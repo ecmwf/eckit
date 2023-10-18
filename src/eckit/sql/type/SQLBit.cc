@@ -8,16 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/sql/type/SQLBit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/sql/LibEcKitSQL.h"
 #include "eckit/sql/SQLOutput.h"
+#include "eckit/sql/type/SQLBit.h"
 
 namespace eckit {
 namespace sql {
 namespace type {
 
 SQLBit::SQLBit(const std::string& name, unsigned long mask, unsigned long shift) :
-    type::SQLType(name), mask_(mask), shift_(shift) {}
+    type::SQLType(name),
+    returnAsDouble_(LibEcKitSQL::instance().treatIntegersAsDoubles()),
+    mask_(mask),
+    shift_(shift) {}
 
 SQLBit::~SQLBit() {}
 
@@ -27,8 +31,16 @@ size_t SQLBit::size() const {
 }
 
 void SQLBit::output(SQLOutput& o, double x, bool missing) const {
-    double val = (missing ? 0 : ((static_cast<unsigned long>(x) & mask_) >> shift_));
-    o.outputUnsignedInt(val, missing);
+
+    unsigned long val = returnAsDouble_ ? static_cast<unsigned long>(x)
+                                        : reinterpret_cast<const int64_t&>(x);
+
+    val = (val & mask_) >> shift_;
+
+    double retval = missing ? 0
+                            : (returnAsDouble_ ? static_cast<double>(val)
+                                               : reinterpret_cast<const double&>(val));
+    o.outputUnsignedInt(retval, missing);
 }
 
 std::string SQLBit::asString(const double* val) const {

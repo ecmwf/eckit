@@ -43,7 +43,13 @@ public:
     void registerAlias(const std::string& name, const std::string& alias);
     const SQLType* lookup(const std::string& name);
 
+    /// Clear and invalidate the contents of the TypeRegistry. Note that this is dangerous as any types that
+    /// have already been looked up (and cached) become invalidated. This should essentially only be used in
+    /// writing unit tests.
+    void debugClear();
+
 private:
+    void enregisterDefaults();
     void enregisterInternal(SQLType* t);
     std::mutex m_;
     std::map<std::string, std::unique_ptr<SQLType>> map_;
@@ -53,9 +59,7 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 TypeRegistry::TypeRegistry() {
-    enregisterInternal(new SQLInt("integer"));
-    enregisterInternal(new SQLReal("real"));
-    enregisterInternal(new SQLDouble("double"));
+    enregisterDefaults();
 }
 
 TypeRegistry& TypeRegistry::instance() {
@@ -70,6 +74,12 @@ void TypeRegistry::enregister(SQLType* t) {
 
 void TypeRegistry::enregisterInternal(SQLType* t) {
     map_.emplace(std::make_pair(t->name(), std::unique_ptr<SQLType>(t)));
+}
+
+void TypeRegistry::enregisterDefaults() {
+    enregisterInternal(new SQLInt("integer"));
+    enregisterInternal(new SQLReal("real"));
+    enregisterInternal(new SQLDouble("double"));
 }
 
 void TypeRegistry::registerAlias(const std::string& name, const std::string& alias) {
@@ -91,6 +101,15 @@ const SQLType* TypeRegistry::lookup(const std::string& name) {
         return it2->second;
 
     return nullptr;
+}
+
+void TypeRegistry::debugClear() {
+    std::lock_guard<std::mutex> lock(m_);
+
+    map_.clear();
+    aliases_.clear();
+
+    enregisterDefaults();
 }
 
 SQLType::SQLType(const std::string& name) :
@@ -131,6 +150,10 @@ const SQLType& SQLType::lookup(const std::string& name, size_t sizeDoubles) {
     if (!typ)
         throw eckit::SeriousBug(name + ": type not defined");
     return *typ;
+}
+
+void SQLType::debugClearTypeRegistry() {
+    TypeRegistry::instance().debugClear();
 }
 
 void SQLType::createAlias(const std::string& name, const std::string& alias) {

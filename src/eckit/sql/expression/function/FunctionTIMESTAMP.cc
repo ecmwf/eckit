@@ -33,17 +33,15 @@ std::shared_ptr<SQLExpression> FunctionTIMESTAMP::clone() const {
     return std::make_shared<FunctionTIMESTAMP>(*this);
 }
 
-FunctionTIMESTAMP::~FunctionTIMESTAMP() {}
-
-double FunctionTIMESTAMP::eval(bool& missing) const {
+int64_t FunctionTIMESTAMP::evalInt(bool& missing) const {
     double indate = args_[0]->eval(missing);
     double intime = args_[1]->eval(missing);
     // Merge "YYYYMMDD" and "HHMMSS" into "YYYYMMDDHHMMSS"
-    double outstamp = 0;
+    int64_t outstamp = 0;
     if (indate >= 0 && indate <= 99991231 && intime >= 0 && intime <= 240000) {
-        long long int lldate = (long long int)indate;
-        long long int lltime = (long long int)intime;
-        long long int tstamp = lldate * 1000000ll + lltime;
+        int64_t lldate = (long long int)indate;
+        int64_t lltime = (long long int)intime;
+        int64_t tstamp = lldate * 1000000ll + lltime;
         outstamp             = tstamp;
         outstamp             = trunc(outstamp);
     }

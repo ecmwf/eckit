@@ -29,7 +29,7 @@ public:
     static void registerIntegerFunctions();
 
     FunctionIntegerExpression(const std::string&, const expression::Expressions&);
-    ~FunctionIntegerExpression();
+    ~FunctionIntegerExpression() override = default;
 
     // -- Overridden methods
     virtual const eckit::sql::type::SQLType* type() const override;
@@ -42,6 +42,10 @@ private:
     FunctionIntegerExpression(const FunctionIntegerExpression&);
     FunctionIntegerExpression& operator=(const FunctionIntegerExpression&);
 
+    double eval(bool& m) const final;
+    virtual int64_t evalInt(bool& m) const = 0;
+
+    bool returnAsDouble_;
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionIntegerExpression& p)
     //	{ p.print(s); return s; }

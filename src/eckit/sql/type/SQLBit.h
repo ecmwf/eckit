@@ -33,6 +33,7 @@ private:
     SQLBit(const SQLBit&);
     SQLBit& operator=(const SQLBit&);
 
+    bool returnAsDouble_;
     unsigned long mask_;
     unsigned long shift_;
 

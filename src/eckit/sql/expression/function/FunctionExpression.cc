@@ -72,7 +72,6 @@ std::shared_ptr<SQLExpression> FunctionExpression::simplify(bool& changed) {
 
         if (simplifiedArg) {
             arg = simplifiedArg;
-            std::cout << "SIMPLIFY " << *this << std::endl;
             changed = true;
         }
     }

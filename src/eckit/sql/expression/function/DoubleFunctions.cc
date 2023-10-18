@@ -10,6 +10,8 @@
 
 
 #include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/type/SQLType.h"
+#include "eckit/sql/LibEcKitSQL.h"
 
 #include <float.h>
 #include <climits>
@@ -25,18 +27,78 @@ namespace function {
 
 template <typename T, int ARITY>
 class ArityFunction : public FunctionExpression {
-    std::shared_ptr<SQLExpression> clone() const { return std::make_shared<T>(name_, args_); }
+    std::shared_ptr<SQLExpression> clone() const override { return std::make_shared<T>(name_, args_); }
+
+    virtual void checkUpdateTypes() {
+        for (int i = 0; i < ARITY; ++i) {
+            if (this->args_[i]->type()->getKind() != type::SQLType::doubleType &&
+                this->args_[i]->type()->getKind() != type::SQLType::realType) {
+                std::ostringstream oss;
+                oss << "Expression \"" << this->args_[i]->title()
+                    << "\" is not of type double in expression \"" << (*this) << "\"";
+                throw BadValue(oss.str(), Here());
+            }
+        }
+    }
+
+protected: // methods
+
+    void prepare(SQLSelect& sql) override {
+        FunctionExpression::prepare(sql);
+        checkUpdateTypes();
+    }
+
+    void updateType(SQLSelect& sql) override {
+        FunctionExpression::updateType(sql);
+        checkUpdateTypes();
+    }
 
 public:
     using FunctionExpression::FunctionExpression;
     static int arity() { return ARITY; }
 };
 
+// UnaryFunctionGeneric properly handles the case where integers are encoded as integers, as well as encoded as
+// doubles depending on the source of the data
+
+template <typename Functor>
+class UnaryFunctionGeneric : public ArityFunction<UnaryFunctionGeneric<Functor>, 1> {
+
+    double (UnaryFunctionGeneric::*evaluate_)(double val) const;
+
+    void checkUpdateTypes() override {
+        if (LibEcKitSQL::instance().treatIntegersAsDoubles()) {
+            evaluate_ = &UnaryFunctionGeneric::doubleEvaluate;
+        } else if (this->args_[0]->type()->getKind() == type::SQLType::integerType ||
+                   this->args_[0]->type()->getKind() == type::SQLType::bitmapType) {
+            evaluate_ = &UnaryFunctionGeneric::longEvaluate;
+        } else {
+            evaluate_ = &UnaryFunctionGeneric::doubleEvaluate;
+        }
+    }
+
+    double eval(bool& m) const override {
+
+        double a0 = this->args_[0]->eval(m);
+        if (m)
+            return this->missingValue_;
+
+        return ((*this).*(this->evaluate_))(a0);
+    }
+
+    static int64_t longCast(double val) { return reinterpret_cast<const int64_t&>(val); }
+
+    double doubleEvaluate(double val) const { return Functor()(val); }
+    double longEvaluate(double val) const   { return Functor()(longCast(val)); }
+
+public:
+    using ArityFunction<UnaryFunctionGeneric<Functor>, 1>::ArityFunction;
+};
 
 template <double (*FN)(double)>
 class UnaryFunction : public ArityFunction<UnaryFunction<FN>, 1> {
 
-    double eval(bool& m) const {
+    double eval(bool& m) const override {
 
         double a0 = this->args_[0]->eval(m);
         if (m)
@@ -49,10 +111,65 @@ public:
     using ArityFunction<UnaryFunction<FN>, 1>::ArityFunction;
 };
 
+// BinaryFunction generic properly handles the case where integers are encoded as integers, as well as encoded as
+// doubles depending on the source of the data
+
+template <class Functor>
+class BinaryFunctionGeneric : public ArityFunction<BinaryFunctionGeneric<Functor>, 2> {
+
+protected:
+    double (BinaryFunctionGeneric::*evaluate_)(double lhs, double rhs) const;
+
+private:
+    void checkUpdateTypes() override {
+        if (LibEcKitSQL::instance().treatIntegersAsDoubles()) {
+            evaluate_ = &BinaryFunctionGeneric::doubleDoubleEvaluate;
+        } else {
+            if (this->args_[0]->type()->getKind() == type::SQLType::integerType ||
+                this->args_[0]->type()->getKind() == type::SQLType::bitmapType) {
+                if (this->args_[1]->type()->getKind() == type::SQLType::integerType ||
+                    this->args_[1]->type()->getKind() == type::SQLType::bitmapType) {
+                    evaluate_ = &BinaryFunctionGeneric::longLongEvaluate;
+                } else {
+                    evaluate_ = &BinaryFunctionGeneric::longDoubleEvaluate;
+                }
+            } else {
+                if (this->args_[1]->type()->getKind() == type::SQLType::integerType ||
+                    this->args_[1]->type()->getKind() == type::SQLType::bitmapType) {
+                    evaluate_ = &BinaryFunctionGeneric::doubleLongEvaluate;
+                } else {
+                    evaluate_ = &BinaryFunctionGeneric::doubleDoubleEvaluate;
+                }
+            }
+        }
+    }
+
+    double eval(bool& m) const override {
+
+        double lval = this->args_[0]->eval(m);
+        if (m) return this->missingValue_;
+
+        double rval = this->args_[1]->eval(m);
+        if (m) return this->missingValue_;
+
+        return ((*this).*(this->evaluate_))(lval, rval);
+    }
+
+    static int64_t longCast(double val) { return reinterpret_cast<const int64_t&>(val); }
+
+    double doubleDoubleEvaluate(double lhs, double rhs) const { return Functor()(lhs, rhs); }
+    double doubleLongEvaluate(double lhs, double rhs) const   { return Functor()(lhs, longCast(rhs)); }
+    double longDoubleEvaluate(double lhs, double rhs) const   { return Functor()(longCast(lhs), rhs); }
+    double longLongEvaluate(double lhs, double rhs) const     { return Functor()(longCast(lhs), longCast(rhs)); }
+
+public:
+    using ArityFunction<BinaryFunctionGeneric<Functor>, 2>::ArityFunction;
+};
+
 template <double (*FN)(double, double)>
 class BinaryFunction : public ArityFunction<BinaryFunction<FN>, 2> {
 
-    double eval(bool& m) const {
+    double eval(bool& m) const override {
 
         double a0 = this->args_[0]->eval(m);
         if (m)
@@ -71,7 +188,7 @@ public:
 template <double (*FN)(double, double, double)>
 class TertiaryFunction : public ArityFunction<TertiaryFunction<FN>, 3> {
 
-    double eval(bool& m) const {
+    double eval(bool& m) const override {
 
         double a0 = this->args_[0]->eval(m);
         if (m)
@@ -93,7 +210,7 @@ public:
 template <double (*FN)(double, double, double, double)>
 class QuaternaryFunction : public ArityFunction<QuaternaryFunction<FN>, 4> {
 
-    double eval(bool& m) const {
+    double eval(bool& m) const override {
 
         double a0 = this->args_[0]->eval(m);
         if (m)
@@ -118,7 +235,7 @@ public:
 template <double (*FN)(double, double, double, double, double)>
 class QuinaryFunction : public ArityFunction<QuinaryFunction<FN>, 5> {
 
-    double eval(bool& m) const {
+    double eval(bool& m) const override {
 
         double a0 = this->args_[0]->eval(m);
         if (m)
@@ -151,9 +268,10 @@ const double R_Earth    = 180 * 60 / M_PI * 1.852 * 1000.0;
 const double D2R        = M_PI / 180.0;
 const double R2D        = 180.0 / M_PI;
 
-inline double abs(double x) {
-    return fabs(x);
-}
+struct GenericAbs {
+    template <typename VAL>
+    double operator()(const VAL& val) { return std::abs(val); }
+};
 
 // Note: ODB's trigonometric funcs require args in degrees
 // and return degrees (where applicable)
@@ -317,71 +435,109 @@ double ibits(double X, double Pos, double Len) {
     return (double)rc;
 }
 
-double negate_double(double n) {
-    return -n;
-}
-double logical_not_double(double n) {
-    return !n;
-}
-double greater_double(double l, double r) {
-    return l > r;
-}
-double greater_equal_double(double l, double r) {
-    return l >= r;
-}
-double less_double(double l, double r) {
-    return l < r;
-}
-double less_equal_double(double l, double r) {
-    return l <= r;
-}
+struct GenericNegate {
+    template <typename VAL>
+    double operator()(const VAL& val) { return -val; }
+};
 
-double plus_double(double l, double r) {
-    return l + r;
-}
-double minus_double(double l, double r) {
-    return l - r;
-}
-double divides_double(double l, double r) {
-    return l / r;
-}
+struct GenericLogicalNot {
+    template <typename VAL>
+    bool operator()(const VAL& val) { return !val; }
+};
+
+struct GenericGreaterThan {
+    template <typename LHS, typename RHS>
+    bool operator()(const LHS& l, const RHS& r) { return l > r; }
+};
+
+struct GenericGreaterEqualTo {
+    template <typename LHS, typename RHS>
+    bool operator()(const LHS& l, const RHS& r) { return l >= r; }
+};
+
+struct GenericLessThan {
+    template <typename LHS, typename RHS>
+    bool operator()(const LHS& l, const RHS& r) { return l < r; }
+};
+
+struct GenericLessEqualTo {
+    template <typename LHS, typename RHS>
+    bool operator()(const LHS& l, const RHS& r) { return l <= r; }
+};
+
+
+/// @note - currently all computed columns are of double type. If we wish to return integer type computed columns
+///         then we will need to do some casting. Something like:
+///             auto retval = l + r;
+///             static_assert(sizeof(retval) == sizeof(double), "Sizing sanity check");
+///             return reinterpret_cast<const double&>(retval);
+
+struct GenericPlus {
+    template <typename LHS, typename RHS>
+    double operator()(const LHS& l, const RHS& r) { return l + r; }
+};
+
+struct GenericMinus {
+    template <typename LHS, typename RHS>
+    double operator()(const LHS& l, const RHS& r) { return l - r; }
+};
+
+struct GenericDivide {
+    template <typename LHS, typename RHS>
+    double operator()(const LHS& l, const RHS& r) { return l / r; }
+};
+
+struct GenericMultiply {
+    template <typename LHS, typename RHS>
+    double operator()(const LHS& l, const RHS& r) { return l * r; }
+};
+
+
 double ldexp_double(double l, double r) {
     return ldexp(l, r);
 }
 
-/// Multiplication is a special case
+/// Multiplication is a special case. In particular, if one of the values is zero, then we let it go through!
 
-class MultiplyFunction : public ArityFunction<MultiplyFunction, 2> {
+class MultiplyFunction : public BinaryFunctionGeneric<GenericMultiply> {
 
-    double eval(bool& m) const {
+    double eval(bool& m) const override {
 
-        bool m0   = false;
-        bool m1   = false;
-        double a0 = args_[0]->eval(m0);
-        double a1 = args_[1]->eval(m1);
+        bool m0;
+        bool m1;
+        double a0 = this->args_[0]->eval(m0);
+        double a1 = this->args_[1]->eval(m1);
 
-        if ((a0 == 0 || a1 == 0) && !(m0 && m1)) {
-            return 0;
+        // If both missing, then missing
+        if (m0 && m1) {
+            m = true;
+            return this->missingValue_;
         }
+
+        double retval = (this->*(this->evaluate_))(a0, a1);
+
+        // Otherwise, if one of the values is zero, we return zero even if the other is missing
+
+        if (retval == 0) return 0;
 
         if (m0 || m1) {
             m = true;
             return this->missingValue_;
         }
 
-        return a0 * a1;
+        return retval;
     }
 
 public:
-    using ArityFunction<MultiplyFunction, 2>::ArityFunction;
+    using BinaryFunctionGeneric<GenericMultiply>::BinaryFunctionGeneric;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 // Static factories
 
-static FunctionBuilder<UnaryFunction<abs>> absBuilder("abs", "absolute value");
-static FunctionBuilder<UnaryFunction<fabs>> fabsBuilder("fabs", "absolute value");
+static FunctionBuilder<UnaryFunctionGeneric<GenericAbs>> absBuilder("abs", "absolute value");
+static FunctionBuilder<UnaryFunctionGeneric<GenericAbs>> fabsBuilder("fabs", "absolute value");
 
 static FunctionBuilder<UnaryFunction<Func_acos>> acosBuilder("acos", "arc cosine");
 static FunctionBuilder<UnaryFunction<Func_asin>> asinBuilder("asin", "arc sine");
@@ -443,16 +599,16 @@ static FunctionBuilder<TertiaryFunction<between_exclude_second>> between_exclude
 static FunctionBuilder<TertiaryFunction<between_exclude_both>> between_exclude_bothBuilder("between_exclude_both", "");
 static FunctionBuilder<TertiaryFunction<ibits>> ibitsBuilder("ibits", "");
 
-static FunctionBuilder<UnaryFunction<negate_double>> negate_doubleBuilder("-", "");
-static FunctionBuilder<UnaryFunction<logical_not_double>> logical_not_doubleBuilder("not", "logical not");
+static FunctionBuilder<UnaryFunctionGeneric<GenericNegate>> negate_Builder("-", "");
+static FunctionBuilder<UnaryFunctionGeneric<GenericLogicalNot>> logical_not_Builder("not", "logical not");
 
-static FunctionBuilder<BinaryFunction<greater_double>> greater_doubleBuilder(">", "greater than");
-static FunctionBuilder<BinaryFunction<greater_equal_double>> greater_equal_doubleBuilder(">=", "greater or equal");
-static FunctionBuilder<BinaryFunction<less_double>> less_doubleBuilder("<", "less than");
-static FunctionBuilder<BinaryFunction<less_equal_double>> less_equal_doubleBuilder("<=", "less or equal");
-static FunctionBuilder<BinaryFunction<plus_double>> plus_doubleBuilder("+", "add");
-static FunctionBuilder<BinaryFunction<minus_double>> minus_doubleBuilder("-", "subtract");
-static FunctionBuilder<BinaryFunction<divides_double>> divides_doubleBuilder("/", "divide");
+static FunctionBuilder<BinaryFunctionGeneric<GenericGreaterThan>> greater_builder(">", "greater than");
+static FunctionBuilder<BinaryFunctionGeneric<GenericGreaterEqualTo>> greater_equal_Builder(">=", "greater or equal");
+static FunctionBuilder<BinaryFunctionGeneric<GenericLessThan>> less_Builder("<", "less than");
+static FunctionBuilder<BinaryFunctionGeneric<GenericLessEqualTo>> less_equal_Builder("<=", "less or equal");
+static FunctionBuilder<BinaryFunctionGeneric<GenericPlus>> plus_Builder("+", "add");
+static FunctionBuilder<BinaryFunctionGeneric<GenericMinus>> minus_Builder("-", "subtract");
+static FunctionBuilder<BinaryFunctionGeneric<GenericDivide>> divides_Builder("/", "divide");
 static FunctionBuilder<BinaryFunction<ldexp_double>> ldexp_doubleBuilder("ldexp_double", "");
 
 static FunctionBuilder<MultiplyFunction> multiplyBuilder("*", "multiply");

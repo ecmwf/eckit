@@ -31,8 +31,6 @@ FunctionTHIN::FunctionTHIN(const std::string& name, const expression::Expression
 FunctionTHIN::FunctionTHIN(const FunctionTHIN& other) :
     FunctionIntegerExpression(other.name_, other.args_), count_(other.count_) {}
 
-FunctionTHIN::~FunctionTHIN() {}
-
 std::shared_ptr<SQLExpression> FunctionTHIN::clone() const {
     return std::make_shared<FunctionTHIN>(*this);
 }
@@ -45,12 +43,12 @@ void FunctionTHIN::print(std::ostream& s) const {
     s << "THIN()";
 }
 
-double FunctionTHIN::eval(bool& missing) const {
+int64_t FunctionTHIN::evalInt(bool& missing) const {
     int every_nth = (int)args_[0]->eval(missing);
     if ((*count_) % every_nth == 0)
-        return 1.0;
+        return 1;
     else
-        return 0.0;
+        return 0;
 }
 
 void FunctionTHIN::prepare(SQLSelect& sql) {

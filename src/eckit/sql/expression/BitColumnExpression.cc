@@ -14,6 +14,7 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/os/BackTrace.h"
+#include "eckit/sql/LibEcKitSQL.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
@@ -35,6 +36,7 @@ namespace expression {
 
 BitColumnExpression::BitColumnExpression(const std::string& name, const std::string& field, SQLTable* table) :
     ColumnExpression(name + "." + field + "@" + table->name(), table),
+    returnAsDouble_(LibEcKitSQL::instance().treatIntegersAsDoubles()),
     mask_(0),
     bitShift_(0),
     field_(field),
@@ -46,6 +48,7 @@ BitColumnExpression::BitColumnExpression(const std::string& name, const std::str
 BitColumnExpression::BitColumnExpression(const std::string& name, const std::string& field,
                                          const std::string& tableReference) :
     ColumnExpression(name + "." + field + tableReference, tableReference),
+    returnAsDouble_(LibEcKitSQL::instance().treatIntegersAsDoubles()),
     mask_(0),
     bitShift_(0),
     field_(field),
@@ -55,7 +58,7 @@ BitColumnExpression::BitColumnExpression(const std::string& name, const std::str
 }
 
 BitColumnExpression::BitColumnExpression(const BitColumnExpression& o) :
-    ColumnExpression(o), mask_(o.mask_), bitShift_(o.bitShift_), field_(o.field_), name_(o.name_) {}
+    ColumnExpression(o), returnAsDouble_(o.returnAsDouble_), mask_(o.mask_), bitShift_(o.bitShift_), field_(o.field_), name_(o.name_) {}
 
 BitColumnExpression::~BitColumnExpression() {}
 
@@ -92,8 +95,10 @@ void BitColumnExpression::updateType(SQLSelect& sql) {
 double BitColumnExpression::eval(bool& missing) const {
     if (value_->second)
         missing = true;
-    unsigned long x = static_cast<unsigned long>(*value_->first);
-    return (x & mask_) >> bitShift_;
+    uint64_t x = static_cast<unsigned long>(*value_->first);
+    x = (x & mask_) >> bitShift_;
+
+    return returnAsDouble_ ? static_cast<double>(x) : reinterpret_cast<const double&>(x);
 }
 
 void BitColumnExpression::expandStars(const std::vector<std::reference_wrapper<const SQLTable>>& tables,

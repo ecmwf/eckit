@@ -25,10 +25,12 @@ namespace function {
 /* Static self-registration */
 
 class FunctionTDIFF : public FunctionIntegerExpression {
+    bool returnAsDouble_;
+
 public:
     FunctionTDIFF(const std::string&, const expression::Expressions&);
     FunctionTDIFF(const FunctionTDIFF&);
-    ~FunctionTDIFF();
+    ~FunctionTDIFF() override = default;
 
     std::shared_ptr<SQLExpression> clone() const override;
 
@@ -40,7 +42,7 @@ private:
 
     // -- Overridden methods
     virtual const eckit::sql::type::SQLType* type() const override;
-    virtual double eval(bool& missing) const override;
+    int64_t evalInt(bool& missing) const override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionTDIFF& p)

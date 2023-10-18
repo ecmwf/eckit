@@ -666,7 +666,7 @@ condition   : term relational_operator term relational_operator term { $$ = Func
             //    const SelectAST& subquery ($8);
             //    $$ = FunctionFactory::instance().build("match", matchList, subquery);
             }
-            | condition  IN '(' expression_list ')'                  { $4.push_back($1); $$ = FunctionFactory::instance().build("in",$4);   }
+            | condition  IN '(' expression_list ')'                  { $4.push_back($1); $$ = FunctionFactory::instance().build("in",$4);   } // n.b. LHS argument appended as most RHS argument in list!!
             | condition  NOT IN '(' expression_list ')'  { $5.push_back($1); $$ = FunctionFactory::instance().build("not_in",$5);   }
             | NOT condition             { $$ = FunctionFactory::instance().build("not",$2);   }
             | condition IS NIL          { $$ = FunctionFactory::instance().build("null",$1);   }

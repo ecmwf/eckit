@@ -22,24 +22,22 @@ namespace function {
 static FunctionBuilder<FunctionCOUNT> countFunctionBuilder("count");
 
 const type::SQLType* FunctionCOUNT::type() const {
-    const type::SQLType& x = type::SQLType::lookup("double");
+    const type::SQLType& x = type::SQLType::lookup("integer");
     return &x;
 }
 
 FunctionCOUNT::FunctionCOUNT(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args), count_(0) {}
+    FunctionIntegerExpression(name, args), count_(0) {}
 
 FunctionCOUNT::FunctionCOUNT(const FunctionCOUNT& other) :
-    FunctionExpression(other.name_, other.args_), count_(other.count_) {}
+    FunctionIntegerExpression(other.name_, other.args_),
+    count_(other.count_) {}
 
 std::shared_ptr<SQLExpression> FunctionCOUNT::clone() const {
     return std::make_shared<FunctionCOUNT>(*this);
 }
 
-FunctionCOUNT::~FunctionCOUNT() {}
-
-double FunctionCOUNT::eval(bool& missing) const {
-    // cout << "FunctionCOUNT " << count_ << std::endl;
+int64_t FunctionCOUNT::evalInt(bool& missing) const {
     return count_;
 }
 
@@ -58,7 +56,6 @@ void FunctionCOUNT::partialResult() {
     args_[0]->eval(missing);
     if (!missing)
         count_++;
-    // cout << "FunctionCOUNT::partialResult " << count_ << std::endl;
 }
 
 }  // namespace function

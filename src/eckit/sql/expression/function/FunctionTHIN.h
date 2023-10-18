@@ -25,7 +25,7 @@ class FunctionTHIN : public FunctionIntegerExpression {
 public:
     FunctionTHIN(const std::string&, const expression::Expressions&);
     FunctionTHIN(const FunctionTHIN&);
-    ~FunctionTHIN();
+    ~FunctionTHIN() override = default;
 
     std::shared_ptr<SQLExpression> clone() const override;
 
@@ -40,7 +40,7 @@ protected:
     virtual void prepare(SQLSelect&) override;
     virtual void cleanup(SQLSelect&) override;
     virtual bool isConstant() const override;
-    virtual double eval(bool& missing) const override;
+    int64_t evalInt(bool& missing) const override;
     virtual std::shared_ptr<SQLExpression> simplify(bool&) override;
     bool isAggregate() const override { return false; }
 

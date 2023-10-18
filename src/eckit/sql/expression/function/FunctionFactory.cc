@@ -35,7 +35,11 @@ void FunctionFactory::enregister(const std::string& name, int arity, const Funct
     auto key = std::make_pair(name, arity);
 
     auto it = builders_.find(key);
-    ASSERT(it == builders_.end());
+    if (it != builders_.end()) {
+        std::ostringstream ss;
+        ss << "Builder already registered for : <\"" << key.first << "\", " << key.second << ">";
+        throw SeriousBug(ss.str(), Here());
+    }
 
     builders_[key] = builder;
 }

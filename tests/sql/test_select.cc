@@ -16,9 +16,9 @@
 #include "eckit/sql/SQLParser.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLSession.h"
-#include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/type/SQLBitfield.h"
+#include "eckit/sql/LibEcKitSQL.h"
 #include "eckit/testing/Test.h"
 
 using namespace eckit::testing;
@@ -41,9 +41,12 @@ static const std::vector<long> BF3_DATA{0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1};
 
 class TestTable : public eckit::sql::SQLTable {
 
+    bool integersAsDoubles_;
+
 public:
-    TestTable(eckit::sql::SQLDatabase& db, const std::string& path, const std::string& name) :
-        SQLTable(db, path, name) {
+    TestTable(eckit::sql::SQLDatabase& db, const std::string& path, const std::string& name, bool integersAsDoubles=false) :
+        SQLTable(db, path, name),
+        integersAsDoubles_(integersAsDoubles) {
         addColumn("icol", 0, eckit::sql::type::SQLType::lookup("integer"), false, 0);
         addColumn("scol", 1, eckit::sql::type::SQLType::lookup("string", 1), false, 0);
         addColumn("rcol", 2, eckit::sql::type::SQLType::lookup("real"), false, 0);
@@ -62,8 +65,9 @@ private:
     public:
         TestTableIterator(const TestTable& owner,
                           const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
-                          std::function<void(eckit::sql::SQLTableIterator&)> updateCallback) :
-            /* owner_(owner), */ idx_(0), data_(8), updateCallback_(updateCallback) {
+                          std::function<void(eckit::sql::SQLTableIterator&)> updateCallback,
+                          bool integersAsDoubles) :
+            /* owner_(owner), */ idx_(0), data_(8), updateCallback_(updateCallback), integersAsDoubles_(integersAsDoubles) {
             std::vector<size_t> offsets{0, 1, 2, 3, 4, 5, 6};
             std::vector<size_t> doublesSizes{1, 1, 1, 1, 1, 1, 1};
             for (const auto& col : columns) {
@@ -76,7 +80,7 @@ private:
         }
 
     private:
-        ~TestTableIterator() override {}
+        ~TestTableIterator() override = default;
         void rewind() override { idx_ = 0; }
         bool next() override {
 
@@ -102,14 +106,21 @@ private:
             }
             return false;
         }
+        double integer_cast(const long& val) const {
+            if (integersAsDoubles_) {
+                return static_cast<double>(val);
+            } else {
+                return reinterpret_cast<const double&>(val);
+            }
+        }
         void copyRow() {
-            data_[0] = INTEGER_DATA[idx_];
+            data_[0] = integer_cast(INTEGER_DATA[idx_]);
             ::strncpy(reinterpret_cast<char*>(&data_[1]), STRING_DATA[idx_].c_str(), 16);
             data_[3] = REAL_DATA[idx_];
-            data_[4] = BITFIELD_DATA[idx_];
-            data_[5] = BITFIELD_DATA[idx_];
-            data_[6] = BITFIELD_DATA[idx_];
-            data_[7] = INTEGER_DATA[idx_];
+            data_[4] = integer_cast(BITFIELD_DATA[idx_]);
+            data_[5] = integer_cast(BITFIELD_DATA[idx_]);
+            data_[6] = integer_cast(BITFIELD_DATA[idx_]);
+            data_[7] = integer_cast(INTEGER_DATA[idx_]);
         }
         std::vector<size_t> columnOffsets() const override { return offsets_; }
         std::vector<size_t> doublesDataSizes() const override { return doublesSizes_; }
@@ -126,18 +137,27 @@ private:
         std::vector<double> missingVals_;
         std::vector<double> data_;
         std::function<void(eckit::sql::SQLTableIterator&)> updateCallback_;
+        bool integersAsDoubles_;
     };
 
     eckit::sql::SQLTableIterator* iterator(
         const std::vector<std::reference_wrapper<const eckit::sql::SQLColumn>>& columns,
         std::function<void(eckit::sql::SQLTableIterator&)> metadataUpdateCallback) const override {
-        return new TestTableIterator(*this, columns, metadataUpdateCallback);
+        return new TestTableIterator(*this, columns, metadataUpdateCallback, integersAsDoubles_);
     }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class TestOutput : public eckit::sql::SQLOutput {
+
+public: // methods
+
+    explicit TestOutput(bool integersAsDoubles) :
+        eckit::sql::SQLOutput(),
+        integersAsDoubles_(integersAsDoubles) {}
+
+private: // methods
 
     void cleanup(eckit::sql::SQLSelect&) override {}
     void reset() override {
@@ -166,26 +186,37 @@ class TestOutput : public eckit::sql::SQLOutput {
         }
     }
 
+    long integer_cast(const double& val) const {
+        if (integersAsDoubles_) {
+            return static_cast<long>(val);
+        } else {
+            return reinterpret_cast<const long&>(val);
+        }
+    }
+
     void outputReal(double d, bool) override { floatOutput_.push_back(d); }
     void outputDouble(double d, bool) override { floatOutput_.push_back(d); }
-    void outputInt(double d, bool) override { intOutput_.push_back(d); }
-    void outputUnsignedInt(double d, bool) override { intOutput_.push_back(d); }
+    void outputInt(double d, bool) override { intOutput_.push_back(integer_cast(d)); }
+    void outputUnsignedInt(double d, bool) override { intOutput_.push_back(integer_cast(d)); }
     void outputString(const char* s, size_t l, bool missing) override {
         if (missing) {
-            strOutput_.push_back(std::string());
+            strOutput_.emplace_back(std::string());
         }
         else {
             ASSERT(s);
-            strOutput_.push_back(std::string(s, l));
+            strOutput_.emplace_back(std::string(s, l));
         }
     }
-    void outputBitfield(double d, bool) override { intOutput_.push_back(d); }
+    void outputBitfield(double d, bool) override { intOutput_.push_back(integer_cast(d)); }
 
     unsigned long long count() override {
         return std::max(intOutput.size(), std::max(floatOutput_.size(), strOutput_.size()));
     }
 
 public:  // visible members
+
+    bool integersAsDoubles_;
+
     std::vector<long> intOutput_;
     std::vector<double> floatOutput_;
     std::vector<std::string> strOutput_;
@@ -210,17 +241,20 @@ CASE("Test SQL database setup") {
 }
 
 
-CASE("Select from constructed table") {
+void run_constructed_table_tests(bool integersAsDoubles, std::string& _test_subsection, int& _num_subsections, int _subsection) {
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::LibEcKitSQL::instance().treatIntegersAsDoubles(integersAsDoubles);
+    eckit::sql::type::SQLType::debugClearTypeRegistry();
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput(integersAsDoubles)));
+
     eckit::sql::SQLDatabase& db(session.currentDatabase());
 
-    db.addTable(new TestTable(db, "a/b/c.path", "table1"));
+    db.addTable(new TestTable(db, "a/b/c.path", "table1", integersAsDoubles));
 
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
     // All of the different types of select from this standard table.
-
     SECTION("Test SQL select columns") {
 
         std::string sql = "select scol,icol from table1";
@@ -404,16 +438,27 @@ CASE("Select from constructed table") {
             EXPECT(o.intOutput[row] == INTEGER_DATA[row]);
         }
     }
+}
+
+CASE("Select from constructed table") {
+
+    bool integersAsDoubles = false;
+    run_constructed_table_tests(integersAsDoubles, _test_subsection, _num_subsections, _subsection);
+    integersAsDoubles = true;
+    run_constructed_table_tests(integersAsDoubles, _test_subsection, _num_subsections, _subsection);
 
 }  // Testing SQL select from standard table
 
 
-CASE("Test with implicit tables") {
+void run_implicit_table_test(bool integersAsDoubles, std::string& _test_subsection, int& _num_subsections, int _subsection) {
 
-    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput));
+    eckit::LibEcKitSQL::instance().treatIntegersAsDoubles(integersAsDoubles);
+    eckit::sql::type::SQLType::debugClearTypeRegistry();
+
+    eckit::sql::SQLSession session(std::unique_ptr<TestOutput>(new TestOutput(integersAsDoubles)));
     eckit::sql::SQLDatabase& db(session.currentDatabase());
 
-    db.addImplicitTable(new TestTable(db, "a/b/c.path", "table1"));
+    db.addImplicitTable(new TestTable(db, "a/b/c.path", "table1", integersAsDoubles));
 
     TestOutput& o(static_cast<TestOutput&>(session.output()));
 
@@ -480,6 +525,13 @@ CASE("Test with implicit tables") {
     }
 }
 
+CASE("Test with implicit tables") {
+
+    bool integersAsDoubles = false;
+    run_implicit_table_test(integersAsDoubles, _test_subsection, _num_subsections, _subsection);
+    integersAsDoubles = true;
+    run_implicit_table_test(integersAsDoubles, _test_subsection, _num_subsections, _subsection);
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

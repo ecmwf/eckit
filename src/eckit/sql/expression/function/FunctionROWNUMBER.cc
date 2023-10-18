@@ -12,6 +12,7 @@
 /// Piotr Kuchta - (C) ECMWF July 2009
 
 #include "eckit/sql/expression/function/FunctionROWNUMBER.h"
+#include "eckit/sql/LibEcKitSQL.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
@@ -26,23 +27,23 @@ namespace function {
 static FunctionBuilder<FunctionROWNUMBER> rownumberFunctionBuilder("rownumber");
 
 FunctionROWNUMBER::FunctionROWNUMBER(const std::string& name, const expression::Expressions& args) :
-    FunctionIntegerExpression(name, args), count_(0) {}
+    FunctionIntegerExpression(name, args),
+    count_(nullptr) {}
 
 
 FunctionROWNUMBER::FunctionROWNUMBER(const FunctionROWNUMBER& other) :
-    FunctionIntegerExpression(other.name_, other.args_), count_(other.count_) {}
+    FunctionIntegerExpression(other.name_, other.args_),
+    count_(other.count_) {}
 
 std::shared_ptr<SQLExpression> FunctionROWNUMBER::clone() const {
     return std::make_shared<FunctionROWNUMBER>(*this);
 }
 
-FunctionROWNUMBER::~FunctionROWNUMBER() {}
-
 void FunctionROWNUMBER::print(std::ostream& s) const {
     s << "rownumber()";
 }
 
-double FunctionROWNUMBER::eval(bool& missing) const {
+int64_t FunctionROWNUMBER::evalInt(bool& missing) const {
     return *count_;
 }
 
@@ -61,10 +62,6 @@ std::shared_ptr<SQLExpression> FunctionROWNUMBER::simplify(bool&) {
 }
 
 void FunctionROWNUMBER::partialResult() { /*NOTIMP;*/
-}
-
-const eckit::sql::type::SQLType* FunctionROWNUMBER::type() const {
-    return &eckit::sql::type::SQLType::lookup("integer");
 }
 
 

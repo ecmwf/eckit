@@ -29,6 +29,7 @@ private:
     SQLBitColumn(const SQLBitColumn&);
     SQLBitColumn& operator=(const SQLBitColumn&);
 
+    bool returnAsDouble_;
     std::string field_;
     unsigned long mask_;
     unsigned long shift_;

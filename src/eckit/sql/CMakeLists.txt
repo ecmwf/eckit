@@ -4,6 +4,8 @@ list( APPEND eckit_sql_lib_srcs
 #SQLMATCHSubquerySession.cc
 #SQLMATCHSubquerySessionOutput.h
 #SQLMATCHSubquerySessionOutput.cc
+LibEcKitSQL.cc
+LibEcKitSQL.h
 Environment.cc
 Environment.h
 SQLBitColumn.cc
@@ -79,16 +81,13 @@ expression/function/FunctionCOUNT.cc
 expression/function/FunctionCOUNT.h
 expression/function/FunctionDOTP.cc
 expression/function/FunctionDOTP.h
-expression/function/FunctionEQ.cc
-expression/function/FunctionEQ.h
+expression/function/FunctionCompare.cc
 expression/function/FunctionRLIKE.cc
 expression/function/FunctionRLIKE.h
 #expression/function/FunctionMATCH.h
 #expression/function/FunctionMATCH.cc
 expression/function/FunctionFactory.cc
 expression/function/FunctionFactory.h
-expression/function/FunctionIN.cc
-expression/function/FunctionIN.h
 expression/function/FunctionIntegerExpression.cc
 expression/function/FunctionIntegerExpression.h
 expression/function/FunctionJOIN.cc
@@ -107,10 +106,6 @@ expression/function/FunctionLAST.cc
 expression/function/FunctionLAST.h
 expression/function/FunctionNORM.cc
 expression/function/FunctionNORM.h
-expression/function/FunctionNE.cc
-expression/function/FunctionNE.h
-expression/function/FunctionNOT_IN.cc
-expression/function/FunctionNOT_IN.h
 expression/function/FunctionNOT_NULL.cc
 expression/function/FunctionNOT_NULL.h
 expression/function/FunctionNULL.cc

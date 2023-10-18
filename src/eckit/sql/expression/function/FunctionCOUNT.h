@@ -14,18 +14,18 @@
 #ifndef FunctionCOUNT_H
 #define FunctionCOUNT_H
 
-#include "eckit/sql/expression/function/FunctionExpression.h"
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
 namespace eckit {
 namespace sql {
 namespace expression {
 namespace function {
 
-class FunctionCOUNT : public FunctionExpression {
+class FunctionCOUNT : public FunctionIntegerExpression {
 public:
     FunctionCOUNT(const std::string&, const expression::Expressions&);
     FunctionCOUNT(const FunctionCOUNT&);
-    ~FunctionCOUNT();
+    ~FunctionCOUNT() override = default;
 
     std::shared_ptr<SQLExpression> clone() const override;
 
@@ -36,14 +36,14 @@ private:
     // No copy allowed
     FunctionCOUNT& operator=(const FunctionCOUNT&);
 
-    unsigned long long count_;
+    int64_t count_;
 
     // -- Overridden methods
     virtual const eckit::sql::type::SQLType* type() const override;
     virtual void prepare(SQLSelect&) override;
     virtual void cleanup(SQLSelect&) override;
     virtual void partialResult() override;
-    virtual double eval(bool& missing) const override;
+    int64_t evalInt(bool& missing) const override;
 
     bool isAggregate() const override { return true; }
 

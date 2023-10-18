@@ -25,7 +25,7 @@ class FunctionTIMESTAMP : public FunctionIntegerExpression {
 public:
     FunctionTIMESTAMP(const std::string&, const expression::Expressions&);
     FunctionTIMESTAMP(const FunctionTIMESTAMP&);
-    ~FunctionTIMESTAMP();
+    ~FunctionTIMESTAMP() = default;
 
     std::shared_ptr<SQLExpression> clone() const override;
 
@@ -38,7 +38,7 @@ private:
     FunctionTIMESTAMP& operator=(const FunctionTIMESTAMP&);
 
     // -- Overridden methods
-    virtual double eval(bool& missing) const override;
+    int64_t evalInt(bool& missing) const override;
 
     // -- Friends
     // friend std::ostream& operator<<(std::ostream& s,const FunctionTIMESTAMP& p)

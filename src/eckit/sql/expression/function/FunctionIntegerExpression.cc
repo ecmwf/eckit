@@ -14,6 +14,7 @@
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/sql/LibEcKitSQL.h"
 
 #define ftrunc(x) ((x)-fmod((x), 1))
 #define F90nint(x) (((x) > 0) ? (int)((x) + 0.5) : (int)((x)-0.5))
@@ -24,9 +25,13 @@ namespace expression {
 namespace function {
 
 FunctionIntegerExpression::FunctionIntegerExpression(const std::string& name, const expression::Expressions& args) :
-    FunctionExpression(name, args) {}
+    FunctionExpression(name, args),
+    returnAsDouble_(LibEcKitSQL::instance().treatIntegersAsDoubles()) {}
 
-FunctionIntegerExpression::~FunctionIntegerExpression() {}
+double FunctionIntegerExpression::eval(bool& m) const {
+    int64_t v = evalInt(m);
+    return returnAsDouble_ ? static_cast<double>(v) : reinterpret_cast<const double&>(v);
+}
 
 const eckit::sql::type::SQLType* FunctionIntegerExpression::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");
@@ -44,7 +49,7 @@ void FunctionIntegerExpression::output(SQLOutput& s) const {
 // TODO: This is REALLY the wrong place for this to be.
 constexpr double DEFAULT_MDI = 2147483647;
 
-template <double (*FN)(double)>
+template <int64_t (*FN)(double)>
 class MathFunctionIntegerExpression_1 : public FunctionIntegerExpression {
 
 public:  // methods
@@ -54,7 +59,7 @@ public:  // methods
     }
 
 private:  // methods
-    double eval(bool& m) const {
+    int64_t evalInt(bool& m) const final {
         bool missing = false;
         double v     = args_[0]->eval(missing);
         if (missing) {
@@ -72,49 +77,49 @@ private:  // methods
 
 //----------------------------------------------------------------------------------------------------------------------
 
-inline double year(double x) {
-    return (double)((int)((x) / 10000));
+inline int64_t year(double x) {
+    return ((int)((x) / 10000));
 }
-inline double month(double x) {
-    return (double)(((int)((x) / 100)) % 100);
+inline int64_t month(double x) {
+    return (((int)((x) / 100)) % 100);
 }
-inline double day(double x) {
-    return (double)(((int)(x)) % 100);
+inline int64_t day(double x) {
+    return (((int)(x)) % 100);
 }
-inline double hour(double x) {
-    return (double)((int)((x) / 10000));
+inline int64_t hour(double x) {
+    return ((int)((x) / 10000));
 }
-inline double minute(double x) {
-    return (double)(((int)((x) / 100)) % 100);
+inline int64_t minute(double x) {
+    return (((int)((x) / 100)) % 100);
 }
-inline double minutes(double x) {
+inline int64_t minutes(double x) {
     return minute(x);
 }
-inline double second(double x) {
-    return (double)(((int)(x)) % 100);
+inline int64_t second(double x) {
+    return (((int)(x)) % 100);
 }
-inline double seconds(double x) {
+inline int64_t seconds(double x) {
     return second(x);
 }
 
 
-inline double Func_ftrunc(double x) {
-    return (double)(ftrunc(x));
+inline int64_t Func_ftrunc(double x) {
+    return static_cast<int64_t>(ftrunc(x));
 }
-inline double Func_dnint(double x) {
-    return (double)(F90nint(x));
+inline int64_t Func_dnint(double x) {
+    return static_cast<int64_t>(F90nint(x));
 }
-inline double Func_dint(double x) {
-    return (double)(ftrunc(x));
+inline int64_t Func_dint(double x) {
+    return static_cast<int64_t>(ftrunc(x));
 }
-inline double Func_ceil(double x) {
-    return (double)(ceil(x));
+inline int64_t Func_ceil(double x) {
+    return static_cast<int64_t>(ceil(x));
 }
-inline double Func_floor(double x) {
-    return (double)(floor(x));
+inline int64_t Func_floor(double x) {
+    return static_cast<int64_t>(floor(x));
 }
-inline double Func_atoi(double x) {
-    return (double)atoi(Translator<double, std::string>()(x).c_str());
+inline int64_t Func_atoi(double x) {
+    return atoi(Translator<double, std::string>()(x).c_str());
 }
 
 
@@ -122,7 +127,7 @@ inline double Func_atoi(double x) {
 
 /* Static self-registration */
 
-template <double (*FN)(double)>
+template <int64_t (*FN)(double)>
 using IntegerFunctionBuilder = FunctionBuilder<MathFunctionIntegerExpression_1<FN>>;
 
 static IntegerFunctionBuilder<year> yearFunctionBuilder("year");

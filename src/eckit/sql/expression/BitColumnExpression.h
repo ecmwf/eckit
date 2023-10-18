@@ -38,6 +38,7 @@ private:
     BitColumnExpression& operator=(const BitColumnExpression&);
 
 protected:
+    bool returnAsDouble_;
     unsigned long mask_;
     unsigned long bitShift_;
 

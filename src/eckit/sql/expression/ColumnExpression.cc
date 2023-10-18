@@ -13,6 +13,7 @@
 #include <cstring>
 #include <ostream>
 
+#include "eckit/sql/LibEcKitSQL.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
@@ -98,11 +99,14 @@ void ColumnExpression::preprepare(SQLSelect& sql) {
     isBitfield_      = column.isBitfield();
     bitfieldDef_     = column.bitfieldDef();
 
-    if (columnName_ == title() && columnName_ != fullName_) {
-        title(fullName_);
+    if (LibEcKitSQL::instance().fullyQualifyColumnNames()) {
+        if (columnName_ == title() && columnName_ != fullName_) {
+            title(fullName_);
 
-        Log::debug() << "ColumnExpression::preprepare: columnName_=" << columnName_ << ", title[PATCHED]=" << title()
-                     << std::endl;
+            Log::debug() << "ColumnExpression::preprepare: columnName_=" << columnName_ << ", title[PATCHED]="
+                         << title()
+                         << std::endl;
+        }
     }
 }
 

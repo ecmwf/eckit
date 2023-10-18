@@ -64,6 +64,11 @@ public:
     // n.b. takes ownership
     static SQLType* registerType(SQLType*);
 
+    /// Clear and invalidate the contents of the TypeRegistry. Note that this is dangerous as any types that
+    /// have already been looked up (and cached) become invalidated. This should essentially only be used in
+    /// writing unit tests.
+    static void debugClearTypeRegistry();
+
 protected:
     virtual void print(std::ostream&) const;
     static bool exists(const std::string&);

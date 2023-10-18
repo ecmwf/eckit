@@ -55,6 +55,20 @@ bool SQLDistinctOutput::output(const expression::Expressions& results) {
         // What do we do with missing? Or has it been already evaluated somewhere before and it doesn't matter???...
     }
 
+//    Log::info() << "Output: ";
+//
+//    const char* sep = "";
+//    for (size_t i = 0; i < tmp_.size(); ++i) {
+//        Log::info() << sep << tmp_[i];
+//        sep = ", ";
+//    }
+//    Log::info() << std::endl;
+//    for (size_t i = 0; i < tmp_.size(); ++i) {
+//        Log::info() << sep << reinterpret_cast<const int64_t&>(tmp_[i]);
+//        sep = ", ";
+//    }
+//    Log::info() << std::endl;
+
     if (seen_.find(tmp_) == seen_.end()) {
         seen_.insert(tmp_);
         return output_.output(results);

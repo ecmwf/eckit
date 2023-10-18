@@ -9,6 +9,7 @@
  */
 
 #include "eckit/sql/expression/function/FunctionTDIFF.h"
+#include "eckit/sql/LibEcKitSQL.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/types/DateTime.h"
 
@@ -31,9 +32,7 @@ std::shared_ptr<SQLExpression> FunctionTDIFF::clone() const {
     return std::make_shared<FunctionTDIFF>(*this);
 }
 
-FunctionTDIFF::~FunctionTDIFF() {}
-
-double FunctionTDIFF::eval(bool& missing) const {
+int64_t FunctionTDIFF::evalInt(bool& missing) const {
     int indate = (int)args_[0]->eval(missing);
     int intime = (int)args_[1]->eval(missing);
     int andate = (int)args_[2]->eval(missing);

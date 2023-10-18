@@ -618,14 +618,14 @@ bool SQLSelect::processOneRow() {
 
     if (count_ == 0) {
         for (size_t idx = 0; idx < cursors_.size(); idx++) {
-            if (!processNextTableRow(idx))
+            if (!processNextTableRow(idx)) {
                 return false;  // If false, there is no data
+            }
         }
 
         if (writeOutput()) {
             count_++;
             return true;
-            ;
         }
     }
 

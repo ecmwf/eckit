@@ -23,6 +23,5 @@ ecbuild_add_library( TARGET eckit_option TYPE SHARED
     TEMPLATES
         FactoryOption.cc
         VectorOption.cc
-        SimpleOption.cc
 
     PUBLIC_LIBS eckit )

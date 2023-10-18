@@ -10,95 +10,36 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Apr 2015
 
 
-#ifndef Separator_H
-#define Separator_H
-
-#include <iosfwd>
+#pragma once
 
 #include "eckit/option/Option.h"
 
+
 namespace eckit::option {
 
-class Separator : public Option {
-public:
-    // -- Exceptions
-    // None
 
+class Separator final : public Option {
+public:
     // -- Contructors
 
-    Separator(const std::string& description);
-
-    // -- Destructor
-
-    ~Separator() override;  // Change to virtual if base class
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
-
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
-
-    // -- Methods
-
-    void print(std::ostream&) const override;  // Change to virtual if base class
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
+    explicit Separator(const std::string& description);
 
 private:
-    // No copy allowed
-
-    Separator(const Separator&);
-    Separator& operator=(const Separator&);
-
-    // -- Members
-    // None
-
     // -- Methods
-    // None
+
+    using Option::set;
 
     // -- Overridden methods
 
-    using Option::set;
+    void print(std::ostream&) const override;
     void set(const std::string& value, Configured&) const override;
     bool active() const override;
     void copy(const Configuration& from, Configured& to) const override;
-
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
 };
 
-}  // namespace eckit::option
 
-#endif
+}  // namespace eckit::option

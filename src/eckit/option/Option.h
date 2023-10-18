@@ -10,59 +10,78 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Apr 2015
 
 
-#ifndef Option_H
-#define Option_H
+#pragma once
 
 #include <iosfwd>
 #include <string>
 
 #include "eckit/memory/NonCopyable.h"
 
-namespace eckit {
+#include "eckit/exception/Exceptions.h"  // FIXME: remove this, dependants have wrong includes
 
+
+namespace eckit {
 class Configuration;
 class Configured;
+}  // namespace eckit
 
-namespace option {
+
+namespace eckit::option {
 
 
-class Option : private eckit::NonCopyable {
-public:  // methods
+template <class T>
+struct Title {
+    const char* operator()() const;
+};
+
+
+class Option : private NonCopyable {
+public:
+    // -- Contructors
+
     Option(const std::string& name, const std::string& description);
 
-    virtual ~Option();  // Change to virtual if base class
+    // -- Destructor
+
+    virtual ~Option() = default;
+
+    // -- Methods
+
+    const std::string& name() const { return name_; }
+    const std::string& description() const { return description_; }
 
     virtual Option* defaultValue(const std::string&);
-
-    const std::string& name() const;
-
     virtual bool active() const;
-
     virtual void set(Configured&) const;
-    virtual void set(const std::string& value, Configured&) const      = 0;
-    virtual void copy(const Configuration& from, Configured& to) const = 0;
     virtual void setDefault(Configured&) const;
 
-protected:  // members
-    std::string name_;
-    std::string description_;
+    virtual void set(const std::string& value, Configured&) const      = 0;
+    virtual void copy(const Configuration& from, Configured& to) const = 0;
 
-    bool hasDefault_;
-    std::string default_;
+protected:
+    // -- Methods
 
-    virtual void print(std::ostream&) const = 0;  // Change to virtual if base class
+    virtual void print(std::ostream&) const = 0;
 
 private:
+    // -- Members
+
+    std::string name_;
+    std::string description_;
+    std::string default_;
+    bool hasDefault_;
+
+    // -- Friends
+
     friend std::ostream& operator<<(std::ostream& s, const Option& p) {
         p.print(s);
         return s;
     }
 };
 
-}  // namespace option
-}  // namespace eckit
 
-#endif
+}  // namespace eckit::option

@@ -10,41 +10,45 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Apr 2015
 
 
 #include "eckit/option/Option.h"
-#include "eckit/option/SimpleOption.h"
 
 #include "eckit/exception/Exceptions.h"
 
+
+namespace eckit {
+class PathName;
+}
+
+
 namespace eckit::option {
+
 
 Option::Option(const std::string& name, const std::string& description) :
     name_(name), description_(description), hasDefault_(false) {}
-
-Option::~Option() {}
-
-const std::string& Option::name() const {
-    return name_;
-}
 
 
 bool Option::active() const {
     return true;
 }
 
+
 void Option::set(Configured&) const {
     std::ostringstream os;
     os << "Option::set() not implemented for " << *this;
-    throw eckit::SeriousBug(os.str());
+    throw SeriousBug(os.str());
 }
+
 
 Option* Option::defaultValue(const std::string& value) {
     hasDefault_ = true;
     default_    = value;
     return this;
 }
+
 
 void Option::setDefault(Configured& configured) const {
     if (hasDefault_) {
@@ -58,52 +62,35 @@ const char* Title<size_t>::operator()() const {
     return "ordinal";
 }
 
+
 template <>
 const char* Title<long>::operator()() const {
     return "integer";
 }
+
 
 template <>
 const char* Title<double>::operator()() const {
     return "real";
 }
 
+
 template <>
 const char* Title<bool>::operator()() const {
     return "0/1";
 }
+
 
 template <>
 const char* Title<std::string>::operator()() const {
     return "string";
 }
 
+
 template <>
 const char* Title<eckit::PathName>::operator()() const {
     return "path";
 }
 
-template <>
-void SimpleOption<bool>::set(Configured& parametrisation) const {
-    parametrisation.set(name_, true);
-}
-
-template <>
-void SimpleOption<eckit::PathName>::set(const std::string& value, Configured& parametrisation) const {
-    parametrisation.set(name_, value);
-}
-
-template <>
-void SimpleOption<eckit::PathName>::copy(const Configuration& from, Configured& to) const {
-    std::string v;
-    if (from.get(name_, v)) {
-        to.set(name_, v);
-    }
-}
-
-template <>
-void SimpleOption<bool>::print(std::ostream& out) const {
-    out << "   --" << name_ << " (" << description_ << ")";
-}
 
 }  // namespace eckit::option

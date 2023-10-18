@@ -10,36 +10,71 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Apr 2015
 
 
-#ifndef eckit_option_SimpleOption_H
-#define eckit_option_SimpleOption_H
+#pragma once
 
-#include <iosfwd>
+#include <iostream>
 
+#include "eckit/config/Configuration.h"
+#include "eckit/config/Configured.h"
 #include "eckit/option/Option.h"
+#include "eckit/utils/Translator.h"
+
+
+namespace eckit {
+class PathName;
+}
+
 
 namespace eckit::option {
 
+
 template <class T>
-class SimpleOption : public Option {
+class SimpleOption final : public Option {
 public:
-    SimpleOption(const std::string& name, const std::string& description);
+    // -- Contructors
 
-    ~SimpleOption() override;
-
-protected:
-    void print(std::ostream&) const override;
+    using Option::Option;
 
 private:
-    void set(Configured&) const override;
-    void set(const std::string& value, Configured&) const override;
-    void copy(const Configuration& from, Configured& to) const override;
+    // -- Overridden methods
+
+    void print(std::ostream& out) const override {
+        out << "   --" << name() << "=" << Title<T>()() << " (" << description() << ")";
+    }
+
+    void set(Configured& parametrisation) const override { Option::set(parametrisation); }
+
+    void set(const std::string& value, Configured& parametrisation) const override {
+        T v = eckit::Translator<std::string, T>()(value);
+        parametrisation.set(name(), v);
+    }
+
+    void copy(const Configuration& from, Configured& to) const override {
+        if (T v; from.get(name(), v)) {
+            to.set(name(), v);
+        }
+    }
 };
 
+
+template <>
+void SimpleOption<eckit::PathName>::set(const std::string& value, Configured&) const;
+
+
+template <>
+void SimpleOption<eckit::PathName>::copy(const Configuration& from, Configured& to) const;
+
+
+template <>
+void SimpleOption<bool>::print(std::ostream&) const;
+
+
+template <>
+void SimpleOption<bool>::set(Configured&) const;
+
+
 }  // namespace eckit::option
-
-#include "eckit/option/SimpleOption.cc"
-
-#endif

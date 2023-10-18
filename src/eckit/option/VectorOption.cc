@@ -10,23 +10,24 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @author Simon Smart
 /// @date March 2016
 
-#include <iostream>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/option/VectorOption.h"
-#include "eckit/types/Types.h"
+
+#include <iostream>
+#include <vector>
+
+#include "eckit/config/Configuration.h"
+#include "eckit/config/Configured.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
 
-namespace eckit {
-
-namespace option {
-
-//----------------------------------------------------------------------------------------------------------------------
+namespace eckit::option {
 
 
 template <class T>
@@ -36,11 +37,8 @@ VectorOption<T>::VectorOption(const std::string& name, const std::string& descri
 
 
 template <class T>
-VectorOption<T>::~VectorOption() {}
-
-template <class T>
 void VectorOption<T>::set(Configured& parametrisation) const {
-    set(std::string{}, parametrisation);
+    set({}, parametrisation);
 }
 
 
@@ -57,17 +55,17 @@ void VectorOption<T>::set(const std::string& value, Configured& parametrisation)
         values.push_back(t(v[i]));
     }
 
-    if (size_) {
-        if (values.size() != size_)
-            throw UserError(std::string("Size of supplied vector \"") + name_ + "\" incorrect", Here());
+    if (size_ > 0 && values.size() != size_) {
+        throw UserError("Size of supplied vector \"" + name() + "\" incorrect", Here());
     }
 
-    parametrisation.set(name_, values);
+    parametrisation.set(name(), values);
 }
+
 
 template <class T>
 void VectorOption<T>::print(std::ostream& out) const {
-    out << "   --" << name_;
+    out << "   --" << name();
 
     const char* sep = "=";
     for (size_t i = 0; i < (size_ ? size_ : 2); i++) {
@@ -79,22 +77,17 @@ void VectorOption<T>::print(std::ostream& out) const {
         out << sep << "...";
     }
 
-    out << " (" << description_ << ")";
+    out << " (" << description() << ")";
 }
 
 
 template <class T>
 void VectorOption<T>::copy(const Configuration& from, Configured& to) const {
     std::vector<T> v;
-    if (from.get(name_, v)) {
-        to.set(name_, v);
+    if (from.get(name(), v)) {
+        to.set(name(), v);
     }
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-}  // namespace option
-
-}  // namespace eckit
+}  // namespace eckit::option

@@ -10,38 +10,41 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Apr 2015
 
 
 #include "eckit/option/Separator.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Translator.h"
 
 #include <iostream>
 
+#include "eckit/exception/Exceptions.h"
+
+
 namespace eckit::option {
 
-Separator::Separator(const std::string& description) :
-    Option("", description) {}
 
-Separator::~Separator() {}
+Separator::Separator(const std::string& description) : Option("", description) {}
 
 
 void Separator::set(const std::string& value, Configured& parametrisation) const {
     NOTIMP;
 }
 
+
 void Separator::copy(const Configuration& from, Configured& to) const {
-    ;
+    // FIXME this function should not be overriding to do nothing
 }
+
 
 bool Separator::active() const {
     return false;
 }
 
+
 void Separator::print(std::ostream& out) const {
-    out << std::endl
-        << description_ << ":" << std::endl;
+    out << "\n" << description() << ":" << std::endl;
 }
+
 
 }  // namespace eckit::option

@@ -10,49 +10,39 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Apr 2015
+
+
+#include "eckit/option/FactoryOption.h"
 
 #include <iostream>
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/option/FactoryOption.h"
-#include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace option {
+namespace eckit::option {
 
-
-template <class T>
-FactoryOption<T>::FactoryOption(const std::string& name, const std::string& description) :
-    Option(name, description) {}
-
-template <class T>
-FactoryOption<T>::~FactoryOption() {}
 
 template <class T>
 void FactoryOption<T>::set(const std::string& value, Configured& parametrisation) const {
-    parametrisation.set(name_, value);
+    parametrisation.set(name(), value);
 }
+
 
 template <class T>
 void FactoryOption<T>::copy(const Configuration& from, Configured& to) const {
-    std::string v;
-    if (from.get(name_, v)) {
-        to.set(name_, v);
+    if (std::string v; from.get(name(), v)) {
+        to.set(name(), v);
     }
 }
 
+
 template <class T>
 void FactoryOption<T>::print(std::ostream& out) const {
-    out << "   --" << name_ << "=name"
-        << " (" << description_ << ")";
-    out << std::endl
-        << "     Values are: ";
-    T::list(out);
+    T::list(out << "   --" << name() << "=name (" << description() << ")\n     Values are: ");
 }
 
-}  // namespace option
-}  // namespace eckit
+
+}  // namespace eckit::option

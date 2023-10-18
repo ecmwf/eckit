@@ -10,41 +10,39 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Apr 2015
 
 
-#ifndef eckit_option_FactoryOption_H
-#define eckit_option_FactoryOption_H
-
-#include <iosfwd>
+#pragma once
 
 #include "eckit/option/Option.h"
 
+
 namespace eckit::option {
 
-/// @note Factory option essentially provides a std::string option, whose acceptable values are listed on the
-///       command line (typename T may be any class that implements the list() method). It does no checks on
-///       the validity of input received, and just returns the appropriate string
 
 template <class T>
-class FactoryOption : public Option {
+class FactoryOption final : public Option {
 public:
-    FactoryOption(const std::string& name, const std::string& description);
+    // -- Contructors
 
-    ~FactoryOption() override;  // Change to virtual if base class
-
-protected:
-    void print(std::ostream&) const override;  // Change to virtual if base class
+    using Option::Option;
 
 private:
+    // -- Methods
+
     using Option::set;
 
+    // -- Overridden methods
+
+    void print(std::ostream&) const override;
     void set(const std::string& value, Configured&) const override;
     void copy(const Configuration& from, Configured& to) const override;
 };
 
+
 }  // namespace eckit::option
 
-#include "eckit/option/FactoryOption.cc"
 
-#endif
+#include "eckit/option/FactoryOption.cc"

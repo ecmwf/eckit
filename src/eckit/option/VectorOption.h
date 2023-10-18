@@ -10,101 +10,43 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Apr 2015
 
 
-#ifndef VectorOption_H
-#define VectorOption_H
-
-#include <iosfwd>
+#pragma once
 
 #include "eckit/option/Option.h"
-#include "eckit/option/SimpleOption.h"
+
 
 namespace eckit::option {
 
-template <class T>
-class VectorOption : public Option {
-public:
-    // -- Exceptions
-    // None
 
+template <class T>
+class VectorOption final : public Option {
+public:
     // -- Contructors
 
     VectorOption(const std::string& name, const std::string& description, size_t size, const char* separator = "/",
                  bool keepEmpty = false);
 
-    // -- Destructor
-
-    ~VectorOption() override;  // Change to virtual if base class
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
-
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
-
-    // -- Methods
-
-    void print(std::ostream&) const override;  // Change to virtual if base class
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
-    // No copy allowed
-
-    VectorOption(const VectorOption&);
-    VectorOption& operator=(const VectorOption&);
-
     // -- Members
 
     size_t size_;
     const char* separator_;
     bool keepEmpty_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
+    void print(std::ostream&) const override;
     void set(Configured&) const override;
     void set(const std::string& value, Configured&) const override;
     void copy(const Configuration& from, Configured& to) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
 };
+
 
 }  // namespace eckit::option
 
-#include "eckit/option/VectorOption.cc"
 
-#endif
+#include "eckit/option/VectorOption.cc"

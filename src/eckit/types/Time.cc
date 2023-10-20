@@ -44,12 +44,14 @@ Time::Time(const std::string& s, bool extended) {
     long ss = 0, mm = 0, hh = 0, dd = 0;
     std::smatch m;
     
-    if (std::regex_match (s, m, std::regex("^[0-9]+$"))) { // only digits
+    if (std::regex_match (s, m, std::regex("^-?[0-9]+$"))) { // only digits
         long t = std::stol(s);
-        if (extended || s.length() <= 2) {     // cases: h, hh, (or hhh..h for step parsing)
+        int sign = (s[0] == '-' ? 1 : 0);
+        std::cout << "\"" << s << "\"  " << t << " " << sign << std::endl;
+        if (extended || s.length() <= 2+sign) {     // cases: h, hh, (or hhh..h for step parsing)
             hh = t;
         } else {
-            if (s.length() <= 4) { // cases: hmm, hhmm
+            if (s.length() <= 4+sign) { // cases: hmm, hhmm
                 hh = t / 100;
                 mm = t % 100;
             } else {              // cases: hmmss, hhmmss
@@ -60,7 +62,7 @@ Time::Time(const std::string& s, bool extended) {
         }
     }
     else {
-        if (std::regex_match (s, m, std::regex("^[0-9]*\\.[0-9]+$"))) { // floating point (hours)
+        if (std::regex_match (s, m, std::regex("^-?[0-9]*\\.[0-9]+$"))) { // floating point (hours)
             long sec = std::round(std::stod(s)*3600);
             hh = sec/3600;
             sec -= hh*3600;
@@ -83,7 +85,7 @@ Time::Time(const std::string& s, bool extended) {
                 }
             }
             else {
-                if (std::regex_match (s, m, std::regex("^([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?$"))) {
+                if (std::regex_match (s, m, std::regex("^-?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?$"))) {
                     for (int i=1; i<m.size(); i++) {
                         if (m[i].matched) {
                             std::string aux = m[i].str();
@@ -98,6 +100,9 @@ Time::Time(const std::string& s, bool extended) {
                         }
                     }
                     ss += 60 * (mm + 60 * (hh + 24 * dd));
+                    if (s[0] == '-') {
+                        ss = -ss;
+                    }
                     dd =  ss / 86400;
                     hh = (ss /  3600) % 24;
                     mm = (ss /    60) % 60;
@@ -111,7 +116,7 @@ Time::Time(const std::string& s, bool extended) {
         }
     }
 
-    if ((!extended && (hh >= 24 || dd > 0)) || mm >= 60 || ss >= 60 || hh < 0 || mm < 0 || ss < 0) {
+    if (mm >= 60 || ss >= 60 || (!extended && (hh >= 24 || dd > 0 || hh < 0 || mm < 0 || ss < 0))) {
         std::string msg = "Wrong input for time: ";
         Translator<long, std::string> t;
         if (dd>0) {
@@ -145,7 +150,7 @@ Time& Time::operator=(const Time& other) {
 
 Time::Time(long hh, long mm, long ss, bool extended) :
     seconds_(hh * 3600 + mm * 60 + ss) {
-    if ((hh >= 24 && !extended) || mm >= 60 || ss >= 60 || hh < 0 || mm < 0 || ss < 0) {
+    if (mm >= 60 || ss >= 60 || (!extended && (hh >= 24 || hh < 0 || mm < 0 || ss < 0))) {
         std::string msg = "Wrong input for time: ";
         Translator<long, std::string> t;
         msg += t(hh);

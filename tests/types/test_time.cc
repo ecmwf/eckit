@@ -42,8 +42,18 @@ CASE("Time only digits (hhmmss)") {
     EXPECT_THROWS(Time(24*3600));
     EXPECT_THROWS(Time(24,0,0));
     EXPECT_THROWS(Time("24"));
+    EXPECT_THROWS(Time(-1));
+    EXPECT_THROWS(Time("-1"));
+    EXPECT_NO_THROW(Time(-1,0,0, true));
+    EXPECT_NO_THROW(Time("-1", true));
+    EXPECT(Time(-1,0,0, true) == Time("-1", true));
     EXPECT(Time(24,0,0, true) == Time(24*3600, true));
     EXPECT(Time(24,0,0, true) == Time("24", true));
+    EXPECT(Time(-1,0,0, true) == Time("-1", true));
+    EXPECT(Time(-1,0,0, true) == Time("-01", true));
+    EXPECT(Time(-100,0,0, true) == Time("-100", true));
+    EXPECT(Time(-100,0,0, true) == Time("-0100", true));
+    EXPECT(Time(0,-30,0, true) == Time("-0.5", true));
 
     EXPECT(Time(2,0,0) == Time("2"));
     EXPECT(Time(2,0,0) == Time("02"));
@@ -146,6 +156,10 @@ CASE("Time with unit (__h__m__s)") {
 
     EXPECT_THROWS(Time("25h"));
     EXPECT_NO_THROW(Time("25h", true));
+
+    EXPECT(Time(0,-30,0, true) == Time("-30m", true));
+    EXPECT(Time(-1,-30,0, true) == Time("-1h30m", true));
+    EXPECT(Time(0,-90,0, true) == Time("-1h30m", true));
 
     EXPECT(Time("0d3h10m20s") == Time("3h10m20s"));
     EXPECT(Time("0d3h10m20s") == Time("3h620s"));

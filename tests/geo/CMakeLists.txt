@@ -3,6 +3,7 @@ foreach( _test
         great_circle
         grid
         grid_reorder
+        grid_to_points
         gridspec
         iterator
         kdtree

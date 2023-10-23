@@ -1,11 +1,11 @@
 
-configure_file( eckit_geo_config.h.in eckit_geo_config.h @ONLY )
+configure_file(eckit_geo_config.h.in eckit_geo_config.h @ONLY)
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h
     DESTINATION ${INSTALL_INCLUDE_DIR}/eckit
 )
 
-list( APPEND eckit_geo_srcs
+list(APPEND eckit_geo_srcs
     ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h
     Area.h
     Cache.cc
@@ -79,6 +79,8 @@ list( APPEND eckit_geo_srcs
     grid/regular/RegularLL.h
     grid/unstructured/ORCA.cc
     grid/unstructured/ORCA.h
+    grid/unstructured/UnstructuredFromGrid.cc
+    grid/unstructured/UnstructuredFromGrid.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc
@@ -130,12 +132,10 @@ endif()
 
 ecbuild_add_library(
     TARGET eckit_geo
-    TYPE   SHARED
-
+    TYPE               SHARED
     INSTALL_HEADERS    ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo
     PUBLIC_LIBS        ${eckit_geo_libs}
     PUBLIC_INCLUDES    ${eckit_geo_include_dirs}
-
-    SOURCES ${eckit_geo_srcs}
+    SOURCES            ${eckit_geo_srcs}
 )

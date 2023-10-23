@@ -32,4 +32,8 @@ Unstructured::Unstructured(const Configuration& config) :
     Grid(config) {}
 
 
+Unstructured::Unstructured(const area::BoundingBox& bbox) :
+    Grid(bbox) {}
+
+
 }  // namespace eckit::geo::grid

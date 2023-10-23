@@ -62,6 +62,7 @@ protected:
     // -- Constructors
 
     explicit Unstructured(const Configuration&);
+    explicit Unstructured(const area::BoundingBox&);
 
     // -- Members
     // None

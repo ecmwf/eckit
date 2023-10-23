@@ -13,6 +13,7 @@
 #include "eckit/geo/Grid.h"
 
 #include <memory>
+#include <numeric>
 #include <ostream>
 
 #include "eckit/config/DynamicConfiguration.h"
@@ -93,8 +94,20 @@ Ordering Grid::order() const {
 }
 
 
-Renumber Grid::reorder(const PointLonLat&) const {
+Renumber Grid::reorder(Ordering) const {
     throw NotImplemented("Grid::reorder");
+}
+
+
+Grid* Grid::grid_reorder(Ordering) const {
+    throw NotImplemented("Grid::grid_reorder");
+}
+
+
+Renumber Grid::no_reorder(size_t size) {
+    Renumber ren(size);
+    std::iota(ren.begin(), ren.end(), 0);
+    return ren;
 }
 
 

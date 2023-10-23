@@ -51,6 +51,10 @@ public:
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
+    Ordering order() const override { return ordering_; }
+    Renumber reorder(Ordering) const override;
+    Grid* grid_reorder(Ordering ordering) const override { return new HEALPix(N_, ordering); }
+
     // -- Class members
 
     static Configuration* config(const std::string& name);

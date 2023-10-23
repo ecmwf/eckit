@@ -124,7 +124,8 @@ public:
     virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
 
     virtual Ordering order() const;
-    virtual Renumber reorder(const PointLonLat&) const;
+    virtual Renumber reorder(Ordering) const;
+    virtual Grid* grid_reorder(Ordering) const;
 
     // -- Overridden methods
     // None
@@ -145,6 +146,8 @@ protected:
 
     area::BoundingBox bbox() const { return bbox_; }
     void bbox(const area::BoundingBox& bbox) { bbox_ = bbox; }
+
+    static Renumber no_reorder(size_t size);
 
     // -- Overridden methods
     // None

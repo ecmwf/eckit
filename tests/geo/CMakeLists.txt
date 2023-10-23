@@ -2,6 +2,7 @@ foreach( _test
         coordinate_helpers
         great_circle
         grid
+        grid_reorder
         gridspec
         iterator
         kdtree

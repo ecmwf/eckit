@@ -30,44 +30,28 @@ namespace eckit {
 
 template <class From, class To>
 struct Translator {
-    // To allow using IsTranslatable with SFINAE it is important the the operator is templated and has a `auto` return type
-    // C++14 version would be with enable_if_t and decay_t. FDB5 seems not to have migrated to C++17 compilation yet.
 
-#if __cplusplus >= 201402L
     // Test for explicit conversion through constructor (also involves implicit conversion or or user-defined conversion operator).
     // Note: To(from) is called with () brackets and not with {} because it includes conversion of plain datatypes - MIR is using this
     template <typename F, std::enable_if_t<
-                              (!std::is_same<std::decay_t<F>, To>::value && (std::is_same<std::decay_t<decltype(To(std::declval<F>()))>, To>::value)),
+                              (!std::is_same_v<std::decay_t<F>, To> && std::is_constructible_v<To, F>),
                               bool> = true>
     auto operator()(F&& from) {
         return To(std::forward<F>(from));
     }
 
+
     // If from and to type are same - simply forward - i.e. allow moving or passing references instead of performing copies
-    template <typename F, std::enable_if_t<
-                              (std::is_same<std::decay_t<F>, To>::value && !(std::is_lvalue_reference<F>::value && !std::is_const<F>::value)),
-                              bool> = true>
+    template <typename F, std::enable_if_t<std::is_same_v<std::decay_t<F>, To>,
+                                           bool> = true>
     decltype(auto) operator()(F&& from) {
-        return std::forward<F>(from);
+        if constexpr (std::is_lvalue_reference_v<F> && !std::is_const_v<F>) {
+            return const_cast<const To&>(from);
+        }
+        else {
+            return std::forward<F>(from);
+        }
     }
-    
-    // If mutable references are passed, a const ref is returened to avoid modifications downstream...
-    template <typename F, std::enable_if_t<
-                              (std::is_same<std::decay_t<F>, To>::value && (std::is_lvalue_reference<F>::value && !std::is_const<F>::value)),
-                              bool> = true>
-    const To& operator()(F&& from) {
-        return const_cast<const To&>(from);
-    }
-#else
-    // If conversion is possible
-    template <typename F, typename std::enable_if<
-                              (std::is_same<typename std::decay<decltype(To(std::declval<F>()))>::type, To>::value),
-                              bool>::type
-                          = true>
-    To operator()(F&& from) {
-        return To(std::forward<F>(from));
-    }
-#endif
 };
 
 // Those are predefined
@@ -226,7 +210,7 @@ struct Translator<std::set<std::string>, std::string> {
 
 template <>
 struct Translator<signed char, std::string> {
-    std::string operator()(signed char v) { return Translator<int, std::string>{}(static_cast<int>(v)); };
+    std::string operator()(signed char v);
 };
 
 
@@ -234,21 +218,13 @@ struct Translator<signed char, std::string> {
 
 // This allows using the Translator without having to explicitly name the type of an argument. For example in case of
 // generic string conversion: translate<std::strig>(someVariable)
-#if __cplusplus >= 201402L
 template <typename To, typename From>
 decltype(auto) translate(From&& from) {
-    return Translator<typename std::decay<From>::type, To>{}(std::forward<From>(from));
+    return Translator<std::decay_t<From>, To>{}(std::forward<From>(from));
 }
-#else
-template <typename To, typename From>
-To translate(From&& from) {
-    return Translator<typename std::decay<From>::type, To>{}(std::forward<From>(from));
-}
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if __cplusplus >= 201703L
 
 // primary template handles types that do not support pre-increment:
 template <typename From, typename To, class = void>
@@ -259,7 +235,6 @@ template <typename From, typename To>
 struct IsTranslatable<From, To,
                       std::void_t<decltype(Translator<From, To>{}(std::declval<const From&>()))>> : std::true_type {};
 
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

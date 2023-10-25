@@ -131,6 +131,13 @@ CASE("Translate strings to double") {
     EXPECT_THROWS_AS(t("foo555bar"), BadParameter);
 }
 
+
+CASE("Translate signed char as a number") {
+    Translator<signed char, std::string> t;
+
+    EXPECT(t((signed char)127) == std::string("127"));
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::test

@@ -217,7 +217,7 @@ struct Translator<signed char, std::string> {
 //----------------------------------------------------------------------------------------------------------------------
 
 // This allows using the Translator without having to explicitly name the type of an argument. For example in case of
-// generic string conversion: translate<std::strig>(someVariable)
+// generic string conversion: translate<std::string>(someVariable)
 template <typename To, typename From>
 decltype(auto) translate(From&& from) {
     return Translator<std::decay_t<From>, To>{}(std::forward<From>(from));
@@ -226,14 +226,18 @@ decltype(auto) translate(From&& from) {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-// primary template handles types that do not support pre-increment:
+// primary template handles types that do not support translation
 template <typename From, typename To, class = void>
 struct IsTranslatable : std::false_type {};
 
-// specialization recognizes types that do support pre-increment:
+// specialization recognizes types that do support translation
 template <typename From, typename To>
 struct IsTranslatable<From, To,
                       std::void_t<decltype(Translator<From, To>{}(std::declval<const From&>()))>> : std::true_type {};
+
+
+template <typename From, typename To>
+inline constexpr bool IsTranslatable_v = IsTranslatable<From, To>::value;
 
 
 //----------------------------------------------------------------------------------------------------------------------

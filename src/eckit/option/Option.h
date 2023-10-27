@@ -79,8 +79,10 @@ class BaseOption : public Option {
 public:
     BaseOption(const std::string& name, const std::string& description) :
         Option(name, description), default_value_{std::nullopt} {};
-    BaseOption(const std::string& name, const std::string& description, const T& default_value_) :
-        Option(name, description), default_value_{std::make_optional(default_value_)} {};
+    BaseOption(const std::string& name, const std::string& description, const T& default_value) :
+        Option(name, description), default_value_{std::make_optional(default_value)} {};
+    BaseOption(const std::string& name, const std::string& description, std::optional<T> default_value) :
+        Option(name, description), default_value_{std::move(default_value)} {};
     ~BaseOption() override = default;
 
     [[deprecated("Specify the default value(s) when calling the ctor")]]

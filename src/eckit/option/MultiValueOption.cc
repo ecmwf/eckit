@@ -25,22 +25,21 @@ MultiValueOption::MultiValueOption(const std::string& name, const std::string& d
 
 MultiValueOption::MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values,
                                    size_t n_optional_values) :
-    base_t(name, description),
-    n_mandatory_values_{n_mandatory_values},
-    n_optional_values_{n_optional_values},
-    values_{} {
-    ASSERT_MSG(n_mandatory_values >= 1, "At least 1 mandatory value is expected.");
-}
+    MultiValueOption(name, description, n_mandatory_values, n_optional_values, std::nullopt) {}
 
 MultiValueOption::MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values,
                                    const values_t& default_values) :
     MultiValueOption(name, description, n_mandatory_values, 0, default_values) {}
 
 MultiValueOption::MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values,
-                                   size_t n_maximum_values, const values_t& default_values) :
-    base_t(name, description, default_values),
+                                   size_t n_optional_values, const values_t& default_values) :
+    MultiValueOption(name, description, n_mandatory_values, n_optional_values, std::make_optional(default_values)) {}
+
+MultiValueOption::MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values,
+                                   size_t n_optional_values, std::optional<values_t> default_values) :
+    base_t(name, description, std::move(default_values)),
     n_mandatory_values_{n_mandatory_values},
-    n_optional_values_{n_maximum_values},
+    n_optional_values_{n_optional_values},
     values_{} {
     ASSERT_MSG(n_mandatory_values >= 1, "At least 1 mandatory value is expected.");
 }
@@ -48,8 +47,8 @@ MultiValueOption::MultiValueOption(const std::string& name, const std::string& d
 size_t MultiValueOption::set(Configured& parametrisation, [[maybe_unused]] size_t values, args_t::const_iterator begin,
                              args_t::const_iterator end) const {
     if (std::distance(begin, end) < n_mandatory_values_) {
-        throw UserError("Not enough option values found for MultiValueOption, where at least "
-                        + std::to_string(n_mandatory_values_) + " were expected");
+        throw UserError("Not enough option values found for MultiValueOption, where at least " +
+                        std::to_string(n_mandatory_values_) + " were expected");
     }
 
     // Collect n_mandatory_values_ mandatory values from the range [begin, end)

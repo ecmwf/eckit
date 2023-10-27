@@ -24,8 +24,8 @@ public:
 
     MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values);
     MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values, size_t n_optional_values);
-    MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values, const values_t& default_values_);
-    MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values, size_t n_maximum_values, const values_t& default_values_);
+    MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values, const values_t& default_values);
+    MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values, size_t n_optional_values, const values_t& default_values);
     ~MultiValueOption() override = default;
 
     size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
@@ -33,6 +33,8 @@ public:
     void print(std::ostream&) const override;
 
 private:
+    MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values, size_t n_maximum_values, std::optional<values_t> default_values);
+
     void set_value(const values_t& values, Configured&) const override;
 
     [[nodiscard]] values_t translate(const std::string& value) const override;

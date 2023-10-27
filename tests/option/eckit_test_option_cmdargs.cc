@@ -1059,6 +1059,79 @@ CASE("test_eckit_option__allows_to_set_default_value_for_options") {
 }
 #endif
 
+#if TESTCASE == 39
+CASE("test_eckit_option__cmdargs_argument_with_dot_in_option_name") {
+    options_t options;
+    options.push_back(new SimpleOption<std::string>("a.a", ""));
+    options.push_back(new SimpleOption<std::string>("b.b.b", ""));
+    options.push_back(new SimpleOption<std::string>("c.", ""));
+    options.push_back(new SimpleOption<std::string>(".d", ""));
+
+    std::vector<const char*> input = {"exe", "--a.a=a", "--b.b.b=b", "--c.=c", "--.d=d"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+    Log::info() << args << std::endl;
+
+    std::string a;
+    EXPECT(args.get("a.a", a));
+    EXPECT(a == "a");
+    EXPECT(args.getString("a.a") == a);
+
+    std::string b;
+    EXPECT(args.get("b.b.b", b));
+    EXPECT(b == "b");
+    EXPECT(args.getString("b.b.b") == b);
+
+    std::string c;
+    EXPECT(args.get("c.", c));
+    EXPECT(c == "c");
+    EXPECT(args.getString("c.") == c);
+
+    std::string d;
+    EXPECT(args.get(".d", d));
+    EXPECT(d == "d");
+    EXPECT(args.getString(".d") == d);
+}
+#endif
+
+#if TESTCASE == 40
+CASE("test_eckit_option__cmdargs_argument_with_dot_in_option_name_and_value") {
+    options_t options;
+    options.push_back(new SimpleOption<std::string>("a.a", ""));
+    options.push_back(new SimpleOption<std::string>("b.b.b", ""));
+    options.push_back(new SimpleOption<std::string>("c.", ""));
+    options.push_back(new SimpleOption<std::string>(".d", ""));
+
+    std::vector<const char*> input = {"exe", "--a.a=a.a", "--b.b.b=b.b.b", "--c.=c.", "--.d=.d"};
+    Main::initialise(input.size(), const_cast<char**>(&input[0]));
+
+    CmdArgs args(&usage, options, 0, 0, true);
+    Log::info() << args << std::endl;
+
+    std::string a;
+    EXPECT(args.get("a.a", a));
+    EXPECT(a == "a.a");
+    EXPECT(args.getString("a.a") == a);
+
+    std::string b;
+    EXPECT(args.get("b.b.b", b));
+    EXPECT(b == "b.b.b");
+    EXPECT(args.getString("b.b.b") == b);
+
+    std::string c;
+    EXPECT(args.get("c.", c));
+    EXPECT(c == "c.");
+    EXPECT(args.getString("c.") == c);
+
+    std::string d;
+    EXPECT(args.get(".d", d));
+    EXPECT(d == ".d");
+    EXPECT(args.getString(".d") == d);
+}
+#endif
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::test

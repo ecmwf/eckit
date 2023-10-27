@@ -47,7 +47,6 @@ Time::Time(const std::string& s, bool extended) {
     if (std::regex_match (s, m, std::regex("^-?[0-9]+$"))) { // only digits
         long t = std::stol(s);
         int sign = (s[0] == '-' ? 1 : 0);
-        std::cout << "\"" << s << "\"  " << t << " " << sign << std::endl;
         if (extended || s.length() <= 2+sign) {     // cases: h, hh, (or hhh..h for step parsing)
             hh = t;
         } else {

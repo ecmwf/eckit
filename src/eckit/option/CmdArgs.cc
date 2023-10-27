@@ -22,6 +22,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/option/Option.h"
 #include "eckit/runtime/Main.h"
+#include "eckit/utils/Tokenizer.h"
 
 namespace eckit::option {
 
@@ -85,7 +86,7 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
             // ... so we remove the '--' prefix
             a = a.substr(2);
             // ... and tokenize [<name>(,<tail>)]
-            std::vector<std::string> tokens = split_at(a, '=');
+            std::vector<std::string> tokens = Tokenizer::split_at(a, '=');
 
             const std::string name = tokens[0];
             tokens.erase(tokens.begin());

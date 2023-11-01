@@ -8,16 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/exception/Exceptions.h"
+
+#include <cstdlib>
+#include <memory>
+
 #include <signal.h>
 #include <unistd.h>
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/ThreadSingleton.h"
 
-#include "eckit/os/BackTrace.h"
-
+#include "eckit/eckit_config.h"
+#if eckit_HAVE_CXXABI_H
+#include <cxxabi.h>
+#endif
 
 namespace eckit {
 
@@ -382,6 +389,70 @@ UnexpectedState::UnexpectedState(const std::string& msg) :
 
 UnexpectedState::UnexpectedState(const std::string& msg, const CodeLocation& loc) :
     Exception(msg, loc) {}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+std::string __eckit__exception_demangle_type(const char* name) {
+#if eckit_HAVE_CXXABI_H
+    int status = -4;
+
+    std::unique_ptr<char, void (*)(void*)> res{abi::__cxa_demangle(name, nullptr, nullptr, &status), std::free};
+
+    return (status == 0) ? res.get() : name;
+#else
+    return name;
+#endif
+}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+NotEncodable::NotEncodable(const std::string& type_name) :
+    Exception{[&type_name] {
+        std::stringstream message;
+        message << "NotEncodable: Cannot encode values of type " << type_name << ".";
+        message << "\n     Implement the functions"
+                   "\n"
+                   "\n         void encode_data(const "
+                << type_name
+                << "&, Data& );"
+                   "\n         size_t encode_metadata(const "
+                << type_name
+                << "&, Metadata& );"
+                   "\n"
+                   "\n     or alternatively a conversion function to types::ArrayView"
+                   "\n"
+                   "\n         void interprete(const "
+                << type_name
+                << "&, types::ArrayView& )"
+                   "\n"
+                   "\n     Rules of argument-dependent-lookup apply."
+                   "\n     --> Functions need to be declared in namespace of any of the arguments.";
+        return message.str();
+    }()} {}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+NotDecodable::NotDecodable(const std::string& type_name) :
+    Exception{[&type_name] {
+        std::stringstream message;
+        message << "NotDecodable: Cannot decode values of type " << type_name << ".";
+        message << "\n     Implement the functions"
+                   "\n"
+                   "\n         void decode( const Metadata&, const Data&, "
+                << type_name
+                << "& );"
+                   "\n"
+                   "\n     Rules of argument-dependent-lookup apply."
+                   "\n     --> Functions need to be declared in namespace of any of the arguments.";
+        return message.str();
+    }()} {}
+
+//---------------------------------------------------------------------------------------------------------------------
+
+NotEncodable::~NotEncodable()     = default;
+NotDecodable::~NotDecodable()     = default;
+InvalidRecord::~InvalidRecord()   = default;
+DataCorruption::~DataCorruption() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
-add_subdirectory( config   )
+add_subdirectory( config )
 add_subdirectory( container )
 add_subdirectory( exception )
 add_subdirectory( filesystem )
@@ -22,9 +22,10 @@ add_subdirectory( value )
 add_subdirectory( system )
 
 if( HAVE_ECKIT_SQL )
-  add_subdirectory( sql )
+    add_subdirectory( sql )
 endif()
 
 if( HAVE_EXPERIMENTAL )
-  add_subdirectory( experimental )
+    add_subdirectory( codec )
+    add_subdirectory( experimental )
 endif()

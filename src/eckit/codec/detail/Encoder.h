@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
@@ -22,8 +24,7 @@
 #include "eckit/codec/detail/Reference.h"
 #include "eckit/codec/detail/TypeTraits.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 class Encoder {
 public:
@@ -51,24 +52,26 @@ public:
         return *this;
     }
 
-    friend size_t encode_metadata(const Encoder&, atlas::io::Metadata&);
+    friend size_t encode_metadata(const Encoder&, Metadata&);
 
-    friend void encode_data(const Encoder&, atlas::io::Data&);
+    friend void encode_data(const Encoder&, Data&);
 
     bool encodes_data() const { return self_->encodes_data_(); }
 
 private:
     struct Encodable {
-        virtual ~Encodable()                                        = default;
-        virtual size_t encode_metadata_(atlas::io::Metadata&) const = 0;
-        virtual void encode_data_(atlas::io::Data&) const           = 0;
-        virtual bool encodes_data_() const                          = 0;
+        virtual ~Encodable()                             = default;
+        virtual size_t encode_metadata_(Metadata&) const = 0;
+        virtual void encode_data_(Data&) const           = 0;
+        virtual bool encodes_data_() const               = 0;
     };
 
     template <typename Value>
     struct EncodableValue : Encodable {
         EncodableValue(Value&& v) :
-            value_{std::move(v)} { sfinae::encode_metadata(value_, metadata_, data_size_); }
+            value_{std::move(v)} {
+            sfinae::encode_metadata(value_, metadata_, data_size_);
+        }
 
         template <bool EnableBool = true, enable_if_scalar_t<Value, EnableBool> = 0>
         EncodableValue(const Value& v) :
@@ -76,12 +79,12 @@ private:
             sfinae::encode_metadata(value_, metadata_, data_size_);
         }
 
-        size_t encode_metadata_(atlas::io::Metadata& metadata) const override {
+        size_t encode_metadata_(Metadata& metadata) const override {
             metadata.set(metadata_);
             return data_size_;
         }
 
-        void encode_data_(atlas::io::Data& out) const override { sfinae::encode_data(value_, out); }
+        void encode_data_(Data& out) const override { sfinae::encode_data(value_, out); }
         bool encodes_data_() const override { return data_size_ > 0; }
 
         const Value value_;
@@ -93,12 +96,12 @@ private:
         EncodableLink(const Link& link) :
             link_(link) {}
 
-        size_t encode_metadata_(atlas::io::Metadata& metadata) const override {
-            metadata.set(atlas::io::Metadata("link", link_.uri));
+        size_t encode_metadata_(Metadata& metadata) const override {
+            metadata.set(Metadata("link", link_.uri));
             return 0;
         }
 
-        void encode_data_(atlas::io::Data& /*out*/) const override {}
+        void encode_data_(Data& /*out*/) const override {}
         bool encodes_data_() const override { return false; }
 
         Link link_;
@@ -108,9 +111,8 @@ private:
     std::unique_ptr<Encodable> self_;
 };
 
-size_t encode_metadata(const Encoder& encoder, atlas::io::Metadata& metadata);
-void encode_data(const Encoder& encoder, atlas::io::Data& out);
+size_t encode_metadata(const Encoder& encoder, Metadata& metadata);
+void encode_data(const Encoder& encoder, Data& out);
 
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

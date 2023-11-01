@@ -1,33 +1,33 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "ArrayReference.h"
 
-#include "eckit/codec/atlas_compat.h"
-#include "eckit/codec/detail/Assert.h"
+#include "eckit/codec/types/ArrayReference.h"
 
-namespace atlas {
-namespace io {
+#include "eckit/exception/Exceptions.h"
+
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void encode_data(const ArrayReference& value, atlas::io::Data& out) {
-    out = atlas::io::Data(value.data(), value.bytes());
+void encode_data(const ArrayReference& value, Data& out) {
+    out = Data(value.data(), value.bytes());
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 namespace {
 template <typename T>
-void encode_metadata_value(const ArrayReference& value, atlas::io::Metadata& out) {
-    ATLAS_IO_ASSERT(value.datatype() == make_datatype<T>());
+void encode_metadata_value(const ArrayReference& value, Metadata& out) {
+    ASSERT(value.datatype() == make_datatype<T>());
     const T* array = reinterpret_cast<const T*>(value.data());
     std::vector<T> vector(value.size());
     std::copy(array, array + vector.size(), vector.begin());
@@ -35,7 +35,7 @@ void encode_metadata_value(const ArrayReference& value, atlas::io::Metadata& out
 }
 }  // namespace
 
-size_t encode_metadata(const ArrayReference& value, atlas::io::Metadata& out) {
+size_t encode_metadata(const ArrayReference& value, Metadata& out) {
     auto bytes = encode_metadata(static_cast<const ArrayMetadata&>(value), out);
     if (value.rank() == 1 && value.size() <= 4) {
         auto kind      = value.datatype().kind();
@@ -61,7 +61,8 @@ size_t encode_metadata(const ArrayReference& value, atlas::io::Metadata& out) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayReference::ArrayReference(const void* data, ArrayMetadata::DataType datatype,
+ArrayReference::ArrayReference(const void* data,
+                               ArrayMetadata::DataType datatype,
                                const ArrayMetadata::ArrayShape& shape) :
     ArrayMetadata(datatype, shape), data_(const_cast<void*>(data)) {}
 
@@ -83,5 +84,4 @@ ArrayReference& ArrayReference::operator=(ArrayReference&& rhs) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

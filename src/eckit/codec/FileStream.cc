@@ -1,23 +1,22 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #include "eckit/codec/FileStream.h"
 
+#include "eckit/codec/Session.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/PooledHandle.h"
 
-#include "eckit/codec/Session.h"
-#include "eckit/codec/Trace.h"
-
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 namespace {
 
@@ -30,12 +29,10 @@ namespace {
 ///       * read: for reading
 ///       * write: for writing, will overwrite existing file
 ///       * append: for appending implemented via write and seek to eof.
-///   - ATLAS_IO_TRACE recording
 class FileHandle : public eckit::FileHandle {
 public:
-    FileHandle(const eckit::PathName& path, char openmode) :
+    FileHandle(const PathName& path, char openmode) :
         eckit::FileHandle(path, openmode == 'a' /*overwrite*/) {
-        ATLAS_IO_TRACE("FileHandle::open(" + eckit::FileHandle::path() + "," + openmode + ")");
         if (openmode == 'r') {
             openForRead();
         }
@@ -44,24 +41,24 @@ public:
         }
         else if (openmode == 'a') {
             openForWrite(path.size());
-            seek(eckit::Offset(path.size()));
+            seek(Offset(path.size()));
         }
     }
 
     void close() override {
         if (not closed_) {
-            ATLAS_IO_TRACE("FileHandle::close(" + path() + ")");
             eckit::FileHandle::close();
             closed_ = true;
         }
     }
 
-    FileHandle(const eckit::PathName& path, Mode openmode) :
-        FileHandle(path, openmode == Mode::read    ? 'r'
-                         : openmode == Mode::write ? 'w'
-                                                   : 'a') {}
+    FileHandle(const PathName& path, Mode openmode) :
+        FileHandle(path,
+                   openmode == Mode::read    ? 'r'
+                   : openmode == Mode::write ? 'w'
+                                             : 'a') {}
 
-    FileHandle(const eckit::PathName& path, const std::string& openmode) :
+    FileHandle(const PathName& path, const std::string& openmode) :
         FileHandle(path, openmode[0]) {}
 
     ~FileHandle() override { close(); }
@@ -80,28 +77,23 @@ private:
 ///
 /// Main difference with eckit::PooledHandle
 ///   - Automatic opening and closing of file
-///   - ATLAS_IO_TRACE recording
 class PooledHandle : public eckit::PooledHandle {
 public:
-    PooledHandle(const eckit::PathName& path) :
+    PooledHandle(const PathName& path) :
         eckit::PooledHandle(path), path_(path) {
-        ATLAS_IO_TRACE("PooledHandle::open(" + path_.baseName() + ")");
         openForRead();
     }
-    ~PooledHandle() override {
-        ATLAS_IO_TRACE("PooledHandle::close(" + path_.baseName() + ")");
-        close();
-    }
-    eckit::PathName path_;
+    ~PooledHandle() override { close(); }
+    PathName path_;
 };
 
 }  // namespace
 
 //---------------------------------------------------------------------------------------------------------------------
 
-FileStream::FileStream(const eckit::PathName& path, char openmode) :
-    Stream([&path, &openmode]() -> eckit::DataHandle* {
-        eckit::DataHandle* datahandle;
+FileStream::FileStream(const PathName& path, char openmode) :
+    Stream([&path, &openmode]() -> DataHandle* {
+        DataHandle* datahandle;
         if (openmode == 'r') {
             datahandle = new PooledHandle(path);
         }
@@ -116,28 +108,29 @@ FileStream::FileStream(const eckit::PathName& path, char openmode) :
     }
 }
 
-FileStream::FileStream(const eckit::PathName& path, Mode openmode) :
-    FileStream(path, openmode == Mode::read    ? 'r'
-                     : openmode == Mode::write ? 'w'
-                                               : 'a') {}
+FileStream::FileStream(const PathName& path, Mode openmode) :
+    FileStream(path,
+               openmode == Mode::read    ? 'r'
+               : openmode == Mode::write ? 'w'
+                                         : 'a') {}
 
-FileStream::FileStream(const eckit::PathName& path, const std::string& openmode) :
+FileStream::FileStream(const PathName& path, const std::string& openmode) :
     FileStream(path, openmode[0]) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-InputFileStream::InputFileStream(const eckit::PathName& path) :
+InputFileStream::InputFileStream(const PathName& path) :
     FileStream(path, Mode::read) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-OutputFileStream::OutputFileStream(const eckit::PathName& path, Mode openmode) :
+OutputFileStream::OutputFileStream(const PathName& path, Mode openmode) :
     FileStream(path, openmode) {}
 
-OutputFileStream::OutputFileStream(const eckit::PathName& path, const std::string& openmode) :
+OutputFileStream::OutputFileStream(const PathName& path, const std::string& openmode) :
     FileStream(path, openmode) {}
 
-OutputFileStream::OutputFileStream(const eckit::PathName& path, char openmode) :
+OutputFileStream::OutputFileStream(const PathName& path, char openmode) :
     FileStream(path, openmode) {}
 
 void OutputFileStream::close() {
@@ -146,5 +139,4 @@ void OutputFileStream::close() {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

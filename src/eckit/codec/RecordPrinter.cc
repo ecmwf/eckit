@@ -1,48 +1,45 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "RecordPrinter.h"
+
+#include "eckit/codec/RecordPrinter.h"
 
 #include <sstream>
 
-#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/FileStream.h"
-#include "eckit/codec/detail/Assert.h"
 #include "eckit/codec/print/JSONFormat.h"
 #include "eckit/codec/print/TableFormat.h"
+#include "eckit/exception/Exceptions.h"
 
-#include "eckit/codec/atlas_compat.h"
-
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordPrinter::RecordPrinter(const eckit::PathName& path, const eckit::Configuration& config) :
+RecordPrinter::RecordPrinter(const PathName& path, const Configuration& config) :
     RecordPrinter(path, 0, config) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordPrinter::RecordPrinter(const eckit::PathName& path, const std::uint64_t offset,
-                             const eckit::Configuration& config) :
+RecordPrinter::RecordPrinter(const PathName& path, const std::uint64_t offset, const Configuration& config) :
     RecordPrinter(Record::URI{path, offset}, config) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordPrinter::RecordPrinter(const Record::URI& ref, const eckit::Configuration& config) :
+RecordPrinter::RecordPrinter(const Record::URI& ref, const Configuration& config) :
     uri_(ref), record_(Session::record(ref.path, ref.offset)) {
     if (record_.empty()) {
         auto in = InputFileStream(uri_.path);
         in.seek(uri_.offset);
         record_.read(in, true);
-        ATLAS_IO_ASSERT(not record_.empty());
+        ASSERT(not record_.empty());
     }
 
     config.get("format", options_.format);
@@ -72,7 +69,7 @@ RecordPrinter::RecordPrinter(const Record::URI& ref, const eckit::Configuration&
 //---------------------------------------------------------------------------------------------------------------------
 
 void RecordPrinter::print(std::ostream& out) const {
-    eckit::LocalConfiguration config;
+    LocalConfiguration config;
     config.set("details", options_.details);
     if (options_.format == "json") {
         JSONFormat{uri_, config}.print(out);
@@ -97,5 +94,4 @@ std::ostream& operator<<(std::ostream& out, const RecordPrinter& info) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

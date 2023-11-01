@@ -1,26 +1,25 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
+
 #include "eckit/codec/RecordWriter.h"
 
-
-#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/RecordWriter.h"
-#include "eckit/codec/Trace.h"
 #include "eckit/codec/detail/Checksum.h"
 #include "eckit/codec/detail/Defaults.h"
 #include "eckit/codec/detail/Encoder.h"
 #include "eckit/codec/detail/RecordSections.h"
+#include "eckit/exception/Exceptions.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -44,7 +43,6 @@ inline void write_string(OStream& out, const std::string& s) {
 //---------------------------------------------------------------------------------------------------------------------
 
 size_t RecordWriter::write(Stream out) const {
-    ATLAS_IO_TRACE("RecordWriter::write");
     RecordHead r;
 
     auto begin_of_record = out.position();
@@ -55,35 +53,36 @@ size_t RecordWriter::write(Stream out) const {
 
     // Begin Record
     // ------------
-    atlas::io::write_struct(out, r);
+    write_struct(out, r);
 
     // Metadata section
     // ----------------
-    ATLAS_IO_TRACE_SCOPE("metadata section") {
+    {
         r.metadata_offset = position();
-        atlas::io::write_struct(out, RecordMetadataSection::Begin());
+        write_struct(out, RecordMetadataSection::Begin());
         auto metadata_str = metadata();
-        atlas::io::write_string(out, metadata_str);
-        atlas::io::write_struct(out, RecordMetadataSection::End());
-        r.metadata_length   = position() - r.metadata_offset;
-        r.metadata_checksum = do_checksum_ ? atlas::io::checksum(metadata_str.data(), metadata_str.size()) : std::string("none:");
+        write_string(out, metadata_str);
+        write_struct(out, RecordMetadataSection::End());
+        r.metadata_length = position() - r.metadata_offset;
+        r.metadata_checksum =
+            do_checksum_ ? codec::checksum(metadata_str.data(), metadata_str.size()) : std::string("none:");
 
         // Index section
         // -------------
         size_t nb_data_sections = static_cast<size_t>(nb_data_sections_);
         r.index_offset          = position();
-        atlas::io::write_struct(out, RecordDataIndexSection::Begin());
+        write_struct(out, RecordDataIndexSection::Begin());
         index.resize(nb_data_sections);
         for (size_t i = 0; i < nb_data_sections; ++i) {
-            atlas::io::write_struct(out, index[i]);
+            write_struct(out, index[i]);
         }
-        atlas::io::write_struct(out, RecordDataIndexSection::End());
+        write_struct(out, RecordDataIndexSection::End());
         r.index_length = position() - r.index_offset;
     }
 
     // Data sections
     // -------------
-    ATLAS_IO_TRACE_SCOPE("data sections") {
+    {
         size_t i{0};
         for (auto& key : keys_) {
             auto& encoder = encoders_.at(key);
@@ -91,16 +90,16 @@ size_t RecordWriter::write(Stream out) const {
             if (info.section() == 0) {
                 continue;
             }
-            atlas::io::Data data;
+            Data data;
             encode_data(encoder, data);
             data.compress(info.compression());
             auto& data_section  = index[i];
             data_section.offset = position();
-            atlas::io::write_struct(out, RecordDataSection::Begin());
+            write_struct(out, RecordDataSection::Begin());
             if (data.write(out) != data.size()) {
                 throw WriteError("Could not write data for item " + key + " to stream");
             }
-            atlas::io::write_struct(out, RecordDataSection::End());
+            write_struct(out, RecordDataSection::End());
             data_section.length   = position() - data_section.offset;
             data_section.checksum = do_checksum_ ? data.checksum() : std::string("none:");
             ++i;
@@ -109,18 +108,18 @@ size_t RecordWriter::write(Stream out) const {
 
     // End Record
     // ----------
-    atlas::io::write_struct(out, RecordEnd());
+    write_struct(out, RecordEnd());
     auto end_of_record = out.position();
 
     r.record_length = end_of_record - begin_of_record;
-    r.time          = atlas::io::Time::now();
+    r.time          = Time::now();
 
     out.seek(begin_of_record);
-    atlas::io::write_struct(out, r);
+    write_struct(out, r);
 
     out.seek(begin_of_record + r.index_offset + sizeof(RecordDataIndexSection::Begin));
     for (auto& entry : index) {
-        atlas::io::write_struct(out, entry);
+        write_struct(out, entry);
     }
     out.seek(end_of_record);  // So that following writes will not overwrite
     return r.record_length;
@@ -156,7 +155,7 @@ void RecordWriter::checksum(bool on) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void RecordWriter::set(const RecordWriter::Key& key, Link&& link, const eckit::Configuration&) {
+void RecordWriter::set(const RecordWriter::Key& key, Link&& link, const Configuration&) {
     keys_.emplace_back(key);
     encoders_[key] = std::move(Encoder{link});
     info_.emplace(key, DataInfo{});
@@ -164,7 +163,7 @@ void RecordWriter::set(const RecordWriter::Key& key, Link&& link, const eckit::C
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void RecordWriter::set(const RecordWriter::Key& key, Encoder&& encoder, const eckit::Configuration& config) {
+void RecordWriter::set(const RecordWriter::Key& key, Encoder&& encoder, const Configuration& config) {
     DataInfo info;
     if (encoder.encodes_data()) {
         ++nb_data_sections_;
@@ -178,13 +177,13 @@ void RecordWriter::set(const RecordWriter::Key& key, Encoder&& encoder, const ec
 
 //---------------------------------------------------------------------------------------------------------------------
 
-size_t RecordWriter::write(const eckit::PathName& path, Mode mode) const {
+size_t RecordWriter::write(const PathName& path, Mode mode) const {
     return write(OutputFileStream(path, mode));
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-size_t RecordWriter::write(eckit::DataHandle& out) const {
+size_t RecordWriter::write(DataHandle& out) const {
     return write(Stream(out));
 }
 
@@ -211,7 +210,7 @@ size_t RecordWriter::estimateMaximumSize() const {
         }
         size += sizeof(RecordDataSection::Begin);
         {
-            atlas::io::Metadata m;
+            Metadata m;
             size_t max_data_size = encode_metadata(encoder, m);
             if (info.compression() != "none") {
                 max_data_size = size_t(1.2 * max_data_size);
@@ -230,11 +229,11 @@ size_t RecordWriter::estimateMaximumSize() const {
 //---------------------------------------------------------------------------------------------------------------------
 
 std::string RecordWriter::metadata() const {
-    atlas::io::Metadata metadata;
+    Metadata metadata;
     for (auto& key : keys_) {
         auto& encoder = encoders_.at(key);
         auto& info    = info_.at(key);
-        atlas::io::Metadata m;
+        Metadata m;
         encode_metadata(encoder, m);
         if (info.section()) {
             m.set("data.section", info.section());
@@ -245,11 +244,10 @@ std::string RecordWriter::metadata() const {
         metadata.set(key, m);
     }
     std::stringstream ss;
-    atlas::io::write(metadata, ss);
+    codec::write(metadata, ss);
     return ss.str();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

@@ -1,26 +1,24 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #include "eckit/codec/Record.h"
 
-#include "eckit/config/YAMLConfiguration.h"
-#include "eckit/filesystem/URI.h"
-
-#include "eckit/codec/Exceptions.h"
-#include "eckit/codec/Trace.h"
-#include "eckit/codec/detail/Assert.h"
 #include "eckit/codec/detail/ParsedRecord.h"
 #include "eckit/codec/detail/Version.h"
+#include "eckit/config/YAMLConfiguration.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 namespace {
 
@@ -62,7 +60,7 @@ Endian RecordHead::endian() const {
 //---------------------------------------------------------------------------------------------------------------------
 
 std::string Record::URI::str() const {
-    eckit::URI uri("file", eckit::PathName(path));
+    eckit::URI uri("file", PathName(path));
     uri.query("offset", std::to_string(offset));
     return uri.asRawString();
 }
@@ -152,14 +150,13 @@ Record& Record::read(Stream& in, bool read_to_end) {
         return *this;
     }
 
-    ATLAS_IO_TRACE("read_metadata");
     auto& r = record_->head;
 
     auto rbegin = in.position();
 
     // Begin Record
     // ------------
-    if (atlas::io::read_struct(in, r) != sizeof(r)) {
+    if (read_struct(in, r) != sizeof(r)) {
         if (in.position() > sizeof(r.begin.string)) {
             if (not r.begin.valid()) {
                 std::stringstream err;
@@ -179,7 +176,8 @@ Record& Record::read(Stream& in, bool read_to_end) {
     }
 
     if (r.metadata_length < sizeof(RecordMetadataSection::Begin) + sizeof(RecordMetadataSection::End)) {
-        throw InvalidRecord("Unexpected metadata section length: " + std::to_string(r.metadata_length) + " < " + std::to_string(sizeof(RecordMetadataSection::Begin) + sizeof(RecordMetadataSection::End)));
+        throw InvalidRecord("Unexpected metadata section length: " + std::to_string(r.metadata_length) + " < " +
+                            std::to_string(sizeof(RecordMetadataSection::Begin) + sizeof(RecordMetadataSection::End)));
     }
 
     if (r.index_length < sizeof(RecordDataIndexSection::Begin) + sizeof(RecordDataIndexSection::End)) {
@@ -192,22 +190,24 @@ Record& Record::read(Stream& in, bool read_to_end) {
     // Metadata section
     // ----------------
     in.seek(r.metadata_offset);
-    auto metadata_begin = atlas::io::read_struct<RecordMetadataSection::Begin>(in);
+    auto metadata_begin = read_struct<RecordMetadataSection::Begin>(in);
     if (not metadata_begin.valid()) {
-        throw InvalidRecord("Metadata section is not valid. Invalid section begin marker: [" + metadata_begin.str() + "]");
+        throw InvalidRecord("Metadata section is not valid. Invalid section begin marker: [" + metadata_begin.str() +
+                            "]");
     }
     std::string metadata_str;
-    metadata_str.resize(size_t(r.metadata_length) - sizeof(RecordMetadataSection::Begin) - sizeof(RecordMetadataSection::End));
+    metadata_str.resize(size_t(r.metadata_length) - sizeof(RecordMetadataSection::Begin) -
+                        sizeof(RecordMetadataSection::End));
     if (in.read(const_cast<char*>(metadata_str.data()), metadata_str.size()) != metadata_str.size()) {
         throw InvalidRecord("Unexpected EOF reached");
     }
-    auto metadata_end = atlas::io::read_struct<RecordMetadataSection::End>(in);
+    auto metadata_end = read_struct<RecordMetadataSection::End>(in);
     if (not metadata_end.valid()) {
         throw InvalidRecord("Metadata section is not valid. Invalid section end marker: [" + metadata_end.str() + "]");
     }
     Checksum encoded_metadata_checksum(r.metadata_checksum);
     Checksum computed_metadata_checksum(
-        atlas::io::checksum(metadata_str.data(), metadata_str.size(), encoded_metadata_checksum.algorithm()));
+        checksum(metadata_str.data(), metadata_str.size(), encoded_metadata_checksum.algorithm()));
     if (computed_metadata_checksum.available() && encoded_metadata_checksum.str() != computed_metadata_checksum.str()) {
         std::stringstream err;
         err << "Mismatch in metadata checksum.\n";
@@ -216,8 +216,8 @@ Record& Record::read(Stream& in, bool read_to_end) {
         throw DataCorruption(err.str());
     }
 
-    ATLAS_IO_ASSERT(r.metadata_format == "yaml");
-    Metadata metadata = eckit::YAMLConfiguration(metadata_str);
+    ASSERT(r.metadata_format == "yaml");
+    Metadata metadata = YAMLConfiguration(metadata_str);
 
     for (auto& key : metadata.keys()) {
         parse_record(*record_, key, metadata.getSubConfiguration(key));
@@ -227,18 +227,20 @@ Record& Record::read(Stream& in, bool read_to_end) {
     // DataIndex section
     // -----------------
     in.seek(r.index_offset);
-    auto index_begin = atlas::io::read_struct<RecordDataIndexSection::Begin>(in);
+    auto index_begin = read_struct<RecordDataIndexSection::Begin>(in);
     if (not index_begin.valid()) {
-        throw InvalidRecord("Data index section is not valid. Invalid section begin marker: [" + index_begin.str() + "]");
+        throw InvalidRecord("Data index section is not valid. Invalid section begin marker: [" + index_begin.str() +
+                            "]");
     }
-    const auto index_length = (size_t(r.index_length) - sizeof(RecordDataIndexSection::Begin) - sizeof(RecordDataIndexSection::End));
-    const auto index_size   = index_length / sizeof(RecordDataIndexSection::Entry);
-    auto& data_sections     = record_->data_sections;
+    const auto index_length =
+        (size_t(r.index_length) - sizeof(RecordDataIndexSection::Begin) - sizeof(RecordDataIndexSection::End));
+    const auto index_size = index_length / sizeof(RecordDataIndexSection::Entry);
+    auto& data_sections   = record_->data_sections;
     data_sections.resize(index_size);
     if (in.read(data_sections.data(), index_length) != index_length) {
         throw InvalidRecord("Unexpected EOF reached");
     }
-    auto index_end = atlas::io::read_struct<RecordDataIndexSection::End>(in);
+    auto index_end = read_struct<RecordDataIndexSection::End>(in);
     if (not index_end.valid()) {
         throw InvalidRecord("Data index section is not valid. Invalid section end marker: [" + index_end.str() + "]");
     }
@@ -279,9 +281,10 @@ void ParsedRecord::parse() {
         if (item.data.section()) {
             auto& data_section = data_sections.at(size_t(item.data.section() - 1));
             item.data.checksum(data_section.checksum);
-            item.data.compressed_size(data_section.length - sizeof(RecordDataSection::Begin) - sizeof(RecordDataSection::End));
+            item.data.compressed_size(data_section.length - sizeof(RecordDataSection::Begin) -
+                                      sizeof(RecordDataSection::End));
             if (item.data.compressed()) {
-                item.data.size(atlas::io::uncompressed_size(item));
+                item.data.size(uncompressed_size(item));
             }
             else {
                 item.data.size(item.data.compressed_size());
@@ -292,5 +295,4 @@ void ParsedRecord::parse() {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

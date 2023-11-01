@@ -18,22 +18,22 @@
 
 namespace eckit::codec::defaults {
 
-static const std::string& checksum_algorithm() {
+[[maybe_unused]] static const std::string& checksum_algorithm() {
     static const auto checksum = Resource<std::string>("eckit.codec.checksum.algorithm;$ECKIT_CODEC_CHECKSUM", "xxh64");
     return checksum;
 }
 
-static bool checksum_read() {
+[[maybe_unused]] static bool checksum_read() {
     static const auto checksum = Resource<bool>("eckit.codec.checksum.read;$ECKIT_CODEC_CHECKSUM_READ", true);
     return checksum;
 }
 
-static bool checksum_write() {
+[[maybe_unused]] static bool checksum_write() {
     static const auto checksum = Resource<bool>("eckit.codec.checksum.write;$ECKIT_CODEC_CHECKSUM_WRITE", true);
     return checksum;
 }
 
-static const std::string& compression_algorithm() {
+[[maybe_unused]] static const std::string& compression_algorithm() {
     static const auto compression = Resource<std::string>("eckit.codec.compression;$ECKIT_CODEC_COMPRESSION", "none");
     return compression;
 }

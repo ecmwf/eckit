@@ -11,14 +11,12 @@
 #include <bitset>
 #include <cstring>
 
+#include "eckit/codec/Data.h"
 #include "eckit/codec/codec.h"
 
-#include "TestEnvironment.h"
+#include "eckit/testing/Test.h"
 
-namespace atlas {
-namespace test {
-
-using io::ArrayReference;
+namespace eckit::test {
 
 // -------------------------------------------------------------------------------------------------------
 
@@ -28,7 +26,7 @@ struct UnencodableType {
 
 // -------------------------------------------------------------------------------------------------------
 
-// Example type that can be encoded / decoded with atlas::io
+// Example type that can be encoded / decoded with eckit::codec
 // The "operations" performed on this type are stored for unit-test purposes
 class EncodableType {
 public:
@@ -36,7 +34,6 @@ public:
 
     EncodableType(std::string s, std::shared_ptr<Operations> operations = std::make_shared<Operations>()) :
         str(s), ops(operations) {
-        ATLAS_IO_TRACE("EncodableType[" + str + "] construct");
         ops->push_back("constructor");
     }
 
@@ -46,14 +43,12 @@ public:
     EncodableType(const EncodableType& other) {
         // This constructor should not be called.
         str = other.str;
-        ATLAS_IO_TRACE("EncodableType[" + str + "] copy constructor");
         ops = other.ops;
         ops->push_back("copy constructor");
     }
 
     EncodableType(EncodableType&& other) {
         str = std::move(other.str);
-        ATLAS_IO_TRACE("EncodableType[" + str + "] move constructor");
         ops = other.ops;
         ops->push_back("move constructor");
     }
@@ -62,7 +57,6 @@ public:
     EncodableType& operator=(const EncodableType& rhs) {
         // This assignment should not be called.
         str = rhs.str;
-        ATLAS_IO_TRACE("EncodableType[" + str + "] assignment");
         ops = rhs.ops;
         ops->push_back("assignment");
         return *this;
@@ -71,26 +65,25 @@ public:
     EncodableType& operator=(const EncodableType&& rhs) {
         // This assignment should not be called.
         str = std::move(rhs.str);
-        ATLAS_IO_TRACE("EncodableType[" + str + "] move");
         ops = rhs.ops;
         ops->push_back("move");
         return *this;
     }
 
 
-    friend void encode_data(const EncodableType& in, atlas::io::Data& out) {
+    friend void encode_data(const EncodableType& in, codec::Data& out) {
         in.ops->push_back("encode_data");
         out.assign(in.str.data(), in.str.size());
     }
 
-    friend size_t encode_metadata(const EncodableType& in, atlas::io::Metadata& metadata) {
+    friend size_t encode_metadata(const EncodableType& in, codec::Metadata& metadata) {
         in.ops->push_back("encode_metadata");
         metadata.set("type", "EncodableType");
         metadata.set("bytes", in.str.size());
         return in.str.size();
     }
 
-    friend void decode(const atlas::io::Metadata&, const atlas::io::Data& b, EncodableType& out) {
+    friend void decode(const codec::Metadata&, const codec::Data& b, EncodableType& out) {
         out.ops->push_back("decode");
         const char* data = static_cast<const char*>(b.data());
         out.str          = std::string(data, data + b.size());
@@ -106,31 +99,31 @@ private:
 // -------------------------------------------------------------------------------------------------------
 
 CASE("test exceptions") {
-    EXPECT(not(io::is_interpretable<UnencodableType, ArrayReference>()));
-    EXPECT(not io::is_encodable<UnencodableType>());
-    EXPECT(not io::can_encode_metadata<UnencodableType>());
-    EXPECT(not io::can_encode_data<UnencodableType>());
+    EXPECT(not(codec::is_interpretable<UnencodableType, codec::ArrayReference>()));
+    EXPECT(not codec::is_encodable<UnencodableType>());
+    EXPECT(not codec::can_encode_metadata<UnencodableType>());
+    EXPECT(not codec::can_encode_data<UnencodableType>());
 
     UnencodableType in;
-    atlas::io::Data data;
-    atlas::io::Metadata metadata;
+    codec::Data data;
+    codec::Metadata metadata;
 
-    EXPECT_THROWS_AS(io::ref(in, io::tag::disable_static_assert()), io::NotEncodable);
-    EXPECT_THROWS_AS(io::copy(in, io::tag::disable_static_assert()), io::NotEncodable);
-    EXPECT_THROWS_AS(io::encode(in, metadata, data, io::tag::disable_static_assert()), io::NotEncodable);
+    EXPECT_THROWS_AS(codec::ref(in, codec::tag::disable_static_assert()), NotEncodable);
+    EXPECT_THROWS_AS(codec::copy(in, codec::tag::disable_static_assert()), NotEncodable);
+    EXPECT_THROWS_AS(codec::encode(in, metadata, data, codec::tag::disable_static_assert()), NotEncodable);
 }
 
 // -------------------------------------------------------------------------------------------------------
 
 CASE("encoding test::EncodableType") {
-    static_assert(not io::is_interpretable<EncodableType, ArrayReference>(), "");
-    static_assert(io::is_encodable<EncodableType>(), "");
-    static_assert(io::is_decodable<EncodableType>(), "");
+    static_assert(not codec::is_interpretable<EncodableType, codec::ArrayReference>(), "");
+    static_assert(codec::is_encodable<EncodableType>(), "");
+    static_assert(codec::is_decodable<EncodableType>(), "");
 
     const std::string encoded_string{"encoded string"};
     EncodableType in(encoded_string);
-    atlas::io::Data data;
-    atlas::io::Metadata metadata;
+    codec::Data data;
+    codec::Metadata metadata;
     EXPECT_NO_THROW(encode(in, metadata, data));
 
     EXPECT(metadata.type() == "EncodableType");
@@ -141,39 +134,39 @@ CASE("encoding test::EncodableType") {
 
 // -------------------------------------------------------------------------------------------------------
 
-CASE("encoding atlas::io::types::ArrayView") {
-    static_assert(not io::is_interpretable<ArrayReference, ArrayReference>(), "");
-    static_assert(io::can_encode_data<ArrayReference>(), "");
-    static_assert(io::can_encode_metadata<ArrayReference>(), "");
-    static_assert(io::is_encodable<ArrayReference>(), "");
+CASE("encoding codec::types::ArrayView") {
+    static_assert(not codec::is_interpretable<codec::ArrayReference, codec::ArrayReference>(), "");
+    static_assert(codec::can_encode_data<codec::ArrayReference>(), "");
+    static_assert(codec::can_encode_metadata<codec::ArrayReference>(), "");
+    static_assert(codec::is_encodable<codec::ArrayReference>(), "");
 }
 
 // -------------------------------------------------------------------------------------------------------
 
 template <typename T>
 void assert_StdVector() {
-    static_assert(io::is_interpretable<std::vector<T>, ArrayReference>(), "");
-    static_assert(not io::can_encode_data<std::vector<T>>(), "");
-    static_assert(not io::can_encode_metadata<std::vector<T>>(), "");
-    static_assert(not io::is_encodable<std::vector<T>>(), "");
+    static_assert(codec::is_interpretable<std::vector<T>, codec::ArrayReference>(), "");
+    static_assert(not codec::can_encode_data<std::vector<T>>(), "");
+    static_assert(not codec::can_encode_metadata<std::vector<T>>(), "");
+    static_assert(not codec::is_encodable<std::vector<T>>(), "");
 }
 
 template <typename T>
 void encode_StdVector() {
     std::vector<T> in{1, 2, 3, 4, 5};
 
-    ArrayReference interpreted;
+    codec::ArrayReference interpreted;
     interprete(in, interpreted);
 
-    atlas::io::Data data;
-    atlas::io::Metadata metadata;
+    codec::Data data;
+    codec::Metadata metadata;
 
     encode(interpreted, metadata, data);
 
     EXPECT(data.size() == in.size() * sizeof(T));
     EXPECT(::memcmp(in.data(), data.data(), data.size()) == 0);
     EXPECT(metadata.type() == "array");
-    EXPECT(metadata.getString("datatype") == atlas::io::DataType::str<T>());
+    EXPECT(metadata.getString("datatype") == codec::DataType::str<T>());
 }
 
 CASE("encoding std::vector") {
@@ -198,18 +191,18 @@ CASE("encoding std::vector") {
             bits.set(n++, true);
             byte = *reinterpret_cast<std::byte*>(&bits);
         }
-        ArrayReference interpreted;
+        codec::ArrayReference interpreted;
         interprete(in, interpreted);
 
-        atlas::io::Data data;
-        atlas::io::Metadata metadata;
+        codec::Data data;
+        codec::Metadata metadata;
 
         encode(interpreted, metadata, data);
 
         EXPECT(data.size() == in.size() * sizeof(T));
         EXPECT(::memcmp(in.data(), data.data(), data.size()) == 0);
         EXPECT(metadata.type() == "array");
-        EXPECT(metadata.getString("datatype") == atlas::io::DataType::str<T>());
+        EXPECT(metadata.getString("datatype") == codec::DataType::str<T>());
     }
 }
 
@@ -218,28 +211,28 @@ CASE("encoding std::vector") {
 
 template <typename T>
 void assert_StdArray() {
-    static_assert(io::is_interpretable<std::array<T, 5>, ArrayReference>(), "");
-    static_assert(not io::can_encode_data<std::array<T, 5>>(), "");
-    static_assert(not io::can_encode_metadata<std::array<T, 5>>(), "");
-    static_assert(not io::is_encodable<std::array<T, 5>>(), "");
+    static_assert(codec::is_interpretable<std::array<T, 5>, codec::ArrayReference>(), "");
+    static_assert(not codec::can_encode_data<std::array<T, 5>>(), "");
+    static_assert(not codec::can_encode_metadata<std::array<T, 5>>(), "");
+    static_assert(not codec::is_encodable<std::array<T, 5>>(), "");
 }
 
 template <typename T>
 void encode_StdArray() {
     std::array<T, 5> in{1, 2, 3, 4, 5};
 
-    ArrayReference interpreted;
+    codec::ArrayReference interpreted;
     interprete(in, interpreted);
 
-    atlas::io::Data data;
-    atlas::io::Metadata metadata;
+    codec::Data data;
+    codec::Metadata metadata;
 
     encode(interpreted, metadata, data);
 
     EXPECT(data.size() == in.size() * sizeof(T));
     EXPECT(::memcmp(in.data(), data.data(), data.size()) == 0);
     EXPECT(metadata.type() == "array");
-    EXPECT(metadata.getString("datatype") == atlas::io::DataType::str<T>());
+    EXPECT(metadata.getString("datatype") == codec::DataType::str<T>());
 }
 
 CASE("encoding std::array") {
@@ -264,18 +257,18 @@ CASE("encoding std::array") {
             bits.set(n++, true);
             byte = *reinterpret_cast<std::byte*>(&bits);
         }
-        ArrayReference interpreted;
+        codec::ArrayReference interpreted;
         interprete(in, interpreted);
 
-        atlas::io::Data data;
-        atlas::io::Metadata metadata;
+        codec::Data data;
+        codec::Metadata metadata;
 
         encode(interpreted, metadata, data);
 
         EXPECT(data.size() == in.size() * sizeof(T));
         EXPECT(::memcmp(in.data(), data.data(), data.size()) == 0);
         EXPECT(metadata.type() == "array");
-        EXPECT(metadata.getString("datatype") == atlas::io::DataType::str<T>());
+        EXPECT(metadata.getString("datatype") == codec::DataType::str<T>());
     }
 }
 
@@ -283,75 +276,75 @@ CASE("encoding std::array") {
 
 CASE("test Encoder") {
     SECTION("default constructor") {
-        io::Encoder encoder;
+        codec::Encoder encoder;
         EXPECT(encoder == false);
-        io::Metadata metadata;
-        io::Data data;
+        codec::Metadata metadata;
+        codec::Data data;
         EXPECT_THROWS_AS(encode(encoder, metadata, data), eckit::AssertionFailed);
     }
 
     SECTION("Encoder via reference") {
-        io::Encoder encoder;
+        codec::Encoder encoder;
         auto ops = std::make_shared<EncodableType::Operations>();
 
         EncodableType encodable("string", ops);
-        EXPECT_EQ(ops->size(), 1);
-        EXPECT_EQ(ops->back(), "constructor");
+        EXPECT_EQUAL(ops->size(), 1);
+        EXPECT_EQUAL(ops->back(), "constructor");
 
-        io::ref(encodable);
-        EXPECT_EQ(ops->size(), 1);
-        EXPECT_EQ(ops->back(), "constructor");
+        codec::ref(encodable);
+        EXPECT_EQUAL(ops->size(), 1);
+        EXPECT_EQUAL(ops->back(), "constructor");
 
-        encoder = io::Encoder{io::ref(encodable)};
-        EXPECT_EQ(ops->size(), 2);
-        EXPECT_EQ(ops->back(), "encode_metadata");
+        encoder = codec::Encoder{codec::ref(encodable)};
+        EXPECT_EQUAL(ops->size(), 2);
+        EXPECT_EQUAL(ops->back(), "encode_metadata");
 
-        io::Metadata metadata;
-        io::Data data;
+        codec::Metadata metadata;
+        codec::Data data;
         encode(encoder, metadata, data);
-        EXPECT_EQ(ops->size(), 3);
-        EXPECT_EQ(ops->back(), "encode_data");
+        EXPECT_EQUAL(ops->size(), 3);
+        EXPECT_EQUAL(ops->back(), "encode_data");
     }
 
     SECTION("Encoder via copy") {
-        io::Encoder encoder;
+        codec::Encoder encoder;
         auto ops = std::make_shared<EncodableType::Operations>();
 
         EncodableType encodable("string", ops);
-        EXPECT_EQ(ops->size(), 1);
-        EXPECT_EQ(ops->back(), "constructor");
+        EXPECT_EQUAL(ops->size(), 1);
+        EXPECT_EQUAL(ops->back(), "constructor");
 
 
-        encoder = io::Encoder{io::copy(encodable)};
-        EXPECT_EQ(ops->size(), 3);
-        EXPECT_EQ(ops->at(1), "encode_metadata");
-        EXPECT_EQ(ops->at(2), "encode_data");
+        encoder = codec::Encoder{codec::copy(encodable)};
+        EXPECT_EQUAL(ops->size(), 3);
+        EXPECT_EQUAL(ops->at(1), "encode_metadata");
+        EXPECT_EQUAL(ops->at(2), "encode_data");
 
-        io::Metadata metadata;
-        io::Data data;
+        codec::Metadata metadata;
+        codec::Data data;
         encode(encoder, metadata, data);
-        EXPECT_EQ(ops->size(), 3);
-        EXPECT_EQ(ops->at(2), "encode_data");
+        EXPECT_EQUAL(ops->size(), 3);
+        EXPECT_EQUAL(ops->at(2), "encode_data");
     }
 
     SECTION("Encoder via move") {
-        io::Encoder encoder;
+        codec::Encoder encoder;
         auto ops = std::make_shared<EncodableType::Operations>();
 
         EncodableType encodable("string", ops);
-        EXPECT_EQ(ops->size(), 1);
-        EXPECT_EQ(ops->back(), "constructor");
+        EXPECT_EQUAL(ops->size(), 1);
+        EXPECT_EQUAL(ops->back(), "constructor");
 
-        encoder = io::Encoder{std::move(encodable)};
-        EXPECT_EQ(ops->size(), 3);
-        EXPECT_EQ(ops->at(1), "move constructor");
-        EXPECT_EQ(ops->at(2), "encode_metadata");
+        encoder = codec::Encoder{std::move(encodable)};
+        EXPECT_EQUAL(ops->size(), 3);
+        EXPECT_EQUAL(ops->at(1), "move constructor");
+        EXPECT_EQUAL(ops->at(2), "encode_metadata");
 
-        io::Metadata metadata;
-        io::Data data;
+        codec::Metadata metadata;
+        codec::Data data;
         encode(encoder, metadata, data);
-        EXPECT_EQ(ops->size(), 4);
-        EXPECT_EQ(ops->at(3), "encode_data");
+        EXPECT_EQUAL(ops->size(), 4);
+        EXPECT_EQUAL(ops->at(3), "encode_data");
     }
 }
 
@@ -362,11 +355,11 @@ CASE("Encoder for std::vector") {
         using T = double;
         std::vector<T> v{1, 2, 3, 4, 5, 6, 7, 8};
 
-        io::Encoder encoder(io::ref(v));
+        codec::Encoder encoder(codec::ref(v));
 
         // We can only encode with reference to original vector (no copies were made)
-        io::Metadata metadata;
-        io::Data data;
+        codec::Metadata metadata;
+        codec::Data data;
         encode(encoder, metadata, data);
         EXPECT(data.size() == v.size() * sizeof(T));
         EXPECT(::memcmp(data, v.data(), data.size()) == 0);
@@ -376,18 +369,18 @@ CASE("Encoder for std::vector") {
         using T = double;
         std::vector<T> v{1, 2, 3, 4, 5, 6, 7, 8};
 
-        io::Encoder encoder;
+        codec::Encoder encoder;
         {
             std::vector<T> scoped = v;
-            encoder               = io::Encoder(io::copy(scoped));
+            encoder               = codec::Encoder(codec::copy(scoped));
             scoped.assign(scoped.size(), 0);  // zero out before destruction
         }
 
         // We can now encode with scoped vector destroyed
-        io::Metadata metadata;
-        io::Data data;
+        codec::Metadata metadata;
+        codec::Data data;
         encode(encoder, metadata, data);
-        EXPECT_EQ(data.size(), v.size() * sizeof(T));
+        EXPECT(data.size() == v.size() * sizeof(T));
         EXPECT(::memcmp(data, v.data(), data.size()) == 0);
     }
 }
@@ -399,11 +392,11 @@ CASE("Encoder for std::array") {
         using T = double;
         std::array<T, 8> v{1, 2, 3, 4, 5, 6, 7, 8};
 
-        io::Encoder encoder(io::ref(v));
+        codec::Encoder encoder(codec::ref(v));
 
         // We can only encode with reference to original vector (no copies were made)
-        io::Metadata metadata;
-        io::Data data;
+        codec::Metadata metadata;
+        codec::Data data;
         encode(encoder, metadata, data);
         EXPECT(data.size() == v.size() * sizeof(T));
         EXPECT(::memcmp(data, v.data(), data.size()) == 0);
@@ -413,18 +406,18 @@ CASE("Encoder for std::array") {
         using T = double;
         std::array<T, 8> v{1, 2, 3, 4, 5, 6, 7, 8};
 
-        io::Encoder encoder;
+        codec::Encoder encoder;
         {
             std::array<T, 8> scoped = v;
-            encoder                 = io::Encoder(io::copy(scoped));
+            encoder                 = codec::Encoder(codec::copy(scoped));
             std::fill(std::begin(scoped), std::end(scoped), 0);  // zero out before destruction
         }
 
         // We can now encode with scoped vector destroyed
-        io::Metadata metadata;
-        io::Data data;
+        codec::Metadata metadata;
+        codec::Data data;
         encode(encoder, metadata, data);
-        EXPECT_EQ(data.size(), v.size() * sizeof(T));
+        EXPECT(data.size() == v.size() * sizeof(T));
         EXPECT(::memcmp(data, v.data(), data.size()) == 0);
     }
 }
@@ -435,13 +428,13 @@ CASE("Encoder of encoder") {
     using T = double;
     std::vector<T> v{1, 2, 3, 4, 5, 6, 7, 8};
 
-    io::Encoder encoder(io::ref(v));
-    io::Encoder encoder_of_encoder(io::ref(encoder));
+    codec::Encoder encoder(codec::ref(v));
+    codec::Encoder encoder_of_encoder(codec::ref(encoder));
 
-    io::Metadata metadata;
-    io::Data data;
+    codec::Metadata metadata;
+    codec::Data data;
     encode(encoder_of_encoder, metadata, data);
-    EXPECT_EQ(data.size(), v.size() * sizeof(T));
+    EXPECT(data.size() == v.size() * sizeof(T));
     EXPECT(::memcmp(data, v.data(), data.size()) == 0);
 }
 
@@ -450,8 +443,8 @@ CASE("Encoder of encoder") {
 /// Helper class to be used in testing decoding of arrays.
 template <typename T>
 struct EncodedArray {
-    atlas::io::Data data;
-    atlas::io::Metadata metadata;
+    codec::Data data;
+    codec::Metadata metadata;
 
     EncodedArray() :
         in{1, 2, 3, 4, 5, 6, 7, 8} { encode(in, metadata, data); }
@@ -476,8 +469,8 @@ private:
 template <>
 struct EncodedArray<std::byte> {
     using T = std::byte;
-    atlas::io::Data data;
-    atlas::io::Metadata metadata;
+    codec::Data data;
+    codec::Metadata metadata;
 
     EncodedArray() {
         std::bitset<8> bits;
@@ -513,20 +506,20 @@ CASE("Decoding to std::vector") {
         EXPECT(out == encoded);
     }
 
-    SECTION("decode using rvalue io::Decoder (type erasure)") {
-        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, io::Decoder(out)));
+    SECTION("decode using rvalue codec::Decoder (type erasure)") {
+        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, codec::Decoder(out)));
         EXPECT(out == encoded);
     }
 
-    SECTION("decode using lvalue io::Decoder (type erasure)") {
-        io::Decoder decoder(out);
-        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, io::Decoder(out)));
+    SECTION("decode using lvalue codec::Decoder (type erasure)") {
+        codec::Decoder decoder(out);
+        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, codec::Decoder(out)));
         EXPECT(out == encoded);
     }
 
     SECTION("decode using decoder of decoder") {
-        io::Decoder decoder(out);
-        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, io::Decoder(decoder)));
+        codec::Decoder decoder(out);
+        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, codec::Decoder(decoder)));
         EXPECT(out == encoded);
     }
 }
@@ -543,20 +536,20 @@ CASE("Decoding to std::array") {
         EXPECT(out == encoded);
     }
 
-    SECTION("decode using rvalue io::Decoder (type erasure)") {
-        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, io::Decoder(out)));
+    SECTION("decode using rvalue codec::Decoder (type erasure)") {
+        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, codec::Decoder(out)));
         EXPECT(out == encoded);
     }
 
-    SECTION("decode using lvalue io::Decoder (type erasure)") {
-        io::Decoder decoder(out);
-        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, io::Decoder(out)));
+    SECTION("decode using lvalue codec::Decoder (type erasure)") {
+        codec::Decoder decoder(out);
+        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, codec::Decoder(out)));
         EXPECT(out == encoded);
     }
 
     SECTION("decode using decoder of decoder") {
-        io::Decoder decoder(out);
-        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, io::Decoder(decoder)));
+        codec::Decoder decoder(out);
+        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, codec::Decoder(decoder)));
         EXPECT(out == encoded);
     }
 }
@@ -586,20 +579,20 @@ CASE("Encode/Decode byte array") {
         validate();
     }
 
-    SECTION("decode using rvalue io::Decoder (type erasure)") {
-        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, io::Decoder(out)));
+    SECTION("decode using rvalue codec::Decoder (type erasure)") {
+        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, codec::Decoder(out)));
         validate();
     }
 
-    SECTION("decode using lvalue io::Decoder (type erasure)") {
-        io::Decoder decoder(out);
-        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, io::Decoder(out)));
+    SECTION("decode using lvalue codec::Decoder (type erasure)") {
+        codec::Decoder decoder(out);
+        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, codec::Decoder(out)));
         validate();
     }
 
     SECTION("decode using decoder of decoder") {
-        io::Decoder decoder(out);
-        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, io::Decoder(decoder)));
+        codec::Decoder decoder(out);
+        EXPECT_NO_THROW(decode(encoded.metadata, encoded.data, codec::Decoder(decoder)));
         validate();
     }
 }
@@ -608,14 +601,14 @@ CASE("Encode/Decode byte array") {
 
 CASE("Encode/Decode string") {
     std::string in{"short string"};
-    io::Metadata metadata;
-    io::Data data;
+    codec::Metadata metadata;
+    codec::Data data;
     encode(in, metadata, data);
-    EXPECT_EQ(data.size(), 0);
+    EXPECT(data.size() == 0);
 
     std::string out;
     decode(metadata, data, out);
-    EXPECT_EQ(out, in);
+    EXPECT(out == in);
 }
 
 // -------------------------------------------------------------------------------------------------------
@@ -623,13 +616,13 @@ CASE("Encode/Decode string") {
 template <typename T>
 void test_encode_decode_scalar() {
     T in{std::numeric_limits<T>::max()}, out;
-    io::Metadata metadata;
-    io::Data data;
+    codec::Metadata metadata;
+    codec::Data data;
     encode(in, metadata, data);
-    EXPECT_EQ(data.size(), 0);
+    EXPECT(data.size() == 0);
 
     decode(metadata, data, out);
-    EXPECT_EQ(out, in);
+    EXPECT(out == in);
 }
 
 CASE("Encode/Decode scalar") {
@@ -653,9 +646,8 @@ CASE("Encode/Decode scalar") {
 
 // -------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace atlas
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return atlas::test::run(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

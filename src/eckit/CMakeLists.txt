@@ -960,14 +960,13 @@ ecbuild_add_library(
 ### sub-directories
 
 if( HAVE_ECKIT_CMD )
-  add_subdirectory( cmd )
+    add_subdirectory( cmd )
 endif()
 
 if( HAVE_ECKIT_SQL )
-  add_subdirectory( sql )
+    add_subdirectory( sql )
 endif()
 
-add_subdirectory( codec )
 add_subdirectory( distributed )
 add_subdirectory( geometry )
 add_subdirectory( linalg )
@@ -975,3 +974,8 @@ add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )
+
+if( HAVE_EXPERIMENTAL )
+    add_subdirectory( codec )
+endif()
+

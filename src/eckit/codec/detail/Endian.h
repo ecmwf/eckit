@@ -28,10 +28,10 @@ enum class Endian
 {
     little = 0,
     big    = 1,
-#if eckit_LITTLE_ENDIAN
+#if eckit_BIG_ENDIAN
     native  = big,
     swapped = little
-#elif ATLAS_IO_LITTLE_ENDIAN
+#elif eckit_LITTLE_ENDIAN
     native  = little,
     swapped = big
 #else

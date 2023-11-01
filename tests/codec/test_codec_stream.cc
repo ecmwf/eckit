@@ -10,40 +10,39 @@
 
 #include "eckit/codec/FileStream.h"
 #include "eckit/codec/Session.h"
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/PooledHandle.h"
 
-#include "TestEnvironment.h"
+#include "eckit/testing/Test.h"
 
 
-namespace atlas {
-namespace test {
+namespace eckit::test {
 
 CASE("Stream interoperability with eckit::DataHandle") {
     SECTION("own pointer") {
-        io::Stream s;
+        codec::Stream s;
         {
             eckit::DataHandle* datahandle = new eckit::FileHandle("test_io_session.data");
             datahandle->openForWrite(0);
-            s = io::Stream{datahandle};
+            s = codec::Stream{datahandle};
         }
         s.datahandle().close();
     }
     SECTION("shared pointer") {
-        io::Stream s;
+        codec::Stream s;
         {
             std::shared_ptr<eckit::DataHandle> datahandle = std::make_shared<eckit::FileHandle>("test_io_session.data");
             datahandle->openForWrite(0);
-            s = io::Stream{datahandle};
+            s = codec::Stream{datahandle};
         }
         s.datahandle().close();
     }
     SECTION("reference") {
-        io::Stream s;
+        codec::Stream s;
         eckit::FileHandle datahandle("test_io_session.data");
         datahandle.openForWrite(0);
-        s = io::Stream{datahandle};
+        s = codec::Stream{datahandle};
         s.datahandle().close();
     }
 }
@@ -53,14 +52,12 @@ CASE("Test seek-for-write works when opening OutputFileStream for append") {
     std::string s2("append   \n");
     std::string s3("overwrite\n");
     {
-        ATLAS_IO_TRACE("write");
-        io::Stream f = io::OutputFileStream("append-test");
+        codec::Stream f = codec::OutputFileStream("append-test");
         f.write(s1.c_str(), s1.size());
     }
     {
-        ATLAS_IO_TRACE("append");
-        io::Stream f = io::OutputFileStream("append-test", io::Mode::append);
-        auto offset  = f.position();
+        codec::Stream f = codec::OutputFileStream("append-test", codec::Mode::append);
+        auto offset     = f.position();
         f.write(s2.c_str(), s2.size());
 
         // Rewind to beginning of append
@@ -68,12 +65,11 @@ CASE("Test seek-for-write works when opening OutputFileStream for append") {
         f.write(s3.c_str(), s3.size());
     }
     {
-        ATLAS_IO_TRACE("read");
-        io::Stream f         = io::InputFileStream("append-test");
+        codec::Stream f      = codec::InputFileStream("append-test");
         std::string expected = s1 + s3;
         std::string read(expected.size(), ' ');
         f.read(const_cast<char*>(read.data()), read.size());
-        EXPECT_EQ(read, expected);
+        EXPECT_EQUAL(read, expected);
     }
 }
 
@@ -83,7 +79,7 @@ CASE("Opening same file in same scope") {
 
     // write a file
     {
-        io::OutputFileStream out("test_io_session.data");
+        codec::OutputFileStream out("test_io_session.data");
         out.write("line1\n", 6);
         out.write("line2\n", 6);
         out.write("line3\n", 6);
@@ -91,26 +87,26 @@ CASE("Opening same file in same scope") {
 
     std::string l1(5, ' '), l2(5, ' '), l3(5, ' ');
 
-    io::Stream f1 = io::InputFileStream{"test_io_session.data"};
+    codec::Stream f1 = codec::InputFileStream{"test_io_session.data"};
     f1.seek(0 * 6);
     f1.read(const_cast<char*>(l1.data()), 5);
 
-    io::Stream f2 = io::InputFileStream{"test_io_session.data"};
+    codec::Stream f2 = codec::InputFileStream{"test_io_session.data"};
     f2.seek(1 * 6);
     f2.read(const_cast<char*>(l2.data()), 5);
 
-    io::Stream f3 = io::InputFileStream{"test_io_session.data"};
+    codec::Stream f3 = codec::InputFileStream{"test_io_session.data"};
     f3.seek(2 * 6);
     f3.read(const_cast<char*>(l3.data()), 5);
 
-    EXPECT_EQ(l1, "line1");
-    EXPECT_EQ(l2, "line2");
-    EXPECT_EQ(l3, "line3");
+    EXPECT_EQUAL(l1, "line1");
+    EXPECT_EQUAL(l2, "line2");
+    EXPECT_EQUAL(l3, "line3");
 
     auto& pooled_handle = dynamic_cast<eckit::PooledHandle&>(f1.datahandle());
-    EXPECT_EQ(pooled_handle.nbOpens(), 1);
-    EXPECT_EQ(pooled_handle.nbSeeks(), 3);
-    EXPECT_EQ(pooled_handle.nbReads(), 3);
+    EXPECT(pooled_handle.nbOpens() == 1);
+    EXPECT(pooled_handle.nbSeeks() == 3);
+    EXPECT(pooled_handle.nbReads() == 3);
 }
 
 CASE("Opening same file in parallel scopes") {
@@ -118,7 +114,7 @@ CASE("Opening same file in parallel scopes") {
 
     // write a file
     {
-        io::OutputFileStream out("test_io_session.data");
+        codec::OutputFileStream out("test_io_session.data");
         out.write("line1\n", 6);
         out.write("line2\n", 6);
         out.write("line3\n", 6);
@@ -127,31 +123,31 @@ CASE("Opening same file in parallel scopes") {
     std::string l1(5, ' '), l2(5, ' '), l3(5, ' ');
 
     {
-        io::Stream f1 = io::InputFileStream{"test_io_session.data"};
+        codec::Stream f1 = codec::InputFileStream{"test_io_session.data"};
         f1.seek(0 * 6);
         f1.read(const_cast<char*>(l1.data()), 5);
         auto& pooled_handle = dynamic_cast<eckit::PooledHandle&>(f1.datahandle());
-        EXPECT_EQ(pooled_handle.nbOpens(), 1);
-        EXPECT_EQ(pooled_handle.nbSeeks(), 1);
-        EXPECT_EQ(pooled_handle.nbReads(), 1);
+        EXPECT(pooled_handle.nbOpens() == 1);
+        EXPECT(pooled_handle.nbSeeks() == 1);
+        EXPECT(pooled_handle.nbReads() == 1);
     }
     {
-        io::Stream f2 = io::InputFileStream{"test_io_session.data"};
+        codec::Stream f2 = codec::InputFileStream{"test_io_session.data"};
         f2.seek(1 * 6);
         f2.read(const_cast<char*>(l2.data()), 5);
         auto& pooled_handle = dynamic_cast<eckit::PooledHandle&>(f2.datahandle());
-        EXPECT_EQ(pooled_handle.nbOpens(), 1);
-        EXPECT_EQ(pooled_handle.nbSeeks(), 1);
-        EXPECT_EQ(pooled_handle.nbReads(), 1);
+        EXPECT(pooled_handle.nbOpens() == 1);
+        EXPECT(pooled_handle.nbSeeks() == 1);
+        EXPECT(pooled_handle.nbReads() == 1);
     }
     {
-        io::Stream f3 = io::InputFileStream{"test_io_session.data"};
+        codec::Stream f3 = codec::InputFileStream{"test_io_session.data"};
         f3.seek(2 * 6);
         f3.read(const_cast<char*>(l3.data()), 5);
         auto& pooled_handle = dynamic_cast<eckit::PooledHandle&>(f3.datahandle());
-        EXPECT_EQ(pooled_handle.nbOpens(), 1);
-        EXPECT_EQ(pooled_handle.nbSeeks(), 1);
-        EXPECT_EQ(pooled_handle.nbReads(), 1);
+        EXPECT(pooled_handle.nbOpens() == 1);
+        EXPECT(pooled_handle.nbSeeks() == 1);
+        EXPECT(pooled_handle.nbReads() == 1);
     }
 }
 
@@ -159,11 +155,11 @@ CASE("Opening same file in parallel scopes with Session") {
     // Declaring this in an outer scope will keep storage of InputFileStream
     // within nested scopes, so that files will not be opened/closed repeatedly
 
-    io::Session session;
+    codec::Session session;
 
     // write a file
     {
-        io::OutputFileStream out("test_io_session.data");
+        codec::OutputFileStream out("test_io_session.data");
         out.write("line1\n", 6);
         out.write("line2\n", 6);
         out.write("line3\n", 6);
@@ -173,39 +169,38 @@ CASE("Opening same file in parallel scopes with Session") {
     std::string l1(5, ' '), l2(5, ' '), l3(5, ' ');
 
     {
-        io::Stream f1 = io::InputFileStream{"test_io_session.data"};
+        codec::Stream f1 = codec::InputFileStream{"test_io_session.data"};
         f1.seek(0 * 6);
         f1.read(const_cast<char*>(l1.data()), 5);
         auto& pooled_handle = dynamic_cast<eckit::PooledHandle&>(f1.datahandle());
-        EXPECT_EQ(pooled_handle.nbOpens(), 1);
-        EXPECT_EQ(pooled_handle.nbSeeks(), 1);
-        EXPECT_EQ(pooled_handle.nbReads(), 1);
+        EXPECT(pooled_handle.nbOpens() == 1);
+        EXPECT(pooled_handle.nbSeeks() == 1);
+        EXPECT(pooled_handle.nbReads() == 1);
     }
     {
-        io::Stream f2 = io::InputFileStream{"test_io_session.data"};
+        codec::Stream f2 = codec::InputFileStream{"test_io_session.data"};
         f2.seek(1 * 6);
         f2.read(const_cast<char*>(l2.data()), 5);
         auto& pooled_handle = dynamic_cast<eckit::PooledHandle&>(f2.datahandle());
-        EXPECT_EQ(pooled_handle.nbOpens(), 1);
-        EXPECT_EQ(pooled_handle.nbSeeks(), 2);
-        EXPECT_EQ(pooled_handle.nbReads(), 2);
+        EXPECT(pooled_handle.nbOpens() == 1);
+        EXPECT(pooled_handle.nbSeeks() == 2);
+        EXPECT(pooled_handle.nbReads() == 2);
     }
     {
-        io::Stream f3 = io::InputFileStream{"test_io_session.data"};
+        codec::Stream f3 = codec::InputFileStream{"test_io_session.data"};
         f3.seek(2 * 6);
         f3.read(const_cast<char*>(l3.data()), 5);
         auto& pooled_handle = dynamic_cast<eckit::PooledHandle&>(f3.datahandle());
-        EXPECT_EQ(pooled_handle.nbOpens(), 1);
-        EXPECT_EQ(pooled_handle.nbSeeks(), 3);
-        EXPECT_EQ(pooled_handle.nbReads(), 3);
+        EXPECT(pooled_handle.nbOpens() == 1);
+        EXPECT(pooled_handle.nbSeeks() == 3);
+        EXPECT(pooled_handle.nbReads() == 3);
     }
 }
 
 
-}  // namespace test
-}  // namespace atlas
+}  // namespace eckit::test
 
 
 int main(int argc, char** argv) {
-    return atlas::test::run(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

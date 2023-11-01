@@ -12,6 +12,9 @@
 #include <string>
 #include <vector>
 
+#include "eckit/codec/RecordPrinter.h"
+#include "eckit/codec/print/Bytes.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/Separator.h"
@@ -19,15 +22,11 @@
 #include "eckit/option/VectorOption.h"
 #include "eckit/runtime/Tool.h"
 
-#include "eckit/codec/Exceptions.h"
-#include "eckit/codec/RecordPrinter.h"
-#include "eckit/codec/print/Bytes.h"
-
 //--------------------------------------------------------------------------------
 
-using eckit::Log;
+namespace eckit::tools {
 
-class AtlasIOTool : public eckit::Tool {
+class EckitCodecTool : public eckit::Tool {
 public:
     using Options = std::vector<eckit::option::Option*>;
     using Args    = eckit::option::CmdArgs;
@@ -54,18 +53,18 @@ protected:
         out << "NAME\n"
             << indented(name());
         std::string brief = briefDescription();
-        if (brief.size()) {
+        if (!brief.empty()) {
             out << " - " << brief << '\n';
         }
 
         std::string usg = usage();
-        if (usg.size()) {
+        if (!usg.empty()) {
             out << '\n';
             out << "SYNOPSIS\n"
                 << indented(usg) << '\n';
         }
         std::string desc = longDescription();
-        if (desc.size()) {
+        if (!desc.empty()) {
             out << '\n';
             out << "DESCRIPTION\n"
                 << indented(desc) << '\n';
@@ -94,7 +93,7 @@ protected:
     }
 
 public:
-    AtlasIOTool(int argc, char** argv) :
+    EckitCodecTool(int argc, char** argv) :
         eckit::Tool(argc, argv) {
         add_option(new eckit::option::SimpleOption<bool>("help", "Print this help"));
     }
@@ -142,25 +141,23 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct EckitCodecList : public AtlasIOTool {
-    std::string briefDescription() override { return "Inspection of eckit codec files"; }
+struct EckitCodecList : public EckitCodecTool {
+    std::string briefDescription() override { return "Inspection of eckit::codec files"; }
     std::string usage() override { return name() + " <file> [OPTION]... [--help,-h]"; }
     std::string longDescription() override {
-        return "Inspection of eckit codec files\n"
+        return "Inspection of eckit::codec files\n"
                "\n"
-               "       <file>: path to eckit codec file";
+               "       <file>: path to eckit::codec file";
     }
 
     EckitCodecList(int argc, char** argv) :
-        AtlasIOTool(argc, argv) {
+        EckitCodecTool(argc, argv) {
         add_option(new eckit::option::SimpleOption<std::string>("format", "Output format"));
         add_option(new eckit::option::SimpleOption<bool>("version", "Print version of records"));
         add_option(new eckit::option::SimpleOption<bool>("details", "Print detailed information"));
     }
     int execute(const Args& args) override {
         auto return_code = success();
-
-        using namespace atlas;
 
         // User sanity checks
         if (args.count() == 0) {
@@ -183,17 +180,17 @@ struct EckitCodecList : public AtlasIOTool {
             }
             auto filesize = size_t(file.size());
 
-            io::Session session;
+            codec::Session session;
 
             std::uint64_t pos = 0;
             try {
                 while (pos < filesize) {
-                    auto uri    = io::Record::URI{file, pos};
-                    auto record = io::RecordPrinter{uri, config};
+                    auto uri    = codec::Record::URI{file, pos};
+                    auto record = codec::RecordPrinter{uri, config};
 
                     std::stringstream out;
                     out << "\n# " << uri.path << " [" << uri.offset << "]    "
-                        << "{ size: " << atlas::io::Bytes{record.size()}.str(0) << ",    version: " << record.version()
+                        << "{ size: " << codec::Bytes{record.size()}.str(0) << ",    version: " << record.version()
                         << ",    created: " << record.time() << " }";
                     out << '\n'
                         << (config.getString("format") == "table" ? "" : "---") << '\n';
@@ -204,7 +201,7 @@ struct EckitCodecList : public AtlasIOTool {
                     pos += record.size();
                 }
             }
-            catch (const io::Exception& e) {
+            catch (const Exception& e) {
                 Log::error() << "    ERROR: " << e.what() << std::endl;
                 return_code = failed();
             }
@@ -213,8 +210,10 @@ struct EckitCodecList : public AtlasIOTool {
     }
 };
 
+}  // namespace eckit::tools
+
 //------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-    return EckitCodecList{argc, argv}.start();
+    return eckit::tools::EckitCodecList{argc, argv}.start();
 }

@@ -142,12 +142,6 @@ ecbuild_add_option( FEATURE AEC
 ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "xxHash support for hashing" )
 
-### Codec options
-
-set( eckit_CODEC_RECORD_BEGIN "ATLAS-IO" CACHE STRING "eckit::codec record begin" )
-set( eckit_CODEC_RECORD_END "ATLAS-IO-END" CACHE STRING "eckit::codec record end" )
-set( eckit_CODEC_STATIC_ASSERT OFF CACHE BOOL "eckit::codec static assertions" )
-
 ### LAPACK
 
 if( eckit_HAVE_MKL )

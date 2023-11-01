@@ -14,9 +14,6 @@
 #include <errno.h>
 #include <iostream>
 #include <sstream>
-#include <string>
-#include <type_traits>
-#include <typeinfo>
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
@@ -251,60 +248,6 @@ public:
 };
 
 //----------------------------------------------------------------------------------------------------------------------
-
-// Codec errors
-
-std::string __eckit__exception_demangle_type(const char*);
-
-class NotEncodable : Exception {
-    template <typename T>
-    std::string demangle() {
-        return __eckit__exception_demangle_type(typeid(T).name());
-    }
-
-public:
-    NotEncodable(const std::string& type_name);
-
-    template <typename T>
-    NotEncodable(const T&) :
-        NotEncodable{demangle<typename std::decay<T>::type>()} {}
-
-    ~NotEncodable() override;
-};
-
-class NotDecodable : public Exception {
-    template <typename T>
-    std::string demangle() {
-        return __eckit__exception_demangle_type(typeid(T).name());
-    }
-
-public:
-    NotDecodable(const std::string& type_name);
-
-    template <typename T>
-    NotDecodable(const T&) :
-        NotDecodable{demangle<typename std::decay<T>::type>()} {}
-
-    ~NotDecodable() override;
-};
-
-class InvalidRecord : public Exception {
-public:
-    InvalidRecord(const std::string& message) :
-        Exception("InvalidRecord: " + message) {}
-
-    ~InvalidRecord() override;
-};
-
-class DataCorruption : public Exception {
-public:
-    DataCorruption(const std::string& message) :
-        Exception("DataCorruption: " + message) {}
-
-    ~DataCorruption() override;
-};
-
-//---------------------------------------------------------------------------------------------------------------------
 
 template <class T>
 inline T SysCall(T code, const char* msg, const char* file, int line, const char* func) {

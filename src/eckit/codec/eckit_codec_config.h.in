@@ -1,7 +1,0 @@
-#pragma once
-
-#cmakedefine eckit_CODEC_RECORD_BEGIN "@eckit_CODEC_RECORD_BEGIN@"
-#cmakedefine eckit_CODEC_RECORD_END "@eckit_CODEC_RECORD_END@"
-
-#cmakedefine eckit_CODEC_STATIC_ASSERT "@eckit_CODEC_STATIC_ASSERT@"
-

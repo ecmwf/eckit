@@ -36,25 +36,25 @@ enum class Mode
 
 class FileStream : public Stream {
 public:
-    FileStream(const PathName& path, Mode openmode);
-    FileStream(const PathName& path, char openmode);
-    FileStream(const PathName& path, const std::string& openmode);
+    FileStream(const PathName&, Mode openmode);
+    FileStream(const PathName&, char openmode);
+    FileStream(const PathName&, const std::string& openmode);
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
 class InputFileStream : public FileStream {
 public:
-    InputFileStream(const PathName& path);
+    explicit InputFileStream(const PathName&);
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
 class OutputFileStream : public FileStream {
 public:
-    OutputFileStream(const PathName& path, Mode openmode = Mode::write);
-    OutputFileStream(const PathName& path, const std::string& openmode);
-    OutputFileStream(const PathName& path, char openmode);
+    explicit OutputFileStream(const PathName&, Mode openmode = Mode::write);
+    OutputFileStream(const PathName&, const std::string& openmode);
+    OutputFileStream(const PathName&, char openmode);
     void close();
 };
 

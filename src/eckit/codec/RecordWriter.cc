@@ -12,7 +12,6 @@
 
 #include "eckit/codec/RecordWriter.h"
 
-#include "eckit/codec/RecordWriter.h"
 #include "eckit/codec/detail/Checksum.h"
 #include "eckit/codec/detail/Defaults.h"
 #include "eckit/codec/detail/Encoder.h"
@@ -25,7 +24,7 @@ namespace eckit::codec {
 
 template <typename OStream, typename Struct>
 inline void write_struct(OStream& out, const Struct& s) {
-    static_assert(Struct::bytes == sizeof(Struct), "");
+    static_assert(Struct::bytes == sizeof(Struct));
     if (out.write(reinterpret_cast<const char*>(&s), sizeof(s)) != sizeof(s)) {
         throw WriteError("Could not write struct to stream");
     }
@@ -65,12 +64,12 @@ size_t RecordWriter::write(Stream out) const {
         write_struct(out, RecordMetadataSection::End());
         r.metadata_length = position() - r.metadata_offset;
         r.metadata_checksum =
-            do_checksum_ ? codec::checksum(metadata_str.data(), metadata_str.size()) : std::string("none:");
+            do_checksum_ != 0 ? codec::checksum(metadata_str.data(), metadata_str.size()) : std::string("none:");
 
         // Index section
         // -------------
-        size_t nb_data_sections = static_cast<size_t>(nb_data_sections_);
-        r.index_offset          = position();
+        auto nb_data_sections = static_cast<size_t>(nb_data_sections_);
+        r.index_offset        = position();
         write_struct(out, RecordDataIndexSection::Begin());
         index.resize(nb_data_sections);
         for (size_t i = 0; i < nb_data_sections; ++i) {
@@ -84,9 +83,9 @@ size_t RecordWriter::write(Stream out) const {
     // -------------
     {
         size_t i{0};
-        for (auto& key : keys_) {
-            auto& encoder = encoders_.at(key);
-            auto& info    = info_.at(key);
+        for (const auto& key : keys_) {
+            const auto& encoder = encoders_.at(key);
+            const auto& info    = info_.at(key);
             if (info.section() == 0) {
                 continue;
             }
@@ -101,7 +100,7 @@ size_t RecordWriter::write(Stream out) const {
             }
             write_struct(out, RecordDataSection::End());
             data_section.length   = position() - data_section.offset;
-            data_section.checksum = do_checksum_ ? data.checksum() : std::string("none:");
+            data_section.checksum = do_checksum_ != 0 ? data.checksum() : std::string("none:");
             ++i;
         }
     }
@@ -145,19 +144,14 @@ void RecordWriter::compression(bool on) {
 //---------------------------------------------------------------------------------------------------------------------
 
 void RecordWriter::checksum(bool on) {
-    if (on) {
-        do_checksum_ = defaults::checksum_write();  // still possible to be off via environment
-    }
-    else {
-        do_checksum_ = false;
-    }
+    do_checksum_ = on && defaults::checksum_write() ? 1 : 0;  //  possible to be off via environment
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void RecordWriter::set(const RecordWriter::Key& key, Link&& link, const Configuration&) {
     keys_.emplace_back(key);
-    encoders_[key] = std::move(Encoder{link});
+    encoders_[key] = Encoder{link};
     info_.emplace(key, DataInfo{});
 }
 
@@ -199,12 +193,12 @@ size_t RecordWriter::estimateMaximumSize() const {
     size += sizeof(RecordMetadataSection::End);
 
     size += sizeof(RecordDataIndexSection::Begin);
-    size += size_t(nb_data_sections_) * sizeof(RecordDataIndexSection::Entry);
+    size += static_cast<size_t>(nb_data_sections_) * sizeof(RecordDataIndexSection::Entry);
     size += sizeof(RecordDataIndexSection::End);
 
-    for (auto& key : keys_) {
-        auto& encoder = encoders_.at(key);
-        auto& info    = info_.at(key);
+    for (const auto& key : keys_) {
+        const auto& encoder = encoders_.at(key);
+        const auto& info    = info_.at(key);
         if (info.section() == 0) {
             continue;
         }
@@ -213,7 +207,7 @@ size_t RecordWriter::estimateMaximumSize() const {
             Metadata m;
             size_t max_data_size = encode_metadata(encoder, m);
             if (info.compression() != "none") {
-                max_data_size = size_t(1.2 * max_data_size);
+                max_data_size = static_cast<size_t>(1.2 * static_cast<double>(max_data_size));
                 max_data_size = std::max<size_t>(max_data_size, 10 * 1024);  // minimum 10KB
             }
             size += max_data_size;
@@ -230,12 +224,12 @@ size_t RecordWriter::estimateMaximumSize() const {
 
 std::string RecordWriter::metadata() const {
     Metadata metadata;
-    for (auto& key : keys_) {
-        auto& encoder = encoders_.at(key);
-        auto& info    = info_.at(key);
+    for (const auto& key : keys_) {
+        const auto& encoder = encoders_.at(key);
+        const auto& info    = info_.at(key);
         Metadata m;
         encode_metadata(encoder, m);
-        if (info.section()) {
+        if (info.section() != 0) {
             m.set("data.section", info.section());
             if (info.compression() != "none") {
                 m.set("data.compression.type", info.compression());

@@ -26,7 +26,7 @@ namespace {
 
 template <typename IStream, typename Struct>
 inline size_t read_struct(IStream& in, Struct& s) {
-    static_assert(Struct::bytes == sizeof(Struct), "");
+    static_assert(Struct::bytes == sizeof(Struct));
     return in.read(reinterpret_cast<char*>(&s), sizeof(Struct));
 }
 
@@ -48,13 +48,9 @@ inline Struct read_struct(IStream& in) {
 //---------------------------------------------------------------------------------------------------------------------
 
 Endian RecordHead::endian() const {
-    if (magic_number == 1234) {
-        return Endian::native;
-    }
-    else if (magic_number == 3523477504) {
-        return Endian::swapped;
-    }
-    throw Exception("Mixed endianness is not supported", Here());
+    return magic_number == 1234         ? Endian::native
+           : magic_number == 3523477504 ? Endian::swapped
+                                        : throw Exception("Mixed endianness is not supported", Here());
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -196,7 +192,7 @@ Record& Record::read(Stream& in, bool read_to_end) {
                             "]");
     }
     std::string metadata_str;
-    metadata_str.resize(size_t(r.metadata_length) - sizeof(RecordMetadataSection::Begin) -
+    metadata_str.resize(static_cast<size_t>(r.metadata_length) - sizeof(RecordMetadataSection::Begin) -
                         sizeof(RecordMetadataSection::End));
     if (in.read(const_cast<char*>(metadata_str.data()), metadata_str.size()) != metadata_str.size()) {
         throw InvalidRecord("Unexpected EOF reached");
@@ -232,10 +228,10 @@ Record& Record::read(Stream& in, bool read_to_end) {
         throw InvalidRecord("Data index section is not valid. Invalid section begin marker: [" + index_begin.str() +
                             "]");
     }
-    const auto index_length =
-        (size_t(r.index_length) - sizeof(RecordDataIndexSection::Begin) - sizeof(RecordDataIndexSection::End));
-    const auto index_size = index_length / sizeof(RecordDataIndexSection::Entry);
-    auto& data_sections   = record_->data_sections;
+    const auto index_length = (static_cast<size_t>(r.index_length) - sizeof(RecordDataIndexSection::Begin) -
+                               sizeof(RecordDataIndexSection::End));
+    const auto index_size   = index_length / sizeof(RecordDataIndexSection::Entry);
+    auto& data_sections     = record_->data_sections;
     data_sections.resize(index_size);
     if (in.read(data_sections.data(), index_length) != index_length) {
         throw InvalidRecord("Unexpected EOF reached");
@@ -278,8 +274,8 @@ void ParsedRecord::parse() {
         item.data.section(item.getInt("data.section", 0));
         item.data.endian(head.endian());
         item.data.compression(item.getString("data.compression.type", "none"));
-        if (item.data.section()) {
-            auto& data_section = data_sections.at(size_t(item.data.section() - 1));
+        if (item.data.section() != 0) {
+            auto& data_section = data_sections.at(static_cast<size_t>(item.data.section() - 1));
             item.data.checksum(data_section.checksum);
             item.data.compressed_size(data_section.length - sizeof(RecordDataSection::Begin) -
                                       sizeof(RecordDataSection::End));

@@ -70,18 +70,17 @@ ActiveSession& ActiveSession::instance() {
 //---------------------------------------------------------------------------------------------------------------------
 
 Record ActiveSession::record(const std::string& path, size_t offset) {
-    if (count_) {
+    if (count_ != 0) {
         return current().record(path, offset);
     }
-    else {
-        return Record();
-    }
+
+    return {};
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void ActiveSession::store(Stream stream) {
-    if (count_) {
+    if (count_ != 0) {
         return current().store(stream);
     }
 }
@@ -102,7 +101,7 @@ void ActiveSession::push() {
     lock_guard lock(mutex_);
     if (count_ == 0) {
         ASSERT(session_ == nullptr);
-        session_.reset(new SessionImpl());
+        session_ = std::make_unique<SessionImpl>();
     }
     ++count_;
 }
@@ -131,7 +130,7 @@ void SessionImpl::store(Stream stream) {
 
 Record SessionImpl::record(const std::string& path, size_t offset) {
     lock_guard lock(mutex_);
-    auto key = Record::URI{eckit::PathName(path).fullName(), offset}.str();
+    auto key = Record::URI{PathName(path).fullName(), offset}.str();
     if (records_.find(key) == records_.end()) {
         records_.emplace(key, Record{});
     }

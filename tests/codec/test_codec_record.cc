@@ -85,7 +85,7 @@ namespace globals {
 struct TestRecord {
     Arrays data;
     TestRecord() = default;
-    TestRecord(const std::function<void(Arrays&)>& initializer) { initializer(data); }
+    explicit TestRecord(const std::function<void(Arrays&)>& initializer) { initializer(data); }
 };
 
 static TestRecord record1{[](Arrays& data) {
@@ -164,7 +164,7 @@ CASE("Write records to same file using record.write(path,codec::Mode)") {
         record.set("v2", codec::ref(data.v2), no_compression);
         record.set("v3", codec::ref(data.v3));
 
-        globals::records.emplace_back(codec::Record::URI{path, offsets.back()});
+        globals::records.emplace_back(path, offsets.back());
         lengths.emplace_back(record.write(path, mode));
         offsets.emplace_back(offsets.back() + lengths.back());
     };
@@ -241,7 +241,7 @@ CASE("Write records in nested subdirectories") {
         record.set("v2", codec::ref(globals::record1.data.v2));
         record.set("v3", codec::ref(globals::record1.data.v3));
         record.set("s1", std::string("short string"));
-        record.set("s2", double(1. / 3.));
+        record.set("s2", (1. / 3.));
         record.write(reference_path / "links" / "1" / "record.atlas" + suffix());
     }
     {
@@ -251,7 +251,7 @@ CASE("Write records in nested subdirectories") {
         record.set("v1", codec::ref(globals::record2.data.v1));
         record.set("v2", codec::ref(globals::record2.data.v2));
         record.set("v3", codec::ref(globals::record2.data.v3));
-        record.set("s1", size_t(10000000000));
+        record.set("s1", static_cast<size_t>(10000000000));
         record.write(reference_path / "links" / "2" / "record.atlas" + suffix());
     }
     {
@@ -341,7 +341,9 @@ CASE("Test RecordItemReader") {
 //-----------------------------------------------------------------------------
 
 CASE("Read records from different files") {
-    Arrays data1, data2, data3;
+    Arrays data1;
+    Arrays data2;
+    Arrays data3;
 
     auto read_record = [&](const eckit::PathName& path, Arrays& data) {
         codec::RecordReader record(path);
@@ -362,7 +364,8 @@ CASE("Read records from different files") {
 //-----------------------------------------------------------------------------
 
 CASE("Read multiple records from same file") {
-    Arrays data1, data2;
+    Arrays data1;
+    Arrays data2;
     codec::RecordReader record1(globals::records[0]);
     codec::RecordReader record2(globals::records[1]);
 
@@ -395,7 +398,8 @@ CASE("Write master record referencing record1 and record2") {
 //-----------------------------------------------------------------------------
 
 CASE("Read master record") {
-    Arrays data1, data2;
+    Arrays data1;
+    Arrays data2;
     codec::RecordReader record("record.atlas" + suffix());
 
     eckit::Log::info() << "record.metadata(\"v1\"): " << record.metadata("v1") << std::endl;
@@ -415,7 +419,8 @@ CASE("Read master record") {
 //-----------------------------------------------------------------------------
 
 CASE("Async read") {
-    Arrays data1, data2;
+    Arrays data1;
+    Arrays data2;
     codec::RecordReader record("record.atlas" + suffix());
 
     // Request reads
@@ -451,7 +456,8 @@ CASE("Recursive Write/read records in nested subdirectories") {
 
     //  Read
 
-    Arrays data1, data2;
+    Arrays data1;
+    Arrays data2;
     codec::RecordReader record(reference_path / "record.atlas" + suffix());
 
     record.read("l1", data1.v1).wait();
@@ -473,7 +479,7 @@ CASE("Recursive Write/read records in nested subdirectories") {
     EXPECT(data2 == globals::record2.data);
     EXPECT_EQUAL(l7, "short string");
     EXPECT_EQUAL(l8, 1. / 3.);
-    EXPECT_EQUAL(l9, 10000000000ul);
+    EXPECT_EQUAL(l9, 10000000000UL);
 }
 
 //-----------------------------------------------------------------------------

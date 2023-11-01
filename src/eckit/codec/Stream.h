@@ -36,10 +36,10 @@ public:
     Stream() = default;
 
     /// Constructor taking ownership of datahandle
-    Stream(DataHandle*);
+    explicit Stream(DataHandle*);
 
     /// Constructor to share datahandle with a shared_ptr
-    Stream(std::shared_ptr<DataHandle>);
+    explicit Stream(std::shared_ptr<DataHandle>);
 
     /// Constructor referencing datahandle, no ownership is taken
     /// @note The usability depends on the usable lifetime of
@@ -69,7 +69,7 @@ public:
     std::uint64_t read(void* data, size_t length);
 
     /// Return true if pointer is valid;
-    operator bool() const { return ptr_; }
+    explicit operator bool() const { return ptr_ != nullptr; }
 
 private:
     std::shared_ptr<DataHandle> shared_;

@@ -28,7 +28,7 @@ namespace {
 
 template <typename IStream, typename Struct>
 inline size_t read_struct(IStream& in, Struct& s) {
-    static_assert(Struct::bytes == sizeof(Struct), "");
+    static_assert(Struct::bytes == sizeof(Struct));
     return in.read(reinterpret_cast<char*>(&s), sizeof(Struct));
 }
 
@@ -45,13 +45,13 @@ inline Struct read_struct(IStream& in) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static Data read_data(const Record& record, int data_section_index, Stream in) {
+Data read_data(const Record& record, int data_section_index, Stream in) {
     if (data_section_index == 0) {
-        return Data();
+        return {};
     }
 
     const auto& parsed       = static_cast<const ParsedRecord&>(record);
-    const auto& data_section = parsed.data_sections.at(size_t(data_section_index) - 1);
+    const auto& data_section = parsed.data_sections.at(static_cast<size_t>(data_section_index) - 1);
 
     Data data;
     auto offset = data_section.offset;
@@ -61,8 +61,9 @@ static Data read_data(const Record& record, int data_section_index, Stream in) {
     if (not data_begin.valid()) {
         throw InvalidRecord("Data section is not valid");
     }
-    auto data_size = size_t(data_section.length) - sizeof(RecordDataSection::Begin) - sizeof(RecordDataSection::End);
-    if (data_size) {
+    auto data_size =
+        static_cast<size_t>(data_section.length) - sizeof(RecordDataSection::Begin) - sizeof(RecordDataSection::End);
+    if (data_size > 0) {
         if (data.read(in, data_size) != data_size) {
             throw InvalidRecord("Data section is not valid");
         }
@@ -77,9 +78,9 @@ static Data read_data(const Record& record, int data_section_index, Stream in) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static PathName make_absolute_path(const std::string& reference_path, RecordItem::URI& uri) {
+PathName make_absolute_path(const std::string& reference_path, RecordItem::URI& uri) {
     PathName absolute_path = uri.path;
-    if (reference_path.size() && uri.path[0] != '/' && uri.path[0] != '~') {
+    if (!reference_path.empty() && uri.path[0] != '/' && uri.path[0] != '~') {
         absolute_path = PathName{reference_path} / absolute_path;
     }
     return absolute_path.fullName();
@@ -87,7 +88,7 @@ static PathName make_absolute_path(const std::string& reference_path, RecordItem
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static Record read_record(const std::string& path, size_t offset) {
+Record read_record(const std::string& path, size_t offset) {
     auto record = Session::record(path, offset);
     if (record.empty()) {
         auto in = InputFileStream(path);
@@ -99,7 +100,7 @@ static Record read_record(const std::string& path, size_t offset) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static Record read_record(Stream in, size_t offset) {
+Record read_record(Stream in, size_t offset) {
     auto record = Session::record(in, offset);
     if (record.empty()) {
         in.seek(offset);
@@ -188,10 +189,9 @@ static void read_from_stream(Record record, Stream in, const std::string& key, M
     if (metadata.link()) {
         throw Exception("Cannot follow links in records that are not file based");
     }
-    else {
-        if (metadata.data.section()) {
-            data = read_data(record, metadata.data.section(), in);
-        }
+
+    if (metadata.data.section() != 0) {
+        data = read_data(record, metadata.data.section(), in);
     }
 }
 
@@ -211,10 +211,8 @@ void RecordItemReader::read(Metadata& metadata, Data& data) {
         RecordItemReader{absolute_path.dirName(), metadata.link()}.read(linked, data);
         metadata.link(std::move(linked));
     }
-    else {
-        if (metadata.data.section()) {
-            data = read_data(record_, metadata.data.section(), InputFileStream(absolute_path));
-        }
+    else if (metadata.data.section() != 0) {
+        data = read_data(record_, metadata.data.section(), InputFileStream(absolute_path));
     }
 };
 

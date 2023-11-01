@@ -31,7 +31,7 @@ static std::string stream_path(Stream stream) {
 ReadRequest::ReadRequest(const std::string& URI, Decoder* decoder) :
     uri_(URI), decoder_(decoder), item_(new RecordItem()) {
     do_checksum_ = defaults::checksum_read();
-    ASSERT(uri_.size());
+    ASSERT(!uri_.empty());
 }
 
 ReadRequest::ReadRequest(Stream stream, size_t offset, const std::string& key, Decoder* decoder) :

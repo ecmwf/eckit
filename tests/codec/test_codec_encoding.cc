@@ -34,25 +34,23 @@ class EncodableType {
 public:
     using Operations = std::vector<std::string>;
 
-    EncodableType(std::string s, std::shared_ptr<Operations> operations = std::make_shared<Operations>()) :
+    explicit EncodableType(std::string s, std::shared_ptr<Operations> operations = std::make_shared<Operations>()) :
         str(s), ops(operations) {
-        ops->push_back("constructor");
+        ops->emplace_back("constructor");
     }
 
     EncodableType() :
         ops(std::make_shared<Operations>()) {}
 
-    EncodableType(const EncodableType& other) {
+    EncodableType(const EncodableType& other) :
+        str(other.str), ops(other.ops) {
         // This constructor should not be called.
-        str = other.str;
-        ops = other.ops;
-        ops->push_back("copy constructor");
+        ops->emplace_back("copy constructor");
     }
 
-    EncodableType(EncodableType&& other) {
-        str = std::move(other.str);
-        ops = other.ops;
-        ops->push_back("move constructor");
+    EncodableType(EncodableType&& other) :
+        str(std::move(other.str)), ops(other.ops) {
+        ops->emplace_back("move constructor");
     }
 
 
@@ -60,34 +58,34 @@ public:
         // This assignment should not be called.
         str = rhs.str;
         ops = rhs.ops;
-        ops->push_back("assignment");
+        ops->emplace_back("assignment");
         return *this;
     }
 
-    EncodableType& operator=(const EncodableType&& rhs) {
+    EncodableType& operator=(EncodableType&& rhs) {
         // This assignment should not be called.
         str = std::move(rhs.str);
         ops = rhs.ops;
-        ops->push_back("move");
+        ops->emplace_back("move");
         return *this;
     }
 
 
     friend void encode_data(const EncodableType& in, codec::Data& out) {
-        in.ops->push_back("encode_data");
+        in.ops->emplace_back("encode_data");
         out.assign(in.str.data(), in.str.size());
     }
 
     friend size_t encode_metadata(const EncodableType& in, codec::Metadata& metadata) {
-        in.ops->push_back("encode_metadata");
+        in.ops->emplace_back("encode_metadata");
         metadata.set("type", "EncodableType");
         metadata.set("bytes", in.str.size());
         return in.str.size();
     }
 
     friend void decode(const codec::Metadata&, const codec::Data& b, EncodableType& out) {
-        out.ops->push_back("decode");
-        const char* data = static_cast<const char*>(b.data());
+        out.ops->emplace_back("decode");
+        const auto* data = static_cast<const char*>(b.data());
         out.str          = std::string(data, data + b.size());
     }
 
@@ -118,9 +116,9 @@ CASE("test exceptions") {
 // -------------------------------------------------------------------------------------------------------
 
 CASE("encoding test::EncodableType") {
-    static_assert(not codec::is_interpretable<EncodableType, codec::ArrayReference>(), "");
-    static_assert(codec::is_encodable<EncodableType>(), "");
-    static_assert(codec::is_decodable<EncodableType>(), "");
+    static_assert(not codec::is_interpretable<EncodableType, codec::ArrayReference>());
+    static_assert(codec::is_encodable<EncodableType>());
+    static_assert(codec::is_decodable<EncodableType>());
 
     const std::string encoded_string{"encoded string"};
     EncodableType in(encoded_string);
@@ -137,20 +135,20 @@ CASE("encoding test::EncodableType") {
 // -------------------------------------------------------------------------------------------------------
 
 CASE("encoding codec::types::ArrayView") {
-    static_assert(not codec::is_interpretable<codec::ArrayReference, codec::ArrayReference>(), "");
-    static_assert(codec::can_encode_data<codec::ArrayReference>(), "");
-    static_assert(codec::can_encode_metadata<codec::ArrayReference>(), "");
-    static_assert(codec::is_encodable<codec::ArrayReference>(), "");
+    static_assert(not codec::is_interpretable<codec::ArrayReference, codec::ArrayReference>());
+    static_assert(codec::can_encode_data<codec::ArrayReference>());
+    static_assert(codec::can_encode_metadata<codec::ArrayReference>());
+    static_assert(codec::is_encodable<codec::ArrayReference>());
 }
 
 // -------------------------------------------------------------------------------------------------------
 
 template <typename T>
 void assert_StdVector() {
-    static_assert(codec::is_interpretable<std::vector<T>, codec::ArrayReference>(), "");
-    static_assert(not codec::can_encode_data<std::vector<T>>(), "");
-    static_assert(not codec::can_encode_metadata<std::vector<T>>(), "");
-    static_assert(not codec::is_encodable<std::vector<T>>(), "");
+    static_assert(codec::is_interpretable<std::vector<T>, codec::ArrayReference>());
+    static_assert(not codec::can_encode_data<std::vector<T>>());
+    static_assert(not codec::can_encode_metadata<std::vector<T>>());
+    static_assert(not codec::is_encodable<std::vector<T>>());
 }
 
 template <typename T>
@@ -213,10 +211,10 @@ CASE("encoding std::vector") {
 
 template <typename T>
 void assert_StdArray() {
-    static_assert(codec::is_interpretable<std::array<T, 5>, codec::ArrayReference>(), "");
-    static_assert(not codec::can_encode_data<std::array<T, 5>>(), "");
-    static_assert(not codec::can_encode_metadata<std::array<T, 5>>(), "");
-    static_assert(not codec::is_encodable<std::array<T, 5>>(), "");
+    static_assert(codec::is_interpretable<std::array<T, 5>, codec::ArrayReference>());
+    static_assert(not codec::can_encode_data<std::array<T, 5>>());
+    static_assert(not codec::can_encode_metadata<std::array<T, 5>>());
+    static_assert(not codec::is_encodable<std::array<T, 5>>());
 }
 
 template <typename T>
@@ -617,7 +615,8 @@ CASE("Encode/Decode string") {
 
 template <typename T>
 void test_encode_decode_scalar() {
-    T in{std::numeric_limits<T>::max()}, out;
+    T in{std::numeric_limits<T>::max()};
+    T out;
     codec::Metadata metadata;
     codec::Data data;
     encode(in, metadata, data);

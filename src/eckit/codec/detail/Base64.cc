@@ -20,7 +20,7 @@ namespace eckit::codec {
 
 namespace {
 
-static std::array<unsigned char, 256> b64_decode_table{
+const std::array<unsigned char, 256> b64_decode_table{
     /* ASCII table */
     64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
     64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 62, 64, 64, 64, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
@@ -32,7 +32,7 @@ static std::array<unsigned char, 256> b64_decode_table{
     64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64,
     64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64};
 
-static std::array<unsigned char, 256> b64_encode_table{
+const std::array<unsigned char, 256> b64_encode_table{
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
     'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
     's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/'};
@@ -42,24 +42,24 @@ static std::array<unsigned char, 256> b64_encode_table{
 //---------------------------------------------------------------------------------------------------------------------
 
 std::string Base64::encode(const void* data, size_t len) {
-    const auto& table        = b64_encode_table;
-    const unsigned char* src = reinterpret_cast<const unsigned char*>(data);
-    unsigned char *out, *pos;
-    const unsigned char *end, *in;
+    const auto& table = b64_encode_table;
+    const auto* src   = reinterpret_cast<const unsigned char*>(data);
 
     size_t out_len = 4 * ((len + 2) / 3); /* 3-byte blocks to 4-byte */
 
     if (out_len < len) {
-        return std::string(); /* integer overflow */
+        return {}; /* integer overflow */
     }
 
     std::string str;
     str.resize(out_len);
-    out = reinterpret_cast<unsigned char*>(const_cast<char*>(str.data()));
 
-    end = src + len;
-    in  = src;
-    pos = out;
+    auto* out = reinterpret_cast<unsigned char*>(const_cast<char*>(str.data()));
+    auto* pos = out;
+
+    const auto* end = src + len;
+    const auto* in  = src;
+
     while (end - in >= 3) {
         *pos++ = table[in[0] >> 2];
         *pos++ = table[((in[0] & 0x03) << 4) | (in[1] >> 4)];
@@ -88,9 +88,9 @@ std::string Base64::encode(const void* data, size_t len) {
 std::string Base64::decode(const void* data, size_t len) {
     const auto& table = b64_decode_table;
 
-    const unsigned char* p = reinterpret_cast<const unsigned char*>(data);
-    int pad                = len > 0 && (len % 4 || p[len - 1] == '=');
-    const size_t L         = ((len + 3) / 4 - pad) * 4;
+    const auto* p  = reinterpret_cast<const unsigned char*>(data);
+    int pad        = len > 0 && (len % 4 || p[len - 1] == '=');
+    const size_t L = ((len + 3) / 4 - pad) * 4;
     std::string str(L / 4 * 3 + pad, '\0');
 
     for (size_t i = 0, j = 0; i < L; i += 4) {
@@ -100,7 +100,7 @@ std::string Base64::decode(const void* data, size_t len) {
         str[j++] = n & 0xFF;
     }
 
-    if (pad) {
+    if (pad != 0) {
         int n               = table[p[L]] << 18 | table[p[L + 1]] << 12;
         str[str.size() - 1] = n >> 16;
 

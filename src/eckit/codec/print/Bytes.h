@@ -20,10 +20,10 @@ namespace eckit::codec {
 
 struct Bytes {
 public:
-    Bytes(size_t bytes) :
+    explicit Bytes(size_t bytes) :
         bytes_(bytes) {}
 
-    operator size_t() const { return bytes_; }
+    explicit operator size_t() const { return bytes_; }
 
     std::string str(int decimals = 2, int width = 7) const;
 

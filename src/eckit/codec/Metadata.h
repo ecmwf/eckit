@@ -41,8 +41,7 @@ class Metadata : public LocalConfiguration {
 public:
     using LocalConfiguration::LocalConfiguration;
 
-    Metadata() :
-        LocalConfiguration() {}
+    Metadata() = default;
 
     Link link() const { return Link{getString("link", "")}; }
 
@@ -59,8 +58,8 @@ public:
     // extended LocalConfiguration:
     using LocalConfiguration::set;
     Metadata& set(const LocalConfiguration& other) {
-        Value& root      = const_cast<Value&>(get());
-        auto& other_root = other.get();
+        auto& root             = const_cast<Value&>(get());
+        const auto& other_root = other.get();
         std::vector<std::string> other_keys;
         fromValue(other_keys, other_root.keys());
         for (auto& key : other_keys) {
@@ -81,7 +80,7 @@ public:
 
 
     Metadata& remove(const std::string& name) {
-        Value& root = const_cast<Value&>(get());
+        auto& root = const_cast<Value&>(get());
         root.remove(name);
         return *this;
     }

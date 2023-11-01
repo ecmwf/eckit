@@ -27,7 +27,7 @@ Data::Data(void* p, size_t size) :
     buffer_(p, size), size_(size) {}
 
 std::uint64_t Data::write(Stream& out) const {
-    if (size()) {
+    if (size() > 0) {
         ASSERT(buffer_.size() >= size());
         return out.write(buffer_.data(), size());
     }
@@ -44,12 +44,13 @@ std::uint64_t Data::read(Stream& in, size_t size) {
 
 
 void Data::compress(const std::string& compression) {
-    if (size_) {
+    if (size_ > 0) {
         auto compressor = std::unique_ptr<Compressor>(CompressorFactory::instance().build(compression));
-        if (dynamic_cast<NoCompressor*>(compressor.get())) {
+        if (dynamic_cast<NoCompressor*>(compressor.get()) != nullptr) {
             return;
         }
-        Buffer compressed(size_t(1.2 * size_));
+
+        Buffer compressed(static_cast<size_t>(1.2 * static_cast<double>(size_)));
         size_   = compressor->compress(buffer_, size_, compressed);
         buffer_ = std::move(compressed);
     }
@@ -57,11 +58,11 @@ void Data::compress(const std::string& compression) {
 
 void Data::decompress(const std::string& compression, size_t uncompressed_size) {
     auto compressor = std::unique_ptr<Compressor>(CompressorFactory::instance().build(compression));
-    if (dynamic_cast<NoCompressor*>(compressor.get())) {
+    if (dynamic_cast<NoCompressor*>(compressor.get()) != nullptr) {
         return;
     }
 
-    Buffer uncompressed(size_t(1.2 * uncompressed_size));
+    Buffer uncompressed(static_cast<size_t>(1.2 * static_cast<double>(uncompressed_size)));
     compressor->uncompress(buffer_, size_, uncompressed, uncompressed_size);
     size_   = uncompressed_size;
     buffer_ = std::move(uncompressed);

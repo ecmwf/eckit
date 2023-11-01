@@ -122,7 +122,7 @@ private:
     std::map<std::string, DataInfo> info_;
 
     std::string compression_{defaults::compression_algorithm()};
-    int do_checksum_{defaults::checksum_write()};
+    int do_checksum_{defaults::checksum_write() ? 1 : 0};
     int nb_data_sections_{0};
 
     std::string metadata() const;

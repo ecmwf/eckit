@@ -39,7 +39,7 @@ std::string MetadataPrettyPrintBase::str() const {
 
 class DefaultMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
-    DefaultMetadataPrettyPrint(const Metadata&) {}
+    explicit DefaultMetadataPrettyPrint(const Metadata&) {}
     void print(std::ostream&) const override {}
 };
 
@@ -59,7 +59,7 @@ class ArrayMetadataPrettyPrint : public MetadataPrettyPrintBase {
     }
 
 public:
-    ArrayMetadataPrettyPrint(const Metadata& m) :
+    explicit ArrayMetadataPrettyPrint(const Metadata& m) :
         metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
@@ -103,7 +103,7 @@ private:
 
 class StringMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
-    StringMetadataPrettyPrint(const Metadata& m) :
+    explicit StringMetadataPrettyPrint(const Metadata& m) :
         metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
@@ -123,7 +123,7 @@ private:
 
 class ScalarMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
-    ScalarMetadataPrettyPrint(const Metadata& m) :
+    explicit ScalarMetadataPrettyPrint(const Metadata& m) :
         metadata_(m) {}
     template <typename T>
     T decode() const {
@@ -286,8 +286,8 @@ void TableFormat::print(std::ostream& out) const {
     }
     table.column();
 
-    for (auto& key : record_.keys()) {
-        auto& item          = items_.at(key);
+    for (const auto& key : record_.keys()) {
+        const auto& item    = items_.at(key);
         size_t cbytes       = item.data.compressed_size();
         size_t ubytes       = item.data.size();
         std::string endian  = (item.data.endian() == Endian::little) ? "little" : "big";
@@ -298,7 +298,7 @@ void TableFormat::print(std::ostream& out) const {
         table << MetadataPrettyPrint{item};
         if (print_details_) {
             table << item.record.version();
-            if (item.data.section()) {
+            if (item.data.section() != 0) {
                 table << item.data.compression();
                 table << Bytes{cbytes}.str() + (item.data.compressed() ? " < " + Bytes{ubytes}.str() : "");
                 table << Checksum{item.data.checksum()}.str(8);

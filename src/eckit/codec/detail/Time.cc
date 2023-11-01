@@ -28,16 +28,15 @@ namespace eckit::codec {
 
 namespace {
 
-static std::time_t to_time_t(Time time) {
-    return std::time_t(time.tv_sec);
+std::time_t to_time_t(Time time) {
+    return static_cast<std::time_t>(time.tv_sec);
 }
 
-static Time from_time_point(std::chrono::time_point<std::chrono::system_clock> t) {
-    using namespace std::chrono;
+Time from_time_point(std::chrono::time_point<std::chrono::system_clock> t) {
     auto since_epoch      = t.time_since_epoch();
-    auto sec_since_epoch  = duration_cast<seconds>(since_epoch);
-    auto nsec_since_epoch = duration_cast<nanoseconds>(since_epoch);
-    auto extra_nsec       = duration_cast<nanoseconds>(nsec_since_epoch - sec_since_epoch);
+    auto sec_since_epoch  = std::chrono::duration_cast<std::chrono::seconds>(since_epoch);
+    auto nsec_since_epoch = std::chrono::duration_cast<std::chrono::nanoseconds>(since_epoch);
+    auto extra_nsec       = std::chrono::duration_cast<std::chrono::nanoseconds>(nsec_since_epoch - sec_since_epoch);
 
     Time time;
     time.tv_sec  = static_cast<std::uint64_t>(sec_since_epoch.count());
@@ -63,7 +62,7 @@ std::ostream& operator<<(std::ostream& out, const Time& time) {
     return out;
 }
 
-eckit::JSON& operator<<(eckit::JSON& out, const Time& time) {
+JSON& operator<<(JSON& out, const Time& time) {
     std::stringstream s;
     s << time;
     out << s.str();

@@ -28,12 +28,12 @@ size_t uncompressed_size(const Metadata& m) {
     if (m.has("data.size")) {
         return m.getUnsigned("data.size");
     }
-    else if (m.has("type")) {
-        if (m.getString("type") == "array") {
-            ArrayMetadata array(m);
-            return array.bytes();
-        }
+
+    if (m.has("type") && m.getString("type") == "array") {
+        ArrayMetadata array(m);
+        return array.bytes();
     }
+
     std::stringstream err;
     err << "Could not compute uncompressed data size from metadata \n";
     write(m, err);
@@ -58,7 +58,7 @@ void write(const Metadata& metadata, Stream& out) {
 
 void Metadata::link(Metadata&& linked) {
     std::string initial_link = link();
-    ASSERT(initial_link.size());
+    ASSERT(!initial_link.empty());
 
     data   = std::move(linked.data);
     record = std::move(linked.record);

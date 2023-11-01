@@ -35,7 +35,7 @@ Checksum::Checksum(const std::string& checksum) {
 }
 
 bool Checksum::available() const {
-    return checksum_.size() && algorithm_ != "none";
+    return !checksum_.empty() && algorithm_ != "none";
 }
 
 std::string Checksum::str() const {
@@ -57,17 +57,12 @@ std::string checksum(const void* buffer, size_t size, const std::string& algorit
 
     auto hash = [&](const std::string& alg) -> std::string {
         std::unique_ptr<Hash> hasher(HashFactory::instance().build(alg));
-        return alg + ":" + hasher->compute(buffer, long(size));
+        return alg + ":" + hasher->compute(buffer, static_cast<long>(size));
     };
 
-    std::string alg = algorithm.empty() ? defaults::checksum_algorithm() : algorithm;
+    auto alg = algorithm.empty() ? defaults::checksum_algorithm() : algorithm;
 
-    if (is_available(alg)) {
-        return hash(alg);
-    }
-    else {
-        return hash("none");
-    }
+    return hash(is_available(alg) ? alg : "none");
 }
 
 

@@ -70,13 +70,13 @@ void encode_scalar_metadata(const T& value, Metadata& out) {
 inline void encode_scalar_metadata(const unsigned long& value, Metadata& out) {
     out.set("type", "scalar");
     out.set("datatype", DataType::str<size_t>());
-    out.set("value", size_t(value));
+    out.set("value", static_cast<size_t>(value));
 }
 
 inline void encode_scalar_metadata(const unsigned long long& value, Metadata& out) {
     out.set("type", "scalar");
     out.set("datatype", DataType::str<size_t>());
-    out.set("value", size_t(value));
+    out.set("value", static_cast<size_t>(value));
 }
 
 template <typename T>

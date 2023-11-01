@@ -27,10 +27,10 @@ namespace eckit::codec {
 struct RecordItem {
 public:
     struct URI {
-        URI(const std::string& uri);
+        explicit URI(const std::string& uri);
         URI(const std::string& _path, std::uint64_t _offset, const std::string& _key);
         std::string str() const;
-        operator std::string() { return str(); }
+        operator std::string() const { return str(); }
         std::string path;
         std::uint64_t offset;
         std::string key;

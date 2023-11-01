@@ -20,7 +20,7 @@ namespace eckit::codec {
 class Checksum {
 public:
     Checksum() = default;
-    Checksum(const std::string& checksum);
+    explicit Checksum(const std::string& checksum);
     bool available() const;
     std::string str() const;
     std::string str(size_t size) const;

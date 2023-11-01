@@ -35,11 +35,12 @@ public:
         std::string str() const;
         std::string path;
         std::uint64_t offset;
-        URI() = default;
-        URI(const std::string& _path, std::uint64_t _offset = 0) :
+
+        URI()           = default;
+        URI(const URI&) = default;
+
+        explicit URI(const std::string& _path, std::uint64_t _offset = 0) :
             path(_path), offset(_offset) {}
-        URI(const URI& other) :
-            path(other.path), offset(other.offset) {}
     };
 
 private:
@@ -52,7 +53,7 @@ public:
 
     bool empty() const;
 
-    Record& read(Stream& in, bool verify_end = false);
+    Record& read(Stream&, bool read_to_end = false);
 
     const Metadata& metadata(const std::string& key) const;
 
@@ -68,7 +69,7 @@ public:
 
     bool has(const std::string& key);
 
-    operator const ParsedRecord&() const;
+    explicit operator const ParsedRecord&() const;
 };
 
 //---------------------------------------------------------------------------------------------------------------------

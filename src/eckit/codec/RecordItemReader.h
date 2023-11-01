@@ -28,7 +28,7 @@ public:
 
     RecordItemReader(Stream, const std::string& key);
 
-    RecordItemReader(const std::string& uri);
+    explicit RecordItemReader(const std::string& uri);
 
     void read(RecordItem& item);
 

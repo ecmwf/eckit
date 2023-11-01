@@ -59,7 +59,7 @@ private:
 };
 
 inline FixedFormat<double> fixed_format(double x, long precision) {
-    return FixedFormat<double>(x, precision);
+    return {x, precision};
 }
 
 /*
@@ -75,7 +75,7 @@ static std::pair<double, std::string> reduce_to_10( size_t bytes ) {
 }
 */
 
-static std::pair<double, std::string> reduce_to_1000(size_t bytes) {
+std::pair<double, std::string> reduce_to_1000(size_t bytes) {
     static const std::vector<std::string> magnitudes{"B", "K", "M", "G", "T", "P", "E", "Z", "Y"};
     double x = bytes;
     size_t n = 0;

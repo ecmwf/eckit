@@ -35,7 +35,7 @@ public:
 
 class MetadataPrettyPrint {
 public:
-    MetadataPrettyPrint(const Metadata&);
+    explicit MetadataPrettyPrint(const Metadata&);
     friend std::ostream& operator<<(std::ostream& out, const MetadataPrettyPrint& p);
     std::string str() const;
 

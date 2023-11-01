@@ -52,7 +52,7 @@ void JSONFormat::print(std::ostream& out) const {
         }
 
         if (print_details_) {
-            if (item.data.size()) {
+            if (item.data.size() > 0) {
                 m.set("data.compression.type", item.data.compression());
                 m.set("data.compression.size", item.data.compressed_size());
                 m.set("data.size", item.data.size());

@@ -39,6 +39,9 @@ public:
     ReadRequest(const RecordItem::URI& URI, T& value) :
         ReadRequest{URI.str(), value} {}
 
+    ReadRequest()                   = delete;
+    ReadRequest(const ReadRequest&) = delete;
+
     ~ReadRequest();
 
     void read();
@@ -56,9 +59,6 @@ public:
 private:
     ReadRequest(const std::string& URI, Decoder* decoder);
     ReadRequest(Stream, size_t offset, const std::string& key, Decoder*);
-
-    ReadRequest()                   = delete;
-    ReadRequest(const ReadRequest&) = delete;
 
     Stream stream_;
     size_t offset_;

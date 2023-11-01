@@ -41,7 +41,7 @@ public:
 
     bool compressed() const { return compression_ != "none"; }
 
-    operator bool() const { return section_ > 0; }
+    explicit operator bool() const { return section_ > 0; }
 
     const Checksum& checksum() const { return checksum_; }
     void checksum(const std::string& c) { checksum_ = Checksum(c); }

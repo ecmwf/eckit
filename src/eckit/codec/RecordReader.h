@@ -26,11 +26,9 @@ namespace eckit::codec {
 
 class RecordReader {
 public:
-    RecordReader(const Record::URI& ref);
-
-    RecordReader(const std::string& path, std::uint64_t offset = 0);
-
-    RecordReader(Stream stream, std::uint64_t offset = 0);
+    explicit RecordReader(const Record::URI& ref);
+    explicit RecordReader(const std::string& path, std::uint64_t offset = 0);
+    explicit RecordReader(Stream stream, std::uint64_t offset = 0);
 
     template <typename T>
     ReadRequest& read(const std::string& key, T& value) {

@@ -30,13 +30,13 @@ class Encoder {
 public:
     Encoder() = default;
 
-    operator bool() const { return bool(self_); }
+    operator bool() const { return static_cast<bool>(self_); }
 
     template <typename T, enable_if_move_constructible_encodable_rvalue_t<T> = 0>
     explicit Encoder(T&& x) :
         self_(new EncodableValue<T>(std::move(x))) {}
 
-    Encoder(const Link& link) :
+    explicit Encoder(const Link& link) :
         self_(new EncodableLink(link)) {}
 
     Encoder(Encoder&& other) :
@@ -68,13 +68,13 @@ private:
 
     template <typename Value>
     struct EncodableValue : Encodable {
-        EncodableValue(Value&& v) :
+        explicit EncodableValue(Value&& v) :
             value_{std::move(v)} {
             sfinae::encode_metadata(value_, metadata_, data_size_);
         }
 
         template <bool EnableBool = true, enable_if_scalar_t<Value, EnableBool> = 0>
-        EncodableValue(const Value& v) :
+        explicit EncodableValue(const Value& v) :
             value_{v} {
             sfinae::encode_metadata(value_, metadata_, data_size_);
         }
@@ -93,7 +93,7 @@ private:
     };
 
     struct EncodableLink : Encodable {
-        EncodableLink(const Link& link) :
+        explicit EncodableLink(const Link& link) :
             link_(link) {}
 
         size_t encode_metadata_(Metadata& metadata) const override {

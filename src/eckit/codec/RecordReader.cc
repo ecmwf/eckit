@@ -25,10 +25,10 @@ RecordReader::RecordReader(const Record::URI& ref) :
 //---------------------------------------------------------------------------------------------------------------------
 
 RecordReader::RecordReader(const std::string& path, uint64_t offset) :
-    session_{}, path_{path}, offset_{offset} {}
+    path_{path}, offset_{offset} {}
 
 RecordReader::RecordReader(Stream stream, uint64_t offset) :
-    session_{}, stream_{stream}, path_{}, offset_{offset} {}
+    stream_{stream}, offset_{offset} {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ Record::URI RecordReader::uri() const {
 //---------------------------------------------------------------------------------------------------------------------
 
 RecordItem::URI RecordReader::uri(const std::string& key) const {
-    return RecordItem::URI(path_, offset_, key);
+    return {path_, offset_, key};
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ Metadata RecordReader::metadata(const std::string& key) {
 }
 
 void RecordReader::checksum(bool b) {
-    do_checksum_ = b;
+    do_checksum_ = b ? 1 : 0;
 }
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -87,7 +87,9 @@ CASE("Opening same file in same scope") {
         out.write("line3\n", 6);
     }
 
-    std::string l1(5, ' '), l2(5, ' '), l3(5, ' ');
+    std::string l1(5, ' ');
+    std::string l2(5, ' ');
+    std::string l3(5, ' ');
 
     codec::Stream f1 = codec::InputFileStream{"test_io_session.data"};
     f1.seek(0 * 6);
@@ -122,7 +124,9 @@ CASE("Opening same file in parallel scopes") {
         out.write("line3\n", 6);
     }
 
-    std::string l1(5, ' '), l2(5, ' '), l3(5, ' ');
+    std::string l1(5, ' ');
+    std::string l2(5, ' ');
+    std::string l3(5, ' ');
 
     {
         codec::Stream f1 = codec::InputFileStream{"test_io_session.data"};
@@ -168,7 +172,9 @@ CASE("Opening same file in parallel scopes with Session") {
     }
 
 
-    std::string l1(5, ' '), l2(5, ' '), l3(5, ' ');
+    std::string l1(5, ' ');
+    std::string l2(5, ' ');
+    std::string l3(5, ' ');
 
     {
         codec::Stream f1 = codec::InputFileStream{"test_io_session.data"};

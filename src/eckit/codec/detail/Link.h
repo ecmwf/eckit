@@ -24,7 +24,7 @@ struct Link {
     std::string uri;
 
     const std::string& str() const { return uri; }
-    operator bool() const { return uri.size(); }
+    operator bool() const { return !uri.empty(); }
     operator const std::string&() const { return str(); }
 
     //    bool relative() const;

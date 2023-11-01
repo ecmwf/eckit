@@ -28,9 +28,9 @@ private:
     using Base = std::vector<size_t>;
 
 public:
-    ArrayShape() {}
+    ArrayShape() = default;
 
-    ArrayShape(Base&& base) :
+    explicit ArrayShape(Base&& base) :
         Base(std::forward<Base>(base)) {}
 
     template <typename idx_t>
@@ -42,15 +42,15 @@ public:
         Base(data, data + size) {}
 
     template <typename idx_t, std::size_t N>
-    ArrayShape(const std::array<idx_t, N>& list) :
+    explicit ArrayShape(const std::array<idx_t, N>& list) :
         Base(list.begin(), list.end()) {}
 
     template <typename idx_t>
-    ArrayShape(const std::vector<idx_t>& list) :
+    explicit ArrayShape(const std::vector<idx_t>& list) :
         Base(list.begin(), list.end()) {}
 
     template <typename Int1, typename = std::enable_if_t<std::is_integral_v<Int1>>>
-    ArrayShape(Int1 i) {
+    explicit ArrayShape(Int1 i) {
         resize(1);
         operator[](0) = i;
     }
@@ -107,13 +107,13 @@ public:
 
     explicit ArrayMetadata(const DataType&, const ArrayShape&);
 
-    explicit ArrayMetadata(const ArrayMetadata&);
+    ArrayMetadata(const ArrayMetadata&);
 
     ArrayMetadata(ArrayMetadata&&);
 
     ArrayMetadata& operator=(ArrayMetadata&&);
 
-    int rank() const { return int(shape_.size()); }
+    int rank() const { return static_cast<int>(shape_.size()); }
 
     int shape(int i) const;
 

@@ -61,7 +61,13 @@ public:
     FileHandle(const PathName& path, const std::string& openmode) :
         FileHandle(path, openmode[0]) {}
 
+    FileHandle(const FileHandle&) = delete;
+    FileHandle(FileHandle&&)      = delete;
+
     ~FileHandle() override { close(); }
+
+    void operator=(const FileHandle&) = delete;
+    void operator=(FileHandle&&)      = delete;
 
 private:
     bool closed_{false};
@@ -79,11 +85,19 @@ private:
 ///   - Automatic opening and closing of file
 class PooledHandle : public eckit::PooledHandle {
 public:
-    PooledHandle(const PathName& path) :
+    explicit PooledHandle(const PathName& path) :
         eckit::PooledHandle(path), path_(path) {
         openForRead();
     }
+
+    PooledHandle(const PooledHandle&) = delete;
+    PooledHandle(PooledHandle&&)      = delete;
+
     ~PooledHandle() override { close(); }
+
+    void operator=(const PooledHandle&) = delete;
+    void operator=(PooledHandle&&)      = delete;
+
     PathName path_;
 };
 
@@ -92,16 +106,7 @@ public:
 //---------------------------------------------------------------------------------------------------------------------
 
 FileStream::FileStream(const PathName& path, char openmode) :
-    Stream([&path, &openmode]() -> DataHandle* {
-        DataHandle* datahandle;
-        if (openmode == 'r') {
-            datahandle = new PooledHandle(path);
-        }
-        else {
-            datahandle = new FileHandle(path, openmode);
-        }
-        return datahandle;
-    }()) {
+    Stream(openmode == 'r' ? static_cast<DataHandle*>(new PooledHandle(path)) : new FileHandle(path, openmode)) {
     if (openmode == 'r') {
         // Keep the PooledHandle alive until the end of active session
         Session::store(*this);

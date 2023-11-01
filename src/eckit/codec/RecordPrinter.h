@@ -28,9 +28,9 @@ namespace eckit::codec {
 
 class RecordPrinter {
 public:
-    RecordPrinter(const Record::URI&, const Configuration& = NoConfig());
+    explicit RecordPrinter(const Record::URI&, const Configuration& = NoConfig());
 
-    RecordPrinter(const PathName&, const Configuration& = NoConfig());
+    explicit RecordPrinter(const PathName&, const Configuration& = NoConfig());
 
     RecordPrinter(const PathName&, std::uint64_t offset, const Configuration& = NoConfig());
 

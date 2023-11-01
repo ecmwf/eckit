@@ -23,7 +23,7 @@ namespace eckit::codec {
 //---------------------------------------------------------------------------------------------------------------------
 
 size_t encode_metadata(const ArrayMetadata& value, Metadata& out) {
-    out.set("type", value.type());
+    out.set("type", ArrayMetadata::type());
     out.set("shape", value.shape_);
     out.set("datatype", value.datatype_.str());
     return value.bytes();
@@ -37,7 +37,7 @@ int ArrayMetadata::shape(int i) const {
             "ArrayMetadata::shape(i=" + std::to_string(i) + ") goes out of bounds. rank=" + std::to_string(rank()),
             Here());
     }
-    return shape_[size_t(i)];
+    return static_cast<int>(shape_[static_cast<size_t>(i)]);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -56,13 +56,13 @@ ArrayMetadata::ArrayMetadata(const Metadata& metadata) :
 //---------------------------------------------------------------------------------------------------------------------
 
 size_t ArrayMetadata::size() const {
-    return size_t(std::accumulate(shape_.begin(), shape_.end(), 1, std::multiplies<int>()));
+    return size_t(std::accumulate(shape_.begin(), shape_.end(), 1, std::multiplies<>()));
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 ArrayMetadata::ArrayMetadata() :
-    shape_(), datatype_(DataType::KIND_REAL64) /* circumvent absense of default constructor */ {}
+    datatype_(DataType::KIND_REAL64) /* circumvent absense of default constructor */ {}
 
 //---------------------------------------------------------------------------------------------------------------------
 

@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "atlas_io/Data.h"
-#include "atlas_io/Metadata.h"
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Metadata.h"
 
 namespace atlas {
 namespace io {

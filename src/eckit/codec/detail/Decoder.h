@@ -12,9 +12,9 @@
 
 #include <memory>
 
-#include "atlas_io/Data.h"
-#include "atlas_io/Metadata.h"
-#include "atlas_io/detail/TypeTraits.h"
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/detail/TypeTraits.h"
 
 namespace atlas {
 namespace io {
@@ -22,7 +22,8 @@ namespace io {
 class Decoder {
 public:
     template <typename T, enable_if_decodable_t<T> = 0>
-    explicit Decoder(T& value): self_(new DecodableItem<T>(value)) {}
+    explicit Decoder(T& value) :
+        self_(new DecodableItem<T>(value)) {}
 
     friend void decode(const atlas::io::Metadata& metadata, const atlas::io::Data& data, Decoder&);
     friend void decode(const atlas::io::Metadata& metadata, const atlas::io::Data& data, Decoder&&);
@@ -35,7 +36,8 @@ private:
 
     template <typename T>
     struct DecodableItem : Decodable {
-        explicit DecodableItem(T& value): data_(value) {}
+        explicit DecodableItem(T& value) :
+            data_(value) {}
 
         void decode_(const atlas::io::Metadata& metadata, const atlas::io::Data& encoded) override {
             decode(metadata, encoded, data_);

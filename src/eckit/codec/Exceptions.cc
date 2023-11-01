@@ -8,15 +8,17 @@
  * nor does it submit to any jurisdiction.
  */
 
+
 #include "Exceptions.h"
 
-#include "atlas_io/detail/defines.h"
-#if ATLAS_HAVE_CXXABI_H
+#include "eckit/eckit_config.h"
+#if eckit_HAVE_CXXABI_H
 #include <cxxabi.h>
 #endif
 
 #include <cstdlib>
 #include <memory>
+
 
 namespace atlas {
 namespace io {
@@ -24,7 +26,7 @@ namespace io {
 //---------------------------------------------------------------------------------------------------------------------
 
 std::string demangle(const char* name) {
-#if ATLAS_HAVE_CXXABI_H
+#if eckit_HAVE_CXXABI_H
     int status = -4;
 
     std::unique_ptr<char, void (*)(void*)> res{abi::__cxa_demangle(name, nullptr, nullptr, &status), std::free};
@@ -37,7 +39,7 @@ std::string demangle(const char* name) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-NotEncodable::NotEncodable(const std::string& type_name):
+NotEncodable::NotEncodable(const std::string& type_name) :
     Exception{[&type_name] {
         std::stringstream message;
         message << "atlas::io::NotEncodable: Cannot encode values of type " << type_name << ".";
@@ -63,7 +65,7 @@ NotEncodable::NotEncodable(const std::string& type_name):
 
 //---------------------------------------------------------------------------------------------------------------------
 
-NotDecodable::NotDecodable(const std::string& type_name):
+NotDecodable::NotDecodable(const std::string& type_name) :
     Exception{[&type_name] {
         std::stringstream message;
         message << "atlas::io::NotDecodable: Cannot decode values of type " << type_name << ".";

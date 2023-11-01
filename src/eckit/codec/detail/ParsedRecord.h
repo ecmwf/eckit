@@ -14,8 +14,8 @@
 #include <string>
 #include <vector>
 
-#include "atlas_io/Metadata.h"
-#include "atlas_io/detail/RecordSections.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/detail/RecordSections.h"
 
 namespace atlas {
 namespace io {

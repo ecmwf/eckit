@@ -8,13 +8,13 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "atlas_io/FileStream.h"
+#include "eckit/codec/FileStream.h"
 
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/PooledHandle.h"
 
-#include "atlas_io/Session.h"
-#include "atlas_io/Trace.h"
+#include "eckit/codec/Session.h"
+#include "eckit/codec/Trace.h"
 
 namespace atlas {
 namespace io {
@@ -33,7 +33,8 @@ namespace {
 ///   - ATLAS_IO_TRACE recording
 class FileHandle : public eckit::FileHandle {
 public:
-    FileHandle(const eckit::PathName& path, char openmode): eckit::FileHandle(path, openmode == 'a' /*overwrite*/) {
+    FileHandle(const eckit::PathName& path, char openmode) :
+        eckit::FileHandle(path, openmode == 'a' /*overwrite*/) {
         ATLAS_IO_TRACE("FileHandle::open(" + eckit::FileHandle::path() + "," + openmode + ")");
         if (openmode == 'r') {
             openForRead();
@@ -55,12 +56,13 @@ public:
         }
     }
 
-    FileHandle(const eckit::PathName& path, Mode openmode):
+    FileHandle(const eckit::PathName& path, Mode openmode) :
         FileHandle(path, openmode == Mode::read    ? 'r'
                          : openmode == Mode::write ? 'w'
                                                    : 'a') {}
 
-    FileHandle(const eckit::PathName& path, const std::string& openmode): FileHandle(path, openmode[0]) {}
+    FileHandle(const eckit::PathName& path, const std::string& openmode) :
+        FileHandle(path, openmode[0]) {}
 
     ~FileHandle() override { close(); }
 
@@ -81,7 +83,8 @@ private:
 ///   - ATLAS_IO_TRACE recording
 class PooledHandle : public eckit::PooledHandle {
 public:
-    PooledHandle(const eckit::PathName& path): eckit::PooledHandle(path), path_(path) {
+    PooledHandle(const eckit::PathName& path) :
+        eckit::PooledHandle(path), path_(path) {
         ATLAS_IO_TRACE("PooledHandle::open(" + path_.baseName() + ")");
         openForRead();
     }
@@ -96,7 +99,7 @@ public:
 
 //---------------------------------------------------------------------------------------------------------------------
 
-FileStream::FileStream(const eckit::PathName& path, char openmode):
+FileStream::FileStream(const eckit::PathName& path, char openmode) :
     Stream([&path, &openmode]() -> eckit::DataHandle* {
         eckit::DataHandle* datahandle;
         if (openmode == 'r') {
@@ -113,25 +116,29 @@ FileStream::FileStream(const eckit::PathName& path, char openmode):
     }
 }
 
-FileStream::FileStream(const eckit::PathName& path, Mode openmode):
+FileStream::FileStream(const eckit::PathName& path, Mode openmode) :
     FileStream(path, openmode == Mode::read    ? 'r'
                      : openmode == Mode::write ? 'w'
                                                : 'a') {}
 
-FileStream::FileStream(const eckit::PathName& path, const std::string& openmode): FileStream(path, openmode[0]) {}
+FileStream::FileStream(const eckit::PathName& path, const std::string& openmode) :
+    FileStream(path, openmode[0]) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-InputFileStream::InputFileStream(const eckit::PathName& path): FileStream(path, Mode::read) {}
+InputFileStream::InputFileStream(const eckit::PathName& path) :
+    FileStream(path, Mode::read) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-OutputFileStream::OutputFileStream(const eckit::PathName& path, Mode openmode): FileStream(path, openmode) {}
-
-OutputFileStream::OutputFileStream(const eckit::PathName& path, const std::string& openmode):
+OutputFileStream::OutputFileStream(const eckit::PathName& path, Mode openmode) :
     FileStream(path, openmode) {}
 
-OutputFileStream::OutputFileStream(const eckit::PathName& path, char openmode): FileStream(path, openmode) {}
+OutputFileStream::OutputFileStream(const eckit::PathName& path, const std::string& openmode) :
+    FileStream(path, openmode) {}
+
+OutputFileStream::OutputFileStream(const eckit::PathName& path, char openmode) :
+    FileStream(path, openmode) {}
 
 void OutputFileStream::close() {
     datahandle().close();

@@ -12,8 +12,8 @@
 
 #include "eckit/filesystem/URI.h"
 
-#include "atlas_io/atlas_compat.h"
-#include "atlas_io/detail/Assert.h"
+#include "eckit/codec/atlas_compat.h"
+#include "eckit/codec/detail/Assert.h"
 
 namespace atlas {
 namespace io {
@@ -36,7 +36,7 @@ RecordItem::URI::URI(const std::string& _uri) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItem::URI::URI(const std::string& _path, uint64_t _offset, const std::string& _key):
+RecordItem::URI::URI(const std::string& _path, uint64_t _offset, const std::string& _key) :
     path(_path), offset(_offset), key(_key) {}
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -50,11 +50,13 @@ std::string RecordItem::URI::str() const {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItem::RecordItem(RecordItem&& other): metadata_(std::move(other.metadata_)), data_(std::move(other.data_)) {}
+RecordItem::RecordItem(RecordItem&& other) :
+    metadata_(std::move(other.metadata_)), data_(std::move(other.data_)) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItem::RecordItem(Metadata&& metadata, Data&& data): metadata_(new Metadata(metadata)), data_(std::move(data)) {}
+RecordItem::RecordItem(Metadata&& metadata, Data&& data) :
+    metadata_(new Metadata(metadata)), data_(std::move(data)) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 

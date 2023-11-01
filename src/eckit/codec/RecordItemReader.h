@@ -12,9 +12,9 @@
 
 #include <string>
 
-#include "atlas_io/Record.h"
-#include "atlas_io/RecordItem.h"
-#include "atlas_io/Stream.h"
+#include "eckit/codec/Record.h"
+#include "eckit/codec/RecordItem.h"
+#include "eckit/codec/Stream.h"
 
 namespace atlas {
 namespace io {

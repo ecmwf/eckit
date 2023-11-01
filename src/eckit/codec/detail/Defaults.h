@@ -19,8 +19,7 @@ namespace io {
 namespace defaults {
 
 static std::string checksum_algorithm() {
-    static std::string checksum =
-        eckit::Resource<std::string>("atlas.io.checksum.algorithm;$ATLAS_IO_CHECKSUM", "xxh64");
+    static std::string checksum = eckit::Resource<std::string>("atlas.io.checksum.algorithm;$ATLAS_IO_CHECKSUM", "xxh64");
     return checksum;
 }
 

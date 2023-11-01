@@ -14,9 +14,9 @@
 #include <functional>
 #include <numeric>
 
-#include "atlas_io/Exceptions.h"
-#include "atlas_io/atlas_compat.h"
-#include "atlas_io/detail/Assert.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/atlas_compat.h"
+#include "eckit/codec/detail/Assert.h"
 
 namespace atlas {
 namespace io {
@@ -43,7 +43,7 @@ int ArrayMetadata::shape(int i) const {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayMetadata::ArrayMetadata(const Metadata& metadata):
+ArrayMetadata::ArrayMetadata(const Metadata& metadata) :
     datatype_(DataType::KIND_REAL64) /* circumvent absense of default constructor */ {
     std::string encoded_type;
     ATLAS_IO_ASSERT_MSG(metadata.get("type", encoded_type), "metadata is missing 'type'");
@@ -62,20 +62,23 @@ size_t ArrayMetadata::size() const {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayMetadata::ArrayMetadata():
+ArrayMetadata::ArrayMetadata() :
     shape_(), datatype_(DataType::KIND_REAL64) /* circumvent absense of default constructor */ {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayMetadata::ArrayMetadata(const DataType& datatype, const ArrayShape& shape): shape_(shape), datatype_(datatype) {}
+ArrayMetadata::ArrayMetadata(const DataType& datatype, const ArrayShape& shape) :
+    shape_(shape), datatype_(datatype) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayMetadata::ArrayMetadata(const ArrayMetadata& other): ArrayMetadata{other.datatype_, other.shape_} {}
+ArrayMetadata::ArrayMetadata(const ArrayMetadata& other) :
+    ArrayMetadata{other.datatype_, other.shape_} {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayMetadata::ArrayMetadata(ArrayMetadata&& other): shape_(std::move(other.shape_)), datatype_{other.datatype_} {}
+ArrayMetadata::ArrayMetadata(ArrayMetadata&& other) :
+    shape_(std::move(other.shape_)), datatype_{other.datatype_} {}
 
 //---------------------------------------------------------------------------------------------------------------------
 

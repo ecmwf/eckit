@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include "atlas_io/Data.h"
-#include "atlas_io/Metadata.h"
-#include "atlas_io/detail/sfinae.h"
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/detail/sfinae.h"
 
-#include "atlas_io/Exceptions.h"
+#include "eckit/codec/Exceptions.h"
 namespace atlas {
 namespace io {
 
@@ -22,7 +22,8 @@ namespace io {
 template <typename T>
 struct Reference {
     const T* ref;
-    Reference(const T& r): ref(&r) {}
+    Reference(const T& r) :
+        ref(&r) {}
 
     friend size_t encode_metadata(const Reference<T>& in, atlas::io::Metadata& metadata) {
         size_t size{0};

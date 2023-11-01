@@ -17,9 +17,9 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/filesystem/PathName.h"
 
-#include "atlas_io/Record.h"
-#include "atlas_io/Session.h"
-#include "atlas_io/detail/NoConfig.h"
+#include "eckit/codec/Record.h"
+#include "eckit/codec/Session.h"
+#include "eckit/codec/detail/NoConfig.h"
 
 namespace atlas {
 namespace io {

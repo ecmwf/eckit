@@ -10,8 +10,8 @@
 
 #include "ArrayReference.h"
 
-#include "atlas_io/atlas_compat.h"
-#include "atlas_io/detail/Assert.h"
+#include "eckit/codec/atlas_compat.h"
+#include "eckit/codec/detail/Assert.h"
 
 namespace atlas {
 namespace io {
@@ -62,12 +62,13 @@ size_t encode_metadata(const ArrayReference& value, atlas::io::Metadata& out) {
 //---------------------------------------------------------------------------------------------------------------------
 
 ArrayReference::ArrayReference(const void* data, ArrayMetadata::DataType datatype,
-                               const ArrayMetadata::ArrayShape& shape):
+                               const ArrayMetadata::ArrayShape& shape) :
     ArrayMetadata(datatype, shape), data_(const_cast<void*>(data)) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayReference::ArrayReference(ArrayReference&& other): ArrayMetadata(std::move(other)), data_(other.data_) {
+ArrayReference::ArrayReference(ArrayReference&& other) :
+    ArrayMetadata(std::move(other)), data_(other.data_) {
     other.data_ = nullptr;
 }
 

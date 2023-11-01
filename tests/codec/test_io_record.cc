@@ -56,8 +56,7 @@ struct Arrays {
     std::vector<float> v2;
     Matrix<int> v3{0, 0};
     bool operator==(const Arrays& other) const {
-        return v1 == other.v1 && ::memcmp(v2.data(), other.v2.data(), v2.size() * sizeof(float)) == 0 &&
-               ::memcmp(v3.data(), other.v3.data(), v3.size() * v3.datatype().size()) == 0;
+        return v1 == other.v1 && ::memcmp(v2.data(), other.v2.data(), v2.size() * sizeof(float)) == 0 && ::memcmp(v3.data(), other.v3.data(), v3.size() * v3.datatype().size()) == 0;
     }
     bool operator!=(const Arrays& other) const { return not operator==(other); }
 };

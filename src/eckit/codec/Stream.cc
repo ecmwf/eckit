@@ -8,23 +8,26 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "atlas_io/Stream.h"
+#include "eckit/codec/Stream.h"
 
 #include "eckit/io/DataHandle.h"
 
-#include "atlas_io/atlas_compat.h"
-#include "atlas_io/detail/Assert.h"
+#include "eckit/codec/atlas_compat.h"
+#include "eckit/codec/detail/Assert.h"
 
 namespace atlas {
 namespace io {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-Stream::Stream(eckit::DataHandle& datahandle): ptr_(&datahandle) {}
+Stream::Stream(eckit::DataHandle& datahandle) :
+    ptr_(&datahandle) {}
 
-Stream::Stream(eckit::DataHandle* datahandle): shared_(datahandle), ptr_(shared_.get()) {}
+Stream::Stream(eckit::DataHandle* datahandle) :
+    shared_(datahandle), ptr_(shared_.get()) {}
 
-Stream::Stream(std::shared_ptr<eckit::DataHandle> datahandle): shared_(datahandle), ptr_(shared_.get()) {}
+Stream::Stream(std::shared_ptr<eckit::DataHandle> datahandle) :
+    shared_(datahandle), ptr_(shared_.get()) {}
 
 Stream::Stream(const Stream& other) = default;
 

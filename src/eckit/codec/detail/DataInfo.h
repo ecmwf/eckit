@@ -14,8 +14,8 @@
 #include <string>
 
 
-#include "atlas_io/detail/Checksum.h"
-#include "atlas_io/detail/Endian.h"
+#include "eckit/codec/detail/Checksum.h"
+#include "eckit/codec/detail/Endian.h"
 
 namespace atlas {
 namespace io {

@@ -23,7 +23,7 @@
 #if ATLAS_IO_STATIC_ASSERT
 
 #include <cstdlib>
-#include "atlas_io/detail/TypeTraits.h"
+#include "eckit/codec/detail/TypeTraits.h"
 
 namespace atlas {
 namespace io {

@@ -12,31 +12,31 @@
 
 #include <sstream>
 
-#include "atlas_io/Exceptions.h"
-#include "atlas_io/FileStream.h"
-#include "atlas_io/detail/Assert.h"
-#include "atlas_io/print/JSONFormat.h"
-#include "atlas_io/print/TableFormat.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/FileStream.h"
+#include "eckit/codec/detail/Assert.h"
+#include "eckit/codec/print/JSONFormat.h"
+#include "eckit/codec/print/TableFormat.h"
 
-#include "atlas_io/atlas_compat.h"
+#include "eckit/codec/atlas_compat.h"
 
 namespace atlas {
 namespace io {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordPrinter::RecordPrinter(const eckit::PathName& path, const eckit::Configuration& config):
+RecordPrinter::RecordPrinter(const eckit::PathName& path, const eckit::Configuration& config) :
     RecordPrinter(path, 0, config) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
 RecordPrinter::RecordPrinter(const eckit::PathName& path, const std::uint64_t offset,
-                             const eckit::Configuration& config):
+                             const eckit::Configuration& config) :
     RecordPrinter(Record::URI{path, offset}, config) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordPrinter::RecordPrinter(const Record::URI& ref, const eckit::Configuration& config):
+RecordPrinter::RecordPrinter(const Record::URI& ref, const eckit::Configuration& config) :
     uri_(ref), record_(Session::record(ref.path, ref.offset)) {
     if (record_.empty()) {
         auto in = InputFileStream(uri_.path);

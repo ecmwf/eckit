@@ -13,13 +13,13 @@
 #include <iosfwd>
 #include <string>
 
-#include "atlas_io/Stream.h"
-#include "atlas_io/detail/Checksum.h"
-#include "atlas_io/detail/DataInfo.h"
-#include "atlas_io/detail/Endian.h"
-#include "atlas_io/detail/Link.h"
-#include "atlas_io/detail/RecordInfo.h"
-#include "atlas_io/detail/Type.h"
+#include "eckit/codec/Stream.h"
+#include "eckit/codec/detail/Checksum.h"
+#include "eckit/codec/detail/DataInfo.h"
+#include "eckit/codec/detail/Endian.h"
+#include "eckit/codec/detail/Link.h"
+#include "eckit/codec/detail/RecordInfo.h"
+#include "eckit/codec/detail/Type.h"
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/value/Value.h"
@@ -41,7 +41,8 @@ class Metadata : public eckit::LocalConfiguration {
 public:
     using eckit::LocalConfiguration::LocalConfiguration;
 
-    Metadata(): eckit::LocalConfiguration() {}
+    Metadata() :
+        eckit::LocalConfiguration() {}
 
     Link link() const { return Link{getString("link", "")}; }
 
@@ -75,7 +76,8 @@ public:
     }
 
     /// @brief Constructor starting from a Configuration
-    Metadata(const eckit::Configuration& other): eckit::LocalConfiguration(other) {}
+    Metadata(const eckit::Configuration& other) :
+        eckit::LocalConfiguration(other) {}
 
 
     Metadata& remove(const std::string& name) {

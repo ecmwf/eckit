@@ -48,18 +48,18 @@
 #define __ATLAS_IO_HAS_COMMA(...) __ATLAS_IO_ARG16(__VA_ARGS__, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 #define __ATLAS_IO_TRIGGER_PARENTHESIS(...) ,
 #define __ATLAS_IO_ISEMPTY(...)                                                                                       \
-    __ATLAS_IO_ISEMPTY_(/* test if there is just one argument, eventually an empty  \
-                      one */                                 \
-                        __ATLAS_IO_HAS_COMMA(__VA_ARGS__), /* test if                  \
-                                                      _TRIGGER_PARENTHESIS_    \
-                                                      together with the        \
-                                                      argument adds a comma */                              \
+    __ATLAS_IO_ISEMPTY_(                                   /* test if there is just one argument, eventually an empty \
+                                                         one */                                                       \
+                        __ATLAS_IO_HAS_COMMA(__VA_ARGS__), /* test if                                                 \
+                                                      _TRIGGER_PARENTHESIS_                                           \
+                                                      together with the                                               \
+                                                      argument adds a comma */                                        \
                         __ATLAS_IO_HAS_COMMA(                                                                         \
-                            __ATLAS_IO_TRIGGER_PARENTHESIS __VA_ARGS__), /* test if the argument together with \
-                                            a parenthesis adds a comma */      \
-                        __ATLAS_IO_HAS_COMMA(__VA_ARGS__(/*empty*/)),    /* test if placing it between              \
-                                       __ATLAS_IO_TRIGGER_PARENTHESIS and the     \
-                                       parenthesis adds a comma */ \
+                            __ATLAS_IO_TRIGGER_PARENTHESIS __VA_ARGS__), /* test if the argument together with        \
+                                            a parenthesis adds a comma */                                             \
+                        __ATLAS_IO_HAS_COMMA(__VA_ARGS__(/*empty*/)),    /* test if placing it between                \
+                                       __ATLAS_IO_TRIGGER_PARENTHESIS and the                                         \
+                                       parenthesis adds a comma */                                                    \
                         __ATLAS_IO_HAS_COMMA(__ATLAS_IO_TRIGGER_PARENTHESIS __VA_ARGS__(/*empty*/)))
 
 #define __ATLAS_IO_PASTE5(_0, _1, _2, _3, _4) _0##_1##_2##_3##_4
@@ -71,8 +71,9 @@
 #define __ATLAS_IO_CALL_NARG_1(...) 0
 #define __ATLAS_IO_CALL_NARG_0 __ATLAS_IO_NARG_
 
-#define __ATLAS_IO_COMMA_ARGS(...) \
-    __ATLAS_IO_SPLICE(__ATLAS_IO_COMMA_ARGS_, __ATLAS_IO_ISEMPTY(__VA_ARGS__))(__VA_ARGS__)
+#define __ATLAS_IO_COMMA_ARGS(...)                                             \
+    __ATLAS_IO_SPLICE(__ATLAS_IO_COMMA_ARGS_, __ATLAS_IO_ISEMPTY(__VA_ARGS__)) \
+    (__VA_ARGS__)
 #define __ATLAS_IO_COMMA_ARGS_1(...)
 #define __ATLAS_IO_COMMA_ARGS_0(...) , __VA_ARGS__
 

@@ -12,12 +12,12 @@
 
 #include "eckit/log/Log.h"
 
-#include "atlas_io/Exceptions.h"
-#include "atlas_io/RecordItemReader.h"
-#include "atlas_io/Trace.h"
-#include "atlas_io/detail/Assert.h"
-#include "atlas_io/detail/Checksum.h"
-#include "atlas_io/detail/Defaults.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/RecordItemReader.h"
+#include "eckit/codec/Trace.h"
+#include "eckit/codec/detail/Assert.h"
+#include "eckit/codec/detail/Checksum.h"
+#include "eckit/codec/detail/Defaults.h"
 
 namespace atlas {
 namespace io {
@@ -30,13 +30,13 @@ static std::string stream_path(Stream stream) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ReadRequest::ReadRequest(const std::string& URI, atlas::io::Decoder* decoder):
+ReadRequest::ReadRequest(const std::string& URI, atlas::io::Decoder* decoder) :
     uri_(URI), decoder_(decoder), item_(new RecordItem()) {
     do_checksum_ = defaults::checksum_read();
     ATLAS_IO_ASSERT(uri_.size());
 }
 
-ReadRequest::ReadRequest(Stream stream, size_t offset, const std::string& key, Decoder* decoder):
+ReadRequest::ReadRequest(Stream stream, size_t offset, const std::string& key, Decoder* decoder) :
     stream_{stream},
     offset_{offset},
     key_{key},
@@ -49,7 +49,7 @@ ReadRequest::ReadRequest(Stream stream, size_t offset, const std::string& key, D
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ReadRequest::ReadRequest(ReadRequest&& other):
+ReadRequest::ReadRequest(ReadRequest&& other) :
     stream_{other.stream_},
     offset_{other.offset_},
     key_{other.key_},

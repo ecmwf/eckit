@@ -12,11 +12,11 @@
 
 #include <array>
 
-#include "atlas_io/Data.h"
-#include "atlas_io/Exceptions.h"
-#include "atlas_io/Metadata.h"
-#include "atlas_io/types/array/ArrayMetadata.h"
-#include "atlas_io/types/array/ArrayReference.h"
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
+#include "eckit/codec/types/array/ArrayReference.h"
 
 namespace std {
 

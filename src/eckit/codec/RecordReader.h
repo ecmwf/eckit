@@ -14,9 +14,9 @@
 #include <map>
 #include <string>
 
-#include "atlas_io/Metadata.h"
-#include "atlas_io/ReadRequest.h"
-#include "atlas_io/Session.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/ReadRequest.h"
+#include "eckit/codec/Session.h"
 
 namespace atlas {
 namespace io {

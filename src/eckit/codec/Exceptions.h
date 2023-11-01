@@ -43,7 +43,8 @@ public:
     NotEncodable(const std::string& type_name);
 
     template <typename T>
-    NotEncodable(const T&): NotEncodable{demangle<typename std::decay<T>::type>()} {}
+    NotEncodable(const T&) :
+        NotEncodable{demangle<typename std::decay<T>::type>()} {}
 
     ~NotEncodable() override;
 };
@@ -55,7 +56,8 @@ public:
     NotDecodable(const std::string& type_name);
 
     template <typename T>
-    NotDecodable(const T&): NotDecodable{demangle<typename std::decay<T>::type>()} {}
+    NotDecodable(const T&) :
+        NotDecodable{demangle<typename std::decay<T>::type>()} {}
 
     ~NotDecodable() override;
 };
@@ -64,7 +66,8 @@ public:
 
 class InvalidRecord : public Exception {
 public:
-    InvalidRecord(const std::string& message): Exception("atlas::io::InvalidRecord: " + message) {}
+    InvalidRecord(const std::string& message) :
+        Exception("atlas::io::InvalidRecord: " + message) {}
 
     ~InvalidRecord() override;
 };
@@ -73,7 +76,8 @@ public:
 
 class DataCorruption : public Exception {
 public:
-    DataCorruption(const std::string& message): Exception("atlas::io::DataCorruption: " + message) {}
+    DataCorruption(const std::string& message) :
+        Exception("atlas::io::DataCorruption: " + message) {}
 
     ~DataCorruption() override;
 };
@@ -82,7 +86,8 @@ public:
 
 class WriteError : public Exception {
 public:
-    WriteError(const std::string& message): Exception("atlas::io::WriteError: " + message) {}
+    WriteError(const std::string& message) :
+        Exception("atlas::io::WriteError: " + message) {}
 
     ~WriteError() override;
 };

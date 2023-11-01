@@ -12,7 +12,7 @@
 
 #include <sstream>
 
-#include "atlas_io/Exceptions.h"
+#include "eckit/codec/Exceptions.h"
 
 //------------------------------------------------------------------------------------------------------
 

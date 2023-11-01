@@ -12,17 +12,17 @@
 
 #include <iomanip>
 
-#include "atlas_io/Exceptions.h"
-#include "atlas_io/Metadata.h"
-#include "atlas_io/Record.h"
-#include "atlas_io/RecordItemReader.h"
-#include "atlas_io/Session.h"
-#include "atlas_io/detail/Assert.h"
-#include "atlas_io/print/Bytes.h"
-#include "atlas_io/types/array/ArrayReference.h"
-#include "atlas_io/types/scalar.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/Record.h"
+#include "eckit/codec/RecordItemReader.h"
+#include "eckit/codec/Session.h"
+#include "eckit/codec/detail/Assert.h"
+#include "eckit/codec/print/Bytes.h"
+#include "eckit/codec/types/array/ArrayReference.h"
+#include "eckit/codec/types/scalar.h"
 
-#include "atlas_io/atlas_compat.h"
+#include "eckit/codec/atlas_compat.h"
 
 namespace atlas {
 namespace io {
@@ -61,7 +61,8 @@ class ArrayMetadataPrettyPrint : public MetadataPrettyPrintBase {
     }
 
 public:
-    ArrayMetadataPrettyPrint(const Metadata& m): metadata_(m) {}
+    ArrayMetadataPrettyPrint(const Metadata& m) :
+        metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
         ATLAS_IO_ASSERT(type == "array");
@@ -104,7 +105,8 @@ private:
 
 class StringMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
-    StringMetadataPrettyPrint(const Metadata& m): metadata_(m) {}
+    StringMetadataPrettyPrint(const Metadata& m) :
+        metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
         ATLAS_IO_ASSERT(type == "string");
@@ -123,7 +125,8 @@ private:
 
 class ScalarMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
-    ScalarMetadataPrettyPrint(const Metadata& m): metadata_(m) {}
+    ScalarMetadataPrettyPrint(const Metadata& m) :
+        metadata_(m) {}
     template <typename T>
     T decode() const {
         T value;
@@ -258,7 +261,7 @@ struct TablePrinter {
 };
 
 
-TableFormat::TableFormat(const Record::URI& record, const eckit::Parametrisation& config):
+TableFormat::TableFormat(const Record::URI& record, const eckit::Parametrisation& config) :
     record_(Session::record(record.path, record.offset)) {
     for (const auto& key : record_.keys()) {
         items_.emplace(key, Metadata());

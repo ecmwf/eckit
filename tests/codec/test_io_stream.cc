@@ -8,8 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "atlas_io/FileStream.h"
-#include "atlas_io/Session.h"
+#include "eckit/codec/FileStream.h"
+#include "eckit/codec/Session.h"
 
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/PooledHandle.h"

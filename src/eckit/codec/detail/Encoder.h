@@ -15,12 +15,12 @@
 #include <memory>
 #include <string>
 
-#include "atlas_io/Data.h"
-#include "atlas_io/RecordItem.h"
-#include "atlas_io/detail/DataInfo.h"
-#include "atlas_io/detail/Link.h"
-#include "atlas_io/detail/Reference.h"
-#include "atlas_io/detail/TypeTraits.h"
+#include "eckit/codec/Data.h"
+#include "eckit/codec/RecordItem.h"
+#include "eckit/codec/detail/DataInfo.h"
+#include "eckit/codec/detail/Link.h"
+#include "eckit/codec/detail/Reference.h"
+#include "eckit/codec/detail/TypeTraits.h"
 
 namespace atlas {
 namespace io {
@@ -32,14 +32,18 @@ public:
     operator bool() const { return bool(self_); }
 
     template <typename T, enable_if_move_constructible_encodable_rvalue_t<T> = 0>
-    explicit Encoder(T&& x): self_(new EncodableValue<T>(std::move(x))) {}
+    explicit Encoder(T&& x) :
+        self_(new EncodableValue<T>(std::move(x))) {}
 
-    Encoder(const Link& link): self_(new EncodableLink(link)) {}
+    Encoder(const Link& link) :
+        self_(new EncodableLink(link)) {}
 
-    Encoder(Encoder&& other): self_(std::move(other.self_)) {}
+    Encoder(Encoder&& other) :
+        self_(std::move(other.self_)) {}
 
     template <typename T, enable_if_scalar_t<T> = 0>
-    explicit Encoder(const T& x): self_(new EncodableValue<T>(x)) {}
+    explicit Encoder(const T& x) :
+        self_(new EncodableValue<T>(x)) {}
 
 
     Encoder& operator=(Encoder&& rhs) {
@@ -63,10 +67,12 @@ private:
 
     template <typename Value>
     struct EncodableValue : Encodable {
-        EncodableValue(Value&& v): value_{std::move(v)} { sfinae::encode_metadata(value_, metadata_, data_size_); }
+        EncodableValue(Value&& v) :
+            value_{std::move(v)} { sfinae::encode_metadata(value_, metadata_, data_size_); }
 
         template <bool EnableBool = true, enable_if_scalar_t<Value, EnableBool> = 0>
-        EncodableValue(const Value& v): value_{v} {
+        EncodableValue(const Value& v) :
+            value_{v} {
             sfinae::encode_metadata(value_, metadata_, data_size_);
         }
 
@@ -84,7 +90,8 @@ private:
     };
 
     struct EncodableLink : Encodable {
-        EncodableLink(const Link& link): link_(link) {}
+        EncodableLink(const Link& link) :
+            link_(link) {}
 
         size_t encode_metadata_(atlas::io::Metadata& metadata) const override {
             metadata.set(atlas::io::Metadata("link", link_.uri));

@@ -12,14 +12,14 @@
 
 #include "eckit/log/JSON.h"
 
-#include "atlas_io/Record.h"
-#include "atlas_io/RecordItemReader.h"
-#include "atlas_io/Session.h"
+#include "eckit/codec/Record.h"
+#include "eckit/codec/RecordItemReader.h"
+#include "eckit/codec/Session.h"
 
 namespace atlas {
 namespace io {
 
-JSONFormat::JSONFormat(const Record::URI& record, const eckit::Configuration& config):
+JSONFormat::JSONFormat(const Record::URI& record, const eckit::Configuration& config) :
     record_(Session::record(record.path, record.offset)) {
     for (const auto& key : record_.keys()) {
         items_.emplace(key, Metadata());

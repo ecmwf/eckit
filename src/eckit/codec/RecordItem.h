@@ -14,9 +14,9 @@
 #include <memory>
 #include <string>
 
-#include "atlas_io/Data.h"
-#include "atlas_io/Metadata.h"
-#include "atlas_io/detail/tag.h"
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/detail/tag.h"
 
 namespace atlas {
 namespace io {

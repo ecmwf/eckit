@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include "atlas_io/detail/Time.h"
-#include "atlas_io/detail/Version.h"
+#include "eckit/codec/detail/Time.h"
+#include "eckit/codec/detail/Version.h"
 
 namespace atlas {
 namespace io {

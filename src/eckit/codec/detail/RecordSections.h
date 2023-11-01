@@ -15,9 +15,9 @@
 
 #include "eckit/types/FixedString.h"
 
-#include "atlas_io/detail/Endian.h"
-#include "atlas_io/detail/Time.h"
-#include "atlas_io/detail/Version.h"
+#include "eckit/codec/detail/Endian.h"
+#include "eckit/codec/detail/Time.h"
+#include "eckit/codec/detail/Version.h"
 
 namespace atlas {
 namespace io {
@@ -59,8 +59,8 @@ struct RecordHead {
     eckit::FixedString<64> metadata_checksum;       ///< 64 checksum of metadata
     std::uint64_t index_offset{0};                  ///<  8  offset where data section starts
     std::uint64_t index_length;                     ///<  8 length of data section
-    std::uint32_t magic_number{1234};        ///<  4 number 1234 encoded in binary, used to detect encoded endianness
-    eckit::FixedString<padding_> padding__;  ///<  Extra padding to get to <bytes>
+    std::uint32_t magic_number{1234};               ///<  4 number 1234 encoded in binary, used to detect encoded endianness
+    eckit::FixedString<padding_> padding__;         ///<  Extra padding to get to <bytes>
     eckit::FixedString<1> eol{"\n"};
 
     static constexpr size_t size() { return bytes; }  ///< Size in bytes of this section

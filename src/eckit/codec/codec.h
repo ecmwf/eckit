@@ -14,25 +14,25 @@
 #include <sstream>
 #include <string>
 
-#include "atlas_io/detail/Link.h"
-#include "atlas_io/detail/Reference.h"
-#include "atlas_io/detail/StaticAssert.h"
-#include "atlas_io/detail/sfinae.h"
+#include "eckit/codec/detail/Link.h"
+#include "eckit/codec/detail/Reference.h"
+#include "eckit/codec/detail/StaticAssert.h"
+#include "eckit/codec/detail/sfinae.h"
 
-#include "atlas_io/Exceptions.h"
-#include "atlas_io/FileStream.h"
-#include "atlas_io/Record.h"
-#include "atlas_io/RecordItemReader.h"
-#include "atlas_io/RecordPrinter.h"
-#include "atlas_io/RecordReader.h"
-#include "atlas_io/RecordWriter.h"
-#include "atlas_io/Session.h"
-#include "atlas_io/Stream.h"
-#include "atlas_io/Trace.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/FileStream.h"
+#include "eckit/codec/Record.h"
+#include "eckit/codec/RecordItemReader.h"
+#include "eckit/codec/RecordPrinter.h"
+#include "eckit/codec/RecordReader.h"
+#include "eckit/codec/RecordWriter.h"
+#include "eckit/codec/Session.h"
+#include "eckit/codec/Stream.h"
+#include "eckit/codec/Trace.h"
 
-#include "atlas_io/types/array.h"
-#include "atlas_io/types/scalar.h"
-#include "atlas_io/types/string.h"
+#include "eckit/codec/types/array.h"
+#include "eckit/codec/types/scalar.h"
+#include "eckit/codec/types/string.h"
 
 
 namespace atlas {

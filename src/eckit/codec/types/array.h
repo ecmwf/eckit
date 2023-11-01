@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include "atlas_io/types/array/ArrayReference.h"
-#include "atlas_io/types/array/adaptors/StdArrayAdaptor.h"
-#include "atlas_io/types/array/adaptors/StdVectorAdaptor.h"
-#include "atlas_io/types/array/adaptors/StdVectorOfStdArrayAdaptor.h"
+#include "eckit/codec/types/array/ArrayReference.h"
+#include "eckit/codec/types/array/adaptors/StdArrayAdaptor.h"
+#include "eckit/codec/types/array/adaptors/StdVectorAdaptor.h"

@@ -11,7 +11,7 @@
 #include <bitset>
 #include <cstring>
 
-#include "atlas_io/atlas-io.h"
+#include "eckit/codec/codec.h"
 
 #include "TestEnvironment.h"
 
@@ -34,13 +34,14 @@ class EncodableType {
 public:
     using Operations = std::vector<std::string>;
 
-    EncodableType(std::string s, std::shared_ptr<Operations> operations = std::make_shared<Operations>()):
+    EncodableType(std::string s, std::shared_ptr<Operations> operations = std::make_shared<Operations>()) :
         str(s), ops(operations) {
         ATLAS_IO_TRACE("EncodableType[" + str + "] construct");
         ops->push_back("constructor");
     }
 
-    EncodableType(): ops(std::make_shared<Operations>()) {}
+    EncodableType() :
+        ops(std::make_shared<Operations>()) {}
 
     EncodableType(const EncodableType& other) {
         // This constructor should not be called.
@@ -452,7 +453,8 @@ struct EncodedArray {
     atlas::io::Data data;
     atlas::io::Metadata metadata;
 
-    EncodedArray(): in{1, 2, 3, 4, 5, 6, 7, 8} { encode(in, metadata, data); }
+    EncodedArray() :
+        in{1, 2, 3, 4, 5, 6, 7, 8} { encode(in, metadata, data); }
 
     friend bool operator==(const std::vector<T>& lhs, const EncodedArray<T>& rhs) {
         if (lhs.size() != rhs.in.size()) {
@@ -569,7 +571,7 @@ CASE("Encode/Decode byte array") {
     auto validate = [&]() {
         EXPECT(out == encoded);
 
-        auto to_byte = []( const char* str) {
+        auto to_byte = [](const char* str) {
             return std::byte(std::bitset<8>(str).to_ulong());
         };
         EXPECT(out[0] == to_byte("00000001"));

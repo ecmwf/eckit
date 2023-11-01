@@ -16,8 +16,8 @@
 
 #include "eckit/config/Configuration.h"
 
-#include "atlas_io/Metadata.h"
-#include "atlas_io/Record.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/Record.h"
 
 namespace atlas {
 namespace io {

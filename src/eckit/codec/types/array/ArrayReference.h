@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include "atlas_io/Data.h"
-#include "atlas_io/Metadata.h"
-#include "atlas_io/types/array/ArrayMetadata.h"
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
 
 namespace atlas {
 namespace io {
@@ -26,7 +26,7 @@ public:
     ArrayReference(const void* data, DataType, const ArrayShape&);
 
     template <typename T>
-    ArrayReference(const T* data, const ArrayShape& shape):
+    ArrayReference(const T* data, const ArrayShape& shape) :
         ArrayMetadata(DataType::create<T>(), shape), data_(const_cast<T*>(data)) {}
 
     ArrayReference(ArrayReference&&);

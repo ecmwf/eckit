@@ -19,7 +19,8 @@ namespace io {
 
 struct Bytes {
 public:
-    Bytes(size_t bytes): bytes_(bytes) {}
+    Bytes(size_t bytes) :
+        bytes_(bytes) {}
 
     operator size_t() const { return bytes_; }
 

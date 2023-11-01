@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "atlas_io/detail/TypeTraits.h"
+#include "eckit/codec/detail/TypeTraits.h"
 
 namespace atlas {
 namespace io {

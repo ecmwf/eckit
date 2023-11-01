@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include "atlas_io/detail/defines.h"
+#include "eckit/eckit_config.h"
 
-#ifndef ATLAS_IO_BIG_ENDIAN
-#error ATLAS_IO_BIG_ENDIAN not defined
+#ifndef eckit_BIG_ENDIAN
+#error eckit_BIG_ENDIAN not defined
 #endif
 
-#ifndef ATLAS_IO_LITTLE_ENDIAN
-#error ATLAS_IO_LITTLE_ENDIAN not defined
+#ifndef eckit_LITTLE_ENDIAN
+#error eckit_LITTLE_ENDIAN not defined
 #endif
 
 namespace atlas {
@@ -27,14 +27,14 @@ enum class Endian
 {
     little = 0,
     big    = 1,
-#if ATLAS_IO_BIG_ENDIAN
+#if eckit_LITTLE_ENDIAN
     native  = big,
     swapped = little
 #elif ATLAS_IO_LITTLE_ENDIAN
     native  = little,
     swapped = big
 #else
-#error Neither ATLAS_IO_BIG_ENDIAN nor ATLAS_IO_LITTLE_ENDIAN equals true
+#error Neither eckit_BIG_ENDIAN nor eckit_LITTLE_ENDIAN equals true
 #endif
 };
 

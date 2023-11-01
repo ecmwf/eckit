@@ -14,7 +14,7 @@
 
 #include "eckit/filesystem/PathName.h"
 
-#include "atlas_io/Stream.h"
+#include "eckit/codec/Stream.h"
 
 namespace eckit {
 class DataHandle;

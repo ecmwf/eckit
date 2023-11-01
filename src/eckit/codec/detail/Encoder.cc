@@ -10,7 +10,7 @@
 
 #include "Encoder.h"
 
-#include "atlas_io/Trace.h"
+#include "eckit/codec/Trace.h"
 
 namespace atlas {
 namespace io {

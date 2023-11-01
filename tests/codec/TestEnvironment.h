@@ -18,6 +18,8 @@
 #include <string>
 #include <thread>
 
+#include "eckit/codec/codec.h"
+#include "eckit/codec/detail/BlackMagic.h"
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/eckit.h"
@@ -25,9 +27,6 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
-
-#include "atlas_io/atlas-io.h"
-#include "atlas_io/detail/BlackMagic.h"
 
 namespace atlas {
 namespace test {
@@ -49,7 +48,7 @@ class Test {
     };
 
 public:
-    Test(const std::string& description, const eckit::CodeLocation& location):
+    Test(const std::string& description, const eckit::CodeLocation& location) :
         description_(description), location_(location) {
         current_test_ = this;
     }
@@ -139,7 +138,8 @@ struct Printer<eckit::CodeLocation> {
 template <typename Value>
 struct PrintValue {
     const Value& value;
-    PrintValue(const Value& v): value(v) {}
+    PrintValue(const Value& v) :
+        value(v) {}
     void print(std::ostream& out) const { Printer<Value>::print(out, value); }
     friend std::ostream& operator<<(std::ostream& out, const PrintValue& v) {
         v.print(out);
@@ -164,12 +164,12 @@ bool approx_eq(const double& v1, const double& v2) {
 bool approx_eq(const double& v1, const double& v2, const double& t) {
     return is_approximately_equal(v1, v2, t);
 }
-//bool approx_eq(const Point2& v1, const Point2& v2) {
-//    return approx_eq(v1[0], v2[0]) && approx_eq(v1[1], v2[1]);
-//}
-//bool approx_eq(const Point2& v1, const Point2& v2, const double& t) {
-//    return approx_eq(v1[0], v2[0], t) && approx_eq(v1[1], v2[1], t);
-//}
+// bool approx_eq(const Point2& v1, const Point2& v2) {
+//     return approx_eq(v1[0], v2[0]) && approx_eq(v1[1], v2[1]);
+// }
+// bool approx_eq(const Point2& v1, const Point2& v2, const double& t) {
+//     return approx_eq(v1[0], v2[0], t) && approx_eq(v1[1], v2[1], t);
+// }
 
 template <typename T1, typename T2>
 std::string expect_message(const std::string& condition, const T1& lhs, const T2& rhs, const eckit::CodeLocation& loc) {

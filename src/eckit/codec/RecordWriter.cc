@@ -8,16 +8,16 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "atlas_io/RecordWriter.h"
+#include "eckit/codec/RecordWriter.h"
 
 
-#include "atlas_io/Exceptions.h"
-#include "atlas_io/RecordWriter.h"
-#include "atlas_io/Trace.h"
-#include "atlas_io/detail/Checksum.h"
-#include "atlas_io/detail/Defaults.h"
-#include "atlas_io/detail/Encoder.h"
-#include "atlas_io/detail/RecordSections.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/RecordWriter.h"
+#include "eckit/codec/Trace.h"
+#include "eckit/codec/detail/Checksum.h"
+#include "eckit/codec/detail/Defaults.h"
+#include "eckit/codec/detail/Encoder.h"
+#include "eckit/codec/detail/RecordSections.h"
 
 namespace atlas {
 namespace io {
@@ -65,9 +65,8 @@ size_t RecordWriter::write(Stream out) const {
         auto metadata_str = metadata();
         atlas::io::write_string(out, metadata_str);
         atlas::io::write_struct(out, RecordMetadataSection::End());
-        r.metadata_length = position() - r.metadata_offset;
-        r.metadata_checksum =
-            do_checksum_ ? atlas::io::checksum(metadata_str.data(), metadata_str.size()) : std::string("none:");
+        r.metadata_length   = position() - r.metadata_offset;
+        r.metadata_checksum = do_checksum_ ? atlas::io::checksum(metadata_str.data(), metadata_str.size()) : std::string("none:");
 
         // Index section
         // -------------

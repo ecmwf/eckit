@@ -10,21 +10,24 @@
 
 #include "RecordReader.h"
 
-#include "atlas_io/Metadata.h"
-#include "atlas_io/RecordItemReader.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/RecordItemReader.h"
 
 namespace atlas {
 namespace io {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordReader::RecordReader(const Record::URI& ref): RecordReader(ref.path, ref.offset) {}
+RecordReader::RecordReader(const Record::URI& ref) :
+    RecordReader(ref.path, ref.offset) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordReader::RecordReader(const std::string& path, uint64_t offset): session_{}, path_{path}, offset_{offset} {}
+RecordReader::RecordReader(const std::string& path, uint64_t offset) :
+    session_{}, path_{path}, offset_{offset} {}
 
-RecordReader::RecordReader(Stream stream, uint64_t offset): session_{}, stream_{stream}, path_{}, offset_{offset} {}
+RecordReader::RecordReader(Stream stream, uint64_t offset) :
+    session_{}, stream_{stream}, path_{}, offset_{offset} {}
 
 //---------------------------------------------------------------------------------------------------------------------
 

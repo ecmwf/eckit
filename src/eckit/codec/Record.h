@@ -15,9 +15,9 @@
 #include <string>
 #include <vector>
 
-#include "atlas_io/detail/Endian.h"
-#include "atlas_io/detail/Time.h"
-#include "atlas_io/detail/Version.h"
+#include "eckit/codec/detail/Endian.h"
+#include "eckit/codec/detail/Time.h"
+#include "eckit/codec/detail/Version.h"
 
 namespace atlas {
 namespace io {
@@ -35,8 +35,10 @@ public:
         std::string path;
         std::uint64_t offset;
         URI() = default;
-        URI(const std::string& _path, std::uint64_t _offset = 0): path(_path), offset(_offset) {}
-        URI(const URI& other): path(other.path), offset(other.offset) {}
+        URI(const std::string& _path, std::uint64_t _offset = 0) :
+            path(_path), offset(_offset) {}
+        URI(const URI& other) :
+            path(other.path), offset(other.offset) {}
     };
 
 private:

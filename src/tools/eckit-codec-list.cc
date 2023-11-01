@@ -12,17 +12,16 @@
 #include <string>
 #include <vector>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/Separator.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/option/VectorOption.h"
 #include "eckit/runtime/Tool.h"
 
-#include "eckit/filesystem/PathName.h"
-
-#include "atlas_io/Exceptions.h"
-#include "atlas_io/RecordPrinter.h"
-#include "atlas_io/print/Bytes.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/RecordPrinter.h"
+#include "eckit/codec/print/Bytes.h"
 
 //--------------------------------------------------------------------------------
 
@@ -52,7 +51,8 @@ protected:
             return str;
         };
 
-        out << "NAME\n" << indented(name());
+        out << "NAME\n"
+            << indented(name());
         std::string brief = briefDescription();
         if (brief.size()) {
             out << " - " << brief << '\n';
@@ -61,12 +61,14 @@ protected:
         std::string usg = usage();
         if (usg.size()) {
             out << '\n';
-            out << "SYNOPSIS\n" << indented(usg) << '\n';
+            out << "SYNOPSIS\n"
+                << indented(usg) << '\n';
         }
         std::string desc = longDescription();
         if (desc.size()) {
             out << '\n';
-            out << "DESCRIPTION\n" << indented(desc) << '\n';
+            out << "DESCRIPTION\n"
+                << indented(desc) << '\n';
         }
         out << '\n';
         out << "OPTIONS\n";
@@ -92,7 +94,8 @@ protected:
     }
 
 public:
-    AtlasIOTool(int argc, char** argv): eckit::Tool(argc, argv) {
+    AtlasIOTool(int argc, char** argv) :
+        eckit::Tool(argc, argv) {
         add_option(new eckit::option::SimpleOption<bool>("help", "Print this help"));
     }
 
@@ -139,16 +142,17 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct AtlasIOList : public AtlasIOTool {
-    std::string briefDescription() override { return "Inspection of atlas-io files"; }
+struct EckitCodecList : public AtlasIOTool {
+    std::string briefDescription() override { return "Inspection of eckit codec files"; }
     std::string usage() override { return name() + " <file> [OPTION]... [--help,-h]"; }
     std::string longDescription() override {
-        return "Inspection of atlas-io files\n"
+        return "Inspection of eckit codec files\n"
                "\n"
-               "       <file>: path to atlas-io file";
+               "       <file>: path to eckit codec file";
     }
 
-    AtlasIOList(int argc, char** argv): AtlasIOTool(argc, argv) {
+    EckitCodecList(int argc, char** argv) :
+        AtlasIOTool(argc, argv) {
         add_option(new eckit::option::SimpleOption<std::string>("format", "Output format"));
         add_option(new eckit::option::SimpleOption<bool>("version", "Print version of records"));
         add_option(new eckit::option::SimpleOption<bool>("details", "Print detailed information"));
@@ -191,7 +195,8 @@ struct AtlasIOList : public AtlasIOTool {
                     out << "\n# " << uri.path << " [" << uri.offset << "]    "
                         << "{ size: " << atlas::io::Bytes{record.size()}.str(0) << ",    version: " << record.version()
                         << ",    created: " << record.time() << " }";
-                    out << '\n' << (config.getString("format") == "table" ? "" : "---") << '\n';
+                    out << '\n'
+                        << (config.getString("format") == "table" ? "" : "---") << '\n';
                     out << record << std::endl;
 
                     std::cout << out.str();
@@ -200,7 +205,7 @@ struct AtlasIOList : public AtlasIOTool {
                 }
             }
             catch (const io::Exception& e) {
-                Log::error() << "    ATLAS-IO-ERROR: " << e.what() << std::endl;
+                Log::error() << "    ERROR: " << e.what() << std::endl;
                 return_code = failed();
             }
         }
@@ -211,5 +216,5 @@ struct AtlasIOList : public AtlasIOTool {
 //------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-    return AtlasIOList{argc, argv}.start();
+    return EckitCodecList{argc, argv}.start();
 }

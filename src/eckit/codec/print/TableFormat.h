@@ -16,10 +16,10 @@
 #include <memory>
 #include <string>
 
-#include "atlas_io/Metadata.h"
-#include "atlas_io/Record.h"
-#include "atlas_io/RecordItemReader.h"
-#include "atlas_io/Session.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/Record.h"
+#include "eckit/codec/RecordItemReader.h"
+#include "eckit/codec/Session.h"
 
 namespace atlas {
 namespace io {

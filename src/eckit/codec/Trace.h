@@ -12,10 +12,10 @@
 
 
 #include <functional>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
-#include <limits>
 
 namespace eckit {
 class CodeLocation;
@@ -71,7 +71,7 @@ private:
 }  // namespace io
 }  // namespace atlas
 
-#include "atlas_io/detail/BlackMagic.h"
+#include "eckit/codec/detail/BlackMagic.h"
 
 #define ATLAS_IO_TRACE(...) __ATLAS_IO_TYPE(::atlas::io::Trace, Here() __ATLAS_IO_COMMA_ARGS(__VA_ARGS__))
 #define ATLAS_IO_TRACE_SCOPE(...) __ATLAS_IO_TYPE_SCOPE(::atlas::io::Trace, Here() __ATLAS_IO_COMMA_ARGS(__VA_ARGS__))

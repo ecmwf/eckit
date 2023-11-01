@@ -10,6 +10,12 @@ ecbuild_add_executable( TARGET      eckit_info
                         SOURCES     eckit-info.cc
                         LIBS        eckit_option eckit )
 
+ecbuild_add_executable( TARGET      eckit_codec_list
+                        OUTPUT_NAME eckit-codec-list
+                        CONDITION   HAVE_BUILD_TOOLS
+                        SOURCES     eckit-codec-list.cc
+                        LIBS        eckit_codec eckit_option )
+
 ### NOT TO INSTALL
 
 ecbuild_add_executable( TARGET      dhcopy

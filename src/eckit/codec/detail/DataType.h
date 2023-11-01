@@ -363,16 +363,19 @@ inline bool DataType::kind_valid(kind_t kind) {
     }
 }
 
-inline DataType::DataType(const DataType& other): kind_(other.kind_) {}
+inline DataType::DataType(const DataType& other) :
+    kind_(other.kind_) {}
 
 inline DataType& DataType::operator=(const DataType& other) {
     kind_ = other.kind_;
     return *this;
 }
 
-inline DataType::DataType(const std::string& datatype): kind_(str_to_kind(datatype)) {}
+inline DataType::DataType(const std::string& datatype) :
+    kind_(str_to_kind(datatype)) {}
 
-inline DataType::DataType(long kind): kind_(kind) {}
+inline DataType::DataType(long kind) :
+    kind_(kind) {}
 
 inline bool operator==(DataType dt1, DataType dt2) {
     return dt1.kind_ == dt2.kind_;

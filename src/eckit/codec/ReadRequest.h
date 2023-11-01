@@ -14,8 +14,8 @@
 #include <memory>
 #include <string>
 
-#include "atlas_io/RecordItem.h"
-#include "atlas_io/detail/Decoder.h"
+#include "eckit/codec/RecordItem.h"
+#include "eckit/codec/detail/Decoder.h"
 
 namespace atlas {
 namespace io {
@@ -27,14 +27,16 @@ public:
     ReadRequest(ReadRequest&& other);
 
     template <typename T>
-    ReadRequest(Stream stream, size_t offset, const std::string& key, T& value):
+    ReadRequest(Stream stream, size_t offset, const std::string& key, T& value) :
         ReadRequest{stream, offset, key, new Decoder(value)} {}
 
     template <typename T>
-    ReadRequest(const std::string& URI, T& value): ReadRequest{URI, new Decoder(value)} {}
+    ReadRequest(const std::string& URI, T& value) :
+        ReadRequest{URI, new Decoder(value)} {}
 
     template <typename T>
-    ReadRequest(const RecordItem::URI& URI, T& value): ReadRequest{URI.str(), value} {}
+    ReadRequest(const RecordItem::URI& URI, T& value) :
+        ReadRequest{URI.str(), value} {}
 
     ~ReadRequest();
 

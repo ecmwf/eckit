@@ -15,8 +15,8 @@
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Tokenizer.h"
 
-#include "atlas_io/Trace.h"
-#include "atlas_io/detail/Defaults.h"
+#include "eckit/codec/Trace.h"
+#include "eckit/codec/detail/Defaults.h"
 
 namespace atlas {
 namespace io {

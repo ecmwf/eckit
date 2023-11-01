@@ -15,20 +15,20 @@
 #include <vector>
 
 
-#include "atlas_io/FileStream.h"
-#include "atlas_io/RecordItem.h"
-#include "atlas_io/Stream.h"
-#include "atlas_io/detail/Encoder.h"
-#include "atlas_io/detail/NoConfig.h"
-#include "atlas_io/detail/Reference.h"
-#include "atlas_io/detail/TypeTraits.h"
+#include "eckit/codec/FileStream.h"
+#include "eckit/codec/RecordItem.h"
+#include "eckit/codec/Stream.h"
+#include "eckit/codec/detail/Encoder.h"
+#include "eckit/codec/detail/NoConfig.h"
+#include "eckit/codec/detail/Reference.h"
+#include "eckit/codec/detail/TypeTraits.h"
 
-#include "atlas_io/types/array/ArrayReference.h"
-#include "atlas_io/types/scalar.h"
-#include "atlas_io/types/string.h"
+#include "eckit/codec/types/array/ArrayReference.h"
+#include "eckit/codec/types/scalar.h"
+#include "eckit/codec/types/string.h"
 
 
-#include "atlas_io/detail/Defaults.h"
+#include "eckit/codec/detail/Defaults.h"
 
 
 namespace atlas {

@@ -14,17 +14,18 @@
 
 #include "eckit/utils/Compressor.h"
 
-#include "atlas_io/Stream.h"
-#include "atlas_io/Trace.h"
-#include "atlas_io/detail/Assert.h"
-#include "atlas_io/detail/Checksum.h"
+#include "eckit/codec/Stream.h"
+#include "eckit/codec/Trace.h"
+#include "eckit/codec/detail/Assert.h"
+#include "eckit/codec/detail/Checksum.h"
 
 namespace atlas {
 namespace io {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-Data::Data(void* p, size_t size): buffer_(p, size), size_(size) {}
+Data::Data(void* p, size_t size) :
+    buffer_(p, size), size_(size) {}
 
 std::uint64_t Data::write(Stream& out) const {
     ATLAS_IO_TRACE();

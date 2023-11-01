@@ -10,14 +10,14 @@
 
 #include "RecordItemReader.h"
 
-#include "atlas_io/Exceptions.h"
-#include "atlas_io/FileStream.h"
-#include "atlas_io/Record.h"
-#include "atlas_io/Session.h"
-#include "atlas_io/Trace.h"
-#include "atlas_io/detail/Assert.h"
-#include "atlas_io/detail/ParsedRecord.h"
-#include "atlas_io/detail/RecordSections.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/FileStream.h"
+#include "eckit/codec/Record.h"
+#include "eckit/codec/Session.h"
+#include "eckit/codec/Trace.h"
+#include "eckit/codec/detail/Assert.h"
+#include "eckit/codec/detail/ParsedRecord.h"
+#include "eckit/codec/detail/RecordSections.h"
 
 namespace atlas {
 namespace io {
@@ -116,7 +116,8 @@ static Record read_record(Stream in, size_t offset) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItemReader::RecordItemReader(Stream in, size_t offset, const std::string& key): in_(in), uri_{"", offset, key} {
+RecordItemReader::RecordItemReader(Stream in, size_t offset, const std::string& key) :
+    in_(in), uri_{"", offset, key} {
     ATLAS_IO_TRACE("RecordItemReader(Stream,offset,key");
     record_ = read_record(in, uri_.offset);
 
@@ -125,7 +126,8 @@ RecordItemReader::RecordItemReader(Stream in, size_t offset, const std::string& 
     }
 }
 
-RecordItemReader::RecordItemReader(Stream in, const std::string& key): in_(in), uri_{"", 0, key} {
+RecordItemReader::RecordItemReader(Stream in, const std::string& key) :
+    in_(in), uri_{"", 0, key} {
     record_ = read_record(in, uri_.offset);
 
     if (not record_.has(uri_.key)) {
@@ -136,11 +138,13 @@ RecordItemReader::RecordItemReader(Stream in, const std::string& key): in_(in), 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItemReader::RecordItemReader(const std::string& uri): RecordItemReader("", uri) {}
+RecordItemReader::RecordItemReader(const std::string& uri) :
+    RecordItemReader("", uri) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItemReader::RecordItemReader(const std::string& ref, const std::string& uri): ref_{ref}, uri_{uri} {
+RecordItemReader::RecordItemReader(const std::string& ref, const std::string& uri) :
+    ref_{ref}, uri_{uri} {
     auto absolute_path = make_absolute_path(ref_, uri_);
 
     if (not absolute_path.exists()) {

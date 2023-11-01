@@ -25,13 +25,13 @@
 
 #include "eckit/utils/ByteSwap.h"
 
-#include "atlas_io/atlas_compat.h"
-#include "atlas_io/detail/Assert.h"
-#include "atlas_io/detail/DataType.h"
+#include "eckit/codec/atlas_compat.h"
+#include "eckit/codec/detail/Assert.h"
+#include "eckit/codec/detail/DataType.h"
 
-#include "atlas_io/Data.h"
-#include "atlas_io/Metadata.h"
-#include "atlas_io/detail/Base64.h"
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/detail/Base64.h"
 
 namespace atlas {
 namespace io {

@@ -12,10 +12,10 @@
 
 #include <string>
 
-#include "atlas_io/Data.h"
-#include "atlas_io/Metadata.h"
-#include "atlas_io/atlas_compat.h"
-#include "atlas_io/detail/Assert.h"
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/atlas_compat.h"
+#include "eckit/codec/detail/Assert.h"
 
 namespace atlas {
 namespace io {

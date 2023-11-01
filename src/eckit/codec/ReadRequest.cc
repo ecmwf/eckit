@@ -1,26 +1,24 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "ReadRequest.h"
 
-#include "eckit/log/Log.h"
+#include "eckit/codec/ReadRequest.h"
 
-#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/RecordItemReader.h"
-#include "eckit/codec/Trace.h"
-#include "eckit/codec/detail/Assert.h"
 #include "eckit/codec/detail/Checksum.h"
 #include "eckit/codec/detail/Defaults.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 static std::string stream_path(Stream stream) {
     std::stringstream s;
@@ -30,10 +28,10 @@ static std::string stream_path(Stream stream) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ReadRequest::ReadRequest(const std::string& URI, atlas::io::Decoder* decoder) :
+ReadRequest::ReadRequest(const std::string& URI, Decoder* decoder) :
     uri_(URI), decoder_(decoder), item_(new RecordItem()) {
     do_checksum_ = defaults::checksum_read();
-    ATLAS_IO_ASSERT(uri_.size());
+    ASSERT(uri_.size());
 }
 
 ReadRequest::ReadRequest(Stream stream, size_t offset, const std::string& key, Decoder* decoder) :
@@ -44,7 +42,7 @@ ReadRequest::ReadRequest(Stream stream, size_t offset, const std::string& key, D
     decoder_(decoder),
     item_(new RecordItem()) {
     do_checksum_ = defaults::checksum_read();
-    ATLAS_IO_ASSERT(stream_);
+    ASSERT(stream_);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -67,7 +65,7 @@ ReadRequest::ReadRequest(ReadRequest&& other) :
 ReadRequest::~ReadRequest() {
     if (item_) {
         if (not finished_) {
-            eckit::Log::error() << "Request for " << uri_ << " was not completed." << std::endl;
+            Log::error() << "Request for " << uri_ << " was not completed." << std::endl;
         }
     }
 }
@@ -125,20 +123,13 @@ void ReadRequest::decompress() {
 
 void ReadRequest::decode() {
     decompress();
-    io::decode(item_->metadata(), item_->data(), *decoder_);
-    if (item_->data().size()) {
-        ATLAS_IO_TRACE_SCOPE("deallocate");
-        item_->clear();
-    }
-    else {
-        item_->clear();
-    }
+    codec::decode(item_->metadata(), item_->data(), *decoder_);
+    item_->clear();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void ReadRequest::wait() {
-    ATLAS_IO_TRACE("ReadRequest::wait(" + uri_ + ")");
     if (item_) {
         if (not finished_) {
             read();
@@ -152,5 +143,4 @@ void ReadRequest::wait() {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

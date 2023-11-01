@@ -1,25 +1,25 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "JSONFormat.h"
 
-#include "eckit/log/JSON.h"
+#include "eckit/codec/print/JSONFormat.h"
 
 #include "eckit/codec/Record.h"
 #include "eckit/codec/RecordItemReader.h"
 #include "eckit/codec/Session.h"
+#include "eckit/log/JSON.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
-JSONFormat::JSONFormat(const Record::URI& record, const eckit::Configuration& config) :
+JSONFormat::JSONFormat(const Record::URI& record, const Configuration& config) :
     record_(Session::record(record.path, record.offset)) {
     for (const auto& key : record_.keys()) {
         items_.emplace(key, Metadata());
@@ -30,7 +30,7 @@ JSONFormat::JSONFormat(const Record::URI& record, const eckit::Configuration& co
 }
 
 void JSONFormat::print(std::ostream& out) const {
-    eckit::JSON js(out, eckit::JSON::Formatting::indent(4));
+    JSON js(out, JSON::Formatting::indent(4));
 
     Metadata metadata;
     for (const auto& key : record_.keys()) {
@@ -70,5 +70,4 @@ void JSONFormat::print(std::ostream& out) const {
 }
 
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

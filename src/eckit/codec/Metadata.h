@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
@@ -20,35 +22,33 @@
 #include "eckit/codec/detail/Link.h"
 #include "eckit/codec/detail/RecordInfo.h"
 #include "eckit/codec/detail/Type.h"
-
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/value/Value.h"
 
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 class Metadata;
 class Stream;
 
 //---------------------------------------------------------------------------------------------------------------------
 
-size_t uncompressed_size(const atlas::io::Metadata& m);
+size_t uncompressed_size(const Metadata& m);
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class Metadata : public eckit::LocalConfiguration {
+class Metadata : public LocalConfiguration {
 public:
-    using eckit::LocalConfiguration::LocalConfiguration;
+    using LocalConfiguration::LocalConfiguration;
 
     Metadata() :
-        eckit::LocalConfiguration() {}
+        LocalConfiguration() {}
 
     Link link() const { return Link{getString("link", "")}; }
 
     Type type() const { return Type{getString("type", "")}; }
 
-    void link(atlas::io::Metadata&&);
+    void link(Metadata&&);
 
     std::string json() const;
 
@@ -57,12 +57,12 @@ public:
 
 
     // extended LocalConfiguration:
-    using eckit::LocalConfiguration::set;
-    Metadata& set(const eckit::LocalConfiguration& other) {
-        eckit::Value& root = const_cast<eckit::Value&>(get());
-        auto& other_root   = other.get();
+    using LocalConfiguration::set;
+    Metadata& set(const LocalConfiguration& other) {
+        Value& root      = const_cast<Value&>(get());
+        auto& other_root = other.get();
         std::vector<std::string> other_keys;
-        eckit::fromValue(other_keys, other_root.keys());
+        fromValue(other_keys, other_root.keys());
         for (auto& key : other_keys) {
             root[key] = other_root[key];
         }
@@ -76,12 +76,12 @@ public:
     }
 
     /// @brief Constructor starting from a Configuration
-    Metadata(const eckit::Configuration& other) :
-        eckit::LocalConfiguration(other) {}
+    Metadata(const Configuration& other) :
+        LocalConfiguration(other) {}
 
 
     Metadata& remove(const std::string& name) {
-        eckit::Value& root = const_cast<eckit::Value&>(get());
+        Value& root = const_cast<Value&>(get());
         root.remove(name);
         return *this;
     }
@@ -90,18 +90,17 @@ public:
     std::vector<std::string> keys() const {
         // Preserves order of keys
         std::vector<std::string> result;
-        eckit::fromValue(result, get().keys());
+        fromValue(result, get().keys());
         return result;
     }
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void write(const atlas::io::Metadata&, std::ostream& out);
+void write(const Metadata&, std::ostream& out);
 
-void write(const atlas::io::Metadata&, atlas::io::Stream& out);
+void write(const Metadata&, Stream& out);
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

@@ -1,44 +1,23 @@
 /*
- * (C) Copyright 2013 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
+#include <cstddef>
 #include <string>
 
 //------------------------------------------------------------------------------------------------------
 
-// For type safety we want to use std::byte for the DataType "BYTE", but it is a C++17 feature.
-// Backport std::byte here without any operations
-#if __cplusplus >= 201703L
-#include <cstddef>
-#else
-#ifndef STD_BYTE_DEFINED
-#define STD_BYTE_DEFINED
-namespace std {
-#ifdef _CRAYC
-struct byte {
-    unsigned char byte_;
-};
-#else
-enum class byte : unsigned char
-{
-};
-#endif
-}  // namespace std
-#endif
-#endif
-
-//------------------------------------------------------------------------------------------------------
-
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 class DataType {
 public:
@@ -413,5 +392,4 @@ inline DataType make_datatype() {
 
 //------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

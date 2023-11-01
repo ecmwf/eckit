@@ -1,39 +1,36 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "Metadata.h"
+
+#include "eckit/codec/Metadata.h"
 
 #include <limits>
 #include <ostream>
 #include <sstream>
 
+#include "eckit/codec/types/ArrayReference.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 
-#include "eckit/codec/atlas_compat.h"
-#include "eckit/codec/detail/Assert.h"
-
-#include "eckit/codec/Exceptions.h"
-#include "eckit/codec/types/array/ArrayReference.h"
-
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-size_t uncompressed_size(const atlas::io::Metadata& m) {
+size_t uncompressed_size(const Metadata& m) {
     if (m.has("data.size")) {
         return m.getUnsigned("data.size");
     }
     else if (m.has("type")) {
         if (m.getString("type") == "array") {
-            atlas::io::ArrayMetadata array(m);
+            ArrayMetadata array(m);
             return array.bytes();
         }
     }
@@ -45,12 +42,12 @@ size_t uncompressed_size(const atlas::io::Metadata& m) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-void write(const atlas::io::Metadata& metadata, std::ostream& out) {
-    eckit::JSON js(out, eckit::JSON::Formatting::indent(4));
+void write(const Metadata& metadata, std::ostream& out) {
+    JSON js(out, JSON::Formatting::indent(4));
     js << metadata;
 }
 
-void write(const atlas::io::Metadata& metadata, atlas::io::Stream& out) {
+void write(const Metadata& metadata, Stream& out) {
     std::stringstream ss;
     write(metadata, ss);
     std::string s = ss.str();
@@ -61,7 +58,7 @@ void write(const atlas::io::Metadata& metadata, atlas::io::Stream& out) {
 
 void Metadata::link(Metadata&& linked) {
     std::string initial_link = link();
-    ATLAS_IO_ASSERT(initial_link.size());
+    ASSERT(initial_link.size());
 
     data   = std::move(linked.data);
     record = std::move(linked.record);
@@ -74,12 +71,11 @@ void Metadata::link(Metadata&& linked) {
 
 std::string Metadata::json() const {
     std::stringstream s;
-    eckit::JSON js(s, eckit::JSON::Formatting::compact());
+    JSON js(s, JSON::Formatting::compact());
     js << *this;
     return s.str();
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

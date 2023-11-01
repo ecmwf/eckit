@@ -1,26 +1,25 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "RecordItemReader.h"
 
-#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/RecordItemReader.h"
+
 #include "eckit/codec/FileStream.h"
 #include "eckit/codec/Record.h"
 #include "eckit/codec/Session.h"
-#include "eckit/codec/Trace.h"
-#include "eckit/codec/detail/Assert.h"
 #include "eckit/codec/detail/ParsedRecord.h"
 #include "eckit/codec/detail/RecordSections.h"
+#include "eckit/exception/Exceptions.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 
 namespace {
@@ -47,19 +46,18 @@ inline Struct read_struct(IStream& in) {
 //---------------------------------------------------------------------------------------------------------------------
 
 static Data read_data(const Record& record, int data_section_index, Stream in) {
-    ATLAS_IO_TRACE("read_data(data_section=" + std::to_string(data_section_index) + ")");
     if (data_section_index == 0) {
-        return atlas::io::Data();
+        return Data();
     }
 
     const auto& parsed       = static_cast<const ParsedRecord&>(record);
     const auto& data_section = parsed.data_sections.at(size_t(data_section_index) - 1);
 
-    atlas::io::Data data;
+    Data data;
     auto offset = data_section.offset;
     in.seek(offset);
 
-    auto data_begin = atlas::io::read_struct<RecordDataSection::Begin>(in);
+    auto data_begin = read_struct<RecordDataSection::Begin>(in);
     if (not data_begin.valid()) {
         throw InvalidRecord("Data section is not valid");
     }
@@ -68,9 +66,9 @@ static Data read_data(const Record& record, int data_section_index, Stream in) {
         if (data.read(in, data_size) != data_size) {
             throw InvalidRecord("Data section is not valid");
         }
-        ATLAS_IO_ASSERT(data.size() == data_size);
+        ASSERT(data.size() == data_size);
     }
-    auto data_end = atlas::io::read_struct<RecordDataSection::End>(in);
+    auto data_end = read_struct<RecordDataSection::End>(in);
     if (not data_end.valid()) {
         throw InvalidRecord("Data section is not valid");
     }
@@ -79,10 +77,10 @@ static Data read_data(const Record& record, int data_section_index, Stream in) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static eckit::PathName make_absolute_path(const std::string& reference_path, RecordItem::URI& uri) {
-    eckit::PathName absolute_path = uri.path;
+static PathName make_absolute_path(const std::string& reference_path, RecordItem::URI& uri) {
+    PathName absolute_path = uri.path;
     if (reference_path.size() && uri.path[0] != '/' && uri.path[0] != '~') {
-        absolute_path = eckit::PathName{reference_path} / absolute_path;
+        absolute_path = PathName{reference_path} / absolute_path;
     }
     return absolute_path.fullName();
 }
@@ -118,7 +116,6 @@ static Record read_record(Stream in, size_t offset) {
 
 RecordItemReader::RecordItemReader(Stream in, size_t offset, const std::string& key) :
     in_(in), uri_{"", offset, key} {
-    ATLAS_IO_TRACE("RecordItemReader(Stream,offset,key");
     record_ = read_record(in, uri_.offset);
 
     if (not record_.has(uri_.key)) {
@@ -160,8 +157,8 @@ RecordItemReader::RecordItemReader(const std::string& ref, const std::string& ur
 //---------------------------------------------------------------------------------------------------------------------
 
 void RecordItemReader::read(RecordItem& item) {
-    io::Metadata metadata;
-    io::Data data;
+    Metadata metadata;
+    Data data;
 
     read(metadata, data);
 
@@ -172,8 +169,6 @@ void RecordItemReader::read(RecordItem& item) {
 //---------------------------------------------------------------------------------------------------------------------
 
 void RecordItemReader::read(Metadata& metadata, bool follow_links) {
-    ATLAS_IO_TRACE("RecordItemReader::read_metadata(" + uri_.path + ":" + uri_.key + ")");
-
     metadata = record_.metadata(uri_.key);
 
     if (follow_links && metadata.link()) {
@@ -187,29 +182,25 @@ void RecordItemReader::read(Metadata& metadata, bool follow_links) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-static void read_from_stream(Record record, Stream in, const std::string& key, io::Metadata& metadata, io::Data& data) {
-    ATLAS_IO_TRACE("RecordItemReader::read( Stream, " + key + ")");
-
+static void read_from_stream(Record record, Stream in, const std::string& key, Metadata& metadata, Data& data) {
     metadata = record.metadata(key);
 
     if (metadata.link()) {
-        throw atlas::io::Exception("Cannot follow links in records that are not file based");
+        throw Exception("Cannot follow links in records that are not file based");
     }
     else {
         if (metadata.data.section()) {
-            data = atlas::io::read_data(record, metadata.data.section(), in);
+            data = read_data(record, metadata.data.section(), in);
         }
     }
 }
 
 
-void RecordItemReader::read(io::Metadata& metadata, io::Data& data) {
+void RecordItemReader::read(Metadata& metadata, Data& data) {
     if (in_) {
         read_from_stream(record_, in_, uri_.key, metadata, data);
         return;
     }
-
-    ATLAS_IO_TRACE("RecordItemReader::read(" + uri_.path + ":" + uri_.key + ")");
 
     metadata = record_.metadata(uri_.key);
 
@@ -222,12 +213,11 @@ void RecordItemReader::read(io::Metadata& metadata, io::Data& data) {
     }
     else {
         if (metadata.data.section()) {
-            data = atlas::io::read_data(record_, metadata.data.section(), InputFileStream(absolute_path));
+            data = read_data(record_, metadata.data.section(), InputFileStream(absolute_path));
         }
     }
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

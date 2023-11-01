@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
@@ -17,15 +19,14 @@ namespace eckit {
 class DataHandle;
 }
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
 /// @class Stream
 /// @brief Handle to a shared eckit::DataHandle
 ///
-/// Note, a Stream is not intended to be opened and closed within atlas::io context
+/// Note, a Stream is not intended to be opened and closed within eckit::codec context
 /// The derived classes InputFileStream and OutputFileStream automatically open and close
 /// on construction an destruction.
 class Stream {
@@ -35,21 +36,21 @@ public:
     Stream() = default;
 
     /// Constructor taking ownership of datahandle
-    Stream(eckit::DataHandle*);
+    Stream(DataHandle*);
 
     /// Constructor to share datahandle with a shared_ptr
-    Stream(std::shared_ptr<eckit::DataHandle>);
+    Stream(std::shared_ptr<DataHandle>);
 
     /// Constructor referencing datahandle, no ownership is taken
     /// @note The usability depends on the usable lifetime of
     ///       the referenced datahandle
-    Stream(eckit::DataHandle&);
+    Stream(DataHandle&);
 
     /// Assignment constructor sharing datahandle with other Stream
     Stream(const Stream&);
 
-    /// Access internal eckit::DataHandle
-    eckit::DataHandle& datahandle();
+    /// Access internal DataHandle
+    DataHandle& datahandle();
 
     /// Move position to given offset
     std::uint64_t seek(std::uint64_t offset);
@@ -71,11 +72,10 @@ public:
     operator bool() const { return ptr_; }
 
 private:
-    std::shared_ptr<eckit::DataHandle> shared_;
-    eckit::DataHandle* ptr_{nullptr};
+    std::shared_ptr<DataHandle> shared_;
+    DataHandle* ptr_{nullptr};
 };
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

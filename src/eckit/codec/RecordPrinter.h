@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
@@ -14,25 +16,23 @@
 #include <iosfwd>
 #include <string>
 
-#include "eckit/config/Configuration.h"
-#include "eckit/filesystem/PathName.h"
-
 #include "eckit/codec/Record.h"
 #include "eckit/codec/Session.h"
 #include "eckit/codec/detail/NoConfig.h"
+#include "eckit/config/Configuration.h"
+#include "eckit/filesystem/PathName.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
 class RecordPrinter {
 public:
-    RecordPrinter(const Record::URI&, const eckit::Configuration& = NoConfig());
+    RecordPrinter(const Record::URI&, const Configuration& = NoConfig());
 
-    RecordPrinter(const eckit::PathName&, const eckit::Configuration& = NoConfig());
+    RecordPrinter(const PathName&, const Configuration& = NoConfig());
 
-    RecordPrinter(const eckit::PathName&, std::uint64_t offset, const eckit::Configuration& = NoConfig());
+    RecordPrinter(const PathName&, std::uint64_t offset, const Configuration& = NoConfig());
 
     Record record() const { return record_; }
 
@@ -61,5 +61,4 @@ private:
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

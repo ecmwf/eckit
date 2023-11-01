@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
@@ -14,25 +16,20 @@
 #include <string>
 #include <vector>
 
-
 #include "eckit/codec/FileStream.h"
 #include "eckit/codec/RecordItem.h"
 #include "eckit/codec/Stream.h"
+#include "eckit/codec/detail/Defaults.h"
 #include "eckit/codec/detail/Encoder.h"
 #include "eckit/codec/detail/NoConfig.h"
 #include "eckit/codec/detail/Reference.h"
 #include "eckit/codec/detail/TypeTraits.h"
-
-#include "eckit/codec/types/array/ArrayReference.h"
+#include "eckit/codec/types/ArrayReference.h"
 #include "eckit/codec/types/scalar.h"
 #include "eckit/codec/types/string.h"
 
 
-#include "eckit/codec/detail/Defaults.h"
-
-
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 template <typename Interpreted, typename T>
 Interpreted interprete(T& in) {
@@ -62,49 +59,49 @@ public:
     // -- set( Key, Value ) where Value can be a variety of things
 
     /// @brief Add link to other record item (RecordItem::URI)
-    void set(const Key&, Link&&, const eckit::Configuration& = NoConfig());
+    void set(const Key&, Link&&, const Configuration& = NoConfig());
 
     /// @brief Add item to record
-    void set(const Key&, Encoder&&, const eckit::Configuration& = NoConfig());
+    void set(const Key&, Encoder&&, const Configuration& = NoConfig());
 
     /// @brief Add item to record
     template <typename Value, enable_if_rvalue_t<Value&&> = 0>
-    void set(const Key& key, Value&& value, const eckit::Configuration& config = NoConfig()) {
+    void set(const Key& key, Value&& value, const Configuration& config = NoConfig()) {
         set(key, Encoder{std::move(value)}, config);
     }
 
     /// @brief Add item to record
     template <typename Value>
-    void set(const Key& key, const Reference<Value>& value, const eckit::Configuration& config = NoConfig()) {
+    void set(const Key& key, const Reference<Value>& value, const Configuration& config = NoConfig()) {
         set(key, std::move(value), config);
     }
 
     /// @brief Add item to record
     template <typename Value, enable_if_interpretable_t<Value, ArrayReference> = 0>
-    void set(const Key& key, const Value& value, const eckit::Configuration& config = NoConfig()) {
+    void set(const Key& key, const Value& value, const Configuration& config = NoConfig()) {
         set(key, RecordItem(interprete<ArrayReference>(value)), config);
     }
 
     /// @brief Add item to record
     template <typename Value, disable_if_interpretable_t<Value, ArrayReference> = 0>
-    void set(const Key& key, const Value& value, const eckit::Configuration& config = NoConfig()) {
+    void set(const Key& key, const Value& value, const Configuration& config = NoConfig()) {
         set(key, Encoder{value}, config);
     }
 
-    void set(const Key& key, const char* value, const eckit::Configuration& config = NoConfig()) {
+    void set(const Key& key, const char* value, const Configuration& config = NoConfig()) {
         set(key, Encoder{std::string(value)}, config);
     }
 
-    void set(const Key& key, const std::string& value, const eckit::Configuration& config = NoConfig()) {
+    void set(const Key& key, const std::string& value, const Configuration& config = NoConfig()) {
         set(key, Encoder{std::string(value)}, config);
     }
 
     /// @brief Write new record to path
-    size_t write(const eckit::PathName&, Mode = Mode::write) const;
+    size_t write(const PathName&, Mode = Mode::write) const;
 
     /// @brief Write new record to a DataHandle
     /// @pre The DataHandle must be opened for Write access.
-    size_t write(eckit::DataHandle&) const;
+    size_t write(DataHandle&) const;
 
     /// @brief Write new record to a Stream
     /// @pre The Stream must be opened for Write access.
@@ -133,5 +130,4 @@ private:
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

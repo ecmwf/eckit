@@ -1,21 +1,22 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
 #include "eckit/codec/Data.h"
 #include "eckit/codec/Metadata.h"
-#include "eckit/codec/types/array/ArrayMetadata.h"
+#include "eckit/codec/types/ArrayMetadata.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -35,7 +36,7 @@ public:
 
     void* data() const { return data_; }
 
-    friend void decode(const atlas::io::Metadata&, const atlas::io::Data&, ArrayReference&);
+    friend void decode(const Metadata&, const Data&, ArrayReference&);
 
 private:
     void* data_{nullptr};
@@ -43,11 +44,10 @@ private:
 
 //---------------------------------------------------------------------------------------------------------------------
 
-size_t encode_metadata(const ArrayReference& value, atlas::io::Metadata& out);
+size_t encode_metadata(const ArrayReference& value, Metadata& out);
 
-void encode_data(const ArrayReference& value, atlas::io::Data& out);
+void encode_data(const ArrayReference& value, Data& out);
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

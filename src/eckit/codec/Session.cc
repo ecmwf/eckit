@@ -1,14 +1,16 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "Session.h"
+
+#include "eckit/codec/Session.h"
 
 #include <atomic>
 #include <cstdint>
@@ -17,14 +19,10 @@
 #include <mutex>
 #include <sstream>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 
-#include "eckit/codec/Exceptions.h"
-#include "eckit/codec/atlas_compat.h"
-#include "eckit/codec/detail/Assert.h"
-
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 using lock_guard = std::lock_guard<std::recursive_mutex>;
 
@@ -93,7 +91,7 @@ void ActiveSession::store(Stream stream) {
 SessionImpl& ActiveSession::current() {
     lock_guard lock(mutex_);
     if (count_ == 0) {
-        throw Exception("No atlas::io session is currently active", Here());
+        throw Exception("No eckit::codec session is currently active", Here());
     }
     return *session_;
 }
@@ -103,7 +101,7 @@ SessionImpl& ActiveSession::current() {
 void ActiveSession::push() {
     lock_guard lock(mutex_);
     if (count_ == 0) {
-        ATLAS_IO_ASSERT(session_ == nullptr);
+        ASSERT(session_ == nullptr);
         session_.reset(new SessionImpl());
     }
     ++count_;
@@ -114,7 +112,7 @@ void ActiveSession::push() {
 void ActiveSession::pop() {
     lock_guard lock(mutex_);
     if (count_ == 0) {
-        throw Exception("No atlas::io session is currently active", Here());
+        throw Exception("No eckit::codec session is currently active", Here());
     }
     --count_;
     if (count_ == 0) {
@@ -180,5 +178,4 @@ void Session::store(Stream stream) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

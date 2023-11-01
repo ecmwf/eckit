@@ -1,31 +1,29 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "TableFormat.h"
+
+#include "eckit/codec/print/TableFormat.h"
 
 #include <iomanip>
 
-#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/Record.h"
 #include "eckit/codec/RecordItemReader.h"
 #include "eckit/codec/Session.h"
-#include "eckit/codec/detail/Assert.h"
 #include "eckit/codec/print/Bytes.h"
-#include "eckit/codec/types/array/ArrayReference.h"
+#include "eckit/codec/types/ArrayReference.h"
 #include "eckit/codec/types/scalar.h"
+#include "eckit/exception/Exceptions.h"
 
-#include "eckit/codec/atlas_compat.h"
-
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 
 std::ostream& operator<<(std::ostream& out, const MetadataPrettyPrintBase& p) {
@@ -65,7 +63,7 @@ public:
         metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
-        ATLAS_IO_ASSERT(type == "array");
+        ASSERT(type == "array");
         ArrayMetadata array(metadata_);
         out << std::setw(7) << std::left << array.datatype().str();
         if (metadata_.has("value")) {
@@ -109,7 +107,7 @@ public:
         metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
-        ATLAS_IO_ASSERT(type == "string");
+        ASSERT(type == "string");
         std::string value = metadata_.getString("value");
         if (value.size() <= 32) {
             out << value;
@@ -131,12 +129,12 @@ public:
     T decode() const {
         T value;
         Data dummy;
-        atlas::io::decode(metadata_, dummy, value);
+        codec::decode(metadata_, dummy, value);
         return value;
     }
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
-        ATLAS_IO_ASSERT(type == "scalar");
+        ASSERT(type == "scalar");
         std::string datatype = metadata_.getString("datatype");
         out << std::setw(7) << std::left << datatype << ": ";
         if (datatype == DataType::str<double>()) {
@@ -161,7 +159,7 @@ private:
 };
 
 
-MetadataPrettyPrint::MetadataPrettyPrint(const atlas::io::Metadata& m) {
+MetadataPrettyPrint::MetadataPrettyPrint(const Metadata& m) {
     std::string type = m.getString("type");
 
     // Poor man factory builder
@@ -261,7 +259,7 @@ struct TablePrinter {
 };
 
 
-TableFormat::TableFormat(const Record::URI& record, const eckit::Parametrisation& config) :
+TableFormat::TableFormat(const Record::URI& record, const Parametrisation& config) :
     record_(Session::record(record.path, record.offset)) {
     for (const auto& key : record_.keys()) {
         items_.emplace(key, Metadata());
@@ -272,7 +270,7 @@ TableFormat::TableFormat(const Record::URI& record, const eckit::Parametrisation
 }
 
 void TableFormat::print(std::ostream& out) const {
-    ATLAS_IO_ASSERT(not record_.empty());
+    ASSERT(not record_.empty());
 
     TablePrinter table;
     table.column("name");
@@ -326,5 +324,4 @@ void TableFormat::print(std::ostream& out) const {
 }
 
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

@@ -1,30 +1,26 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "Decoder.h"
 
-#include "eckit/codec/Trace.h"
+#include "eckit/codec/detail/Decoder.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
-void decode(const atlas::io::Metadata& metadata, const atlas::io::Data& data, Decoder& decoder) {
-    ATLAS_IO_TRACE("decode");
+void decode(const Metadata& metadata, const Data& data, Decoder& decoder) {
     decoder.self_->decode_(metadata, data);
 }
 
-void decode(const atlas::io::Metadata& metadata, const atlas::io::Data& data, Decoder&& decoder) {
-    ATLAS_IO_TRACE_SCOPE("decode");
+void decode(const Metadata& metadata, const Data& data, Decoder&& decoder) {
     decoder.self_->decode_(metadata, data);
 }
 
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

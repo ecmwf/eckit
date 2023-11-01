@@ -1,29 +1,28 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "ArrayMetadata.h"
+
+#include "eckit/codec/types/ArrayMetadata.h"
 
 #include <algorithm>
 #include <functional>
 #include <numeric>
 
-#include "eckit/codec/Exceptions.h"
-#include "eckit/codec/atlas_compat.h"
-#include "eckit/codec/detail/Assert.h"
+#include "eckit/exception/Exceptions.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-size_t encode_metadata(const ArrayMetadata& value, atlas::io::Metadata& out) {
+size_t encode_metadata(const ArrayMetadata& value, Metadata& out) {
     out.set("type", value.type());
     out.set("shape", value.shape_);
     out.set("datatype", value.datatype_.str());
@@ -46,11 +45,11 @@ int ArrayMetadata::shape(int i) const {
 ArrayMetadata::ArrayMetadata(const Metadata& metadata) :
     datatype_(DataType::KIND_REAL64) /* circumvent absense of default constructor */ {
     std::string encoded_type;
-    ATLAS_IO_ASSERT_MSG(metadata.get("type", encoded_type), "metadata is missing 'type'");
-    ATLAS_IO_ASSERT_MSG(encoded_type == type(), "metadata has unexpected type '" + encoded_type + "'");
-    ATLAS_IO_ASSERT_MSG(metadata.get("shape", shape_), "metadata is missing 'shape'");
+    ASSERT_MSG(metadata.get("type", encoded_type), "metadata is missing 'type'");
+    ASSERT_MSG(encoded_type == type(), "metadata has unexpected type '" + encoded_type + "'");
+    ASSERT_MSG(metadata.get("shape", shape_), "metadata is missing 'shape'");
     std::string datatype_str;
-    ATLAS_IO_ASSERT_MSG(metadata.get("datatype", datatype_str), "metadata is missing 'datatype'");
+    ASSERT_MSG(metadata.get("datatype", datatype_str), "metadata is missing 'datatype'");
     datatype_ = DataType(datatype_str);
 }
 
@@ -90,5 +89,4 @@ ArrayMetadata& ArrayMetadata::operator=(ArrayMetadata&& rhs) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

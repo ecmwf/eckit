@@ -1,30 +1,29 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "RecordItem.h"
 
+#include "eckit/codec/RecordItem.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 
-#include "eckit/codec/atlas_compat.h"
-#include "eckit/codec/detail/Assert.h"
-
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
 RecordItem::URI::URI(const std::string& _uri) {
     eckit::URI uri{_uri};
 
-    ATLAS_IO_ASSERT(uri.scheme() == "file");
-    ATLAS_IO_ASSERT(not uri.query("key").empty());
+    ASSERT(uri.scheme() == "file");
+    ASSERT(not uri.query("key").empty());
 
     path   = uri.path();
     offset = 0;
@@ -42,7 +41,7 @@ RecordItem::URI::URI(const std::string& _path, uint64_t _offset, const std::stri
 //---------------------------------------------------------------------------------------------------------------------
 
 std::string RecordItem::URI::str() const {
-    eckit::URI uri("file", eckit::PathName(path));
+    eckit::URI uri("file", PathName(path));
     uri.query("offset", std::to_string(offset));
     uri.query("key", key);
     return uri.asRawString();
@@ -92,13 +91,13 @@ bool RecordItem::empty() const {
 
 void RecordItem::clear() {
     data_.clear();
-    metadata_.reset(new atlas::io::Metadata());
+    metadata_.reset(new Metadata());
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
 void RecordItem::decompress() {
-    ATLAS_IO_ASSERT(not empty());
+    ASSERT(not empty());
     if (metadata().data.compressed()) {
         data_.decompress(metadata().data.compression(), metadata().data.size());
     }
@@ -108,7 +107,7 @@ void RecordItem::decompress() {
 //---------------------------------------------------------------------------------------------------------------------
 
 void RecordItem::compress() {
-    ATLAS_IO_ASSERT(not empty());
+    ASSERT(not empty());
     if (not metadata().data.compressed() && metadata().data.compression() != "none") {
         data_.compress(metadata().data.compression());
         metadata_->data.compressed(true);
@@ -130,5 +129,4 @@ void encode_data(const RecordItem& in, Data& out) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

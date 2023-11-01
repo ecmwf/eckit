@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
@@ -21,8 +23,7 @@
 #include "eckit/codec/RecordItemReader.h"
 #include "eckit/codec/Session.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 class MetadataPrettyPrintBase {
 public:
@@ -34,7 +35,7 @@ public:
 
 class MetadataPrettyPrint {
 public:
-    MetadataPrettyPrint(const atlas::io::Metadata&);
+    MetadataPrettyPrint(const Metadata&);
     friend std::ostream& operator<<(std::ostream& out, const MetadataPrettyPrint& p);
     std::string str() const;
 
@@ -44,7 +45,7 @@ private:
 
 class TableFormat {
 public:
-    TableFormat(const Record::URI& record, const eckit::Parametrisation& config);
+    TableFormat(const Record::URI& record, const Parametrisation& config);
 
     void print(std::ostream&) const;
 
@@ -55,5 +56,4 @@ private:
 };
 
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

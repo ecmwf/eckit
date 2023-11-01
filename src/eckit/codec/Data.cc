@@ -1,26 +1,25 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
-#include "Data.h"
+
+#include "eckit/codec/Data.h"
 
 #include <memory>
 
+#include "eckit/codec/Stream.h"
+#include "eckit/codec/detail/Checksum.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Compressor.h"
 
-#include "eckit/codec/Stream.h"
-#include "eckit/codec/Trace.h"
-#include "eckit/codec/detail/Assert.h"
-#include "eckit/codec/detail/Checksum.h"
-
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -28,9 +27,8 @@ Data::Data(void* p, size_t size) :
     buffer_(p, size), size_(size) {}
 
 std::uint64_t Data::write(Stream& out) const {
-    ATLAS_IO_TRACE();
     if (size()) {
-        ATLAS_IO_ASSERT(buffer_.size() >= size());
+        ASSERT(buffer_.size() >= size());
         return out.write(buffer_.data(), size());
     }
     return 0;
@@ -46,39 +44,36 @@ std::uint64_t Data::read(Stream& in, size_t size) {
 
 
 void Data::compress(const std::string& compression) {
-    ATLAS_IO_TRACE("compress(" + compression + ")");
     if (size_) {
-        auto compressor = std::unique_ptr<eckit::Compressor>(eckit::CompressorFactory::instance().build(compression));
-        if (dynamic_cast<eckit::NoCompressor*>(compressor.get())) {
+        auto compressor = std::unique_ptr<Compressor>(CompressorFactory::instance().build(compression));
+        if (dynamic_cast<NoCompressor*>(compressor.get())) {
             return;
         }
-        eckit::Buffer compressed(size_t(1.2 * size_));
+        Buffer compressed(size_t(1.2 * size_));
         size_   = compressor->compress(buffer_, size_, compressed);
         buffer_ = std::move(compressed);
     }
 }
 
 void Data::decompress(const std::string& compression, size_t uncompressed_size) {
-    ATLAS_IO_TRACE("decompress(" + compression + ")");
-
-    auto compressor = std::unique_ptr<eckit::Compressor>(eckit::CompressorFactory::instance().build(compression));
-    if (dynamic_cast<eckit::NoCompressor*>(compressor.get())) {
+    auto compressor = std::unique_ptr<Compressor>(CompressorFactory::instance().build(compression));
+    if (dynamic_cast<NoCompressor*>(compressor.get())) {
         return;
     }
 
-    eckit::Buffer uncompressed(size_t(1.2 * uncompressed_size));
+    Buffer uncompressed(size_t(1.2 * uncompressed_size));
     compressor->uncompress(buffer_, size_, uncompressed, uncompressed_size);
     size_   = uncompressed_size;
     buffer_ = std::move(uncompressed);
 }
 
 void Data::clear() {
-    buffer_ = eckit::Buffer{};
+    buffer_ = Buffer{};
     size_   = 0;
 }
 
 std::string Data::checksum(const std::string& algorithm) const {
-    return atlas::io::checksum(buffer_, size_, algorithm);
+    return codec::checksum(buffer_, size_, algorithm);
 }
 
 void Data::assign(const Data& other) {
@@ -115,5 +110,4 @@ void encode(const Data& in, Data& out) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

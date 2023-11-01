@@ -305,10 +305,7 @@ void TableFormat::print(std::ostream& out) const {
                 table << endian;
             }
             else {
-                table << ""
-                      << ""
-                      << ""
-                      << "";
+                table << "" << "" << "" << "";
             }
             table << created;
         }

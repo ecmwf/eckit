@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2013 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #include <bitset>
 #include <cstring>
@@ -447,7 +449,9 @@ struct EncodedArray {
     codec::Metadata metadata;
 
     EncodedArray() :
-        in{1, 2, 3, 4, 5, 6, 7, 8} { encode(in, metadata, data); }
+        in{1, 2, 3, 4, 5, 6, 7, 8} {
+        encode(in, metadata, data);
+    }
 
     friend bool operator==(const std::vector<T>& lhs, const EncodedArray<T>& rhs) {
         if (lhs.size() != rhs.in.size()) {
@@ -564,9 +568,7 @@ CASE("Encode/Decode byte array") {
     auto validate = [&]() {
         EXPECT(out == encoded);
 
-        auto to_byte = [](const char* str) {
-            return std::byte(std::bitset<8>(str).to_ulong());
-        };
+        auto to_byte = [](const char* str) { return std::byte(std::bitset<8>(str).to_ulong()); };
         EXPECT(out[0] == to_byte("00000001"));
         EXPECT(out[1] == to_byte("00000011"));
         EXPECT(out[2] == to_byte("00000111"));

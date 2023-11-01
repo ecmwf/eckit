@@ -48,16 +48,14 @@ void decode(const eckit::codec::Metadata& m, const eckit::codec::Data& encoded, 
     if (array.rank() != 2) {
         std::stringstream err;
         err << "Could not decode " << m.json() << " into std::vector<std::array<" << eckit::codec::demangle<T>() << ","
-            << N << ">>. "
-            << "Incompatible rank!";
+            << N << ">>. " << "Incompatible rank!";
         throw eckit::Exception(err.str(), Here());
     }
 
     if (array.shape(1) != N) {
         std::stringstream err;
         err << "Could not decode " << m.json() << " into std::vector<std::array<" << eckit::codec::demangle<T>() << ","
-            << N << ">>. "
-            << "Incompatible size!";
+            << N << ">>. " << "Incompatible size!";
         throw eckit::Exception(err.str(), Here());
     }
 

@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2013 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #include <cstring>
 #include <fstream>
@@ -56,7 +58,8 @@ struct Arrays {
     std::vector<float> v2;
     Matrix<int> v3{0, 0};
     bool operator==(const Arrays& other) const {
-        return v1 == other.v1 && ::memcmp(v2.data(), other.v2.data(), v2.size() * sizeof(float)) == 0 && ::memcmp(v3.data(), other.v3.data(), v3.size() * v3.datatype().size()) == 0;
+        return v1 == other.v1 && ::memcmp(v2.data(), other.v2.data(), v2.size() * sizeof(float)) == 0 &&
+               ::memcmp(v3.data(), other.v3.data(), v3.size() * v3.datatype().size()) == 0;
     }
     bool operator!=(const Arrays& other) const { return not operator==(other); }
 };

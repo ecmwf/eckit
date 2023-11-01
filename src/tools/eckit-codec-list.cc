@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2013 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #include <iostream>
 #include <string>
@@ -50,8 +52,7 @@ protected:
             return str;
         };
 
-        out << "NAME\n"
-            << indented(name());
+        out << "NAME\n" << indented(name());
         std::string brief = briefDescription();
         if (!brief.empty()) {
             out << " - " << brief << '\n';
@@ -60,14 +61,12 @@ protected:
         std::string usg = usage();
         if (!usg.empty()) {
             out << '\n';
-            out << "SYNOPSIS\n"
-                << indented(usg) << '\n';
+            out << "SYNOPSIS\n" << indented(usg) << '\n';
         }
         std::string desc = longDescription();
         if (!desc.empty()) {
             out << '\n';
-            out << "DESCRIPTION\n"
-                << indented(desc) << '\n';
+            out << "DESCRIPTION\n" << indented(desc) << '\n';
         }
         out << '\n';
         out << "OPTIONS\n";
@@ -192,8 +191,7 @@ struct EckitCodecList : public EckitCodecTool {
                     out << "\n# " << uri.path << " [" << uri.offset << "]    "
                         << "{ size: " << codec::Bytes{record.size()}.str(0) << ",    version: " << record.version()
                         << ",    created: " << record.time() << " }";
-                    out << '\n'
-                        << (config.getString("format") == "table" ? "" : "---") << '\n';
+                    out << '\n' << (config.getString("format") == "table" ? "" : "---") << '\n';
                     out << record << std::endl;
 
                     std::cout << out.str();

@@ -38,16 +38,14 @@ void decode(const eckit::codec::Metadata& m, const eckit::codec::Data& encoded, 
     if (array.datatype().kind() != eckit::codec::ArrayMetadata::DataType::kind<T>()) {
         std::stringstream err;
         err << "Could not decode " << m.json() << " into std::vector<" << typeid(typename std::decay<T>::type).name()
-            << ">. "
-            << "Incompatible datatype!";
+            << ">. " << "Incompatible datatype!";
 
         throw eckit::Exception(err.str(), Here());
     }
     if (array.size() != N) {
         std::stringstream err;
         err << "Could not decode " << m.json() << " into std::array<" << typeid(typename std::decay<T>::type).name()
-            << "," << N << ">. "
-            << "Incompatible size!";
+            << "," << N << ">. " << "Incompatible size!";
         throw eckit::Exception(err.str(), Here());
     }
     const T* data = static_cast<const T*>(encoded.data());

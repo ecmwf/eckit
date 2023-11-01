@@ -1,16 +1,24 @@
-ecbuild_add_library( TARGET eckit_codec
+
+configure_file( eckit_codec_config.h.in eckit_codec_config.h @ONLY )
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_codec_config.h
+    DESTINATION ${INSTALL_INCLUDE_DIR}/eckit
+)
+
+ecbuild_add_library(
+    TARGET eckit_codec
 
     INSTALL_HEADERS    ALL
+    HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/codec
     PUBLIC_LIBS        eckit
     PUBLIC_INCLUDES
       $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
       $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
 
     SOURCES
+        ${CMAKE_CURRENT_BINARY_DIR}/eckit_codec_config.h
         Data.cc
         Data.h
-        Exceptions.cc
-        Exceptions.h
         FileStream.cc
         FileStream.h
         Metadata.cc
@@ -33,10 +41,7 @@ ecbuild_add_library( TARGET eckit_codec
         Session.h
         Stream.cc
         Stream.h
-        Trace.cc
-        Trace.h
         codec.h
-        detail/Assert.h
         detail/Base64.cc
         detail/Base64.h
         detail/Checksum.cc
@@ -52,6 +57,7 @@ ecbuild_add_library( TARGET eckit_codec
         detail/Endian.h
         detail/Link.cc
         detail/Link.h
+        detail/NoConfig.h
         detail/ParsedRecord.h
         detail/RecordInfo.h
         detail/RecordSections.h
@@ -70,13 +76,12 @@ ecbuild_add_library( TARGET eckit_codec
         print/JSONFormat.h
         print/TableFormat.cc
         print/TableFormat.h
-        types/array.h
-        types/array/ArrayMetadata.cc
-        types/array/ArrayMetadata.h
-        types/array/ArrayReference.cc
-        types/array/ArrayReference.h
-        types/array/adaptors/StdArrayAdaptor.h
-        types/array/adaptors/StdVectorAdaptor.h
+        types/ArrayMetadata.cc
+        types/ArrayMetadata.h
+        types/ArrayReference.cc
+        types/ArrayReference.h
+        types/StdArrayAdaptor.h
+        types/StdVectorAdaptor.h
         types/scalar.cc
         types/scalar.h
         types/string.h

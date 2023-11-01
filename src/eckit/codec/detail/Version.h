@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
@@ -14,8 +16,7 @@
 
 #include "eckit/types/SemanticVersion.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 struct Version {             // 8 bytes
     std::uint32_t major{0};  ///<  Major version
@@ -23,13 +24,13 @@ struct Version {             // 8 bytes
 
     std::string str() const { return std::to_string(major) + "." + std::to_string(minor); }
     operator std::string() const { return str(); }
-    operator eckit::SemanticVersion() const { return eckit::SemanticVersion{major, minor, 0}; }
+    operator SemanticVersion() const { return SemanticVersion{major, minor, 0}; }
 
     bool operator<(const Version& v) const {
-        return eckit::SemanticVersion{major, minor, 0} < eckit::SemanticVersion{v.major, v.minor, 0};
+        return SemanticVersion{major, minor, 0} < SemanticVersion{v.major, v.minor, 0};
     }
     bool operator==(const Version& v) const {
-        return eckit::SemanticVersion{major, minor, 0} == eckit::SemanticVersion{v.major, v.minor, 0};
+        return SemanticVersion{major, minor, 0} == SemanticVersion{v.major, v.minor, 0};
     }
     bool operator!=(const Version& v) const { return !(*this == v); }
     bool operator<=(const Version& v) const { return (*this < v) or (*this == v); }
@@ -44,5 +45,4 @@ struct Version {             // 8 bytes
 };
 
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

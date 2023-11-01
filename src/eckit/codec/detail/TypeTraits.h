@@ -1,12 +1,14 @@
 /*
- * (C) Copyright 2020 ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation
- * nor does it submit to any jurisdiction.
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
+
 
 #pragma once
 
@@ -14,12 +16,10 @@
 
 #include "eckit/codec/detail/DataType.h"
 
-namespace atlas {
-namespace io {
+namespace eckit::codec {
 
 class Metadata;
 class Data;
-class Stream;
 
 namespace adl_tests {
 using std::declval;
@@ -40,17 +40,16 @@ std::true_type can_encode_data(int) noexcept(noexcept(encode_data(declval<const 
 template <class>
 std::false_type can_encode_metadata(...) noexcept(false);
 
-template <class T, class = decltype(encode_metadata(declval<const T&>(), declval<atlas::io::Metadata&>()))>
-std::true_type can_encode_metadata(int) noexcept(noexcept(encode_metadata(declval<const T&>(),
-                                                                          declval<atlas::io::Metadata&>())));
+template <class T, class = decltype(encode_metadata(declval<const T&>(), declval<Metadata&>()))>
+std::true_type can_encode_metadata(int) noexcept(noexcept(encode_metadata(declval<const T&>(), declval<Metadata&>())));
 
 
 template <class>
 std::false_type can_decode(...) noexcept(false);
 
 template <class T, class = decltype(decode(declval<const Metadata&>(), declval<const Data&>(), declval<T&>()))>
-std::true_type can_decode(int) noexcept(noexcept(decode(declval<const Metadata&>(), declval<const Data&>(),
-                                                        declval<T&>())));
+std::true_type can_decode(int) noexcept(
+    noexcept(decode(declval<const Metadata&>(), declval<const Data&>(), declval<T&>())));
 }  // namespace adl_tests
 
 
@@ -126,25 +125,26 @@ using disable_if_interpretable_t = disable_if_t<is_interpretable<T, A>()>;
 template <typename T>
 using enable_if_rvalue_t = enable_if_t<std::is_rvalue_reference<T>::value>;
 
+template <typename T>
+using enable_if_move_constructible_encodable_rvalue_t =
+    enable_if_t<is_encodable<T>() && std::is_rvalue_reference<T&&>() && std::is_move_constructible<T>()>;
 
 template <typename T>
-using enable_if_move_constructible_encodable_rvalue_t = enable_if_t<is_encodable<T>() && std::is_rvalue_reference<T&&>() && std::is_move_constructible<T>()>;
-
-template <typename T>
-using enable_if_move_constructible_decodable_rvalue_t = enable_if_t<is_decodable<T>() && std::is_rvalue_reference<T&&>() && std::is_move_constructible<T>()>;
+using enable_if_move_constructible_decodable_rvalue_t =
+    enable_if_t<is_decodable<T>() && std::is_rvalue_reference<T&&>() && std::is_move_constructible<T>()>;
 
 template <typename T, bool EnableBool = true>
 using enable_if_scalar_t = enable_if_t<std::is_scalar<T>::value && EnableBool>;
 
-
 template <typename T>
 constexpr bool is_array_datatype() {
-    return std::is_same<T, double>::value || std::is_same<T, float>::value || std::is_same<T, int>::value || std::is_same<T, long>::value || std::is_same<T, size_t>::value || std::is_same<T, std::byte>::value;
+    return std::is_same_v<T, double> || std::is_same_v<T, float> || std::is_same_v<T, int> || std::is_same_v<T, long> ||
+           std::is_same_v<T, std::int32_t> || std::is_same_v<T, std::int64_t> || std::is_same_v<T, std::uint64_t> ||
+           std::is_same_v<T, size_t> || std::is_same_v<T, std::byte>;
 }
 
 template <typename T>
 using enable_if_array_datatype = typename std::enable_if<is_array_datatype<T>(), int>::type;
 
 
-}  // namespace io
-}  // namespace atlas
+}  // namespace eckit::codec

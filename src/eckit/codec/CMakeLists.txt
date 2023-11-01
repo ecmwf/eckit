@@ -82,6 +82,9 @@ ecbuild_add_library(
         types/ArrayReference.h
         types/StdArrayAdaptor.h
         types/StdVectorAdaptor.h
+        types/StdVectorOfStdArrayAdaptor.h
+        types/demangle.cc
+        types/demangle.h
         types/scalar.cc
         types/scalar.h
         types/string.h

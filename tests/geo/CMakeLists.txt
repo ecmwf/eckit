@@ -8,6 +8,7 @@ foreach( _test
         grid_reorder
         grid_to_points
         gridspec
+        increments
         iterator
         kdtree
         kpoint

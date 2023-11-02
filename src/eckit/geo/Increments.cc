@@ -14,29 +14,33 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo {
 
 
+static Increments make_from_config(const Configuration& config) {
+    auto grid = config.getDoubleVector("grid");
+
+    ASSERT_MSG(grid.size() == 2, "Increments: expected list of size 2");
+    return {grid[0], grid[1]};
+}
+
+
 Increments::Increments(double west_east, double south_north) :
-    P{west_east, south_north} {
-    ASSERT(operator[](0) > 0.);
-    ASSERT(operator[](1) > 0.);
+    array{west_east, south_north} {
+    ASSERT(!types::is_equal(operator[](0), 0.));
+    ASSERT(!types::is_equal(operator[](1), 0.));
 }
 
 
 Increments::Increments(const Configuration& config) :
-    Increments(VectorHelper(config)) {}
+    Increments(make_from_config(config)) {}
 
 
-Increments::Increments(const VectorHelper& helper) :
-    Increments(helper[0], helper[1]) {}
-
-
-Increments::VectorHelper::VectorHelper(const Configuration& config) :
-    vector(config.getDoubleVector("grid")) {
-    ASSERT(size() == 2);
+bool Increments::operator==(const Increments& other) const {
+    return west_east == other.west_east && south_north == other.south_north;
 }
 
 

@@ -13,7 +13,7 @@
 #pragma once
 
 #include <array>
-#include <vector>
+#include <ostream>
 
 
 namespace eckit {
@@ -25,41 +25,49 @@ namespace eckit::geo {
 
 
 class Increments : protected std::array<double, 2> {
-private:
-    // -- Types
-
-    using P = std::array<double, 2>;
-
-    struct VectorHelper : std::vector<double> {
-        explicit VectorHelper(const Configuration&);
-    };
-
 public:
-    // -- Types
-    // None
-
     // -- Exceptions
     // None
 
     // -- Constructors
 
-    Increments(double west_east, double south_north);
+    explicit Increments(const Configuration&);
 
-    explicit Increments(const Configuration& config);
+    Increments(double west_east, double south_north);
+    Increments() :
+        Increments(0, 0) {}
+
+    Increments(const Increments& other) :
+        array(other) {}
+
+    Increments(Increments&&) = default;
 
     // -- Destructor
-    // None
+
+    ~Increments() = default;
 
     // -- Convertors
     // None
 
     // -- Operators
-    // None
+
+    bool operator==(const Increments& other) const;
+    bool operator!=(const Increments& other) const { return !operator==(other); }
+
+    Increments& operator=(const Increments& other) {
+        array::operator=(other);
+        return *this;
+    }
+
+    Increments& operator=(Increments&& other) {
+        array::operator=(other);
+        return *this;
+    }
 
     // Members
 
-    double& west_east   = P::operator[](0);
-    double& south_north = P::operator[](1);
+    double& west_east   = array::operator[](0);
+    double& south_north = array::operator[](1);
 
     // -- Methods
 
@@ -75,10 +83,6 @@ public:
     // None
 
 private:
-    // -- Constructors
-
-    explicit Increments(const VectorHelper&);
-
     // -- Members
     // None
 
@@ -95,7 +99,10 @@ private:
     // None
 
     // -- Friends
-    // None
+
+    friend std::ostream& operator<<(std::ostream& os, const Increments& inc) {
+        return os << "[" << inc.west_east << "," << inc.south_north << "]";
+    }
 };
 
 

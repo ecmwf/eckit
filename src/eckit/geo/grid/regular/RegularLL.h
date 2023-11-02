@@ -12,18 +12,39 @@
 
 #pragma once
 
+#include <memory>
+
 #include "eckit/geo/grid/Regular.h"
 
 
 namespace eckit::geo {
 class Increments;
-}
+class Range;
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::grid::regular {
 
 
 class RegularLL final : public Regular {
+private:
+    // -- Types
+
+    struct Internal {
+        Internal(const Increments& _inc, const area::BoundingBox& _bbox, const PointLonLat& _ref);
+
+        Increments inc;
+        area::BoundingBox bbox;
+        PointLonLat first;
+
+        size_t ni = 0;
+        size_t nj = 0;
+    };
+
+    // -- Constructors
+
+    explicit RegularLL(Internal&&);
+
 public:
     // -- Types
     // None
@@ -34,15 +55,8 @@ public:
     // -- Constructors
 
     explicit RegularLL(const Configuration&);
-
-    explicit RegularLL(const Increments& increments, const area::BoundingBox& bbox = {}) :
-        RegularLL(increments, bbox, {bbox.south(), bbox.west()}) {}
-
-    explicit RegularLL(size_t ni, size_t nj, const area::BoundingBox& bbox = {}) :
-        RegularLL(ni, nj, bbox, {bbox.south(), bbox.west()}) {}
-
-    RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& reference);
-    RegularLL(size_t ni, size_t nj, const area::BoundingBox&, const PointLonLat& reference);
+    explicit RegularLL(const Increments&, const area::BoundingBox& = {});
+    RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
 
     // -- Destructor
     // None
@@ -61,8 +75,8 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override { return ni_; }
-    size_t nj() const override { return nj_; }
+    size_t ni() const override { return internal_.ni; }
+    size_t nj() const override { return internal_.nj; }
 
     // -- Class members
     // None
@@ -74,9 +88,9 @@ public:
 private:
     // -- Members
 
-    size_t ni_;
-    size_t nj_;
-    PointLonLat reference_;
+    const Internal internal_;
+    const std::unique_ptr<Range> range_longitude_;
+    const std::unique_ptr<Range> range_latitude_;
 
     // -- Methods
     // None

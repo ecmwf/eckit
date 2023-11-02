@@ -16,6 +16,8 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/iterator/Regular.h"
+#include "eckit/geo/range/Regular.h"
+#include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/util/regex.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
@@ -55,22 +57,22 @@ struct DiscreteRange {
         if (inc == 0) {
             b = a = _a;
             n     = 1;
+            return;
+        }
+
+        auto shift = (_ref / inc).decimalPart() * _inc;
+        a          = shift + adjust(_a - shift, inc, true);
+
+        if (_b == _a) {
+            b = a;
         }
         else {
-            auto shift = (_ref / inc).decimalPart() * _inc;
-            a          = shift + adjust(_a - shift, inc, true);
-
-            if (_b == _a) {
-                b = a;
-            }
-            else {
-                auto c = shift + adjust(_b - shift, inc, false);
-                c      = a + ((c - a) / inc).integralPart() * inc;
-                b      = c < a ? a : c;
-            }
-
-            n = static_cast<size_t>(((b - a) / inc).integralPart() + 1);
+            auto c = shift + adjust(_b - shift, inc, false);
+            c      = a + ((c - a) / inc).integralPart() * inc;
+            b      = c < a ? a : c;
         }
+
+        n = static_cast<size_t>(((b - a) / inc).integralPart() + 1);
 
         ASSERT(a <= b);
         ASSERT(n >= 1);
@@ -99,6 +101,21 @@ struct DiscreteRange {
 }  // namespace
 
 
+RegularLL::Internal::Internal(const Increments& _inc, const area::BoundingBox& _bbox, const PointLonLat& _ref) :
+    inc(_inc), bbox(_bbox), first(_ref) {
+
+    const DiscreteRange lon(bbox.west, bbox.east, inc.west_east, _ref.lon, 360);
+    const DiscreteRange lat(bbox.south, bbox.north, inc.south_north, _ref.lat);
+
+    ni = lon.n;
+    nj = lat.n;
+    ASSERT(ni > 0);
+    ASSERT(nj > 0);
+
+    bbox = {lat.b, lon.a, lat.a, lon.b};
+}
+
+
 RegularLL::RegularLL(const Configuration& config) :
     RegularLL(Increments{config},
               area::BoundingBox{config},
@@ -106,18 +123,23 @@ RegularLL::RegularLL(const Configuration& config) :
                           config.getDouble("reference_lat", config.getDouble("south", -90))}) {}
 
 
-RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& reference) :
-    Regular(bbox),
-    ni_(DiscreteRange(bbox.west(), bbox.east(), inc.west_east, reference.lon, 360).n),
-    nj_(DiscreteRange(bbox.south(), bbox.north(), inc.south_north, reference.lat).n),
-    reference_(reference) {
-    ASSERT(ni_ > 0);
-    ASSERT(nj_ > 0);
+RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox) :
+    RegularLL(inc, bbox, {bbox.south, bbox.west}) {}
+
+
+RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref) :
+    RegularLL(Internal{inc, bbox, ref}) {}
+
+
+RegularLL::RegularLL(Internal&& internal) :
+    Regular(internal.bbox),
+    internal_(internal),
+    range_longitude_(new range::RegularLongitude(internal_.ni, internal_.bbox.east, internal_.bbox.west)),
+    range_latitude_(new range::Regular(internal_.nj, internal_.bbox.north, internal_.bbox.south)) {
+    ASSERT(size() > 0);
+    ASSERT(ni() == range_longitude_->size());
+    ASSERT(nj() == range_latitude_->size());
 }
-
-
-RegularLL::RegularLL(size_t ni, size_t nj, const area::BoundingBox& bbox, const PointLonLat& reference) :
-    Regular(bbox), ni_(ni), nj_(nj), reference_(reference) {}
 
 
 Grid::iterator RegularLL::cbegin() const {
@@ -131,12 +153,12 @@ Grid::iterator RegularLL::cend() const {
 
 
 const std::vector<double>& RegularLL::longitudes() const {
-    NOTIMP;
+    return range_longitude_->values();
 }
 
 
 const std::vector<double>& RegularLL::latitudes() const {
-    NOTIMP;
+    return range_latitude_->values();
 }
 
 

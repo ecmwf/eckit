@@ -77,8 +77,8 @@ list(APPEND eckit_geo_srcs
     grid/regular/RegularGaussian.h
     grid/regular/RegularLL.cc
     grid/regular/RegularLL.h
-    grid/unstructured/ORCA.cc
-    grid/unstructured/ORCA.h
+    # grid/unstructured/ORCA.cc  # requires eckit::codec
+    # grid/unstructured/ORCA.h
     grid/unstructured/UnstructuredFromGrid.cc
     grid/unstructured/UnstructuredFromGrid.h
     iterator/Reduced.cc
@@ -122,7 +122,7 @@ set(eckit_geo_include_dirs
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
 )
 
-set(eckit_geo_libs eckit_maths eckit_codec)
+set(eckit_geo_libs eckit_maths)  # eckit_codec
 
 if(HAVE_PROJ)
     list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)

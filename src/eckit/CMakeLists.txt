@@ -984,7 +984,6 @@ add_subdirectory( option )
 add_subdirectory( web )
 
 if( HAVE_EXPERIMENTAL )
-    add_subdirectory( codec )
     add_subdirectory( geo )
 endif()
 

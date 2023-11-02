@@ -26,7 +26,6 @@ if( HAVE_ECKIT_SQL )
 endif()
 
 if( HAVE_EXPERIMENTAL )
-    add_subdirectory( codec )
     add_subdirectory( geo )
     add_subdirectory( experimental )
 endif()

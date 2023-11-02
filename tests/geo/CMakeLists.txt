@@ -5,6 +5,7 @@ foreach( _test
         figure_sphere
         figure_sphere_great_circle
         grid
+        grid_regular_ll
         grid_reorder
         grid_to_points
         gridspec

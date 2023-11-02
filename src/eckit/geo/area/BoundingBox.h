@@ -13,6 +13,7 @@
 #pragma once
 
 #include <array>
+#include <ostream>
 
 #include "eckit/geo/Area.h"
 
@@ -35,10 +36,17 @@ public:
     explicit BoundingBox(const Configuration&);
 
     BoundingBox(double north, double west, double south, double east);
-    BoundingBox();
+    BoundingBox() :
+        BoundingBox(90., 0., -90., 360.) {}
+
+    BoundingBox(const BoundingBox& other) :
+        array(other) {}
+
+    BoundingBox(BoundingBox&&) = default;
 
     // -- Destructor
-    // None
+
+    ~BoundingBox() override = default;
 
     // -- Convertors
     // None
@@ -48,14 +56,19 @@ public:
     bool operator==(const BoundingBox&) const;
     bool operator!=(const BoundingBox& other) const { return !operator==(other); }
 
+    BoundingBox& operator=(const BoundingBox& other) {
+        array::operator=(other);
+        return *this;
+    }
+
+    BoundingBox& operator=(BoundingBox&& other) {
+        array::operator=(other);
+        return *this;
+    }
+
     // -- Methods
 
-    std::array<double, 4> deconstruct() const { return {north_, west_, south_, east_}; }
-
-    double north() const { return north_; }
-    double west() const { return west_; }
-    double south() const { return south_; }
-    double east() const { return east_; }
+    std::array<double, 4> deconstruct() const { return {north, west, south, east}; }
 
     bool isPeriodicWestEast() const;
 
@@ -80,9 +93,12 @@ public:
     // -- Class methods
     // None
 
-protected:
     // -- Members
-    // None
+
+    double& north = operator[](0);
+    double& west  = operator[](1);
+    double& south = operator[](2);
+    double& east  = operator[](3);
 
     // -- Methods
     // None
@@ -97,30 +113,10 @@ protected:
     // None
 
     // -- Friends
-    // None
 
-private:
-    // -- Members
-
-    double north_;
-    double west_;
-    double south_;
-    double east_;
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
+    friend std::ostream& operator<<(std::ostream& os, const BoundingBox& bbox) {
+        return os << "[" << bbox.north << "," << bbox.west << "," << bbox.south << "," << bbox.east << "]";
+    }
 };
 
 

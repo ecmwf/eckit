@@ -5,6 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+
 #include "eckit/geo/CoordinateHelpers.h"
 #include "eckit/geo/Point2.h"
 #include "eckit/testing/Test.h"
@@ -12,7 +13,9 @@
 
 namespace eckit::test {
 
+
 using namespace geo;
+
 
 // -----------------------------------------------------------------------------
 

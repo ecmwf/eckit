@@ -20,10 +20,10 @@
 namespace eckit::test {
 
 
+using namespace geo;
+
+
 CASE("GridFactory::build") {
-    using geo::Grid;
-
-
     struct test_t {
         std::string name;
         size_t size;
@@ -32,8 +32,8 @@ CASE("GridFactory::build") {
 
     SECTION("GridFactory::build_from_name") {
         for (const auto& test : {test_t{"O2", 88}, {"f2", 32}, {"h2", 48}}) {
-            std::unique_ptr<const Grid> grid(geo::GridFactory::build(
-                *std::unique_ptr<Configuration>(new MappedConfiguration({{"grid", test.name}}))));
+            std::unique_ptr<const Grid> grid(
+                GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({{"grid", test.name}}))));
 
             auto size = grid->size();
             EXPECT_EQUAL(size, test.size);
@@ -42,7 +42,7 @@ CASE("GridFactory::build") {
 
 
     SECTION("RegularGaussian") {
-        std::unique_ptr<const Grid> grid(geo::GridFactory::build(
+        std::unique_ptr<const Grid> grid(GridFactory::build(
             *std::unique_ptr<Configuration>(new MappedConfiguration({{"grid", "f2"}, {"south", 0}}))));
 
         auto nh = grid->size();
@@ -56,7 +56,7 @@ CASE("GridFactory::build") {
     SECTION("Grid::build_from_increments") {
         SECTION("global") {
             std::unique_ptr<const Grid> global(
-                geo::GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({
+                GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({
                     {"type", "regular_ll"},
                     {"west_east_increment", 1},
                     {"south_north_increment", 1},
@@ -69,7 +69,7 @@ CASE("GridFactory::build") {
 
         SECTION("non-global") {
             std::unique_ptr<const Grid> grid(
-                geo::GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({
+                GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({
                     {"type", "regular_ll"},
                     {"west_east_increment", 1},
                     {"south_north_increment", 1},

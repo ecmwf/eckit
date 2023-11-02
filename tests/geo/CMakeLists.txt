@@ -1,6 +1,9 @@
 foreach( _test
+        area_boundingbox
+        area_polygon
         coordinate_helpers
-        great_circle
+        figure_sphere
+        figure_sphere_great_circle
         grid
         grid_reorder
         grid_to_points
@@ -8,18 +11,15 @@ foreach( _test
         iterator
         kdtree
         kpoint
-        param
-        points
-        polygon
+        point
         projection
         range
         search
-        sphere
-        types
         util )
     ecbuild_add_test(
         TARGET  eckit_test_geo_${_test}
-        SOURCES test_${_test}.cc
-        LIBS    eckit_geo )
+        SOURCES ${_test}.cc
+        LIBS    eckit_geo
+    )
 endforeach()
 

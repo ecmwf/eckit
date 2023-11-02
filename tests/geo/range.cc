@@ -25,14 +25,15 @@
 namespace eckit::test {
 
 
-CASE("range::Gaussian") {
-    using geo::range::Gaussian;
+using namespace geo;
 
+
+CASE("range::Gaussian") {
     std::vector<double> ref{59.44440828916676, 19.87571914744090, -19.87571914744090, -59.44440828916676};
 
 
     SECTION("global") {
-        auto global = Gaussian(2);
+        auto global = range::Gaussian(2);
         EXPECT(global.size() == ref.size());
 
         size_t i = 0;
@@ -45,17 +46,17 @@ CASE("range::Gaussian") {
     SECTION("crop [50., -50.]") {
         constexpr auto eps = 1e-3;
 
-        auto cropped = Gaussian(2, 50., -50., eps);
+        auto cropped = range::Gaussian(2, 50., -50., eps);
         EXPECT(cropped.size() == ref.size() - 2);
 
         EXPECT_APPROX(cropped.values()[0], ref[1], eps);
         EXPECT_APPROX(cropped.values()[1], ref[2], eps);
 
-        EXPECT(Gaussian(2, 59.444, -59.444, 1e-3).size() == 4);
-        EXPECT(Gaussian(2, 59.444, -59.444, 1e-6).size() == 2);
-        EXPECT(Gaussian(2, 59.444, -59.445, 1e-6).size() == 3);
+        EXPECT(range::Gaussian(2, 59.444, -59.444, 1e-3).size() == 4);
+        EXPECT(range::Gaussian(2, 59.444, -59.444, 1e-6).size() == 2);
+        EXPECT(range::Gaussian(2, 59.444, -59.445, 1e-6).size() == 3);
 
-        auto single = Gaussian(2, -59.444, -59.444, eps);
+        auto single = range::Gaussian(2, -59.444, -59.444, eps);
         EXPECT(single.size() == 1);
 
         EXPECT_APPROX(single.values().front(), ref.back(), eps);
@@ -65,7 +66,7 @@ CASE("range::Gaussian") {
     SECTION("crop [90., 0.]") {
         constexpr auto eps = 1e-3;
 
-        auto cropped = Gaussian(2, 90., 0., eps);
+        auto cropped = range::Gaussian(2, 90., 0., eps);
         EXPECT(cropped.size() == ref.size() / 2);
 
         EXPECT_APPROX(cropped.values()[0], ref[0], eps);

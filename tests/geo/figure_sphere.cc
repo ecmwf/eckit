@@ -3,10 +3,12 @@
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+
 
 #include <cmath>
 #include <limits>
@@ -19,17 +21,17 @@
 
 namespace eckit::tests::geo {
 
+
+using namespace eckit::geo;
+
+
 // set sphere
 struct DatumTwoUnits {
     static double radius() { return 2.; }
 };
 
-using TwoUnitsSphere = eckit::geo::SphereT<DatumTwoUnits>;
+using TwoUnitsSphere = SphereT<DatumTwoUnits>;
 
-using eckit::geo::Point3;
-using eckit::geo::PointLonLat;
-
-using eckit::geo::UnitSphere;
 const double R = UnitSphere::radius();
 
 
@@ -116,8 +118,8 @@ CASE("test unit sphere lon 45") {
     auto p = UnitSphere::convertSphericalToCartesian({45., 0.});
     auto q = UnitSphere::convertSphericalToCartesian({-315., 0.});
 
-    EXPECT(eckit::types::is_approximately_equal(p.X, L));
-    EXPECT(eckit::types::is_approximately_equal(p.Y, L));
+    EXPECT(types::is_approximately_equal(p.X, L));
+    EXPECT(types::is_approximately_equal(p.Y, L));
     EXPECT(p.Z == 0);
 
     EXPECT(Point3::equal(p, q));
@@ -127,8 +129,8 @@ CASE("test unit sphere lon 135") {
     auto p = UnitSphere::convertSphericalToCartesian({135., 0.});
     auto q = UnitSphere::convertSphericalToCartesian({-225., 0.});
 
-    EXPECT(eckit::types::is_approximately_equal(p.X, -L));
-    EXPECT(eckit::types::is_approximately_equal(p.Y, L));
+    EXPECT(types::is_approximately_equal(p.X, -L));
+    EXPECT(types::is_approximately_equal(p.Y, L));
     EXPECT(p.Z == 0);
 
     EXPECT(Point3::equal(p, q));
@@ -138,8 +140,8 @@ CASE("test unit sphere lon 225") {
     auto p = UnitSphere::convertSphericalToCartesian({225., 0.});
     auto q = UnitSphere::convertSphericalToCartesian({-135., 0.});
 
-    EXPECT(eckit::types::is_approximately_equal(p.X, -L));
-    EXPECT(eckit::types::is_approximately_equal(p.Y, -L));
+    EXPECT(types::is_approximately_equal(p.X, -L));
+    EXPECT(types::is_approximately_equal(p.Y, -L));
     EXPECT(p.Z == 0);
 
     EXPECT(Point3::equal(p, q));
@@ -149,8 +151,8 @@ CASE("test unit sphere lon 315") {
     auto p = UnitSphere::convertSphericalToCartesian({315., 0.});
     auto q = UnitSphere::convertSphericalToCartesian({-45., 0.});
 
-    EXPECT(eckit::types::is_approximately_equal(p.X, L));
-    EXPECT(eckit::types::is_approximately_equal(p.Y, -L));
+    EXPECT(types::is_approximately_equal(p.X, L));
+    EXPECT(types::is_approximately_equal(p.Y, -L));
     EXPECT(p.Z == 0);
 
     EXPECT(Point3::equal(p, q));
@@ -161,44 +163,44 @@ CASE("test unit sphere lon 315") {
 
 CASE("test unit sphere lat 100") {
     // Default behavior throws
-    EXPECT_THROWS_AS(PointLonLat(0., 100.), eckit::BadValue);
-    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({0., 100.}), eckit::BadValue);
+    EXPECT_THROWS_AS(PointLonLat(0., 100.), BadValue);
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({0., 100.}), BadValue);
 
     auto p = UnitSphere::convertSphericalToCartesian(PointLonLat::make(0., 100.), 0.);
     auto q = UnitSphere::convertSphericalToCartesian(PointLonLat::make(180., 80.), 0.);
 
     // sin(x) and sin(pi-x) are not bitwise identical
-    EXPECT(eckit::types::is_approximately_equal(p.X, q.X));
-    EXPECT(eckit::types::is_approximately_equal(p.Y, q.Y));
-    EXPECT(eckit::types::is_approximately_equal(p.Z, q.Z));
+    EXPECT(types::is_approximately_equal(p.X, q.X));
+    EXPECT(types::is_approximately_equal(p.Y, q.Y));
+    EXPECT(types::is_approximately_equal(p.Z, q.Z));
 }
 
 CASE("test unit sphere lat 290") {
     // Default behavior throws
-    EXPECT_THROWS_AS(PointLonLat(15., 290.), eckit::BadValue);
-    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({15., 290.}), eckit::BadValue);
+    EXPECT_THROWS_AS(PointLonLat(15., 290.), BadValue);
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({15., 290.}), BadValue);
 
     auto p = UnitSphere::convertSphericalToCartesian(PointLonLat::make(15., 290.), 0.);
     auto q = UnitSphere::convertSphericalToCartesian(PointLonLat::make(15., -70.), 0.);
 
     // sin(x) and sin(pi-x) are not bitwise identical
-    EXPECT(eckit::types::is_approximately_equal(p.X, q.X));
-    EXPECT(eckit::types::is_approximately_equal(p.Y, q.Y));
-    EXPECT(eckit::types::is_approximately_equal(p.Z, q.Z));
+    EXPECT(types::is_approximately_equal(p.X, q.X));
+    EXPECT(types::is_approximately_equal(p.Y, q.Y));
+    EXPECT(types::is_approximately_equal(p.Z, q.Z));
 }
 
 CASE("test unit sphere lat -120") {
     // Default behavior throws
-    EXPECT_THROWS_AS(PointLonLat(45., -120.), eckit::BadValue);
-    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({45., -120.}), eckit::BadValue);
+    EXPECT_THROWS_AS(PointLonLat(45., -120.), BadValue);
+    EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({45., -120.}), BadValue);
 
     auto p = UnitSphere::convertSphericalToCartesian(PointLonLat::make(45., -120.), 0.);
     auto q = UnitSphere::convertSphericalToCartesian(PointLonLat::make(225., -60.), 0.);
 
     // sin(x) and sin(pi-x) are not bitwise identical
-    EXPECT(eckit::types::is_approximately_equal(p.X, q.X));
-    EXPECT(eckit::types::is_approximately_equal(p.Y, q.Y));
-    EXPECT(eckit::types::is_approximately_equal(p.Z, q.Z));
+    EXPECT(types::is_approximately_equal(p.X, q.X));
+    EXPECT(types::is_approximately_equal(p.Y, q.Y));
+    EXPECT(types::is_approximately_equal(p.Z, q.Z));
 }
 
 // -----------------------------------------------------------------------------
@@ -218,9 +220,9 @@ CASE("test unit sphere distances") {
     const double d2 = UnitSphere::distance(P1, P2b);
     const double d3 = UnitSphere::distance(P1, P2c);
 
-    EXPECT(eckit::types::is_approximately_equal(d0, d1));
-    EXPECT(eckit::types::is_approximately_equal(d0, d2));
-    EXPECT(eckit::types::is_approximately_equal(d0, d3));
+    EXPECT(types::is_approximately_equal(d0, d1));
+    EXPECT(types::is_approximately_equal(d0, d2));
+    EXPECT(types::is_approximately_equal(d0, d3));
 }
 
 // -----------------------------------------------------------------------------

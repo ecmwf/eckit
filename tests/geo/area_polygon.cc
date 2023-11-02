@@ -3,10 +3,12 @@
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+
 
 #include <vector>
 
@@ -16,6 +18,10 @@
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
+
+
+using namespace geo;
+
 
 CASE("Polygon") {
     using geo::polygon::Polygon;
@@ -269,7 +275,7 @@ CASE("LonLatPolygon") {
 
         // Test points at non-canonical coordinates
         // Default behavior throws
-        EXPECT_THROWS_AS(poly.contains({lonmid, 180. - latmid}), eckit::BadValue);
+        EXPECT_THROWS_AS(poly.contains({lonmid, 180. - latmid}), BadValue);
 
         EXPECT(poly.contains({lonmid + 360., latmid}, true));
         EXPECT(poly.contains({lonmid, 180. - latmid}, true));

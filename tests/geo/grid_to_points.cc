@@ -20,11 +20,14 @@
 namespace eckit::test {
 
 
+using namespace geo;
+
+
 CASE("HEALPix") {
     SECTION("HEALPix::to_points") {
-        std::unique_ptr<const geo::Grid> grid(new geo::grid::reduced::HEALPix(2, geo::Ordering::healpix_ring));
+        std::unique_ptr<const Grid> grid(new grid::reduced::HEALPix(2, Ordering::healpix_ring));
 
-        static const std::vector<geo::PointLonLat> expected_points_ring{
+        static const std::vector<PointLonLat> expected_points_ring{
             {45, 66.443536},     {135, 66.443536},    {225, 66.443536},    {315, 66.443536},    {22.5, 41.810315},
             {67.5, 41.810315},   {112.5, 41.810315},  {157.5, 41.810315},  {202.5, 41.810315},  {247.5, 41.810315},
             {292.5, 41.810315},  {337.5, 41.810315},  {0, 19.471221},      {45, 19.471221},     {90, 19.471221},
@@ -41,7 +44,7 @@ CASE("HEALPix") {
         EXPECT_EQUAL(points.size(), expected_points_ring.size());
 
         for (int i = 0; i < points.size(); ++i) {
-            EXPECT(geo::points_equal(std::get<geo::PointLonLat>(points[i]), expected_points_ring[i]));
+            EXPECT(points_equal(std::get<PointLonLat>(points[i]), expected_points_ring[i]));
         }
     }
 }

@@ -3,10 +3,12 @@
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
  * In applying this licence, ECMWF does not waive the privileges and immunities
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+
 
 #include <list>
 
@@ -15,12 +17,12 @@
 #include "eckit/os/Semaphore.h"
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-using namespace eckit::geo;
 
 namespace eckit::test {
+
+
+using namespace geo;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -36,12 +38,12 @@ struct TestTreeTrait {
 template <typename TreeTrait>
 class PointInBoxInteriorFinder {
 public:
-    typedef eckit::KDTreeX<TreeTrait> KDTree;
-    typedef typename KDTree::Point Point;
+    using KDTree = KDTreeX<TreeTrait>;
+    using Point  = KDTree::Point;
 
 private:
-    typedef typename KDTree::Alloc Alloc;
-    typedef typename KDTree::Node Node;
+    using Alloc = KDTree::Alloc;
+    using Node  = KDTree::Node;
 
 public:
     /// \brief Returns true if any point in \p tree lies in the interior of the specified
@@ -112,9 +114,9 @@ private:
 /// \brief Returns true if any point in \p tree is in the interior of the axis-aligned box
 /// with bottom-left and top-right corners at \p lbound and \p ubound.
 template <typename TreeTraits>
-bool isAnyPointInBoxInterior(const eckit::KDTreeX<TreeTraits>& tree,
-                             const typename eckit::KDTreeX<TreeTraits>::Point& lbound,
-                             const typename eckit::KDTreeX<TreeTraits>::Point& ubound) {
+bool isAnyPointInBoxInterior(const KDTreeX<TreeTraits>& tree,
+                             const typename KDTreeX<TreeTraits>::Point& lbound,
+                             const typename KDTreeX<TreeTraits>::Point& ubound) {
     return PointInBoxInteriorFinder<TreeTraits>::isAnyPointInBoxInterior(tree, lbound, ubound);
 }
 
@@ -325,7 +327,7 @@ CASE("test_kdtree_mapped") {
         return true;
     };
 
-    eckit::PathName path("test_kdtree_mapped.kdtree");
+    PathName path("test_kdtree_mapped.kdtree");
 
     // Write file with kdtree
     {
@@ -344,10 +346,10 @@ CASE("test_kdtree_mapped") {
         Tree kd(path, 0, 0);
 
         // Cannot insert point as the tree is readonly
-        EXPECT_THROWS_AS(kd.insert(points.front()), eckit::AssertionFailed);
+        EXPECT_THROWS_AS(kd.insert(points.front()), AssertionFailed);
 
         // Cannot build with points as the tree is readonly
-        EXPECT_THROWS_AS(kd.build(points), eckit::AssertionFailed);
+        EXPECT_THROWS_AS(kd.build(points), AssertionFailed);
 
         EXPECT_EQUAL(kd.size(), points.size());
         EXPECT(passTest(kd));
@@ -370,5 +372,5 @@ CASE("test_kdtree_iterate_empty") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

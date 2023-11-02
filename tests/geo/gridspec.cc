@@ -31,8 +31,11 @@
 namespace eckit::test {
 
 
+using namespace geo;
+
+
 using C = std::unique_ptr<const Configuration>;
-using G = std::unique_ptr<const geo::Grid>;
+using G = std::unique_ptr<const Grid>;
 using M = MappedConfiguration;
 using v = std::vector<double>;
 
@@ -94,7 +97,7 @@ CASE("gridspec") {
         for (const auto& [user, gridspec] : cases) {
             Log::info() << user << " -> " << gridspec << std::endl;
 
-            C config(geo::GridFactory::configure(user));
+            C config(GridFactory::configure(user));
             ASSERT(config);
 
             if (!config->has("type")) {
@@ -103,10 +106,10 @@ CASE("gridspec") {
             }
 
             if (gridspec.empty()) {
-                EXPECT_THROWS(G(geo::GridFactory::build(*config)));
+                EXPECT_THROWS(G(GridFactory::build(*config)));
             }
             else {
-                EXPECT_NO_THROW(G(geo::GridFactory::build(*config)));
+                EXPECT_NO_THROW(G(GridFactory::build(*config)));
             }
         }
     }
@@ -117,11 +120,11 @@ CASE("gridspec") {
             Log::info() << user << " -> " << gridspec << std::endl;
 
             if (gridspec.empty()) {
-                EXPECT_THROWS(G(geo::GridFactory::build(user)));
+                EXPECT_THROWS(G(GridFactory::build(user)));
                 continue;
             }
 
-            // G grid(geo::GridFactory::build(*user));
+            // G grid(GridFactory::build(*user));
             // EXPECT(grid);
         }
     }

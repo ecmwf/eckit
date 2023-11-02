@@ -87,6 +87,12 @@ public:
 
     // -- Methods
 
+    using P::size;
+    using P::begin;
+    using P::end;
+    using P::cbegin;
+    using P::cend;
+
     static Matrix3<T> identity() { return {1, 0, 0, 0, 1, 0, 0, 0, 1}; }
 
     Matrix3<T> inverse() const {
@@ -97,6 +103,8 @@ public:
                 (YZ * ZX - YX * ZZ) / det, (XX * ZZ - XZ * ZX) / det, (XZ * YX - XX * YZ) / det,
                 (YX * ZY - YY * ZX) / det, (XY * ZX - XX * ZY) / det, (XX * YY - XY * YX) / det};
     }
+
+    T determinant() const { return XX*YY*ZZ-XZ*YY*ZX+XY*YZ*ZX+XZ*YX*ZY-XX*YZ*ZY-XY*YX*ZZ;    }
 
     // -- Overridden methods
     // None

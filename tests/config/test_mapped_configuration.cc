@@ -17,24 +17,41 @@
 #include "eckit/testing/Test.h"
 
 
-int main(int argc, char* argv[]) {
-    std::unique_ptr<eckit::Configuration> param(
-        new eckit::MappedConfiguration({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
+//----------------------------------------------------------------------------------------------------------------------
+
+
+namespace eckit::test {
+
+
+CASE("MappedConfiguration") {
+    std::unique_ptr<Configuration> param(new MappedConfiguration({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
 
     int a = 0;
     EXPECT(param->get("a", a));
+    EXPECT_EQUAL(a, -123);
     std::cout << "a: '" << a << "'" << std::endl;
 
     std::string b;
     EXPECT(param->get("b", b));
-    std::cout << "b: '" << b << "'" << std::endl;
+    EXPECT_EQUAL(b, "B");
 
     size_t c = 0;
     EXPECT(param->get("c", c));
-    std::cout << "c: '" << c << "'" << std::endl;
+    EXPECT_EQUAL(c, 123UL);
 
-    int d = 321;
-    dynamic_cast<eckit::MappedConfiguration*>(param.get())->set("b", d);
+    int d = 0;
+    dynamic_cast<MappedConfiguration*>(param.get())->set("b", 321);
     EXPECT(param->get("b", d));
-    std::cout << "d: '" << d << "'" << std::endl;
+    EXPECT_EQUAL(d, 321);
+}
+
+
+}  // namespace eckit::test
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+int main(int argc, char** argv) {
+    return eckit::testing::run_tests(argc, argv);
 }

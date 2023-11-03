@@ -12,42 +12,44 @@
 
 #pragma once
 
-#include <vector>
+#include <array>
+#include <type_traits>
 
 #include "eckit/codec/Data.h"
 #include "eckit/codec/Metadata.h"
-#include "eckit/codec/detail/demangle.h"
-#include "eckit/codec/detail/TypeTraits.h"
-#include "eckit/codec/types/ArrayMetadata.h"
-#include "eckit/codec/types/ArrayReference.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
+#include "eckit/codec/types/array/ArrayReference.h"
 #include "eckit/exception/Exceptions.h"
 
 namespace std {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template <typename T, eckit::codec::enable_if_array_datatype<T> = 0>
-void interprete(const std::vector<T>& vector, eckit::codec::ArrayReference& out) {
-    using eckit::codec::ArrayReference;
-    out = ArrayReference{vector.data(), {int(vector.size())}};
+template <typename T, size_t N>
+void interprete(const std::array<T, N>& vector, eckit::codec::ArrayReference& out) {
+    out = eckit::codec::ArrayReference{vector.data(), {N}};
 }
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template <typename T, eckit::codec::enable_if_array_datatype<T> = 0>
-void decode(const eckit::codec::Metadata& m, const eckit::codec::Data& encoded, std::vector<T>& out) {
+template <typename T, size_t N>
+void decode(const eckit::codec::Metadata& m, const eckit::codec::Data& encoded, std::array<T, N>& out) {
     eckit::codec::ArrayMetadata array(m);
-
     if (array.datatype().kind() != eckit::codec::ArrayMetadata::DataType::kind<T>()) {
         std::stringstream err;
-        err << "Could not decode " << m.json() << " into std::vector<" << eckit::codec::demangle<T>() << ">. "
-            << "Incompatible datatypes: " << array.datatype().str() << " and "
-            << eckit::codec::ArrayMetadata::DataType::str<T>() << ".";
+        err << "Could not decode " << m.json() << " into std::vector<" << typeid(typename std::decay<T>::type).name()
+            << ">. " << "Incompatible datatype!";
+
         throw eckit::Exception(err.str(), Here());
     }
-
-    const auto* data = static_cast<const T*>(encoded.data());
-    out.assign(data, data + array.size());
+    if (array.size() != N) {
+        std::stringstream err;
+        err << "Could not decode " << m.json() << " into std::array<" << typeid(typename std::decay<T>::type).name()
+            << "," << N << ">. " << "Incompatible size!";
+        throw eckit::Exception(err.str(), Here());
+    }
+    const T* data = static_cast<const T*>(encoded.data());
+    std::copy(data, data + N, out.begin());
 }
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -78,13 +78,14 @@ ecbuild_add_library(
         print/JSONFormat.h
         print/TableFormat.cc
         print/TableFormat.h
-        types/ArrayMetadata.cc
-        types/ArrayMetadata.h
-        types/ArrayReference.cc
-        types/ArrayReference.h
-        types/StdArrayAdaptor.h
-        types/StdVectorAdaptor.h
-        types/StdVectorOfStdArrayAdaptor.h
+        types/array.h
+        types/array/ArrayMetadata.cc
+        types/array/ArrayMetadata.h
+        types/array/ArrayReference.cc
+        types/array/ArrayReference.h
+        types/array/adaptors/StdArrayAdaptor.h
+        types/array/adaptors/StdVectorAdaptor.h
+        types/array/adaptors/StdVectorOfStdArrayAdaptor.h
         types/scalar.cc
         types/scalar.h
         types/string.h

@@ -16,10 +16,10 @@
 #include <vector>
 
 #include "eckit/codec/Data.h"
-#include "eckit/codec/detail/demangle.h"
 #include "eckit/codec/Metadata.h"
-#include "eckit/codec/types/ArrayMetadata.h"
-#include "eckit/codec/types/ArrayReference.h"
+#include "eckit/codec/detail/demangle.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
+#include "eckit/codec/types/array/ArrayReference.h"
 #include "eckit/exception/Exceptions.h"
 
 namespace std {

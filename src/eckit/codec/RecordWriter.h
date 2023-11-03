@@ -24,7 +24,7 @@
 #include "eckit/codec/detail/NoConfig.h"
 #include "eckit/codec/detail/Reference.h"
 #include "eckit/codec/detail/TypeTraits.h"
-#include "eckit/codec/types/ArrayReference.h"
+#include "eckit/codec/types/array/ArrayReference.h"
 #include "eckit/codec/types/scalar.h"
 #include "eckit/codec/types/string.h"
 

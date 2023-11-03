@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/codec/types/ArrayMetadata.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
 
 #include <algorithm>
 #include <functional>

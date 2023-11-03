@@ -14,7 +14,7 @@
 
 #include "eckit/codec/Data.h"
 #include "eckit/codec/Metadata.h"
-#include "eckit/codec/types/ArrayMetadata.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
 
 namespace eckit::codec {
 

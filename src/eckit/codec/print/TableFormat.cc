@@ -19,7 +19,7 @@
 #include "eckit/codec/RecordItemReader.h"
 #include "eckit/codec/Session.h"
 #include "eckit/codec/print/Bytes.h"
-#include "eckit/codec/types/ArrayReference.h"
+#include "eckit/codec/types/array.h"
 #include "eckit/codec/types/scalar.h"
 #include "eckit/exception/Exceptions.h"
 

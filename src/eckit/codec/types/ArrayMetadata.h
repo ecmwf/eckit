@@ -30,7 +30,7 @@ private:
 public:
     ArrayShape() = default;
 
-    explicit ArrayShape(Base&& base) :
+    ArrayShape(Base&& base) :
         Base(std::forward<Base>(base)) {}
 
     template <typename idx_t>
@@ -42,15 +42,15 @@ public:
         Base(data, data + size) {}
 
     template <typename idx_t, std::size_t N>
-    explicit ArrayShape(const std::array<idx_t, N>& list) :
+    ArrayShape(const std::array<idx_t, N>& list) :
         Base(list.begin(), list.end()) {}
 
     template <typename idx_t>
-    explicit ArrayShape(const std::vector<idx_t>& list) :
+    ArrayShape(const std::vector<idx_t>& list) :
         Base(list.begin(), list.end()) {}
 
     template <typename Int1, typename = std::enable_if_t<std::is_integral_v<Int1>>>
-    explicit ArrayShape(Int1 i) {
+    ArrayShape(Int1 i) {
         resize(1);
         operator[](0) = i;
     }

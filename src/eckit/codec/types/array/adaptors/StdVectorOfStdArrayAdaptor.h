@@ -16,11 +16,11 @@
 #include <vector>
 
 #include "eckit/codec/Data.h"
+#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/detail/demangle.h"
 #include "eckit/codec/types/array/ArrayMetadata.h"
 #include "eckit/codec/types/array/ArrayReference.h"
-#include "eckit/exception/Exceptions.h"
 
 namespace std {
 
@@ -42,21 +42,21 @@ void decode(const eckit::codec::Metadata& m, const eckit::codec::Data& encoded, 
         std::stringstream err;
         err << "Could not decode " << m.json() << " into std::vector<" << eckit::codec::demangle<T>() << ">. "
             << "Incompatible datatype!";
-        throw eckit::Exception(err.str(), Here());
+        throw eckit::codec::Exception(err.str(), Here());
     }
 
     if (array.rank() != 2) {
         std::stringstream err;
         err << "Could not decode " << m.json() << " into std::vector<std::array<" << eckit::codec::demangle<T>() << ","
             << N << ">>. " << "Incompatible rank!";
-        throw eckit::Exception(err.str(), Here());
+        throw eckit::codec::Exception(err.str(), Here());
     }
 
     if (array.shape(1) != N) {
         std::stringstream err;
         err << "Could not decode " << m.json() << " into std::vector<std::array<" << eckit::codec::demangle<T>() << ","
             << N << ">>. " << "Incompatible size!";
-        throw eckit::Exception(err.str(), Here());
+        throw eckit::codec::Exception(err.str(), Here());
     }
 
     const auto* data = static_cast<const std::array<T, N>*>(encoded.data());

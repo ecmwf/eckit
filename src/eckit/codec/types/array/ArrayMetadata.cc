@@ -16,7 +16,7 @@
 #include <functional>
 #include <numeric>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/codec/Exceptions.h"
 
 namespace eckit::codec {
 

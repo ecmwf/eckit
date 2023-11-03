@@ -12,7 +12,7 @@
 
 #include "eckit/codec/RecordItem.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/codec/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 
 namespace eckit::codec {

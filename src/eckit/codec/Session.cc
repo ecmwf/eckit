@@ -19,7 +19,7 @@
 #include <mutex>
 #include <sstream>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/codec/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 
 namespace eckit::codec {

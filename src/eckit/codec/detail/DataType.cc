@@ -14,7 +14,7 @@
 
 #include <sstream>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/codec/Exceptions.h"
 
 //------------------------------------------------------------------------------------------------------
 

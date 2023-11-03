@@ -19,6 +19,8 @@ ecbuild_add_library(
         ${CMAKE_CURRENT_BINARY_DIR}/eckit_codec_config.h
         Data.cc
         Data.h
+        Exceptions.cc
+        Exceptions.h
         FileStream.cc
         FileStream.h
         Metadata.cc

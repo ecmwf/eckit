@@ -108,9 +108,9 @@ CASE("test exceptions") {
     codec::Data data;
     codec::Metadata metadata;
 
-    EXPECT_THROWS_AS(codec::ref(in, codec::tag::disable_static_assert()), NotEncodable);
-    EXPECT_THROWS_AS(codec::copy(in, codec::tag::disable_static_assert()), NotEncodable);
-    EXPECT_THROWS_AS(codec::encode(in, metadata, data, codec::tag::disable_static_assert()), NotEncodable);
+    EXPECT_THROWS_AS(codec::ref(in, codec::tag::disable_static_assert()), codec::NotEncodable);
+    EXPECT_THROWS_AS(codec::copy(in, codec::tag::disable_static_assert()), codec::NotEncodable);
+    EXPECT_THROWS_AS(codec::encode(in, metadata, data, codec::tag::disable_static_assert()), codec::NotEncodable);
 }
 
 // -------------------------------------------------------------------------------------------------------

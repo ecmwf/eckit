@@ -14,6 +14,7 @@
 
 #include <iomanip>
 
+#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/Record.h"
 #include "eckit/codec/RecordItemReader.h"
@@ -21,7 +22,6 @@
 #include "eckit/codec/print/Bytes.h"
 #include "eckit/codec/types/array.h"
 #include "eckit/codec/types/scalar.h"
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit::codec {
 

@@ -13,9 +13,9 @@
 #pragma once
 
 #include "eckit/codec/Data.h"
+#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/detail/sfinae.h"
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit::codec {
 

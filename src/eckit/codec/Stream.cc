@@ -12,7 +12,7 @@
 
 #include "eckit/codec/Stream.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/codec/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 
 namespace eckit::codec {

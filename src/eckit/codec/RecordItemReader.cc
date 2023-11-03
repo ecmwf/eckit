@@ -12,12 +12,12 @@
 
 #include "eckit/codec/RecordItemReader.h"
 
+#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/FileStream.h"
 #include "eckit/codec/Record.h"
 #include "eckit/codec/Session.h"
 #include "eckit/codec/detail/ParsedRecord.h"
 #include "eckit/codec/detail/RecordSections.h"
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit::codec {
 

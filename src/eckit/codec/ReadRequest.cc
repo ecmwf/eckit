@@ -12,10 +12,10 @@
 
 #include "eckit/codec/ReadRequest.h"
 
+#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/RecordItemReader.h"
 #include "eckit/codec/detail/Checksum.h"
 #include "eckit/codec/detail/Defaults.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
 namespace eckit::codec {

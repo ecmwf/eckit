@@ -16,8 +16,8 @@
 #include <ostream>
 #include <sstream>
 
+#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/types/array/ArrayReference.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 
 namespace eckit::codec {

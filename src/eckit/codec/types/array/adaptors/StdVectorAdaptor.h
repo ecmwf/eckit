@@ -15,12 +15,11 @@
 #include <vector>
 
 #include "eckit/codec/Data.h"
+#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/Metadata.h"
-#include "eckit/codec/detail/demangle.h"
 #include "eckit/codec/detail/TypeTraits.h"
 #include "eckit/codec/types/array/ArrayMetadata.h"
 #include "eckit/codec/types/array/ArrayReference.h"
-#include "eckit/exception/Exceptions.h"
 
 namespace std {
 
@@ -43,7 +42,7 @@ void decode(const eckit::codec::Metadata& m, const eckit::codec::Data& encoded, 
         err << "Could not decode " << m.json() << " into std::vector<" << eckit::codec::demangle<T>() << ">. "
             << "Incompatible datatypes: " << array.datatype().str() << " and "
             << eckit::codec::ArrayMetadata::DataType::str<T>() << ".";
-        throw eckit::Exception(err.str(), Here());
+        throw eckit::codec::Exception(err.str(), Here());
     }
 
     const auto* data = static_cast<const T*>(encoded.data());

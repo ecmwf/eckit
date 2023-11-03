@@ -16,7 +16,7 @@
 #include "eckit/codec/detail/Defaults.h"
 #include "eckit/codec/detail/Encoder.h"
 #include "eckit/codec/detail/RecordSections.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/codec/Exceptions.h"
 
 namespace eckit::codec {
 

@@ -14,7 +14,7 @@
 
 #include "eckit/codec/eckit_codec_config.h"
 
-#ifdef eckit_CODEC_STATIC_ASSERT
+#if eckit_CODEC_STATIC_ASSERT
 
 #include <cstdlib>
 

@@ -1,5 +1,5 @@
 
-configure_file( eckit_codec_config.h.in eckit_codec_config.h @ONLY )
+configure_file( eckit_codec_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/eckit_codec_config.h @ONLY )
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_codec_config.h
     DESTINATION ${INSTALL_INCLUDE_DIR}/eckit

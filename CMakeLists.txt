@@ -146,7 +146,7 @@ ecbuild_add_option( FEATURE XXHASH
 
 set( eckit_CODEC_RECORD_BEGIN "ATLAS-IO" CACHE STRING "eckit::codec record begin" )
 set( eckit_CODEC_RECORD_END "ATLAS-IO-END" CACHE STRING "eckit::codec record end" )
-set( eckit_CODEC_STATIC_ASSERT OFF CACHE BOOL "eckit::codec static assertions" )
+set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
 
 ### LAPACK
 

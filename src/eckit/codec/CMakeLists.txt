@@ -52,6 +52,8 @@ ecbuild_add_library(
         detail/Decoder.cc
         detail/Decoder.h
         detail/Defaults.h
+        detail/demangle.cc
+        detail/demangle.h
         detail/Encoder.cc
         detail/Encoder.h
         detail/Endian.h
@@ -83,8 +85,6 @@ ecbuild_add_library(
         types/StdArrayAdaptor.h
         types/StdVectorAdaptor.h
         types/StdVectorOfStdArrayAdaptor.h
-        types/demangle.cc
-        types/demangle.h
         types/scalar.cc
         types/scalar.h
         types/string.h

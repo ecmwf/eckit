@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/codec/types/demangle.h"
+#include "eckit/codec/detail/demangle.h"
 
 #include "eckit/eckit_config.h"
 

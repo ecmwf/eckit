@@ -975,7 +975,7 @@ add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )
 
-if( HAVE_EXPERIMENTAL )
+if( HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
 endif()
 

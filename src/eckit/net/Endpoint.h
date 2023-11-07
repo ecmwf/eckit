@@ -38,6 +38,8 @@ public:                            // methods
     const std::string& host() const { return host_; }
     int port() const { return port_; }
 
+    std::string hostport() const { return host_+":"+std::to_string(port_); }
+
     bool operator==(const net::Endpoint& other);
 
     void print(std::ostream& os) const;

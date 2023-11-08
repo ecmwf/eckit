@@ -73,10 +73,9 @@ public:
 
     void remove(const PooledFile* file) {
         auto s = statuses_.find(file);
-        ASSERT(s != statuses_.end());
-
-        statuses_.erase(s);
-
+        if (s != statuses_.end()) {
+            statuses_.erase(s);
+        }
         if (statuses_.size() == 0) {
             doClose();
             pool_.erase(name_);
@@ -114,10 +113,10 @@ public:
 
     void close(const PooledFile* file) {
         auto s = statuses_.find(file);
-        ASSERT(s != statuses_.end());
-
-        ASSERT(s->second.opened_);
-        s->second.opened_ = false;
+        if (s != statuses_.end()) {
+            ASSERT(s->second.opened_);
+            s->second.opened_ = false;
+        }
     }
 
     int fileno(const PooledFile* file) const {

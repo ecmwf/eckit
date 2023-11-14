@@ -55,6 +55,8 @@ public:
     static void onLine(const std::string&, int);
 
     static std::vector<NodeInfo> all();
+
+    static bool lookUpHost(const std::string& type, const std::string& host, NodeInfo& );
 };
 
 

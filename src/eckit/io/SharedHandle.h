@@ -82,7 +82,8 @@ public:
     DataHandle* toLocal() override;
 
     void toRemote(Stream& s) const override;
-    void cost(std::map<std::string, Length>&, bool) const override;
+    void selectMover(MoverTransferSelection&, bool read) const override;
+
     std::string title() const override;
     void collectMetrics(const std::string& what) const override;  // Tag for metrics collection
 

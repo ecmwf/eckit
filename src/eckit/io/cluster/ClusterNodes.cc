@@ -58,7 +58,7 @@ class ClusterNodeEntry {
 
 public:
     ClusterNodeEntry(const NodeInfo& info) :
-        ClusterNodeEntry(info.node(), info.name(), info.host(), info.port(), info.attributes()) {}
+    ClusterNodeEntry(info.node(), info.name(), info.host(), info.port(), info.attributes()) {}
 
     NodeInfo asNodeInfo() const {
         NodeInfo info;
@@ -483,6 +483,20 @@ void ClusterNodes::receive(Stream& s) {
     }
 }
 
+
+bool ClusterNodes::lookUpHost(const std::string& type, const std::string& host, NodeInfo& result) {
+    pthread_once(&once, init);
+    AutoLock<NodeArray> lock(*nodeArray);
+
+    for (const auto& k : *nodeArray) {
+        if (k.active() && type == k.type() && host == k.host()) {
+            result = k.asNodeInfo();
+            return true;
+        }
+    }
+
+    return false;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -142,7 +142,7 @@ void SharedHandle::toRemote(Stream& s) const {
     NOTIMP;
 }
 
-void SharedHandle::cost(std::map<std::string, Length>&, bool) const {
+void SharedHandle::selectMover(MoverTransferSelection&, bool) const {
     NOTIMP;
 }
 

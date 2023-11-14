@@ -412,9 +412,9 @@ DataHandle* MultiHandle::toLocal() {
     return this;
 }
 
-void MultiHandle::cost(std::map<std::string, Length>& c, bool read) const {
+void MultiHandle::selectMover(MoverTransferSelection& c, bool read) const {
     for (size_t i = 0; i < datahandles_.size(); i++) {
-        datahandles_[i]->cost(c, read);
+        datahandles_[i]->selectMover(c, read);
     }
 }
 
@@ -425,16 +425,6 @@ bool MultiHandle::moveable() const {
         }
     }
     return datahandles_.size() > 0;
-}
-
-const std::set<std::string>& MultiHandle::requiredMoverAttributes() const {
-    if (requiredAttributes_.empty()) {
-        for (const auto& dh : datahandles_) {
-            auto&& attrs = dh->requiredMoverAttributes();
-            requiredAttributes_.insert(attrs.begin(), attrs.end());
-        }
-    }
-    return requiredAttributes_;
 }
 
 std::string MultiHandle::title() const {

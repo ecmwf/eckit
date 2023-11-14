@@ -12,7 +12,6 @@
 #pragma once
 
 #include <algorithm>
-#include <deque>
 #include <memory>
 #include <unordered_set>
 
@@ -55,8 +54,11 @@ public:
 
     bool has(const std::string& name) const override {
         return !hide_.contains(name) &&
-               (config_.has(name) ||
-                std::any_of(configs_.begin(), configs_.end(), [&](const decltype(configs_)::value_type& c) {
+               (std::any_of(before_.begin(),
+                            before_.end(),
+                            [&](const decltype(before_)::value_type& c) { return c->has(name); }) ||
+                config_.has(name) ||
+                std::any_of(after_.begin(), after_.end(), [&](const decltype(after_)::value_type& c) {
                     return c->has(name);
                 }));
     }
@@ -91,15 +93,19 @@ private:
     } hide_;
 
     const Configuration& config_;
-    std::deque<std::unique_ptr<Configuration>> configs_;
+    std::vector<std::unique_ptr<Configuration>> before_;
+    std::vector<std::unique_ptr<Configuration>> after_;
 
     // -- Methods
 
     template <typename T>
     bool __get(const std::string& name, T& value) const {
         return !hide_.contains(name) &&
-               (config_.get(name, value) ||
-                std::any_of(configs_.begin(), configs_.end(), [&](const decltype(configs_)::value_type& c) {
+               (std::any_of(before_.begin(),
+                            before_.end(),
+                            [&](const decltype(before_)::value_type& c) { return c->get(name, value); }) ||
+                config_.get(name, value) ||
+                std::any_of(after_.begin(), after_.end(), [&](const decltype(after_)::value_type& c) {
                     return c->get(name, value);
                 }));
     }

@@ -48,13 +48,13 @@ void DynamicConfiguration::unhide(const std::string& name) {
 
 void DynamicConfiguration::push_back(Configuration* config) {
     ASSERT(config != nullptr);
-    configs_.emplace_back(config);
+    after_.emplace_back(config);
 }
 
 
 void DynamicConfiguration::push_front(Configuration* config) {
     ASSERT(config != nullptr);
-    configs_.emplace_front(config);
+    before_.emplace_back(config);
 }
 
 
@@ -67,8 +67,15 @@ void DynamicConfiguration::print(std::ostream& out) const {
     }
 
     sep = "";
-    out << "],config=" << config_ << ",configs[";
-    for (const auto& config : configs_) {
+    out << "],config=" << config_ << ",before[";
+    for (const auto& config : before_) {
+        out << sep << *config;
+        sep = ",";
+    }
+
+    sep = "";
+    out << ",after[";
+    for (const auto& config : after_) {
         out << sep << *config;
         sep = ",";
     }

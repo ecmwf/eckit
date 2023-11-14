@@ -8,17 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_MappedConfiguration_H
-#define eckit_MappedConfiguration_H
+
+#pragma once
 
 #include <map>
 #include <variant>
 
 #include "eckit/config/Configuration.h"
 
+
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 class MappedConfiguration final : public Configuration {
 public:
@@ -72,44 +72,41 @@ public:
     void set(const std::string& name, const char* value) { set(name, std::string{value}); }
 
     // (consistent with Configured)
-    void set(const std::string&, const std::string&);
-    void set(const std::string&, bool);
-    void set(const std::string&, int);
-    void set(const std::string&, long);
-    void set(const std::string&, long long);
-    void set(const std::string&, std::size_t);
-    void set(const std::string&, float);
-    void set(const std::string&, double);
-
-    // (consistent with Configured)
-    void set(const std::string&, const std::vector<int>&);
-    void set(const std::string&, const std::vector<long>&);
-    void set(const std::string&, const std::vector<long long>&);
-    void set(const std::string&, const std::vector<std::size_t>&);
-    void set(const std::string&, const std::vector<float>&);
-    void set(const std::string&, const std::vector<double>&);
-    void set(const std::string&, const std::vector<std::string>&);
+    void set(const std::string& name, const std::string& value);
+    void set(const std::string& name, bool value);
+    void set(const std::string& name, int value);
+    void set(const std::string& name, long value);
+    void set(const std::string& name, long long value);
+    void set(const std::string& name, std::size_t value);
+    void set(const std::string& name, float value);
+    void set(const std::string& name, double value);
+    void set(const std::string& name, const std::vector<int>& value);
+    void set(const std::string& name, const std::vector<long>& value);
+    void set(const std::string& name, const std::vector<long long>& value);
+    void set(const std::string& name, const std::vector<std::size_t>& value);
+    void set(const std::string& name, const std::vector<float>& value);
+    void set(const std::string& name, const std::vector<double>& value);
+    void set(const std::string& name, const std::vector<std::string>& value);
 
     // -- Overridden methods
 
-    bool has(const std::string&) const override;
+    bool has(const std::string& name) const override;
 
-    bool get(const std::string&, std::string&) const override;
-    bool get(const std::string&, bool&) const override;
-    bool get(const std::string&, int&) const override;
-    bool get(const std::string&, long&) const override;
-    bool get(const std::string&, long long&) const override;
-    bool get(const std::string&, std::size_t&) const override;
-    bool get(const std::string&, float&) const override;
-    bool get(const std::string&, double&) const override;
-
-    bool get(const std::string&, std::vector<int>&) const override;
-    bool get(const std::string&, std::vector<long>&) const override;
-    bool get(const std::string&, std::vector<long long>&) const override;
-    bool get(const std::string&, std::vector<std::size_t>&) const override;
-    bool get(const std::string&, std::vector<float>&) const override;
-    bool get(const std::string&, std::vector<double>&) const override;
-    bool get(const std::string&, std::vector<std::string>&) const override;
+    bool get(const std::string& name, std::string& value) const override;
+    bool get(const std::string& name, bool& value) const override;
+    bool get(const std::string& name, int& value) const override;
+    bool get(const std::string& name, long& value) const override;
+    bool get(const std::string& name, long long& value) const override;
+    bool get(const std::string& name, std::size_t& value) const override;
+    bool get(const std::string& name, float& value) const override;
+    bool get(const std::string& name, double& value) const override;
+    bool get(const std::string& name, std::vector<int>& value) const override;
+    bool get(const std::string& name, std::vector<long>& value) const override;
+    bool get(const std::string& name, std::vector<long long>& value) const override;
+    bool get(const std::string& name, std::vector<std::size_t>& value) const override;
+    bool get(const std::string& name, std::vector<float>& value) const override;
+    bool get(const std::string& name, std::vector<double>& value) const override;
+    bool get(const std::string& name, std::vector<std::string>& value) const override;
 
     // -- Class members
     // None
@@ -140,8 +137,5 @@ private:
     // None
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

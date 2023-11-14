@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+
 #include "eckit/config/MappedConfiguration.h"
 
 #include "eckit/log/JSON.h"
 #include "eckit/value/Value.h"
 
-namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
+namespace eckit {
 
 
 namespace {
@@ -328,6 +328,12 @@ bool MappedConfiguration::get(const std::string& name, std::vector<std::string>&
 }
 
 
+void MappedConfiguration::print(std::ostream& out) const {
+    JSON j(out);
+    json(j);
+}
+
+
 void MappedConfiguration::json(JSON& j) const {
     j.startObject();
     for (const auto& nv : map_) {
@@ -337,13 +343,5 @@ void MappedConfiguration::json(JSON& j) const {
     j.endObject();
 }
 
-
-void MappedConfiguration::print(std::ostream& out) const {
-    JSON j(out);
-    json(j);
-}
-
-
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

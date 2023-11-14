@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_DynamicConfiguration_H
-#define eckit_DynamicConfiguration_H
+
+#pragma once
 
 #include <algorithm>
 #include <deque>
@@ -18,9 +18,9 @@
 
 #include "eckit/config/Configuration.h"
 
+
 namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 class DynamicConfiguration : public Configuration {
 public:
@@ -118,8 +118,5 @@ private:
     // None
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

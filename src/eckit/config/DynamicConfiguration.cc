@@ -14,9 +14,8 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/value/Value.h"
 
-namespace eckit {
 
-//----------------------------------------------------------------------------------------------------------------------
+namespace eckit {
 
 
 namespace {
@@ -76,7 +75,5 @@ void DynamicConfiguration::print(std::ostream& out) const {
     out << "]]";
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

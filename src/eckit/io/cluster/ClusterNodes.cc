@@ -22,6 +22,7 @@
 #include "eckit/memory/Zero.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Clock.h"
+#include "eckit/net/IPAddress.h"
 
 namespace eckit {
 
@@ -488,8 +489,10 @@ bool ClusterNodes::lookUpHost(const std::string& type, const std::string& host, 
     pthread_once(&once, init);
     AutoLock<NodeArray> lock(*nodeArray);
 
+    auto ip = eckit::net::IPAddress::hostAddress(host);
+
     for (const auto& k : *nodeArray) {
-        if (k.active() && type == k.type() && host == k.host()) {
+        if (k.active() && type == k.type() && ip == eckit::net::IPAddress::hostAddress(k.host())) {
             result = k.asNodeInfo();
             return true;
         }

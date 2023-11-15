@@ -33,7 +33,7 @@ void MoverTransferSelection::updateCost(const std::string& name, const eckit::Le
 
 
 void MoverTransferSelection::updateCost(const eckit::NodeInfo& node, const eckit::Length& length) {
-    updateCost(node.name(), length);
+    updateCost(node.node(), length);
 }
 
 void MoverTransferSelection::requiredMoverAttributes(const std::set<std::string>& attrs) {
@@ -120,10 +120,11 @@ NodeInfo MoverTransferSelection::selectedMover() {
 }
 
 void MoverTransferSelection::preferredMover(const NodeInfo& node) {
-    preferredMover(node.name());
+    preferredMover(node.node());
 }
 
 void MoverTransferSelection::preferredMover(const std::string& name) {
+    Log::info() << "MoverTransferSelection::preferredMover " << name << std::endl;
     preferredMover_ = name;
 }
 

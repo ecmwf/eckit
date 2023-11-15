@@ -53,6 +53,8 @@ public:
 
     bool canSeek() const override { return false; }
 
+    virtual void selectMover(eckit::MoverTransferSelection&, bool) const override;
+
     // From Streamable
 
     void encode(Stream&) const override;

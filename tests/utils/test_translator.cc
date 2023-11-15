@@ -136,6 +136,8 @@ CASE("Translate signed char as a number") {
     Translator<signed char, std::string> t;
 
     EXPECT(t((signed char)127) == std::string("127"));
+    EXPECT(t((signed char)-127) == std::string("-127"));
+    EXPECT(t((signed char)128) == std::string("-128"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

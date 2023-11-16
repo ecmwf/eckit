@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
@@ -26,15 +27,21 @@
 namespace eckit::geo::area {
 
 
-static BoundingBox make_from_config(const Configuration& config) {
-    auto area = config.getDoubleVector("area",
-                                       {config.getDouble("north", 90.),
-                                        config.getDouble("west", 0.),
-                                        config.getDouble("south", -90.),
-                                        config.getDouble("east", 360.)});
+static constexpr std::array<double, 4> DEFAULT{90, 0, -90, 360};
 
-    ASSERT_MSG(area.size() == 4, "BoundingBox: expected list of size 4");
-    return {area[0], area[1], area[2], area[3]};
+
+static BoundingBox make_from_config(const Configuration& config) {
+    if (std::vector<double> area{DEFAULT[0], DEFAULT[1], DEFAULT[2], DEFAULT[3]}; config.get("area", area)) {
+        ASSERT_MSG(area.size() == 4, "BoundingBox: 'area' expected list of size 4");
+        return {area[0], area[1], area[2], area[3]};
+    }
+
+    if (auto area(DEFAULT); config.get("north", area[0]) && config.get("west", area[1]) &&
+                            config.get("south", area[2]) && config.get("east", area[3])) {
+        return {area[0], area[1], area[2], area[3]};
+    }
+
+    throw UserError("BoundingBox: expecting 'area'=N/W/S/E or ('north', 'west', 'south', 'east')");
 }
 
 
@@ -52,6 +59,10 @@ BoundingBox::BoundingBox(double n, double w, double s, double e) :
     ASSERT_MSG(west <= east && east <= west + 360., "BoundingBox: longitude range");
     ASSERT_MSG(-90. <= south && south <= north && north <= 90., "BoundingBox: latitude range");
 }
+
+
+BoundingBox::BoundingBox() :
+    BoundingBox(DEFAULT[0], DEFAULT[1], DEFAULT[2], DEFAULT[3]) {}
 
 
 bool BoundingBox::operator==(const BoundingBox& other) const {

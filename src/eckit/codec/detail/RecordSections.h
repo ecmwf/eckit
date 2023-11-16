@@ -18,18 +18,20 @@
 #include "eckit/codec/detail/Endian.h"
 #include "eckit/codec/detail/Time.h"
 #include "eckit/codec/detail/Version.h"
-#include "eckit/codec/eckit_codec_config.h"
 #include "eckit/types/FixedString.h"
 
 namespace eckit::codec {
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 
+constexpr char RECORD_BEGIN[] = "ATLAS-IO";
+constexpr char RECORD_END[]   = "ATLAS-IO-END";
+
 struct RecordBegin {
-    FixedString<8> string{eckit_CODEC_RECORD_BEGIN};
+    FixedString<8> string{RECORD_BEGIN};
     FixedString<8> spare{"\n"};
 
-    bool valid() const { return string == eckit_CODEC_RECORD_BEGIN; }
+    bool valid() const { return string == RECORD_BEGIN; }
     std::string str() const { return string; }
 };
 
@@ -37,10 +39,10 @@ struct RecordEnd {  // 32 bytes
     static constexpr size_t bytes = 32;
 
     FixedString<1> eol{"\n"};
-    FixedString<12> string{eckit_CODEC_RECORD_END};
+    FixedString<12> string{RECORD_END};
     FixedString<19> padding{"               \n\n\n\n"};
 
-    bool valid() const { return string == eckit_CODEC_RECORD_END; }
+    bool valid() const { return string == RECORD_END; }
     std::string str() const { return string; }
 };
 
@@ -73,14 +75,17 @@ struct RecordHead {
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 struct RecordMetadataSection {
+    static constexpr char TAG_BEGIN[] = "METADATA-BEGIN";
+    static constexpr char TAG_END[]   = "METADATA-END";
+
     struct Begin {  // 32 bytes
         static constexpr size_t bytes = 32;
 
         FixedString<1> eol{"\n"};
-        FixedString<14> string{"METADATA-BEGIN"};
+        FixedString<14> string{TAG_BEGIN};
         FixedString<17> padding{"                \n"};
 
-        bool valid() const { return string == "METADATA-BEGIN"; }
+        bool valid() const { return string == TAG_BEGIN; }
         std::string str() const { return string; }
     };
 
@@ -88,10 +93,10 @@ struct RecordMetadataSection {
         static constexpr size_t bytes = 32;
 
         FixedString<1> eol{"\n"};
-        FixedString<12> string{"METADATA-END"};
+        FixedString<12> string{TAG_END};
         FixedString<19> padding{"                  \n"};
 
-        bool valid() const { return string == "METADATA-END"; }
+        bool valid() const { return string == TAG_END; }
         std::string str() const { return string; }
     };
 };
@@ -99,14 +104,17 @@ struct RecordMetadataSection {
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 struct RecordDataIndexSection {
+    static constexpr char TAG_BEGIN[] = "INDEX-BEGIN";
+    static constexpr char TAG_END[]   = "INDEX-END";
+
     struct Begin {  // 32 bytes
         static constexpr size_t bytes = 32;
 
         FixedString<1> eol{"\n"};
-        FixedString<11> string{"INDEX-BEGIN"};
+        FixedString<11> string{TAG_BEGIN};
         FixedString<20> padding{"                   \n"};
 
-        bool valid() const { return string == "INDEX-BEGIN"; }
+        bool valid() const { return string == TAG_BEGIN; }
         std::string str() const { return string; }
     };
 
@@ -114,10 +122,10 @@ struct RecordDataIndexSection {
         static constexpr size_t bytes = 32;
 
         FixedString<1> eol{"\n"};
-        FixedString<9> string{"INDEX-END"};
+        FixedString<9> string{TAG_END};
         FixedString<22> padding{"                     \n"};
 
-        bool valid() const { return string == "INDEX-END"; }
+        bool valid() const { return string == TAG_END; }
         std::string str() const { return string; }
     };
 
@@ -133,24 +141,27 @@ struct RecordDataIndexSection {
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 struct RecordDataSection {
+    static constexpr char TAG_BEGIN[] = "DATA-BEGIN";
+    static constexpr char TAG_END[]   = "DATA-END";
+
     struct Begin {  // 32 bytes
         static constexpr size_t bytes = 32;
 
         FixedString<1> eol{"\n"};
-        FixedString<10> string{"DATA-BEGIN"};
+        FixedString<10> string{TAG_BEGIN};
         FixedString<21> padding{"                    \n"};
 
-        bool valid() const { return string == "DATA-BEGIN"; }
+        bool valid() const { return string == TAG_BEGIN; }
         std::string str() const { return string; }
     };
     struct End {  // 32 bytes
         static constexpr size_t bytes = 32;
 
         FixedString<1> eol{"\n"};
-        FixedString<8> string{"DATA-END"};
+        FixedString<8> string{TAG_END};
         FixedString<23> padding{"                      \n"};
 
-        bool valid() const { return string == "DATA-END"; }
+        bool valid() const { return string == TAG_END; }
         std::string str() const { return string; }
     };
 };

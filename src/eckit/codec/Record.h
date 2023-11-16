@@ -39,8 +39,7 @@ public:
         URI()           = default;
         URI(const URI&) = default;
 
-        explicit URI(const std::string& _path, std::uint64_t _offset = 0) :
-            path(_path), offset(_offset) {}
+        explicit URI(const std::string& _path, std::uint64_t _offset = 0) : path(_path), offset(_offset) {}
     };
 
 private:
@@ -48,8 +47,6 @@ private:
 
 public:
     Record();
-
-    Record(const Record&);
 
     bool empty() const;
 

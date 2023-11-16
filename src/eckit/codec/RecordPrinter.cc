@@ -23,8 +23,7 @@ namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordPrinter::RecordPrinter(const PathName& path, const Configuration& config) :
-    RecordPrinter(path, 0, config) {}
+RecordPrinter::RecordPrinter(const PathName& path, const Configuration& config) : RecordPrinter(path, 0, config) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 

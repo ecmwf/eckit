@@ -19,16 +19,13 @@ namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordReader::RecordReader(const Record::URI& ref) :
-    RecordReader(ref.path, ref.offset) {}
+RecordReader::RecordReader(const Record::URI& ref) : RecordReader(ref.path, ref.offset) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordReader::RecordReader(const std::string& path, uint64_t offset) :
-    path_{path}, offset_{offset} {}
+RecordReader::RecordReader(const std::string& path, uint64_t offset) : path_{path}, offset_{offset} {}
 
-RecordReader::RecordReader(Stream stream, uint64_t offset) :
-    stream_{stream}, offset_{offset} {}
+RecordReader::RecordReader(Stream stream, uint64_t offset) : stream_{stream}, offset_{offset} {}
 
 //---------------------------------------------------------------------------------------------------------------------
 

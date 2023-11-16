@@ -23,8 +23,7 @@ namespace eckit::codec {
 class Decoder {
 public:
     template <typename T, enable_if_decodable_t<T> = 0>
-    explicit Decoder(T& value) :
-        self_(new DecodableItem<T>(value)) {}
+    explicit Decoder(T& value) : self_(new DecodableItem<T>(value)) {}
 
     friend void decode(const Metadata& metadata, const Data& data, Decoder&);
     friend void decode(const Metadata& metadata, const Data& data, Decoder&&);
@@ -37,8 +36,7 @@ private:
 
     template <typename T>
     struct DecodableItem : Decodable {
-        explicit DecodableItem(T& value) :
-            data_(value) {}
+        explicit DecodableItem(T& value) : data_(value) {}
 
         void decode_(const Metadata& metadata, const Data& encoded) override { decode(metadata, encoded, data_); }
 

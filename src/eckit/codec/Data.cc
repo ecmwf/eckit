@@ -23,8 +23,7 @@ namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-Data::Data(void* p, size_t size) :
-    buffer_(p, size), size_(size) {}
+Data::Data(void* p, size_t size) : buffer_(p, size), size_(size) {}
 
 std::uint64_t Data::write(Stream& out) const {
     if (size() > 0) {

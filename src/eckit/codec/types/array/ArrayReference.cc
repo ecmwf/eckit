@@ -61,15 +61,13 @@ size_t encode_metadata(const ArrayReference& value, Metadata& out) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayReference::ArrayReference(const void* data,
-                               ArrayMetadata::DataType datatype,
+ArrayReference::ArrayReference(const void* data, ArrayMetadata::DataType datatype,
                                const ArrayMetadata::ArrayShape& shape) :
     ArrayMetadata(datatype, shape), data_(const_cast<void*>(data)) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayReference::ArrayReference(ArrayReference&& other) :
-    ArrayMetadata(std::move(other)), data_(other.data_) {
+ArrayReference::ArrayReference(ArrayReference&& other) : ArrayMetadata(std::move(other)), data_(other.data_) {
     other.data_ = nullptr;
 }
 

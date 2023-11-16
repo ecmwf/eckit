@@ -20,8 +20,7 @@ namespace eckit::codec {
 
 struct Bytes {
 public:
-    explicit Bytes(size_t bytes) :
-        bytes_(bytes) {}
+    explicit Bytes(size_t bytes) : bytes_(bytes) {}
 
     explicit operator size_t() const { return bytes_; }
 

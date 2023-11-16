@@ -19,14 +19,11 @@ namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-Stream::Stream(DataHandle& datahandle) :
-    ptr_(&datahandle) {}
+Stream::Stream(DataHandle& datahandle) : ptr_(&datahandle) {}
 
-Stream::Stream(DataHandle* datahandle) :
-    shared_(datahandle), ptr_(shared_.get()) {}
+Stream::Stream(DataHandle* datahandle) : shared_(datahandle), ptr_(shared_.get()) {}
 
-Stream::Stream(std::shared_ptr<DataHandle> datahandle) :
-    shared_(datahandle), ptr_(shared_.get()) {}
+Stream::Stream(std::shared_ptr<DataHandle> datahandle) : shared_(datahandle), ptr_(shared_.get()) {}
 
 Stream::Stream(const Stream& other) = default;
 

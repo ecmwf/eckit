@@ -12,11 +12,11 @@
 
 #include "eckit/codec/RecordWriter.h"
 
+#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/detail/Checksum.h"
 #include "eckit/codec/detail/Defaults.h"
 #include "eckit/codec/detail/Encoder.h"
 #include "eckit/codec/detail/RecordSections.h"
-#include "eckit/codec/Exceptions.h"
 
 namespace eckit::codec {
 
@@ -63,8 +63,8 @@ size_t RecordWriter::write(Stream out) const {
         write_string(out, metadata_str);
         write_struct(out, RecordMetadataSection::End());
         r.metadata_length = position() - r.metadata_offset;
-        r.metadata_checksum =
-            do_checksum_ != 0 ? codec::checksum(metadata_str.data(), metadata_str.size()) : std::string("none:");
+        r.metadata_checksum
+            = do_checksum_ != 0 ? codec::checksum(metadata_str.data(), metadata_str.size()) : std::string("none:");
 
         // Index section
         // -------------

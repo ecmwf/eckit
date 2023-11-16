@@ -49,13 +49,11 @@ std::string RecordItem::URI::str() const {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItem::RecordItem(RecordItem&& other) :
-    metadata_(std::move(other.metadata_)), data_(std::move(other.data_)) {}
+RecordItem::RecordItem(RecordItem&& other) : metadata_(std::move(other.metadata_)), data_(std::move(other.data_)) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItem::RecordItem(Metadata&& metadata, Data&& data) :
-    metadata_(new Metadata(metadata)), data_(std::move(data)) {}
+RecordItem::RecordItem(Metadata&& metadata, Data&& data) : metadata_(new Metadata(metadata)), data_(std::move(data)) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 

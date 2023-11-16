@@ -20,10 +20,8 @@ struct Type {
     const std::string name_;
     explicit operator const std::string&() { return name_; }
     operator bool() const { return !name_.empty(); }
-    Type(const char* name) :
-        name_(name) {}
-    explicit Type(const std::string& name) :
-        name_(name) {}
+    Type(const char* name) : name_(name) {}
+    explicit Type(const std::string& name) : name_(name) {}
     bool operator==(const Type& other) const { return name_ == other.name_; }
 };
 

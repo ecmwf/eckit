@@ -33,18 +33,14 @@ public:
     operator bool() const { return static_cast<bool>(self_); }
 
     template <typename T, enable_if_move_constructible_encodable_rvalue_t<T> = 0>
-    explicit Encoder(T&& x) :
-        self_(new EncodableValue<T>(std::move(x))) {}
+    explicit Encoder(T&& x) : self_(new EncodableValue<T>(std::move(x))) {}
 
-    explicit Encoder(const Link& link) :
-        self_(new EncodableLink(link)) {}
+    explicit Encoder(const Link& link) : self_(new EncodableLink(link)) {}
 
-    Encoder(Encoder&& other) :
-        self_(std::move(other.self_)) {}
+    Encoder(Encoder&& other) : self_(std::move(other.self_)) {}
 
     template <typename T, enable_if_scalar_t<T> = 0>
-    explicit Encoder(const T& x) :
-        self_(new EncodableValue<T>(x)) {}
+    explicit Encoder(const T& x) : self_(new EncodableValue<T>(x)) {}
 
 
     Encoder& operator=(Encoder&& rhs) {
@@ -68,14 +64,12 @@ private:
 
     template <typename Value>
     struct EncodableValue : Encodable {
-        explicit EncodableValue(Value&& v) :
-            value_{std::move(v)} {
+        explicit EncodableValue(Value&& v) : value_{std::move(v)} {
             sfinae::encode_metadata(value_, metadata_, data_size_);
         }
 
         template <bool EnableBool = true, enable_if_scalar_t<Value, EnableBool> = 0>
-        explicit EncodableValue(const Value& v) :
-            value_{v} {
+        explicit EncodableValue(const Value& v) : value_{v} {
             sfinae::encode_metadata(value_, metadata_, data_size_);
         }
 
@@ -93,8 +87,7 @@ private:
     };
 
     struct EncodableLink : Encodable {
-        explicit EncodableLink(const Link& link) :
-            link_(link) {}
+        explicit EncodableLink(const Link& link) : link_(link) {}
 
         size_t encode_metadata_(Metadata& metadata) const override {
             metadata.set(Metadata("link", link_.uri));

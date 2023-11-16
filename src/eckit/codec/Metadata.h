@@ -75,8 +75,7 @@ public:
     }
 
     /// @brief Constructor starting from a Configuration
-    Metadata(const Configuration& other) :
-        LocalConfiguration(other) {}
+    Metadata(const Configuration& other) : LocalConfiguration(other) {}
 
 
     Metadata& remove(const std::string& name) {

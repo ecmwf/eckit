@@ -12,11 +12,11 @@
 
 #include "eckit/codec/detail/demangle.h"
 
-namespace eckit::codec{
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-NotEncodable::NotEncodable(const std::string& type_name):
+NotEncodable::NotEncodable(const std::string& type_name) :
     Exception{[&type_name] {
         std::stringstream message;
         message << "eckit::codec::NotEncodable: Cannot encode values of type " << type_name << ".";
@@ -42,7 +42,7 @@ NotEncodable::NotEncodable(const std::string& type_name):
 
 //---------------------------------------------------------------------------------------------------------------------
 
-NotDecodable::NotDecodable(const std::string& type_name):
+NotDecodable::NotDecodable(const std::string& type_name) :
     Exception{[&type_name] {
         std::stringstream message;
         message << "eckit::codec::NotDecodable: Cannot decode values of type " << type_name << ".";

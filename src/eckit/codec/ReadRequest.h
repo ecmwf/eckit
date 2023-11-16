@@ -32,12 +32,10 @@ public:
         ReadRequest{stream, offset, key, new Decoder(value)} {}
 
     template <typename T>
-    ReadRequest(const std::string& URI, T& value) :
-        ReadRequest{URI, new Decoder(value)} {}
+    ReadRequest(const std::string& URI, T& value) : ReadRequest{URI, new Decoder(value)} {}
 
     template <typename T>
-    ReadRequest(const RecordItem::URI& URI, T& value) :
-        ReadRequest{URI.str(), value} {}
+    ReadRequest(const RecordItem::URI& URI, T& value) : ReadRequest{URI.str(), value} {}
 
     ReadRequest()                   = delete;
     ReadRequest(const ReadRequest&) = delete;

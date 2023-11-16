@@ -61,8 +61,8 @@ Data read_data(const Record& record, int data_section_index, Stream in) {
     if (not data_begin.valid()) {
         throw InvalidRecord("Data section is not valid");
     }
-    auto data_size =
-        static_cast<size_t>(data_section.length) - sizeof(RecordDataSection::Begin) - sizeof(RecordDataSection::End);
+    auto data_size
+        = static_cast<size_t>(data_section.length) - sizeof(RecordDataSection::Begin) - sizeof(RecordDataSection::End);
     if (data_size > 0) {
         if (data.read(in, data_size) != data_size) {
             throw InvalidRecord("Data section is not valid");
@@ -115,8 +115,7 @@ Record read_record(Stream in, size_t offset) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItemReader::RecordItemReader(Stream in, size_t offset, const std::string& key) :
-    in_(in), uri_{"", offset, key} {
+RecordItemReader::RecordItemReader(Stream in, size_t offset, const std::string& key) : in_(in), uri_{"", offset, key} {
     record_ = read_record(in, uri_.offset);
 
     if (not record_.has(uri_.key)) {
@@ -124,8 +123,7 @@ RecordItemReader::RecordItemReader(Stream in, size_t offset, const std::string& 
     }
 }
 
-RecordItemReader::RecordItemReader(Stream in, const std::string& key) :
-    in_(in), uri_{"", 0, key} {
+RecordItemReader::RecordItemReader(Stream in, const std::string& key) : in_(in), uri_{"", 0, key} {
     record_ = read_record(in, uri_.offset);
 
     if (not record_.has(uri_.key)) {
@@ -136,13 +134,11 @@ RecordItemReader::RecordItemReader(Stream in, const std::string& key) :
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItemReader::RecordItemReader(const std::string& uri) :
-    RecordItemReader("", uri) {}
+RecordItemReader::RecordItemReader(const std::string& uri) : RecordItemReader("", uri) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-RecordItemReader::RecordItemReader(const std::string& ref, const std::string& uri) :
-    ref_{ref}, uri_{uri} {
+RecordItemReader::RecordItemReader(const std::string& ref, const std::string& uri) : ref_{ref}, uri_{uri} {
     auto absolute_path = make_absolute_path(ref_, uri_);
 
     if (not absolute_path.exists()) {

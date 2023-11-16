@@ -61,23 +61,19 @@ size_t ArrayMetadata::size() const {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayMetadata::ArrayMetadata() :
-    datatype_(DataType::KIND_REAL64) /* circumvent absense of default constructor */ {}
+ArrayMetadata::ArrayMetadata() : datatype_(DataType::KIND_REAL64) /* circumvent absense of default constructor */ {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayMetadata::ArrayMetadata(const DataType& datatype, const ArrayShape& shape) :
-    shape_(shape), datatype_(datatype) {}
+ArrayMetadata::ArrayMetadata(const DataType& datatype, const ArrayShape& shape) : shape_(shape), datatype_(datatype) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayMetadata::ArrayMetadata(const ArrayMetadata& other) :
-    ArrayMetadata{other.datatype_, other.shape_} {}
+ArrayMetadata::ArrayMetadata(const ArrayMetadata& other) : ArrayMetadata{other.datatype_, other.shape_} {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-ArrayMetadata::ArrayMetadata(ArrayMetadata&& other) :
-    shape_(std::move(other.shape_)), datatype_{other.datatype_} {}
+ArrayMetadata::ArrayMetadata(ArrayMetadata&& other) : shape_(std::move(other.shape_)), datatype_{other.datatype_} {}
 
 //---------------------------------------------------------------------------------------------------------------------
 

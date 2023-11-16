@@ -31,8 +31,7 @@ namespace {
 ///       * append: for appending implemented via write and seek to eof.
 class FileHandle : public eckit::FileHandle {
 public:
-    FileHandle(const PathName& path, char openmode) :
-        eckit::FileHandle(path, openmode == 'a' /*overwrite*/) {
+    FileHandle(const PathName& path, char openmode) : eckit::FileHandle(path, openmode == 'a' /*overwrite*/) {
         if (openmode == 'r') {
             openForRead();
         }
@@ -53,13 +52,11 @@ public:
     }
 
     FileHandle(const PathName& path, Mode openmode) :
-        FileHandle(path,
-                   openmode == Mode::read    ? 'r'
-                   : openmode == Mode::write ? 'w'
-                                             : 'a') {}
+        FileHandle(path, openmode == Mode::read    ? 'r'
+                         : openmode == Mode::write ? 'w'
+                                                   : 'a') {}
 
-    FileHandle(const PathName& path, const std::string& openmode) :
-        FileHandle(path, openmode[0]) {}
+    FileHandle(const PathName& path, const std::string& openmode) : FileHandle(path, openmode[0]) {}
 
     FileHandle(const FileHandle&) = delete;
     FileHandle(FileHandle&&)      = delete;
@@ -85,10 +82,7 @@ private:
 ///   - Automatic opening and closing of file
 class PooledHandle : public eckit::PooledHandle {
 public:
-    explicit PooledHandle(const PathName& path) :
-        eckit::PooledHandle(path), path_(path) {
-        openForRead();
-    }
+    explicit PooledHandle(const PathName& path) : eckit::PooledHandle(path), path_(path) { openForRead(); }
 
     PooledHandle(const PooledHandle&) = delete;
     PooledHandle(PooledHandle&&)      = delete;
@@ -114,29 +108,23 @@ FileStream::FileStream(const PathName& path, char openmode) :
 }
 
 FileStream::FileStream(const PathName& path, Mode openmode) :
-    FileStream(path,
-               openmode == Mode::read    ? 'r'
-               : openmode == Mode::write ? 'w'
-                                         : 'a') {}
+    FileStream(path, openmode == Mode::read    ? 'r'
+                     : openmode == Mode::write ? 'w'
+                                               : 'a') {}
 
-FileStream::FileStream(const PathName& path, const std::string& openmode) :
-    FileStream(path, openmode[0]) {}
+FileStream::FileStream(const PathName& path, const std::string& openmode) : FileStream(path, openmode[0]) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-InputFileStream::InputFileStream(const PathName& path) :
-    FileStream(path, Mode::read) {}
+InputFileStream::InputFileStream(const PathName& path) : FileStream(path, Mode::read) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
-OutputFileStream::OutputFileStream(const PathName& path, Mode openmode) :
-    FileStream(path, openmode) {}
+OutputFileStream::OutputFileStream(const PathName& path, Mode openmode) : FileStream(path, openmode) {}
 
-OutputFileStream::OutputFileStream(const PathName& path, const std::string& openmode) :
-    FileStream(path, openmode) {}
+OutputFileStream::OutputFileStream(const PathName& path, const std::string& openmode) : FileStream(path, openmode) {}
 
-OutputFileStream::OutputFileStream(const PathName& path, char openmode) :
-    FileStream(path, openmode) {}
+OutputFileStream::OutputFileStream(const PathName& path, char openmode) : FileStream(path, openmode) {}
 
 void OutputFileStream::close() {
     datahandle().close();

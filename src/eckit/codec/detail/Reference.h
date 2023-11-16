@@ -23,8 +23,7 @@ namespace eckit::codec {
 template <typename T>
 struct Reference {
     const T* ref;
-    explicit Reference(const T& r) :
-        ref(&r) {}
+    explicit Reference(const T& r) : ref(&r) {}
 
     friend size_t encode_metadata(const Reference<T>& in, Metadata& metadata) {
         size_t size{0};

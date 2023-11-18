@@ -42,7 +42,10 @@ public:
     // None
 
     // -- Methods
-    // None
+    size_t set(Configured& parameter, size_t values, args_t::const_iterator begin,
+               args_t::const_iterator end) const override;
+
+    void setDefault(Configured&) const override;
 
 
     // -- Overridden methods
@@ -83,9 +86,6 @@ private:
     // None
 
     // -- Overridden methods
-
-    using Option::set;
-    void set(const std::string& value, Configured&) const override;
     bool active() const override;
     void copy(const Configuration& from, Configured& to) const override;
 

@@ -7,6 +7,8 @@ ecbuild_add_library( TARGET eckit_option TYPE SHARED
 	SOURCES
         FactoryOption.cc
         FactoryOption.h
+        MultiValueOption.cc
+        MultiValueOption.h
         Option.cc
         Option.h
         Separator.cc

@@ -189,11 +189,6 @@ bool StatsHandle::moveable() const {
     return false;
 }
 
-const std::set<std::string>& StatsHandle::requiredMoverAttributes() const {
-    // Requires moveable();
-    NOTIMP;
-}
-
 void StatsHandle::toLocal(Stream& s) const {
     NOTIMP;
 }
@@ -206,7 +201,7 @@ void StatsHandle::toRemote(Stream& s) const {
     NOTIMP;
 }
 
-void StatsHandle::cost(std::map<std::string, Length>&, bool) const {
+void StatsHandle::selectMover(MoverTransferSelection&, bool) const {
     NOTIMP;
 }
 

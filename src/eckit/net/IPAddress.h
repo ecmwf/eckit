@@ -37,6 +37,8 @@ public:
     static IPAddress myIPAddress();
     static IPAddress hostAddress(const std::string& hostname);
 
+    bool operator==(const IPAddress& other) const;
+
 private:
     // Members
 

@@ -58,6 +58,7 @@ public:  // methods
 
     bool done();
     void wait();
+    bool done();
     void resize(size_t);
 
     void startTask();

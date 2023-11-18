@@ -189,6 +189,8 @@ io/MemoryHandle.cc
 io/MemoryHandle.h
 io/MoverTransfer.cc
 io/MoverTransfer.h
+io/MoverTransferSelection.cc
+io/MoverTransferSelection.h
 io/MultiHandle.cc
 io/MultiHandle.h
 io/Offset.cc
@@ -960,11 +962,11 @@ ecbuild_add_library(
 ### sub-directories
 
 if( HAVE_ECKIT_CMD )
-  add_subdirectory( cmd )
+    add_subdirectory( cmd )
 endif()
 
 if( HAVE_ECKIT_SQL )
-  add_subdirectory( sql )
+    add_subdirectory( sql )
 endif()
 
 add_subdirectory( distributed )
@@ -974,3 +976,8 @@ add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )
+
+if( HAVE_ECKIT_CODEC )
+    add_subdirectory( codec )
+endif()
+

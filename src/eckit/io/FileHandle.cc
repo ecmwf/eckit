@@ -22,6 +22,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/os/Stat.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/io/MoverTransferSelection.h"
 
 
 namespace eckit {
@@ -278,13 +279,13 @@ void FileHandle::toRemote(Stream& s) const {
     s << *remote;
 }
 
-void FileHandle::cost(std::map<std::string, Length>& c, bool read) const {
+void FileHandle::selectMover(MoverTransferSelection& c, bool read) const {
     if (read) {
-        c[NodeInfo::thisNode().node()] += const_cast<FileHandle*>(this)->estimate();
+        c.updateCost(NodeInfo::thisNode(), const_cast<FileHandle*>(this)->estimate());
     }
     else {
         // Just mark the node as being a candidate
-        c[NodeInfo::thisNode().node()] += 0;
+        c.updateCost(NodeInfo::thisNode(), 0);
     }
 }
 

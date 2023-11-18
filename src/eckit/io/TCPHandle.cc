@@ -9,6 +9,8 @@
  */
 
 #include "eckit/io/TCPHandle.h"
+#include "eckit/io/MoverTransferSelection.h"
+#include "eckit/io/cluster/ClusterNodes.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -83,6 +85,16 @@ std::string TCPHandle::title() const {
     os << "TCP[" << host_ << ":" << port_ << "]";
     return os.str();
 }
+
+void TCPHandle::selectMover(eckit::MoverTransferSelection& selection, bool read) const {
+    // If we use a callback server that is collocated on a mover node
+    // we want to use that mover
+    NodeInfo node;
+    if (ClusterNodes::lookUpHost("mover", host_, node)) {
+        selection.preferredMover(node);
+    }
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -17,52 +17,98 @@
 #define Option_H
 
 #include <iosfwd>
+#include <optional>
 #include <string>
+#include <vector>
 
+#include "eckit/config/Configuration.h"
+#include "eckit/config/Configured.h"
 #include "eckit/memory/NonCopyable.h"
 
-namespace eckit {
-
-class Configuration;
-class Configured;
-
-namespace option {
-
+namespace eckit::option {
 
 class Option : private eckit::NonCopyable {
+public:
+    using args_t = std::vector<std::string>;
+
 public:  // methods
     Option(const std::string& name, const std::string& description);
+    virtual ~Option() = default;
 
-    virtual ~Option();  // Change to virtual if base class
+    [[nodiscard]] const std::string& name() const { return name_; };
+    [[nodiscard]] const std::string& description() const { return description_; }
 
-    virtual Option* defaultValue(const std::string&);
+    [[nodiscard]] virtual bool active() const { return true; };
 
-    const std::string& name() const;
+    /**
+     * Set the value of the option into `parameter`, taking as many values as necessary from the range `[begin, end)`.
+     *
+     * - `values` indicates the number of items in `[begin, end)` that were provided as an option value.
+     *    This parameter is expected to be either 0 (for --flag options) or 1 (for traditional --option=<value>)
+     *
+     * Return: number of items consumed from the range `[begin, end)`.
+     */
+    virtual size_t set(Configured& param, size_t values, args_t::const_iterator begin,
+                       args_t::const_iterator end) const = 0;
 
-    virtual bool active() const;
-
-    virtual void set(Configured&) const;
-    virtual void set(const std::string& value, Configured&) const      = 0;
     virtual void copy(const Configuration& from, Configured& to) const = 0;
-    virtual void setDefault(Configured&) const;
+
+    virtual void setDefault(Configured&) const = 0;
+
+    template <typename T>
+    static void copy(const std::string& name, const Configuration& from, Configured& to) {
+        // This is so generic that could probably be provided by Configuration or Configured
+        T value;
+        if (from.get(name, value)) {
+            to.set(name, value);
+        }
+    }
 
 protected:  // members
     std::string name_;
     std::string description_;
 
-    bool hasDefault_;
-    std::string default_;
-
-    virtual void print(std::ostream&) const = 0;  // Change to virtual if base class
+    virtual void print(std::ostream&) const = 0;
 
 private:
-    friend std::ostream& operator<<(std::ostream& s, const Option& p) {
-        p.print(s);
-        return s;
-    }
+    friend std::ostream& operator<<(std::ostream& s, const Option& p);
 };
 
-}  // namespace option
-}  // namespace eckit
+template <class T>
+class BaseOption : public Option {
+public:
+    BaseOption(const std::string& name, const std::string& description) :
+        Option(name, description), default_value_{std::nullopt} {};
+    BaseOption(const std::string& name, const std::string& description, const T& default_value) :
+        Option(name, description), default_value_{std::make_optional(default_value)} {};
+    BaseOption(const std::string& name, const std::string& description, std::optional<T> default_value) :
+        Option(name, description), default_value_{std::move(default_value)} {};
+    ~BaseOption() override = default;
+
+    [[deprecated("Specify the default value(s) when calling the ctor")]]
+    Option* defaultValue(const std::string& value) {
+        T translated   = translate(value);
+        default_value_ = std::make_optional(translated);
+        return this;
+    }
+
+    void setDefault(Configured& parametrisation) const final {
+        if (default_value_) {
+            set_value(default_value_.value(), parametrisation);
+        }
+    }
+
+protected:
+    virtual void set_value(const T& value, Configured& parametrisation) const = 0;
+
+    // Performs the conversion from 'string' value to actual 'type' value
+    virtual T translate(const std::string& value) const = 0;
+
+private:
+    std::optional<T> default_value_;
+};
+
+
+}  // namespace eckit::option
 
 #endif

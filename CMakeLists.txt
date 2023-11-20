@@ -8,6 +8,7 @@
 
 ########################################################################################################################
 
+
 cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
 find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
@@ -142,16 +143,22 @@ ecbuild_add_option( FEATURE AEC
 ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "xxHash support for hashing" )
 
-if ( HAVE_EXPERIMENTAL )
-    ### eckit::geo options
-    
-    ecbuild_add_option( FEATURE GEO_CACHING
-                        CONDITION HAVE_EXPERIMENTAL
-                        DEFAULT OFF
-                        DESCRIPTION "eckit::geo default caching behaviour" )
-    
-    set( eckit_GEO_CACHE_PATH "/tmp/cache" )
-endif()
+### Codec options
+
+ecbuild_add_option( FEATURE ECKIT_CODEC
+                    DEFAULT OFF
+                    DESCRIPTION "Encoding/Decoding library ported from atlas_io" )
+
+set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
+
+### eckit::geo options
+
+ecbuild_add_option( FEATURE GEO_CACHING
+                    CONDITION HAVE_EXPERIMENTAL
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::geo default caching behaviour" )
+
+set( eckit_GEO_CACHE_PATH "/tmp/cache" )
 
 ### LAPACK
 

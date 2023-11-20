@@ -127,7 +127,7 @@ CASE("From one PooledFile") {
         }
 
         // read interlaced from N pooled files
-        size_t p = 0;
+        [[maybe_unused]] size_t p = 0;
         for (size_t i = 0; i < M; ++i) {
             for (size_t j = 0; j < N; ++j) {
                 char b[2];

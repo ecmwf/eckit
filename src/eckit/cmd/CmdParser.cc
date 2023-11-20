@@ -227,7 +227,7 @@ void CmdParser::historize() {
 //----------------------------------------------------------------------------------------------------------------------
 
 void CmdParser::shell(const std::string& s) {
-    int ret = 0;
+    [[maybe_unused]] int ret = 0;
     if (not s.empty()) {
         ret = ::system(s.c_str());
     }

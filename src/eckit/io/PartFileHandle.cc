@@ -18,6 +18,7 @@
 #include "eckit/io/PartFileHandle.h"
 
 #include "eckit/io/PooledHandle.h"
+#include "eckit/io/MoverTransferSelection.h"
 
 namespace eckit {
 
@@ -268,9 +269,9 @@ Length PartFileHandle::estimate() {
     return std::accumulate(length_.begin(), length_.end(), Length(0));
 }
 
-void PartFileHandle::cost(std::map<std::string, Length>& c, bool read) const {
+void PartFileHandle::selectMover(MoverTransferSelection& c, bool read) const {
     if (read) {
-        c[path_.node()] += const_cast<PartFileHandle*>(this)->estimate();
+        c.updateCost(path_.node(), const_cast<PartFileHandle*>(this)->estimate());
     }
 }
 

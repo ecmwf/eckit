@@ -219,7 +219,11 @@ std::string URI::authority() const {
 }
 
 void URI::query(const std::string& attribute, const std::string& value) {
-    queryValues_[attribute] = encode(value);
+    if (value.empty()) {
+        queryValues_.erase(attribute);
+    } else {
+        queryValues_[attribute] = encode(value);
+    }
 }
 
 const std::string URI::query(const std::string& attribute) const {

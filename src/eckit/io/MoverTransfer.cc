@@ -8,21 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-
 #include "eckit/io/MoverTransfer.h"
-#include "eckit/io/cluster/ClusterNodes.h"
-#include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Progress.h"
 #include "eckit/net/Connector.h"
-#include "eckit/net/TCPServer.h"
-#include "eckit/net/TCPStream.h"
 #include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Thread.h"
-#include "eckit/thread/ThreadControler.h"
-#include "eckit/value/Value.h"
+#include "eckit/io/MoverTransferSelection.h"
 
 
 namespace eckit {
@@ -45,55 +37,17 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
         throw SeriousBug(to.title() + " is not moveable");
     }
 
-    // Attributes that are required from the mover
-
-    std::set<std::string> moverAttributes;
-    {
-        auto&& f = from.requiredMoverAttributes();
-        moverAttributes.insert(f.begin(), f.end());
-        auto&& t = to.requiredMoverAttributes();
-        moverAttributes.insert(t.begin(), t.end());
-    }
 
     // Using node-specific info, determine beneficial nodes to use
 
-    std::map<std::string, Length> cost;
-    from.cost(cost, true);
-    to.cost(cost, false);
-
-    // Should any of the nodes be removed from the cost matrix, because they don't support
-    // the required attributes?
-    // Also remove any movers that are not up
-
-    for (auto it = cost.begin(); it != cost.end(); /* no increment */) {
-        if (ClusterNodes::available("mover", it->first)) {
-            if (!ClusterNodes::lookUp("mover", it->first).supportsAttributes(moverAttributes)) {
-                cost.erase(it++);
-            }
-            else {
-                ++it;
-            }
-        }
-        else {
-            cost.erase(it++);
-        }
-    }
-
-    if (cost.empty()) {
-        NodeInfo info     = ClusterNodes::any("mover", moverAttributes);
-        cost[info.node()] = 0;
-        send_costs        = false;
-        //        throw SeriousBug(std::string("No cost for ") + from.title() + " => " + to.title());
-    }
+    MoverTransferSelection cost;
+    from.selectMover(cost, true);
+    to.selectMover(cost, false);
 
     Log::info() << "MoverTransfer::transfer(" << from << "," << to << ")" << std::endl;
 
-    Log::info() << "MoverTransfer::transfer cost:" << std::endl;
-    for (std::map<std::string, Length>::iterator j = cost.begin(); j != cost.end(); ++j) {
-        Log::info() << "   " << (*j).first << " => " << Bytes((*j).second) << std::endl;
-    }
 
-    net::Connector& c(net::Connector::service("mover", cost));
+    net::Connector& c(net::Connector::service(cost.selectedMover()));
     AutoLock<net::Connector> lock(c);
     // This will close the connector on unlock
     c.autoclose(true);
@@ -148,17 +102,6 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
     s >> len;
     Metrics::receive(s);
 
-
-    Metrics::set("mover_node", c.node());
-    if (send_costs) {
-        for (auto j = cost.begin(); j != cost.end(); ++j) {
-            std::string h        = (*j).first;
-            unsigned long long l = (*j).second;
-            Metrics::set("mover_costs." + h, l);
-        }
-    }
-    // Metrics::set("mover_metric", prefix_);
-    // //    ASSERT(len == total);
 
     Log::message() << " " << std::endl;
 

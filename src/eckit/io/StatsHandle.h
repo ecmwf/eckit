@@ -78,13 +78,14 @@ public:
 
 
     bool moveable() const override;
-    const std::set<std::string>& requiredMoverAttributes() const override;
+
     void toLocal(Stream& s) const override;
 
     DataHandle* toLocal() override;
 
     void toRemote(Stream& s) const override;
-    void cost(std::map<std::string, Length>&, bool) const override;
+    void selectMover(MoverTransferSelection&, bool read) const override;
+
     std::string title() const override;
     void collectMetrics(const std::string& what) const override;  // Tag for metrics collection
 

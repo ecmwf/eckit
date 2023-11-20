@@ -189,6 +189,8 @@ io/MemoryHandle.cc
 io/MemoryHandle.h
 io/MoverTransfer.cc
 io/MoverTransfer.h
+io/MoverTransferSelection.cc
+io/MoverTransferSelection.h
 io/MultiHandle.cc
 io/MultiHandle.h
 io/Offset.cc
@@ -982,6 +984,10 @@ add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )
+
+if( HAVE_ECKIT_CODEC )
+    add_subdirectory( codec )
+endif()
 
 if( HAVE_EXPERIMENTAL )
     add_subdirectory( geo )

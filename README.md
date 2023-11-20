@@ -11,7 +11,7 @@ eckit
 Project home: https://software.ecmwf.int/wiki/display/ECKIT
 
 
-ecKit is a cross-platform c++ toolkit that supports development of tools and applications at ECMWF.
+ecKit is a cross-platform C++ toolkit that supports development of tools and applications at ECMWF.
 It is based on code developed over the last 20 years within the MARS software and was re-factored out to be reused by other applications.
 It provides a an abstraction layer on top of the operating system, so it is easier to port code to new architectures.
 It is developed taking into account the robustness requirements of running production systems at ECMWF.
@@ -22,6 +22,7 @@ It features facilities to easily handle, in a cross-platform way:
 * multi-threading
 * json and yaml parsing
 * object serialization and persistence
+* object serialization supporting compression, to and from file and network
 * configuration of user options and resources
 * file-system abstraction
 * regular expressions
@@ -36,6 +37,7 @@ It features facilities to easily handle, in a cross-platform way:
 * advanced container classes
     * space partition trees
     * file-mapped arrays
+
 
 Requirements
 ------------
@@ -52,6 +54,7 @@ Required dependencies:
 - CMake --- For use and installation see http://www.cmake.org/
 - ecbuild --- ECMWF library of CMake macros
 - Perl5 --- For some code generation
+
 
 Installation
 ------------

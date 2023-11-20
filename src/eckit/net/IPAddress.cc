@@ -17,6 +17,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <ostream>
+#include <string.h>
 
 namespace eckit::net {
 
@@ -44,6 +45,11 @@ void IPAddress::print(std::ostream& os) const {
 std::string IPAddress::asString() const {
     return inet_ntoa(address_);
 }
+
+bool IPAddress::operator==(const IPAddress& other) const {
+    return ::memcmp(&address_, &other.address_, sizeof(address_)) == 0;
+}
+
 
 IPAddress IPAddress::hostAddress(const std::string& hostname) {
     struct hostent* hostEntry = gethostbyname(hostname.c_str());

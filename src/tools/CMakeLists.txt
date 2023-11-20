@@ -10,6 +10,12 @@ ecbuild_add_executable( TARGET      eckit_info
                         SOURCES     eckit-info.cc
                         LIBS        eckit_option eckit )
 
+ecbuild_add_executable( TARGET      eckit_codec_list
+                        OUTPUT_NAME eckit-codec-list
+                        CONDITION   HAVE_BUILD_TOOLS AND ECKIT_CODEC
+                        SOURCES     eckit-codec-list.cc
+                        LIBS        eckit_codec eckit_option )
+
 ecbuild_add_executable( TARGET      eckit_grid
                         OUTPUT_NAME eckit-grid
                         CONDITION   HAVE_BUILD_TOOLS AND HAVE_EXPERIMENTAL

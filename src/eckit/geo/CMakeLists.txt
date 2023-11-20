@@ -77,8 +77,8 @@ list(APPEND eckit_geo_srcs
     grid/regular/RegularGaussian.h
     grid/regular/RegularLL.cc
     grid/regular/RegularLL.h
-    # grid/unstructured/ORCA.cc  # requires eckit::codec
-    # grid/unstructured/ORCA.h
+    grid/unstructured/ORCA.cc
+    grid/unstructured/ORCA.h
     grid/unstructured/UnstructuredFromGrid.cc
     grid/unstructured/UnstructuredFromGrid.h
     iterator/Reduced.cc

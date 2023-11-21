@@ -10,25 +10,21 @@
  */
 
 
-#include <list>
+#include <vector>
 
 #include "eckit/container/KDTree.h"
 #include "eckit/geo/Point2.h"
-#include "eckit/os/Semaphore.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::test {
 
 
-using namespace geo;
-
-
 //----------------------------------------------------------------------------------------------------------------------
 
 struct TestTreeTrait {
-    typedef Point2 Point;
-    typedef double Payload;
+    using Point   = geo::Point2;
+    using Payload = double;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -36,16 +32,12 @@ struct TestTreeTrait {
 /// \brief Class used to test whether any point in a kd-tree lies in the interior of an
 /// axis-aligned box.
 template <typename TreeTrait>
-class PointInBoxInteriorFinder {
-public:
+struct PointInBoxInteriorFinder {
     using KDTree = KDTreeX<TreeTrait>;
-    using Point  = KDTree::Point;
+    using Point  = typename KDTree::Point;
+    using Alloc  = typename KDTree::Alloc;
+    using Node   = typename KDTree::Node;
 
-private:
-    using Alloc = KDTree::Alloc;
-    using Node  = KDTree::Node;
-
-public:
     /// \brief Returns true if any point in \p tree lies in the interior of the specified
     /// axis-aligned box.
     ///
@@ -59,8 +51,10 @@ public:
         if (!tree.root_) {
             return false;
         }
-        Alloc& alloc = tree.alloc_;
-        Node* root   = alloc.convert(tree.root_, static_cast<Node*>(nullptr));
+
+        auto& alloc = tree.alloc_;
+        auto* root  = alloc.convert(tree.root_, static_cast<Node*>(nullptr));
+        ASSERT(root != nullptr);
 
         return isAnyPointInBoxInterior(root, alloc, lbound, ubound);
     }
@@ -70,7 +64,11 @@ private:
     /// interior of the axis-aligned box with bottom-left and top-right corners at
     /// \p lbound and \p ubound.
     static bool isAnyPointInBoxInterior(const Node* node, Alloc& alloc, const Point& lbound, const Point& ubound) {
-        const Point& point = node->value().point();
+        if (node == nullptr) {
+            return false;
+        }
+
+        const auto& point = node->value().point();
 
         if (isPointInBoxInterior(point, lbound, ubound)) {
             return true;
@@ -78,23 +76,8 @@ private:
 
         const size_t axis = node->axis();
 
-        if (lbound.x(axis) < point.x(axis)) {
-            if (Node* left = node->left(alloc)) {
-                if (isAnyPointInBoxInterior(left, alloc, lbound, ubound)) {
-                    return true;
-                }
-            }
-        }
-
-        if (ubound.x(axis) > point.x(axis)) {
-            if (Node* right = node->right(alloc)) {
-                if (isAnyPointInBoxInterior(right, alloc, lbound, ubound)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return (lbound.x(axis) < point.x(axis) && isAnyPointInBoxInterior(node->left(alloc), alloc, lbound, ubound)) ||
+               (ubound.x(axis) > point.x(axis) && isAnyPointInBoxInterior(node->right(alloc), alloc, lbound, ubound));
     }
 
     /// \brief Returns true if \p point is in the interior of the axis-aligned box
@@ -122,177 +105,120 @@ bool isAnyPointInBoxInterior(const KDTreeX<TreeTraits>& tree,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("test_eckit_container_kdtree_constructor") {
-    typedef KDTreeMemory<TestTreeTrait> Tree;
+#define EXPECT_POINT_EQUAL(a, b)                       \
+    for (size_t i = 0; i < Point::dimensions(); ++i) { \
+        EXPECT(a.x(i) == b.x(i));                      \
+    }
 
-    Tree kd;
+
+CASE("test_eckit_container_kdtree_constructor") {
+    using Tree  = KDTreeMemory<TestTreeTrait>;
     using Point = Tree::PointType;
 
+    // build k-d tree (offline)
+    Tree kd;
     std::vector<Tree::Value> points;
-
-    // test it for single closest point
-
-    for (unsigned int i = 0; i < 10; i++) {
-        for (unsigned int j = 0; j < 10; j++) {
-            Point p = Point(double(i), double(j));
-            Tree::Value v(p, 99.9);
-            points.push_back(v);
+    for (size_t i = 0; i < 10; ++i) {
+        for (size_t j = 0; j < 10; ++j) {
+            points.emplace_back(Point{static_cast<double>(i), static_cast<double>(j)}, 99.9);
         }
     }
-
     kd.build(points.begin(), points.end());
 
-    // pick some point from the vector
-    Point refPoint = points[points.size() / 2].point();
+    // size
+    EXPECT_EQUAL(kd.size(), points.size());
 
-    // perturb it a little
-    Point delta(0.1, 0.1);
-    Point testPoint = Point::add(refPoint, delta);
-    Log::info() << "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) << std::endl;
+    // pick a point
+    auto ref = points[points.size() / 2].point();
 
-    Point nr = kd.nearestNeighbour(testPoint).point();
+    SECTION("test single closest point") {
+        // a point similar to an existing one
+        EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(Point::add(ref, Point{0.1, 0.1})).point());
 
-    // we should find the same point
-    for (unsigned int i = 0; i < Point::dimensions(); i++) {
-        EXPECT(nr.x(i) == refPoint.x(i));
+        // exact match to a point
+        EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(ref).point());
+
+        // off the scale, i.e. not within a group of points (+)
+        EXPECT_POINT_EQUAL(points.back().point(),
+                           kd.nearestNeighbour(Point::add(points.back().point(), Point{1000., 0.})).point());
+
+        // off the scale, i.e. not within a group of points (-)
+        EXPECT_POINT_EQUAL(points.front().point(),
+                           kd.nearestNeighbour(Point::add(points.front().point(), Point{-1000., 0.})).point());
     }
 
-    // test exact match to a point
+    SECTION("test N nearest") {
+        // move this point so it lies between four equally, make sure we differ by 0.5 along each axis
+        auto test = Point::add(ref, Point{0.5, 0.5});
 
-    nr = kd.nearestNeighbour(refPoint).point();
-    for (unsigned int i = 0; i < Point::dimensions(); i++) {
-        EXPECT(nr.x(i) == refPoint.x(i));
-    }
-
-    // test "off the scale" - i.e. not within a group of points
-    delta = Point(1000.0, 0.0);
-    // add it to the last point
-    testPoint = Point::add(points.back().point(), delta);
-    nr        = kd.nearestNeighbour(testPoint).point();
-
-    for (unsigned int i = 0; i < Point::dimensions(); i++) {
-        EXPECT(nr.x(i) == points.back().point().x(i));
-    }
-
-    // and negatively
-    //
-    delta = Point(-1000.0, 0.0);
-    // add it to the point() point
-    testPoint = Point::add(points.front().point(), delta);
-    nr        = kd.nearestNeighbour(testPoint).point();
-
-    for (unsigned int i = 0; i < Point::dimensions(); i++) {
-        EXPECT(nr.x(i) == points.front().point().x(i));
-    }
-
-    // test N nearest
-    refPoint = points[points.size() / 2].point();
-    // move this point so it lies between four equally
-    delta     = Point(0.5, 0.5);
-    testPoint = Point::add(refPoint, delta);
-
-    Tree::NodeList nn = kd.kNearestNeighbours(testPoint, 4);
-    for (Tree::NodeList::iterator it = nn.begin(); it != nn.end(); ++it) {
-        Point diff = Point::sub(it->point(), testPoint);
-        // make sure we differ by 0.5 along each axis
-        for (unsigned int i = 0; i < Point::dimensions(); ++i) {
-            Log::info() << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) << std::endl;
-            EXPECT(Point::distance(Point(0.0, 0.0), diff, i) == 0.5);
+        for (auto& near : kd.kNearestNeighbours(test, 4)) {
+            auto diff = Point::sub(near.point(), test);
+            for (size_t i = 0; i < Point::dimensions(); ++i) {
+                EXPECT(Point::distance(Point{0., 0.}, diff, i) == 0.5);
+            }
         }
     }
 
-    // Test a custom visitor. The purpose of doing that in this test is to ensure that the public
-    // interface of KDTree is sufficient to write a custom class traversing the tree.
-    delta        = Point(0.25, 0.25);
-    Point lbound = Point::sub(refPoint, delta);
-    Point ubound = Point::add(refPoint, delta);
-    EXPECT(isAnyPointInBoxInterior(kd, lbound, ubound));
+    SECTION("test a custom visitor") {
+        // Test a custom visitor. The purpose of doing that in this test is to ensure that the public
+        // interface of KDTree is sufficient to write a custom class traversing the tree.
+        auto a      = Point{0.25, 0.25};
+        auto lbound = Point::sub(ref, a);
+        auto ubound = Point::add(ref, a);
+        EXPECT(isAnyPointInBoxInterior(kd, lbound, ubound));
 
-    delta  = Point(0.5, 0.5);
-    lbound = Point::add(lbound, delta);
-    ubound = Point::add(ubound, delta);
-    EXPECT_NOT(isAnyPointInBoxInterior(kd, lbound, ubound));
-
-    // Test size()
-    EXPECT_EQUAL(kd.size(), points.size());
+        auto b = Point{0.5, 0.5};
+        lbound = Point::add(lbound, b);
+        ubound = Point::add(ubound, b);
+        EXPECT_NOT(isAnyPointInBoxInterior(kd, lbound, ubound));
+    }
 }
 
 CASE("test_eckit_container_kdtree_insert") {
-    typedef KDTreeMemory<TestTreeTrait> Tree;
+    using Tree  = KDTreeMemory<TestTreeTrait>;
+    using Point = Tree::PointType;
 
+    // build k-d tree (online)
     Tree kd;
-    typedef Tree::PointType Point;
-
     std::vector<Tree::Value> points;
-
-    // test it for single closest point
-
-    for (unsigned int i = 0; i < 10; i++) {
-        for (unsigned int j = 0; j < 10; j++) {
-            Point p = Point(double(i), double(j));
-            Tree::Value v(p, 99.9);
-            points.push_back(v);
-            kd.insert(v);
+    for (size_t i = 0; i < 10; ++i) {
+        for (size_t j = 0; j < 10; ++j) {
+            points.emplace_back(Point{static_cast<double>(i), static_cast<double>(j)}, 99.9);
+            kd.insert(points.back());
         }
     }
 
+    // size
+    EXPECT_EQUAL(kd.size(), points.size());
 
-    // pick some point from the vector
-    Point refPoint = points[points.size() / 2].point();
+    // pick a point
+    auto ref = points[points.size() / 2].point();
 
-    // perturb it a little
-    Point delta(0.1, 0.1);
-    Point testPoint = Point::add(refPoint, delta);
-    Log::info() << "testPoint perturb " << testPoint.x(0) << ", " << testPoint.x(1) << std::endl;
+    SECTION("test single closest point") {
+        // a point similar to an existing one
+        EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(Point::add(ref, Point{0.1, 0.1})).point());
 
-    Point nr = kd.nearestNeighbour(testPoint).point();
+        // exact match to a point
+        EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(ref).point());
 
-    // we should find the same point
-    for (unsigned int i = 0; i < Point::dimensions(); i++) {
-        EXPECT(nr.x(i) == refPoint.x(i));
+        // off the scale, i.e. not within a group of points (+)
+        EXPECT_POINT_EQUAL(points.back().point(),
+                           kd.nearestNeighbour(Point::add(points.back().point(), Point{1000., 0.})).point());
+
+        // off the scale, i.e. not within a group of points (-)
+        EXPECT_POINT_EQUAL(points.front().point(),
+                           kd.nearestNeighbour(Point::add(points.front().point(), Point{-1000., 0.})).point());
     }
 
-    // test exact match to a point
+    SECTION("test N nearest") {
+        // move this point so it lies between four equally, make sure we differ by 0.5 along each axis
+        auto test = Point::add(ref, Point{0.5, 0.5});
 
-    nr = kd.nearestNeighbour(refPoint).point();
-    for (unsigned int i = 0; i < Point::dimensions(); i++) {
-        EXPECT(nr.x(i) == refPoint.x(i));
-    }
-
-    // test "off the scale" - i.e. not within a group of points
-    delta = Point(1000.0, 0.0);
-    // add it to the last point
-    testPoint = Point::add(points.back().point(), delta);
-    nr        = kd.nearestNeighbour(testPoint).point();
-
-    for (unsigned int i = 0; i < Point::dimensions(); i++) {
-        EXPECT(nr.x(i) == points.back().point().x(i));
-    }
-
-    // and negatively
-    //
-    delta = Point(-1000.0, 0.0);
-    // add it to the point() point
-    testPoint = Point::add(points.front().point(), delta);
-    nr        = kd.nearestNeighbour(testPoint).point();
-
-    for (unsigned int i = 0; i < Point::dimensions(); i++) {
-        EXPECT(nr.x(i) == points.front().point().x(i));
-    }
-
-    // test N nearest
-    refPoint = points[points.size() / 2].point();
-    // move this point so it lies between four equally
-    delta     = Point(0.5, 0.5);
-    testPoint = Point::add(refPoint, delta);
-
-    Tree::NodeList nn = kd.kNearestNeighbours(testPoint, 4);
-    for (Tree::NodeList::iterator it = nn.begin(); it != nn.end(); ++it) {
-        Point diff = Point::sub(it->point(), testPoint);
-        // make sure we differ by 0.5 along each axis
-        for (unsigned int i = 0; i < Point::dimensions(); ++i) {
-            Log::info() << "distance along point " << Point::distance(Point(0.0, 0.0), diff, i) << std::endl;
-            EXPECT(Point::distance(Point(0.0, 0.0), diff, i) == 0.5);
+        for (auto& near : kd.kNearestNeighbours(test, 4)) {
+            auto diff = Point::sub(near.point(), test);
+            for (size_t i = 0; i < Point::dimensions(); ++i) {
+                EXPECT(Point::distance(Point{0., 0.}, diff, i) == 0.5);
+            }
         }
     }
 }
@@ -300,27 +226,23 @@ CASE("test_eckit_container_kdtree_insert") {
 CASE("test_kdtree_mapped") {
     using Tree  = KDTreeMapped<TestTreeTrait>;
     using Point = Tree::PointType;
+
     std::vector<Tree::Value> points;
-    for (unsigned int i = 0; i < 10; i++) {
-        for (unsigned int j = 0; j < 10; j++) {
-            Point p = Point(double(i), double(j));
-            Tree::Value v(p, 99.9);
-            points.push_back(v);
+    for (size_t i = 0; i < 10; ++i) {
+        for (size_t j = 0; j < 10; ++j) {
+            points.emplace_back(Point{static_cast<double>(i), static_cast<double>(j)}, 99.9);
         }
     }
-    auto passTest = [&](Tree& kd) -> bool {
-        // pick some point from the vector
-        Point refPoint = points[points.size() / 2].point();
 
+    // pick a point
+    auto ref = points[points.size() / 2].point();
+
+    auto passTest = [&](Tree& kd, const Point& p) -> bool {
         // perturb it a little
-        Point delta(0.1, 0.1);
-        Point testPoint = Point::add(refPoint, delta);
-
-        Point nr = kd.nearestNeighbour(testPoint).point();
-
         // we should find the same point
-        for (unsigned int i = 0; i < Point::dimensions(); i++) {
-            if (nr.x(i) != refPoint.x(i)) {
+        auto nr = kd.nearestNeighbour(Point::add(p, Point{0.1, 0.1})).point();
+        for (size_t i = 0; i < Point::dimensions(); ++i) {
+            if (nr.x(i) != p.x(i)) {
                 return false;
             }
         }
@@ -329,19 +251,22 @@ CASE("test_kdtree_mapped") {
 
     PathName path("test_kdtree_mapped.kdtree");
 
-    // Write file with kdtree
+    // Write file with k-d tree
     {
         if (path.exists()) {
             path.unlink();
         }
+
         Tree kd(path, points.size(), 0);
         EXPECT_EQUAL(kd.size(), 0);
+
         kd.build(points);
+
         EXPECT_EQUAL(kd.size(), points.size());
-        EXPECT(passTest(kd));
+        EXPECT(passTest(kd, ref));
     }
 
-    // Load file with kdtree
+    // Load file with k-d tree
     {
         Tree kd(path, 0, 0);
 
@@ -352,19 +277,20 @@ CASE("test_kdtree_mapped") {
         EXPECT_THROWS_AS(kd.build(points), AssertionFailed);
 
         EXPECT_EQUAL(kd.size(), points.size());
-        EXPECT(passTest(kd));
+        EXPECT(passTest(kd, ref));
     }
 }
 
 CASE("test_kdtree_iterate_empty") {
     using Tree = KDTreeMemory<TestTreeTrait>;
 
+    size_t count = 0;
     Tree kd;
-    size_t count{0};
     for (auto& item : kd) {
         count++;
     }
     EXPECT_EQUAL(count, 0);
+    EXPECT_EQUAL(kd.size(), 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

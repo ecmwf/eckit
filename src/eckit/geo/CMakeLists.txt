@@ -121,7 +121,7 @@ set(eckit_geo_include_dirs
 )
 
 ecbuild_add_library(
-    TARGET eckit_geo
+    TARGET             eckit_geo
     TYPE               SHARED
     INSTALL_HEADERS    ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo

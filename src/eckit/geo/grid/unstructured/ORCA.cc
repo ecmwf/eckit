@@ -13,6 +13,7 @@
 #include "eckit/geo/grid/unstructured/ORCA.h"
 
 #include "eckit/codec/codec.h"
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/LibEcKitGeo.h"
@@ -25,7 +26,7 @@
 #include "eckit/utils/ByteSwap.h"
 #include "eckit/utils/MD5.h"
 
-#ifdef eckit_HAVE_CURL
+#if eckit_HAVE_CURL
 #include "eckit/io/URLHandle.h"
 #endif
 

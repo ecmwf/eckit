@@ -34,7 +34,7 @@ public:
 
 public:  // methods
     Option(const std::string& name, const std::string& description);
-    virtual ~Option() = default;
+    virtual ~Option() {};
 
     [[nodiscard]] const std::string& name() const { return name_; };
     [[nodiscard]] const std::string& description() const { return description_; }

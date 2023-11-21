@@ -77,8 +77,6 @@ list(APPEND eckit_geo_srcs
     grid/regular/RegularGaussian.h
     grid/regular/RegularLL.cc
     grid/regular/RegularLL.h
-    grid/unstructured/ORCA.cc
-    grid/unstructured/ORCA.h
     grid/unstructured/UnstructuredFromGrid.cc
     grid/unstructured/UnstructuredFromGrid.h
     iterator/Reduced.cc
@@ -122,20 +120,23 @@ set(eckit_geo_include_dirs
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
 )
 
-set(eckit_geo_libs eckit_maths)  # eckit_codec
-
-if(HAVE_PROJ)
-    list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
-    list(APPEND eckit_geo_libs PROJ::proj)
-    list(APPEND eckit_geo_include_dirs ${PROJ_INCLUDE_DIRS})
-endif()
-
 ecbuild_add_library(
     TARGET eckit_geo
     TYPE               SHARED
     INSTALL_HEADERS    ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo
-    PUBLIC_LIBS        ${eckit_geo_libs}
+    PUBLIC_LIBS        eckit_maths
     PUBLIC_INCLUDES    ${eckit_geo_include_dirs}
     SOURCES            ${eckit_geo_srcs}
 )
+
+if(HAVE_PROJ)
+    target_sources(eckit_geo PRIVATE projection/PROJ.cc projection/PROJ.h)
+    target_link_libraries(eckit_geo PUBLIC PROJ::proj)
+endif()
+
+if(HAVE_CODEC)
+    target_sources(eckit_geo PRIVATE grid/unstructured/ORCA.cc grid/unstructured/ORCA.h)
+    target_link_libraries(eckit_geo PUBLIC eckit_codec)
+endif()
+

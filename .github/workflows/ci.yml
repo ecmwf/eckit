@@ -27,6 +27,14 @@ jobs:
     uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci.yml@main
     with:
       eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
+      skip_matrix_jobs: |
+        gnu@debian-11
+        gnu-7@centos-7.9
+        gnu-8@centos-7.9
+        gnu@rocky-8.6
+        clang@rocky-8.6
+        gnu@ubuntu-22.04
+        gnu@fedora-37
       codecov_upload: true
     secrets: inherit
 

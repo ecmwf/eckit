@@ -2,3 +2,7 @@ dependencies: |
   ecmwf/ecbuild
 dependency_branch: develop
 parallelism_factor: 8
+cmake_options: -DCMAKE_VERBOSE_MAKEFILE=ON
+dependency_cmake_options: |
+  ecmwf/eckit: "-DCMAKE_VERBOSE_MAKEFILE=ON"
+  ecmwf/atlas: "-DCMAKE_VERBOSE_MAKEFILE=ON"

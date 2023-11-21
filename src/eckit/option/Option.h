@@ -27,6 +27,7 @@
 
 namespace eckit::option {
 
+
 class Option : private eckit::NonCopyable {
 public:
     using args_t = std::vector<std::string>;

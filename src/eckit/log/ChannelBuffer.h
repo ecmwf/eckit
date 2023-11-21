@@ -33,7 +33,7 @@ class ChannelBuffer : public std::streambuf, private NonCopyable {
 
 private:  // methods
     /// constructor, taking ownership of stream
-    ChannelBuffer(std::size_t size = 1024);
+    ChannelBuffer(std::size_t size = 4096);
 
     ~ChannelBuffer() override;
 

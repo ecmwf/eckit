@@ -13,6 +13,8 @@
 /// @author Simon Smart
 /// @date March 2016
 
+#pragma once
+
 #include <iostream>
 
 #include "eckit/exception/Exceptions.h"

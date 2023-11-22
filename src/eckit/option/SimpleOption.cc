@@ -12,6 +12,8 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
+#pragma once
+
 #include <iostream>
 
 #include "eckit/config/Configuration.h"

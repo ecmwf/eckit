@@ -19,7 +19,6 @@
 #include <iosfwd>
 
 #include "eckit/option/Option.h"
-#include "eckit/option/SimpleOption.h"
 
 namespace eckit::option {
 

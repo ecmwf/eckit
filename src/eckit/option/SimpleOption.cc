@@ -20,48 +20,10 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/option/SimpleOption.h"
+#include "eckit/option/Title.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit::option {
-
-namespace implementation_detail {
-
-template <class T>
-struct Title {
-    const char* operator()() const;
-};
-
-template <>
-inline const char* Title<size_t>::operator()() const {
-    return "ordinal";
-}
-
-template <>
-inline const char* Title<long>::operator()() const {
-    return "integer";
-}
-
-template <>
-inline const char* Title<double>::operator()() const {
-    return "real";
-}
-
-template <>
-inline const char* Title<bool>::operator()() const {
-    return "0/1";
-}
-
-template <>
-inline const char* Title<std::string>::operator()() const {
-    return "string";
-}
-
-template <>
-inline const char* Title<eckit::PathName>::operator()() const {
-    return "path";
-}
-
-}  // namespace implementation_detail
 
 template <class T>
 SimpleOption<T>::SimpleOption(const std::string& name, const std::string& description) : base_t(name, description) {}

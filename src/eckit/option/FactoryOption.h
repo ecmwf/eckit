@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
-#ifndef eckit_option_FactoryOption_H
-#define eckit_option_FactoryOption_H
+#pragma once
 
 #include <iosfwd>
 
@@ -52,5 +50,3 @@ private:
 }  // namespace eckit::option
 
 #include "eckit/option/FactoryOption.cc"
-
-#endif

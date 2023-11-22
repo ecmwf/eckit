@@ -13,8 +13,7 @@
 /// @date Apr 2015
 
 
-#ifndef VectorOption_H
-#define VectorOption_H
+#pragma once
 
 #include <iosfwd>
 
@@ -33,7 +32,8 @@ public:
     // -- Contructors
 
     VectorOption(const std::string& name, const std::string& description, size_t size, const char* separator = "/");
-    VectorOption(const std::string& name, const std::string& description, size_t size, const std::vector<T>& default_value, const char* separator = "/");
+    VectorOption(const std::string& name, const std::string& description, size_t size,
+                 const std::vector<T>& default_value, const char* separator = "/");
 
     // -- Destructor
 
@@ -106,5 +106,3 @@ private:
 }  // namespace eckit::option
 
 #include "eckit/option/VectorOption.cc"
-
-#endif

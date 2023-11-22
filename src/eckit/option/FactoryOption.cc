@@ -16,15 +16,11 @@
 
 #include <iostream>
 
-#include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/option/FactoryOption.h"
-#include "eckit/utils/Translator.h"
 
-namespace eckit {
-namespace option {
+namespace eckit::option {
 
 
 template <class T>
@@ -62,11 +58,9 @@ void FactoryOption<T>::copy(const Configuration& from, Configured& to) const {
 
 template <class T>
 void FactoryOption<T>::print(std::ostream& out) const {
-    out << "   --" << name_ << "=name"
-        << " (" << description_ << ")";
+    out << "   --" << name_ << "=name" << " (" << description_ << ")";
     out << std::endl << "     Values are: ";
     T::list(out);
 }
 
-}  // namespace option
-}  // namespace eckit
+}  // namespace eckit::option

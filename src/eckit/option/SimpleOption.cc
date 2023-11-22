@@ -18,7 +18,6 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/option/SimpleOption.h"
@@ -68,12 +67,12 @@ void SimpleOption<T>::set_value(const T& value, Configured& parametrisation) con
 
 template <class T>
 T SimpleOption<T>::translate(const std::string& value) const {
-    T v = eckit::Translator<std::string, T>()(value);
+    T v = Translator<std::string, T>()(value);
     return v;
 }
 
 template <>
-inline void SimpleOption<eckit::PathName>::copy(const Configuration& from, Configured& to) const {
+inline void SimpleOption<PathName>::copy(const Configuration& from, Configured& to) const {
     std::string v;
     if (from.get(name_, v)) {
         to.set(name_, v);

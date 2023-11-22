@@ -23,13 +23,7 @@
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-
-namespace eckit {
-
-namespace option {
-
-//----------------------------------------------------------------------------------------------------------------------
-
+namespace eckit::option {
 
 template <class T>
 VectorOption<T>::VectorOption(const std::string& name, const std::string& description, size_t size,
@@ -61,9 +55,9 @@ void VectorOption<T>::set_value(const std::vector<T>& value, Configured& paramet
 
 template <class T>
 std::vector<T> VectorOption<T>::translate(const std::string& value) const {
-    eckit::Translator<std::string, T> t;
+    Translator<std::string, T> t;
 
-    eckit::Tokenizer parse(separator_);
+    Tokenizer parse(separator_);
     std::vector<std::string> tokens;
     parse(value, tokens);
 
@@ -97,16 +91,9 @@ void VectorOption<T>::print(std::ostream& out) const {
     out << " (" << this->description() << ")";
 }
 
-
 template <class T>
 void VectorOption<T>::copy(const Configuration& from, Configured& to) const {
     Option::copy<std::vector<T>>(this->name(), from, to);
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
-
-
-}  // namespace option
-
-}  // namespace eckit
+}  // namespace eckit::option

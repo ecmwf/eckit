@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
-#ifndef eckit_option_SimpleOption_H
-#define eckit_option_SimpleOption_H
+#pragma once
 
 #include <iosfwd>
 
@@ -39,7 +37,6 @@ protected:
     void print(std::ostream&) const override;
 
 private:
-
     void set_value(const T& value, Configured&) const override;
 
     [[nodiscard]] T translate(const std::string& value) const override;
@@ -50,5 +47,3 @@ private:
 }  // namespace eckit::option
 
 #include "eckit/option/SimpleOption.cc"
-
-#endif

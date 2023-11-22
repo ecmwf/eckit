@@ -1,6 +1,8 @@
 eckit
 =====
 
+{WIP} investigation ongoing
+
 [![eckit release version](https://img.shields.io/github/release/ecmwf/eckit.svg)](https://github.com/ecmwf/eckit/releases/latest)
 [![travis master](https://img.shields.io/travis/ecmwf/eckit/master.svg?label=master&logo=travis)](http://travis-ci.org/ecmwf/eckit "master")
 [![travis develop](https://img.shields.io/travis/ecmwf/eckit/develop.svg?label=develop&logo=travis)](http://travis-ci.org/ecmwf/eckit "develop")

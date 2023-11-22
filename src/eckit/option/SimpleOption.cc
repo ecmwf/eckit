@@ -127,7 +127,7 @@ inline void SimpleOption<bool>::print(std::ostream& out) const {
 }
 
 template <class T>
-void SimpleOption<T>::print(std::ostream& out) const {
+inline void SimpleOption<T>::print(std::ostream& out) const {
     out << "   --" << this->name() << "=" << Title<T>()() << " (" << this->description() << ")";
 }
 

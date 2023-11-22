@@ -87,7 +87,7 @@ public:
     ~BaseOption() override = default;
 
     [[deprecated("Specify the default value(s) when calling the ctor")]]
-    Option* defaultValue(const std::string& value) {
+    inline Option* defaultValue(const std::string& value) {
         T translated   = translate(value);
         default_value_ = std::make_optional(translated);
         return this;

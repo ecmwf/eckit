@@ -16,8 +16,8 @@
 #include <iostream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/option/Title.h"
 #include "eckit/option/VectorOption.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
@@ -84,7 +84,7 @@ void VectorOption<T>::print(std::ostream& out) const {
 
     const char* sep = "=";
     for (size_t i = 0; i < (size_ ? size_ : 2); i++) {
-        out << sep << Title<T>()();
+        out << sep << implementation_detail::Title<T>()();
         sep = separator_;
     }
 

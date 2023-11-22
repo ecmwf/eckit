@@ -20,48 +20,10 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/option/SimpleOption.h"
+#include "eckit/option/Title.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit::option {
-
-namespace {
-
-template <class T>
-struct Title {
-    const char* operator()() const;
-};
-
-template <>
-inline const char* Title<size_t>::operator()() const {
-    return "ordinal";
-}
-
-template <>
-inline const char* Title<long>::operator()() const {
-    return "integer";
-}
-
-template <>
-inline const char* Title<double>::operator()() const {
-    return "real";
-}
-
-template <>
-inline const char* Title<bool>::operator()() const {
-    return "0/1";
-}
-
-template <>
-inline const char* Title<std::string>::operator()() const {
-    return "string";
-}
-
-template <>
-inline const char* Title<eckit::PathName>::operator()() const {
-    return "path";
-}
-
-}  // namespace
 
 template <class T>
 SimpleOption<T>::SimpleOption(const std::string& name, const std::string& description) : base_t(name, description) {}
@@ -128,7 +90,7 @@ inline void SimpleOption<bool>::print(std::ostream& out) const {
 
 template <class T>
 void SimpleOption<T>::print(std::ostream& out) const {
-    out << "   --" << this->name() << "=" << Title<T>()() << " (" << this->description() << ")";
+    out << "   --" << this->name() << "=" << implementation_detail::Title<T>()() << " (" << this->description() << ")";
 }
 
 }  // namespace eckit::option

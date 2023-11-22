@@ -15,6 +15,7 @@ ecbuild_add_library( TARGET eckit_option TYPE SHARED
         Separator.h
         SimpleOption.cc
         SimpleOption.h
+        Title.h
         VectorOption.cc
         VectorOption.h
         CmdArgs.cc

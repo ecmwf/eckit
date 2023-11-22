@@ -24,7 +24,7 @@
 
 namespace eckit::option {
 
-namespace {
+namespace implementation_detail {
 
 template <class T>
 struct Title {
@@ -61,7 +61,7 @@ inline const char* Title<eckit::PathName>::operator()() const {
     return "path";
 }
 
-}  // namespace
+}  // namespace implementation_detail
 
 template <class T>
 SimpleOption<T>::SimpleOption(const std::string& name, const std::string& description) : base_t(name, description) {}
@@ -128,7 +128,7 @@ inline void SimpleOption<bool>::print(std::ostream& out) const {
 
 template <class T>
 inline void SimpleOption<T>::print(std::ostream& out) const {
-    out << "   --" << this->name() << "=" << Title<T>()() << " (" << this->description() << ")";
+    out << "   --" << this->name() << "=" << implementation_detail::Title<T>()() << " (" << this->description() << ")";
 }
 
 }  // namespace eckit::option

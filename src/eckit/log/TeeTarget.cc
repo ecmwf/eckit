@@ -17,8 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TeeTarget::TeeTarget(LogTarget* left, LogTarget* right) :
-    left_(left), right_(right) {
+TeeTarget::TeeTarget(LogTarget* left, LogTarget* right) : left_(left), right_(right) {
 
     if (left_) {
         left_->attach();
@@ -40,6 +39,8 @@ TeeTarget::~TeeTarget() {
 }
 
 void TeeTarget::write(const char* start, const char* end) {
+    if (start >= end)
+        return;
     if (left_) {
         left_->write(start, end);
     }

@@ -37,7 +37,7 @@ struct DiscreteRange {
         DiscreteRange(Fraction{_a}, Fraction{_b}, Fraction{_inc}, Fraction{_ref}, Fraction{period}) {}
 
     DiscreteRange(const Fraction& _a, const Fraction& _b, const Fraction& _inc, const Fraction& _ref) :
-        inc(_inc) {
+        inc(_inc), periodic(false) {
         ASSERT(_a <= _b);
         ASSERT(_inc >= 0);
 
@@ -89,13 +89,29 @@ struct DiscreteRange {
 
             b = a + (n - 1) * inc;
         }
+
+        if (n * inc == period) {
+            periodic = true;
+            b        = a + n * inc;
+        }
     }
 
     Fraction a;
     Fraction b;
     Fraction inc;
     size_t n;
+    bool periodic;
 };
+
+
+PointLonLat make_reference_from_config(const Configuration& config) {
+    if (double lon = 0, lat = 0; config.get("reference_lon", lon) && config.get("reference_lat", lat)) {
+        return {lon, lat};
+    }
+
+    area::BoundingBox area(config);
+    return {area.west, area.south};
+}
 
 
 }  // namespace
@@ -117,10 +133,7 @@ RegularLL::Internal::Internal(const Increments& _inc, const area::BoundingBox& _
 
 
 RegularLL::RegularLL(const Configuration& config) :
-    RegularLL(Increments{config},
-              area::BoundingBox{config},
-              PointLonLat{config.getDouble("reference_lon", config.getDouble("west", 0)),
-                          config.getDouble("reference_lat", config.getDouble("south", -90))}) {}
+    RegularLL(Increments{config}, area::BoundingBox{config}, make_reference_from_config(config)) {}
 
 
 RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox) :

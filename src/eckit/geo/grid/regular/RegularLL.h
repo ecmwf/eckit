@@ -31,7 +31,7 @@ private:
     // -- Types
 
     struct Internal {
-        Internal(const Increments& _inc, const area::BoundingBox& _bbox, const PointLonLat& _ref);
+        Internal(const Increments&, const area::BoundingBox&, const PointLonLat& _ref);
 
         Increments inc;
         area::BoundingBox bbox;

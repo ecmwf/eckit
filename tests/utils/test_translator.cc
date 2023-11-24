@@ -16,6 +16,8 @@
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Translator.h"
 
+#include "eckit/filesystem/PathName.h"
+
 #include "eckit/testing/Test.h"
 
 using namespace std;
@@ -138,6 +140,14 @@ CASE("Translate signed char as a number") {
     EXPECT(t((signed char)127) == std::string("127"));
     EXPECT(t((signed char)-127) == std::string("-127"));
     EXPECT(t((signed char)128) == std::string("-128"));
+}
+
+
+CASE("Translate through construction (including implicit conversion)") {
+    Translator<std::string, int> t;
+
+    EXPECT(t("123") == 123);
+    EXPECT(t(eckit::PathName("123")) == 123);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

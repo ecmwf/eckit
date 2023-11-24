@@ -36,12 +36,14 @@ public:
     explicit BoundingBox(const Configuration&);
 
     BoundingBox(double north, double west, double south, double east);
+
     BoundingBox();
 
     BoundingBox(const BoundingBox& other) :
         array(other) {}
 
-    BoundingBox(BoundingBox&&) = default;
+    BoundingBox(BoundingBox&& other) :
+        array(other) {}
 
     // -- Destructor
 

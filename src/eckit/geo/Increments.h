@@ -34,13 +34,15 @@ public:
     explicit Increments(const Configuration&);
 
     Increments(double west_east, double south_north);
+
     Increments() :
         Increments(0, 0) {}
 
     Increments(const Increments& other) :
         array(other) {}
 
-    Increments(Increments&&) = default;
+    Increments(Increments&& other) :
+        array(other) {}
 
     // -- Destructor
 

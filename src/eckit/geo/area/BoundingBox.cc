@@ -41,7 +41,11 @@ static BoundingBox make_from_config(const Configuration& config) {
         return {area[0], area[1], area[2], area[3]};
     }
 
-    throw UserError("BoundingBox: expecting 'area'=N/W/S/E or ('north', 'west', 'south', 'east')");
+    if (!config.has("north") && !config.has("west") && !config.has("south") && !config.has("east")) {
+        return {};
+    }
+
+    throw UserError("BoundingBox: expecting 'area'=north/west/south/east or ('north', 'west', 'south', 'east')");
 }
 
 

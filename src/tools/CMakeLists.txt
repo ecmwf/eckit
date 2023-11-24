@@ -28,6 +28,12 @@ ecbuild_add_executable( TARGET      eckit_grid_list
                         SOURCES     eckit-grid-list.cc
                         LIBS        eckit_geo eckit_option )
 
+ecbuild_add_executable( TARGET      eckit_grid_triangulation
+                        OUTPUT_NAME eckit-grid-triangulation
+                        CONDITION   HAVE_BUILD_TOOLS AND HAVE_EXPERIMENTAL AND Qhull_FOUND
+                        SOURCES     eckit-grid-triangulation.cc
+                        LIBS        eckit_geo eckit_option Qhull::Qhull )
+
 ### NOT TO INSTALL
 
 ecbuild_add_executable( TARGET      dhcopy

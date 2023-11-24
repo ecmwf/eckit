@@ -143,22 +143,25 @@ ecbuild_add_option( FEATURE AEC
 ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "xxHash support for hashing" )
 
-### Codec options
+### eckit::codec
 
 ecbuild_add_option( FEATURE ECKIT_CODEC
                     DEFAULT OFF
-                    DESCRIPTION "Encoding/Decoding library ported from atlas_io" )
+                    DESCRIPTION "eckit::codec encoding/decoding library" )
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
 
-### eckit::geo options
+### eckit::geo
 
 ecbuild_add_option( FEATURE GEO_CACHING
                     CONDITION HAVE_EXPERIMENTAL
                     DEFAULT OFF
                     DESCRIPTION "eckit::geo default caching behaviour" )
 
-set( eckit_GEO_CACHE_PATH "/tmp/cache" )
+if( HAVE_EXPERIMENTAL )
+    set( eckit_GEO_CACHE_PATH "/tmp/cache" )
+    find_package( Qhull COMPONENTS C CXX )
+endif()
 
 ### LAPACK
 

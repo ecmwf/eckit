@@ -111,7 +111,6 @@ public:
     virtual iterator cend() const   = 0;
 
     virtual const area::BoundingBox& boundingBox() const;
-    void boundingBox(const area::BoundingBox&);
 
     virtual size_t size() const;
     virtual uid_t uid() const;

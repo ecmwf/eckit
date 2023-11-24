@@ -41,11 +41,6 @@ const area::BoundingBox& Grid::boundingBox() const {
 }
 
 
-void Grid::boundingBox(const area::BoundingBox& bbox) {
-    bbox_ = bbox;
-}
-
-
 size_t Grid::size() const {
     throw NotImplemented("Grid::size", Here());
 }

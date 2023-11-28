@@ -14,7 +14,6 @@
 
 
 #include "eckit/option/Option.h"
-#include "eckit/option/SimpleOption.h"
 
 #include "eckit/exception/Exceptions.h"
 

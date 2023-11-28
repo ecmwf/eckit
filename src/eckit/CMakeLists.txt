@@ -876,22 +876,25 @@ foreach( dir ${eckit_dirs} )
 endforeach()
 
 list( APPEND eckit_templates
+                    container/BTree.cc
+                    container/BloomFilter.cc
                     container/CacheLRU.cc
+                    container/MappedArray.cc
+                    container/SharedMemArray.cc
+                    container/Trie.cc
+                    container/bsptree/BSPNode.cc
                     container/kdtree/KDNode.cc
                     container/sptree/SPNode.cc
                     filesystem/BasePathNameT.cc
                     io/FileBase.cc
+                    option/FactoryOption.cc
+                    option/SimpleOption.cc
+                    option/VectorOption.cc
                     runtime/PipeHandler.cc
                     serialisation/Reanimator.cc
                     transaction/TxnLog.cc
                     types/Types.cc
                     utils/RLE.cc
-                    container/BTree.cc
-                    container/BloomFilter.cc
-                    container/MappedArray.cc
-                    container/SharedMemArray.cc
-                    container/Trie.cc
-                    container/bsptree/BSPNode.cc
 )
 
 list( APPEND eckit_persistent

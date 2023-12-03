@@ -134,6 +134,10 @@ Content* NumberContent::mod(const Content& other) const {
     return other.modNumber(*this);
 }
 
+Content* NumberContent::modNumber(const NumberContent& other) const {
+    return new NumberContent(int(other.value_) % int(value_));
+}
+
 Content* NumberContent::mulNumber(const NumberContent& other) const {
     return new NumberContent(other.value_ * value_);
 }

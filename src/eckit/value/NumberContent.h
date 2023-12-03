@@ -73,6 +73,7 @@ protected:
     Content* subNumber(const NumberContent&) const override;
     Content* mulNumber(const NumberContent&) const override;
     Content* divNumber(const NumberContent&) const override;
+    Content* modNumber(const NumberContent&) const override;
 
     Value negate() const override;
 

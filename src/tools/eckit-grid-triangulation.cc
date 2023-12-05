@@ -9,79 +9,21 @@
  */
 
 
-#include <array>
 #include <memory>
 #include <ostream>
-#include <string>
-#include <vector>
 
 #include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/geo/triangulation/Triangulation3.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
 #include "eckit/option/SimpleOption.h"
 
-#include "libqhullcpp/Qhull.h"
-#include "libqhullcpp/QhullFacet.h"
-#include "libqhullcpp/QhullFacetList.h"
-#include "libqhullcpp/QhullPoints.h"
-#include "libqhullcpp/QhullVertexSet.h"
-
 
 namespace eckit::tools {
-
-
-struct Triangulation {
-    using triangle_type = std::array<countT, 3>;
-
-    size_t n_triangles() const {
-        ASSERT(qhull_);
-        return static_cast<size_t>(qhull_->facetCount());
-    }
-
-    std::vector<triangle_type> triangles() const {
-        ASSERT(qhull_);
-
-        std::vector<triangle_type> tri;
-        tri.reserve(qhull_->facetCount());
-
-        for (const auto& facet : qhull_->facetList()) {
-            auto vertices = facet.vertices();
-            ASSERT(vertices.size() == 3);
-
-            tri.emplace_back(triangle_type{vertices[0].id(), vertices[1].id(), vertices[2].id()});
-        }
-
-        return tri;
-    }
-
-protected:
-    std::unique_ptr<const orgQhull::Qhull> qhull_;
-};
-
-
-struct Triangulation3D : Triangulation {
-    Triangulation3D(const std::vector<double>& lon, const std::vector<double>& lat) {
-        ASSERT(lon.size() == lat.size());
-
-        auto N = static_cast<int>(lon.size());
-        std::vector<double> coord(N * 3);
-
-        geo::projection::LonLatToXYZ lonlat2xyz(1.);
-        for (size_t i = 0; i < N; ++i) {
-            auto p = lonlat2xyz.fwd({lon[i], lat[i]});
-
-            coord[i * 3 + 0] = p.X;
-            coord[i * 3 + 1] = p.Y;
-            coord[i * 3 + 2] = p.Z;
-        }
-
-        qhull_ = std::make_unique<orgQhull::Qhull>("", 3, N, coord.data(), "Qt");
-    }
-};
 
 
 struct EckitGridTriangulation final : EckitTool {
@@ -104,13 +46,34 @@ void EckitGridTriangulation::execute(const option::CmdArgs& args) {
     std::unique_ptr<const geo::Grid> grid(
         geo::GridFactory::build(MappedConfiguration{{{"grid", args.getString("grid")}}}));
 
-    auto [lat, lon] = grid->to_latlon();
-    ASSERT(lon.size() == lat.size());
+    auto& out = std::cout;
 
-    std::unique_ptr<Triangulation> tri(new Triangulation3D(lon, lat));
-    for (const auto& t : tri->triangles()) {
-        Log::info() << t[0] << ' ' << t[1] << ' ' << t[2] << std::endl;
+    geo::triangulation::Triangulation3 tri(*grid);
+
+    auto [lat, lon] = grid->to_latlon();
+
+    auto N = grid->size();
+    ASSERT(N == lat.size());
+    ASSERT(N == lon.size());
+
+    out << "$MeshFormat\n"
+           "4.1 0 8\n"
+           "$EndMeshFormat\n";
+
+    out << "$Nodes\n" << N << '\n';
+    geo::projection::LonLatToXYZ lonlat2xyz(1.);
+    for (size_t i = 0; i < N; ++i) {
+        auto p = lonlat2xyz.fwd(geo::PointLonLat{lon[i], lat[i]});
+        out << (i + 1) << ' ' << p.X << ' ' << p.Y << ' ' << p.Z << '\n';
     }
+    out << "$EndNodes\n";
+
+    out << "$Elements\n" << tri.size() << '\n';
+    size_t i = 0;
+    for (const auto& t : tri) {
+        out << (i + 1) << " 2 4 1 1 1 0 " << t[0] << ' ' << t[1] << ' ' << t[2] << '\n';
+    }
+    out << "$EndElements\n";
 };
 
 

@@ -50,6 +50,8 @@ list(APPEND eckit_geo_srcs
     Sphere.cc
     Sphere.h
     SphereT.h
+    Triangulation.cc
+    Triangulation.h
     UnitSphere.h
     area/BoundingBox.cc
     area/BoundingBox.h
@@ -138,5 +140,10 @@ endif()
 if(HAVE_CODEC)
     target_sources(eckit_geo PRIVATE grid/unstructured/ORCA.cc grid/unstructured/ORCA.h)
     target_link_libraries(eckit_geo PUBLIC eckit_codec)
+endif()
+
+if(Qhull_FOUND)
+    target_sources(eckit_geo PRIVATE triangulation/Triangulation3.cc triangulation/Triangulation3.h)
+    target_link_libraries(eckit_geo PUBLIC Qhull::Qhull)
 endif()
 

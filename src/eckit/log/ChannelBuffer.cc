@@ -67,7 +67,7 @@ void ChannelBuffer::reset() {
 
 bool ChannelBuffer::dumpBuffer() {
     // When setting and using pointers we should have boundary checks. In a multi threaded environment we already have experienced weird behaviour.
-    // With thiese checks the race conditions are not gone but they won't cause any segfaults. See https://github.com/ecmwf/eckit/issues/89
+    // With these checks the race conditions are not gone but they won't cause any segfaults. See https://github.com/ecmwf/eckit/issues/89
     if (target_) {
         // Explicitly check that `pptr()` is not larger than end of buffer. Racecondition can end up adding larger values.
         target_->write(buffer_.data(), std::min(pptr(), buffer_.data() + buffer_.size()));

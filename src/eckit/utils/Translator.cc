@@ -316,11 +316,18 @@ char Translator<std::string, char>::operator()(const std::string& s) {
     return s[0];
 }
 
+
 std::string Translator<char, std::string>::operator()(char c) {
     std::string s;
     s = c;
     return s;
 }
+
+
+std::string Translator<signed char, std::string>::operator()(signed char v) {
+    return Translator<int, std::string>{}(static_cast<int>(v));
+};
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

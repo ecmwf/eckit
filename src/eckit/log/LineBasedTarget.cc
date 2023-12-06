@@ -36,10 +36,11 @@ void LineBasedTarget::reserve(size_t size) {
 }
 
 void LineBasedTarget::write(const char* start, const char* end) {
+    if(start >= end) return;
 
     reserve(position_ + (end - start) + 1);
 
-    while (start != end) {
+    while (start < end) {
         if (*start == '\n') {
             buffer_[position_] = 0;
             line(buffer_);

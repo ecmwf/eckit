@@ -13,7 +13,6 @@
 
 #include "eckit/exception/Exceptions.h"
 
-#include "libqhullcpp/Qhull.h"
 #include "libqhullcpp/QhullFacetList.h"
 #include "libqhullcpp/QhullVertexSet.h"
 
@@ -22,18 +21,69 @@ namespace eckit::geo::convexhull {
 
 
 Qhull::Qhull(size_t N, const std::vector<double>& coord, const std::string& command) {
+    ASSERT(N > 0);
     ASSERT(coord.size() % N == 0);
+
     auto pointDimension = static_cast<int>(N);
     auto pointCount     = static_cast<int>(coord.size() % N);
 
-    qh_ = std::make_unique<qh_type>("", pointDimension, pointCount, coord.data(), command.c_str());
+    qh_ = std::make_unique<decltype(qh_)::element_type>("", pointDimension, pointCount, coord.data(), command.c_str());
     ASSERT(qh_);
 }
 
 
-const orgQhull::Qhull& Qhull::qh() {
-    ASSERT(qh_);
-    return *qh_;
+std::vector<std::vector<double>> Qhull::list_vertices() const {
+    std::vector<std::vector<double>> vertices;
+    vertices.reserve(qh_->vertexCount());
+
+    auto N = qh_->dimension();
+    for (const auto& vertex : qh_->vertexList()) {
+        const auto point = vertex.point();
+        ASSERT(point.dimension() == N);
+
+        const auto* coord = point.coordinates();
+        vertices.emplace_back(coord, coord + N);
+    }
+
+    return vertices;
+}
+
+
+std::vector<std::vector<size_t>> Qhull::list_facets() const {
+    std::vector<std::vector<size_t>> facets;
+    facets.reserve(qh_->facetCount());
+
+    for (const auto& facet : qh_->facetList()) {
+        const auto vertices = facet.vertices();
+
+        std::vector<size_t> f;
+        f.reserve(vertices.size());
+
+        for (const auto& vertex : vertices) {
+            f.push_back(static_cast<size_t>(vertex.id()));
+        }
+
+        facets.emplace_back(f);
+    }
+
+    return facets;
+}
+
+
+std::vector<ConvexHull::Triangle> Qhull::list_triangles() const {
+    std::vector<Triangle> tri;
+    tri.reserve(qh_->facetCount());
+
+    for (const auto& facet : qh_->facetList()) {
+        const auto vertices = facet.vertices();
+        ASSERT(vertices.size() == 3);
+
+        tri.emplace_back(Triangle{static_cast<Triangle::value_type>(vertices[0].id()),
+                                  static_cast<Triangle::value_type>(vertices[1].id()),
+                                  static_cast<Triangle::value_type>(vertices[2].id())});
+    }
+
+    return tri;
 }
 
 

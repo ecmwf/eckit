@@ -11,21 +11,16 @@
 
 #include "eckit/geo/triangulation/Triangulation3.h"
 
-#include <memory>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/convexhull/Qhull.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
-
-#include "libqhullcpp/Qhull.h"
-#include "libqhullcpp/QhullFacetList.h"
-#include "libqhullcpp/QhullVertexSet.h"
 
 
 namespace eckit::geo::triangulation {
 
 
-Triangulation3::Triangulation3(const Grid& grid) {
+std::vector<double> grid_to_coord(const Grid& grid) {
     auto [lat, lon] = grid.to_latlon();
     ASSERT(lat.size() == lon.size());
 
@@ -41,18 +36,12 @@ Triangulation3::Triangulation3(const Grid& grid) {
         coord[i * 3 + 2] = p.Z;
     }
 
-    auto qh = std::make_unique<orgQhull::Qhull>("", 3, N, coord.data(), "Qt");
-
-    reserve(qh->facetCount());
-    for (const auto& facet : qh->facetList()) {
-        auto vertices = facet.vertices();
-        ASSERT(vertices.size() == 3);
-
-        emplace_back(Triangle{static_cast<Triangle::value_type>(vertices[0].id()),
-                              static_cast<Triangle::value_type>(vertices[1].id()),
-                              static_cast<Triangle::value_type>(vertices[2].id())});
-    }
+    return coord;
 }
+
+
+Triangulation3::Triangulation3(const Grid& grid) :
+    Triangulation(convexhull::Qhull(3, grid_to_coord(grid), "Qt").list_triangles()) {}
 
 
 }  // namespace eckit::geo::triangulation

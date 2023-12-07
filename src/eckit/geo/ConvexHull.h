@@ -9,6 +9,8 @@
  */
 
 
+#pragma once
+
 #include <array>
 #include <vector>
 
@@ -24,12 +26,11 @@ class Configuration;
 namespace eckit::geo {
 
 
-using Triangle = std::array<size_t, 3>;
-
-
 class ConvexHull {
 public:
     // -- Types
+
+    using Triangle = std::array<size_t, 3>;
 
     using builder_t = BuilderT1<ConvexHull>;
     using ARG1      = const Configuration&;
@@ -51,6 +52,10 @@ public:
     // -- Methods
 
     static std::string className() { return "ConvexHull"; }
+
+    virtual std::vector<std::vector<double>> list_vertices() const = 0;
+    virtual std::vector<std::vector<size_t>> list_facets() const   = 0;
+    virtual std::vector<Triangle> list_triangles() const           = 0;
 
 protected:
     // -- Constructors

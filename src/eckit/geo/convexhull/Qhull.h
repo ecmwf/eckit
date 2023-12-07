@@ -17,25 +17,28 @@
 #include <string>
 #include <vector>
 
-
-namespace orgQhull {
-class Qhull;
-}  // namespace orgQhull
+#include "libqhullcpp/Qhull.h"
 
 
 namespace eckit::geo::convexhull {
 
 
 class Qhull : public ConvexHull {
-protected:
-    Qhull(size_t N, const std::vector<double>&, const std::string& command);
+public:
+    // -- Types
 
-    using qh_type = orgQhull::Qhull;
+    Qhull(size_t N, const std::vector<double>& coord, const std::string& command);
 
-    const qh_type& qh();
+    // -- Overridden methods
+
+    std::vector<std::vector<double>> list_vertices() const override;
+    std::vector<std::vector<size_t>> list_facets() const override;
+    std::vector<Triangle> list_triangles() const override;
 
 private:
-    std::unique_ptr<qh_type> qh_;
+    // -- Members
+
+    std::unique_ptr<orgQhull::Qhull> qh_;
 };
 
 

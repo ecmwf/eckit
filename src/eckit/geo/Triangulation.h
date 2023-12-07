@@ -12,6 +12,7 @@
 #include <array>
 #include <vector>
 
+#include "eckit/geo/ConvexHull.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
 
@@ -24,7 +25,7 @@ class Configuration;
 namespace eckit::geo {
 
 
-using Triangle = std::array<size_t, 3>;
+using Triangle = ConvexHull::Triangle;
 
 
 class Triangulation : protected std::vector<Triangle> {
@@ -34,6 +35,13 @@ public:
     using builder_t = BuilderT1<Triangulation>;
     using ARG1      = const Configuration&;
 
+    // -- Constructors
+
+    using vector::vector;
+
+    Triangulation(const Triangulation&) = default;
+    Triangulation(Triangulation&&)      = default;
+
     // -- Destructor
 
     virtual ~Triangulation() = default;
@@ -41,6 +49,9 @@ public:
     // -- Operators
 
     using vector::operator[];
+
+    Triangulation& operator=(const Triangulation&) = default;
+    Triangulation& operator=(Triangulation&&)      = default;
 
     // -- Methods
 
@@ -57,7 +68,8 @@ public:
 protected:
     // -- Constructors
 
-    Triangulation() /*noexcept */ = default;
+    explicit Triangulation(const std::vector<Triangle>& tri) :
+        vector(tri) {}
 };
 
 

@@ -26,7 +26,7 @@ namespace eckit::geo::convexhull {
 
 
 ConvexHullN::ConvexHullN(size_t N, const std::vector<double>& coord) :
-    Qhull(N, coord, "Qt") {}
+    Qhull(N, coord, "QJ") {}
 
 
 }  // namespace eckit::geo::convexhull

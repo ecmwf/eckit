@@ -168,10 +168,8 @@ ecbuild_add_option( FEATURE GEO_CONVEX_HULL
                     DESCRIPTION "eckit::geo geometry library convex hull/Delaunay triangulation"
                     REQUIRED_PACKAGES "Qhull COMPONENTS C CXX" )
 
-if( eckit_HAVE_GEO_CONVEX_HULL )
-	if(NOT Qhull_FOUND OR NOT TARGET Qhull::Qhull)
-	    message(FATAL_ERROR "eckit::geo ENABLE_GEO_CONVEX_HULL requires Qhull C/C++ libraries")
-	endif()
+if( eckit_HAVE_GEO_CONVEX_HULL AND NOT TARGET Qhull::Qhull )
+    message(FATAL_ERROR "eckit::geo ENABLE_GEO_CONVEX_HULL requires Qhull C/C++ libraries")
 endif()
 
 set( eckit_GEO_CACHE_PATH "/tmp/cache" )

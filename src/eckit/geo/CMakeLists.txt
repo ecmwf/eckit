@@ -11,6 +11,8 @@ list(APPEND eckit_geo_srcs
     Cache.cc
     Cache.h
     Configurator.h
+    ConvexHull.cc
+    ConvexHull.h
     CoordinateHelpers.cc
     CoordinateHelpers.h
     Domain.cc
@@ -135,7 +137,14 @@ if(eckit_HAVE_ECKIT_CODEC)
 endif()
 
 if(eckit_HAVE_GEO_CONVEX_HULL)
-    list(APPEND eckit_geo_srcs triangulation/Triangulation3.cc triangulation/Triangulation3.h)
+    list(APPEND eckit_geo_srcs
+        convexhull/ConvexHullN.cc
+        convexhull/ConvexHullN.h
+        convexhull/Qhull.cc
+        convexhull/Qhull.h
+        triangulation/Triangulation3.cc
+        triangulation/Triangulation3.h
+    )
     list(APPEND eckit_geo_libs Qhull::Qhull)
 endif()
 

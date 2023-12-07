@@ -47,9 +47,10 @@ Triangulation3::Triangulation3(const Grid& grid) {
     for (const auto& facet : qh->facetList()) {
         auto vertices = facet.vertices();
         ASSERT(vertices.size() == 3);
-        emplace_back(Triangle{static_cast<size_t>(vertices[0].id()),
-                              static_cast<size_t>(vertices[1].id()),
-                              static_cast<size_t>(vertices[2].id())});
+
+        emplace_back(Triangle{static_cast<Triangle::value_type>(vertices[0].id()),
+                              static_cast<Triangle::value_type>(vertices[1].id()),
+                              static_cast<Triangle::value_type>(vertices[2].id())});
     }
 }
 

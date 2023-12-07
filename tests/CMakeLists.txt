@@ -21,18 +21,18 @@ add_subdirectory( types )
 add_subdirectory( utils )
 add_subdirectory( value )
 
-if( HAVE_ECKIT_SQL )
+if( eckit_HAVE_ECKIT_SQL )
     add_subdirectory( sql )
 endif()
 
-if( HAVE_ECKIT_CODEC )
+if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
 endif()
 
-if( HAVE_EXPERIMENTAL )
+if( eckit_HAVE_ECKIT_GEO )
     add_subdirectory( geo )
 endif()
 
-if( HAVE_EXPERIMENTAL )
+if( eckit_HAVE_EXPERIMENTAL )
     add_subdirectory( experimental )
 endif()

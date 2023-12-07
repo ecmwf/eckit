@@ -122,28 +122,29 @@ set(eckit_geo_include_dirs
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
 )
 
+set(eckit_geo_libs eckit_maths)
+
+if(eckit_HAVE_PROJ)
+    list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
+    list(APPEND eckit_geo_libs PROJ::proj)
+endif()
+
+if(eckit_HAVE_ECKIT_CODEC)
+    list(APPEND eckit_geo_srcs grid/unstructured/ORCA.cc grid/unstructured/ORCA.h)
+    list(APPEND eckit_geo_libs eckit_codec)
+endif()
+
+if(eckit_HAVE_GEO_CONVEX_HULL)
+    list(APPEND eckit_geo_srcs triangulation/Triangulation3.cc triangulation/Triangulation3.h)
+    list(APPEND eckit_geo_libs Qhull::Qhull)
+endif()
+
 ecbuild_add_library(
     TARGET             eckit_geo
     TYPE               SHARED
     INSTALL_HEADERS    ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo
-    PUBLIC_LIBS        eckit_maths
+    PUBLIC_LIBS        ${eckit_geo_libs}
     PUBLIC_INCLUDES    ${eckit_geo_include_dirs}
     SOURCES            ${eckit_geo_srcs}
 )
-
-if(HAVE_PROJ)
-    target_sources(eckit_geo PRIVATE projection/PROJ.cc projection/PROJ.h)
-    target_link_libraries(eckit_geo PUBLIC PROJ::proj)
-endif()
-
-if(HAVE_CODEC)
-    target_sources(eckit_geo PRIVATE grid/unstructured/ORCA.cc grid/unstructured/ORCA.h)
-    target_link_libraries(eckit_geo PUBLIC eckit_codec)
-endif()
-
-if(Qhull_FOUND)
-    target_sources(eckit_geo PRIVATE triangulation/Triangulation3.cc triangulation/Triangulation3.h)
-    target_link_libraries(eckit_geo PUBLIC Qhull::Qhull)
-endif()
-

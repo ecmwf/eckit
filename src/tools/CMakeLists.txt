@@ -1,36 +1,38 @@
 ecbuild_add_executable( TARGET      eckit_version
                         OUTPUT_NAME eckit-version
-                        CONDITION   HAVE_BUILD_TOOLS
                         SOURCES     eckit-version.cc
                         LIBS        eckit_option eckit )
 
+if( NOT eckit_HAVE_BUILD_TOOLS )
+    return()
+endif()
+
 ecbuild_add_executable( TARGET      eckit_info
                         OUTPUT_NAME eckit-info
-                        CONDITION   HAVE_BUILD_TOOLS
                         SOURCES     eckit-info.cc
                         LIBS        eckit_option eckit )
 
 ecbuild_add_executable( TARGET      eckit_codec_list
                         OUTPUT_NAME eckit-codec-list
-                        CONDITION   HAVE_BUILD_TOOLS AND ECKIT_CODEC
+                        CONDITION   ECKIT_CODEC
                         SOURCES     eckit-codec-list.cc
                         LIBS        eckit_codec eckit_option )
 
 ecbuild_add_executable( TARGET      eckit_grid
                         OUTPUT_NAME eckit-grid
-                        CONDITION   HAVE_BUILD_TOOLS AND HAVE_EXPERIMENTAL
+                        CONDITION   eckit_HAVE_ECKIT_GEO
                         SOURCES     eckit-grid.cc
                         LIBS        eckit_geo eckit_option )
 
 ecbuild_add_executable( TARGET      eckit_grid_list
                         OUTPUT_NAME eckit-grid-list
-                        CONDITION   HAVE_BUILD_TOOLS AND HAVE_EXPERIMENTAL
+                        CONDITION   eckit_HAVE_ECKIT_GEO
                         SOURCES     eckit-grid-list.cc
                         LIBS        eckit_geo eckit_option )
 
 ecbuild_add_executable( TARGET      eckit_grid_triangulation
                         OUTPUT_NAME eckit-grid-triangulation
-                        CONDITION   HAVE_BUILD_TOOLS AND HAVE_EXPERIMENTAL AND Qhull_FOUND
+                        CONDITION   eckit_HAVE_ECKIT_GEO AND eckit_HAVE_GEO_CONVEX_HULL
                         SOURCES     eckit-grid-triangulation.cc
                         LIBS        eckit_geo eckit_option Qhull::Qhull )
 
@@ -38,35 +40,31 @@ ecbuild_add_executable( TARGET      eckit_grid_triangulation
 
 ecbuild_add_executable( TARGET      dhcopy
                         OUTPUT_NAME eckit-dhcopy
-                        CONDITION   HAVE_BUILD_TOOLS
                         NOINSTALL
                         SOURCES     dhcopy.cc
                         LIBS        eckit_option eckit )
 
 ecbuild_add_executable( TARGET      syslog_server
                         OUTPUT_NAME eckit-syslog-server
-                        CONDITION   HAVE_BUILD_TOOLS
                         NOINSTALL
                         SOURCES     syslog-server.cc
                         LIBS        eckit )
 
 ecbuild_add_executable( TARGET      syslog_client
                         OUTPUT_NAME eckit-syslog-client
-                        CONDITION   HAVE_BUILD_TOOLS
                         NOINSTALL
                         SOURCES     syslog-client.cc
                         LIBS        eckit )
 
 ecbuild_add_executable( TARGET      eckit_rsync
                         OUTPUT_NAME eckit-rsync
-                        CONDITION   HAVE_BUILD_TOOLS AND eckit_HAVE_RSYNC
+                        CONDITION   eckit_HAVE_RSYNC
                         NOINSTALL
                         SOURCES     rsync.cc
                         LIBS        eckit_option eckit )
 
 ecbuild_add_executable( TARGET      eckit_hash
                         OUTPUT_NAME eckit-hash
-                        CONDITION   HAVE_BUILD_TOOLS
                         NOINSTALL
                         SOURCES     eckit-hash.cc
                         LIBS        eckit_option eckit )

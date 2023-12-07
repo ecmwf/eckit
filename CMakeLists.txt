@@ -153,15 +153,28 @@ set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
 
 ### eckit::geo
 
-ecbuild_add_option( FEATURE GEO_CACHING
-                    CONDITION HAVE_EXPERIMENTAL
+ecbuild_add_option( FEATURE ECKIT_GEO
                     DEFAULT OFF
-                    DESCRIPTION "eckit::geo default caching behaviour" )
+                    DESCRIPTION "eckit::geo geometry library" )
 
-if( HAVE_EXPERIMENTAL )
-    set( eckit_GEO_CACHE_PATH "/tmp/cache" )
-    find_package( Qhull COMPONENTS C CXX )
+ecbuild_add_option( FEATURE GEO_CACHING
+                    DEFAULT OFF
+                    CONDITION HAVE_ECKIT_GEO
+                    DESCRIPTION "eckit::geo geometry library default caching behaviour" )
+
+ecbuild_add_option( FEATURE GEO_CONVEX_HULL
+                    DEFAULT ON
+                    CONDITION HAVE_ECKIT_GEO
+                    DESCRIPTION "eckit::geo geometry library convex hull/Delaunay triangulation"
+                    REQUIRED_PACKAGES "Qhull COMPONENTS C CXX" )
+
+if( eckit_HAVE_GEO_CONVEX_HULL )
+	if(NOT Qhull_FOUND OR NOT TARGET Qhull::Qhull)
+	    message(FATAL_ERROR "eckit::geo ENABLE_GEO_CONVEX_HULL requires Qhull C/C++ libraries")
+	endif()
 endif()
+
+set( eckit_GEO_CACHE_PATH "/tmp/cache" )
 
 ### LAPACK
 

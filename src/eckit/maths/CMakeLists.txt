@@ -7,7 +7,7 @@ list( APPEND eckit_maths_lib_srcs
     MatrixLapack.h
 )
 
-if( HAVE_EXPERIMENTAL )
+if( eckit_HAVE_ECKIT_GEO )
     # for eckit::geo
     list( APPEND eckit_maths_lib_srcs
         Matrix3.h

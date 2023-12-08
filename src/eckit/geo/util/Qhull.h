@@ -27,11 +27,15 @@ class Qhull : public ConvexHull {
 public:
     // -- Types
 
-    Qhull(size_t N, const std::vector<double>& coord, const std::string& command);
+    using coord_t = std::vector<double>;
+
+    // -- Constructors
+
+    Qhull(size_t N, const coord_t& coord, const std::string& command);
 
     // -- Overridden methods
 
-    std::vector<std::vector<double>> list_vertices() const override;
+    std::vector<size_t> list_vertices() const override;
     std::vector<std::vector<size_t>> list_facets() const override;
     std::vector<Triangle> list_triangles() const override;
 

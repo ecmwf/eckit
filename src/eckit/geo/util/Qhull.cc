@@ -20,28 +20,23 @@
 namespace eckit::geo::util {
 
 
-Qhull::Qhull(size_t N, const std::vector<double>& coord, const std::string& command) {
+Qhull::Qhull(size_t N, const coord_t& coord, const std::string& command) {
     ASSERT(0 < N && coord.size() % N == 0);
 
     auto pointDimension = static_cast<int>(N);
-    auto pointCount     = static_cast<int>(coord.size() % N);
+    auto pointCount     = static_cast<int>(coord.size() / N);
 
     qh_ = std::make_unique<decltype(qh_)::element_type>("", pointDimension, pointCount, coord.data(), command.c_str());
     ASSERT(qh_);
 }
 
 
-std::vector<std::vector<double>> Qhull::list_vertices() const {
-    std::vector<std::vector<double>> vertices;
+std::vector<size_t> Qhull::list_vertices() const {
+    std::vector<size_t> vertices;
     vertices.reserve(qh_->vertexCount());
 
-    auto N = qh_->dimension();
     for (const auto& vertex : qh_->vertexList()) {
-        const auto point = vertex.point();
-        ASSERT(point.dimension() == N);
-
-        const auto* coord = point.coordinates();
-        vertices.emplace_back(coord, coord + N);
+        vertices.emplace_back(vertex.point().id());
     }
 
     return vertices;

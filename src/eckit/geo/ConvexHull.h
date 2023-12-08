@@ -53,9 +53,9 @@ public:
 
     static std::string className() { return "ConvexHull"; }
 
-    virtual std::vector<std::vector<double>> list_vertices() const = 0;
-    virtual std::vector<std::vector<size_t>> list_facets() const   = 0;
-    virtual std::vector<Triangle> list_triangles() const           = 0;
+    virtual std::vector<size_t> list_vertices() const            = 0;
+    virtual std::vector<std::vector<size_t>> list_facets() const = 0;
+    virtual std::vector<Triangle> list_triangles() const         = 0;
 
 protected:
     // -- Constructors

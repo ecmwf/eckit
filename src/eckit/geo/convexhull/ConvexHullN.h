@@ -13,25 +13,71 @@
 
 #include "eckit/geo/ConvexHull.h"
 
-// #include <memory>
+#include <memory>
+
+#include "eckit/geo/util/Qhull.h"
 
 
 namespace eckit::geo::convexhull {
 
 
+template <size_t N>
 class ConvexHullN : public ConvexHull {
 public:
-    template <size_t _Size>
-    explicit ConvexHullN(const std::vector<std::array<double, _Size>>&);
+    // -- Types
 
-    explicit ConvexHullN(const std::vector<std::vector<double>>&);
+    using coord_t = util::Qhull::coord_t;
 
-    std::vector<std::vector<double>> list_vertices() const override;
-    std::vector<std::vector<size_t>> list_facets() const override;
-    std::vector<Triangle> list_triangles() const override;
+    // -- Constructors
+
+    explicit ConvexHullN(const coord_t& coord) :
+        qhull_(N, coord, "QJ") {}
+
+    explicit ConvexHullN(const std::vector<std::vector<double>>& coord_v) :
+        ConvexHullN(convert_vector_v(coord_v)) {}
+
+    explicit ConvexHullN(const std::vector<std::array<double, N>>& coord_a) :
+        ConvexHullN(convert_vector_a(coord_a)) {}
+
+    // -- Methods
+
+    std::vector<size_t> list_vertices() const override { return qhull_.list_vertices(); }
+
+    std::vector<std::vector<size_t>> list_facets() const override { return qhull_.list_facets(); }
+
+    std::vector<Triangle> list_triangles() const override { return qhull_.list_triangles(); }
 
 private:
-    explicit ConvexHullN(size_t N, const std::vector<double>&);
+    // -- Methods
+
+    static coord_t convert_vector_v(const std::vector<std::vector<double>>& coord_v) {
+        coord_t coord;
+        coord.reserve(N * coord_v.size());
+
+        for (const auto& v : coord_v) {
+            ASSERT(N == v.size());
+            for (int i = 0; i < N; ++i) {
+                coord.emplace_back(v[i]);
+            }
+        }
+
+        return coord;
+    }
+
+    static coord_t convert_vector_a(const std::vector<std::array<double, N>>& coord_a) {
+        coord_t coord;
+        coord.reserve(N * coord_a.size());
+        for (const auto& a : coord_a) {
+            for (int i = 0; i < N; ++i) {
+                coord.emplace_back(a[i]);
+            }
+        }
+        return coord;
+    }
+
+    // -- Members
+
+    util::Qhull qhull_;
 };
 
 

@@ -97,7 +97,6 @@ public:
     // None
 
     // -- Operators
-    // None
 
     Grid& operator=(const Grid&) = delete;
     Grid& operator=(Grid&&)      = delete;

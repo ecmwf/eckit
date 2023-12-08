@@ -138,7 +138,6 @@ endif()
 
 if(eckit_HAVE_GEO_CONVEX_HULL)
     list(APPEND eckit_geo_srcs
-        convexhull/ConvexHullN.cc
         convexhull/ConvexHullN.h
         triangulation/Triangulation3.cc
         triangulation/Triangulation3.h

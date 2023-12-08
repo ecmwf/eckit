@@ -1,6 +1,7 @@
 foreach( _test
         area_boundingbox
         area_polygon
+        convex_hull_n
         coordinate_helpers
         figure_sphere
         figure_sphere_great_circle

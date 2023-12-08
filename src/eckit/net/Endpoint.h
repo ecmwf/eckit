@@ -34,16 +34,22 @@ public:                            // methods
     Endpoint(Stream& s);
     Endpoint();
 
-    const std::string& hostname() const { return host_; }
+    virtual ~Endpoint() {}
+
+    virtual const std::string& hostname() const { return host_; }
     const std::string& host() const { return host_; }
     int port() const { return port_; }
 
-    std::string hostport() const { return host_+":"+std::to_string(port_); }
+    operator std::string() const { return hostname()+":"+std::to_string(port_); }
 
-    bool operator==(const net::Endpoint& other);
+    bool operator==(const net::Endpoint& other) const;
 
     void print(std::ostream& os) const;
     void encode(Stream& s) const;
+
+protected:  // members
+    std::string host_;
+    int port_;
 
 private:  // methods
     void validate() const;
@@ -57,10 +63,6 @@ private:  // methods
         ep.encode(s);
         return s;
     }
-
-private:  // members
-    std::string host_;
-    int port_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -68,5 +70,13 @@ private:  // members
 }  // namespace net
 }  // namespace eckit
 
+template <>
+struct std::hash<eckit::net::Endpoint>
+{
+    std::size_t operator()(const eckit::net::Endpoint& endpoint) const noexcept {
+        const std::string& e = endpoint;
+        return std::hash<std::string>{}(e);
+    }
+};
 
 #endif

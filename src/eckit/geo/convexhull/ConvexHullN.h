@@ -11,26 +11,24 @@
 
 #pragma once
 
-#include "eckit/geo/convexhull/Qhull.h"
+#include "eckit/geo/ConvexHull.h"
 
-#include <array>
-#include <vector>
-
-
-namespace eckit::geo {
-class Grid;
-}  // namespace eckit::geo
+// #include <memory>
 
 
 namespace eckit::geo::convexhull {
 
 
-class ConvexHullN : public Qhull {
+class ConvexHullN : public ConvexHull {
 public:
     template <size_t _Size>
     explicit ConvexHullN(const std::vector<std::array<double, _Size>>&);
 
     explicit ConvexHullN(const std::vector<std::vector<double>>&);
+
+    std::vector<std::vector<double>> list_vertices() const override;
+    std::vector<std::vector<size_t>> list_facets() const override;
+    std::vector<Triangle> list_triangles() const override;
 
 private:
     explicit ConvexHullN(size_t N, const std::vector<double>&);

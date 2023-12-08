@@ -20,7 +20,7 @@
 #include "libqhullcpp/Qhull.h"
 
 
-namespace eckit::geo::convexhull {
+namespace eckit::geo::util {
 
 
 class Qhull : public ConvexHull {
@@ -42,4 +42,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::convexhull
+}  // namespace eckit::geo::util

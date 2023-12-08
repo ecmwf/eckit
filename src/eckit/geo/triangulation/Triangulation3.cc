@@ -13,8 +13,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/convexhull/Qhull.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/geo/util/Qhull.h"
 
 
 namespace eckit::geo::triangulation {
@@ -41,7 +41,7 @@ std::vector<double> grid_to_coord(const Grid& grid) {
 
 
 Triangulation3::Triangulation3(const Grid& grid) :
-    Triangulation(convexhull::Qhull(3, grid_to_coord(grid), "Qt").list_triangles()) {}
+    Triangulation(util::Qhull(3, grid_to_coord(grid), "Qt").list_triangles()) {}
 
 
 }  // namespace eckit::geo::triangulation

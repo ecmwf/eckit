@@ -11,22 +11,31 @@
 
 #include "eckit/geo/convexhull/ConvexHullN.h"
 
-#include <memory>
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Grid.h"
-#include "eckit/geo/projection/LonLatToXYZ.h"
-
-#include "libqhullcpp/Qhull.h"
-#include "libqhullcpp/QhullFacetList.h"
-#include "libqhullcpp/QhullVertexSet.h"
+#include "eckit/geo/util/Qhull.h"
 
 
 namespace eckit::geo::convexhull {
 
 
-ConvexHullN::ConvexHullN(size_t N, const std::vector<double>& coord) :
-    Qhull(N, coord, "QJ") {}
+std::vector<std::vector<double>> ConvexHullN::list_vertices() const {
+    NOTIMP;
+}
+
+
+std::vector<std::vector<size_t>> ConvexHullN::list_facets() const {
+    NOTIMP;
+}
+
+
+std::vector<ConvexHull::Triangle> ConvexHullN::list_triangles() const {
+    NOTIMP;
+}
+
+
+ConvexHullN::ConvexHullN(size_t N, const std::vector<double>& coord) {
+    // util::Qhull q(N, coord, "QJ");
+}
 
 
 }  // namespace eckit::geo::convexhull

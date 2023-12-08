@@ -9,7 +9,7 @@
  */
 
 
-#include "eckit/geo/convexhull/Qhull.h"
+#include "eckit/geo/util/Qhull.h"
 
 #include "eckit/exception/Exceptions.h"
 
@@ -17,12 +17,11 @@
 #include "libqhullcpp/QhullVertexSet.h"
 
 
-namespace eckit::geo::convexhull {
+namespace eckit::geo::util {
 
 
 Qhull::Qhull(size_t N, const std::vector<double>& coord, const std::string& command) {
-    ASSERT(N > 0);
-    ASSERT(coord.size() % N == 0);
+    ASSERT(0 < N && coord.size() % N == 0);
 
     auto pointDimension = static_cast<int>(N);
     auto pointCount     = static_cast<int>(coord.size() % N);
@@ -87,4 +86,4 @@ std::vector<ConvexHull::Triangle> Qhull::list_triangles() const {
 }
 
 
-}  // namespace eckit::geo::convexhull
+}  // namespace eckit::geo::util

@@ -17,7 +17,6 @@
 #include "eckit/types/Time.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Tokenizer.h"
-#include "eckit/utils/Translator.h"
 
 namespace eckit {
 
@@ -31,17 +30,19 @@ inline void printTime(std::ostream& s, long n) {
 }
 
 Time::Time(long seconds, bool extended) :
-    seconds_(seconds) {
+    seconds_(static_cast<Second>(seconds)) {
     if ((seconds >= 86400 && !extended) || seconds < 0) {
         std::string msg = "Time in seconds must be positive and less than 86400 seconds (24h): ";
-        Translator<long, std::string> t;
-        msg += t(seconds);
+        msg += std::to_string(seconds);
         throw BadTime(msg);
     }
 }
 
 Time::Time(const std::string& s, bool extended) {
-    long ss = 0, mm = 0, hh = 0, dd = 0;
+    long ss = 0;
+    long mm = 0;
+    long hh = 0;
+    long dd = 0;
     std::smatch m;
     
     if (std::regex_match (s, m, std::regex("^-?[0-9]+$"))) { // only digits
@@ -117,16 +118,15 @@ Time::Time(const std::string& s, bool extended) {
 
     if (mm >= 60 || ss >= 60 || (!extended && (hh >= 24 || dd > 0 || hh < 0 || mm < 0 || ss < 0))) {
         std::string msg = "Wrong input for time: ";
-        Translator<long, std::string> t;
         if (dd>0) {
-            msg += t(dd);
+            msg += std::to_string(dd);
             msg += " days ";
         }
-        msg += t(hh);
+        msg += std::to_string(hh);
         msg += " hours ";
-        msg += t(mm);
+        msg += std::to_string(mm);
         msg += " minutes ";
-        msg += t(ss);
+        msg += std::to_string(ss);
         msg += " seconds";
         throw BadTime(msg);
     }
@@ -151,12 +151,11 @@ Time::Time(long hh, long mm, long ss, bool extended) :
     seconds_(hh * 3600 + mm * 60 + ss) {
     if (mm >= 60 || ss >= 60 || (!extended && (hh >= 24 || hh < 0 || mm < 0 || ss < 0))) {
         std::string msg = "Wrong input for time: ";
-        Translator<long, std::string> t;
-        msg += t(hh);
+        msg += std::to_string(hh);
         msg += " hours ";
-        msg += t(mm);
+        msg += std::to_string(mm);
         msg += " minutes ";
-        msg += t(ss);
+        msg += std::to_string(ss);
         msg += " seconds";
         throw BadTime(msg);
     }

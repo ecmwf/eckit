@@ -25,16 +25,16 @@ class DumpLoad;
 class Bless;
 class Hash;
 
-typedef double Second;
+using Second = double;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class Time {
 
 public:  // methods
-    Time(long, long, long, bool extended = false);
+    Time(long hours, long minutes, long seconds, bool extended = false);
     Time(long seconds = 0, bool extended = false);
-    Time(const std::string&, bool extended = false);
+    Time(const std::string& time, bool extended = false);
 
 #include "eckit/types/Time.b"
 

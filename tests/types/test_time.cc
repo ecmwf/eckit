@@ -149,6 +149,7 @@ CASE("Time with unit (__h__m__s)") {
     EXPECT(Time(0,3,0) == Time("3M"));
     EXPECT(Time(0,3,0) == Time("180s"));
 
+    EXPECT(Time(1,2,3) == Time("1h2m3s"));
     EXPECT(Time(1,23,45) == Time("1h23m45s"));
     EXPECT(Time(1,23,45) == Time("01h23m45s"));
     EXPECT(Time(1,23,45) == Time("5025s"));

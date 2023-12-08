@@ -163,9 +163,9 @@ DataHandle* TeeHandle::toLocal() {
     return this;
 }
 
-void TeeHandle::cost(std::map<std::string, Length>& c, bool read) const {
+void TeeHandle::selectMover(MoverTransferSelection& c, bool read) const {
     for (size_t i = 0; i < datahandles_.size(); i++) {
-        datahandles_[i]->cost(c, read);
+        datahandles_[i]->selectMover(c, read);
     }
 }
 
@@ -177,17 +177,6 @@ bool TeeHandle::moveable() const {
     }
     return true;
 }
-
-const std::set<std::string>& TeeHandle::requiredMoverAttributes() const {
-    if (requiredAttributes_.empty()) {
-        for (const auto& dh : datahandles_) {
-            auto&& attrs = dh->requiredMoverAttributes();
-            requiredAttributes_.insert(attrs.begin(), attrs.end());
-        }
-    }
-    return requiredAttributes_;
-}
-
 
 //----------------------------------------------------------------------------------------------------------------------
 

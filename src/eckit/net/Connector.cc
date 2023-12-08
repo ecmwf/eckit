@@ -214,40 +214,8 @@ Connector& Connector::service(const std::string& name, const std::string& node) 
     return get(info.host(), info.port(), info.node());
 }
 
-Connector& Connector::service(const std::string& name, const std::map<std::string, Length>& cost,
-                              const std::set<std::string>& attributes) {
-    std::string host;
-    std::string node;
-
-    int port    = 0;
-    Length best = 0;
-
-    for (std::map<std::string, Length>::const_iterator j = cost.begin(); j != cost.end(); ++j) {
-        if ((*j).second > best || port == 0) {
-            best = (*j).second;
-            if (ClusterNodes::available(name, (*j).first)) {
-                NodeInfo info = ClusterNodes::lookUp(name, (*j).first);
-                host          = info.host();
-                port          = info.port();
-                node          = info.node();
-            }
-            else {
-                Log::warning() << "Service not available: " << name << "@" << (*j).first << std::endl;
-            }
-        }
-    }
-
-    if (!port) {
-        NodeInfo info = ClusterNodes::any(name, attributes);
-        host          = info.host();
-        port          = info.port();
-        node          = info.node();
-        Log::warning() << "Using node: " << info << std::endl;
-    }
-
-    ASSERT(port);
-
-    return get(host, port, node);
+Connector& Connector::service(const NodeInfo& info) {
+    return get(info.host(), info.port(), info.node());
 }
 
 void Connector::lock() {

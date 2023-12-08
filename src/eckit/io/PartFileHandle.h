@@ -63,7 +63,8 @@ public:  // methods
     Offset seek(const Offset&) override;
     bool canSeek() const override;
 
-    void cost(std::map<std::string, Length>&, bool) const override;
+    void selectMover(MoverTransferSelection&, bool read) const override;
+
     std::string title() const override;
     std::string metricsTag() const override;
 

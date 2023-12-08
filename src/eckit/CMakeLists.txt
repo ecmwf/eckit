@@ -189,6 +189,8 @@ io/MemoryHandle.cc
 io/MemoryHandle.h
 io/MoverTransfer.cc
 io/MoverTransfer.h
+io/MoverTransferSelection.cc
+io/MoverTransferSelection.h
 io/MultiHandle.cc
 io/MultiHandle.h
 io/Offset.cc

@@ -12,9 +12,6 @@
 #pragma once
 
 #include "eckit/geo/ConvexHull.h"
-
-#include <memory>
-
 #include "eckit/geo/util/Qhull.h"
 
 

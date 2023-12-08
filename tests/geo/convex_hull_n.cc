@@ -12,6 +12,8 @@
 
 #include <algorithm>
 #include <array>
+#include <memory>
+#include <set>
 #include <vector>
 
 #include "eckit/geo/convexhull/ConvexHullN.h"
@@ -73,6 +75,38 @@ CASE("ConvexHullN, N=2") {
             }
         }
     }
+
+
+    SECTION("factory") {
+        // same as above
+        std::unique_ptr<geo::ConvexHull> ch2(geo::ConvexHullFactory::instance()
+                                                 .get("convex-hull-n-2")
+                                                 .create(std::vector<std::vector<double>>{
+                                                     {1, 2},
+                                                     {3, 1},
+                                                     {4, 4},
+                                                     {6, 5},
+                                                     {7, 2},
+                                                     {2, 5},
+                                                     {5, 7},
+                                                     {8, 3},
+                                                     {6, 9},
+                                                     {9, 6},
+                                                 }));
+
+        auto vertex_set = [](const std::vector<size_t>& list) { return std::set<size_t>{list.cbegin(), list.cend()}; };
+        EXPECT(vertex_set(ch.list_vertices()) == vertex_set(ch2->list_vertices()));
+
+        // wrong dimensions
+        EXPECT_THROWS_AS(geo::ConvexHullFactory::instance()
+                             .get("convex-hull-n-3")
+                             .create(std::vector<std::vector<double>>{
+                                 {1, 2},
+                                 {3, 1},
+                                 {4, 4},
+                             }),
+                         AssertionFailed);
+    }
 }
 
 
@@ -101,9 +135,12 @@ CASE("ConvexHullN, N=3") {
     }
 
 
-    SECTION("facets") {
+    SECTION("facets/triangles") {
         const auto facets = ch.list_facets();
         EXPECT(facets.size() == 4);
+
+        const auto triangles = ch.list_triangles();
+        EXPECT(triangles.size() == 4);
 
         for (const auto& fr : {
                  std::vector<size_t>{0, 1, 2},
@@ -117,25 +154,11 @@ CASE("ConvexHullN, N=3") {
                               std::count(fr.begin(), fr.end(), facet[1]) == 1 &&
                               std::count(fr.begin(), fr.end(), facet[2]) == 1;
                    }) == 1);
-        }
-    }
 
-
-    SECTION("triangles") {
-        const auto triangles = ch.list_triangles();
-        EXPECT(triangles.size() == 4);
-
-        for (const auto& tr : {
-                 std::vector<size_t>{0, 1, 2},
-                 {0, 1, 3},
-                 {0, 2, 3},
-                 {1, 2, 3},
-             }) {
-            EXPECT(std::count_if(triangles.begin(), triangles.end(), [&tr](const auto& tri) {
-                       ASSERT(tri.size() == 3);
-                       return std::count(tr.begin(), tr.end(), tri[0]) == 1 &&
-                              std::count(tr.begin(), tr.end(), tri[1]) == 1 &&
-                              std::count(tr.begin(), tr.end(), tri[2]) == 1;
+            EXPECT(std::count_if(triangles.begin(), triangles.end(), [&fr](const auto& tri) {
+                       return std::count(fr.begin(), fr.end(), tri[0]) == 1 &&
+                              std::count(fr.begin(), fr.end(), tri[1]) == 1 &&
+                              std::count(fr.begin(), fr.end(), tri[2]) == 1;
                    }) == 1);
         }
     }

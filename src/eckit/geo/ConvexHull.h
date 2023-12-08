@@ -33,7 +33,7 @@ public:
     using Triangle = std::array<size_t, 3>;
 
     using builder_t = BuilderT1<ConvexHull>;
-    using ARG1      = const Configuration&;
+    using ARG1      = const std::vector<std::vector<double>>&;  // TODO use std::vector<Point>
 
     // -- Constructors
 

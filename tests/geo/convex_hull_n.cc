@@ -27,17 +27,18 @@ namespace eckit::test {
 CASE("ConvexHullN, N=2") {
     using Point2 = std::array<double, 2>;
 
+    // Polygon (vertices 0, 1, 4, 5, 7, 8, 9) containing point indices 2, 3, 6
     geo::convexhull::ConvexHullN ch(std::vector<Point2>{
-        {1, 2},  // part of convex hull
-        {3, 1},  //...
+        {1, 2},
+        {3, 1},
         {4, 4},
         {6, 5},
-        {7, 2},  //...
-        {2, 5},  //...
+        {7, 2},
+        {2, 5},
         {5, 7},
-        {8, 3},  //...
-        {6, 9},  //...
-        {9, 6},  //...
+        {8, 3},
+        {6, 9},
+        {9, 6},
     });
 
 
@@ -59,19 +60,82 @@ CASE("ConvexHullN, N=2") {
         const auto facets = ch.list_facets();
         EXPECT(facets.size() == 7);
 
-        for (const auto& fr : std::vector<std::vector<size_t>>{
-                 {3, 2},
-                 {5, 1},
-                 {5, 3},
-                 {6, 1},
-                 {6, 4},
-                 {7, 2},
-                 {7, 4},
-             }) {
-            ASSERT(fr.size() == 2);
+        for (const auto& fr : {std::vector<size_t>{8, 9}, {5, 0}, {5, 8}, {1, 0}, {1, 4}, {7, 9}, {7, 4}}) {
             EXPECT(std::count_if(facets.begin(), facets.end(), [&fr](const auto& facet) {
                        ASSERT(facet.size() == 2);
                        return (fr[0] == facet[0] && fr[1] == facet[1]) || (fr[0] == facet[1] && fr[1] == facet[0]);
+                   }) == 1);
+        }
+
+        for (size_t vertex : {2, 3, 6}) {
+            for (const auto& facet : facets) {
+                EXPECT(std::find(facet.begin(), facet.end(), vertex) == facet.end());
+            }
+        }
+    }
+}
+
+
+CASE("ConvexHullN, N=3") {
+    using Point3 = std::array<double, 3>;
+
+    // Tetrahedron (vertices 0, 1, 2, 3) containing point index 4
+    geo::convexhull::ConvexHullN ch(std::vector<Point3>{
+        {0, 0, 1},
+        {1, 0, -1},
+        {-1, 1, -1},
+        {-1, -1, -1},
+        {0, 0, 0},
+    });
+
+
+    SECTION("vertices") {
+        const auto vertices = ch.list_vertices();
+        EXPECT(vertices.size() == 4);
+
+        for (size_t vertex = 0; vertex < 4; ++vertex) {
+            EXPECT(std::find(vertices.begin(), vertices.end(), vertex) != vertices.end());
+        }
+
+        EXPECT(std::find(vertices.begin(), vertices.end(), 4) == vertices.end());
+    }
+
+
+    SECTION("facets") {
+        const auto facets = ch.list_facets();
+        EXPECT(facets.size() == 4);
+
+        for (const auto& fr : {
+                 std::vector<size_t>{0, 1, 2},
+                 {0, 1, 3},
+                 {0, 2, 3},
+                 {1, 2, 3},
+             }) {
+            EXPECT(std::count_if(facets.begin(), facets.end(), [&fr](const auto& facet) {
+                       ASSERT(facet.size() == 3);
+                       return std::count(fr.begin(), fr.end(), facet[0]) == 1 &&
+                              std::count(fr.begin(), fr.end(), facet[1]) == 1 &&
+                              std::count(fr.begin(), fr.end(), facet[2]) == 1;
+                   }) == 1);
+        }
+    }
+
+
+    SECTION("triangles") {
+        const auto triangles = ch.list_triangles();
+        EXPECT(triangles.size() == 4);
+
+        for (const auto& tr : {
+                 std::vector<size_t>{0, 1, 2},
+                 {0, 1, 3},
+                 {0, 2, 3},
+                 {1, 2, 3},
+             }) {
+            EXPECT(std::count_if(triangles.begin(), triangles.end(), [&tr](const auto& tri) {
+                       ASSERT(tri.size() == 3);
+                       return std::count(tr.begin(), tr.end(), tri[0]) == 1 &&
+                              std::count(tr.begin(), tr.end(), tri[1]) == 1 &&
+                              std::count(tr.begin(), tr.end(), tri[2]) == 1;
                    }) == 1);
         }
     }

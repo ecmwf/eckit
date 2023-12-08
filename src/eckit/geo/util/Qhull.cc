@@ -54,7 +54,7 @@ std::vector<std::vector<size_t>> Qhull::list_facets() const {
         f.reserve(vertices.size());
 
         for (const auto& vertex : vertices) {
-            f.push_back(static_cast<size_t>(vertex.id()));
+            f.push_back(static_cast<size_t>(vertex.point().id()));
         }
 
         facets.emplace_back(f);
@@ -72,9 +72,9 @@ std::vector<ConvexHull::Triangle> Qhull::list_triangles() const {
         const auto vertices = facet.vertices();
         ASSERT(vertices.size() == 3);
 
-        tri.emplace_back(Triangle{static_cast<Triangle::value_type>(vertices[0].id()),
-                                  static_cast<Triangle::value_type>(vertices[1].id()),
-                                  static_cast<Triangle::value_type>(vertices[2].id())});
+        tri.emplace_back(Triangle{static_cast<Triangle::value_type>(vertices[0].point().id()),
+                                  static_cast<Triangle::value_type>(vertices[1].point().id()),
+                                  static_cast<Triangle::value_type>(vertices[2].point().id())});
     }
 
     return tri;

@@ -72,10 +72,10 @@ public:
     void toRemote(Stream&) const override;
     void toLocal(Stream&) const override;
     DataHandle* toLocal() override;
-    void cost(std::map<std::string, Length>&, bool) const override;
+    void selectMover(MoverTransferSelection&, bool read) const override;
+
     std::string title() const override;
     bool moveable() const override;
-    const std::set<std::string>& requiredMoverAttributes() const override;
     DataHandle* clone() const override;
     void collectMetrics(const std::string& what) const override;
     // From Streamable

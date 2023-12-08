@@ -400,11 +400,6 @@ void DataHandle::restartWriteFrom(const Offset& offset) {
     throw NotImplemented(os.str(), Here());
 }
 
-const std::set<std::string>& DataHandle::requiredMoverAttributes() const {
-    static std::set<std::string> nullSet;
-    return nullSet;
-}
-
 void DataHandle::toLocal(Stream& s) const {
     s << *this;
 }
@@ -417,7 +412,9 @@ void DataHandle::toRemote(Stream& s) const {
     s << *this;
 }
 
-void DataHandle::cost(std::map<std::string, Length>& c, bool read) const {}
+void DataHandle::selectMover(MoverTransferSelection&, bool) const {
+    
+}
 
 DataHandle* DataHandle::clone() const {
     std::ostringstream os;

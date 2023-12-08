@@ -28,6 +28,7 @@ namespace eckit {
 
 class MD5;
 class Metrics;
+class MoverTransferSelection;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -39,6 +40,7 @@ public:
         from_(from) {}
     const Offset& from() const { return from_; }
 };
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -125,13 +127,14 @@ public:
     // For remote data movers
 
     virtual bool moveable() const { return false; }
-    virtual const std::set<std::string>& requiredMoverAttributes() const;
     virtual void toLocal(Stream& s) const;
 
     virtual DataHandle* toLocal();
 
     virtual void toRemote(Stream& s) const;
-    virtual void cost(std::map<std::string, Length>&, bool) const;
+
+    virtual void selectMover(MoverTransferSelection&, bool read) const;
+
     virtual std::string title() const;
     virtual std::string metricsTag() const;
     virtual void collectMetrics(const std::string& what) const;  // Tag for metrics collection

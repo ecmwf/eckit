@@ -56,7 +56,8 @@ public:
     void restartReadFrom(const Offset& from) override;
     void restartWriteFrom(const Offset& from) override;
     void toRemote(Stream&) const override;
-    void cost(std::map<std::string, Length>&, bool) const override;
+    void selectMover(MoverTransferSelection&, bool read) const override;
+
     std::string title() const override;
     std::string metricsTag() const override;
 

@@ -18,6 +18,7 @@
 
 #include <set>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace eckit {
@@ -30,8 +31,27 @@ namespace eckit {
 template <class From, class To>
 struct Translator {
 
-    // Default template calls cast
-    To operator()(const From& from) { return To(from); }
+    // Test for explicit conversion through constructor (also involves implicit conversion or or user-defined conversion operator).
+    // Note: To(from) is called with () brackets and not with {} because it includes conversion of plain datatypes - MIR is using this
+    template <typename F, std::enable_if_t<
+                              (!std::is_same_v<std::decay_t<F>, To> && std::is_constructible_v<To, F>),
+                              bool> = true>
+    auto operator()(F&& from) {
+        return To(std::forward<F>(from));
+    }
+
+
+    // If from and to type are same - simply forward - i.e. allow moving or passing references instead of performing copies
+    template <typename F, std::enable_if_t<std::is_same_v<std::decay_t<F>, To>,
+                                           bool> = true>
+    decltype(auto) operator()(F&& from) {
+        if constexpr (std::is_lvalue_reference_v<F> && !std::is_const_v<F>) {
+            return const_cast<const To&>(from);
+        }
+        else {
+            return std::forward<F>(from);
+        }
+    }
 };
 
 // Those are predefined
@@ -159,12 +179,12 @@ struct Translator<char, std::string> {
 };
 
 template <>
-struct Translator<std::string, std::vector<std::string> > {
+struct Translator<std::string, std::vector<std::string>> {
     std::vector<std::string> operator()(const std::string&);
 };
 
 template <>
-struct Translator<std::string, std::vector<long> > {
+struct Translator<std::string, std::vector<long>> {
     std::vector<long> operator()(const std::string&);
 };
 
@@ -179,7 +199,7 @@ struct Translator<std::vector<std::string>, std::string> {
 };
 
 template <>
-struct Translator<std::string, std::set<std::string> > {
+struct Translator<std::string, std::set<std::string>> {
     std::set<std::string> operator()(const std::string&);
 };
 
@@ -188,15 +208,37 @@ struct Translator<std::set<std::string>, std::string> {
     std::string operator()(const std::set<std::string>&);
 };
 
+template <>
+struct Translator<signed char, std::string> {
+    std::string operator()(signed char v);
+};
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
 // This allows using the Translator without having to explicitly name the type of an argument. For example in case of
-// generic string conversion: translate<std::strig>(someVariable)
+// generic string conversion: translate<std::string>(someVariable)
 template <typename To, typename From>
-To translate(From&& from) {
-    return Translator<typename std::decay<From>::type, To>()(std::forward<From>(from));
+decltype(auto) translate(From&& from) {
+    return Translator<std::decay_t<From>, To>{}(std::forward<From>(from));
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+// primary template handles types that do not support translation
+template <typename From, typename To, class = void>
+struct IsTranslatable : std::false_type {};
+
+// specialization recognizes types that do support translation
+template <typename From, typename To>
+struct IsTranslatable<From, To,
+                      std::void_t<decltype(Translator<From, To>{}(std::declval<const From&>()))>> : std::true_type {};
+
+
+template <typename From, typename To>
+inline constexpr bool IsTranslatable_v = IsTranslatable<From, To>::value;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

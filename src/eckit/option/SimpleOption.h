@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
-#ifndef eckit_option_SimpleOption_H
-#define eckit_option_SimpleOption_H
+#pragma once
 
 #include <iosfwd>
 
@@ -23,23 +21,29 @@
 namespace eckit::option {
 
 template <class T>
-class SimpleOption : public Option {
+class SimpleOption : public BaseOption<T> {
 public:
-    SimpleOption(const std::string& name, const std::string& description);
+    using base_t = BaseOption<T>;
+    using args_t = Option::args_t;
 
-    ~SimpleOption() override;
+    SimpleOption(const std::string& name, const std::string& description);
+    SimpleOption(const std::string& name, const std::string& description, const T& default_value);
+
+    ~SimpleOption() override = default;
+
+    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
 
 protected:
     void print(std::ostream&) const override;
 
 private:
-    void set(Configured&) const override;
-    void set(const std::string& value, Configured&) const override;
+    void set_value(const T& value, Configured&) const override;
+
+    [[nodiscard]] T translate(const std::string& value) const override;
+
     void copy(const Configuration& from, Configured& to) const override;
 };
 
 }  // namespace eckit::option
 
 #include "eckit/option/SimpleOption.cc"
-
-#endif

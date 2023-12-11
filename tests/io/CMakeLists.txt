@@ -13,6 +13,16 @@ ecbuild_add_test( TARGET   eckit_test_filepool
                   SOURCES  test_filepool.cc
                   LIBS     eckit )
 
+ecbuild_add_test( TARGET  eckit_test_easycurl
+                  SOURCES test_easycurl.cc
+                  CONDITION HAVE_EXTRA_TESTS AND eckit_HAVE_CURL
+                  LIBS    eckit )
+
+file(
+  COPY mock/MockREST.py mock/MockREST.launcher.sh
+  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 ecbuild_add_test( TARGET  eckit_test_urlhandle
                   SOURCES test_urlhandle.cc
                   CONDITION HAVE_EXTRA_TESTS AND eckit_HAVE_CURL

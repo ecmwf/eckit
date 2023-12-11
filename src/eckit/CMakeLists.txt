@@ -686,6 +686,7 @@ list( APPEND eckit_utils_srcs
   utils/MD5.h
   utils/EnumBitmask.h
   utils/Optional.h
+  utils/Overloaded.h
   utils/RLE.cc
   utils/RLE.h
   utils/Regex.cc
@@ -876,22 +877,25 @@ foreach( dir ${eckit_dirs} )
 endforeach()
 
 list( APPEND eckit_templates
+                    container/BTree.cc
+                    container/BloomFilter.cc
                     container/CacheLRU.cc
+                    container/MappedArray.cc
+                    container/SharedMemArray.cc
+                    container/Trie.cc
+                    container/bsptree/BSPNode.cc
                     container/kdtree/KDNode.cc
                     container/sptree/SPNode.cc
                     filesystem/BasePathNameT.cc
                     io/FileBase.cc
+                    option/FactoryOption.cc
+                    option/SimpleOption.cc
+                    option/VectorOption.cc
                     runtime/PipeHandler.cc
                     serialisation/Reanimator.cc
                     transaction/TxnLog.cc
                     types/Types.cc
                     utils/RLE.cc
-                    container/BTree.cc
-                    container/BloomFilter.cc
-                    container/MappedArray.cc
-                    container/SharedMemArray.cc
-                    container/Trie.cc
-                    container/bsptree/BSPNode.cc
 )
 
 list( APPEND eckit_persistent
@@ -962,11 +966,11 @@ ecbuild_add_library(
 ### sub-directories
 
 if( HAVE_ECKIT_CMD )
-  add_subdirectory( cmd )
+    add_subdirectory( cmd )
 endif()
 
 if( HAVE_ECKIT_SQL )
-  add_subdirectory( sql )
+    add_subdirectory( sql )
 endif()
 
 add_subdirectory( distributed )
@@ -976,3 +980,8 @@ add_subdirectory( maths )
 add_subdirectory( mpi )
 add_subdirectory( option )
 add_subdirectory( web )
+
+if( HAVE_ECKIT_CODEC )
+    add_subdirectory( codec )
+endif()
+

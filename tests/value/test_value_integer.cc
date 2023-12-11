@@ -342,11 +342,12 @@ CASE("Division only works between 2 integers") {
     EXPECT_THROWS_AS(ValueDivSelf(val, ValueMap()), BadOperator);
 }
 
-CASE("Module operator currently not defined for integers") {
+
+CASE("Modulo only works between 2 integers") {
     Value val(123);
 
-    EXPECT_THROWS_AS(ValueMod(val, true), BadOperator);
-    EXPECT_THROWS_AS(ValueMod(val, 1234), BadOperator);
+    EXPECT_THROWS_AS(ValueDiv(val, true), BadOperator);
+    EXPECT(ValueMod(val, 12).as<long long>() == 3);
     EXPECT_THROWS_AS(ValueMod(val, 66.6), BadOperator);
     EXPECT_THROWS_AS(ValueMod(val, "hi"), BadOperator);
     EXPECT_THROWS_AS(ValueMod(val, Date(2016, 3, 31)), BadOperator);
@@ -354,7 +355,7 @@ CASE("Module operator currently not defined for integers") {
     EXPECT_THROWS_AS(ValueMod(val, ValueMap()), BadOperator);
 
     EXPECT_THROWS_AS(ValueMod(true, val), BadOperator);
-    EXPECT_THROWS_AS(ValueMod(1234, val), BadOperator);
+    EXPECT(ValueMod(12, val).as<long long>() == 12);
     EXPECT_THROWS_AS(ValueMod(66.6, val), BadOperator);
     EXPECT_THROWS_AS(ValueMod("hi", val), BadOperator);
     EXPECT_THROWS_AS(ValueMod(Date(2016, 3, 31), val), BadOperator);
@@ -362,13 +363,15 @@ CASE("Module operator currently not defined for integers") {
     EXPECT_THROWS_AS(ValueMod(ValueMap(), val), BadOperator);
 
     EXPECT_THROWS_AS(ValueModSelf(val, true), BadOperator);
-    EXPECT_THROWS_AS(ValueModSelf(val, 1234), BadOperator);
+    EXPECT(ValueModSelf(val, 12).as<long long>() == 3);
+    val = Value(1476);
     EXPECT_THROWS_AS(ValueModSelf(val, 66.6), BadOperator);
     EXPECT_THROWS_AS(ValueModSelf(val, "hi"), BadOperator);
     EXPECT_THROWS_AS(ValueModSelf(val, Date(2016, 3, 31)), BadOperator);
     EXPECT_THROWS_AS(ValueModSelf(val, ValueList()), BadOperator);
     EXPECT_THROWS_AS(ValueModSelf(val, ValueMap()), BadOperator);
 }
+
 
 CASE("Integer has semantics of single list with a double for head and tail") {
     Value val(12345);

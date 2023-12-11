@@ -13,65 +13,74 @@
 /// @author Simon Smart
 /// @date March 2016
 
+#pragma once
+
 #include <iostream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/option/Title.h"
 #include "eckit/option/VectorOption.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-
-namespace eckit {
-
-namespace option {
-
-//----------------------------------------------------------------------------------------------------------------------
-
+namespace eckit::option {
 
 template <class T>
 VectorOption<T>::VectorOption(const std::string& name, const std::string& description, size_t size,
                               const char* separator) :
-    Option(name, description), size_(size), separator_(separator) {}
+    base_t(name, description), size_(size), separator_(separator) {}
+
+template <class T>
+VectorOption<T>::VectorOption(const std::string& name, const std::string& description, size_t size,
+                              const std::vector<T>& default_value, const char* separator) :
+    base_t(Option(name, description, default_value)), size_(size), separator_(separator) {}
 
 
 template <class T>
-VectorOption<T>::~VectorOption() {}
-
-template <class T>
-void VectorOption<T>::set(Configured& parametrisation) const {
-    set(std::string{}, parametrisation);
+size_t VectorOption<T>::set(Configured& parametrisation, size_t values, args_t::const_iterator begin,
+                            args_t::const_iterator end) const {
+    if (begin == end) {
+        throw UserError("No option value found for VectorOption, where 1 was expected");
+    }
+    // Take first value in range [begin, end)
+    auto value = translate(*begin);
+    set_value(value, parametrisation);
+    return 1;
 }
 
+template <class T>
+void VectorOption<T>::set_value(const std::vector<T>& value, Configured& parametrisation) const {
+    parametrisation.set(this->name(), value);
+}
 
 template <class T>
-void VectorOption<T>::set(const std::string& value, Configured& parametrisation) const {
-    eckit::Translator<std::string, T> t;
+std::vector<T> VectorOption<T>::translate(const std::string& value) const {
+    Translator<std::string, T> t;
 
-    eckit::Tokenizer parse(separator_);
-    std::vector<std::string> v;
-    parse(value, v);
+    Tokenizer parse(separator_);
+    std::vector<std::string> tokens;
+    parse(value, tokens);
 
     std::vector<T> values;
-    for (size_t i = 0; i < v.size(); i++) {
-        values.push_back(t(v[i]));
+    for (size_t i = 0; i < tokens.size(); i++) {
+        values.push_back(t(tokens[i]));
     }
 
     if (size_) {
         if (values.size() != size_)
-            throw UserError(std::string("Size of supplied vector \"") + name_ + "\" incorrect", Here());
+            throw UserError(std::string("Size of supplied vector \"") + this->name() + "\" incorrect", Here());
     }
 
-    parametrisation.set(name_, values);
+    return values;
 }
 
 template <class T>
 void VectorOption<T>::print(std::ostream& out) const {
-    out << "   --" << name_;
+    out << "   --" << this->name();
 
     const char* sep = "=";
     for (size_t i = 0; i < (size_ ? size_ : 2); i++) {
-        out << sep << Title<T>()();
+        out << sep << implementation_detail::Title<T>()();
         sep = separator_;
     }
 
@@ -79,22 +88,12 @@ void VectorOption<T>::print(std::ostream& out) const {
         out << sep << "...";
     }
 
-    out << " (" << description_ << ")";
+    out << " (" << this->description() << ")";
 }
-
 
 template <class T>
 void VectorOption<T>::copy(const Configuration& from, Configured& to) const {
-    std::vector<T> v;
-    if (from.get(name_, v)) {
-        to.set(name_, v);
-    }
+    Option::copy<std::vector<T>>(this->name(), from, to);
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
-
-
-}  // namespace option
-
-}  // namespace eckit
+}  // namespace eckit::option

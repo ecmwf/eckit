@@ -42,6 +42,15 @@ public:  // methods
     std::vector<std::string> tokenize(const std::string&) const;
     std::vector<std::string> tokenize(std::istream&) const;
 
+    /**
+     * Splits the given the string on the first instance of the separator.
+     *
+     * The result is the set of separated tokens:
+     *  - if the separator is not found, containing 1 token: [begin, end]
+     *  - if the separator is found, containing 2 tokens: [begin, separator[, ]separator, end]
+     * */
+    static std::vector<std::string> split_at(const std::string& s, char separator);
+
 private:
     std::set<char, std::less<char> > separator_;  // To make searching faster
     bool keepEmpty_;
@@ -67,6 +76,13 @@ inline std::vector<std::string> Tokenizer::tokenize(std::istream& s) const {
     std::vector<std::string> r;
     this->operator()(s, r);
     return r;
+}
+
+inline std::vector<std::string> Tokenizer::split_at(const std::string& s, char separator) {
+    if (auto found = s.find_first_of(separator); found != std::string::npos) {
+        return {s.substr(0, found), s.substr(found + 1)};
+    }
+    return {s};
 }
 
 //---------------------------------------------------------------------------------------------------------------------

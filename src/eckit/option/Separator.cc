@@ -21,14 +21,16 @@
 
 namespace eckit::option {
 
-Separator::Separator(const std::string& description) :
-    Option("", description) {}
+Separator::Separator(const std::string& description) : Option("", description) {}
 
 Separator::~Separator() {}
 
+size_t Separator::set(Configured& parameter, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const {
+    return 0;  // Never consumes any argv tokens
+}
 
-void Separator::set(const std::string& value, Configured& parametrisation) const {
-    NOTIMP;
+void Separator::setDefault(Configured&) const {
+    ;
 }
 
 void Separator::copy(const Configuration& from, Configured& to) const {
@@ -40,8 +42,7 @@ bool Separator::active() const {
 }
 
 void Separator::print(std::ostream& out) const {
-    out << std::endl
-        << description_ << ":" << std::endl;
+    out << std::endl << description_ << ":" << std::endl;
 }
 
 }  // namespace eckit::option

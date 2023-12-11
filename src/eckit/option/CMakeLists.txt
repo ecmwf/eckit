@@ -4,15 +4,18 @@ ecbuild_add_library( TARGET eckit_option TYPE SHARED
 
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/option
 
-	SOURCES
+    SOURCES
         FactoryOption.cc
         FactoryOption.h
+        MultiValueOption.cc
+        MultiValueOption.h
         Option.cc
         Option.h
         Separator.cc
         Separator.h
         SimpleOption.cc
         SimpleOption.h
+        Title.h
         VectorOption.cc
         VectorOption.h
         CmdArgs.cc

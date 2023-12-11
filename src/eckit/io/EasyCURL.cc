@@ -933,14 +933,31 @@ EasyCURLResponse EasyCURL::POST(const std::string& url, const std::string& data)
     return request(url);
 }
 
+namespace {
+
+/**
+ * Copies the content from input `userdata` into output `buffer`
+ *
+ * Returns the number of characters copied
+ */
+size_t readCallback(char* buffer, size_t size [[maybe_unused]], size_t nitems [[maybe_unused]], void* userdata) {
+    auto data = static_cast<std::string*>(userdata);
+
+    data->copy(buffer, data->size());
+    return data->size();
+}
+
+}  // namespace
+
 EasyCURLResponse EasyCURL::PUT(const std::string& url, const std::string& data) {
-    NOTIMP;
-    // Disable unreachable code
-#if 0
-    _(curl_easy_setopt(ch_->curl_, CURLOPT_CUSTOMREQUEST, NULL));
-    _(curl_easy_setopt(ch_->curl_, CURLOPT_PUT, 1L));
+    _(curl_easy_setopt(ch_->curl_, CURLOPT_UPLOAD, 1L));
+
+    // Setup callback to read PUT request body (i.e. copy the given 'data' into an internal 'buffer')
+    _(curl_easy_setopt(ch_->curl_, CURLOPT_READFUNCTION, readCallback));
+    _(curl_easy_setopt(ch_->curl_, CURLOPT_READDATA, &data));
+    _(curl_easy_setopt(ch_->curl_, CURLOPT_INFILESIZE, data.size()));
+
     return request(url);
-#endif
 }
 
 EasyCURLResponse EasyCURL::DELETE(const std::string& url) {

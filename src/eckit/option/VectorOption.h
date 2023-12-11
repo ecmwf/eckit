@@ -13,29 +13,31 @@
 /// @date Apr 2015
 
 
-#ifndef VectorOption_H
-#define VectorOption_H
+#pragma once
 
 #include <iosfwd>
 
 #include "eckit/option/Option.h"
-#include "eckit/option/SimpleOption.h"
 
 namespace eckit::option {
 
 template <class T>
-class VectorOption : public Option {
+class VectorOption : public BaseOption<std::vector<T>> {
 public:
+    using base_t = BaseOption<std::vector<T>>;
+    using args_t = Option::args_t;
     // -- Exceptions
     // None
 
     // -- Contructors
 
     VectorOption(const std::string& name, const std::string& description, size_t size, const char* separator = "/");
+    VectorOption(const std::string& name, const std::string& description, size_t size,
+                 const std::vector<T>& default_value, const char* separator = "/");
 
     // -- Destructor
 
-    ~VectorOption() override;  // Change to virtual if base class
+    ~VectorOption() override = default;
 
     // -- Convertors
     // None
@@ -46,9 +48,8 @@ public:
     // -- Methods
     // None
 
-
     // -- Overridden methods
-    // None
+    size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
 
     // -- Class members
     // None
@@ -87,9 +88,10 @@ private:
     // None
 
     // -- Overridden methods
+    void set_value(const std::vector<T>& value, Configured&) const override;
 
-    void set(Configured&) const override;
-    void set(const std::string& value, Configured&) const override;
+    [[nodiscard]] std::vector<T> translate(const std::string& value) const override;
+
     void copy(const Configuration& from, Configured& to) const override;
 
     // -- Class members
@@ -104,5 +106,3 @@ private:
 }  // namespace eckit::option
 
 #include "eckit/option/VectorOption.cc"
-
-#endif

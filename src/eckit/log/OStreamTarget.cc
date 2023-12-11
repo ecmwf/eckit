@@ -22,6 +22,7 @@ OStreamTarget::OStreamTarget(std::ostream& out) :
 OStreamTarget::~OStreamTarget() {}
 
 void OStreamTarget::write(const char* start, const char* end) {
+    if (start >= end) return;
     out_.write(start, end - start);
 }
 void OStreamTarget::flush() {

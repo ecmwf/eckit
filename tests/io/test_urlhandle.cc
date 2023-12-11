@@ -8,14 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
 #include <iostream>
 #include <string>
 
-#include "eckit/eckit_config.h"
-#include "eckit/io/EasyCURL.h"
 #include "eckit/io/URLHandle.h"
-#include "eckit/value/Value.h"
 
 #include "eckit/testing/Test.h"
 
@@ -94,13 +90,6 @@ CASE("No use of SSL") {
     Log::info() << out << " size " << out.size() << std::endl;
     EXPECT(out.size() == Length(102309));
     out.unlink();
-}
-
-
-CASE("EasyCURL GET") {
-    auto r = EasyCURL().GET("http://get.ecmwf.int/test-data/eckit/tests/io/t.grib.md5");
-    // Log::info() << "[" << r.body() << "]" << std::endl;
-    EXPECT(r.body() == "f59fdc6a09c1d11b0e567309ef541bef  t.grib\n");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

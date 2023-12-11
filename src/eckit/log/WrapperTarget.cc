@@ -35,7 +35,7 @@ void WrapperTarget::write(const char* start, const char* end) {
 
     const char* begin = start;
 
-    while (start != end) {
+    while (start < end) {
         if (*start == '\n') {
             target_->write(begin, start);
             writeSuffix();
@@ -52,7 +52,7 @@ void WrapperTarget::write(const char* start, const char* end) {
         start++;
     }
 
-    if (begin != end) {
+    if (begin < end) {
         if (prefix_) {
             writePrefix();
             prefix_ = false;

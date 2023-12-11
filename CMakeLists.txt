@@ -8,6 +8,7 @@
 
 ########################################################################################################################
 
+
 cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
 find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
@@ -141,6 +142,14 @@ ecbuild_add_option( FEATURE AEC
 
 ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "xxHash support for hashing" )
+
+### Codec options
+
+ecbuild_add_option( FEATURE ECKIT_CODEC
+                    DEFAULT OFF
+                    DESCRIPTION "Encoding/Decoding library ported from atlas_io" )
+
+set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
 
 ### LAPACK
 

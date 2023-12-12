@@ -4,7 +4,7 @@ foreach( _test
         convex_hull_n
         coordinate_helpers
         figure_sphere
-        figure_sphere_great_circle
+        great_circle
         grid
         grid_regular_ll
         grid_reorder

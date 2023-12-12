@@ -115,23 +115,18 @@ bool GreatCircle::crossesPoles() const {
     return crossesPoles_;
 }
 
-std::pair<double, double> GreatCircle::calculate_course(const PointLonLat& lonLat1, const PointLonLat& lonLat2) {
-    const auto lambda1 = lonLat1.lon * util::degree_to_radian;
-    const auto lambda2 = lonLat2.lon * util::degree_to_radian;
-    const auto phi1    = lonLat1.lat * util::degree_to_radian;
-    const auto phi2    = lonLat2.lat * util::degree_to_radian;
+std::pair<double, double> GreatCircle::calculate_course(const PointLonLat& A, const PointLonLat& B) {
+    const auto sdl = std::sin(util::degree_to_radian * (B.lon - A.lon));
+    const auto cdl = std::cos(util::degree_to_radian * (B.lon - A.lon));
+    const auto spA = std::sin(util::degree_to_radian * A.lat);
+    const auto cpA = std::cos(util::degree_to_radian * A.lat);
+    const auto spB = std::sin(util::degree_to_radian * B.lat);
+    const auto cpB = std::cos(util::degree_to_radian * B.lat);
 
-    const auto sinLambda12 = std::sin(lambda2 - lambda1);
-    const auto cosLambda12 = std::cos(lambda2 - lambda1);
-    const auto sinPhi1     = std::sin(phi1);
-    const auto sinPhi2     = std::sin(phi2);
-    const auto cosPhi1     = std::cos(phi1);
-    const auto cosPhi2     = std::cos(phi2);
+    const auto alpha1 = util::radian_to_degree * std::atan2(cpB * sdl, cpA * spB - spA * cpB * cdl);
+    const auto alpha2 = util::radian_to_degree * std::atan2(cpA * sdl, -cpB * spA + spB * cpA * cdl);
 
-    const auto alpha1 = std::atan2(cosPhi2 * sinLambda12, cosPhi1 * sinPhi2 - sinPhi1 * cosPhi2 * cosLambda12);
-    const auto alpha2 = std::atan2(cosPhi1 * sinLambda12, -cosPhi2 * sinPhi1 + sinPhi2 * cosPhi1 * cosLambda12);
-
-    return std::make_pair(alpha1 * util::radian_to_degree, alpha2 * util::radian_to_degree);
+    return {alpha1, alpha2};
 }
 
 //----------------------------------------------------------------------------------------------------------------------

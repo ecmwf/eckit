@@ -8,18 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef GreatCircle_H
-#define GreatCircle_H
 
+#pragma once
+
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/PointLonLat.h"
 
-//------------------------------------------------------------------------------------------------------
 
 namespace eckit::geo {
 
-//------------------------------------------------------------------------------------------------------
 
 class GreatCircle {
 public:
@@ -32,7 +31,21 @@ public:
     /// Great circle longitude given latitude, see http://www.edwilliams.org/avform.htm#Par
     std::vector<double> longitude(double lat) const;
 
+    // Calculate great circle course between two points
+    std::pair<double, double> course(const PointLonLat& A, const PointLonLat& B) { return calculate_course(A_, B_); }
+
     bool crossesPoles() const;
+
+    /**
+     * @brief Calculate great circle course between two points
+     *
+     * @details Calculates the direction (clockwise from North) of a great circle arc between two points. Returns the
+     * direction (angle) of the arc at each, normalised to the range of atan2 (usually (-180, 180]). All input and
+     * output values are in units of degrees.
+     *
+     * @ref https://en.wikipedia.org/wiki/Great-circle_navigation
+     */
+    static std::pair<double, double> calculate_course(const PointLonLat&, const PointLonLat&);
 
 private:
     const PointLonLat A_;
@@ -41,8 +54,5 @@ private:
     bool crossesPoles_;
 };
 
-//------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo
-
-#endif

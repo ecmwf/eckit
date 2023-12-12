@@ -11,7 +11,6 @@ list(APPEND eckit_geo_srcs
     Cache.cc
     Cache.h
     Configurator.h
-    ConvexHull.cc
     ConvexHull.h
     CoordinateHelpers.cc
     CoordinateHelpers.h
@@ -52,7 +51,6 @@ list(APPEND eckit_geo_srcs
     Sphere.cc
     Sphere.h
     SphereT.h
-    Triangulation.cc
     Triangulation.h
     UnitSphere.h
     area/BoundingBox.cc

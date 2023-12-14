@@ -176,7 +176,7 @@ endif()
 
 ecbuild_add_option( FEATURE CURL
                     DESCRIPTION "Curl library for transfering data with URLs"
-                    REQUIRED_PACKAGES "CURL VERSION 7.20" )
+                    REQUIRED_PACKAGES "CURL 7.20" )
 
 if(HAVE_CURL)
   ecbuild_info("Curl version ${CURL_VERSION_STRING} -- libs [${CURL_LIBRARIES}] incs [${CURL_INCLUDE_DIRS}]")

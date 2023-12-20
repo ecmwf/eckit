@@ -16,7 +16,9 @@
 #include <set>
 #include <vector>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/convexhull/ConvexHullN.h"
+#include "eckit/geo/util/Qhull.h"
 #include "eckit/testing/Test.h"
 
 
@@ -24,6 +26,48 @@
 
 
 namespace eckit::test {
+
+
+CASE("Qhull errors/exceptions") {
+    using geo::util::Qhull;
+
+
+    SECTION("input") {
+        for (size_t N : {2, 3, 4}) {
+            Qhull::coord_t coord((N + 1) * N + 1, 1.);
+            ASSERT(coord.size() % N != 0);
+            EXPECT_THROWS_AS(Qhull(N, coord, "Qt"), AssertionFailed);  // 0 < N && coord.size() % N == 0
+        }
+    }
+
+
+    SECTION("qhull") {
+        struct {
+            const int errorCode;
+            const std::string what;
+            const std::string command;
+            const size_t N;
+            const Qhull::coord_t coord;
+        } static const tests[] = {
+            {6050, "QH6050 qhull error: dimension 1 must be > 1", "Qt", 1, {1, 1}},
+            {6154, "QH6154 Qhull precision error: Initial simplex is flat", "Qt", 2, {1, 1, 2, 2, 3, 3}},
+            {6214, "QH6214 qhull input error: not enough points", "Qt", 2, {1, 1}},
+            {6412, "QH6412 qhull input error (qh_initqhull_globals)", "Qt", 2, {}},
+            {6421, "QH6421 qhull internal error (qh_maxsimplex)", "Qt", 2, {1, 1, 1, 1, 1, 1}},
+        };
+
+        for (const auto& test : tests) {
+            try {
+                Qhull(test.N, test.coord, test.command);
+                EXPECT(false);
+            }
+            catch (const Qhull::Exception& e) {
+                EXPECT_EQUAL(test.errorCode, e.errorCode);
+                EXPECT_EQUAL(test.what, std::string(e.what(), test.what.length()));
+            }
+        }
+    }
+}
 
 
 CASE("ConvexHullN, N=2") {

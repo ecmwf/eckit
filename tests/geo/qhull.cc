@@ -21,70 +21,43 @@
 namespace eckit::test {
 
 
-CASE("QHull exceptions") {
+CASE("Qhull errors/exceptions") {
     using geo::util::Qhull;
 
 
-    SECTION("Assertion failed: 0 < N && coord.size() % N == 0 in Qhull") {
+    SECTION("input errors") {
         for (size_t N : {2, 3, 4}) {
             Qhull::coord_t coord((N + 1) * N + 1, 1.);
             ASSERT(coord.size() % N != 0);
-            EXPECT_THROWS_AS(Qhull(N, coord, "Qt"), AssertionFailed);
+            EXPECT_THROWS_AS(Qhull(N, coord, "Qt"), AssertionFailed);  // 0 < N && coord.size() % N == 0
         }
     }
 
 
-    SECTION("QH6050 qhull error: dimension 1 must be > 1") {
-        try {
-            Qhull(1, {1, 1}, "Qt");
-            EXPECT(false);
-        }
-        catch (const Qhull::Exception& e) {
-            EXPECT(e.errorCode == 6050);
-        }
-    }
+    SECTION("qhull errors") {
+        struct {
+            const int errorCode;
+            const std::string what;
+            const std::string command;
+            const size_t N;
+            const Qhull::coord_t coord;
+        } static const tests[] = {
+            {6050, "QH6050 qhull error: dimension 1 must be > 1", "Qt", 1, {1, 1}},
+            {6154, "QH6154 Qhull precision error: Initial simplex is flat", "Qt", 2, {1, 1, 2, 2, 3, 3}},
+            {6214, "QH6214 qhull input error: not enough points", "Qt", 2, {1, 1}},
+            {6412, "QH6412 qhull input error (qh_initqhull_globals)", "Qt", 2, {}},
+            {6421, "QH6421 qhull internal error (qh_maxsimplex)", "Qt", 2, {1, 1, 1, 1, 1, 1}},
+        };
 
-
-    SECTION("QH6154 Qhull precision error: Initial simplex is flat (facet 1 is coplanar with the interior point)") {
-        try {
-            Qhull(2, {1, 1, 2, 2, 3, 3, 4, 4}, "Qt");
-            EXPECT(false);
-        }
-        catch (const Qhull::Exception& e) {
-            EXPECT(e.errorCode == 6154);
-        }
-    }
-
-
-    SECTION("QH6214 qhull input error: not enough points(1) to construct initial simplex (need 3)") {
-        try {
-            Qhull(2, {1, 1}, "Qt");
-            EXPECT(false);
-        }
-        catch (const Qhull::Exception& e) {
-            EXPECT(e.errorCode == 6214);
-        }
-    }
-
-
-    SECTION("QH6412 qhull input error (qh_initqhull_globals): expecting between 1 and 2147483631 points") {
-        try {
-            Qhull(2, {}, "Qt");
-            EXPECT(false);
-        }
-        catch (const Qhull::Exception& e) {
-            EXPECT(e.errorCode == 6412);
-        }
-    }
-
-
-    SECTION("QH6421 qhull internal error (qh_maxsimplex): qh.MAXwidth required for qh_maxsimplex") {
-        try {
-            Qhull(2, {1, 1, 1, 1, 1, 1}, "Qt");
-            EXPECT(false);
-        }
-        catch (const Qhull::Exception& e) {
-            EXPECT(e.errorCode == 6421);
+        for (const auto& test : tests) {
+            try {
+                Qhull(test.N, test.coord, test.command);
+                EXPECT(false);
+            }
+            catch (const Qhull::Exception& e) {
+                EXPECT_EQUAL(test.errorCode, e.errorCode);
+                EXPECT_EQUAL(test.what, std::string(e.what(), test.what.length()));
+            }
         }
     }
 }

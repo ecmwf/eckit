@@ -67,7 +67,7 @@ std::vector<std::vector<size_t>> Qhull::list_facets() const {
         f.reserve(vertices.size());
 
         for (const auto& vertex : vertices) {
-            f.push_back(static_cast<size_t>(vertex.point().id()));
+            f.emplace_back(vertex.point().id());
         }
 
         facets.emplace_back(f);

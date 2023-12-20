@@ -21,7 +21,7 @@
 namespace eckit::test {
 
 
-CASE("QHull assertions") {
+CASE("QHull exceptions") {
     using geo::util::Qhull;
 
 

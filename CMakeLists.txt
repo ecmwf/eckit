@@ -163,13 +163,20 @@ ecbuild_add_option( FEATURE GEO_CACHING
                     DESCRIPTION "eckit::geo geometry library default caching behaviour" )
 
 ecbuild_add_option( FEATURE GEO_CONVEX_HULL
-                    DEFAULT ON
+                    DEFAULT OFF
                     CONDITION HAVE_ECKIT_GEO
-                    DESCRIPTION "eckit::geo geometry library convex hull/Delaunay triangulation"
-                    REQUIRED_PACKAGES "Qhull COMPONENTS C CXX" )
+                    DESCRIPTION "eckit::geo geometry library convex hull/Delaunay triangulation" )
+                    # REQUIRED_PACKAGES "Qhull COMPONENTS C CXX"
 
-if( eckit_HAVE_GEO_CONVEX_HULL AND NOT TARGET Qhull::Qhull )
-    message(FATAL_ERROR "eckit::geo ENABLE_GEO_CONVEX_HULL requires Qhull C/C++ libraries")
+if( eckit_HAVE_GEO_CONVEX_HULL )
+    find_package( Qhull REQUIRED CONFIG )
+
+    if( NOT TARGET Qhull::qhullcpp OR NOT TARGET Qhull::qhullstatic_r )
+        message( FATAL_ERROR "eckit::geo ENABLE_GEO_CONVEX_HULL requires Qhull C/C++ libraries" )
+    endif()
+
+    add_library(Qhull::Qhull INTERFACE IMPORTED)
+    target_link_libraries(Qhull::Qhull INTERFACE Qhull::qhullcpp Qhull::qhullstatic_r )
 endif()
 
 set( eckit_GEO_CACHE_PATH "/tmp/cache" )

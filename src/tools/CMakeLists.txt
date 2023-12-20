@@ -34,7 +34,7 @@ ecbuild_add_executable( TARGET      eckit_grid_triangulation
                         OUTPUT_NAME eckit-grid-triangulation
                         CONDITION   eckit_HAVE_ECKIT_GEO AND eckit_HAVE_GEO_CONVEX_HULL
                         SOURCES     eckit-grid-triangulation.cc
-                        LIBS        eckit_geo eckit_option Qhull::Qhull )
+                        LIBS        eckit_geo eckit_option )
 
 ### NOT TO INSTALL
 

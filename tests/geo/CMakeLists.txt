@@ -26,3 +26,10 @@ foreach( _test
     )
 endforeach()
 
+ecbuild_add_test(
+    TARGET    eckit_test_geo_qhull
+    SOURCES   qhull.cc
+    LIBS      eckit_geo
+    CONDITION eckit_HAVE_GEO_CONVEX_HULL
+)
+

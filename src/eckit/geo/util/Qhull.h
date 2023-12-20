@@ -11,11 +11,12 @@
 
 #pragma once
 
-#include "eckit/geo/ConvexHull.h"
 
-#include <memory>
 #include <string>
 #include <vector>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/ConvexHull.h"
 
 #include "libqhullcpp/Qhull.h"
 
@@ -28,6 +29,13 @@ public:
     // -- Types
 
     using coord_t = std::vector<double>;
+
+    struct Exception : eckit::Exception {
+        Exception(const std::string& what, int _errorCode, const std::string& _command) :
+            eckit::Exception(what), errorCode(_errorCode), command(_command) {}
+        const int errorCode;
+        const std::string& command;
+    };
 
     // -- Constructors
 
@@ -42,7 +50,7 @@ public:
 private:
     // -- Members
 
-    std::unique_ptr<orgQhull::Qhull> qh_;
+    orgQhull::Qhull qh_;
 };
 
 

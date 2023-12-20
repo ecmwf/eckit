@@ -11,7 +11,10 @@
 
 #include "eckit/geo/util/Qhull.h"
 
+#include <sstream>
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
 
 #include "libqhullcpp/QhullFacetList.h"
 #include "libqhullcpp/QhullVertexSet.h"
@@ -26,16 +29,26 @@ Qhull::Qhull(size_t N, const coord_t& coord, const std::string& command) {
     auto pointDimension = static_cast<int>(N);
     auto pointCount     = static_cast<int>(coord.size() / N);
 
-    qh_ = std::make_unique<decltype(qh_)::element_type>("", pointDimension, pointCount, coord.data(), command.c_str());
-    ASSERT(qh_);
+    std::ostringstream err;
+    qh_.setErrorStream(&err);
+    qh_.setOutputStream(&Log::info());
+    qh_.enableOutputStream();
+
+    try {
+        qh_.runQhull("", pointDimension, pointCount, coord.data(), command.c_str());
+        ASSERT(qh_.qhullStatus() == 0);
+    }
+    catch (const orgQhull::QhullError& e) {
+        throw Exception(err.str(), e.errorCode(), command);
+    }
 }
 
 
 std::vector<size_t> Qhull::list_vertices() const {
     std::vector<size_t> vertices;
-    vertices.reserve(qh_->vertexCount());
+    vertices.reserve(qh_.vertexCount());
 
-    for (const auto& vertex : qh_->vertexList()) {
+    for (const auto& vertex : qh_.vertexList()) {
         vertices.emplace_back(vertex.point().id());
     }
 
@@ -45,9 +58,9 @@ std::vector<size_t> Qhull::list_vertices() const {
 
 std::vector<std::vector<size_t>> Qhull::list_facets() const {
     std::vector<std::vector<size_t>> facets;
-    facets.reserve(qh_->facetCount());
+    facets.reserve(qh_.facetCount());
 
-    for (const auto& facet : qh_->facetList()) {
+    for (const auto& facet : qh_.facetList()) {
         const auto vertices = facet.vertices();
 
         std::vector<size_t> f;
@@ -66,9 +79,9 @@ std::vector<std::vector<size_t>> Qhull::list_facets() const {
 
 std::vector<ConvexHull::Triangle> Qhull::list_triangles() const {
     std::vector<Triangle> tri;
-    tri.reserve(qh_->facetCount());
+    tri.reserve(qh_.facetCount());
 
-    for (const auto& facet : qh_->facetList()) {
+    for (const auto& facet : qh_.facetList()) {
         const auto vertices = facet.vertices();
         ASSERT(vertices.size() == 3);
 

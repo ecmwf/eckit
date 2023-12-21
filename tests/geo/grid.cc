@@ -50,7 +50,9 @@ CASE("GridFactory::build") {
     }
 
 
-    SECTION("Grid::build_from_uid") {}
+    SECTION("Grid::build_from_uid") {
+        // TODO
+    }
 
 
     SECTION("Grid::build_from_increments") {

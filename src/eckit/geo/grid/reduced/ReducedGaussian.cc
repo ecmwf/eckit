@@ -18,6 +18,7 @@
 #include "eckit/geo/range/Gaussian.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/geo/Range.h"
 
 
 namespace eckit::geo::grid::reduced {

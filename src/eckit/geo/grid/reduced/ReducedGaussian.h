@@ -14,9 +14,13 @@
 
 #include <memory>
 
-#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/util.h"
+
+
+namespace eckit::geo {
+class Range;}
+
 
 
 namespace eckit::geo::grid::reduced {

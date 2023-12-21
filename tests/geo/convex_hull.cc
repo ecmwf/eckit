@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <numeric>
 #include <set>
 #include <vector>
 
@@ -73,13 +74,13 @@ CASE("Qhull errors/exceptions") {
 CASE("ConvexHullN, N=2") {
     using Point2 = std::array<double, 2>;
 
-    // Polygon (vertices 0, 1, 4, 5, 7, 8, 9) containing point indices 2, 3, 6
+    // Build convex hull
     geo::convexhull::ConvexHullN ch(std::vector<Point2>{
         {1, 2},
         {3, 1},
         {4, 4},
         {6, 5},
-        {7, 2},
+        {7, 0},
         {2, 5},
         {5, 7},
         {8, 3},
@@ -87,36 +88,29 @@ CASE("ConvexHullN, N=2") {
         {9, 6},
     });
 
+    // Inner points to convex hull
+    const std::set<size_t> inner{2, 3, 6, 7 /*on edge*/};
 
-    SECTION("vertices") {
+    SECTION("vertices and facets") {
         const auto vertices = ch.list_vertices();
-        EXPECT(vertices.size() == 7);
+        EXPECT(vertices.size() == 6);
 
-        for (size_t vertex : {0, 1, 4, 5, 7, 8, 9}) {
-            EXPECT(std::find(vertices.begin(), vertices.end(), vertex) != vertices.end());
-        }
-
-        for (size_t vertex : {2, 3, 6}) {
-            EXPECT(std::find(vertices.begin(), vertices.end(), vertex) == vertices.end());
-        }
-    }
-
-
-    SECTION("facets") {
         const auto facets = ch.list_facets();
-        EXPECT(facets.size() == 7);
+        EXPECT(facets.size() == 6);
 
-        for (const auto& fr : {std::vector<size_t>{8, 9}, {5, 0}, {5, 8}, {1, 0}, {1, 4}, {7, 9}, {7, 4}}) {
-            EXPECT(std::count_if(facets.begin(), facets.end(), [&fr](const auto& facet) {
-                       ASSERT(facet.size() == 2);
-                       return (fr[0] == facet[0] && fr[1] == facet[1]) || (fr[0] == facet[1] && fr[1] == facet[0]);
-                   }) == 1);
-        }
-
-        for (size_t vertex : {2, 3, 6}) {
-            for (const auto& facet : facets) {
-                EXPECT(std::find(facet.begin(), facet.end(), vertex) == facet.end());
-            }
+        for (size_t vertex = 0; vertex < 10; ++vertex) {
+            auto inside            = inner.find(vertex) != inner.end();
+            auto count_in_vertices = std::count(vertices.begin(), vertices.end(), vertex);
+            auto count_in_facets   = std::accumulate(facets.begin(),
+                                                   facets.end(),
+                                                   static_cast<size_t>(0),
+                                                   [vertex](auto c, const auto& facet) {
+                                                       auto f = std::count(facet.begin(), facet.end(), vertex);
+                                                       EXPECT(f <= 1);
+                                                       return c + f;
+                                                   });
+            EXPECT_EQUAL(count_in_vertices, (inside ? 0 : 1));
+            EXPECT_EQUAL(count_in_facets, (inside ? 0 : 2));
         }
     }
 
@@ -130,7 +124,7 @@ CASE("ConvexHullN, N=2") {
                                                      {3, 1},
                                                      {4, 4},
                                                      {6, 5},
-                                                     {7, 2},
+                                                     {7, 0},
                                                      {2, 5},
                                                      {5, 7},
                                                      {8, 3},

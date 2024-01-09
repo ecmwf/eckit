@@ -353,6 +353,8 @@ CASE("test_local_configuration") {
         LocalConfiguration manager;
         manager.set("name", "Sidonia");
         manager.set("office", 1);
+        manager.set("height", 1.78);
+        manager.set("free", false);
 
         std::vector<LocalConfiguration> staff(2);
         staff[0].set("name", "Suske");
@@ -362,6 +364,8 @@ CASE("test_local_configuration") {
 
         local.set("manager", manager);
         local.set("staff", staff);
+
+        local.set("books.count", 10);
     }
     const Configuration& conf = local;
 
@@ -369,6 +373,9 @@ CASE("test_local_configuration") {
     std::vector<LocalConfiguration> staff;
 
     EXPECT(conf.get("manager", manager));
+
+    EXPECT(conf.isSubConfigurationList("staff"));
+    EXPECT(conf.isConvertible("staff",staff));
     EXPECT(conf.get("staff", staff));
 
     std::string name;
@@ -388,6 +395,43 @@ CASE("test_local_configuration") {
     EXPECT(staff[1].get("office", office));
     EXPECT(name == std::string("Wiske"));
     EXPECT(office == 3);
+
+    int books_count;
+    EXPECT(conf.has("books"));
+    EXPECT(conf.get("books.count", books_count));
+    EXPECT(books_count == 10);
+
+    LocalConfiguration books;
+    EXPECT(conf.isSubConfiguration("books"));
+    conf.get("books",books);
+    EXPECT(books.getInt("count") == 10);
+
+    EXPECT(conf.isConvertible<LocalConfiguration>("books"));
+
+    EXPECT(conf.isList("staff"));
+    EXPECT(conf.isIntegral("manager.office"));
+    EXPECT(!conf.isFloatingPoint("manager.office"));
+    EXPECT(conf.isConvertible<int>("manager.office"));
+    EXPECT(conf.isConvertible<long>("manager.office"));
+    EXPECT(conf.isConvertible<long long>("manager.office"));
+    EXPECT(conf.isConvertible<std::size_t>("manager.office"));
+    EXPECT(conf.isConvertible<double>("manager.office"));
+    EXPECT(conf.isConvertible<float>("manager.office"));
+    EXPECT(!conf.isConvertible<bool>("manager.office"));
+    EXPECT(!conf.isConvertible<std::string>("manager.office"));
+    EXPECT(!conf.isConvertible<LocalConfiguration>("manager.office"));
+
+    EXPECT(conf.isConvertible<float>("manager.height"));
+    EXPECT(conf.isConvertible<double>("manager.height"));
+    EXPECT(!conf.isConvertible<int>("manager.height"));
+    EXPECT(!conf.isConvertible<bool>("manager.height"));
+    EXPECT(!conf.isConvertible<std::string>("manager.height"));
+    EXPECT(!conf.isConvertible<LocalConfiguration>("manager.height"));
+
+    double manager_height;
+    EXPECT(conf.get("manager.height", manager_height));
+    EXPECT(manager_height == 1.78);
+
 }
 
 CASE("Hash a configuration") {

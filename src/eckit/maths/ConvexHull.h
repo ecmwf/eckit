@@ -14,60 +14,30 @@
 #include <array>
 #include <vector>
 
-#include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
+
+namespace eckit::maths {
 
 
-namespace eckit {
-class Configuration;
-}  // namespace eckit
-
-
-namespace eckit::geo {
+using Triangle = std::array<size_t, 3>;
 
 
 class ConvexHull {
 public:
-    // -- Types
-
-    using Triangle = std::array<size_t, 3>;
-
-    using builder_t = BuilderT1<ConvexHull>;
-    using ARG1      = const std::vector<std::vector<double>>&;  // TODO use std::vector<Point>
-
-    // -- Constructors
-
     ConvexHull(const ConvexHull&) = delete;
     ConvexHull(ConvexHull&&)      = delete;
 
-    // -- Operators
+    virtual ~ConvexHull() = default;
 
     void operator=(const ConvexHull&) = delete;
     void operator=(ConvexHull&&)      = delete;
-
-    // -- Destructor
-
-    virtual ~ConvexHull() = default;
-
-    // -- Methods
-
-    static std::string className() { return "ConvexHull"; }
 
     virtual std::vector<size_t> list_vertices() const            = 0;
     virtual std::vector<std::vector<size_t>> list_facets() const = 0;
     virtual std::vector<Triangle> list_triangles() const         = 0;
 
 protected:
-    // -- Constructors
-
-    ConvexHull() /*noexcept */ = default;
+    ConvexHull() /*noexcept*/ = default;
 };
 
 
-using ConvexHullFactory = Factory<ConvexHull>;
-
-template <typename T>
-using ConvexHullBuilder = ConcreteBuilderT1<ConvexHull, T>;
-
-
-}  // namespace eckit::geo
+}  // namespace eckit::maths

@@ -18,8 +18,8 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/convexhull/ConvexHullN.h"
-#include "eckit/geo/util/Qhull.h"
+#include "eckit/maths/ConvexHull.h"
+#include "eckit/maths/ConvexHullN.h"
 #include "eckit/testing/Test.h"
 
 
@@ -30,7 +30,7 @@ namespace eckit::test {
 
 
 CASE("Qhull errors/exceptions") {
-    using geo::util::Qhull;
+    using maths::Qhull;
 
 
     SECTION("input") {
@@ -72,10 +72,8 @@ CASE("Qhull errors/exceptions") {
 
 
 CASE("ConvexHullN, N=2") {
-    using Point2 = std::array<double, 2>;
-
     // Build convex hull
-    geo::convexhull::ConvexHullN ch(std::vector<Point2>{
+    maths::ConvexHullN ch(std::vector<std::array<double, 2>>{
         {1, 2},
         {3, 1},
         {4, 4},
@@ -101,10 +99,8 @@ CASE("ConvexHullN, N=2") {
         for (size_t vertex = 0; vertex < 10; ++vertex) {
             auto inside            = inner.find(vertex) != inner.end();
             auto count_in_vertices = std::count(vertices.begin(), vertices.end(), vertex);
-            auto count_in_facets   = std::accumulate(facets.begin(),
-                                                   facets.end(),
-                                                   static_cast<size_t>(0),
-                                                   [vertex](auto c, const auto& facet) {
+            auto count_in_facets   = std::accumulate(facets.begin(), facets.end(), static_cast<size_t>(0),
+                                                     [vertex](auto c, const auto& facet) {
                                                        auto f = std::count(facet.begin(), facet.end(), vertex);
                                                        EXPECT(f <= 1);
                                                        return c + f;
@@ -117,42 +113,36 @@ CASE("ConvexHullN, N=2") {
 
     SECTION("factory") {
         // same as above
-        std::unique_ptr<geo::ConvexHull> ch2(geo::ConvexHullFactory::instance()
-                                                 .get("convex-hull-n-2")
-                                                 .create(std::vector<std::vector<double>>{
-                                                     {1, 2},
-                                                     {3, 1},
-                                                     {4, 4},
-                                                     {6, 5},
-                                                     {7, 0},
-                                                     {2, 5},
-                                                     {5, 7},
-                                                     {8, 3},
-                                                     {6, 9},
-                                                     {9, 6},
-                                                 }));
+        std::unique_ptr<maths::ConvexHull> ch2(new maths::ConvexHullN<2>(std::vector<std::vector<double>>{
+            {1, 2},
+            {3, 1},
+            {4, 4},
+            {6, 5},
+            {7, 0},
+            {2, 5},
+            {5, 7},
+            {8, 3},
+            {6, 9},
+            {9, 6},
+        }));
 
         auto vertex_set = [](const std::vector<size_t>& list) { return std::set<size_t>{list.cbegin(), list.cend()}; };
         EXPECT(vertex_set(ch.list_vertices()) == vertex_set(ch2->list_vertices()));
 
         // wrong dimensions
-        EXPECT_THROWS_AS(geo::ConvexHullFactory::instance()
-                             .get("convex-hull-n-3")
-                             .create(std::vector<std::vector<double>>{
-                                 {1, 2},
-                                 {3, 1},
-                                 {4, 4},
-                             }),
+        EXPECT_THROWS_AS(new maths::ConvexHullN<3>(std::vector<std::vector<double>>{
+                             {1, 2},
+                             {3, 1},
+                             {4, 4},
+                         }),
                          AssertionFailed);
     }
 }
 
 
 CASE("ConvexHullN, N=3") {
-    using Point3 = std::array<double, 3>;
-
     // Tetrahedron (vertices 0, 1, 2, 3) containing point index 4
-    geo::convexhull::ConvexHullN ch(std::vector<Point3>{
+    maths::ConvexHullN ch(std::vector<std::array<double, 3>>{
         {0, 0, 1},
         {1, 0, -1},
         {-1, 1, -1},
@@ -186,20 +176,56 @@ CASE("ConvexHullN, N=3") {
                  {0, 2, 3},
                  {1, 2, 3},
              }) {
-            EXPECT(std::count_if(facets.begin(), facets.end(), [&fr](const auto& facet) {
-                       ASSERT(facet.size() == 3);
-                       return std::count(fr.begin(), fr.end(), facet[0]) == 1 &&
-                              std::count(fr.begin(), fr.end(), facet[1]) == 1 &&
-                              std::count(fr.begin(), fr.end(), facet[2]) == 1;
-                   }) == 1);
+            EXPECT(std::count_if(facets.begin(), facets.end(),
+                                 [&fr](const auto& facet) {
+                                     ASSERT(facet.size() == 3);
+                                     return std::count(fr.begin(), fr.end(), facet[0]) == 1
+                                            && std::count(fr.begin(), fr.end(), facet[1]) == 1
+                                            && std::count(fr.begin(), fr.end(), facet[2]) == 1;
+                                 })
+                   == 1);
 
-            EXPECT(std::count_if(triangles.begin(), triangles.end(), [&fr](const auto& tri) {
-                       return std::count(fr.begin(), fr.end(), tri[0]) == 1 &&
-                              std::count(fr.begin(), fr.end(), tri[1]) == 1 &&
-                              std::count(fr.begin(), fr.end(), tri[2]) == 1;
-                   }) == 1);
+            EXPECT(std::count_if(triangles.begin(), triangles.end(),
+                                 [&fr](const auto& tri) {
+                                     return std::count(fr.begin(), fr.end(), tri[0]) == 1
+                                            && std::count(fr.begin(), fr.end(), tri[1]) == 1
+                                            && std::count(fr.begin(), fr.end(), tri[2]) == 1;
+                                 })
+                   == 1);
         }
     }
+}
+
+
+CASE("Triangulation, N=3") {
+    auto tri = maths::Qhull(3,
+                            std::vector<double>{
+                                0.1, 0.1, 0.1,  //
+                                0, 0, 0,        //
+                                1, 0, 0,        //
+                                0, 1, 0,        //
+                                0, 0, 1,        //
+                            },
+                            "Qt")
+                   .list_triangles();
+
+    EXPECT_EQUAL(tri.size(), 4);
+
+    auto find_triangle = [&tri](const maths::Triangle& a) -> bool {
+        return 1 == std::count_if(tri.begin(), tri.end(), [&a](const maths::Triangle& b) {
+                   for (auto i : b) {
+                       if (std::count(a.begin(), a.end(), i) != 1) {
+                           return false;
+                       }
+                   }
+                   return true;
+               });
+    };
+
+    EXPECT(find_triangle({1, 2, 3}));
+    EXPECT(find_triangle({1, 2, 4}));
+    EXPECT(find_triangle({1, 3, 4}));
+    EXPECT(find_triangle({2, 3, 4}));
 }
 
 

@@ -11,49 +11,40 @@
 
 #pragma once
 
-#include "eckit/geo/ConvexHull.h"
-#include "eckit/geo/util/Qhull.h"
+#include <string>
+#include <vector>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/maths/ConvexHull.h"
+#include "eckit/maths/Qhull.h"
+
+#include "libqhullcpp/Qhull.h"
 
 
-namespace eckit::geo::convexhull {
+namespace eckit::maths {
 
 
 template <size_t N>
 class ConvexHullN : public ConvexHull {
 public:
-    // -- Types
+    using coord_t = typename Qhull::coord_t;
 
-    using coord_t = util::Qhull::coord_t;
-
-    // -- Constructors
-
-    explicit ConvexHullN(const coord_t& coord) :
-        qhull_(N, coord, "QJ") {}
-
-    explicit ConvexHullN(const std::vector<std::vector<double>>& coord_v) :
-        ConvexHullN(convert_vector_v(coord_v)) {}
-
-    explicit ConvexHullN(const std::vector<std::array<double, N>>& coord_a) :
-        ConvexHullN(convert_vector_a(coord_a)) {}
-
-    // -- Methods
+    explicit ConvexHullN(const coord_t& coord) : qhull_(N, coord, "QJ") {}
+    explicit ConvexHullN(const std::vector<std::vector<double>>& coord_v) : ConvexHullN(convert_vector_v(coord_v)) {}
+    explicit ConvexHullN(const std::vector<std::array<double, N>>& coord_a) : ConvexHullN(convert_vector_a(coord_a)) {}
 
     std::vector<size_t> list_vertices() const override { return qhull_.list_vertices(); }
-
     std::vector<std::vector<size_t>> list_facets() const override { return qhull_.list_facets(); }
-
     std::vector<Triangle> list_triangles() const override { return qhull_.list_triangles(); }
 
 private:
-    // -- Methods
-
     static coord_t convert_vector_v(const std::vector<std::vector<double>>& coord_v) {
         coord_t coord;
         coord.reserve(N * coord_v.size());
 
         for (const auto& v : coord_v) {
             ASSERT(N == v.size());
-            for (int i = 0; i < N; ++i) {
+            for (size_t i = 0; i < N; ++i) {
                 coord.emplace_back(v[i]);
             }
         }
@@ -65,17 +56,15 @@ private:
         coord_t coord;
         coord.reserve(N * coord_a.size());
         for (const auto& a : coord_a) {
-            for (int i = 0; i < N; ++i) {
+            for (size_t i = 0; i < N; ++i) {
                 coord.emplace_back(a[i]);
             }
         }
         return coord;
     }
 
-    // -- Members
-
-    util::Qhull qhull_;
+    Qhull qhull_;
 };
 
 
-}  // namespace eckit::geo::convexhull
+}  // namespace eckit::maths

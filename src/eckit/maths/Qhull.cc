@@ -9,7 +9,7 @@
  */
 
 
-#include "eckit/geo/util/Qhull.h"
+#include "eckit/maths/Qhull.h"
 
 #include <sstream>
 
@@ -20,7 +20,7 @@
 #include "libqhullcpp/QhullVertexSet.h"
 
 
-namespace eckit::geo::util {
+namespace eckit::maths {
 
 
 Qhull::Qhull(size_t N, const coord_t& coord, const std::string& command) {
@@ -77,7 +77,7 @@ std::vector<std::vector<size_t>> Qhull::list_facets() const {
 }
 
 
-std::vector<ConvexHull::Triangle> Qhull::list_triangles() const {
+std::vector<Triangle> Qhull::list_triangles() const {
     std::vector<Triangle> tri;
     tri.reserve(qh_.facetCount());
 
@@ -94,4 +94,4 @@ std::vector<ConvexHull::Triangle> Qhull::list_triangles() const {
 }
 
 
-}  // namespace eckit::geo::util
+}  // namespace eckit::maths

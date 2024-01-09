@@ -16,15 +16,15 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/ConvexHull.h"
+#include "eckit/maths/ConvexHull.h"
 
 #include "libqhullcpp/Qhull.h"
 
 
-namespace eckit::geo::util {
+namespace eckit::maths {
 
 
-class Qhull : public ConvexHull {
+class Qhull {
 public:
     // -- Types
 
@@ -43,9 +43,9 @@ public:
 
     // -- Overridden methods
 
-    std::vector<size_t> list_vertices() const override;
-    std::vector<std::vector<size_t>> list_facets() const override;
-    std::vector<Triangle> list_triangles() const override;
+    std::vector<size_t> list_vertices() const;
+    std::vector<std::vector<size_t>> list_facets() const;
+    std::vector<Triangle> list_triangles() const;
 
 private:
     // -- Members
@@ -54,4 +54,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::util
+}  // namespace eckit::maths

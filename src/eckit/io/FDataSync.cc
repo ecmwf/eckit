@@ -14,11 +14,17 @@
 #include <unistd.h>
 
 #include "eckit/eckit.h"
+#include "eckit/os/Stat.h"
 
 namespace eckit {
 
 
 int fsync(int fd) {
+    Stat::Struct info;
+    if (Stat::fstat(fd, &info) == 0 && (info.st_mode & S_IFIFO)) {
+        return 0;
+    }
+
     int ret = ::fsync(fd);
     while (ret < 0 && errno == EINTR) {
         ret = ::fsync(fd);

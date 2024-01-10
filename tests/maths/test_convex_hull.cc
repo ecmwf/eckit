@@ -199,7 +199,7 @@ CASE("ConvexHullN, N=3") {
 
 CASE("Triangulation, N=3") {
     auto tri = maths::Qhull(3,
-                            std::vector<double>{
+                            {
                                 0.1, 0.1, 0.1,  //
                                 0, 0, 0,        //
                                 1, 0, 0,        //
@@ -211,14 +211,10 @@ CASE("Triangulation, N=3") {
 
     EXPECT_EQUAL(tri.size(), 4);
 
-    auto find_triangle = [&tri](const maths::Triangle& a) -> bool {
-        return 1 == std::count_if(tri.begin(), tri.end(), [&a](const maths::Triangle& b) {
-                   for (auto i : b) {
-                       if (std::count(a.begin(), a.end(), i) != 1) {
-                           return false;
-                       }
-                   }
-                   return true;
+    auto find_triangle = [&tri](const maths::Triangle& a) {
+        return 1 == std::count_if(tri.begin(), tri.end(), [&a](const auto& b) {
+                   return std::all_of(b.begin(), b.end(),
+                                      [&a](auto bi) { return 1 == std::count(a.begin(), a.end(), bi); });
                });
     };
 

@@ -19,8 +19,8 @@
 
 
 namespace eckit::geo {
-class Range;}
-
+class Range;
+}
 
 
 namespace eckit::geo::grid::reduced {

@@ -51,7 +51,6 @@ list(APPEND eckit_geo_srcs
     Sphere.cc
     Sphere.h
     SphereT.h
-    Triangulation.h
     UnitSphere.h
     area/BoundingBox.cc
     area/BoundingBox.h
@@ -132,18 +131,6 @@ endif()
 if(eckit_HAVE_ECKIT_CODEC)
     list(APPEND eckit_geo_srcs grid/unstructured/ORCA.cc grid/unstructured/ORCA.h)
     list(APPEND eckit_geo_libs eckit_codec)
-endif()
-
-if(eckit_HAVE_GEO_CONVEX_HULL)
-    list(APPEND eckit_geo_srcs
-        convexhull/ConvexHullN.cc
-        convexhull/ConvexHullN.h
-        triangulation/Triangulation3.cc
-        triangulation/Triangulation3.h
-        util/Qhull.cc
-        util/Qhull.h
-    )
-    list(APPEND eckit_geo_libs Qhull::Qhull)
 endif()
 
 ecbuild_add_library(

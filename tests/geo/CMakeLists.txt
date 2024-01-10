@@ -19,10 +19,6 @@ set( _tests
     search
     util )
 
-if( eckit_HAVE_GEO_CONVEX_HULL )
-    list( APPEND _tests convex_hull )
-endif()
-
 foreach( _test ${_tests} )
     ecbuild_add_test(
         TARGET  eckit_test_geo_${_test}

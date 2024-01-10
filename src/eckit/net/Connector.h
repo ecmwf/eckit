@@ -89,6 +89,7 @@ private:
     int port_;
     TCPSocket socket_;
     bool locked_;
+    time_t last_;
 
 
     // Memoisation
@@ -113,7 +114,7 @@ private:
 
     TCPSocket& socket();
     template <class T, class F>
-    long socketIo(F proc, T buf, long len, const char*);
+    long socketIo(F proc, T buf, long len, const char*, time_t&);
 
     // -- Overridden methods
     // None

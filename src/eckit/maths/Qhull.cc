@@ -30,6 +30,7 @@ Qhull::Qhull(size_t N, const coord_t& coord, const std::string& command) {
     auto pointCount     = static_cast<int>(coord.size() / N);
 
     qh_ = new orgQhull::Qhull;
+    ASSERT(qh_ != nullptr);
 
     std::ostringstream err;
     qh_->setErrorStream(&err);

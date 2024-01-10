@@ -13,7 +13,6 @@
 
 #include <sstream>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
 #include "libqhullcpp/QhullFacetList.h"

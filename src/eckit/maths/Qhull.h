@@ -18,7 +18,10 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/maths/ConvexHull.h"
 
-#include "libqhullcpp/Qhull.h"
+
+namespace orgQhull {
+class Qhull;
+}
 
 
 namespace eckit::maths {
@@ -41,6 +44,18 @@ public:
 
     Qhull(size_t N, const coord_t& coord, const std::string& command);
 
+    Qhull(const Qhull&) = delete;
+    Qhull(Qhull&&)      = delete;
+
+    // -- Destructor
+
+    ~Qhull();
+
+    // -- Operators
+
+    Qhull& operator=(const Qhull&) = delete;
+    Qhull& operator=(Qhull&&)      = delete;
+
     // -- Overridden methods
 
     std::vector<size_t> list_vertices() const;
@@ -50,7 +65,7 @@ public:
 private:
     // -- Members
 
-    orgQhull::Qhull qh_;
+    orgQhull::Qhull* qh_;
 };
 
 

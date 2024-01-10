@@ -1,4 +1,4 @@
-list(APPEND eckit_maths_public_libs eckit)
+list(APPEND eckit_maths_private_libs "${LAPACK_LIBRARIES}" "${BLAS_LIBRARIES}")
 list(APPEND eckit_maths_sources
     Eigen.h
     Lapack.h
@@ -9,7 +9,7 @@ list(APPEND eckit_maths_sources
 
 if(eckit_HAVE_CONVEX_HULL)
     list(APPEND eckit_maths_sources ConvexHull.h ConvexHullN.h Qhull.cc Qhull.h)
-    list(APPEND eckit_maths_public_libs Qhull::Qhull)
+    list(APPEND eckit_maths_private_libs Qhull::Qhull)
 endif()
 
 ecbuild_add_library(
@@ -18,7 +18,7 @@ ecbuild_add_library(
     INSTALL_HEADERS     ALL
     HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/eckit/maths
     SOURCES             ${eckit_maths_sources}
-    PRIVATE_LIBS        "${LAPACK_LIBRARIES}" "${BLAS_LIBRARIES}"
+    PRIVATE_LIBS        ${eckit_maths_private_libs}
     PUBLIC_INCLUDES     "${EIGEN3_INCLUDE_DIRS}"
-    PUBLIC_LIBS         ${eckit_maths_public_libs})
+    PUBLIC_LIBS         eckit)
 

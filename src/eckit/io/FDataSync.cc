@@ -21,7 +21,7 @@ namespace eckit {
 
 int fsync(int fd) {
     Stat::Struct info;
-    if (Stat::fstat(fd, &info) == 0 && (info.st_mode & S_IFIFO)) {
+    if (Stat::fstat(fd, &info) == 0 && !S_ISREG(info.st_mode) && !S_ISLNK(info.st_mode)) {
         return 0;
     }
 

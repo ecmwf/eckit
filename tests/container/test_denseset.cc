@@ -291,6 +291,44 @@ CASE("test_set_bool") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void test_sets(const initializer_list<int> v1,
+               const initializer_list<int> v2,
+               const initializer_list<int> vcompare) {
+
+    DenseSet<int> s1;
+    for (const auto& v : v1) s1.insert(v);
+    s1.sort();
+
+    DenseSet<int> s2;
+    for (const auto& v : v2) s2.insert(v);
+    s2.sort();
+
+    s1.merge(s2);
+
+    DenseSet<int> scomp;
+    for (const auto& v : vcompare) scomp.insert(v);
+    scomp.sort();
+
+    if (s1 != scomp) {
+        std::cout << "s1: " << s1 << std::endl;
+        std::cout << "s2: " << s2 << std::endl;
+        std::cout << "scomp: " << scomp << std::endl;
+    }
+    EXPECT(s1 == scomp);
+}
+
+CASE("test merge") {
+    test_sets({1, 2, 3}, {}, {1, 2, 3});
+    test_sets({1, 2, 3}, {4, 5, 6}, {1, 2, 3, 4, 5, 6});
+    test_sets({3, 5, 7}, {1, 2, 4, 6, 7}, {1, 2, 3, 4, 5, 6, 7});
+    test_sets({2, 3, 4}, {1, 3, 7, 8, 9}, {1, 2, 3, 4, 7, 8, 9});
+    test_sets({}, {3, 8, 9}, {3, 8, 9});
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {

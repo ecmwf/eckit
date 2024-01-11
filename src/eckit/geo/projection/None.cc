@@ -12,7 +12,7 @@
 
 #include "eckit/geo/projection/None.h"
 
-#include "eckit/config/MappedConfiguration.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 
 
 namespace eckit::geo::projection {

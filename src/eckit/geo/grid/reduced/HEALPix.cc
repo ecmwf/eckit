@@ -18,8 +18,8 @@
 #include <cstdint>
 #include <tuple>
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/iterator/Reduced.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/geo/util.h"
 #include "eckit/utils/Translator.h"
 
@@ -296,7 +296,7 @@ size_t HEALPix::nj() const {
 
 Configuration* HEALPix::config(const std::string& name) {
     auto Nside = Translator<std::string, size_t>{}(name.substr(1));
-    return new MappedConfiguration({{"type", "HEALPix"}, {"Nside", Nside}, {"orderingConvention", "ring"}});
+    return new spec::MappedConfiguration({{"type", "HEALPix"}, {"Nside", Nside}, {"orderingConvention", "ring"}});
 }
 
 

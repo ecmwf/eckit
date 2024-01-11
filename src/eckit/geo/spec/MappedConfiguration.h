@@ -17,7 +17,7 @@
 #include "eckit/config/Configuration.h"
 
 
-namespace eckit {
+namespace eckit::geo::spec {
 
 
 class MappedConfiguration final : public Configuration {
@@ -54,7 +54,8 @@ public:
     MappedConfiguration(MappedConfiguration&&);
 
     // -- Destructor
-    // None
+
+    ~MappedConfiguration() final = default;
 
     // -- Convertors
     // None
@@ -138,4 +139,4 @@ private:
 };
 
 
-}  // namespace eckit
+}  // namespace eckit::geo::spec

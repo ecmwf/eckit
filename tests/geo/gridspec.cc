@@ -13,8 +13,8 @@
 #include <memory>
 #include <utility>
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -36,11 +36,11 @@ using namespace geo;
 
 using C = std::unique_ptr<const Configuration>;
 using G = std::unique_ptr<const Grid>;
-using M = MappedConfiguration;
+using M = spec::MappedConfiguration;
 using v = std::vector<double>;
 
 
-static const MappedConfiguration BAD;
+static const spec::MappedConfiguration BAD;
 
 
 static std::pair<M, M> cases[]{

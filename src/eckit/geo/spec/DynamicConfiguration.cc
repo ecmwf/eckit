@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/config/DynamicConfiguration.h"
+#include "eckit/geo/spec/DynamicConfiguration.h"
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/value/Value.h"
 
 
-namespace eckit {
+namespace eckit::geo::spec {
 
 
 namespace {
@@ -83,4 +83,4 @@ void DynamicConfiguration::print(std::ostream& out) const {
 }
 
 
-}  // namespace eckit
+}  // namespace eckit::geo::spec

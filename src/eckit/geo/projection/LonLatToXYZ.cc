@@ -12,9 +12,9 @@
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/EllipsoidOfRevolution.h"
 #include "eckit/geo/Sphere.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/types/FloatCompare.h"
 
 

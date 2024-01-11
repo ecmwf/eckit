@@ -13,12 +13,12 @@
 #include <iostream>
 #include <memory>
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/projection/Mercator.h"
 #include "eckit/geo/projection/Rotation.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 
@@ -36,14 +36,14 @@ CASE("projection") {
 
 
     SECTION("projection type: none") {
-        P projection(ProjectionFactory::instance().get("none").create(MappedConfiguration{}));
+        P projection(ProjectionFactory::instance().get("none").create(spec::MappedConfiguration{}));
         EXPECT(points_equal(p, projection->inv(p)));
         EXPECT(points_equal(p, projection->fwd(p)));
     }
 
 
     SECTION("projection type: rotation") {
-        MappedConfiguration param({
+        spec::MappedConfiguration param({
             {"projection", "rotation"},
             {"south_pole_lat", -91.},
             {"south_pole_lon", -361.},
@@ -57,9 +57,9 @@ CASE("projection") {
 
 
     SECTION("projection type: ll_to_xyz") {
-        P s1(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"R", 1.}})));
-        P s2(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"a", 1.}, {"b", 1.}})));
-        P s3(ProjectionFactory::instance().get("ll_to_xyz").create(MappedConfiguration({{"a", 1.}, {"b", 0.5}})));
+        P s1(ProjectionFactory::instance().get("ll_to_xyz").create(spec::MappedConfiguration({{"R", 1.}})));
+        P s2(ProjectionFactory::instance().get("ll_to_xyz").create(spec::MappedConfiguration({{"a", 1.}, {"b", 1.}})));
+        P s3(ProjectionFactory::instance().get("ll_to_xyz").create(spec::MappedConfiguration({{"a", 1.}, {"b", 0.5}})));
 
         EXPECT(points_equal(p, s1->inv(s1->fwd(p))));
         EXPECT(points_equal(p, s2->inv(s2->fwd(p))));
@@ -304,7 +304,7 @@ CASE("projection") {
 
             for (const auto& test : tests) {
                 P projection(ProjectionFactory::instance().get("proj").create(
-                    MappedConfiguration{{{"source", "EPSG:4326"}, {"target", test.target}}}));
+                    spec::MappedConfiguration{{{"source", "EPSG:4326"}, {"target", test.target}}}));
 
 #if 0
         std::cout << "ellipsoid: '" << PROJ::ellipsoid(projection.target())
@@ -320,7 +320,7 @@ CASE("projection") {
                 EXPECT(points_equal(c, a));
 
                 P reverse(ProjectionFactory::instance().get("proj").create(
-                    MappedConfiguration({{"source", test.target}, {"target", "EPSG:4326"}})));
+                    spec::MappedConfiguration({{"source", test.target}, {"target", "EPSG:4326"}})));
 
                 auto d = reverse->fwd(test.b);
                 auto e = reverse->inv(d);

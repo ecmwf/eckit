@@ -13,7 +13,7 @@
 #include <iostream>
 #include <memory>
 
-#include "eckit/config/MappedConfiguration.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/testing/Test.h"
 
 
@@ -24,7 +24,7 @@ namespace eckit::test {
 
 
 CASE("MappedConfiguration") {
-    std::unique_ptr<Configuration> param(new MappedConfiguration({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
+    std::unique_ptr<Configuration> param(new geo::spec::MappedConfiguration({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
 
     int a = 0;
     EXPECT(param->get("a", a));
@@ -40,7 +40,7 @@ CASE("MappedConfiguration") {
     EXPECT_EQUAL(c, 123UL);
 
     int d = 0;
-    dynamic_cast<MappedConfiguration*>(param.get())->set("b", 321);
+    dynamic_cast<geo::spec::MappedConfiguration*>(param.get())->set("b", 321);
     EXPECT(param->get("b", d));
     EXPECT_EQUAL(d, 321);
 }

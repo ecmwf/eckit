@@ -12,9 +12,9 @@
 
 #include "eckit/geo/grid/regular/Mercator.h"
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/geo/util/regex.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"

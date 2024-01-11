@@ -104,6 +104,10 @@ list(APPEND eckit_geo_srcs
     range/Regular.h
     range/RegularLongitude.cc
     range/RegularLongitude.h
+    spec/DynamicConfiguration.cc
+    spec/DynamicConfiguration.h
+    spec/MappedConfiguration.cc
+    spec/MappedConfiguration.h
     util.cc
     util.h
     util/arange.cc

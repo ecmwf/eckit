@@ -346,8 +346,6 @@ list( APPEND eckit_config_srcs
     config/Configuration.h
     config/Configured.cc
     config/Configured.h
-    config/DynamicConfiguration.cc
-    config/DynamicConfiguration.h
     config/EtcTable.cc
     config/EtcTable.h
     config/JSONConfiguration.h
@@ -355,8 +353,6 @@ list( APPEND eckit_config_srcs
     config/LibEcKit.h
     config/LocalConfiguration.cc
     config/LocalConfiguration.h
-    config/MappedConfiguration.cc
-    config/MappedConfiguration.h
     config/Parametrisation.cc
     config/Parametrisation.h
     config/Resource.h

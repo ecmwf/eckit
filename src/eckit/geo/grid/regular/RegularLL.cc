@@ -12,12 +12,12 @@
 
 #include "eckit/geo/grid/regular/RegularLL.h"
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/range/RegularLongitude.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/geo/util/regex.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
@@ -192,7 +192,7 @@ Configuration* RegularLL::config(const std::string& name) {
                   // Fraction(360)).n();
     auto nj = 1;  // detail::RegularIterator(Fraction(-90), Fraction(90), Fraction(increments[1]), Fraction(0)).n();
 
-    return new MappedConfiguration({{"type", "regular_ll"}, {"grid", increments}, {"ni", ni}, {"nj", nj}});
+    return new spec::MappedConfiguration({{"type", "regular_ll"}, {"grid", increments}, {"ni", ni}, {"nj", nj}});
 }
 
 

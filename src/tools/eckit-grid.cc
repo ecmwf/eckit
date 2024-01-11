@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "eckit/config/MappedConfiguration.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
@@ -52,7 +52,7 @@ private:
         out.precision(args.getInt("precision", 16));
 
         for (const auto& arg : args) {
-            std::unique_ptr<Configuration> cfg(new MappedConfiguration({{uid ? "uid" : "name", std::string(arg)}}));
+            std::unique_ptr<Configuration> cfg(new geo::spec::MappedConfiguration({{uid ? "uid" : "name", std::string(arg)}}));
             std::unique_ptr<const geo::Grid> grid(geo::GridFactory::build(*cfg));
 
             out << "size: " << grid->size() << std::endl;

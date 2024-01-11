@@ -12,12 +12,12 @@
 
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/Gaussian.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -73,7 +73,7 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
 struct ReducedGaussianClassical {
     static Configuration* config(const std::string& name) {
         auto N = Translator<std::string, size_t>{}(name.substr(1));
-        return new MappedConfiguration({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
+        return new spec::MappedConfiguration({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
     }
 };
 
@@ -81,7 +81,8 @@ struct ReducedGaussianClassical {
 struct ReducedGaussianOctahedral {
     static Configuration* config(const std::string& name) {
         auto N = Translator<std::string, size_t>{}(name.substr(1));
-        return new MappedConfiguration({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_octahedral_pl(N)}});
+        return new spec::MappedConfiguration(
+            {{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_octahedral_pl(N)}});
     }
 };
 

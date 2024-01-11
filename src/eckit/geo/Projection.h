@@ -21,7 +21,9 @@
 
 namespace eckit {
 class Configuration;
+namespace geo::spec {
 class MappedConfiguration;
+}
 }  // namespace eckit
 
 
@@ -35,7 +37,7 @@ public:
     using builder_t = BuilderT1<Projection>;
     using ARG1      = const Configuration&;
 
-    using Spec = MappedConfiguration;
+    using Spec = spec::MappedConfiguration;
 
     // -- Exceptions
     // None

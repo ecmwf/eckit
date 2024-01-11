@@ -12,31 +12,31 @@
 
 #include <memory>
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::test {
 
 
-using namespace eckit::geo;
+using namespace geo;
 
 
 CASE("") {
     std::unique_ptr<Grid> global(
-        new grid::regular::RegularLL(MappedConfiguration{{{"grid", std::vector<double>{1, 1}}}}));
+        new grid::regular::RegularLL(spec::MappedConfiguration{{{"grid", std::vector<double>{1, 1}}}}));
 
     size_t global_size = global->size();
     EXPECT_EQUAL(global_size, 360 * 181);
 
     std::unique_ptr<Grid> local(new grid::regular::RegularLL(
-        MappedConfiguration{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}}));
+        spec::MappedConfiguration{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}}));
 
     size_t local_size = local->size();
     EXPECT_EQUAL(local_size, 5 * 10);
 
-    std::unique_ptr<Grid> almost_global(new grid::regular::RegularLL(MappedConfiguration{
+    std::unique_ptr<Grid> almost_global(new grid::regular::RegularLL(spec::MappedConfiguration{
         {{"grid", std::vector<double>{1, 1}}, {"area", std::vector<double>{89.5, 0., -89.5, 359.1}}}}));
 
     size_t almost_global_size = almost_global->size();

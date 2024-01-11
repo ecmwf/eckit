@@ -12,10 +12,10 @@
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/range/Gaussian.h"
 #include "eckit/geo/range/RegularLongitude.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -51,7 +51,7 @@ Grid::iterator RegularGaussian::cend() const {
 
 Configuration* RegularGaussian::config(const std::string& name) {
     auto N = Translator<std::string, size_t>{}(name.substr(1));
-    return new MappedConfiguration({{"type", "regular_gg"}, {"N", N}, {"ni", 4 * N}});
+    return new spec::MappedConfiguration({{"type", "regular_gg"}, {"N", N}, {"ni", 4 * N}});
 }
 
 

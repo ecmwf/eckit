@@ -15,11 +15,11 @@
 #include <algorithm>
 #include <memory>
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/geo/util.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/value/Value.h"
@@ -32,14 +32,14 @@ namespace {
 
 
 template <typename T>
-MappedConfiguration::value_type __from_value(const Value& value) {
+spec::MappedConfiguration::value_type __from_value(const Value& value) {
     T to;
     fromValue(to, value);
     return {to};
 }
 
 
-void set_config_value(MappedConfiguration& config, const std::string& key, const Value& value) {
+void set_config_value(spec::MappedConfiguration& config, const std::string& key, const Value& value) {
     using number_type = pl_type::value_type;
 
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
@@ -57,8 +57,8 @@ void set_config_value(MappedConfiguration& config, const std::string& key, const
 }
 
 
-MappedConfiguration* config_from_value_map(const ValueMap& map) {
-    auto* config = new MappedConfiguration;
+spec::MappedConfiguration* config_from_value_map(const ValueMap& map) {
+    auto* config = new spec::MappedConfiguration;
     for (const auto& kv : map) {
         set_config_value(*config, kv.first, kv.second);
     }
@@ -76,23 +76,23 @@ const GridConfig& GridConfig::instance() {
 
 
 GridConfig::GridConfig(const PathName& path) {
-    auto* config = new MappedConfiguration;
+    auto* config = new spec::MappedConfiguration;
     config_.reset(config);
 
     struct ConfigurationFromUID final : GridConfigurationUID::configurator_t {
-        explicit ConfigurationFromUID(MappedConfiguration* config) :
+        explicit ConfigurationFromUID(spec::MappedConfiguration* config) :
             config_(config) {}
-        Configuration* config() const override { return new MappedConfiguration(*config_); }
-        std::unique_ptr<MappedConfiguration> config_;
+        Configuration* config() const override { return new spec::MappedConfiguration(*config_); }
+        std::unique_ptr<spec::MappedConfiguration> config_;
     };
 
     struct ConfigurationFromName final : GridConfigurationName::configurator_t {
-        explicit ConfigurationFromName(MappedConfiguration* config) :
+        explicit ConfigurationFromName(spec::MappedConfiguration* config) :
             config_(config) {}
         Configuration* config(GridConfigurationName::configurator_t::arg1_t) const override {
-            return new MappedConfiguration(*config_);
+            return new spec::MappedConfiguration(*config_);
         }
-        std::unique_ptr<MappedConfiguration> config_;
+        std::unique_ptr<spec::MappedConfiguration> config_;
     };
 
     if (path.exists()) {

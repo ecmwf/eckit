@@ -15,8 +15,8 @@
 #include <cmath>
 #include <utility>
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/UnitSphere.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
 #include "eckit/types/FloatCompare.h"

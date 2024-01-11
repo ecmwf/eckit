@@ -14,7 +14,7 @@
 
 #include <cmath>
 
-#include "eckit/config/MappedConfiguration.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 

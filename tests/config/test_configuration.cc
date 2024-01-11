@@ -10,9 +10,9 @@
 
 #include <fstream>
 
-#include "eckit/config/DynamicConfiguration.h"
+#include "eckit/geo/spec/DynamicConfiguration.h"
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/config/MappedConfiguration.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/testing/Test.h"
@@ -391,7 +391,7 @@ CASE("test_mapped_configuration") {
     std::string three = "3";
 
 
-    MappedConfiguration a({
+    geo::spec::MappedConfiguration a({
         {"double", static_cast<double>(one)},
         {"float", static_cast<float>(one)},
         {"int", static_cast<int>(one)},
@@ -421,7 +421,7 @@ CASE("test_mapped_configuration") {
     }
 
 
-    MappedConfiguration b({
+    geo::spec::MappedConfiguration b({
         {"true", true},
         {"false", false},
         {"zero", 0},
@@ -453,7 +453,7 @@ CASE("test_mapped_configuration") {
     EXPECT(b.get("one", maybe = false) && maybe);
 
 
-    MappedConfiguration c;
+    geo::spec::MappedConfiguration c;
     EXPECT_NOT(c.has("foo"));
 
     c.set("foo", two);
@@ -471,7 +471,7 @@ CASE("test_mapped_configuration") {
     EXPECT_EQUAL(c.getString("foo"), three);
 
 
-    MappedConfiguration d(c);
+    geo::spec::MappedConfiguration d(c);
 
     EXPECT(d.has("foo"));
     EXPECT_EQUAL(d.getString("foo"), three);
@@ -482,7 +482,7 @@ CASE("test_mapped_configuration") {
     EXPECT_EQUAL(d.getInt("foo"), one);
 
 
-    MappedConfiguration e(c);
+    geo::spec::MappedConfiguration e(c);
 
     ASSERT(e.has("foo"));
     ASSERT(e.has("bar"));
@@ -494,11 +494,11 @@ CASE("test_dynamic_configuration") {
     int one    = 1;
     double two = 2.;
 
-    MappedConfiguration a({{"foo", one}, {"bar", two}});
+    geo::spec::MappedConfiguration a({{"foo", one}, {"bar", two}});
     ASSERT(a.has("foo"));
     ASSERT(a.has("bar"));
 
-    DynamicConfiguration b(a);
+    geo::spec::DynamicConfiguration b(a);
 
     ASSERT(b.has("foo"));
     ASSERT(b.has("bar"));

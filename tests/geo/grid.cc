@@ -12,8 +12,8 @@
 
 #include <memory>
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/testing/Test.h"
 
 
@@ -32,8 +32,8 @@ CASE("GridFactory::build") {
 
     SECTION("GridFactory::build_from_name") {
         for (const auto& test : {test_t{"O2", 88}, {"f2", 32}, {"h2", 48}}) {
-            std::unique_ptr<const Grid> grid(
-                GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({{"grid", test.name}}))));
+            std::unique_ptr<const Grid> grid(GridFactory::build(
+                *std::unique_ptr<Configuration>(new spec::MappedConfiguration({{"grid", test.name}}))));
 
             auto size = grid->size();
             EXPECT_EQUAL(size, test.size);
@@ -43,7 +43,7 @@ CASE("GridFactory::build") {
 
     SECTION("RegularGaussian") {
         std::unique_ptr<const Grid> grid(GridFactory::build(
-            *std::unique_ptr<Configuration>(new MappedConfiguration({{"grid", "f2"}, {"south", 0}}))));
+            *std::unique_ptr<Configuration>(new spec::MappedConfiguration({{"grid", "f2"}, {"south", 0}}))));
 
         auto nh = grid->size();
         EXPECT_EQUAL(nh, 32 / 2);
@@ -58,7 +58,7 @@ CASE("GridFactory::build") {
     SECTION("Grid::build_from_increments") {
         SECTION("global") {
             std::unique_ptr<const Grid> global(
-                GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({
+                GridFactory::build(*std::unique_ptr<Configuration>(new spec::MappedConfiguration({
                     {"type", "regular_ll"},
                     {"west_east_increment", 1},
                     {"south_north_increment", 1},
@@ -71,7 +71,7 @@ CASE("GridFactory::build") {
 
         SECTION("non-global") {
             std::unique_ptr<const Grid> grid(
-                GridFactory::build(*std::unique_ptr<Configuration>(new MappedConfiguration({
+                GridFactory::build(*std::unique_ptr<Configuration>(new spec::MappedConfiguration({
                     {"type", "regular_ll"},
                     {"west_east_increment", 1},
                     {"south_north_increment", 1},

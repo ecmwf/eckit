@@ -9,13 +9,13 @@
  */
 
 
-#include "eckit/config/MappedConfiguration.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 
 #include "eckit/log/JSON.h"
 #include "eckit/value/Value.h"
 
 
-namespace eckit {
+namespace eckit::geo::spec {
 
 
 namespace {
@@ -344,4 +344,4 @@ void MappedConfiguration::json(JSON& j) const {
 }
 
 
-}  // namespace eckit
+}  // namespace eckit::geo::spec

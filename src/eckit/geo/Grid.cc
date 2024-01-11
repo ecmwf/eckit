@@ -16,10 +16,10 @@
 #include <numeric>
 #include <ostream>
 
-#include "eckit/config/DynamicConfiguration.h"
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/GridConfig.h"
+#include "eckit/geo/spec/DynamicConfiguration.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -131,13 +131,13 @@ Configuration* GridFactory::configure_(const Configuration& config) const {
 
     GridConfig::instance();
 
-    auto* cfg = new DynamicConfiguration(config);
+    auto* cfg = new spec::DynamicConfiguration(config);
     ASSERT(cfg != nullptr);
 
 
     // hardcoded, interpreted options (contributing to gridspec)
 
-    auto* map = new MappedConfiguration;
+    auto* map = new spec::MappedConfiguration;
     ASSERT(map != nullptr);
 
     if (size_t N = 0; cfg->get("N", N)) {

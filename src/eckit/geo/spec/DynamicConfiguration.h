@@ -18,7 +18,7 @@
 #include "eckit/config/Configuration.h"
 
 
-namespace eckit {
+namespace eckit::geo::spec {
 
 
 class DynamicConfiguration : public Configuration {
@@ -125,4 +125,4 @@ private:
 };
 
 
-}  // namespace eckit
+}  // namespace eckit::geo::spec

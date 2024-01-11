@@ -12,8 +12,8 @@
 
 #include "eckit/geo/projection/PROJ.h"
 
-#include "eckit/config/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/spec/MappedConfiguration.h"
 
 
 namespace eckit::geo::projection {

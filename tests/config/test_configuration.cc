@@ -432,6 +432,10 @@ CASE("test_local_configuration") {
     EXPECT(conf.get("manager.height", manager_height));
     EXPECT(manager_height == 1.78);
 
+    local.set("a", "a");
+    const eckit::Parametrisation& p = conf;
+    EXPECT(!p.has("a.b"));
+
 }
 
 CASE("Hash a configuration") {

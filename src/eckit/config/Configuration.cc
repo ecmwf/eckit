@@ -73,6 +73,10 @@ eckit::Value Configuration::lookUp(const std::string& s, bool& found) const {
     eckit::Value result = *root_;
 
     for (size_t i = 0; i < path.size(); i++) {
+        if (!(result.isMap() || result.isOrderedMap())) {
+            found = false;
+            return result;
+        }
         const std::string& key = path[i];
         if (!result.contains(key)) {
             found = false;

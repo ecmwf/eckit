@@ -23,8 +23,6 @@ list(APPEND eckit_geo_srcs
     GreatCircle.h
     Grid.cc
     Grid.h
-    GridConfig.cc
-    GridConfig.h
     Increments.cc
     Increments.h
     Iterator.h
@@ -54,6 +52,8 @@ list(APPEND eckit_geo_srcs
     UnitSphere.h
     area/BoundingBox.cc
     area/BoundingBox.h
+    etc/Grid.cc
+    etc/Grid.h
     figure/OblateSpheroid.cc
     figure/OblateSpheroid.h
     figure/Sphere.cc
@@ -104,9 +104,9 @@ list(APPEND eckit_geo_srcs
     range/Regular.h
     range/RegularLongitude.cc
     range/RegularLongitude.h
-    spec/Generator.h
     spec/Custom.cc
     spec/Custom.h
+    spec/Generator.h
     spec/Layered.cc
     spec/Layered.h
     util.cc

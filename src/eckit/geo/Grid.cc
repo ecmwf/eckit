@@ -17,7 +17,7 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/GridConfig.h"
+#include "eckit/geo/etc/Grid.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/log/Log.h"
@@ -129,7 +129,7 @@ const Grid* GridFactory::build_(const Spec& spec) const {
 Spec* GridFactory::generate_spec_(const Spec& spec) const {
     AutoLock<Mutex> lock(mutex_);
 
-    GridConfig::instance();
+    etc::Grid::instance();
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);

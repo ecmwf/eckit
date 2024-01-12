@@ -23,10 +23,10 @@ class PathName;
 }  // namespace eckit
 
 
-namespace eckit::geo {
+namespace eckit::geo::etc {
 
 
-class GridConfig final {
+class Grid final {
 public:
     // -- Types
     // None
@@ -48,7 +48,7 @@ public:
 
     // -- Methods
 
-    static const GridConfig& instance();
+    static const Grid& instance();
 
     const Spec& config() const { return *config_; }
 
@@ -64,7 +64,7 @@ public:
 private:
     // -- Constructors
 
-    explicit GridConfig(const PathName&);
+    explicit Grid(const PathName&);
 
     // -- Members
 
@@ -87,4 +87,4 @@ private:
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::etc

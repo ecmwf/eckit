@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/GridConfig.h"
+#include "eckit/geo/etc/Grid.h"
 
 #include <algorithm>
 #include <memory>
@@ -25,7 +25,7 @@
 #include "eckit/value/Value.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::etc {
 
 
 namespace {
@@ -69,13 +69,13 @@ spec::Custom* config_from_value_map(const ValueMap& map) {
 }  // namespace
 
 
-const GridConfig& GridConfig::instance() {
-    static const GridConfig __instance(LibEcKitGeo::configFileGrid());
+const Grid& Grid::instance() {
+    static const Grid __instance(LibEcKitGeo::configFileGrid());
     return __instance;
 }
 
 
-GridConfig::GridConfig(const PathName& path) {
+Grid::Grid(const PathName& path) {
     auto* config = new spec::Custom;
     config_.reset(config);
 
@@ -123,4 +123,4 @@ GridConfig::GridConfig(const PathName& path) {
 }
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::etc

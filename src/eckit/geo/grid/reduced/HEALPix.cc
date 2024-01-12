@@ -19,7 +19,7 @@
 #include <tuple>
 
 #include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/utils/Translator.h"
 
@@ -227,8 +227,8 @@ static Ordering ordering_from_string(const std::string& str) {
 }
 
 
-HEALPix::HEALPix(const Configuration& config) :
-    HEALPix(config.getUnsigned("Nside"), ordering_from_string(config.getString("orderingConvention", "ring"))) {}
+HEALPix::HEALPix(const Spec& spec) :
+    HEALPix(spec.get_unsigned("Nside"), ordering_from_string(spec.get_string("orderingConvention", "ring"))) {}
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) :
@@ -294,9 +294,9 @@ size_t HEALPix::nj() const {
 }
 
 
-Configuration* HEALPix::config(const std::string& name) {
+Spec* HEALPix::config(const std::string& name) {
     auto Nside = Translator<std::string, size_t>{}(name.substr(1));
-    return new spec::MappedConfiguration({{"type", "HEALPix"}, {"Nside", Nside}, {"orderingConvention", "ring"}});
+    return new spec::Custom({{"type", "HEALPix"}, {"Nside", Nside}, {"orderingConvention", "ring"}});
 }
 
 

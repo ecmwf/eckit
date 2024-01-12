@@ -16,8 +16,8 @@
 #include <ostream>
 
 
-namespace eckit {
-class Configuration;
+namespace eckit::geo {
+class Spec;
 }
 
 
@@ -31,7 +31,7 @@ public:
 
     // -- Constructors
 
-    explicit Increments(const Configuration&);
+    explicit Increments(const Spec&);
 
     Increments(double west_east, double south_north);
 

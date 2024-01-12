@@ -18,8 +18,8 @@
 #include "eckit/memory/Factory.h"
 
 
-namespace eckit {
-class Configuration;
+namespace eckit::geo {
+class Spec;
 }
 
 
@@ -31,7 +31,7 @@ public:
     // -- Types
 
     using builder_t = BuilderT1<Figure>;
-    using ARG1      = const Configuration&;
+    using ARG1      = const Spec&;
 
     // -- Exceptions
     // None
@@ -42,7 +42,7 @@ public:
     Figure(const Figure&) = default;
     Figure(Figure&&)      = default;
 
-    explicit Figure(const Configuration&);
+    explicit Figure(const Spec&);
 
     // -- Destructor
 

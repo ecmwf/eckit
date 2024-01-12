@@ -33,7 +33,7 @@ public:
 
     // -- Constructors
 
-    explicit BoundingBox(const Configuration&);
+    explicit BoundingBox(const Spec&);
 
     BoundingBox(double north, double west, double south, double east);
 

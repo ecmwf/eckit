@@ -16,7 +16,9 @@
 
 
 namespace eckit {
-class Configuration;
+namespace geo {
+class Spec;
+}
 class PathName;
 }  // namespace eckit
 
@@ -48,7 +50,7 @@ public:
 
     static const GridConfig& instance();
 
-    const Configuration& config() const { return *config_; }
+    const Spec& config() const { return *config_; }
 
     // -- Overridden methods
     // None
@@ -66,7 +68,7 @@ private:
 
     // -- Members
 
-    std::unique_ptr<Configuration> config_;
+    std::unique_ptr<Spec> config_;
 
     // -- Methods
     // None

@@ -18,8 +18,8 @@
 namespace eckit::geo::grid::reduced {
 
 
-ReducedLL::ReducedLL(const Configuration& config) :
-    Reduced(config) {}
+ReducedLL::ReducedLL(const Spec& spec) :
+    Reduced(spec) {}
 
 
 Grid::iterator ReducedLL::cbegin() const {

@@ -5,12 +5,9 @@ ecbuild_add_test(
     LIBS    eckit
 )
 
-foreach( _test configuration mapped_configuration )
-    ecbuild_add_test(
-        TARGET  eckit_test_config_${_test}
-        SOURCES test_${_test}.cc
-        LIBS    eckit eckit_geo
-        CONDITION HAVE_ECKIT_GEO
-        )
-endforeach()
+ecbuild_add_test(
+    TARGET  eckit_test_config_configuration
+    SOURCES test_configuration.cc
+    LIBS    eckit
+)
 

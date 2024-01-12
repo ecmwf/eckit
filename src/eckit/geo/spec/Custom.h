@@ -14,13 +14,18 @@
 #include <map>
 #include <variant>
 
-#include "eckit/config/Configuration.h"
+#include "eckit/geo/Spec.h"
+
+
+namespace eckit {
+class JSON;
+}
 
 
 namespace eckit::geo::spec {
 
 
-class MappedConfiguration final : public Configuration {
+class Custom final : public Spec {
 public:
     // -- Types
 
@@ -47,23 +52,23 @@ public:
 
     // -- Constructors
 
-    explicit MappedConfiguration(const container_type& = {});
-    explicit MappedConfiguration(container_type&&);
+    explicit Custom(const container_type& = {});
+    explicit Custom(container_type&&);
 
-    MappedConfiguration(const MappedConfiguration&);
-    MappedConfiguration(MappedConfiguration&&);
+    Custom(const Custom&);
+    Custom(Custom&&);
 
     // -- Destructor
 
-    ~MappedConfiguration() final = default;
+    ~Custom() final = default;
 
     // -- Convertors
     // None
 
     // -- Operators
 
-    MappedConfiguration& operator=(const MappedConfiguration&);
-    MappedConfiguration& operator=(MappedConfiguration&&);
+    Custom& operator=(const Custom&);
+    Custom& operator=(Custom&&);
 
     // -- Methods
 
@@ -125,8 +130,7 @@ private:
 
     // -- Overridden methods
 
-    void print(std::ostream&) const override;
-    void json(JSON&) const override;
+    void json(JSON&) const final;
 
     // -- Class members
     // None

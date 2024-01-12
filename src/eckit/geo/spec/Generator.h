@@ -17,7 +17,6 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <vector>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
@@ -25,17 +24,17 @@
 #include "eckit/utils/Regex.h"
 
 
-namespace eckit {
-class Configuration;
+namespace eckit::geo {
+class Spec;
 }
 
 
-namespace eckit::geo {
+namespace eckit::geo::spec {
 
 //------------------------------------------------------------------------------------------------------
 
 template <class C>
-class Configurator {
+class GeneratorT {
 public:
     // -- Types
 
@@ -45,17 +44,17 @@ public:
 
     // -- Constructors
 
-    Configurator(const Configurator&) = delete;
-    Configurator(Configurator&&)      = delete;
+    GeneratorT(const GeneratorT&) = delete;
+    GeneratorT(GeneratorT&&)      = delete;
 
     // -- Operators
 
-    void operator=(const Configurator&) = delete;
-    void operator=(Configurator&&)      = delete;
+    void operator=(const GeneratorT&) = delete;
+    void operator=(GeneratorT&&)      = delete;
 
     // -- Methods
 
-    static Configurator<C>& instance();
+    static GeneratorT<C>& instance();
 
     bool exists(const key_t&) const;
     bool matches(const std::string&) const;
@@ -69,11 +68,11 @@ public:
 private:
     // -- Constructors
 
-    Configurator() = default;
+    GeneratorT() = default;
 
     // -- Destructor
 
-    ~Configurator() = default;
+    ~GeneratorT() = default;
 
     // -- Members
 
@@ -86,7 +85,7 @@ private:
 
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& os, const Configurator<C>& o) {
+    friend std::ostream& operator<<(std::ostream& os, const GeneratorT<C>& o) {
         o.print(os);
         return os;
     }
@@ -95,25 +94,25 @@ private:
 //------------------------------------------------------------------------------------------------------
 
 template <class C>
-Configurator<C>& Configurator<C>::instance() {
-    static Configurator<C> obj;
+GeneratorT<C>& GeneratorT<C>::instance() {
+    static GeneratorT<C> obj;
     return obj;
 }
 
 template <class C>
-bool Configurator<C>::exists(const key_t& k) const {
+bool GeneratorT<C>::exists(const key_t& k) const {
     AutoLock<Mutex> lock(mutex_);
     return store_.find(k) != store_.end();
 }
 
 template <class C>
-bool Configurator<C>::matches(const std::string& k) const {
+bool GeneratorT<C>::matches(const std::string& k) const {
     AutoLock<Mutex> lock(mutex_);
     return std::any_of(store_.begin(), store_.end(), [&](const auto& p) { return Regex(p.first).match(k); });
 }
 
 template <class C>
-void Configurator<C>::regist(const key_t& k, configurator_t* c) {
+void GeneratorT<C>::regist(const key_t& k, configurator_t* c) {
     AutoLock<Mutex> lock(mutex_);
     if (exists(k)) {
         throw BadParameter("Configurator has already a builder for " + k, Here());
@@ -123,7 +122,7 @@ void Configurator<C>::regist(const key_t& k, configurator_t* c) {
 }
 
 template <class C>
-void Configurator<C>::unregist(const key_t& k) {
+void GeneratorT<C>::unregist(const key_t& k) {
     AutoLock<Mutex> lock(mutex_);
     if (auto it = store_.find(k); it != store_.end()) {
         store_.erase(it);
@@ -133,7 +132,7 @@ void Configurator<C>::unregist(const key_t& k) {
 }
 
 template <class C>
-const typename Configurator<C>::configurator_t& Configurator<C>::get(const key_t& k) const {
+const typename GeneratorT<C>::configurator_t& GeneratorT<C>::get(const key_t& k) const {
     AutoLock<Mutex> lock(mutex_);
     if (auto it = store_.find(k); it != store_.end()) {
         return *(it->second);
@@ -142,7 +141,7 @@ const typename Configurator<C>::configurator_t& Configurator<C>::get(const key_t
 }
 
 template <class C>
-const typename Configurator<C>::configurator_t& Configurator<C>::match(const std::string& k) const {
+const typename GeneratorT<C>::configurator_t& GeneratorT<C>::match(const std::string& k) const {
     AutoLock<Mutex> lock(mutex_);
 
     auto end = store_.cend();
@@ -164,7 +163,7 @@ const typename Configurator<C>::configurator_t& Configurator<C>::match(const std
 }
 
 template <class C>
-void Configurator<C>::print(std::ostream& os) const {
+void GeneratorT<C>::print(std::ostream& os) const {
     AutoLock<Mutex> lock(mutex_);
     os << "Configurator" << std::endl;
 
@@ -180,7 +179,7 @@ void Configurator<C>::print(std::ostream& os) const {
 
 //------------------------------------------------------------------------------------------------------
 
-class ConfigurationGenerator {
+class SpecGenerator {
 public:
     // -- Types
 
@@ -190,33 +189,33 @@ public:
 
     // -- Constructors
 
-    ConfigurationGenerator()                              = default;
-    ConfigurationGenerator(const ConfigurationGenerator&) = delete;
-    ConfigurationGenerator(ConfigurationGenerator&&)      = delete;
+    SpecGenerator()                     = default;
+    SpecGenerator(const SpecGenerator&) = delete;
+    SpecGenerator(SpecGenerator&&)      = delete;
 
     // -- Destructor
 
-    virtual ~ConfigurationGenerator() = default;
+    virtual ~SpecGenerator() = default;
 
     // -- Operators
 
-    void operator=(const ConfigurationGenerator&) = delete;
-    void operator=(ConfigurationGenerator&&)      = delete;
+    void operator=(const SpecGenerator&) = delete;
+    void operator=(SpecGenerator&&)      = delete;
 };
 
 //------------------------------------------------------------------------------------------------------
 
-class ConfigurationGeneratorT0 : public ConfigurationGenerator {
+class SpecGeneratorT0 : public SpecGenerator {
 public:
     // -- Methods
 
-    virtual Configuration* config() const = 0;
+    virtual Spec* config() const = 0;
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template <typename ARG1>
-class ConfigurationGeneratorT1 : public ConfigurationGenerator {
+class SpecGeneratorT1 : public SpecGenerator {
 public:
     // -- Types
 
@@ -224,13 +223,13 @@ public:
 
     // -- Methods
 
-    virtual Configuration* config(arg1_t) const = 0;
+    virtual Spec* config(arg1_t) const = 0;
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template <typename ARG1, typename ARG2>
-class ConfigurationGeneratorT2 : public ConfigurationGenerator {
+class SpecGeneratorT2 : public SpecGenerator {
 public:
     // -- Types
 
@@ -239,118 +238,113 @@ public:
 
     // -- Methods
 
-    virtual Configuration* config(arg1_t, arg2_t) const = 0;
+    virtual Spec* config(arg1_t, arg2_t) const = 0;
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template <class T>
-class ConcreteConfigurationGeneratorT0 final : public ConfigurationGeneratorT0 {
+class ConcreteSpecGeneratorT0 final : public SpecGeneratorT0 {
 public:
     // -- Constructors
 
-    explicit ConcreteConfigurationGeneratorT0(const ConfigurationGeneratorT0::key_t& k) :
+    explicit ConcreteSpecGeneratorT0(const SpecGeneratorT0::key_t& k) :
         key_(k) {
-        Configurator<ConfigurationGeneratorT0>::instance().regist(key_, this);
+        GeneratorT<SpecGeneratorT0>::instance().regist(key_, this);
     }
 
-    ConcreteConfigurationGeneratorT0(const ConcreteConfigurationGeneratorT0&) = delete;
-    ConcreteConfigurationGeneratorT0(ConcreteConfigurationGeneratorT0&&)      = delete;
+    ConcreteSpecGeneratorT0(const ConcreteSpecGeneratorT0&) = delete;
+    ConcreteSpecGeneratorT0(ConcreteSpecGeneratorT0&&)      = delete;
 
     // -- Destructor
 
-    ~ConcreteConfigurationGeneratorT0() override { Configurator<ConfigurationGeneratorT0>::instance().unregist(key_); }
+    ~ConcreteSpecGeneratorT0() override { GeneratorT<SpecGeneratorT0>::instance().unregist(key_); }
 
     // -- Operators
 
-    void operator=(const ConcreteConfigurationGeneratorT0&) = delete;
-    void operator=(ConcreteConfigurationGeneratorT0&&)      = delete;
+    void operator=(const ConcreteSpecGeneratorT0&) = delete;
+    void operator=(ConcreteSpecGeneratorT0&&)      = delete;
 
     // -- Overridden methods
 
-    Configuration* config() const override { return T::config(); }
+    Spec* config() const override { return T::config(); }
 
 private:
     // -- Members
 
-    ConfigurationGeneratorT0::key_t key_;
+    SpecGeneratorT0::key_t key_;
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template <class T, typename ARG1>
-class ConcreteConfigurationGeneratorT1 final : public ConfigurationGeneratorT1<ARG1> {
+class ConcreteSpecGeneratorT1 final : public SpecGeneratorT1<ARG1> {
 public:
     // -- Constructors
 
-    explicit ConcreteConfigurationGeneratorT1(const typename ConfigurationGeneratorT1<ARG1>::key_t& k) :
+    explicit ConcreteSpecGeneratorT1(const typename SpecGeneratorT1<ARG1>::key_t& k) :
         key_(k) {
-        Configurator<ConfigurationGeneratorT1<ARG1>>::instance().regist(key_, this);
+        GeneratorT<SpecGeneratorT1<ARG1>>::instance().regist(key_, this);
     }
 
-    ConcreteConfigurationGeneratorT1(const ConcreteConfigurationGeneratorT1&) = delete;
-    ConcreteConfigurationGeneratorT1(ConcreteConfigurationGeneratorT1&&)      = delete;
+    ConcreteSpecGeneratorT1(const ConcreteSpecGeneratorT1&) = delete;
+    ConcreteSpecGeneratorT1(ConcreteSpecGeneratorT1&&)      = delete;
 
     // -- Destructor
 
-    ~ConcreteConfigurationGeneratorT1() override {
-        Configurator<ConfigurationGeneratorT1<ARG1>>::instance().unregist(key_);
-    }
+    ~ConcreteSpecGeneratorT1() override { GeneratorT<SpecGeneratorT1<ARG1>>::instance().unregist(key_); }
 
     // -- Operators
 
-    void operator=(const ConcreteConfigurationGeneratorT1&) = delete;
-    void operator=(ConcreteConfigurationGeneratorT1&&)      = delete;
+    void operator=(const ConcreteSpecGeneratorT1&) = delete;
+    void operator=(ConcreteSpecGeneratorT1&&)      = delete;
 
     // -- Overridden methods
 
-    Configuration* config(typename ConfigurationGeneratorT1<ARG1>::arg1_t p1) const override { return T::config(p1); }
+    Spec* config(typename SpecGeneratorT1<ARG1>::arg1_t p1) const override { return T::config(p1); }
 
 private:
     // -- Members
 
-    typename ConfigurationGeneratorT1<ARG1>::key_t key_;
+    typename SpecGeneratorT1<ARG1>::key_t key_;
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template <class T, typename ARG1, typename ARG2>
-class ConcreteConfigurationGeneratorT2 final : public ConfigurationGeneratorT2<ARG1, ARG2> {
+class ConcreteSpecGeneratorT2 final : public SpecGeneratorT2<ARG1, ARG2> {
 public:
     // -- Constructors
 
-    explicit ConcreteConfigurationGeneratorT2(const typename ConfigurationGeneratorT2<ARG1, ARG2>::key_t& k) :
+    explicit ConcreteSpecGeneratorT2(const typename SpecGeneratorT2<ARG1, ARG2>::key_t& k) :
         key_(k) {
-        Configurator<ConfigurationGeneratorT2<ARG1, ARG2>>::instance().regist(key_, this);
+        GeneratorT<SpecGeneratorT2<ARG1, ARG2>>::instance().regist(key_, this);
     }
 
-    ConcreteConfigurationGeneratorT2(const ConcreteConfigurationGeneratorT2&) = delete;
-    ConcreteConfigurationGeneratorT2(ConcreteConfigurationGeneratorT2&&)      = delete;
+    ConcreteSpecGeneratorT2(const ConcreteSpecGeneratorT2&) = delete;
+    ConcreteSpecGeneratorT2(ConcreteSpecGeneratorT2&&)      = delete;
 
     // -- Destructor
 
-    ~ConcreteConfigurationGeneratorT2() override {
-        Configurator<ConfigurationGeneratorT2<ARG1, ARG2>>::instance().unregist(key_);
-    }
+    ~ConcreteSpecGeneratorT2() override { GeneratorT<SpecGeneratorT2<ARG1, ARG2>>::instance().unregist(key_); }
 
     // -- Operators
 
-    void operator=(const ConcreteConfigurationGeneratorT2&) = delete;
-    void operator=(ConcreteConfigurationGeneratorT2&&)      = delete;
+    void operator=(const ConcreteSpecGeneratorT2&) = delete;
+    void operator=(ConcreteSpecGeneratorT2&&)      = delete;
 
     // -- Overridden methods
 
-    Configuration* config(typename ConfigurationGeneratorT1<ARG1>::arg1_t p1,
-                          typename ConfigurationGeneratorT1<ARG1>::arg2_t p2) const override {
+    Spec* config(typename SpecGeneratorT1<ARG1>::arg1_t p1, typename SpecGeneratorT1<ARG1>::arg2_t p2) const override {
         return T::config(p1, p2);
     }
 
 private:
     // -- Members
 
-    typename ConfigurationGeneratorT2<ARG1, ARG2>::key_t key_;
+    typename SpecGeneratorT2<ARG1, ARG2>::key_t key_;
 };
 
 //------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::spec

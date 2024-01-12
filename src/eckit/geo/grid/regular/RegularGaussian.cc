@@ -15,15 +15,15 @@
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/range/Gaussian.h"
 #include "eckit/geo/range/RegularLongitude.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
 
 
-RegularGaussian::RegularGaussian(const Configuration& config) :
-    RegularGaussian(config.getUnsigned("N"), config.getUnsigned("ni"), area::BoundingBox(config)) {}
+RegularGaussian::RegularGaussian(const Spec& spec) :
+    RegularGaussian(spec.get_unsigned("N"), spec.get_unsigned("ni"), area::BoundingBox(spec)) {}
 
 
 RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
@@ -49,9 +49,9 @@ Grid::iterator RegularGaussian::cend() const {
 }
 
 
-Configuration* RegularGaussian::config(const std::string& name) {
+Spec* RegularGaussian::config(const std::string& name) {
     auto N = Translator<std::string, size_t>{}(name.substr(1));
-    return new spec::MappedConfiguration({{"type", "regular_gg"}, {"N", N}, {"ni", 4 * N}});
+    return new spec::Custom({{"type", "regular_gg"}, {"N", N}, {"ni", 4 * N}});
 }
 
 

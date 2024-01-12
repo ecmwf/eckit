@@ -29,7 +29,7 @@ public:
 
     // -- Constructors
 
-    explicit RegularGaussian(const Configuration&);
+    explicit RegularGaussian(const Spec&);
     explicit RegularGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
     RegularGaussian(size_t N, size_t ni, const area::BoundingBox& = area::BoundingBox::make_global_prime());
 
@@ -58,7 +58,7 @@ public:
 
     // -- Class methods
 
-    static Configuration* config(const std::string& name);
+    static Spec* config(const std::string& name);
 
 private:
     // -- Members

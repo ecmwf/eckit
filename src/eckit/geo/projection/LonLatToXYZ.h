@@ -30,7 +30,7 @@ public:
 
     LonLatToXYZ(double a, double b);
     explicit LonLatToXYZ(double R);
-    explicit LonLatToXYZ(const Configuration&);
+    explicit LonLatToXYZ(const Spec&);
 
     // -- Destructor
     // None
@@ -48,7 +48,7 @@ public:
 
     // -- Overridden methods
 
-    Spec spec() const override;
+    Spec* spec() const override;
 
     // -- Class members
     // None
@@ -70,7 +70,7 @@ private:
 
         virtual Point3 operator()(const PointLonLat&) const = 0;
         virtual PointLonLat operator()(const Point3&) const = 0;
-        virtual Spec spec() const                           = 0;
+        virtual Spec* spec() const                          = 0;
     };
 
     // -- Members

@@ -64,8 +64,8 @@ std::pair<std::vector<double>, std::vector<double> > Reduced::to_latlon() const 
 }
 
 
-Reduced::Reduced(const Configuration& config) :
-    Grid(config) {}
+Reduced::Reduced(const Spec& spec) :
+    Grid(spec) {}
 
 
 Reduced::Reduced(const area::BoundingBox& bbox) :

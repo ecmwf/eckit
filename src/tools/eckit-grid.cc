@@ -11,12 +11,12 @@
 #include <memory>
 #include <string>
 
-#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/grid/Unstructured.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
@@ -52,8 +52,8 @@ private:
         out.precision(args.getInt("precision", 16));
 
         for (const auto& arg : args) {
-            std::unique_ptr<Configuration> cfg(new geo::spec::MappedConfiguration({{uid ? "uid" : "name", std::string(arg)}}));
-            std::unique_ptr<const geo::Grid> grid(geo::GridFactory::build(*cfg));
+            std::unique_ptr<geo::Spec> spec(new geo::spec::Custom({{uid ? "uid" : "name", std::string(arg)}}));
+            std::unique_ptr<const geo::Grid> grid(geo::GridFactory::build(*spec));
 
             out << "size: " << grid->size() << std::endl;
 
@@ -89,9 +89,7 @@ private:
                     << tool << "[options] ..." << std::endl;
     }
 
-    int minimumPositionalArguments() const override {
-        return 0;
-    }
+    int minimumPositionalArguments() const override { return 0; }
 };
 
 }  // namespace eckit

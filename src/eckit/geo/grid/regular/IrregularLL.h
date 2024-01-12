@@ -28,7 +28,7 @@ public:
 
     // -- Constructors
 
-    explicit IrregularLL(const Configuration&);
+    explicit IrregularLL(const Spec&);
 
     // -- Destructor
     // None

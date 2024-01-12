@@ -45,7 +45,7 @@ public:
 
     // -- Constructors
 
-    explicit ORCA(const Configuration&);
+    explicit ORCA(const Spec&);
 
     // -- Destructor
     // None
@@ -61,7 +61,7 @@ public:
     uid_t calculate_uid() const;
 
     void read(const PathName&);
-    void check(const Configuration&);
+    void check(const Spec&);
     size_t write(const PathName&, const std::string& compression = "none");
 
     size_t ni() const { return static_cast<size_t>(dimensions_[0]); }
@@ -91,7 +91,7 @@ public:
 
     // -- Class methods
 
-    static Configuration* config(const std::string& name);
+    static Spec* config(const std::string& name);
 
 private:
     // -- Members

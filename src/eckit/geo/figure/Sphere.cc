@@ -12,8 +12,8 @@
 
 #include "eckit/geo/figure/Sphere.h"
 
-#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -26,8 +26,8 @@ Sphere::Sphere(double R) :
 }
 
 
-Sphere::Sphere(const Configuration& config) :
-    Sphere(config.getDouble("R")) {}
+Sphere::Sphere(const Spec& spec) :
+    Sphere(spec.get_double("R")) {}
 
 
 }  // namespace eckit::geo::figure

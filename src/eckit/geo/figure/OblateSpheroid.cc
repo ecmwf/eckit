@@ -12,8 +12,8 @@
 
 #include "eckit/geo/figure/OblateSpheroid.h"
 
-#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -26,8 +26,8 @@ OblateSpheroid::OblateSpheroid(double a, double b) :
 }
 
 
-OblateSpheroid::OblateSpheroid(const Configuration& config) :
-    OblateSpheroid(config.getDouble("a"), config.getDouble("b")) {}
+OblateSpheroid::OblateSpheroid(const Spec& spec) :
+    OblateSpheroid(spec.get_double("a"), spec.get_double("b")) {}
 
 
 double OblateSpheroid::R() const {

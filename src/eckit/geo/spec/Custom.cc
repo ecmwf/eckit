@@ -9,19 +9,15 @@
  */
 
 
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 
 #include "eckit/log/JSON.h"
-#include "eckit/value/Value.h"
 
 
 namespace eckit::geo::spec {
 
 
 namespace {
-
-
-const eckit::Value __empty_root;
 
 
 template <typename From, typename To>
@@ -56,7 +52,7 @@ bool __get_v(const std::vector<From>& from, std::vector<From>& to) {
 
 
 template <typename T>
-bool __get_s_integral(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+bool __get_s_integral(const Custom::container_type& map, const std::string& name, T& value) {
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
         return std::holds_alternative<int>(v)           ? __get_s(std::get<int>(v), value)
@@ -70,7 +66,7 @@ bool __get_s_integral(const MappedConfiguration::container_type& map, const std:
 
 
 template <typename T>
-bool __get_s_real(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+bool __get_s_real(const Custom::container_type& map, const std::string& name, T& value) {
     if (__get_s_integral(map, name, value)) {
         return true;
     }
@@ -86,7 +82,7 @@ bool __get_s_real(const MappedConfiguration::container_type& map, const std::str
 
 
 template <typename T>
-bool __get_v_integral(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+bool __get_v_integral(const Custom::container_type& map, const std::string& name, T& value) {
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
         return std::holds_alternative<std::vector<int>>(v)         ? __get_v(std::get<std::vector<int>>(v), value)
@@ -101,7 +97,7 @@ bool __get_v_integral(const MappedConfiguration::container_type& map, const std:
 
 
 template <typename T>
-bool __get_v_real(const MappedConfiguration::container_type& map, const std::string& name, T& value) {
+bool __get_v_real(const Custom::container_type& map, const std::string& name, T& value) {
     if (__get_v_integral(map, name, value)) {
         return true;
     }
@@ -116,7 +112,7 @@ bool __get_v_real(const MappedConfiguration::container_type& map, const std::str
 }
 
 
-JSON& operator<<(JSON& out, const MappedConfiguration::value_type& value) {
+JSON& operator<<(JSON& out, const Custom::value_type& value) {
     std::visit([&](const auto& arg) { out << arg; }, value);
     return out;
 }
@@ -125,115 +121,115 @@ JSON& operator<<(JSON& out, const MappedConfiguration::value_type& value) {
 }  // namespace
 
 
-MappedConfiguration::MappedConfiguration(const MappedConfiguration::container_type& map) :
-    Configuration(__empty_root), map_(map) {}
+Custom::Custom(const Custom::container_type& map) :
+    map_(map) {}
 
 
-MappedConfiguration::MappedConfiguration(MappedConfiguration::container_type&& map) :
-    Configuration(__empty_root), map_(map) {}
+Custom::Custom(Custom::container_type&& map) :
+    map_(map) {}
 
 
-MappedConfiguration::MappedConfiguration(const MappedConfiguration& config) :
-    MappedConfiguration(config.map_) {}
+Custom::Custom(const Custom& custom) :
+    Custom(custom.map_) {}
 
 
-MappedConfiguration::MappedConfiguration(MappedConfiguration&& config) :
-    MappedConfiguration(config.map_) {}
+Custom::Custom(Custom&& custom) :
+    Custom(custom.map_) {}
 
 
-MappedConfiguration& MappedConfiguration::operator=(MappedConfiguration&& config) {
-    map_.swap(config.map_);
+Custom& Custom::operator=(Custom&& custom) {
+    map_.swap(custom.map_);
     return *this;
 }
 
 
-MappedConfiguration& MappedConfiguration::operator=(const MappedConfiguration& config) {
-    map_ = config.map_;
+Custom& Custom::operator=(const Custom& custom) {
+    map_ = custom.map_;
     return *this;
 }
 
 
-void MappedConfiguration::set(const std::string& name, const std::string& value) {
+void Custom::set(const std::string& name, const std::string& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, bool value) {
+void Custom::set(const std::string& name, bool value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, int value) {
+void Custom::set(const std::string& name, int value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, long value) {
+void Custom::set(const std::string& name, long value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, long long value) {
+void Custom::set(const std::string& name, long long value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, std::size_t value) {
+void Custom::set(const std::string& name, std::size_t value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, float value) {
+void Custom::set(const std::string& name, float value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, double value) {
+void Custom::set(const std::string& name, double value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, const std::vector<int>& value) {
+void Custom::set(const std::string& name, const std::vector<int>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, const std::vector<long>& value) {
+void Custom::set(const std::string& name, const std::vector<long>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, const std::vector<long long>& value) {
+void Custom::set(const std::string& name, const std::vector<long long>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, const std::vector<std::size_t>& value) {
+void Custom::set(const std::string& name, const std::vector<std::size_t>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, const std::vector<float>& value) {
+void Custom::set(const std::string& name, const std::vector<float>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, const std::vector<double>& value) {
+void Custom::set(const std::string& name, const std::vector<double>& value) {
     map_[name] = value;
 }
 
 
-void MappedConfiguration::set(const std::string& name, const std::vector<std::string>& value) {
+void Custom::set(const std::string& name, const std::vector<std::string>& value) {
     map_[name] = value;
 }
 
 
-bool MappedConfiguration::has(const std::string& name) const {
+bool Custom::has(const std::string& name) const {
     return map_.find(name) != map_.cend();
 }
 
 
-bool MappedConfiguration::get(const std::string& name, std::string& value) const {
+bool Custom::get(const std::string& name, std::string& value) const {
     if (auto it = map_.find(name); it != map_.cend() && std::holds_alternative<std::string>(it->second)) {
         value = std::get<std::string>(it->second);
         return true;
@@ -242,7 +238,7 @@ bool MappedConfiguration::get(const std::string& name, std::string& value) const
 }
 
 
-bool MappedConfiguration::get(const std::string& name, bool& value) const {
+bool Custom::get(const std::string& name, bool& value) const {
     if (auto it = map_.find(name); it != map_.cend()) {
         if (std::holds_alternative<bool>(it->second)) {
             value = std::get<bool>(it->second);
@@ -258,67 +254,67 @@ bool MappedConfiguration::get(const std::string& name, bool& value) const {
 }
 
 
-bool MappedConfiguration::get(const std::string& name, int& value) const {
+bool Custom::get(const std::string& name, int& value) const {
     return __get_s_integral(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, long& value) const {
+bool Custom::get(const std::string& name, long& value) const {
     return __get_s_integral(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, long long& value) const {
+bool Custom::get(const std::string& name, long long& value) const {
     return __get_s_integral(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, std::size_t& value) const {
+bool Custom::get(const std::string& name, std::size_t& value) const {
     return __get_s_integral(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, float& value) const {
+bool Custom::get(const std::string& name, float& value) const {
     return __get_s_real(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, double& value) const {
+bool Custom::get(const std::string& name, double& value) const {
     return __get_s_real(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, std::vector<int>& value) const {
+bool Custom::get(const std::string& name, std::vector<int>& value) const {
     return __get_v_integral(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, std::vector<long>& value) const {
+bool Custom::get(const std::string& name, std::vector<long>& value) const {
     return __get_v_integral(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, std::vector<long long>& value) const {
+bool Custom::get(const std::string& name, std::vector<long long>& value) const {
     return __get_v_integral(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, std::vector<std::size_t>& value) const {
+bool Custom::get(const std::string& name, std::vector<std::size_t>& value) const {
     return __get_v_integral(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, std::vector<float>& value) const {
+bool Custom::get(const std::string& name, std::vector<float>& value) const {
     return __get_v_real(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, std::vector<double>& value) const {
+bool Custom::get(const std::string& name, std::vector<double>& value) const {
     return __get_v_real(map_, name, value);
 }
 
 
-bool MappedConfiguration::get(const std::string& name, std::vector<std::string>& value) const {
+bool Custom::get(const std::string& name, std::vector<std::string>& value) const {
     auto it = map_.find(name);
     if (it != map_.cend() && std::holds_alternative<std::vector<std::string>>(it->second)) {
         value = std::get<std::vector<std::string>>(it->second);
@@ -328,17 +324,10 @@ bool MappedConfiguration::get(const std::string& name, std::vector<std::string>&
 }
 
 
-void MappedConfiguration::print(std::ostream& out) const {
-    JSON j(out);
-    json(j);
-}
-
-
-void MappedConfiguration::json(JSON& j) const {
+void Custom::json(JSON& j) const {
     j.startObject();
     for (const auto& nv : map_) {
-        j << nv.first;
-        j << nv.second;
+        j << nv.first << nv.second;
     }
     j.endObject();
 }

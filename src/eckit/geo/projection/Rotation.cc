@@ -16,7 +16,7 @@
 #include <utility>
 
 #include "eckit/geo/UnitSphere.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
 #include "eckit/types/FloatCompare.h"
@@ -36,20 +36,20 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     rotated_(true) {
     using M = maths::Matrix3<double>;
 
-    struct NonRotated final : Rotate {
+    struct NonRotated final : Implementation {
         PointLonLat operator()(const PointLonLat& p) const override { return p; }
-        Spec spec() const override { return Spec{}; }
+        Spec* spec() const override { return new spec::Custom{}; }
     };
 
-    struct RotationAngle final : Rotate {
+    struct RotationAngle final : Implementation {
         explicit RotationAngle(double angle) :
             angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override { return {p.lon + angle_, p.lat}; }
-        Spec spec() const override { return Spec{{{"angle", angle_}}}; }
+        Spec* spec() const override { return new spec::Custom{{{"angle", angle_}}}; }
         const double angle_;
     };
 
-    struct RotationMatrix final : Rotate {
+    struct RotationMatrix final : Implementation {
         explicit RotationMatrix(M&& R) :
             RotationMatrix(std::move(R), 0, 0, 0) {}
         RotationMatrix(M&& R, double south_pole_lon, double south_pole_lat, double angle) :
@@ -57,8 +57,9 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
         PointLonLat operator()(const PointLonLat& p) const override {
             return UnitSphere::convertCartesianToSpherical(R_ * UnitSphere::convertSphericalToCartesian(p));
         }
-        Spec spec() const override {
-            return Spec{{{"south_pole_lon", south_pole_lon_}, {"south_pole_lat", south_pole_lat_}, {"angle", angle_}}};
+        Spec* spec() const override {
+            return new spec::Custom{
+                {{"south_pole_lon", south_pole_lon_}, {"south_pole_lat", south_pole_lat_}, {"angle", angle_}}};
         }
         const M R_;
         const double south_pole_lon_;
@@ -78,8 +79,8 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
         angle    = PointLonLat::normalise_angle_to_minimum(angle - south_pole_lon, -180.);
         rotated_ = !types::is_approximately_equal(angle, 0., util::eps);
 
-        fwd_.reset(rotated_ ? static_cast<Rotate*>(new RotationAngle(-angle)) : new NonRotated);
-        inv_.reset(rotated_ ? static_cast<Rotate*>(new RotationAngle(angle)) : new NonRotated);
+        fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
+        inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle)) : new NonRotated);
         return;
     }
 
@@ -120,11 +121,11 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 }
 
 
-Rotation::Rotation(const Configuration& config) :
-    Rotation(config.getDouble("south_pole_lon"), config.getDouble("south_pole_lat"), config.getDouble("angle", 0)) {}
+Rotation::Rotation(const Spec& spec) :
+    Rotation(spec.get_double("south_pole_lon"), spec.get_double("south_pole_lat"), spec.get_double("angle", 0)) {}
 
 
-Projection::Spec Rotation::spec() const {
+Spec* Rotation::spec() const {
     return fwd_->spec();
 }
 

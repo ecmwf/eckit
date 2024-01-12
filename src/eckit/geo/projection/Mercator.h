@@ -31,7 +31,7 @@ public:
 
     Mercator(double meridian, double parallel, Figure*, PointLonLat first = {0, 0});
 
-    explicit Mercator(const Configuration&);
+    explicit Mercator(const Spec&);
 
     // -- Destructor
     // None
@@ -49,7 +49,7 @@ public:
 
     // -- Overridden methods
 
-    Spec spec() const override;
+    Spec* spec() const override;
 
     // -- Class members
     // None

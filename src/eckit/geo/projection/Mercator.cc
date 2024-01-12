@@ -14,7 +14,7 @@
 
 #include <cmath>
 
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -59,11 +59,11 @@ Mercator::Mercator(double meridian, double parallel, Figure* figure, PointLonLat
 }
 
 
-Mercator::Mercator(const Configuration& config) :
-    Mercator(config.getDouble("meridian"),
-             config.getDouble("parallel"),
-             FigureFactory::instance().get(config.getString("figure")).create(config),
-             PointLonLat{config.getDouble("lon0"), config.getDouble("lat0")}) {}
+Mercator::Mercator(const Spec& spec) :
+    Mercator(spec.get_double("meridian"),
+             spec.get_double("parallel"),
+             FigureFactory::instance().get(spec.get_string("figure")).create(spec),
+             PointLonLat{spec.get_double("lon0"), spec.get_double("lat0")}) {}
 
 
 double Mercator::calculate_phi(double t) const {
@@ -98,8 +98,8 @@ PointLonLat Mercator::inv(const Point2& q) const {
 }
 
 
-Projection::Spec Mercator::spec() const {
-    return Spec{{{"lad", parallel_}, {"orientation", meridian_}}};
+Spec* Mercator::spec() const {
+    return new spec::Custom{{{"lad", parallel_}, {"orientation", meridian_}}};
 }
 
 

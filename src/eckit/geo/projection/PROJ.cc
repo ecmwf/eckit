@@ -13,7 +13,7 @@
 #include "eckit/geo/projection/PROJ.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
@@ -90,10 +90,10 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 }
 
 
-PROJ::PROJ(const Configuration& config) :
-    PROJ(config.getString("source", "EPSG:4326"),  // default to WGS 84
-         config.getString("target", "EPSG:4326"),  // ...
-         config.getDouble("lon_minimum", 0)) {}
+PROJ::PROJ(const Spec& spec) :
+    PROJ(spec.get_string("source", "EPSG:4326"),  // default to WGS 84
+         spec.get_string("target", "EPSG:4326"),  // ...
+         spec.get_double("lon_minimum", 0)) {}
 
 
 std::string PROJ::ellipsoid(const std::string& string) {
@@ -123,8 +123,8 @@ Point PROJ::inv(const Point& q) const {
 }
 
 
-Projection::Spec PROJ::spec() const {
-    return Spec{{{"source", source_}, {"target", target_}}};
+Spec* PROJ::spec() const {
+    return new spec::Custom{{{"source", source_}, {"target", target_}}};
 }
 
 

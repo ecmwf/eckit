@@ -18,8 +18,8 @@
 namespace eckit::geo::grid {
 
 
-Regular::Regular(const Configuration& config) :
-    Grid(config) {}
+Regular::Regular(const Spec& spec) :
+    Grid(spec) {}
 
 
 Regular::Regular(const area::BoundingBox& bbox) :

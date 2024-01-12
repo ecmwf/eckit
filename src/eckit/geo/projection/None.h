@@ -29,7 +29,7 @@ public:
     // -- Constructors
 
     None() = default;
-    explicit None(const Configuration&);
+    explicit None(const Spec&);
 
     // -- Destructor
     // None
@@ -45,7 +45,7 @@ public:
 
     // -- Overridden methods
 
-    Spec spec() const override;
+    Spec* spec() const override;
 
     // -- Class members
     // None

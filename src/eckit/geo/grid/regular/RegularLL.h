@@ -54,7 +54,7 @@ public:
 
     // -- Constructors
 
-    explicit RegularLL(const Configuration&);
+    explicit RegularLL(const Spec&);
     explicit RegularLL(const Increments&, const area::BoundingBox& = {});
     RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
 
@@ -83,7 +83,7 @@ public:
 
     // -- Class methods
 
-    static Configuration* config(const std::string& name);
+    static Spec* config(const std::string& name);
 
 private:
     // -- Members

@@ -19,7 +19,7 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/value/Value.h"
@@ -32,14 +32,14 @@ namespace {
 
 
 template <typename T>
-spec::MappedConfiguration::value_type __from_value(const Value& value) {
+spec::Custom::value_type __from_value(const Value& value) {
     T to;
     fromValue(to, value);
     return {to};
 }
 
 
-void set_config_value(spec::MappedConfiguration& config, const std::string& key, const Value& value) {
+void set_config_value(spec::Custom& config, const std::string& key, const Value& value) {
     using number_type = pl_type::value_type;
 
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
@@ -57,8 +57,8 @@ void set_config_value(spec::MappedConfiguration& config, const std::string& key,
 }
 
 
-spec::MappedConfiguration* config_from_value_map(const ValueMap& map) {
-    auto* config = new spec::MappedConfiguration;
+spec::Custom* config_from_value_map(const ValueMap& map) {
+    auto* config = new spec::Custom;
     for (const auto& kv : map) {
         set_config_value(*config, kv.first, kv.second);
     }
@@ -76,23 +76,21 @@ const GridConfig& GridConfig::instance() {
 
 
 GridConfig::GridConfig(const PathName& path) {
-    auto* config = new spec::MappedConfiguration;
+    auto* config = new spec::Custom;
     config_.reset(config);
 
-    struct ConfigurationFromUID final : GridConfigurationUID::configurator_t {
-        explicit ConfigurationFromUID(spec::MappedConfiguration* config) :
+    struct SpecUID final : SpecByUID::configurator_t {
+        explicit SpecUID(spec::Custom* config) :
             config_(config) {}
-        Configuration* config() const override { return new spec::MappedConfiguration(*config_); }
-        std::unique_ptr<spec::MappedConfiguration> config_;
+        Spec* config() const override { return new spec::Custom(*config_); }
+        std::unique_ptr<spec::Custom> config_;
     };
 
-    struct ConfigurationFromName final : GridConfigurationName::configurator_t {
-        explicit ConfigurationFromName(spec::MappedConfiguration* config) :
+    struct SpecName final : SpecByName::configurator_t {
+        explicit SpecName(spec::Custom* config) :
             config_(config) {}
-        Configuration* config(GridConfigurationName::configurator_t::arg1_t) const override {
-            return new spec::MappedConfiguration(*config_);
-        }
-        std::unique_ptr<spec::MappedConfiguration> config_;
+        Spec* config(SpecByName::configurator_t::arg1_t) const override { return new spec::Custom(*config_); }
+        std::unique_ptr<spec::Custom> config_;
     };
 
     if (path.exists()) {
@@ -104,9 +102,8 @@ GridConfig::GridConfig(const PathName& path) {
             if (key == "grid_uids") {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
-                    GridConfigurationUID::instance().regist(
-                        m.begin()->first.as<std::string>(),
-                        new ConfigurationFromUID(config_from_value_map(m.begin()->second)));
+                    SpecByUID::instance().regist(m.begin()->first.as<std::string>(),
+                                                 new SpecUID(config_from_value_map(m.begin()->second)));
                 }
                 continue;
             }
@@ -114,9 +111,8 @@ GridConfig::GridConfig(const PathName& path) {
             if (key == "grid_names") {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
-                    GridConfigurationName::instance().regist(
-                        m.begin()->first.as<std::string>(),
-                        new ConfigurationFromName(config_from_value_map(m.begin()->second)));
+                    SpecByName::instance().regist(m.begin()->first.as<std::string>(),
+                                                  new SpecName(config_from_value_map(m.begin()->second)));
                 }
                 continue;
             }

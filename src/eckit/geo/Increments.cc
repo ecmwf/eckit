@@ -12,16 +12,17 @@
 
 #include "eckit/geo/Increments.h"
 
-#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo {
 
 
-static Increments make_from_config(const Configuration& config) {
-    auto grid = config.getDoubleVector("grid");
+static Increments make_from_spec(const Spec& spec) {
+    std::vector<double> grid;
+    spec.get("grid", grid);
 
     ASSERT_MSG(grid.size() == 2, "Increments: expected list of size 2");
     return {grid[0], grid[1]};
@@ -35,8 +36,8 @@ Increments::Increments(double west_east, double south_north) :
 }
 
 
-Increments::Increments(const Configuration& config) :
-    Increments(make_from_config(config)) {}
+Increments::Increments(const Spec& spec) :
+    Increments(make_from_spec(spec)) {}
 
 
 bool Increments::operator==(const Increments& other) const {

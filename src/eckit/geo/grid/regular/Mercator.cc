@@ -14,7 +14,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/regex.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
@@ -26,8 +26,8 @@ namespace eckit::geo::grid::regular {
 static const GridRegisterType<Mercator> __grid_type("mercator");
 
 
-Mercator::Mercator(const Configuration& config) :
-    Mercator(config.getUnsigned("ni"), config.getUnsigned("nj"), Increments{config}, area::BoundingBox{config}) {}
+Mercator::Mercator(const Spec& spec) :
+    Mercator(spec.get_unsigned("ni"), spec.get_unsigned("nj"), Increments{spec}, area::BoundingBox{spec}) {}
 
 
 Mercator::Mercator(size_t ni, size_t nj, const Increments& inc, const area::BoundingBox& bbox) :

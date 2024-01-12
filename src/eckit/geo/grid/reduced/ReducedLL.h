@@ -28,7 +28,7 @@ public:
 
     // -- Constructors
 
-    explicit ReducedLL(const Configuration&);
+    explicit ReducedLL(const Spec&);
 
     // -- Destructor
     // None

@@ -18,8 +18,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/GridConfig.h"
-#include "eckit/geo/spec/DynamicConfiguration.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/spec/Layered.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -28,8 +28,8 @@
 namespace eckit::geo {
 
 
-Grid::Grid(const Configuration& config) :
-    bbox_(config) {}
+Grid::Grid(const Spec& spec) :
+    bbox_(spec) {}
 
 
 Grid::Grid(const area::BoundingBox& bbox) :
@@ -112,10 +112,10 @@ GridFactory& GridFactory::instance() {
 }
 
 
-const Grid* GridFactory::build_(const Configuration& config) const {
+const Grid* GridFactory::build_(const Spec& spec) const {
     AutoLock<Mutex> lock(mutex_);
 
-    std::unique_ptr<Configuration> cfg(configure_(config));
+    std::unique_ptr<Spec> cfg(generate_spec_(spec));
 
     if (std::string type; cfg->get("type", type)) {
         return GridFactoryType::instance().get(type).create(*cfg);
@@ -126,18 +126,18 @@ const Grid* GridFactory::build_(const Configuration& config) const {
 }
 
 
-Configuration* GridFactory::configure_(const Configuration& config) const {
+Spec* GridFactory::generate_spec_(const Spec& spec) const {
     AutoLock<Mutex> lock(mutex_);
 
     GridConfig::instance();
 
-    auto* cfg = new spec::DynamicConfiguration(config);
+    auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
 
 
     // hardcoded, interpreted options (contributing to gridspec)
 
-    auto* map = new spec::MappedConfiguration;
+    auto* map = new spec::Custom;
     ASSERT(map != nullptr);
 
     if (size_t N = 0; cfg->get("N", N)) {
@@ -154,10 +154,10 @@ Configuration* GridFactory::configure_(const Configuration& config) const {
     // configurable options
 
     if (std::string uid; cfg->get("uid", uid)) {
-        cfg->push_front(GridConfigurationUID::instance().get(uid).config());
+        cfg->push_front(SpecByUID::instance().get(uid).config());
     }
-    else if (std::string grid; cfg->get("grid", grid) && GridConfigurationName::instance().matches(grid)) {
-        cfg->push_front(GridConfigurationName::instance().match(grid).config(grid));
+    else if (std::string grid; cfg->get("grid", grid) && SpecByName::instance().matches(grid)) {
+        cfg->push_front(SpecByName::instance().match(grid).config(grid));
     }
 
 
@@ -172,8 +172,8 @@ void GridFactory::list_(std::ostream& out) const {
 
     GridConfig::instance();
 
-    out << GridConfigurationUID::instance() << std::endl;
-    out << GridConfigurationName::instance() << std::endl;
+    out << SpecByUID::instance() << std::endl;
+    out << SpecByName::instance() << std::endl;
     out << GridFactoryType::instance() << std::endl;
 }
 

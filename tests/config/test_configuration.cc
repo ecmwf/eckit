@@ -10,9 +10,7 @@
 
 #include <fstream>
 
-#include "eckit/geo/spec/DynamicConfiguration.h"
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/testing/Test.h"
@@ -381,138 +379,6 @@ CASE("Hash a configuration") {
     //    std::cout << "MD5 " << h->digest() << std::endl;
 
     EXPECT(h->digest() == "9f060b35735e98b0fdc0bf4c2d6d6d8d");
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-CASE("test_mapped_configuration") {
-    int one           = 1;
-    double two        = 2.;
-    std::string three = "3";
-
-
-    geo::spec::MappedConfiguration a({
-        {"double", static_cast<double>(one)},
-        {"float", static_cast<float>(one)},
-        {"int", static_cast<int>(one)},
-        {"long", static_cast<long>(one)},
-        {"size_t", static_cast<size_t>(one)},
-    });
-
-    // test scalar type conversion
-    for (std::string key : {"double", "float", "int", "long", "size_t"}) {
-        double value_as_double = 0;
-        float value_as_float   = 0;
-
-        EXPECT(a.get(key, value_as_double) && value_as_double == static_cast<double>(one));
-        EXPECT(a.get(key, value_as_float) && value_as_float == static_cast<float>(one));
-
-        if (key == "int" || key == "long" || key == "size_t") {
-            int value_as_int       = 0;
-            long value_as_long     = 0;
-            size_t value_as_size_t = 0;
-
-            EXPECT(a.get(key, value_as_int) && value_as_int == static_cast<int>(one));
-            EXPECT(a.get(key, value_as_long) && value_as_long == static_cast<long>(one));
-            EXPECT(a.get(key, value_as_size_t) && value_as_size_t == static_cast<size_t>(one));
-        }
-
-        EXPECT_EQUAL(a.getString(key), std::to_string(1));
-    }
-
-
-    geo::spec::MappedConfiguration b({
-        {"true", true},
-        {"false", false},
-        {"zero", 0},
-        {"one", 1},
-    });
-
-    EXPECT(b.getBool("true"));
-    EXPECT(!b.getBool("false"));
-
-    bool maybe = false;
-    EXPECT(!b.has("?"));
-    EXPECT(!b.getBool("?", false));
-    EXPECT(b.getBool("?", true));
-
-    EXPECT(b.get("true", maybe = false) && maybe);
-    EXPECT(b.getBool("true", true));
-    EXPECT(b.getBool("true", false));
-
-    EXPECT(b.get("false", maybe = true) && !maybe);
-    EXPECT(!b.getBool("false", true));
-    EXPECT(!b.getBool("false", false));
-
-    EXPECT(!b.getBool("zero"));
-    EXPECT(!b.getBool("zero", maybe = true));
-    EXPECT(b.get("zero", maybe = true) && !maybe);
-
-    EXPECT(b.getBool("one"));
-    EXPECT(b.getBool("one", maybe = false));
-    EXPECT(b.get("one", maybe = false) && maybe);
-
-
-    geo::spec::MappedConfiguration c;
-    EXPECT_NOT(c.has("foo"));
-
-    c.set("foo", two);
-    EXPECT(c.has("foo"));
-    EXPECT_THROWS_AS(c.getInt("foo"), eckit::ConfigurationNotFound);  // cannot access as int
-    EXPECT(::eckit::types::is_approximately_equal(c.getDouble("foo"), two));
-    EXPECT(c.getString("foo") == "2");
-
-    c.set("bar", one);
-    EXPECT_EQUAL(c.getInt("bar"), one);
-    EXPECT(::eckit::types::is_approximately_equal(c.getDouble("bar"), static_cast<double>(one)));
-    EXPECT(c.getString("bar") == "1");
-
-    c.set("foo", three);
-    EXPECT_EQUAL(c.getString("foo"), three);
-
-
-    geo::spec::MappedConfiguration d(c);
-
-    EXPECT(d.has("foo"));
-    EXPECT_EQUAL(d.getString("foo"), three);
-    EXPECT_THROWS_AS(d.getInt("foo"), eckit::ConfigurationNotFound);     // cannot access as int
-    EXPECT_THROWS_AS(d.getDouble("foo"), eckit::ConfigurationNotFound);  // cannot access as real
-
-    d.set("foo", one);
-    EXPECT_EQUAL(d.getInt("foo"), one);
-
-
-    geo::spec::MappedConfiguration e(c);
-
-    ASSERT(e.has("foo"));
-    ASSERT(e.has("bar"));
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-CASE("test_dynamic_configuration") {
-    int one    = 1;
-    double two = 2.;
-
-    geo::spec::MappedConfiguration a({{"foo", one}, {"bar", two}});
-    ASSERT(a.has("foo"));
-    ASSERT(a.has("bar"));
-
-    geo::spec::DynamicConfiguration b(a);
-
-    ASSERT(b.has("foo"));
-    ASSERT(b.has("bar"));
-
-    b.hide("foo");
-    EXPECT_NOT(b.has("foo"));
-
-    b.unhide("foo");
-    ASSERT(b.has("foo"));
-
-    EXPECT_EQUAL(a.getInt("foo"), one);
-
-    auto value = b.getInt("foo");
-    EXPECT_EQUAL(value, one);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

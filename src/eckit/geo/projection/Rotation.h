@@ -30,7 +30,7 @@ public:
 
     Rotation();
     Rotation(double south_pole_lon, double south_pole_lat, double angle);
-    explicit Rotation(const Configuration&);
+    explicit Rotation(const Spec&);
 
     // -- Destructor
     // None
@@ -49,7 +49,7 @@ public:
 
     // -- Overridden methods
 
-    Spec spec() const override;
+    Spec* spec() const override;
 
     // -- Class members
     // None
@@ -60,23 +60,23 @@ public:
 private:
     // -- Types
 
-    struct Rotate {
-        Rotate()          = default;
-        virtual ~Rotate() = default;
+    struct Implementation {
+        Implementation()          = default;
+        virtual ~Implementation() = default;
 
-        Rotate(const Rotate&)         = delete;
-        Rotate(Rotate&&)              = delete;
-        void operator=(const Rotate&) = delete;
-        void operator=(Rotate&&)      = delete;
+        Implementation(const Implementation&) = delete;
+        Implementation(Implementation&&)      = delete;
+        void operator=(const Implementation&) = delete;
+        void operator=(Implementation&&)      = delete;
 
         virtual PointLonLat operator()(const PointLonLat&) const = 0;
-        virtual Spec spec() const                                = 0;
+        virtual Spec* spec() const                               = 0;
     };
 
     // -- Members
 
-    std::unique_ptr<Rotate> fwd_;
-    std::unique_ptr<Rotate> inv_;
+    std::unique_ptr<Implementation> fwd_;
+    std::unique_ptr<Implementation> inv_;
     bool rotated_;
 
     // -- Methods

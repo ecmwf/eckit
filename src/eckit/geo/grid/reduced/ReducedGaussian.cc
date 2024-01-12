@@ -17,15 +17,15 @@
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/Gaussian.h"
 #include "eckit/geo/range/Regular.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::reduced {
 
 
-ReducedGaussian::ReducedGaussian(const Configuration& config) :
-    ReducedGaussian(config.getUnsigned("N"), config.getLongVector("pl"), area::BoundingBox(config)) {}
+ReducedGaussian::ReducedGaussian(const Spec& spec) :
+    ReducedGaussian(spec.get_unsigned("N"), spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const area::BoundingBox& bbox) :
@@ -71,18 +71,17 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
 
 
 struct ReducedGaussianClassical {
-    static Configuration* config(const std::string& name) {
+    static Spec* config(const std::string& name) {
         auto N = Translator<std::string, size_t>{}(name.substr(1));
-        return new spec::MappedConfiguration({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
+        return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
     }
 };
 
 
 struct ReducedGaussianOctahedral {
-    static Configuration* config(const std::string& name) {
+    static Spec* config(const std::string& name) {
         auto N = Translator<std::string, size_t>{}(name.substr(1));
-        return new spec::MappedConfiguration(
-            {{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_octahedral_pl(N)}});
+        return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_octahedral_pl(N)}});
     }
 };
 

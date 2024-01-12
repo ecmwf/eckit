@@ -18,19 +18,10 @@
 
 #include <cstdint>
 #include <memory>
-
 #include "eckit/config/Parametrisation.h"
-#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class ConfigurationNotFound : public Exception {
-public:
-    explicit ConfigurationNotFound(const std::string& name);
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -158,7 +149,7 @@ protected:  // members
     char separator_;
 
 private:  // methods
-    virtual void json(JSON& s) const;
+    void json(JSON& s) const;
     friend JSON& operator<<(JSON& s, const Configuration& v) {
         v.json(s);
         return s;

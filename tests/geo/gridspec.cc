@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 1996- ECMWF.
+ * (S) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -14,7 +14,7 @@
 #include <utility>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -34,61 +34,61 @@ namespace eckit::test {
 using namespace geo;
 
 
-using C = std::unique_ptr<const Configuration>;
+using S = std::unique_ptr<const Spec>;
 using G = std::unique_ptr<const Grid>;
-using M = spec::MappedConfiguration;
+using C = spec::Custom;
 using v = std::vector<double>;
 
 
-static const spec::MappedConfiguration BAD;
+static const spec::Custom BAD;
 
 
-static std::pair<M, M> cases[]{
-    {M({{"N", 2}}), M({{"N", 2}, {"type", "reduced_gg"}})},
-    {M({{"area", v{90, -180, -90, 180}}, {"grid", v{2, 2}}}), M({{"type", "regular_ll"}})},
-    {M({{"area", v{90, -180, -90, 180}}}), BAD},
-    {M({{"grid", "B48"}}), BAD},
-    {M({{"grid", "F48"}}), M({{"type", "regular_gg"}})},
-    {M({{"grid", "N48"}}), M({{"type", "reduced_gg"}})},
-    {M({{"grid", "O48"}}), M({{"type", "reduced_gg"}})},
-    {M({{"grid", 48}}), BAD},
-    {M({{"grid", v{2, 2}}}), M({{"grid", v{2, 2}}, {"type", "regular_ll"}})},
-    {M({{"type", "latlon"}, {"grid", v{2, 2}}}), BAD},
-    {M({{"type", "reduced_gg"}, {"grid", "48"}}), BAD},
-    {M({{"type", "reduced_gg"}, {"grid", "F048"}}), BAD},
-    {M({{"type", "reduced_gg"}, {"grid", "N"}}), BAD},
-    {M({{"type", "reduced_gg"}, {"grid", "N048"}}), BAD},
-    {M({{"type", "reduced_gg"}, {"grid", "N48"}}), M({{"type", "reduced_gg"}})},
-    {M({{"type", "reduced_gg"}, {"grid", "O048"}}), BAD},
-    {M({{"type", "reduced_gg"}, {"grid", "O48"}}), M({{"type", "reduced_gg"}})},
-    {M({{"type", "reduced_gg"}, {"grid", 48}}), BAD},
-    {M({{"type", "reduced_gg"}}), BAD},
-    {M({{"type", "reduced_latlon"}, {"grid", 2}}), BAD},
-    {M({{"type", "reduced_ll"}, {"grid", 12}}), BAD},
-    {M({{"type", "regular_gg"}, {"grid", "48"}}), BAD},
-    {M({{"type", "regular_gg"}, {"grid", "F048"}}), BAD},
-    {M({{"type", "regular_gg"}, {"grid", "F48"}}), M({{"type", "regular_gg"}})},
-    {M({{"type", "regular_gg"}, {"grid", "N48"}}), BAD},
-    {M({{"type", "regular_gg"}, {"grid", "O48"}}), BAD},
-    {M({{"type", "regular_gg"}, {"grid", "a"}}), BAD},
-    {M({{"type", "regular_gg"}, {"grid", 48}}), BAD},
-    {M({{"type", "regular_ll"}, {"area", v{90, -180, -90, 180}}}), BAD},
-    {M({{"type", "regular_ll"}, {"grid", "F48"}}), BAD},
-    {M({{"type", "regular_ll"}, {"grid", "a"}}), BAD},
-    {M({{"type", "regular_ll"}, {"grid", 48}}), BAD},
-    {M({{"type", "regular_ll"}, {"grid", std::vector<std::string>{"a", "b"}}}), BAD},
-    {M({{"type", "regular_ll"}, {"grid", v{1, 2, 3}}}), BAD},
-    {M({{"type", "regular_ll"}, {"grid", v{1, 2}}}), M({{"type", "regular_ll"}})},
-    {M({{"type", "regular_ll"}, {"grid", v{1}}}), BAD},
+static std::pair<C, C> cases[]{
+    {C({{"N", 2}}), C({{"N", 2}, {"type", "reduced_gg"}})},
+    {C({{"area", v{90, -180, -90, 180}}, {"grid", v{2, 2}}}), C({{"type", "regular_ll"}})},
+    {C({{"area", v{90, -180, -90, 180}}}), BAD},
+    {C({{"grid", "B48"}}), BAD},
+    {C({{"grid", "F48"}}), C({{"type", "regular_gg"}})},
+    {C({{"grid", "N48"}}), C({{"type", "reduced_gg"}})},
+    {C({{"grid", "O48"}}), C({{"type", "reduced_gg"}})},
+    {C({{"grid", 48}}), BAD},
+    {C({{"grid", v{2, 2}}}), C({{"grid", v{2, 2}}, {"type", "regular_ll"}})},
+    {C({{"type", "latlon"}, {"grid", v{2, 2}}}), BAD},
+    {C({{"type", "reduced_gg"}, {"grid", "48"}}), BAD},
+    {C({{"type", "reduced_gg"}, {"grid", "F048"}}), BAD},
+    {C({{"type", "reduced_gg"}, {"grid", "N"}}), BAD},
+    {C({{"type", "reduced_gg"}, {"grid", "N048"}}), BAD},
+    {C({{"type", "reduced_gg"}, {"grid", "N48"}}), C({{"type", "reduced_gg"}})},
+    {C({{"type", "reduced_gg"}, {"grid", "O048"}}), BAD},
+    {C({{"type", "reduced_gg"}, {"grid", "O48"}}), C({{"type", "reduced_gg"}})},
+    {C({{"type", "reduced_gg"}, {"grid", 48}}), BAD},
+    {C({{"type", "reduced_gg"}}), BAD},
+    {C({{"type", "reduced_latlon"}, {"grid", 2}}), BAD},
+    {C({{"type", "reduced_ll"}, {"grid", 12}}), BAD},
+    {C({{"type", "regular_gg"}, {"grid", "48"}}), BAD},
+    {C({{"type", "regular_gg"}, {"grid", "F048"}}), BAD},
+    {C({{"type", "regular_gg"}, {"grid", "F48"}}), C({{"type", "regular_gg"}})},
+    {C({{"type", "regular_gg"}, {"grid", "N48"}}), BAD},
+    {C({{"type", "regular_gg"}, {"grid", "O48"}}), BAD},
+    {C({{"type", "regular_gg"}, {"grid", "a"}}), BAD},
+    {C({{"type", "regular_gg"}, {"grid", 48}}), BAD},
+    {C({{"type", "regular_ll"}, {"area", v{90, -180, -90, 180}}}), BAD},
+    {C({{"type", "regular_ll"}, {"grid", "F48"}}), BAD},
+    {C({{"type", "regular_ll"}, {"grid", "a"}}), BAD},
+    {C({{"type", "regular_ll"}, {"grid", 48}}), BAD},
+    {C({{"type", "regular_ll"}, {"grid", std::vector<std::string>{"a", "b"}}}), BAD},
+    {C({{"type", "regular_ll"}, {"grid", v{1, 2, 3}}}), BAD},
+    {C({{"type", "regular_ll"}, {"grid", v{1, 2}}}), C({{"type", "regular_ll"}})},
+    {C({{"type", "regular_ll"}, {"grid", v{1}}}), BAD},
 
-    {M({{"type", "mercator"},
+    {C({{"type", "mercator"},
         {"area", v{31.173058, 262.036499, 14.736453, 284.975281}},
         {"grid", v{45000.0, 45000.0}},
         {"lad", 14.0},
         {"nx", 56},
         {"ny", 44},
         {"orientation", 0.0}}),
-     M()},
+     C()},
 };
 
 
@@ -97,19 +97,19 @@ CASE("gridspec") {
         for (const auto& [user, gridspec] : cases) {
             Log::info() << user << " -> " << gridspec << std::endl;
 
-            C config(GridFactory::configure(user));
-            ASSERT(config);
+            S spec(GridFactory::spec(user));
+            ASSERT(spec);
 
-            if (!config->has("type")) {
+            if (!spec->has("type")) {
                 EXPECT(gridspec.empty());
                 continue;
             }
 
             if (gridspec.empty()) {
-                EXPECT_THROWS(G(GridFactory::build(*config)));
+                EXPECT_THROWS(GridFactory::build(*spec));
             }
             else {
-                EXPECT_NO_THROW(G(GridFactory::build(*config)));
+                EXPECT_NO_THROW(GridFactory::build(*spec));
             }
         }
     }

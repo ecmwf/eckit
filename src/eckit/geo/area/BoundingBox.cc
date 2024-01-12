@@ -16,9 +16,9 @@
 #include <cmath>
 #include <vector>
 
-#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/geo/Sphere.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -30,18 +30,18 @@ namespace eckit::geo::area {
 static constexpr std::array<double, 4> DEFAULT{90, 0, -90, 360};
 
 
-static BoundingBox make_from_config(const Configuration& config) {
-    if (std::vector<double> area{DEFAULT[0], DEFAULT[1], DEFAULT[2], DEFAULT[3]}; config.get("area", area)) {
+static BoundingBox make_from_spec(const Spec& spec) {
+    if (std::vector<double> area{DEFAULT[0], DEFAULT[1], DEFAULT[2], DEFAULT[3]}; spec.get("area", area)) {
         ASSERT_MSG(area.size() == 4, "BoundingBox: 'area' expected list of size 4");
         return {area[0], area[1], area[2], area[3]};
     }
 
-    if (auto area(DEFAULT); config.get("north", area[0]) && config.get("west", area[1]) &&
-                            config.get("south", area[2]) && config.get("east", area[3])) {
+    if (auto area(DEFAULT); spec.get("north", area[0]) && spec.get("west", area[1]) && spec.get("south", area[2]) &&
+                            spec.get("east", area[3])) {
         return {area[0], area[1], area[2], area[3]};
     }
 
-    if (!config.has("north") && !config.has("west") && !config.has("south") && !config.has("east")) {
+    if (!spec.has("north") && !spec.has("west") && !spec.has("south") && !spec.has("east")) {
         return {};
     }
 
@@ -49,8 +49,8 @@ static BoundingBox make_from_config(const Configuration& config) {
 }
 
 
-BoundingBox::BoundingBox(const Configuration& config) :
-    BoundingBox(make_from_config(config)) {}
+BoundingBox::BoundingBox(const Spec& spec) :
+    BoundingBox(make_from_spec(spec)) {}
 
 
 BoundingBox::BoundingBox(double n, double w, double s, double e) :

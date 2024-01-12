@@ -15,8 +15,8 @@
 #include <vector>
 
 
-namespace eckit {
-class Configuration;
+namespace eckit::geo {
+class Spec;
 }
 
 
@@ -70,7 +70,7 @@ public:
 protected:
     // -- Constructors
 
-    explicit Range(const Configuration&);
+    explicit Range(const Spec&);
     explicit Range(size_t n);
 
     // -- Members

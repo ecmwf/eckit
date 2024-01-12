@@ -15,13 +15,13 @@
 #include <memory>
 #include <unordered_set>
 
-#include "eckit/config/Configuration.h"
+#include "eckit/geo/Spec.h"
 
 
 namespace eckit::geo::spec {
 
 
-class DynamicConfiguration : public Configuration {
+class Layered final : public Spec {
 public:
     // -- Types
     // None
@@ -31,8 +31,8 @@ public:
 
     // -- Constructors
 
-    DynamicConfiguration();
-    explicit DynamicConfiguration(const Configuration&);
+    Layered();
+    explicit Layered(const Spec&);
 
     // -- Destructor
     // None
@@ -47,8 +47,8 @@ public:
 
     void hide(const std::string&);
     void unhide(const std::string&);
-    void push_back(Configuration*);
-    void push_front(Configuration*);
+    void push_back(Spec*);
+    void push_front(Spec*);
 
     // -- Overridden methods
 
@@ -57,7 +57,7 @@ public:
                (std::any_of(before_.begin(),
                             before_.end(),
                             [&](const decltype(before_)::value_type& c) { return c->has(name); }) ||
-                config_.has(name) ||
+                spec_.has(name) ||
                 std::any_of(after_.begin(), after_.end(), [&](const decltype(after_)::value_type& c) {
                     return c->has(name);
                 }));
@@ -92,9 +92,9 @@ private:
         bool contains(const value_type& name) const { return find(name) != end(); }
     } hide_;
 
-    const Configuration& config_;
-    std::vector<std::unique_ptr<Configuration>> before_;
-    std::vector<std::unique_ptr<Configuration>> after_;
+    const Spec& spec_;
+    std::vector<std::unique_ptr<Spec>> before_;
+    std::vector<std::unique_ptr<Spec>> after_;
 
     // -- Methods
 
@@ -104,7 +104,7 @@ private:
                (std::any_of(before_.begin(),
                             before_.end(),
                             [&](const decltype(before_)::value_type& c) { return c->get(name, value); }) ||
-                config_.get(name, value) ||
+                spec_.get(name, value) ||
                 std::any_of(after_.begin(), after_.end(), [&](const decltype(after_)::value_type& c) {
                     return c->get(name, value);
                 }));
@@ -112,7 +112,8 @@ private:
 
     // -- Overridden methods
 
-    void print(std::ostream&) const override;
+    void print(std::ostream&) const final;
+    void json(JSON&) const final;
 
     // -- Class members
     // None

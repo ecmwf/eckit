@@ -14,6 +14,7 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/LocalConfiguration.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/value/Value.h"
@@ -22,11 +23,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ConfigurationNotFound::ConfigurationNotFound(const std::string& name) {
-    std::ostringstream s;
-    s << "ConfigurationNotFound: [" << name << "]";
-    reason(s.str());
-}
+class ConfigurationNotFound : public Exception {
+public:
+    ConfigurationNotFound(const std::string& name) {
+        std::ostringstream s;
+        s << "ConfigurationNotFound: [" << name << "]";
+        reason(s.str());
+    }
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

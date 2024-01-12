@@ -12,15 +12,15 @@
 
 #include "eckit/geo/Range.h"
 
-#include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Spec.h"
 
 
 namespace eckit::geo {
 
 
-Range::Range(const Configuration& config) :
-    Range(config.getUnsigned("n")) {}
+Range::Range(const Spec& spec) :
+    Range(spec.get_unsigned("n", 0)) {}
 
 
 Range::Range(size_t n) :

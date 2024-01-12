@@ -18,8 +18,8 @@
 namespace eckit::geo::grid::regular {
 
 
-IrregularLL::IrregularLL(const Configuration& config) :
-    Regular(config) {}
+IrregularLL::IrregularLL(const Spec& spec) :
+    Regular(spec) {}
 
 
 Grid::iterator IrregularLL::cbegin() const {

@@ -60,7 +60,7 @@ public:
     // -- Constructors
 
     PROJ(const std::string& source, const std::string& target, double lon_minimum = 0.);
-    explicit PROJ(const Configuration&);
+    explicit PROJ(const Spec&);
 
     // -- Destructor
     // None
@@ -83,7 +83,7 @@ public:
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
-    Spec spec() const override;
+    Spec* spec() const override;
 
     // -- Class members
     // None

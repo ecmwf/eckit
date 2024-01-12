@@ -28,7 +28,7 @@ public:
 
     // -- Constructors
 
-    explicit HEALPix(const Configuration&);
+    explicit HEALPix(const Spec&);
     explicit HEALPix(size_t Nside, Ordering = Ordering::healpix_ring);
 
     // -- Destructor
@@ -57,7 +57,7 @@ public:
 
     // -- Class members
 
-    static Configuration* config(const std::string& name);
+    static Spec* config(const std::string& name);
 
     // -- Class methods
     // None

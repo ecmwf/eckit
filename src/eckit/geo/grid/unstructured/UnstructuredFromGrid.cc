@@ -75,8 +75,8 @@ std::vector<Point> UnstructuredFromGrid::to_points() const {
 }
 
 
-Configuration* UnstructuredFromGrid::config(const std::string& name) {
-    return GridConfigurationUID::instance().get(name).config();
+Spec* UnstructuredFromGrid::config(const std::string& name) {
+    return SpecByUID::instance().get(name).config();
 }
 
 

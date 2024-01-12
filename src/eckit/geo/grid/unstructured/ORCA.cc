@@ -17,6 +17,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/io/Length.h"
@@ -60,15 +61,15 @@ std::string arrangement_to_string(ORCA::Arrangement a) {
 }  // namespace
 
 
-ORCA::ORCA(const Configuration& config) :
-    Unstructured(config),
-    name_(config.getString("orca_name")),
-    uid_(config.getString("orca_uid")),
-    arrangement_(arrangement_from_string(config.getString("orca_arrangement"))),
+ORCA::ORCA(const Spec& spec) :
+    Unstructured(spec),
+    name_(spec.get_string("orca_name")),
+    uid_(spec.get_string("orca_uid")),
+    arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
     dimensions_{-1, -1},
     halo_{-1, -1, -1, -1},
     pivot_{-1, -1} {
-    PathName path = config.getString("path", LibEcKitGeo::cacheDir() + "/eckit/geo/orca/" + uid_ + ".atlas");
+    PathName path = spec.get_string("path", LibEcKitGeo::cacheDir() + "/eckit/geo/orca/" + uid_ + ".atlas");
 
 #if eckit_HAVE_CURL  // for eckit::URLHandle
     if (!path.exists() && LibEcKitGeo::caching()) {
@@ -77,7 +78,7 @@ ORCA::ORCA(const Configuration& config) :
         ASSERT(dir.exists());
 
         auto tmp = path + ".download";
-        auto url = config.getString("url_prefix", "") + config.getString("url");
+        auto url = spec.get_string("url_prefix", "") + spec.get_string("url");
 
         Timer timer;
         Log::info() << "ORCA: downloading '" << url << "' to '" << path << "'..." << std::endl;
@@ -108,7 +109,7 @@ ORCA::ORCA(const Configuration& config) :
 
     // read and check against metadata (if present)
     read(path);
-    check(config);
+    check(spec);
 }
 
 
@@ -159,23 +160,23 @@ void ORCA::read(const PathName& p) {
 }
 
 
-void ORCA::check(const Configuration& config) {
+void ORCA::check(const Spec& spec) {
     ASSERT(uid_.length() == 32);
-    if (config.getBool("orca_uid_check", false)) {
+    if (spec.get_bool("orca_uid_check", false)) {
         ASSERT(uid_ == uid());
     }
 
-    if (std::vector<decltype(dimensions_)::value_type> d; config.get("dimensions", d)) {
+    if (std::vector<decltype(dimensions_)::value_type> d; spec.get("dimensions", d)) {
         ASSERT(d.size() == 2);
         ASSERT(d[0] == dimensions_[0] && d[1] == dimensions_[1]);
     }
 
-    if (std::vector<decltype(halo_)::value_type> h; config.get("halo", h)) {
+    if (std::vector<decltype(halo_)::value_type> h; spec.get("halo", h)) {
         ASSERT(h.size() == 4);
         ASSERT(h[0] == halo_[0] && h[1] == halo_[1] && h[2] == halo_[2] && h[3] == halo_[3]);
     }
 
-    if (std::vector<decltype(pivot_)::value_type> p; config.get("pivot", p)) {
+    if (std::vector<decltype(pivot_)::value_type> p; spec.get("pivot", p)) {
         ASSERT(p.size() == 2);
         ASSERT(types::is_approximately_equal(p[0], pivot_[0]));
         ASSERT(types::is_approximately_equal(p[1], pivot_[1]));
@@ -228,8 +229,8 @@ std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlon() const {
 }
 
 
-Configuration* ORCA::config(const std::string& name) {
-    return GridConfigurationUID::instance().get(name).config();
+Spec* ORCA::config(const std::string& name) {
+    return SpecByUID::instance().get(name).config();
 }
 
 

@@ -17,7 +17,7 @@
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/range/RegularLongitude.h"
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/regex.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
@@ -104,12 +104,12 @@ struct DiscreteRange {
 };
 
 
-PointLonLat make_reference_from_config(const Configuration& config) {
-    if (double lon = 0, lat = 0; config.get("reference_lon", lon) && config.get("reference_lat", lat)) {
+PointLonLat make_reference_from_spec(const Spec& spec) {
+    if (double lon = 0, lat = 0; spec.get("reference_lon", lon) && spec.get("reference_lat", lat)) {
         return {lon, lat};
     }
 
-    area::BoundingBox area(config);
+    area::BoundingBox area(spec);
     return {area.west, area.south};
 }
 
@@ -132,8 +132,8 @@ RegularLL::Internal::Internal(const Increments& _inc, const area::BoundingBox& _
 }
 
 
-RegularLL::RegularLL(const Configuration& config) :
-    RegularLL(Increments{config}, area::BoundingBox{config}, make_reference_from_config(config)) {}
+RegularLL::RegularLL(const Spec& spec) :
+    RegularLL(Increments{spec}, area::BoundingBox{spec}, make_reference_from_spec(spec)) {}
 
 
 RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox) :
@@ -178,7 +178,7 @@ const std::vector<double>& RegularLL::latitudes() const {
 #define POSITIVE_REAL "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
 
 
-Configuration* RegularLL::config(const std::string& name) {
+Spec* RegularLL::config(const std::string& name) {
     static const std::string pattern("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 
     auto match = util::regex_match(pattern, name);
@@ -192,7 +192,7 @@ Configuration* RegularLL::config(const std::string& name) {
                   // Fraction(360)).n();
     auto nj = 1;  // detail::RegularIterator(Fraction(-90), Fraction(90), Fraction(increments[1]), Fraction(0)).n();
 
-    return new spec::MappedConfiguration({{"type", "regular_ll"}, {"grid", increments}, {"ni", ni}, {"nj", nj}});
+    return new spec::Custom({{"type", "regular_ll"}, {"grid", increments}, {"ni", ni}, {"nj", nj}});
 }
 
 

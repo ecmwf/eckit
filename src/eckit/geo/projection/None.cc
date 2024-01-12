@@ -12,7 +12,7 @@
 
 #include "eckit/geo/projection/None.h"
 
-#include "eckit/geo/spec/MappedConfiguration.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
@@ -24,11 +24,11 @@ static ProjectionBuilder<None> __projection3("equirectangular");
 static ProjectionBuilder<None> __projection4("plate-carree");
 
 
-None::None(const Configuration&) {}
+None::None(const Spec&) {}
 
 
-Projection::Spec None::spec() const {
-    return Spec{};
+Spec* None::spec() const {
+    return new spec::Custom{};
 }
 
 

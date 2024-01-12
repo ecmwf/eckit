@@ -62,7 +62,7 @@ public:
 protected:
     // -- Constructors
 
-    explicit Regular(const Configuration&);
+    explicit Regular(const Spec&);
     explicit Regular(const area::BoundingBox&);
 
     // -- Members

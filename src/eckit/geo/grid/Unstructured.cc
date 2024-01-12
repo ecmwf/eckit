@@ -28,8 +28,8 @@ Grid::iterator Unstructured::cend() const {
 }
 
 
-Unstructured::Unstructured(const Configuration& config) :
-    Grid(config) {}
+Unstructured::Unstructured(const Spec& spec) :
+    Grid(spec) {}
 
 
 Unstructured::Unstructured(const area::BoundingBox& bbox) :

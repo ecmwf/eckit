@@ -19,12 +19,12 @@
 #include "eckit/memory/Factory.h"
 
 
-namespace eckit {
-class Configuration;
-namespace geo::spec {
-class MappedConfiguration;
+namespace eckit::geo {
+class Spec;
+namespace spec {
+class Custom;
 }
-}  // namespace eckit
+}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -35,9 +35,7 @@ public:
     // -- Types
 
     using builder_t = BuilderT1<Projection>;
-    using ARG1      = const Configuration&;
-
-    using Spec = spec::MappedConfiguration;
+    using ARG1      = const Spec&;
 
     // -- Exceptions
     // None
@@ -67,7 +65,7 @@ public:
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
 
-    virtual Spec spec() const = 0;
+    virtual Spec* spec() const = 0;
 
     // -- Overridden methods
     // None

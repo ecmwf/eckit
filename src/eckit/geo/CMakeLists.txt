@@ -10,8 +10,6 @@ list(APPEND eckit_geo_srcs
     Area.h
     Cache.cc
     Cache.h
-    Configurator.h
-    ConvexHull.h
     CoordinateHelpers.cc
     CoordinateHelpers.h
     Domain.cc
@@ -48,6 +46,8 @@ list(APPEND eckit_geo_srcs
     Range.h
     Renumber.h
     Search.h
+    Spec.cc
+    Spec.h
     Sphere.cc
     Sphere.h
     SphereT.h
@@ -104,10 +104,11 @@ list(APPEND eckit_geo_srcs
     range/Regular.h
     range/RegularLongitude.cc
     range/RegularLongitude.h
-    spec/DynamicConfiguration.cc
-    spec/DynamicConfiguration.h
-    spec/MappedConfiguration.cc
-    spec/MappedConfiguration.h
+    spec/Generator.h
+    spec/Custom.cc
+    spec/Custom.h
+    spec/Layered.cc
+    spec/Layered.h
     util.cc
     util.h
     util/arange.cc

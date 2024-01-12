@@ -62,7 +62,7 @@ public:
 protected:
     // -- Constructors
 
-    explicit Reduced(const Configuration&);
+    explicit Reduced(const Spec&);
     explicit Reduced(const area::BoundingBox&);
 
     // -- Members

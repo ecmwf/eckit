@@ -29,7 +29,7 @@ public:
     // -- Constructors
 
     Sphere(double R);
-    Sphere(const Configuration&);
+    Sphere(const Spec&);
 
     // -- Destructor
     // None

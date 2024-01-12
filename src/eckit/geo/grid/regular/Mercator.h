@@ -30,7 +30,7 @@ public:
 
     // -- Constructors
 
-    explicit Mercator(const Configuration&);
+    explicit Mercator(const Spec&);
 
     Mercator(size_t ni, size_t nj, const Increments&, const area::BoundingBox&);
 

@@ -19,19 +19,19 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/Configurator.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Ordering.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Renumber.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
 
 
-namespace eckit {
-class Configuration;
+namespace eckit::geo {
+class Spec;
 }
 
 
@@ -44,13 +44,14 @@ public:
 
     using uid_t     = std::string;
     using builder_t = BuilderT1<Grid>;
-    using ARG1      = const Configuration&;
+    using ARG1      = const Spec&;
 
     struct Iterator final : std::unique_ptr<geo::Iterator> {
         explicit Iterator(geo::Iterator* it) :
             unique_ptr(it) {
             ASSERT(unique_ptr::operator bool());
         }
+
         using diff_t = unique_ptr::element_type::diff_t;
 
         Iterator(const Iterator&) = delete;
@@ -83,7 +84,7 @@ public:
 
     // -- Constructors
 
-    explicit Grid(const Configuration&);
+    explicit Grid(const Spec&);
 
     Grid(const Grid&) = delete;
     Grid(Grid&&)      = delete;
@@ -177,35 +178,35 @@ private:
 };
 
 
-using GridFactoryType       = Factory<Grid>;
-using GridConfigurationName = Configurator<ConfigurationGeneratorT1<const std::string&>>;
-using GridConfigurationUID  = Configurator<ConfigurationGeneratorT0>;
+using GridFactoryType = Factory<Grid>;
+using SpecByName      = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+using SpecByUID       = spec::GeneratorT<spec::SpecGeneratorT0>;
 
 
 template <typename T>
 using GridRegisterType = ConcreteBuilderT1<Grid, T>;
 
 template <typename T>
-using GridRegisterUID = ConcreteConfigurationGeneratorT0<T>;
+using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
 
 template <typename T>
-using GridRegisterName = ConcreteConfigurationGeneratorT1<T, const std::string&>;
+using GridRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
 
 
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
-    static const Grid* build(const Configuration& config) { return instance().build_(config); }
+    static const Grid* build(const Spec& spec) { return instance().build_(spec); }
 
-    static Configuration* configure(const Configuration& config) { return instance().configure_(config); }
+    static Spec* spec(const Spec& spec) { return instance().generate_spec_(spec); }
     static void list(std::ostream& out) { return instance().list_(out); }
 
 private:
     static GridFactory& instance();
 
     // This is 'const' as Grid should always be immutable
-    const Grid* build_(const Configuration&) const;
+    const Grid* build_(const Spec&) const;
 
-    Configuration* configure_(const Configuration&) const;
+    Spec* generate_spec_(const Spec&) const;
     void list_(std::ostream&) const;
 
     mutable Mutex mutex_;

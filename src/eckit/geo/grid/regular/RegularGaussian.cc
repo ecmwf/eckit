@@ -49,7 +49,7 @@ Grid::iterator RegularGaussian::cend() const {
 }
 
 
-Spec* RegularGaussian::config(const std::string& name) {
+Spec* RegularGaussian::spec(const std::string& name) {
     auto N = Translator<std::string, size_t>{}(name.substr(1));
     return new spec::Custom({{"type", "regular_gg"}, {"N", N}, {"ni", 4 * N}});
 }

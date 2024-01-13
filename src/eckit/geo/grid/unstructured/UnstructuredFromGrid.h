@@ -76,7 +76,7 @@ public:
 
     // -- Class methods
 
-    static Spec* config(const std::string& name);
+    static Spec* spec(const std::string& name);
 
 private:
     // -- Members

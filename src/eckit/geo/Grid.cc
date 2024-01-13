@@ -154,10 +154,10 @@ Spec* GridFactory::generate_spec_(const Spec& spec) const {
     // configurable options
 
     if (std::string uid; cfg->get("uid", uid)) {
-        cfg->push_front(SpecByUID::instance().get(uid).config());
+        cfg->push_front(SpecByUID::instance().get(uid).spec());
     }
     else if (std::string grid; cfg->get("grid", grid) && SpecByName::instance().matches(grid)) {
-        cfg->push_front(SpecByName::instance().match(grid).config(grid));
+        cfg->push_front(SpecByName::instance().match(grid).spec(grid));
     }
 
 

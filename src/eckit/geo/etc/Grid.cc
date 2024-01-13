@@ -39,7 +39,7 @@ spec::Custom::value_type __from_value(const Value& value) {
 }
 
 
-void set_config_value(spec::Custom& config, const std::string& key, const Value& value) {
+void set_custom_value(spec::Custom& custom, const std::string& key, const Value& value) {
     using number_type = pl_type::value_type;
 
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
@@ -53,14 +53,14 @@ void set_config_value(spec::Custom& config, const std::string& key, const Value&
                : value.isNumber() ? __from_value<number_type>(value)
                                   : __from_value<std::string>(value);
 
-    std::visit([&](const auto& val) { config.set(key, val); }, val);
+    std::visit([&](const auto& val) { custom.set(key, val); }, val);
 }
 
 
 spec::Custom* config_from_value_map(const ValueMap& map) {
     auto* config = new spec::Custom;
     for (const auto& kv : map) {
-        set_config_value(*config, kv.first, kv.second);
+        set_custom_value(*config, kv.first, kv.second);
     }
     return config;
 }
@@ -70,27 +70,27 @@ spec::Custom* config_from_value_map(const ValueMap& map) {
 
 
 const Grid& Grid::instance() {
-    static const Grid __instance(LibEcKitGeo::configFileGrid());
+    static const Grid __instance(LibEcKitGeo::etcGrid());
     return __instance;
 }
 
 
 Grid::Grid(const PathName& path) {
-    auto* config = new spec::Custom;
-    config_.reset(config);
+    auto* custom = new spec::Custom;
+    spec_.reset(custom);
 
-    struct SpecUID final : SpecByUID::configurator_t {
-        explicit SpecUID(spec::Custom* config) :
-            config_(config) {}
-        Spec* config() const override { return new spec::Custom(*config_); }
-        std::unique_ptr<spec::Custom> config_;
+    struct SpecUID final : SpecByUID::generator_t {
+        explicit SpecUID(spec::Custom* spec) :
+            spec_(spec) {}
+        Spec* spec() const override { return new spec::Custom(*spec_); }
+        std::unique_ptr<spec::Custom> spec_;
     };
 
-    struct SpecName final : SpecByName::configurator_t {
-        explicit SpecName(spec::Custom* config) :
-            config_(config) {}
-        Spec* config(SpecByName::configurator_t::arg1_t) const override { return new spec::Custom(*config_); }
-        std::unique_ptr<spec::Custom> config_;
+    struct SpecName final : SpecByName::generator_t {
+        explicit SpecName(spec::Custom* spec) :
+            spec_(spec) {}
+        Spec* spec(SpecByName::generator_t::arg1_t) const override { return new spec::Custom(*spec_); }
+        std::unique_ptr<spec::Custom> spec_;
     };
 
     if (path.exists()) {
@@ -117,7 +117,7 @@ Grid::Grid(const PathName& path) {
                 continue;
             }
 
-            set_config_value(*config, key, kv.second);
+            set_custom_value(*custom, key, kv.second);
         }
     }
 }

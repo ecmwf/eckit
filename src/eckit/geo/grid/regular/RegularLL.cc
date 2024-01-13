@@ -178,7 +178,7 @@ const std::vector<double>& RegularLL::latitudes() const {
 #define POSITIVE_REAL "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
 
 
-Spec* RegularLL::config(const std::string& name) {
+Spec* RegularLL::spec(const std::string& name) {
     static const std::string pattern("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 
     auto match = util::regex_match(pattern, name);

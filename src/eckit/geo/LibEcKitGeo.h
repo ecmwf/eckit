@@ -47,7 +47,7 @@ public:
 
     static LibEcKitGeo& instance();
 
-    static eckit::PathName configFileGrid();
+    static eckit::PathName etcGrid();
 
     static bool caching();
     static std::string cacheDir();

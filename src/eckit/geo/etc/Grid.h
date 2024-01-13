@@ -50,7 +50,7 @@ public:
 
     static const Grid& instance();
 
-    const Spec& config() const { return *config_; }
+    const Spec& spec() const { return *spec_; }
 
     // -- Overridden methods
     // None
@@ -68,7 +68,7 @@ private:
 
     // -- Members
 
-    std::unique_ptr<Spec> config_;
+    std::unique_ptr<Spec> spec_;
 
     // -- Methods
     // None

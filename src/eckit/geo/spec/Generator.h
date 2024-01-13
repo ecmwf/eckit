@@ -38,9 +38,9 @@ class GeneratorT {
 public:
     // -- Types
 
-    using configurator_t = C;
-    using key_t          = std::string;
-    using storage_t      = std::map<key_t, configurator_t*>;
+    using generator_t = C;
+    using key_t       = std::string;
+    using storage_t   = std::map<key_t, generator_t*>;
 
     // -- Constructors
 
@@ -59,11 +59,11 @@ public:
     bool exists(const key_t&) const;
     bool matches(const std::string&) const;
 
-    void regist(const key_t&, configurator_t*);
+    void regist(const key_t&, generator_t*);
     void unregist(const key_t&);
 
-    const configurator_t& get(const key_t&) const;
-    const configurator_t& match(const std::string&) const;
+    const generator_t& get(const key_t&) const;
+    const generator_t& match(const std::string&) const;
 
 private:
     // -- Constructors
@@ -112,7 +112,7 @@ bool GeneratorT<C>::matches(const std::string& k) const {
 }
 
 template <class C>
-void GeneratorT<C>::regist(const key_t& k, configurator_t* c) {
+void GeneratorT<C>::regist(const key_t& k, generator_t* c) {
     AutoLock<Mutex> lock(mutex_);
     if (exists(k)) {
         throw BadParameter("Configurator has already a builder for " + k, Here());
@@ -132,7 +132,7 @@ void GeneratorT<C>::unregist(const key_t& k) {
 }
 
 template <class C>
-const typename GeneratorT<C>::configurator_t& GeneratorT<C>::get(const key_t& k) const {
+const typename GeneratorT<C>::generator_t& GeneratorT<C>::get(const key_t& k) const {
     AutoLock<Mutex> lock(mutex_);
     if (auto it = store_.find(k); it != store_.end()) {
         return *(it->second);
@@ -141,7 +141,7 @@ const typename GeneratorT<C>::configurator_t& GeneratorT<C>::get(const key_t& k)
 }
 
 template <class C>
-const typename GeneratorT<C>::configurator_t& GeneratorT<C>::match(const std::string& k) const {
+const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::string& k) const {
     AutoLock<Mutex> lock(mutex_);
 
     auto end = store_.cend();
@@ -209,7 +209,7 @@ class SpecGeneratorT0 : public SpecGenerator {
 public:
     // -- Methods
 
-    virtual Spec* config() const = 0;
+    virtual Spec* spec() const = 0;
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ public:
 
     // -- Methods
 
-    virtual Spec* config(arg1_t) const = 0;
+    virtual Spec* spec(arg1_t) const = 0;
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -238,7 +238,7 @@ public:
 
     // -- Methods
 
-    virtual Spec* config(arg1_t, arg2_t) const = 0;
+    virtual Spec* spec(arg1_t, arg2_t) const = 0;
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -267,7 +267,7 @@ public:
 
     // -- Overridden methods
 
-    Spec* config() const override { return T::config(); }
+    Spec* spec() const override { return T::spec(); }
 
 private:
     // -- Members
@@ -301,7 +301,7 @@ public:
 
     // -- Overridden methods
 
-    Spec* config(typename SpecGeneratorT1<ARG1>::arg1_t p1) const override { return T::config(p1); }
+    Spec* spec(typename SpecGeneratorT1<ARG1>::arg1_t p1) const override { return T::spec(p1); }
 
 private:
     // -- Members
@@ -335,8 +335,8 @@ public:
 
     // -- Overridden methods
 
-    Spec* config(typename SpecGeneratorT1<ARG1>::arg1_t p1, typename SpecGeneratorT1<ARG1>::arg2_t p2) const override {
-        return T::config(p1, p2);
+    Spec* spec(typename SpecGeneratorT1<ARG1>::arg1_t p1, typename SpecGeneratorT1<ARG1>::arg2_t p2) const override {
+        return T::spec(p1, p2);
     }
 
 private:

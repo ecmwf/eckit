@@ -294,7 +294,7 @@ size_t HEALPix::nj() const {
 }
 
 
-Spec* HEALPix::config(const std::string& name) {
+Spec* HEALPix::spec(const std::string& name) {
     auto Nside = Translator<std::string, size_t>{}(name.substr(1));
     return new spec::Custom({{"type", "HEALPix"}, {"Nside", Nside}, {"orderingConvention", "ring"}});
 }

@@ -71,7 +71,7 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
 
 
 struct ReducedGaussianClassical {
-    static Spec* config(const std::string& name) {
+    static Spec* spec(const std::string& name) {
         auto N = Translator<std::string, size_t>{}(name.substr(1));
         return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
     }
@@ -79,7 +79,7 @@ struct ReducedGaussianClassical {
 
 
 struct ReducedGaussianOctahedral {
-    static Spec* config(const std::string& name) {
+    static Spec* spec(const std::string& name) {
         auto N = Translator<std::string, size_t>{}(name.substr(1));
         return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_octahedral_pl(N)}});
     }

@@ -57,7 +57,7 @@ public:
 
     // -- Class members
 
-    static Spec* config(const std::string& name);
+    static Spec* spec(const std::string& name);
 
     // -- Class methods
     // None

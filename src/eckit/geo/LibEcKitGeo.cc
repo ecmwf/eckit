@@ -34,7 +34,7 @@ LibEcKitGeo& LibEcKitGeo::instance() {
 }
 
 
-PathName LibEcKitGeo::configFileGrid() {
+PathName LibEcKitGeo::etcGrid() {
     static const PathName path{
         LibResource<std::string, LibEcKitGeo>("eckit-geo-grid;$ECKIT_GEO_GRID", "~eckit/etc/eckit/geo/grid.yaml")};
     return path;

@@ -229,8 +229,8 @@ std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlon() const {
 }
 
 
-Spec* ORCA::config(const std::string& name) {
-    return SpecByUID::instance().get(name).config();
+Spec* ORCA::spec(const std::string& name) {
+    return SpecByUID::instance().get(name).spec();
 }
 
 

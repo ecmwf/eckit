@@ -170,7 +170,7 @@ Spec* GridFactory::generate_spec_(const Spec& spec) const {
 void GridFactory::list_(std::ostream& out) const {
     AutoLock<Mutex> lock(mutex_);
 
-    GridConfig::instance();
+    etc::Grid::instance();
 
     out << SpecByUID::instance() << std::endl;
     out << SpecByName::instance() << std::endl;

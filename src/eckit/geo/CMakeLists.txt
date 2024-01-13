@@ -111,6 +111,7 @@ list(APPEND eckit_geo_srcs
     spec/Layered.h
     util.cc
     util.h
+    util/Mutex.h
     util/arange.cc
     util/gaussian_latitudes.cc
     util/linspace.cc

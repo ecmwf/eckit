@@ -79,15 +79,15 @@ Grid::Grid(const PathName& path) {
     auto* custom = new spec::Custom;
     spec_.reset(custom);
 
-    struct SpecUID final : SpecByUID::generator_t {
-        explicit SpecUID(spec::Custom* spec) :
+    struct SpecByUIDGenerator final : SpecByUID::generator_t {
+        explicit SpecByUIDGenerator(spec::Custom* spec) :
             spec_(spec) {}
         Spec* spec() const override { return new spec::Custom(*spec_); }
         std::unique_ptr<spec::Custom> spec_;
     };
 
-    struct SpecName final : SpecByName::generator_t {
-        explicit SpecName(spec::Custom* spec) :
+    struct SpecByNameGenerator final : SpecByName::generator_t {
+        explicit SpecByNameGenerator(spec::Custom* spec) :
             spec_(spec) {}
         Spec* spec(SpecByName::generator_t::arg1_t) const override { return new spec::Custom(*spec_); }
         std::unique_ptr<spec::Custom> spec_;
@@ -103,7 +103,7 @@ Grid::Grid(const PathName& path) {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
                     SpecByUID::instance().regist(m.begin()->first.as<std::string>(),
-                                                 new SpecUID(config_from_value_map(m.begin()->second)));
+                                                 new SpecByUIDGenerator(config_from_value_map(m.begin()->second)));
                 }
                 continue;
             }
@@ -112,7 +112,7 @@ Grid::Grid(const PathName& path) {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
                     SpecByName::instance().regist(m.begin()->first.as<std::string>(),
-                                                  new SpecName(config_from_value_map(m.begin()->second)));
+                                                  new SpecByNameGenerator(config_from_value_map(m.begin()->second)));
                 }
                 continue;
             }

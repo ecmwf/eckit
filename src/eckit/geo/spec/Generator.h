@@ -14,13 +14,13 @@
 
 #include <algorithm>
 #include <iomanip>
+#include <ios>
 #include <iostream>
 #include <map>
 #include <string>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/utils/Regex.h"
 
 
@@ -93,6 +93,14 @@ private:
 
 //------------------------------------------------------------------------------------------------------
 
+static util::recursive_mutex MUTEX;
+
+class lock_type {
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+//------------------------------------------------------------------------------------------------------
+
 template <class C>
 GeneratorT<C>& GeneratorT<C>::instance() {
     static GeneratorT<C> obj;
@@ -101,19 +109,19 @@ GeneratorT<C>& GeneratorT<C>::instance() {
 
 template <class C>
 bool GeneratorT<C>::exists(const key_t& k) const {
-    AutoLock<Mutex> lock(mutex_);
+    lock_type lock;
     return store_.find(k) != store_.end();
 }
 
 template <class C>
 bool GeneratorT<C>::matches(const std::string& k) const {
-    AutoLock<Mutex> lock(mutex_);
+    lock_type lock;
     return std::any_of(store_.begin(), store_.end(), [&](const auto& p) { return Regex(p.first).match(k); });
 }
 
 template <class C>
 void GeneratorT<C>::regist(const key_t& k, generator_t* c) {
-    AutoLock<Mutex> lock(mutex_);
+    lock_type lock;
     if (exists(k)) {
         throw BadParameter("Configurator has already a builder for " + k, Here());
     }
@@ -123,7 +131,7 @@ void GeneratorT<C>::regist(const key_t& k, generator_t* c) {
 
 template <class C>
 void GeneratorT<C>::unregist(const key_t& k) {
-    AutoLock<Mutex> lock(mutex_);
+    lock_type lock;
     if (auto it = store_.find(k); it != store_.end()) {
         store_.erase(it);
         return;
@@ -133,7 +141,7 @@ void GeneratorT<C>::unregist(const key_t& k) {
 
 template <class C>
 const typename GeneratorT<C>::generator_t& GeneratorT<C>::get(const key_t& k) const {
-    AutoLock<Mutex> lock(mutex_);
+    lock_type lock;
     if (auto it = store_.find(k); it != store_.end()) {
         return *(it->second);
     }
@@ -142,7 +150,7 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::get(const key_t& k) co
 
 template <class C>
 const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::string& k) const {
-    AutoLock<Mutex> lock(mutex_);
+    lock_type lock;
 
     auto end = store_.cend();
     auto i   = end;
@@ -164,7 +172,7 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::strin
 
 template <class C>
 void GeneratorT<C>::print(std::ostream& os) const {
-    AutoLock<Mutex> lock(mutex_);
+    lock_type lock;
     os << "Configurator" << std::endl;
 
     int key_width = 0;

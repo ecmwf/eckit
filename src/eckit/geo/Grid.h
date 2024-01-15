@@ -208,8 +208,6 @@ private:
 
     Spec* generate_spec_(const Spec&) const;
     void list_(std::ostream&) const;
-
-    mutable Mutex mutex_;
 };
 
 

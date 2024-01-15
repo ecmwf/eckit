@@ -20,6 +20,7 @@
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Timer.h"
@@ -58,6 +59,13 @@ std::string arrangement_to_string(ORCA::Arrangement a) {
 }
 
 
+static util::recursive_mutex MUTEX;
+
+
+class lock_type {
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
 }  // namespace
 
 
@@ -69,6 +77,9 @@ ORCA::ORCA(const Spec& spec) :
     dimensions_{-1, -1},
     halo_{-1, -1, -1, -1},
     pivot_{-1, -1} {
+    // control concurrent download/access
+    lock_type lock;
+
     PathName path = spec.get_string("path", LibEcKitGeo::cacheDir() + "/eckit/geo/orca/" + uid_ + ".atlas");
 
 #if eckit_HAVE_CURL  // for eckit::URLHandle

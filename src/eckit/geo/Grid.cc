@@ -20,12 +20,19 @@
 #include "eckit/geo/etc/Grid.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 
 
 namespace eckit::geo {
+
+
+static util::recursive_mutex MUTEX;
+
+
+class lock_type {
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
 
 
 Grid::Grid(const Spec& spec) :
@@ -113,7 +120,7 @@ GridFactory& GridFactory::instance() {
 
 
 const Grid* GridFactory::build_(const Spec& spec) const {
-    AutoLock<Mutex> lock(mutex_);
+    lock_type lock;
 
     std::unique_ptr<Spec> cfg(generate_spec_(spec));
 
@@ -127,8 +134,7 @@ const Grid* GridFactory::build_(const Spec& spec) const {
 
 
 Spec* GridFactory::generate_spec_(const Spec& spec) const {
-    AutoLock<Mutex> lock(mutex_);
-
+    lock_type lock;
     etc::Grid::instance();
 
     auto* cfg = new spec::Layered(spec);
@@ -168,8 +174,7 @@ Spec* GridFactory::generate_spec_(const Spec& spec) const {
 
 
 void GridFactory::list_(std::ostream& out) const {
-    AutoLock<Mutex> lock(mutex_);
-
+    lock_type lock;
     etc::Grid::instance();
 
     out << SpecByUID::instance() << std::endl;

@@ -29,7 +29,7 @@ public:
     // -- Constructors
 
     None() = default;
-    explicit None(const Spec&);
+    explicit None(const Spec&) {}
 
     // -- Destructor
     // None
@@ -62,8 +62,15 @@ private:
 
     // -- Overridden methods
 
-    Point fwd(const Point& p) const override { return p; }
-    Point inv(const Point& q) const override { return q; }
+    Point fwd(const Point& p) const override {
+        const auto& q = std::get<PointLonLat>(p);
+        return Point2{q.lon, q.lat};
+    }
+
+    Point inv(const Point& q) const override {
+        const auto& p = std::get<Point2>(q);
+        return PointLonLat{p.X, p.Y};
+    }
 
     // -- Class members
     // None

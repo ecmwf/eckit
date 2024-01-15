@@ -24,9 +24,6 @@ static ProjectionBuilder<None> __projection3("equirectangular");
 static ProjectionBuilder<None> __projection4("plate-carree");
 
 
-None::None(const Spec&) {}
-
-
 Spec* None::spec() const {
     return new spec::Custom{};
 }

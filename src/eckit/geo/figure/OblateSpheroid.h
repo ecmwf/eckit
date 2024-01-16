@@ -28,8 +28,8 @@ public:
 
     // -- Constructors
 
-    OblateSpheroid(double R, double b);
-    OblateSpheroid(const Spec&);
+    OblateSpheroid(double a, double b);
+    explicit OblateSpheroid(const Spec&);
 
     // -- Destructor
     // None

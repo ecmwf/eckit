@@ -28,8 +28,8 @@ public:
 
     // -- Constructors
 
-    Sphere(double R);
-    Sphere(const Spec&);
+    explicit Sphere(double R);
+    explicit Sphere(const Spec&);
 
     // -- Destructor
     // None

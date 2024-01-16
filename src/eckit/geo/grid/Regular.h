@@ -35,8 +35,7 @@ public:
     // None
 
     // -- Destructor
-
-    ~Regular() override = default;
+    // None
 
     // -- Convertors
     // None

@@ -59,7 +59,7 @@ std::string arrangement_to_string(ORCA::Arrangement a) {
 }
 
 
-static util::recursive_mutex MUTEX;
+util::recursive_mutex MUTEX;
 
 
 class lock_type {

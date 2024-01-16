@@ -258,7 +258,7 @@ CASE("test_kdtree_mapped") {
         }
 
         Tree kd(path, points.size(), 0);
-        EXPECT_EQUAL(kd.size(), 0);
+        EXPECT(kd.empty());
 
         kd.build(points);
 
@@ -290,7 +290,7 @@ CASE("test_kdtree_iterate_empty") {
         count++;
     }
     EXPECT_EQUAL(count, 0);
-    EXPECT_EQUAL(kd.size(), 0);
+    EXPECT(kd.empty());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

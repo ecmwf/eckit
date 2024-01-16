@@ -40,6 +40,19 @@ private:
 
 template <typename Key, typename Value>
 class CacheT final : private Cache {
+private:
+    template <typename V>
+    using footprint_t = decltype(std::declval<V>().footprint());
+
+    template <typename V, typename = std::void_t<>>
+    struct has_footprint : std::false_type {};
+
+    template <typename V>
+    struct has_footprint<V, std::void_t<footprint_t<V>>> : std::true_type {};
+
+    template <typename V>
+    static inline constexpr bool has_footprint_v = has_footprint<V>::value;
+
 public:
     using key_type   = Key;
     using value_type = Value;
@@ -67,7 +80,12 @@ public:
     bytes_t footprint() const final {
         lock_guard<recursive_mutex> lock(*mutex_);
         return std::accumulate(container_.begin(), container_.end(), 0, [](bytes_t sum, const auto& kv) {
-            return sum + kv.second.size() * sizeof(typename value_type::value_type);
+            if constexpr (has_footprint_v<value_type>) {
+                return sum + kv.second.footprint();
+            }
+            else {
+                return sum + kv.second.size() * sizeof(typename value_type::value_type);
+            }
         });
     }
 

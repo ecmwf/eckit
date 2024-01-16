@@ -20,6 +20,7 @@
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/util/Cache.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Bytes.h"
@@ -66,21 +67,13 @@ class lock_type {
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
 
-}  // namespace
+
+util::CacheT<PathName, ORCA::ORCARecord> CACHE;
 
 
-ORCA::ORCA(const Spec& spec) :
-    Unstructured(spec),
-    name_(spec.get_string("orca_name")),
-    uid_(spec.get_string("orca_uid")),
-    arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
-    dimensions_{-1, -1},
-    halo_{-1, -1, -1, -1},
-    pivot_{-1, -1} {
+PathName orca_path(const PathName& path, const std::string& url) {
     // control concurrent download/access
     lock_type lock;
-
-    PathName path = spec.get_string("path", LibEcKitGeo::cacheDir() + "/eckit/geo/orca/" + uid_ + ".atlas");
 
 #if eckit_HAVE_CURL  // for eckit::URLHandle
     if (!path.exists() && LibEcKitGeo::caching()) {
@@ -89,7 +82,6 @@ ORCA::ORCA(const Spec& spec) :
         ASSERT(dir.exists());
 
         auto tmp = path + ".download";
-        auto url = spec.get_string("url_prefix", "") + spec.get_string("url");
 
         Timer timer;
         Log::info() << "ORCA: downloading '" << url << "' to '" << path << "'..." << std::endl;
@@ -117,16 +109,41 @@ ORCA::ORCA(const Spec& spec) :
 #endif
 
     ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
-
-    // read and check against metadata (if present)
-    read(path);
-    check(spec);
+    return path;
 }
 
 
-Grid::uid_t ORCA::calculate_uid() const {
+const ORCA::ORCARecord& orca_record(const PathName& p, const Spec& spec) {
+    if (CACHE.contains(p)) {
+        return CACHE[p];
+    }
+
+    // read and check against metadata (if present)
+    auto& record = CACHE[p];
+    record.read(p);
+    record.check(spec);
+
+    return record;
+}
+
+
+}  // namespace
+
+
+ORCA::ORCA(const Spec& spec) :
+    Unstructured(spec),
+    name_(spec.get_string("orca_name")),
+    uid_(spec.get_string("orca_uid")),
+    arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
+    record_(orca_record(
+        orca_path(spec.get_string("path", LibEcKitGeo::cacheDir() + "/eckit/geo/grid/orca/" + uid_ + ".atlas"),
+                  spec.get_string("url_prefix", "") + spec.get_string("url")),
+        spec)) {}
+
+
+Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     MD5 hash;
-    hash.add(arrangement_to_string(arrangement_));
+    hash.add(arrangement_to_string(arrangement));
 
     auto sized = static_cast<long>(longitudes_.size() * sizeof(double));
 
@@ -150,7 +167,26 @@ Grid::uid_t ORCA::calculate_uid() const {
 }
 
 
-void ORCA::read(const PathName& p) {
+ORCA::ORCARecord::bytes_t ORCA::ORCARecord::footprint() const {
+    return sizeof(dimensions_.front()) * dimensions_.size() + sizeof(halo_.front()) * halo_.size() +
+           sizeof(pivot_.front()) * pivot_.size() + sizeof(longitudes_.front()) * longitudes_.size() +
+           sizeof(latitudes_.front()) * latitudes_.size() + sizeof(flags_.front()) * flags_.size();
+}
+
+
+size_t ORCA::ORCARecord::ni() const {
+    ASSERT(0 <= dimensions_[0]);
+    return static_cast<size_t>(dimensions_[0]);
+}
+
+
+size_t ORCA::ORCARecord::nj() const {
+    ASSERT(0 <= dimensions_[1]);
+    return static_cast<size_t>(dimensions_[1]);
+}
+
+
+void ORCA::ORCARecord::read(const PathName& p) {
     codec::RecordReader reader(p);
 
     int version = -1;
@@ -171,10 +207,11 @@ void ORCA::read(const PathName& p) {
 }
 
 
-void ORCA::check(const Spec& spec) {
-    ASSERT(uid_.length() == 32);
+void ORCA::ORCARecord::check(const Spec& spec) const {
     if (spec.get_bool("orca_uid_check", false)) {
-        ASSERT(uid_ == uid());
+        auto uid = spec.get_string("orca_uid");
+        ASSERT(uid.length() == 32);
+        ASSERT(uid == calculate_uid(arrangement_from_string(spec.get_string("orca_arrangement"))));
     }
 
     if (std::vector<decltype(dimensions_)::value_type> d; spec.get("dimensions", d)) {
@@ -201,7 +238,7 @@ void ORCA::check(const Spec& spec) {
 }
 
 
-size_t ORCA::write(const PathName& p, const std::string& compression) {
+size_t ORCA::ORCARecord::write(const PathName& p, const std::string& compression) {
     codec::RecordWriter record;
 
     codec::ArrayShape shape{static_cast<size_t>(dimensions_[0]), static_cast<size_t>(dimensions_[1])};
@@ -236,7 +273,7 @@ const area::BoundingBox& ORCA::boundingBox() const {
 
 
 std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlon() const {
-    return {latitudes_, longitudes_};
+    return {record_.latitudes_, record_.longitudes_};
 }
 
 

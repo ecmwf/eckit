@@ -40,6 +40,29 @@ public:
         W,
     };
 
+    struct ORCARecord {
+        explicit ORCARecord() = default;
+
+        void read(const PathName&);
+        void check(const Spec&) const;
+        size_t write(const PathName&, const std::string& compression = "none");
+        uid_t calculate_uid(Arrangement) const;
+
+        using bytes_t = decltype(sizeof(int));
+        bytes_t footprint() const;
+
+        size_t ni() const;
+        size_t nj() const;
+
+        std::array<std::int32_t, 2> dimensions_ = {-1, -1};
+        std::array<std::int32_t, 4> halo_       = {-1, -1, -1, -1};
+        std::array<double, 2> pivot_            = {-1, -1};
+
+        std::vector<double> longitudes_;
+        std::vector<double> latitudes_;
+        std::vector<std::byte> flags_;
+    };
+
     // -- Exceptions
     // None
 
@@ -58,14 +81,8 @@ public:
 
     // -- Methods
 
-    uid_t calculate_uid() const;
-
-    void read(const PathName&);
-    void check(const Spec&);
-    size_t write(const PathName&, const std::string& compression = "none");
-
-    size_t ni() const { return static_cast<size_t>(dimensions_[0]); }
-    size_t nj() const { return static_cast<size_t>(dimensions_[1]); }
+    size_t ni() const { return record_.ni(); }
+    size_t nj() const { return record_.nj(); }
 
     // -- Overridden methods
 
@@ -83,8 +100,8 @@ public:
 
     std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
-    const std::vector<double>& longitudes() const override { return longitudes_; }
-    const std::vector<double>& latitudes() const override { return latitudes_; }
+    const std::vector<double>& longitudes() const override { return record_.longitudes_; }
+    const std::vector<double>& latitudes() const override { return record_.latitudes_; }
 
     // -- Class members
     // None
@@ -99,13 +116,7 @@ private:
     std::string name_;
     uid_t uid_;
     Arrangement arrangement_;
-
-    std::array<std::int32_t, 2> dimensions_;
-    std::array<std::int32_t, 4> halo_;
-    std::array<double, 2> pivot_;
-    std::vector<double> longitudes_;
-    std::vector<double> latitudes_;
-    std::vector<std::byte> flags_;
+    const ORCARecord& record_;
 
     // -- Methods
     // None

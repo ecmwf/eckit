@@ -10,10 +10,9 @@
  */
 
 
-#include <map>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
+#include "eckit/geo/util/Cache.h"
 
 
 namespace eckit::geo::util {
@@ -22,9 +21,9 @@ namespace eckit::geo::util {
 const pl_type& reduced_octahedral_pl(size_t N) {
     ASSERT(N > 0);
 
-    static std::map<size_t, pl_type> __cache;
-    if (auto pl = __cache.find(N); pl != __cache.end()) {
-        return pl->second;
+    static CacheT<size_t, pl_type> cache;
+    if (cache.contains(N)) {
+        return cache[N];
     }
 
     pl_type pl(N * 2);
@@ -35,8 +34,7 @@ const pl_type& reduced_octahedral_pl(size_t N) {
         p += 4;
     }
 
-    __cache[N] = std::move(pl);
-    return __cache[N];
+    return (cache[N] = std::move(pl));
 }
 
 

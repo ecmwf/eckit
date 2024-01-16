@@ -55,7 +55,7 @@ pl_type pl_convert(const pl_type&);
 std::vector<double> arange(double start, double stop, double step);
 
 
-std::vector<double> gaussian_latitudes(size_t N, bool increasing);
+const std::vector<double>& gaussian_latitudes(size_t N, bool increasing);
 
 
 std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);

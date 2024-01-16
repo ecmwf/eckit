@@ -13,15 +13,27 @@
 #include <cmath>
 #include <limits>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util/Cache.h"
 
 
 namespace eckit::geo::util {
 
 
-std::vector<double> gaussian_latitudes(size_t N, bool increasing) {
+const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
+    ASSERT(N > 0);
+
+    using cache_t = CacheT<std::pair<size_t, bool>, std::vector<double>>;
+    const cache_t::key_type key{N, increasing};
+
+    static cache_t cache;
+    if (cache.contains(key)) {
+        return cache[key];
+    }
+
     std::vector<double> lats(2 * N);
 
 
@@ -92,7 +104,7 @@ std::vector<double> gaussian_latitudes(size_t N, bool increasing) {
     }
 
 
-    return lats;
+    return (cache[key] = std::move(lats));
 }
 
 

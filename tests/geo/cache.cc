@@ -10,8 +10,8 @@
  */
 
 
-#include "eckit/geo/util.h"
 #include "eckit/geo/util/Cache.h"
+#include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
 
 
@@ -22,12 +22,10 @@ using namespace geo::util;
 
 
 CASE("Cache") {
-    using func_t = const geo::pl_type& (*)(size_t);
-
     struct test_t {
         size_t N;
-        Cache::bytes_t footprint;
-        Cache::bytes_t footprint_acc;
+        Cache::bytes_t pl_footprint;
+        Cache::bytes_t pl_footprint_acc;
     } tests[] = {
         {16, 256, 256},
         {24, 384, 640},
@@ -39,22 +37,41 @@ CASE("Cache") {
     };
 
 
+    SECTION("separate caches") {
+        Cache::total_purge();
+        EXPECT_EQUAL(0, Cache::total_footprint());
+
+        // add an entry to a cache
+        reduced_classical_pl(16);
+        auto foot = Cache::total_footprint();
+        EXPECT(0 < foot);
+
+        // add another distinct entry to a cache of same type
+        reduced_octahedral_pl(16);
+        EXPECT(foot < Cache::total_footprint());
+
+        Cache::total_purge();
+        EXPECT_EQUAL(0, Cache::total_footprint());
+    }
+
+
     SECTION("reduced_classical_pl, reduced_octahedral_pl") {
-        for (func_t cacheable : {&reduced_classical_pl, &reduced_octahedral_pl}) {
+        for (const geo::pl_type& (*cacheable)(size_t) : {&reduced_classical_pl, &reduced_octahedral_pl}) {
             for (const auto& test : tests) {
                 Cache::total_purge();
                 (*cacheable)(test.N);
-                EXPECT_EQUAL(Cache::total_footprint(), test.footprint);
+                EXPECT_EQUAL(Cache::total_footprint(), test.pl_footprint);
             }
 
             Cache::total_purge();
             for (const auto& test : tests) {
                 (*cacheable)(test.N);
-                EXPECT_EQUAL(Cache::total_footprint(), test.footprint_acc);
+                EXPECT_EQUAL(Cache::total_footprint(), test.pl_footprint_acc);
             }
         }
 
         Cache::total_purge();
+        EXPECT_EQUAL(0, Cache::total_footprint());
     }
 }
 

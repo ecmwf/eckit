@@ -30,25 +30,20 @@ Gaussian::Gaussian(size_t N, double a, double b, double precision) :
     // pre-calculate on cropping
     auto [min, max] = std::minmax(a_, b_);
     if (!types::is_approximately_equal(min, -90., eps_) || !types::is_approximately_equal(max, 90., eps_)) {
-        auto& v = const_cast<std::vector<double>&>(values());
+        values_ = util::gaussian_latitudes(N_, a_ < b_);
+        auto& v = values_;
 
         auto [from, to] = util::monotonic_crop(v, min, max, precision);
         v.erase(v.begin() + to, v.end());
         v.erase(v.begin(), v.begin() + from);
 
-        ASSERT(!empty());
+        ASSERT(!v.empty());
     }
 }
 
 
 const std::vector<double>& Gaussian::values() const {
-    if (empty()) {
-        const_cast<std::vector<double>&>(valuesVector()) = util::gaussian_latitudes(N_, a_ < b_);
-        ASSERT(!empty());
-        ASSERT(size() == 2 * N_);
-    }
-
-    return *this;
+    return values_.empty() ? util::gaussian_latitudes(N_, a_ < b_) : values_;
 }
 
 

@@ -27,7 +27,6 @@ Regular::Regular(size_t n, double a, double b, double precision) :
         endpoint_ = false;
     }
     else {
-
         b             = PointLonLat::normalise_angle_to_minimum(b, a + util::eps);
         auto inc      = (b - a) / static_cast<double>(n);
         auto periodic = types::is_approximately_greater_or_equal(b - a + inc, 360.);
@@ -38,18 +37,18 @@ Regular::Regular(size_t n, double a, double b, double precision) :
 
 
 const std::vector<double>& Regular::values() const {
-    if (empty()) {
-        auto& v = const_cast<std::vector<double>&>(valuesVector());
-        v       = util::linspace(0., 360., size(), false);
+    if (values_.empty()) {
+        auto& v = const_cast<std::vector<double>&>(values_);
+        v       = util::linspace(0., 360., Range::size(), false);
 
         auto [from, to] = util::monotonic_crop(v, a_, b_, precision_);
         v.erase(v.begin() + to, v.end());
         v.erase(v.begin(), v.begin() + from);
 
-        ASSERT(!empty());
+        ASSERT(!v.empty());
     }
 
-    return *this;
+    return values_;
 }
 
 

@@ -63,6 +63,7 @@ private:
     const double a_;
     const double b_;
     const double eps_;
+    std::vector<double> values_;
 
     // -- Methods
     // None

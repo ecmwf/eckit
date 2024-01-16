@@ -16,18 +16,9 @@
 
 
 namespace eckit::geo {
-class Spec;
-}
 
 
-namespace eckit::geo {
-
-
-class Range : protected std::vector<double> {
-protected:
-    // -- Types
-    using P = vector;
-
+class Range {
 public:
     // -- Types
     // None
@@ -54,9 +45,9 @@ public:
 
     // -- Methods
 
-    size_t size() const { return empty() ? n_ : P::size(); }
+    size_t size() const { return n_; }
 
-    virtual const P& values() const = 0;
+    virtual const std::vector<double>& values() const = 0;
 
     // -- Overridden methods
     // None
@@ -70,15 +61,13 @@ public:
 protected:
     // -- Constructors
 
-    explicit Range(const Spec&);
     explicit Range(size_t n);
 
     // -- Members
     // None
 
     // -- Methods
-
-    const P& valuesVector() const { return *this; }
+    // None
 
     // -- Overridden methods
     // None

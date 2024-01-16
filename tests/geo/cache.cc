@@ -21,38 +21,46 @@ namespace eckit::test {
 using namespace geo::util;
 
 
-CASE("Cache") {
+CASE("eckit::geo::util") {
     struct test_t {
         size_t N;
+        bool increasing;
         Cache::bytes_t pl_footprint;
         Cache::bytes_t pl_footprint_acc;
+        Cache::bytes_t gl_footprint;
+        Cache::bytes_t gl_footprint_acc;
     } tests[] = {
-        {16, 256, 256},
-        {24, 384, 640},
-        {24, 384, 640},  // (repeated for a cache hit)
-        {32, 512, 1152},
-        {16, 256, 1152},  // (repeated for another cache hit)
-        {48, 768, 1920},
-        {64, 1024, 2944},
+        {16, false, 256, 256, 256, 256},
+        {24, false, 384, 640, 384, 640},
+        {24, false, 384, 640, 384, 640},  // (repeated for a cache hit)
+        {32, false, 512, 1152, 512, 1152},
+        {16, false, 256, 1152, 256, 1152},  // (repeated for another cache hit)
+        {48, false, 768, 1920, 768, 1920},
+        {16, true, 256, 1920, 256, 2176},  // (repeated except for 'increasing')
+        {24, true, 384, 1920, 384, 2560},  // ...
+        {24, true, 384, 1920, 384, 2560},
+        {32, true, 512, 1920, 512, 3072},
+        {16, true, 256, 1920, 256, 3072},
+        {48, true, 768, 1920, 768, 3840},
     };
 
 
-    SECTION("separate caches") {
-        Cache::total_purge();
-        EXPECT_EQUAL(0, Cache::total_footprint());
+    Cache::total_purge();
+    EXPECT_EQUAL(0, Cache::total_footprint());
 
-        // add an entry to a cache
+
+    SECTION("separate caches") {
         reduced_classical_pl(16);
         auto foot = Cache::total_footprint();
         EXPECT(0 < foot);
 
-        // add another distinct entry to a cache of same type
         reduced_octahedral_pl(16);
         EXPECT(foot < Cache::total_footprint());
-
-        Cache::total_purge();
-        EXPECT_EQUAL(0, Cache::total_footprint());
     }
+
+
+    Cache::total_purge();
+    EXPECT_EQUAL(0, Cache::total_footprint());
 
 
     SECTION("reduced_classical_pl, reduced_octahedral_pl") {
@@ -69,10 +77,30 @@ CASE("Cache") {
                 EXPECT_EQUAL(Cache::total_footprint(), test.pl_footprint_acc);
             }
         }
+    }
+
+
+    Cache::total_purge();
+    EXPECT_EQUAL(0, Cache::total_footprint());
+
+
+    SECTION("gaussian_latitudes") {
+        for (const auto& test : tests) {
+            Cache::total_purge();
+            gaussian_latitudes(test.N, test.increasing);
+            EXPECT_EQUAL(Cache::total_footprint(), test.gl_footprint);
+        }
 
         Cache::total_purge();
-        EXPECT_EQUAL(0, Cache::total_footprint());
+        for (const auto& test : tests) {
+            gaussian_latitudes(test.N, test.increasing);
+            EXPECT_EQUAL(Cache::total_footprint(), test.gl_footprint_acc);
+        }
     }
+
+
+    Cache::total_purge();
+    EXPECT_EQUAL(0, Cache::total_footprint());
 }
 
 

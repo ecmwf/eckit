@@ -67,17 +67,17 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
         const double angle_;
     };
 
-    const auto alpha = util::degree_to_radian * angle;
-    const auto theta = util::degree_to_radian * -(south_pole_lat + 90.);
-    const auto phi   = util::degree_to_radian * -south_pole_lon;
+    const auto alpha = util::DEGREE_TO_RADIAN * angle;
+    const auto theta = util::DEGREE_TO_RADIAN * -(south_pole_lat + 90.);
+    const auto phi   = util::DEGREE_TO_RADIAN * -south_pole_lon;
 
     const auto ca = std::cos(alpha);
     const auto ct = std::cos(theta);
     const auto cp = std::cos(phi);
 
-    if (types::is_approximately_equal(ct, 1., util::eps)) {
+    if (types::is_approximately_equal(ct, 1., util::EPS)) {
         angle    = PointLonLat::normalise_angle_to_minimum(angle - south_pole_lon, -180.);
-        rotated_ = !types::is_approximately_equal(angle, 0., util::eps);
+        rotated_ = !types::is_approximately_equal(angle, 0., util::EPS);
 
         fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
         inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle)) : new NonRotated);

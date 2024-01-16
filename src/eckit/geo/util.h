@@ -30,10 +30,9 @@ using pl_type         = std::vector<long>;
 namespace util {
 
 
-constexpr double degree_to_radian = M_PI / 180.;
-constexpr double radian_to_degree = M_1_PI * 180.;
-
-constexpr double eps = 1e-12;
+constexpr double DEGREE_TO_RADIAN = M_PI / 180.;
+constexpr double RADIAN_TO_DEGREE = M_1_PI * 180.;
+constexpr double EPS              = 1e-12;
 
 
 template <typename T>

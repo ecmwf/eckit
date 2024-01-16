@@ -156,8 +156,8 @@ double BoundingBox::area(double radius) const {
     double lonf = isPeriodicWestEast() ? 1. : ((east - west) / 360.);
     ASSERT(0. <= lonf && lonf <= 1.);
 
-    const auto sn = std::sin(north * util::degree_to_radian);
-    const auto ss = std::sin(south * util::degree_to_radian);
+    const auto sn = std::sin(north * util::DEGREE_TO_RADIAN);
+    const auto ss = std::sin(south * util::DEGREE_TO_RADIAN);
 
     double latf = 0.5 * (sn - ss);
     ASSERT(0. <= latf && latf <= 1.);

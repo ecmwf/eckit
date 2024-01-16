@@ -22,18 +22,17 @@
 namespace eckit::geo::range {
 
 
-Gaussian::Gaussian(size_t N, double a, double b, double precision) :
-    Range(2 * N), N_(N), a_(a), b_(b), eps_(precision) {
+Gaussian::Gaussian(size_t N, double a, double b, double _eps) :
+    Range(2 * N, _eps), N_(N), a_(a), b_(b) {
     ASSERT(N > 0);
-    ASSERT(eps_ >= 0.);
 
     // pre-calculate on cropping
     auto [min, max] = std::minmax(a_, b_);
-    if (!types::is_approximately_equal(min, -90., eps_) || !types::is_approximately_equal(max, 90., eps_)) {
+    if (!types::is_approximately_equal(min, -90., eps()) || !types::is_approximately_equal(max, 90., eps())) {
         values_ = util::gaussian_latitudes(N_, a_ < b_);
         auto& v = values_;
 
-        auto [from, to] = util::monotonic_crop(v, min, max, precision);
+        auto [from, to] = util::monotonic_crop(v, min, max, eps());
         v.erase(v.begin() + to, v.end());
         v.erase(v.begin(), v.begin() + from);
 

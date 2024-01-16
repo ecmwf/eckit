@@ -28,10 +28,10 @@ public:
 
     // -- Constructors
 
-    explicit Gaussian(size_t N, double precision = 0.) :
-        Gaussian(N, 90., -90., precision) {}
+    explicit Gaussian(size_t N, double eps = 0.) :
+        Gaussian(N, 90., -90., eps) {}
 
-    Gaussian(size_t N, double a, double b, double precision = 0.);
+    Gaussian(size_t N, double crop_a, double crop_b, double eps = 0.);
 
     // -- Destructor
     // None
@@ -62,7 +62,6 @@ private:
     const size_t N_;
     const double a_;
     const double b_;
-    const double eps_;
     std::vector<double> values_;
 
     // -- Methods

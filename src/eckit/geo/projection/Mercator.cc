@@ -41,11 +41,11 @@ Mercator::Mercator(double meridian, double parallel, Figure* figure, PointLonLat
                "Mercator: projection cannot be calculated at the poles");
 
     e_    = figure_->eccentricity();
-    lam0_ = util::degree_to_radian * meridian_;
+    lam0_ = util::DEGREE_TO_RADIAN * meridian_;
 
-    auto phi0 = util::degree_to_radian * parallel_;
-    auto lam1 = util::degree_to_radian * first.lon;
-    auto phi1 = util::degree_to_radian * first.lat;
+    auto phi0 = util::DEGREE_TO_RADIAN * parallel_;
+    auto lam1 = util::DEGREE_TO_RADIAN * first.lon;
+    auto phi1 = util::DEGREE_TO_RADIAN * first.lat;
 
     m_ = figure_->a() * std::cos(phi0) / (std::sqrt(1. - e_ * e_ * std::sin(phi0) * std::sin(phi0)));
     ASSERT(!types::is_approximately_equal(m_, 0.));
@@ -83,8 +83,8 @@ double Mercator::calculate_phi(double t) const {
 
 
 Point2 Mercator::fwd(const PointLonLat& p) const {
-    auto phi = util::degree_to_radian * p.lat;
-    auto lam = util::degree_to_radian * p.lon;
+    auto phi = util::DEGREE_TO_RADIAN * p.lat;
+    auto lam = util::DEGREE_TO_RADIAN * p.lon;
 
     return {x0_ + m_ * (lam - lam0_),
             y0_ - m_ * std::log(std::tan(M_PI_4 - 0.5 * phi) /
@@ -93,8 +93,8 @@ Point2 Mercator::fwd(const PointLonLat& p) const {
 
 
 PointLonLat Mercator::inv(const Point2& q) const {
-    return PointLonLat::make(util::radian_to_degree * (lam0_ + (q.X - x0_) * w_),
-                             util::radian_to_degree * calculate_phi(std::exp(-(q.Y - y0_) * w_)));
+    return PointLonLat::make(util::RADIAN_TO_DEGREE * (lam0_ + (q.X - x0_) * w_),
+                             util::RADIAN_TO_DEGREE * calculate_phi(std::exp(-(q.Y - y0_) * w_)));
 }
 
 

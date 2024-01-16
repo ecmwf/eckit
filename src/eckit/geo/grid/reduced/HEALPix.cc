@@ -338,7 +338,7 @@ const std::vector<double>& HEALPix::latitudes() const {
             const auto f = ring < N_ ? 1. - static_cast<double>(ring * ring) / (3 * static_cast<double>(N_ * N_))
                                      : 4. / 3. - 2 * static_cast<double>(ring) / (3 * static_cast<double>(N_));
 
-            *i = 90. - util::radian_to_degree * std::acos(f);
+            *i = 90. - util::RADIAN_TO_DEGREE * std::acos(f);
             *j = -*i;
         }
         *i = 0.;

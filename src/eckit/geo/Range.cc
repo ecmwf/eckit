@@ -18,9 +18,10 @@
 namespace eckit::geo {
 
 
-Range::Range(size_t n) :
-    n_(n) {
+Range::Range(size_t n, double eps) :
+    n_(n), eps_(eps) {
     ASSERT(n > 0);
+    ASSERT(eps_ >= 0);
 }
 
 

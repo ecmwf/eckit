@@ -21,13 +21,13 @@
 namespace eckit::geo::range {
 
 
-Regular::Regular(size_t n, double a, double b, double precision) :
-    Range(n), a_(a), b_(b), precision_(precision) {
-    if (types::is_approximately_equal(a, b, util::eps)) {
+Regular::Regular(size_t n, double a, double b, double _eps) :
+    Range(n, _eps), a_(a), b_(b) {
+    if (types::is_approximately_equal(a, b, eps())) {
         endpoint_ = false;
     }
     else {
-        b             = PointLonLat::normalise_angle_to_minimum(b, a + util::eps);
+        b             = PointLonLat::normalise_angle_to_minimum(b, a + eps());
         auto inc      = (b - a) / static_cast<double>(n);
         auto periodic = types::is_approximately_greater_or_equal(b - a + inc, 360.);
 
@@ -41,7 +41,7 @@ const std::vector<double>& Regular::values() const {
         auto& v = const_cast<std::vector<double>&>(values_);
         v       = util::linspace(0., 360., Range::size(), false);
 
-        auto [from, to] = util::monotonic_crop(v, a_, b_, precision_);
+        auto [from, to] = util::monotonic_crop(v, a_, b_, eps());
         v.erase(v.begin() + to, v.end());
         v.erase(v.begin(), v.begin() + from);
 

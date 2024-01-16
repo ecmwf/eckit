@@ -58,15 +58,15 @@ std::vector<double> GreatCircle::latitude(double lon) const {
         return {};
     }
 
-    const double lat1     = util::degree_to_radian * A_.lat;
-    const double lat2     = util::degree_to_radian * B_.lat;
-    const double lambda1p = util::degree_to_radian * (lon - A_.lon);
-    const double lambda2p = util::degree_to_radian * (lon - B_.lon);
-    const double lambda   = util::degree_to_radian * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, -180.);
+    const double lat1     = util::DEGREE_TO_RADIAN * A_.lat;
+    const double lat2     = util::DEGREE_TO_RADIAN * B_.lat;
+    const double lambda1p = util::DEGREE_TO_RADIAN * (lon - A_.lon);
+    const double lambda2p = util::DEGREE_TO_RADIAN * (lon - B_.lon);
+    const double lambda   = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, -180.);
 
     double lat =
         std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
-    return {util::radian_to_degree * lat};
+    return {util::RADIAN_TO_DEGREE * lat};
 }
 
 std::vector<double> GreatCircle::longitude(double lat) const {
@@ -79,11 +79,11 @@ std::vector<double> GreatCircle::longitude(double lat) const {
         return {lon, lon + 180.};
     }
 
-    const double lon12 = util::degree_to_radian * PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -180.);
-    const double lon1  = util::degree_to_radian * A_.lon;
-    const double lat1  = util::degree_to_radian * A_.lat;
-    const double lat2  = util::degree_to_radian * B_.lat;
-    const double lat3  = util::degree_to_radian * lat;
+    const double lon12 = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -180.);
+    const double lon1  = util::DEGREE_TO_RADIAN * A_.lon;
+    const double lat1  = util::DEGREE_TO_RADIAN * A_.lat;
+    const double lat2  = util::DEGREE_TO_RADIAN * B_.lat;
+    const double lat3  = util::DEGREE_TO_RADIAN * lat;
 
     const double X = std::sin(lat1) * std::cos(lat2) * std::sin(lon12);
     const double Y = std::sin(lat1) * std::cos(lat2) * std::cos(lon12) - std::cos(lat1) * std::sin(lat2);
@@ -96,16 +96,16 @@ std::vector<double> GreatCircle::longitude(double lat) const {
     const double C    = std::cos(lat1) * std::cos(lat2) * std::tan(lat3) * std::sin(lon12) / std::sqrt(X * X + Y * Y);
 
     if (is_approximately_equal(C, -1.)) {
-        return {util::radian_to_degree * (lon0 + M_PI)};
+        return {util::RADIAN_TO_DEGREE * (lon0 + M_PI)};
     }
 
     if (is_approximately_equal(C, 1.)) {
-        return {util::radian_to_degree * lon0};
+        return {util::RADIAN_TO_DEGREE * lon0};
     }
 
     if (-1 < C && C < 1) {
         const double dlon = std::acos(C);
-        return {util::radian_to_degree * (lon0 - dlon + 2 * M_PI), util::radian_to_degree * (lon0 + dlon)};
+        return {util::RADIAN_TO_DEGREE * (lon0 - dlon + 2 * M_PI), util::RADIAN_TO_DEGREE * (lon0 + dlon)};
     }
 
     return {};
@@ -116,15 +116,15 @@ bool GreatCircle::crossesPoles() const {
 }
 
 std::pair<double, double> GreatCircle::calculate_course(const PointLonLat& A, const PointLonLat& B) {
-    const auto sdl = std::sin(util::degree_to_radian * (B.lon - A.lon));
-    const auto cdl = std::cos(util::degree_to_radian * (B.lon - A.lon));
-    const auto spA = std::sin(util::degree_to_radian * A.lat);
-    const auto cpA = std::cos(util::degree_to_radian * A.lat);
-    const auto spB = std::sin(util::degree_to_radian * B.lat);
-    const auto cpB = std::cos(util::degree_to_radian * B.lat);
+    const auto sdl = std::sin(util::DEGREE_TO_RADIAN * (B.lon - A.lon));
+    const auto cdl = std::cos(util::DEGREE_TO_RADIAN * (B.lon - A.lon));
+    const auto spA = std::sin(util::DEGREE_TO_RADIAN * A.lat);
+    const auto cpA = std::cos(util::DEGREE_TO_RADIAN * A.lat);
+    const auto spB = std::sin(util::DEGREE_TO_RADIAN * B.lat);
+    const auto cpB = std::cos(util::DEGREE_TO_RADIAN * B.lat);
 
-    const auto alpha1 = util::radian_to_degree * std::atan2(cpB * sdl, cpA * spB - spA * cpB * cdl);
-    const auto alpha2 = util::radian_to_degree * std::atan2(cpA * sdl, -cpB * spA + spB * cpA * cdl);
+    const auto alpha1 = util::RADIAN_TO_DEGREE * std::atan2(cpB * sdl, cpA * spB - spA * cpB * cdl);
+    const auto alpha2 = util::RADIAN_TO_DEGREE * std::atan2(cpA * sdl, -cpB * spA + spB * cpA * cdl);
 
     return {alpha1, alpha2};
 }

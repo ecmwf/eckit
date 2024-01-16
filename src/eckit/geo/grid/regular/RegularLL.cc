@@ -16,7 +16,6 @@
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/range/Regular.h"
-#include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/regex.h"
 #include "eckit/types/Fraction.h"
@@ -147,7 +146,7 @@ RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const
 RegularLL::RegularLL(Internal&& internal) :
     Regular(internal.bbox),
     internal_(internal),
-    range_longitude_(new range::RegularLongitude(internal_.ni, internal_.bbox.east, internal_.bbox.west)),
+    range_longitude_(new range::Regular(internal_.ni, internal_.bbox.east, internal_.bbox.west)),
     range_latitude_(new range::Regular(internal_.nj, internal_.bbox.north, internal_.bbox.south)) {
     ASSERT(size() > 0);
     ASSERT(ni() == range_longitude_->size());

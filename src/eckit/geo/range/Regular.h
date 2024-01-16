@@ -58,6 +58,7 @@ private:
     const double a_;
     const double b_;
     const double precision_;
+    bool endpoint_;
 
     // -- Methods
     // None

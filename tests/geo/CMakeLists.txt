@@ -1,6 +1,7 @@
 foreach(_test
         area_boundingbox
         area_polygon
+        cache
         coordinate_helpers
         figure_sphere
         great_circle

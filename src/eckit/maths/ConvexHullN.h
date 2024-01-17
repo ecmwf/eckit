@@ -31,7 +31,7 @@ public:
 
     std::vector<size_t> list_vertices() const override { return qhull_.list_vertices(); }
     std::vector<std::vector<size_t>> list_facets() const override { return qhull_.list_facets(); }
-    std::vector<Triangle> list_triangles() const override { return qhull_.list_triangles(); }
+    std::vector<std::vector<size_t>> list_facets(size_t n) const override { return qhull_.list_facets(n); }
 
 private:
     static coord_t convert_vector_v(const std::vector<std::vector<double>>& coord_v) {

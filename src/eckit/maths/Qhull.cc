@@ -64,41 +64,24 @@ std::vector<size_t> Qhull::list_vertices() const {
 }
 
 
-std::vector<std::vector<size_t>> Qhull::list_facets() const {
+std::vector<std::vector<size_t>> Qhull::list_facets(size_t n) const {
     std::vector<std::vector<size_t>> facets;
     facets.reserve(qh_->facetCount());
 
     for (const auto& facet : qh_->facetList()) {
-        const auto vertices = facet.vertices();
+        if (const auto vertices = facet.vertices(); n == 0 || vertices.size() == n) {
+            std::vector<size_t> f;
+            f.reserve(vertices.size());
 
-        std::vector<size_t> f;
-        f.reserve(vertices.size());
+            for (const auto& vertex : vertices) {
+                f.emplace_back(vertex.point().id());
+            }
 
-        for (const auto& vertex : vertices) {
-            f.emplace_back(vertex.point().id());
+            facets.emplace_back(f);
         }
-
-        facets.emplace_back(f);
     }
 
     return facets;
-}
-
-
-std::vector<Triangle> Qhull::list_triangles() const {
-    std::vector<Triangle> tri;
-    tri.reserve(qh_->facetCount());
-
-    for (const auto& facet : qh_->facetList()) {
-        const auto vertices = facet.vertices();
-        ASSERT(vertices.size() == 3);
-
-        tri.emplace_back(Triangle{static_cast<Triangle::value_type>(vertices[0].point().id()),
-                                  static_cast<Triangle::value_type>(vertices[1].point().id()),
-                                  static_cast<Triangle::value_type>(vertices[2].point().id())});
-    }
-
-    return tri;
 }
 
 

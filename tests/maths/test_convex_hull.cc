@@ -167,8 +167,11 @@ CASE("ConvexHullN, N=3") {
         const auto facets = ch.list_facets();
         EXPECT(facets.size() == 4);
 
-        const auto triangles = ch.list_triangles();
-        EXPECT(triangles.size() == 4);
+        EXPECT(ch.list_facets(2).empty());
+        EXPECT(ch.list_facets(4).empty());
+
+        const auto tri = ch.list_facets(3);
+        EXPECT(tri.size() == 4);
 
         for (const auto& fr : {
                  std::vector<size_t>{0, 1, 2},
@@ -185,7 +188,7 @@ CASE("ConvexHullN, N=3") {
                                  })
                    == 1);
 
-            EXPECT(std::count_if(triangles.begin(), triangles.end(),
+            EXPECT(std::count_if(tri.begin(), tri.end(),
                                  [&fr](const auto& tri) {
                                      return std::count(fr.begin(), fr.end(), tri[0]) == 1
                                             && std::count(fr.begin(), fr.end(), tri[1]) == 1
@@ -207,11 +210,12 @@ CASE("Triangulation, N=3") {
                                 0, 0, 1,        //
                             },
                             "Qt")
-                   .list_triangles();
+                   .list_facets(3);
 
     EXPECT_EQUAL(tri.size(), 4);
+    EXPECT(std::all_of(tri.begin(), tri.end(), [](const std::vector<size_t>& f) { return f.size() == 3; }));
 
-    auto find_triangle = [&tri](const maths::Triangle& a) {
+    auto find_triangle = [&tri](const std::vector<size_t>& a) {
         return 1 == std::count_if(tri.begin(), tri.end(), [&a](const auto& b) {
                    return std::all_of(b.begin(), b.end(),
                                       [&a](auto bi) { return 1 == std::count(a.begin(), a.end(), bi); });

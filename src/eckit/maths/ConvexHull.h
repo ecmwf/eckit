@@ -11,14 +11,10 @@
 
 #pragma once
 
-#include <array>
 #include <vector>
 
 
 namespace eckit::maths {
-
-
-using Triangle = std::array<size_t, 3>;
 
 
 class ConvexHull {
@@ -31,9 +27,9 @@ public:
     void operator=(const ConvexHull&) = delete;
     void operator=(ConvexHull&&)      = delete;
 
-    virtual std::vector<size_t> list_vertices() const            = 0;
-    virtual std::vector<std::vector<size_t>> list_facets() const = 0;
-    virtual std::vector<Triangle> list_triangles() const         = 0;
+    virtual std::vector<size_t> list_vertices() const                    = 0;
+    virtual std::vector<std::vector<size_t>> list_facets() const         = 0;
+    virtual std::vector<std::vector<size_t>> list_facets(size_t n) const = 0;
 
 protected:
     ConvexHull() /*noexcept*/ = default;

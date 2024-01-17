@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/maths/ConvexHull.h"
 
 
 namespace orgQhull {
@@ -59,8 +58,7 @@ public:
     // -- Overridden methods
 
     std::vector<size_t> list_vertices() const;
-    std::vector<std::vector<size_t>> list_facets() const;
-    std::vector<Triangle> list_triangles() const;
+    std::vector<std::vector<size_t>> list_facets(size_t n = 0) const;
 
 private:
     // -- Members

@@ -50,8 +50,10 @@ public:  // methods
     void reserve(size_t s) { values_.reserve(s); }
 
     void insert(const V& v) {
+        if (!values_.empty() && v <= values_.back()) {
+            sorted_ = false;
+        }
         values_.push_back(v);
-        sorted_ = false;
     }
 
     /// @TODO shoudl we implement this?

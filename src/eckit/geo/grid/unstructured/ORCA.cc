@@ -114,6 +114,9 @@ PathName orca_path(const PathName& path, const std::string& url) {
 
 
 const ORCA::ORCARecord& orca_record(const PathName& p, const Spec& spec) {
+    // control concurrent reads/writes
+    lock_type lock;
+
     if (CACHE.contains(p)) {
         return CACHE[p];
     }

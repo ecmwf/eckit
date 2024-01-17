@@ -19,7 +19,7 @@
 #include "eckit/geo/util/mutex.h"
 
 
-namespace eckit::geo::util {
+namespace eckit::geo {
 
 
 class Cache {
@@ -58,27 +58,27 @@ public:
     using value_type = Value;
 
     CacheT() :
-        mutex_(new recursive_mutex) {
+        mutex_(new util::recursive_mutex) {
         ASSERT(mutex_ != nullptr);
     }
 
     bool contains(const key_type& key) const {
-        lock_guard<recursive_mutex> lock(*mutex_);
+        util::lock_guard<util::recursive_mutex> lock(*mutex_);
         return container_.find(key) != container_.end();
     }
 
     const value_type& operator[](const key_type& key) const {
-        lock_guard<recursive_mutex> lock(*mutex_);
+        util::lock_guard<util::recursive_mutex> lock(*mutex_);
         return container_[key];
     }
 
     value_type& operator[](const key_type& key) {
-        lock_guard<recursive_mutex> lock(*mutex_);
+        util::lock_guard<util::recursive_mutex> lock(*mutex_);
         return container_[key];
     }
 
     bytes_t footprint() const final {
-        lock_guard<recursive_mutex> lock(*mutex_);
+        util::lock_guard<util::recursive_mutex> lock(*mutex_);
         return std::accumulate(container_.begin(), container_.end(), 0, [](bytes_t sum, const auto& kv) {
             if constexpr (has_footprint_v<value_type>) {
                 return sum + kv.second.footprint();
@@ -94,8 +94,8 @@ public:
 private:
     mutable std::map<Key, Value> container_;
 
-    recursive_mutex* mutex_;
+    util::recursive_mutex* mutex_;
 };
 
 
-}  // namespace eckit::geo::util
+}  // namespace eckit::geo

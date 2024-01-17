@@ -10,20 +10,20 @@
  */
 
 
-#include "eckit/geo/util/Cache.h"
+#include "eckit/geo/Cache.h"
 
 #include <vector>
 
 
-namespace eckit::geo::util {
+namespace eckit::geo {
 
 
-static recursive_mutex MUTEX;
+static util::recursive_mutex MUTEX;
 static std::vector<Cache*> CACHES;
 
 
 Cache::bytes_t Cache::total_footprint() {
-    lock_guard<recursive_mutex> lock(MUTEX);
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
     return std::accumulate(CACHES.begin(), CACHES.end(), static_cast<bytes_t>(0), [](bytes_t sum, const auto* cache) {
         return sum + cache->footprint();
     });
@@ -31,15 +31,15 @@ Cache::bytes_t Cache::total_footprint() {
 
 
 void Cache::total_purge() {
-    lock_guard<recursive_mutex> lock(MUTEX);
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
     std::for_each(CACHES.begin(), CACHES.end(), [](auto* cache) { cache->purge(); });
 }
 
 
 Cache::Cache() {
-    lock_guard<recursive_mutex> lock(MUTEX);
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
     CACHES.emplace_back(this);
 }
 
 
-}  // namespace eckit::geo::util
+}  // namespace eckit::geo

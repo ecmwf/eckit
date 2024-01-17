@@ -16,11 +16,11 @@
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Cache.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Unstructured.h"
-#include "eckit/geo/util/Cache.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Bytes.h"
@@ -68,7 +68,7 @@ class lock_type {
 };
 
 
-util::CacheT<PathName, ORCA::ORCARecord> CACHE;
+CacheT<PathName, ORCA::ORCARecord> CACHE;
 
 
 PathName orca_path(const PathName& path, const std::string& url) {

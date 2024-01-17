@@ -11,8 +11,8 @@
 
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Cache.h"
 #include "eckit/geo/util.h"
-#include "eckit/geo/util/Cache.h"
 
 
 namespace eckit::geo::util {

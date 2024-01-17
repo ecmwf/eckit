@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/util/Cache.h"
+#include "eckit/geo/Cache.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
 
@@ -18,7 +18,7 @@
 namespace eckit::test {
 
 
-using namespace geo::util;
+using namespace geo;
 
 
 CASE("eckit::geo::util") {
@@ -50,11 +50,11 @@ CASE("eckit::geo::util") {
 
 
     SECTION("separate caches") {
-        reduced_classical_pl(16);
+        util::reduced_classical_pl(16);
         auto foot = Cache::total_footprint();
         EXPECT(0 < foot);
 
-        reduced_octahedral_pl(16);
+        util::reduced_octahedral_pl(16);
         EXPECT(foot < Cache::total_footprint());
     }
 
@@ -64,7 +64,7 @@ CASE("eckit::geo::util") {
 
 
     SECTION("reduced_classical_pl, reduced_octahedral_pl") {
-        for (const geo::pl_type& (*cacheable)(size_t) : {&reduced_classical_pl, &reduced_octahedral_pl}) {
+        for (const geo::pl_type& (*cacheable)(size_t) : {&util::reduced_classical_pl, &util::reduced_octahedral_pl}) {
             for (const auto& test : tests) {
                 Cache::total_purge();
                 (*cacheable)(test.N);
@@ -87,13 +87,13 @@ CASE("eckit::geo::util") {
     SECTION("gaussian_latitudes") {
         for (const auto& test : tests) {
             Cache::total_purge();
-            gaussian_latitudes(test.N, test.increasing);
+            util::gaussian_latitudes(test.N, test.increasing);
             EXPECT_EQUAL(Cache::total_footprint(), test.gl_footprint);
         }
 
         Cache::total_purge();
         for (const auto& test : tests) {
-            gaussian_latitudes(test.N, test.increasing);
+            util::gaussian_latitudes(test.N, test.increasing);
             EXPECT_EQUAL(Cache::total_footprint(), test.gl_footprint_acc);
         }
     }

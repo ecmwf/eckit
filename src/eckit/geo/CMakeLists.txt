@@ -8,6 +8,8 @@ install(
 list(APPEND eckit_geo_srcs
     ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h
     Area.h
+    Cache.cc
+    Cache.h
     CoordinateHelpers.cc
     CoordinateHelpers.h
     Domain.cc
@@ -107,8 +109,6 @@ list(APPEND eckit_geo_srcs
     spec/Layered.h
     util.cc
     util.h
-    util/Cache.cc
-    util/Cache.h
     util/arange.cc
     util/gaussian_latitudes.cc
     util/linspace.cc

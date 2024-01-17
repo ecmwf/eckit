@@ -17,7 +17,7 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/util/Cache.h"
+#include "eckit/geo/Cache.h"
 
 
 namespace eckit::geo::util {

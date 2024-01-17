@@ -164,6 +164,18 @@ public:
             RawTag("</B>") {}
     };
 
+    class BeginH1 : public RawTag {
+    public:
+        BeginH1() :
+            RawTag("<H1>") {}
+    };
+
+    class EndH1 : public RawTag {
+    public:
+        EndH1() :
+            RawTag("</H1>") {}
+    };
+
     //----------------------------------------------------------------------------------------------------------------------
 
     class BeginForm : public Tag {

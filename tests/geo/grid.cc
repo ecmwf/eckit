@@ -14,6 +14,7 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/util/Cache.h"
 #include "eckit/testing/Test.h"
 
 
@@ -24,16 +25,14 @@ using namespace geo;
 
 
 CASE("GridFactory::build") {
-    struct test_t {
-        std::string name;
-        size_t size;
-    };
-
-
     SECTION("GridFactory::build_from_name") {
-        for (const auto& test : {test_t{"O2", 88}, {"f2", 32}, {"h2", 48}}) {
-            std::unique_ptr<const Grid> grid(
-                GridFactory::build(*std::unique_ptr<Spec>(new spec::Custom({{"grid", test.name}}))));
+        struct {
+            std::string name;
+            size_t size;
+        } tests[]{{"O2", 88}, {"f2", 32}, {"h2", 48}};
+
+        for (const auto& test : tests) {
+            std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", test.name}})));
 
             auto size = grid->size();
             EXPECT_EQUAL(size, test.size);
@@ -42,8 +41,7 @@ CASE("GridFactory::build") {
 
 
     SECTION("RegularGaussian") {
-        std::unique_ptr<const Grid> grid(
-            GridFactory::build(*std::unique_ptr<Spec>(new spec::Custom({{"grid", "f2"}, {"south", 0}}))));
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "f2"}, {"south", 0}})));
 
         auto nh = grid->size();
         EXPECT_EQUAL(nh, 32 / 2);
@@ -51,17 +49,35 @@ CASE("GridFactory::build") {
 
 
     SECTION("Grid::build_from_uid") {
-        // TODO
+        spec::Custom spec({
+            {"uid", "a832a12030c73928133553ec3a8d2a7e"},
+        });
+
+        const auto footprint = util::Cache::total_footprint();
+
+        std::unique_ptr<const Grid> a(GridFactory::build(spec));
+
+        const auto footprint_a = util::Cache::total_footprint();
+        EXPECT(footprint < footprint_a);
+
+        std::unique_ptr<const Grid> b(GridFactory::build(spec));
+
+        const auto footprint_b = util::Cache::total_footprint();
+        EXPECT_EQUAL(footprint_a, footprint_b);
+
+        const auto size_a = a->size();
+        const auto size_b = b->size();
+        EXPECT_EQUAL(size_a, size_b);
     }
 
 
     SECTION("Grid::build_from_increments") {
         SECTION("global") {
-            std::unique_ptr<const Grid> global(GridFactory::build(*std::unique_ptr<Spec>(new spec::Custom({
+            std::unique_ptr<const Grid> global(GridFactory::build(spec::Custom({
                 {"type", "regular_ll"},
                 {"west_east_increment", 1},
                 {"south_north_increment", 1},
-            }))));
+            })));
 
             auto size = global->size();
             EXPECT_EQUAL(size, 360 * 181);
@@ -69,7 +85,7 @@ CASE("GridFactory::build") {
 
 
         SECTION("non-global") {
-            std::unique_ptr<const Grid> grid(GridFactory::build(*std::unique_ptr<Spec>(new spec::Custom({
+            std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({
                 {"type", "regular_ll"},
                 {"west_east_increment", 1},
                 {"south_north_increment", 1},
@@ -77,7 +93,7 @@ CASE("GridFactory::build") {
                 {"west", 1},
                 {"south", 1},
                 {"east", 10},
-            }))));
+            })));
 
             auto size = grid->size();
             EXPECT_EQUAL(size, 100);

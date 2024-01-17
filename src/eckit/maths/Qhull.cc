@@ -77,7 +77,7 @@ std::vector<std::vector<size_t>> Qhull::list_facets(size_t n) const {
                 f.emplace_back(vertex.point().id());
             }
 
-            facets.emplace_back(f);
+            facets.emplace_back(std::move(f));
         }
     }
 

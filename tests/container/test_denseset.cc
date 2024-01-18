@@ -38,36 +38,37 @@ CASE("test_eckit_container_denseset_0") {
 CASE("test_set_string") {
     DenseSet<std::string> s;
 
-    //
+    EXPECT(s.sorted());
 
     s.insert("two");
-
-    // find fails if not sorted
-    EXPECT(!s.sorted());
-    EXPECT_THROWS(s.find("two"));
-
-    EXPECT(s.size() == 1);
-
-    s.sort();
-
     EXPECT(s.sorted());
-
+    EXPECT(s.size() == 1);
     EXPECT(s.contains("two"));
 
-    //
+    // Add something after two, should not desort it
+    s.insert("txx");
+    EXPECT(s.sorted());
+    EXPECT(s.size() == 2);
 
+    // This should be a nop
+    s.sort();
+    EXPECT(s.sorted());
+
+    // Now, non-sorted values
     s.insert("four");
     s.insert("nine");
-
     EXPECT(!s.sorted());
+    EXPECT_THROWS_AS(s.find("two"), eckit::AssertionFailed);
+    EXPECT_THROWS_AS(s.contains("two"), eckit::AssertionFailed);
 
     s.sort();
 
     EXPECT(s.sorted());
 
-    EXPECT(s.size() == 3);
+    EXPECT(s.size() == 4);
 
     EXPECT(s.find("two") != s.end());
+    EXPECT(s.find("txx") != s.end());
     EXPECT(s.find("four") != s.end());
     EXPECT(s.find("nine") != s.end());
 
@@ -77,7 +78,7 @@ CASE("test_set_string") {
     EXPECT(s.find("one") == s.end());
 
     // iterate over the elements
-    std::vector<std::string> e                      = {"four", "nine", "two"};
+    std::vector<std::string> e                      = {"four", "nine", "two", "txx"};
     DenseSet<std::string>::const_iterator set_it    = s.begin();
     std::vector<std::string>::const_iterator vec_it = e.begin();
     for (; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
@@ -94,6 +95,7 @@ CASE("test_set_string") {
     EXPECT(!(s == s2));
     EXPECT(s != s2);
     s2.insert("nine");
+    s2.insert("txx");
     s2.sort();
     EXPECT(!(s == s2));
     EXPECT(s != s2);
@@ -102,6 +104,11 @@ CASE("test_set_string") {
     s2.sort();
     EXPECT(s == s2);
     EXPECT(!(s != s2));
+
+    // Adding an element that already exists is OK
+    s2.insert("nine");
+    s2.sort();
+    EXPECT(s == s2);
 
     // clear the set
     s.clear();
@@ -115,44 +122,32 @@ CASE("test_set_string") {
 
     // find() should return end() now
     EXPECT(s.find("two") == s.end());
-
-    //
-    // std::cout << s << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_set_int") {
     DenseSet<int> s;
-
-    //
-
-    s.insert(2);
-
-    // find fails if not sorted
-    EXPECT(!s.sorted());
-    EXPECT_THROWS(s.find(2));
-
-    EXPECT(s.size() == 1);
-
-    s.sort();
-
     EXPECT(s.sorted());
 
+    s.insert(2);
+    EXPECT(s.sorted());
+
+    s.insert(3);
+    EXPECT(s.sorted());
+    EXPECT(s.size() == 2);
     EXPECT(s.contains(2));
 
-    //
-
+    s.insert(1);
     s.insert(4);
+    s.insert(2);
     s.insert(9);
 
     EXPECT(!s.sorted());
-
     s.sort();
-
     EXPECT(s.sorted());
 
-    EXPECT(s.size() == 3);
+    EXPECT(s.size() == 5);
 
     EXPECT(s.find(2) != s.end());
     EXPECT(s.find(4) != s.end());
@@ -160,11 +155,11 @@ CASE("test_set_int") {
 
     // failed find
 
-    EXPECT(!s.contains(1));
-    EXPECT(s.find(1) == s.end());
+    EXPECT(!s.contains(17));
+    EXPECT(s.find(17) == s.end());
 
     // iterate over the elements
-    std::vector<int> e                      = {2, 4, 9};
+    std::vector<int> e                      = {1, 2, 3, 4, 9};
     DenseSet<int>::const_iterator set_it    = s.begin();
     std::vector<int>::const_iterator vec_it = e.begin();
     for (; set_it != s.end() && vec_it != e.end(); ++set_it, ++vec_it) {
@@ -172,8 +167,8 @@ CASE("test_set_int") {
     }
 
     // array-like indexing
-    EXPECT(s[1] == 4);
-    EXPECT(s.at(2) == 9);
+    EXPECT(s[1] == 2);
+    EXPECT(s.at(2) == 3);
     EXPECT_THROWS(s.at(12));
 
     // operator==
@@ -185,6 +180,8 @@ CASE("test_set_int") {
     EXPECT(!(s == s2));
     EXPECT(s != s2);
     s2.insert(4);
+    s2.insert(1);
+    s2.insert(3);
     s2.insert(2);
     s2.sort();
     EXPECT(s == s2);
@@ -202,8 +199,6 @@ CASE("test_set_int") {
 
     // find() should return end() now
     EXPECT(s.find(2) == s.end());
-
-    // std::cout << s << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -211,19 +206,10 @@ CASE("test_set_int") {
 CASE("test_set_bool") {
     DenseSet<bool> s;
 
-    //
-
-    s.insert(true);
-
-    // find fails if not sorted
-    EXPECT(!s.sorted());
-    EXPECT_THROWS(s.find(true));
-
-    EXPECT(s.size() == 1);
-
-    s.sort();
-
     EXPECT(s.sorted());
+    s.insert(true);
+    EXPECT(s.sorted());
+    EXPECT(s.size() == 1);
 
     // failed find
 
@@ -231,11 +217,10 @@ CASE("test_set_bool") {
     EXPECT(s.find(false) == s.end());
     EXPECT(s.contains(true));
 
-    //
+    // Now we can insert false
 
     s.insert(false);
     s.insert(false);
-
     EXPECT(!s.sorted());
 
     s.sort();

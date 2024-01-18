@@ -13,12 +13,17 @@
 
 #include <vector>
 
+#include "eckit/maths/Qhull.h"
+
 
 namespace eckit::maths {
 
 
 class ConvexHull {
 public:
+    using coord_t    = typename Qhull::coord_t;
+    using facets_n_t = typename Qhull::facets_n_t;
+
     ConvexHull(const ConvexHull&) = delete;
     ConvexHull(ConvexHull&&)      = delete;
 
@@ -27,9 +32,11 @@ public:
     void operator=(const ConvexHull&) = delete;
     void operator=(ConvexHull&&)      = delete;
 
-    virtual std::vector<size_t> list_vertices() const                    = 0;
-    virtual std::vector<std::vector<size_t>> list_facets() const         = 0;
-    virtual std::vector<std::vector<size_t>> list_facets(size_t n) const = 0;
+    virtual std::vector<size_t> list_vertices() const            = 0;
+    virtual std::vector<std::vector<size_t>> list_facets() const = 0;
+
+    virtual facets_n_t facets_n() const                = 0;
+    virtual std::vector<size_t> facets(size_t n) const = 0;
 
 protected:
     ConvexHull() /*noexcept*/ = default;

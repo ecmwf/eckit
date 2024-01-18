@@ -23,6 +23,9 @@
 namespace eckit::maths {
 
 
+const char* Qhull::COMMAND_DEFAULT = "QJ";
+
+
 Qhull::Qhull(size_t N, const coord_t& coord, const std::string& command) {
     ASSERT(0 < N && coord.size() % N == 0);
 
@@ -64,20 +67,47 @@ std::vector<size_t> Qhull::list_vertices() const {
 }
 
 
-std::vector<std::vector<size_t>> Qhull::list_facets(size_t n) const {
+std::vector<std::vector<size_t>> Qhull::list_facets() const {
     std::vector<std::vector<size_t>> facets;
     facets.reserve(qh_->facetCount());
 
     for (const auto& facet : qh_->facetList()) {
-        if (const auto vertices = facet.vertices(); n == 0 || vertices.size() == n) {
-            std::vector<size_t> f;
-            f.reserve(vertices.size());
+        const auto vertices = facet.vertices();
 
+        std::vector<size_t> f;
+        f.reserve(vertices.size());
+
+        for (const auto& vertex : vertices) {
+            f.emplace_back(vertex.point().id());
+        }
+
+        facets.emplace_back(std::move(f));
+    }
+
+    return facets;
+}
+
+
+Qhull::facets_n_t Qhull::facets_n() const {
+    facets_n_t counts;
+    for (const auto& facet : qh_->facetList()) {
+        counts[facet.vertices().size()]++;
+    }
+    return counts;
+}
+
+
+std::vector<size_t> Qhull::facets(size_t n) const {
+    ASSERT(0 < n);
+
+    std::vector<size_t> facets;
+    facets.reserve(qh_->facetCount() * n);
+
+    for (const auto& facet : qh_->facetList()) {
+        if (const auto vertices = facet.vertices(); vertices.size() == n) {
             for (const auto& vertex : vertices) {
-                f.emplace_back(vertex.point().id());
+                facets.emplace_back(vertex.point().id());
             }
-
-            facets.emplace_back(std::move(f));
         }
     }
 

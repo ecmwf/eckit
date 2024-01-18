@@ -140,8 +140,8 @@ CASE("ConvexHullN, N=2") {
 }
 
 
-CASE("ConvexHullN, N=3") {
-    // Tetrahedron (vertices 0, 1, 2, 3) containing point index 4
+CASE("ConvexHullN, N=3 (tetrahedron)") {
+    // vertices 0-3 containing point index 4
     maths::ConvexHullN ch(std::vector<std::array<double, 3>>{
         {0, 0, 1},
         {1, 0, -1},
@@ -163,39 +163,64 @@ CASE("ConvexHullN, N=3") {
     }
 
 
-    SECTION("facets/triangles") {
+    SECTION("facets") {
+        const auto count = ch.facets_n();
+        decltype(count) correct{{3, 4}};
+        EXPECT(count == correct);
+
+        auto tri = ch.facets(3);
+        EXPECT(tri.size() == 4 * 3);
+
         const auto facets = ch.list_facets();
-        EXPECT(facets.size() == 4);
-
-        EXPECT(ch.list_facets(2).empty());
-        EXPECT(ch.list_facets(4).empty());
-
-        const auto tri = ch.list_facets(3);
-        EXPECT(tri.size() == 4);
-
         for (const auto& fr : {
-                 std::vector<size_t>{0, 1, 2},
+                 std::set<size_t>{0, 1, 2},
                  {0, 1, 3},
                  {0, 2, 3},
                  {1, 2, 3},
              }) {
-            EXPECT(std::count_if(facets.begin(), facets.end(),
-                                 [&fr](const auto& facet) {
-                                     ASSERT(facet.size() == 3);
-                                     return std::count(fr.begin(), fr.end(), facet[0]) == 1
-                                            && std::count(fr.begin(), fr.end(), facet[1]) == 1
-                                            && std::count(fr.begin(), fr.end(), facet[2]) == 1;
-                                 })
-                   == 1);
+            EXPECT(1 == std::count_if(facets.begin(), facets.end(), [&fr](const auto& facet) {
+                       ASSERT(facet.size() == 3);
+                       return std::count(fr.begin(), fr.end(), facet[0]) == 1
+                              && std::count(fr.begin(), fr.end(), facet[1]) == 1
+                              && std::count(fr.begin(), fr.end(), facet[2]) == 1;
+                   }));
 
-            EXPECT(std::count_if(tri.begin(), tri.end(),
-                                 [&fr](const auto& tri) {
-                                     return std::count(fr.begin(), fr.end(), tri[0]) == 1
-                                            && std::count(fr.begin(), fr.end(), tri[1]) == 1
-                                            && std::count(fr.begin(), fr.end(), tri[2]) == 1;
-                                 })
-                   == 1);
+            auto count = 0;
+            for (auto t = tri.begin(); t != tri.end(); t += 3) {
+                count += std::set<size_t>(t, t + 3) == fr ? 1 : 0;
+            }
+            EXPECT_EQUAL(1, count);
         }
+    }
+}
+
+
+CASE("ConvexHullN, N=3 (square pyramid)") {
+    // vertices 1-5 containing point index 0
+    maths::ConvexHullN ch(
+        std::vector<std::array<double, 3>>{
+            {0, 0, 0.1},
+            {0, 0, 1},
+            {1, 0, 0},
+            {0, 1, 0},
+            {-1, 0, 0},
+            {0, -1, 0},
+        },
+        "Q");
+
+    SECTION("vertices") {
+        const auto vertices = ch.list_vertices();
+
+        const std::set<size_t> result(vertices.begin(), vertices.end());
+        decltype(result) correct{1, 2, 3, 4, 5};
+        EXPECT(result == correct);
+    }
+
+
+    SECTION("facets") {
+        const auto result = ch.facets_n();
+        decltype(result) correct{{3, 4}, {4, 1}};
+        EXPECT(result == correct);
     }
 }
 
@@ -210,16 +235,16 @@ CASE("Triangulation, N=3") {
                                 0, 0, 1,        //
                             },
                             "Qt")
-                   .list_facets(3);
+                   .facets(3);
 
-    EXPECT_EQUAL(tri.size(), 4);
-    EXPECT(std::all_of(tri.begin(), tri.end(), [](const std::vector<size_t>& f) { return f.size() == 3; }));
+    EXPECT_EQUAL(tri.size(), 4 * 3);
 
-    auto find_triangle = [&tri](const std::vector<size_t>& a) {
-        return 1 == std::count_if(tri.begin(), tri.end(), [&a](const auto& b) {
-                   return std::all_of(b.begin(), b.end(),
-                                      [&a](auto bi) { return 1 == std::count(a.begin(), a.end(), bi); });
-               });
+    auto find_triangle = [&tri](const std::set<size_t>& fr) {
+        auto count = 0;
+        for (auto t = tri.begin(); t != tri.end(); t += 3) {
+            count += std::set<size_t>(t, t + 3) == fr ? 1 : 0;
+        }
+        return 1 == count;
     };
 
     EXPECT(find_triangle({1, 2, 3}));

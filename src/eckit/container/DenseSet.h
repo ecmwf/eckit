@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/log/JSON.h"
 #include "eckit/exception/Exceptions.h"
 
 
@@ -130,12 +131,26 @@ public:  // methods
         }
     }
 
+    void json(JSON& s) const {
+        s.startList();
+        const_iterator it = cbegin();
+        for (; it != cend(); ++it) {
+            s << *it;
+        }
+        s.endList();
+    }
+
     bool operator==(const DenseSet& rhs) const { return !operator!=(rhs); }
 
     bool operator!=(const DenseSet& rhs) const { return values_ != rhs.values_; }
 
     friend std::ostream& operator<<(std::ostream& s, const DenseSet& m) {
         m.print(s);
+        return s;
+    }
+
+    friend JSON& operator<<(JSON& s, const DenseSet& m) {
+        m.json(s);
         return s;
     }
 

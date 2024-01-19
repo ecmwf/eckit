@@ -100,13 +100,26 @@ public:
     // None
 
     // -- Class methods
-    // None
+
+    static PointLonLat componentsMin(const PointLonLat& p, const PointLonLat& q) {
+        return {std::min(p.lon, q.lon), std::min(p.lat, q.lat)};
+    }
+
+    static PointLonLat componentsMax(const PointLonLat& p, const PointLonLat& q) {
+        return {std::max(p.lon, q.lon), std::max(p.lat, q.lat)};
+    }
 
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const PointLonLat& p) {
         return out << '{' << p.lon << ", " << p.lat << '}';
     }
+
+    friend PointLonLat operator-(const PointLonLat& p, const PointLonLat& q) { return {p.lon - q.lon, p.lat - q.lat}; }
+
+    friend PointLonLat operator+(const PointLonLat& p, const PointLonLat& q) { return {p.lon + q.lon, p.lat + q.lat}; }
+
+    friend PointLonLat operator*(const PointLonLat& p, double d) { return {p.lon * d, p.lat * d}; }
 };
 
 bool points_equal(const PointLonLat&, const PointLonLat&);

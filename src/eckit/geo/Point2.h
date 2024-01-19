@@ -88,6 +88,8 @@ public:
     }
 
     operator eckit::Value() const;
+
+    static Point2 middle(const Point2& p, const Point2& q) { return (p + q) * 0.5; }
 };
 
 //------------------------------------------------------------------------------------------------------

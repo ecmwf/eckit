@@ -36,16 +36,20 @@ static BoundingBox make_from_spec(const Spec& spec) {
         return {area[0], area[1], area[2], area[3]};
     }
 
-    if (auto area(DEFAULT); spec.get("north", area[0]) && spec.get("west", area[1]) && spec.get("south", area[2]) &&
-                            spec.get("east", area[3])) {
-        return {area[0], area[1], area[2], area[3]};
+    auto area(DEFAULT);
+    spec.get("north", area[0]);
+    spec.get("south", area[2]);
+
+    if (spec.get("west", area[1]) != spec.get("east", area[3])) {
+        if (spec.has("west")) {
+            area[3] = area[1] + 360;
+        }
+        else {
+            area[1] = area[3] - 360;
+        }
     }
 
-    if (!spec.has("north") && !spec.has("west") && !spec.has("south") && !spec.has("east")) {
-        return {};
-    }
-
-    throw UserError("BoundingBox: expecting 'area'=north/west/south/east or ('north', 'west', 'south', 'east')");
+    return {area[0], area[1], area[2], area[3]};
 }
 
 

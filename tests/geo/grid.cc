@@ -41,10 +41,29 @@ CASE("GridFactory::build") {
 
 
     SECTION("RegularGaussian") {
-        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "f2"}, {"south", 0}})));
+        spec::Custom spec({{"grid", "f2"}});
+        std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+        auto n1 = grid1->size();
 
-        auto nh = grid->size();
-        EXPECT_EQUAL(nh, 32 / 2);
+        EXPECT_EQUAL(n1, 32);
+
+        spec.set("south", 0);
+        std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
+        auto n2 = grid2->size();
+
+        EXPECT_EQUAL(n2, n1 / 2);
+
+        spec = spec::Custom{{{"grid", "f2"}, {"west", -180}}};
+        std::unique_ptr<const Grid> grid3(GridFactory::build(spec));
+        auto n3 = grid3->size();
+
+        EXPECT_EQUAL(n3, n1);
+
+        spec.set("east", 0);
+        std::unique_ptr<const Grid> grid4(GridFactory::build(spec));
+        auto n4 = grid4->size();
+
+        EXPECT_EQUAL(n4, n1 / 2);
     }
 
 

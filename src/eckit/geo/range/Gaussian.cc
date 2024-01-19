@@ -37,6 +37,7 @@ Gaussian::Gaussian(size_t N, double a, double b, double _eps) :
         v.erase(v.begin(), v.begin() + from);
 
         ASSERT(!v.empty());
+        resize(v.size());
     }
 }
 

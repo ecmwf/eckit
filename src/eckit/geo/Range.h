@@ -70,7 +70,8 @@ protected:
     // None
 
     // -- Methods
-    // None
+
+    void resize(size_t n) { n_ = n; }
 
     // -- Overridden methods
     // None
@@ -84,7 +85,7 @@ protected:
 private:
     // -- Members
 
-    const size_t n_;
+    size_t n_;
     const double eps_;
 
     // -- Methods

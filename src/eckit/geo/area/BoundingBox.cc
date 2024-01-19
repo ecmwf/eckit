@@ -55,13 +55,18 @@ BoundingBox::BoundingBox(const Spec& spec) :
 
 BoundingBox::BoundingBox(double n, double w, double s, double e) :
     array{n, w, s, e} {
-    if (west != east) {
+    ASSERT_MSG(types::is_approximately_lesser_or_equal(-90., south), "BoundingBox: latitude range (-90 <= south)");
+    ASSERT_MSG(types::is_approximately_lesser_or_equal(south, north), "BoundingBox: latitude range (south <= north)");
+    ASSERT_MSG(types::is_approximately_lesser_or_equal(north, 90.), "BoundingBox: latitude range (north <= 90)");
+
+    if (!types::is_approximately_equal(west, east)) {
         auto e = PointLonLat::normalise_angle_to_minimum(east, west);
-        east   = e == west ? (e + 360.) : e;
+        east   = types::is_approximately_equal(e, west) ? (e + 360.) : e;
     }
 
-    ASSERT_MSG(west <= east && east <= west + 360., "BoundingBox: longitude range");
-    ASSERT_MSG(-90. <= south && south <= north && north <= 90., "BoundingBox: latitude range");
+    ASSERT_MSG(types::is_approximately_lesser_or_equal(west, east), "BoundingBox: longitude range (west <= east)");
+    ASSERT_MSG(types::is_approximately_lesser_or_equal(east, west + 360.),
+               "BoundingBox: longitude range (east <= west + 360)");
 }
 
 

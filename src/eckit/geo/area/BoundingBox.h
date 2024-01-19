@@ -36,6 +36,8 @@ public:
     explicit BoundingBox(const Spec&);
 
     BoundingBox(double north, double west, double south, double east);
+    BoundingBox(double north, double west, double south) :
+        BoundingBox(north, west, south, west + 360.) {}
 
     BoundingBox();
 

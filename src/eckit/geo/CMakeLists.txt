@@ -98,10 +98,6 @@ list(APPEND eckit_geo_srcs
     projection/None.h
     projection/Rotation.cc
     projection/Rotation.h
-    range/Gaussian.cc
-    range/Gaussian.h
-    range/Regular.cc
-    range/Regular.h
     spec/Custom.cc
     spec/Custom.h
     spec/Generator.h

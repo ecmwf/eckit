@@ -13,8 +13,7 @@
 #include <iostream>
 #include <vector>
 
-#include "eckit/geo/range/Gaussian.h"
-#include "eckit/geo/range/Regular.h"
+#include "eckit/geo/Range.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 

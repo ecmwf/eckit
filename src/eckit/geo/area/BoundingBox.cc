@@ -40,16 +40,10 @@ static BoundingBox make_from_spec(const Spec& spec) {
     spec.get("north", area[0]);
     spec.get("south", area[2]);
 
-    if (spec.get("west", area[1]) != spec.get("east", area[3])) {
-        if (spec.has("west")) {
-            area[3] = area[1] + 360;
-        }
-        else {
-            area[1] = area[3] - 360;
-        }
-    }
+    auto new_east = spec.get("west", area[1]) && !spec.has("east");
+    auto new_west = spec.get("east", area[3]) && !spec.has("west");
 
-    return {area[0], area[1], area[2], area[3]};
+    return {area[0], new_west ? area[3] - 360 : area[1], area[2], new_east ? area[1] + 360 : area[3]};
 }
 
 

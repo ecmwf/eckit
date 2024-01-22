@@ -7,6 +7,7 @@
 
 #include <limits>
 #include <sstream>
+#include <cmath>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/CoordinateHelpers.h"
@@ -16,14 +17,12 @@ namespace eckit::geometry {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-double normalise_angle(double a, const double minimum) {
-    while (a < minimum) {
-        a += 360.;
-    }
-    while (a >= minimum + 360.) {
-        a -= 360.;
-    }
-    return a;
+inline double modulo(const double a, const double b) {
+    return a-b*std::floor(a/b);
+}
+
+double normalise_angle(const double a, const double minimum) {
+    return minimum + modulo(a-minimum, 360.);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

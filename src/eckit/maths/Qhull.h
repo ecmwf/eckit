@@ -16,8 +16,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/exception/Exceptions.h"
-
 
 namespace orgQhull {
 class Qhull;
@@ -35,13 +33,6 @@ public:
     using facets_n_t = std::map<size_t, size_t>;
 
     static const char* COMMAND_DEFAULT;
-
-    struct Exception : eckit::Exception {
-        Exception(const std::string& what, int _errorCode, const std::string& _command) :
-            eckit::Exception(what), errorCode(_errorCode), command(_command) {}
-        const int errorCode;
-        const std::string& command;
-    };
 
     // -- Constructors
 

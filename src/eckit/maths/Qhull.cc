@@ -14,6 +14,7 @@
 #include <sstream>
 
 #include "eckit/log/Log.h"
+#include "eckit/maths/ConvexHull.h"
 
 #include "libqhullcpp/Qhull.h"
 #include "libqhullcpp/QhullFacetList.h"
@@ -45,7 +46,7 @@ Qhull::Qhull(size_t N, const coord_t& coord, const std::string& command) {
         ASSERT(qh_->qhullStatus() == 0);
     }
     catch (const orgQhull::QhullError& e) {
-        throw Exception(err.str(), e.errorCode(), command);
+        throw ConvexHull::Exception(err.str(), e.errorCode(), command);
     }
 }
 

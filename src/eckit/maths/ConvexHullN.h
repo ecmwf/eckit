@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 #include "eckit/maths/ConvexHull.h"
 
 
@@ -41,14 +43,10 @@ private:
     static coord_t convert_vector_v(const std::vector<std::vector<double>>& coord_v) {
         coord_t coord;
         coord.reserve(N * coord_v.size());
-
         for (const auto& v : coord_v) {
             ASSERT(N == v.size());
-            for (size_t i = 0; i < N; ++i) {
-                coord.emplace_back(v[i]);
-            }
+            std::for_each_n(v.begin(), N, [&coord](auto x) { coord.emplace_back(x); });
         }
-
         return coord;
     }
 
@@ -56,9 +54,7 @@ private:
         coord_t coord;
         coord.reserve(N * coord_a.size());
         for (const auto& a : coord_a) {
-            for (size_t i = 0; i < N; ++i) {
-                coord.emplace_back(a[i]);
-            }
+            std::for_each_n(a.begin(), N, [&coord](auto x) { coord.emplace_back(x); });
         }
         return coord;
     }

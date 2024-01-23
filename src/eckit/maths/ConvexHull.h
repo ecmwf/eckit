@@ -13,6 +13,7 @@
 
 #include <vector>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/maths/Qhull.h"
 
 
@@ -21,16 +22,33 @@ namespace eckit::maths {
 
 class ConvexHull {
 public:
+    // -- Types
+
     using coord_t    = typename Qhull::coord_t;
     using facets_n_t = typename Qhull::facets_n_t;
+
+    struct Exception : eckit::Exception {
+        Exception(const std::string& what, int _errorCode, const std::string& _command) :
+            eckit::Exception(what), errorCode(_errorCode), command(_command) {}
+        const int errorCode;
+        const std::string& command;
+    };
+
+    // -- Constructors
 
     ConvexHull(const ConvexHull&) = delete;
     ConvexHull(ConvexHull&&)      = delete;
 
+    // -- Destructor
+
     virtual ~ConvexHull() = default;
+
+    // -- Operators
 
     void operator=(const ConvexHull&) = delete;
     void operator=(ConvexHull&&)      = delete;
+
+    // -- Methods
 
     virtual std::vector<size_t> list_vertices() const            = 0;
     virtual std::vector<std::vector<size_t>> list_facets() const = 0;
@@ -39,6 +57,8 @@ public:
     virtual std::vector<size_t> facets(size_t n) const = 0;
 
 protected:
+    // -- Constructors
+
     ConvexHull() /*noexcept*/ = default;
 };
 

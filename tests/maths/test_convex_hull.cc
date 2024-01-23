@@ -30,14 +30,14 @@ namespace eckit::test {
 
 
 CASE("Qhull errors/exceptions") {
-    using maths::Qhull;
+    using maths::ConvexHull;
 
 
     SECTION("input") {
         for (size_t N : {2, 3, 4}) {
-            Qhull::coord_t coord((N + 1) * N + 1, 1.);
+            ConvexHull::coord_t coord((N + 1) * N + 1, 1.);
             ASSERT(coord.size() % N != 0);
-            EXPECT_THROWS_AS(Qhull(N, coord, "Qt"), AssertionFailed);  // 0 < N && coord.size() % N == 0
+            EXPECT_THROWS_AS(maths::Qhull(N, coord, "Qt"), AssertionFailed);  // 0 < N && coord.size() % N == 0
         }
     }
 
@@ -48,7 +48,7 @@ CASE("Qhull errors/exceptions") {
             const std::string what;
             const std::string command;
             const size_t N;
-            const Qhull::coord_t coord;
+            const ConvexHull::coord_t coord;
         } static const tests[] = {
             {6050, "QH6050 qhull error: dimension 1 must be > 1", "Qt", 1, {1, 1}},
             {6154, "QH6154 Qhull precision error: Initial simplex is flat", "Qt", 2, {1, 1, 2, 2, 3, 3}},
@@ -59,10 +59,10 @@ CASE("Qhull errors/exceptions") {
 
         for (const auto& test : tests) {
             try {
-                Qhull(test.N, test.coord, test.command);
+                maths::Qhull(test.N, test.coord, test.command);
                 EXPECT(false);
             }
-            catch (const Qhull::Exception& e) {
+            catch (const maths::ConvexHull::Exception& e) {
                 EXPECT_EQUAL(test.errorCode, e.errorCode);
                 EXPECT_EQUAL(test.what, std::string(e.what(), test.what.length()));
             }

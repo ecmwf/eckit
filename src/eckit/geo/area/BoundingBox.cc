@@ -27,23 +27,32 @@
 namespace eckit::geo::area {
 
 
-static constexpr std::array<double, 4> DEFAULT{90, 0, -90, 360};
+BoundingBox BoundingBox::make_global_prime() {
+    return {90., 0., -90., 360.};
+}
+
+
+BoundingBox BoundingBox::make_global_antiprime() {
+    return {90., -180., -90., 180.};
+}
 
 
 static BoundingBox make_from_spec(const Spec& spec) {
-    if (std::vector<double> area{DEFAULT[0], DEFAULT[1], DEFAULT[2], DEFAULT[3]}; spec.get("area", area)) {
+    const auto [n, w, s, e] = BoundingBox::make_global_prime().deconstruct();
+
+    if (std::vector<double> area{n, w, s, e}; spec.get("area", area)) {
         ASSERT_MSG(area.size() == 4, "BoundingBox: 'area' expected list of size 4");
         return {area[0], area[1], area[2], area[3]};
     }
 
-    auto area(DEFAULT);
+    std::array<double, 4> area{n, w, s, e};
     spec.get("north", area[0]);
     spec.get("south", area[2]);
 
     auto new_east = spec.get("west", area[1]) && !spec.has("east");
     auto new_west = spec.get("east", area[3]) && !spec.has("west");
 
-    return {area[0], new_west ? area[3] - 360 : area[1], area[2], new_east ? area[1] + 360 : area[3]};
+    return {area[0], new_west ? area[3] - 360. : area[1], area[2], new_east ? area[1] + 360. : area[3]};
 }
 
 
@@ -66,10 +75,6 @@ BoundingBox::BoundingBox(double n, double w, double s, double e) :
     ASSERT_MSG(types::is_approximately_lesser_or_equal(east, west + 360.),
                "BoundingBox: longitude range (east <= west + 360)");
 }
-
-
-BoundingBox::BoundingBox() :
-    BoundingBox(DEFAULT[0], DEFAULT[1], DEFAULT[2], DEFAULT[3]) {}
 
 
 bool BoundingBox::operator==(const BoundingBox& other) const {

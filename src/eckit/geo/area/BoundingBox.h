@@ -36,10 +36,9 @@ public:
     explicit BoundingBox(const Spec&);
 
     BoundingBox(double north, double west, double south, double east);
-    BoundingBox(double north, double west, double south) :
-        BoundingBox(north, west, south, west + 360.) {}
 
-    BoundingBox();
+    BoundingBox() :
+        BoundingBox(make_global_prime()) {}
 
     BoundingBox(const BoundingBox& other) :
         array(other) {}
@@ -83,9 +82,8 @@ public:
     double area(double radius) const;
 
     static BoundingBox make(const BoundingBox&, const Projection&);
-
-    static BoundingBox make_global_prime() { return {90., 0., -90., 360.}; }
-    static BoundingBox make_global_antiprime() { return {90., -180., -90., 180.}; }
+    static BoundingBox make_global_prime();
+    static BoundingBox make_global_antiprime();
 
     // -- Overridden methods
     // None

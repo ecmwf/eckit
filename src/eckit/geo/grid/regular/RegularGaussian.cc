@@ -22,16 +22,12 @@ namespace eckit::geo::grid::regular {
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), spec.get_unsigned("ni"), area::BoundingBox(spec)) {}
+    RegularGaussian(spec.get_unsigned("N"), area::BoundingBox(spec)) {}
 
 
 RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
-    RegularGaussian(N, 4 * N, bbox) {}
-
-
-RegularGaussian::RegularGaussian(size_t N, size_t ni, const area::BoundingBox& bbox) :
     Regular(bbox),
-    x_(new range::Regular(ni, bbox.west, bbox.east)),
+    x_(new range::Regular(4 * N, bbox.west, bbox.east)),
     y_(new range::Gaussian(N, bbox.north, bbox.south)) {
     ASSERT(x_->size() > 0);
     ASSERT(y_->size() > 0);

@@ -31,7 +31,6 @@ public:
 
     explicit RegularGaussian(const Spec&);
     explicit RegularGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
-    RegularGaussian(size_t N, size_t ni, const area::BoundingBox& = area::BoundingBox::make_global_prime());
 
     // -- Destructor
     // None

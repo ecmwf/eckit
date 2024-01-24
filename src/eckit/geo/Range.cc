@@ -61,6 +61,8 @@ const std::vector<double>& Regular::values() const {
 
 RegularPeriodic::RegularPeriodic(size_t n, double a, double b, double _eps) :
     Range(n, _eps), a_(a), b_(b) {
+    constexpr auto db = 1e-12;
+
     if (types::is_approximately_equal(a_, b_, eps())) {
         resize(1);
         b_        = a_;
@@ -68,20 +70,12 @@ RegularPeriodic::RegularPeriodic(size_t n, double a, double b, double _eps) :
         values_   = {a_};
     }
     else if (a_ < b_) {
-        auto n = PointLonLat::normalise_angle_to_minimum(b_, a_);
-
-        b_ = types::is_approximately_equal(n, a_, eps()) ? a_ + 360. : n;
-        ASSERT(!types::is_approximately_equal(a_, b_, eps()));
-
+        b_        = PointLonLat::normalise_angle_to_minimum(b_ - db, a_) + db;
         auto inc  = (b_ - a_) / static_cast<double>(size());
         endpoint_ = types::is_strictly_greater(360., b_ - a_ + inc);
     }
     else {
-        auto n = PointLonLat::normalise_angle_to_maximum(b_, a_);
-
-        b_ = types::is_approximately_equal(n, a_, eps()) ? a_ - 360. : n;
-        ASSERT(!types::is_approximately_equal(a_, b_, eps()));
-
+        b_        = PointLonLat::normalise_angle_to_maximum(b_ + db, a_) - db;
         auto inc  = (b_ - a_) / static_cast<double>(size());
         endpoint_ = types::is_strictly_greater(b_ - a_ + inc, -360.);
     }

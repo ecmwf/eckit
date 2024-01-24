@@ -11,8 +11,8 @@
 
 
 #include "eckit/geo/Point.h"
-#include "eckit/maths/Matrix3.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -25,6 +25,16 @@ using namespace geo;
 
 
 CASE("PointLonLat normalisation") {
+    constexpr auto EPS = 1e-9;
+    constexpr auto da  = 1e-3;
+
+    for (double a = -370.; a < 370.; a += 10.) {
+        EXPECT(types::is_approximately_equal(a, PointLonLat::normalise_angle_to_minimum(a, a), EPS));
+        EXPECT(types::is_approximately_equal(a, PointLonLat::normalise_angle_to_maximum(a, a), EPS));
+        EXPECT(types::is_approximately_equal(a + 360., PointLonLat::normalise_angle_to_minimum(a - da, a) + da, EPS));
+        EXPECT(types::is_approximately_equal(a - 360., PointLonLat::normalise_angle_to_maximum(a + da, a) - da, EPS));
+    }
+
     PointLonLat p(1, 90.);
     EXPECT_EQUAL(p.lon, 1.);
     EXPECT_EQUAL(p.lat, 90.);
@@ -156,7 +166,7 @@ CASE("Point2 comparison") {
 }
 
 
-CASE("Point distance comparison") {
+CASE("Point2 distance comparison") {
     Point2 p1 = {2.0, 1.0};
     Point2 p2 = {1.0, 2.0};
 
@@ -168,7 +178,7 @@ CASE("Point distance comparison") {
 }
 
 
-CASE("Point distance2 comparison") {
+CASE("Point2 distance2 comparison") {
     Point2 p1 = {2.0, 1.0};
     Point2 p2 = {1.0, 2.0};
 

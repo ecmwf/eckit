@@ -74,7 +74,6 @@ public:
 private:
     double a_;
     double b_;
-    bool endpoint_;
     std::vector<double> values_;
 };
 

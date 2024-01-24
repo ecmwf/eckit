@@ -35,17 +35,10 @@ namespace range {
 
 Regular::Regular(size_t n, double a, double b, double _eps) :
     Range(n, _eps), a_(a), b_(b) {
-    if (types::is_approximately_equal(a, b, eps())) {
-        b_        = a_;
-        endpoint_ = false;
-        ASSERT(n == 1);
-    }
-    else {
-        b             = PointLonLat::normalise_angle_to_minimum(b, a + eps());
-        auto inc      = (b - a) / static_cast<double>(n);
-        auto periodic = types::is_approximately_greater_or_equal(b - a + inc, 360.);
-
-        endpoint_ = !periodic;
+    if (types::is_approximately_equal(a_, b_, eps())) {
+        resize(1);
+        b_      = a_;
+        values_ = {a_};
     }
 }
 
@@ -53,11 +46,7 @@ Regular::Regular(size_t n, double a, double b, double _eps) :
 const std::vector<double>& Regular::values() const {
     if (values_.empty()) {
         auto& v = const_cast<std::vector<double>&>(values_);
-        v       = util::linspace(0., 360., Range::size(), false);
-
-        auto [from, to] = util::monotonic_crop(v, a_, b_, eps());
-        v.erase(v.begin() + to, v.end());
-        v.erase(v.begin(), v.begin() + from);
+        v       = util::linspace(a_, b_, size(), true);
 
         ASSERT(!v.empty());
     }

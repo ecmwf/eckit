@@ -10,7 +10,6 @@
  */
 
 
-#include <iostream>
 #include <vector>
 
 #include "eckit/geo/Range.h"
@@ -25,6 +24,39 @@ namespace eckit::test {
 
 
 using namespace geo;
+
+
+constexpr auto EPS = 1e-3;
+
+
+CASE("range::Regular") {
+    SECTION("degenerate") {
+        EXPECT_THROWS_AS(range::Regular(0, 0., 0.), eckit::AssertionFailed);
+        EXPECT_THROWS_AS(range::Regular(0, 0., 10.), eckit::AssertionFailed);
+
+        range::Regular range1(1, 1., 1.);
+        EXPECT(range1.size() == 1);
+        EXPECT(range1.values().front() == 1.);
+
+        range::Regular range2(2, 2., 2.);
+        EXPECT(range2.size() == 1);
+        EXPECT(range2.values().front() == 2.);
+    }
+
+
+    SECTION("global") {
+        const auto range = range::Regular(4, -90., 90.);
+        EXPECT(range.size() == 4);
+
+        const auto& values = range.values();
+        EXPECT(range.size() == values.size());
+
+        EXPECT_APPROX(values[0], -90., EPS);
+        EXPECT_APPROX(values[1], -30., EPS);
+        EXPECT_APPROX(values[2], 30., EPS);
+        EXPECT_APPROX(values[3], 90., EPS);
+    }
+}
 
 
 CASE("range::Gaussian") {
@@ -43,22 +75,20 @@ CASE("range::Gaussian") {
 
 
     SECTION("crop [50., -50.]") {
-        constexpr auto eps = 1e-3;
-
-        auto cropped = range::Gaussian(2, 50., -50., eps);
+        auto cropped = range::Gaussian(2, 50., -50., EPS);
         EXPECT(cropped.size() == ref.size() - 2);
 
-        EXPECT_APPROX(cropped.values()[0], ref[1], eps);
-        EXPECT_APPROX(cropped.values()[1], ref[2], eps);
+        EXPECT_APPROX(cropped.values()[0], ref[1], EPS);
+        EXPECT_APPROX(cropped.values()[1], ref[2], EPS);
 
         EXPECT(range::Gaussian(2, 59.444, -59.444, 1e-3).size() == 4);
         EXPECT(range::Gaussian(2, 59.444, -59.444, 1e-6).size() == 2);
         EXPECT(range::Gaussian(2, 59.444, -59.445, 1e-6).size() == 3);
 
-        auto single = range::Gaussian(2, -59.444, -59.444, eps);
+        auto single = range::Gaussian(2, -59.444, -59.444, EPS);
         EXPECT(single.size() == 1);
 
-        EXPECT_APPROX(single.values().front(), ref.back(), eps);
+        EXPECT_APPROX(single.values().front(), ref.back(), EPS);
     }
 
 

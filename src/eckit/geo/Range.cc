@@ -16,6 +16,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 

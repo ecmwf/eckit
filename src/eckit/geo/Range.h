@@ -14,8 +14,6 @@
 
 #include <vector>
 
-#include "eckit/geo/util.h"
-
 
 namespace eckit::geo {
 
@@ -36,7 +34,7 @@ public:
     virtual const std::vector<double>& values() const = 0;
 
 protected:
-    explicit Range(size_t n, double eps = util::EPS);
+    explicit Range(size_t n, double eps = 0.);
 
     void resize(size_t n) { n_ = n; }
 

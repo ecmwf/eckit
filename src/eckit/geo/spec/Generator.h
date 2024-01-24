@@ -123,7 +123,7 @@ template <class C>
 void GeneratorT<C>::regist(const key_t& k, generator_t* c) {
     lock_type lock;
     if (exists(k)) {
-        throw BadParameter("Configurator has already a builder for " + k, Here());
+        throw BadParameter("Generator has already a builder for " + k, Here());
     }
     ASSERT(c != nullptr);
     store_[k] = c;
@@ -136,7 +136,7 @@ void GeneratorT<C>::unregist(const key_t& k) {
         store_.erase(it);
         return;
     }
-    throw BadParameter("Configurator unknown: '" + k + "'", Here());
+    throw BadParameter("Generator unknown: '" + k + "'", Here());
 }
 
 template <class C>
@@ -145,7 +145,7 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::get(const key_t& k) co
     if (auto it = store_.find(k); it != store_.end()) {
         return *(it->second);
     }
-    throw BadParameter("Configurator unknown: '" + k + "'", Here());
+    throw BadParameter("Generator unknown: '" + k + "'", Here());
 }
 
 template <class C>
@@ -157,7 +157,7 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::strin
     for (auto j = store_.cbegin(); j != end; ++j) {
         if (Regex(j->first).match(k)) {
             if (i != end) {
-                throw SeriousBug("Configurator name '" + k + "' matches '" + i->first + "' and '" + j->first + "'");
+                throw SeriousBug("Generator name '" + k + "' matches '" + i->first + "' and '" + j->first + "'");
             }
             i = j;
         }
@@ -167,13 +167,13 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::strin
         return *(i->second);
     }
 
-    throw BadParameter("Configurator unknown: '" + k + "'", Here());
+    throw BadParameter("Generator unknown: '" + k + "'", Here());
 }
 
 template <class C>
 void GeneratorT<C>::print(std::ostream& os) const {
     lock_type lock;
-    os << "Configurator" << std::endl;
+    os << "Generator" << std::endl;
 
     int key_width = 0;
     for (const auto& i : store_) {

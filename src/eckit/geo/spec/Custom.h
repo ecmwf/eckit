@@ -77,7 +77,6 @@ public:
 
     void set(const std::string& name, const char* value) { set(name, std::string{value}); }
 
-    // (consistent with Configured)
     void set(const std::string& name, const std::string& value);
     void set(const std::string& name, bool value);
     void set(const std::string& name, int value);

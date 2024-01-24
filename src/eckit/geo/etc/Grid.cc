@@ -57,12 +57,12 @@ void set_custom_value(spec::Custom& custom, const std::string& key, const Value&
 }
 
 
-spec::Custom* config_from_value_map(const ValueMap& map) {
-    auto* config = new spec::Custom;
+spec::Custom* spec_from_value_map(const ValueMap& map) {
+    auto* spec = new spec::Custom;
     for (const auto& kv : map) {
-        set_custom_value(*config, kv.first, kv.second);
+        set_custom_value(*spec, kv.first, kv.second);
     }
-    return config;
+    return spec;
 }
 
 
@@ -103,7 +103,7 @@ Grid::Grid(const PathName& path) {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
                     SpecByUID::instance().regist(m.begin()->first.as<std::string>(),
-                                                 new SpecByUIDGenerator(config_from_value_map(m.begin()->second)));
+                                                 new SpecByUIDGenerator(spec_from_value_map(m.begin()->second)));
                 }
                 continue;
             }
@@ -112,7 +112,7 @@ Grid::Grid(const PathName& path) {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
                     SpecByName::instance().regist(m.begin()->first.as<std::string>(),
-                                                  new SpecByNameGenerator(config_from_value_map(m.begin()->second)));
+                                                  new SpecByNameGenerator(spec_from_value_map(m.begin()->second)));
                 }
                 continue;
             }

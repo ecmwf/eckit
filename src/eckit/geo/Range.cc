@@ -13,15 +13,18 @@
 #include "eckit/geo/Range.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/util.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo {
+
+
+util::recursive_mutex MUTEX;
 
 
 Range::Range(size_t n, double eps) :
@@ -45,11 +48,11 @@ Regular::Regular(size_t n, double a, double b, double _eps) :
 
 
 const std::vector<double>& Regular::values() const {
-    if (values_.empty()) {
-        auto& v = const_cast<std::vector<double>&>(values_);
-        v       = util::linspace(a_, b_, size(), true);
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
-        ASSERT(!v.empty());
+    if (values_.empty()) {
+        const_cast<std::vector<double>&>(values_) = util::linspace(a_, b_, Range::size(), true);
+        ASSERT(!values_.empty());
     }
 
     return values_;
@@ -64,31 +67,33 @@ RegularPeriodic::RegularPeriodic(size_t n, double a, double b, double _eps) :
         endpoint_ = false;
         values_   = {a_};
     }
-    else {
-        auto plus = a_ < b_;
-        auto n =
-            plus ? PointLonLat::normalise_angle_to_minimum(b_, a_) : PointLonLat::normalise_angle_to_maximum(b_, a_);
+    else if (a_ < b_) {
+        auto n = PointLonLat::normalise_angle_to_minimum(b_, a_);
 
-        b_ = types::is_approximately_equal(n, a_, eps()) ? a_ + (plus ? 360. : -360.) : n;
+        b_ = types::is_approximately_equal(n, a_, eps()) ? a_ + 360. : n;
         ASSERT(!types::is_approximately_equal(a_, b_, eps()));
 
-        auto inc = (b_ - a_) / static_cast<double>(size());
-        endpoint_ =
-            plus ? types::is_strictly_greater(360., b_ - a_ + inc) : types::is_strictly_greater(b_ - a_ + inc, -360.);
+        auto inc  = (b_ - a_) / static_cast<double>(size());
+        endpoint_ = types::is_strictly_greater(360., b_ - a_ + inc);
+    }
+    else {
+        auto n = PointLonLat::normalise_angle_to_maximum(b_, a_);
+
+        b_ = types::is_approximately_equal(n, a_, eps()) ? a_ - 360. : n;
+        ASSERT(!types::is_approximately_equal(a_, b_, eps()));
+
+        auto inc  = (b_ - a_) / static_cast<double>(size());
+        endpoint_ = types::is_strictly_greater(b_ - a_ + inc, -360.);
     }
 }
 
 
 const std::vector<double>& RegularPeriodic::values() const {
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+
     if (values_.empty()) {
-        auto& v = const_cast<std::vector<double>&>(values_);
-        v       = util::linspace(a_, b_, Range::size(), false);
-
-        auto [from, to] = util::monotonic_crop(v, a_, b_, eps());
-        v.erase(v.begin() + to, v.end());
-        v.erase(v.begin(), v.begin() + from);
-
-        ASSERT(!v.empty());
+        const_cast<std::vector<double>&>(values_) = util::linspace(a_, b_, Range::size(), false);
+        ASSERT(!values_.empty());
     }
 
     return values_;
@@ -116,6 +121,8 @@ Gaussian::Gaussian(size_t N, double a, double b, double _eps) :
 
 
 const std::vector<double>& Gaussian::values() const {
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+
     return values_.empty() ? util::gaussian_latitudes(N_, a_ < b_) : values_;
 }
 

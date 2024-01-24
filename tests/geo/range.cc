@@ -75,16 +75,28 @@ CASE("range::RegularPeriodic") {
 
 
     SECTION("global") {
-        const range::RegularPeriodic range(4, -180., 180.);
-        EXPECT(range.size() == 4);
+        const range::RegularPeriodic range1(4, -180., 180.);
+        EXPECT(range1.size() == 4);
 
-        const auto& values = range.values();
-        EXPECT(range.size() == values.size());
+        const auto& values1 = range1.values();
+        EXPECT(range1.size() == values1.size());
 
-        EXPECT_APPROX(values[0], -180., EPS);
-        EXPECT_APPROX(values[1], -90., EPS);
-        EXPECT_APPROX(values[2], 0., EPS);
-        EXPECT_APPROX(values[3], 90., EPS);
+        EXPECT_APPROX(values1[0], -180., EPS);
+        EXPECT_APPROX(values1[1], -90., EPS);
+        EXPECT_APPROX(values1[2], 0., EPS);
+        EXPECT_APPROX(values1[3], 90., EPS);
+
+        const range::RegularPeriodic range2(8, 180., -180.);
+        EXPECT(range2.size() == 8);
+
+        const auto& values2 = range2.values();
+        EXPECT(range2.size() == values2.size());
+
+        EXPECT_APPROX(values2[0], 180., EPS);
+        EXPECT_APPROX(values2[1], 135., EPS);
+        EXPECT_APPROX(values2[2], 90., EPS);
+        EXPECT_APPROX(values2[3], 45., EPS);
+        EXPECT_APPROX(values2[7], -135., EPS);
     }
 }
 

@@ -45,7 +45,7 @@ CASE("range::Regular") {
 
 
     SECTION("global") {
-        const auto range = range::Regular(4, -90., 90.);
+        const range::Regular range(4, -90., 90.);
         EXPECT(range.size() == 4);
 
         const auto& values = range.values();
@@ -54,6 +54,36 @@ CASE("range::Regular") {
         EXPECT_APPROX(values[0], -90., EPS);
         EXPECT_APPROX(values[1], -30., EPS);
         EXPECT_APPROX(values[2], 30., EPS);
+        EXPECT_APPROX(values[3], 90., EPS);
+    }
+}
+
+
+CASE("range::RegularPeriodic") {
+    SECTION("degenerate") {
+        EXPECT_THROWS_AS(range::RegularPeriodic(0, 0., 0.), eckit::AssertionFailed);
+        EXPECT_THROWS_AS(range::RegularPeriodic(0, 0., 10.), eckit::AssertionFailed);
+
+        range::RegularPeriodic range1(1, 1., 1.);
+        EXPECT(range1.size() == 1);
+        EXPECT(range1.values().front() == 1.);
+
+        range::RegularPeriodic range2(2, 2., 2.);
+        EXPECT(range2.size() == 1);
+        EXPECT(range2.values().front() == 2.);
+    }
+
+
+    SECTION("global") {
+        const range::RegularPeriodic range(4, -180., 180.);
+        EXPECT(range.size() == 4);
+
+        const auto& values = range.values();
+        EXPECT(range.size() == values.size());
+
+        EXPECT_APPROX(values[0], -180., EPS);
+        EXPECT_APPROX(values[1], -90., EPS);
+        EXPECT_APPROX(values[2], 0., EPS);
         EXPECT_APPROX(values[3], 90., EPS);
     }
 }

@@ -13,6 +13,7 @@
 #include "eckit/geo/Range.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
@@ -47,6 +48,45 @@ const std::vector<double>& Regular::values() const {
     if (values_.empty()) {
         auto& v = const_cast<std::vector<double>&>(values_);
         v       = util::linspace(a_, b_, size(), true);
+
+        ASSERT(!v.empty());
+    }
+
+    return values_;
+}
+
+
+RegularPeriodic::RegularPeriodic(size_t n, double a, double b, double _eps) :
+    Range(n, _eps), a_(a), b_(b) {
+    if (types::is_approximately_equal(a_, b_, eps())) {
+        resize(1);
+        b_        = a_;
+        endpoint_ = false;
+        values_   = {a_};
+    }
+    else {
+        auto plus = a_ < b_;
+        auto n =
+            plus ? PointLonLat::normalise_angle_to_minimum(b_, a_) : PointLonLat::normalise_angle_to_maximum(b_, a_);
+
+        b_ = types::is_approximately_equal(n, a_, eps()) ? a_ + (plus ? 360. : -360.) : n;
+        ASSERT(!types::is_approximately_equal(a_, b_, eps()));
+
+        auto inc = (b_ - a_) / static_cast<double>(size());
+        endpoint_ =
+            plus ? types::is_strictly_greater(360., b_ - a_ + inc) : types::is_strictly_greater(b_ - a_ + inc, -360.);
+    }
+}
+
+
+const std::vector<double>& RegularPeriodic::values() const {
+    if (values_.empty()) {
+        auto& v = const_cast<std::vector<double>&>(values_);
+        v       = util::linspace(a_, b_, Range::size(), false);
+
+        auto [from, to] = util::monotonic_crop(v, a_, b_, eps());
+        v.erase(v.begin() + to, v.end());
+        v.erase(v.begin(), v.begin() + from);
 
         ASSERT(!v.empty());
     }

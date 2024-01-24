@@ -57,15 +57,51 @@ CASE("Qhull errors/exceptions") {
             {6421, "QH6421 qhull internal error (qh_maxsimplex)", "Qt", 2, {1, 1, 1, 1, 1, 1}},
         };
 
+        auto trigger = [](const auto& test) { maths::Qhull(test.N, test.coord, test.command); };
+
         for (const auto& test : tests) {
             try {
-                maths::Qhull(test.N, test.coord, test.command);
+                trigger(test);
                 EXPECT(false);
             }
-            catch (const maths::ConvexHull::Exception& e) {
+            catch (const ConvexHull::Exception& e) {
                 EXPECT_EQUAL(test.errorCode, e.errorCode);
                 EXPECT_EQUAL(test.what, std::string(e.what(), test.what.length()));
             }
+            catch (...) {
+                EXPECT(false);
+            }
+        }
+
+        EXPECT_THROWS_AS(trigger(tests[0]), ConvexHull::DimensionError);
+        EXPECT_THROWS_AS(trigger(tests[1]), ConvexHull::PrecisionError);
+        EXPECT_THROWS_AS(trigger(tests[2]), ConvexHull::InputError);
+        EXPECT_THROWS_AS(trigger(tests[3]), ConvexHull::InputError);
+
+        // tests[4] does not throw a specialised error type
+        try {
+            trigger(tests[4]);
+            EXPECT(false);
+        }
+        catch (const ConvexHull::DimensionError&) {
+            EXPECT(false);
+        }
+        catch (const ConvexHull::InputError&) {
+            EXPECT(false);
+        }
+        catch (const ConvexHull::OptionError&) {
+            EXPECT(false);
+        }
+        catch (const ConvexHull::PrecisionError&) {
+            EXPECT(false);
+        }
+        catch (const ConvexHull::TopologyError&) {
+            EXPECT(false);
+        }
+        catch (const ConvexHull::Exception&) {
+        }
+        catch (...) {
+            EXPECT(false);
         }
     }
 }

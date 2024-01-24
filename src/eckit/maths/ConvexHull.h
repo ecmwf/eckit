@@ -34,6 +34,26 @@ public:
         const std::string& command;
     };
 
+    struct DimensionError : Exception {
+        using Exception::Exception;
+    };
+
+    struct InputError : Exception {
+        using Exception::Exception;
+    };
+
+    struct OptionError : Exception {
+        using Exception::Exception;
+    };
+
+    struct PrecisionError : Exception {
+        using Exception::Exception;
+    };
+
+    struct TopologyError : Exception {
+        using Exception::Exception;
+    };
+
     // -- Constructors
 
     ConvexHull(const ConvexHull&) = delete;

@@ -11,6 +11,7 @@
 
 #include "eckit/maths/Qhull.h"
 
+#include <set>
 #include <sstream>
 
 #include "eckit/log/Log.h"
@@ -46,7 +47,31 @@ Qhull::Qhull(size_t N, const coord_t& coord, const std::string& command) {
         ASSERT(qh_->qhullStatus() == 0);
     }
     catch (const orgQhull::QhullError& e) {
-        throw ConvexHull::Exception(err.str(), e.errorCode(), command);
+        static const std::set<int> DIMENSION_ERROR{6050};
+
+        static const std::set<int> INPUT_ERROR{6010, 6013, 6019, 6020, 6021, 6022, 6023, 6033, 6067, 6070,
+                                               6072, 6073, 6074, 6075, 6077, 6078, 6150, 6151, 6152, 6153,
+                                               6203, 6204, 6214, 6220, 6221, 6222, 6223, 6229, 6411, 6412};
+
+        static const std::set<int> OPTION_ERROR{6006, 6029, 6035, 6036, 6037, 6041, 6044, 6045, 6046,
+                                                6047, 6048, 6049, 6051, 6053, 6054, 6055, 6056, 6057,
+                                                6058, 6059, 6215, 6362, 6363, 6364, 6365, 6375};
+
+        static const std::set<int> PRECISION_ERROR{6012, 6109, 6110, 6111, 6112, 6113, 6114, 6115, 6116,
+                                                   6117, 6118, 6136, 6154, 6239, 6240, 6297, 6298, 6347,
+                                                   6348, 6354, 6379, 6380, 6417, 6418, 6422};
+
+        static const std::set<int> TOPOLOGY_ERROR{6001, 6107, 6155, 6168, 6170, 6208, 6227, 6260,
+                                                  6271, 6356, 6361, 6381, 6391, 6420, 6425};
+
+        auto is = [](int err, const auto& set) { return set.find(err) != set.end(); };
+
+        is(e.errorCode(), DIMENSION_ERROR)   ? throw ConvexHull::DimensionError(err.str(), e.errorCode(), command)
+        : is(e.errorCode(), INPUT_ERROR)     ? throw ConvexHull::InputError(err.str(), e.errorCode(), command)
+        : is(e.errorCode(), OPTION_ERROR)    ? throw ConvexHull::OptionError(err.str(), e.errorCode(), command)
+        : is(e.errorCode(), PRECISION_ERROR) ? throw ConvexHull::PrecisionError(err.str(), e.errorCode(), command)
+        : is(e.errorCode(), TOPOLOGY_ERROR)  ? throw ConvexHull::TopologyError(err.str(), e.errorCode(), command)
+                                             : throw ConvexHull::Exception(err.str(), e.errorCode(), command);
     }
 }
 

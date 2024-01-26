@@ -20,9 +20,9 @@
 namespace eckit::geo {
 
 
-bool points_equal(const Point& p, const Point& q) {
+bool points_equal(const Point& p, const Point& q, double eps) {
     ASSERT(p.index() == q.index());
-    return std::visit([&](const auto& p, const auto& q) { return points_equal(p, q); }, p, q);
+    return std::visit([&](const auto& p, const auto& q) { return points_equal(p, q, eps); }, p, q);
 }
 
 

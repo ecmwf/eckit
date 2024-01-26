@@ -18,8 +18,7 @@ namespace eckit::geo {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-bool points_equal(const Point3& a, const Point3& b) {
-    auto eps = 1e-6;
+bool points_equal(const Point3& a, const Point3& b, double eps) {
     return types::is_approximately_equal(a.X, b.X, eps) && types::is_approximately_equal(a.Y, b.Y, eps) &&
            types::is_approximately_equal(a.Z, b.Z, eps);
 }

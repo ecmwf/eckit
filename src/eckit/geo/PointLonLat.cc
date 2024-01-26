@@ -40,13 +40,12 @@ double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
 }
 
 
-bool points_equal(const PointLonLat& a, const PointLonLat& b) {
+bool points_equal(const PointLonLat& a, const PointLonLat& b, double eps) {
     // FIXME
     // solved {180., 0.} == {-180., 0.}
     // could be more performant
-    auto c   = PointLonLat::make(a.lon, a.lat);
-    auto d   = PointLonLat::make(b.lon, b.lat);
-    auto eps = 1e-6;
+    auto c = PointLonLat::make(a.lon, a.lat);
+    auto d = PointLonLat::make(b.lon, b.lat);
     return types::is_approximately_equal(c.lon, d.lon, eps) && types::is_approximately_equal(c.lat, d.lat, eps);
 }
 

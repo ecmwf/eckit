@@ -126,6 +126,6 @@ public:
     }
 };
 
-bool points_equal(const PointLonLat&, const PointLonLat&);
+bool points_equal(const PointLonLat&, const PointLonLat&, double eps = 1.e-9);
 
 }  // namespace eckit::geo

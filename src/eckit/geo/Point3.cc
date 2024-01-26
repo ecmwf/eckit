@@ -24,8 +24,6 @@ bool points_equal(const Point3& a, const Point3& b) {
            types::is_approximately_equal(a.Z, b.Z, eps);
 }
 
-bool operator<(const Point3& a, const Point3& b) {}
-
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo

@@ -120,10 +120,12 @@ public:
     friend PointLonLat operator+(const PointLonLat& p, const PointLonLat& q) { return {p.lon + q.lon, p.lat + q.lat}; }
 
     friend PointLonLat operator*(const PointLonLat& p, double d) { return {p.lon * d, p.lat * d}; }
+
+    friend bool operator<(const PointLonLat& p, const PointLonLat& q) {
+        return static_cast<const P&>(p) < static_cast<const P&>(q);
+    }
 };
 
 bool points_equal(const PointLonLat&, const PointLonLat&);
-
-bool operator<(const PointLonLat&, const PointLonLat&);
 
 }  // namespace eckit::geo

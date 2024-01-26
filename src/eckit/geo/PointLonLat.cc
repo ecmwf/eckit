@@ -51,13 +51,4 @@ bool points_equal(const PointLonLat& a, const PointLonLat& b) {
 }
 
 
-bool operator<(const PointLonLat& a, const PointLonLat& b) {
-    if (types::is_approximately_equal(a.lon, b.lon) || types::is_approximately_equal(a.lat, b.lat)) {
-        return false;
-    }
-
-    return a.lon < b.lon && a.lat < b.lat;
-}
-
-
 }  // namespace eckit::geo

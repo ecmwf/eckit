@@ -12,13 +12,15 @@
 
 #pragma once
 
+#include <memory>
+
 #include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
 
 
-class None final : public Projection {
+class None : public Projection {
 public:
     // -- Types
     // None
@@ -28,8 +30,9 @@ public:
 
     // -- Constructors
 
-    None() = default;
-    explicit None(const Spec&) {}
+    explicit None();
+    explicit None(const std::string& source, const std::string& target);
+    explicit None(const Spec&);
 
     // -- Destructor
     // None
@@ -54,32 +57,69 @@ public:
     // None
 
 private:
+    // -- Types
+
+    struct Implementation {
+        Implementation()          = default;
+        virtual ~Implementation() = default;
+
+        Implementation(const Implementation&) = delete;
+        Implementation(Implementation&&)      = delete;
+        void operator=(const Implementation&) = delete;
+        void operator=(Implementation&&)      = delete;
+
+        virtual Point operator()(const Point&) const = 0;
+    };
+
+    struct NoPointConversion final : Implementation {
+        Point operator()(const Point& p) const override { return p; }
+    };
+
+    struct Point2ToPointLonLat final : Implementation {
+        Point operator()(const Point& p) const override {
+            const auto& q = std::get<Point2>(p);
+            return PointLonLat{q.X, q.Y};
+        }
+    };
+
+    struct PointLonLatToPoint2 final : Implementation {
+        Point operator()(const Point& p) const override {
+            const auto& q = std::get<PointLonLat>(p);
+            return Point2{q.lon, q.lat};
+        }
+    };
+
     // -- Members
-    // None
+
+    std::unique_ptr<Implementation> fwd_;
+    std::unique_ptr<Implementation> inv_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    Point fwd(const Point& p) const override {
-        const auto& q = std::get<PointLonLat>(p);
-        return Point2{q.lon, q.lat};
-    }
-
-    Point inv(const Point& q) const override {
-        const auto& p = std::get<Point2>(q);
-        return PointLonLat{p.X, p.Y};
-    }
+    Point fwd(const Point& p) const override { return (*fwd_)(p); }
+    Point inv(const Point& q) const override { return (*inv_)(q); }
 
     // -- Class members
     // None
 
     // -- Class methods
-    // None
+
+    static Implementation* new_point_conversion(const std::string& source, const std::string& target);
 
     // -- Friends
     // None
+};
+
+
+struct PlateCaree final : None {
+    explicit PlateCaree() :
+        None("xy", "lonlat") {}
+    explicit PlateCaree(const Spec&) :
+        PlateCaree() {}
+    Spec* spec() const override;
 };
 
 

@@ -21,11 +21,36 @@ namespace eckit::geo::projection {
 static ProjectionBuilder<None> __projection1("");
 static ProjectionBuilder<None> __projection2("none");
 static ProjectionBuilder<None> __projection3("equirectangular");
-static ProjectionBuilder<None> __projection4("plate-carree");
+static ProjectionBuilder<PlateCaree> __projection4("plate-carree");
+
+
+None::None() :
+    fwd_(new NoPointConversion), inv_(new NoPointConversion) {}
+
+
+None::None(const std::string& source, const std::string& target) :
+    fwd_(new_point_conversion(source, target)), inv_(new_point_conversion(target, source)) {}
+
+
+None::None(const Spec& spec) :
+    None(spec.get_string("source", "xy"), spec.get_string("target", "xy")) {}
 
 
 Spec* None::spec() const {
-    return new spec::Custom{};
+    return new spec::Custom({{"type", "none"}, {"source", "xy"}, {"target", "lonlat"}});
+}
+
+
+None::Implementation* None::new_point_conversion(const std::string& source, const std::string& target) {
+    ASSERT(source == "xy" || source == "lonlat");
+    return source == "xy" && target == "lonlat"   ? static_cast<Implementation*>(new Point2ToPointLonLat)
+           : source == "lonlat" && target == "xy" ? static_cast<Implementation*>(new PointLonLatToPoint2)
+                                                  : new NoPointConversion;
+}
+
+
+Spec* PlateCaree::spec() const {
+    return new spec::Custom({{"type", "plate-carree"}});
 }
 
 

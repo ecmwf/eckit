@@ -77,7 +77,7 @@ RegularPeriodic::RegularPeriodic(size_t n, double a, double b, double _eps) :
     else {
         b_        = PointLonLat::normalise_angle_to_maximum(b_ + db, a_) - db;
         auto inc  = (b_ - a_) / static_cast<double>(size());
-        endpoint_ = types::is_strictly_greater(b_ - a_ + inc, -360.);
+        endpoint_ = types::is_strictly_greater(360., a_ - b_ + inc);
     }
 }
 

@@ -110,14 +110,22 @@ private:
     static Implementation* new_point_conversion(const std::string& source, const std::string& target);
 
     // -- Friends
-    // None
+
+    friend struct PlateCaree;
 };
 
 
-struct PlateCaree final : None {
-    explicit PlateCaree();
-    explicit PlateCaree(const Spec&);
+struct PlateCaree final : Projection {
+    explicit PlateCaree() = default;
+    explicit PlateCaree(const Spec&) {}
+
     Spec* spec() const override;
+    inline Point fwd(const Point& p) const override { return fwd_(p); }
+    inline Point inv(const Point& q) const override { return inv_(q); }
+
+private:
+    None::Point2ToPointLonLat fwd_;
+    None::PointLonLatToPoint2 inv_;
 };
 
 

@@ -52,14 +52,6 @@ None::Implementation* None::new_point_conversion(const std::string& source, cons
 }
 
 
-PlateCaree::PlateCaree() :
-    None(XY, LONLAT) {}
-
-
-PlateCaree::PlateCaree(const Spec&) :
-    PlateCaree() {}
-
-
 Spec* PlateCaree::spec() const {
     return new spec::Custom({{"type", "plate-carree"}});
 }

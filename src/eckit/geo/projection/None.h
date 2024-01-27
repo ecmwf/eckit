@@ -115,10 +115,8 @@ private:
 
 
 struct PlateCaree final : None {
-    explicit PlateCaree() :
-        None("xy", "lonlat") {}
-    explicit PlateCaree(const Spec&) :
-        PlateCaree() {}
+    explicit PlateCaree();
+    explicit PlateCaree(const Spec&);
     Spec* spec() const override;
 };
 

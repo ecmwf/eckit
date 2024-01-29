@@ -41,7 +41,7 @@ struct BoundLonLat {
     BoundLonLat(PointLonLat min, PointLonLat max) :
         min_(min), max_(max) {}
 
-    operator area::BoundingBox() const { return {max_.lat, min_.lon, min_.lat, max_.lon}; }
+    explicit operator area::BoundingBox() const { return {max_.lat, min_.lon, min_.lat, max_.lon}; }
 
     void extend(PointLonLat p, PointLonLat eps) {
         ASSERT(0. <= eps.lon && 0. <= eps.lat);
@@ -107,39 +107,47 @@ struct Derivate {
         refLongitude_(refLongitude) {}
     virtual ~Derivate() = default;
 
+    Derivate(const Derivate&)       = delete;
+    Derivate(Derivate&&)            = delete;
+    void operator=(const Derivate&) = delete;
+    void operator=(Derivate&&)      = delete;
+
     virtual PointLonLat d(Point2) const = 0;
 
-protected:
-    const Projection& projection_;
-    const Point2 H_;
-    const double invnH_;
-    const double refLongitude_;
-
-    PointLonLat xy2lonlat(const Point2& p) const {
+    PointLonLat f(const Point2& p) const {
         auto q = std::get<PointLonLat>(projection_.inv(p));
         longitude_in_range(refLongitude_, q.lon);
         return q;
     }
+
+    inline const Point2& H() const { return H_; }
+    inline double invnH() const { return invnH_; }
+
+private:
+    const Projection& projection_;
+    const Point2 H_;
+    const double invnH_;
+    const double refLongitude_;
 };
 
 
 struct DerivateForwards final : Derivate {
     using Derivate::Derivate;
-    PointLonLat d(Point2 P) const override { return (xy2lonlat(P + H_) - xy2lonlat(P)) * invnH_; }
+    PointLonLat d(Point2 P) const override { return (f(P + H()) - f(P)) * invnH(); }
 };
 
 
 struct DerivateBackwards final : Derivate {
     using Derivate::Derivate;
-    PointLonLat d(Point2 P) const override { return (xy2lonlat(P) - xy2lonlat(P - H_)) * invnH_; }
+    PointLonLat d(Point2 P) const override { return (f(P) - f(P - H())) * invnH(); }
 };
 
 
 struct DerivateCentral final : Derivate {
     DerivateCentral(const Projection& p, Point2 A, Point2 B, double h, double refLongitude) :
-        Derivate(p, A, B, h, refLongitude), H2_{H_ * 0.5} {}
+        Derivate(p, A, B, h, refLongitude), H2_{H() * 0.5} {}
     const Point2 H2_;
-    PointLonLat d(Point2 P) const override { return (xy2lonlat(P + H2_) - xy2lonlat(P - H2_)) * invnH_; }
+    PointLonLat d(Point2 P) const override { return (f(P + H2_) - f(P - H2_)) * invnH(); }
 };
 
 
@@ -285,7 +293,7 @@ area::BoundingBox bounding_box(Point2 min, Point2 max, Projection& projection) {
 
 
     // 4. return bounding box
-    return bounds;
+    return {bounds};
 }
 
 

@@ -12,6 +12,8 @@
 
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 
+#include <memory>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/iterator/Reduced.h"
@@ -61,7 +63,7 @@ const std::vector<double>& ReducedGaussian::latitudes() const {
 std::vector<double> ReducedGaussian::longitudes(size_t j) const {
     auto Ni = ni(j);
     if (!x_ || x_->size() != Ni) {
-        const_cast<std::unique_ptr<Range>&>(x_).reset(new range::Regular(Ni, bbox().west, bbox().east));
+        const_cast<std::unique_ptr<Range>&>(x_) = std::make_unique<range::Regular>(Ni, bbox().west, bbox().east);
     }
 
     return x_->values();

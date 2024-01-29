@@ -26,7 +26,7 @@ namespace eckit::geo {
 
 //------------------------------------------------------------------------------------------------------
 
-class Point2 : public KPoint<2> {
+class Point2 final : public KPoint<2> {
     using BasePoint = KPoint<2>;
 
 public:
@@ -48,6 +48,8 @@ public:
 
     Point2(Point2&& other) :
         Point2(other.X, other.Y) {}
+
+    ~Point2() = default;
 
     double x() const { return x_[XX]; }
 
@@ -87,7 +89,7 @@ public:
         x_[YY] = p[YY];
     }
 
-    operator eckit::Value() const;
+    explicit operator eckit::Value() const;
 
     static Point2 middle(const Point2& p, const Point2& q) { return (p + q) * 0.5; }
 };

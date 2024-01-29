@@ -18,7 +18,7 @@ namespace eckit::geo {
 
 //------------------------------------------------------------------------------------------------------
 
-class Point3 : public KPoint<3> {
+class Point3 final : public KPoint<3> {
     using BasePoint = KPoint<3>;
 
 public:
@@ -41,6 +41,8 @@ public:
 
     Point3(Point3&& other) :
         Point3(other.X, other.Y, other.Z) {}
+
+    ~Point3() = default;
 
     double& X = x_[XX];
 

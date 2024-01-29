@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/projection/None.h"
+#include "eckit/geo/projection/XYToLonLat.h"
 
 #include "eckit/geo/spec/Custom.h"
 
@@ -18,11 +18,12 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<None> __projection("none");
+static ProjectionBuilder<XYToLonLat> __projection1("xy_to_ll");
+static ProjectionBuilder<XYToLonLat> __projection2("plate-carree");
 
 
-Spec* None::spec() const {
-    return new spec::Custom({{"type", "none"}});
+Spec* XYToLonLat::spec() const {
+    return new spec::Custom({{"type", "plate-carree"}});
 }
 
 

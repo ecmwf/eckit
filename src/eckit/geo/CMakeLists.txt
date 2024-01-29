@@ -90,6 +90,8 @@ list(APPEND eckit_geo_srcs
     polygon/LonLatPolygon.h
     polygon/Polygon.cc
     polygon/Polygon.h
+    projection/LonLatToXY.cc
+    projection/LonLatToXY.h
     projection/LonLatToXYZ.cc
     projection/LonLatToXYZ.h
     projection/Mercator.cc
@@ -98,6 +100,8 @@ list(APPEND eckit_geo_srcs
     projection/None.h
     projection/Rotation.cc
     projection/Rotation.h
+    projection/XYToLonLat.cc
+    projection/XYToLonLat.h
     spec/Custom.cc
     spec/Custom.h
     spec/Generator.h

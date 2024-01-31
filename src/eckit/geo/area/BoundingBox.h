@@ -73,6 +73,8 @@ public:
     std::array<double, 4> deconstruct() const { return {north, west, south, east}; }
 
     bool isPeriodicWestEast() const;
+    bool containsNorthPole() const;
+    bool containsSouthPole() const;
 
     bool intersects(BoundingBox&) const;
 

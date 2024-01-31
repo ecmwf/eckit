@@ -97,7 +97,8 @@ public:
     // None
 
     // -- Class members
-    // None
+
+    static constexpr double EPS = 1e-9;
 
     // -- Class methods
 
@@ -126,6 +127,6 @@ public:
     }
 };
 
-bool points_equal(const PointLonLat&, const PointLonLat&, double eps = 1.e-9);
+bool points_equal(const PointLonLat&, const PointLonLat&, double eps = PointLonLat::EPS);
 
 }  // namespace eckit::geo

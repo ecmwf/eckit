@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/projection/Mercator.h"
@@ -21,6 +22,11 @@
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
+
+
+namespace eckit::geo::util {
+area::BoundingBox bounding_box(Point2, Point2, Projection&);
+}
 
 
 namespace eckit::test {
@@ -110,7 +116,7 @@ CASE("projection: ll_to_xyz") {
 
     auto q = to_xyz_r.fwd(p);
     auto r = to_xyz_r.inv(q);
-    std::cout << "p(lat, lon): " << p << " -> p(x,y,z): " << q << " -> p(lat, lon): " << r << std::endl;
+    Log::info() << "p(lat, lon): " << p << " -> p(x,y,z): " << q << " -> p(lat, lon): " << r << std::endl;
 
     EXPECT(points_equal(p, r));
 
@@ -119,7 +125,7 @@ CASE("projection: ll_to_xyz") {
 
     for (const auto& lon : {0., 90., 180., 270.}) {
         PointLonLat p{lon, 0.};
-        std::cout << "p(lat, lon): " << p << " -> p_ab(x,y,z): " << to_xyz_ab.fwd(p) << std::endl;
+        Log::info() << "p(lat, lon): " << p << " -> p_ab(x,y,z): " << to_xyz_ab.fwd(p) << std::endl;
     }
 
     // problate spheroid (not supported)
@@ -303,14 +309,12 @@ CASE("projection: proj") {
 
 
     if (ProjectionFactory::instance().exists("proj")) {
-        std::cout.precision(14);
-
         PointLonLat a{12., 55.};
 
         struct {
             const Point b;
             const std::string target;
-        } tests[] = {
+        } tests_proj[] = {
             {Point2{691875.632137542, 6098907.825129169}, "+proj=utm +zone=32 +datum=WGS84"},
             {Point2{691875.632137542, 6098907.825129169}, "EPSG:32632"},
             {a, "EPSG:4326"},
@@ -321,12 +325,12 @@ CASE("projection: proj") {
             {a, "+proj=latlon +ellps=sphere"},
         };
 
-        for (const auto& test : tests) {
+        for (const auto& test : tests_proj) {
             P projection(ProjectionFactory::instance().get("proj").create(
                 spec::Custom{{{"source", "EPSG:4326"}, {"target", test.target}}}));
 
 #if 0
-    std::cout << "ellipsoid: '" << PROJ::ellipsoid(projection.target())
+    Log::info() << "ellipsoid: '" << PROJ::ellipsoid(projection.target())
               << std::endl;
 #endif
 
@@ -344,6 +348,35 @@ CASE("projection: proj") {
 
             EXPECT(points_equal(d, a, eps));
             EXPECT(points_equal(e, test.b, eps));
+        }
+
+        struct {
+            const Point2 min;
+            const Point2 max;
+            const bool is_periodic_west_east;
+            const bool contains_north_pole;
+            const bool contains_south_pole;
+        } tests_bbox[] = {
+            {{-2e6, -2e6}, {2e6, 2e6}, true, true, false},
+            {{-2e6, -2e6}, {1e6, 1e6}, true, true, false},
+            {{-2e6, -2e6}, {-1e6, -1e6}, false, false, false},
+            {{-1e6, -1e6}, {2e6, 2e6}, true, true, false},
+            {{-1e6, -1e6}, {1e6, 1e6}, true, true, false},
+            {{1e6, 1e6}, {2e6, 2e6}, false, false, false},
+        };
+
+        P polar_stereographic(ProjectionFactory::instance().get("proj").create(
+            spec::Custom{{{"source", "EPSG:4326"},
+                          {"target", "+proj=stere +lat_ts=90. +lat_0=90. +lon_0=-30. +k_0=1 +R=6371229."}}}));
+
+        for (const auto& test : tests_bbox) {
+            auto bbox = util::bounding_box(test.min, test.max, *polar_stereographic);
+
+            Log::info() << bbox << std::endl;
+
+            EXPECT_EQUAL(test.is_periodic_west_east, bbox.isPeriodicWestEast());
+            EXPECT_EQUAL(test.contains_north_pole, bbox.containsNorthPole());
+            EXPECT_EQUAL(test.contains_south_pole, bbox.containsSouthPole());
         }
     }
 }
@@ -378,5 +411,6 @@ CASE("projection: mercator") {
 
 
 int main(int argc, char** argv) {
+    eckit::Log::info().precision(1);
     return eckit::testing::run_tests(argc, argv);
 }

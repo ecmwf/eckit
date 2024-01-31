@@ -78,12 +78,29 @@ BoundingBox::BoundingBox(double n, double w, double s, double e) :
 
 
 bool BoundingBox::operator==(const BoundingBox& other) const {
-    return north == other.north && south == other.south && west == other.west && east == other.east;
+    return types::is_approximately_equal(north, other.north, PointLonLat::EPS) &&
+           types::is_approximately_equal(south, other.south, PointLonLat::EPS) &&
+           types::is_approximately_equal(west, other.west, PointLonLat::EPS) &&
+           types::is_approximately_equal(east, other.east, PointLonLat::EPS);
 }
 
 
 bool BoundingBox::isPeriodicWestEast() const {
-    return west != east && west == PointLonLat::normalise_angle_to_minimum(east, west);
+
+    return west != east &&
+           types::is_approximately_equal(west, PointLonLat::normalise_angle_to_minimum(east, west), PointLonLat::EPS);
+}
+
+
+bool BoundingBox::containsNorthPole() const {
+    static const auto NORTH_POLE = PointLonLat::make(0., 90.);
+    return points_equal({0., north}, NORTH_POLE);
+}
+
+
+bool BoundingBox::containsSouthPole() const {
+    static const auto SOUTH_POLE = PointLonLat::make(0., 90.);
+    return points_equal({0., south}, SOUTH_POLE);
 }
 
 

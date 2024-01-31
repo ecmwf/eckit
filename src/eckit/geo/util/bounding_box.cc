@@ -46,8 +46,8 @@ struct BoundLonLat {
     void extend(PointLonLat p, PointLonLat eps) {
         ASSERT(0. <= eps.lon && 0. <= eps.lat);
 
-        auto sub = p + eps;
-        auto add = p - eps;
+        auto sub = p - eps;
+        auto add = p + eps;
         min_     = first_ ? sub : PointLonLat::componentsMin(min_, sub);
         max_     = first_ ? add : PointLonLat::componentsMax(max_, add);
         first_   = false;
@@ -205,6 +205,13 @@ area::BoundingBox bounding_box(Point2 min, Point2 max, Projection& projection) {
 
     // 1. determine box from projected corners
 
+    struct : public std::pair<Point2, Point2> {
+        using pair::pair;
+        bool contains(const Point2& P) const {
+            return (first.X < P.X && P.X < second.X) && (first.Y < P.Y && P.Y < second.Y);
+        }
+    } rect(min, max);
+
     const std::pair<Point2, Point2> segments[] = {{{min.X, max.Y}, {max.X, max.Y}},
                                                   {{max.X, max.Y}, {max.X, min.Y}},
                                                   {{max.X, min.Y}, {min.X, min.Y}},
@@ -220,6 +227,16 @@ area::BoundingBox bounding_box(Point2 min, Point2 max, Projection& projection) {
 
     // 2. locate latitude extrema by checking if poles are included (in the un-projected frame) and if not, find extrema
     // not at the corners by refining iteratively
+
+    if (const auto P = projection.fwd(PointLonLat{0., 90.});
+        !bounds.includesNorthPole() && std::holds_alternative<Point2>(P)) {
+        bounds.includesNorthPole(rect.contains(std::get<Point2>(P)));
+    }
+
+    if (const auto P = projection.fwd(PointLonLat{0., -90.});
+        !bounds.includesSouthPole() && std::holds_alternative<Point2>(P)) {
+        bounds.includesSouthPole(rect.contains(std::get<Point2>(P)));
+    }
 
     for (auto [A, B] : segments) {
         if (!bounds.includesNorthPole() || !bounds.includesSouthPole()) {

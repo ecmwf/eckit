@@ -103,6 +103,14 @@ ecbuild_add_option( FEATURE RADOS
                     DESCRIPTION "Ceph/Rados storage support"
                     REQUIRED_PACKAGES Rados )
 
+### S3 Support
+
+ecbuild_add_option( FEATURE AWS_S3
+                    DEFAULT OFF
+                    ADVANCED
+                    REQUIRED_PACKAGES "AWSSDK REQUIRED COMPONENTS s3"
+                    DESCRIPTION "Enables AWS S3 support" )
+
 ### Armadillo
 
 ecbuild_add_option( FEATURE ARMADILLO

@@ -33,15 +33,3 @@
 #define NO_COPY_NO_MOVE(TypeName) \
     NO_COPY(TypeName)             \
     NO_MOVE(TypeName)
-
-//----------------------------------------------------------------------------------------------------------------------
-
-#include <memory>
-
-template<class T>
-using UPtr = std::unique_ptr<T>;
-
-template<class T>
-using SPtr = std::shared_ptr<T>;
-
-//----------------------------------------------------------------------------------------------------------------------

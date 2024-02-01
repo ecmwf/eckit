@@ -71,7 +71,7 @@ public:
 
 private:  // members
     class S3HandleInternal;
-    UPtr<S3HandleInternal> impl_;
+    std::unique_ptr<S3HandleInternal> impl_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

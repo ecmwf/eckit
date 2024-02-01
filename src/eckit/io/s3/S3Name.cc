@@ -35,9 +35,9 @@ auto S3Name::uri() const -> URI {
     return uri_;
 }
 
-auto S3Name::createObject() -> UPtr<S3Object> {
+auto S3Name::createObject() -> std::unique_ptr<S3Object> {
     NOTIMP;
-    return UPtr<S3Object>();
+    return std::unique_ptr<S3Object>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

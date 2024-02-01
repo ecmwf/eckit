@@ -36,7 +36,7 @@ public:  // methods
     auto uri() const -> URI;
 
     NODISCARD
-    auto createObject() -> UPtr<S3Object>;
+    auto createObject() -> std::unique_ptr<S3Object>;
 
     friend std::ostream& operator<<(std::ostream& out, const S3Name& name) {
         name.print(out);

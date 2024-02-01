@@ -99,7 +99,7 @@ bool BoundingBox::containsNorthPole() const {
 
 
 bool BoundingBox::containsSouthPole() const {
-    static const auto SOUTH_POLE = PointLonLat::make(0., 90.);
+    static const auto SOUTH_POLE = PointLonLat::make(0., -90.);
     return points_equal({0., south}, SOUTH_POLE);
 }
 

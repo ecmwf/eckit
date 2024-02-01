@@ -194,7 +194,7 @@ area::BoundingBox bounding_box(Point2 min, Point2 max, Projection& projection) {
 
     // use central longitude as absolute reference (keep points within +-180 longitude range)
     const Point2 centre_xy{(min.X + max.X) / 2., (min.Y + max.Y) / 2.};
-    const auto centre_ll  = std::get<PointLonLat>(projection.inv(centre_xy));
+    const auto centre_ll  = std::get<PointLonLat>(projection.inv(centre_xy));  // asserts fwd(PointLonLat) -> Point2
     const auto centre_lon = centre_ll.lon;
 
     const std::string derivative_type = "central";
@@ -228,14 +228,12 @@ area::BoundingBox bounding_box(Point2 min, Point2 max, Projection& projection) {
     // 2. locate latitude extrema by checking if poles are included (in the un-projected frame) and if not, find extrema
     // not at the corners by refining iteratively
 
-    if (const auto P = projection.fwd(PointLonLat{0., 90.});
-        !bounds.includesNorthPole() && std::holds_alternative<Point2>(P)) {
-        bounds.includesNorthPole(rect.contains(std::get<Point2>(P)));
+    if (!bounds.includesNorthPole()) {
+        bounds.includesNorthPole(rect.contains(std::get<Point2>(projection.fwd(PointLonLat{0., 90.}))));
     }
 
-    if (const auto P = projection.fwd(PointLonLat{0., -90.});
-        !bounds.includesSouthPole() && std::holds_alternative<Point2>(P)) {
-        bounds.includesSouthPole(rect.contains(std::get<Point2>(P)));
+    if (!bounds.includesSouthPole()) {
+        bounds.includesSouthPole(rect.contains(std::get<Point2>(projection.fwd(PointLonLat{0., -90.}))));
     }
 
     for (auto [A, B] : segments) {

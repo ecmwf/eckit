@@ -350,29 +350,36 @@ CASE("projection: proj") {
             EXPECT(points_equal(e, test.b, eps));
         }
 
+        P polar_stereographic_north(ProjectionFactory::instance().get("proj").create(
+            spec::Custom{{{"source", "EPSG:4326"}, {"target", "+proj=stere +lat_0=90. +lon_0=-30. +R=6371229."}}}));
+
+        P polar_stereographic_south(ProjectionFactory::instance().get("proj").create(
+            spec::Custom{{{"source", "EPSG:4326"}, {"target", "+proj=stere +lat_0=-90. +lon_0=-30. +R=6371229."}}}));
+
         struct {
+            const P& projection;
             const Point2 min;
             const Point2 max;
             const bool is_periodic_west_east;
             const bool contains_north_pole;
             const bool contains_south_pole;
         } tests_bbox[] = {
-            {{-2e6, -2e6}, {2e6, 2e6}, true, true, false},
-            {{-2e6, -2e6}, {1e6, 1e6}, true, true, false},
-            {{-2e6, -2e6}, {-1e6, -1e6}, false, false, false},
-            {{-1e6, -1e6}, {2e6, 2e6}, true, true, false},
-            {{-1e6, -1e6}, {1e6, 1e6}, true, true, false},
-            {{1e6, 1e6}, {2e6, 2e6}, false, false, false},
+            {polar_stereographic_north, {-2e6, -2e6}, {2e6, 2e6}, true, true, false},
+            {polar_stereographic_north, {-2e6, -2e6}, {1e6, 1e6}, true, true, false},
+            {polar_stereographic_north, {-2e6, -2e6}, {-1e6, -1e6}, false, false, false},
+            {polar_stereographic_north, {-1e6, -1e6}, {2e6, 2e6}, true, true, false},
+            {polar_stereographic_north, {-1e6, -1e6}, {1e6, 1e6}, true, true, false},
+            {polar_stereographic_north, {1e6, 1e6}, {2e6, 2e6}, false, false, false},
+            {polar_stereographic_south, {-2e6, -2e6}, {2e6, 2e6}, true, false, true},
+            {polar_stereographic_south, {-2e6, -2e6}, {1e6, 1e6}, true, false, true},
+            {polar_stereographic_south, {-2e6, -2e6}, {-1e6, -1e6}, false, false, false},
+            {polar_stereographic_south, {-1e6, -1e6}, {2e6, 2e6}, true, false, true},
+            {polar_stereographic_south, {-1e6, -1e6}, {1e6, 1e6}, true, false, true},
+            {polar_stereographic_south, {1e6, 1e6}, {2e6, 2e6}, false, false, false},
         };
 
-        P polar_stereographic(ProjectionFactory::instance().get("proj").create(
-            spec::Custom{{{"source", "EPSG:4326"},
-                          {"target", "+proj=stere +lat_ts=90. +lat_0=90. +lon_0=-30. +k_0=1 +R=6371229."}}}));
-
         for (const auto& test : tests_bbox) {
-            auto bbox = util::bounding_box(test.min, test.max, *polar_stereographic);
-
-            Log::info() << bbox << std::endl;
+            auto bbox = util::bounding_box(test.min, test.max, *test.projection);
 
             EXPECT_EQUAL(test.is_periodic_west_east, bbox.isPeriodicWestEast());
             EXPECT_EQUAL(test.contains_north_pole, bbox.containsNorthPole());

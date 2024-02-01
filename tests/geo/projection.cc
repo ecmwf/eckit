@@ -16,6 +16,7 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/figure/Sphere.h"
+#include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/projection/Mercator.h"
 #include "eckit/geo/projection/Rotation.h"
@@ -56,21 +57,6 @@ CASE("projection: plate-caree") {
 
     EXPECT(points_equal(p, projection->fwd(q)));
     EXPECT(std::holds_alternative<PointLonLat>(projection->fwd(q)));
-}
-
-
-CASE("projection: rotation") {
-    spec::Custom spec({
-        {"projection", "rotation"},
-        {"south_pole_lat", -91.},
-        {"south_pole_lon", -361.},
-    });
-
-    Point p = PointLonLat{1, 1};
-    P projection(ProjectionFactory::instance().get(spec.get_string("projection")).create(spec));
-
-    EXPECT(points_equal(p, projection->inv(projection->fwd(p))));
-    EXPECT(points_equal(p, projection->fwd(projection->inv(p))));
 }
 
 
@@ -138,6 +124,21 @@ CASE("projection: rotation") {
 
 
     SECTION("rotation (1)") {
+        spec::Custom spec({
+            {"projection", "rotation"},
+            {"south_pole_lat", -91.},
+            {"south_pole_lon", -361.},
+        });
+
+        Point p = PointLonLat{1, 1};
+        P projection(ProjectionFactory::instance().get(spec.get_string("projection")).create(spec));
+
+        EXPECT(points_equal(p, projection->inv(projection->fwd(p))));
+        EXPECT(points_equal(p, projection->fwd(projection->inv(p))));
+    }
+
+
+    SECTION("rotation (2)") {
         const PointLonLat p(1, 1);
         int delta[] = {-360, -180, -1, 0, 1, 90, 91, 180};
 
@@ -157,7 +158,7 @@ CASE("projection: rotation") {
     }
 
 
-    SECTION("rotation (2)") {
+    SECTION("rotation (3)") {
         const int Ni = 12;
         const int Nj = 3;
 
@@ -263,7 +264,7 @@ CASE("projection: rotation") {
     }
 
 
-    SECTION("rotation (3)") {
+    SECTION("rotation (4)") {
         const projection::Rotation non_rotated(0., -90., 0.);
         const projection::Rotation rotation_angle(0., -90., -180.);
         const projection::Rotation rotation_matrix(4., -40., 180.);
@@ -299,6 +300,45 @@ CASE("projection: rotation") {
 
             auto a = test.rotation.inv(b);
             EXPECT(points_equal(a, test.a, eps));
+        }
+    }
+
+
+    SECTION("rotation (5)") {
+        spec::Custom spec({
+            {"projection", "rotation"},
+            {"south_pole_lat", -90.},
+            {"south_pole_lon", 0.},
+            {"angle", 45.},
+        });
+
+        const auto& builder = ProjectionFactory::instance().get("rotation");
+        P composition(new projection::Composer{
+            builder.create(spec),
+            builder.create(spec),
+            builder.create(spec),
+            builder.create(spec),
+            builder.create(spec),
+            builder.create(spec),
+            builder.create(spec),
+            builder.create(spec),
+        });
+
+        for (auto lat : {0., 10., -10.}) {
+            PointLonLat p{0., lat};
+            auto q = composition->fwd(p);
+
+            EXPECT(points_equal(p, q));
+            EXPECT(points_equal(p, composition->inv(q)));
+
+            auto qs = dynamic_cast<projection::Composer*>(composition.get())->fwd_points(p);
+            EXPECT(qs.size() == 8);
+
+            EXPECT(points_equal(qs.front(), PointLonLat{-45., lat}));
+            EXPECT(points_equal(qs[1], PointLonLat{-90., lat}));
+            EXPECT(points_equal(qs[2], PointLonLat{-135., lat}));
+            // ...
+            EXPECT(points_equal(qs.back(), p));
         }
     }
 }
@@ -392,7 +432,8 @@ CASE("projection: proj") {
 CASE("projection: mercator") {
     PointLonLat first{262.036, 14.7365};
 
-    {
+
+    SECTION("mercator (1)") {
         projection::Mercator projection(0., 14., new figure::Sphere(6371229.), first);
 
         Point2 a{0., 0.};
@@ -402,7 +443,8 @@ CASE("projection: mercator") {
         EXPECT(points_equal(c, a));
     }
 
-    {
+
+    SECTION("mercator (2)") {
         projection::Mercator projection(-180., 0., new figure::Sphere(1.), {0, 0});
 
         PointLonLat a{-75., 35.};
@@ -418,6 +460,5 @@ CASE("projection: mercator") {
 
 
 int main(int argc, char** argv) {
-    eckit::Log::info().precision(1);
     return eckit::testing::run_tests(argc, argv);
 }

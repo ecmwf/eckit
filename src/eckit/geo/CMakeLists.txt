@@ -90,6 +90,8 @@ list(APPEND eckit_geo_srcs
     polygon/LonLatPolygon.h
     polygon/Polygon.cc
     polygon/Polygon.h
+    projection/Composer.cc
+    projection/Composer.h
     projection/LonLatToXY.cc
     projection/LonLatToXY.h
     projection/LonLatToXYZ.cc

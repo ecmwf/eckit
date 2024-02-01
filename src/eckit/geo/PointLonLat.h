@@ -12,11 +12,9 @@
 
 #pragma once
 
+#include <algorithm>
 #include <array>
-#include <cmath>
 #include <ostream>
-
-#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit::geo {
@@ -37,12 +35,7 @@ public:
 
     // -- Constructors
 
-    PointLonLat(double lon, double lat) :
-        P{lon, lat} {
-        if (!(-90. <= lat && lat <= 90.)) {
-            throw BadValue("PointLonLat: invalid latitude");
-        }
-    }
+    PointLonLat(double lon, double lat);
 
     PointLonLat(const PointLonLat& other) :
         P(other) {}

@@ -22,7 +22,7 @@ static ProjectionBuilder<LonLatToXY> __projection("ll_to_xy");
 
 
 Spec* LonLatToXY::spec() const {
-    return new spec::Custom({{"type", "ll_to_xy"}});
+    return new spec::Custom({{"projection", "ll_to_xy"}});
 }
 
 

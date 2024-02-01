@@ -12,11 +12,19 @@
 
 #include "eckit/geo/PointLonLat.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo {
 
+
+PointLonLat::PointLonLat(double lon, double lat) :
+    P{lon, lat} {
+    if (!(-90. <= lat && lat <= 90.)) {
+        throw BadValue("PointLonLat: invalid latitude");
+    }
+}
 
 double PointLonLat::normalise_angle_to_minimum(double a, double minimum) {
     while (a < minimum) {

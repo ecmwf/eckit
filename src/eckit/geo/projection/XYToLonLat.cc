@@ -23,7 +23,7 @@ static ProjectionBuilder<XYToLonLat> __projection2("plate-carree");
 
 
 Spec* XYToLonLat::spec() const {
-    return new spec::Custom({{"type", "plate-carree"}});
+    return new spec::Custom({{"projection", "plate-carree"}});
 }
 
 

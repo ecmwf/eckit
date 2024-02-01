@@ -22,7 +22,7 @@ static ProjectionBuilder<None> __projection("none");
 
 
 Spec* None::spec() const {
-    return new spec::Custom({{"type", "none"}});
+    return nullptr;
 }
 
 

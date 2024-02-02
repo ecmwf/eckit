@@ -312,6 +312,7 @@ CASE("projection: rotation") {
             {"angle", 45.},
         });
 
+        // compose sequentially
         const auto& builder = ProjectionFactory::instance().get("rotation");
         P composition(new projection::Composer{
             builder.create(spec),
@@ -339,6 +340,24 @@ CASE("projection: rotation") {
             EXPECT(points_equal(qs[2], PointLonLat{-135., lat}));
             // ...
             EXPECT(points_equal(qs.back(), p));
+        }
+
+        // compose by nesting
+        P composition2(builder.create(spec));
+        for (size_t i = 1; i < 8; ++i) {
+            composition2.reset(projection::Composer::compose_back(composition2.release(), spec));
+        }
+
+        for (auto lat : {0., 10., -10.}) {
+            PointLonLat p{0., lat};
+
+            auto qs1 = dynamic_cast<projection::Composer*>(composition.get())->fwd_points(p);
+            auto qs2 = dynamic_cast<projection::Composer*>(composition2.get())->fwd_points(p);
+
+            ASSERT(qs1.size() == 8);
+            EXPECT(qs2.size() == 2);
+            EXPECT(points_equal(qs1[6], qs2[0]));
+            EXPECT(points_equal(qs1[7], qs2[1]));
         }
     }
 }

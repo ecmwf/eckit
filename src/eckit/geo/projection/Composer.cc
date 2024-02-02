@@ -13,6 +13,7 @@
 #include "eckit/geo/projection/Composer.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Spec.h"
 
 
 namespace eckit::geo::projection {
@@ -74,6 +75,16 @@ Point Composer::inv(const Point& p) const {
         q = (*proj)->inv(q);
     }
     return q;
+}
+
+
+Projection* Composer::compose_back(Projection* p, const Spec& spec) {
+    return new Composer{p, ProjectionFactory::instance().get(spec.get_string("projection")).create(spec)};
+}
+
+
+Projection* Composer::compose_front(const Spec& spec, Projection* p) {
+    return new Composer{ProjectionFactory::instance().get(spec.get_string("projection")).create(spec), p};
 }
 
 

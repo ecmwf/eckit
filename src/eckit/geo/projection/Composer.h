@@ -46,6 +46,11 @@ public:
 
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
+
+    // -- Class methods
+
+    static Projection* compose_back(Projection*, const Spec&);
+    static Projection* compose_front(const Spec&, Projection*);
 };
 
 

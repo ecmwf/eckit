@@ -314,8 +314,7 @@ CASE("projection: rotation") {
 
         // compose sequentially
         const auto& builder = ProjectionFactory::instance().get("rotation");
-        P composition(new projection::Composer{
-            builder.create(spec),
+        P composition1(new projection::Composer{
             builder.create(spec),
             builder.create(spec),
             builder.create(spec),
@@ -325,14 +324,16 @@ CASE("projection: rotation") {
             builder.create(spec),
         });
 
+        dynamic_cast<projection::Composer*>(composition1.get())->emplace_back(builder.create(spec));
+
         for (auto lat : {0., 10., -10.}) {
             PointLonLat p{0., lat};
-            auto q = composition->fwd(p);
+            auto q = composition1->fwd(p);
 
             EXPECT(points_equal(p, q));
-            EXPECT(points_equal(p, composition->inv(q)));
+            EXPECT(points_equal(p, composition1->inv(q)));
 
-            auto qs = dynamic_cast<projection::Composer*>(composition.get())->fwd_points(p);
+            auto qs = dynamic_cast<projection::Composer*>(composition1.get())->fwd_points(p);
             EXPECT(qs.size() == 8);
 
             EXPECT(points_equal(qs.front(), PointLonLat{-45., lat}));
@@ -351,7 +352,7 @@ CASE("projection: rotation") {
         for (auto lat : {0., 10., -10.}) {
             PointLonLat p{0., lat};
 
-            auto qs1 = dynamic_cast<projection::Composer*>(composition.get())->fwd_points(p);
+            auto qs1 = dynamic_cast<projection::Composer*>(composition1.get())->fwd_points(p);
             auto qs2 = dynamic_cast<projection::Composer*>(composition2.get())->fwd_points(p);
 
             ASSERT(qs1.size() == 8);

@@ -27,8 +27,8 @@ namespace eckit::geo {
 util::recursive_mutex MUTEX;
 
 
-Range::Range(size_t n, double eps) :
-    n_(n), eps_(eps) {
+Range::Range(size_t n, double _a, double _b, double eps) :
+    n_(n), a_(_a), b_(_b), eps_(eps) {
     ASSERT(n > 0);
     ASSERT(eps_ >= 0);
 }
@@ -37,26 +37,25 @@ Range::Range(size_t n, double eps) :
 namespace range {
 
 
-Regular::Regular(size_t n, double a, double b, double _eps) :
-    Range(n, _eps), a_(a), b_(b) {
+Regular::Regular(size_t n, double _a, double _b, double _eps) :
+    Range(n, _a, types::is_approximately_equal(_a, _b, _eps) ? _a : _b, _eps), endpoint_(false) {
     constexpr auto db = 1e-12;
 
     // pre-calculate on n = 1
-    if (types::is_approximately_equal(a_, b_, eps())) {
-        resize(1);
-        b_        = a_;
-        endpoint_ = false;
-        values_   = {a_};
+    if (a() < b()) {
+        b(PointLonLat::normalise_angle_to_minimum(b() - db, a()) + db);
+        auto inc  = (b() - a()) / static_cast<double>(size());
+        endpoint_ = types::is_strictly_greater(360., b() - a() + inc);
     }
-    else if (a_ < b_) {
-        b_        = PointLonLat::normalise_angle_to_minimum(b_ - db, a_) + db;
-        auto inc  = (b_ - a_) / static_cast<double>(size());
-        endpoint_ = types::is_strictly_greater(360., b_ - a_ + inc);
+    else if (b() < a()) {
+        b(PointLonLat::normalise_angle_to_maximum(b() + db, a()) - db);
+        auto inc  = (a() - b()) / static_cast<double>(size());
+        endpoint_ = types::is_strictly_greater(360., a() - b() + inc);
     }
     else {
-        b_        = PointLonLat::normalise_angle_to_maximum(b_ + db, a_) - db;
-        auto inc  = (b_ - a_) / static_cast<double>(size());
-        endpoint_ = types::is_strictly_greater(360., a_ - b_ + inc);
+        resize(1);
+        endpoint_ = false;
+        values_   = {a()};
     }
 }
 
@@ -65,21 +64,29 @@ const std::vector<double>& Regular::values() const {
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
     if (values_.empty()) {
-        const_cast<std::vector<double>&>(values_) = util::linspace(a_, b_, Range::size(), true);
+        const_cast<std::vector<double>&>(values_) = util::linspace(a(), b(), size(), endpoint_);
         ASSERT(!values_.empty());
     }
 
     return values_;
 }
 
+Range* Regular::crop(double a, double b) const {}
 
-Gaussian::Gaussian(size_t N, double a, double b, double _eps) :
-    Range(2 * N, _eps), N_(N), a_(a), b_(b) {
 
+Gaussian::Gaussian(size_t N, double _a, double _b, double _eps) :
+    Range(2 * N,
+          types::is_approximately_equal(_a, 90., _eps)    ? 90.
+          : types::is_approximately_equal(_a, -90., _eps) ? -90.
+                                                          : _a,
+          types::is_approximately_equal(_b, 90., _eps)    ? 90.
+          : types::is_approximately_equal(_b, -90., _eps) ? -90.
+                                                          : _b,
+          _eps),
+    N_(N) {
     // pre-calculate on cropping
-    auto [min, max] = std::minmax(a_, b_);
-    if (!types::is_approximately_equal(min, -90., eps()) || !types::is_approximately_equal(max, 90., eps())) {
-        values_ = util::gaussian_latitudes(N_, a_ < b_);
+    if (auto [min, max] = std::minmax(a(), b()); -90. < min || max < 90.) {
+        values_ = util::gaussian_latitudes(N_, a() < b());
         auto& v = values_;
 
         auto [from, to] = util::monotonic_crop(v, min, max, eps());
@@ -95,7 +102,7 @@ Gaussian::Gaussian(size_t N, double a, double b, double _eps) :
 const std::vector<double>& Gaussian::values() const {
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
-    return values_.empty() ? util::gaussian_latitudes(N_, a_ < b_) : values_;
+    return values_.empty() ? util::gaussian_latitudes(N_, a() < b()) : values_;
 }
 
 

@@ -29,17 +29,23 @@ public:
     Range& operator=(Range&&)      = delete;
 
     size_t size() const { return n_; }
+    double a() const { return a_; }
+    double b() const { return b_; }
     double eps() const { return eps_; }
 
     virtual const std::vector<double>& values() const = 0;
 
 protected:
-    explicit Range(size_t n, double eps = 0.);
+    explicit Range(size_t n, double a, double b, double eps = 0.);
 
     void resize(size_t n) { n_ = n; }
+    void a(double value) { a_ = value; }
+    void b(double value) { b_ = value; }
 
 private:
     size_t n_;
+    double a_;
+    double b_;
     const double eps_;
 };
 
@@ -59,8 +65,6 @@ public:
 
 private:
     const size_t N_;
-    const double a_;
-    const double b_;
     std::vector<double> values_;
 };
 
@@ -72,8 +76,6 @@ public:
     const std::vector<double>& values() const override;
 
 private:
-    double a_;
-    double b_;
     bool endpoint_;
     std::vector<double> values_;
 };

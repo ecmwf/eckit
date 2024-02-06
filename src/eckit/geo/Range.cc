@@ -39,30 +39,9 @@ namespace range {
 
 Regular::Regular(size_t n, double a, double b, double _eps) :
     Range(n, _eps), a_(a), b_(b) {
-    if (types::is_approximately_equal(a_, b_, eps())) {
-        resize(1);
-        b_      = a_;
-        values_ = {a_};
-    }
-}
-
-
-const std::vector<double>& Regular::values() const {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
-
-    if (values_.empty()) {
-        const_cast<std::vector<double>&>(values_) = util::linspace(a_, b_, Range::size(), true);
-        ASSERT(!values_.empty());
-    }
-
-    return values_;
-}
-
-
-RegularPeriodic::RegularPeriodic(size_t n, double a, double b, double _eps) :
-    Range(n, _eps), a_(a), b_(b) {
     constexpr auto db = 1e-12;
 
+    // pre-calculate on n = 1
     if (types::is_approximately_equal(a_, b_, eps())) {
         resize(1);
         b_        = a_;
@@ -82,11 +61,11 @@ RegularPeriodic::RegularPeriodic(size_t n, double a, double b, double _eps) :
 }
 
 
-const std::vector<double>& RegularPeriodic::values() const {
+const std::vector<double>& Regular::values() const {
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
     if (values_.empty()) {
-        const_cast<std::vector<double>&>(values_) = util::linspace(a_, b_, Range::size(), false);
+        const_cast<std::vector<double>&>(values_) = util::linspace(a_, b_, Range::size(), true);
         ASSERT(!values_.empty());
     }
 
@@ -96,7 +75,6 @@ const std::vector<double>& RegularPeriodic::values() const {
 
 Gaussian::Gaussian(size_t N, double a, double b, double _eps) :
     Range(2 * N, _eps), N_(N), a_(a), b_(b) {
-    ASSERT(N > 0);
 
     // pre-calculate on cropping
     auto [min, max] = std::minmax(a_, b_);

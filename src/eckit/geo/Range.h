@@ -74,19 +74,6 @@ public:
 private:
     double a_;
     double b_;
-    std::vector<double> values_;
-};
-
-
-class RegularPeriodic final : public Range {
-public:
-    explicit RegularPeriodic(size_t n, double a, double b, double eps = 0.);
-
-    const std::vector<double>& values() const override;
-
-private:
-    double a_;
-    double b_;
     bool endpoint_;
     std::vector<double> values_;
 };

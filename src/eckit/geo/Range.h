@@ -20,13 +20,21 @@ namespace eckit::geo {
 
 class Range {
 public:
+    // -- Constructors
+
     Range(const Range&) = delete;
     Range(Range&&)      = delete;
 
+    // -- Destructors
+
     virtual ~Range() = default;
+
+    // -- Operators
 
     Range& operator=(const Range&) = delete;
     Range& operator=(Range&&)      = delete;
+
+    // -- Methods
 
     size_t size() const { return n_; }
     double a() const { return a_; }
@@ -36,6 +44,8 @@ public:
     virtual const std::vector<double>& values() const = 0;
 
 protected:
+    // -- Constructors
+
     explicit Range(size_t n, double a, double b, double eps = 0.);
 
     void resize(size_t n) { n_ = n; }
@@ -43,6 +53,8 @@ protected:
     void b(double value) { b_ = value; }
 
 private:
+    // -- Members
+
     size_t n_;
     double a_;
     double b_;
@@ -55,15 +67,24 @@ namespace range {
 
 class Gaussian final : public Range {
 public:
+    // -- Constructors
+
     explicit Gaussian(size_t N, double eps = 0.) :
         Gaussian(N, 90., -90., eps) {}
 
     Gaussian(size_t N, double crop_a, double crop_b, double eps = 0.);
 
+    // -- Methods
+
     size_t N() const { return N_; }
+
+    // -- Overridden methods
+
     const std::vector<double>& values() const override;
 
 private:
+    // -- Members
+
     const size_t N_;
     std::vector<double> values_;
 };
@@ -71,11 +92,21 @@ private:
 
 class Regular final : public Range {
 public:
+    // -- Constructors
+
     explicit Regular(size_t n, double a, double b, double eps = 0.);
+
+    // -- Overridden methods
 
     const std::vector<double>& values() const override;
 
+    // -- Methods
+
+    Range* crop(double a, double b) const;
+
 private:
+    // -- Members
+
     bool endpoint_;
     std::vector<double> values_;
 };

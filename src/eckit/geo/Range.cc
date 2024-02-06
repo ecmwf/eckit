@@ -44,11 +44,15 @@ Regular::Regular(size_t n, double _a, double _b, double _eps) :
     // pre-calculate on n = 1
     if (a() < b()) {
         b(PointLonLat::normalise_angle_to_minimum(b() - db, a()) + db);
+        ASSERT(b() - a() <= 360.);
+
         auto inc  = (b() - a()) / static_cast<double>(size());
         endpoint_ = types::is_strictly_greater(360., b() - a() + inc);
     }
     else if (b() < a()) {
         b(PointLonLat::normalise_angle_to_maximum(b() + db, a()) - db);
+        ASSERT(a() - b() <= 360.);
+
         auto inc  = (a() - b()) / static_cast<double>(size());
         endpoint_ = types::is_strictly_greater(360., a() - b() + inc);
     }
@@ -71,7 +75,9 @@ const std::vector<double>& Regular::values() const {
     return values_;
 }
 
-Range* Regular::crop(double a, double b) const {}
+Range* Regular::crop(double a, double b) const {
+    auto v = values();
+}
 
 
 Gaussian::Gaussian(size_t N, double _a, double _b, double _eps) :

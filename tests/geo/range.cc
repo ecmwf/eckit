@@ -45,16 +45,15 @@ CASE("range::Regular") {
 
 
     SECTION("range [-90, 90]") {
-        const range::Regular range(4, -90., 90.);
-        EXPECT(range.size() == 4);
+        const range::Regular range(3, -90., 90.);
+        EXPECT(range.size() == 3);
 
         const auto& values = range.values();
         EXPECT(range.size() == values.size());
 
         EXPECT_APPROX(values[0], -90., EPS);
-        EXPECT_APPROX(values[1], -30., EPS);
-        EXPECT_APPROX(values[2], 30., EPS);
-        EXPECT_APPROX(values[3], 90., EPS);
+        EXPECT_APPROX(values[1], 0., EPS);
+        EXPECT_APPROX(values[2], 90., EPS);
     }
 
 

@@ -20,6 +20,14 @@
 
 #pragma once
 
+///>>> These macros should not be used.
+///>>>   1. We should be avoiding the use of macros except where they really are
+///>>>      necessary
+///>>>   2. If we wanted functionality like this, we would implement it centrally
+///>>>      in eckit, not in a file S3Macros.h
+///>>>   3. See the classes NonCopyable and OnlyMovable in eckit. Derive from these
+///>>>      to have the desired effect (typically use private inheritance)
+
 #define NODISCARD [[nodiscard]]
 
 #define NO_COPY(TypeName)                          \

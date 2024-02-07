@@ -29,6 +29,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+///>>> What is S3ObjectBase for? Why do we not directly implement S3Object?
+
 class S3ObjectBase {
 public:  // methods
     NO_COPY_NO_MOVE(S3ObjectBase)

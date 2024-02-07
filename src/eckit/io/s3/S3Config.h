@@ -24,6 +24,11 @@
 
 namespace eckit {
 
+///>>> What is the difference between the AWS and REST types here. Surely S3 is a
+///>>> specification of a service type (i.e. it can be served by more than just
+///>>> Amazon) for which REST is the underlying type. It isn't clear why we need
+///>>> the machinery of an abstract base here.
+
 enum class S3Types { NONE, AWS, REST };
 
 //----------------------------------------------------------------------------------------------------------------------

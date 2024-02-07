@@ -97,6 +97,7 @@ auto S3ClientAWS::deleteBucket(const std::string& bucketName) const -> bool {
         LOG_DEBUG_LIB(LibEcKit) << "Deleted bucket: " << bucketName << std::endl;
     } else {
         const Aws::S3::S3Error& err = outcome.GetError();
+        ///>>> Aaargh, you discard the errors. We need to throw an Exception if something goes wrong!!!
         Log::error() << "Failed to delete bucket: " << bucketName << " Error: " << err.GetExceptionName() << ": "
                      << err.GetMessage() << std::endl;
     }
@@ -113,6 +114,7 @@ auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
     if (outcome.IsSuccess()) {
         for (auto& bucket : outcome.GetResult().GetBuckets()) { result.emplace_back(bucket.GetName()); }
     } else {
+        ///>>> Aaargh, you discard the errors. We need to throw an Exception if something goes wrong!!!
         Log::error() << "Cannot list buckets! " << outcome.GetError().GetMessage() << std::endl;
     }
 

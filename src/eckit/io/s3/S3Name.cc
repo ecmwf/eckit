@@ -23,6 +23,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+///>>> This constructor to URI accepts scheme, hostname, port
+///>>>  1. I would expect the scheme to be s3 rather than S3
+///>>>  2. From the use in S3HandleInternal, I'm expecting name here to
+///>>>     be a _path_ rather than a hostname
+///>>>  3. In your S3Config you allow the port to be specified, but here
+///>>>     you force it to default to 9000
+
 S3Name::S3Name(const std::string& name): uri_("S3", name, 9000) { }
 
 S3Name::~S3Name() = default;
@@ -35,6 +42,7 @@ auto S3Name::uri() const -> URI {
     return uri_;
 }
 
+///>>> Probably easier to have an S3Object accept an S3Name as an argument?
 auto S3Name::createObject() -> std::unique_ptr<S3Object> {
     NOTIMP;
     return std::unique_ptr<S3Object>();

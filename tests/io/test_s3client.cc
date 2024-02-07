@@ -48,6 +48,13 @@ CASE("create bucket") {
     EXPECT_NOT(client->createBucket("test-bucket-1"));
 
     EXPECT(client->createBucket("test-bucket-2"));
+
+    ///>>> This test does not test that (a) the bucket does not exist at the start
+    ///>>> of the test, or (b) that it has been created at the end. It only tests
+    ///>>> that the code does not report an error.
+    ///
+    ///>>> Question - is there a namespacing of buckets, or do they have to be
+    ///>>> globally unique? How would/could we ensure that?
 }
 
 CASE("list buckets") {
@@ -61,6 +68,8 @@ CASE("list buckets") {
     for (auto&& bucket : buckets) { EXPECT(client->deleteBucket(bucket)); }
 
     EXPECT_NOT(client->deleteBucket("test-bucket-1"));
+
+    ///>>> This also does not test that the bucket has been removed
 }
 
 //----------------------------------------------------------------------------------------------------------------------

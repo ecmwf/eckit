@@ -40,6 +40,8 @@ CASE("S3Handle") {
     h.openForWrite(sizeof(buf));
     h.write(buf, sizeof(buf));
     h.close();
+
+    ///>>> This does not test that any data has been written.
 }
 
 //----------------------------------------------------------------------------------------------------------------------

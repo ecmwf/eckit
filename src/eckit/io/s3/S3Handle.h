@@ -30,6 +30,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+///>>> Note DataHandle derives from eckit::NonCopyable, so there is no need to
+///>>> make that more explicit here.
+
 class S3Handle: public DataHandle {
 public:
     NO_COPY_NO_MOVE(S3Handle)

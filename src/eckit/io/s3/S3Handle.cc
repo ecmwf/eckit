@@ -25,10 +25,22 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+///>>> I don't understand S3HandleInternal.
+///>>> I thought you had this to have a separable compilation unit that could be used
+///>>> to make this work for Nicolau when compiled without access to the AWS SDK
+///>>> But here, it is in the same translation unit as S3Handle?
+
 class S3Handle::S3HandleInternal {
 public:
+
+    ///>>> It would be nice to construct the S3 handle with the explict argumens
+    ///>>> region, bucket & path
+
     S3HandleInternal(const PathName& name, const eckit::Offset& offset): name_(name), pos_(offset) { }
 
+    ///>>> Friend operators do not need to be declared in the public section.
+    ///>>> Look at other examples in eckit, and please delegate to a member function
+    ///>>>     void print(std::ostream& os) const;
     friend std::ostream& operator<<(std::ostream& os, const S3HandleInternal& handle) {
         os << "name: " << handle.name_ << ", pos: " << handle.pos_ << " can write: " << handle.canWrite_ << std::endl;
         return os;

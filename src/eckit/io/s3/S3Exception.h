@@ -28,6 +28,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+///>>> I only see this being used in one place. We should be using exceptions more
+///>>> widely (although I admit that I would probably have just used SeriousBug
+///>>> directly myself)
+
 class S3SeriousBug: public SeriousBug {
 public:
     S3SeriousBug(const std::string& msg, const CodeLocation& loc);

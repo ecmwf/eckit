@@ -45,6 +45,8 @@ auto S3ContextAWS::makeShared() -> std::shared_ptr<S3Context> {
     return std::make_shared<S3ContextAWS>(options);
 }
 
+///>>> Where are you anticipating getting credentials from?
+
 auto S3ContextAWS::checkCredentials(const char* chain) -> bool {
     // AWS S3 permits unauthenticated requests; client returns "success" but 0 buckets
     auto provider = Aws::MakeShared<Aws::Auth::DefaultAWSCredentialsProviderChain>(chain);

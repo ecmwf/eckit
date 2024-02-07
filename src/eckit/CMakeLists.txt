@@ -959,6 +959,7 @@ ecbuild_add_library(
               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
 
           PRIVATE_INCLUDES
+              ///>>> Why do we need to include a derived build directory here?
               $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src/eckit/io/s3/aws>
               "${CURL_INCLUDE_DIRS}"
               "${SNAPPY_INCLUDE_DIRS}"

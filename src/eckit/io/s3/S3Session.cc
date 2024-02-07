@@ -22,6 +22,11 @@
 
 namespace eckit {
 
+///>>> This is a local namespace, just for this file. Unless there is a strong reason
+///>>> to do so, just use an anonymous namespace.
+///>>> Otherwise you risk conflicts with other namespaces actually called (say) utils
+///>>> (In header files, typically you would use a "detail" namespace)
+
 namespace utils {
 
 /// @brief Functor for S3Context type
@@ -58,6 +63,11 @@ S3Session::S3Session() = default;
 S3Session::~S3Session() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
+
+///>>> This strongly suggests that we can have (up to) 2 S3Contexts - one for 
+///>>> type AWS and one for type REST. This seems a little bit weird.
+///>>> Not sure what you are trying to do here, and how S3Session differs
+///>>> from S3Context in its purpose.
 
 auto S3Session::getContext(const S3Types type) -> std::shared_ptr<S3Context> {
     // return if found

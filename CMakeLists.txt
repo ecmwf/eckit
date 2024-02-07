@@ -105,6 +105,7 @@ ecbuild_add_option( FEATURE RADOS
 
 ### S3 Support
 
+///>>> Why ADVANCED?
 ecbuild_add_option( FEATURE AWS_S3
                     DEFAULT OFF
                     ADVANCED

@@ -28,6 +28,12 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+///>>> Is there a reason that we don't
+///>>>  i) Drop the separation between S3Client and S3ClientAWS
+///>>>  ii) Make eckit::S3Client just derive from AWS::S3Client
+///>>>  iii) Or if we want to have a nice clean separation, make
+///>>>       S3Client own a std::unique_ptr to a AWS::S3Client
+
 class S3ClientAWS: public S3Client {
 public:  // methods
     NO_COPY_NO_MOVE(S3ClientAWS)

@@ -27,6 +27,12 @@ class S3Object;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+///>>> Conceptually (If I undestand correctly) an S3Name ought to contain a
+///>>> region, bucket, (sub)path
+///>>> It would be nice to explictly retain this functionality, and implement
+///>>> the handler to construct this from a URI, rather than to make it need
+///>>> to contain a URI.
+
 class S3Name {
 public:  // methods
     S3Name(const std::string& name);
@@ -34,6 +40,10 @@ public:  // methods
     ~S3Name();
 
     auto uri() const -> URI;
+
+    ///>>> General comment, to remain in keeping with elsewhere,
+    ///>>> [[ nodiscard ]]
+    ///>>> std::unique_ptr<S3Object> createObject() const;
 
     NODISCARD
     auto createObject() -> std::unique_ptr<S3Object>;

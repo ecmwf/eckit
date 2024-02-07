@@ -94,7 +94,7 @@ class Regular final : public Range {
 public:
     // -- Constructors
 
-    explicit Regular(size_t n, double a, double b, double eps = 0.);
+    Regular(size_t n, double a, double b, double eps = 0.);
 
     // -- Overridden methods
 
@@ -102,7 +102,10 @@ public:
 
     // -- Methods
 
-    Range* crop(double a, double b) const;
+    Regular* crop(double a, double b) const;
+
+    static Regular make_global_prime(size_t n, double eps = 0.);
+    static Regular make_global_antiprime(size_t n, double eps = 0.);
 
 private:
     // -- Members

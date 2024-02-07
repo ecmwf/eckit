@@ -32,9 +32,13 @@ using namespace eckit::testing;
 
 namespace eckit::test {
 
-S3Config cfg {S3Types::AWS, "name", "eu-central-1", "127.0.0.1", 9000};
+S3Config cfg {S3Types::AWS, "eu-central-1", "127.0.0.1", 9000};
 
 //----------------------------------------------------------------------------------------------------------------------
+
+CASE("unkown S3 type") {
+    EXPECT_THROWS(S3Client::makeUnique({S3Types::NONE}));
+}
 
 CASE("create bucket") {
     auto client = S3Client::makeUnique(cfg);

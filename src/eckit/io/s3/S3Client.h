@@ -40,9 +40,15 @@ public:  // methods
 
     static auto makeUnique(const S3Config& config) -> std::unique_ptr<S3Client>;
 
-    virtual auto createBucket(const std::string& name) const -> bool = 0;
+    virtual auto createBucket(const std::string& bucketName) const -> bool = 0;
 
-    virtual void listBuckets() const;
+    virtual auto deleteBucket(const std::string& bucketName) const -> bool = 0;
+
+    virtual auto putObject(const std::string& bucketName, const std::string& objectName) const -> bool = 0;
+
+    virtual auto listObjects(const std::string& bucketName) const -> bool = 0;
+
+    virtual void listBuckets() const = 0;
 
 private:  // members
     S3ContextSPtr context_;

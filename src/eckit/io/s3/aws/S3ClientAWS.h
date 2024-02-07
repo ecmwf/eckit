@@ -36,9 +36,15 @@ public:  // methods
 
     ~S3ClientAWS();
 
-    auto createBucket(const std::string& name) const -> bool override;
+    auto createBucket(const std::string& bucketName) const -> bool override;
+
+    auto deleteBucket(const std::string& bucketName) const -> bool override;
 
     void listBuckets() const override;
+
+    auto putObject(const std::string& bucketName, const std::string& objectName) const -> bool override;
+
+    auto listObjects(const std::string& bucketName) const -> bool override;
 
 private:  // members
     Aws::Client::ClientConfiguration config_;

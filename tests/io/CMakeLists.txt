@@ -74,6 +74,12 @@ ecbuild_add_test( TARGET      eckit_test_radoshandle
                   INCLUDES    ${RADOS_INCLUDE_DIRS}
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_s3client
+                  SOURCES     test_s3client.cc
+                  CONDITION   HAVE_AWS_S3
+                  INCLUDES    ${AWSSDK_INCLUDE_DIRS}
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_s3handle
                   SOURCES     test_s3handle.cc
                   CONDITION   HAVE_AWS_S3

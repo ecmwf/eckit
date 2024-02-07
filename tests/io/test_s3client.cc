@@ -14,34 +14,48 @@
  * limitations under the License.
  */
 
+/// @file   test_s3client.cc
+/// @author Metin Cakircali
+/// @date   Jan 2024
+
+#include "eckit/config/LibEcKit.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/s3/S3Client.h"
-
-#include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Session.h"
-#include "eckit/io/s3/aws/S3ClientAWS.h"
+#include "eckit/testing/Test.h"
 
-namespace eckit {
+#include <cstring>
+
+using namespace std;
+using namespace eckit;
+using namespace eckit::testing;
+
+namespace eckit::test {
+
+S3Config cfg {S3Types::AWS, "name", "eu-central-1", "127.0.0.1", 9000};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Client::S3Client(S3ContextSPtr context): context_(context) { }
+CASE("create bucket") {
+    auto client = S3Client::makeUnique(cfg);
+    client->createBucket("test-bucket-1");
+}
 
-S3Client::~S3Client() = default;
+CASE("list bucket") {
+    auto client = S3Client::makeUnique(cfg);
+    client->listBuckets();
+}
 
-//----------------------------------------------------------------------------------------------------------------------
+CASE("delete bucket") {
+    auto client = S3Client::makeUnique(cfg);
 
-auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
-    if (config.type == S3Types::AWS) { return std::make_unique<S3ClientAWS>(config); }
-    Log::error() << "Empty client!" << std::endl;
-    return {};
+    client->deleteBucket("test-bucket-1");
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void S3Client::listBuckets() const {
-    NOTIMP;
+}  // namespace eckit::test
+
+int main(int argc, char** argv) {
+    return run_tests(argc, argv);
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-}  // namespace eckit

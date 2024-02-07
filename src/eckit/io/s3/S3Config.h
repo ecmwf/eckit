@@ -30,9 +30,12 @@ enum class S3Types { NONE, AWS, REST };
 
 struct S3Config {
     S3Types     type {S3Types::AWS};
+    std::string keyID;
+    std::string secret;
+    std::string tag {"ALLOCATION_TAG"};
     std::string region {"eu-central-1"};
     std::string endpoint {"127.0.0.1"};
-    int         port {0};
+    int         port {8888};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

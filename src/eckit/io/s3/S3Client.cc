@@ -30,9 +30,15 @@ S3Client::~S3Client() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
-    if (config.type == S3Types::AWS) { return std::make_unique<S3ClientAWS>(config); }
+auto S3Client::makeUnique(const S3Types type) -> std::unique_ptr<S3Client> {
+    if (type == S3Types::AWS) { return std::make_unique<S3ClientAWS>(); }
     throw S3SeriousBug("Unkown S3 client type!", Here());
+}
+
+auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
+    auto client = makeUnique(config.type);
+    client->configure(config);
+    return client;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

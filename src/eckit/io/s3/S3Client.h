@@ -39,7 +39,11 @@ public:  // methods
 
     virtual ~S3Client();
 
+    static auto makeUnique(S3Types type) -> std::unique_ptr<S3Client>;
+
     static auto makeUnique(const S3Config& config) -> std::unique_ptr<S3Client>;
+
+    virtual void configure(const S3Config& config) = 0;
 
     virtual auto createBucket(const std::string& bucketName) const -> bool = 0;
 

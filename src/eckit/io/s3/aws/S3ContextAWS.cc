@@ -49,8 +49,7 @@ auto S3ContextAWS::checkCredentials(const char* chain) -> bool {
     // AWS S3 permits unauthenticated requests; client returns "success" but 0 buckets
     auto provider = Aws::MakeShared<Aws::Auth::DefaultAWSCredentialsProviderChain>(chain);
 
-    auto creds = provider->GetAWSCredentials();
-    if (creds.IsExpiredOrEmpty()) {
+    if (provider->GetAWSCredentials().IsExpiredOrEmpty()) {
         Log::warning() << "Authentication failed!" << std::endl;
         return false;
     }

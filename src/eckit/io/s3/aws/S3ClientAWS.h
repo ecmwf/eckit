@@ -32,9 +32,11 @@ class S3ClientAWS: public S3Client {
 public:  // methods
     NO_COPY_NO_MOVE(S3ClientAWS)
 
-    explicit S3ClientAWS(const S3Config& config);
+    explicit S3ClientAWS();
 
     ~S3ClientAWS();
+
+    void configure(const S3Config& config) override;
 
     auto createBucket(const std::string& bucketName) const -> bool override;
 
@@ -44,14 +46,14 @@ public:  // methods
 
     auto putObject(const std::string& bucketName, const std::string& objectName) const -> bool override;
 
-    auto deleteObject(const std::string& bucketName, const std::string& objectKey) const -> bool;
+    auto deleteObject(const std::string& bucketName, const std::string& objectKey) const -> bool override;
 
     auto deleteObjects(const std::string& bucketName, const std::vector<std::string>& objectKeys) const -> bool;
 
     auto listObjects(const std::string& bucketName) const -> std::vector<std::string> override;
 
 private:  // members
-    Aws::Client::ClientConfiguration config_;
+    std::unique_ptr<Aws::S3::S3Client> client_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

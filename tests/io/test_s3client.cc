@@ -32,12 +32,26 @@ using namespace eckit::testing;
 
 namespace eckit::test {
 
-S3Config cfg {S3Types::AWS, "eu-central-1", "127.0.0.1", 9000};
+S3Config cfg {S3Types::AWS, "minio", "minio1234", "test-tag", "eu-central-1", "127.0.0.1", 9000};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("unkown S3 type") {
-    EXPECT_THROWS(S3Client::makeUnique({S3Types::NONE}));
+CASE("different types") {
+    EXPECT_THROWS(S3Client::makeUnique(S3Types::NONE));
+    EXPECT_NO_THROW(S3Client::makeUnique(S3Types::AWS));
+}
+
+CASE("wrong credentials") {
+    EXPECT_NOT(S3Client::makeUnique(S3Types::AWS)->createBucket("failed-bucket"));
+}
+
+CASE("create bucket in missing region") {
+    S3Config config(cfg);
+    config.region = "eu-central-2";
+
+    auto client = S3Client::makeUnique(config);
+
+    EXPECT_NOT(client->createBucket("test-bucket-1"));
 }
 
 CASE("create bucket") {

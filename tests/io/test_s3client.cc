@@ -38,18 +38,25 @@ S3Config cfg {S3Types::AWS, "name", "eu-central-1", "127.0.0.1", 9000};
 
 CASE("create bucket") {
     auto client = S3Client::makeUnique(cfg);
-    client->createBucket("test-bucket-1");
+
+    EXPECT(client->createBucket("test-bucket-1"));
+
+    EXPECT_NOT(client->createBucket("test-bucket-1"));
+
+    EXPECT(client->createBucket("test-bucket-2"));
 }
 
-CASE("list bucket") {
-    auto client = S3Client::makeUnique(cfg);
-    client->listBuckets();
-}
-
-CASE("delete bucket") {
+CASE("list buckets") {
     auto client = S3Client::makeUnique(cfg);
 
-    client->deleteBucket("test-bucket-1");
+    const auto buckets = client->listBuckets();
+
+    EXPECT_EQUAL(buckets[0], "test-bucket-1");
+    EXPECT_EQUAL(buckets[1], "test-bucket-2");
+
+    for (auto&& bucket : buckets) { EXPECT(client->deleteBucket(bucket)); }
+
+    EXPECT_NOT(client->deleteBucket("test-bucket-1"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

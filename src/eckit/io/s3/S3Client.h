@@ -23,6 +23,7 @@
 #include "eckit/io/s3/S3Context.h"
 
 #include <memory>
+#include <vector>
 
 namespace eckit {
 
@@ -44,11 +45,13 @@ public:  // methods
 
     virtual auto deleteBucket(const std::string& bucketName) const -> bool = 0;
 
+    virtual auto listBuckets() const -> std::vector<std::string> = 0;
+
     virtual auto putObject(const std::string& bucketName, const std::string& objectName) const -> bool = 0;
 
-    virtual auto listObjects(const std::string& bucketName) const -> bool = 0;
+    virtual auto deleteObject(const std::string& bucketName, const std::string& objectKey) const -> bool = 0;
 
-    virtual void listBuckets() const = 0;
+    virtual auto listObjects(const std::string& bucketName) const -> std::vector<std::string> = 0;
 
 private:  // members
     S3ContextSPtr context_;

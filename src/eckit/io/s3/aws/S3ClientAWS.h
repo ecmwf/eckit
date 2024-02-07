@@ -40,11 +40,15 @@ public:  // methods
 
     auto deleteBucket(const std::string& bucketName) const -> bool override;
 
-    void listBuckets() const override;
+    auto listBuckets() const -> std::vector<std::string> override;
 
     auto putObject(const std::string& bucketName, const std::string& objectName) const -> bool override;
 
-    auto listObjects(const std::string& bucketName) const -> bool override;
+    auto deleteObject(const std::string& bucketName, const std::string& objectKey) const -> bool;
+
+    auto deleteObjects(const std::string& bucketName, const std::vector<std::string>& objectKeys) const -> bool;
+
+    auto listObjects(const std::string& bucketName) const -> std::vector<std::string> override;
 
 private:  // members
     Aws::Client::ClientConfiguration config_;

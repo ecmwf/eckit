@@ -22,7 +22,10 @@
 #include "eckit/io/s3/aws/S3ContextAWS.h"
 
 #include <aws/s3/model/CreateBucketRequest.h>
+#include <aws/s3/model/Delete.h>
 #include <aws/s3/model/DeleteBucketRequest.h>
+#include <aws/s3/model/DeleteObjectRequest.h>
+#include <aws/s3/model/DeleteObjectsRequest.h>
 #include <aws/s3/model/ListObjectsRequest.h>
 #include <aws/s3/model/PutObjectRequest.h>
 
@@ -101,16 +104,19 @@ auto S3ClientAWS::deleteBucket(const std::string& bucketName) const -> bool {
     return outcome.IsSuccess();
 }
 
-void S3ClientAWS::listBuckets() const {
+auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
     Aws::S3::S3Client client(config_);
+
+    std::vector<std::string> result;
 
     auto outcome = client.ListBuckets();
     if (outcome.IsSuccess()) {
-        Log::info() << "Found " << outcome.GetResult().GetBuckets().size() << " buckets:\n";
-        for (auto& bucket : outcome.GetResult().GetBuckets()) { Log::info() << bucket.GetName() << std::endl; }
+        for (auto& bucket : outcome.GetResult().GetBuckets()) { result.emplace_back(bucket.GetName()); }
     } else {
-        Log::error() << "List failed! " << outcome.GetError().GetMessage() << std::endl;
+        Log::error() << "Cannot list buckets! " << outcome.GetError().GetMessage() << std::endl;
     }
+
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -124,15 +130,6 @@ auto S3ClientAWS::putObject(const std::string& bucketName, const std::string& ob
     // We are using the name of the file as the key for the object in the bucket.
     // However, this is just a string and can be set according to your retrieval needs.
     request.SetKey(objectName);
-
-    // std::shared_ptr<Aws::IOStream> inputData = Aws::MakeShared<Aws::FStream>("SampleAllocationTag",
-    // objectName.c_str(),
-    //                                                                          std::ios_base::in |
-    //                                                                          std::ios_base::binary);
-    // if (!*inputData) {
-    //     std::cerr << "Error unable to read file " << objectName << std::endl;
-    //     return false;
-    // }
 
     const std::shared_ptr<Aws::IOStream> inputData = Aws::MakeShared<Aws::StringStream>("");
 
@@ -151,22 +148,70 @@ auto S3ClientAWS::putObject(const std::string& bucketName, const std::string& ob
     return outcome.IsSuccess();
 }
 
-auto S3ClientAWS::listObjects(const std::string& bucketName) const -> bool {
+auto S3ClientAWS::deleteObject(const std::string& bucketName, const std::string& objectKey) const -> bool {
+    Aws::S3::S3Client client(config_);
+
+    Aws::S3::Model::DeleteObjectRequest request;
+    request.WithKey(objectKey).WithBucket(bucketName);
+
+    Aws::S3::Model::DeleteObjectOutcome outcome = client.DeleteObject(request);
+
+    if (outcome.IsSuccess()) {
+        LOG_DEBUG_LIB(LibEcKit) << "Successfully deleted the object." << std::endl;
+    } else {
+        auto err = outcome.GetError();
+        Log::error() << "Error: DeleteObject: " << err.GetExceptionName() << ": " << err.GetMessage() << std::endl;
+    }
+
+    return outcome.IsSuccess();
+}
+
+auto S3ClientAWS::deleteObjects(const std::string& bucketName, const std::vector<std::string>& objectKeys) const -> bool {
+    Aws::S3::S3Client client(config_);
+
+    Aws::S3::Model::DeleteObjectsRequest request;
+
+    Aws::S3::Model::Delete deleteObject;
+    for (const auto& objectKey : objectKeys) {
+        deleteObject.AddObjects(Aws::S3::Model::ObjectIdentifier().WithKey(objectKey));
+    }
+
+    request.SetDelete(deleteObject);
+    request.SetBucket(bucketName);
+
+    Aws::S3::Model::DeleteObjectsOutcome outcome = client.DeleteObjects(request);
+
+    if (outcome.IsSuccess()) {
+        LOG_DEBUG_LIB(LibEcKit) << "Deleted " << objectKeys.size() << " objects from bucket " << bucketName << std::endl;
+        for (auto i = 0; i < objectKeys.size(); ++i) {
+            LOG_DEBUG_LIB(LibEcKit) << "Deleted object: " << objectKeys[i] << std::endl;
+        }
+    } else {
+        const auto err = outcome.GetError();
+        Log::error() << "Error deleting objects. " << err.GetExceptionName() << ": " << err.GetMessage() << std::endl;
+    }
+
+    return outcome.IsSuccess();
+}
+
+auto S3ClientAWS::listObjects(const std::string& bucketName) const -> std::vector<std::string> {
     Aws::S3::S3Client s3_client(config_);
+
+    std::vector<std::string> result;
 
     Aws::S3::Model::ListObjectsRequest request;
     request.WithBucket(bucketName);
 
     auto outcome = s3_client.ListObjects(request);
 
-    if (!outcome.IsSuccess()) {
-        Log::error() << "Error: ListObjects: " << outcome.GetError().GetMessage() << std::endl;
-    } else {
+    if (outcome.IsSuccess()) {
         Aws::Vector<Aws::S3::Model::Object> objects = outcome.GetResult().GetContents();
-        for (Aws::S3::Model::Object& object : objects) { Log::info() << object.GetKey() << std::endl; }
+        for (Aws::S3::Model::Object& object : objects) { result.emplace_back(object.GetKey()); }
+    } else {
+        Log::error() << "Cannot list objects! " << outcome.GetError().GetMessage() << std::endl;
     }
 
-    return outcome.IsSuccess();
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

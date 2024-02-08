@@ -40,17 +40,6 @@ S3Session& S3Session::instance() {
     return session;
 }
 
-// auto S3Session::createClient(const S3Config& config) -> std::unique_ptr<S3Client> {
-//     LOG_DEBUG_LIB(LibEcKit) << "Creating S3Client..." << std::endl;
-//     auto ctx = getContext(config.type);
-//     if (config.type == S3Types::AWS) {
-//         auto client = std::make_unique<S3ClientAWS>(ctx);
-//         client->configure(config);
-//         return client;
-//     }
-//     return {};
-// }
-
 //----------------------------------------------------------------------------------------------------------------------
 
 S3Session::S3Session() = default;

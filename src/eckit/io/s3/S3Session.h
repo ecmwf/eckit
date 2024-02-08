@@ -35,8 +35,6 @@ public:  // methods
 
     static S3Session& instance();
 
-    // auto createClient(const S3Config& config) -> std::unique_ptr<S3Client>;
-
     NODISCARD
     auto getContext(S3Types type) -> std::shared_ptr<S3Context>;
 

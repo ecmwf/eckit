@@ -18,6 +18,8 @@
 /// @author Metin Cakircali
 /// @date   Jan 2024
 
+#pragma once
+
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3Macros.h"
 

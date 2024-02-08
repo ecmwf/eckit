@@ -22,6 +22,7 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/s3/S3Macros.h"
+#include "eckit/io/s3/S3Name.h"
 
 #include <iostream>
 #include <memory>
@@ -31,25 +32,23 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3Handle: public DataHandle {
-public:
+public:  // methods
     NO_COPY_NO_MOVE(S3Handle)
-
-    // NOTE: @Nicolau we will try S3 stream later which is not here yet
 
     explicit S3Handle(const PathName& name);
 
-    explicit S3Handle(const PathName& name, const eckit::Offset& offset);
+    explicit S3Handle(const PathName& name, const Offset& offset);
 
     ~S3Handle() override;
 
     void print(std::ostream& out) const override;
 
-public:
-    eckit::Length openForRead() override;
+public:  // methods
+    Length openForRead() override;
 
-    void openForWrite(const eckit::Length& length) override;
+    void openForWrite(const Length& length) override;
 
-    void openForAppend(const eckit::Length& length) override;
+    void openForAppend(const Length& length) override;
 
     long read(void* buffer, long length) override;
 
@@ -59,19 +58,20 @@ public:
 
     void close() override;
 
-    eckit::Length size() override;
+    Length size() override;
 
-    eckit::Offset position() override;
+    Offset position() override;
 
-    eckit::Offset seek(const eckit::Offset& offset) override;
+    Offset seek(const Offset& offset) override;
 
     std::string title() const override;
 
     bool canSeek() const override { return true; }
 
 private:  // members
-    class S3HandleInternal;
-    std::unique_ptr<S3HandleInternal> impl_;
+    S3Name name_;
+    Offset pos_ {0};
+    // bool   canWrite_ {false};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

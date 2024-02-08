@@ -25,35 +25,12 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3Handle::S3HandleInternal {
-public:
-    S3HandleInternal(const PathName& name, const eckit::Offset& offset): name_(name), pos_(offset) { }
-
-    friend std::ostream& operator<<(std::ostream& os, const S3HandleInternal& handle) {
-        os << "name: " << handle.name_ << ", pos: " << handle.pos_ << " can write: " << handle.canWrite_ << std::endl;
-        return os;
-    }
-
-private:
-    // const PathName name_;
-    S3Name name_;
-
-    // S3Object object_;
-
-    Offset pos_ {0};
-
-    bool canWrite_ {false};
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
 S3Handle::S3Handle(const PathName& name): S3Handle(name, 0) {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
 }
 
-S3Handle::S3Handle(const PathName& name, const eckit::Offset& offset):
-    impl_(std::make_unique<S3HandleInternal>(name, offset)) {
+S3Handle::S3Handle(const PathName& name, const Offset& offset): name_(name), pos_(offset) {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
 }
@@ -64,12 +41,12 @@ S3Handle::~S3Handle() {
 }
 
 void S3Handle::print(std::ostream& out) const {
-    out << "S3Handle[" << impl_ << "]";
+    // out << "S3Handle[" << impl_ << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-eckit::Length S3Handle::openForRead() {
+Length S3Handle::openForRead() {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
 
@@ -80,7 +57,7 @@ eckit::Length S3Handle::openForRead() {
     return {};
 }
 
-void S3Handle::openForWrite(const eckit::Length& length) {
+void S3Handle::openForWrite(const Length& length) {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
     //     canWrite_ = true;
@@ -88,7 +65,7 @@ void S3Handle::openForWrite(const eckit::Length& length) {
     //     if (!object_->create(name_.pool())) { throw NotFound("Cannot create object!", -1, Here()); }
 }
 
-void S3Handle::openForAppend(const eckit::Length& length) {
+void S3Handle::openForAppend(const Length& length) {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
     // NOTIMP;
@@ -122,20 +99,20 @@ void S3Handle::close() {
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
 }
 
-eckit::Length S3Handle::size() {
+Length S3Handle::size() {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
     return {};
 }
 
-eckit::Offset S3Handle::position() {
+Offset S3Handle::position() {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
     // return pos_;
     return {};
 }
 
-eckit::Offset S3Handle::seek(const eckit::Offset& offset) {
+Offset S3Handle::seek(const Offset& offset) {
     // pos_ = pos_ + offset;
     // return pos_;
     /// @todo remove

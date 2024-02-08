@@ -27,8 +27,8 @@ RegularGaussian::RegularGaussian(const Spec& spec) :
 
 RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
     Regular(bbox),
-    x_(range::Regular::make_global_prime(4 * N).crop(bbox.west, bbox.east)),
-    y_(new range::Gaussian(N, bbox.north, bbox.south)) {
+    x_(range::RegularLongitude::make_global_prime(4 * N).crop(bbox.west, bbox.east)),
+    y_(new range::GaussianLatitude(N, bbox.north, bbox.south)) {
     ASSERT(x_->size() > 0);
     ASSERT(y_->size() > 0);
 }

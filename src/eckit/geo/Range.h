@@ -65,14 +65,14 @@ private:
 namespace range {
 
 
-class Gaussian final : public Range {
+class GaussianLatitude final : public Range {
 public:
     // -- Constructors
 
-    explicit Gaussian(size_t N, double eps = 0.) :
-        Gaussian(N, 90., -90., eps) {}
+    explicit GaussianLatitude(size_t N, double eps = 0.) :
+        GaussianLatitude(N, 90., -90., eps) {}
 
-    Gaussian(size_t N, double crop_a, double crop_b, double eps = 0.);
+    GaussianLatitude(size_t N, double crop_a, double crop_b, double eps = 0.);
 
     // -- Methods
 
@@ -90,11 +90,11 @@ private:
 };
 
 
-class Regular final : public Range {
+class RegularLongitude final : public Range {
 public:
     // -- Constructors
 
-    Regular(size_t n, double a, double b, double eps = 0.);
+    RegularLongitude(size_t n, double a, double b, double eps = 0.);
 
     // -- Overridden methods
 
@@ -102,10 +102,10 @@ public:
 
     // -- Methods
 
-    Regular* crop(double a, double b) const;
+    RegularLongitude* crop(double a, double b) const;
 
-    static Regular make_global_prime(size_t n, double eps = 0.);
-    static Regular make_global_antiprime(size_t n, double eps = 0.);
+    static RegularLongitude make_global_prime(size_t n, double eps = 0.);
+    static RegularLongitude make_global_antiprime(size_t n, double eps = 0.);
 
 private:
     // -- Members

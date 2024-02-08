@@ -29,7 +29,7 @@ ReducedGaussian::ReducedGaussian(const Spec& spec) :
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox), pl_(pl), j_(0), Nj_(N * 2), y_(new range::Gaussian(N, bbox.north, bbox.south)) {
+    Reduced(bbox), pl_(pl), j_(0), Nj_(N * 2), y_(new range::GaussianLatitude(N, bbox.north, bbox.south)) {
     ASSERT(y_);
 }
 
@@ -63,7 +63,8 @@ const std::vector<double>& ReducedGaussian::latitudes() const {
 std::vector<double> ReducedGaussian::longitudes(size_t j) const {
     auto Ni = ni(j);
     if (!x_ || x_->size() != Ni) {
-        const_cast<std::unique_ptr<Range>&>(x_) = std::make_unique<range::Regular>(Ni, bbox().west, bbox().east);
+        const_cast<std::unique_ptr<Range>&>(x_) =
+            std::make_unique<range::RegularLongitude>(Ni, bbox().west, bbox().east);
     }
 
     return x_->values();

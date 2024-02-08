@@ -24,11 +24,9 @@
 
 #include <sstream>
 
-namespace eckit {
-
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace helper {
+namespace {
 
 inline auto addCode(const std::string& msg, int code) -> std::string {
     std::ostringstream oss;
@@ -36,15 +34,16 @@ inline auto addCode(const std::string& msg, int code) -> std::string {
     return oss.str();
 };
 
-}  // namespace helper
+}  // namespace
+
+namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3SeriousBug::S3SeriousBug(const std::string& msg, const CodeLocation& loc):
-    SeriousBug(std::string("[S3 Error] ") + msg, loc) { }
+S3SeriousBug::S3SeriousBug(const std::string& msg, const CodeLocation& loc): SeriousBug("[S3 Error] " + msg, loc) { }
 
 S3SeriousBug::S3SeriousBug(const std::string& msg, const int code, const CodeLocation& loc):
-    S3SeriousBug(helper::addCode(msg, code), loc) { }
+    S3SeriousBug(addCode(msg, code), loc) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -17,7 +17,6 @@
 #include "eckit/io/s3/S3Handle.h"
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Name.h"
 
@@ -25,12 +24,12 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Handle::S3Handle(const PathName& name): S3Handle(name, 0) {
+S3Handle::S3Handle(const S3Name& name): S3Handle(name, 0) {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
 }
 
-S3Handle::S3Handle(const PathName& name, const Offset& offset): name_(name), pos_(offset) {
+S3Handle::S3Handle(const S3Name& name, const Offset& offset): name_(name), pos_(offset) {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
 }

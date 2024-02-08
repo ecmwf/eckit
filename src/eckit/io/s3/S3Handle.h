@@ -24,9 +24,6 @@
 #include "eckit/io/s3/S3Macros.h"
 #include "eckit/io/s3/S3Name.h"
 
-#include <iostream>
-#include <memory>
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -35,9 +32,9 @@ class S3Handle: public DataHandle {
 public:  // methods
     NO_COPY_NO_MOVE(S3Handle)
 
-    explicit S3Handle(const PathName& name);
+    explicit S3Handle(const S3Name& name);
 
-    explicit S3Handle(const PathName& name, const Offset& offset);
+    explicit S3Handle(const S3Name& name, const Offset& offset);
 
     ~S3Handle() override;
 

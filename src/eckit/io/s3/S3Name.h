@@ -20,25 +20,24 @@
 
 #pragma once
 
-#include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3Macros.h"
+
+#include <string>
 
 namespace eckit {
 
-class S3Object;
+class DataHandle;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3Name {
 public:  // methods
-    S3Name(const std::string& name);
+    S3Name(const std::string& regionName, const std::string& bucketName, const std::string& objectName);
 
     ~S3Name();
 
-    auto uri() const -> URI;
-
     NODISCARD
-    auto createObject() -> std::unique_ptr<S3Object>;
+    auto dataHandle() -> std::unique_ptr<DataHandle>;
 
     friend std::ostream& operator<<(std::ostream& out, const S3Name& name) {
         name.print(out);
@@ -49,7 +48,9 @@ private:  // methods
     void print(std::ostream& out) const;
 
 private:  // members
-    URI uri_;
+    std::string region_;
+    std::string bucket_;
+    std::string object_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -46,7 +46,7 @@ CASE("wrong credentials") {
 }
 
 CASE("create bucket in missing region") {
-    S3Config config(cfg);
+    auto config   = cfg;
     config.region = "eu-central-2";
 
     auto client = S3Client::makeUnique(config);

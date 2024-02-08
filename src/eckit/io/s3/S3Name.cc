@@ -17,27 +17,23 @@
 #include "eckit/io/s3/S3Name.h"
 
 #include "eckit/io/s3/S3Exception.h"
-#include "eckit/io/s3/S3Object.h"
+#include "eckit/io/s3/S3Handle.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Name::S3Name(const std::string& name): uri_("S3", name, 9000) { }
+S3Name::S3Name(const std::string& regionName, const std::string& bucketName, const std::string& objectName):
+    region_(regionName), bucket_(bucketName), object_(objectName) { }
 
 S3Name::~S3Name() = default;
 
 void S3Name::print(std::ostream& out) const {
-    out << "S3Name[uri=" << uri_ << "]";
+    out << "S3Name[region=" << region_ << ",bucket=" << bucket_ << ",object=" << object_ << "]";
 }
 
-auto S3Name::uri() const -> URI {
-    return uri_;
-}
-
-auto S3Name::createObject() -> std::unique_ptr<S3Object> {
-    NOTIMP;
-    return std::unique_ptr<S3Object>();
+auto S3Name::dataHandle() -> std::unique_ptr<DataHandle> {
+    return std::make_unique<S3Handle>(*this);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -18,6 +18,7 @@
 /// @author Metin Cakircali
 /// @date   Jan 2024
 
+#include "eckit/filesystem/URI.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/s3/S3Handle.h"
 #include "eckit/testing/Test.h"
@@ -35,11 +36,22 @@ namespace eckit::test {
 CASE("S3Handle") {
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    S3Handle h("blablaregion/bucketname/objectname");
+    S3Name name("myS3region", "myS3bucket", "myS3object");
 
-    h.openForWrite(sizeof(buf));
-    h.write(buf, sizeof(buf));
-    h.close();
+    {
+        auto h = name.dataHandle();
+        h->openForWrite(sizeof(buf));
+        h->write(buf, sizeof(buf));
+    }
+    // h->close();
+
+    URI uri("s3://hostname:port/region/bucket/object");
+    // credentials
+
+    // std::unique_ptr<DataHandle> dh = uri.dataHandle();
+    // dh->openForRead();
+    // AutoClose closer(dh);
+    // dh->read(buf, length);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

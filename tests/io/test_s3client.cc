@@ -32,7 +32,7 @@ using namespace eckit::testing;
 
 namespace eckit::test {
 
-S3Config cfg {S3Types::AWS, "minio", "minio1234", "test-tag", "eu-central-1", "127.0.0.1", 9000};
+S3Config cfg {S3Types::AWS, "test-tag", "eu-central-1", "127.0.0.1", 9000};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -83,5 +83,8 @@ CASE("list buckets") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
+    S3Credential cred {"minio", "minio1234", "127.0.0.1"};
+    S3Session::instance().addCredentials(cred);
+
     return run_tests(argc, argv);
 }

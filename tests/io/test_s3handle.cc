@@ -21,6 +21,7 @@
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/s3/S3Handle.h"
+#include "eckit/io/s3/S3Session.h"
 #include "eckit/testing/Test.h"
 
 #include <cstring>
@@ -59,5 +60,7 @@ CASE("S3Handle") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
+    S3Credential cred {"minio", "minio1234", "127.0.0.1"};
+    S3Session::instance().addCredentials(cred);
     return run_tests(argc, argv);
 }

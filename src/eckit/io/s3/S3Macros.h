@@ -20,7 +20,16 @@
 
 #pragma once
 
+// nodiscard is C++17 or higher
+#if defined(__has_cpp_attribute)
+#if __has_cpp_attribute(nodiscard)
 #define NODISCARD [[nodiscard]]
+#endif
+#elif !defined(_MSC_VER)
+#define NODISCARD __attribute__((warn_unused_result))
+#else
+#define NODISCARD
+#endif
 
 #define NO_COPY(TypeName)                          \
     TypeName(const TypeName&)            = delete; \

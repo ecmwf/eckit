@@ -14,30 +14,23 @@
  * limitations under the License.
  */
 
-#include "eckit/io/s3/S3Context.h"
+/// @file   S3Credential.h
+/// @author Metin Cakircali
+/// @date   Feb 2024
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/io/s3/aws/S3ContextAWS.h"
+#pragma once
+
+#include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Context::S3Context(const S3Types type): type_(type) { }
-
-S3Context::~S3Context() = default;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-auto S3Context::makeShared(S3Types type) -> std::shared_ptr<S3Context> {
-    // AWS SDK API
-    if (type == S3Types::AWS) { return S3ContextAWS::makeShared(); }
-
-    // REST API
-    if (type == S3Types::REST) { NOTIMP; }
-
-    return {};
-}
+struct S3Credential {
+    std::string keyID;
+    std::string secret;
+    std::string endpoint {"127.0.0.1"};
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

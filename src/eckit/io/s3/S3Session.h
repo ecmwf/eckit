@@ -21,6 +21,7 @@
 #pragma once
 
 #include "eckit/io/s3/S3Client.h"
+#include "eckit/io/s3/S3Credential.h"
 
 #include <list>
 #include <memory>
@@ -36,10 +37,14 @@ public:  // methods
     static S3Session& instance();
 
     NODISCARD
-    auto getContext(S3Types type) -> std::shared_ptr<S3Context>;
+    auto getCredentials(const std::string& endpoint) const -> std::shared_ptr<S3Credential>;
+
+    void addCredentials(const S3Credential& credential);
+
+    void removeCredentials(const std::string& endpoint);
 
     NODISCARD
-    auto findContext(S3Types type) -> std::shared_ptr<S3Context>;
+    auto getContext(S3Types type) -> std::shared_ptr<S3Context>;
 
     void removeContext(S3Types type);
 
@@ -50,8 +55,12 @@ private:  // methods
 
     ~S3Session();
 
+    NODISCARD
+    auto findContext(S3Types type) -> std::shared_ptr<S3Context>;
+
 private:  // members
-    std::list<std::shared_ptr<S3Context>> registry_;
+    std::list<std::shared_ptr<S3Context>>    contexts_;
+    std::list<std::shared_ptr<S3Credential>> credentials_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

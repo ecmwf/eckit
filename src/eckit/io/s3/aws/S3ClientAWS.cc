@@ -17,6 +17,7 @@
 #include "eckit/io/s3/aws/S3ClientAWS.h"
 
 #include "eckit/config/LibEcKit.h"
+#include "eckit/io/s3/S3Credential.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/io/s3/aws/S3ContextAWS.h"
@@ -77,11 +78,16 @@ void S3ClientAWS::configure(const S3Config& config) {
     if (config.port > 0) { configuration.endpointOverride += ":" + std::to_string(config.port); }
 
     // setup credentials
-    Aws::Auth::AWSCredentials credentials(config.keyID, config.secret);
+    Aws::Auth::AWSCredentials credentials;
+    if (auto cred = S3Session::instance().getCredentials(config.endpoint)) {
+        credentials.SetAWSAccessKeyId(cred->keyID);
+        credentials.SetAWSSecretKey(cred->secret);
+    }
 
     // endpoint provider
     auto provider = Aws::MakeShared<Aws::S3::Endpoint::S3EndpointProvider>(config.tag.c_str());
 
+    // finally client
     client_ = std::make_unique<Aws::S3::S3Client>(credentials, provider, configuration);
 }
 

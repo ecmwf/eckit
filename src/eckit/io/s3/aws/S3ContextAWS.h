@@ -38,8 +38,6 @@ public:  // methods
 
     ~S3ContextAWS();
 
-    static auto checkCredentials(const char* chain) -> bool;
-
 private:  // methods
     friend S3Context;
 

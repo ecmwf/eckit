@@ -49,7 +49,7 @@ public:
     static URIManager& lookUp(const std::string&);
 
 protected:
-    URIManager(const std::string&);
+    explicit URIManager(const std::string&);
 
     virtual ~URIManager();
 

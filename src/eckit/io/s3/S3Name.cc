@@ -18,6 +18,9 @@
 
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Handle.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/utils/Tokenizer.h"
+#include "eckit/utils/StringTools.h"
 
 namespace eckit {
 
@@ -26,14 +29,30 @@ namespace eckit {
 S3Name::S3Name(const std::string& regionName, const std::string& bucketName, const std::string& objectName):
     region_(regionName), bucket_(bucketName), object_(objectName) { }
 
+S3Name::S3Name(const URI& uri) {
+    ASSERT(uri.scheme() == "s3");
+    region_ = uri.host();
+
+    const std::string& name = uri.name();
+    size_t pos = name.find('/');
+    ASSERT(pos != std::string::npos);
+
+    bucket_ = name.substr(0, pos);
+    object_ = name.substr(pos + 1);
+}
+
 S3Name::~S3Name() = default;
 
 void S3Name::print(std::ostream& out) const {
     out << "S3Name[region=" << region_ << ",bucket=" << bucket_ << ",object=" << object_ << "]";
 }
 
-auto S3Name::dataHandle() -> std::unique_ptr<DataHandle> {
-    return std::make_unique<S3Handle>(*this);
+bool S3Name::exists() const {
+    NOTIMP;
+}
+
+DataHandle* S3Name::dataHandle() {
+    return new S3Handle(*this);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

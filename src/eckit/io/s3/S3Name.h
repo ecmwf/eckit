@@ -27,17 +27,22 @@
 namespace eckit {
 
 class DataHandle;
+class URI;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3Name {
 public:  // methods
+    explicit S3Name(const URI& uri);
+
     S3Name(const std::string& regionName, const std::string& bucketName, const std::string& objectName);
 
     ~S3Name();
 
-    NODISCARD
-    auto dataHandle() -> std::unique_ptr<DataHandle>;
+    bool exists() const;
+
+    [[ nodiscard ]]
+    DataHandle* dataHandle();
 
     friend std::ostream& operator<<(std::ostream& out, const S3Name& name) {
         name.print(out);

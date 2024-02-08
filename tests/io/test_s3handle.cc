@@ -19,7 +19,7 @@
 /// @date   Jan 2024
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/io/MemoryHandle.h"
 #include "eckit/io/s3/S3Handle.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/testing/Test.h"
@@ -32,7 +32,29 @@ using namespace eckit::testing;
 
 namespace eckit::test {
 
+S3Config cfg {S3Types::AWS, "test-tag", "eu-central-1", "127.0.0.1", 9000};
+
+static const std::string TEST_BUCKET("test-bucket");
+
 //----------------------------------------------------------------------------------------------------------------------
+
+void ensureClean() {
+    auto client = S3Client::makeUnique(cfg);
+    auto&& tmp = client->listBuckets();
+    std::set<std::string> buckets(tmp.begin(), tmp.end());
+
+    for (const std::string& name : {TEST_BUCKET}) {
+        if (buckets.find(name) != buckets.end()) {
+            client->deleteBucket(name);
+        }
+    }
+}
+
+void bucketSetup() {
+    ensureClean();
+    auto client = S3Client::makeUnique(cfg);
+    client->createBucket(TEST_BUCKET);
+}
 
 CASE("S3Handle") {
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
@@ -40,20 +62,26 @@ CASE("S3Handle") {
     S3Name name("myS3region", "myS3bucket", "myS3object");
 
     {
-        auto h = name.dataHandle();
+        std::unique_ptr<DataHandle> h{name.dataHandle()};
         h->openForWrite(sizeof(buf));
-        h->write(buf, sizeof(buf));
+        AutoClose closer(*h);
+        EXPECT(h->write(buf, sizeof(buf)) == sizeof(buf));
     }
-    // h->close();
 
     URI uri("s3://hostname:port/region/bucket/object");
     // credentials
 
-    // std::unique_ptr<DataHandle> dh = uri.dataHandle();
-    // dh->openForRead();
-    // AutoClose closer(dh);
-    // dh->read(buf, length);
+    {
+        std::unique_ptr<DataHandle> dh(uri.newReadHandle());
+        MemoryHandle mh;
+        dh->saveInto(mh);
+
+        EXPECT(mh.size() == Length(sizeof(buf)));
+        EXPECT(::memcmp(mh.data(), buf, sizeof(buf)) == 0);
+    }
 }
+
+// TODO: Also check that it doesn't work if the bucket doesn't exist, etc.
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -62,5 +90,12 @@ CASE("S3Handle") {
 int main(int argc, char** argv) {
     S3Credential cred {"minio", "minio1234", "127.0.0.1"};
     S3Session::instance().addCredentials(cred);
-    return run_tests(argc, argv);
+
+    int ret = -1;
+    try {
+        eckit::test::bucketSetup();
+        ret = run_tests(argc, argv);
+        eckit::test::ensureClean();
+    } catch (...) {}
+    return ret;
 }

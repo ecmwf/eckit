@@ -38,10 +38,10 @@
 
 namespace {
 
-std::ostream& operator<<(std::ostream& os, const Aws::S3::S3Error& error) {
-    os << "Error: " << error.GetExceptionName() << ", Message: " << error.GetMessage()
-       << " Remote IP: " << error.GetRemoteHostIpAddress() << std::endl;
-    return os;
+inline std::string awsErrorMessage(const std::string& msg, const Aws::S3::S3Error& error) {
+    std::ostringstream oss;
+    oss << " AWS: " << error.GetMessage() << " Remote IP: " << error.GetRemoteHostIpAddress();
+    return oss.str();
 }
 
 }  // namespace
@@ -97,8 +97,7 @@ void S3ClientAWS::createBucket(const std::string& bucketName) const {
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Created bucket: " << bucketName << std::endl;
     } else {
-        std::ostringstream msg;
-        msg << "Failed to create bucket: " << bucketName << outcome.GetError();
+        auto msg = awsErrorMessage("Failed to create bucket: " + bucketName, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
 }
@@ -112,8 +111,7 @@ void S3ClientAWS::deleteBucket(const std::string& bucketName) const {
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Deleted bucket: " << bucketName << std::endl;
     } else {
-        std::ostringstream msg;
-        msg << "Failed to delete bucket: " << bucketName << outcome.GetError();
+        auto msg = awsErrorMessage("Failed to delete bucket: " + bucketName, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
 }
@@ -148,8 +146,8 @@ void S3ClientAWS::putObject(const std::string& bucketName, const std::string& ob
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Added object '" << objectName << "' to bucket '" << bucketName << "'.";
     } else {
-        std::ostringstream msg;
-        msg << "Failed to put object: " << objectName << " to bucket: " << bucketName << outcome.GetError();
+        auto msg =
+            awsErrorMessage("Failed to put object: " + objectName + " to bucket: " + bucketName, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
 }
@@ -163,8 +161,8 @@ void S3ClientAWS::deleteObject(const std::string& bucketName, const std::string&
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Successfully deleted the object." << std::endl;
     } else {
-        std::ostringstream msg;
-        msg << "Failed to delete object: " << objectKey << " in bucket: " << bucketName << outcome.GetError();
+        auto msg =
+            awsErrorMessage("Failed to delete object: " + objectKey + " in bucket: " + bucketName, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
 }
@@ -187,8 +185,7 @@ void S3ClientAWS::deleteObjects(const std::string& bucketName, const std::vector
             LOG_DEBUG_LIB(LibEcKit) << "Deleted object: " << objectKeys[i] << std::endl;
         }
     } else {
-        std::ostringstream msg;
-        msg << "Failed to delete objects in bucket: " << bucketName << outcome.GetError();
+        auto msg = awsErrorMessage("Failed to delete objects in bucket: " + bucketName, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
 }
@@ -203,10 +200,7 @@ auto S3ClientAWS::listObjects(const std::string& bucketName) const -> std::vecto
     auto outcome = client_->ListObjects(request);
     if (outcome.IsSuccess()) {
         Aws::Vector<Aws::S3::Model::Object> objects = outcome.GetResult().GetContents();
-        for (Aws::S3::Model::Object& object : objects) {
-            // object.
-            result.emplace_back(object.GetKey());
-        }
+        for (Aws::S3::Model::Object& object : objects) { result.emplace_back(object.GetKey()); }
     } else {
         Log::warning() << "Failed to list objects in bucket: " << bucketName << outcome.GetError();
     }

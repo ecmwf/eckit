@@ -40,7 +40,7 @@ S3ContextAWS::~S3ContextAWS() {
 
 auto S3ContextAWS::makeShared() -> std::shared_ptr<S3Context> {
     Aws::SDKOptions options;
-    // TODO: remove debugging logs
+    /// @todo: remove debugging logs
     options.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Debug;
     return std::make_shared<S3ContextAWS>(options);
 }

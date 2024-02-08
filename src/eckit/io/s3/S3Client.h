@@ -45,15 +45,15 @@ public:  // methods
 
     virtual void configure(const S3Config& config) = 0;
 
-    virtual auto createBucket(const std::string& bucketName) const -> bool = 0;
+    virtual void createBucket(const std::string& bucketName) const = 0;
 
-    virtual auto deleteBucket(const std::string& bucketName) const -> bool = 0;
+    virtual void deleteBucket(const std::string& bucketName) const = 0;
 
     virtual auto listBuckets() const -> std::vector<std::string> = 0;
 
-    virtual auto putObject(const std::string& bucketName, const std::string& objectName) const -> bool = 0;
+    virtual void putObject(const std::string& bucketName, const std::string& objectName) const = 0;
 
-    virtual auto deleteObject(const std::string& bucketName, const std::string& objectKey) const -> bool = 0;
+    virtual void deleteObject(const std::string& bucketName, const std::string& objectKey) const = 0;
 
     virtual auto listObjects(const std::string& bucketName) const -> std::vector<std::string> = 0;
 

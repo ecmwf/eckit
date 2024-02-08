@@ -32,6 +32,9 @@ class S3SeriousBug: public SeriousBug {
 public:
     S3SeriousBug(const std::string& msg, const CodeLocation& loc);
     S3SeriousBug(const std::string& msg, int code, const CodeLocation& loc);
+    S3SeriousBug(const std::ostringstream& msg, const CodeLocation& loc): S3SeriousBug(msg.str(), loc) { }
+    S3SeriousBug(const std::ostringstream& msg, int code, const CodeLocation& loc):
+        S3SeriousBug(msg.str(), code, loc) { }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -38,17 +38,17 @@ public:  // methods
 
     void configure(const S3Config& config) override;
 
-    auto createBucket(const std::string& bucketName) const -> bool override;
+    void createBucket(const std::string& bucketName) const override;
 
-    auto deleteBucket(const std::string& bucketName) const -> bool override;
+    void deleteBucket(const std::string& bucketName) const override;
 
     auto listBuckets() const -> std::vector<std::string> override;
 
-    auto putObject(const std::string& bucketName, const std::string& objectName) const -> bool override;
+    void putObject(const std::string& bucketName, const std::string& objectName) const override;
 
-    auto deleteObject(const std::string& bucketName, const std::string& objectKey) const -> bool override;
+    void deleteObject(const std::string& bucketName, const std::string& objectKey) const override;
 
-    auto deleteObjects(const std::string& bucketName, const std::vector<std::string>& objectKeys) const -> bool;
+    void deleteObjects(const std::string& bucketName, const std::vector<std::string>& objectKeys) const;
 
     auto listObjects(const std::string& bucketName) const -> std::vector<std::string> override;
 

@@ -42,7 +42,7 @@ CASE("different types") {
 }
 
 CASE("wrong credentials") {
-    EXPECT_NOT(S3Client::makeUnique(S3Types::AWS)->createBucket("failed-bucket"));
+    EXPECT_THROWS(S3Client::makeUnique(S3Types::AWS)->createBucket("failed-bucket"));
 }
 
 CASE("create bucket in missing region") {
@@ -51,17 +51,17 @@ CASE("create bucket in missing region") {
 
     auto client = S3Client::makeUnique(config);
 
-    EXPECT_NOT(client->createBucket("test-bucket-1"));
+    EXPECT_THROWS(client->createBucket("test-bucket-1"));
 }
 
 CASE("create bucket") {
     auto client = S3Client::makeUnique(cfg);
 
-    EXPECT(client->createBucket("test-bucket-1"));
+    EXPECT_NO_THROW(client->createBucket("test-bucket-1"));
 
-    EXPECT_NOT(client->createBucket("test-bucket-1"));
+    EXPECT_THROWS(client->createBucket("test-bucket-1"));
 
-    EXPECT(client->createBucket("test-bucket-2"));
+    EXPECT_NO_THROW(client->createBucket("test-bucket-2"));
 }
 
 CASE("list buckets") {
@@ -72,9 +72,10 @@ CASE("list buckets") {
     EXPECT_EQUAL(buckets[0], "test-bucket-1");
     EXPECT_EQUAL(buckets[1], "test-bucket-2");
 
-    for (auto&& bucket : buckets) { EXPECT(client->deleteBucket(bucket)); }
+    for (auto&& bucket : buckets) { EXPECT_NO_THROW(client->deleteBucket(bucket)); }
 
-    EXPECT_NOT(client->deleteBucket("test-bucket-1"));
+    EXPECT_THROWS(client->deleteBucket("test-bucket-1"));
+    EXPECT_THROWS(client->deleteBucket("test-bucket-2"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -24,7 +24,7 @@
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/testing/Test.h"
 
-#include <cstring>
+#include <string>
 
 using namespace std;
 using namespace eckit;
@@ -37,7 +37,9 @@ namespace eckit::test {
 CASE("S3Handle") {
     const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    S3Name name("myS3region", "myS3bucket", "myS3object");
+    S3Config config("eu-central-1", "127.0.0.1", 9000);
+
+    S3Name name(config, "myS3bucket", "myS3object");
 
     {
         auto h = name.dataHandle();
@@ -46,8 +48,14 @@ CASE("S3Handle") {
     }
     // h->close();
 
-    URI uri("s3://hostname:port/region/bucket/object");
-    // credentials
+    URI uri("s3://127.0.0.1:9000/bucket/object");
+    {
+        auto h = uri.newReadHandle();
+        h->openForRead();
+        std::string rbuf;
+        h->read(rbuf.data(), sizeof(buf));
+        std::cout << rbuf << std::endl;
+    }
 
     // std::unique_ptr<DataHandle> dh = uri.dataHandle();
     // dh->openForRead();

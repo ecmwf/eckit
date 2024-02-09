@@ -32,7 +32,7 @@ using namespace eckit::testing;
 
 namespace eckit::test {
 
-S3Config cfg {S3Types::AWS, "test-tag", "eu-central-1", "127.0.0.1", 9000};
+const S3Config cfg("eu-central-1", "127.0.0.1", 9000);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -47,7 +47,7 @@ CASE("wrong credentials") {
 
 CASE("create bucket in missing region") {
     auto config   = cfg;
-    config.region = "eu-central-2";
+    config.setRegion("eu-central-2");
 
     auto client = S3Client::makeUnique(config);
 

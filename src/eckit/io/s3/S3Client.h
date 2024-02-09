@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include "eckit/io/s3/S3Config.h"
 #include "eckit/io/s3/S3Context.h"
 
 #include <memory>

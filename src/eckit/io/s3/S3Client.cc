@@ -36,7 +36,7 @@ auto S3Client::makeUnique(const S3Types type) -> std::unique_ptr<S3Client> {
 }
 
 auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
-    auto client = makeUnique(config.type);
+    auto client = makeUnique(config.type());
     client->configure(config);
     return client;
 }

@@ -20,21 +20,33 @@
 
 #pragma once
 
+#include "eckit/io/s3/S3Config.h"
 #include "eckit/io/s3/S3Macros.h"
 
+// #include <memory>
 #include <string>
 
 namespace eckit {
 
+class URI;
 class DataHandle;
+// class S3Client;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3Name {
 public:  // methods
-    S3Name(const std::string& regionName, const std::string& bucketName, const std::string& objectName);
+    explicit S3Name(const URI& uri);
+
+    S3Name(const S3Config& config, const std::string& bucketName, const std::string& objectName);
 
     ~S3Name();
+
+    NODISCARD
+    auto getConfig() const -> const S3Config& { return config_; }
+
+    NODISCARD
+    auto exists() -> bool;
 
     NODISCARD
     auto dataHandle() -> std::unique_ptr<DataHandle>;
@@ -48,9 +60,11 @@ private:  // methods
     void print(std::ostream& out) const;
 
 private:  // members
-    std::string region_;
+    S3Config    config_;
     std::string bucket_;
     std::string object_;
+
+    // std::unique_ptr<S3Client> client_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

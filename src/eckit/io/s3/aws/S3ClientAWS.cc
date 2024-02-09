@@ -41,7 +41,7 @@ namespace {
 
 inline std::string awsErrorMessage(const std::string& msg, const Aws::S3::S3Error& error) {
     std::ostringstream oss;
-    oss << " AWS: " << error.GetMessage() << " Remote IP: " << error.GetRemoteHostIpAddress();
+    oss << msg << " AWS: " << error.GetMessage() << " Remote IP: " << error.GetRemoteHostIpAddress();
     return oss.str();
 }
 
@@ -112,7 +112,7 @@ void S3ClientAWS::deleteBucket(const std::string& bucketName) const {
     Aws::S3::Model::DeleteBucketRequest request;
     request.SetBucket(bucketName);
 
-    auto outcome = client_->DeleteBucket(request);
+    const auto outcome = client_->DeleteBucket(request);
 
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Deleted bucket: " << bucketName << std::endl;
@@ -127,7 +127,7 @@ auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
 
     auto outcome = client_->ListBuckets();
     if (outcome.IsSuccess()) {
-        for (auto& bucket : outcome.GetResult().GetBuckets()) { result.emplace_back(bucket.GetName()); }
+        for (const auto& bucket : outcome.GetResult().GetBuckets()) { result.emplace_back(bucket.GetName()); }
     } else {
         Log::warning() << "Failed to list buckets!" << outcome.GetError();
     }
@@ -145,7 +145,6 @@ void S3ClientAWS::putObject(const std::string& bucketName, const std::string& ob
     request.SetKey(objectName);
 
     const std::shared_ptr<Aws::IOStream> inputData = Aws::MakeShared<Aws::StringStream>("");
-    // *inputData << objectContent.c_str();
     request.SetBody(inputData);
 
     auto outcome = client_->PutObject(request);
@@ -205,8 +204,8 @@ auto S3ClientAWS::listObjects(const std::string& bucketName) const -> std::vecto
 
     auto outcome = client_->ListObjects(request);
     if (outcome.IsSuccess()) {
-        Aws::Vector<Aws::S3::Model::Object> objects = outcome.GetResult().GetContents();
-        for (Aws::S3::Model::Object& object : objects) { result.emplace_back(object.GetKey()); }
+        const auto& objects = outcome.GetResult().GetContents();
+        for (const auto& object : objects) { result.emplace_back(object.GetKey()); }
     } else {
         Log::warning() << "Failed to list objects in bucket: " << bucketName << outcome.GetError();
     }

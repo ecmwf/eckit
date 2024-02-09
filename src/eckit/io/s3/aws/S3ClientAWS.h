@@ -32,7 +32,7 @@ class S3ClientAWS: public S3Client {
 public:  // methods
     NO_COPY_NO_MOVE(S3ClientAWS)
 
-    explicit S3ClientAWS();
+    S3ClientAWS();
 
     ~S3ClientAWS();
 

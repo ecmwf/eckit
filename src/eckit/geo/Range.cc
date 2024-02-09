@@ -19,6 +19,7 @@
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo {
@@ -65,6 +66,9 @@ GaussianLatitude::GaussianLatitude(size_t N, double _a, double _b, double _eps) 
 
         ASSERT(!v.empty());
         resize(v.size());
+
+        a(v.front());
+        b(v.back());
     }
 }
 
@@ -76,28 +80,69 @@ const std::vector<double>& GaussianLatitude::values() const {
 }
 
 
-RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) :
-    Range(n, _a, types::is_approximately_equal(_a, _b, _eps) ? _a : _b, _eps), endpoint_(false) {
-
-    // pre-calculate on n = 1
-    if (a() < b()) {
-        b(PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB);
-        ASSERT(b() - a() <= 360.);
-
-        auto inc  = (b() - a()) / static_cast<double>(size());
-        endpoint_ = types::is_strictly_greater(360., b() - a() + inc);
+RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double crop_a, double crop_b, double _eps) :
+    Range(n, _a, types::is_approximately_equal(_a, _b, _eps) ? _a : _b, _eps) {
+    // adjust range limits, before cropping
+    if (types::is_approximately_equal(a(), b(), eps())) {
+        resize(1);
+        periodic_ = false;
+        values_   = {a()};
     }
-    else if (b() < a()) {
-        b(PointLonLat::normalise_angle_to_maximum(b() + DB, a()) - DB);
-        ASSERT(a() - b() <= 360.);
+    else if (a() < b()) {
+        if (auto x = PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB, d = x - a();
+            (periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n)))) {
+            b(a() + 360.);
 
-        auto inc  = (a() - b()) / static_cast<double>(size());
-        endpoint_ = types::is_strictly_greater(360., a() - b() + inc);
+            crop_a = PointLonLat::normalise_angle_to_minimum(crop_a - DB, a()) + DB;
+            crop_b = PointLonLat::normalise_angle_to_minimum(crop_b - DB, crop_a) + DB;
+
+            auto adjust = [](const Fraction& target, const Fraction& inc, bool up) -> Fraction {
+                ASSERT(inc > 0);
+
+                auto r = target / inc;
+                auto n = r.integralPart();
+
+                if (!r.integer() && (target > 0) == up) {
+                    n += (up ? 1 : -1);
+                }
+
+                return (n * inc);
+            };
+
+            Fraction inc((b() - a()) / static_cast<double>(periodic_ ? n : (n - 1)));
+            auto da = (Fraction(a()) / inc).decimalPart() * inc;
+
+            auto fraction_a = adjust(crop_a - da, inc, true) + da;
+            auto fraction_b = adjust(crop_b - da, inc, false) + da;
+            auto fraction_n = (fraction_b - fraction_a) / inc;
+            ASSERT(fraction_n.integer() && 0 < fraction_n && fraction_n <= n);
+
+            if (fraction_b - fraction_a < 360) {
+                resize(static_cast<size_t>(fraction_n.integralPart()) + 1);
+                periodic_ = false;
+            }
+
+            a(fraction_a);
+            b(fraction_b);
+        }
+        else {
+            b(x);
+
+            NOTIMP;  // FIXME
+        }
     }
     else {
-        resize(1);
-        endpoint_ = false;
-        values_   = {a()};
+        if (auto x = PointLonLat::normalise_angle_to_maximum(b() + DB, a()) - DB, d = a() - x;
+            (periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n)))) {
+            b(a() - 360.);
+
+            NOTIMP;  // FIXME
+        }
+        else {
+            b(x);
+
+            NOTIMP;  // FIXME
+        }
     }
 }
 
@@ -106,28 +151,11 @@ const std::vector<double>& RegularLongitude::values() const {
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
     if (values_.empty()) {
-        const_cast<std::vector<double>&>(values_) = util::linspace(a(), b(), size(), endpoint_);
+        const_cast<std::vector<double>&>(values_) = util::linspace(a(), b(), size(), !periodic_);
         ASSERT(!values_.empty());
     }
 
     return values_;
-}
-
-
-RegularLongitude* RegularLongitude::crop(double _a, double _b) const {
-    ASSERT_MSG((a() < b() && _a <= _b) || (b() < a() && _b <= _a), "Regular::crop: range does not respect ordering");
-
-    NOTIMP;  // TODO
-}
-
-
-RegularLongitude RegularLongitude::make_global_prime(size_t n, double eps) {
-    return {n, 0., 360., eps};
-}
-
-
-RegularLongitude RegularLongitude::make_global_antiprime(size_t n, double eps) {
-    return {n, -180, 180., eps};
 }
 
 

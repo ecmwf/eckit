@@ -94,23 +94,19 @@ class RegularLongitude final : public Range {
 public:
     // -- Constructors
 
-    RegularLongitude(size_t n, double a, double b, double eps = 0.);
+    RegularLongitude(size_t n, double a, double b, double eps = 0.) :
+        RegularLongitude(n, a, b, a, b, eps) {}
+
+    RegularLongitude(size_t n, double a, double b, double crop_a, double crop_b, double eps = 0.);
 
     // -- Overridden methods
 
     const std::vector<double>& values() const override;
 
-    // -- Methods
-
-    RegularLongitude* crop(double a, double b) const;
-
-    static RegularLongitude make_global_prime(size_t n, double eps = 0.);
-    static RegularLongitude make_global_antiprime(size_t n, double eps = 0.);
-
 private:
     // -- Members
 
-    bool endpoint_;
+    bool periodic_;
     std::vector<double> values_;
 };
 

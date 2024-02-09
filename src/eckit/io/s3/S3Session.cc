@@ -61,11 +61,9 @@ S3Session::~S3Session() = default;
 // CREDENTIALS
 
 auto S3Session::getCredentials(const std::string& endpoint) const -> std::shared_ptr<S3Credential> {
-    LOG_DEBUG_LIB(LibEcKit) << "Searching credential for endpoint:" << endpoint << std::endl;
-
     /// @todo check if all keyid and secret different
     // search by endpoint
-    auto cred = std::find_if(credentials_.begin(), credentials_.end(), IsCredentialEndpoint(endpoint));
+    const auto cred = std::find_if(credentials_.begin(), credentials_.end(), IsCredentialEndpoint(endpoint));
     // found
     if (cred != credentials_.end()) { return *cred; }
     // not found
@@ -99,9 +97,8 @@ auto S3Session::getContext(const S3Types type) -> std::shared_ptr<S3Context> {
 }
 
 auto S3Session::findContext(const S3Types type) -> std::shared_ptr<S3Context> {
-    LOG_DEBUG_LIB(LibEcKit) << "Find context!" << std::endl;
     // search by type
-    auto context = std::find_if(contexts_.begin(), contexts_.end(), IsContextType({type}));
+    const auto context = std::find_if(contexts_.begin(), contexts_.end(), IsContextType({type}));
     // found
     if (context != contexts_.end()) { return *context; }
     // not found

@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include "eckit/io/s3/S3Client.h"
+#include "eckit/io/s3/S3Context.h"
 #include "eckit/io/s3/S3Credential.h"
 
 #include <list>

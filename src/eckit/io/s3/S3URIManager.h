@@ -8,24 +8,33 @@
  * does it submit to any jurisdiction.
  */
 
+/*
+ * This software was developed as part of the EC H2020 funded project IO-SEA
+ * (Project ID: 955811) iosea-project.eu
+ */
+
+/// @file   S3URIManager.h
+/// @author Simon Smart
+/// @author Metin Cakircali
+/// @date   Feb 2024
+
 #pragma once
 
 #include "eckit/filesystem/URIManager.h"
-
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3URIManager : public URIManager {
-
-public: // methods
-
+class S3URIManager: public URIManager {
+public:  // methods
     S3URIManager(const std::string& name);
+
     ~S3URIManager() override;
 
-private: // methods
+    bool authority() override { return true; }
 
+private:  // methods
     bool exists(const URI&) override;
 
     DataHandle* newWriteHandle(const URI&) override;

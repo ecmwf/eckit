@@ -309,6 +309,8 @@ io/s3/S3Object.h
 io/s3/S3Session.cc
 io/s3/S3Session.h
 io/s3/S3Macros.h
+io/s3/S3URIManager.cc
+io/s3/S3URIManager.h
 )
 endif(HAVE_AWS_S3)
 

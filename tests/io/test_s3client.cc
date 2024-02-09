@@ -36,16 +36,36 @@ const S3Config cfg("eu-central-1", "127.0.0.1", 9000);
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void ensureClean() {
+
+    auto client = S3Client::makeUnique(cfg);
+    auto&& tmp = client->listBuckets();
+    std::set<std::string> buckets(tmp.begin(), tmp.end());
+
+    for (const std::string& name : {"failed-bucket", "test-bucket-1", "test-bucket-2"}) {
+        if (buckets.find(name) != buckets.end()) {
+            client->deleteBucket(name);
+        }
+    }
+
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
 CASE("different types") {
     EXPECT_THROWS(S3Client::makeUnique(S3Types::NONE));
     EXPECT_NO_THROW(S3Client::makeUnique(S3Types::AWS));
 }
 
 CASE("wrong credentials") {
+    ensureClean();
     EXPECT_THROWS(S3Client::makeUnique(S3Types::AWS)->createBucket("failed-bucket"));
 }
 
 CASE("create bucket in missing region") {
+    ensureClean();
+
     auto config   = cfg;
     config.setRegion("eu-central-2");
 
@@ -55,6 +75,7 @@ CASE("create bucket in missing region") {
 }
 
 CASE("create bucket") {
+    ensureClean();
     auto client = S3Client::makeUnique(cfg);
 
     EXPECT_NO_THROW(client->createBucket("test-bucket-1"));
@@ -65,14 +86,28 @@ CASE("create bucket") {
 }
 
 CASE("list buckets") {
+
+    ensureClean();
+
     auto client = S3Client::makeUnique(cfg);
+    EXPECT_NO_THROW(client->createBucket("test-bucket-1"));
+    EXPECT_NO_THROW(client->createBucket("test-bucket-2"));
 
-    const auto buckets = client->listBuckets();
+    {
+        const auto buckets = client->listBuckets();
 
-    EXPECT_EQUAL(buckets[0], "test-bucket-1");
-    EXPECT_EQUAL(buckets[1], "test-bucket-2");
+        EXPECT_EQUAL(buckets[0], "test-bucket-1");
+        EXPECT_EQUAL(buckets[1], "test-bucket-2");
 
-    for (auto&& bucket : buckets) { EXPECT_NO_THROW(client->deleteBucket(bucket)); }
+        for (auto&& bucket : buckets) {
+            client->deleteBucket(bucket);
+        }
+    }
+
+    {
+        const auto buckets = client->listBuckets();
+        EXPECT(buckets.empty());
+    }
 
     EXPECT_THROWS(client->deleteBucket("test-bucket-1"));
     EXPECT_THROWS(client->deleteBucket("test-bucket-2"));
@@ -86,5 +121,9 @@ int main(int argc, char** argv) {
     S3Credential cred {"minio", "minio1234", "127.0.0.1"};
     S3Session::instance().addCredentials(cred);
 
-    return run_tests(argc, argv);
+    auto ret = run_tests(argc, argv);
+    try {
+        eckit::test::ensureClean();
+    } catch (...) {}
+    return ret;
 }

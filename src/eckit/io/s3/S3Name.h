@@ -1,21 +1,16 @@
 /*
- * Copyright 2024- European Centre for Medium-Range Weather Forecasts (ECMWF).
+ *  (C) Copyright 1996- ECMWF.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ *  This software is licensed under the terms of the Apache Licence Version 2.0
+ *  which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *  In applying this licence, ECMWF does not waive the privileges and immunities
+ *  granted to it by virtue of its status as an intergovernmental organisation nor
+ *  does it submit to any jurisdiction.
  */
 
 /// @file   S3Name.h
 /// @author Metin Cakircali
+/// @author Simon Smart
 /// @date   Jan 2024
 
 #pragma once
@@ -23,14 +18,12 @@
 #include "eckit/io/s3/S3Config.h"
 #include "eckit/io/s3/S3Macros.h"
 
-// #include <memory>
 #include <string>
 
 namespace eckit {
 
 class URI;
 class DataHandle;
-// class S3Client;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -42,14 +35,12 @@ public:  // methods
 
     ~S3Name();
 
-    NODISCARD
     auto getConfig() const -> const S3Config& { return config_; }
 
-    NODISCARD
     auto exists() -> bool;
 
     NODISCARD
-    auto dataHandle() -> std::unique_ptr<DataHandle>;
+    auto dataHandle() const -> DataHandle*;
 
     friend std::ostream& operator<<(std::ostream& out, const S3Name& name) {
         name.print(out);

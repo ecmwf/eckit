@@ -1,17 +1,16 @@
 /*
- * Copyright 2024- European Centre for Medium-Range Weather Forecasts (ECMWF).
+ * (C) Copyright 1996- ECMWF.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/*
+ * This software was developed as part of the EC H2020 funded project IO-SEA
+ * (Project ID: 955811) iosea-project.eu
  */
 
 /// @file   S3Client.h
@@ -21,22 +20,20 @@
 #pragma once
 
 #include "eckit/io/s3/S3Config.h"
-#include "eckit/io/s3/S3Context.h"
+#include "eckit/memory/NonCopyable.h"
 
 #include <memory>
 #include <vector>
 
 namespace eckit {
 
-using S3ContextSPtr = std::shared_ptr<S3Context>;
+class S3Context;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3Client {
+class S3Client: private NonCopyable {
 public:  // methods
-    NO_COPY_NO_MOVE(S3Client)
-
-    explicit S3Client(S3ContextSPtr context);
+    explicit S3Client(std::shared_ptr<S3Context> context);
 
     virtual ~S3Client();
 
@@ -50,6 +47,8 @@ public:  // methods
 
     virtual void deleteBucket(const std::string& bucketName) const = 0;
 
+    virtual auto bucketExists(const std::string& bucketName) const -> bool = 0;
+
     virtual auto listBuckets() const -> std::vector<std::string> = 0;
 
     virtual void putObject(const std::string& bucketName, const std::string& objectName) const = 0;
@@ -58,8 +57,12 @@ public:  // methods
 
     virtual auto listObjects(const std::string& bucketName) const -> std::vector<std::string> = 0;
 
+    virtual auto objectExists(const std::string& bucketName, const std::string& objectKey) const -> bool = 0;
+
+    virtual auto objectSize(const std::string& bucketName, const std::string& objectKey) const -> Length = 0;
+
 private:  // members
-    S3ContextSPtr context_;
+    std::shared_ptr<S3Context> context_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

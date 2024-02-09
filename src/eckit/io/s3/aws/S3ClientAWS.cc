@@ -1,17 +1,16 @@
 /*
- * Copyright 2024- European Centre for Medium-Range Weather Forecasts (ECMWF).
+ * (C) Copyright 1996- ECMWF.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/*
+ * This software was developed as part of the EC H2020 funded project IO-SEA
+ * (Project ID: 955811) iosea-project.eu
  */
 
 #include "eckit/io/s3/aws/S3ClientAWS.h"
@@ -29,6 +28,8 @@
 #include <aws/s3/model/DeleteBucketRequest.h>
 #include <aws/s3/model/DeleteObjectRequest.h>
 #include <aws/s3/model/DeleteObjectsRequest.h>
+#include <aws/s3/model/HeadBucketRequest.h>
+#include <aws/s3/model/HeadObjectRequest.h>
 #include <aws/s3/model/ListObjectsRequest.h>
 #include <aws/s3/model/PutObjectRequest.h>
 
@@ -74,12 +75,14 @@ void S3ClientAWS::configure(const S3Config& config) {
     // configuration.verifySSL = false;
 
     // setup endpoint
-    if (!config.host().empty()) { configuration.endpointOverride = "http://" + config.host(); }
-    if (config.port() > 0) { configuration.endpointOverride += ":" + std::to_string(config.port()); }
+    /// @todo handle http/https possibly via scheme flag in S3Config
+    const auto& endpoint = config.endpoint();
+    if (!endpoint.host().empty()) { configuration.endpointOverride = "http://" + endpoint.host(); }
+    if (endpoint.port() > 0) { configuration.endpointOverride += ":" + std::to_string(endpoint.port()); }
 
     // setup credentials
     Aws::Auth::AWSCredentials credentials;
-    if (auto cred = S3Session::instance().getCredentials(config.host())) {
+    if (auto cred = S3Session::instance().getCredentials(endpoint.host())) {
         credentials.SetAWSAccessKeyId(cred->keyID);
         credentials.SetAWSSecretKey(cred->secret);
     }
@@ -120,6 +123,12 @@ void S3ClientAWS::deleteBucket(const std::string& bucketName) const {
         auto msg = awsErrorMessage("Failed to delete bucket: " + bucketName, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
+}
+
+auto S3ClientAWS::bucketExists(const std::string& bucketName) const -> bool {
+    Aws::S3::Model::HeadBucketRequest request;
+    request.SetBucket(bucketName);
+    return client_->HeadBucket(request).IsSuccess();
 }
 
 auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
@@ -208,6 +217,29 @@ auto S3ClientAWS::listObjects(const std::string& bucketName) const -> std::vecto
         for (const auto& object : objects) { result.emplace_back(object.GetKey()); }
     } else {
         Log::warning() << "Failed to list objects in bucket: " << bucketName << outcome.GetError();
+    }
+
+    return result;
+}
+
+auto S3ClientAWS::objectExists(const std::string& bucketName, const std::string& objectKey) const -> bool {
+    Aws::S3::Model::HeadObjectRequest request;
+    request.WithKey(objectKey).WithBucket(bucketName);
+    return client_->HeadObject(request).IsSuccess();
+}
+
+auto S3ClientAWS::objectSize(const std::string& bucketName, const std::string& objectKey) const -> Length {
+    Length result;
+
+    Aws::S3::Model::HeadObjectRequest request;
+    request.WithKey(objectKey).WithBucket(bucketName);
+
+    const auto outcome = client_->HeadObject(request);
+    if (outcome.IsSuccess()) {
+        result = outcome.GetResult().GetContentLength();
+    } else {
+        const auto msg = awsErrorMessage("Object '" + objectKey + "' doesn't exist or no access!", outcome.GetError());
+        throw S3SeriousBug(msg, Here());
     }
 
     return result;

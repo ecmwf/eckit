@@ -1,11 +1,16 @@
 /*
- *  (C) Copyright 1996- ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
- *  This software is licensed under the terms of the Apache Licence Version 2.0
- *  which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *  In applying this licence, ECMWF does not waive the privileges and immunities
- *  granted to it by virtue of its status as an intergovernmental organisation nor
- *  does it submit to any jurisdiction.
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/*
+ * This software was developed as part of the EC H2020 funded project IO-SEA
+ * (Project ID: 955811) iosea-project.eu
  */
 
 /// @file   S3Name.h
@@ -15,15 +20,16 @@
 
 #pragma once
 
-#include "eckit/io/s3/S3Config.h"
-#include "eckit/io/s3/S3Macros.h"
+#include "eckit/io/Length.h"
 
+#include <memory>
 #include <string>
 
 namespace eckit {
 
 class URI;
 class DataHandle;
+class S3Client;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -31,16 +37,20 @@ class S3Name {
 public:  // methods
     explicit S3Name(const URI& uri);
 
-    S3Name(const S3Config& config, const std::string& bucketName, const std::string& objectName);
-
     ~S3Name();
 
-    auto getConfig() const -> const S3Config& { return config_; }
+    auto bucket() const -> const std::string& { return bucket_; }
 
-    auto exists() -> bool;
+    auto object() const -> const std::string& { return object_; }
 
-    NODISCARD
-    auto dataHandle() const -> DataHandle*;
+    auto bucketExists() const -> bool;
+
+    auto exists() const -> bool;
+
+    auto size() const -> Length;
+
+    [[nodiscard]]
+    auto dataHandle() -> DataHandle*;
 
     friend std::ostream& operator<<(std::ostream& out, const S3Name& name) {
         name.print(out);
@@ -48,14 +58,15 @@ public:  // methods
     }
 
 private:  // methods
+    void parse(const std::string& path);
+
     void print(std::ostream& out) const;
 
 private:  // members
-    S3Config    config_;
     std::string bucket_;
     std::string object_;
 
-    // std::unique_ptr<S3Client> client_;
+    std::unique_ptr<S3Client> client_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -304,8 +304,6 @@ io/s3/S3Handle.cc
 io/s3/S3Handle.h
 io/s3/S3Name.cc
 io/s3/S3Name.h
-io/s3/S3Object.cc
-io/s3/S3Object.h
 io/s3/S3Session.cc
 io/s3/S3Session.h
 io/s3/S3Macros.h

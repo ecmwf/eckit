@@ -8,6 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+/*
+ * This software was developed as part of the EC H2020 funded project IO-SEA
+ * (Project ID: 955811) iosea-project.eu
+ */
+
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3URIManager.h"
 #include "eckit/io/s3/S3Name.h"

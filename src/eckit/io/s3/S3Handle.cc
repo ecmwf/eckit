@@ -1,17 +1,16 @@
 /*
- * Copyright 2024- European Centre for Medium-Range Weather Forecasts (ECMWF).
+ * (C) Copyright 1996- ECMWF.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/*
+ * This software was developed as part of the EC H2020 funded project IO-SEA
+ * (Project ID: 955811) iosea-project.eu
  */
 
 #include "eckit/io/s3/S3Handle.h"
@@ -40,34 +39,25 @@ S3Handle::~S3Handle() {
 }
 
 void S3Handle::print(std::ostream& out) const {
-    // out << "S3Handle[" << impl_ << "]";
+    out << "S3Handle[name=" << name_ << ",position=" << pos_ << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 Length S3Handle::openForRead() {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-
-    //     canWrite_ = false;
-    //     object_ = name_.object();
-    //     if (object_->open()) { return object_->size(); }
-
-    return {};
+    LOG_DEBUG_LIB(LibEcKit) << "S3Handle::openForRead" << std::endl;
+    canWrite_ = false;
+    return name_.size();  // asserts
 }
 
 void S3Handle::openForWrite(const Length& length) {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-    //     canWrite_ = true;
-    //     object_ = name_.object();
-    //     if (!object_->create(name_.pool())) { throw NotFound("Cannot create object!", -1, Here()); }
+    LOG_DEBUG_LIB(LibEcKit) << "S3Handle::openForWrite" << std::endl;
+    canWrite_ = true;
 }
 
 void S3Handle::openForAppend(const Length& length) {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-    // NOTIMP;
+    LOG_DEBUG_LIB(LibEcKit) << "S3Handle::openForAppend" << std::endl;
+    canWrite_ = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -99,16 +89,11 @@ void S3Handle::close() {
 }
 
 Length S3Handle::size() {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-    return {};
+    return name_.size();  // asserts
 }
 
 Offset S3Handle::position() {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-    // return pos_;
-    return {};
+    return pos_;
 }
 
 Offset S3Handle::seek(const Offset& offset) {

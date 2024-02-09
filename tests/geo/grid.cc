@@ -64,6 +64,12 @@ CASE("GridFactory::build") {
         auto n4 = grid4->size();
 
         EXPECT_EQUAL(n4, 5 * 4);  // Ni * Nj
+
+        spec.set("east", -1.);
+        std::unique_ptr<const Grid> grid5(GridFactory::build(spec));
+        auto n5 = grid5->size();
+
+        EXPECT_EQUAL(n5, 4 * 4);  // Ni * Nj
     }
 
 

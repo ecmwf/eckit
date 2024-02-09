@@ -1,21 +1,16 @@
 /*
- * Copyright 2024- European Centre for Medium-Range Weather Forecasts (ECMWF).
+ * (C) Copyright 1996- ECMWF.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     https://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
 /// @file   test_s3client.cc
 /// @author Metin Cakircali
+/// @author Simon Smart
 /// @date   Jan 2024
 
 #include "eckit/config/LibEcKit.h"
@@ -23,8 +18,6 @@
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/testing/Test.h"
-
-#include <cstring>
 
 using namespace std;
 using namespace eckit;
@@ -118,7 +111,7 @@ CASE("list buckets") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    S3Credential cred {"minio", "minio1234", "127.0.0.1"};
+    const S3Credential cred {"minio", "minio1234", "127.0.0.1"};
     S3Session::instance().addCredentials(cred);
 
     auto ret = run_tests(argc, argv);

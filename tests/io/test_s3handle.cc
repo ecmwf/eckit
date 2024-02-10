@@ -41,6 +41,7 @@ void ensureClean() {
 
     for (const std::string& name : {TEST_BUCKET}) {
         if (buckets.find(name) != buckets.end()) {
+            client->emptyBucket(name);
             client->deleteBucket(name);
         }
     }
@@ -58,7 +59,7 @@ CASE("S3Handle") {
     const void* buffer = testData.data();
     const auto  length = testData.size();
 
-    URI uri("s3://127.0.0.1:9000/test-bucket/test-object");
+    URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/test-object");
 
     {
         S3Name name(uri);

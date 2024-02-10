@@ -45,6 +45,8 @@ public:  // methods
 
     virtual void createBucket(const std::string& bucketName) const = 0;
 
+    virtual void emptyBucket(const std::string& bucketName) const = 0;
+
     virtual void deleteBucket(const std::string& bucketName) const = 0;
 
     virtual auto bucketExists(const std::string& bucketName) const -> bool = 0;

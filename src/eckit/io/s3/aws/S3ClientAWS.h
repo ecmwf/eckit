@@ -37,6 +37,8 @@ public:  // methods
 
     void createBucket(const std::string& bucketName) const override;
 
+    void emptyBucket(const std::string& bucketName) const override;
+
     void deleteBucket(const std::string& bucketName) const override;
 
     auto bucketExists(const std::string& bucketName) const -> bool override;

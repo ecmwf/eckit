@@ -114,6 +114,10 @@ void S3ClientAWS::createBucket(const std::string& bucketName) const {
     }
 }
 
+void S3ClientAWS::emptyBucket(const std::string& bucketName) const {
+    deleteObjects(bucketName, listObjects(bucketName));
+}
+
 void S3ClientAWS::deleteBucket(const std::string& bucketName) const {
     Aws::S3::Model::DeleteBucketRequest request;
     request.SetBucket(bucketName);
@@ -209,15 +213,22 @@ void S3ClientAWS::deleteObject(const std::string& bucketName, const std::string&
 }
 
 void S3ClientAWS::deleteObjects(const std::string& bucketName, const std::vector<std::string>& objectKeys) const {
+    if (objectKeys.empty()) {
+        LOG_DEBUG_LIB(LibEcKit) << "No objects to delete in bucket=" << bucketName << std::endl;
+        return;
+    }
+
     Aws::S3::Model::DeleteObjectsRequest request;
+
+    request.SetBucket(bucketName);
 
     Aws::S3::Model::Delete deleteObject;
     for (const auto& objectKey : objectKeys) {
         deleteObject.AddObjects(Aws::S3::Model::ObjectIdentifier().WithKey(objectKey));
     }
+    // deleteObject.SetQuiet(true);
 
     request.SetDelete(deleteObject);
-    request.SetBucket(bucketName);
 
     auto outcome = client_->DeleteObjects(request);
 

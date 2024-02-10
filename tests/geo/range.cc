@@ -84,10 +84,18 @@ CASE("range::RegularLongitude") {
 
 
     SECTION("range [0, 360], cropped") {
-        const range::RegularLongitude range1(20, 0., 360., -180., 180.);
-        EXPECT(range1.size() == 20);
+        const range::RegularLongitude range1(36, 0., 360., -180., 180.);
+        EXPECT(range1.size() == 36);
         EXPECT(range1.a() == -180.);
         EXPECT(range1.b() == 180.);
+
+        const range::RegularLongitude range2(36, 0., 360., -180., 170.);
+        EXPECT(range2.size() == 36);
+        EXPECT(range2.b() == 180.);
+
+        const range::RegularLongitude range3(36, 0., 360., -180., 160.);
+        EXPECT(range3.size() == 36 - 1);
+        EXPECT(range3.b() == 160.);
     }
 }
 

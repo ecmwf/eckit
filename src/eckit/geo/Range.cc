@@ -32,6 +32,12 @@ Range::Range(size_t n, double _a, double _b, double _eps) :
 }
 
 
+void Range::resize(size_t n) {
+    ASSERT(n > 0);
+    n_ = n;
+}
+
+
 namespace range {
 
 
@@ -107,6 +113,19 @@ RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) 
 
 RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double crop_a, double crop_b, double _eps) :
     Range(n, _a, types::is_approximately_equal(_a, _b, _eps) ? _a : _b, _eps) {
+    auto adjust = [](const Fraction& target, const Fraction& inc, bool up) -> Fraction {
+        ASSERT(inc > 0);
+
+        auto r = target / inc;
+        auto n = r.integralPart();
+
+        if (!r.integer() && (target > 0) == up) {
+            n += (up ? 1 : -1);
+        }
+
+        return (n * inc);
+    };
+
     // adjust range limits, before cropping
     if (types::is_approximately_equal(a(), b(), eps())) {
         resize(1);
@@ -120,34 +139,24 @@ RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double crop_a
 
             crop_b = PointLonLat::normalise_angle_to_minimum(crop_b - DB, crop_a) + DB;
 
-            auto adjust = [](const Fraction& target, const Fraction& inc, bool up) -> Fraction {
-                ASSERT(inc > 0);
-
-                auto r = target / inc;
-                auto n = r.integralPart();
-
-                if (!r.integer() && (target > 0) == up) {
-                    n += (up ? 1 : -1);
-                }
-
-                return (n * inc);
-            };
-
             Fraction inc((b() - a()) / static_cast<double>(periodic_ ? n : (n - 1)));
             auto da = (Fraction(a()) / inc).decimalPart() * inc;
+            auto af = adjust(crop_a - da, inc, true) + da;
+            auto bf = adjust(crop_b - da, inc, false) + da;
 
-            auto fraction_a = adjust(crop_a - da, inc, true) + da;
-            auto fraction_b = adjust(crop_b - da, inc, false) + da;
-            auto fraction_n = (fraction_b - fraction_a) / inc;
-            ASSERT(fraction_n.integer() && 0 < fraction_n && fraction_n <= n);
+            if (bf - af + inc >= 360) {
+                a(af);
+                b(af + 360);
+            }
+            else {
+                a(af);
+                b(bf);
 
-            if (fraction_b - fraction_a < 360) {
-                resize(static_cast<size_t>(fraction_n.integralPart()) + 1);
+                auto nf = (bf - af) / inc;
+                ASSERT(nf.integer() && 0 < nf && nf <= n);
+                resize(static_cast<size_t>(nf.integralPart()) + 1);
                 periodic_ = false;
             }
-
-            a(fraction_a);
-            b(fraction_b);
         }
         else {
             b(x);

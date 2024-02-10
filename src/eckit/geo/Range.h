@@ -48,7 +48,7 @@ protected:
 
     explicit Range(size_t n, double a, double b, double eps = 0.);
 
-    void resize(size_t n) { n_ = n; }
+    void resize(size_t n);
     void a(double value) { a_ = value; }
     void b(double value) { b_ = value; }
 

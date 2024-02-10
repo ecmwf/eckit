@@ -31,6 +31,7 @@ enum class S3Types { NONE, AWS, REST };
 
 class S3Config {
 public:  // methods
+    /// @todo region is part of hostname (s3express-control.region_code.amazonaws.com/bucket-name)
     S3Config(const std::string& region, const std::string& hostname, const int port):
         region_(region), endpoint_(hostname, port) { }
 
@@ -58,7 +59,7 @@ public:  // methods
 private:  // members
     S3Types       type_ {S3Types::AWS};
     std::string   tag_ {"ALLOCATION_TAG"};
-    std::string   region_ {"ecmwf-central-1"};
+    std::string   region_ {"eu-central-1"};
     net::Endpoint endpoint_ {"127.0.0.1", 8888};
 };
 

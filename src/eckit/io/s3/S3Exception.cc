@@ -13,10 +13,6 @@
  * (Project ID: 955811) iosea-project.eu
  */
 
-/// @file   S3Exception.h
-/// @author Metin Cakircali
-/// @date   Jan 2024
-
 #include "eckit/io/s3/S3Exception.h"
 
 #include <sstream>

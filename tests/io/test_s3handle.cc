@@ -30,7 +30,7 @@ namespace eckit::test {
 
 S3Config cfg("eu-central-1", "127.0.0.1", 9000);
 
-static const std::string TEST_BUCKET("test-bucket");
+static const std::string TEST_BUCKET("eckit-s3handle-test-bucket");
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -53,7 +53,10 @@ void bucketSetup() {
 }
 
 CASE("S3Handle") {
-    const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+    const std::string_view testData = "abcdefghijklmnopqrstuvwxyz";
+
+    const void* buffer = testData.data();
+    const auto  length = testData.size();
 
     URI uri("s3://127.0.0.1:9000/test-bucket/test-object");
 
@@ -61,16 +64,16 @@ CASE("S3Handle") {
         S3Name name(uri);
 
         std::unique_ptr<DataHandle> h {name.dataHandle()};
-        h->openForWrite(sizeof(buf));
+        h->openForWrite(length);
         AutoClose closer(*h);
-        EXPECT(h->write(buf, sizeof(buf)) == sizeof(buf));
+        EXPECT(h->write(buffer, length) == length);
     }
 
     {
         auto h = uri.newReadHandle();
         h->openForRead();
         std::string rbuf;
-        h->read(rbuf.data(), sizeof(buf));
+        h->read(rbuf.data(), length);
         std::cout << rbuf << std::endl;
     }
 
@@ -79,8 +82,8 @@ CASE("S3Handle") {
         MemoryHandle mh;
         dh->saveInto(mh);
 
-        EXPECT(mh.size() == Length(sizeof(buf)));
-        EXPECT(::memcmp(mh.data(), buf, sizeof(buf)) == 0);
+        EXPECT(mh.size() == Length(length));
+        EXPECT(::memcmp(mh.data(), buffer, length) == 0);
     }
 }
 

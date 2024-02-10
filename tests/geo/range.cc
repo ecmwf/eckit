@@ -81,6 +81,14 @@ CASE("range::RegularLongitude") {
         EXPECT_APPROX(values2[3], 45., EPS);
         EXPECT_APPROX(values2[7], -135., EPS);
     }
+
+
+    SECTION("range [0, 360], cropped") {
+        const range::RegularLongitude range1(20, 0., 360., -180., 180.);
+        EXPECT(range1.size() == 20);
+        EXPECT(range1.a() == -180.);
+        EXPECT(range1.b() == 180.);
+    }
 }
 
 

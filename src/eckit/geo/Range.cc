@@ -118,7 +118,6 @@ RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double crop_a
             (periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n)))) {
             b(a() + 360.);
 
-            crop_a = PointLonLat::normalise_angle_to_minimum(crop_a - DB, a()) + DB;
             crop_b = PointLonLat::normalise_angle_to_minimum(crop_b - DB, crop_a) + DB;
 
             auto adjust = [](const Fraction& target, const Fraction& inc, bool up) -> Fraction {

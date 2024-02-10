@@ -80,6 +80,31 @@ const std::vector<double>& GaussianLatitude::values() const {
 }
 
 
+RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) :
+    Range(n, _a, types::is_approximately_equal(_a, _b, _eps) ? _a : _b, _eps) {
+    // adjust range limits, before cropping
+    if (types::is_approximately_equal(a(), b(), eps())) {
+        resize(1);
+        periodic_ = false;
+        values_   = {a()};
+    }
+    else if (a() < b()) {
+        auto x = PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB;
+        auto d = x - a();
+
+        periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n));
+        b(periodic_ ? a() + 360. : x);
+    }
+    else {
+        auto x = PointLonLat::normalise_angle_to_maximum(b() + DB, a()) - DB;
+        auto d = a() - x;
+
+        periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n));
+        b(periodic_ ? a() - 360. : x);
+    }
+}
+
+
 RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double crop_a, double crop_b, double _eps) :
     Range(n, _a, types::is_approximately_equal(_a, _b, _eps) ? _a : _b, _eps) {
     // adjust range limits, before cropping

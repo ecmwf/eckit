@@ -94,9 +94,7 @@ class RegularLongitude final : public Range {
 public:
     // -- Constructors
 
-    RegularLongitude(size_t n, double a, double b, double eps = 0.) :
-        RegularLongitude(n, a, b, a, b, eps) {}
-
+    RegularLongitude(size_t n, double a, double b, double eps = 0.);
     RegularLongitude(size_t n, double a, double b, double crop_a, double crop_b, double eps = 0.);
 
     // -- Overridden methods

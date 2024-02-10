@@ -29,7 +29,7 @@ using namespace geo;
 constexpr auto EPS = 1e-3;
 
 
-CASE("range::Regular") {
+CASE("range::RegularLongitude") {
     SECTION("degenerate") {
         EXPECT_THROWS_AS(range::RegularLongitude(0, 0., 0.), eckit::AssertionFailed);
         EXPECT_THROWS_AS(range::RegularLongitude(0, 0., 10.), eckit::AssertionFailed);

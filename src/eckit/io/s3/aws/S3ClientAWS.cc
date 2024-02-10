@@ -22,6 +22,7 @@
 #include "eckit/io/s3/aws/S3ContextAWS.h"
 
 #include <aws/core/auth/AWSCredentials.h>
+#include <aws/core/utils/stream/PreallocatedStreamBuf.h>
 #include <aws/s3/S3Client.h>
 #include <aws/s3/model/CreateBucketRequest.h>
 #include <aws/s3/model/Delete.h>
@@ -149,6 +150,28 @@ auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
 
 //----------------------------------------------------------------------------------------------------------------------
 // OBJECT
+
+void S3ClientAWS::putObject(const std::string& bucketName, const std::string& objectName, const void* buffer,
+                            const uint64_t length) const {
+    Aws::S3::Model::PutObjectRequest request;
+
+    request.SetBucket(bucketName);
+    request.SetKey(objectName);
+    request.SetContentLength(length);
+
+    auto sBuffer = Aws::New<Aws::Utils::Stream::PreallocatedStreamBuf>(ALLOC_TAG, (unsigned char*)buffer, length);
+    auto sReader = Aws::MakeShared<Aws::IOStream>(ALLOC_TAG, sBuffer);
+    request.SetBody(sReader);
+
+    auto outcome = client_->PutObject(request);
+
+    if (outcome.IsSuccess()) {
+        LOG_DEBUG_LIB(LibEcKit) << "Added object=" << objectName << " to bucket=" << bucketName << std::endl;
+    } else {
+        auto msg = awsErrorMessage("Failed to put object=" + objectName + " to bucket=" + bucketName, outcome.GetError());
+        throw S3SeriousBug(msg, Here());
+    }
+}
 
 void S3ClientAWS::putObject(const std::string& bucketName, const std::string& objectName) const {
     Aws::S3::Model::PutObjectRequest request;

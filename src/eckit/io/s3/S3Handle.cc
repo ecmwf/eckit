@@ -50,7 +50,7 @@ Length S3Handle::openForRead() {
     return name_.size();  // asserts
 }
 
-void S3Handle::openForWrite(const Length& length) {
+void S3Handle::openForWrite(const Length&) {
     LOG_DEBUG_LIB(LibEcKit) << "S3Handle::openForWrite" << std::endl;
     canWrite_ = true;
 }
@@ -72,8 +72,9 @@ long S3Handle::read(void* buffer, const long length) {
 long S3Handle::write(const void* buffer, const long length) {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-    // if (object_ && canWrite_) { return object_->write(buffer, length, pos_); }
-    return 0;
+    name_.put(buffer, length);
+    pos_ += length;
+    return length;
 }
 
 void S3Handle::flush() {
@@ -82,7 +83,7 @@ void S3Handle::flush() {
 }
 
 void S3Handle::close() {
-    // canWrite_ = false;
+    canWrite_ = false;
     // object_.reset();
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;

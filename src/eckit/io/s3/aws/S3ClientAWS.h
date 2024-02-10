@@ -45,6 +45,9 @@ public:  // methods
 
     void putObject(const std::string& bucketName, const std::string& objectName) const override;
 
+    void putObject(const std::string& bucketName, const std::string& objectName, const void* buffer,
+                   const uint64_t length) const override;
+
     void deleteObject(const std::string& bucketName, const std::string& objectKey) const override;
 
     void deleteObjects(const std::string& bucketName, const std::vector<std::string>& objectKeys) const;

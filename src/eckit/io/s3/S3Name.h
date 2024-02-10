@@ -39,6 +39,8 @@ public:  // methods
 
     ~S3Name();
 
+    void put(const void* buffer, uint64_t length) const;
+
     auto bucket() const -> const std::string& { return bucket_; }
 
     auto object() const -> const std::string& { return object_; }

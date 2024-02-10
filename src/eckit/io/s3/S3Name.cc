@@ -49,6 +49,10 @@ void S3Name::print(std::ostream& out) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void S3Name::put(const void* buffer, const uint64_t length) const {
+    client_->putObject(bucket_, object_, buffer, length);
+}
+
 auto S3Name::bucketExists() const -> bool {
     return client_->bucketExists(bucket_);
 }

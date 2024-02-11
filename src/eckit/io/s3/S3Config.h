@@ -41,8 +41,6 @@ public:  // methods
 
     auto type() const -> S3Types { return type_; }
 
-    auto tag() const -> const std::string& { return tag_; }
-
     auto region() const -> const std::string& { return region_; }
 
     void setRegion(const std::string& region) { region_ = region; }
@@ -52,13 +50,12 @@ public:  // methods
     auto getURI() const -> URI { return {"s3", endpoint_.host(), endpoint_.port()}; }
 
     friend std::ostream& operator<<(std::ostream& out, const S3Config& config) {
-        out << "S3Config[tag=" << config.tag_ << ",region=" << config.region_ << ",endpoint=" << config.endpoint_ << "]";
+        out << "S3Config[region=" << config.region_ << ",endpoint=" << config.endpoint_ << "]";
         return out;
     }
 
 private:  // members
     S3Types       type_ {S3Types::AWS};
-    std::string   tag_ {"ALLOCATION_TAG"};
     std::string   region_ {"eu-central-1"};
     net::Endpoint endpoint_ {"127.0.0.1", 8888};
 };

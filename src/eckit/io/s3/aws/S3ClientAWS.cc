@@ -92,7 +92,7 @@ void S3ClientAWS::configure(const S3Config& config) {
     }
 
     // endpoint provider
-    auto provider = Aws::MakeShared<Aws::S3::Endpoint::S3EndpointProvider>(config.tag().c_str());
+    auto provider = Aws::MakeShared<Aws::S3::Endpoint::S3EndpointProvider>(ALLOC_TAG);
 
     // finally client
     client_ = std::make_unique<Aws::S3::S3Client>(credentials, provider, configuration);
@@ -197,8 +197,9 @@ void S3ClientAWS::putObject(const std::string& bucket, const std::string& object
     }
 }
 
-void S3ClientAWS::getObject(const std::string& bucket, const std::string& object) const {
+void S3ClientAWS::getObject(const std::string& bucket, const std::string& object, void* buffer, const long length) const {
     Aws::S3::Model::GetObjectRequest request;
+
     request.SetBucket(bucket);
     request.SetKey(object);
 
@@ -246,7 +247,7 @@ void S3ClientAWS::deleteObjects(const std::string& bucket, const std::vector<std
     auto outcome = client_->DeleteObjects(request);
 
     if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Deleted " << objects.size() << " objects from bucket " << bucket << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "Deleted " << objects.size() << " objects in bucket=" << bucket << std::endl;
         for (const auto& object : objects) { LOG_DEBUG_LIB(LibEcKit) << "Deleted object=" << object << std::endl; }
     } else {
         auto msg = awsErrorMessage("Failed to delete objects in bucket=" + bucket, outcome.GetError());
@@ -267,7 +268,7 @@ auto S3ClientAWS::listObjects(const std::string& bucket) const -> std::vector<st
         const auto& objects = outcome.GetResult().GetContents();
         for (const auto& object : objects) { result.emplace_back(object.GetKey()); }
     } else {
-        Log::warning() << "Failed to list objects in bucket: " << bucket << outcome.GetError();
+        Log::warning() << "Failed to list objects in bucket=" << bucket << outcome.GetError();
     }
 
     return result;

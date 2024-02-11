@@ -32,11 +32,6 @@ public:  // methods
 
     S3Handle(const S3Name& name, const Offset& offset);
 
-    ~S3Handle() override;
-
-    void print(std::ostream& out) const override;
-
-public:  // methods
     Length openForRead() override;
 
     void openForWrite(const Length& length) override;
@@ -61,8 +56,11 @@ public:  // methods
 
     bool canSeek() const override { return true; }
 
+private:  // methods
+    void print(std::ostream& out) const override;
+
 private:  // members
-    const S3Name& name_;
+    const S3Name name_;
 
     Offset pos_ {0};
 

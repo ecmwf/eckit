@@ -37,8 +37,6 @@ class S3Name {
 public:  // methods
     explicit S3Name(const URI& uri);
 
-    ~S3Name();
-
     void put(const void* buffer, uint64_t length) const;
 
     auto bucket() const -> const std::string& { return bucket_; }
@@ -70,7 +68,7 @@ private:  // members
     std::string bucket_;
     std::string object_;
 
-    std::unique_ptr<S3Client> client_;
+    std::shared_ptr<S3Client> client_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

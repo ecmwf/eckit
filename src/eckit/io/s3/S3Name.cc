@@ -26,11 +26,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Name::S3Name(const URI& uri): client_(S3Client::makeUnique({uri})) {
+S3Name::S3Name(const URI& uri): client_(S3Client::makeShared({uri})) {
     parse(uri.name());
 }
-
-S3Name::~S3Name() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 

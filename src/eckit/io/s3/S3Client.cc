@@ -21,6 +21,20 @@
 
 namespace eckit {
 
+namespace {
+
+inline auto makeSharedS3Client(const S3Types type) -> std::shared_ptr<S3Client> {
+    if (type == S3Types::AWS) { return std::make_shared<S3ClientAWS>(); }
+    throw S3SeriousBug("Unkown S3 client type!", Here());
+}
+
+inline auto makeUniqueS3Client(const S3Types type) -> std::unique_ptr<S3Client> {
+    if (type == S3Types::AWS) { return std::make_unique<S3ClientAWS>(); }
+    throw S3SeriousBug("Unkown S3 client type!", Here());
+}
+
+}  // namespace
+
 //----------------------------------------------------------------------------------------------------------------------
 
 S3Client::S3Client(std::shared_ptr<S3Context> context): context_(context) { }
@@ -29,15 +43,24 @@ S3Client::~S3Client() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3Client::makeUnique(const S3Types type) -> std::unique_ptr<S3Client> {
-    if (type == S3Types::AWS) { return std::make_unique<S3ClientAWS>(); }
-    throw S3SeriousBug("Unkown S3 client type!", Here());
-}
-
-auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
-    auto client = makeUnique(config.type());
+auto S3Client::makeShared(const S3Config& config) -> std::shared_ptr<S3Client> {
+    // if (auto client = makeSharedS3Client(config.type())) {
+    auto client = makeSharedS3Client(config.type());
     client->configure(config);
     return client;
+    // }
+    // throw S3SeriousBug("Unkown S3 client type!", Here());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
+    // if (auto client = makeUniqueS3Client(config.type())) {
+    auto client = makeUniqueS3Client(config.type());
+    client->configure(config);
+    return client;
+    // }
+    // throw S3SeriousBug("Unkown S3 client type!", Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -33,11 +33,9 @@ class S3Context;
 
 class S3Client: private NonCopyable {
 public:  // methods
-    explicit S3Client(std::shared_ptr<S3Context> context);
-
     virtual ~S3Client();
 
-    static auto makeUnique(S3Types type) -> std::unique_ptr<S3Client>;
+    static auto makeShared(const S3Config& config) -> std::shared_ptr<S3Client>;
 
     static auto makeUnique(const S3Config& config) -> std::unique_ptr<S3Client>;
 
@@ -58,7 +56,7 @@ public:  // methods
 
     virtual void putObject(const std::string& bucket, const std::string& object) const = 0;
 
-    virtual void getObject(const std::string& bucket, const std::string& object) const = 0;
+    virtual void getObject(const std::string& bucket, const std::string& object, void* buffer, long length) const = 0;
 
     virtual void deleteObject(const std::string& bucket, const std::string& object) const = 0;
 
@@ -69,6 +67,9 @@ public:  // methods
     virtual auto objectExists(const std::string& bucket, const std::string& object) const -> bool = 0;
 
     virtual auto objectSize(const std::string& bucket, const std::string& object) const -> Length = 0;
+
+protected:  // methods
+    explicit S3Client(std::shared_ptr<S3Context> context);
 
 private:  // members
     std::shared_ptr<S3Context> context_;

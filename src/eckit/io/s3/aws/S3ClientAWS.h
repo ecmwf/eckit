@@ -35,30 +35,30 @@ public:  // methods
 
     void configure(const S3Config& config) override;
 
-    void createBucket(const std::string& bucketName) const override;
+    void createBucket(const std::string& bucket) const override;
 
-    void emptyBucket(const std::string& bucketName) const override;
+    void emptyBucket(const std::string& bucket) const override;
 
-    void deleteBucket(const std::string& bucketName) const override;
+    void deleteBucket(const std::string& bucket) const override;
 
-    auto bucketExists(const std::string& bucketName) const -> bool override;
+    auto bucketExists(const std::string& bucket) const -> bool override;
 
     auto listBuckets() const -> std::vector<std::string> override;
 
-    void putObject(const std::string& bucketName, const std::string& objectName) const override;
+    void putObject(const std::string& bucket, const std::string& object) const override;
 
-    void putObject(const std::string& bucketName, const std::string& objectName, const void* buffer,
+    void putObject(const std::string& bucket, const std::string& object, const void* buffer,
                    const uint64_t length) const override;
 
-    void deleteObject(const std::string& bucketName, const std::string& objectKey) const override;
+    void deleteObject(const std::string& bucket, const std::string& object) const override;
 
-    void deleteObjects(const std::string& bucketName, const std::vector<std::string>& objectKeys) const;
+    void deleteObjects(const std::string& bucket, const std::vector<std::string>& objects) const override;
 
-    auto listObjects(const std::string& bucketName) const -> std::vector<std::string> override;
+    auto listObjects(const std::string& bucket) const -> std::vector<std::string> override;
 
-    auto objectExists(const std::string& bucketName, const std::string& objectKey) const -> bool override;
+    auto objectExists(const std::string& bucket, const std::string& object) const -> bool override;
 
-    auto objectSize(const std::string& bucketName, const std::string& objectKey) const -> Length override;
+    auto objectSize(const std::string& bucket, const std::string& object) const -> Length override;
 
 private:  // members
     std::unique_ptr<Aws::S3::S3Client> client_;

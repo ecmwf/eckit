@@ -43,28 +43,31 @@ public:  // methods
 
     virtual void configure(const S3Config& config) = 0;
 
-    virtual void createBucket(const std::string& bucketName) const = 0;
+    virtual void createBucket(const std::string& bucket) const = 0;
 
-    virtual void emptyBucket(const std::string& bucketName) const = 0;
+    virtual void emptyBucket(const std::string& bucket) const = 0;
 
-    virtual void deleteBucket(const std::string& bucketName) const = 0;
+    virtual void deleteBucket(const std::string& bucket) const = 0;
 
-    virtual auto bucketExists(const std::string& bucketName) const -> bool = 0;
+    virtual auto bucketExists(const std::string& bucket) const -> bool = 0;
 
     virtual auto listBuckets() const -> std::vector<std::string> = 0;
 
-    virtual void putObject(const std::string& bucketName, const std::string& objectName, const void* buffer,
+    virtual void putObject(const std::string& bucket, const std::string& object, const void* buffer,
                            const uint64_t length) const = 0;
 
-    virtual void putObject(const std::string& bucketName, const std::string& objectName) const = 0;
+    virtual void putObject(const std::string& bucket, const std::string& object) const = 0;
 
-    virtual void deleteObject(const std::string& bucketName, const std::string& objectKey) const = 0;
 
-    virtual auto listObjects(const std::string& bucketName) const -> std::vector<std::string> = 0;
+    virtual void deleteObject(const std::string& bucket, const std::string& object) const = 0;
 
-    virtual auto objectExists(const std::string& bucketName, const std::string& objectKey) const -> bool = 0;
+    virtual void deleteObjects(const std::string& bucket, const std::vector<std::string>& objects) const = 0;
 
-    virtual auto objectSize(const std::string& bucketName, const std::string& objectKey) const -> Length = 0;
+    virtual auto listObjects(const std::string& bucket) const -> std::vector<std::string> = 0;
+
+    virtual auto objectExists(const std::string& bucket, const std::string& object) const -> bool = 0;
+
+    virtual auto objectSize(const std::string& bucket, const std::string& object) const -> Length = 0;
 
 private:  // members
     std::shared_ptr<S3Context> context_;

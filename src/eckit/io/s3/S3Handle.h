@@ -20,7 +20,6 @@
 #pragma once
 
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/s3/S3Macros.h"
 #include "eckit/io/s3/S3Name.h"
 
 namespace eckit {
@@ -29,11 +28,9 @@ namespace eckit {
 
 class S3Handle: public DataHandle {
 public:  // methods
-    NO_COPY_NO_MOVE(S3Handle)
-
     explicit S3Handle(const S3Name& name);
 
-    explicit S3Handle(const S3Name& name, const Offset& offset);
+    S3Handle(const S3Name& name, const Offset& offset);
 
     ~S3Handle() override;
 

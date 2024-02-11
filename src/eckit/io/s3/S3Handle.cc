@@ -17,26 +17,16 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/io/s3/S3Exception.h"
-#include "eckit/io/s3/S3Name.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Handle::S3Handle(const S3Name& name): S3Handle(name, 0) {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-}
+S3Handle::S3Handle(const S3Name& name): name_(name) { }
 
-S3Handle::S3Handle(const S3Name& name, const Offset& offset): name_(name), pos_(offset) {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-}
+S3Handle::S3Handle(const S3Name& name, const Offset& offset): name_(name), pos_(offset) { }
 
-S3Handle::~S3Handle() {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-}
+S3Handle::~S3Handle() = default;
 
 void S3Handle::print(std::ostream& out) const {
     out << "S3Handle[name=" << name_ << ",position=" << pos_ << "]";
@@ -45,18 +35,16 @@ void S3Handle::print(std::ostream& out) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 Length S3Handle::openForRead() {
-    LOG_DEBUG_LIB(LibEcKit) << "S3Handle::openForRead" << std::endl;
     canWrite_ = false;
     return name_.size();  // asserts
 }
 
 void S3Handle::openForWrite(const Length&) {
-    LOG_DEBUG_LIB(LibEcKit) << "S3Handle::openForWrite" << std::endl;
     canWrite_ = true;
 }
 
-void S3Handle::openForAppend(const Length& length) {
-    LOG_DEBUG_LIB(LibEcKit) << "S3Handle::openForAppend" << std::endl;
+void S3Handle::openForAppend(const Length&) {
+    NOTIMP;
     canWrite_ = true;
 }
 
@@ -66,27 +54,23 @@ long S3Handle::read(void* buffer, const long length) {
     /// @todo remove
     LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
     return 0;
-    // return object_ ? object_->read(buffer, length, pos_) : 0;
 }
 
 long S3Handle::write(const void* buffer, const long length) {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
     name_.put(buffer, length);
     pos_ += length;
     return length;
 }
 
 void S3Handle::flush() {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
+    NOTIMP;
 }
 
 void S3Handle::close() {
+    /// @todo remove
+    LOG_DEBUG_LIB(LibEcKit) << "close!" << std::endl;
     canWrite_ = false;
     // object_.reset();
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
 }
 
 Length S3Handle::size() {
@@ -98,17 +82,11 @@ Offset S3Handle::position() {
 }
 
 Offset S3Handle::seek(const Offset& offset) {
-    // pos_ = pos_ + offset;
-    // return pos_;
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-    return {};
+    pos_ = pos_ + offset;
+    return pos_;
 }
 
 std::string S3Handle::title() const {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-    // NOTIMP;
     return {};
 }
 

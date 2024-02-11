@@ -29,46 +29,60 @@ const S3Config cfg("eu-central-1", "127.0.0.1", 9000);
 
 //----------------------------------------------------------------------------------------------------------------------
 
+bool findString(const std::vector<std::string>& list, const std::string& item) {
+    return (std::find(list.begin(), list.end(), item) != list.end());
+}
+
 void ensureClean() {
 
     auto client = S3Client::makeUnique(cfg);
     auto&& tmp = client->listBuckets();
     std::set<std::string> buckets(tmp.begin(), tmp.end());
 
-    for (const std::string& name : {"failed-bucket", "test-bucket-1", "test-bucket-2"}) {
+    for (const std::string& name : {"test-bucket-1", "test-bucket-2"}) {
         if (buckets.find(name) != buckets.end()) {
+            client->emptyBucket(name);
             client->deleteBucket(name);
         }
     }
-
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("different types") {
-    EXPECT_THROWS(S3Client::makeUnique(S3Types::NONE));
-    EXPECT_NO_THROW(S3Client::makeUnique(S3Types::AWS));
+    S3Config cfgTmp(cfg);
+
+    cfgTmp.type = S3Types::NONE;
+    EXPECT_THROWS(S3Client::makeUnique(cfgTmp));
+
+    cfgTmp.type = S3Types::AWS;
+    EXPECT_NO_THROW(S3Client::makeUnique(cfgTmp));
+
+    cfgTmp.type = S3Types::REST;
+    EXPECT_THROWS(S3Client::makeUnique(cfgTmp));
 }
 
-CASE("wrong credentials") {
+// CASE("wrong credentials") {
+//     ensureClean();
+//
+//     S3Config cfgTmp(cfg);
+//     cfgTmp.region = "no-region-random";
+//
+//     EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket("failed-bucket"));
+// }
+
+CASE("create bucket in non-existing region") {
     ensureClean();
-    EXPECT_THROWS(S3Client::makeUnique(S3Types::AWS)->createBucket("failed-bucket"));
-}
 
-CASE("create bucket in missing region") {
-    ensureClean();
+    S3Config cfgTmp(cfg);
+    cfgTmp.region = "non-existing-region-random";
 
-    auto config   = cfg;
-    config.setRegion("eu-central-2");
-
-    auto client = S3Client::makeUnique(config);
-
-    EXPECT_THROWS(client->createBucket("test-bucket-1"));
+    EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket("test-bucket-1"));
 }
 
 CASE("create bucket") {
     ensureClean();
+
     auto client = S3Client::makeUnique(cfg);
 
     EXPECT_NO_THROW(client->createBucket("test-bucket-1"));
@@ -79,7 +93,6 @@ CASE("create bucket") {
 }
 
 CASE("list buckets") {
-
     ensureClean();
 
     auto client = S3Client::makeUnique(cfg);
@@ -89,17 +102,17 @@ CASE("list buckets") {
     {
         const auto buckets = client->listBuckets();
 
-        EXPECT_EQUAL(buckets[0], "test-bucket-1");
-        EXPECT_EQUAL(buckets[1], "test-bucket-2");
+        EXPECT(findString(buckets, "test-bucket-1"));
+        EXPECT(findString(buckets, "test-bucket-2"));
 
-        for (auto&& bucket : buckets) {
-            client->deleteBucket(bucket);
-        }
+        EXPECT_NO_THROW(client->deleteBucket("test-bucket-1"));
+        EXPECT_NO_THROW(client->deleteBucket("test-bucket-2"));
     }
 
     {
         const auto buckets = client->listBuckets();
-        EXPECT(buckets.empty());
+        EXPECT_NOT(findString(buckets, "test-bucket-1"));
+        EXPECT_NOT(findString(buckets, "test-bucket-2"));
     }
 
     EXPECT_THROWS(client->deleteBucket("test-bucket-1"));
@@ -117,6 +130,6 @@ int main(int argc, char** argv) {
     auto ret = run_tests(argc, argv);
     try {
         eckit::test::ensureClean();
-    } catch (...) {}
+    } catch (...) { }
     return ret;
 }

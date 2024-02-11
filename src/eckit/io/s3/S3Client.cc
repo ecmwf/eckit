@@ -43,24 +43,33 @@ S3Client::~S3Client() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void S3Client::print(std::ostream& out) const {
+    out << "S3Client[type=";
+    const auto type = context_->getType();
+    if (type == S3Types::AWS) {
+        out << "AWS";
+    } else if (type == S3Types::REST) {
+        out << "REST";
+    } else {
+        out << "REST";
+    }
+    out << "]";
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 auto S3Client::makeShared(const S3Config& config) -> std::shared_ptr<S3Client> {
-    // if (auto client = makeSharedS3Client(config.type())) {
-    auto client = makeSharedS3Client(config.type());
+    auto client = makeSharedS3Client(config.type);
     client->configure(config);
     return client;
-    // }
-    // throw S3SeriousBug("Unkown S3 client type!", Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
-    // if (auto client = makeUniqueS3Client(config.type())) {
-    auto client = makeUniqueS3Client(config.type());
+    auto client = makeUniqueS3Client(config.type);
     client->configure(config);
     return client;
-    // }
-    // throw S3SeriousBug("Unkown S3 client type!", Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

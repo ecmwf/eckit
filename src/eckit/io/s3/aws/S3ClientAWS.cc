@@ -107,6 +107,11 @@ void S3ClientAWS::configure(const S3Config& config) {
     client_ = std::make_unique<Aws::S3::S3Client>(credentials, provider, configuration);
 }
 
+void S3ClientAWS::print(std::ostream& out) const {
+    S3Client::print(out);
+    out << "S3ClientAWS[]";
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 // BUCKET
 

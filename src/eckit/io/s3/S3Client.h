@@ -68,8 +68,15 @@ public:  // methods
 
     virtual auto objectSize(const std::string& bucket, const std::string& object) const -> Length = 0;
 
+    friend std::ostream& operator<<(std::ostream& out, const S3Client& client) {
+        client.print(out);
+        return out;
+    }
+
 protected:  // methods
     explicit S3Client(std::shared_ptr<S3Context> context);
+
+    virtual void print(std::ostream& out) const;
 
 private:  // members
     std::shared_ptr<S3Context> context_;

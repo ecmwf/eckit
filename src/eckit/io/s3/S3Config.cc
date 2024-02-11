@@ -13,39 +13,24 @@
  * (Project ID: 955811) iosea-project.eu
  */
 
-/// @file   S3Config.h
-/// @author Metin Cakircali
-/// @date   Jan 2024
-
-#pragma once
-
-#include "eckit/filesystem/URI.h"
-
-#include <string>
+#include "eckit/io/s3/S3Config.h"
 
 namespace eckit {
 
-enum class S3Types { NONE, AWS, REST };
+//----------------------------------------------------------------------------------------------------------------------
+
+S3Config::S3Config(std::string region, const URI& uri): region(std::move(region)), endpoint(uri) { }
+
+S3Config::S3Config(std::string region, const std::string& hostname, const int port):
+    region(std::move(region)), endpoint(hostname, port) { }
+
+S3Config::S3Config(const URI& uri): endpoint(uri) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct S3Config {
-    /// @todo region is part of hostname (s3express-control.region_code.amazonaws.com/bucket-name)
-    S3Config(std::string region, const URI& uri);
-    S3Config(std::string region, const std::string& hostname, int port);
-    S3Config(const URI& uri);
-
-    friend std::ostream& operator<<(std::ostream& out, const S3Config& config) {
-        config.print(out);
-        return out;
-    }
-
-    void print(std::ostream& out) const;
-
-    S3Types       type {S3Types::AWS};
-    std::string   region {"eu-central-1"};
-    net::Endpoint endpoint {"127.0.0.1", -1};
-};
+void S3Config::print(std::ostream& out) const {
+    out << "S3Config[region=" << region << ",endpoint=" << endpoint << "]";
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

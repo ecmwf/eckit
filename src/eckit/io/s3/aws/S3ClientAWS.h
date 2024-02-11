@@ -62,6 +62,9 @@ public:  // methods
 
     auto objectSize(const std::string& bucket, const std::string& object) const -> Length override;
 
+private:  // methods
+    void print(std::ostream& out) const override;
+
 private:  // members
     std::unique_ptr<Aws::S3::S3Client> client_;
 };

@@ -81,21 +81,21 @@ void S3ClientAWS::configure(const S3Config& config) {
     configuration.disableIMDS = true;
 
     // setup region
-    configuration.region = config.region();
-    if (!config.region().empty()) { configuration.region = config.region(); }
+    // configuration.region = config.region;
+    if (!config.region.empty()) { configuration.region = config.region; }
 
     // configuration.proxyScheme = Aws::Http::Scheme::HTTPS;
     // configuration.verifySSL = false;
 
     // setup endpoint
     /// @todo handle http/https possibly via scheme flag in S3Config
-    const auto& endpoint = config.endpoint();
-    if (!endpoint.host().empty()) { configuration.endpointOverride = "http://" + endpoint.host(); }
-    if (endpoint.port() > 0) { configuration.endpointOverride += ":" + std::to_string(endpoint.port()); }
+    // const auto& endpoint = config.endpoint;
+    if (!config.endpoint.host().empty()) { configuration.endpointOverride = "http://" + config.endpoint.host(); }
+    if (config.endpoint.port() > 0) { configuration.endpointOverride += ":" + std::to_string(config.endpoint.port()); }
 
     // setup credentials
     Aws::Auth::AWSCredentials credentials;
-    if (auto cred = S3Session::instance().getCredentials(endpoint.host())) {
+    if (auto cred = S3Session::instance().getCredentials(config.endpoint.host())) {
         credentials.SetAWSAccessKeyId(cred->keyID);
         credentials.SetAWSSecretKey(cred->secret);
     }

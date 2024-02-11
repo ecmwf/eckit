@@ -54,6 +54,8 @@ public:  // methods
     [[nodiscard]]
     auto dataHandle() -> DataHandle*;
 
+    auto asString() const -> std::string;
+
     friend std::ostream& operator<<(std::ostream& out, const S3Name& name) {
         name.print(out);
         return out;

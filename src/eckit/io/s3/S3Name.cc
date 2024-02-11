@@ -69,6 +69,10 @@ auto S3Name::dataHandle() -> DataHandle* {
     return new S3Handle(*this);
 }
 
+auto S3Name::asString() const -> std::string {
+    return bucket_ + "/" + object_;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

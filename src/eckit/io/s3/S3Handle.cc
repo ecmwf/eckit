@@ -87,7 +87,7 @@ Offset S3Handle::seek(const Offset& offset) {
 }
 
 std::string S3Handle::title() const {
-    return {};
+    return name_.asString();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

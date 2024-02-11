@@ -49,9 +49,9 @@ void S3Handle::openForAppend(const Length&) {
 //----------------------------------------------------------------------------------------------------------------------
 
 long S3Handle::read(void* buffer, const long length) {
-    /// @todo remove
-    LOG_DEBUG_LIB(LibEcKit) << *this << std::endl;
-    return 0;
+    name_.get(buffer, length);
+    pos_ += length;
+    return length;
 }
 
 long S3Handle::write(const void* buffer, const long length) {

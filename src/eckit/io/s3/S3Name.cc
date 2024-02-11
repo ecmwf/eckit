@@ -51,6 +51,10 @@ void S3Name::put(const void* buffer, const uint64_t length) const {
     client_->putObject(bucket_, object_, buffer, length);
 }
 
+void S3Name::get(void* buffer, const uint64_t length) const {
+    client_->getObject(bucket_, object_, buffer, length);
+}
+
 auto S3Name::bucketExists() const -> bool {
     return client_->bucketExists(bucket_);
 }

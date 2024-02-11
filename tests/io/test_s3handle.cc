@@ -30,7 +30,10 @@ namespace eckit::test {
 
 S3Config cfg("eu-central-1", "127.0.0.1", 9000);
 
+constexpr std::string_view TEST_DATA = "abcdefghijklmnopqrstuvwxyz";
+
 static const std::string TEST_BUCKET("eckit-s3handle-test-bucket");
+static const std::string TEST_OBJECT("eckit-s3handle-test-object");
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -54,28 +57,29 @@ void bucketSetup() {
 }
 
 CASE("S3Handle") {
-    const std::string_view testData = "abcdefghijklmnopqrstuvwxyz";
+    const void* buffer = TEST_DATA.data();
+    const auto  length = TEST_DATA.size();
 
-    const void* buffer = testData.data();
-    const auto  length = testData.size();
+    std::cout << "write buffer: " << TEST_DATA << std::endl;
 
-    URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/test-object");
+    URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     {
         S3Name name(uri);
 
-        std::unique_ptr<DataHandle> h {name.dataHandle()};
+        std::unique_ptr<DataHandle> h(name.dataHandle());
         h->openForWrite(length);
         AutoClose closer(*h);
         EXPECT(h->write(buffer, length) == length);
     }
 
     {
-        auto h = uri.newReadHandle();
+        std::unique_ptr<DataHandle> h(uri.newReadHandle());
         h->openForRead();
         std::string rbuf;
+        std::cout << "read buffer: " << rbuf << std::endl;
         h->read(rbuf.data(), length);
-        std::cout << rbuf << std::endl;
+        std::cout << "read buffer: " << rbuf << std::endl;
     }
 
     {

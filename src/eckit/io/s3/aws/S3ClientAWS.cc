@@ -38,6 +38,10 @@
 #include <iostream>
 #include <memory>
 
+namespace eckit {
+
+const auto ALLOC_TAG = "S3ClientAWS";
+
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
@@ -48,11 +52,16 @@ inline std::string awsErrorMessage(const std::string& msg, const Aws::S3::S3Erro
     return oss.str();
 }
 
+class BufferIOStream: public Aws::IOStream {
+public:
+    /// @todo reinterpret_cast
+    BufferIOStream(void* buffer, uint64_t size):
+        Aws::IOStream(new Aws::Utils::Stream::PreallocatedStreamBuf(reinterpret_cast<unsigned char*>(buffer), size)) { }
+
+    ~BufferIOStream() override { delete rdbuf(); }
+};
+
 }  // namespace
-
-namespace eckit {
-
-const auto ALLOC_TAG = "S3ClientAWS";
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -164,9 +173,8 @@ void S3ClientAWS::putObject(const std::string& bucket, const std::string& object
     request.SetKey(object);
     // request.SetContentLength(length);
 
-    auto* sBuffer = Aws::New<Aws::Utils::Stream::PreallocatedStreamBuf>(ALLOC_TAG, (unsigned char*)buffer, length);
-    auto  sReader = Aws::MakeShared<Aws::IOStream>(ALLOC_TAG, sBuffer);
-    request.SetBody(sReader);
+    auto streamBuffer = Aws::MakeShared<BufferIOStream>(ALLOC_TAG, const_cast<void*>(buffer), length);
+    request.SetBody(streamBuffer);
 
     auto outcome = client_->PutObject(request);
 
@@ -202,11 +210,17 @@ void S3ClientAWS::getObject(const std::string& bucket, const std::string& object
 
     request.SetBucket(bucket);
     request.SetKey(object);
+    request.SetResponseStreamFactory([buffer, length]() { return Aws::New<BufferIOStream>(ALLOC_TAG, buffer, length); });
 
     auto outcome = client_->GetObject(request);
 
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Retrieved object=" << object << " from bucket=" << bucket << std::endl;
+        // const auto& body = outcome.GetResult().GetBody();
+
+        // buffer = body.rdbuf();
+
+        // objectStream << body.rdbuf();
     } else {
         auto msg = awsErrorMessage("Failed to retrieve object=" + object + " to bucket=" + bucket, outcome.GetError());
         throw S3SeriousBug(msg, Here());

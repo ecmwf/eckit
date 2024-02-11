@@ -39,6 +39,8 @@ public:  // methods
 
     void put(const void* buffer, uint64_t length) const;
 
+    void get(void* buffer, const uint64_t length) const;
+
     auto bucket() const -> const std::string& { return bucket_; }
 
     auto object() const -> const std::string& { return object_; }

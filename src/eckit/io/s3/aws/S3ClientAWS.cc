@@ -29,6 +29,7 @@
 #include <aws/s3/model/DeleteBucketRequest.h>
 #include <aws/s3/model/DeleteObjectRequest.h>
 #include <aws/s3/model/DeleteObjectsRequest.h>
+#include <aws/s3/model/GetObjectRequest.h>
 #include <aws/s3/model/HeadBucketRequest.h>
 #include <aws/s3/model/HeadObjectRequest.h>
 #include <aws/s3/model/ListObjectsRequest.h>
@@ -196,7 +197,20 @@ void S3ClientAWS::putObject(const std::string& bucket, const std::string& object
     }
 }
 
-void S3ClientAWS::deleteObject(const std::string& bucketName, const std::string& objectKey) const {
+void S3ClientAWS::getObject(const std::string& bucket, const std::string& object) const {
+    Aws::S3::Model::GetObjectRequest request;
+    request.SetBucket(bucket);
+    request.SetKey(object);
+
+    auto outcome = client_->GetObject(request);
+
+    if (outcome.IsSuccess()) {
+        LOG_DEBUG_LIB(LibEcKit) << "Retrieved object=" << object << " from bucket=" << bucket << std::endl;
+    } else {
+        auto msg = awsErrorMessage("Failed to retrieve object=" + object + " to bucket=" + bucket, outcome.GetError());
+        throw S3SeriousBug(msg, Here());
+    }
+}
 
 void S3ClientAWS::deleteObject(const std::string& bucket, const std::string& object) const {
     Aws::S3::Model::DeleteObjectRequest request;

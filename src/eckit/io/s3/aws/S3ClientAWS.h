@@ -47,6 +47,8 @@ public:  // methods
 
     void putObject(const std::string& bucket, const std::string& object) const override;
 
+    void getObject(const std::string& bucket, const std::string& object) const override;
+
     void putObject(const std::string& bucket, const std::string& object, const void* buffer,
                    const uint64_t length) const override;
 

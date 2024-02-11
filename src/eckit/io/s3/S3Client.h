@@ -58,6 +58,7 @@ public:  // methods
 
     virtual void putObject(const std::string& bucket, const std::string& object) const = 0;
 
+    virtual void getObject(const std::string& bucket, const std::string& object) const = 0;
 
     virtual void deleteObject(const std::string& bucket, const std::string& object) const = 0;
 

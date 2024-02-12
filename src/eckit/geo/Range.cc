@@ -56,6 +56,16 @@ double pole_snap(double lat, double _eps) {
 }
 
 
+Fraction regular_adjust(const Fraction& target, const Fraction& inc, bool up) {
+    ASSERT(inc > 0);
+
+    auto r = target / inc;
+    auto n = r.integralPart() + ((r.integer() || (r > 0) != up) ? 0 : up ? 1 : -1);
+
+    return n * inc;
+};
+
+
 }  // namespace
 
 
@@ -113,19 +123,6 @@ RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) 
 
 RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double crop_a, double crop_b, double _eps) :
     Range(n, _a, types::is_approximately_equal(_a, _b, _eps) ? _a : _b, _eps) {
-    auto adjust = [](const Fraction& target, const Fraction& inc, bool up) -> Fraction {
-        ASSERT(inc > 0);
-
-        auto r = target / inc;
-        auto n = r.integralPart();
-
-        if (!r.integer() && (target > 0) == up) {
-            n += (up ? 1 : -1);
-        }
-
-        return (n * inc);
-    };
-
     // adjust range limits, before cropping
     if (types::is_approximately_equal(a(), b(), eps())) {
         resize(1);
@@ -136,27 +133,6 @@ RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double crop_a
         if (auto x = PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB, d = x - a();
             (periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n)))) {
             b(a() + 360.);
-
-            crop_b = PointLonLat::normalise_angle_to_minimum(crop_b - DB, crop_a) + DB;
-
-            Fraction inc((b() - a()) / static_cast<double>(periodic_ ? n : (n - 1)));
-            auto da = (Fraction(a()) / inc).decimalPart() * inc;
-            auto af = adjust(crop_a - da, inc, true) + da;
-            auto bf = adjust(crop_b - da, inc, false) + da;
-
-            if (bf - af + inc >= 360) {
-                a(af);
-                b(af + 360);
-            }
-            else {
-                a(af);
-                b(bf);
-
-                auto nf = (bf - af) / inc;
-                ASSERT(nf.integer() && 0 < nf && nf <= n);
-                resize(static_cast<size_t>(nf.integralPart()) + 1);
-                periodic_ = false;
-            }
         }
         else {
             b(x);
@@ -176,6 +152,29 @@ RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double crop_a
 
             NOTIMP;  // FIXME
         }
+    }
+
+
+    // crop
+    crop_b = PointLonLat::normalise_angle_to_minimum(crop_b - DB, crop_a) + DB;
+
+    Fraction inc((b() - a()) / static_cast<double>(periodic_ ? n : (n - 1)));
+    auto da = (Fraction(a()) / inc).decimalPart() * inc;
+    auto af = regular_adjust(crop_a - da, inc, true) + da;
+    auto bf = regular_adjust(crop_b - da, inc, false) + da;
+
+    if (bf - af + inc >= 360) {
+        a(af);
+        b(af + 360);
+    }
+    else {
+        a(af);
+        b(bf);
+
+        auto nf = (bf - af) / inc;
+        ASSERT(nf.integer() && 0 < nf && nf <= n);
+        resize(static_cast<size_t>(nf.integralPart()) + 1);
+        periodic_ = false;
     }
 }
 

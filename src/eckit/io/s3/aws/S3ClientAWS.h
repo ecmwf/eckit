@@ -47,10 +47,14 @@ public:  // methods
 
     void putObject(const std::string& bucket, const std::string& object) const override;
 
-    void getObject(const std::string& bucket, const std::string& object, void* buffer, long length) const override;
+    auto putObject(const std::string& bucket, const std::string& object, const void* buffer, uint64_t length) const
+        -> long long override;
 
-    void putObject(const std::string& bucket, const std::string& object, const void* buffer,
-                   const uint64_t length) const override;
+    auto getObject(const std::string& bucket, const std::string& object, void* buffer, const uint64_t offset,
+                   const uint64_t length) const -> long long override;
+
+    auto getObject(const std::string& bucket, const std::string& object, void* buffer, uint64_t length) const
+        -> long long override;
 
     void deleteObject(const std::string& bucket, const std::string& object) const override;
 

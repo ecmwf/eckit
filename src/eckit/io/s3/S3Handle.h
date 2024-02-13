@@ -48,22 +48,25 @@ public:  // methods
 
     Length size() override;
 
+    Length estimate() override;
+
     Offset position() override;
 
     Offset seek(const Offset& offset) override;
-
-    std::string title() const override;
 
     bool canSeek() const override { return true; }
 
 private:  // methods
     void print(std::ostream& out) const override;
 
+    void open(const Offset& position);
+
 private:  // members
     const S3Name name_;
 
     Offset pos_ {0};
 
+    bool open_ {false};
     bool canWrite_ {false};
 };
 

@@ -34,11 +34,12 @@ S3Name::S3Name(const URI& uri): client_(S3Client::makeShared({uri})) {
 
 void S3Name::parse(const std::string& path) {
     const auto pairs = Tokenizer("/").tokenize(path);
+    const auto pSize = pairs.size();
 
-    ASSERT(pairs.size() == 2);
+    ASSERT(pSize == 1 || pSize == 2);
 
-    bucket_ = pairs[0];
-    object_ = pairs[1];
+    if (pSize > 0) { bucket_ = pairs[0]; }
+    if (pSize > 1) { object_ = pairs[1]; }
 }
 
 void S3Name::print(std::ostream& out) const {
@@ -47,12 +48,16 @@ void S3Name::print(std::ostream& out) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void S3Name::put(const void* buffer, const uint64_t length) const {
-    client_->putObject(bucket_, object_, buffer, length);
+auto S3Name::put(const void* buffer, const long length) const -> long {
+    return client_->putObject(bucket_, object_, buffer, length);
 }
 
-void S3Name::get(void* buffer, const uint64_t length) const {
-    client_->getObject(bucket_, object_, buffer, length);
+auto S3Name::get(void* buffer, const long offset, const long length) const -> long {
+    return client_->getObject(bucket_, object_, buffer, offset, length);
+}
+
+auto S3Name::get(void* buffer, const long length) const -> long {
+    return client_->getObject(bucket_, object_, buffer, length);
 }
 
 auto S3Name::bucketExists() const -> bool {

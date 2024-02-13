@@ -51,12 +51,16 @@ public:  // methods
 
     virtual auto listBuckets() const -> std::vector<std::string> = 0;
 
-    virtual void putObject(const std::string& bucket, const std::string& object, const void* buffer,
-                           const uint64_t length) const = 0;
-
     virtual void putObject(const std::string& bucket, const std::string& object) const = 0;
 
-    virtual void getObject(const std::string& bucket, const std::string& object, void* buffer, long length) const = 0;
+    virtual auto putObject(const std::string& bucket, const std::string& object, const void* buffer,
+                           uint64_t length) const -> long long = 0;
+
+    virtual auto getObject(const std::string& bucket, const std::string& object, void* buffer, uint64_t length) const
+        -> long long = 0;
+
+    virtual auto getObject(const std::string& bucket, const std::string& object, void* buffer, uint64_t offset,
+                           uint64_t length) const -> long long = 0;
 
     virtual void deleteObject(const std::string& bucket, const std::string& object) const = 0;
 

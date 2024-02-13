@@ -67,7 +67,7 @@ void S3Handle::openForAppend(const Length& length) {
 //----------------------------------------------------------------------------------------------------------------------
 
 long S3Handle::read(void* buffer, const long length) {
-    if (!open_) { throw S3SeriousBug("S3 object is not writable!", Here()); }
+    if (!open_) { throw S3SeriousBug("S3 handle is not open!", Here()); }
 
     long len = 0;
     if (pos_ == Offset(0)) {
@@ -84,7 +84,7 @@ long S3Handle::read(void* buffer, const long length) {
 long S3Handle::write(const void* buffer, const long length) {
     ASSERT(!name_.exists());
 
-    if (!open_ || !canWrite_) { throw S3SeriousBug("S3 object is not writable!", Here()); }
+    if (!open_ || !canWrite_) { throw S3SeriousBug("S3 handle is not writable!", Here()); }
 
     const auto len = name_.put(buffer, length);
 

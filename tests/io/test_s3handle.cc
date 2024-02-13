@@ -14,6 +14,7 @@
 /// @date   Jan 2024
 
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Handle.h"
@@ -58,7 +59,7 @@ void bucketSetup() {
 
 CASE("S3Handle") {
     const void* buffer = TEST_DATA.data();
-    const auto  length = TEST_DATA.size();
+    const long  length = TEST_DATA.size();
 
     std::cout << "write buffer: " << TEST_DATA << std::endl;
 
@@ -76,15 +77,21 @@ CASE("S3Handle") {
     {
         std::unique_ptr<DataHandle> h(uri.newReadHandle());
         h->openForRead();
+
         std::string rbuf;
-        std::cout << "read buffer: " << rbuf << std::endl;
-        h->read(rbuf.data(), length);
-        std::cout << "read buffer: " << rbuf << std::endl;
+        rbuf.resize(length);
+
+        const auto len = h->read(rbuf.data(), length);
+
+        EXPECT(len == length);
+        EXPECT(rbuf == TEST_DATA);
     }
 
     {
         std::unique_ptr<DataHandle> dh(uri.newReadHandle());
-        MemoryHandle mh;
+
+        MemoryHandle mh(length);
+        /// @todo this creates issues because internal buffer size is set to 64*1024*1024
         dh->saveInto(mh);
 
         EXPECT(mh.size() == Length(length));

@@ -89,6 +89,11 @@ GaussianLatitude::GaussianLatitude(size_t N, double _a, double _b, double _eps) 
 }
 
 
+Range* GaussianLatitude::crop(double crop_a, double crop_b) const {
+    NOTIMP;  // FIXME
+}
+
+
 const std::vector<double>& GaussianLatitude::values() const {
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
@@ -98,83 +103,48 @@ const std::vector<double>& GaussianLatitude::values() const {
 
 RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) :
     Range(n, _a, types::is_approximately_equal(_a, _b, _eps) ? _a : _b, _eps) {
-    // adjust range limits, before cropping
     if (types::is_approximately_equal(a(), b(), eps())) {
         resize(1);
         periodic_ = false;
         values_   = {a()};
     }
     else if (a() < b()) {
-        auto x = PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB;
-        auto d = x - a();
-
-        periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n));
-        b(periodic_ ? a() + 360. : x);
+        auto new_b = PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB;
+        periodic_  = types::is_approximately_lesser_or_equal(360., (new_b - a()) * (1. + 1. / static_cast<double>(n)));
+        b(periodic_ ? a() + 360. : new_b);
     }
     else {
-        auto x = PointLonLat::normalise_angle_to_maximum(b() + DB, a()) - DB;
-        auto d = a() - x;
-
-        periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n));
-        b(periodic_ ? a() - 360. : x);
+        auto new_b = PointLonLat::normalise_angle_to_maximum(b() + DB, a()) - DB;
+        periodic_  = types::is_approximately_lesser_or_equal(360., (a() - new_b) * (1. + 1. / static_cast<double>(n)));
+        b(periodic_ ? a() - 360. : new_b);
     }
 }
 
 
-RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double crop_a, double crop_b, double _eps) :
-    Range(n, _a, types::is_approximately_equal(_a, _b, _eps) ? _a : _b, _eps) {
-    // adjust range limits, before cropping
-    if (types::is_approximately_equal(a(), b(), eps())) {
-        resize(1);
-        periodic_ = false;
-        values_   = {a()};
-    }
-    else if (a() < b()) {
-        if (auto x = PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB, d = x - a();
-            (periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n)))) {
-            b(a() + 360.);
-        }
-        else {
-            b(x);
-
-            NOTIMP;  // FIXME
-        }
-    }
-    else {
-        if (auto x = PointLonLat::normalise_angle_to_maximum(b() + DB, a()) - DB, d = a() - x;
-            (periodic_ = types::is_approximately_lesser_or_equal(360., d + d / static_cast<double>(n)))) {
-            b(a() - 360.);
-
-            NOTIMP;  // FIXME
-        }
-        else {
-            b(x);
-
-            NOTIMP;  // FIXME
-        }
-    }
-
-
-    // crop
+Range* RegularLongitude::crop(double crop_a, double crop_b) const {
+    auto n = size();
     crop_b = PointLonLat::normalise_angle_to_minimum(crop_b - DB, crop_a) + DB;
 
-    Fraction inc((b() - a()) / static_cast<double>(periodic_ ? n : (n - 1)));
-    auto da = (Fraction(a()) / inc).decimalPart() * inc;
-    auto af = regular_adjust(crop_a - da, inc, true) + da;
-    auto bf = regular_adjust(crop_b - da, inc, false) + da;
-
-    if (bf - af + inc >= 360) {
-        a(af);
-        b(af + 360);
+    if (types::is_approximately_equal(crop_a, crop_b, eps())) {
+        NOTIMP;  // FIXME
     }
-    else {
-        a(af);
-        b(bf);
+    else if (crop_a < crop_b) {
+        Fraction inc((b() - a()) / static_cast<double>(periodic_ ? n : (n - 1)));
+        auto da = (Fraction(a()) / inc).decimalPart() * inc;
+        auto af = regular_adjust(crop_a - da, inc, true) + da;
+        auto bf = regular_adjust(crop_b - da, inc, false) + da;
+
+        if (bf - af + inc >= 360) {
+            return new RegularLongitude(n, af, af + 360);
+        }
 
         auto nf = (bf - af) / inc;
-        ASSERT(nf.integer() && 0 < nf && nf <= n);
-        resize(static_cast<size_t>(nf.integralPart()) + 1);
-        periodic_ = false;
+        ASSERT(nf.integer() && nf <= n);
+
+        return new RegularLongitude(static_cast<size_t>(nf.integralPart() + 1), af, bf);
+    }
+    else {
+        NOTIMP;  // FIXME
     }
 }
 

@@ -41,7 +41,8 @@ public:
     double b() const { return b_; }
     double eps() const { return eps_; }
 
-    virtual const std::vector<double>& values() const = 0;
+    virtual Range* crop(double crop_a, double crop_b) const = 0;
+    virtual const std::vector<double>& values() const       = 0;
 
 protected:
     // -- Constructors
@@ -80,6 +81,7 @@ public:
 
     // -- Overridden methods
 
+    Range* crop(double crop_a, double crop_b) const override;
     const std::vector<double>& values() const override;
 
 private:
@@ -95,10 +97,10 @@ public:
     // -- Constructors
 
     RegularLongitude(size_t n, double a, double b, double eps = 0.);
-    RegularLongitude(size_t n, double a, double b, double crop_a, double crop_b, double eps = 0.);
 
     // -- Overridden methods
 
+    Range* crop(double crop_a, double crop_b) const override;
     const std::vector<double>& values() const override;
 
 private:

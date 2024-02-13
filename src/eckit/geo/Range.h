@@ -15,6 +15,11 @@
 #include <vector>
 
 
+namespace eckit {
+class Fraction;
+}
+
+
 namespace eckit::geo {
 
 
@@ -41,6 +46,7 @@ public:
     double b() const { return b_; }
     double eps() const { return eps_; }
 
+    virtual Range* flip() const                             = 0;
     virtual Range* crop(double crop_a, double crop_b) const = 0;
     virtual const std::vector<double>& values() const       = 0;
 
@@ -70,10 +76,7 @@ class GaussianLatitude final : public Range {
 public:
     // -- Constructors
 
-    explicit GaussianLatitude(size_t N, double eps = 0.) :
-        GaussianLatitude(N, 90., -90., eps) {}
-
-    GaussianLatitude(size_t N, double crop_a, double crop_b, double eps = 0.);
+    explicit GaussianLatitude(size_t N, bool increasing, double eps = 0.);
 
     // -- Methods
 
@@ -81,10 +84,16 @@ public:
 
     // -- Overridden methods
 
+    Range* flip() const override;
     Range* crop(double crop_a, double crop_b) const override;
     const std::vector<double>& values() const override;
 
 private:
+    // -- Constructors
+
+    GaussianLatitude(size_t N, std::vector<double>&& values, double _eps) :
+        Range(values.size(), values.front(), values.back(), _eps), N_(N), values_(values) {}
+
     // -- Members
 
     const size_t N_;
@@ -98,16 +107,38 @@ public:
 
     RegularLongitude(size_t n, double a, double b, double eps = 0.);
 
+    // -- Methods
+    bool periodic() const { return periodic_ != NonPeriodic; }
+
     // -- Overridden methods
 
+    Range* flip() const override;
     Range* crop(double crop_a, double crop_b) const override;
     const std::vector<double>& values() const override;
 
 private:
+    // -- Types
+
+    enum Periodic
+    {
+        NonPeriodic = 0,
+        PeriodicNoEndPoint,
+        PeriodicNoStartPoint
+    };
+
+    // -- Constructors
+
+    RegularLongitude(size_t n, double a, double b, Periodic periodic, double eps) :
+        Range(n, a, b, eps), periodic_(periodic) {}
+
     // -- Members
 
-    bool periodic_;
+    Periodic periodic_;
     std::vector<double> values_;
+
+    // -- Methods
+
+    Fraction increment() const;
 };
 
 

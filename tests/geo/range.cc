@@ -41,6 +41,7 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
 
 
 CASE("range::RegularLongitude") {
+#if 1
     SECTION("degenerate") {
         EXPECT_THROWS_AS(range::RegularLongitude(0, 0., 0.), eckit::AssertionFailed);
         EXPECT_THROWS_AS(range::RegularLongitude(0, 0., 10.), eckit::AssertionFailed);
@@ -120,8 +121,10 @@ CASE("range::RegularLongitude") {
         EXPECT(range3->size() == 36 - 1);
         EXPECT(range3->b() == 160.);
     }
+#endif
 
 
+#if 1
     SECTION("range [0, 180], cropped") {
         auto range = range::RegularLongitude(19, 0., 180.);
         const std::unique_ptr<Range> range1(range.crop(1., 181.));
@@ -143,15 +146,17 @@ CASE("range::RegularLongitude") {
         // EXPECT(range3->a() == 180.);
         // EXPECT(range3->b() == 160.);
     }
+#endif
 }
 
 
+#if 1
 CASE("range::Gaussian") {
     std::vector<double> ref{59.44440828916676, 19.87571914744090, -19.87571914744090, -59.44440828916676};
 
 
     SECTION("global") {
-        auto global = range::GaussianLatitude(2);
+        auto global = range::GaussianLatitude(2, false);
         EXPECT(global.size() == ref.size());
 
         size_t i = 0;
@@ -162,33 +167,32 @@ CASE("range::Gaussian") {
 
 
     SECTION("crop [50., -50.]") {
-        auto cropped = range::GaussianLatitude(2, 50., -50., EPS);
-        EXPECT(cropped.size() == ref.size() - 2);
+        std::unique_ptr<Range> cropped(range::GaussianLatitude(2, false).crop(50., -50.));
+        EXPECT(cropped->size() == ref.size() - 2);
 
-        EXPECT_APPROX(cropped.values()[0], ref[1], EPS);
-        EXPECT_APPROX(cropped.values()[1], ref[2], EPS);
+        EXPECT_APPROX(cropped->values()[0], ref[1], EPS);
+        EXPECT_APPROX(cropped->values()[1], ref[2], EPS);
 
-        EXPECT(range::GaussianLatitude(2, 59.444, -59.444, 1e-3).size() == 4);
-        EXPECT(range::GaussianLatitude(2, 59.444, -59.444, 1e-6).size() == 2);
-        EXPECT(range::GaussianLatitude(2, 59.444, -59.445, 1e-6).size() == 3);
+        EXPECT(std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-3).crop(59.444, -59.444))->size() == 4);
+        EXPECT(std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).crop(59.444, -59.444))->size() == 2);
+        EXPECT(std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).crop(59.444, -59.445))->size() == 3);
 
-        auto single = range::GaussianLatitude(2, -59.444, -59.444, EPS);
-        EXPECT(single.size() == 1);
+        std::unique_ptr<Range> single(range::GaussianLatitude(2, false, EPS).crop(-59.444, -59.444));
+        EXPECT(single->size() == 1);
 
-        EXPECT_APPROX(single.values().front(), ref.back(), EPS);
+        EXPECT_APPROX(single->values().front(), ref.back(), EPS);
     }
 
 
     SECTION("crop [90., 0.]") {
-        constexpr auto eps = 1e-3;
+        std::unique_ptr<Range> cropped(range::GaussianLatitude(2, false, EPS).crop(90., 0.));
+        EXPECT(cropped->size() == ref.size() / 2);
 
-        auto cropped = range::GaussianLatitude(2, 90., 0., eps);
-        EXPECT(cropped.size() == ref.size() / 2);
-
-        EXPECT_APPROX(cropped.values()[0], ref[0], eps);
-        EXPECT_APPROX(cropped.values()[1], ref[1], eps);
+        EXPECT_APPROX(cropped->values()[0], ref[0], EPS);
+        EXPECT_APPROX(cropped->values()[1], ref[1], EPS);
     }
 }
+#endif
 
 
 }  // namespace eckit::test

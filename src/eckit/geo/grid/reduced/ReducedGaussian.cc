@@ -29,7 +29,7 @@ ReducedGaussian::ReducedGaussian(const Spec& spec) :
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox), pl_(pl), j_(0), Nj_(N * 2), y_(new range::GaussianLatitude(N, bbox.north, bbox.south)) {
+    Reduced(bbox), pl_(pl), j_(0), Nj_(N * 2), y_(range::GaussianLatitude(N, false).crop(bbox.north, bbox.south)) {
     ASSERT(y_);
 }
 

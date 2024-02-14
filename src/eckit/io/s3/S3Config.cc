@@ -26,6 +26,8 @@ S3Config::S3Config(std::string region, const std::string& hostname, const int po
 
 S3Config::S3Config(const URI& uri): endpoint(uri) { }
 
+S3Config::S3Config(const net::Endpoint& e): endpoint(e) { }
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void S3Config::print(std::ostream& out) const {

@@ -34,6 +34,7 @@ struct S3Config {
     S3Config(std::string region, const URI& uri);
     S3Config(std::string region, const std::string& hostname, int port);
     S3Config(const URI& uri);
+    S3Config(const net::Endpoint&);
 
     friend std::ostream& operator<<(std::ostream& out, const S3Config& config) {
         config.print(out);

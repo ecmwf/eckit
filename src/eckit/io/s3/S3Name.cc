@@ -20,6 +20,7 @@
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Handle.h"
+#include "eckit/io/s3/S3Bucket.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
@@ -29,6 +30,9 @@ namespace eckit {
 S3Name::S3Name(const URI& uri): client_(S3Client::makeShared({uri})) {
     parse(uri.name());
 }
+
+S3Name::S3Name(const eckit::S3Bucket& bucket, const std::string& key) : 
+    bucket_(bucket.name()), object_(key) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

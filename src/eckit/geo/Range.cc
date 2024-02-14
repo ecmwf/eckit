@@ -144,30 +144,29 @@ Range* RegularLongitude::crop(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
            (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
 
-    auto n = size();
-    crop_b = PointLonLat::normalise_angle_to_minimum(crop_b - DB, crop_a) + DB;
-
     if (types::is_approximately_equal(crop_a, crop_b, eps())) {
         NOTIMP;  // FIXME
     }
     else if (a() < b()) {
+        ASSERT(a() <= crop_a && crop_b <= b());  // FIXME do better
+
         auto inc(increment());
-        auto da = (a() / inc).decimalPart() * inc;
-        auto af = regular_adjust(crop_a - da, inc, true) + da;
-        auto bf = regular_adjust(crop_b - da, inc, false) + da;
+        auto d  = (a() / inc).decimalPart() * inc;
+        auto _a = regular_adjust(crop_a - d, inc, true) + d;
+        auto _b = regular_adjust(crop_b - d, inc, false) + d;
 
-        if (bf - af + inc >= 360) {
-            return new RegularLongitude(n, af, af + 360);
-        }
+        auto nf = (_b - _a) / inc;
+        ASSERT(nf.integer());
 
-        auto nf = (bf - af) / inc;
-        ASSERT(nf.integer() && nf <= n);
+        auto n = static_cast<size_t>(nf.integralPart() + (nf * inc >= 360 ? 0 : 1));
+        ASSERT(0 < n && n <= size());
 
-        return new RegularLongitude(static_cast<size_t>(nf.integralPart() + 1), af, bf);
+        return new RegularLongitude(n, _a, _b);
     }
     else {
         NOTIMP;  // FIXME
     }
+    NOTIMP;
 }
 
 

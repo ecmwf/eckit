@@ -53,9 +53,6 @@ public:  // methods
     auto getObject(const std::string& bucket, const std::string& object, void* buffer, const uint64_t offset,
                    const uint64_t length) const -> long long override;
 
-    auto getObject(const std::string& bucket, const std::string& object, void* buffer, uint64_t length) const
-        -> long long override;
-
     void deleteObject(const std::string& bucket, const std::string& object) const override;
 
     void deleteObjects(const std::string& bucket, const std::vector<std::string>& objects) const override;

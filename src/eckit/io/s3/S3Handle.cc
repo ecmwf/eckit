@@ -51,15 +51,11 @@ Length S3Handle::openForRead() {
 void S3Handle::openForWrite(const Length& length) {
     open(Offset(length));
 
-    pos_ += length;
-
     canWrite_ = true;
 }
 
 void S3Handle::openForAppend(const Length& length) {
     open(Offset(length));
-
-    pos_ += length;
 
     canWrite_ = true;
 }
@@ -69,12 +65,7 @@ void S3Handle::openForAppend(const Length& length) {
 long S3Handle::read(void* buffer, const long length) {
     if (!open_) { throw S3SeriousBug("S3 handle is not open!", Here()); }
 
-    long len = 0;
-    if (pos_ == Offset(0)) {
-        len = name_.get(buffer, length);
-    } else if (pos_ > Offset(0)) {
-        len = name_.get(buffer, pos_, length);
-    }
+    const auto len = name_.get(buffer, pos_, length);
 
     pos_ += len;
 

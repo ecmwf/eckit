@@ -39,9 +39,7 @@ public:  // methods
 
     auto put(const void* buffer, long length) const -> long;
 
-    auto get(void* buffer, long length) const -> long;
-
-    auto get(void* buffer, const long offset, const long length) const -> long;
+    auto get(void* buffer, long offset, long length) const -> long;
 
     auto bucket() const -> const std::string& { return bucket_; }
 

@@ -31,8 +31,7 @@ S3Name::S3Name(const URI& uri): client_(S3Client::makeShared({uri})) {
     parse(uri.name());
 }
 
-S3Name::S3Name(const eckit::S3Bucket& bucket, const std::string& key) : 
-    bucket_(bucket.name()), object_(key) {}
+S3Name::S3Name(const eckit::S3Bucket& bucket, const std::string& key): bucket_(bucket.name()), object_(key) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -51,11 +50,6 @@ void S3Name::print(std::ostream& out) const {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
-// auto S3Name::create() const -> Length {
-//     if (exists()) { return size(); }
-//     return client_->putObject(bucket_, object_, nullptr, 0);
-// }
 
 auto S3Name::put(const void* buffer, const long length) const -> Length {
     return client_->putObject(bucket_, object_, buffer, length);

@@ -18,32 +18,39 @@ namespace eckit::geo {
 
 enum Ordering
 {
-    regular_scan_i_positively_j_negatively_ij_i_single_direction,
-    regular_scan_i_negatively_j_negatively_ij_i_single_direction,
-    regular_scan_i_positively_j_positively_ij_i_single_direction,
-    regular_scan_i_negatively_j_positively_ij_i_single_direction,
-    regular_scan_i_positively_j_negatively_ji_i_single_direction,
-    regular_scan_i_negatively_j_negatively_ji_i_single_direction,
-    regular_scan_i_positively_j_positively_ji_i_single_direction,
-    regular_scan_i_negatively_j_positively_ji_i_single_direction,
-    regular_scan_i_positively_j_negatively_ij_i_alternating_direction,
-    regular_scan_i_negatively_j_negatively_ij_i_alternating_direction,
-    regular_scan_i_positively_j_positively_ij_i_alternating_direction,
-    regular_scan_i_negatively_j_positively_ij_i_alternating_direction,
-    regular_scan_i_positively_j_negatively_ji_i_alternating_direction,
-    regular_scan_i_negatively_j_negatively_ji_i_alternating_direction,
-    regular_scan_i_positively_j_positively_ji_i_alternating_direction,
-    regular_scan_i_negatively_j_positively_ji_i_alternating_direction,
-    // TODO regular_scan_ ... shift
+    regular_i_positively_j_negatively_ij_i_single_direction,
+    regular_i_negatively_j_negatively_ij_i_single_direction,
+    regular_i_positively_j_positively_ij_i_single_direction,
+    regular_i_negatively_j_positively_ij_i_single_direction,
+    regular_i_positively_j_negatively_ji_i_single_direction,
+    regular_i_negatively_j_negatively_ji_i_single_direction,
+    regular_i_positively_j_positively_ji_i_single_direction,
+    regular_i_negatively_j_positively_ji_i_single_direction,
+    regular_i_positively_j_negatively_ij_i_alternating_direction,
+    regular_i_negatively_j_negatively_ij_i_alternating_direction,
+    regular_i_positively_j_positively_ij_i_alternating_direction,
+    regular_i_negatively_j_positively_ij_i_alternating_direction,
+    regular_i_positively_j_negatively_ji_i_alternating_direction,
+    regular_i_negatively_j_negatively_ji_i_alternating_direction,
+    regular_i_positively_j_positively_ji_i_alternating_direction,
+    regular_i_negatively_j_positively_ji_i_alternating_direction,
+    // TODO regular_ ... shift
 
-    reduced_scan_i_positively_j_negatively,
-    reduced_scan_i_negatively_j_negatively,
-    reduced_scan_i_positively_j_positively,
-    reduced_scan_i_negatively_j_positively,
-    // TODO reduced_scan_ ... shift
+    reduced_i_positively_j_negatively,
+    reduced_i_negatively_j_negatively,
+    reduced_i_positively_j_positively,
+    reduced_i_negatively_j_positively,
+    // TODO reduced_ ... shift
 
     healpix_ring,
     healpix_nested,
+
+    regular_ordering     = regular_i_positively_j_negatively_ij_i_single_direction,
+    regular_ordering_end = regular_i_negatively_j_positively_ji_i_alternating_direction,
+    reduced_ordering     = reduced_i_positively_j_negatively,
+    reduced_ordering_end = reduced_i_negatively_j_positively,
+    healpix_ordering     = healpix_ring,
+    healpix_ordering_end = healpix_nested,
 };
 
 

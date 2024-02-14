@@ -150,6 +150,10 @@ Spec* GridFactory::generate_spec_(const Spec& spec) const {
         map->set("grid", "O" + std::to_string(N));
     }
 
+    if (cfg->has("pl")) {
+        map->set("type", "reduced_gg");
+    }
+
     if (std::vector<double> grid; cfg->get("grid", grid) && grid.size() == 2) {
         map->set("type", "regular_ll");
     }

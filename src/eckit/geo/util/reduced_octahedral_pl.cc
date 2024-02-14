@@ -19,7 +19,7 @@ namespace eckit::geo::util {
 
 
 const pl_type& reduced_octahedral_pl(size_t N) {
-    ASSERT(N > 0);
+    ASSERT(0 < N && N % 2 == 0);
 
     static CacheT<size_t, pl_type> cache;
     if (cache.contains(N)) {

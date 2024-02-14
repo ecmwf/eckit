@@ -24,14 +24,29 @@
 namespace eckit::geo::grid::reduced {
 
 
+static size_t N(const pl_type& pl) {
+    ASSERT(!pl.empty() && pl.size() % 2 == 0);
+    return pl.size() / 2;
+}
+
+
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_unsigned("N"), spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
+    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox), pl_(pl), j_(0), Nj_(N * 2), y_(range::GaussianLatitude(N, false).crop(bbox.north, bbox.south)) {
+ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox) :
+    Reduced(bbox),
+    pl_(pl),
+    j_(0),
+    Nj_(N(pl) * 2),
+    y_(range::GaussianLatitude(N(pl), false).crop(bbox.north, bbox.south)) {
+    ASSERT(Nj_ == pl_.size());
     ASSERT(y_);
 }
+
+
+ReducedGaussian::ReducedGaussian(size_t N, const area::BoundingBox& bbox) :
+    ReducedGaussian(util::reduced_octahedral_pl(N), bbox) {}
 
 
 Grid::iterator ReducedGaussian::cbegin() const {

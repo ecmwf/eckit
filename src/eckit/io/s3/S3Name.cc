@@ -48,11 +48,16 @@ void S3Name::print(std::ostream& out) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3Name::put(const void* buffer, const long length) const -> long {
+// auto S3Name::create() const -> Length {
+//     if (exists()) { return size(); }
+//     return client_->putObject(bucket_, object_, nullptr, 0);
+// }
+
+auto S3Name::put(const void* buffer, const long length) const -> Length {
     return client_->putObject(bucket_, object_, buffer, length);
 }
 
-auto S3Name::get(void* buffer, const long offset, const long length) const -> long {
+auto S3Name::get(void* buffer, const long offset, const long length) const -> Length {
     return client_->getObject(bucket_, object_, buffer, offset, length);
 }
 

@@ -57,11 +57,9 @@ void bucketSetup() {
     client->createBucket(TEST_BUCKET);
 }
 
-CASE("S3Handle") {
+CASE("bucket exists") {
     const void* buffer = TEST_DATA.data();
     const long  length = TEST_DATA.size();
-
-    std::cout << "write buffer: " << TEST_DATA << std::endl;
 
     URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
@@ -76,14 +74,17 @@ CASE("S3Handle") {
 
     {
         std::unique_ptr<DataHandle> h(uri.newReadHandle());
-        h->openForRead();
+
+        const auto rlen = h->openForRead();
+        EXPECT(rlen == Length(length));
 
         std::string rbuf;
         rbuf.resize(length);
 
         const auto len = h->read(rbuf.data(), length);
-
-        // EXPECT(len == 0); // POSIX
+        /// @todo this is odd with respect to saveInto issue below
+        // EXPECT(len == 0);  // POSIX
+        EXPECT(len == length);
 
         EXPECT(rbuf == TEST_DATA);
     }
@@ -92,12 +93,21 @@ CASE("S3Handle") {
         std::unique_ptr<DataHandle> dh(uri.newReadHandle());
 
         MemoryHandle mh(length);
-        /// @todo this creates issues because internal buffer size is set to 64*1024*1024
+        /// @todo this creates request loop issues because default internal buffer size is 64MiB
         dh->saveInto(mh);
 
         EXPECT(mh.size() == Length(length));
         EXPECT(::memcmp(mh.data(), buffer, length) == 0);
     }
+}
+
+CASE("bucket does not exist") {
+    URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+
+    ensureClean();
+
+    std::unique_ptr<DataHandle> h(uri.newReadHandle());
+    EXPECT_THROWS(h->openForRead());
 }
 
 /// @todo Also check that it doesn't work if the bucket doesn't exist, etc.

@@ -45,13 +45,11 @@ public:  // methods
 
     auto listBuckets() const -> std::vector<std::string> override;
 
-    void putObject(const std::string& bucket, const std::string& object) const override;
-
     auto putObject(const std::string& bucket, const std::string& object, const void* buffer, uint64_t length) const
-        -> long long override;
+        -> Length override;
 
     auto getObject(const std::string& bucket, const std::string& object, void* buffer, const uint64_t offset,
-                   const uint64_t length) const -> long long override;
+                   const uint64_t length) const -> Length override;
 
     void deleteObject(const std::string& bucket, const std::string& object) const override;
 

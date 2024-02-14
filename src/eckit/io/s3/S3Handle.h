@@ -59,7 +59,7 @@ public:  // methods
 private:  // methods
     void print(std::ostream& out) const override;
 
-    void open(const Offset& position);
+    void open(bool canWrite);
 
 private:  // members
     const S3Name name_;

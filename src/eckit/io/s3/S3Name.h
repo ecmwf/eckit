@@ -37,9 +37,11 @@ class S3Name {
 public:  // methods
     explicit S3Name(const URI& uri);
 
-    auto put(const void* buffer, long length) const -> long;
+    // auto create() const -> Length;
 
-    auto get(void* buffer, long offset, long length) const -> long;
+    auto put(const void* buffer, long length) const -> Length;
+
+    auto get(void* buffer, long offset, long length) const -> Length;
 
     auto bucket() const -> const std::string& { return bucket_; }
 

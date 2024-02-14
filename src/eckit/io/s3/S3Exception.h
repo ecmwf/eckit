@@ -38,4 +38,21 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class S3Exception : public eckit::Exception {
+public:
+    S3Exception(const std::string&, const eckit::CodeLocation&);
+};
+
+class S3EntityNotFound : public S3Exception {
+public:
+    S3EntityNotFound(const std::string&, const eckit::CodeLocation&);
+};
+
+class S3EntityAlreadyExists : public S3Exception {
+public:
+    S3EntityAlreadyExists(const std::string&, const eckit::CodeLocation&);
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
 }  // namespace eckit

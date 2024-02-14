@@ -13,7 +13,8 @@
 #include <memory>
 #include <vector>
 
-#include "eckit/geo/Range.h"
+#include "eckit/geo/range/GaussianLatitude.h"
+#include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 

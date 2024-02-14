@@ -77,10 +77,11 @@ CASE("GridFactory::build") {
 
     SECTION("ReducedGaussian") {
         // different ways to instantiate the same grid (O2)
-        for (auto spec : {spec::Custom({{"grid", "o2"}}),
-                          spec::Custom({{"N", 2}}),
-                          spec::Custom({{"pl", pl_type{20, 24, 24, 20}}}),
-                          }) {
+        for (auto spec : {
+                 spec::Custom({{"grid", "o2"}}),
+                 spec::Custom({{"N", 2}}),
+                 spec::Custom({{"pl", pl_type{20, 24, 24, 20}}}),
+             }) {
             std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
             auto n1 = grid1->size();
 
@@ -104,7 +105,6 @@ CASE("GridFactory::build") {
 
             // EXPECT_EQUAL(n2, n1 / 2);
         }
-
     }
 
 

@@ -15,8 +15,9 @@
 #include <memory>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Range.h"
 #include "eckit/geo/iterator/Reduced.h"
+#include "eckit/geo/range/GaussianLatitude.h"
+#include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/utils/Translator.h"
 

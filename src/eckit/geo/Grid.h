@@ -121,6 +121,7 @@ public:
     virtual std::vector<Point> to_points() const;
     virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
 
+    virtual std::string spec() const;
     virtual Ordering order() const;
     virtual Renumber reorder(Ordering) const;
     virtual Grid* grid_reorder(Ordering) const;

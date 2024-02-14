@@ -91,6 +91,11 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlon() const {
 }
 
 
+std::string Grid::spec() const {
+    throw NotImplemented("Grid::spec");
+}
+
+
 Ordering Grid::order() const {
     throw NotImplemented("Grid::order");
 }

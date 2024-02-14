@@ -12,8 +12,9 @@
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
-#include "eckit/geo/Range.h"
 #include "eckit/geo/iterator/Regular.h"
+#include "eckit/geo/range/GaussianLatitude.h"
+#include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/utils/Translator.h"
 

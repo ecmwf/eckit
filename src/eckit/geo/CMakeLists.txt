@@ -104,6 +104,10 @@ list(APPEND eckit_geo_srcs
     projection/Rotation.h
     projection/XYToLonLat.cc
     projection/XYToLonLat.h
+    range/GaussianLatitude.cc
+    range/GaussianLatitude.h
+    range/RegularLongitude.cc
+    range/RegularLongitude.h
     spec/Custom.cc
     spec/Custom.h
     spec/Generator.h

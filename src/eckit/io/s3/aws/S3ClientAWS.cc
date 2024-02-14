@@ -89,7 +89,6 @@ void S3ClientAWS::configure(const S3Config& config) {
 
     // setup endpoint
     /// @todo handle http/https possibly via scheme flag in S3Config
-    // const auto& endpoint = config.endpoint;
     if (!config.endpoint.host().empty()) { configuration.endpointOverride = "http://" + config.endpoint.host(); }
     if (config.endpoint.port() > 0) { configuration.endpointOverride += ":" + std::to_string(config.endpoint.port()); }
 
@@ -213,65 +212,27 @@ auto S3ClientAWS::putObject(const std::string& bucket, const std::string& object
     }
 }
 
-// auto S3ClientAWS::putObject(const std::string& bucket, const std::string& object, const void* buffer,
-//                             const uint64_t start, const uint64_t end) const -> long long {
-//     Aws::S3::Model::PutObjectRequest request;
-//
-//     request.SetBucket(bucket);
-//     request.SetKey(object);
-//     // request.SetContentLength(length);
-//
-//     auto streamBuffer = Aws::MakeShared<BufferIOStream>(ALLOC_TAG, const_cast<void*>(buffer), length);
-//     request.SetBody(streamBuffer);
-//
-//     auto outcome = client_->PutObject(request);
-//
-//     if (outcome.IsSuccess()) {
-//         LOG_DEBUG_LIB(LibEcKit) << "Added object=" << object << " to bucket=" << bucket << std::endl;
-//         /// @todo actual size of written bytes
-//         return end - start;
-//         // return request.GetContentLength();
-//     }
-//
-//     auto msg = awsErrorMessage("Failed to put object=" + object + " to bucket=" + bucket, outcome.GetError());
-//     throw S3SeriousBug(msg, Here());
-// }
-
 //----------------------------------------------------------------------------------------------------------------------
 // GET OBJECT
 
-auto S3ClientAWS::getObject(const std::string& bucket, const std::string& object, void* buffer,
-                            const uint64_t length) const -> long long {
-    Aws::S3::Model::GetObjectRequest request;
-
-    request.SetBucket(bucket);
-    request.SetKey(object);
-    request.SetResponseStreamFactory([&buffer, length]() { return Aws::New<BufferIOStream>(ALLOC_TAG, buffer, length); });
-
-    auto outcome = client_->GetObject(request);
-
-    if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Retrieved object=" << object << " from bucket=" << bucket << std::endl;
-        return outcome.GetResult().GetContentLength();
-    }
-
-    auto msg = awsErrorMessage("Failed to retrieve object=" + object + " to bucket=" + bucket, outcome.GetError());
-    throw S3SeriousBug(msg, Here());
-}
-
 auto S3ClientAWS::getObject(const std::string& bucket, const std::string& object, void* buffer, const uint64_t offset,
                             const uint64_t length) const -> long long {
+    // no throw; POSIX
+    if (length == 0) { return 0; }
+
     Aws::S3::Model::GetObjectRequest request;
 
     request.SetBucket(bucket);
     request.SetKey(object);
     request.SetResponseStreamFactory([&buffer, length]() { return Aws::New<BufferIOStream>(ALLOC_TAG, buffer, length); });
-    request.SetRange(std::to_string(offset) + "-" + std::to_string(offset + length));
+    if (offset > 0) { request.SetRange(std::to_string(offset) + "-" + std::to_string(offset + length)); }
 
     auto outcome = client_->GetObject(request);
 
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Retrieved object=" << object << " from bucket=" << bucket << std::endl;
+
+        /// @todo (try to check) if EOF and return 0; according to POSIX
         return outcome.GetResult().GetContentLength();
     }
 

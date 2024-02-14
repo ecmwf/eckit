@@ -60,10 +60,6 @@ auto S3Name::get(void* buffer, const long offset, const long length) const -> lo
     return client_->getObject(bucket_, object_, buffer, offset, length);
 }
 
-auto S3Name::get(void* buffer, const long length) const -> long {
-    return client_->getObject(bucket_, object_, buffer, length);
-}
-
 auto S3Name::bucketExists() const -> bool {
     return client_->bucketExists(bucket_);
 }

@@ -56,9 +56,6 @@ public:  // methods
     virtual auto putObject(const std::string& bucket, const std::string& object, const void* buffer,
                            uint64_t length) const -> long long = 0;
 
-    virtual auto getObject(const std::string& bucket, const std::string& object, void* buffer, uint64_t length) const
-        -> long long = 0;
-
     virtual auto getObject(const std::string& bucket, const std::string& object, void* buffer, uint64_t offset,
                            uint64_t length) const -> long long = 0;
 

@@ -30,12 +30,15 @@ namespace eckit {
 class URI;
 class DataHandle;
 class S3Client;
+class S3Bucket;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3Name {
 public:  // methods
     explicit S3Name(const URI& uri);
+
+    S3Name(const eckit::S3Bucket&, const std::string& key);
 
     auto put(const void* buffer, long length) const -> long;
 

@@ -27,61 +27,70 @@ S3Handle::S3Handle(const S3Name& name): S3Handle(name, 0) { }
 S3Handle::S3Handle(const S3Name& name, const Offset& offset): name_(name), pos_(offset) { }
 
 void S3Handle::print(std::ostream& out) const {
-    out << "S3Handle[name=" << name_ << ",position=" << pos_ << ", open=" << open_ << ", writable=" << canWrite_ << "]";
+    out << "S3Handle[name=" << name_ << ", position=" << pos_ << ", open=" << open_ << ", writable=" << canWrite_ << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void S3Handle::open(const Offset& position) {
+void S3Handle::open(const bool canWrite) {
     ASSERT(!open_);
-    pos_  = position;
-    open_ = true;
+    pos_      = 0;
+    open_     = true;
+    canWrite_ = canWrite;
 }
 
 Length S3Handle::openForRead() {
-    ASSERT(name_.exists());
-
-    open(0);
-
-    canWrite_ = false;
+    open(false);
 
     return size();
 }
 
 void S3Handle::openForWrite(const Length& length) {
-    open(Offset(length));
+    open(true);
 
-    canWrite_ = true;
+    if (name_.exists()) { ASSERT(size() == length); }
 }
 
 void S3Handle::openForAppend(const Length& length) {
-    open(Offset(length));
+    open(true);
 
-    canWrite_ = true;
+    const auto oSize = size();
+
+    ASSERT(oSize == length);
+
+    pos_ += oSize;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 long S3Handle::read(void* buffer, const long length) {
-    if (!open_) { throw S3SeriousBug("S3 handle is not open!", Here()); }
+    ASSERT(open_);
+    ASSERT(!canWrite_);
 
-    const auto len = name_.get(buffer, pos_, length);
+    const auto oSize = size();
 
-    pos_ += len;
+    if (pos_ == oSize) { return 0; }
 
-    return len;
+    const auto rLength = name_.get(buffer, pos_, length);
+
+    pos_ += rLength;
+
+    ASSERT(pos_ >= Offset(0) || pos_ <= oSize);
+
+    return rLength;
 }
 
 long S3Handle::write(const void* buffer, const long length) {
-    ASSERT(!name_.exists());
+    ASSERT(open_);
+    ASSERT(canWrite_);
 
-    if (!open_ || !canWrite_) { throw S3SeriousBug("S3 handle is not writable!", Here()); }
+    const auto rLength = name_.put(buffer, length);
 
-    const auto len = name_.put(buffer, length);
+    pos_ += rLength;
 
-    pos_ += len;
+    ASSERT(pos_ >= Offset(0) || pos_ <= size());
 
-    return len;
+    return rLength;
 }
 
 void S3Handle::flush() {
@@ -89,12 +98,13 @@ void S3Handle::flush() {
 }
 
 void S3Handle::close() {
+    pos_      = 0;
     open_     = false;
     canWrite_ = false;
 }
 
 Length S3Handle::size() {
-    return name_.size();  // asserts
+    return name_.size();
 }
 
 Length S3Handle::estimate() {
@@ -107,6 +117,7 @@ Offset S3Handle::position() {
 
 Offset S3Handle::seek(const Offset& offset) {
     pos_ = pos_ + offset;
+    ASSERT(pos_ >= Offset(0) || pos_ <= size());
     return pos_;
 }
 

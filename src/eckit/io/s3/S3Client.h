@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "eckit/io/Length.h"
 #include "eckit/io/s3/S3Config.h"
 #include "eckit/memory/NonCopyable.h"
 
@@ -51,13 +52,11 @@ public:  // methods
 
     virtual auto listBuckets() const -> std::vector<std::string> = 0;
 
-    virtual void putObject(const std::string& bucket, const std::string& object) const = 0;
-
     virtual auto putObject(const std::string& bucket, const std::string& object, const void* buffer,
-                           uint64_t length) const -> long long = 0;
+                           uint64_t length) const -> Length = 0;
 
     virtual auto getObject(const std::string& bucket, const std::string& object, void* buffer, uint64_t offset,
-                           uint64_t length) const -> long long = 0;
+                           uint64_t length) const -> Length = 0;
 
     virtual void deleteObject(const std::string& bucket, const std::string& object) const = 0;
 

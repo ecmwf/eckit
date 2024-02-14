@@ -132,6 +132,8 @@ void S3ClientAWS::createBucket(const std::string& bucket) const {
         auto msg = awsErrorMessage("Failed to create bucket=" + bucket, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
+
+    LOG_DEBUG_LIB(LibEcKit) << "Created bucket=" << bucket << std::endl;
 }
 
 void S3ClientAWS::emptyBucket(const std::string& bucket) const {
@@ -153,82 +155,67 @@ void S3ClientAWS::deleteBucket(const std::string& bucket) const {
         auto msg = awsErrorMessage("Failed to delete bucket=" + bucket, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
+
+    LOG_DEBUG_LIB(LibEcKit) << "Deleted bucket=" << bucket << std::endl;
 }
 
 auto S3ClientAWS::bucketExists(const std::string& bucket) const -> bool {
     Aws::S3::Model::HeadBucketRequest request;
+
     request.SetBucket(bucket);
+
     return client_->HeadBucket(request).IsSuccess();
 }
 
 auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
-    std::vector<std::string> buckets;
-
     auto outcome = client_->ListBuckets();
 
     if (outcome.IsSuccess()) {
+        std::vector<std::string> buckets;
         for (const auto& bucket : outcome.GetResult().GetBuckets()) { buckets.emplace_back(bucket.GetName()); }
-    } else {
-        Log::warning() << "Failed to list buckets!" << outcome.GetError();
+        return buckets;
     }
 
-    return buckets;
+    auto msg = awsErrorMessage("Failed list buckets!", outcome.GetError());
+    throw S3SeriousBug(msg, Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // PUT OBJECT
 
-void S3ClientAWS::putObject(const std::string& bucket, const std::string& object) const {
-    Aws::S3::Model::PutObjectRequest request;
-
-    request.SetBucket(bucket);
-    request.SetKey(object);
-
-    // empty object
-    request.SetBody(Aws::MakeShared<Aws::StringStream>(ALLOC_TAG));
-
-    auto outcome = client_->PutObject(request);
-
-    if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Added object=" << object << " to bucket=" << bucket << std::endl;
-    } else {
-        auto msg = awsErrorMessage("Failed to put object=" + object + " to bucket=" + bucket, outcome.GetError());
-        throw S3SeriousBug(msg, Here());
-    }
-}
-
 auto S3ClientAWS::putObject(const std::string& bucket, const std::string& object, const void* buffer,
-                            const uint64_t length) const -> long long {
+                            const uint64_t length) const -> Length {
     Aws::S3::Model::PutObjectRequest request;
 
     request.SetBucket(bucket);
     request.SetKey(object);
     // request.SetContentLength(length);
 
-    auto streamBuffer = Aws::MakeShared<BufferIOStream>(ALLOC_TAG, const_cast<void*>(buffer), length);
-    request.SetBody(streamBuffer);
+    if (buffer && length > 0) {
+        auto streamBuffer = Aws::MakeShared<BufferIOStream>(ALLOC_TAG, const_cast<void*>(buffer), length);
+        request.SetBody(streamBuffer);
+    } else {
+        // empty object
+        request.SetBody(Aws::MakeShared<Aws::StringStream>(ALLOC_TAG));
+    }
 
     auto outcome = client_->PutObject(request);
 
     if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Added object=" << object << " to bucket=" << bucket << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "Put object=" << object << " [len=" << length << "] to bucket=" << bucket << std::endl;
         /// @todo actual size of written bytes
         return length;
-        // return request.GetContentLength();
-    } else {
-        auto msg = awsErrorMessage("Failed to put object=" + object + " to bucket=" + bucket, outcome.GetError());
-        throw S3SeriousBug(msg, Here());
     }
+
+    auto msg = awsErrorMessage("Failed to put object=" + object + " to bucket=" + bucket, outcome.GetError());
+    throw S3SeriousBug(msg, Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // GET OBJECT
 
 auto S3ClientAWS::getObject(const std::string& bucket, const std::string& object, void* buffer, const uint64_t offset,
-                            const uint64_t length) const -> long long {
-    // no throw; POSIX
-    if (length == 0) { return 0; }
-
+                            const uint64_t length) const -> Length {
     Aws::S3::Model::GetObjectRequest request;
 
     request.SetBucket(bucket);
@@ -239,9 +226,9 @@ auto S3ClientAWS::getObject(const std::string& bucket, const std::string& object
     auto outcome = client_->GetObject(request);
 
     if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Retrieved object=" << object << " from bucket=" << bucket << std::endl;
-
-        /// @todo (try to check) if EOF and return 0; according to POSIX
+        LOG_DEBUG_LIB(LibEcKit) << "Get object=" << object << " from bucket=" << bucket << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "Req. len=" << length << ", Obj. len=" << outcome.GetResult().GetContentLength()
+                                << std::endl;
         return outcome.GetResult().GetContentLength();
     }
 
@@ -255,16 +242,17 @@ auto S3ClientAWS::getObject(const std::string& bucket, const std::string& object
 void S3ClientAWS::deleteObject(const std::string& bucket, const std::string& object) const {
     Aws::S3::Model::DeleteObjectRequest request;
 
-    request.WithKey(object).WithBucket(bucket);
+    request.SetBucket(bucket);
+    request.SetKey(object);
 
     auto outcome = client_->DeleteObject(request);
 
-    if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Deleted object=" << object << " in bucket=" << bucket << std::endl;
-    } else {
+    if (!outcome.IsSuccess()) {
         auto msg = awsErrorMessage("Failed to delete object=" + object + " in bucket=" + bucket, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
+
+    LOG_DEBUG_LIB(LibEcKit) << "Deleted object=" << object << " in bucket=" << bucket << std::endl;
 }
 
 void S3ClientAWS::deleteObjects(const std::string& bucket, const std::vector<std::string>& objects) const {
@@ -285,56 +273,56 @@ void S3ClientAWS::deleteObjects(const std::string& bucket, const std::vector<std
 
     auto outcome = client_->DeleteObjects(request);
 
-    if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Deleted " << objects.size() << " objects in bucket=" << bucket << std::endl;
-        for (const auto& object : objects) { LOG_DEBUG_LIB(LibEcKit) << "Deleted object=" << object << std::endl; }
-    } else {
+    if (!outcome.IsSuccess()) {
         auto msg = awsErrorMessage("Failed to delete objects in bucket=" + bucket, outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
+
+    LOG_DEBUG_LIB(LibEcKit) << "Deleted " << objects.size() << " objects in bucket=" << bucket << std::endl;
+    for (const auto& object : objects) { LOG_DEBUG_LIB(LibEcKit) << "Deleted object=" << object << std::endl; }
 }
 
 auto S3ClientAWS::listObjects(const std::string& bucket) const -> std::vector<std::string> {
-    std::vector<std::string> result;
-
     Aws::S3::Model::ListObjectsRequest request;
 
-    request.WithBucket(bucket);
+    request.SetBucket(bucket);
 
     auto outcome = client_->ListObjects(request);
 
     if (outcome.IsSuccess()) {
+        std::vector<std::string> result;
+
         const auto& objects = outcome.GetResult().GetContents();
         for (const auto& object : objects) { result.emplace_back(object.GetKey()); }
-    } else {
-        Log::warning() << "Failed to list objects in bucket=" << bucket << outcome.GetError();
+
+        return result;
     }
 
-    return result;
+    auto msg = awsErrorMessage("Failed to list objects in bucket=" + bucket, outcome.GetError());
+    throw S3SeriousBug(msg, Here());
 }
 
 auto S3ClientAWS::objectExists(const std::string& bucket, const std::string& object) const -> bool {
     Aws::S3::Model::HeadObjectRequest request;
-    request.WithKey(object).WithBucket(bucket);
+
+    request.SetBucket(bucket);
+    request.SetKey(object);
+
     return client_->HeadObject(request).IsSuccess();
 }
 
 auto S3ClientAWS::objectSize(const std::string& bucket, const std::string& object) const -> Length {
-    Length result;
-
     Aws::S3::Model::HeadObjectRequest request;
-    request.WithKey(object).WithBucket(bucket);
+
+    request.SetBucket(bucket);
+    request.SetKey(object);
 
     auto outcome = client_->HeadObject(request);
 
-    if (outcome.IsSuccess()) {
-        result = outcome.GetResult().GetContentLength();
-    } else {
-        const auto msg = awsErrorMessage("Object '" + object + "' doesn't exist or no access!", outcome.GetError());
-        throw S3SeriousBug(msg, Here());
-    }
+    if (outcome.IsSuccess()) { return outcome.GetResult().GetContentLength(); }
 
-    return result;
+    const auto msg = awsErrorMessage("Object '" + object + "' doesn't exist or no access!", outcome.GetError());
+    throw S3SeriousBug(msg, Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

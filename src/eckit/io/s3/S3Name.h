@@ -40,9 +40,9 @@ public:  // methods
 
     S3Name(const eckit::S3Bucket&, const std::string& key);
 
-    auto put(const void* buffer, long length) const -> long;
+    auto put(const void* buffer, long length) const -> Length;
 
-    auto get(void* buffer, long offset, long length) const -> long;
+    auto get(void* buffer, long offset, long length) const -> Length;
 
     auto bucket() const -> const std::string& { return bucket_; }
 

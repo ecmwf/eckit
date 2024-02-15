@@ -27,81 +27,61 @@ S3Handle::S3Handle(const S3Name& name): S3Handle(name, 0) { }
 S3Handle::S3Handle(const S3Name& name, const Offset& offset): name_(name), pos_(offset) { }
 
 void S3Handle::print(std::ostream& out) const {
-    out << "S3Handle[name=" << name_ << ", position=" << pos_ << ", open=" << open_ << ", writable=" << canWrite_ << "]";
+    out << "S3Handle[name=" << name_ << ", position=" << pos_ << ", open=" << open_ << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void S3Handle::open(const bool canWrite) {
-    ASSERT(!open_);
-    pos_      = 0;
-    open_     = true;
-    canWrite_ = canWrite;
-}
-
 Length S3Handle::openForRead() {
-    open(false);
+    open(Mode::READ);
 
-    return size();
+    return estimate();
 }
 
 void S3Handle::openForWrite(const Length& length) {
-    open(true);
+    open(Mode::WRITE);
+
+    ASSERT(name_.bucketExists());
 
     if (name_.exists()) { ASSERT(size() == length); }
-}
-
-void S3Handle::openForAppend(const Length& length) {
-    open(true);
-
-    const auto oSize = size();
-
-    ASSERT(oSize == length);
-
-    pos_ += oSize;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 long S3Handle::read(void* buffer, const long length) {
-    ASSERT(open_);
-    ASSERT(!canWrite_);
+    ASSERT(open_ && mode_ == Mode::READ);
 
-    const auto oSize = size();
+    if (size() == pos_) { return 0; }
 
-    if (pos_ == oSize) { return 0; }
-
-    const auto rLength = name_.get(buffer, pos_, length);
-
-    pos_ += rLength;
-
-    ASSERT(pos_ >= Offset(0) || pos_ <= oSize);
-
-    return rLength;
+    return seek(name_.get(buffer, pos_, length));
 }
 
 long S3Handle::write(const void* buffer, const long length) {
-    ASSERT(open_);
-    ASSERT(canWrite_);
+    ASSERT(open_ && mode_ == Mode::WRITE);
 
-    const auto rLength = name_.put(buffer, length);
+    return seek(name_.put(buffer, length));
+}
 
-    pos_ += rLength;
+//----------------------------------------------------------------------------------------------------------------------
 
-    ASSERT(pos_ >= Offset(0) || pos_ <= size());
+void S3Handle::open(const Mode mode) {
+    ASSERT(!open_);
+    pos_  = 0;
+    open_ = true;
+    mode_ = mode;
+}
 
-    return rLength;
+void S3Handle::close() {
+    pos_  = 0;
+    open_ = false;
+    mode_ = Mode::NONE;
 }
 
 void S3Handle::flush() {
     NOTIMP;
 }
 
-void S3Handle::close() {
-    pos_      = 0;
-    open_     = false;
-    canWrite_ = false;
-}
+//----------------------------------------------------------------------------------------------------------------------
 
 Length S3Handle::size() {
     return name_.size();
@@ -111,13 +91,11 @@ Length S3Handle::estimate() {
     return size();
 }
 
-Offset S3Handle::position() {
-    return pos_;
-}
-
 Offset S3Handle::seek(const Offset& offset) {
     pos_ = pos_ + offset;
-    ASSERT(pos_ >= Offset(0) || pos_ <= size());
+
+    ASSERT(0 <= pos_ && size() >= pos_);
+
     return pos_;
 }
 

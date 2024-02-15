@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include "eckit/io/Length.h"
-
 #include <memory>
 #include <string>
 
@@ -38,11 +36,11 @@ class S3Name {
 public:  // methods
     explicit S3Name(const URI& uri);
 
-    S3Name(const eckit::S3Bucket&, const std::string& key);
+    S3Name(const S3Bucket&, const std::string& key);
 
-    auto put(const void* buffer, long length) const -> Length;
+    auto put(const void* buffer, long length) const -> long long;
 
-    auto get(void* buffer, long offset, long length) const -> Length;
+    auto get(void* buffer, long offset, long length) const -> long long;
 
     auto bucket() const -> const std::string& { return bucket_; }
 
@@ -52,7 +50,7 @@ public:  // methods
 
     auto exists() const -> bool;
 
-    auto size() const -> Length;
+    auto size() const -> long long;
 
     [[nodiscard]]
     auto dataHandle() -> DataHandle*;

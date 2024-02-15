@@ -28,6 +28,8 @@ namespace eckit {
 
 class S3Handle: public DataHandle {
 public:  // methods
+    enum class Mode { NONE, READ, WRITE };
+
     explicit S3Handle(const S3Name& name);
 
     S3Handle(const S3Name& name, const Offset& offset);
@@ -35,8 +37,6 @@ public:  // methods
     Length openForRead() override;
 
     void openForWrite(const Length& length) override;
-
-    void openForAppend(const Length& length) override;
 
     long read(void* buffer, long length) override;
 
@@ -50,16 +50,16 @@ public:  // methods
 
     Length estimate() override;
 
-    Offset position() override;
+    Offset position() override { return pos_; }
 
     Offset seek(const Offset& offset) override;
 
-    bool canSeek() const override { return true; }
+    auto canSeek() const -> bool override { return true; }
 
 private:  // methods
     void print(std::ostream& out) const override;
 
-    void open(bool canWrite);
+    void open(Mode mode);
 
 private:  // members
     const S3Name name_;
@@ -67,7 +67,8 @@ private:  // members
     Offset pos_ {0};
 
     bool open_ {false};
-    bool canWrite_ {false};
+
+    Mode mode_ {Mode::NONE};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -17,10 +17,10 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/s3/S3Bucket.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Handle.h"
-#include "eckit/io/s3/S3Bucket.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
@@ -51,11 +51,11 @@ void S3Name::print(std::ostream& out) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3Name::put(const void* buffer, const long length) const -> Length {
+auto S3Name::put(const void* buffer, const long length) const -> long long {
     return client_->putObject(bucket_, object_, buffer, length);
 }
 
-auto S3Name::get(void* buffer, const long offset, const long length) const -> Length {
+auto S3Name::get(void* buffer, const long offset, const long length) const -> long long {
     return client_->getObject(bucket_, object_, buffer, offset, length);
 }
 
@@ -67,7 +67,7 @@ auto S3Name::exists() const -> bool {
     return client_->objectExists(bucket_, object_);
 }
 
-auto S3Name::size() const -> Length {
+auto S3Name::size() const -> long long {
     return client_->objectSize(bucket_, object_);
 }
 

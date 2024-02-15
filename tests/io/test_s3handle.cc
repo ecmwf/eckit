@@ -39,8 +39,8 @@ static const std::string TEST_OBJECT("eckit-s3handle-test-object");
 //----------------------------------------------------------------------------------------------------------------------
 
 void ensureClean() {
-    auto client = S3Client::makeUnique(cfg);
-    auto&& tmp = client->listBuckets();
+    auto                  client = S3Client::makeUnique(cfg);
+    auto&&                tmp    = client->listBuckets();
     std::set<std::string> buckets(tmp.begin(), tmp.end());
 
     for (const std::string& name : {TEST_BUCKET}) {
@@ -80,8 +80,6 @@ CASE("bucket exists") {
         rbuf.resize(length);
 
         const auto len = h->read(rbuf.data(), length);
-        /// @todo this is odd with respect to saveInto issue below
-        // EXPECT(len == 0);  // POSIX
         EXPECT(len == length);
 
         EXPECT(rbuf == TEST_DATA);
@@ -91,7 +89,6 @@ CASE("bucket exists") {
         std::unique_ptr<DataHandle> dh(uri.newReadHandle());
 
         MemoryHandle mh(length);
-        /// @todo this creates request loop issues because default internal buffer size is 64MiB
         dh->saveInto(mh);
 
         EXPECT(mh.size() == Length(length));
@@ -99,9 +96,26 @@ CASE("bucket exists") {
     }
 }
 
-CASE("bucket does not exist") {
+CASE("S3Handle::openForWrite") {
+    std::cout << "===================" << std::endl;
+
+    ensureClean();
+
     URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
+    {
+        std::unique_ptr<DataHandle> h(uri.newWriteHandle());
+        // no bucket
+        EXPECT_THROWS(h->openForWrite(0));
+        // no read
+        EXPECT_THROWS(h->openForRead());
+    }
+
+    {
+        std::unique_ptr<DataHandle> h(uri.newWriteHandle());
+        EXPECT_THROWS(h->openForWrite(0));
+    }
+}
     ensureClean();
 
     std::unique_ptr<DataHandle> h(uri.newReadHandle());
@@ -120,6 +134,6 @@ int main(int argc, char** argv) {
     try {
         eckit::test::ensureClean();
         ret = run_tests(argc, argv);
-    } catch (...) {}
+    } catch (...) { }
     return ret;
 }

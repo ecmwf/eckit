@@ -12,30 +12,22 @@
 
 #pragma once
 
-#include <utility>
-
 #include "eckit/geo/range/Regular.h"
 
 
 namespace eckit::geo::range {
 
 
-class RegularLongitude final : public Regular {
+class RegularLatitude final : public Regular {
 public:
     // -- Constructors
 
-    RegularLongitude(size_t n, double a, double b, double eps = 0.);
+    RegularLatitude(size_t n, double a, double b, double eps = 0.);
 
     // -- Overridden methods
 
     Range* crop(double crop_a, double crop_b) const override;
-    Range* flip() const override;
-
-private:
-    // -- Constructors
-
-    RegularLongitude(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
-        Regular(n, a, b, std::move(values), periodic, eps) {}
+    Range* flip() const override { return new RegularLatitude(size(), b(), a(), eps()); }
 };
 
 

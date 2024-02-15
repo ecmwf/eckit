@@ -10,12 +10,9 @@
  */
 
 
-#include "eckit/geo/range/RegularLongitude.h"
-
-#include <algorithm>
+#include "eckit/geo/range/RegularLatitude.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
@@ -26,32 +23,14 @@ namespace eckit::geo::range {
 static constexpr auto DB = 1e-12;
 
 
-RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) :
+RegularLatitude::RegularLatitude(size_t n, double _a, double _b, double _eps) :
     Regular(n, _a, _b, _eps) {
-    if (a() < b()) {
-        auto new_b = PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB;
-        if (types::is_approximately_lesser_or_equal(360., (new_b - a()) * (1. + 1. / static_cast<double>(n)))) {
-            periodic(true);
-            b(a() + 360.);
-        }
-        else {
-            b(new_b);
-        }
-    }
-    else {
-        auto new_b = PointLonLat::normalise_angle_to_maximum(b() + DB, a()) - DB;
-        if (types::is_approximately_lesser_or_equal(360., (a() - new_b) * (1. + 1. / static_cast<double>(n)))) {
-            periodic(true);
-            b(a() - 360.);
-        }
-        else {
-            b(new_b);
-        }
-    }
+    ASSERT(-90 <= a() && a() <= 90);
+    ASSERT(-90 <= b() && b() <= 90);
 }
 
 
-Range* RegularLongitude::crop(double crop_a, double crop_b) const {
+Range* RegularLatitude::crop(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
            (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
 
@@ -69,25 +48,16 @@ Range* RegularLongitude::crop(double crop_a, double crop_b) const {
         auto nf = (_b - _a) / inc;
         ASSERT(nf.integer());
 
-        auto n = static_cast<size_t>(nf.integralPart() + (nf * inc >= 360 ? 0 : 1));
+        auto n = static_cast<size_t>(nf.integralPart() + 1);
         ASSERT(0 < n && n <= size());
 
-        return new RegularLongitude(n, _a, _b, eps());
+        return new RegularLatitude(n, _a, _b, eps());
     }
     else {
         NOTIMP;  // FIXME
     }
 
     NOTIMP;
-}
-
-
-Range* RegularLongitude::flip() const {
-    std::vector<double> flipped(size());
-    const auto& v = values();
-    std::reverse_copy(v.begin(), v.end(), flipped.begin());
-
-    return new RegularLongitude(size(), b(), a(), eps());
 }
 
 

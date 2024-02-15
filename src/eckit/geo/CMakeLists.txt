@@ -106,6 +106,12 @@ list(APPEND eckit_geo_srcs
     projection/XYToLonLat.h
     range/GaussianLatitude.cc
     range/GaussianLatitude.h
+    range/Regular.cc
+    range/Regular.h
+    range/RegularCartesian.cc
+    range/RegularCartesian.h
+    range/RegularLatitude.cc
+    range/RegularLatitude.h
     range/RegularLongitude.cc
     range/RegularLongitude.h
     spec/Custom.cc

@@ -47,27 +47,19 @@ public:  // methods
 
     auto exists() const -> bool;
 
-    // Create the bucket on the 
-    // n.b. throws if bucket already exists
+    /// @note: throws if bucket already exists
     void create();
 
-    // Destroy the bucket.
-    // n.b. throws if bucket does not exist
+    /// @note: throws if bucket does not exist
     void destroy();
 
-    // Ensure that the bucket is created. Already existing is not a problem
-    // (this is very useful in a multi-client environment)
-    void ensureCreated() { NOTIMP; };
+    void ensureCreated();
 
-    // Similarly for destroying bucket
-    void ensureDestroyed() { NOTIMP; };
+    void ensureDestroyed();
 
-    // List the objects contained inside the bucket
-    // This function can have variants according to the various S3 functionality available
-    // e.g. selecting by prefix
-    //
-    // TO DISCUSS: How do we handle there being lots of keys. Really we want to return an 
-    //             iterator that internally handles the relevant pagination.
+    /// @todo: How do we handle there being lots of keys.
+    ///   We want to return an iterator that internally handles the 
+    ///   relevant pagination.
     std::vector<S3Name> listObjects() const;
 
     // friend std::ostream& operator<<(std::ostream& out, const S3Bucket& name) {

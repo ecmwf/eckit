@@ -18,7 +18,7 @@
 // #include "eckit/config/LibEcKit.h"
 // #include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3Client.h"
-// #include "eckit/io/s3/S3Exception.h"
+#include "eckit/io/s3/S3Exception.h"
 // #include "eckit/io/s3/S3Handle.h"
 // #include "eckit/utils/Tokenizer.h"
 
@@ -59,6 +59,18 @@ void S3Bucket::create() {
 
 void S3Bucket::destroy() {
     return client_->deleteBucket(name_);
+}
+
+void S3Bucket::ensureCreated() {
+    try {
+        create();
+    } catch (eckit::S3EntityAlreadyExists& e) { }
+}
+
+void S3Bucket::ensureDestroyed() {
+    try {
+        destroy();
+    } catch (eckit::S3EntityNotFound& e) { }
 }
 
 std::vector<S3Name> S3Bucket::listObjects() const {

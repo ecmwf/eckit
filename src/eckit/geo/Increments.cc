@@ -21,11 +21,11 @@ namespace eckit::geo {
 
 
 static Increments make_from_spec(const Spec& spec) {
-    std::vector<double> grid;
-    spec.get("grid", grid);
+    if (std::vector<double> grid; spec.get("grid", grid) && grid.size() == 2) {
+        return {grid[0], grid[1]};
+    }
 
-    ASSERT_MSG(grid.size() == 2, "Increments: expected list of size 2");
-    return {grid[0], grid[1]};
+    throw BadParameter("Increments: expected list of size 2");
 }
 
 

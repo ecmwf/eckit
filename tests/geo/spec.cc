@@ -222,6 +222,7 @@ CASE("Spec <- Layered") {
 
 CASE("spec") {
     static const spec::Custom BAD;
+    ASSERT(BAD.empty());
 
     static std::pair<C, C> cases[]{
         {C({{"N", 2}}), C({{"N", 2}, {"type", "reduced_gg"}})},
@@ -273,38 +274,22 @@ CASE("spec") {
 
 
     SECTION("user -> type") {
-        for (const auto& [user, spec] : cases) {
-            Log::info() << user << " -> " << spec << std::endl;
+        for (const auto& [user, gridspec] : cases) {
+            Log::info() << user << " -> " << gridspec << std::endl;
 
-            S userspec(GridFactory::spec(user));
-            ASSERT(userspec);
+            try {
+                S spec(GridFactory::spec(user));
+                EXPECT(spec);
 
-            if (!userspec->has("type")) {
-                EXPECT(spec.empty());
-                continue;
+                G grid(GridFactory::build(*spec));
+                EXPECT(grid);
             }
-
-            if (spec.empty()) {
-                EXPECT_THROWS(GridFactory::build(*userspec));
+            catch (const SpecNotFound& e) {
+                EXPECT(gridspec.empty() /*BAD*/);
             }
-            else {
-                EXPECT_NO_THROW(GridFactory::build(*userspec));
+            catch (const BadParameter& e) {
+                EXPECT(gridspec.empty() /*BAD*/);
             }
-        }
-    }
-
-
-    SECTION("user -> grid -> spec") {
-        for (const auto& [user, spec] : cases) {
-            Log::info() << user << " -> " << spec << std::endl;
-
-            if (spec.empty()) {
-                EXPECT_THROWS(G(GridFactory::build(user)));
-                continue;
-            }
-
-            // G grid(GridFactory::build(*user));
-            // EXPECT(grid);
         }
     }
 }

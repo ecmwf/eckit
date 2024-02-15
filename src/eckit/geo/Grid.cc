@@ -134,7 +134,7 @@ const Grid* GridFactory::build_(const Spec& spec) const {
     }
 
     list(Log::error() << "Grid: cannot build grid without 'type', choices are: ");
-    throw SeriousBug("Grid: cannot build grid without 'type'");
+    throw SpecNotFound("Grid: cannot build grid without 'type'");
 }
 
 
@@ -172,7 +172,13 @@ Spec* GridFactory::generate_spec_(const Spec& spec) const {
         cfg->push_front(SpecByUID::instance().get(uid).spec());
     }
     else if (std::string grid; cfg->get("grid", grid) && SpecByName::instance().matches(grid)) {
-        cfg->push_front(SpecByName::instance().match(grid).spec(grid));
+        std::unique_ptr<Spec> front(SpecByName::instance().match(grid).spec(grid));
+
+        if (std::string user, forced; front->get("type", forced) && cfg->get("type", user) && user != forced) {
+            throw BadParameter("Grid: conflicting 'type': '" + user + "' and '" + forced + "'");
+        }
+
+        cfg->push_front(front.release());
     }
 
 

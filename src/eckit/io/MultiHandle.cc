@@ -149,11 +149,13 @@ long MultiHandle::read1(char* buffer, long length) {
     }
 
     long n = (*current_)->read(buffer, length);
-    if (n <= 0) {
+    if (n < length) {
         (*current_)->close();
         current_++;
         openCurrent();
-        return read1(buffer, length);
+        if (n <= 0) {
+            return read1(buffer, length);
+        }
     }
     return n;
 }

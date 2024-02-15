@@ -43,7 +43,7 @@ public:  // methods
 
     // Contructors
     URI();
-    URI(const std::string& uri);
+    explicit URI(const std::string& uri);
     URI(const std::string& scheme, const PathName& path);
     URI(const std::string& scheme, const URI& uri);
     URI(const std::string& scheme, const std::string& hostname, int port);

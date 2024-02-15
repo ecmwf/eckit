@@ -28,6 +28,13 @@ bool __get_s(const From& from, To& to) {
 
 
 template <typename From>
+bool __get_s(const From& from, std::string& to) {
+    to = std::to_string(from);
+    return true;
+}
+
+
+template <typename From>
 bool __get_s(const From& from, From& to) {
     to = from;
     return true;
@@ -230,9 +237,13 @@ bool Custom::has(const std::string& name) const {
 
 
 bool Custom::get(const std::string& name, std::string& value) const {
-    if (auto it = map_.find(name); it != map_.cend() && std::holds_alternative<std::string>(it->second)) {
-        value = std::get<std::string>(it->second);
-        return true;
+    if (auto it = map_.find(name); it != map_.cend() /*&& )*/) {
+        if (std::holds_alternative<std::string>(it->second)) {
+            value = std::get<std::string>(it->second);
+            return true;
+        }
+
+        return __get_s_real(map_, name, value);
     }
     return false;
 }

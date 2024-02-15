@@ -46,9 +46,10 @@ using v = std::vector<double>;
 
 
 CASE("Spec <- Custom") {
-    int one           = 1;
-    double two        = 2.;
-    std::string three = "3";
+    constexpr int zero      = 0;
+    constexpr int one       = 1;
+    constexpr double two    = 2.;
+    const std::string three = "3";
 
 
     SECTION("access") {
@@ -74,8 +75,7 @@ CASE("Spec <- Custom") {
     }
 
 
-#if 0
-    SECTION("conversion (1)") {
+    SECTION("conversion (2)") {
         spec::Custom a({
             {"double", static_cast<double>(one)},
             {"float", static_cast<float>(one)},
@@ -85,7 +85,7 @@ CASE("Spec <- Custom") {
         });
 
         // test scalar type conversion
-        for (std::string key : {"double", "float", "int", "long", "size_t"}) {
+        for (const std::string& key : {"double", "float", "int", "long", "size_t"}) {
             double value_as_double = 0;
             float value_as_float   = 0;
 
@@ -100,15 +100,17 @@ CASE("Spec <- Custom") {
                 EXPECT(a.get(key, value_as_int) && value_as_int == static_cast<int>(one));
                 EXPECT(a.get(key, value_as_long) && value_as_long == static_cast<long>(one));
                 EXPECT(a.get(key, value_as_size_t) && value_as_size_t == static_cast<size_t>(one));
-            }
 
-            EXPECT_EQUAL(a.get_string(key), std::to_string(1));
+                EXPECT_EQUAL(a.get_string(key), std::to_string(1));
+            }
+            else {
+                EXPECT_EQUAL(a.get_string(key), std::to_string(1.));
+            }
         }
     }
-#endif
 
 
-    SECTION("conversion (2)") {
+    SECTION("conversion (4)") {
         spec::Custom b({
             {"true", true},
             {"false", false},
@@ -142,8 +144,7 @@ CASE("Spec <- Custom") {
     }
 
 
-#if 0
-    SECTION("conversion (3)") {
+    SECTION("conversion (4)") {
         spec::Custom c;
         EXPECT_NOT(c.has("foo"));
 
@@ -151,7 +152,7 @@ CASE("Spec <- Custom") {
         EXPECT(c.has("foo"));
         EXPECT_THROWS_AS(c.get_int("foo"), SpecNotFound);  // cannot access as int
         EXPECT(::eckit::types::is_approximately_equal(c.get_double("foo"), two));
-        EXPECT(c.get_string("foo") == "2");
+        EXPECT(c.get_string("foo") == std::to_string(two));
 
         c.set("bar", one);
         EXPECT_EQUAL(c.get_int("bar"), one);
@@ -178,7 +179,18 @@ CASE("Spec <- Custom") {
         ASSERT(e.has("foo"));
         ASSERT(e.has("bar"));
     }
-#endif
+
+
+    SECTION("conversion (5)") {
+        spec::Custom e({{"zero", zero}, {"one", one}, {"two", two}});
+
+        bool maybe = true;
+        EXPECT(!e.get("?", maybe) && maybe);    // non-existant key
+        EXPECT(!e.get("two", maybe) && maybe);  // non-convertible
+
+        EXPECT(e.get("zero", maybe) && !maybe);
+        EXPECT(e.get("one", maybe) && maybe);
+    }
 }
 
 
@@ -260,7 +272,6 @@ CASE("spec") {
     };
 
 
-#if 0
     SECTION("user -> type") {
         for (const auto& [user, spec] : cases) {
             Log::info() << user << " -> " << spec << std::endl;
@@ -281,10 +292,8 @@ CASE("spec") {
             }
         }
     }
-#endif
 
 
-#if 0
     SECTION("user -> grid -> spec") {
         for (const auto& [user, spec] : cases) {
             Log::info() << user << " -> " << spec << std::endl;
@@ -298,7 +307,6 @@ CASE("spec") {
             // EXPECT(grid);
         }
     }
-#endif
 }
 
 

@@ -18,10 +18,17 @@ namespace eckit::geo {
 
 
 template <typename T>
-static T _get(const Spec& spec, const std::string& name, const T& _default) {
+static T _get_d(const Spec& spec, const std::string& name, const T& _default) {
     T value{_default};
     spec.get(name, value);
     return value;
+}
+
+
+template <typename T>
+static T _get_t(const Spec& spec, const std::string& name) {
+    T value{};
+    return spec.get(name, value) ? value : throw SpecNotFound(name);
 }
 
 
@@ -33,79 +40,72 @@ SpecNotFound::SpecNotFound(const std::string& name) {
 
 
 bool Spec::get_bool(const std::string& name) const {
-    ASSERT(has(name));
-    return _get(*this, name, false);
+    return _get_t<bool>(*this, name);
 }
 
 
 int Spec::get_int(const std::string& name) const {
-    ASSERT(has(name));
-    return _get<int>(*this, name, 0);
+    return _get_t<int>(*this, name);
 }
 
 
 long Spec::get_long(const std::string& name) const {
-    ASSERT(has(name));
-    return _get<long>(*this, name, 0);
+    return _get_t<long>(*this, name);
 }
 
 
 std::size_t Spec::get_unsigned(const std::string& name) const {
-    ASSERT(has(name));
-    return _get<std::size_t>(*this, name, 0);
+    return _get_t<std::size_t>(*this, name);
 }
 
 
 double Spec::get_double(const std::string& name) const {
-    ASSERT(has(name));
-    return _get<double>(*this, name, 0);
+    return _get_t<double>(*this, name);
 }
 
 
 std::string Spec::get_string(const std::string& name) const {
-    ASSERT(has(name));
-    return _get<std::string>(*this, name, {});
+    return _get_t<std::string>(*this, name);
 }
 
 
 std::vector<long> Spec::get_long_vector(const std::string& name) const {
-    ASSERT(has(name));
-    return _get<std::vector<long>>(*this, name, {});
+    return _get_t<std::vector<long>>(*this, name);
 }
 
 
 bool Spec::get_bool(const std::string& name, const bool& _default) const {
-    return _get(*this, name, _default);
+    return _get_d(*this, name, _default);
 }
 
 
 int Spec::get_int(const std::string& name, const int& _default) const {
-    return _get(*this, name, _default);
+    return _get_d(*this, name, _default);
 }
 
 
 long Spec::get_long(const std::string& name, const long& _default) const {
-    return _get(*this, name, _default);
+    return _get_d(*this, name, _default);
 }
 
 
 std::size_t Spec::get_unsigned(const std::string& name, const std::size_t& _default) const {
-    return _get(*this, name, _default);
+    return _get_d(*this, name, _default);
 }
 
 
 double Spec::get_double(const std::string& name, const double& _default) const {
-    return _get(*this, name, _default);
+    return _get_d(*this, name, _default);
 }
 
 
 std::string Spec::get_string(const std::string& name, const std::string& _default) const {
-    return _get(*this, name, _default);
+    return _get_d(*this, name, _default);
 }
 
 
 std::vector<long> Spec::get_long_vector(const std::string& name, const std::vector<long>& _default) const {
-    return _get(*this, name, _default);
+    return _get_d(*this, name, _default);
 }
 
 

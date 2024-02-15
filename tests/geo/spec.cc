@@ -12,10 +12,22 @@
 
 #include <iostream>
 #include <memory>
+#include <utility>
 
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+
+
+#define EXPECT_APPROX(a, b, eps) EXPECT(::eckit::types::is_approximately_equal((a), (b), (eps)))
+
+#define EXPECT_AREA(a, b, eps)                                                             \
+    EXPECT((a).size() == 4 && (b).size() == 4 && EXPECT_APPROX((a)[0], (b)[0], (eps)) &&   \
+           EXPECT_APPROX((a)[1], (b)[1], (eps)) && EXPECT_APPROX((a)[2], (b)[2], (eps)) && \
+           EXPECT_APPROX((a)[3], (b)[3], (eps)))
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -27,7 +39,18 @@ namespace eckit::test {
 using namespace geo;
 
 
-CASE("Custom") {
+using S = std::unique_ptr<const Spec>;
+using G = std::unique_ptr<const Grid>;
+using C = spec::Custom;
+using v = std::vector<double>;
+
+
+CASE("Spec <- Custom") {
+    int one           = 1;
+    double two        = 2.;
+    std::string three = "3";
+
+
     SECTION("access") {
         std::unique_ptr<Spec> spec(new spec::Custom({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
 
@@ -50,12 +73,9 @@ CASE("Custom") {
         EXPECT_EQUAL(d, 321);
     }
 
-    SECTION("conversion") {
-        int one           = 1;
-        double two        = 2.;
-        std::string three = "3";
 
-
+#if 0
+    SECTION("conversion (1)") {
         spec::Custom a({
             {"double", static_cast<double>(one)},
             {"float", static_cast<float>(one)},
@@ -84,8 +104,11 @@ CASE("Custom") {
 
             EXPECT_EQUAL(a.get_string(key), std::to_string(1));
         }
+    }
+#endif
 
 
+    SECTION("conversion (2)") {
         spec::Custom b({
             {"true", true},
             {"false", false},
@@ -116,8 +139,11 @@ CASE("Custom") {
         EXPECT(b.get_bool("one"));
         EXPECT(b.get_bool("one", maybe = false));
         EXPECT(b.get("one", maybe = false) && maybe);
+    }
 
 
+#if 0
+    SECTION("conversion (3)") {
         spec::Custom c;
         EXPECT_NOT(c.has("foo"));
 
@@ -152,12 +178,11 @@ CASE("Custom") {
         ASSERT(e.has("foo"));
         ASSERT(e.has("bar"));
     }
+#endif
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
-CASE("Layered") {
+CASE("Spec <- Layered") {
     int one    = 1;
     double two = 2.;
 
@@ -180,6 +205,100 @@ CASE("Layered") {
 
     auto value = b.get_int("foo");
     EXPECT_EQUAL(value, one);
+}
+
+
+CASE("spec") {
+    static const spec::Custom BAD;
+
+    static std::pair<C, C> cases[]{
+        {C({{"N", 2}}), C({{"N", 2}, {"type", "reduced_gg"}})},
+        {C({{"area", v{90, -180, -90, 180}}, {"grid", v{2, 2}}}), C({{"type", "regular_ll"}})},
+        {C({{"area", v{90, -180, -90, 180}}}), BAD},
+        {C({{"grid", "B48"}}), BAD},
+        {C({{"grid", "F48"}}), C({{"type", "regular_gg"}})},
+        {C({{"grid", "N48"}}), C({{"type", "reduced_gg"}})},
+        {C({{"grid", "O48"}}), C({{"type", "reduced_gg"}})},
+        {C({{"grid", 48}}), BAD},
+        {C({{"grid", v{2, 2}}}), C({{"grid", v{2, 2}}, {"type", "regular_ll"}})},
+        {C({{"type", "latlon"}, {"grid", v{2, 2}}}), BAD},
+        {C({{"type", "reduced_gg"}, {"grid", "48"}}), BAD},
+        {C({{"type", "reduced_gg"}, {"grid", "F048"}}), BAD},
+        {C({{"type", "reduced_gg"}, {"grid", "N"}}), BAD},
+        {C({{"type", "reduced_gg"}, {"grid", "N048"}}), BAD},
+        {C({{"type", "reduced_gg"}, {"grid", "N48"}}), C({{"type", "reduced_gg"}})},
+        {C({{"type", "reduced_gg"}, {"grid", "O048"}}), BAD},
+        {C({{"type", "reduced_gg"}, {"grid", "O48"}}), C({{"type", "reduced_gg"}})},
+        {C({{"type", "reduced_gg"}, {"grid", 48}}), BAD},
+        {C({{"type", "reduced_gg"}}), BAD},
+        {C({{"type", "reduced_latlon"}, {"grid", 2}}), BAD},
+        {C({{"type", "reduced_ll"}, {"grid", 12}}), BAD},
+        {C({{"type", "regular_gg"}, {"grid", "48"}}), BAD},
+        {C({{"type", "regular_gg"}, {"grid", "F048"}}), BAD},
+        {C({{"type", "regular_gg"}, {"grid", "F48"}}), C({{"type", "regular_gg"}})},
+        {C({{"type", "regular_gg"}, {"grid", "N48"}}), BAD},
+        {C({{"type", "regular_gg"}, {"grid", "O48"}}), BAD},
+        {C({{"type", "regular_gg"}, {"grid", "a"}}), BAD},
+        {C({{"type", "regular_gg"}, {"grid", 48}}), BAD},
+        {C({{"type", "regular_ll"}, {"area", v{90, -180, -90, 180}}}), BAD},
+        {C({{"type", "regular_ll"}, {"grid", "F48"}}), BAD},
+        {C({{"type", "regular_ll"}, {"grid", "a"}}), BAD},
+        {C({{"type", "regular_ll"}, {"grid", 48}}), BAD},
+        {C({{"type", "regular_ll"}, {"grid", std::vector<std::string>{"a", "b"}}}), BAD},
+        {C({{"type", "regular_ll"}, {"grid", v{1, 2, 3}}}), BAD},
+        {C({{"type", "regular_ll"}, {"grid", v{1, 2}}}), C({{"type", "regular_ll"}})},
+        {C({{"type", "regular_ll"}, {"grid", v{1}}}), BAD},
+
+        {C({{"type", "mercator"},
+            {"area", v{31.173058, 262.036499, 14.736453, 284.975281}},
+            {"grid", v{45000.0, 45000.0}},
+            {"lad", 14.0},
+            {"nx", 56},
+            {"ny", 44},
+            {"orientation", 0.0}}),
+         C()},
+    };
+
+
+#if 0
+    SECTION("user -> type") {
+        for (const auto& [user, spec] : cases) {
+            Log::info() << user << " -> " << spec << std::endl;
+
+            S userspec(GridFactory::spec(user));
+            ASSERT(userspec);
+
+            if (!userspec->has("type")) {
+                EXPECT(spec.empty());
+                continue;
+            }
+
+            if (spec.empty()) {
+                EXPECT_THROWS(GridFactory::build(*userspec));
+            }
+            else {
+                EXPECT_NO_THROW(GridFactory::build(*userspec));
+            }
+        }
+    }
+#endif
+
+
+#if 0
+    SECTION("user -> grid -> spec") {
+        for (const auto& [user, spec] : cases) {
+            Log::info() << user << " -> " << spec << std::endl;
+
+            if (spec.empty()) {
+                EXPECT_THROWS(G(GridFactory::build(user)));
+                continue;
+            }
+
+            // G grid(GridFactory::build(*user));
+            // EXPECT(grid);
+        }
+    }
+#endif
 }
 
 

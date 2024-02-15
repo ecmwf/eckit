@@ -122,10 +122,8 @@ void S3ClientAWS::createBucket(const std::string& bucket) const {
 
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Created bucket=" << bucket << std::endl;
-    } else if (
-        outcome.GetError().GetErrorType() == Aws::S3::S3Errors::BUCKET_ALREADY_EXISTS || 
-        outcome.GetError().GetErrorType() == Aws::S3::S3Errors::BUCKET_ALREADY_OWNED_BY_YOU
-        ) {
+    } else if (outcome.GetError().GetErrorType() == Aws::S3::S3Errors::BUCKET_ALREADY_EXISTS ||
+               outcome.GetError().GetErrorType() == Aws::S3::S3Errors::BUCKET_ALREADY_OWNED_BY_YOU) {
         auto msg = awsErrorMessage("Bucket already exists=" + bucket, outcome.GetError());
         throw S3EntityAlreadyExists(msg, Here());
     } else {
@@ -184,7 +182,7 @@ auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
 // PUT OBJECT
 
 auto S3ClientAWS::putObject(const std::string& bucket, const std::string& object, const void* buffer,
-                            const uint64_t length) const -> Length {
+                            const uint64_t length) const -> long long {
     Aws::S3::Model::PutObjectRequest request;
 
     request.SetBucket(bucket);
@@ -215,7 +213,7 @@ auto S3ClientAWS::putObject(const std::string& bucket, const std::string& object
 // GET OBJECT
 
 auto S3ClientAWS::getObject(const std::string& bucket, const std::string& object, void* buffer, const uint64_t offset,
-                            const uint64_t length) const -> Length {
+                            const uint64_t length) const -> long long {
     Aws::S3::Model::GetObjectRequest request;
 
     request.SetBucket(bucket);
@@ -311,7 +309,7 @@ auto S3ClientAWS::objectExists(const std::string& bucket, const std::string& obj
     return client_->HeadObject(request).IsSuccess();
 }
 
-auto S3ClientAWS::objectSize(const std::string& bucket, const std::string& object) const -> Length {
+auto S3ClientAWS::objectSize(const std::string& bucket, const std::string& object) const -> long long {
     Aws::S3::Model::HeadObjectRequest request;
 
     request.SetBucket(bucket);

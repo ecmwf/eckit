@@ -46,10 +46,10 @@ public:  // methods
     auto listBuckets() const -> std::vector<std::string> override;
 
     auto putObject(const std::string& bucket, const std::string& object, const void* buffer, uint64_t length) const
-        -> Length override;
+        -> long long override;
 
     auto getObject(const std::string& bucket, const std::string& object, void* buffer, const uint64_t offset,
-                   const uint64_t length) const -> Length override;
+                   const uint64_t length) const -> long long override;
 
     void deleteObject(const std::string& bucket, const std::string& object) const override;
 
@@ -59,7 +59,7 @@ public:  // methods
 
     auto objectExists(const std::string& bucket, const std::string& object) const -> bool override;
 
-    auto objectSize(const std::string& bucket, const std::string& object) const -> Length override;
+    auto objectSize(const std::string& bucket, const std::string& object) const -> long long override;
 
 private:  // methods
     void print(std::ostream& out) const override;

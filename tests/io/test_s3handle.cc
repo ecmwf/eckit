@@ -51,13 +51,11 @@ void ensureClean() {
     }
 }
 
-void bucketSetup() {
-    ensureClean();
-    auto client = S3Client::makeUnique(cfg);
-    client->createBucket(TEST_BUCKET);
-}
-
 CASE("bucket exists") {
+    ensureClean();
+
+    S3Client::makeUnique(cfg)->createBucket(TEST_BUCKET);
+
     const void* buffer = TEST_DATA.data();
     const long  length = TEST_DATA.size();
 
@@ -110,8 +108,6 @@ CASE("bucket does not exist") {
     EXPECT_THROWS(h->openForRead());
 }
 
-/// @todo Also check that it doesn't work if the bucket doesn't exist, etc.
-
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::test
@@ -122,9 +118,8 @@ int main(int argc, char** argv) {
 
     int ret = -1;
     try {
-        eckit::test::bucketSetup();
-        ret = run_tests(argc, argv);
         eckit::test::ensureClean();
+        ret = run_tests(argc, argv);
     } catch (...) {}
     return ret;
 }

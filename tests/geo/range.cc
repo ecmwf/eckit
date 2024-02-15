@@ -42,7 +42,6 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
 
 
 CASE("range::RegularLongitude") {
-#if 0
     SECTION("degenerate") {
         EXPECT_THROWS_AS(range::RegularLongitude(0, 0., 0.), eckit::AssertionFailed);
         EXPECT_THROWS_AS(range::RegularLongitude(0, 0., 10.), eckit::AssertionFailed);
@@ -72,7 +71,7 @@ CASE("range::RegularLongitude") {
         EXPECT_APPROX(values[1], 0., EPS);
         EXPECT_APPROX(values[2], 90., EPS);
     }
-#endif
+
 
     SECTION("range [-180, 180]") {
         const range::RegularLongitude range1(4, -180., 180.);

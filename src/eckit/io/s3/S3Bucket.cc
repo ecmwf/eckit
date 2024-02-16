@@ -13,27 +13,57 @@
  * (Project ID: 955811) iosea-project.eu
  */
 
-#include "eckit/io/s3/S3Bucket.h"
-
 // #include "eckit/config/LibEcKit.h"
 // #include "eckit/filesystem/URI.h"
-#include "eckit/io/s3/S3Client.h"
-#include "eckit/io/s3/S3Exception.h"
 // #include "eckit/io/s3/S3Handle.h"
 // #include "eckit/utils/Tokenizer.h"
+
+#include "eckit/io/s3/S3Bucket.h"
+#include "eckit/io/s3/S3Name.h"
+#include "eckit/io/s3/S3Client.h"
+#include "eckit/io/s3/S3Exception.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Bucket::S3Bucket(const URI& uri): client_(eckit::S3Client::makeShared({uri})) {
+S3Bucket::S3Bucket(const URI& uri): 
+    client_(eckit::S3Client::makeShared({uri})),
+    endpoint_(uri) {
+
     parse(uri.name());
+
 }
 
 S3Bucket::S3Bucket(const eckit::net::Endpoint& endpoint, const std::string& name): 
-    client_(S3Client::makeShared({endpoint})), name_(name) { }
+    client_(S3Client::makeShared({endpoint})), 
+    endpoint_(endpoint),
+    name_(name) { }
+
+S3Bucket::S3Bucket(const S3Bucket& other) : 
+    client_(S3Client::makeShared({other.endpoint_})),
+    endpoint_(other.endpoint_),
+    name_(other.name_) { }
+
+S3Bucket& S3Bucket::operator=(S3Bucket&& other) {
+
+    client_ = std::move(other.client_);
+    endpoint_ = std::move(other.endpoint_);
+    name_ = std::move(other.name_); 
+
+    return *this;
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------
+
+auto S3Bucket::uri() const -> eckit::URI {
+
+    eckit::URI u{"s3", endpoint_.host(), endpoint_.port()};
+    u.path(name_);
+    return u;
+
+}
 
 void S3Bucket::parse(const std::string& path) {
 

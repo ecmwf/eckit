@@ -27,13 +27,13 @@
 #include "eckit/net/Endpoint.h"
 
 #include "eckit/io/s3/S3Exception.h"
-#include "eckit/io/s3/S3Name.h"
 
 namespace eckit {
 
 class URI;
 class DataHandle;
 class S3Client;
+class S3Name;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -42,8 +42,12 @@ public:  // methods
 
     explicit S3Bucket(const URI& uri);
     explicit S3Bucket(const eckit::net::Endpoint& endpoint, const std::string& name);
+    S3Bucket(const S3Bucket&);
+    S3Bucket& operator=(S3Bucket&&);
 
     auto name() const -> const std::string& { return name_; }
+
+    auto uri() const -> eckit::URI;
 
     auto exists() const -> bool;
 
@@ -70,12 +74,18 @@ public:  // methods
     auto asString() const -> const std::string& { return name_; }
 
 private:  // methods
+
+    friend class S3Name;
+
+    S3Bucket() {}
+
     void parse(const std::string& path);
 
     void print(std::ostream& out) const;
 
 private:  // members
     std::shared_ptr<S3Client> client_;
+    eckit::net::Endpoint endpoint_;
     std::string name_;
 };
 

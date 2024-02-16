@@ -23,12 +23,13 @@
 #include <memory>
 #include <string>
 
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/s3/S3Bucket.h"
+
 namespace eckit {
 
 class URI;
-class DataHandle;
 class S3Client;
-class S3Bucket;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -38,13 +39,20 @@ public:  // methods
 
     S3Name(const S3Bucket&, const std::string& key);
 
+    S3Name(const net::Endpoint&, const std::string& bucket, const std::string& key);
+
     auto put(const void* buffer, long length) const -> long long;
 
     auto get(void* buffer, long offset, long length) const -> long long;
 
-    auto bucket() const -> const std::string& { return bucket_; }
+    void destroy();
+
+    auto bucket() const -> const S3Bucket& { return bucket_; }
 
     auto object() const -> const std::string& { return object_; }
+    auto name() const -> const std::string& { return object_; }
+
+    auto uri() const -> eckit::URI;
 
     auto bucketExists() const -> bool;
 
@@ -55,6 +63,9 @@ public:  // methods
     [[nodiscard]]
     auto dataHandle() -> DataHandle*;
 
+    [[nodiscard]]
+    auto dataHandle(const eckit::Offset&, const eckit::Length&) -> DataHandle*;
+
     auto asString() const -> std::string;
 
     friend std::ostream& operator<<(std::ostream& out, const S3Name& name) {
@@ -63,12 +74,11 @@ public:  // methods
     }
 
 private:  // methods
-    void parse(const std::string& path);
 
     void print(std::ostream& out) const;
 
 private:  // members
-    std::string bucket_;
+    eckit::S3Bucket bucket_;
     std::string object_;
 
     std::shared_ptr<S3Client> client_;

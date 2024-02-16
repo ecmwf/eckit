@@ -22,9 +22,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Handle::S3Handle(const S3Name& name): S3Handle(name, 0) { }
+S3Handle::S3Handle(const S3Name& name): name_(name), pos_(0), readonly_(false) { }
 
-S3Handle::S3Handle(const S3Name& name, const Offset& offset): name_(name), pos_(offset) { }
+S3Handle::S3Handle(const S3Name& name, const Offset& offset, const Length& length): 
+    name_(name), pos_(offset), len_(length), readonly_(true) { }
 
 void S3Handle::print(std::ostream& out) const {
     out << "S3Handle[name=" << name_ << ", position=" << pos_ << ", open=" << open_ << "]";
@@ -39,6 +40,7 @@ Length S3Handle::openForRead() {
 }
 
 void S3Handle::openForWrite(const Length& length) {
+    ASSERT(!readonly_);
     open(Mode::WRITE);
 
     ASSERT(name_.bucketExists());
@@ -84,7 +86,12 @@ void S3Handle::flush() {
 //----------------------------------------------------------------------------------------------------------------------
 
 Length S3Handle::size() {
+
+    if (readonly_)
+        return len_;
+
     return name_.size();
+    
 }
 
 Length S3Handle::estimate() {

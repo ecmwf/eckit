@@ -32,7 +32,7 @@ public:  // methods
 
     explicit S3Handle(const S3Name& name);
 
-    S3Handle(const S3Name& name, const Offset& offset);
+    S3Handle(const S3Name& name, const Offset& offset, const Length& length);
 
     Length openForRead() override;
 
@@ -65,6 +65,10 @@ private:  // members
     const S3Name name_;
 
     Offset pos_ {0};
+
+    Length len_;
+
+    bool readonly_;
 
     bool open_ {false};
 

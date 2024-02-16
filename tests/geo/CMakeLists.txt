@@ -14,6 +14,9 @@ foreach(_test
         kdtree
         kpoint
         point
+        point2
+        point3
+        pointlonlat
         projection
         range
         search

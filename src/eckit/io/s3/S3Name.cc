@@ -27,18 +27,16 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 S3Name::S3Name(const URI& uri): client_(S3Client::makeShared({uri})) {
-
     const auto pairs = Tokenizer("/").tokenize(uri.name());
     const auto pSize = pairs.size();
 
     ASSERT(pSize == 1 || pSize == 2);
 
-    bucket_ = S3Bucket{eckit::net::Endpoint{uri}, pairs[0]};
+    bucket_ = S3Bucket {net::Endpoint {uri}, pairs[0]};
     if (pSize > 1) { object_ = pairs[1]; }
-
 }
 
-S3Name::S3Name(const eckit::S3Bucket& bucket, const std::string& key): bucket_(bucket), object_(key) { }
+S3Name::S3Name(const S3Bucket& bucket, const std::string& key): bucket_(bucket), object_(key) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -57,17 +55,13 @@ auto S3Name::get(void* buffer, const long offset, const long length) const -> lo
 }
 
 void S3Name::destroy() {
-
     client_->deleteObject(bucket_.name(), object_);
-
 }
 
-auto S3Name::uri() const -> eckit::URI {
-
-    eckit::URI u{bucket_.uri()};
+auto S3Name::uri() const -> URI {
+    URI u {bucket_.uri()};
     u.path(u.name() + "/" + object_);
     return u;
-
 }
 
 auto S3Name::bucketExists() const -> bool {
@@ -86,7 +80,7 @@ auto S3Name::dataHandle() -> DataHandle* {
     return new S3Handle(*this);
 }
 
-auto S3Name::dataHandle(const eckit::Offset& offset) -> DataHandle* {
+auto S3Name::dataHandle(const Offset& offset) -> DataHandle* {
     return new S3Handle(*this, offset);
 }
 

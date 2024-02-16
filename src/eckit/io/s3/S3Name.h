@@ -20,11 +20,11 @@
 
 #pragma once
 
-#include <memory>
-#include <string>
-
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/s3/S3Bucket.h"
+
+#include <memory>
+#include <string>
 
 namespace eckit {
 
@@ -74,7 +74,6 @@ public:  // methods
     }
 
 private:  // methods
-
     void print(std::ostream& out) const;
 
 private:  // members

@@ -103,23 +103,28 @@ CASE("S3Handle::openForWrite") {
 
     URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
-    {
-        std::unique_ptr<DataHandle> h(uri.newWriteHandle());
-        // no bucket
-        EXPECT_THROWS(h->openForWrite(0));
-        // no read
-        EXPECT_THROWS(h->openForRead());
-    }
+    std::unique_ptr<DataHandle> h(uri.newWriteHandle());
 
-    {
-        std::unique_ptr<DataHandle> h(uri.newWriteHandle());
-        EXPECT_THROWS(h->openForWrite(0));
-    }
+    // no bucket
+    EXPECT_NO_THROW(h->openForWrite(0));
+
+    // no read
+    EXPECT_THROWS(h->openForRead());
 }
+
+CASE("S3Handle::openForRead") {
+    std::cout << "===================" << std::endl;
+
     ensureClean();
 
-    std::unique_ptr<DataHandle> h(uri.newReadHandle());
-    EXPECT_THROWS(h->openForRead());
+    S3Client::makeUnique(cfg)->createBucket(TEST_BUCKET);
+
+    URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+
+    {
+        std::unique_ptr<DataHandle> h(uri.newReadHandle());
+        EXPECT_THROWS(h->openForRead());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

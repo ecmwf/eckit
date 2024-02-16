@@ -40,14 +40,11 @@ S3SeriousBug::S3SeriousBug(const std::string& msg, const int code, const CodeLoc
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Exception::S3Exception(const std::string& w, const eckit::CodeLocation& l) :
-    Exception(w, l) {}
+S3Exception::S3Exception(const std::string& msg, const CodeLocation& loc): Exception("[S3 Exception] " + msg, loc) { }
 
-S3EntityNotFound::S3EntityNotFound(const std::string& w, const eckit::CodeLocation& l) :
-    S3Exception(w, l) {}
+S3EntityNotFound::S3EntityNotFound(const std::string& msg, const CodeLocation& loc): S3Exception(msg, loc) { }
 
-S3EntityAlreadyExists::S3EntityAlreadyExists(const std::string& w, const eckit::CodeLocation& l) :
-    S3Exception(w, l) {}
+S3EntityAlreadyExists::S3EntityAlreadyExists(const std::string& msg, const CodeLocation& loc): S3Exception(msg, loc) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 

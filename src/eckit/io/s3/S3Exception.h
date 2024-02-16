@@ -15,6 +15,7 @@
 
 /// @file   S3Exception.h
 /// @author Metin Cakircali
+/// @author Nicolau Manubens
 /// @date   Jan 2024
 
 #pragma once
@@ -38,19 +39,19 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3Exception : public eckit::Exception {
+class S3Exception: public Exception {
 public:
-    S3Exception(const std::string&, const eckit::CodeLocation&);
+    S3Exception(const std::string& msg, const CodeLocation& loc);
 };
 
-class S3EntityNotFound : public S3Exception {
+class S3EntityNotFound: public S3Exception {
 public:
-    S3EntityNotFound(const std::string&, const eckit::CodeLocation&);
+    S3EntityNotFound(const std::string& msg, const CodeLocation& loc);
 };
 
-class S3EntityAlreadyExists : public S3Exception {
+class S3EntityAlreadyExists: public S3Exception {
 public:
-    S3EntityAlreadyExists(const std::string&, const eckit::CodeLocation&);
+    S3EntityAlreadyExists(const std::string& msg, const CodeLocation& loc);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

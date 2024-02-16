@@ -22,7 +22,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Handle::S3Handle(const S3Name& name): name_(name), pos_(0) { }
+S3Handle::S3Handle(const S3Name& name): S3Handle(name, 0) { }
 
 S3Handle::S3Handle(const S3Name& name, const Offset& offset): name_(name), pos_(offset) { }
 
@@ -66,6 +66,7 @@ long S3Handle::read(void* buffer, const long length) {
 
 long S3Handle::write(const void* buffer, const long length) {
     ASSERT(mode_ == Mode::WRITE);
+    ASSERT(!name_.exists());
 
     return seek(name_.put(buffer, length));
 }

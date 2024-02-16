@@ -62,7 +62,7 @@ CASE("bucket exists") {
     URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     {
-        S3Name name(uri);
+        S3ObjectName name(uri);
 
         std::unique_ptr<DataHandle> h(name.dataHandle());
         h->openForWrite(length);

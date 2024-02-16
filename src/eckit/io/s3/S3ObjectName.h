@@ -13,49 +13,53 @@
  * (Project ID: 955811) iosea-project.eu
  */
 
-/// @file   S3Name.h
+/// @file   S3ObjectName.h
 /// @author Metin Cakircali
-/// @author Simon Smart
 /// @date   Jan 2024
 
 #pragma once
 
-#include "eckit/net/Endpoint.h"
-
-#include <string>
+#include "eckit/io/s3/S3Name.h"
 
 namespace eckit {
 
-class S3Client;
+class Offset;
+class DataHandle;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3Name {
+class S3ObjectName: public S3Name {
 public:  // methods
-    explicit S3Name(const URI& uri);
+    explicit S3ObjectName(const URI& uri);
 
-    S3Name(const net::Endpoint& endpoint, const std::string& name);
+    auto bucket() const -> const std::string& { return bucket_; }
 
-    virtual auto exists() const -> bool = 0;
+    auto uri() const -> URI;
 
-    virtual auto asString() const -> std::string;
+    auto size() const -> long long;
 
-    friend std::ostream& operator<<(std::ostream& out, const S3Name& name) {
-        name.print(out);
-        return out;
-    }
+    auto exists() const -> bool override;
 
-protected:  // methods
-    virtual void print(std::ostream& out) const;
+    void remove();
+
+    auto put(const void* buffer, long length) const -> long long;
+
+    auto get(void* buffer, long offset, long length) const -> long long;
 
     [[nodiscard]]
-    auto parseName() const -> std::vector<std::string>;
+    auto dataHandle() -> DataHandle*;
 
-    auto client() const -> std::shared_ptr<S3Client>;
+    [[nodiscard]]
+    auto dataHandle(const Offset& offset) -> DataHandle*;
+
+private:  // methods
+    void print(std::ostream& out) const override;
+
+    void parse();
 
 private:  // members
-    const net::Endpoint endpoint_;
-    const std::string   name_;
+    std::string bucket_;
+    std::string object_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

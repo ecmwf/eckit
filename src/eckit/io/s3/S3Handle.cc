@@ -22,9 +22,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Handle::S3Handle(const S3Name& name): S3Handle(name, 0) { }
+S3Handle::S3Handle(const S3ObjectName& name): S3Handle(name, 0) { }
 
-S3Handle::S3Handle(const S3Name& name, const Offset& offset): name_(name), pos_(offset) { }
+S3Handle::S3Handle(const S3ObjectName& name, const Offset& offset): name_(name), pos_(offset) { }
 
 void S3Handle::print(std::ostream& out) const {
     out << "S3Handle[name=" << name_ << ", position=" << pos_;

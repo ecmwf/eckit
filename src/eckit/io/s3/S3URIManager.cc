@@ -13,9 +13,9 @@
  * (Project ID: 955811) iosea-project.eu
  */
 
-#include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3URIManager.h"
-#include "eckit/io/s3/S3Name.h"
+
+#include "eckit/io/s3/S3ObjectName.h"
 
 namespace eckit {
 
@@ -28,25 +28,25 @@ S3URIManager::S3URIManager(const std::string& name): URIManager(name) { }
 S3URIManager::~S3URIManager() = default;
 
 bool S3URIManager::exists(const URI& uri) {
-    return S3Name(uri).exists();
+    return S3ObjectName(uri).exists();
 }
 
 DataHandle* S3URIManager::newWriteHandle(const URI& uri) {
-    return S3Name(uri).dataHandle();
+    return S3ObjectName(uri).dataHandle();
 }
 
 DataHandle* S3URIManager::newReadHandle(const URI& uri) {
-    return S3Name(uri).dataHandle();
+    return S3ObjectName(uri).dataHandle();
 }
 
 DataHandle* S3URIManager::newReadHandle(const URI& uri, const OffsetList&, const LengthList&) {
-    return S3Name(uri).dataHandle();
+    return S3ObjectName(uri).dataHandle();
 }
 
 std::string S3URIManager::asString(const URI& uri) const {
-    return std::string("s3://") + uri.name();
+    return S3ObjectName(uri).asString();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}
+}  // namespace eckit

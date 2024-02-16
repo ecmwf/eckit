@@ -40,7 +40,7 @@ public:  // methods
 
     void ensureDestroyed();
 
-    /// @todo: return S3 object iterator
+    /// @todo: return S3 object iterator but first add prefix
     auto listObjects() const -> std::vector<std::string>;
 
 private:  // methods

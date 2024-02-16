@@ -292,8 +292,8 @@ io/s3/aws/S3ClientAWS.cc
 io/s3/aws/S3ClientAWS.h
 io/s3/aws/S3ContextAWS.cc
 io/s3/aws/S3ContextAWS.h
-io/s3/S3Bucket.cc
-io/s3/S3Bucket.h
+io/s3/S3BucketName.cc
+io/s3/S3BucketName.h
 io/s3/S3Client.cc
 io/s3/S3Client.h
 io/s3/S3Config.cc

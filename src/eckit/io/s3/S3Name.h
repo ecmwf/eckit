@@ -64,7 +64,7 @@ public:  // methods
     auto dataHandle() -> DataHandle*;
 
     [[nodiscard]]
-    auto dataHandle(const eckit::Offset&, const eckit::Length&) -> DataHandle*;
+    auto dataHandle(const eckit::Offset&) -> DataHandle*;
 
     auto asString() const -> std::string;
 

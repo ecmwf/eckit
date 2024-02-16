@@ -86,8 +86,8 @@ auto S3Name::dataHandle() -> DataHandle* {
     return new S3Handle(*this);
 }
 
-auto S3Name::dataHandle(const eckit::Offset& offset, const eckit::Length& length) -> DataHandle* {
-    return new S3Handle(*this, offset, length);
+auto S3Name::dataHandle(const eckit::Offset& offset) -> DataHandle* {
+    return new S3Handle(*this, offset);
 }
 
 auto S3Name::asString() const -> std::string {

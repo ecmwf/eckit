@@ -28,11 +28,11 @@ namespace eckit {
 
 class S3Handle: public DataHandle {
 public:  // methods
-    enum class Mode { NONE, READ, WRITE };
+    enum class Mode { CLOSED, READ, WRITE };
 
     explicit S3Handle(const S3Name& name);
 
-    S3Handle(const S3Name& name, const Offset& offset, const Length& length);
+    S3Handle(const S3Name& name, const Offset& offset);
 
     Length openForRead() override;
 
@@ -66,13 +66,7 @@ private:  // members
 
     Offset pos_ {0};
 
-    Length len_;
-
-    bool readonly_;
-
-    bool open_ {false};
-
-    Mode mode_ {Mode::NONE};
+    Mode mode_ {Mode::CLOSED};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

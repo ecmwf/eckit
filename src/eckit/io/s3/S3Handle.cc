@@ -22,13 +22,20 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Handle::S3Handle(const S3Name& name): name_(name), pos_(0), readonly_(false) { }
+S3Handle::S3Handle(const S3Name& name): name_(name), pos_(0) { }
 
-S3Handle::S3Handle(const S3Name& name, const Offset& offset, const Length& length): 
-    name_(name), pos_(offset), len_(length), readonly_(true) { }
+S3Handle::S3Handle(const S3Name& name, const Offset& offset): name_(name), pos_(offset) { }
 
 void S3Handle::print(std::ostream& out) const {
-    out << "S3Handle[name=" << name_ << ", position=" << pos_ << ", open=" << open_ << "]";
+    out << "S3Handle[name=" << name_ << ", position=" << pos_;
+    if (mode_ == Mode::CLOSED) {
+        out << ", mode=closed";
+    } else if (mode_ == Mode::READ) {
+        out << ", mode=read";
+    } else if (mode_ == Mode::WRITE) {
+        out << ", mode=write";
+    }
+    out << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -40,7 +47,6 @@ Length S3Handle::openForRead() {
 }
 
 void S3Handle::openForWrite(const Length& length) {
-    ASSERT(!readonly_);
     open(Mode::WRITE);
 
     ASSERT(name_.bucketExists());
@@ -51,7 +57,7 @@ void S3Handle::openForWrite(const Length& length) {
 //----------------------------------------------------------------------------------------------------------------------
 
 long S3Handle::read(void* buffer, const long length) {
-    ASSERT(open_ && mode_ == Mode::READ);
+    ASSERT(mode_ == Mode::READ);
 
     if (size() == pos_) { return 0; }
 
@@ -59,7 +65,7 @@ long S3Handle::read(void* buffer, const long length) {
 }
 
 long S3Handle::write(const void* buffer, const long length) {
-    ASSERT(open_ && mode_ == Mode::WRITE);
+    ASSERT(mode_ == Mode::WRITE);
 
     return seek(name_.put(buffer, length));
 }
@@ -67,16 +73,14 @@ long S3Handle::write(const void* buffer, const long length) {
 //----------------------------------------------------------------------------------------------------------------------
 
 void S3Handle::open(const Mode mode) {
-    ASSERT(!open_);
+    ASSERT(mode_ == Mode::CLOSED);
     pos_  = 0;
-    open_ = true;
     mode_ = mode;
 }
 
 void S3Handle::close() {
     pos_  = 0;
-    open_ = false;
-    mode_ = Mode::NONE;
+    mode_ = Mode::CLOSED;
 }
 
 void S3Handle::flush() {
@@ -86,12 +90,7 @@ void S3Handle::flush() {
 //----------------------------------------------------------------------------------------------------------------------
 
 Length S3Handle::size() {
-
-    if (readonly_)
-        return len_;
-
     return name_.size();
-    
 }
 
 Length S3Handle::estimate() {

@@ -120,14 +120,13 @@ void S3ClientAWS::createBucket(const std::string& bucket) const {
 
     auto outcome = client_->CreateBucket(request);
 
-    if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Created bucket=" << bucket << std::endl;
-    } else if (outcome.GetError().GetErrorType() == Aws::S3::S3Errors::BUCKET_ALREADY_EXISTS ||
-               outcome.GetError().GetErrorType() == Aws::S3::S3Errors::BUCKET_ALREADY_OWNED_BY_YOU) {
-        auto msg = awsErrorMessage("Bucket already exists=" + bucket, outcome.GetError());
-        throw S3EntityAlreadyExists(msg, Here());
-    } else {
-        auto msg = awsErrorMessage("Failed to create bucket=" + bucket, outcome.GetError());
+    if (!outcome.IsSuccess()) {
+        const auto& err   = outcome.GetError();
+        const auto  msg   = awsErrorMessage("Failed to create bucket=" + bucket, err);
+        const auto  eType = err.GetErrorType();
+        if (eType == Aws::S3::S3Errors::BUCKET_ALREADY_EXISTS || eType == Aws::S3::S3Errors::BUCKET_ALREADY_OWNED_BY_YOU) {
+            throw S3EntityAlreadyExists(msg, Here());
+        }
         throw S3SeriousBug(msg, Here());
     }
 
@@ -144,13 +143,10 @@ void S3ClientAWS::deleteBucket(const std::string& bucket) const {
 
     auto outcome = client_->DeleteBucket(request);
 
-    if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Deleted bucket=" << bucket << std::endl;
-    } else if (outcome.GetError().GetErrorType() == Aws::S3::S3Errors::NO_SUCH_BUCKET) {
-        auto msg = awsErrorMessage("Bucket does not exist=" + bucket, outcome.GetError());
-        throw S3EntityNotFound(msg, Here());
-    } else {
-        auto msg = awsErrorMessage("Failed to delete bucket=" + bucket, outcome.GetError());
+    if (!outcome.IsSuccess()) {
+        const auto& err = outcome.GetError();
+        const auto  msg = awsErrorMessage("Failed to delete bucket=" + bucket, err);
+        if (err.GetErrorType() == Aws::S3::S3Errors::NO_SUCH_BUCKET) { throw S3EntityNotFound(msg, Here()); }
         throw S3SeriousBug(msg, Here());
     }
 

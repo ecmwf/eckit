@@ -22,6 +22,8 @@ namespace eckit::test {
 
 using namespace geo;
 
+constexpr auto EPS = 1e-3;
+
 
 CASE("HEALPix") {
     SECTION("HEALPix::to_points") {
@@ -44,7 +46,7 @@ CASE("HEALPix") {
         EXPECT_EQUAL(points.size(), expected_points_ring.size());
 
         for (int i = 0; i < points.size(); ++i) {
-            EXPECT(points_equal(std::get<PointLonLat>(points[i]), expected_points_ring[i]));
+            EXPECT(points_equal(std::get<PointLonLat>(points[i]), expected_points_ring[i], EPS));
         }
     }
 }

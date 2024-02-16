@@ -172,13 +172,14 @@ Spec* GridFactory::generate_spec_(const Spec& spec) const {
         cfg->push_front(SpecByUID::instance().get(uid).spec());
     }
     else if (std::string grid; cfg->get("grid", grid) && SpecByName::instance().matches(grid)) {
-        std::unique_ptr<Spec> front(SpecByName::instance().match(grid).spec(grid));
+        auto* front = SpecByName::instance().match(grid).spec(grid);
+        ASSERT(front != nullptr);
 
         if (std::string user, forced; front->get("type", forced) && cfg->get("type", user) && user != forced) {
             throw BadParameter("Grid: conflicting 'type': '" + user + "' and '" + forced + "'");
         }
 
-        cfg->push_front(front.release());
+        cfg->push_front(front);
     }
 
 

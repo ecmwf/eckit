@@ -75,7 +75,7 @@ CASE("Spec <- Custom") {
     }
 
 
-    SECTION("conversion (2)") {
+    SECTION("conversion (1)") {
         spec::Custom a({
             {"double", static_cast<double>(one)},
             {"float", static_cast<float>(one)},
@@ -110,7 +110,7 @@ CASE("Spec <- Custom") {
     }
 
 
-    SECTION("conversion (4)") {
+    SECTION("conversion (2)") {
         spec::Custom b({
             {"true", true},
             {"false", false},
@@ -144,7 +144,7 @@ CASE("Spec <- Custom") {
     }
 
 
-    SECTION("conversion (4)") {
+    SECTION("conversion (3)") {
         spec::Custom c;
         EXPECT_NOT(c.has("foo"));
 
@@ -174,14 +174,14 @@ CASE("Spec <- Custom") {
         EXPECT_EQUAL(d.get_int("foo"), one);
 
 
-        spec::Custom e(c);
+        spec::Custom e(d);
 
         ASSERT(e.has("foo"));
         ASSERT(e.has("bar"));
     }
 
 
-    SECTION("conversion (5)") {
+    SECTION("conversion (4)") {
         spec::Custom e({{"zero", zero}, {"one", one}, {"two", two}});
 
         bool maybe = true;

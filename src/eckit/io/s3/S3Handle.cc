@@ -49,9 +49,8 @@ Length S3Handle::openForRead() {
 void S3Handle::openForWrite(const Length& length) {
     open(Mode::WRITE);
 
-    ASSERT(name_.bucketExists());
-
-    if (name_.exists()) { ASSERT(size() == length); }
+    /// @todo slow code, needed ?
+    // if (length > 0 && name_.exists()) { ASSERT(size() == length); }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

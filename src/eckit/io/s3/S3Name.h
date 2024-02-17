@@ -36,6 +36,8 @@ public:  // methods
 
     S3Name(const net::Endpoint& endpoint, const std::string& name);
 
+    virtual ~S3Name();
+
     virtual auto exists() const -> bool = 0;
 
     virtual auto asString() const -> std::string;

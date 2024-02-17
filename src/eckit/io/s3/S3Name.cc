@@ -30,6 +30,8 @@ S3Name::S3Name(const URI& uri): endpoint_(uri), name_(uri.name()) {
 
 S3Name::S3Name(const net::Endpoint& endpoint, const std::string& name): endpoint_(endpoint), name_(name) { }
 
+S3Name::~S3Name() = default;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3Name::asString() const -> std::string {

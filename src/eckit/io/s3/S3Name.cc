@@ -35,13 +35,11 @@ S3Name::~S3Name() = default;
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3Name::asString() const -> std::string {
-    std::ostringstream oss;
-    oss << "s3://" << endpoint_ << "/" << name_;
-    return oss.str();
+    return "s3://" + std::string(endpoint_);
 }
 
 void S3Name::print(std::ostream& out) const {
-    out << "endpoint=" << endpoint_ << ",name=" << name_;
+    out << ",endpoint=" << endpoint_ << ",name=" << name_ << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

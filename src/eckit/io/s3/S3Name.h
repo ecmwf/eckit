@@ -38,6 +38,8 @@ public:  // methods
 
     virtual ~S3Name();
 
+    auto endpoint() const -> const net::Endpoint& { return endpoint_; }
+
     virtual auto exists() const -> bool = 0;
 
     virtual auto asString() const -> std::string;

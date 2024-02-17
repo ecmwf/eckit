@@ -25,7 +25,8 @@ namespace eckit::geo {
 
 using Point = std::variant<PointLonLat, Point2, Point3>;
 
-bool points_equal(const Point&, const Point&, double eps = 1.e-9);
+bool points_equal(const Point&, const Point&);
+bool points_equal(const Point&, const Point&, double eps);
 
 std::ostream& operator<<(std::ostream&, const Point&);
 

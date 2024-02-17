@@ -32,9 +32,8 @@ S3ObjectName::S3ObjectName(const URI& uri): S3Name(uri) {
 //----------------------------------------------------------------------------------------------------------------------
 
 void S3ObjectName::print(std::ostream& out) const {
-    out << "S3ObjectName[bucket=" << bucket_;
+    out << "S3ObjectName[object=" << object_ << ",bucket=" << bucket_;
     S3Name::print(out);
-    out << "]";
 }
 
 void S3ObjectName::parse() {
@@ -45,6 +44,10 @@ void S3ObjectName::parse() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+auto S3ObjectName::asString() const -> std::string {
+    return S3Name::asString() + "/" + bucket_ + "/" + object_;
+}
 
 auto S3ObjectName::uri() const -> URI {
     return asString();

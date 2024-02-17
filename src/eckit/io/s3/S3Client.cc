@@ -51,7 +51,7 @@ void S3Client::print(std::ostream& out) const {
     } else if (type == S3Types::REST) {
         out << "REST";
     } else {
-        out << "REST";
+        out << "NONE";
     }
     out << "]";
 }

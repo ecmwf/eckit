@@ -52,6 +52,8 @@ public:  // methods
     [[nodiscard]]
     auto dataHandle(const Offset& offset) -> DataHandle*;
 
+    auto asString() const -> std::string override;
+
 private:  // methods
     void print(std::ostream& out) const override;
 

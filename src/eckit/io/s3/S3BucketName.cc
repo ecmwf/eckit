@@ -30,8 +30,13 @@ S3BucketName::S3BucketName(const URI& uri): S3Name(uri) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+auto S3BucketName::asString() const -> std::string {
+    return S3Name::asString() + "/" + bucket_;
+}
+
 void S3BucketName::print(std::ostream& out) const {
-    out << "S3BucketName[bucket=" << bucket_ << "]";
+    out << "S3BucketName[bucket=" << bucket_;
+    S3Name::print(out);
 }
 
 void S3BucketName::parse() {
@@ -57,14 +62,20 @@ void S3BucketName::destroy() {
 void S3BucketName::ensureCreated() {
     try {
         create();
-    } catch (S3EntityAlreadyExists& e) { LOG_DEBUG_LIB(LibEcKit) << e.what() << std::endl; }
+    }
+    catch (S3EntityAlreadyExists& e) {
+        LOG_DEBUG_LIB(LibEcKit) << e.what() << "\n";
+    }
 }
 
 void S3BucketName::ensureDestroyed() {
     try {
         client()->emptyBucket(bucket_);
         client()->deleteBucket(bucket_);
-    } catch (S3EntityNotFound& e) { LOG_DEBUG_LIB(LibEcKit) << e.what() << std::endl; }
+    }
+    catch (S3EntityNotFound& e) {
+        LOG_DEBUG_LIB(LibEcKit) << e.what() << "\n";
+    }
 }
 
 auto S3BucketName::listObjects() const -> std::vector<std::string> {

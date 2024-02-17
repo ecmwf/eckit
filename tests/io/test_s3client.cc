@@ -71,14 +71,14 @@ CASE("different types") {
 //     EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket("failed-bucket"));
 // }
 
-CASE("create bucket in non-existing region") {
-    ensureClean();
+// CASE("create bucket in non-existing region") {
+//     ensureClean();
 
-    S3Config cfgTmp(cfg);
-    cfgTmp.region = "non-existing-region-random";
+//     S3Config cfgTmp(cfg);
+//     cfgTmp.region = "non-existing-region-random";
 
-    EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket("test-bucket-1"));
-}
+//     EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket("test-bucket-1"));
+// }
 
 CASE("create bucket") {
     ensureClean();

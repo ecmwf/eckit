@@ -88,6 +88,7 @@ void S3Bucket::create() {
 }
 
 void S3Bucket::destroy() {
+    client_->emptyBucket(name_);
     return client_->deleteBucket(name_);
 }
 

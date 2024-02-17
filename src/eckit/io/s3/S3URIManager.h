@@ -35,6 +35,7 @@ public:  // methods
     bool authority() override { return true; }
 
 private:  // methods
+
     bool exists(const URI&) override;
 
     DataHandle* newWriteHandle(const URI&) override;

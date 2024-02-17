@@ -26,7 +26,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Name::S3Name(const URI& uri): client_(S3Client::makeShared({uri})) {
+S3Name::S3Name(const URI& uri) {
     const auto pairs = Tokenizer("/").tokenize(uri.name());
     const auto pSize = pairs.size();
 
@@ -38,6 +38,9 @@ S3Name::S3Name(const URI& uri): client_(S3Client::makeShared({uri})) {
 
 S3Name::S3Name(const S3Bucket& bucket, const std::string& key): bucket_(bucket), object_(key) { }
 
+S3Name::S3Name(const eckit::net::Endpoint& endpoint, const std::string& bucket, const std::string& key) :
+    bucket_(endpoint, bucket), object_(key) { }
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void S3Name::print(std::ostream& out) const {
@@ -47,15 +50,15 @@ void S3Name::print(std::ostream& out) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3Name::put(const void* buffer, const long length) const -> long long {
-    return client_->putObject(bucket_.name(), object_, buffer, length);
+    return bucket_.client_->putObject(bucket_.name(), object_, buffer, length);
 }
 
 auto S3Name::get(void* buffer, const long offset, const long length) const -> long long {
-    return client_->getObject(bucket_.name(), object_, buffer, offset, length);
+    return bucket_.client_->getObject(bucket_.name(), object_, buffer, offset, length);
 }
 
 void S3Name::destroy() {
-    client_->deleteObject(bucket_.name(), object_);
+    bucket_.client_->deleteObject(bucket_.name(), object_);
 }
 
 auto S3Name::uri() const -> URI {
@@ -65,15 +68,15 @@ auto S3Name::uri() const -> URI {
 }
 
 auto S3Name::bucketExists() const -> bool {
-    return client_->bucketExists(bucket_.name());
+    return bucket_.client_->bucketExists(bucket_.name());
 }
 
 auto S3Name::exists() const -> bool {
-    return client_->objectExists(bucket_.name(), object_);
+    return bucket_.client_->objectExists(bucket_.name(), object_);
 }
 
 auto S3Name::size() const -> long long {
-    return client_->objectSize(bucket_.name(), object_);
+    return bucket_.client_->objectSize(bucket_.name(), object_);
 }
 
 auto S3Name::dataHandle() -> DataHandle* {

@@ -112,8 +112,8 @@ private:
 
     // -- Overridden methods
 
-    void print(std::ostream&) const final;
-    void json(JSON&) const final;
+    void print(std::ostream&) const override;
+    void json(JSON&) const override;
 
     // -- Class members
     // None

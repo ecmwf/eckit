@@ -11,6 +11,8 @@
 
 #include "eckit/geo/Spec.h"
 
+#include <sstream>
+
 #include "eckit/log/JSON.h"
 
 
@@ -106,6 +108,14 @@ std::string Spec::get_string(const std::string& name, const std::string& _defaul
 
 std::vector<long> Spec::get_long_vector(const std::string& name, const std::vector<long>& _default) const {
     return _get_d(*this, name, _default);
+}
+
+
+std::string Spec::str() const {
+    std::ostringstream str;
+    JSON j(str);
+    json(j);
+    return str.str();
 }
 
 

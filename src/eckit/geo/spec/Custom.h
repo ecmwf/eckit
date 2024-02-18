@@ -129,7 +129,7 @@ private:
 
     // -- Overridden methods
 
-    void json(JSON&) const final;
+    void json(JSON&) const override;
 
     // -- Class members
     // None

@@ -58,6 +58,8 @@ public:
     std::string get_string(const std::string& name, const std::string&) const;
     std::vector<long> get_long_vector(const std::string& name, const std::vector<long>&) const;
 
+    std::string str() const;
+
 private:
     virtual void print(std::ostream&) const;
     virtual void json(JSON&) const = 0;

@@ -191,6 +191,35 @@ CASE("Spec <- Custom") {
         EXPECT(e.get("zero", maybe) && !maybe);
         EXPECT(e.get("one", maybe) && maybe);
     }
+
+
+    SECTION("json") {
+        std::unique_ptr<Spec> spec(
+            new spec::Custom({{"string", "string"},
+                              {"bool", true},
+                              {"int", static_cast<int>(1)},
+                              {"long", static_cast<long>(2)},
+                              {"long long", static_cast<long long>(3)},
+                              {"size_t", static_cast<std::size_t>(4)},
+                              {"float", static_cast<float>(5)},
+                              {"double", static_cast<double>(6)},
+                              {"vector<int>", std::vector<int>{1, 1}},
+                              {"vector<long>", std::vector<long>{2, 2}},
+                              {"vector<long long>", std::vector<long long>{3, 3}},
+                              {"vector<size_t>", std::vector<std::size_t>{4, 4}},
+                              {"vector<float>", std::vector<float>{5, 5}},
+                              {"vector<double>", std::vector<double>{6, 6}},
+                              {"vector<string>", std::vector<std::string>{"string", "string"}}}));
+
+        // this also tests the order of the keys in the json output
+        const std::string str = spec->str();
+        const std::string ref =
+            "{\"bool\":true,\"double\":6,\"float\":5,\"int\":1,\"long\":2,\"long "
+            "long\":3,\"size_t\":4,\"string\":\"string\",\"vector<double>\":[6,6],\"vector<float>\":[5,5],\"vector<int>"
+            "\":[1,1],\"vector<long "
+            "long>\":[3,3],\"vector<long>\":[2,2],\"vector<size_t>\":[4,4],\"vector<string>\":[\"string\",\"string\"]}";
+        EXPECT_EQUAL(str, ref);
+    }
 }
 
 

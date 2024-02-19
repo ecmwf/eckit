@@ -50,6 +50,9 @@ void S3Handle::openForWrite(const Length& length) {
     open(Mode::WRITE);
 
     /// @todo slow code, needed ?
+    ASSERT(name_.bucketExists());
+
+    /// @todo slow code, use of length ?
     // if (length > 0 && name_.exists()) { ASSERT(size() == length); }
 }
 
@@ -57,17 +60,26 @@ void S3Handle::openForWrite(const Length& length) {
 
 long S3Handle::read(void* buffer, const long length) {
     ASSERT(mode_ == Mode::READ);
+    ASSERT(0 <= pos_);
 
     if (size() == pos_) { return 0; }
 
-    return seek(name_.get(buffer, pos_, length));
+    const auto len = name_.get(buffer, pos_, length);
+
+    pos_ += len;
+
+    return len;
 }
 
 long S3Handle::write(const void* buffer, const long length) {
     ASSERT(mode_ == Mode::WRITE);
     ASSERT(!name_.exists());
 
-    return seek(name_.put(buffer, length));
+    const auto len = name_.put(buffer, length);
+
+    pos_ += len;
+
+    return len;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -79,12 +91,13 @@ void S3Handle::open(const Mode mode) {
 }
 
 void S3Handle::close() {
+    if (mode_ == Mode::WRITE) { flush(); }
     pos_  = 0;
     mode_ = Mode::CLOSED;
 }
 
 void S3Handle::flush() {
-    NOTIMP;
+    LOG_DEBUG_LIB(LibEcKit) << "flush()!" << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

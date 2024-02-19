@@ -24,11 +24,17 @@
 
 namespace eckit {
 
+class S3ObjectName;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3BucketName: public S3Name {
 public:  // methods
     explicit S3BucketName(const URI& uri);
+
+    S3BucketName(const net::Endpoint& endpoint, const std::string& bucket);
+
+    auto makeObject(const std::string& object) const -> std::unique_ptr<S3ObjectName>;
 
     auto exists() const -> bool override;
 
@@ -42,6 +48,8 @@ public:  // methods
 
     /// @todo: return S3 object iterator but first add prefix
     auto listObjects() const -> std::vector<std::string>;
+
+    auto asString() const -> std::string override;
 
 private:  // methods
     void print(std::ostream& out) const override;

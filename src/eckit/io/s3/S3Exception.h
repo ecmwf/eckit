@@ -44,6 +44,11 @@ public:
     S3Exception(const std::string& msg, const CodeLocation& loc);
 };
 
+class S3BucketNotEmpty: public S3Exception {
+public:
+    S3BucketNotEmpty(const std::string& msg, const CodeLocation& loc);
+};
+
 class S3EntityNotFound: public S3Exception {
 public:
     S3EntityNotFound(const std::string& msg, const CodeLocation& loc);

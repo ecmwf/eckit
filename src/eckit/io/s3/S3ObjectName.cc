@@ -29,6 +29,9 @@ S3ObjectName::S3ObjectName(const URI& uri): S3Name(uri) {
     parse();
 }
 
+S3ObjectName::S3ObjectName(const net::Endpoint& endpoint, const std::string& bucket, const std::string& object):
+    S3Name(endpoint, "/"), bucket_(bucket), object_(object) { }
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void S3ObjectName::print(std::ostream& out) const {
@@ -59,6 +62,10 @@ auto S3ObjectName::size() const -> long long {
 
 auto S3ObjectName::exists() const -> bool {
     return client()->objectExists(bucket_, object_);
+}
+
+auto S3ObjectName::bucketExists() const -> bool {
+    return client()->bucketExists(bucket_);
 }
 
 void S3ObjectName::remove() {

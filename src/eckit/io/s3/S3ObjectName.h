@@ -32,7 +32,7 @@ class S3ObjectName: public S3Name {
 public:  // methods
     explicit S3ObjectName(const URI& uri);
 
-    auto bucket() const -> const std::string& { return bucket_; }
+    S3ObjectName(const net::Endpoint& endpoint, const std::string& bucket, const std::string& object);
 
     auto uri() const -> URI;
 
@@ -53,6 +53,12 @@ public:  // methods
     auto dataHandle(const Offset& offset) -> DataHandle*;
 
     auto asString() const -> std::string override;
+
+    auto name() const -> const std::string& { return object_; }
+
+    auto bucket() const -> const std::string& { return bucket_; }
+
+    auto bucketExists() const -> bool;
 
 private:  // methods
     void print(std::ostream& out) const override;

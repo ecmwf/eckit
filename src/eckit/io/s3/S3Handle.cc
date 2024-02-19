@@ -49,7 +49,6 @@ Length S3Handle::openForRead() {
 void S3Handle::openForWrite(const Length& length) {
     open(Mode::WRITE);
 
-    /// @todo slow code, needed ?
     ASSERT(name_.bucketExists());
 
     /// @todo slow code, use of length ?

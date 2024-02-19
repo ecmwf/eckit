@@ -14,10 +14,11 @@
 /// @date   Jan 2024
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/io/MemoryHandle.h"
+#include "eckit/io/s3/S3BucketName.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Handle.h"
+#include "eckit/io/s3/S3ObjectName.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/testing/Test.h"
 
@@ -29,29 +30,109 @@ using namespace eckit::testing;
 
 namespace eckit::test {
 
-S3Config cfg("eu-central-1", "127.0.0.1", 9000);
-
 constexpr std::string_view TEST_DATA = "abcdefghijklmnopqrstuvwxyz";
 
 static const std::string TEST_BUCKET("eckit-s3handle-test-bucket");
 static const std::string TEST_OBJECT("eckit-s3handle-test-object");
 
+S3Config cfg("eu-central-1", "127.0.0.1", 9000);
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void ensureClean() {
-    auto                  client = S3Client::makeUnique(cfg);
-    auto&&                tmp    = client->listBuckets();
-    std::set<std::string> buckets(tmp.begin(), tmp.end());
-
-    for (const std::string& name : {TEST_BUCKET}) {
-        if (buckets.find(name) != buckets.end()) {
+    auto client = S3Client::makeUnique(cfg);
+    for (const auto& name : {TEST_BUCKET}) {
+        if (client->bucketExists(name)) {
             client->emptyBucket(name);
             client->deleteBucket(name);
         }
     }
 }
 
-CASE("bucket exists") {
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("invalid bucket") {
+    {
+        EXPECT_THROWS(S3BucketName("http://127.0.0.1:9000/" + TEST_BUCKET));
+        EXPECT_THROWS(S3BucketName("s3://127.0.0.1" + TEST_BUCKET));
+        EXPECT_THROWS(S3BucketName("s3://127.0.0.1/" + TEST_BUCKET));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("S3BucketName: no bucket") {
+    ensureClean();
+
+    S3BucketName bucket("s3://127.0.0.1:9000/" + TEST_BUCKET);
+
+    EXPECT_NOT(bucket.exists());
+
+    // LIST
+    EXPECT_THROWS(bucket.listObjects());
+
+    // CREATE OBJECT
+    EXPECT_THROWS(bucket.makeObject(TEST_OBJECT)->put(TEST_DATA.data(), TEST_DATA.size()));
+
+    // DESTROY BUCKET
+    EXPECT_THROWS(bucket.destroy());
+    EXPECT_NO_THROW(bucket.ensureDestroyed());
+}
+
+CASE("S3BucketName: create bucket") {
+    ensureClean();
+
+    S3BucketName bucket("s3://127.0.0.1:9000/" + TEST_BUCKET);
+
+    EXPECT_NOT(bucket.exists());
+
+    // CREATE BUCKET
+    EXPECT_NO_THROW(bucket.create());
+    EXPECT_THROWS(bucket.create());
+    EXPECT_NO_THROW(bucket.ensureCreated());
+
+    // DESTROY BUCKET
+    EXPECT_NO_THROW(bucket.destroy());
+}
+
+CASE("S3BucketName: empty bucket") {
+    ensureClean();
+
+    S3BucketName bucket("s3://127.0.0.1:9000/" + TEST_BUCKET);
+
+    // CREATE BUCKET
+    EXPECT_NO_THROW(bucket.ensureCreated());
+    EXPECT(bucket.exists());
+
+    // LIST
+    EXPECT(bucket.listObjects().size() == 0);
+
+    // DESTROY BUCKET
+    EXPECT_NO_THROW(bucket.destroy());
+}
+
+CASE("S3BucketName: bucket with object") {
+    ensureClean();
+
+    S3BucketName bucket("s3://127.0.0.1:9000/" + TEST_BUCKET);
+
+    // CREATE BUCKET
+    EXPECT_NO_THROW(bucket.ensureCreated());
+
+    // CREATE OBJECT
+    EXPECT_NO_THROW(bucket.makeObject(TEST_OBJECT)->put(TEST_DATA.data(), TEST_DATA.size()));
+
+    // LIST
+    EXPECT(bucket.listObjects().size() == 1);
+
+    // DESTROY BUCKET
+    EXPECT_THROWS(bucket.destroy());
+    EXPECT_NO_THROW(bucket.ensureDestroyed());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("S3Handle operations") {
     ensureClean();
 
     S3Client::makeUnique(cfg)->createBucket(TEST_BUCKET);
@@ -59,72 +140,118 @@ CASE("bucket exists") {
     const void* buffer = TEST_DATA.data();
     const long  length = TEST_DATA.size();
 
-    URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     {
-        S3ObjectName name(uri);
+        S3ObjectName object(uri);
 
-        std::unique_ptr<DataHandle> h(name.dataHandle());
-        h->openForWrite(length);
-        AutoClose closer(*h);
-        EXPECT(h->write(buffer, length) == length);
+        std::unique_ptr<DataHandle> handle(object.dataHandle());
+        EXPECT_NO_THROW(handle->openForWrite(length));
+        EXPECT(handle->write(buffer, length) == length);
+        EXPECT_NO_THROW(handle->close());
     }
 
     {
-        std::unique_ptr<DataHandle> h(uri.newReadHandle());
-
-        const auto rlen = h->openForRead();
-        EXPECT(rlen == Length(length));
+        std::unique_ptr<DataHandle> handle(uri.newReadHandle());
+        EXPECT_NO_THROW(handle->openForRead());
 
         std::string rbuf;
         rbuf.resize(length);
 
-        const auto len = h->read(rbuf.data(), length);
-        EXPECT(len == length);
+        EXPECT_NO_THROW(handle->read(rbuf.data(), length));
 
         EXPECT(rbuf == TEST_DATA);
+
+        EXPECT_NO_THROW(handle->close());
     }
 
     {
-        std::unique_ptr<DataHandle> dh(uri.newReadHandle());
+        std::unique_ptr<DataHandle> handle(uri.newReadHandle());
 
-        MemoryHandle mh(length);
-        dh->saveInto(mh);
+        MemoryHandle memHandle(length);
+        handle->saveInto(memHandle);
 
-        EXPECT(mh.size() == Length(length));
-        EXPECT(::memcmp(mh.data(), buffer, length) == 0);
+        EXPECT(memHandle.size() == Length(length));
+        EXPECT(::memcmp(memHandle.data(), buffer, length) == 0);
+
+        EXPECT_NO_THROW(handle->close());
     }
 }
 
 CASE("S3Handle::openForWrite") {
-    std::cout << "===================" << std::endl;
-
     ensureClean();
 
-    URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
-    std::unique_ptr<DataHandle> h(uri.newWriteHandle());
+    {  // NO BUCKET
+        std::unique_ptr<DataHandle> handle(uri.newWriteHandle());
+        EXPECT_THROWS(handle->openForWrite(0));
+        EXPECT_NO_THROW(handle->close());
+    }
 
-    // no bucket
-    EXPECT_NO_THROW(h->openForWrite(0));
+    // CREATE BUCKET
+    EXPECT_NO_THROW(S3BucketName(uri).ensureCreated());
 
-    // no read
-    EXPECT_THROWS(h->openForRead());
+    {  // BUCKET EXISTS
+        std::unique_ptr<DataHandle> handle(uri.newWriteHandle());
+        EXPECT_NO_THROW(handle->openForWrite(0));
+        EXPECT_NO_THROW(handle->close());
+    }
 }
 
 CASE("S3Handle::openForRead") {
-    std::cout << "===================" << std::endl;
-
     ensureClean();
 
-    S3Client::makeUnique(cfg)->createBucket(TEST_BUCKET);
+    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
-    URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+    EXPECT_NO_THROW(S3BucketName(uri).ensureCreated());
 
-    {
-        std::unique_ptr<DataHandle> h(uri.newReadHandle());
-        EXPECT_THROWS(h->openForRead());
+    std::unique_ptr<DataHandle> handle(uri.newReadHandle());
+
+    // NO OBJECT
+    EXPECT_THROWS(handle->openForRead());
+
+    // CREATE OBJECT
+    EXPECT_NO_THROW(S3ObjectName(uri).put(nullptr, 0));
+
+    // DOUBLE OPEN
+    EXPECT_THROWS(handle->openForRead());
+
+    // RE-OPEN
+    EXPECT_NO_THROW(handle->close());
+    EXPECT_NO_THROW(handle->openForRead());
+}
+
+CASE("S3Handle::read") {
+    ensureClean();
+
+    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+
+    EXPECT_NO_THROW(S3BucketName(uri).ensureCreated());
+
+    // CREATE OBJECT
+    EXPECT_NO_THROW(S3ObjectName(uri).put(TEST_DATA.data(), TEST_DATA.size()));
+
+    std::unique_ptr<DataHandle> handle(uri.newReadHandle());
+
+    // OPEN
+    EXPECT_NO_THROW(handle->openForRead());
+
+    {  /// @todo range based read
+
+        // const auto length = TEST_DATA.size();
+
+        // std::string rbuf;
+        // rbuf.resize(length);
+        // auto len = handle->read(rbuf.data(), 10);
+        // std::cout << "========" << rbuf << std::endl;
+        // len = handle->read(rbuf.data(), length - 10);
+        // std::cout << "========" << rbuf << std::endl;
+        // EXPECT(rbuf == TEST_DATA);
     }
+
+    // CLOSE
+    EXPECT_NO_THROW(handle->close());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -137,8 +264,9 @@ int main(int argc, char** argv) {
 
     int ret = -1;
     try {
-        eckit::test::ensureClean();
         ret = run_tests(argc, argv);
-    } catch (...) { }
+    }
+    catch (...) {
+    }
     return ret;
 }

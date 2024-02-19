@@ -19,6 +19,7 @@
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Exception.h"
+#include "eckit/io/s3/S3ObjectName.h"
 
 namespace eckit {
 
@@ -27,6 +28,9 @@ namespace eckit {
 S3BucketName::S3BucketName(const URI& uri): S3Name(uri) {
     parse();
 }
+
+S3BucketName::S3BucketName(const net::Endpoint& endpoint, const std::string& bucket):
+    S3Name(endpoint, "/"), bucket_(bucket) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -47,6 +51,10 @@ void S3BucketName::parse() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+auto S3BucketName::makeObject(const std::string& object) const -> std::unique_ptr<S3ObjectName> {
+    return std::make_unique<S3ObjectName>(endpoint(), bucket_, object);
+}
+
 auto S3BucketName::exists() const -> bool {
     return client()->bucketExists(bucket_);
 }
@@ -64,7 +72,7 @@ void S3BucketName::ensureCreated() {
         create();
     }
     catch (S3EntityAlreadyExists& e) {
-        LOG_DEBUG_LIB(LibEcKit) << e.what() << "\n";
+        LOG_DEBUG_LIB(LibEcKit) << e.what() << std::endl;
     }
 }
 
@@ -74,7 +82,7 @@ void S3BucketName::ensureDestroyed() {
         client()->deleteBucket(bucket_);
     }
     catch (S3EntityNotFound& e) {
-        LOG_DEBUG_LIB(LibEcKit) << e.what() << "\n";
+        LOG_DEBUG_LIB(LibEcKit) << e.what() << std::endl;
     }
 }
 

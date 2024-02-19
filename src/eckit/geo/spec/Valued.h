@@ -12,13 +12,8 @@
 #pragma once
 
 #include "eckit/geo/Spec.h"
-#include "eckit/value/Content.h"  // for ValueMap
+#include "eckit/value/Content.h"  // for ValueList, ValueMap
 #include "eckit/value/Value.h"
-
-
-namespace eckit {
-class JSON;
-}
 
 
 namespace eckit::geo::spec {

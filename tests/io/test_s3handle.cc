@@ -178,27 +178,6 @@ CASE("S3Handle operations") {
     }
 }
 
-CASE("S3Handle::openForWrite") {
-    ensureClean();
-
-    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
-
-    {  // NO BUCKET
-        std::unique_ptr<DataHandle> handle(uri.newWriteHandle());
-        EXPECT_THROWS(handle->openForWrite(0));
-        EXPECT_NO_THROW(handle->close());
-    }
-
-    // CREATE BUCKET
-    EXPECT_NO_THROW(S3BucketName(uri).ensureCreated());
-
-    {  // BUCKET EXISTS
-        std::unique_ptr<DataHandle> handle(uri.newWriteHandle());
-        EXPECT_NO_THROW(handle->openForWrite(0));
-        EXPECT_NO_THROW(handle->close());
-    }
-}
-
 CASE("S3Handle::openForRead") {
     ensureClean();
 
@@ -220,6 +199,27 @@ CASE("S3Handle::openForRead") {
     // RE-OPEN
     EXPECT_NO_THROW(handle->close());
     EXPECT_NO_THROW(handle->openForRead());
+}
+
+CASE("S3Handle::openForWrite") {
+    ensureClean();
+
+    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+
+    {  // NO BUCKET
+        std::unique_ptr<DataHandle> handle(uri.newWriteHandle());
+        EXPECT_THROWS(handle->openForWrite(0));
+        EXPECT_NO_THROW(handle->close());
+    }
+
+    // CREATE BUCKET
+    EXPECT_NO_THROW(S3BucketName(uri).ensureCreated());
+
+    {  // BUCKET EXISTS
+        std::unique_ptr<DataHandle> handle(uri.newWriteHandle());
+        EXPECT_NO_THROW(handle->openForWrite(0));
+        EXPECT_NO_THROW(handle->close());
+    }
 }
 
 CASE("S3Handle::read") {
@@ -252,6 +252,23 @@ CASE("S3Handle::read") {
 
     // CLOSE
     EXPECT_NO_THROW(handle->close());
+}
+
+CASE("write 1000 objects") {
+    ensureClean();
+
+    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET);
+
+    S3BucketName bucket(uri);
+
+    EXPECT_NO_THROW(bucket.ensureCreated());
+
+    EXPECT_NO_THROW({
+        for (int i = 0; i < 1000; i++) {
+            const auto objName = TEST_OBJECT + std::to_string(i);
+            bucket.makeObject(objName)->put(TEST_DATA.data(), TEST_DATA.size());
+        }
+    });
 }
 
 //----------------------------------------------------------------------------------------------------------------------

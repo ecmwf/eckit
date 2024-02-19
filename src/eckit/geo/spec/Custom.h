@@ -17,11 +17,6 @@
 #include "eckit/geo/Spec.h"
 
 
-namespace eckit {
-class JSON;
-}
-
-
 namespace eckit::geo::spec {
 
 
@@ -57,10 +52,6 @@ public:
 
     Custom(const Custom&);
     Custom(Custom&&);
-
-    // -- Destructor
-
-    ~Custom() final = default;
 
     // -- Convertors
     // None

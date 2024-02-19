@@ -28,3 +28,10 @@ foreach(_test
         LIBS    eckit_geo )
 endforeach()
 
+ecbuild_add_test(
+    TARGET  eckit_test_geo_tool_grid_spec_1_1
+    COMMAND eckit_grid_spec 1/1. )
+
+#set_tests_properties(eckit_test_geo_tool_grid_spec_1_1 PROPERTIES
+#    PASS_REGULAR_EXPRESSION "GridSpec: 1/1")
+

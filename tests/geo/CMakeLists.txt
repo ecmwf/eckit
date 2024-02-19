@@ -30,8 +30,9 @@ endforeach()
 
 ecbuild_add_test(
     TARGET  eckit_test_geo_tool_grid_spec_1_1
-    COMMAND eckit_grid_spec 1/1. )
+    COMMAND eckit_grid_spec ARGS "grid: 1/1.0" [=[--check=[{]"grid":\[1,1\][}]]=] )
 
-#set_tests_properties(eckit_test_geo_tool_grid_spec_1_1 PROPERTIES
-#    PASS_REGULAR_EXPRESSION "GridSpec: 1/1")
+ecbuild_add_test(
+    TARGET  eckit_test_geo_tool_grid_spec_025_01
+    COMMAND eckit_grid_spec ARGS "grid: .250/001e-1" [=[--check=[{]"grid":\[0\.25,0\.1\][}]]=] )
 

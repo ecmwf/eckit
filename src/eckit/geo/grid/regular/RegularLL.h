@@ -100,6 +100,8 @@ private:
     const std::vector<double>& longitudes() const override;
     const std::vector<double>& latitudes() const override;
 
+    void json(JSON&) const override;
+
     // -- Class members
     // None
 

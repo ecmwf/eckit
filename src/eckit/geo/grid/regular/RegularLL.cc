@@ -18,6 +18,7 @@
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/regex.h"
+#include "eckit/log/JSON.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
 
@@ -171,6 +172,12 @@ const std::vector<double>& RegularLL::longitudes() const {
 
 const std::vector<double>& RegularLL::latitudes() const {
     return range_latitude_->values();
+}
+
+
+void RegularLL::json(JSON& j) const {
+    j << "grid";
+    j << std::vector<double>{internal_.inc.west_east, internal_.inc.south_north};
 }
 
 

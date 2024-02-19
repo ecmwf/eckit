@@ -15,6 +15,7 @@
 #include <memory>
 #include <numeric>
 #include <ostream>
+#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/etc/Grid.h"
@@ -22,6 +23,7 @@
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/spec/Valued.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 
@@ -43,6 +45,18 @@ Grid::Grid(const Spec& spec) :
 
 Grid::Grid(const area::BoundingBox& bbox) :
     bbox_(bbox) {}
+
+
+std::string Grid::spec() const {
+    std::ostringstream ss;
+    JSON j(ss);
+
+    j.startObject();
+    json(j);
+    j.endObject();
+
+    return ss.str();
+}
 
 
 const area::BoundingBox& Grid::boundingBox() const {
@@ -93,11 +107,6 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlon() const {
 }
 
 
-std::string Grid::spec() const {
-    throw NotImplemented("Grid::spec");
-}
-
-
 Ordering Grid::order() const {
     throw NotImplemented("Grid::order");
 }
@@ -117,6 +126,11 @@ Renumber Grid::no_reorder(size_t size) {
     Renumber ren(size);
     std::iota(ren.begin(), ren.end(), 0);
     return ren;
+}
+
+
+void Grid::json(JSON&) const {
+    throw NotImplemented("Grid::json");
 }
 
 

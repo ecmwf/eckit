@@ -30,9 +30,12 @@
 #include "eckit/memory/Factory.h"
 
 
-namespace eckit::geo {
+namespace eckit {
+class JSON;
+namespace geo {
 class Spec;
 }
+}  // namespace eckit
 
 
 namespace eckit::geo {
@@ -106,6 +109,8 @@ public:
     iterator begin() const { return cbegin(); }
     iterator end() const { return cend(); }
 
+    std::string spec() const;
+
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
@@ -121,7 +126,6 @@ public:
     virtual std::vector<Point> to_points() const;
     virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
 
-    virtual std::string spec() const;
     virtual Ordering order() const;
     virtual Renumber reorder(Ordering) const;
     virtual Grid* grid_reorder(Ordering) const;
@@ -163,7 +167,8 @@ private:
     area::BoundingBox bbox_;
 
     // -- Methods
-    // None
+
+    virtual void json(JSON&) const;
 
     // -- Overridden methods
     // None

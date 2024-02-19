@@ -21,9 +21,8 @@
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/io/s3/aws/S3ContextAWS.h"
 
-#include <aws/core/auth/AWSCredentials.h>
+#include <aws/core/auth/AWSCredentialsProvider.h>
 #include <aws/core/utils/stream/PreallocatedStreamBuf.h>
-#include <aws/s3/S3Client.h>
 #include <aws/s3/model/CreateBucketRequest.h>
 #include <aws/s3/model/Delete.h>
 #include <aws/s3/model/DeleteBucketRequest.h>
@@ -37,10 +36,6 @@
 
 #include <iostream>
 #include <memory>
-
-namespace eckit {
-
-const auto ALLOC_TAG = "S3ClientAWS";
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -65,8 +60,13 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3ClientAWS::S3ClientAWS():
-    S3Client(S3Session::instance().getContext(S3Types::AWS)), client_(std::make_unique<Aws::S3::S3Client>()) { }
+namespace eckit {
+
+const auto ALLOC_TAG = "S3ClientAWS";
+
+S3ClientAWS::S3ClientAWS(const S3Config& config): S3Client(S3Session::instance().getContext(S3Types::AWS)) {
+    configure(config);
+}
 
 S3ClientAWS::~S3ClientAWS() = default;
 
@@ -75,16 +75,19 @@ S3ClientAWS::~S3ClientAWS() = default;
 void S3ClientAWS::configure(const S3Config& config) {
     LOG_DEBUG_LIB(LibEcKit) << "Configure S3 AWS client..." << std::endl;
 
-    Aws::Client::ClientConfiguration configuration;
+    Aws::Client::ClientConfigurationInitValues initVal;
+    initVal.shouldDisableIMDS = true;
+    Aws::Client::ClientConfiguration configuration(initVal);
 
     // we are not an ec2 instance
-    configuration.disableIMDS = true;
+    configuration.disableIMDS   = true;
+    configuration.disableImdsV1 = true;
 
     // setup region
     // configuration.region = config.region;
     if (!config.region.empty()) { configuration.region = config.region; }
 
-    // configuration.proxyScheme = Aws::Http::Scheme::HTTPS;
+    // configuration.scheme = Aws::Http::Scheme::HTTPS;
     // configuration.verifySSL = false;
 
     // setup endpoint
@@ -92,23 +95,26 @@ void S3ClientAWS::configure(const S3Config& config) {
     if (!config.endpoint.host().empty()) { configuration.endpointOverride = "http://" + config.endpoint.host(); }
     if (config.endpoint.port() > 0) { configuration.endpointOverride += ":" + std::to_string(config.endpoint.port()); }
 
-    // setup credentials
-    Aws::Auth::AWSCredentials credentials;
     if (auto cred = S3Session::instance().getCredentials(config.endpoint.host())) {
-        credentials.SetAWSAccessKeyId(cred->keyID);
-        credentials.SetAWSSecretKey(cred->secret);
+        // credentials provider
+        auto cProvider = Aws::MakeShared<Aws::Auth::SimpleAWSCredentialsProvider>(ALLOC_TAG, cred->keyID, cred->secret);
+        // endpoint provider
+        auto eProvider = Aws::MakeShared<Aws::S3::Endpoint::S3EndpointProvider>(ALLOC_TAG);
+        // client
+        client_ = std::make_unique<Aws::S3::S3Client>(cProvider, eProvider, configuration);
+    } else {
+        throw S3SeriousBug("No credentials found!", Here());
     }
-
-    // endpoint provider
-    auto provider = Aws::MakeShared<Aws::S3::Endpoint::S3EndpointProvider>(ALLOC_TAG);
-
-    // finally client
-    client_ = std::make_unique<Aws::S3::S3Client>(credentials, provider, configuration);
 }
 
 void S3ClientAWS::print(std::ostream& out) const {
     S3Client::print(out);
     out << "S3ClientAWS[]";
+}
+
+auto S3ClientAWS::getClient() const -> Aws::S3::S3Client& {
+    if (client_) { return *client_; }
+    throw S3SeriousBug("Invalid client!", Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -118,7 +124,7 @@ void S3ClientAWS::createBucket(const std::string& bucket) const {
     Aws::S3::Model::CreateBucketRequest request;
     request.SetBucket(bucket);
 
-    auto outcome = client_->CreateBucket(request);
+    auto outcome = getClient().CreateBucket(request);
 
     if (!outcome.IsSuccess()) {
         const auto& err   = outcome.GetError();
@@ -143,7 +149,7 @@ void S3ClientAWS::deleteBucket(const std::string& bucket) const {
     Aws::S3::Model::DeleteBucketRequest request;
     request.SetBucket(bucket);
 
-    auto outcome = client_->DeleteBucket(request);
+    auto outcome = getClient().DeleteBucket(request);
 
     if (!outcome.IsSuccess()) {
         const auto& err = outcome.GetError();
@@ -165,13 +171,13 @@ auto S3ClientAWS::bucketExists(const std::string& bucket) const -> bool {
 
     request.SetBucket(bucket);
 
-    return client_->HeadBucket(request).IsSuccess();
+    return getClient().HeadBucket(request).IsSuccess();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
-    auto outcome = client_->ListBuckets();
+    auto outcome = getClient().ListBuckets();
 
     if (outcome.IsSuccess()) {
         std::vector<std::string> buckets;
@@ -202,7 +208,7 @@ auto S3ClientAWS::putObject(const std::string& bucket, const std::string& object
         request.SetBody(Aws::MakeShared<Aws::StringStream>(ALLOC_TAG));
     }
 
-    auto outcome = client_->PutObject(request);
+    auto outcome = getClient().PutObject(request);
 
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Put object=" << object << " [len=" << length << "] to bucket=" << bucket << std::endl;
@@ -227,7 +233,7 @@ auto S3ClientAWS::getObject(const std::string& bucket, const std::string& object
     /// @todo range and streambuf
     // request.SetRange(std::to_string(offset) + "-" + std::to_string(offset + length));
 
-    auto outcome = client_->GetObject(request);
+    auto outcome = getClient().GetObject(request);
 
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Get object=" << object << " from bucket=" << bucket << std::endl;
@@ -249,7 +255,7 @@ void S3ClientAWS::deleteObject(const std::string& bucket, const std::string& obj
     request.SetBucket(bucket);
     request.SetKey(object);
 
-    auto outcome = client_->DeleteObject(request);
+    auto outcome = getClient().DeleteObject(request);
 
     if (!outcome.IsSuccess()) {
         auto msg = awsErrorMessage("Failed to delete object=" + object + " in bucket=" + bucket, outcome.GetError());
@@ -274,7 +280,7 @@ void S3ClientAWS::deleteObjects(const std::string& bucket, const std::vector<std
 
     request.SetDelete(deleteObject);
 
-    auto outcome = client_->DeleteObjects(request);
+    auto outcome = getClient().DeleteObjects(request);
 
     if (!outcome.IsSuccess()) {
         auto msg = awsErrorMessage("Failed to delete objects in bucket=" + bucket, outcome.GetError());
@@ -292,7 +298,7 @@ auto S3ClientAWS::listObjects(const std::string& bucket) const -> std::vector<st
 
     request.SetBucket(bucket);
 
-    auto outcome = client_->ListObjectsV2(request);
+    auto outcome = getClient().ListObjectsV2(request);
 
     if (!outcome.IsSuccess()) {
         const auto& err = outcome.GetError();
@@ -317,7 +323,7 @@ auto S3ClientAWS::objectExists(const std::string& bucket, const std::string& obj
     request.SetBucket(bucket);
     request.SetKey(object);
 
-    return client_->HeadObject(request).IsSuccess();
+    return getClient().HeadObject(request).IsSuccess();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -328,7 +334,7 @@ auto S3ClientAWS::objectSize(const std::string& bucket, const std::string& objec
     request.SetBucket(bucket);
     request.SetKey(object);
 
-    auto outcome = client_->HeadObject(request);
+    auto outcome = getClient().HeadObject(request);
 
     if (outcome.IsSuccess()) { return outcome.GetResult().GetContentLength(); }
 

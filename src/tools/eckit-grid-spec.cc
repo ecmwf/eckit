@@ -9,11 +9,11 @@
  */
 
 
-// #include <memory>
+#include <memory>
 #include <sstream>
 #include <string>
 
-// #include "eckit/geo/Grid.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
@@ -58,7 +58,8 @@ private:
             user = out.str();
         }
 
-        // std::unique_ptr<const geo::Grid> grid(geo::GridFactory::build(user))
+        std::unique_ptr<const geo::Grid> grid(geo::GridFactory::make_from_string(user));
+        Log::info() << grid->spec() << std::endl;
     }
 
     void usage(const std::string& tool) const override {

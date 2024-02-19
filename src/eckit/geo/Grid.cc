@@ -20,8 +20,10 @@
 #include "eckit/geo/etc/Grid.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
+#include "eckit/geo/spec/Valued.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
+#include "eckit/parser/YAMLParser.h"
 
 
 namespace eckit::geo {
@@ -115,6 +117,12 @@ Renumber Grid::no_reorder(size_t size) {
     Renumber ren(size);
     std::iota(ren.begin(), ren.end(), 0);
     return ren;
+}
+
+
+const Grid* GridFactory::make_from_string(const std::string& str) {
+    std::unique_ptr<Spec> spec(new spec::Valued(YAMLParser::decodeString(str)));
+    return instance().build_(*spec);
 }
 
 

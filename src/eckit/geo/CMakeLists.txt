@@ -119,6 +119,8 @@ list(APPEND eckit_geo_srcs
     spec/Generator.h
     spec/Layered.cc
     spec/Layered.h
+    spec/Valued.cc
+    spec/Valued.h
     util.cc
     util.h
     util/arange.cc

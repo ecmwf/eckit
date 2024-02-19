@@ -198,6 +198,9 @@ struct GridFactory {
     // This is 'const' as Grid should always be immutable
     static const Grid* build(const Spec& spec) { return instance().build_(spec); }
 
+    // This is 'const' as Grid should always be immutable
+    static const Grid* make_from_string(const std::string&);
+
     static Spec* spec(const Spec& spec) { return instance().generate_spec_(spec); }
     static void list(std::ostream& out) { return instance().list_(out); }
 

@@ -156,22 +156,22 @@ Spec* GridFactory::generate_spec_(const Spec& spec) const {
 
     // hardcoded, interpreted options (contributing to gridspec)
 
-    auto* map = new spec::Custom;
-    ASSERT(map != nullptr);
+    auto* back = new spec::Custom;
+    ASSERT(back != nullptr);
 
     if (size_t N = 0; cfg->get("N", N)) {
-        map->set("grid", "O" + std::to_string(N));
+        back->set("grid", "O" + std::to_string(N));
     }
 
     if (cfg->has("pl")) {
-        map->set("type", "reduced_gg");
+        back->set("type", "reduced_gg");
     }
 
     if (std::vector<double> grid; cfg->get("grid", grid) && grid.size() == 2) {
-        map->set("type", "regular_ll");
+        back->set("type", "regular_ll");
     }
 
-    cfg->push_back(map);
+    cfg->push_back(back);
 
 
     // configurable options

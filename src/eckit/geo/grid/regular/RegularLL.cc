@@ -174,7 +174,7 @@ const std::vector<double>& RegularLL::latitudes() const {
 }
 
 
-#define POSITIVE_REAL "[+]?([0-9]*[.])?[0-9]+([eE][-+][0-9]+)?"
+#define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)([eE][-+][0-9]+)?"
 
 
 Spec* RegularLL::spec(const std::string& name) {
@@ -182,16 +182,11 @@ Spec* RegularLL::spec(const std::string& name) {
 
     auto match = util::regex_match(pattern, name);
     ASSERT(match);
-    ASSERT(match.size() == 7);  // because of sub-matches
+    ASSERT(match.size() == 9);  // because of sub-matches
 
     auto d = Translator<std::string, double>{};
-    std::vector<double> increments{d(match[1]), d(match[4])};
 
-    auto ni = 1;  // detail::RegularIterator(Fraction(0), Fraction(360), Fraction(increments[0]), Fraction(0),
-                  // Fraction(360)).n();
-    auto nj = 1;  // detail::RegularIterator(Fraction(-90), Fraction(90), Fraction(increments[1]), Fraction(0)).n();
-
-    return new spec::Custom({{"type", "regular_ll"}, {"grid", increments}, {"ni", ni}, {"nj", nj}});
+    return new spec::Custom({{"type", "regular_ll"}, {"grid", std::vector<double>{d(match[1]), d(match[5])}}});
 }
 
 

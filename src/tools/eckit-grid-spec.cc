@@ -61,8 +61,7 @@ private:
         Log::info() << "\n"
                        "Usage: \n"
                     << tool << " <YAML-like>\n"
-                    << "echo <YAML-like> | " << tool << "\n"
-                    << "Note: ':' should be followed by a space/' '" << std::endl;
+                    << "echo <YAML-like> | " << tool << std::endl;
     }
 
     int minimumPositionalArguments() const override { return 0; }

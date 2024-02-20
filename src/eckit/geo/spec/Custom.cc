@@ -11,7 +11,10 @@
 
 #include "eckit/geo/spec/Custom.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
+#include "eckit/value/Content.h"  // for ValueList, ValueMap
+#include "eckit/value/Value.h"
 
 
 namespace eckit::geo::spec {
@@ -134,6 +137,30 @@ Custom::Custom(const Custom::container_type& map) :
 
 Custom::Custom(Custom::container_type&& map) :
     map_(map) {}
+
+
+Custom::Custom(const Value& value) {
+    auto scalar = [](const Value& value) -> value_type {
+        return value.isNumber()   ? value_type(static_cast<int>(value))
+               : value.isDouble() ? value_type(static_cast<double>(value))
+               : value.isString() ? static_cast<std::string>(value)
+                                  : throw BadValue(value);
+    };
+
+    auto vector = [](const Value& value) -> value_type {
+        const ValueList list(value);
+        ASSERT(!list.empty());
+        return list.front().isNumber()   ? value_type(std::vector<int>(list.begin(), list.end()))
+               : list.front().isDouble() ? value_type(std::vector<double>(list.begin(), list.end()))
+               : list.front().isString() ? std::vector<std::string>(list.begin(), list.end())
+                                         : throw BadValue(value);
+    };
+
+    ASSERT(value.isMap());
+    for (const auto& [key, value] : static_cast<ValueMap>(value)) {
+        map_[key] = value.isList() ? vector(value) : scalar(value);
+    }
+}
 
 
 Custom::Custom(const Custom& custom) :

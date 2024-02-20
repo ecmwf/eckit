@@ -21,7 +21,6 @@
 #include "eckit/geo/etc/Grid.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
-#include "eckit/geo/spec/Valued.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
@@ -135,7 +134,7 @@ void Grid::json(JSON&) const {
 
 
 const Grid* GridFactory::make_from_string(const std::string& str) {
-    std::unique_ptr<Spec> spec(new spec::Valued(YAMLParser::decodeString(str)));
+    std::unique_ptr<Spec> spec(new spec::Custom(YAMLParser::decodeString(str)));
     return instance().build_(*spec);
 }
 

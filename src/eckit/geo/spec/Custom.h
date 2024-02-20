@@ -17,6 +17,11 @@
 #include "eckit/geo/Spec.h"
 
 
+namespace eckit {
+class Value;
+}
+
+
 namespace eckit::geo::spec {
 
 
@@ -49,6 +54,8 @@ public:
 
     explicit Custom(const container_type& = {});
     explicit Custom(container_type&&);
+
+    explicit Custom(const Value&);
 
     Custom(const Custom&);
     Custom(Custom&&);

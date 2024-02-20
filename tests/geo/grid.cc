@@ -14,6 +14,7 @@
 
 #include "eckit/geo/Cache.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
@@ -108,26 +109,28 @@ CASE("GridFactory::build") {
     }
 
 
-    SECTION("Grid::build_from_uid") {
-        spec::Custom spec({
-            {"uid", "a832a12030c73928133553ec3a8d2a7e"},
-        });
+    if (LibEcKitGeo::caching()) {
+        SECTION("Grid::build_from_uid") {
+            spec::Custom spec({
+                {"uid", "a832a12030c73928133553ec3a8d2a7e"},
+            });
 
-        const auto footprint = Cache::total_footprint();
+            const auto footprint = Cache::total_footprint();
 
-        std::unique_ptr<const Grid> a(GridFactory::build(spec));
+            std::unique_ptr<const Grid> a(GridFactory::build(spec));
 
-        const auto footprint_a = Cache::total_footprint();
-        EXPECT(footprint < footprint_a);
+            const auto footprint_a = Cache::total_footprint();
+            EXPECT(footprint < footprint_a);
 
-        std::unique_ptr<const Grid> b(GridFactory::build(spec));
+            std::unique_ptr<const Grid> b(GridFactory::build(spec));
 
-        const auto footprint_b = Cache::total_footprint();
-        EXPECT_EQUAL(footprint_a, footprint_b);
+            const auto footprint_b = Cache::total_footprint();
+            EXPECT_EQUAL(footprint_a, footprint_b);
 
-        const auto size_a = a->size();
-        const auto size_b = b->size();
-        EXPECT_EQUAL(size_a, size_b);
+            const auto size_a = a->size();
+            const auto size_b = b->size();
+            EXPECT_EQUAL(size_a, size_b);
+        }
     }
 
 

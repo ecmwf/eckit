@@ -61,7 +61,7 @@ long S3Handle::read(void* buffer, const long length) {
     ASSERT(mode_ == Mode::READ);
     ASSERT(0 <= pos_);
 
-    if (size() == pos_) { return 0; }
+    if (size() <= pos_) { return 0; }
 
     const auto len = name_.get(buffer, pos_, length);
 

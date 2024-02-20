@@ -27,37 +27,51 @@
 
 namespace eckit {
 
+class S3Client;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3Session {
 public:  // methods
-    NO_COPY_NO_MOVE(S3Session)
+    S3Session(const S3Session&)            = delete;
+    S3Session& operator=(const S3Session&) = delete;
+    S3Session(S3Session&&)                 = delete;
+    S3Session& operator=(S3Session&&)      = delete;
 
     static S3Session& instance();
 
-    NODISCARD
+    [[nodiscard]]
     auto getCredentials(const std::string& endpoint) const -> std::shared_ptr<S3Credential>;
 
     void addCredentials(const S3Credential& credential);
 
     void removeCredentials(const std::string& endpoint);
 
-    NODISCARD
+    void clear();
+
+    [[nodiscard]]
+    auto getClient(const S3Config& config) -> std::shared_ptr<S3Client>;
+
+    void removeClient(const net::Endpoint& endpoint);
+
+    [[nodiscard]]
     auto getContext(S3Types type) -> std::shared_ptr<S3Context>;
 
     void removeContext(S3Types type);
-
-    void clear();
 
 private:  // methods
     S3Session();
 
     ~S3Session();
 
-    NODISCARD
+    [[nodiscard]]
     auto findContext(S3Types type) -> std::shared_ptr<S3Context>;
 
+    [[nodiscard]]
+    auto findClient(const net::Endpoint& endpoint) -> std::shared_ptr<S3Client>;
+
 private:  // members
+    std::list<std::shared_ptr<S3Client>>     client_;
     std::list<std::shared_ptr<S3Context>>    contexts_;
     std::list<std::shared_ptr<S3Credential>> credentials_;
 };

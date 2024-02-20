@@ -15,6 +15,7 @@
 
 #include "eckit/io/s3/S3Client.h"
 
+#include "S3Client.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/io/s3/aws/S3ClientAWS.h"
@@ -23,7 +24,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Client::S3Client(std::shared_ptr<S3Context> context): context_(context) { }
+S3Client::S3Client(const S3Config& config, std::shared_ptr<S3Context> context): config_(config), context_(context) { }
 
 S3Client::~S3Client() = default;
 
@@ -54,6 +55,10 @@ auto S3Client::makeShared(const S3Config& config) -> std::shared_ptr<S3Client> {
 auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
     if (config.type == S3Types::AWS) { return std::make_unique<S3ClientAWS>(config); }
     throw S3SeriousBug("Unkown S3 client type!", Here());
+}
+
+auto S3Client::endpoint() const -> net::Endpoint {
+    return config_.endpoint;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -18,6 +18,7 @@
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Exception.h"
+#include "eckit/io/s3/S3Session.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
@@ -49,7 +50,8 @@ auto S3Name::parseName() const -> std::vector<std::string> {
 }
 
 auto S3Name::client() const -> std::shared_ptr<S3Client> {
-    return S3Client::makeShared({endpoint_});
+    /// @todo
+    return S3Session::instance().getClient({endpoint_});
 }
 
 //----------------------------------------------------------------------------------------------------------------------

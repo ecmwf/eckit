@@ -25,6 +25,16 @@ namespace eckit {
 namespace {
 
 /// @brief Functor for S3Context type
+struct IsClientEndpoint {
+    IsClientEndpoint(const net::Endpoint& endpoint): endpoint_(endpoint) { }
+
+    bool operator()(const std::shared_ptr<S3Client>& client) const { return client->endpoint() == endpoint_; }
+
+private:
+    const net::Endpoint& endpoint_;
+};
+
+/// @brief Functor for S3Context type
 struct IsContextType {
     const S3Types type_;
 
@@ -55,6 +65,33 @@ S3Session& S3Session::instance() {
 S3Session::S3Session() = default;
 
 S3Session::~S3Session() = default;
+
+//----------------------------------------------------------------------------------------------------------------------
+// CLIENT
+
+auto S3Session::getClient(const S3Config& config) -> std::shared_ptr<S3Client> {
+    // return if found
+    if (auto client = findClient(config.endpoint)) { return client; }
+
+    // not found
+    auto client = S3Client::makeShared(config);
+    client_.push_back(client);
+
+    return client;
+}
+
+auto S3Session::findClient(const net::Endpoint& endpoint) -> std::shared_ptr<S3Client> {
+    // search by type
+    const auto client = std::find_if(client_.begin(), client_.end(), IsClientEndpoint(endpoint));
+    // found
+    if (client != client_.end()) { return *client; }
+    // not found
+    return {};
+}
+
+void S3Session::removeClient(const net::Endpoint& endpoint) {
+    client_.remove_if(IsClientEndpoint(endpoint));
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 // CREDENTIALS

@@ -20,7 +20,6 @@
 #pragma once
 
 #include "eckit/io/s3/S3Config.h"
-#include "eckit/io/s3/S3Macros.h"
 
 #include <memory>
 
@@ -30,14 +29,19 @@ namespace eckit {
 
 class S3Context {
 public:  // methods
-    NO_COPY_NO_MOVE(S3Context)
+    S3Context(const S3Context&)            = delete;
+    S3Context& operator=(const S3Context&) = delete;
+    S3Context(S3Context&&)                 = delete;
+    S3Context& operator=(S3Context&&)      = delete;
 
     explicit S3Context(S3Types type);
 
     virtual ~S3Context();
 
-    NODISCARD
-    auto getType() const -> S3Types { return type_; }
+    [[nodiscard]]
+    auto getType() const -> S3Types {
+        return type_;
+    }
 
 private:  // methods
     friend class S3Session;

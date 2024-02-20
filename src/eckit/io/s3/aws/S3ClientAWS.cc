@@ -64,7 +64,7 @@ namespace eckit {
 
 const auto ALLOC_TAG = "S3ClientAWS";
 
-S3ClientAWS::S3ClientAWS(const S3Config& config): S3Client(S3Session::instance().getContext(S3Types::AWS)) {
+S3ClientAWS::S3ClientAWS(const S3Config& config): S3Client(config, S3Session::instance().getContext(S3Types::AWS)) {
     configure(config);
 }
 

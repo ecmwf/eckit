@@ -14,12 +14,15 @@
 /// @date   Jan 2024
 
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/io/s3/S3BucketName.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Handle.h"
 #include "eckit/io/s3/S3ObjectName.h"
 #include "eckit/io/s3/S3Session.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Timer.h"
 #include "eckit/testing/Test.h"
 
 #include <string>
@@ -38,6 +41,23 @@ static const std::string TEST_OBJECT("eckit-s3handle-test-object");
 S3Config cfg("eu-central-1", "127.0.0.1", 9000);
 
 //----------------------------------------------------------------------------------------------------------------------
+
+void writePerformance(S3BucketName& bucket, const int count) {
+    eckit::Timer timer;
+
+    Buffer buffer(1024 * 1024);
+    buffer.zero();
+
+    timer.start();
+    for (int i = 0; i < count; i++) {
+        const auto objName = TEST_OBJECT + std::to_string(i);
+        bucket.makeObject(objName)->put(buffer.data(), buffer.size());
+    }
+    timer.stop();
+
+    std::cout << "Write performance: " << Bytes(buffer.size()) << " x " << count
+              << " objects, rate: " << Bytes(buffer.size() * 1000, timer) << std::endl;
+}
 
 void ensureClean() {
     auto client = S3Client::makeUnique(cfg);
@@ -254,7 +274,7 @@ CASE("S3Handle::read") {
     EXPECT_NO_THROW(handle->close());
 }
 
-CASE("write 1000 objects") {
+CASE("performance: write 1000 objects") {
     ensureClean();
 
     const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET);
@@ -263,12 +283,11 @@ CASE("write 1000 objects") {
 
     EXPECT_NO_THROW(bucket.ensureCreated());
 
-    EXPECT_NO_THROW({
-        for (int i = 0; i < 1000; i++) {
-            const auto objName = TEST_OBJECT + std::to_string(i);
-            bucket.makeObject(objName)->put(TEST_DATA.data(), TEST_DATA.size());
-        }
-    });
+    writePerformance(bucket, 10);
+
+    writePerformance(bucket, 100);
+
+    writePerformance(bucket, 1000);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

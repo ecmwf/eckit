@@ -69,6 +69,7 @@ public:
 private:
     // -- Members
 
+    const size_t N_;
     const pl_type pl_;
     size_t j_;
     size_t Nj_;
@@ -83,6 +84,8 @@ private:
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t j) const override;
+
+    void json(JSON& j) const override;
 
     // -- Class members
     // None

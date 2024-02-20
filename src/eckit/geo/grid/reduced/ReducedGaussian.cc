@@ -19,6 +19,8 @@
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/util.h"
+#include "eckit/log/JSON.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -37,10 +39,11 @@ ReducedGaussian::ReducedGaussian(const Spec& spec) :
 
 ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox) :
     Reduced(bbox),
+    N_(N(pl)),
     pl_(pl),
     j_(0),
-    Nj_(N(pl) * 2),
-    y_(range::GaussianLatitude(N(pl), false).crop(bbox.north, bbox.south)) {
+    Nj_(N_ * 2),
+    y_(range::GaussianLatitude(N_, false).crop(bbox.north, bbox.south)) {
     ASSERT(Nj_ == pl_.size());
     ASSERT(y_);
 }
@@ -84,6 +87,12 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
     }
 
     return x_->values();
+}
+
+
+void ReducedGaussian::json(JSON& j) const {
+    j << "grid";
+    j << (pl_ == util::reduced_octahedral_pl(N_) ? "O" : "N") + std::to_string(N_);
 }
 
 

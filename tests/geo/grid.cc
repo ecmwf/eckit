@@ -106,6 +106,16 @@ CASE("GridFactory::build") {
 
             // EXPECT_EQUAL(n2, n1 / 2);
         }
+
+        {
+            std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "o2"}})));
+            std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("N: 2"));
+            std::unique_ptr<const Grid> grid3(new grid::reduced::ReducedGaussian(pl_type{20, 24, 24, 20}));
+
+            EXPECT(*grid1 == *grid2);
+            EXPECT(*grid2 == *grid3);
+            EXPECT(*grid3 == *grid1);
+        }
     }
 
 

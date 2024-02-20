@@ -19,32 +19,26 @@
 
 #pragma once
 
-#include "eckit/io/s3/S3Context.h"
-#include "eckit/io/s3/S3Macros.h"
-
 #include <aws/core/Aws.h>
-
-#include <memory>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3ContextAWS: public S3Context {
+/// @brief Provides singleton for AWS API init/shutdown
+class S3ContextAWS {
 public:  // methods
     S3ContextAWS(const S3ContextAWS&)            = delete;
     S3ContextAWS& operator=(const S3ContextAWS&) = delete;
     S3ContextAWS(S3ContextAWS&&)                 = delete;
     S3ContextAWS& operator=(S3ContextAWS&&)      = delete;
 
-    explicit S3ContextAWS(const Aws::SDKOptions& options);
-
-    ~S3ContextAWS();
+    static S3ContextAWS& instance();
 
 private:  // methods
-    friend S3Context;
+    explicit S3ContextAWS();
 
-    static auto makeShared() -> std::shared_ptr<S3Context>;
+    ~S3ContextAWS();
 
 private:  // members
     Aws::SDKOptions options_;

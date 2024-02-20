@@ -39,7 +39,7 @@ public:  // methods
 
     static auto makeUnique(const S3Config& config) -> std::unique_ptr<S3Client>;
 
-    virtual auto endpoint() const -> net::Endpoint;
+    virtual auto endpoint() const -> const net::Endpoint&;
 
     virtual void createBucket(const std::string& bucket) const = 0;
 
@@ -73,14 +73,12 @@ public:  // methods
     }
 
 protected:  // methods
-    explicit S3Client(const S3Config& config, std::shared_ptr<S3Context> context);
+    explicit S3Client(const S3Config& config);
 
     virtual void print(std::ostream& out) const;
 
 private:  // members
     S3Config config_;
-
-    std::shared_ptr<S3Context> context_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -15,10 +15,9 @@
 
 #include "eckit/io/s3/S3Session.h"
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/io/s3/S3Credential.h"
-#include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/aws/S3ClientAWS.h"
+#include "eckit/net/Endpoint.h"
 
 namespace eckit {
 
@@ -32,13 +31,6 @@ struct IsClientEndpoint {
 
 private:
     const net::Endpoint& endpoint_;
-};
-
-/// @brief Functor for S3Context type
-struct IsContextType {
-    const S3Types type_;
-
-    bool operator()(const std::shared_ptr<S3Context>& ctx) const { return ctx->getType() == type_; }
 };
 
 /// @brief Functor for S3Credential endpoint
@@ -65,6 +57,13 @@ S3Session& S3Session::instance() {
 S3Session::S3Session() = default;
 
 S3Session::~S3Session() = default;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void S3Session::clear() {
+    client_.clear();
+    credentials_.clear();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 // CLIENT
@@ -116,38 +115,6 @@ void S3Session::addCredentials(const S3Credential& credential) {
 
 void S3Session::removeCredentials(const std::string& endpoint) {
     credentials_.remove_if(IsCredentialEndpoint(endpoint));
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// CONTEXT
-
-auto S3Session::getContext(const S3Types type) -> std::shared_ptr<S3Context> {
-    // return if found
-    if (auto context = findContext(type)) { return context; }
-
-    // not found
-    auto context = S3Context::makeShared(type);
-    contexts_.push_back(context);
-
-    return context;
-}
-
-auto S3Session::findContext(const S3Types type) -> std::shared_ptr<S3Context> {
-    // search by type
-    const auto context = std::find_if(contexts_.begin(), contexts_.end(), IsContextType({type}));
-    // found
-    if (context != contexts_.end()) { return *context; }
-    // not found
-    return {};
-}
-
-void S3Session::removeContext(const S3Types type) {
-    contexts_.remove_if(IsContextType({type}));
-}
-
-void S3Session::clear() {
-    contexts_.clear();
-    credentials_.clear();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

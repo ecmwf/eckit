@@ -15,28 +15,30 @@
 
 #include "eckit/io/s3/aws/S3ContextAWS.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/io/s3/S3Exception.h"
-#include "eckit/io/s3/aws/S3ClientAWS.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3ContextAWS::S3ContextAWS(const Aws::SDKOptions& options): S3Context(S3Types::AWS), options_(options) {
-    Aws::InitAPI(options_);
-}
-
-S3ContextAWS::~S3ContextAWS() {
-    Aws::ShutdownAPI(options_);
+S3ContextAWS& S3ContextAWS::instance() {
+    static S3ContextAWS ctx;
+    return ctx;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3ContextAWS::makeShared() -> std::shared_ptr<S3Context> {
-    Aws::SDKOptions options;
+S3ContextAWS::S3ContextAWS() {
+    LOG_DEBUG_LIB(LibEcKit) << "init AWS API\n";
     /// @todo remove debug stuff below
-    options.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Debug;
-    return std::make_shared<S3ContextAWS>(options);
+    options_.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Debug;
+    Aws::InitAPI(options_);
+}
+
+S3ContextAWS::~S3ContextAWS() {
+    LOG_DEBUG_LIB(LibEcKit) << "shutdown AWS API\n";
+    Aws::ShutdownAPI(options_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

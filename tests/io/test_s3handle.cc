@@ -72,11 +72,9 @@ void ensureClean() {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("invalid bucket") {
-    {
-        EXPECT_THROWS(S3BucketName("http://127.0.0.1:9000/" + TEST_BUCKET));
-        EXPECT_THROWS(S3BucketName("s3://127.0.0.1" + TEST_BUCKET));
-        EXPECT_THROWS(S3BucketName("s3://127.0.0.1/" + TEST_BUCKET));
-    }
+    EXPECT_THROWS(S3BucketName("http://127.0.0.1:9000/" + TEST_BUCKET));
+    EXPECT_THROWS(S3BucketName("s3://127.0.0.1" + TEST_BUCKET));
+    EXPECT_THROWS(S3BucketName("s3://127.0.0.1/" + TEST_BUCKET));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

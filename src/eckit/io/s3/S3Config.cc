@@ -15,6 +15,8 @@
 
 #include "eckit/io/s3/S3Config.h"
 
+#include "eckit/filesystem/URI.h"
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -31,7 +33,17 @@ S3Config::S3Config(const net::Endpoint& e): endpoint(e) { }
 //----------------------------------------------------------------------------------------------------------------------
 
 void S3Config::print(std::ostream& out) const {
-    out << "S3Config[region=" << region << ",endpoint=" << endpoint << "]";
+    out << "S3Config[type=";
+    if (type == S3Types::AWS) {
+        out << "AWS";
+    } else if (type == S3Types::MINIO) {
+        out << "MinIO";
+    } else if (type == S3Types::REST) {
+        out << "REST";
+    } else {
+        out << "NONE";
+    }
+    out << ",region=" << region << ",endpoint=" << endpoint << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

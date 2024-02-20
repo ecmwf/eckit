@@ -64,7 +64,7 @@ namespace eckit {
 
 const auto ALLOC_TAG = "S3ClientAWS";
 
-S3ClientAWS::S3ClientAWS(const S3Config& config): S3Client(config, S3Session::instance().getContext(S3Types::AWS)) {
+S3ClientAWS::S3ClientAWS(const S3Config& config): S3Client(config), ctx_(S3ContextAWS::instance()) {
     configure(config);
 }
 
@@ -105,11 +105,6 @@ void S3ClientAWS::configure(const S3Config& config) {
     } else {
         throw S3SeriousBug("No credentials found!", Here());
     }
-}
-
-void S3ClientAWS::print(std::ostream& out) const {
-    S3Client::print(out);
-    out << "S3ClientAWS[]";
 }
 
 auto S3ClientAWS::getClient() const -> Aws::S3::S3Client& {

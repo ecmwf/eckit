@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "eckit/io/s3/S3Context.h"
 #include "eckit/io/s3/S3Credential.h"
 
 #include <list>
@@ -28,6 +27,11 @@
 namespace eckit {
 
 class S3Client;
+struct S3Config;
+
+namespace net {
+class Endpoint;
+}  // namespace net
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,6 +44,8 @@ public:  // methods
 
     static S3Session& instance();
 
+    void clear();
+
     [[nodiscard]]
     auto getCredentials(const std::string& endpoint) const -> std::shared_ptr<S3Credential>;
 
@@ -47,17 +53,10 @@ public:  // methods
 
     void removeCredentials(const std::string& endpoint);
 
-    void clear();
-
     [[nodiscard]]
     auto getClient(const S3Config& config) -> std::shared_ptr<S3Client>;
 
     void removeClient(const net::Endpoint& endpoint);
-
-    [[nodiscard]]
-    auto getContext(S3Types type) -> std::shared_ptr<S3Context>;
-
-    void removeContext(S3Types type);
 
 private:  // methods
     S3Session();
@@ -65,14 +64,10 @@ private:  // methods
     ~S3Session();
 
     [[nodiscard]]
-    auto findContext(S3Types type) -> std::shared_ptr<S3Context>;
-
-    [[nodiscard]]
     auto findClient(const net::Endpoint& endpoint) -> std::shared_ptr<S3Client>;
 
 private:  // members
     std::list<std::shared_ptr<S3Client>>     client_;
-    std::list<std::shared_ptr<S3Context>>    contexts_;
     std::list<std::shared_ptr<S3Credential>> credentials_;
 };
 

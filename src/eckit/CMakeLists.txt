@@ -298,8 +298,6 @@ io/s3/S3Client.cc
 io/s3/S3Client.h
 io/s3/S3Config.cc
 io/s3/S3Config.h
-io/s3/S3Context.cc
-io/s3/S3Context.h
 io/s3/S3Credential.h
 io/s3/S3Exception.cc
 io/s3/S3Exception.h

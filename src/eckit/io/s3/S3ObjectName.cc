@@ -16,6 +16,7 @@
 #include "eckit/io/s3/S3ObjectName.h"
 
 #include "eckit/config/LibEcKit.h"
+#include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Handle.h"

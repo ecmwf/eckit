@@ -24,23 +24,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Client::S3Client(const S3Config& config, std::shared_ptr<S3Context> context): config_(config), context_(context) { }
+S3Client::S3Client(const S3Config& config): config_(config) { }
 
 S3Client::~S3Client() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void S3Client::print(std::ostream& out) const {
-    out << "S3Client[type=";
-    const auto type = context_->getType();
-    if (type == S3Types::AWS) {
-        out << "AWS";
-    } else if (type == S3Types::REST) {
-        out << "REST";
-    } else {
-        out << "NONE";
-    }
-    out << "]";
+    out << "S3Client[config=" << config_ << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -57,7 +48,7 @@ auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
     throw S3SeriousBug("Unkown S3 client type!", Here());
 }
 
-auto S3Client::endpoint() const -> net::Endpoint {
+auto S3Client::endpoint() const -> const net::Endpoint& {
     return config_.endpoint;
 }
 

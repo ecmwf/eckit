@@ -19,13 +19,15 @@
 
 #pragma once
 
-#include "eckit/filesystem/URI.h"
+#include "eckit/net/Endpoint.h"
 
 #include <string>
 
 namespace eckit {
 
-enum class S3Types { NONE, AWS, REST };
+class URI;
+
+enum class S3Types { NONE, AWS, MINIO, REST };
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -25,11 +25,13 @@
 
 namespace eckit {
 
+class S3ContextAWS;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3ClientAWS: public S3Client {
 public:  // methods
-    S3ClientAWS(const S3Config& config);
+    explicit S3ClientAWS(const S3Config& config);
 
     ~S3ClientAWS();
 
@@ -62,11 +64,11 @@ public:  // methods
     auto objectSize(const std::string& bucket, const std::string& object) const -> long long override;
 
 private:  // methods
-    void print(std::ostream& out) const override;
-
     auto getClient() const -> Aws::S3::S3Client&;
 
 private:  // members
+    const S3ContextAWS& ctx_;
+
     std::unique_ptr<Aws::S3::S3Client> client_;
 };
 

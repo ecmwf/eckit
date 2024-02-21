@@ -60,9 +60,10 @@ public:
 
     std::string str() const;
 
+    virtual void json(JSON&) const = 0;
+
 private:
     virtual void print(std::ostream&) const;
-    virtual void json(JSON&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& out, const Spec& spec) {
         spec.print(out);

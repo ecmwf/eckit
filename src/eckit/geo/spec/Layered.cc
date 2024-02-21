@@ -12,6 +12,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/log/JSON.h"
 #include "eckit/value/Value.h"
 
 
@@ -52,27 +53,34 @@ void Layered::push_front(Spec* spec) {
 
 
 void Layered::print(std::ostream& out) const {
-    const auto* sep = "";
-    out << "Layered[hide[";
+    JSON j(out);
+    j.startObject();
+
+    j << "hide";
+    j.startList();
     for (const auto& name : hide_) {
-        out << sep << name;
-        sep = ",";
+        j << name;
     }
+    j.endList();
 
-    sep = "";
-    out << "],spec=" << spec_ << ",before[";
+    j << "before";
+    j.startList();
     for (const auto& spec : before_) {
-        out << sep << *spec;
-        sep = ",";
+        spec->json(j);
     }
+    j.endList();
 
-    sep = "";
-    out << ",after[";
+    j << "spec";
+    spec_.json(j);
+
+    j << "after";
+    j.startList();
     for (const auto& spec : after_) {
-        out << sep << *spec;
-        sep = ",";
+        spec->json(j);
     }
-    out << "]]";
+    j.endList();
+
+    j.endObject();
 }
 
 

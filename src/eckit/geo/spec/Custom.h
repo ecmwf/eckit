@@ -47,9 +47,6 @@ public:
 
     using container_type = std::map<std::string, value_type>;
 
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit Custom(const container_type& = {});
@@ -60,9 +57,6 @@ public:
     Custom(const Custom&);
     Custom(Custom&&);
 
-    // -- Convertors
-    // None
-
     // -- Operators
 
     Custom& operator=(const Custom&);
@@ -72,6 +66,8 @@ public:
 
     bool empty() const { return map_.empty(); }
     void clear() { map_.clear(); }
+
+    void json(JSON&) const override;
 
     void set(const std::string& name, const char* value) { set(name, std::string{value}); }
 
@@ -111,32 +107,10 @@ public:
     bool get(const std::string& name, std::vector<double>& value) const override;
     bool get(const std::string& name, std::vector<std::string>& value) const override;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
     container_type map_;
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    void json(JSON&) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

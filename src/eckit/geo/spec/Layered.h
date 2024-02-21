@@ -23,25 +23,10 @@ namespace eckit::geo::spec {
 
 class Layered final : public Spec {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     Layered();
     explicit Layered(const Spec&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -79,12 +64,6 @@ public:
     bool get(const std::string& name, std::vector<double>& value) const override { return __get(name, value); }
     bool get(const std::string& name, std::vector<std::string>& value) const override { return __get(name, value); }
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
@@ -114,15 +93,6 @@ private:
 
     void print(std::ostream&) const override;
     void json(JSON&) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

@@ -26,7 +26,10 @@
 
 namespace eckit::geo {
 class Spec;
+namespace spec {
+class Custom;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::spec {
@@ -64,6 +67,16 @@ public:
 
     const generator_t& get(const key_t&) const;
     const generator_t& match(const std::string&) const;
+
+    bool match(const Custom& spec, std::string& name) const {
+        for (const auto& [another_name, another_spec] : store_) {
+            if (another_spec->match(spec)) {
+                name = another_name;
+                return true;
+            }
+        }
+        return false;
+    }
 
 private:
     // -- Constructors
@@ -209,6 +222,10 @@ public:
 
     void operator=(const SpecGenerator&) = delete;
     void operator=(SpecGenerator&&)      = delete;
+
+    // -- Methods
+
+    virtual bool match(const spec::Custom&) const { return false; }
 };
 
 //------------------------------------------------------------------------------------------------------

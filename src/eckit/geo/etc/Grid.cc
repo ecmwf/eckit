@@ -83,6 +83,7 @@ Grid::Grid(const PathName& path) {
         explicit SpecByUIDGenerator(spec::Custom* spec) :
             spec_(spec) {}
         Spec* spec() const override { return new spec::Custom(*spec_); }
+        bool match(const spec::Custom& other) const override { return other == *spec_; }
         std::unique_ptr<spec::Custom> spec_;
     };
 
@@ -90,6 +91,7 @@ Grid::Grid(const PathName& path) {
         explicit SpecByNameGenerator(spec::Custom* spec) :
             spec_(spec) {}
         Spec* spec(SpecByName::generator_t::arg1_t) const override { return new spec::Custom(*spec_); }
+        bool match(const spec::Custom& other) const override { return other == *spec_; }
         std::unique_ptr<spec::Custom> spec_;
     };
 

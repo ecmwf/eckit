@@ -22,13 +22,7 @@
 #define EXPECT_APPROX(a, b, eps) EXPECT(::eckit::types::is_approximately_equal((a), (b), (eps)))
 
 
-namespace eckit::test {
-
-
-using namespace geo;
-
-
-// -----------------------------------------------------------------------------
+namespace eckit::geo::test {
 
 
 CASE("great circle intersections") {
@@ -243,7 +237,6 @@ CASE("great circle intersections") {
     }
 }
 
-// -----------------------------------------------------------------------------
 
 CASE("great circle course") {
     SECTION("Valparaíso-Shanghai") {
@@ -261,9 +254,9 @@ CASE("great circle course") {
     }
 }
 
-// -----------------------------------------------------------------------------
 
-}  // namespace eckit::test
+}  // namespace eckit::geo::test
+
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

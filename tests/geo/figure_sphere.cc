@@ -19,10 +19,7 @@
 #include "eckit/testing/Test.h"
 
 
-namespace eckit::tests {
-
-
-using namespace eckit::geo;
+namespace eckit::geo::test {
 
 
 CASE("unit sphere") {
@@ -267,7 +264,7 @@ CASE("two-unit sphere") {
 }
 
 
-}  // namespace eckit::tests
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

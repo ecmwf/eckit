@@ -30,10 +30,8 @@ area::BoundingBox bounding_box(Point2, Point2, Projection&);
 }
 
 
-namespace eckit::test {
+namespace eckit::geo::test {
 
-
-using namespace geo;
 
 using P = std::unique_ptr<Projection>;
 
@@ -476,7 +474,7 @@ CASE("projection: mercator") {
 }
 
 
-}  // namespace eckit::test
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

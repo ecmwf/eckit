@@ -17,13 +17,7 @@
 #include "eckit/testing/Test.h"
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-namespace eckit::test {
-
-
-using namespace geo;
+namespace eckit::geo::test {
 
 
 CASE("") {
@@ -62,10 +56,7 @@ CASE("") {
 }
 
 
-}  // namespace eckit::test
-
-
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

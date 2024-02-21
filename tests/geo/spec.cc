@@ -30,13 +30,7 @@
            EXPECT_APPROX((a)[3], (b)[3], (eps)))
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-namespace eckit::test {
-
-
-using namespace geo;
+namespace eckit::geo::test {
 
 
 using S = std::unique_ptr<const Spec>;
@@ -327,10 +321,7 @@ CASE("spec") {
 }
 
 
-}  // namespace eckit::test
-
-
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

@@ -17,14 +17,13 @@
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/testing/Test.h"
 
-namespace eckit::test {
 
-
-using namespace geo;
+namespace eckit::geo::test {
 
 
 CASE("Polygon") {
     using geo::polygon::Polygon;
+
 
     SECTION("empty polygon") {
         Polygon poly1;
@@ -32,6 +31,7 @@ CASE("Polygon") {
 
         EXPECT(poly1.sameAs(poly2));
     }
+
 
     SECTION("equality") {
         Polygon poly1;
@@ -56,6 +56,7 @@ CASE("Polygon") {
         poly2.push_back(p2);
         EXPECT(!poly1.sameAs(poly2));
     }
+
 
     SECTION("congruence") {
         Polygon poly1;
@@ -91,8 +92,10 @@ CASE("Polygon") {
     }
 }
 
+
 CASE("LonLatPolygon") {
     using Polygon = geo::polygon::LonLatPolygon;
+
 
     SECTION("Construction") {
         const std::vector<Polygon::value_type> points1{{0, 0}, {1, 1}, {2, 2}, {0, 0}};
@@ -105,6 +108,7 @@ CASE("LonLatPolygon") {
         EXPECT_EQUAL(Polygon(points2).size(), 5);
         EXPECT_EQUAL(Polygon(points2.begin(), points2.end()).size(), 5);
     }
+
 
     SECTION("Contains North pole") {
         const std::vector<Polygon::value_type> points{{0, 90}, {0, 0}, {1, 0}, {1, 90}, {0, 90}};
@@ -122,6 +126,7 @@ CASE("LonLatPolygon") {
         EXPECT_NOT(poly2.contains({10, -90}));
     }
 
+
     SECTION("Contains South pole") {
         const std::vector<Polygon::value_type> points{{0, -90}, {0, 0}, {1, 0}, {1, -90}, {0, -90}};
 
@@ -138,6 +143,7 @@ CASE("LonLatPolygon") {
         EXPECT_NOT(poly2.contains({10, -90}));
     }
 
+
     SECTION("Contains South and North poles") {
         Polygon poly({{0, -90}, {0, 90}, {1, 90}, {1, -90}, {0, -90}});
         EXPECT(poly.contains({0, 90}));
@@ -147,6 +153,7 @@ CASE("LonLatPolygon") {
         EXPECT(poly.contains({0, -90}));
         EXPECT(poly.contains({10, -90}));
     }
+
 
     SECTION("MIR-566: wide polygon") {
         Polygon poly1({{0, 0}, {361, 0}, {361, 2}, {0, 2}, {0, 0}});
@@ -227,11 +234,13 @@ CASE("LonLatPolygon") {
         EXPECT(poly.contains({721, 0}));
     }
 
+
     SECTION("MIR-566: winding number strict check of edges") {
         Polygon poly({{110, -34}, {90, -62}, {100, -59}, {110, -50}, {132, -40}, {110, -34}});
         EXPECT_NOT(poly.contains({90, -40}));
         EXPECT_NOT(poly.contains({90, -34}));
     }
+
 
     SECTION("Simple rectangular polygon") {
         double lonmin = 0;
@@ -244,6 +253,7 @@ CASE("LonLatPolygon") {
 
         Polygon poly({{lonmin, latmax}, {lonmax, latmax}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
 
+
         SECTION("Contains edges") {
             EXPECT(poly.contains({lonmin, latmax}));
             EXPECT(poly.contains({lonmid, latmax}));
@@ -254,6 +264,7 @@ CASE("LonLatPolygon") {
             EXPECT(poly.contains({lonmin, latmin}));
             EXPECT(poly.contains({lonmin, latmid}));
         }
+
 
         SECTION("Contains in/outward of edges") {
             constexpr auto eps = 0.001;
@@ -281,6 +292,7 @@ CASE("LonLatPolygon") {
         EXPECT(poly.contains({lonmid, 180. - latmid}, true));
     }
 
+
     SECTION("Parallelogram") {
         const std::vector<Polygon::value_type> points{{0, 0}, {1, 1}, {2, 1}, {1, 0}, {0, 0}};
         Polygon poly(points);
@@ -291,6 +303,7 @@ CASE("LonLatPolygon") {
         EXPECT_NOT(poly.contains({0, 1}));
         EXPECT_NOT(poly.contains({2, 0}));
     }
+
 
     SECTION("Degenerate polygon") {
         const std::vector<Polygon::value_type> points{{0, 0}, {2, 0}, {2, 0} /*duplicate*/, {0, 2}, {0, 0}};
@@ -305,6 +318,7 @@ CASE("LonLatPolygon") {
             EXPECT_NOT(poly.contains(p));
         }
     }
+
 
     SECTION("Self-intersecting polygon") {
         Polygon poly1({{-1, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}});
@@ -334,6 +348,7 @@ CASE("LonLatPolygon") {
             EXPECT_NOT(poly3.contains({lon + 270, 89.}));
         }
     }
+
 
     SECTION("Partitioning (includePoles=false)") {
         auto mid = [](double a, double b) { return (a + b) / 2.; };
@@ -394,7 +409,9 @@ CASE("LonLatPolygon") {
     }
 }
 
-}  // namespace eckit::test
+
+}  // namespace eckit::geo::test
+
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

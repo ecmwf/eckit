@@ -15,13 +15,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-namespace eckit::test {
-
-
-using namespace geo;
+namespace eckit::geo::test {
 
 
 CASE("Point2 initialisation") {
@@ -130,10 +124,7 @@ CASE("Point2 distance2 comparison") {
 }
 
 
-}  // namespace eckit::test
-
-
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

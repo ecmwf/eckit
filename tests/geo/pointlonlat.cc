@@ -16,13 +16,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-namespace eckit::test {
-
-
-using namespace geo;
+namespace eckit::geo::test {
 
 
 CASE("PointLonLat normalisation") {
@@ -86,10 +80,7 @@ CASE("PointLonLat comparison") {
 }
 
 
-}  // namespace eckit::test
-
-
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

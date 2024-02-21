@@ -11,13 +11,8 @@
 #include "eckit/testing/Test.h"
 
 
-namespace eckit::test {
+namespace eckit::geo::test {
 
-
-using namespace geo;
-
-
-// -----------------------------------------------------------------------------
 
 CASE("normalise angles") {
     EXPECT(0. == normalise_angle(360., 0.));
@@ -62,9 +57,8 @@ CASE("canonicalise on sphere") {
     EXPECT(q2d.y() == 32.);
 }
 
-// -----------------------------------------------------------------------------
 
-}  // namespace eckit::test
+}  // namespace eckit::geo::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

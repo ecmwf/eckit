@@ -14,22 +14,13 @@
 #include "eckit/testing/Test.h"
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-namespace eckit::test {
-
-
-using namespace eckit::geo;
+namespace eckit::geo::test {
 
 
 CASE("") {}
 
 
-}  // namespace eckit::test
-
-
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

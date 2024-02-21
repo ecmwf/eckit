@@ -39,15 +39,10 @@ std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
 }
 
 
-//----------------------------------------------------------------------------------------------------------------------
-
-
-namespace eckit::test {
+namespace eckit::geo::test {
 
 
 constexpr double EPS = 1e-9;
-
-using namespace geo;
 
 
 CASE("eckit::geo::util::linspace") {
@@ -127,10 +122,7 @@ CASE("eckit::geo::util::monotonic_crop") {
 }
 
 
-}  // namespace eckit::test
-
-
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

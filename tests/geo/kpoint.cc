@@ -14,10 +14,7 @@
 #include "eckit/testing/Test.h"
 
 
-namespace eckit::test {
-
-
-using namespace geo;
+namespace eckit::geo::test {
 
 
 CASE("KPoint Inits to Zero") {
@@ -108,9 +105,9 @@ CASE("KPoint distance2 comparison") {
     EXPECT(p1.distance2(zz) < p2.distance2(zz));
 }
 
-}  // namespace eckit::test
 
-//----------------------------------------------------------------------------------------------------------------------
+}  // namespace eckit::geo::test
+
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

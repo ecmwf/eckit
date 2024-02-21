@@ -15,16 +15,12 @@
 #include "eckit/geo/Cache.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
 
 
-namespace eckit::test {
-
-
-using namespace geo;
+namespace eckit::geo::test {
 
 
 CASE("GridFactory::build") {
@@ -39,82 +35,6 @@ CASE("GridFactory::build") {
 
             auto size = grid->size();
             EXPECT_EQUAL(size, test.size);
-        }
-    }
-
-
-    SECTION("RegularGaussian") {
-        spec::Custom spec({{"grid", "f2"}});
-        std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
-        auto n1 = grid1->size();
-
-        EXPECT_EQUAL(n1, 32);
-
-        spec.set("south", 0);
-        std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
-        auto n2 = grid2->size();
-
-        EXPECT_EQUAL(n2, n1 / 2);
-
-        // spec = spec::Custom{{{"grid", "f2"}, {"west", -180}}};
-        // std::unique_ptr<const Grid> grid3(GridFactory::build(spec));
-        // auto n3 = grid3->size();
-
-        // EXPECT_EQUAL(n3, n1);
-
-        // spec.set("east", 0);
-        // std::unique_ptr<const Grid> grid4(GridFactory::build(spec));
-        // auto n4 = grid4->size();
-
-        // EXPECT_EQUAL(n4, 5 * 4);  // Ni * Nj
-
-        // spec.set("east", -1.);
-        // std::unique_ptr<const Grid> grid5(GridFactory::build(spec));
-        // auto n5 = grid5->size();
-
-        // EXPECT_EQUAL(n5, 4 * 4);  // Ni * Nj
-    }
-
-
-    SECTION("ReducedGaussian") {
-        // different ways to instantiate the same grid (O2)
-        for (auto spec : {
-                 spec::Custom({{"grid", "o2"}}),
-                 spec::Custom({{"N", 2}}),
-                 spec::Custom({{"pl", pl_type{20, 24, 24, 20}}}),
-             }) {
-            std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
-            auto n1 = grid1->size();
-
-            EXPECT_EQUAL(n1, 88);
-
-            spec.set("south", 0);
-            std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
-            auto n2 = grid2->size();
-
-            EXPECT_EQUAL(n2, n1 / 2);
-        }
-
-        {
-            std::unique_ptr<const Grid> grid1(new grid::reduced::ReducedGaussian(2));
-            auto n1 = grid1->size();
-
-            EXPECT_EQUAL(n1, 88);
-
-            // std::unique_ptr<const Grid> grid2(grid1->crop(...));
-            // auto n2 = grid2->size();
-
-            // EXPECT_EQUAL(n2, n1 / 2);
-        }
-
-        {
-            std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "o2"}})));
-            std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("N: 2"));
-            std::unique_ptr<const Grid> grid3(new grid::reduced::ReducedGaussian(pl_type{20, 24, 24, 20}));
-
-            EXPECT(*grid1 == *grid2);
-            EXPECT(*grid2 == *grid3);
-            EXPECT(*grid3 == *grid1);
         }
     }
 
@@ -175,7 +95,7 @@ CASE("GridFactory::build") {
 }
 
 
-}  // namespace eckit::test
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

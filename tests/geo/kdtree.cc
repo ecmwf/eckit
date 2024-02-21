@@ -17,7 +17,7 @@
 #include "eckit/testing/Test.h"
 
 
-namespace eckit::test {
+namespace eckit::geo::test {
 
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -295,7 +295,7 @@ CASE("test_kdtree_iterate_empty") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit::test
+}  // namespace eckit::geo::test
 
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);

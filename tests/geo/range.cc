@@ -22,10 +22,7 @@
 #define EXPECT_APPROX(a, b, eps) EXPECT(::eckit::types::is_approximately_equal((a), (b), (eps)))
 
 
-namespace eckit::test {
-
-
-using namespace geo;
+namespace eckit::geo::test {
 
 
 constexpr auto EPS = 1e-3;
@@ -198,7 +195,7 @@ CASE("range::Gaussian") {
 }
 
 
-}  // namespace eckit::test
+}  // namespace eckit::geo::test
 
 
 int main(int argc, char** argv) {

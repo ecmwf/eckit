@@ -10,7 +10,6 @@
  */
 
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Cache.h"
 #include "eckit/geo/util.h"
 
@@ -19,8 +18,6 @@ namespace eckit::geo::util {
 
 
 const pl_type& reduced_octahedral_pl(size_t N) {
-    ASSERT(0 < N && N % 2 == 0);
-
     static CacheT<size_t, pl_type> cache;
     if (cache.contains(N)) {
         return cache[N];

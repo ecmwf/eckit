@@ -41,6 +41,11 @@ SpecNotFound::SpecNotFound(const std::string& name) {
 }
 
 
+std::string Spec::get_string(const std::string& name) const {
+    return _get_t<std::string>(*this, name);
+}
+
+
 bool Spec::get_bool(const std::string& name) const {
     return _get_t<bool>(*this, name);
 }
@@ -56,8 +61,8 @@ long Spec::get_long(const std::string& name) const {
 }
 
 
-std::size_t Spec::get_unsigned(const std::string& name) const {
-    return _get_t<std::size_t>(*this, name);
+size_t Spec::get_unsigned(const std::string& name) const {
+    return _get_t<size_t>(*this, name);
 }
 
 
@@ -66,13 +71,23 @@ double Spec::get_double(const std::string& name) const {
 }
 
 
-std::string Spec::get_string(const std::string& name) const {
-    return _get_t<std::string>(*this, name);
+std::vector<long> Spec::get_long_vector(const std::string& name) const {
+    return _get_t<std::vector<long>>(*this, name);
 }
 
 
-std::vector<long> Spec::get_long_vector(const std::string& name) const {
-    return _get_t<std::vector<long>>(*this, name);
+std::vector<size_t> Spec::get_unsigned_vector(const std::string& name) const {
+    return _get_t<std::vector<size_t>>(*this, name);
+}
+
+
+std::vector<double> Spec::get_double_vector(const std::string& name) const {
+    return _get_t<std::vector<double>>(*this, name);
+}
+
+
+std::string Spec::get_string(const std::string& name, const std::string& _default) const {
+    return _get_d(*this, name, _default);
 }
 
 
@@ -91,7 +106,7 @@ long Spec::get_long(const std::string& name, const long& _default) const {
 }
 
 
-std::size_t Spec::get_unsigned(const std::string& name, const std::size_t& _default) const {
+size_t Spec::get_unsigned(const std::string& name, const size_t& _default) const {
     return _get_d(*this, name, _default);
 }
 
@@ -101,12 +116,17 @@ double Spec::get_double(const std::string& name, const double& _default) const {
 }
 
 
-std::string Spec::get_string(const std::string& name, const std::string& _default) const {
+std::vector<long> Spec::get_long_vector(const std::string& name, const std::vector<long>& _default) const {
     return _get_d(*this, name, _default);
 }
 
 
-std::vector<long> Spec::get_long_vector(const std::string& name, const std::vector<long>& _default) const {
+std::vector<size_t> Spec::get_unsigned_vector(const std::string& name, const std::vector<size_t>& _default) const {
+    return _get_d(*this, name, _default);
+}
+
+
+std::vector<double> Spec::get_double_vector(const std::string& name, const std::vector<double>& _default) const {
     return _get_d(*this, name, _default);
 }
 

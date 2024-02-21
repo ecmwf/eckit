@@ -11,6 +11,9 @@
 
 #include "eckit/geo/spec/Custom.h"
 
+#include <algorithm>
+#include <type_traits>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 #include "eckit/value/Content.h"  // for ValueList, ValueMap
@@ -65,11 +68,11 @@ template <typename T>
 bool __get_s_integral(const Custom::container_type& map, const std::string& name, T& value) {
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
-        return std::holds_alternative<int>(v)           ? __get_s(std::get<int>(v), value)
-               : std::holds_alternative<long>(v)        ? __get_s(std::get<long>(v), value)
-               : std::holds_alternative<long long>(v)   ? __get_s(std::get<long long>(v), value)
-               : std::holds_alternative<std::size_t>(v) ? __get_s(std::get<std::size_t>(v), value)
-                                                        : false;
+        return std::holds_alternative<int>(v)         ? __get_s(std::get<int>(v), value)
+               : std::holds_alternative<long>(v)      ? __get_s(std::get<long>(v), value)
+               : std::holds_alternative<long long>(v) ? __get_s(std::get<long long>(v), value)
+               : std::holds_alternative<size_t>(v)    ? __get_s(std::get<size_t>(v), value)
+                                                      : false;
     }
     return false;
 }
@@ -98,9 +101,8 @@ bool __get_v_integral(const Custom::container_type& map, const std::string& name
         return std::holds_alternative<std::vector<int>>(v)         ? __get_v(std::get<std::vector<int>>(v), value)
                : std::holds_alternative<std::vector<long>>(v)      ? __get_v(std::get<std::vector<long>>(v), value)
                : std::holds_alternative<std::vector<long long>>(v) ? __get_v(std::get<std::vector<long long>>(v), value)
-               : std::holds_alternative<std::vector<std::size_t>>(v)
-                   ? __get_v(std::get<std::vector<std::size_t>>(v), value)
-                   : false;
+               : std::holds_alternative<std::vector<size_t>>(v)    ? __get_v(std::get<std::vector<size_t>>(v), value)
+                                                                   : false;
     }
     return false;
 }
@@ -177,6 +179,23 @@ Custom& Custom::operator=(Custom&& custom) {
 }
 
 
+bool Custom::operator==(const Custom& other) const {
+    auto custom_value_equal = [](const auto& a, const auto& b) -> bool {
+        if constexpr (std::is_same_v<decltype(a), decltype(b)>) {
+            return a == b;
+        }
+        else {
+            return false;
+        }
+    };
+
+    return std::all_of(map_.begin(), map_.end(), [&](const auto& _a) {
+        auto _b = other.map_.find(_a.first);
+        return _b != other.map_.end() && custom_value_equal(_a.second, _b->second);
+    });
+}
+
+
 Custom& Custom::operator=(const Custom& custom) {
     map_ = custom.map_;
     return *this;
@@ -208,7 +227,7 @@ void Custom::set(const std::string& name, long long value) {
 }
 
 
-void Custom::set(const std::string& name, std::size_t value) {
+void Custom::set(const std::string& name, size_t value) {
     map_[name] = value;
 }
 
@@ -238,7 +257,7 @@ void Custom::set(const std::string& name, const std::vector<long long>& value) {
 }
 
 
-void Custom::set(const std::string& name, const std::vector<std::size_t>& value) {
+void Custom::set(const std::string& name, const std::vector<size_t>& value) {
     map_[name] = value;
 }
 
@@ -307,7 +326,7 @@ bool Custom::get(const std::string& name, long long& value) const {
 }
 
 
-bool Custom::get(const std::string& name, std::size_t& value) const {
+bool Custom::get(const std::string& name, size_t& value) const {
     return __get_s_integral(map_, name, value);
 }
 
@@ -337,7 +356,7 @@ bool Custom::get(const std::string& name, std::vector<long long>& value) const {
 }
 
 
-bool Custom::get(const std::string& name, std::vector<std::size_t>& value) const {
+bool Custom::get(const std::string& name, std::vector<size_t>& value) const {
     return __get_v_integral(map_, name, value);
 }
 

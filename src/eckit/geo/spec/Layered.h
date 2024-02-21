@@ -53,13 +53,13 @@ public:
     bool get(const std::string& name, int& value) const override { return __get(name, value); }
     bool get(const std::string& name, long& value) const override { return __get(name, value); }
     bool get(const std::string& name, long long& value) const override { return __get(name, value); }
-    bool get(const std::string& name, std::size_t& value) const override { return __get(name, value); }
+    bool get(const std::string& name, size_t& value) const override { return __get(name, value); }
     bool get(const std::string& name, float& value) const override { return __get(name, value); }
     bool get(const std::string& name, double& value) const override { return __get(name, value); }
     bool get(const std::string& name, std::vector<int>& value) const override { return __get(name, value); }
     bool get(const std::string& name, std::vector<long>& value) const override { return __get(name, value); }
     bool get(const std::string& name, std::vector<long long>& value) const override { return __get(name, value); }
-    bool get(const std::string& name, std::vector<std::size_t>& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::vector<size_t>& value) const override { return __get(name, value); }
     bool get(const std::string& name, std::vector<float>& value) const override { return __get(name, value); }
     bool get(const std::string& name, std::vector<double>& value) const override { return __get(name, value); }
     bool get(const std::string& name, std::vector<std::string>& value) const override { return __get(name, value); }

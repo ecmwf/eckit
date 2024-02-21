@@ -42,21 +42,27 @@ public:
     Spec& operator=(const Spec&) = delete;
     Spec& operator=(Spec&&)      = delete;
 
+    std::string get_string(const std::string& name) const;
     bool get_bool(const std::string& name) const;
     int get_int(const std::string& name) const;
     long get_long(const std::string& name) const;
-    std::size_t get_unsigned(const std::string& name) const;
+    size_t get_unsigned(const std::string& name) const;
     double get_double(const std::string& name) const;
-    std::string get_string(const std::string& name) const;
-    std::vector<long> get_long_vector(const std::string& name) const;
 
+    std::vector<long> get_long_vector(const std::string& name) const;
+    std::vector<size_t> get_unsigned_vector(const std::string& name) const;
+    std::vector<double> get_double_vector(const std::string& name) const;
+
+    std::string get_string(const std::string& name, const std::string&) const;
     bool get_bool(const std::string& name, const bool&) const;
     int get_int(const std::string& name, const int&) const;
     long get_long(const std::string& name, const long&) const;
-    std::size_t get_unsigned(const std::string& name, const std::size_t&) const;
+    size_t get_unsigned(const std::string& name, const size_t&) const;
     double get_double(const std::string& name, const double&) const;
-    std::string get_string(const std::string& name, const std::string&) const;
+
     std::vector<long> get_long_vector(const std::string& name, const std::vector<long>&) const;
+    std::vector<size_t> get_unsigned_vector(const std::string& name, const std::vector<size_t>&) const;
+    std::vector<double> get_double_vector(const std::string& name, const std::vector<double>&) const;
 
     std::string str() const;
 

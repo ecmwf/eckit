@@ -15,8 +15,7 @@ grid_names:
         centralLongitudeInDegrees: 10.
         latitudeOfFirstGridPointInDegrees: 66.982143
         longitudeOfFirstGridPointInDegrees: -35.034024
-        numberOfPointsAlongXAxis: 1000
-        numberOfPointsAlongYAxis: 950
+        dimensions: [1000, 950]
 
     - SMUFF-OPERA-2km:
         type: lambert_azimuthal_equal_area
@@ -26,8 +25,7 @@ grid_names:
         gaussianNumber: 1280
         latitudeOfFirstGridPointInDegrees: 67.035186732680
         longitudeOfFirstGridPointInDegrees: -39.535385563614
-        numberOfPointsAlongXAxis: 1900
-        numberOfPointsAlongYAxis: 2200
+        dimensions: [1900, 2200]
 
     - ORCA2_F: &ORCA2_F
         type: ORCA

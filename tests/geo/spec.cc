@@ -10,7 +10,6 @@
  */
 
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -31,12 +30,6 @@
 
 
 namespace eckit::geo::test {
-
-
-using S = std::unique_ptr<const Spec>;
-using G = std::unique_ptr<const Grid>;
-using C = spec::Custom;
-using v = std::vector<double>;
 
 
 CASE("Spec <- Custom") {
@@ -247,67 +240,69 @@ CASE("Spec <- Layered") {
 
 
 CASE("spec") {
-    static const spec::Custom BAD;
-    ASSERT(BAD.empty());
-
-    static std::pair<C, C> cases[]{
-        {C({{"N", 2}}), C({{"N", 2}, {"type", "reduced_gg"}})},
-        {C({{"area", v{90, -180, -90, 180}}, {"grid", v{2, 2}}}), C({{"type", "regular_ll"}})},
-        {C({{"area", v{90, -180, -90, 180}}}), BAD},
-        {C({{"grid", "B48"}}), BAD},
-        {C({{"grid", "F48"}}), C({{"type", "regular_gg"}})},
-        {C({{"grid", "N48"}}), C({{"type", "reduced_gg"}})},
-        {C({{"grid", "O48"}}), C({{"type", "reduced_gg"}})},
-        {C({{"grid", 48}}), BAD},
-        {C({{"grid", v{2, 2}}}), C({{"grid", v{2, 2}}, {"type", "regular_ll"}})},
-        {C({{"type", "latlon"}, {"grid", v{2, 2}}}), BAD},
-        {C({{"type", "reduced_gg"}, {"grid", "48"}}), BAD},
-        {C({{"type", "reduced_gg"}, {"grid", "F048"}}), BAD},
-        {C({{"type", "reduced_gg"}, {"grid", "N"}}), BAD},
-        {C({{"type", "reduced_gg"}, {"grid", "N048"}}), BAD},
-        {C({{"type", "reduced_gg"}, {"grid", "N48"}}), C({{"type", "reduced_gg"}})},
-        {C({{"type", "reduced_gg"}, {"grid", "O048"}}), BAD},
-        {C({{"type", "reduced_gg"}, {"grid", "O48"}}), C({{"type", "reduced_gg"}})},
-        {C({{"type", "reduced_gg"}, {"grid", 48}}), BAD},
-        {C({{"type", "reduced_gg"}}), BAD},
-        {C({{"type", "reduced_latlon"}, {"grid", 2}}), BAD},
-        {C({{"type", "reduced_ll"}, {"grid", 12}}), BAD},
-        {C({{"type", "regular_gg"}, {"grid", "48"}}), BAD},
-        {C({{"type", "regular_gg"}, {"grid", "F048"}}), BAD},
-        {C({{"type", "regular_gg"}, {"grid", "F48"}}), C({{"type", "regular_gg"}})},
-        {C({{"type", "regular_gg"}, {"grid", "N48"}}), BAD},
-        {C({{"type", "regular_gg"}, {"grid", "O48"}}), BAD},
-        {C({{"type", "regular_gg"}, {"grid", "a"}}), BAD},
-        {C({{"type", "regular_gg"}, {"grid", 48}}), BAD},
-        {C({{"type", "regular_ll"}, {"area", v{90, -180, -90, 180}}}), BAD},
-        {C({{"type", "regular_ll"}, {"grid", "F48"}}), BAD},
-        {C({{"type", "regular_ll"}, {"grid", "a"}}), BAD},
-        {C({{"type", "regular_ll"}, {"grid", 48}}), BAD},
-        {C({{"type", "regular_ll"}, {"grid", std::vector<std::string>{"a", "b"}}}), BAD},
-        {C({{"type", "regular_ll"}, {"grid", v{1, 2, 3}}}), BAD},
-        {C({{"type", "regular_ll"}, {"grid", v{1, 2}}}), C({{"type", "regular_ll"}})},
-        {C({{"type", "regular_ll"}, {"grid", v{1}}}), BAD},
-
-        {C({{"type", "mercator"},
-            {"area", v{31.173058, 262.036499, 14.736453, 284.975281}},
-            {"grid", v{45000.0, 45000.0}},
-            {"lad", 14.0},
-            {"nx", 56},
-            {"ny", 44},
-            {"orientation", 0.0}}),
-         C()},
-    };
-
-
     SECTION("user -> type") {
-        for (const auto& [user, gridspec] : cases) {
+        using C = spec::Custom;
+        using v = std::vector<double>;
+
+        static const C BAD;
+        ASSERT(BAD.empty());
+
+        static std::pair<C, C> tests[]{
+            {C({{"N", 2}}), C({{"N", 2}, {"type", "reduced_gg"}})},
+            {C({{"area", v{90, -180, -90, 180}}, {"grid", v{2, 2}}}), C({{"type", "regular_ll"}})},
+            {C({{"area", v{90, -180, -90, 180}}}), BAD},
+            {C({{"grid", "B48"}}), BAD},
+            {C({{"grid", "F48"}}), C({{"type", "regular_gg"}})},
+            {C({{"grid", "N48"}}), C({{"type", "reduced_gg"}})},
+            {C({{"grid", "O48"}}), C({{"type", "reduced_gg"}})},
+            {C({{"grid", 48}}), BAD},
+            {C({{"grid", v{2, 2}}}), C({{"grid", v{2, 2}}, {"type", "regular_ll"}})},
+            {C({{"type", "latlon"}, {"grid", v{2, 2}}}), BAD},
+            {C({{"type", "reduced_gg"}, {"grid", "48"}}), BAD},
+            {C({{"type", "reduced_gg"}, {"grid", "F048"}}), BAD},
+            {C({{"type", "reduced_gg"}, {"grid", "N"}}), BAD},
+            {C({{"type", "reduced_gg"}, {"grid", "N048"}}), BAD},
+            {C({{"type", "reduced_gg"}, {"grid", "N48"}}), C({{"type", "reduced_gg"}})},
+            {C({{"type", "reduced_gg"}, {"grid", "O048"}}), BAD},
+            {C({{"type", "reduced_gg"}, {"grid", "O48"}}), C({{"type", "reduced_gg"}})},
+            {C({{"type", "reduced_gg"}, {"grid", 48}}), BAD},
+            {C({{"type", "reduced_gg"}}), BAD},
+            {C({{"type", "reduced_latlon"}, {"grid", 2}}), BAD},
+            {C({{"type", "reduced_ll"}, {"grid", 12}}), BAD},
+            {C({{"type", "regular_gg"}, {"grid", "48"}}), BAD},
+            {C({{"type", "regular_gg"}, {"grid", "F048"}}), BAD},
+            {C({{"type", "regular_gg"}, {"grid", "F48"}}), C({{"type", "regular_gg"}})},
+            {C({{"type", "regular_gg"}, {"grid", "N48"}}), BAD},
+            {C({{"type", "regular_gg"}, {"grid", "O48"}}), BAD},
+            {C({{"type", "regular_gg"}, {"grid", "a"}}), BAD},
+            {C({{"type", "regular_gg"}, {"grid", 48}}), BAD},
+            {C({{"type", "regular_ll"}, {"area", v{90, -180, -90, 180}}}), BAD},
+            {C({{"type", "regular_ll"}, {"grid", "F48"}}), BAD},
+            {C({{"type", "regular_ll"}, {"grid", "a"}}), BAD},
+            {C({{"type", "regular_ll"}, {"grid", 48}}), BAD},
+            {C({{"type", "regular_ll"}, {"grid", std::vector<std::string>{"a", "b"}}}), BAD},
+            {C({{"type", "regular_ll"}, {"grid", v{1, 2, 3}}}), BAD},
+            {C({{"type", "regular_ll"}, {"grid", v{1, 2}}}), C({{"type", "regular_ll"}})},
+            {C({{"type", "regular_ll"}, {"grid", v{1}}}), BAD},
+
+            {C({{"type", "mercator"},
+                {"area", v{31.173058, 262.036499, 14.736453, 284.975281}},
+                {"grid", v{45000.0, 45000.0}},
+                {"lad", 14.0},
+                {"nx", 56},
+                {"ny", 44},
+                {"orientation", 0.0}}),
+             C()},
+        };
+
+        for (const auto& [user, gridspec] : tests) {
             Log::info() << user << " -> " << gridspec << std::endl;
 
             try {
-                S spec(GridFactory::spec(user));
+                std::unique_ptr<const Spec> spec(GridFactory::spec(user));
                 EXPECT(spec);
 
-                G grid(GridFactory::build(*spec));
+                std::unique_ptr<const Grid> grid(GridFactory::build(*spec));
                 EXPECT(grid);
             }
             catch (const SpecNotFound& e) {
@@ -317,6 +312,15 @@ CASE("spec") {
                 EXPECT(gridspec.empty() /*BAD*/);
             }
         }
+    }
+
+
+    SECTION("user -> spec -> str") {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "SMUFF-OPERA-2km"}})));
+        EXPECT(grid);
+
+        auto gridspec = grid->spec();
+        EXPECT(gridspec == R"({"grid":"SMUFF-OPERA-2km"})");
     }
 }
 

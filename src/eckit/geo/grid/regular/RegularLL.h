@@ -12,14 +12,13 @@
 
 #pragma once
 
-#include <memory>
-
 #include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/range/RegularLatitude.h"
+#include "eckit/geo/range/RegularLongitude.h"
 
 
 namespace eckit::geo {
 class Increments;
-class Range;
 }  // namespace eckit::geo
 
 
@@ -35,7 +34,6 @@ private:
 
         Increments inc;
         area::BoundingBox bbox;
-        PointLonLat first;
 
         size_t ni = 0;
         size_t nj = 0;
@@ -75,8 +73,8 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override { return internal_.ni; }
-    size_t nj() const override { return internal_.nj; }
+    size_t ni() const override { return lat_.size(); }
+    size_t nj() const override { return lon_.size(); }
 
     // -- Class members
     // None
@@ -88,19 +86,18 @@ public:
 private:
     // -- Members
 
-    const Internal internal_;
-    const std::unique_ptr<Range> range_longitude_;
-    const std::unique_ptr<Range> range_latitude_;
+    const range::RegularLongitude lon_;
+    const range::RegularLatitude lat_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    const std::vector<double>& longitudes() const override;
-    const std::vector<double>& latitudes() const override;
+    const std::vector<double>& longitudes() const override { return lon_.values(); }
+    const std::vector<double>& latitudes() const override { return lat_.values(); }
 
-    void json(JSON&) const override;
+    void spec(spec::Custom&) const override;
 
     // -- Class members
     // None

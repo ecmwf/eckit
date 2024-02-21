@@ -62,6 +62,8 @@ public:
 private:
     // -- Members
 
+    const size_t N_;
+
     std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
 
@@ -72,6 +74,8 @@ private:
 
     const std::vector<double>& longitudes() const override;
     const std::vector<double>& latitudes() const override;
+
+    void spec(spec::Custom&) const override;
 
     // -- Class members
     // None

@@ -34,7 +34,10 @@ namespace eckit {
 class JSON;
 namespace geo {
 class Spec;
+namespace spec {
+class Custom;
 }
+}  // namespace geo
 }  // namespace eckit
 
 
@@ -168,7 +171,7 @@ private:
 
     // -- Methods
 
-    virtual void json(JSON&) const;
+    virtual void spec(spec::Custom&) const;
 
     // -- Overridden methods
     // None

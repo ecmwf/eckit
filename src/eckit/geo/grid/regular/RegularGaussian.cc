@@ -28,6 +28,7 @@ RegularGaussian::RegularGaussian(const Spec& spec) :
 
 RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
     Regular(bbox),
+    N_(N),
     x_(range::RegularLongitude(4 * N, 0., 360.).crop(bbox.west, bbox.east)),
     y_(range::GaussianLatitude(N, false).crop(bbox.north, bbox.south)) {
     ASSERT(x_->size() > 0);
@@ -47,7 +48,7 @@ Grid::iterator RegularGaussian::cend() const {
 
 Spec* RegularGaussian::spec(const std::string& name) {
     auto N = Translator<std::string, size_t>{}(name.substr(1));
-    return new spec::Custom({{"type", "regular_gg"}, {"N", N}, {"ni", 4 * N}});
+    return new spec::Custom({{"type", "regular_gg"}, {"N", N}});
 }
 
 
@@ -58,6 +59,12 @@ const std::vector<double>& RegularGaussian::longitudes() const {
 
 const std::vector<double>& RegularGaussian::latitudes() const {
     return x_->values();
+}
+
+
+void RegularGaussian::spec(spec::Custom& custom) const {
+    ASSERT(!custom.has("grid"));
+    custom.set("grid", "F" + std::to_string(N_));
 }
 
 

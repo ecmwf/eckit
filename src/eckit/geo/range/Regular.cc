@@ -12,6 +12,8 @@
 
 #include "eckit/geo/range/Regular.h"
 
+#include <cmath>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
@@ -26,7 +28,7 @@ static util::recursive_mutex MUTEX;
 
 Fraction Regular::increment() const {
     ASSERT(1 < size());
-    return Fraction((b() - a()) / static_cast<double>(periodic() ? size() : (size() - 1)));
+    return Fraction(std::abs(b() - a()) / static_cast<double>(periodic() ? size() : (size() - 1)));
 }
 
 const std::vector<double>& Regular::values() const {

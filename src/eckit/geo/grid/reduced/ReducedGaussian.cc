@@ -20,7 +20,6 @@
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
-#include "eckit/log/JSON.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -90,9 +89,9 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
 }
 
 
-void ReducedGaussian::json(JSON& j) const {
-    j << "grid";
-    j << (pl_ == util::reduced_octahedral_pl(N_) ? "O" : "N") + std::to_string(N_);
+void ReducedGaussian::spec(spec::Custom& custom) const {
+    ASSERT(!custom.has("grid"));
+    custom.set("grid", (pl_ == util::reduced_octahedral_pl(N_) ? "O" : "N") + std::to_string(N_));
 }
 
 

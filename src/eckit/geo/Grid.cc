@@ -15,14 +15,12 @@
 #include <memory>
 #include <numeric>
 #include <ostream>
-#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/etc/Grid.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 
@@ -47,14 +45,9 @@ Grid::Grid(const area::BoundingBox& bbox) :
 
 
 std::string Grid::spec() const {
-    std::ostringstream ss;
-    JSON j(ss);
-
-    j.startObject();
-    json(j);
-    j.endObject();
-
-    return ss.str();
+    spec::Custom gridspec;
+    this->spec(gridspec);
+    return gridspec.str();
 }
 
 
@@ -128,8 +121,8 @@ Renumber Grid::no_reorder(size_t size) {
 }
 
 
-void Grid::json(JSON&) const {
-    throw NotImplemented("Grid::json");
+void Grid::spec(spec::Custom&) const {
+    throw NotImplemented("Grid::spec");
 }
 
 

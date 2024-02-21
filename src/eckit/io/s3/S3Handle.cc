@@ -46,7 +46,7 @@ Length S3Handle::openForRead() {
     return estimate();
 }
 
-void S3Handle::openForWrite(const Length& length) {
+void S3Handle::openForWrite(const Length& /*length*/) {
     open(Mode::WRITE);
 
     ASSERT(name_.bucketExists());

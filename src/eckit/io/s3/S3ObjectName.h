@@ -34,8 +34,6 @@ public:  // methods
 
     S3ObjectName(const net::Endpoint& endpoint, const std::string& bucket, const std::string& object);
 
-    auto uri() const -> URI;
-
     auto size() const -> long long;
 
     auto exists() const -> bool override;

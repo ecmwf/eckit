@@ -53,10 +53,6 @@ auto S3ObjectName::asString() const -> std::string {
     return S3Name::asString() + "/" + bucket_ + "/" + object_;
 }
 
-auto S3ObjectName::uri() const -> URI {
-    return asString();
-}
-
 auto S3ObjectName::size() const -> long long {
     return client()->objectSize(bucket_, object_);
 }

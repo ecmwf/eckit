@@ -35,8 +35,12 @@ S3Name::~S3Name() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+auto S3Name::uri() const -> URI {
+    return "s3://" + asString();
+}
+
 auto S3Name::asString() const -> std::string {
-    return "s3://" + std::string(endpoint_);
+    return std::string(endpoint_);
 }
 
 void S3Name::print(std::ostream& out) const {

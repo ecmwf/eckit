@@ -48,7 +48,7 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 S3Session& S3Session::instance() {
-    thread_local S3Session session;  // TODO: thread local vs static
+    thread_local S3Session session;
     return session;
 }
 

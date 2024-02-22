@@ -69,12 +69,23 @@ public:
     const generator_t& match(const std::string&) const;
 
     bool match(const Custom& spec, std::string& name) const {
-        for (const auto& [another_name, another_spec] : store_) {
-            if (another_spec->match(spec)) {
-                name = another_name;
-                return true;
+        auto end = store_.cend();
+        auto i   = end;
+        for (auto j = store_.cbegin(); j != end; ++j) {
+            if (!(j->first.empty()) && j->second->match(spec)) {
+                if (i != end) {
+                    throw SeriousBug("Generator matches names '" + i->first + "' and '" + j->first + "'");
+                }
+                i = j;
             }
         }
+
+        if (i != end) {
+            name = i->first;
+            ASSERT(!name.empty());
+            return true;
+        }
+
         return false;
     }
 

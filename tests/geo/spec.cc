@@ -315,12 +315,14 @@ CASE("spec") {
     }
 
 
-    SECTION("user -> spec -> str") {
-        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", "SMUFF-OPERA-2km"}})));
-        EXPECT(grid);
+    SECTION("grid: name -> spec -> grid: name") {
+        for (const std::string name : {"LAEA-EFAS-5km", "SMUFF-OPERA-2km"}) {
+            std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", name}})));
+            EXPECT(grid);
 
-        auto gridspec = grid->spec();
-        EXPECT(gridspec == R"({"grid":"SMUFF-OPERA-2km"})");
+            auto gridspec = grid->spec();
+            EXPECT(gridspec == R"({"grid":")" + name + R"("})");
+        }
     }
 }
 

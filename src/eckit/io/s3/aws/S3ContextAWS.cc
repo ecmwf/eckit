@@ -15,9 +15,6 @@
 
 #include "eckit/io/s3/aws/S3ContextAWS.h"
 
-#include "eckit/config/LibEcKit.h"
-#include "eckit/io/s3/S3Exception.h"
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -30,14 +27,10 @@ S3ContextAWS& S3ContextAWS::instance() {
 //----------------------------------------------------------------------------------------------------------------------
 
 S3ContextAWS::S3ContextAWS() {
-    LOG_DEBUG_LIB(LibEcKit) << "init AWS API\n";
-    /// @todo remove debug stuff below
-    options_.loggingOptions.logLevel = Aws::Utils::Logging::LogLevel::Debug;
     Aws::InitAPI(options_);
 }
 
 S3ContextAWS::~S3ContextAWS() {
-    LOG_DEBUG_LIB(LibEcKit) << "shutdown AWS API\n";
     Aws::ShutdownAPI(options_);
 }
 

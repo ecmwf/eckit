@@ -23,11 +23,28 @@
 namespace eckit::geo::range {
 
 
-static constexpr auto DB = 1e-12;
+RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _ref, double _eps) :
+    Regular(_inc, _a, _b, _ref, _eps) {
+    const Fraction period(360, 1);
+    const Fraction inc(_inc);
+
+    auto n = size();
+    if ((n - 1) * inc >= period) {
+        n -= 1;
+    }
+
+    ASSERT(n * inc <= period);
+    resize(n);
+
+    periodic((n + 1) * inc >= period);
+    b(Fraction(a()) + n * inc);
+}
 
 
 RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) :
     Regular(n, _a, _b, _eps) {
+    static constexpr auto DB = 1e-12;
+
     if (a() < b()) {
         auto new_b = PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB;
         if (types::is_approximately_lesser_or_equal(360., (new_b - a()) * (1. + 1. / static_cast<double>(n)))) {

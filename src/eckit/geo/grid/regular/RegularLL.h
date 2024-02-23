@@ -26,23 +26,6 @@ namespace eckit::geo::grid::regular {
 
 
 class RegularLL final : public Regular {
-private:
-    // -- Types
-
-    struct Internal {
-        Internal(const Increments&, const area::BoundingBox&, const PointLonLat& _ref);
-
-        Increments inc;
-        area::BoundingBox bbox;
-
-        size_t ni = 0;
-        size_t nj = 0;
-    };
-
-    // -- Constructors
-
-    explicit RegularLL(Internal&&);
-
 public:
     // -- Types
     // None

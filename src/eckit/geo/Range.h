@@ -15,11 +15,6 @@
 #include <vector>
 
 
-namespace eckit {
-class Fraction;
-}
-
-
 namespace eckit::geo {
 
 

@@ -17,12 +17,36 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
 
 
-static util::recursive_mutex MUTEX;
+Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) :
+    Range(2, _a, _b, eps), periodic_(false) {
+    ASSERT(0. <= _inc);
+
+    Fraction inc(_inc);
+    Fraction __a(_a);
+    Fraction __b(_b);
+    if (inc == 0 || __b == __a) {
+        a(__a);
+        b(__a);
+        resize(1);
+        return;
+    }
+
+    bool up    = __a < __b;
+    auto shift = (Fraction(_ref) / inc).decimalPart() * inc;
+    auto c     = shift + adjust(__b - shift, inc, !up);
+
+    a(shift + adjust(__a - shift, inc, up));
+    b(__a + ((c - __a) / inc).integralPart() * inc);
+
+    auto n = static_cast<size_t>((Fraction::abs(__b - __a) / inc).integralPart() + 1);
+    resize(n);
+}
 
 
 Fraction Regular::increment() const {
@@ -30,7 +54,9 @@ Fraction Regular::increment() const {
     return Fraction(std::abs(b() - a()) / static_cast<double>(periodic() ? size() : (size() - 1)));
 }
 
+
 const std::vector<double>& Regular::values() const {
+    static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
     if (values_.empty()) {
@@ -39,72 +65,6 @@ const std::vector<double>& Regular::values() const {
     }
 
     return values_;
-}
-
-
-Regular::Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
-    Range(n, a, b, eps), values_(values), periodic_(periodic) {}
-
-
-DiscreteRange::DiscreteRange(double _a, double _b, double _inc, double _ref) :
-    a(_a), b(_b), inc(_inc), periodic(false) {
-    ASSERT(_a <= _b && a <= b);
-    ASSERT(0 <= _inc && 0 <= inc);
-
-    auto adjust = [](const Fraction& target, const Fraction& inc, bool up) -> Fraction {
-        ASSERT(inc > 0);
-
-        auto r = target / inc;
-        auto n = r.integralPart();
-
-        if (!r.integer() && (r > 0) == up) {
-            n += (up ? 1 : -1);
-        }
-
-        return n * inc;
-    };
-
-    if (inc == 0) {
-        b = a;
-        n = 1;
-        return;
-    }
-
-    auto shift = (Fraction(_ref) / inc).decimalPart() * inc;
-    a          = shift + adjust(a - shift, inc, true);
-
-    if (b == a) {
-        b = a;
-    }
-    else {
-        auto c = shift + adjust(b - shift, inc, false);
-        c      = a + ((c - a) / inc).integralPart() * inc;
-        b      = c < a ? a : c;
-    }
-
-    n = static_cast<size_t>(((b - a) / inc).integralPart() + 1);
-
-    ASSERT(a <= b);
-    ASSERT(1 <= n);
-}
-
-
-DiscreteRange::DiscreteRange(double _a, double _b, double _inc, double _ref, double _period) :
-    DiscreteRange(_a, _b, _inc, _ref) {
-    Fraction period(_period);
-    ASSERT(period > 0);
-
-    if ((n - 1) * inc >= period) {
-        n -= 1;
-        ASSERT(n * inc == period || (n - 1) * inc < period);
-
-        b = a + (n - 1) * inc;
-    }
-
-    if (n * inc == period) {
-        periodic = true;
-        b        = a + n * inc;
-    }
 }
 
 

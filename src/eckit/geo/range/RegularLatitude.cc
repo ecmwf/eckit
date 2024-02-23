@@ -20,13 +20,14 @@
 namespace eckit::geo::range {
 
 
-static constexpr auto DB = 1e-12;
+RegularLatitude::RegularLatitude(double _inc, double _a, double _b, double _ref, double _eps) :
+    Regular(_inc, _a, _b, _ref, _eps) {}
 
 
 RegularLatitude::RegularLatitude(size_t n, double _a, double _b, double _eps) :
     Regular(n, _a, _b, _eps) {
-    ASSERT(-90 <= a() && a() <= 90);
-    ASSERT(-90 <= b() && b() <= 90);
+    ASSERT(-90. <= a() && a() <= 90.);
+    ASSERT(-90. <= b() && b() <= 90.);
 }
 
 
@@ -40,15 +41,15 @@ Range* RegularLatitude::crop(double crop_a, double crop_b) const {
     else if (a() < b()) {
         ASSERT(a() <= crop_a && crop_b <= b());  // FIXME do better
 
-        auto inc(increment());
-        auto d  = (a() / inc).decimalPart() * inc;
-        auto _a = adjust(crop_a - d, inc, true) + d;
-        auto _b = adjust(crop_b - d, inc, false) + d;
+        const auto inc(increment());
+        const auto d  = (a() / inc).decimalPart() * inc;
+        const auto _a = adjust(crop_a - d, inc, true) + d;
+        const auto _b = adjust(crop_b - d, inc, false) + d;
 
-        auto nf = (_b - _a) / inc;
+        const auto nf = (_b - _a) / inc;
         ASSERT(nf.integer());
 
-        auto n = static_cast<size_t>(nf.integralPart() + 1);
+        const auto n = static_cast<size_t>(nf.integralPart() + 1);
         ASSERT(0 < n && n <= size());
 
         return new RegularLatitude(n, _a, _b, eps());

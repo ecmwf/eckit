@@ -22,7 +22,8 @@ class RegularLatitude final : public Regular {
 public:
     // -- Constructors
 
-    RegularLatitude(size_t n, double a, double b, double eps = 0.);
+    explicit RegularLatitude(double inc, double a, double b, double ref, double eps = 0.);
+    explicit RegularLatitude(size_t n, double a, double b, double eps = 0.);
 
     // -- Overridden methods
 

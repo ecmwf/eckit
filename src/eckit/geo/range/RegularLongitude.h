@@ -24,7 +24,8 @@ class RegularLongitude final : public Regular {
 public:
     // -- Constructors
 
-    RegularLongitude(size_t n, double a, double b, double eps = 0.);
+    explicit RegularLongitude(double inc, double a, double b, double ref, double eps = 0.);
+    explicit RegularLongitude(size_t n, double a, double b, double eps = 0.);
 
     // -- Overridden methods
 

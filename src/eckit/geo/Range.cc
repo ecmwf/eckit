@@ -12,15 +12,8 @@
 
 #include "eckit/geo/Range.h"
 
-#include <algorithm>
-#include <utility>
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/util.h"
-#include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo {
@@ -41,9 +34,6 @@ void Range::resize(size_t n) {
     ASSERT(n > 0);
     n_ = n;
 }
-
-
-namespace range {}  // namespace range
 
 
 }  // namespace eckit::geo

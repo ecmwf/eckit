@@ -13,22 +13,14 @@
 #pragma once
 
 #include "eckit/geo/Range.h"
-#include "eckit/types/Fraction.h"
+
+
+namespace eckit {
+class Fraction;
+}
 
 
 namespace eckit::geo::range {
-
-
-struct DiscreteRange {
-    DiscreteRange(double a, double b, double inc, double ref);
-    DiscreteRange(double a, double b, double inc, double ref, double period);
-
-    Fraction a;
-    Fraction b;
-    Fraction inc;
-    size_t n;
-    bool periodic;
-};
 
 
 class Regular : public Range {
@@ -45,10 +37,13 @@ public:
 protected:
     // -- Constructors
 
-    Regular(size_t n, double a, double b, double eps) :
+    explicit Regular(double inc, double a, double b, double ref, double eps);
+
+    explicit Regular(size_t n, double a, double b, double eps) :
         Range(n, a, b, eps), periodic_(false) {}
 
-    Regular(size_t n, double a, double b, std::vector<double>&&, bool periodic, double eps);
+    explicit Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
+        Range(n, a, b, eps), values_(values), periodic_(periodic) {}
 
     // -- Methods
 

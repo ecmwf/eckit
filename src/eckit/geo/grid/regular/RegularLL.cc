@@ -15,27 +15,15 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/iterator/Regular.h"
-#include "eckit/geo/range/Regular.h"
+#include "eckit/geo/range/RegularLatitude.h"
+#include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/regex.h"
+#include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
-
-
-RegularLL::Internal::Internal(const Increments& _inc, const area::BoundingBox& _bbox, const PointLonLat& _ref) :
-    inc(_inc), bbox(_bbox) {
-    const range::DiscreteRange lon(bbox.west, bbox.east, inc.west_east, _ref.lon, 360);
-    const range::DiscreteRange lat(bbox.south, bbox.north, inc.south_north, _ref.lat);
-
-    ni = lon.n;
-    nj = lat.n;
-    ASSERT(ni > 0);
-    ASSERT(nj > 0);
-
-    bbox = {lat.b, lon.a, lat.a, lon.b};
-}
 
 
 RegularLL::RegularLL(const Spec& spec) :
@@ -54,13 +42,9 @@ RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox) :
 
 
 RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref) :
-    RegularLL(Internal{inc, bbox, ref}) {}
-
-
-RegularLL::RegularLL(Internal&& internal) :
-    Regular(internal.bbox),
-    lon_(internal.ni, internal.bbox.west, internal.bbox.east),
-    lat_(internal.nj, internal.bbox.north, internal.bbox.south) {
+    Regular(bbox),
+    lon_(inc.west_east, bbox.west, bbox.east, ref.lon),
+    lat_(inc.south_north, bbox.north, bbox.south, ref.lat) {
     ASSERT(size() > 0);
 }
 

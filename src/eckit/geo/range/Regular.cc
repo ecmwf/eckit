@@ -17,7 +17,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
@@ -54,6 +53,66 @@ Fraction Regular::adjust(const Fraction& target, const Fraction& inc, bool up) {
     auto n = r.integralPart() + ((r.integer() || (r > 0) != up) ? 0 : up ? 1 : -1);
 
     return n * inc;
+}
+
+DiscreteRange::DiscreteRange(const Fraction& _a, const Fraction& _b, const Fraction& _inc, const Fraction& _ref) :
+    inc(_inc), periodic(false) {
+    ASSERT(_a <= _b);
+    ASSERT(_inc >= 0);
+
+    auto adjust = [](const Fraction& target, const Fraction& inc, bool up) -> Fraction {
+        ASSERT(inc > 0);
+
+        auto r = target / inc;
+        auto n = r.integralPart();
+
+        if (!r.integer() && (r > 0) == up) {
+            n += (up ? 1 : -1);
+        }
+
+        return n * inc;
+    };
+
+    if (inc == 0) {
+        b = a = _a;
+        n     = 1;
+        return;
+    }
+
+    auto shift = (_ref / inc).decimalPart() * _inc;
+    a          = shift + adjust(_a - shift, inc, true);
+
+    if (_b == _a) {
+        b = a;
+    }
+    else {
+        auto c = shift + adjust(_b - shift, inc, false);
+        c      = a + ((c - a) / inc).integralPart() * inc;
+        b      = c < a ? a : c;
+    }
+
+    n = static_cast<size_t>(((b - a) / inc).integralPart() + 1);
+
+    ASSERT(a <= b);
+    ASSERT(n >= 1);
+}
+
+DiscreteRange::DiscreteRange(
+    const Fraction& _a, const Fraction& _b, const Fraction& _inc, const Fraction& _ref, const Fraction& period) :
+    DiscreteRange(_a, _b, _inc, _ref) {
+    ASSERT(period > 0);
+
+    if ((n - 1) * inc >= period) {
+        n -= 1;
+        ASSERT(n * inc == period || (n - 1) * inc < period);
+
+        b = a + (n - 1) * inc;
+    }
+
+    if (n * inc == period) {
+        periodic = true;
+        b        = a + n * inc;
+    }
 }
 
 

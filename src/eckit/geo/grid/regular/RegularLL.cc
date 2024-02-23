@@ -15,110 +15,19 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/iterator/Regular.h"
+#include "eckit/geo/range/Regular.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/regex.h"
-#include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
 
 
-namespace {
-
-
-struct DiscreteRange {
-    DiscreteRange(double _a, double _b, double _inc, double _ref) :
-        DiscreteRange(Fraction{_a}, Fraction{_b}, Fraction{_inc}, Fraction{_ref}) {}
-
-    DiscreteRange(double _a, double _b, double _inc, double _ref, double period) :
-        DiscreteRange(Fraction{_a}, Fraction{_b}, Fraction{_inc}, Fraction{_ref}, Fraction{period}) {}
-
-    DiscreteRange(const Fraction& _a, const Fraction& _b, const Fraction& _inc, const Fraction& _ref) :
-        inc(_inc), periodic(false) {
-        ASSERT(_a <= _b);
-        ASSERT(_inc >= 0);
-
-        auto adjust = [](const Fraction& target, const Fraction& inc, bool up) -> Fraction {
-            ASSERT(inc > 0);
-
-            auto r = target / inc;
-            auto n = r.integralPart();
-
-            if (!r.integer() && (r > 0) == up) {
-                n += (up ? 1 : -1);
-            }
-
-            return n * inc;
-        };
-
-        if (inc == 0) {
-            b = a = _a;
-            n     = 1;
-            return;
-        }
-
-        auto shift = (_ref / inc).decimalPart() * _inc;
-        a          = shift + adjust(_a - shift, inc, true);
-
-        if (_b == _a) {
-            b = a;
-        }
-        else {
-            auto c = shift + adjust(_b - shift, inc, false);
-            c      = a + ((c - a) / inc).integralPart() * inc;
-            b      = c < a ? a : c;
-        }
-
-        n = static_cast<size_t>(((b - a) / inc).integralPart() + 1);
-
-        ASSERT(a <= b);
-        ASSERT(n >= 1);
-    }
-
-    DiscreteRange(
-        const Fraction& _a, const Fraction& _b, const Fraction& _inc, const Fraction& _ref, const Fraction& period) :
-        DiscreteRange(_a, _b, _inc, _ref) {
-        ASSERT(period > 0);
-
-        if ((n - 1) * inc >= period) {
-            n -= 1;
-            ASSERT(n * inc == period || (n - 1) * inc < period);
-
-            b = a + (n - 1) * inc;
-        }
-
-        if (n * inc == period) {
-            periodic = true;
-            b        = a + n * inc;
-        }
-    }
-
-    Fraction a;
-    Fraction b;
-    Fraction inc;
-    size_t n;
-    bool periodic;
-};
-
-
-PointLonLat reference_from_spec(const Spec& spec) {
-    if (double lon = 0, lat = 0; spec.get("reference_lon", lon) && spec.get("reference_lat", lat)) {
-        return {lon, lat};
-    }
-
-    area::BoundingBox area(spec);
-    return {area.west, area.south};
-}
-
-
-}  // namespace
-
-
 RegularLL::Internal::Internal(const Increments& _inc, const area::BoundingBox& _bbox, const PointLonLat& _ref) :
     inc(_inc), bbox(_bbox) {
-    const DiscreteRange lon(bbox.west, bbox.east, inc.west_east, _ref.lon, 360);
-    const DiscreteRange lat(bbox.south, bbox.north, inc.south_north, _ref.lat);
+    const range::DiscreteRange lon(bbox.west, bbox.east, inc.west_east, _ref.lon, 360);
+    const range::DiscreteRange lat(bbox.south, bbox.north, inc.south_north, _ref.lat);
 
     ni = lon.n;
     nj = lat.n;
@@ -130,7 +39,14 @@ RegularLL::Internal::Internal(const Increments& _inc, const area::BoundingBox& _
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(Increments{spec}, area::BoundingBox{spec}, reference_from_spec(spec)) {}
+    RegularLL(Increments{spec}, area::BoundingBox{spec}, [&spec]() -> PointLonLat {
+        if (double lon = 0., lat = 0.; spec.get("reference_lon", lon) && spec.get("reference_lat", lat)) {
+            return {lon, lat};
+        }
+
+        area::BoundingBox area{spec};
+        return {area.west, area.south};
+    }()) {}
 
 
 RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox) :

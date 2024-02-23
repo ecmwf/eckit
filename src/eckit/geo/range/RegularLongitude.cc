@@ -39,7 +39,7 @@ RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _re
     resize(n);
 
     periodic((n + 1) * inc >= PERIOD);
-    b(Fraction(a()) + n * inc);
+    b(Fraction(a()) + (periodic() ? n : n - 1) * inc);
 }
 
 

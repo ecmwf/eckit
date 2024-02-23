@@ -20,7 +20,7 @@
 namespace eckit::geo::test {
 
 
-CASE("") {
+CASE("global") {
     std::unique_ptr<Grid> global(new grid::regular::RegularLL(spec::Custom{{{"grid", std::vector<double>{1, 1}}}}));
 
     size_t global_size = global->size();
@@ -32,11 +32,41 @@ CASE("") {
     size_t local_size = local->size();
     EXPECT_EQUAL(local_size, 5 * 10);
 
-    std::unique_ptr<Grid> almost_global(new grid::regular::RegularLL(
-        spec::Custom{{{"grid", std::vector<double>{1, 1}}, {"area", std::vector<double>{89.5, 0., -89.5, 359.1}}}}));
+    std::unique_ptr<Grid> almost_global(new grid::regular::RegularLL({1, 1}, {89.5, 0., -89.5, 359.1}));
 
     size_t almost_global_size = almost_global->size();
     EXPECT_EQUAL(almost_global_size, 360 * 180);
+}
+
+
+CASE("non-global") {
+    /*
+     *  1  .  .  .  .
+     *  0
+     * -1  .  .  .  .
+     *    -1  0  1  2
+     */
+    grid::regular::RegularLL grid({1, 2}, {1, -1, -1, 2});
+
+    const std::vector<Point> ref{
+        PointLonLat{-1, 1},
+        PointLonLat{0, 1},
+        PointLonLat{1, 1},
+        PointLonLat{2, 1},
+        PointLonLat{-1, -1},
+        PointLonLat{0, -1},
+        PointLonLat{1, -1},
+        PointLonLat{2, -1},
+    };
+
+    auto points = grid.to_points();
+
+    EXPECT(points.size() == grid.size());
+    ASSERT(points.size() == ref.size());
+
+    for (size_t i = 0; i < points.size(); ++i) {
+        EXPECT(points_equal(points[i], ref[i]));
+    }
 }
 
 

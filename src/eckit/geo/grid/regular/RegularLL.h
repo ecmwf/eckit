@@ -56,8 +56,8 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override { return lat_.size(); }
-    size_t nj() const override { return lon_.size(); }
+    size_t ni() const override { return lon_.size(); }
+    size_t nj() const override { return lat_.size(); }
 
     // -- Class members
     // None

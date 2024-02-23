@@ -21,8 +21,8 @@ namespace eckit::geo {
 
 Range::Range(size_t n, double _a, double _b, double _eps) :
     n_(n), a_(_a), b_(_b), eps_(_eps) {
-    ASSERT(n > 0);
-    ASSERT(eps_ >= 0);
+    ASSERT(0 < n);
+    ASSERT(0. <= eps_);
     if (types::is_approximately_equal(_a, _b)) {
         n_ = 1;
         b(_a);
@@ -31,7 +31,7 @@ Range::Range(size_t n, double _a, double _b, double _eps) :
 
 
 void Range::resize(size_t n) {
-    ASSERT(n > 0);
+    ASSERT(0 < n);
     n_ = n;
 }
 

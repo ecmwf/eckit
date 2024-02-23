@@ -27,12 +27,11 @@ Regular::Regular(const Grid& grid, size_t index) :
     i_(0),
     j_(0),
     index_(index),
-    ni_(grid_.ni()),
-    nj_(grid_.nj()),
+    ni_(longitudes_.size()),
+    nj_(latitudes_.size()),
     index_size_(ni_ * nj_) {
-    if (index_ < index_size_) {
-        ASSERT(latitudes_.size() == grid_.nj());
-    }
+    ASSERT(longitudes_.size() == grid_.ni());
+    ASSERT(latitudes_.size() == grid_.nj());
 }
 
 

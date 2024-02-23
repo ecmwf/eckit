@@ -17,9 +17,10 @@
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/types/Fraction.h"
 
 
-#define EXPECT_APPROX(a, b, eps) EXPECT(::eckit::types::is_approximately_equal((a), (b), (eps)))
+#define EXPECT_APPROX(a, b, eps) EXPECT(::eckit::types::is_approximately_equal<double>((a), (b), (eps)))
 
 
 namespace eckit::geo::test {
@@ -40,8 +41,20 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
 
 CASE("range::RegularLongitude") {
     SECTION("simple") {
-        const range::RegularLongitude range(1., -1., 2.);
-        EXPECT(range.size() == 4);
+        const range::RegularLongitude range1(1., -1., 2.);
+
+        EXPECT(range1.size() == 4);
+
+        EXPECT_APPROX(range1.a(), -1., EPS);
+        EXPECT_APPROX(range1.b(), 2., EPS);
+        EXPECT_APPROX(range1.increment(), 1., EPS);
+
+        const auto& values = range1.values();
+
+        EXPECT_APPROX(values[0], -1., EPS);
+        EXPECT_APPROX(values[1], 0., EPS);
+        EXPECT_APPROX(values[2], 1., EPS);
+        EXPECT_APPROX(values[3], 2., EPS);
     }
 
 

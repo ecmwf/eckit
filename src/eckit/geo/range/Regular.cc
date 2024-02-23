@@ -46,19 +46,10 @@ Regular::Regular(size_t n, double a, double b, std::vector<double>&& values, boo
     Range(n, a, b, eps), values_(values), periodic_(periodic) {}
 
 
-Fraction Regular::adjust(const Fraction& target, const Fraction& inc, bool up) {
-    ASSERT(inc > 0);
-
-    auto r = target / inc;
-    auto n = r.integralPart() + ((r.integer() || (r > 0) != up) ? 0 : up ? 1 : -1);
-
-    return n * inc;
-}
-
-DiscreteRange::DiscreteRange(const Fraction& _a, const Fraction& _b, const Fraction& _inc, const Fraction& _ref) :
-    inc(_inc), periodic(false) {
-    ASSERT(_a <= _b);
-    ASSERT(_inc >= 0);
+DiscreteRange::DiscreteRange(double _a, double _b, double _inc, double _ref) :
+    a(_a), b(_b), inc(_inc), periodic(false) {
+    ASSERT(_a <= _b && a <= b);
+    ASSERT(0 <= _inc && 0 <= inc);
 
     auto adjust = [](const Fraction& target, const Fraction& inc, bool up) -> Fraction {
         ASSERT(inc > 0);
@@ -74,19 +65,19 @@ DiscreteRange::DiscreteRange(const Fraction& _a, const Fraction& _b, const Fract
     };
 
     if (inc == 0) {
-        b = a = _a;
-        n     = 1;
+        b = a;
+        n = 1;
         return;
     }
 
-    auto shift = (_ref / inc).decimalPart() * _inc;
-    a          = shift + adjust(_a - shift, inc, true);
+    auto shift = (Fraction(_ref) / inc).decimalPart() * inc;
+    a          = shift + adjust(a - shift, inc, true);
 
-    if (_b == _a) {
+    if (b == a) {
         b = a;
     }
     else {
-        auto c = shift + adjust(_b - shift, inc, false);
+        auto c = shift + adjust(b - shift, inc, false);
         c      = a + ((c - a) / inc).integralPart() * inc;
         b      = c < a ? a : c;
     }
@@ -94,12 +85,13 @@ DiscreteRange::DiscreteRange(const Fraction& _a, const Fraction& _b, const Fract
     n = static_cast<size_t>(((b - a) / inc).integralPart() + 1);
 
     ASSERT(a <= b);
-    ASSERT(n >= 1);
+    ASSERT(1 <= n);
 }
 
-DiscreteRange::DiscreteRange(
-    const Fraction& _a, const Fraction& _b, const Fraction& _inc, const Fraction& _ref, const Fraction& period) :
+
+DiscreteRange::DiscreteRange(double _a, double _b, double _inc, double _ref, double _period) :
     DiscreteRange(_a, _b, _inc, _ref) {
+    Fraction period(_period);
     ASSERT(period > 0);
 
     if ((n - 1) * inc >= period) {
@@ -113,6 +105,16 @@ DiscreteRange::DiscreteRange(
         periodic = true;
         b        = a + n * inc;
     }
+}
+
+
+Fraction Regular::adjust(const Fraction& target, const Fraction& inc, bool up) {
+    ASSERT(inc > 0);
+
+    auto r = target / inc;
+    auto n = r.integralPart() + ((r.integer() || (r > 0) != up) ? 0 : up ? 1 : -1);
+
+    return n * inc;
 }
 
 

@@ -19,21 +19,10 @@
 namespace eckit::geo::range {
 
 
-class DiscreteRange {
-public:
-    DiscreteRange(double _a, double _b, double _inc, double _ref) :
-        DiscreteRange(Fraction{_a}, Fraction{_b}, Fraction{_inc}, Fraction{_ref}) {}
+struct DiscreteRange {
+    DiscreteRange(double a, double b, double inc, double ref);
+    DiscreteRange(double a, double b, double inc, double ref, double period);
 
-    DiscreteRange(double _a, double _b, double _inc, double _ref, double period) :
-        DiscreteRange(Fraction{_a}, Fraction{_b}, Fraction{_inc}, Fraction{_ref}, Fraction{period}) {}
-
-private:
-    DiscreteRange(const Fraction& _a, const Fraction& _b, const Fraction& _inc, const Fraction& _ref);
-
-    DiscreteRange(
-        const Fraction& _a, const Fraction& _b, const Fraction& _inc, const Fraction& _ref, const Fraction& period);
-
-public:
     Fraction a;
     Fraction b;
     Fraction inc;

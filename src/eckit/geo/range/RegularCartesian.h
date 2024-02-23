@@ -23,7 +23,7 @@ public:
     // -- Constructors
 
     RegularCartesian(size_t n, double a, double b, double eps = 0.) :
-        Regular(n, a, b, eps) {}
+        Regular(n, a, b, false, eps) {}
 
     // -- Overridden methods
 

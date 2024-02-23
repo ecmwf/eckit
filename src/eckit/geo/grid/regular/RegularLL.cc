@@ -34,7 +34,9 @@ RegularLL::RegularLL(const Spec& spec) :
 
         area::BoundingBox area{spec};
         return {area.west, area.south};
-    }()) {}
+    }()) {
+    ASSERT(size() > 0);
+}
 
 
 RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox) :
@@ -43,8 +45,8 @@ RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox) :
 
 RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref) :
     Regular(bbox),
-    lon_(inc.west_east, bbox.west, bbox.east, ref.lon),
-    lat_(inc.south_north, bbox.north, bbox.south, ref.lat) {
+    lon_(inc.west_east, bbox.west, bbox.east, ref.lon, 0.),
+    lat_(inc.south_north, bbox.north, bbox.south, ref.lat, 0.) {
     ASSERT(size() > 0);
 }
 

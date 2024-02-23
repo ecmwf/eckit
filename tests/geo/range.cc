@@ -39,16 +39,22 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
 
 
 CASE("range::RegularLongitude") {
-    SECTION("degenerate") {
-        EXPECT_THROWS_AS(range::RegularLongitude(0, 0., 0.), eckit::AssertionFailed);
-        EXPECT_THROWS_AS(range::RegularLongitude(0, 0., 10.), eckit::AssertionFailed);
+    SECTION("simple") {
+        const range::RegularLongitude range(1., -1., 2.);
+        EXPECT(range.size() == 4);
+    }
 
-        range::RegularLongitude range1(1, 1., 1.);
+
+    SECTION("degenerate") {
+        EXPECT_THROWS_AS(range::RegularLongitude(static_cast<size_t>(0), 0., 0.), eckit::AssertionFailed);
+        EXPECT_THROWS_AS(range::RegularLongitude(static_cast<size_t>(0), 0., 10.), eckit::AssertionFailed);
+
+        range::RegularLongitude range1(static_cast<size_t>(1), 1., 1.);
 
         EXPECT(range1.size() == 1);
         EXPECT(range1.values().front() == 1.);
 
-        range::RegularLongitude range2(2, 2., 2.);
+        range::RegularLongitude range2(static_cast<size_t>(2), 2., 2.);
 
         EXPECT(range2.size() == 1);
         EXPECT(range2.values().front() == 2.);
@@ -56,7 +62,7 @@ CASE("range::RegularLongitude") {
 
 
     SECTION("range [-90, 90]") {
-        const range::RegularLongitude range(3, -90., 90.);
+        const range::RegularLongitude range(static_cast<size_t>(3), -90., 90.);
 
         EXPECT(range.size() == 3);
 
@@ -71,7 +77,7 @@ CASE("range::RegularLongitude") {
 
 
     SECTION("range [-180, 180]") {
-        const range::RegularLongitude range1(4, -180., 180.);
+        const range::RegularLongitude range1(static_cast<size_t>(4), -180., 180.);
 
         EXPECT(range1.size() == 4);
 
@@ -84,7 +90,7 @@ CASE("range::RegularLongitude") {
         EXPECT_APPROX(values1[2], 0., EPS);
         EXPECT_APPROX(values1[3], 90., EPS);
 
-        const range::RegularLongitude range2(8, 180., -180.);
+        const range::RegularLongitude range2(static_cast<size_t>(8), 180., -180.);
 
         EXPECT(range2.size() == 8);
 
@@ -101,7 +107,7 @@ CASE("range::RegularLongitude") {
 
 
     SECTION("range [0, 360], cropped") {
-        auto range = range::RegularLongitude(36, 0., 360.);
+        auto range = range::RegularLongitude(static_cast<size_t>(36), 0., 360.);
         // const std::unique_ptr<Range> range1(range.crop(-180., 180.));
 
         // std::cout << range1->values() << std::endl;
@@ -122,7 +128,7 @@ CASE("range::RegularLongitude") {
 
 
     SECTION("range [0, 180], cropped") {
-        auto range = range::RegularLongitude(19, 0., 180.);
+        auto range = range::RegularLongitude(static_cast<size_t>(19), 0., 180.);
         const std::unique_ptr<Range> range1(range.crop(1., 179.));
 
         EXPECT(range1->size() == 19 - 2);

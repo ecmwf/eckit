@@ -13,9 +13,9 @@
 #include "eckit/geo/range/RegularLongitude.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
@@ -23,49 +23,28 @@
 namespace eckit::geo::range {
 
 
+static const Fraction PERIOD(360, 1);
+
+
 RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _ref, double _eps) :
     Regular(_inc, _a, _b, _ref, _eps) {
-    const Fraction period(360, 1);
     const Fraction inc(_inc);
 
     auto n = size();
-    if ((n - 1) * inc >= period) {
+    if ((n - 1) * inc >= PERIOD) {
         n -= 1;
     }
 
-    ASSERT(n * inc <= period);
+    ASSERT(n * inc <= PERIOD);
     resize(n);
 
-    periodic((n + 1) * inc >= period);
+    periodic((n + 1) * inc >= PERIOD);
     b(Fraction(a()) + n * inc);
 }
 
 
 RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) :
-    Regular(n, _a, _b, _eps) {
-    static constexpr auto DB = 1e-12;
-
-    if (a() < b()) {
-        auto new_b = PointLonLat::normalise_angle_to_minimum(b() - DB, a()) + DB;
-        if (types::is_approximately_lesser_or_equal(360., (new_b - a()) * (1. + 1. / static_cast<double>(n)))) {
-            periodic(true);
-            b(a() + 360.);
-        }
-        else {
-            b(new_b);
-        }
-    }
-    else {
-        auto new_b = PointLonLat::normalise_angle_to_maximum(b() + DB, a()) - DB;
-        if (types::is_approximately_lesser_or_equal(360., (a() - new_b) * (1. + 1. / static_cast<double>(n)))) {
-            periodic(true);
-            b(a() - 360.);
-        }
-        else {
-            b(new_b);
-        }
-    }
-}
+    Regular(n, _a, _b, types::is_approximately_lesser_or_equal<double>(PERIOD, std::abs(_b - _a)), _eps) {}
 
 
 Range* RegularLongitude::crop(double crop_a, double crop_b) const {
@@ -86,7 +65,7 @@ Range* RegularLongitude::crop(double crop_a, double crop_b) const {
         auto nf = (_b - _a) / inc;
         ASSERT(nf.integer());
 
-        auto n = static_cast<size_t>(nf.integralPart() + (nf * inc >= 360 ? 0 : 1));
+        auto n = static_cast<size_t>(nf.integralPart() + (nf * inc >= PERIOD ? 0 : 1));
         ASSERT(0 < n && n <= size());
 
         return new RegularLongitude(n, _a, _b, eps());

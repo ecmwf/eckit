@@ -25,7 +25,7 @@ RegularLatitude::RegularLatitude(double _inc, double _a, double _b, double _ref,
 
 
 RegularLatitude::RegularLatitude(size_t n, double _a, double _b, double _eps) :
-    Regular(n, _a, _b, _eps) {
+    Regular(n, _a, _b, false, _eps) {
     ASSERT(-90. <= a() && a() <= 90.);
     ASSERT(-90. <= b() && b() <= 90.);
 }

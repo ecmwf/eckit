@@ -21,21 +21,21 @@ namespace eckit::geo::test {
 
 
 CASE("global") {
-    std::unique_ptr<Grid> global(new grid::regular::RegularLL(spec::Custom{{{"grid", std::vector<double>{1, 1}}}}));
+    std::unique_ptr<Grid> grid1(new grid::regular::RegularLL(spec::Custom{{{"grid", std::vector<double>{1, 1}}}}));
 
-    size_t global_size = global->size();
-    EXPECT_EQUAL(global_size, 360 * 181);
+    EXPECT(grid1->size() == 360 * 181);
 
-    std::unique_ptr<Grid> local(new grid::regular::RegularLL(
+    std::unique_ptr<Grid> grid2(new grid::regular::RegularLL(
         spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}}));
 
-    size_t local_size = local->size();
-    EXPECT_EQUAL(local_size, 5 * 10);
+    EXPECT(grid2->size() == 5 * 10);
 
-    std::unique_ptr<Grid> almost_global(new grid::regular::RegularLL({1, 1}, {89.5, 0., -89.5, 359.1}));
-
-    size_t almost_global_size = almost_global->size();
-    EXPECT_EQUAL(almost_global_size, 360 * 180);
+    for (const auto& grid : {grid::regular::RegularLL({1., 1.}, {89.5, 0.5, -89.5, 359.5}),
+                             grid::regular::RegularLL({1., 1.}, {90., 0., -90, 360.}, {0.5, 0.5})}) {
+        EXPECT(grid.ni() == 360);
+        EXPECT(grid.nj() == 180);
+        EXPECT(grid.size() == 360 * 180);
+    }
 }
 
 

@@ -17,6 +17,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
 
@@ -28,23 +29,20 @@ Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) :
     ASSERT(0. <= _inc);
 
     Fraction inc(_inc);
-    Fraction __a(_a);
-    Fraction __b(_b);
-    if (inc == 0 || __b == __a) {
-        a(__a);
-        b(__a);
+    if (inc == 0 || types::is_approximately_equal(_a, _b)) {
+        b(_a);
         resize(1);
         return;
     }
 
-    bool up    = __a < __b;
+    bool up    = _a < _b;
     auto shift = (Fraction(_ref) / inc).decimalPart() * inc;
-    auto c     = shift + adjust(__b - shift, inc, !up);
+    auto __a   = shift + adjust(Fraction(_a) - shift, inc, up);
+    auto __b   = shift + adjust(Fraction(_b) - shift, inc, !up);
+    auto n     = static_cast<size_t>((Fraction::abs(__b - __a) / inc).integralPart() + 1);
 
-    a(shift + adjust(__a - shift, inc, up));
-    b(__a + ((c - __a) / inc).integralPart() * inc);
-
-    auto n = static_cast<size_t>((Fraction::abs(__b - __a) / inc).integralPart() + 1);
+    a(__a);
+    b(__b);
     resize(n);
 }
 

@@ -28,18 +28,14 @@ static const Fraction PERIOD(360, 1);
 
 RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _ref, double _eps) :
     Regular(_inc, _a, _b, _ref, _eps) {
+    ASSERT(_a < _b);  // FIXME temporary
     const Fraction inc(_inc);
 
-    auto n = size();
-    if ((n - 1) * inc >= PERIOD) {
-        n -= 1;
-    }
+    auto n = 1 + (std::min(Fraction(b() - a()), PERIOD) / inc).integralPart();
+    periodic(n * inc >= PERIOD);
 
-    ASSERT(n * inc <= PERIOD);
-    resize(n);
-
-    periodic((n + 1) * inc >= PERIOD);
-    b(Fraction(a()) + (periodic() ? n : n - 1) * inc);
+    b(Fraction(a()) + (n - 1) * inc);
+    resize(periodic() ? (PERIOD / inc).integralPart() : n);
 }
 
 

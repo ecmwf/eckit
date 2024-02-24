@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "eckit/geo/range/GaussianLatitude.h"
+#include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -55,6 +56,15 @@ CASE("range::RegularLongitude") {
         EXPECT_APPROX(values[1], 0., EPS);
         EXPECT_APPROX(values[2], 1., EPS);
         EXPECT_APPROX(values[3], 2., EPS);
+
+        for (const auto& range : {
+                 range::RegularLongitude(1., 0., 360.),
+                 range::RegularLongitude(1., 0.5, 359.5),
+                 range::RegularLongitude(1., 0., 360., 0.5, 0.),
+             }) {
+            EXPECT(range.periodic());
+            EXPECT(range.size() == 360);
+        }
     }
 
 
@@ -167,6 +177,17 @@ CASE("range::RegularLongitude") {
         // EXPECT(range4->size() == 2);
         // EXPECT(range4->a() == -190.);
         // EXPECT(range4->b() == -180.);
+    }
+}
+
+
+CASE("range::RegularLatitude") {
+    SECTION("simple") {
+        const range::RegularLatitude range1(1., 90., -90., 0.5);
+
+        EXPECT(range1.size() == 180);
+        EXPECT(range1.a() == 89.5);
+        EXPECT(range1.b() == -89.5);
     }
 }
 

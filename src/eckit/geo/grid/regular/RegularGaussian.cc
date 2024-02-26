@@ -58,7 +58,7 @@ const std::vector<double>& RegularGaussian::longitudes() const {
 
 
 const std::vector<double>& RegularGaussian::latitudes() const {
-    return x_->values();
+    return y_->values();
 }
 
 

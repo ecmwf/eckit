@@ -42,13 +42,13 @@ void Layered::unhide(const std::string& name) {
 
 void Layered::push_back(Spec* spec) {
     ASSERT(spec != nullptr);
-    after_.emplace_back(spec);
+    back_.emplace_back(spec);
 }
 
 
 void Layered::push_front(Spec* spec) {
     ASSERT(spec != nullptr);
-    before_.emplace_back(spec);
+    front_.emplace_back(spec);
 }
 
 
@@ -65,7 +65,7 @@ void Layered::print(std::ostream& out) const {
 
     j << "before";
     j.startList();
-    for (const auto& spec : before_) {
+    for (const auto& spec : front_) {
         spec->json(j);
     }
     j.endList();
@@ -75,7 +75,7 @@ void Layered::print(std::ostream& out) const {
 
     j << "after";
     j.startList();
-    for (const auto& spec : after_) {
+    for (const auto& spec : back_) {
         spec->json(j);
     }
     j.endList();

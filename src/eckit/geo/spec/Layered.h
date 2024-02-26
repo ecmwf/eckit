@@ -39,11 +39,10 @@ public:
 
     bool has(const std::string& name) const override {
         return !hide_.contains(name) &&
-               (std::any_of(before_.begin(),
-                            before_.end(),
-                            [&](const decltype(before_)::value_type& c) { return c->has(name); }) ||
-                spec_.has(name) ||
-                std::any_of(after_.begin(), after_.end(), [&](const decltype(after_)::value_type& c) {
+               (std::any_of(front_.begin(),
+                            front_.end(),
+                            [&](const decltype(front_)::value_type& c) { return c->has(name); }) ||
+                spec_.has(name) || std::any_of(back_.begin(), back_.end(), [&](const decltype(back_)::value_type& c) {
                     return c->has(name);
                 }));
     }
@@ -72,19 +71,19 @@ private:
     } hide_;
 
     const Spec& spec_;
-    std::vector<std::unique_ptr<Spec>> before_;
-    std::vector<std::unique_ptr<Spec>> after_;
+    std::vector<std::unique_ptr<Spec>> front_;
+    std::vector<std::unique_ptr<Spec>> back_;
 
     // -- Methods
 
     template <typename T>
     bool __get(const std::string& name, T& value) const {
         return !hide_.contains(name) &&
-               (std::any_of(before_.begin(),
-                            before_.end(),
-                            [&](const decltype(before_)::value_type& c) { return c->get(name, value); }) ||
+               (std::any_of(front_.rbegin(),
+                            front_.rend(),
+                            [&](const decltype(front_)::value_type& c) { return c->get(name, value); }) ||
                 spec_.get(name, value) ||
-                std::any_of(after_.begin(), after_.end(), [&](const decltype(after_)::value_type& c) {
+                std::any_of(back_.begin(), back_.end(), [&](const decltype(back_)::value_type& c) {
                     return c->get(name, value);
                 }));
     }

@@ -23,17 +23,49 @@ namespace eckit::geo::test {
 
 
 CASE("RegularGaussian") {
-    SECTION("gridspec") {
-        struct {
-            std::string name;
+    SECTION("sizes") {
+        struct test_t {
+            explicit test_t(size_t N) :
+                N(N), size(4 * N * 2 * N) {}
+            size_t N;
             size_t size;
-        } tests[]{{"f2", 32}};
+        } tests[]{test_t{2}, test_t{3}, test_t{64}};
 
         for (const auto& test : tests) {
-            std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", test.name}})));
+            std::unique_ptr<const Grid> grid1(
+                GridFactory::build(spec::Custom({{"grid", "f" + std::to_string(test.N)}})));
+            std::unique_ptr<const Grid> grid2(
+                GridFactory::build(spec::Custom({{"type", "regular_gg"}, {"N", test.N}})));
+            grid::regular::RegularGaussian grid3(test.N);
 
-            auto size = grid->size();
-            EXPECT_EQUAL(size, test.size);
+            EXPECT(grid1->size() == test.size);
+            EXPECT(grid2->size() == test.size);
+            EXPECT(grid3.size() == test.size);
+        }
+    }
+
+
+    SECTION("points") {
+        grid::regular::RegularGaussian grid(1);
+
+        const std::vector<Point> ref{
+            PointLonLat{0., 35.264389683},
+            PointLonLat{90., 35.264389683},
+            PointLonLat{180., 35.264389683},
+            PointLonLat{270., 35.264389683},
+            PointLonLat{0., -35.264389683},
+            PointLonLat{90., -35.264389683},
+            PointLonLat{180., -35.264389683},
+            PointLonLat{270., -35.264389683},
+        };
+
+        auto points = grid.to_points();
+
+        EXPECT(points.size() == grid.size());
+        ASSERT(points.size() == ref.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(points[i], ref[i]));
         }
     }
 

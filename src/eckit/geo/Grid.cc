@@ -162,8 +162,8 @@ Spec* GridFactory::generate_spec_(const Spec& spec) const {
 
     // hardcoded, interpreted options (contributing to gridspec)
 
-    auto* back = new spec::Custom;
-    ASSERT(back != nullptr);
+    auto back = std::make_unique<spec::Custom>();
+    ASSERT(back);
 
     if (size_t N = 0; cfg->get("N", N)) {
         back->set("grid", "O" + std::to_string(N));
@@ -177,23 +177,16 @@ Spec* GridFactory::generate_spec_(const Spec& spec) const {
         back->set("type", "regular_ll");
     }
 
-    cfg->push_back(back);
+    if (!back->empty()) {
+        cfg->push_back(back.release());
+    }
 
-
-    // configurable options
+    if (std::string grid; cfg->get("grid", grid) && SpecByName::instance().matches(grid)) {
+        cfg->push_back(SpecByName::instance().match(grid).spec(grid));
+    }
 
     if (std::string uid; cfg->get("uid", uid)) {
         cfg->push_front(SpecByUID::instance().get(uid).spec());
-    }
-    else if (std::string grid; cfg->get("grid", grid) && SpecByName::instance().matches(grid)) {
-        auto* front = SpecByName::instance().match(grid).spec(grid);
-        ASSERT(front != nullptr);
-
-        if (std::string user, forced; front->get("type", forced) && cfg->get("type", user) && user != forced) {
-            throw BadParameter("Grid: conflicting 'type': '" + user + "' and '" + forced + "'");
-        }
-
-        cfg->push_front(front);
     }
 
 

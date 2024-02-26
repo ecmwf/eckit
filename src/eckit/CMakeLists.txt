@@ -309,7 +309,6 @@ io/s3/S3ObjectName.cc
 io/s3/S3ObjectName.h
 io/s3/S3Session.cc
 io/s3/S3Session.h
-io/s3/S3Macros.h
 io/s3/S3URIManager.cc
 io/s3/S3URIManager.h
 )

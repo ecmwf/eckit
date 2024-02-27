@@ -31,7 +31,7 @@ struct S3Config;
 
 namespace net {
 class Endpoint;
-}  // namespace net
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -47,7 +47,9 @@ public:  // methods
     void clear();
 
     [[nodiscard]]
-    auto getCredentials(const std::string& endpoint) const -> std::shared_ptr<S3Credential>;
+    auto getCredentials(const net::Endpoint& endpoint) const -> std::shared_ptr<S3Credential>;
+
+    void readCredentials(std::string path = "");
 
     void addCredentials(const S3Credential& credential);
 

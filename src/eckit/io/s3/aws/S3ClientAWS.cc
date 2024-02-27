@@ -95,7 +95,7 @@ void S3ClientAWS::configure(const S3Config& config) {
     if (!config.endpoint.host().empty()) { configuration.endpointOverride = "http://" + config.endpoint.host(); }
     if (config.endpoint.port() > 0) { configuration.endpointOverride += ":" + std::to_string(config.endpoint.port()); }
 
-    if (auto cred = S3Session::instance().getCredentials(config.endpoint.host())) {
+    if (auto cred = S3Session::instance().getCredentials(config.endpoint)) {
         // credentials provider
         auto cProvider = Aws::MakeShared<Aws::Auth::SimpleAWSCredentialsProvider>(ALLOC_TAG, cred->keyID, cred->secret);
         // endpoint provider

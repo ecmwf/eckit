@@ -15,9 +15,13 @@
 
 #include "eckit/io/s3/S3Session.h"
 
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/io/s3/S3Credential.h"
 #include "eckit/io/s3/aws/S3ClientAWS.h"
 #include "eckit/net/Endpoint.h"
+#include "eckit/parser/YAMLParser.h"
+
+#include <eckit/config/Resource.h>
 
 namespace eckit {
 
@@ -95,8 +99,21 @@ void S3Session::removeClient(const net::Endpoint& endpoint) {
 //----------------------------------------------------------------------------------------------------------------------
 // CREDENTIALS
 
-auto S3Session::getCredentials(const std::string& endpoint) const -> std::shared_ptr<S3Credential> {
-    /// @todo check if all keyid and secret different
+void S3Session::readCredentials(std::string path) {
+    if (path.empty()) {
+        path = Resource<std::string>("$ECKIT_S3_CREDENTIALS_FILE", "~/.config/eckit/s3credentials.yaml");
+    }
+
+    const PathName credFile(path, true);
+    if (credFile.exists()) {
+        const ValueList creds = YAMLParser::decodeFile(credFile);
+        for (auto&& cred : creds) { addCredentials({cred["endpoint"], cred["accessKeyID"], cred["secretKey"]}); }
+    } else {
+        Log::warning() << ReadError(credFile).what() << std::endl;
+    }
+}
+
+auto S3Session::getCredentials(const net::Endpoint& endpoint) const -> std::shared_ptr<S3Credential> {
     // search by endpoint
     const auto cred = std::find_if(credentials_.begin(), credentials_.end(), IsCredentialEndpoint(endpoint));
     // found

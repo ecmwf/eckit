@@ -13,6 +13,7 @@
 /// @author Simon Smart
 /// @date   Jan 2024
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/MemoryHandle.h"
@@ -272,7 +273,7 @@ CASE("S3Handle::read") {
     EXPECT_NO_THROW(handle->close());
 }
 
-CASE("performance: write 1000 objects") {
+CASE("performance: write 10 100 1000 objects") {
     ensureClean();
 
     const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET);
@@ -293,7 +294,7 @@ CASE("performance: write 1000 objects") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    const S3Credential cred {"minio", "minio1234", "127.0.0.1"};
+    const S3Credential cred {"127.0.0.1:9000", "minio", "minio1234"};
     S3Session::instance().addCredentials(cred);
 
     int ret = -1;

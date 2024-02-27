@@ -124,7 +124,7 @@ CASE("list buckets") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    const S3Credential cred {"minio", "minio1234", "127.0.0.1"};
+    const S3Credential cred {"127.0.0.1:9000", "minio", "minio1234"};
     S3Session::instance().addCredentials(cred);
 
     auto ret = run_tests(argc, argv);

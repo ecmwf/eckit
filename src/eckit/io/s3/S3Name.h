@@ -22,7 +22,9 @@
 
 #include "eckit/net/Endpoint.h"
 
+#include <memory>
 #include <string>
+#include <vector>
 
 namespace eckit {
 

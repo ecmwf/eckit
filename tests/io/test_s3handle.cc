@@ -26,6 +26,7 @@
 #include "eckit/log/Timer.h"
 #include "eckit/testing/Test.h"
 
+#include <cstring>
 #include <string>
 
 using namespace std;

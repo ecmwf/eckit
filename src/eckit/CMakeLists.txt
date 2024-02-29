@@ -286,35 +286,6 @@ io/rados/RadosAttributes.cc
 )
 endif()
 
-if(HAVE_AWS_S3)
-list( APPEND eckit_io_srcs
-io/s3/aws/S3ClientAWS.cc
-io/s3/aws/S3ClientAWS.h
-io/s3/aws/S3ContextAWS.cc
-io/s3/aws/S3ContextAWS.h
-io/s3/S3Bucket.cc
-io/s3/S3Bucket.h
-io/s3/S3Client.cc
-io/s3/S3Client.h
-io/s3/S3Config.cc
-io/s3/S3Config.h
-io/s3/S3Context.cc
-io/s3/S3Context.h
-io/s3/S3Credential.h
-io/s3/S3Exception.cc
-io/s3/S3Exception.h
-io/s3/S3Handle.cc
-io/s3/S3Handle.h
-io/s3/S3Name.cc
-io/s3/S3Name.h
-io/s3/S3Session.cc
-io/s3/S3Session.h
-io/s3/S3Macros.h
-io/s3/S3URIManager.cc
-io/s3/S3URIManager.h
-)
-endif(HAVE_AWS_S3)
-
 list( APPEND eckit_filesystem_srcs
 filesystem/BasePathName.cc
 filesystem/BasePathName.h

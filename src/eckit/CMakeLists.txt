@@ -934,7 +934,6 @@ ecbuild_add_library(
               $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
 
           PRIVATE_INCLUDES
-              $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src/eckit/io/s3/aws>
               "${CURL_INCLUDE_DIRS}"
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"

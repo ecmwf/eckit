@@ -23,8 +23,9 @@ namespace mir::stats::field {
 struct CounterStats : detail::Counter, Field {
     CounterStats(const param::MIRParametrisation& param) : Counter(param), Field(param) {}
 
-    virtual double value() const override            = 0;
-    virtual void print(std::ostream&) const override = 0;
+    double value() const override            = 0;
+    void json(eckit::JSON&) const override   = 0;
+    void print(std::ostream&) const override = 0;
 
     void count(const double& value) override { Counter::count(value); }
     void reset(double missingValue, bool hasMissing) override { Counter::reset(missingValue, hasMissing); }

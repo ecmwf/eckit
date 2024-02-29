@@ -12,8 +12,11 @@
 
 #include "mir/stats/Field.h"
 
+#include <cmath>
 #include <map>
 #include <ostream>
+
+#include "eckit/log/JSON.h"
 
 #include "mir/util/Exceptions.h"
 #include "mir/util/Log.h"
@@ -33,6 +36,16 @@ static void init() {
 
 
 Field::Field(const param::MIRParametrisation& /*unused*/) {}
+
+
+void Field::json_tv(eckit::JSON& j, const std::string& type, double value) {
+    j.startObject();
+    j << "type" << type;
+    if (!std::isnan(value)) {
+        j << "value" << value;
+    }
+    j.endObject();
+}
 
 
 Field::~Field() = default;

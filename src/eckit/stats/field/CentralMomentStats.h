@@ -25,7 +25,9 @@ struct CentralMomentStatsT : detail::Counter, Field, STATS {
     CentralMomentStatsT(const param::MIRParametrisation& param) : Counter(param), Field(param) {}
     ~CentralMomentStatsT() override = default;
 
-    virtual double value() const override = 0;
+    double value() const override            = 0;
+    void json(eckit::JSON&) const override   = 0;
+    void print(std::ostream&) const override = 0;
 
     void count(const double& value) override {
         if (Counter::count(value)) {

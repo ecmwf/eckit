@@ -24,8 +24,9 @@ template <typename STATS>
 struct ModeStatsT : detail::Counter, Field, STATS {
     ModeStatsT(const param::MIRParametrisation& param) : Counter(param), Field(param), STATS(param) {}
 
-    virtual double value() const override            = 0;
-    virtual void print(std::ostream&) const override = 0;
+    double value() const override            = 0;
+    void json(eckit::JSON&) const override   = 0;
+    void print(std::ostream&) const override = 0;
 
     void count(const double& value) override {
         if (Counter::count(value)) {

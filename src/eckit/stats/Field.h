@@ -16,6 +16,10 @@
 #include <string>
 
 
+namespace eckit {
+class JSON;
+}
+
 namespace mir::param {
 class MIRParametrisation;
 }  // namespace mir::param
@@ -31,8 +35,10 @@ public:
 
     // -- Constructors
 
-    Field(const param::MIRParametrisation&);
+    explicit Field(const param::MIRParametrisation&);
+
     Field(const Field&) = delete;
+    Field(Field&&)      = delete;
 
     // -- Destructor
 
@@ -44,6 +50,7 @@ public:
     // -- Operators
 
     void operator=(const Field&) = delete;
+    void operator=(Field&&)      = delete;
 
     // -- Methods
 
@@ -66,7 +73,10 @@ protected:
 
     // -- Methods
 
+    virtual void json(eckit::JSON&) const   = 0;
     virtual void print(std::ostream&) const = 0;
+
+    static void json_tv(eckit::JSON&, const std::string& type, double value);
 
     // -- Overridden methods
     // None
@@ -97,6 +107,11 @@ private:
 
     friend std::ostream& operator<<(std::ostream& out, const Field& r) {
         r.print(out);
+        return out;
+    }
+
+    friend eckit::JSON& operator<<(eckit::JSON& out, const Field& r) {
+        r.json(out);
         return out;
     }
 };

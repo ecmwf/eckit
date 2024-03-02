@@ -12,8 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosReadHandle_h
-#define eckit_io_rados_RadosReadHandle_h
+#pragma once
 
 #include <memory>
 
@@ -22,20 +21,20 @@
 
 namespace eckit {
 
-class MultiHandle;
 
-class RadosReadHandle : public eckit::DataHandle {
+class RadosMultiObjWriteHandle : public eckit::DataHandle {
 
 public:  // methods
-    RadosReadHandle(const RadosObject&);
-    RadosReadHandle(const std::string&);
-    RadosReadHandle(Stream&);
+    RadosMultiObjWriteHandle(const RadosObject&, bool persistent = false, const Length& maxObjectSize = 0, 
+        size_t maxAioBuffSize = 1024, size_t maxHandleBuffSize = 1024);
+    // RadosMultiObjWriteHandle(const eckit::URI&, const Length& maxObjectSize = 0);
+    // RadosMultiObjWriteHandle(Stream&);
 
-    ~RadosReadHandle() override;
+    ~RadosMultiObjWriteHandle() override;
 
     // -- Class methods
 
-    static const ClassSpec& classSpec() { return classSpec_; }
+    // static const ClassSpec& classSpec() { return classSpec_; }
 
     std::string title() const;
 
@@ -51,28 +50,32 @@ public:  // methods
     void rewind() override;
 
     Offset position() override;
-    Length estimate() override;
 
     void print(std::ostream&) const override;
 
     // From Streamable
 
-    void encode(Stream&) const override;
-    const ReanimatorBase& reanimator() const override { return reanimator_; }
+    // void encode(Stream&) const override;
+    // const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
     RadosObject object_;
 
-    Length length_;
-    size_t parts_;
+    bool persistent_;
+    Length maxObjectSize_;
+    size_t maxAioBuffSize_;
+    size_t maxHandleBuffSize_;
 
-    std::unique_ptr<MultiHandle> handle_;
+    size_t written_;
+    Offset position_;
+    size_t part_;
+    bool opened_;
+
+    std::vector<std::unique_ptr<DataHandle>> handles_;
 
 
-    static ClassSpec classSpec_;
-    static Reanimator<RadosReadHandle> reanimator_;
+    // static ClassSpec classSpec_;
+    // static Reanimator<RadosMultiObjWriteHandle> reanimator_;
 };
 
 }  // namespace eckit
-
-#endif

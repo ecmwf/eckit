@@ -12,8 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosWriteHandle_h
-#define eckit_io_rados_RadosWriteHandle_h
+#pragma once
 
 #include <memory>
 
@@ -22,19 +21,20 @@
 
 namespace eckit {
 
+class MultiHandle;
 
-class RadosWriteHandle : public eckit::DataHandle {
+class RadosMultiObjReadHandle : public eckit::DataHandle {
 
 public:  // methods
-    RadosWriteHandle(const RadosObject&, const Length& maxObjectSize = 0);
-    RadosWriteHandle(const std::string&, const Length& maxObjectSize = 0);
-    RadosWriteHandle(Stream&);
+    RadosMultiObjReadHandle(const RadosObject&);
+    // RadosMultiObjReadHandle(const eckit::URI&);
+    // RadosMultiObjReadHandle(Stream&);
 
-    ~RadosWriteHandle() override;
+    ~RadosMultiObjReadHandle() override;
 
     // -- Class methods
 
-    static const ClassSpec& classSpec() { return classSpec_; }
+    // static const ClassSpec& classSpec() { return classSpec_; }
 
     std::string title() const;
 
@@ -48,32 +48,30 @@ public:  // methods
     void close() override;
     void flush() override;
     void rewind() override;
+    eckit::Offset seek(const eckit::Offset&) override;
+    bool canSeek() const override { return true; };
 
     Offset position() override;
+    Length estimate() override;
 
     void print(std::ostream&) const override;
 
     // From Streamable
 
-    void encode(Stream&) const override;
-    const ReanimatorBase& reanimator() const override { return reanimator_; }
+    // void encode(Stream&) const override;
+    // const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
     RadosObject object_;
 
-    Length maxObjectSize_;
-    size_t written_;
-    Offset position_;
-    size_t part_;
-    bool opened_;
+    Length length_;
+    size_t parts_;
 
-    std::unique_ptr<DataHandle> handle_;
+    std::unique_ptr<MultiHandle> handle_;
 
 
-    static ClassSpec classSpec_;
-    static Reanimator<RadosWriteHandle> reanimator_;
+    // static ClassSpec classSpec_;
+    // static Reanimator<RadosMultiObjReadHandle> reanimator_;
 };
 
 }  // namespace eckit
-
-#endif

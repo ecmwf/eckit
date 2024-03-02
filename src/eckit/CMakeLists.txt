@@ -273,16 +273,24 @@ if(HAVE_RADOS)
 list( APPEND eckit_io_srcs
 io/rados/RadosHandle.cc
 io/rados/RadosHandle.h
-io/rados/RadosCluster.h
 io/rados/RadosCluster.cc
-io/rados/RadosReadHandle.cc
-io/rados/RadosReadHandle.h
-io/rados/RadosWriteHandle.cc
-io/rados/RadosWriteHandle.h
-io/rados/RadosObject.h
+io/rados/RadosCluster.h
+io/rados/RadosMultiObjReadHandle.cc
+io/rados/RadosMultiObjReadHandle.h
+io/rados/RadosMultiObjWriteHandle.cc
+io/rados/RadosMultiObjWriteHandle.h
+io/rados/RadosPersistentHandle.cc
+io/rados/RadosPersistentHandle.h
+io/rados/RadosNamespace.cc
+io/rados/RadosNamespace.h
+io/rados/RadosPool.cc
+io/rados/RadosPool.h
 io/rados/RadosObject.cc
-io/rados/RadosAttributes.h
+io/rados/RadosObject.h
 io/rados/RadosAttributes.cc
+io/rados/RadosAttributes.h
+io/rados/RadosException.cc
+io/rados/RadosException.h
 )
 endif()
 

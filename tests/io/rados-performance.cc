@@ -20,8 +20,9 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosReadHandle.h"
-#include "eckit/io/rados/RadosWriteHandle.h"
+#include "eckit/io/rados/RadosObject.h"
+#include "eckit/io/rados/RadosMultiObjReadHandle.h"
+#include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
@@ -53,7 +54,13 @@ CASE("Test rados performance") {
     dh->read(buf, size);
     dh->close();
 
-    RadosWriteHandle h("mars:largeFile", 0);
+    RadosPool pool("mars");
+    /// @todo: auto pool destroyer
+    pool.ensureCreated();
+
+    RadosObject obj(pool.name(), "default", "largeFile")
+
+    RadosMultiObjWriteHandle h(obj, false, 0);
     h.openForWrite(size);
 
     timer.start();
@@ -62,7 +69,7 @@ CASE("Test rados performance") {
     timer.stop();
     std::cout << " - write rate " << Bytes(size, timer) << std::endl;
 
-    RadosReadHandle g("mars:largeFile");
+    RadosMultiObjReadHandle g(obj);
     std::cout << "Size is " << g.openForRead() << std::endl;
 
     timer.start();
@@ -71,7 +78,10 @@ CASE("Test rados performance") {
     timer.stop();
     std::cout << " - read rate " << Bytes(size, timer) << std::endl;
 
-    RadosCluster::instance().remove(RadosObject("mars:largeFile"));
+    obj.ensureDestroyed();
+
+    pool.destroy();
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

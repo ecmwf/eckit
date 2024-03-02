@@ -10,53 +10,64 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date   June 2019
+/// @author Nicolau Manubens
+/// @date June 2019
 
-#ifndef eckit_io_rados_RadosObject_h
-#define eckit_io_rados_RadosObject_h
+#pragma once
 
 #include <memory>
 #include <string>
 
+#include "eckit/io/rados/RadosNamespace.h"
 
 namespace eckit {
 
-class Stream;
+// class Stream;
 
 
 class RadosObject {
 public:
-    RadosObject(Stream&);
+    // RadosObject(Stream&);
 
-    RadosObject(const std::string& path);
-    RadosObject(const std::string& pool, const std::string& oid);
+    RadosObject(const eckit::URI&);
+    RadosObject(const std::string& pool, const std::string& nspace, const std::string& oid);
 
     RadosObject(const RadosObject& other, size_t part);
 
-    const std::string& pool() const { return pool_; }
-    const std::string& oid() const { return oid_; }
+    const eckit::RadosNamespace& nspace() const { return ns_; }
+    const std::string& name() const { return oid_; }
+    eckit::URI uri() const { return eckit::URI{"rados", eckit::PathName(str())}; }
     std::string str() const;
 
+    bool exists() const;
+    void ensureDestroyed();
+    void ensureAllDestroyed();
+
+    eckit::DataHandle* dataHandle() const;
+    eckit::DataHandle* persistentDataHandle(bool persist_on_write = false, size_t maxAioBuffSize = 1024 * 1024) const;
+    eckit::DataHandle* rangeReadHandle(const eckit::Offset&, const eckit::Length&) const;
+    eckit::DataHandle* multipartWriteHandle(const eckit::Length& maxObjectSize = 0) const;
+    eckit::DataHandle* persistentMultipartWriteHandle(const eckit::Length& maxObjectSize = 0, 
+        size_t maxAioBuffSize = 1024, size_t maxHandleBuffSize = 1024) const;
+    eckit::DataHandle* multipartRangeReadHandle(const eckit::Offset&, const eckit::Length&) const;
+
 private:
-    std::string pool_;
+    eckit::RadosNamespace ns_;
     std::string oid_;
 
-    void print(std::ostream&) const;
-    void encode(Stream&) const;
+    // void print(std::ostream&) const;
+    // void encode(Stream&) const;
 
+    // friend std::ostream& operator<<(std::ostream& s, const RadosObject& o) {
+    //     o.print(s);
+    //     return s;
+    // }
 
-    friend std::ostream& operator<<(std::ostream& s, const RadosObject& o) {
-        o.print(s);
-        return s;
-    }
-
-    friend Stream& operator<<(Stream& s, const RadosObject& o) {
-        o.encode(s);
-        return s;
-    }
+    // friend Stream& operator<<(Stream& s, const RadosObject& o) {
+    //     o.encode(s);
+    //     return s;
+    // }
 };
 
 
 }  // namespace eckit
-
-#endif

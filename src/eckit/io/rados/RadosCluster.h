@@ -12,8 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosCluster_h
-#define eckit_io_rados_RadosCluster_h
+#pragma once
 
 #include <iostream>
 #include <map>
@@ -24,6 +23,7 @@
 
 #include "eckit/io/Length.h"
 
+#include "eckit/io/rados/RadosException.h"
 
 namespace eckit {
 
@@ -35,18 +35,24 @@ class RadosIOCtx;
 
 #define RADOS_CALL(a) eckit::rados_call(a, #a, __FILE__, __LINE__, __func__)
 
+using NamespaceCtxCache = std::map<std::string, RadosIOCtx*>;
+using PoolCtxCache = std::map<std::string, NamespaceCtxCache>;
+
 class RadosCluster {
 public:
-    rados_ioctx_t& ioCtx(const std::string& pool) const;
+    rados_ioctx_t& ioCtx(const std::string& pool, const std::string& nspace) const;
     rados_ioctx_t& ioCtx(const RadosObject& object) const;
 
+    Length maxWriteSize() const;
     Length maxObjectSize() const;
 
     rados_t cluster() const { return cluster_; }
 
+    bool poolExists(const std::string& pool) const;
+    void createPool(const std::string& pool) const;
     void ensurePool(const std::string& pool) const;
     void ensurePool(const RadosObject& object) const;
-
+    void destroyPool(const std::string& pool) const;
 
     void attributes(const RadosObject&, const RadosAttributes&) const;
 
@@ -58,6 +64,9 @@ public:
     void remove(const RadosObject&) const;
     void truncate(const RadosObject&, const Length& = 0) const;
     time_t lastModified(const RadosObject&) const;
+
+    std::vector<std::string> listPools() const;
+    std::vector<std::string> listObjects(const std::string& pool, const std::string& nspace) const;
 
 
     // For multi-object items
@@ -75,7 +84,7 @@ private:
 
 private:
     rados_t cluster_;
-    mutable std::map<std::string, RadosIOCtx*> ctx_;
+    mutable PoolCtxCache ctx_;
 
     void reset();
 
@@ -83,6 +92,7 @@ public:
     static void error(int code, const char* msg, const char* file, int line, const char* func);
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
 static inline int rados_call(int code, const char* msg, const char* file, int line, const char* func) {
 
@@ -91,6 +101,7 @@ static inline int rados_call(int code, const char* msg, const char* file, int li
     if (code < 0) {
         std::cout << "RADOS_FAIL !! " << msg << std::endl;
 
+        if (code == -ENOENT) throw eckit::RadosEntityNotFoundException(msg);
         RadosCluster::error(code, msg, file, line, func);
     }
 
@@ -99,7 +110,15 @@ static inline int rados_call(int code, const char* msg, const char* file, int li
     return code;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+class RadosAIO {
+public:
+    rados_completion_t comp_;
+    RadosAIO();
+    ~RadosAIO();
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

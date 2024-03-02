@@ -199,8 +199,8 @@ int ResourceQualifier::operator<(const ResourceQualifier& other) const {
     char buf1[1024];
     char buf2[1024];
 
-    sprintf(buf1, "%s.%s.%s", owner_.c_str(), kind_.c_str(), name_.c_str());
-    sprintf(buf2, "%s.%s.%s", other.owner_.c_str(), other.kind_.c_str(), other.name_.c_str());
+    snprintf(buf1, sizeof(buf1), "%s.%s.%s", owner_.c_str(), kind_.c_str(), name_.c_str());
+    snprintf(buf2, sizeof(buf2), "%s.%s.%s", other.owner_.c_str(), other.kind_.c_str(), other.name_.c_str());
 
     return strcmp(buf1, buf2) < 0;
 }

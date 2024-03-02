@@ -124,8 +124,9 @@ typedef struct context {
 static bool processCode(int c, context* s);
 
 static void output(const context* s) {
-    char* buffer = (char*)malloc(strlen(s->prompt) + strlen(s->curr->edit) + 20);
-    sprintf(buffer, "\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->edit, strlen(s->prompt) + s->pos);
+    const size_t numBytes = strlen(s->prompt) + strlen(s->curr->edit) + 20;
+    char* buffer = (char*)malloc(numBytes);
+    snprintf(buffer, numBytes,"\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->edit, strlen(s->prompt) + s->pos);
     write(1, buffer, strlen(buffer));
     free(buffer);
 }

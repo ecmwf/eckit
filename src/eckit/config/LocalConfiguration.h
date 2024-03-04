@@ -15,7 +15,9 @@
 #ifndef eckit_LocalConfiguration_H
 #define eckit_LocalConfiguration_H
 
+#include <initializer_list>
 #include <vector>
+#include <type_traits>
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
@@ -42,6 +44,8 @@ public:  // methods
 
     ~LocalConfiguration() override;
 
+    LocalConfiguration& set(const Configuration& other);
+
     LocalConfiguration& set(const std::string& name, const std::string& value) override;
     LocalConfiguration& set(const std::string& name, const char* value) override;
     LocalConfiguration& set(const std::string& name, bool value) override;
@@ -60,8 +64,32 @@ public:  // methods
     LocalConfiguration& set(const std::string& name, const std::vector<double>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<std::string>& value) override;
 
-    LocalConfiguration& set(const std::string& name, const LocalConfiguration& value);
-    LocalConfiguration& set(const std::string& name, const std::vector<LocalConfiguration>& value);
+    LocalConfiguration& set(const std::string& name, const Configuration& value);
+
+    template <typename ConfigurationT,
+              typename = std::enable_if_t<std::is_base_of_v<Configuration, std::decay_t<ConfigurationT>>>>
+    LocalConfiguration& set(const std::string& name, const std::vector<ConfigurationT>& value) {
+        std::vector<const Configuration*> abstract_pointers;
+        abstract_pointers.reserve(value.size());
+        for (auto& v: value) {
+            abstract_pointers.emplace_back(&v);
+        }
+        return set(name, abstract_pointers.data(), abstract_pointers.size());
+    }
+
+    template <typename ConfigurationT,
+              typename = std::enable_if_t<std::is_base_of_v<Configuration, std::decay_t<ConfigurationT>>>>
+    LocalConfiguration& set(const std::string& name, std::initializer_list<ConfigurationT>&& value) {
+        std::vector<const Configuration*> abstract_pointers;
+        abstract_pointers.reserve(value.size());
+        for (auto& v: value) {
+            abstract_pointers.emplace_back(&v);
+        }
+        return set(name, abstract_pointers.data(), abstract_pointers.size());
+    }
+
+
+    LocalConfiguration& remove(const std::string& name);
 
 protected:
     friend class Configuration;
@@ -70,6 +98,8 @@ protected:
     LocalConfiguration(const eckit::Value&, char separator = '.');
 
     void print(std::ostream&) const override;
+
+    LocalConfiguration& set(const std::string& name, const Configuration* abstract_pointers[], size_t size);
 
 private:
     void setValue(const std::vector<std::string>& path, size_t i, Value& root, const Value& value);

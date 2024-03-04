@@ -1011,6 +1011,11 @@ CASE("test_eckit_option_cmdargs_value_with_equals") {
 #endif
 
 #if TESTCASE == 38
+// disable deprecated declarations warning here as we are testing it
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
 CASE("test_eckit_option__allows_to_set_default_value_for_options") {
     options_t options;
     {
@@ -1057,6 +1062,9 @@ CASE("test_eckit_option__allows_to_set_default_value_for_options") {
         EXPECT_EQUAL(v[3], 4L);
     }
 }
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #endif
 
 #if TESTCASE == 39

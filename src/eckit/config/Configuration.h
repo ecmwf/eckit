@@ -125,8 +125,11 @@ public:  // methods
     bool get(const std::string& name, LocalConfiguration&) const;
 
     /// @todo This method should be protected. As per note above,
-    ///       we don't wnat to expose eckit::Value out of Configuration.
-    const Value& get() const;
+    ///       we don't want to expose eckit::Value out of Configuration.
+    [[deprecated("eckit::Value should not be exposed via eckit::Configuration::get(). This method Will be removed in a next release.")]]
+    const Value& get() const {
+        return getValue();
+    }
 
     virtual void hash(eckit::Hash&) const;
 
@@ -144,7 +147,10 @@ protected:  // methods
 
     operator Value() const;
 
+    const Value& getValue() const;
+
 protected:  // members
+    friend class LocalConfiguration;
     std::unique_ptr<Value> root_;
     char separator_;
 

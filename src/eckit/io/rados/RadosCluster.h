@@ -29,6 +29,8 @@ namespace eckit {
 
 class RadosObject;
 
+class RadosKeyValue;
+
 class RadosAttributes;
 
 class RadosIOCtx;
@@ -42,6 +44,7 @@ class RadosCluster {
 public:
     rados_ioctx_t& ioCtx(const std::string& pool, const std::string& nspace) const;
     rados_ioctx_t& ioCtx(const RadosObject& object) const;
+    rados_ioctx_t& ioCtx(const RadosKeyValue& object) const;
 
     Length maxWriteSize() const;
     Length maxObjectSize() const;
@@ -51,7 +54,6 @@ public:
     bool poolExists(const std::string& pool) const;
     void createPool(const std::string& pool) const;
     void ensurePool(const std::string& pool) const;
-    void ensurePool(const RadosObject& object) const;
     void destroyPool(const std::string& pool) const;
 
     void attributes(const RadosObject&, const RadosAttributes&) const;
@@ -64,6 +66,9 @@ public:
     void remove(const RadosObject&) const;
     void truncate(const RadosObject&, const Length& = 0) const;
     time_t lastModified(const RadosObject&) const;
+
+    bool exists(const RadosKeyValue&) const;
+    void remove(const RadosKeyValue&) const;
 
     std::vector<std::string> listPools() const;
     std::vector<std::string> listObjects(const std::string& pool, const std::string& nspace) const;
@@ -117,6 +122,32 @@ public:
     rados_completion_t comp_;
     RadosAIO();
     ~RadosAIO();
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class RadosWriteOp {
+public:
+    rados_write_op_t op_;
+    RadosWriteOp();
+    ~RadosWriteOp();
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class RadosReadOp {
+public:
+    rados_read_op_t op_;
+    RadosReadOp();
+    ~RadosReadOp();
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class RadosIter {
+public:
+    rados_omap_iter_t it_;
+    ~RadosIter();
 };
 
 //----------------------------------------------------------------------------------------------------------------------

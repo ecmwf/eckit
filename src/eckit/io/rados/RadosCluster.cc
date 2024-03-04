@@ -11,11 +11,14 @@
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosObject.h"
+#include "eckit/io/rados/RadosKeyValue.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class RadosIOCtx {
 public:
@@ -38,6 +41,8 @@ public:
     }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 RadosAIO::RadosAIO() {
     std::cout << "RadosAIO => rados_aio_create_completion()" << std::endl;
     RADOS_CALL(rados_aio_create_completion(NULL, NULL, NULL, &comp_));
@@ -50,6 +55,43 @@ RadosAIO::~RadosAIO() {
     std::cout << "~RadosAIO <= rados_aio_release()" << std::endl;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+RadosWriteOp::RadosWriteOp() {
+    std::cout << "RadosWriteOp => rados_create_write_op()" << std::endl;
+    op_ = rados_create_write_op();
+    std::cout << "RadosWriteOp <= rados_create_write_op()" << std::endl;
+}
+
+RadosWriteOp::~RadosWriteOp() {
+    std::cout << "~RadosWriteOp => rados_release_write_op()" << std::endl;
+    rados_release_write_op(op_);
+    std::cout << "~RadosWriteOp <= rados_release_write_op()" << std::endl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+RadosReadOp::RadosReadOp() {
+    std::cout << "RadosReadOp => rados_create_read_op()" << std::endl;
+    op_ = rados_create_read_op();
+    std::cout << "RadosReadOp <= rados_create_read_op()" << std::endl;
+}
+
+RadosReadOp::~RadosReadOp() {
+    std::cout << "~RadosReadOp => rados_release_read_op()" << std::endl;
+    rados_release_read_op(op_);
+    std::cout << "~RadosReadOp <= rados_release_read_op()" << std::endl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+RadosIter::~RadosIter() {
+    std::cout << "~RadosIter => rados_omap_get_end()" << std::endl;
+    rados_omap_get_end(it_);
+    std::cout << "~RadosIter <= rados_omap_get_end()" << std::endl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 const RadosCluster& RadosCluster::instance() {
     thread_local RadosCluster instance_;
@@ -159,6 +201,10 @@ rados_ioctx_t& RadosCluster::ioCtx(const RadosObject& object) const {
     return ioCtx(object.nspace().pool().name(), object.nspace().name());
 }
 
+rados_ioctx_t& RadosCluster::ioCtx(const RadosKeyValue& object) const {
+    return ioCtx(object.nspace().pool().name(), object.nspace().name());
+}
+
 bool RadosCluster::poolExists(const std::string& pool) const {
 
     try {
@@ -181,10 +227,6 @@ void RadosCluster::ensurePool(const std::string& pool) const {
 
     if (!poolExists(pool)) createPool(pool);
 
-}
-
-void RadosCluster::ensurePool(const RadosObject& object) const {
-    ensurePool(object.nspace().pool().name());
 }
 
 void RadosCluster::destroyPool(const std::string& pool) const {
@@ -262,15 +304,6 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
     return attr;
 }
 
-void RadosCluster::remove(const RadosObject& object) const {
-    RADOS_CALL(rados_remove(ioCtx(object), object.name().c_str()));
-}
-
-void RadosCluster::truncate(const RadosObject& object, const Length& length) const {
-
-    RADOS_CALL(rados_trunc(ioCtx(object), object.name().c_str(), length));
-}
-
 bool RadosCluster::exists(const RadosObject& object) const {
     uint64_t psize;
     time_t pmtime;
@@ -288,6 +321,12 @@ bool RadosCluster::exists(const RadosObject& object) const {
     // NOTIMP;
 }
 
+/// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
+///   define RadosCluster::exists() only for arguments of that base class.
+bool RadosCluster::exists(const RadosKeyValue& object) const {
+    return exists(RadosObject{object.uri()});
+}
+
 Length RadosCluster::size(const RadosObject& object) const {
     uint64_t psize;
     time_t pmtime;
@@ -295,6 +334,20 @@ Length RadosCluster::size(const RadosObject& object) const {
     return psize;
 }
 
+void RadosCluster::remove(const RadosObject& object) const {
+    RADOS_CALL(rados_remove(ioCtx(object), object.name().c_str()));
+}
+
+/// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
+///   define RadosCluster::remove() only for arguments of that base class.
+void RadosCluster::remove(const RadosKeyValue& object) const {
+    return remove(RadosObject{object.uri()});
+}
+
+void RadosCluster::truncate(const RadosObject& object, const Length& length) const {
+
+    RADOS_CALL(rados_trunc(ioCtx(object), object.name().c_str(), length));
+}
 
 time_t RadosCluster::lastModified(const RadosObject& object) const {
     uint64_t psize;
@@ -323,6 +376,7 @@ std::vector<std::string> RadosCluster::listPools() const {
     
 }
 
+/// @todo: this lists all regular objects as well as omaps with no distinction
 std::vector<std::string> RadosCluster::listObjects(const std::string& pool, const std::string& nspace) const {
 
     std::vector<std::string> res;

@@ -39,6 +39,7 @@ public:
 
 private:  // methods
     friend class RadosObject;
+    friend class RadosKeyValue;
     RadosNamespace() {}
 
 private:  // members

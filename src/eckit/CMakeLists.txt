@@ -287,6 +287,8 @@ io/rados/RadosPool.cc
 io/rados/RadosPool.h
 io/rados/RadosObject.cc
 io/rados/RadosObject.h
+io/rados/RadosKeyValue.cc
+io/rados/RadosKeyValue.h
 io/rados/RadosAttributes.cc
 io/rados/RadosAttributes.h
 io/rados/RadosException.cc

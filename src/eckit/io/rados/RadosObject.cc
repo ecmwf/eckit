@@ -76,7 +76,7 @@ void RadosObject::ensureDestroyed() {
 
         eckit::RadosCluster::instance().remove(*this);
 
-    } catch (eckit::SeriousBug& e) {}
+    } catch (eckit::RadosEntityNotFoundException& e) {}
 
 }
 
@@ -86,7 +86,7 @@ void RadosObject::ensureAllDestroyed() {
 
         eckit::RadosCluster::instance().removeAll(*this);
 
-    } catch (eckit::SeriousBug& e) {}
+    } catch (eckit::RadosEntityNotFoundException& e) {}
 
 }
 

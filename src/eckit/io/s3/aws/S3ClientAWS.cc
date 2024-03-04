@@ -84,15 +84,13 @@ void S3ClientAWS::configure(const S3Config& config) {
     configuration.disableImdsV1 = true;
 
     // setup region
-    // configuration.region = config.region;
     if (!config.region.empty()) { configuration.region = config.region; }
 
-    // configuration.scheme = Aws::Http::Scheme::HTTPS;
-    // configuration.verifySSL = false;
+    // configuration.scheme    = Aws::Http::Scheme::HTTPS;
+    configuration.verifySSL = false;
 
     // setup endpoint
-    /// @todo handle http/https possibly via scheme flag in S3Config
-    if (!config.endpoint.host().empty()) { configuration.endpointOverride = "http://" + config.endpoint.host(); }
+    if (!config.endpoint.host().empty()) { configuration.endpointOverride = config.endpoint.host(); }
     if (config.endpoint.port() > 0) { configuration.endpointOverride += ":" + std::to_string(config.endpoint.port()); }
 
     if (auto cred = S3Session::instance().getCredentials(config.endpoint)) {

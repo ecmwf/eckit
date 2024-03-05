@@ -33,6 +33,7 @@
 namespace eckit {
 class JSON;
 namespace geo {
+class Area;
 class Spec;
 namespace spec {
 class Custom;
@@ -132,6 +133,9 @@ public:
     virtual Ordering order() const;
     virtual Renumber reorder(Ordering) const;
     virtual Grid* grid_reorder(Ordering) const;
+
+    virtual Renumber crop(const Area&) const;
+    virtual Grid* grid_crop(const Area&) const;
 
     // -- Overridden methods
     // None

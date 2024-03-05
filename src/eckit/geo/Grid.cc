@@ -114,6 +114,16 @@ Grid* Grid::grid_reorder(Ordering) const {
 }
 
 
+Renumber Grid::crop(const Area&) const {
+    throw NotImplemented("Grid::crop");
+}
+
+
+Grid* Grid::grid_crop(const Area&) const {
+    throw NotImplemented("Grid::grid_crop");
+}
+
+
 Renumber Grid::no_reorder(size_t size) {
     Renumber ren(size);
     std::iota(ren.begin(), ren.end(), 0);

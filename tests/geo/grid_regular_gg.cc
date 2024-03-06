@@ -77,29 +77,36 @@ CASE("RegularGaussian") {
 
         EXPECT_EQUAL(n1, 32);
 
-        spec.set("south", 0);
+        spec.set("south", 0.);
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
         auto n2 = grid2->size();
 
         EXPECT_EQUAL(n2, n1 / 2);
 
-        // spec = spec::Custom{{{"grid", "f2"}, {"west", -180}}};
-        // std::unique_ptr<const Grid> grid3(GridFactory::build(spec));
-        // auto n3 = grid3->size();
+        spec = spec::Custom{{{"grid", "f2"}, {"west", -180}}};
+        std::unique_ptr<const Grid> grid3(GridFactory::build(spec));
+        auto n3 = grid3->size();
 
-        // EXPECT_EQUAL(n3, n1);
+        EXPECT_EQUAL(n3, n1);
 
-        // spec.set("east", 0);
-        // std::unique_ptr<const Grid> grid4(GridFactory::build(spec));
-        // auto n4 = grid4->size();
+        auto bbox3 = grid3->boundingBox();
 
-        // EXPECT_EQUAL(n4, 5 * 4);  // Ni * Nj
+        EXPECT(bbox3.isPeriodicWestEast());
 
-        // spec.set("east", -1.);
-        // std::unique_ptr<const Grid> grid5(GridFactory::build(spec));
-        // auto n5 = grid5->size();
+        bbox3.east = 0.;
 
-        // EXPECT_EQUAL(n5, 4 * 4);  // Ni * Nj
+        EXPECT_NOT(bbox3.isPeriodicWestEast());
+
+        std::unique_ptr<const Grid> grid4(grid3->grid_crop(bbox3));
+        auto n4 = grid4->size();
+
+        EXPECT_EQUAL(n4, 5 * 4);  // Ni * Nj
+
+        spec.set("east", -1.);
+        std::unique_ptr<const Grid> grid5(GridFactory::build(spec));
+        auto n5 = grid5->size();
+
+        EXPECT_EQUAL(n5, 4 * 4);  // Ni * Nj
     }
 
 

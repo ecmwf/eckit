@@ -61,11 +61,6 @@ Grid::iterator UnstructuredFromGrid::cend() const {
 }
 
 
-const area::BoundingBox& UnstructuredFromGrid::boundingBox() const {
-    return Unstructured::boundingBox();
-}
-
-
 std::vector<Point> UnstructuredFromGrid::to_points() const {
     std::vector<Point> p;
     for (size_t i = 0; i < size(); ++i) {

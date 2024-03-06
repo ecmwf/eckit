@@ -118,7 +118,6 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    virtual const area::BoundingBox& boundingBox() const;
 
     virtual size_t size() const;
     virtual uid_t uid() const;
@@ -134,8 +133,13 @@ public:
     virtual Renumber reorder(Ordering) const;
     virtual Grid* grid_reorder(Ordering) const;
 
+    virtual Area* area() const;
     virtual Renumber crop(const Area&) const;
     virtual Grid* grid_crop(const Area&) const;
+
+    virtual area::BoundingBox boundingBox() const;
+    virtual Renumber crop(const area::BoundingBox&) const;
+    virtual Grid* grid_crop(const area::BoundingBox&) const;
 
     // -- Overridden methods
     // None
@@ -154,7 +158,6 @@ protected:
 
     // -- Methods
 
-    area::BoundingBox bbox() const { return bbox_; }
     void bbox(const area::BoundingBox& bbox) { bbox_ = bbox; }
 
     static Renumber no_reorder(size_t size);

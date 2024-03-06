@@ -269,7 +269,7 @@ Grid::iterator ORCA::cend() const {
 }
 
 
-const area::BoundingBox& ORCA::boundingBox() const {
+area::BoundingBox ORCA::boundingBox() const {
     static const auto __bbox(area::BoundingBox::make_global_prime());
     return __bbox;
 }

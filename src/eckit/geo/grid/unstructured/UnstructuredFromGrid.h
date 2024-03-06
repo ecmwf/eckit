@@ -56,8 +56,6 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    const area::BoundingBox& boundingBox() const override;
-
     size_t size() const override { return latitudes_.size(); }
     uid_t uid() const override;
 

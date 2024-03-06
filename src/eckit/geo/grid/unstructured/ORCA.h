@@ -89,7 +89,7 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    const area::BoundingBox& boundingBox() const override;
+    area::BoundingBox boundingBox() const override;
 
     size_t size() const override { return ni() * nj(); }
     uid_t uid() const override { return uid_; }

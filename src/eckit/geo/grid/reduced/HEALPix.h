@@ -75,7 +75,7 @@ private:
 
     // -- Overridden methods
 
-    const area::BoundingBox& boundingBox() const override;
+    area::BoundingBox boundingBox() const override;
 
     size_t size() const override;
 

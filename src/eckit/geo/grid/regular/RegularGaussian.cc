@@ -12,6 +12,7 @@
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
@@ -65,6 +66,15 @@ const std::vector<double>& RegularGaussian::latitudes() const {
 void RegularGaussian::spec(spec::Custom& custom) const {
     ASSERT(!custom.has("grid"));
     custom.set("grid", "F" + std::to_string(N_));
+}
+
+
+Grid* RegularGaussian::grid_crop(const area::BoundingBox& bbox) const {
+    if (auto intersection(boundingBox()); bbox.intersects(intersection)) {
+        return new RegularGaussian(N_, bbox);
+    }
+
+    throw eckit::Exception("RegularGaussian: cannot crop grid (empty intersection)");
 }
 
 

@@ -81,8 +81,8 @@ const std::vector<double>& ReducedGaussian::latitudes() const {
 std::vector<double> ReducedGaussian::longitudes(size_t j) const {
     auto Ni = ni(j);
     if (!x_ || x_->size() != Ni) {
-        const_cast<std::unique_ptr<Range>&>(x_) =
-            std::make_unique<range::RegularLongitude>(Ni, bbox().west, bbox().east);
+        auto bbox                               = boundingBox();
+        const_cast<std::unique_ptr<Range>&>(x_) = std::make_unique<range::RegularLongitude>(Ni, bbox.west, bbox.east);
     }
 
     return x_->values();

@@ -51,11 +51,6 @@ std::string Grid::spec() const {
 }
 
 
-const area::BoundingBox& Grid::boundingBox() const {
-    throw NotImplemented("Grid::boundingBox", Here());
-}
-
-
 size_t Grid::size() const {
     throw NotImplemented("Grid::size", Here());
 }
@@ -114,6 +109,11 @@ Grid* Grid::grid_reorder(Ordering) const {
 }
 
 
+Area* Grid::area() const {
+    return new area::BoundingBox(bbox_);
+}
+
+
 Renumber Grid::crop(const Area&) const {
     throw NotImplemented("Grid::crop");
 }
@@ -121,6 +121,21 @@ Renumber Grid::crop(const Area&) const {
 
 Grid* Grid::grid_crop(const Area&) const {
     throw NotImplemented("Grid::grid_crop");
+}
+
+
+area::BoundingBox Grid::boundingBox() const {
+    return bbox_;
+}
+
+
+Renumber Grid::crop(const area::BoundingBox& bbox) const {
+    return crop(static_cast<const Area&>(bbox));
+}
+
+
+Grid* Grid::grid_crop(const area::BoundingBox& bbox) const {
+    return grid_crop(static_cast<const Area&>(bbox));
 }
 
 

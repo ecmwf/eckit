@@ -300,7 +300,7 @@ Spec* HEALPix::spec(const std::string& name) {
 }
 
 
-const area::BoundingBox& HEALPix::boundingBox() const {
+area::BoundingBox HEALPix::boundingBox() const {
     static const auto __bbox(area::BoundingBox::make_global_prime());
     return __bbox;
 }

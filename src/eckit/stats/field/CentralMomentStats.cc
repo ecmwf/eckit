@@ -13,6 +13,8 @@
 
 #include <ostream>
 
+#include "eckit/log/JSON.h"
+
 #include "mir/stats/Field.h"
 #include "mir/stats/detail/CentralMomentsT.h"
 
@@ -23,6 +25,7 @@ namespace mir::stats::field {
 struct Mean final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
     using CentralMomentStatsT::CentralMomentStatsT;
     double value() const override { return mean(); }
+    void json(eckit::JSON& j) const override { json_tv(j, "mean", value()); }
     void print(std::ostream& out) const override { out << "Mean[]"; }
 };
 
@@ -30,6 +33,7 @@ struct Mean final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
 struct Variance final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
     using CentralMomentStatsT::CentralMomentStatsT;
     double value() const override { return variance(); }
+    void json(eckit::JSON& j) const override { json_tv(j, "variance", value()); }
     void print(std::ostream& out) const override { out << "Variance[]"; }
 };
 
@@ -37,6 +41,7 @@ struct Variance final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
 struct Skewness final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
     using CentralMomentStatsT::CentralMomentStatsT;
     double value() const override { return skewness(); }
+    void json(eckit::JSON& j) const override { json_tv(j, "skewness", value()); }
     void print(std::ostream& out) const override { out << "Skewness[]"; }
 };
 
@@ -44,6 +49,7 @@ struct Skewness final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
 struct Kurtosis final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
     using CentralMomentStatsT::CentralMomentStatsT;
     double value() const override { return kurtosis(); }
+    void json(eckit::JSON& j) const override { json_tv(j, "kurtosis", value()); }
     void print(std::ostream& out) const override { out << "Kurtosis[]"; }
 };
 
@@ -51,13 +57,15 @@ struct Kurtosis final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
 struct StandardDeviation final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
     using CentralMomentStatsT::CentralMomentStatsT;
     double value() const override { return standardDeviation(); }
+    void json(eckit::JSON& j) const override { json_tv(j, "stddev", value()); }
     void print(std::ostream& out) const override { out << "StandardDeviation[]"; }
 };
 
 
 struct Sum final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
     using CentralMomentStatsT::CentralMomentStatsT;
-    double value() const override { return mean() * double(Counter::count()); }
+    double value() const override { return mean() * static_cast<double>(Counter::count()); }
+    void json(eckit::JSON& j) const override { json_tv(j, "sum", value()); }
     void print(std::ostream& out) const override { out << "Sum[]"; }
 };
 

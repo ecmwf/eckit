@@ -16,6 +16,7 @@
 #include <cmath>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
@@ -28,6 +29,7 @@ static const Fraction PERIOD(360, 1);
 
 RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _ref, double _eps) :
     Regular(_inc, _a, _b, _ref, _eps) {
+    ASSERT(!types::is_approximately_equal(_a, _b));
     ASSERT(_a < _b);  // FIXME temporary
     const Fraction inc(_inc);
 
@@ -44,16 +46,24 @@ RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) 
 
 
 Range* RegularLongitude::crop(double crop_a, double crop_b) const {
-    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
-           (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
+    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b));
 
-    if (types::is_approximately_equal(crop_a, crop_b, eps())) {
-        NOTIMP;  // FIXME
-    }
-    else if (a() < b()) {
+    if (a() < b()) {
+        const auto inc(increment());
+
+        if (periodic()) {
+            return new RegularLongitude(inc, crop_a, crop_b, a(), eps());
+        }
+
+        RegularLongitude crop(inc, crop_a, crop_b, a(), eps());
+        if (crop.periodic()) {
+            auto _a = PointLonLat::normalise_angle_to_minimum(crop_a, crop.a());
+            auto _b = PointLonLat::normalise_angle_to_minimum(crop_b, _a);
+            return new RegularLongitude(inc, _a, _b, a(), eps());
+        }
+
         ASSERT(a() <= crop_a && crop_b <= b());  // FIXME do better
 
-        auto inc(increment());
         auto d  = (a() / inc).decimalPart() * inc;
         auto _a = adjust(crop_a - d, inc, true) + d;
         auto _b = adjust(crop_b - d, inc, false) + d;
@@ -65,9 +75,6 @@ Range* RegularLongitude::crop(double crop_a, double crop_b) const {
         ASSERT(0 < n && n <= size());
 
         return new RegularLongitude(n, _a, _b, eps());
-    }
-    else {
-        NOTIMP;  // FIXME
     }
 
     NOTIMP;

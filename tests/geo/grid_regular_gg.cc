@@ -107,6 +107,34 @@ CASE("RegularGaussian") {
         auto n5 = grid5->size();
 
         EXPECT_EQUAL(n5, 4 * 4);  // Ni * Nj
+
+        const std::vector<Point> ref{
+            PointLonLat{-180., 59.444408289},
+            PointLonLat{-135., 59.444408289},
+            PointLonLat{-90., 59.444408289},
+            PointLonLat{-45., 59.444408289},
+            PointLonLat{-180., 19.875719147},
+            PointLonLat{-135., 19.875719147},
+            PointLonLat{-90., 19.875719147},
+            PointLonLat{-45., 19.875719147},
+            PointLonLat{-180., -19.875719147},
+            PointLonLat{-135., -19.875719147},
+            PointLonLat{-90., -19.875719147},
+            PointLonLat{-45., -19.875719147},
+            PointLonLat{-180., -59.444408289},
+            PointLonLat{-135., -59.444408289},
+            PointLonLat{-90., -59.444408289},
+            PointLonLat{-45., -59.444408289},
+        };
+
+        auto points5 = grid5->to_points();
+
+        EXPECT(points5.size() == grid5->size());
+        ASSERT(points5.size() == ref.size());
+
+        for (size_t i = 0; i < points5.size(); ++i) {
+            EXPECT(points_equal(points5[i], ref[i]));
+        }
     }
 
 

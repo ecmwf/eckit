@@ -44,6 +44,7 @@ private:
     void cleanup(SQLSelect& sql) override;
 
     const type::SQLType* type() const override;
+    using SQLExpression::eval;
     double eval(bool& missing) const override;
     bool isConstant() const override { return true; }
     bool isNumber() const override { return true; }

@@ -15,6 +15,7 @@
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/thread/ThreadSingleton.h"
+#include "eckit/log/Seconds.h"
 
 namespace eckit::net {
 
@@ -29,7 +30,7 @@ static void offLine(const std::string& host, int port) {
 }
 
 Connector::Connector(const std::string& host, int port, const std::string& node) :
-    host_(host), node_(node), port_(port), locked_(false), memoize_(false), sent_(false), life_(0), autoclose_(false) {
+    host_(host), node_(node), port_(port), locked_(false), last_(::time(0)), memoize_(false), sent_(false), life_(0), autoclose_(false) {
     Log::info() << "Connector::Connector(" << node << "," << host << ":" << port << ")" << std::endl;
 }
 
@@ -49,6 +50,16 @@ Connector::~Connector() {
 }
 
 TCPSocket& Connector::socket() {
+
+    static int connectorTimeout = Resource<int>("connectorTimeout", 0);
+    if(connectorTimeout != 0) {
+        time_t now = ::time(0);
+        if(now - last_ > connectorTimeout) {
+            Log::info() << "Connector::socket() opened for " << Seconds(now - last_) << " seconds, reopening connection" << std::endl;
+            socket_.close();
+        }
+    }
+
     if (!socket_.isConnected()) {
         try {
             NodeInfo remote;
@@ -252,8 +263,9 @@ std::string Connector::name() const {
 }
 
 template <class T, class F>
-long Connector::socketIo(F proc, T buf, long len, const char* msg) {
+long Connector::socketIo(F proc, T buf, long len, const char* msg, time_t& last) {
     TCPSocket& s = socket();
+    last = ::time(0);
     long l       = (s.*proc)(buf, len);
     if (l != len) {
         reset();
@@ -282,7 +294,7 @@ long Connector::write(const void* buf, long len) {
         return len;
     }
 
-    return socketIo(&TCPSocket::write, buf, len, "written");
+    return socketIo(&TCPSocket::write, buf, len, "written", last_);
 }
 
 long Connector::read(void* buf, long len) {
@@ -307,7 +319,7 @@ long Connector::read(void* buf, long len) {
             if (!useCache) {
                 cached_.buffer_ = 0;
                 try {
-                    ASSERT((size_t)socketIo(&TCPSocket::write, out_.buffer(), out_.count(), "written") == out_.count());
+                    ASSERT((size_t)socketIo(&TCPSocket::write, out_.buffer(), out_.count(), "written", last_) == out_.count());
                 }
                 catch (...) {
                     reset();
@@ -338,7 +350,7 @@ long Connector::read(void* buf, long len) {
     }
 
     try {
-        len = socketIo(&TCPSocket::read, buf, len, "read");
+        len = socketIo(&TCPSocket::read, buf, len, "read", last_);
     }
     catch (...) {
         reset();

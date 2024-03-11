@@ -47,12 +47,12 @@ Endpoint::Endpoint() :
     validate();
 }
 
-bool Endpoint::operator==(const net::Endpoint& other) {
-    return (port_ == other.port_ && host_ == other.host_);
+bool Endpoint::operator==(const net::Endpoint& other) const {
+    return (port_ == other.port_ && hostname() == other.hostname());
 }
 
 void Endpoint::print(std::ostream& os) const {
-    os << host_ << ":" << port_;
+    os << hostname() << ":" << port_;
 }
 
 void Endpoint::encode(Stream& s) const {

@@ -13,6 +13,7 @@
 
 #include "eckit/eckit.h"
 
+#include "eckit/io/FDataSync.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/FileStream.h"
@@ -39,11 +40,8 @@ void FileStream::close() {
         // a power failure, we lose some data. So we
         // need to fsync
 
-        int ret = fsync(fileno(file_));
+        int ret = eckit::fsync(fileno(file_));
 
-        while (ret < 0 && errno == EINTR) {
-            ret = fsync(fileno(file_));
-        }
         if (ret < 0) {
             Log::error() << "Cannot fsync(" << name_ << ") " << fileno(file_) << Log::syserr << std::endl;
         }

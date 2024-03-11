@@ -89,6 +89,12 @@ void Timer::report(const std::string& message) {
          << std::endl;
 }
 
+void Timer::reset(const std::string& message) {
+    stop();
+    report(message);
+    start();
+}
+
 void Timer::takeTime() {
     cpuStop_ = ::clock();
     ::gettimeofday(&timeStop_, 0);

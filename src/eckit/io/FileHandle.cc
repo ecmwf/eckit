@@ -151,10 +151,6 @@ void FileHandle::flush() {
 
             int ret = eckit::fsync(fileno(file_));
 
-            while (ret < 0 && errno == EINTR) {
-                ret = eckit::fsync(fileno(file_));
-            }
-
             if (ret < 0) {
                 std::ostringstream oss;
                 oss << "Cannot fsync(" << name_ << ") " << fileno(file_);

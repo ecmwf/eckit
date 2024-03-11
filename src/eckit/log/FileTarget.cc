@@ -39,6 +39,7 @@ FileTarget::~FileTarget() {
 }
 
 void FileTarget::write(const char* start, const char* end) {
+    if (start >= end) return;
     out_.write(start, end - start);
 }
 

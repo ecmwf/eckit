@@ -23,11 +23,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ChannelBuffer::ChannelBuffer(std::size_t size) :
-    std::streambuf(), target_(0), buffer_(size) {
+ChannelBuffer::ChannelBuffer(std::size_t size) : std::streambuf(), target_(0), buffer_(size) {
     ASSERT(size);
-    char* base = &buffer_.front();
-    setp(base, base + buffer_.size());
+    setp(buffer_.data(), buffer_.data() + buffer_.size());
 }
 
 ChannelBuffer::~ChannelBuffer() {
@@ -68,10 +66,13 @@ void ChannelBuffer::reset() {
 }
 
 bool ChannelBuffer::dumpBuffer() {
+    // When setting and using pointers we should have boundary checks. In a multi threaded environment we already have experienced weird behaviour.
+    // With these checks the race conditions are not gone but they won't cause any segfaults. See https://github.com/ecmwf/eckit/issues/89
     if (target_) {
-        target_->write(pbase(), pptr());
+        // Explicitly check that `pptr()` is not larger than end of buffer. Racecondition can end up adding larger values.
+        target_->write(buffer_.data(), std::min(pptr(), buffer_.data() + buffer_.size()));
     }
-    setp(pbase(), epptr());
+    setp(buffer_.data(), buffer_.data() + buffer_.size());
     return true;
 }
 
@@ -120,8 +121,7 @@ std::streambuf::int_type ChannelBuffer::overflow(std::streambuf::int_type ch) {
         return sync();
     }
     dumpBuffer();
-    sputc(ch);
-    return traits_type::to_int_type(ch);
+    return sputc(ch);
 }
 
 std::streambuf::int_type ChannelBuffer::sync() {

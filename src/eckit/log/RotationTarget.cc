@@ -44,6 +44,7 @@ public:
     }
 
     void write(const char* start, const char* end) {
+        if(start >= end) return;
         AutoLock<StaticMutex> lock(local_mutex);
         rotout().write(start, end - start);
     }
@@ -125,6 +126,7 @@ RotationTarget::RotationTarget(const std::string& name) :
 RotationTarget::~RotationTarget() {}
 
 void RotationTarget::write(const char* start, const char* end) {
+    if(start >= end) return;
     RotationOutputStream::instance(name_).write(start, end);
 }
 void RotationTarget::flush() {

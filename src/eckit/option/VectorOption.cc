@@ -13,21 +13,17 @@
 /// @author Simon Smart
 /// @date March 2016
 
+#pragma once
+
 #include <iostream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/option/Title.h"
 #include "eckit/option/VectorOption.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
-
-namespace eckit {
-
-namespace option {
-
-//----------------------------------------------------------------------------------------------------------------------
-
+namespace eckit::option {
 
 template <class T>
 VectorOption<T>::VectorOption(const std::string& name, const std::string& description, size_t size,
@@ -59,9 +55,9 @@ void VectorOption<T>::set_value(const std::vector<T>& value, Configured& paramet
 
 template <class T>
 std::vector<T> VectorOption<T>::translate(const std::string& value) const {
-    eckit::Translator<std::string, T> t;
+    Translator<std::string, T> t;
 
-    eckit::Tokenizer parse(separator_);
+    Tokenizer parse(separator_);
     std::vector<std::string> tokens;
     parse(value, tokens);
 
@@ -84,7 +80,7 @@ void VectorOption<T>::print(std::ostream& out) const {
 
     const char* sep = "=";
     for (size_t i = 0; i < (size_ ? size_ : 2); i++) {
-        out << sep << Title<T>()();
+        out << sep << implementation_detail::Title<T>()();
         sep = separator_;
     }
 
@@ -95,16 +91,9 @@ void VectorOption<T>::print(std::ostream& out) const {
     out << " (" << this->description() << ")";
 }
 
-
 template <class T>
 void VectorOption<T>::copy(const Configuration& from, Configured& to) const {
     Option::copy<std::vector<T>>(this->name(), from, to);
 }
 
-
-//----------------------------------------------------------------------------------------------------------------------
-
-
-}  // namespace option
-
-}  // namespace eckit
+}  // namespace eckit::option

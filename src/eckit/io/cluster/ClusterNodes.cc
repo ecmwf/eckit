@@ -171,7 +171,7 @@ public:
     const char* host() const { return host_; }
 
     void attributes(const std::set<std::string>& attrs) {
-        ASSERT(attrs.size() >= 0 && attrs.size() <= MAX_NODE_ATTRIBUTES);
+        ASSERT(attrs.size() <= MAX_NODE_ATTRIBUTES);
         zero(attributes_);
         nattrs_ = 0;
         for (const auto& a : attrs) {

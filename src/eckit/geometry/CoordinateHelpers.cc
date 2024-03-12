@@ -5,9 +5,9 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include <cmath>
 #include <limits>
 #include <sstream>
-#include <cmath>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/CoordinateHelpers.h"
@@ -18,11 +18,11 @@ namespace eckit::geometry {
 //----------------------------------------------------------------------------------------------------------------------
 
 inline double modulo(const double a, const double b) {
-    return a-b*std::floor(a/b);
+    return a - b * std::floor(a / b);
 }
 
 double normalise_angle(const double a, const double minimum) {
-    return minimum + modulo(a-minimum, 360.);
+    return minimum + modulo(a - minimum, 360.);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

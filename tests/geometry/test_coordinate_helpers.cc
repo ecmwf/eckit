@@ -24,10 +24,10 @@ CASE("normalise angles") {
     EXPECT(14. == normalise_angle(-346., 0.));
     EXPECT(14. == normalise_angle(-346., -90.));
     EXPECT(374. == normalise_angle(-346., 90.));
-    EXPECT(0. == normalise_angle(360.*1e12, 0.));
-    EXPECT(14. == normalise_angle(360.*1e12+14, 0.));
-    EXPECT(0. == normalise_angle(-360.*1e12, 0.));
-    EXPECT(14. == normalise_angle(-360.*1e12+14, 0.));
+    EXPECT(0. == normalise_angle(360. * 1e12, 0.));
+    EXPECT(14. == normalise_angle(360. * 1e12 + 14, 0.));
+    EXPECT(0. == normalise_angle(-360. * 1e12, 0.));
+    EXPECT(14. == normalise_angle(-360. * 1e12 + 14, 0.));
 }
 
 CASE("canonicalise on sphere") {

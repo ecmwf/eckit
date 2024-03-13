@@ -299,7 +299,7 @@ CASE("spec") {
             Log::info() << user << " -> " << gridspec << std::endl;
 
             try {
-                std::unique_ptr<const Spec> spec(GridFactory::spec(user));
+                std::unique_ptr<const Spec> spec(GridFactory::make_spec(user));
                 EXPECT(spec);
 
                 std::unique_ptr<const Grid> grid(GridFactory::build(*spec));

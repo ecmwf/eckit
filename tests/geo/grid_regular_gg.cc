@@ -97,7 +97,7 @@ CASE("RegularGaussian") {
 
         EXPECT_NOT(bbox3.isPeriodicWestEast());
 
-        std::unique_ptr<const Grid> grid4(grid3->grid_crop(bbox3));
+        std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(bbox3));
         auto n4 = grid4->size();
 
         EXPECT_EQUAL(n4, 5 * 4);  // Ni * Nj

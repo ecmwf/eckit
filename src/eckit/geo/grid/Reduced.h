@@ -105,7 +105,7 @@ private:
 
     // -- Friends
 
-    friend class ::eckit::geo::iterator::Reduced;
+    friend class geo::iterator::Reduced;
 };
 
 

@@ -53,7 +53,7 @@ public:
 
     Ordering order() const override { return ordering_; }
     Renumber reorder(Ordering) const override;
-    Grid* grid_reorder(Ordering ordering) const override { return new HEALPix(N_, ordering); }
+    Grid* make_grid_reordered(Ordering ordering) const override { return new HEALPix(N_, ordering); }
 
     // -- Class members
 

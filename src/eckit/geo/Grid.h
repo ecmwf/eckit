@@ -113,11 +113,10 @@ public:
     iterator begin() const { return cbegin(); }
     iterator end() const { return cend(); }
 
-    std::string spec() const;
-
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
+    std::string spec() const;
 
     virtual size_t size() const;
     virtual uid_t uid() const;
@@ -131,15 +130,15 @@ public:
 
     virtual Ordering order() const;
     virtual Renumber reorder(Ordering) const;
-    virtual Grid* grid_reorder(Ordering) const;
+    virtual Grid* make_grid_reordered(Ordering) const;
 
     virtual Area* area() const;
     virtual Renumber crop(const Area&) const;
-    virtual Grid* grid_crop(const Area&) const;
+    virtual Grid* make_grid_cropped(const Area&) const;
 
     virtual area::BoundingBox boundingBox() const;
     virtual Renumber crop(const area::BoundingBox&) const;
-    virtual Grid* grid_crop(const area::BoundingBox&) const;
+    virtual Grid* make_grid_cropped(const area::BoundingBox&) const;
 
     // -- Overridden methods
     // None
@@ -212,21 +211,21 @@ using GridRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
 
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
-    static const Grid* build(const Spec& spec) { return instance().build_(spec); }
+    static const Grid* build(const Spec& spec) { return instance().make_from_spec_(spec); }
 
     // This is 'const' as Grid should always be immutable
     static const Grid* make_from_string(const std::string&);
 
-    static Spec* spec(const Spec& spec) { return instance().generate_spec_(spec); }
+    static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
     static void list(std::ostream& out) { return instance().list_(out); }
 
 private:
     static GridFactory& instance();
 
     // This is 'const' as Grid should always be immutable
-    const Grid* build_(const Spec&) const;
+    const Grid* make_from_spec_(const Spec&) const;
 
-    Spec* generate_spec_(const Spec&) const;
+    Spec* make_spec_(const Spec&) const;
     void list_(std::ostream&) const;
 };
 

@@ -59,7 +59,7 @@ CASE("HEALPix") {
         EXPECT_EQUAL_VECTOR(ren_to_nested, expected_ren_ring_to_nested);
 
 
-        std::unique_ptr<const Grid> nested(ring->grid_reorder(Ordering::healpix_nested));
+        std::unique_ptr<const Grid> nested(ring->make_grid_reordered(Ordering::healpix_nested));
 
         auto order_nested = nested->order();
         EXPECT_EQUAL(order_nested, Ordering::healpix_nested);

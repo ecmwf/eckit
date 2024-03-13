@@ -99,7 +99,7 @@ private:
 
     // -- Friends
 
-    friend class ::eckit::geo::iterator::Regular;
+    friend class geo::iterator::Regular;
 };
 
 

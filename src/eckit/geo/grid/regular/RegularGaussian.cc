@@ -69,7 +69,7 @@ void RegularGaussian::spec(spec::Custom& custom) const {
 }
 
 
-Grid* RegularGaussian::grid_crop(const area::BoundingBox& crop) const {
+Grid* RegularGaussian::make_grid_cropped(const area::BoundingBox& crop) const {
     if (auto bbox(boundingBox()); crop.intersects(bbox)) {
         return new RegularGaussian(N_, bbox);
     }

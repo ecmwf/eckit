@@ -104,7 +104,7 @@ Renumber Grid::reorder(Ordering) const {
 }
 
 
-Grid* Grid::grid_reorder(Ordering) const {
+Grid* Grid::make_grid_reordered(Ordering) const {
     throw NotImplemented("Grid::grid_reorder");
 }
 
@@ -119,7 +119,7 @@ Renumber Grid::crop(const Area&) const {
 }
 
 
-Grid* Grid::grid_crop(const Area&) const {
+Grid* Grid::make_grid_cropped(const Area&) const {
     throw NotImplemented("Grid::grid_crop");
 }
 
@@ -134,8 +134,8 @@ Renumber Grid::crop(const area::BoundingBox& bbox) const {
 }
 
 
-Grid* Grid::grid_crop(const area::BoundingBox& bbox) const {
-    return grid_crop(static_cast<const Area&>(bbox));
+Grid* Grid::make_grid_cropped(const area::BoundingBox& bbox) const {
+    return make_grid_cropped(static_cast<const Area&>(bbox));
 }
 
 
@@ -153,7 +153,7 @@ void Grid::spec(spec::Custom&) const {
 
 const Grid* GridFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Spec> spec(new spec::Custom(YAMLParser::decodeString(str)));
-    return instance().build_(*spec);
+    return instance().make_from_spec_(*spec);
 }
 
 
@@ -163,10 +163,10 @@ GridFactory& GridFactory::instance() {
 }
 
 
-const Grid* GridFactory::build_(const Spec& spec) const {
+const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
     lock_type lock;
 
-    std::unique_ptr<Spec> cfg(generate_spec_(spec));
+    std::unique_ptr<Spec> cfg(make_spec_(spec));
 
     if (std::string type; cfg->get("type", type)) {
         return GridFactoryType::instance().get(type).create(*cfg);
@@ -177,7 +177,7 @@ const Grid* GridFactory::build_(const Spec& spec) const {
 }
 
 
-Spec* GridFactory::generate_spec_(const Spec& spec) const {
+Spec* GridFactory::make_spec_(const Spec& spec) const {
     lock_type lock;
     etc::Grid::instance();
 

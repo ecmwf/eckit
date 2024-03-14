@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <memory>
+
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Regular.h"
 

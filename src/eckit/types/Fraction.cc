@@ -103,7 +103,7 @@ Fraction::Fraction(double x) {
 
         x = 1.0 / (x - a);
 
-        if (x > std::numeric_limits<Fraction::value_type>::max()) {
+        if (x > static_cast<double>(std::numeric_limits<Fraction::value_type>::max())) {
             break;
         }
 

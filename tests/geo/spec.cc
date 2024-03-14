@@ -324,6 +324,19 @@ CASE("spec") {
             EXPECT(gridspec == R"({"grid":")" + name + R"("})");
         }
     }
+
+
+    SECTION("grid: reduced_gg") {
+        std::unique_ptr<const Grid> n16(GridFactory::build(spec::Custom({{"grid", "n16"}})));
+
+        EXPECT(
+            n16->spec() ==
+            R"({"grid":"N16","pl":[20,27,32,40,45,48,60,60,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,60,60,48,45,40,32,27,20]})");
+
+        std::unique_ptr<const Grid> o16(GridFactory::build(spec::Custom({{"grid", "o16"}})));
+
+        EXPECT(o16->spec() == R"({"grid":"O16"})");
+    }
 }
 
 

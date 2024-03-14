@@ -42,7 +42,7 @@ void LinearAlgebraMKL::print(std::ostream& out) const {
 Scalar LinearAlgebraMKL::dot(const Vector& x, const Vector& y) const {
     ASSERT(x.size() == y.size());
 
-    const auto n   = static_cast<const MKL_INT>(x.size());
+    const auto n   = static_cast<MKL_INT>(x.size());
     const auto* _x = static_cast<const double*>(x.data());
     const auto* _y = static_cast<const double*>(y.data());
 
@@ -57,8 +57,8 @@ void LinearAlgebraMKL::gemv(const Matrix& A, const Vector& x, Vector& y) const {
     ASSERT(x.size() == A.cols());
     ASSERT(y.size() == A.rows());
 
-    const auto m = static_cast<const MKL_INT>(A.rows());
-    const auto n = static_cast<const MKL_INT>(A.cols());
+    const auto m = static_cast<MKL_INT>(A.rows());
+    const auto n = static_cast<MKL_INT>(A.cols());
 
     const auto* _A = static_cast<const double*>(A.data());
     const auto* _x = static_cast<const double*>(x.data());
@@ -79,9 +79,9 @@ void LinearAlgebraMKL::gemm(const Matrix& A, const Matrix& B, Matrix& C) const {
     ASSERT(A.rows() == C.rows());
     ASSERT(B.cols() == C.cols());
 
-    const auto m = static_cast<const MKL_INT>(A.rows());
-    const auto n = static_cast<const MKL_INT>(B.cols());
-    const auto k = static_cast<const MKL_INT>(A.cols());
+    const auto m = static_cast<MKL_INT>(A.rows());
+    const auto n = static_cast<MKL_INT>(B.cols());
+    const auto k = static_cast<MKL_INT>(A.cols());
 
     const auto* _A = static_cast<const double*>(A.data());
     const auto* _B = static_cast<const double*>(B.data());

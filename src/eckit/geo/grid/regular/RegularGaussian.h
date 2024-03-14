@@ -79,7 +79,7 @@ private:
 
     void spec(spec::Custom&) const override;
 
-    Grid* make_grid_cropped(const area::BoundingBox& bbox) const override;
+    Grid* make_grid_cropped(const area::BoundingBox&) const override;
 
     // -- Class members
     // None

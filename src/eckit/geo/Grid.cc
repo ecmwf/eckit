@@ -105,7 +105,7 @@ Renumber Grid::reorder(Ordering) const {
 
 
 Grid* Grid::make_grid_reordered(Ordering) const {
-    throw NotImplemented("Grid::grid_reorder");
+    throw NotImplemented("Grid::make_grid_reordered");
 }
 
 
@@ -120,7 +120,7 @@ Renumber Grid::crop(const Area&) const {
 
 
 Grid* Grid::make_grid_cropped(const Area&) const {
-    throw NotImplemented("Grid::grid_crop");
+    throw NotImplemented("Grid::make_grid_cropped");
 }
 
 

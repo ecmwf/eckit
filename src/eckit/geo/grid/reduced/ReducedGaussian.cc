@@ -104,6 +104,15 @@ void ReducedGaussian::spec(spec::Custom& custom) const {
 }
 
 
+Grid* ReducedGaussian::make_grid_cropped(const area::BoundingBox& crop) const {
+    if (auto bbox(boundingBox()); crop.intersects(bbox)) {
+        return new ReducedGaussian(pl_, bbox);
+    }
+
+    throw eckit::Exception("RegularGaussian: cannot crop grid (empty intersection)");
+}
+
+
 struct ReducedGaussianClassical {
     static Spec* spec(const std::string& name) {
         auto N = Translator<std::string, size_t>{}(name.substr(1));

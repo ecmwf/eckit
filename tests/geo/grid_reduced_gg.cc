@@ -110,43 +110,32 @@ CASE("ReducedGaussianOctahedral") {
 
         EXPECT_EQUAL(n2, n1 / 2);
 
-#if 0
         spec = spec::Custom{{{"grid", "o2"}, {"west", -180}}};
         std::unique_ptr<const Grid> grid3(GridFactory::build(spec));
         auto n3 = grid3->size();
 
         EXPECT_EQUAL(n3, n1);
 
-        auto bbox3 = grid3->boundingBox();
+        EXPECT(grid3->boundingBox().isPeriodicWestEast());
 
-        EXPECT(bbox3.isPeriodicWestEast());
-
-        bbox3.east = 0.;
-
-        EXPECT_NOT(bbox3.isPeriodicWestEast());
-
-        std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(bbox3));
+        // (exclude Greenwhich meridian)
+        std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(area::BoundingBox(90., -180., 0., -1.)));
         auto n4 = grid4->size();
 
-        EXPECT_EQUAL(n4, 5 * 4);  // Ni * Nj
+        EXPECT_EQUAL(n4, n3 / 4);
 
-        spec.set("east", -1.);
-        std::unique_ptr<const Grid> grid5(GridFactory::build(spec));
-        auto n5 = grid5->size();
-
-        EXPECT_EQUAL(n5, 4 * 4);  // Ni * Nj
-
+#if 0
         const std::vector<Point> ref{
             ...
         };
 
-        auto points5 = grid5->to_points();
+        auto points4 = grid4->to_points();
 
-        EXPECT(points5.size() == grid5->size());
-        ASSERT(points5.size() == ref.size());
+        EXPECT(points4.size() == grid4->size());
+        ASSERT(points4.size() == ref.size());
 
-        for (size_t i = 0; i < points5.size(); ++i) {
-            EXPECT(points_equal(points5[i], ref[i]));
+        for (size_t i = 0; i < points4.size(); ++i) {
+            EXPECT(points_equal(points4[i], ref[i]));
         }
 #endif
     }

@@ -228,7 +228,7 @@ static Ordering ordering_from_string(const std::string& str) {
 
 
 HEALPix::HEALPix(const Spec& spec) :
-    HEALPix(spec.get_unsigned("Nside"), ordering_from_string(spec.get_string("orderingConvention", "ring"))) {}
+    HEALPix(spec.get_unsigned("Nside"), ordering_from_string(spec.get_string("ordering", "ring"))) {}
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) :
@@ -360,6 +360,14 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
     });
 
     return lons;
+}
+
+
+void HEALPix::spec(spec::Custom& custom) const {
+    custom.set("grid", "H" + std::to_string(N_));
+    if (ordering_ != Ordering::healpix_ring) {
+        custom.set("ordering", "nested");
+    }
 }
 
 

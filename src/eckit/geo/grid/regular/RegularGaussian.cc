@@ -64,8 +64,8 @@ const std::vector<double>& RegularGaussian::latitudes() const {
 
 
 void RegularGaussian::spec(spec::Custom& custom) const {
-    ASSERT(!custom.has("grid"));
     custom.set("grid", "F" + std::to_string(N_));
+    boundingBox().spec(custom);
 }
 
 

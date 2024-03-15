@@ -62,8 +62,8 @@ Grid::iterator RegularLL::cend() const {
 
 
 void RegularLL::spec(spec::Custom& custom) const {
-    ASSERT(!custom.has("grid"));
     custom.set("grid", std::vector<double>{lon_.increment(), lat_.increment()});
+    boundingBox().spec(custom);
 }
 
 

@@ -63,7 +63,6 @@ Grid::iterator ReducedGaussian::cend() const {
 
 
 size_t ReducedGaussian::ni(size_t j) const {
-    ASSERT(j < Nj_);
     return pl_.at(j + j_);
 }
 
@@ -90,8 +89,6 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
 
 
 void ReducedGaussian::spec(spec::Custom& custom) const {
-    ASSERT(!custom.has("grid"));
-
     if (pl_ == util::reduced_octahedral_pl(N_)) {
         custom.set("grid", "O" + std::to_string(N_));
     }
@@ -101,6 +98,8 @@ void ReducedGaussian::spec(spec::Custom& custom) const {
             custom.set("pl", pl_);
         }
     }
+
+    boundingBox().spec(custom);
 }
 
 

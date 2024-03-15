@@ -23,12 +23,16 @@ namespace eckit::geo::test {
 using P = std::unique_ptr<Projection>;
 
 
-CASE("projection: none") {
+CASE("projection: plate-caree") {
     Point p = PointLonLat{1, 1};
-    P projection(ProjectionFactory::instance().get("none").create(spec::Custom{}));
+    Point q = Point2{1, 1};
+    P projection(ProjectionFactory::instance().get("plate-carree").create(spec::Custom{}));
 
-    EXPECT(points_equal(p, projection->inv(p)));
-    EXPECT(points_equal(p, projection->fwd(p)));
+    EXPECT(points_equal(q, projection->inv(p)));
+    EXPECT(std::holds_alternative<Point2>(projection->inv(p)));
+
+    EXPECT(points_equal(p, projection->fwd(q)));
+    EXPECT(std::holds_alternative<PointLonLat>(projection->fwd(q)));
 }
 
 

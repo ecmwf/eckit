@@ -19,6 +19,11 @@ foreach(_test
         point3
         pointlonlat
         projection
+        projection_ll_to_xyz
+        projection_mercator
+        projection_plate-caree
+        projection_proj
+        projection_rotation
         range
         search
         spec

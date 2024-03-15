@@ -26,6 +26,7 @@ PointLonLat::PointLonLat(double lon, double lat) :
     }
 }
 
+
 double PointLonLat::normalise_angle_to_minimum(double a, double minimum) {
     while (a < minimum) {
         a += 360.;

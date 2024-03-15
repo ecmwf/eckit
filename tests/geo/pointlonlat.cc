@@ -77,6 +77,49 @@ CASE("PointLonLat comparison") {
     Point d1 = PointLonLat{-178., -46.7};
     Point d2 = PointLonLat{-178.00000000000003, -46.7};
     EXPECT(points_equal(d1, d2));
+
+    Point e1 = PointLonLat(0., 90.);
+    Point e2 = PointLonLat(180., 90.);
+    EXPECT(points_equal(e1, e2));
+
+    Point f1 = PointLonLat(-0., -90.);
+    Point f2 = PointLonLat(-180., -90.);
+    EXPECT(points_equal(f1, f2));
+}
+
+
+CASE("PointLonLat normalise angles") {
+    EXPECT(0. == PointLonLat::normalise_angle_to_minimum(360., 0.));
+    EXPECT(14. == PointLonLat::normalise_angle_to_minimum(374., 0.));
+    EXPECT(14. == PointLonLat::normalise_angle_to_minimum(374., -90.));
+    EXPECT(374. == PointLonLat::normalise_angle_to_minimum(374., 90.));
+}
+
+
+CASE("PointLonLat canonicalise on sphere") {
+    const PointLonLat p1(108., 32.);
+
+    // Worse coordinates for the same point:
+    const auto p2 = PointLonLat::make(-252., 32.);
+    const auto p3 = PointLonLat::make(288., 148.);
+    const auto p4 = PointLonLat::make(108., -328.);
+
+    // Check each of these is correctly shifted back to original point:
+    const PointLonLat q2 = PointLonLat::make(p2.lon, p2.lat);
+    const PointLonLat q3 = PointLonLat::make(p3.lon, p3.lat);
+    const PointLonLat q4 = PointLonLat::make(p4.lon, p4.lat);
+
+    EXPECT(p1.lon == q2.lon);
+    EXPECT(p1.lat == q2.lat);
+    EXPECT(p1.lon == q3.lon);
+    EXPECT(p1.lat == q3.lat);
+    EXPECT(p1.lon == q4.lon);
+    EXPECT(p1.lat == q4.lat);
+
+    // Check with longitude offset
+    EXPECT(points_equal(PointLonLat::make(1., -90.), PointLonLat(0., -90.)));
+    EXPECT(points_equal(PointLonLat::make(2., 90.), PointLonLat(0., 90.)));
+    EXPECT(points_equal(PointLonLat::make(3., 180.), PointLonLat(183., 0.)));
 }
 
 

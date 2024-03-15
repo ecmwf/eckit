@@ -12,7 +12,11 @@
 
 #pragma once
 
+#include <memory>
+
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
+#include "eckit/geo/util.h"
 
 
 namespace eckit::geo::grid::reduced {
@@ -29,6 +33,7 @@ public:
     // -- Constructors
 
     explicit ReducedLL(const Spec&);
+    explicit ReducedLL(const pl_type&, const area::BoundingBox& = area::BoundingBox::make_global_prime());
 
     // -- Destructor
     // None
@@ -58,7 +63,11 @@ public:
 
 private:
     // -- Members
-    // None
+
+    const pl_type pl_;
+
+    std::unique_ptr<Range> x_;
+    std::unique_ptr<Range> y_;
 
     // -- Methods
     // None
@@ -67,6 +76,8 @@ private:
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t j) const override;
+
+    void spec(spec::Custom&) const override;
 
     // -- Class members
     // None

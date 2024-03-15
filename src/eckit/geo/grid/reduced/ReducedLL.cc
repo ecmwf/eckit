@@ -13,13 +13,22 @@
 #include "eckit/geo/grid/reduced/ReducedLL.h"
 
 #include "eckit/geo/iterator/Reduced.h"
+#include "eckit/geo/range/RegularLatitude.h"
+#include "eckit/geo/range/RegularLongitude.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::grid::reduced {
 
 
 ReducedLL::ReducedLL(const Spec& spec) :
-    Reduced(spec) {}
+    ReducedLL(spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
+
+
+ReducedLL::ReducedLL(const pl_type& pl, const area::BoundingBox& bbox) :
+    Reduced(bbox), pl_(pl), y_(new range::RegularLatitude(pl_.size(), bbox.north, bbox.south)) {
+    ASSERT(y_);
+}
 
 
 Grid::iterator ReducedLL::cbegin() const {
@@ -33,22 +42,35 @@ Grid::iterator ReducedLL::cend() const {
 
 
 size_t ReducedLL::ni(size_t j) const {
-    NOTIMP;
+    return pl_.at(j);
 }
 
 
 size_t ReducedLL::nj() const {
-    NOTIMP;
+    return pl_.size();
 }
 
 
 const std::vector<double>& ReducedLL::latitudes() const {
-    NOTIMP;
+    return y_->values();
 }
 
 
 std::vector<double> ReducedLL::longitudes(size_t j) const {
-    NOTIMP;
+    auto Ni = ni(j);
+    if (!x_ || x_->size() != Ni) {
+        auto bbox                               = boundingBox();
+        const_cast<std::unique_ptr<Range>&>(x_) = std::make_unique<range::RegularLongitude>(Ni, bbox.west, bbox.east);
+    }
+
+    return x_->values();
+}
+
+
+void ReducedLL::spec(spec::Custom& custom) const {
+    custom.set("type", "reduced_ll");
+    custom.set("pl", pl_);
+    boundingBox().spec(custom);
 }
 
 

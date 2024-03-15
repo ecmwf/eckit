@@ -62,7 +62,7 @@ protected:
     // -- Constructors
 
     explicit Regular(const Spec&);
-    explicit Regular(const area::BoundingBox&);
+    explicit Regular(const area::BoundingBox& = area::BoundingBox::make_global_prime());
 
     // -- Members
     // None

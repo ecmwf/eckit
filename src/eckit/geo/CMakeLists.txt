@@ -73,14 +73,12 @@ list(APPEND eckit_geo_srcs
     grid/reduced/ReducedLL.h
     grid/regular/IrregularLL.cc
     grid/regular/IrregularLL.h
-    grid/regular/LambertAzimuthalEqualArea.cc
-    grid/regular/LambertAzimuthalEqualArea.h
-    grid/regular/Mercator.cc
-    grid/regular/Mercator.h
     grid/regular/RegularGaussian.cc
     grid/regular/RegularGaussian.h
     grid/regular/RegularLL.cc
     grid/regular/RegularLL.h
+    grid/regular/XYToLonLat.cc
+    grid/regular/XYToLonLat.h
     grid/unstructured/UnstructuredFromGrid.cc
     grid/unstructured/UnstructuredFromGrid.h
     iterator/Reduced.cc

@@ -22,67 +22,48 @@ namespace eckit::geo::grid::regular {
 
 class Mercator final : public Regular {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit Mercator(const Spec&);
 
-    Mercator(size_t ni, size_t nj, const Increments&, const area::BoundingBox&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
+    Mercator(size_t Nx, size_t Ny, double Dx, double Dy);
 
     // -- Overridden methods
 
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override { return ni_; }
-    size_t nj() const override { return nj_; }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
+    size_t ni() const override { return Ny_; }
+    size_t nj() const override { return Nx_; }
 
 private:
+    // -- Types
+
+    struct Internal {
+        explicit Internal(const Spec&);
+        size_t Nx;
+        size_t Ny;
+        double Dx;
+        double Dy;
+    };
+
+    // -- Constructors
+
+    explicit Mercator(Internal&&);
+
     // -- Members
 
-    Increments inc_;
-    size_t ni_;
-    size_t nj_;
-
-    // -- Methods
-    // None
+    size_t Nx_;
+    size_t Ny_;
+    const double Dx_;
+    const double Dy_;
 
     // -- Overridden methods
 
     const std::vector<double>& longitudes() const override;
     const std::vector<double>& latitudes() const override;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
+    void spec(spec::Custom&) const override;
 };
 
 

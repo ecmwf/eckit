@@ -18,9 +18,6 @@
 #include "eckit/geo/etc/Grid.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/spec/Custom.h"
-// #include "eckit/geo/util/regex.h"
-// #include "eckit/types/Fraction.h"
-// #include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
@@ -33,8 +30,8 @@ LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
     LambertAzimuthalEqualArea(Internal(spec)) {}
 
 
-LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(size_t ni, size_t nj, double Dx, double Dy) :
-    Regular(area::BoundingBox{}), Nx_(ni), Ny_(nj), Dx_(Dx), Dy_(Dy) {}
+LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(size_t Nx, size_t Ny, double Dx, double Dy) :
+    Regular(area::BoundingBox{}), Nx_(Nx), Ny_(Ny), Dx_(Dx), Dy_(Dy) {}
 
 
 Grid::iterator LambertAzimuthalEqualArea::cbegin() const {
@@ -62,27 +59,26 @@ const std::vector<double>& LambertAzimuthalEqualArea::latitudes() const {
 
 
 void LambertAzimuthalEqualArea::spec(spec::Custom& custom) const {
-    // FIXME a lot more stuff to add here!
-    spec::Custom spec({
-        {"type", "lambert_azimuthal_equal_area"},
-        {"grid", std::vector<double>{Dx_, Dy_}},
-        {"dimensions", std::vector<long>{static_cast<long>(Nx_), static_cast<long>(Ny_)}},
-        // ...
-    });
+    custom.set("type", "lambert_azimuthal_equal_area");
+    custom.set("grid", std::vector<double>{Dx_, Dy_});
+    custom.set("shape", std::vector<long>{static_cast<long>(Nx_), static_cast<long>(Ny_)});
 
-    if (std::string name; SpecByName::instance().match(spec, name)) {
-        custom.set("grid", name);
-        return;
-    }
+    // FIXME a lot more stuff to add here!
+    //...
 
     NOTIMP;
+
+    if (std::string name; SpecByName::instance().match(custom, name)) {
+        custom.clear();
+        custom.set("grid", name);
+    }
 }
 
 
 LambertAzimuthalEqualArea::Internal::Internal(const Spec& spec) {
-    auto dimensions(spec.get_unsigned_vector("dimensions", {0, 0}));
-    Nx = dimensions.size() == 2 ? dimensions[0] : spec.get_unsigned("Nx");
-    Ny = dimensions.size() == 2 ? dimensions[1] : spec.get_unsigned("Ny");
+    auto shape(spec.get_unsigned_vector("shape", {0, 0}));
+    Nx = shape.size() == 2 ? shape[0] : spec.get_unsigned("Nx");
+    Ny = shape.size() == 2 ? shape[1] : spec.get_unsigned("Ny");
     ASSERT(Nx > 0);
     ASSERT(Ny > 0);
 

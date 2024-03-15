@@ -65,6 +65,9 @@ std::pair<difference_type, difference_type> monotonic_crop(const std::vector<dou
                                                            double eps);
 
 
+bool reduced_classical_pl_known(size_t N);
+
+
 const pl_type& reduced_classical_pl(size_t N);
 
 

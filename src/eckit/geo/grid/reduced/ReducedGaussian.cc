@@ -97,7 +97,9 @@ void ReducedGaussian::spec(spec::Custom& custom) const {
     }
     else {
         custom.set("grid", "N" + std::to_string(N_));
-        custom.set("pl", pl_);
+        if (!util::reduced_classical_pl_known(N_)) {
+            custom.set("pl", pl_);
+        }
     }
 }
 

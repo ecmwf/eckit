@@ -16,6 +16,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
+#include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -327,15 +328,29 @@ CASE("spec") {
 
 
     SECTION("grid: reduced_gg") {
-        std::unique_ptr<const Grid> n16(GridFactory::build(spec::Custom({{"grid", "n16"}})));
-
-        EXPECT(
-            n16->spec() ==
-            R"({"grid":"N16","pl":[20,27,32,40,45,48,60,60,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,64,60,60,48,45,40,32,27,20]})");
-
         std::unique_ptr<const Grid> o16(GridFactory::build(spec::Custom({{"grid", "o16"}})));
 
         EXPECT(o16->spec() == R"({"grid":"O16"})");
+
+        std::unique_ptr<const Grid> n16(GridFactory::build(spec::Custom({{"grid", "n16"}})));
+
+        EXPECT(n16->spec() == R"({"grid":"N16"})");
+
+        std::unique_ptr<const Grid> known_pl_1(GridFactory::build(
+            spec::Custom({{"pl", pl_type{20, 27, 32, 40, 45, 48, 60, 60, 64, 64, 64, 64, 64, 64, 64, 64,
+                                         64, 64, 64, 64, 64, 64, 64, 64, 60, 60, 48, 45, 40, 32, 27, 20}}})));
+
+        EXPECT(known_pl_1->spec() == R"({"grid":"N16"})");
+
+        std::unique_ptr<const Grid> known_pl_2(
+            GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 20}}})));
+
+        EXPECT(known_pl_2->spec() == R"({"grid":"O4"})");
+
+        std::unique_ptr<const Grid> unknown_pl(
+            GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 99}}})));
+
+        EXPECT(unknown_pl->spec() == R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
     }
 }
 

@@ -21,7 +21,7 @@
 namespace eckit::geo::util {
 
 
-static const std::map<size_t, pl_type> __classical_pls{
+static const std::map<size_t, pl_type> CLASSICAL_PLS{
     {16, {20, 27, 32, 40, 45, 48, 60, 60, 64, 64, 64, 64, 64, 64, 64, 64}},
     {24, {20, 25, 36, 40, 45, 48, 54, 60, 64, 72, 80, 80, 90, 90, 96, 96, 96, 96, 96, 96, 96, 96, 96, 96}},
     {32, {20,  27,  36,  40,  45,  50,  60,  64,  72,  75,  80,  90,  90,  96,  100, 108,
@@ -1332,6 +1332,11 @@ static const std::map<size_t, pl_type> __classical_pls{
 };
 
 
+bool reduced_classical_pl_known(size_t N) {
+    return CLASSICAL_PLS.find(N) != CLASSICAL_PLS.end();
+}
+
+
 const pl_type& reduced_classical_pl(size_t N) {
     ASSERT(N > 0);
 
@@ -1340,8 +1345,8 @@ const pl_type& reduced_classical_pl(size_t N) {
         return cache[N];
     }
 
-    auto pl_half = __classical_pls.find(N);
-    if (pl_half == __classical_pls.end()) {
+    auto pl_half = CLASSICAL_PLS.find(N);
+    if (pl_half == CLASSICAL_PLS.end()) {
         throw BadValue("reduced_classical_pl: unknown N=" + std::to_string(N));
     }
 

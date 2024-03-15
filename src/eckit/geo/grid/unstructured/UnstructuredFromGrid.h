@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <array>
 #include <cstddef>
 #include <cstdint>
 
@@ -86,7 +85,8 @@ private:
     // None
 
     // -- Overridden methods
-    // None
+
+    void spec(spec::Custom&) const override;
 
     // -- Class members
     // None

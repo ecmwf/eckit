@@ -21,6 +21,7 @@
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Bytes.h"
@@ -282,6 +283,12 @@ std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlon() const {
 
 Spec* ORCA::spec(const std::string& name) {
     return SpecByUID::instance().get(name).spec();
+}
+
+
+void ORCA::spec(spec::Custom& custom) const {
+    custom.set("type", "ORCA");
+    custom.set("uid", uid_);
 }
 
 

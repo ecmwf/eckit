@@ -122,7 +122,8 @@ private:
     // None
 
     // -- Overridden methods
-    // None
+
+    void spec(spec::Custom&) const override;
 
     // -- Class members
     // None

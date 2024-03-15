@@ -14,6 +14,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::grid::unstructured {
@@ -72,6 +73,12 @@ std::vector<Point> UnstructuredFromGrid::to_points() const {
 
 Spec* UnstructuredFromGrid::spec(const std::string& name) {
     return SpecByUID::instance().get(name).spec();
+}
+
+
+void UnstructuredFromGrid::spec(spec::Custom& custom) const {
+    custom.set("type", "unstructured");
+    custom.set("uid", uid());
 }
 
 

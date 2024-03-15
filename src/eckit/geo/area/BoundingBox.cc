@@ -18,8 +18,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/Spec.h"
 #include "eckit/geo/Sphere.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -27,13 +27,24 @@
 namespace eckit::geo::area {
 
 
+static const BoundingBox GLOBE_PRIME{90., 0., -90., 360.};
+static const BoundingBox GLOBE_ANTIPRIME{90., -180., -90., 180.};
+
+
 BoundingBox BoundingBox::make_global_prime() {
-    return {90., 0., -90., 360.};
+    return GLOBE_PRIME;
 }
 
 
 BoundingBox BoundingBox::make_global_antiprime() {
-    return {90., -180., -90., 180.};
+    return GLOBE_ANTIPRIME;
+}
+
+
+void BoundingBox::spec(spec::Custom& custom) const {
+    if (operator!=(GLOBE_PRIME)) {
+        custom.set("area", std::vector<double>{north, west, south, east});
+    }
 }
 
 

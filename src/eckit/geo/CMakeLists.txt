@@ -7,6 +7,7 @@ install(
 
 list(APPEND eckit_geo_srcs
     ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h
+    Area.cc
     Area.h
     Cache.cc
     Cache.h

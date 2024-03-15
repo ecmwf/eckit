@@ -20,7 +20,10 @@
 
 namespace eckit::geo {
 class Spec;
+namespace spec {
+class Custom;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -57,6 +60,8 @@ public:
     // -- Methods
 
     static std::string className() { return "area"; }
+
+    virtual void spec(spec::Custom&) const;
 
     // -- Overridden methods
     // None

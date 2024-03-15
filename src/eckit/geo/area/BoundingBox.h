@@ -88,7 +88,8 @@ public:
     static BoundingBox make_global_antiprime();
 
     // -- Overridden methods
-    // None
+
+    void spec(spec::Custom&) const override;
 
     // -- Class members
     // None

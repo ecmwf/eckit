@@ -12,6 +12,7 @@
 #include "eckit/geo/spec/Custom.h"
 
 #include <algorithm>
+#include <cctype>
 #include <type_traits>
 
 #include "eckit/exception/Exceptions.h"
@@ -133,6 +134,12 @@ JSON& operator<<(JSON& out, const Custom::value_type& value) {
 }  // namespace
 
 
+Custom::key_type::key_type(const std::string& s) :
+    std::string{s} {
+    std::transform(begin(), end(), begin(), [](unsigned char c) -> unsigned char { return std::tolower(c); });
+}
+
+
 Custom::Custom(const Custom::container_type& map) :
     map_(map) {}
 
@@ -160,7 +167,8 @@ Custom::Custom(const Value& value) {
 
     ASSERT(value.isMap());
     for (const auto& [key, value] : static_cast<ValueMap>(value)) {
-        map_[key] = value.isList() ? vector(value) : scalar(value);
+        const std::string name = key;
+        map_[name]             = value.isList() ? vector(value) : scalar(value);
     }
 }
 
@@ -372,10 +380,11 @@ bool Custom::get(const std::string& name, std::vector<double>& value) const {
 
 
 bool Custom::get(const std::string& name, std::vector<std::string>& value) const {
-    auto it = map_.find(name);
-    if (it != map_.cend() && std::holds_alternative<std::vector<std::string>>(it->second)) {
-        value = std::get<std::vector<std::string>>(it->second);
-        return true;
+    if (auto it = map_.find(name); it != map_.cend()) {
+        if (std::holds_alternative<std::vector<std::string>>(it->second)) {
+            value = std::get<std::vector<std::string>>(it->second);
+            return true;
+        }
     }
     return false;
 }

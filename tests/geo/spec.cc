@@ -22,14 +22,6 @@
 #include "eckit/types/FloatCompare.h"
 
 
-#define EXPECT_APPROX(a, b, eps) EXPECT(::eckit::types::is_approximately_equal((a), (b), (eps)))
-
-#define EXPECT_AREA(a, b, eps)                                                             \
-    EXPECT((a).size() == 4 && (b).size() == 4 && EXPECT_APPROX((a)[0], (b)[0], (eps)) &&   \
-           EXPECT_APPROX((a)[1], (b)[1], (eps)) && EXPECT_APPROX((a)[2], (b)[2], (eps)) && \
-           EXPECT_APPROX((a)[3], (b)[3], (eps)))
-
-
 namespace eckit::geo::test {
 
 
@@ -56,8 +48,12 @@ CASE("Spec <- Custom") {
         EXPECT(spec->get("c", c));
         EXPECT_EQUAL(c, 123UL);
 
+        std::string b2;
+        EXPECT(spec->get("B", b2));
+        EXPECT_EQUAL(b2, b);
+
         int d = 0;
-        dynamic_cast<spec::Custom*>(spec.get())->set("b", 321);
+        dynamic_cast<spec::Custom*>(spec.get())->set("B", 321);
         EXPECT(spec->get("b", d));
         EXPECT_EQUAL(d, 321);
     }

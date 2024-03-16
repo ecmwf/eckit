@@ -29,6 +29,12 @@ class Custom final : public Spec {
 public:
     // -- Types
 
+    struct key_type : std::string {
+        key_type(const std::string&);
+        key_type(const char* s) :
+            key_type(std::string{s}) {};
+    };
+
     using value_type = std::variant<std::string,
                                     bool,
                                     int,
@@ -45,7 +51,7 @@ public:
                                     std::vector<double>,
                                     std::vector<std::string>>;
 
-    using container_type = std::map<std::string, value_type>;
+    using container_type = std::map<key_type, value_type>;
 
     // -- Constructors
 

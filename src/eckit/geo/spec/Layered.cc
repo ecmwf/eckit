@@ -19,11 +19,11 @@
 namespace eckit::geo::spec {
 
 
-static const Custom __empty_spec;
+static const Custom EMPTY;
 
 
 Layered::Layered() :
-    Layered(__empty_spec) {}
+    Layered(EMPTY) {}
 
 
 Layered::Layered(const Spec& spec) :

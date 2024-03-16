@@ -27,23 +27,43 @@ XYToLonLat::XYToLonLat(const Spec& spec) :
 
 
 XYToLonLat::XYToLonLat(Internal&& internal) :
-    Nx_(internal.Nx), Ny_(internal.Ny), Dx_(internal.Dx), Dy_(internal.Dy) {}
+    internal_(internal) {}
 
 
-XYToLonLat::XYToLonLat(size_t Nx, size_t Ny, double Dx, double Dy) :
-    XYToLonLat(Internal{Nx, Ny, Dx, Dy}) {}
-XYToLonLat::Internal::Internal(const Spec& spec) {
-    auto shape(spec.get_unsigned_vector("shape", {0, 0}));
-    Nx = shape.size() == 2 ? shape[0] : spec.get_unsigned("Nx");
-    Ny = shape.size() == 2 ? shape[1] : spec.get_unsigned("Ny");
-    ASSERT(Nx > 0);
-    ASSERT(Ny > 0);
+XYToLonLat::XYToLonLat(double dx, double dy, size_t nx, size_t ny) :
+    XYToLonLat(Internal{dx, dy, nx, ny}) {}
 
-    auto grid(spec.get_double_vector("grid", {0., 0.}));
-    Dx = grid.size() == 2 ? grid[0] : spec.get_double("Nx");
-    Dy = grid.size() == 2 ? grid[1] : spec.get_double("Ny");
-    ASSERT(Dx > 0.);
-    ASSERT(Dy > 0.);
+
+XYToLonLat::Internal::Internal(const Spec& spec) :
+    grid{0., 0.}, shape{0, 0} {
+    if (std::vector<size_t> value; spec.get("shape", value) && value.size() == 2) {
+        shape = {value[0], value[1]};
+    }
+    else if (!spec.get("nx", shape[0]) || !spec.get("ny", shape[1])) {
+        throw SpecNotFound("'shape': ['nx', 'ny'] expected");
+    }
+
+    if (std::vector<double> value; spec.get("grid", value) && value.size() == 2) {
+        grid = {value[0], value[1]};
+    }
+    else if (!spec.get("dx", grid[0]) || !spec.get("dy", grid[1])) {
+        throw SpecNotFound("'grid': ['dx', 'dy'] expected");
+    }
+
+    check();
+}
+
+XYToLonLat::Internal::Internal(double dx, double dy, size_t nx, size_t ny) :
+    grid{dx, dy}, shape{nx, ny} {
+    check();
+}
+
+
+void XYToLonLat::Internal::check() const {
+    ASSERT_MSG(grid[0] > 0 && grid[1] > 0,
+               "'grid' > 0 failed, got grid: [" + std::to_string(grid[0]) + ", " + std::to_string(grid[0]) + "]");
+    ASSERT_MSG(shape[0] > 0 && shape[1] > 0,
+               "'shape' > 0 failed, got shape: [" + std::to_string(shape[0]) + ", " + std::to_string(shape[0]) + "]");
 }
 
 

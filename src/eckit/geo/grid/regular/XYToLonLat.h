@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <array>
+
 #include "eckit/geo/grid/Regular.h"
 
 
@@ -41,16 +43,22 @@ public:
 
     // -- Methods
 
-    double di() const { return Dy_; };
-    double dj() const { return Dx_; };
+    double dx() const { return internal_.grid[0]; };
+    double dy() const { return internal_.grid[1]; };
+
+    size_t nx() const { return internal_.shape[0]; }
+    size_t ny() const { return internal_.shape[1]; }
+
+    double di() const { return dy(); };
+    double dj() const { return dx(); };
 
     // -- Overridden methods
 
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override { return Ny_; }
-    size_t nj() const override { return Nx_; }
+    size_t ni() const override { return ny(); }
+    size_t nj() const override { return nx(); }
 
     // -- Class members
     // None
@@ -63,20 +71,19 @@ protected:
 
     struct Internal {
         explicit Internal(const Spec&);
-        Internal(size_t Nx, size_t Ny, double Dx, double Dy) :
-            Nx(Nx), Ny(Ny), Dx(Dx), Dy(Dy) {}
+        Internal(double dx, double dy, size_t nx, size_t ny);
 
-        size_t Nx;
-        size_t Ny;
-        double Dx;
-        double Dy;
+        void check() const;
+
+        std::array<double, 2> grid;
+        std::array<size_t, 2> shape;
     };
 
     // -- Constructors
 
     explicit XYToLonLat(Internal&&);
 
-    XYToLonLat(size_t Nx, size_t Ny, double Dx, double Dy);
+    XYToLonLat(double dx, double dy, size_t nx, size_t ny);
 
     // -- Members
     // None
@@ -96,10 +103,7 @@ protected:
 private:
     // -- Members
 
-    size_t Nx_;
-    size_t Ny_;
-    const double Dx_;
-    const double Dy_;
+    const Internal internal_;
 
     // -- Methods
     // None

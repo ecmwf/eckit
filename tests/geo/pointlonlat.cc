@@ -19,6 +19,60 @@
 namespace eckit::geo::test {
 
 
+CASE("PointLonLat normalise_angle_to_*") {
+    SECTION("normalise_angle_to_minimum") {
+        struct {
+            double angle;
+            double lim;
+            double ref;
+        } tests[]{
+            {10., 0., 10.},
+            {0., 0., 0.},
+            {-10., 0., 350.},
+            {720., 0., 0.},
+            {100., 90., 100.},
+            {-370., 0., 350.},
+            {100000., 0., static_cast<double>(100000 % 360)},
+            {-100., -180., -100.},
+            {360., 0., 0.},
+            {100000., 99960., 100000.},
+        };
+
+        for (const auto& test : tests) {
+            EXPECT(types::is_approximately_equal(test.ref,
+                                                 PointLonLat::normalise_angle_to_minimum(test.angle, test.lim),
+                                                 PointLonLat::EPS));
+        }
+    }
+
+
+    SECTION("normalise_angle_to_maximum") {
+        struct {
+            double angle;
+            double lim;
+            double ref;
+        } tests[]{
+            {350., 360., 350.},
+            {360., 360., 360.},
+            {361., 360., 1.},
+            {-720., 360., 360.},
+            {100., 180., 100.},
+            {-370., 360., 350.},
+            {100000., 360., static_cast<double>(100000 % 360)},
+            {-100., -90., -100.},
+            {720., 360., 360.},
+            {100040., 100080., 100040.},
+        };
+
+        for (const auto& test : tests) {
+            EXPECT(types::is_approximately_equal(test.ref,
+                                                 PointLonLat::normalise_angle_to_maximum(test.angle, test.lim),
+                                                 PointLonLat::EPS));
+        }
+    }
+}
+
+
 CASE("PointLonLat normalisation") {
     constexpr auto da = 1e-3;
 

@@ -36,13 +36,8 @@ double PointLonLat::normalise_angle_to_minimum(double a, double minimum) {
 
 
 double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
-    while (a > maximum) {
-        a -= 360.;
-    }
-    while (a <= maximum - 360.) {
-        a += 360.;
-    }
-    return a;
+    auto modulo_360 = [](double a) { return a - 360. * std::ceil(a / 360.); };
+    return maximum + modulo_360(a - maximum);
 }
 
 

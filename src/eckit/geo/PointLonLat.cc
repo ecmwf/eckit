@@ -49,12 +49,24 @@ double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
 }
 
 
+PointLonLat PointLonLat::make(double lon, double lat, double lon_minimum, double eps) {
+    lat = normalise_angle_to_minimum(lat, -90.);
+
+    if (types::is_strictly_greater(lat, 90., eps)) {
+        lat = 180. - lat;
+        lon += 180.;
+    }
+
+    return types::is_approximately_equal(lat, 90., eps) ? PointLonLat{0., 90.}
+           : types::is_approximately_equal(lat, -90., eps)
+               ? PointLonLat{0., -90.}
+               : PointLonLat{normalise_angle_to_minimum(lon, lon_minimum), lat};
+}
+
+
 bool points_equal(const PointLonLat& a, const PointLonLat& b, double eps) {
-    // FIXME
-    // solved {180., 0.} == {-180., 0.}
-    // could be more performant
-    auto c = PointLonLat::make(a.lon, a.lat);
-    auto d = PointLonLat::make(b.lon, b.lat);
+    auto c = PointLonLat::make(a.lon, a.lat, 0., eps);
+    auto d = PointLonLat::make(b.lon, b.lat, 0., eps);
     return types::is_approximately_equal(c.lon, d.lon, eps) && types::is_approximately_equal(c.lat, d.lat, eps);
 }
 

@@ -120,6 +120,12 @@ CASE("PointLonLat canonicalise on sphere") {
     EXPECT(points_equal(PointLonLat::make(1., -90.), PointLonLat(0., -90.)));
     EXPECT(points_equal(PointLonLat::make(2., 90.), PointLonLat(0., 90.)));
     EXPECT(points_equal(PointLonLat::make(3., 180.), PointLonLat(183., 0.)));
+
+    // Check with latitude offset
+    constexpr double eps = 1.e-6;
+
+    EXPECT(points_equal(PointLonLat::make(-1., 89.99999914622634, 0., eps), {0., 90.}));
+    EXPECT(points_equal(PointLonLat::make(1., -89.99999914622634, 0., eps), {0., -90.}));
 }
 
 

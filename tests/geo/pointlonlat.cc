@@ -93,6 +93,14 @@ CASE("PointLonLat normalise angles") {
     EXPECT(14. == PointLonLat::normalise_angle_to_minimum(374., 0.));
     EXPECT(14. == PointLonLat::normalise_angle_to_minimum(374., -90.));
     EXPECT(374. == PointLonLat::normalise_angle_to_minimum(374., 90.));
+
+    EXPECT(14. == PointLonLat::normalise_angle_to_minimum(-346., 0.));
+    EXPECT(14. == PointLonLat::normalise_angle_to_minimum(-346., -90.));
+    EXPECT(374. == PointLonLat::normalise_angle_to_minimum(-346., 90.));
+    EXPECT(0. == PointLonLat::normalise_angle_to_minimum(360. * 1e12, 0.));
+    EXPECT(14. == PointLonLat::normalise_angle_to_minimum(360. * 1e12 + 14, 0.));
+    EXPECT(0. == PointLonLat::normalise_angle_to_minimum(-360. * 1e12, 0.));
+    EXPECT(14. == PointLonLat::normalise_angle_to_minimum(-360. * 1e12 + 14, 0.));
 }
 
 

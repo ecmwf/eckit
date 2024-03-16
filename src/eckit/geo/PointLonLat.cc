@@ -12,6 +12,8 @@
 
 #include "eckit/geo/PointLonLat.h"
 
+#include <cmath>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -28,13 +30,8 @@ PointLonLat::PointLonLat(double lon, double lat) :
 
 
 double PointLonLat::normalise_angle_to_minimum(double a, double minimum) {
-    while (a < minimum) {
-        a += 360.;
-    }
-    while (a >= minimum + 360.) {
-        a -= 360.;
-    }
-    return a;
+    auto modulo_360 = [](double a) { return a - 360. * std::floor(a / 360.); };
+    return minimum + modulo_360(a - minimum);
 }
 
 

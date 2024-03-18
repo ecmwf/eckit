@@ -21,8 +21,25 @@ inline double modulo(const double a, const double b) {
     return a - b * std::floor(a / b);
 }
 
-double normalise_angle(const double a, const double minimum) {
-    return minimum + modulo(a - minimum, 360.);
+double normalise_angle(double a, const double minimum) {
+    constexpr double treshold = 4. * 360.;
+    const double diff = a - minimum;
+    if (std::abs(diff) > treshold) {
+        // This formula is not bit-dentical with original below,
+        // but is faster for very large values of 'a'.
+        // The treshold tries to capture values of 'a' which need to
+        // stay bit-identical.
+        return minimum + modulo(diff, 360.);
+    }
+
+    // The original function
+    while (a < minimum) {
+        a += 360.;
+    }
+    while (a >= minimum + 360.) {
+        a -= 360.;
+    }
+    return a;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

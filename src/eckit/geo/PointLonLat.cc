@@ -31,13 +31,17 @@ PointLonLat::PointLonLat(double lon, double lat) :
 
 double PointLonLat::normalise_angle_to_minimum(double a, double minimum) {
     auto modulo_360 = [](double a) { return a - 360. * std::floor(a / 360.); };
-    return minimum + modulo_360(a - minimum);
+
+    auto diff = a - minimum;
+    return 0. <= diff && diff < 360. ? a : modulo_360(diff) + minimum;
 }
 
 
 double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
     auto modulo_360 = [](double a) { return a - 360. * std::ceil(a / 360.); };
-    return maximum + modulo_360(a - maximum);
+
+    auto diff = a - maximum;
+    return -360. < diff && diff <= 0. ? a : modulo_360(a - maximum) + maximum;
 }
 
 

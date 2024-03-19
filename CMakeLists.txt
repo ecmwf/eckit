@@ -162,6 +162,11 @@ ecbuild_add_option( FEATURE GEO_CACHING
                     CONDITION HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default caching behaviour" )
 
+ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
+                    DEFAULT OFF
+                    CONDITION HAVE_ECKIT_GEO
+                    DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
+
 set( eckit_GEO_CACHE_PATH "/tmp/cache" )
 
 ### LAPACK

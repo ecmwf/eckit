@@ -13,6 +13,7 @@
 #pragma once
 
 #cmakedefine01 eckit_HAVE_ECKIT_CODEC
+#cmakedefine01 eckit_HAVE_GEO_BITREPRODUCIBLE
 #cmakedefine01 eckit_HAVE_GEO_CACHING
 #cmakedefine01 eckit_HAVE_GEO_CONVEX_HULL
 #cmakedefine eckit_GEO_CACHE_PATH "@eckit_GEO_CACHE_PATH@"

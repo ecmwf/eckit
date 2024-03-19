@@ -12,7 +12,7 @@
 
 #include "eckit/geo/grid/Reduced.h"
 
-// #include <>
+#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit::geo::grid {
@@ -44,11 +44,14 @@ std::vector<Point> Reduced::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double> > Reduced::to_latlon() const {
-    std::vector<double> lat;
-    std::vector<double> lon;
-    lat.reserve(size());
-    lon.reserve(size());
+std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlon() const {
+    const auto N = size();
+
+    std::pair<std::vector<double>, std::vector<double>> latlon;
+    auto& lat = latlon.first;
+    auto& lon = latlon.second;
+    lat.reserve(N);
+    lon.reserve(N);
 
     const auto& lats = latitudes();
     ASSERT(lats.size() == nj());
@@ -60,7 +63,8 @@ std::pair<std::vector<double>, std::vector<double> > Reduced::to_latlon() const 
         lon.insert(lon.end(), lons.begin(), lons.end());
     }
 
-    return {lat, lon};
+    ASSERT(lat.size() == N && lon.size() == N);
+    return latlon;
 }
 
 

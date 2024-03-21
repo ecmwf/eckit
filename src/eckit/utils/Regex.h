@@ -17,6 +17,7 @@
 #include <regex.h>
 
 #include <string>
+#include <string_view>
 
 
 namespace eckit {
@@ -41,6 +42,8 @@ public:
     operator const std::string&() const { return str_; }
 
     bool operator==(const Regex& other) const { return str_ == other.str_; }
+    
+    static std::string escape(std::string_view);
 
 protected:  // methods
     void print(std::ostream&) const;

@@ -19,7 +19,7 @@
 #include "eckit/geo/util.h"
 
 
-namespace eckit::geo::grid::reduced {
+namespace eckit::geo::grid::reducedlocal {
 
 
 class ReducedLL : public ReducedLocal {
@@ -90,4 +90,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::reduced
+}  // namespace eckit::geo::grid::reducedlocal

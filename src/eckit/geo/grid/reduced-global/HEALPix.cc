@@ -24,6 +24,9 @@
 #include "eckit/utils/Translator.h"
 
 
+namespace eckit::geo::grid::reducedglobal {
+
+
 namespace {
 
 
@@ -217,9 +220,6 @@ private:
 }  // unnamed namespace
 
 
-namespace eckit::geo::grid::reduced {
-
-
 static Ordering ordering_from_string(const std::string& str) {
     return str == "ring"     ? Ordering::healpix_ring
            : str == "nested" ? Ordering::healpix_nested
@@ -375,4 +375,4 @@ static const GridRegisterType<HEALPix> __grid_type("HEALPix");
 static const GridRegisterName<HEALPix> __grid_pattern("[hH][1-9][0-9]*");
 
 
-}  // namespace eckit::geo::grid::reduced
+}  // namespace eckit::geo::grid::reducedglobal

@@ -18,7 +18,7 @@
 #include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::grid::reduced {
+namespace eckit::geo::grid::reducedlocal {
 
 
 ReducedLL::ReducedLL(const Spec& spec) :
@@ -74,4 +74,4 @@ void ReducedLL::spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::grid::reduced
+}  // namespace eckit::geo::grid::reducedlocal

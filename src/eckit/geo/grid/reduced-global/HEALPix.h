@@ -15,7 +15,7 @@
 #include "eckit/geo/grid/ReducedGlobal.h"
 
 
-namespace eckit::geo::grid::reduced {
+namespace eckit::geo::grid::reducedglobal {
 
 
 class HEALPix final : public ReducedGlobal {
@@ -101,4 +101,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::reduced
+}  // namespace eckit::geo::grid::reducedglobal

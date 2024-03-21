@@ -23,7 +23,7 @@
 #include "eckit/utils/Translator.h"
 
 
-namespace eckit::geo::grid::reduced {
+namespace eckit::geo::grid::reducedglobal {
 
 
 static size_t N(const pl_type& pl) {
@@ -133,4 +133,4 @@ static const GridRegisterName<ReducedGaussianClassical> __grid_pattern_1("[nN][1
 static const GridRegisterName<ReducedGaussianOctahedral> __grid_pattern_2("[oO][1-9][0-9]*");
 
 
-}  // namespace eckit::geo::grid::reduced
+}  // namespace eckit::geo::grid::reducedglobal

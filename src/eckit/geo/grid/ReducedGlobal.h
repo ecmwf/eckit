@@ -23,7 +23,7 @@ class Reduced;
 namespace eckit::geo::grid {
 
 
-class Reduced : public Grid {
+class ReducedGlobal : public Grid {
 public:
     // -- Types
     // None
@@ -61,8 +61,8 @@ public:
 protected:
     // -- Constructors
 
-    explicit Reduced(const Spec&);
-    explicit Reduced(const area::BoundingBox&);
+    explicit ReducedGlobal(const Spec&);
+    explicit ReducedGlobal(const area::BoundingBox&);
 
     // -- Members
     // None

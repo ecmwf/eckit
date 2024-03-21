@@ -12,17 +12,13 @@
 
 #pragma once
 
-#include <memory>
-
-#include "eckit/geo/Range.h"
-#include "eckit/geo/grid/Reduced.h"
-#include "eckit/geo/util.h"
+#include "eckit/geo/grid/ReducedGlobal.h"
 
 
 namespace eckit::geo::grid::reduced {
 
 
-class ReducedLL : public Reduced {
+class HEALPix final : public ReducedGlobal {
 public:
     // -- Types
     // None
@@ -32,8 +28,8 @@ public:
 
     // -- Constructors
 
-    explicit ReducedLL(const Spec&);
-    explicit ReducedLL(const pl_type&, const area::BoundingBox& = area::BoundingBox::make_global_prime());
+    explicit HEALPix(const Spec&);
+    explicit HEALPix(size_t Nside, Ordering = Ordering::healpix_ring);
 
     // -- Destructor
     // None
@@ -55,8 +51,13 @@ public:
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
+    Ordering order() const override { return ordering_; }
+    Renumber reorder(Ordering) const override;
+    Grid* make_grid_reordered(Ordering ordering) const override { return new HEALPix(N_, ordering); }
+
     // -- Class members
-    // None
+
+    static Spec* spec(const std::string& name);
 
     // -- Class methods
     // None
@@ -64,15 +65,25 @@ public:
 private:
     // -- Members
 
-    const pl_type pl_;
+    const size_t N_;
+    const Ordering ordering_;
 
-    std::unique_ptr<Range> x_;
-    std::unique_ptr<Range> y_;
+    mutable std::vector<double> latitudes_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
+
+    area::BoundingBox boundingBox() const override;
+
+    size_t size() const override;
+
+    bool includesNorthPole() const override { return true; }
+    bool includesSouthPole() const override { return true; }
+    bool isPeriodicWestEast() const override { return true; }
+
+    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t j) const override;

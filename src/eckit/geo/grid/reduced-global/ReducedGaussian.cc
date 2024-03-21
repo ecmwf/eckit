@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/reduced/ReducedGaussian.h"
+#include "eckit/geo/grid/reduced-global/ReducedGaussian.h"
 
 #include <memory>
 
@@ -37,7 +37,7 @@ ReducedGaussian::ReducedGaussian(const Spec& spec) :
 
 
 ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox),
+    ReducedGlobal(bbox),
     N_(N(pl)),
     pl_(pl),
     j_(0),

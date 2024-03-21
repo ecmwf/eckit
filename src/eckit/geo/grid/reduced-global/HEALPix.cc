@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/geo/grid/reduced-global/HEALPix.h"
 
 #include <algorithm>
 #include <bitset>
@@ -232,7 +232,7 @@ HEALPix::HEALPix(const Spec& spec) :
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) :
-    Reduced(area::BoundingBox::make_global_prime()), N_(Nside), ordering_(ordering) {
+    ReducedGlobal(area::BoundingBox::make_global_prime()), N_(Nside), ordering_(ordering) {
     ASSERT(N_ > 0);
     ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested,
                "HEALPix: supported orderings: ring, nested");

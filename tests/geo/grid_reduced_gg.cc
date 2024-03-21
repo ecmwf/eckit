@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/grid/reduced/ReducedGaussian.h"
+#include "eckit/geo/grid/reduced-global/ReducedGaussian.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"

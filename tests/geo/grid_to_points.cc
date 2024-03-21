@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 
-#include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/geo/grid/reduced-global/HEALPix.h"
 #include "eckit/testing/Test.h"
 
 

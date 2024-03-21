@@ -16,7 +16,7 @@
 
 
 namespace eckit::geo::grid {
-class Reduced;
+class ReducedGlobal;
 }
 
 
@@ -59,7 +59,7 @@ public:
 private:
     // -- Members
 
-    const grid::Reduced& grid_;
+    const grid::ReducedGlobal& grid_;
     std::vector<double> longitudes_j_;
     const std::vector<double>& latitudes_;
     const std::vector<size_t>& niacc_;

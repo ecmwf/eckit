@@ -15,14 +15,14 @@
 #include <memory>
 
 #include "eckit/geo/Range.h"
-#include "eckit/geo/grid/Reduced.h"
+#include "eckit/geo/grid/ReducedGlobal.h"
 #include "eckit/geo/util.h"
 
 
 namespace eckit::geo::grid::reduced {
 
 
-class ReducedGaussian : public Reduced {
+class ReducedGaussian : public ReducedGlobal {
 public:
     // -- Types
     // None

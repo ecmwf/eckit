@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/reduced/ReducedLL.h"
+#include "eckit/geo/grid/reduced-local/ReducedLL.h"
 
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/RegularLatitude.h"
@@ -26,7 +26,7 @@ ReducedLL::ReducedLL(const Spec& spec) :
 
 
 ReducedLL::ReducedLL(const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox), pl_(pl), y_(new range::RegularLatitude(pl_.size(), bbox.north, bbox.south)) {
+    ReducedLocal(bbox), pl_(pl), y_(new range::RegularLatitude(pl_.size(), bbox.north, bbox.south)) {
     ASSERT(y_);
 }
 

@@ -59,18 +59,20 @@ list(APPEND eckit_geo_srcs
     figure/OblateSpheroid.h
     figure/Sphere.cc
     figure/Sphere.h
-    grid/Reduced.cc
-    grid/Reduced.h
+    grid/ReducedGlobal.cc
+    grid/ReducedGlobal.h
+    grid/ReducedLocal.cc
+    grid/ReducedLocal.h
     grid/Regular.cc
     grid/Regular.h
     grid/Unstructured.cc
     grid/Unstructured.h
-    grid/reduced/HEALPix.cc
-    grid/reduced/HEALPix.h
-    grid/reduced/ReducedGaussian.cc
-    grid/reduced/ReducedGaussian.h
-    grid/reduced/ReducedLL.cc
-    grid/reduced/ReducedLL.h
+    grid/reduced-global/HEALPix.cc
+    grid/reduced-global/HEALPix.h
+    grid/reduced-global/ReducedGaussian.cc
+    grid/reduced-global/ReducedGaussian.h
+    grid/reduced-local/ReducedLL.cc
+    grid/reduced-local/ReducedLL.h
     grid/regular/IrregularLL.cc
     grid/regular/IrregularLL.h
     grid/regular/RegularGaussian.cc
@@ -79,6 +81,8 @@ list(APPEND eckit_geo_srcs
     grid/regular/RegularLL.h
     grid/regular/XYToLonLat.cc
     grid/regular/XYToLonLat.h
+    grid/unstructured/ORCA.cc
+    grid/unstructured/ORCA.h
     grid/unstructured/UnstructuredFromGrid.cc
     grid/unstructured/UnstructuredFromGrid.h
     iterator/Reduced.cc

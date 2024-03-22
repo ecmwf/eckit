@@ -44,6 +44,7 @@ private:
     std::map<std::string, unsigned long> shift_;
 
     size_t size() const override;
+    using SQLType::output;
     void output(SQLOutput& s, double, bool) const override;
     std::string asString(const double* val) const override;
     const SQLType* subType(const std::string&) const override;

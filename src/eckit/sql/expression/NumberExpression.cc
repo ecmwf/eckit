@@ -17,9 +17,11 @@ namespace eckit::sql::expression {
 //----------------------------------------------------------------------------------------------------------------------
 
 NumberExpression::NumberExpression(double value) :
+    SQLExpression(),
     value_(value) {}
 
 NumberExpression::NumberExpression(const NumberExpression& other) :
+    SQLExpression(),
     value_(other.value_) {}
 
 std::shared_ptr<SQLExpression> NumberExpression::clone() const {

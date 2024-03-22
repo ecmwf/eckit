@@ -8,7 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstddef>
 #include <cstring>
+#include <iterator>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
@@ -50,18 +52,23 @@ static int xindex = std::ios::xalloc();
 
 typedef std::vector<char> VC;
 
-class back_encoder_iterator : public std::iterator<std::output_iterator_tag, char> {
+class back_encoder_iterator {
     VC& container;
     void push(const char* p) {
-        while (*p) {
+        while (*p != static_cast<char>(0)) {
             container.push_back(*p++);
         }
     }
 
 public:
-    back_encoder_iterator(VC& v) :
-        container(v) {}
-    back_encoder_iterator& operator=(char);
+    using iterator_category = std::output_iterator_tag;
+    using value_type        = VC::value_type;
+    using difference_type   = std::ptrdiff_t;
+    using pointer           = value_type*;
+    using reference         = value_type&;
+
+    explicit back_encoder_iterator(VC& v) : container(v) {}
+    back_encoder_iterator& operator=(value_type);
     back_encoder_iterator& operator*() { return *this; }
     back_encoder_iterator& operator++() { return *this; }
     back_encoder_iterator& operator++(int) { return *this; }
@@ -153,15 +160,15 @@ void HttpBuf::write(std::ostream& out, Url& url) {
     //	out << "</HTML>";
 
 #if 0
-	Log::debug() << "Data: " << std::endl;
+    Log::debug() << "Data: " << std::endl;
 
-	for (std::vector<char>::iterator i = buffer_.begin(); i != buffer_.end(); ++i)
-		if (isprint(*i) || isspace(*i))
-			Log::debug() << *i;
-		else
-			break;
+    for (std::vector<char>::iterator i = buffer_.begin(); i != buffer_.end(); ++i)
+        if (isprint(*i) || isspace(*i))
+            Log::debug() << *i;
+        else
+            break;
 
-	Log::debug() << std::endl;
+    Log::debug() << std::endl;
 #endif
 }
 

@@ -20,6 +20,10 @@ std::string evaluate_message(bool answer_is_correct) {
     if (answer_is_correct) {
         // this should never execute, and therefore the code below never reached
         throw NotImplemented(Here());
+// Suppress warning "statement is unreachable"
+#if defined(__NVCOMPILER)
+#pragma diag_suppress 111
+#endif
         return "NON REACHABLE CODE";
     }
 

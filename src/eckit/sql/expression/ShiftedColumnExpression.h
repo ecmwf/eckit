@@ -65,6 +65,7 @@ protected:
     // -- Overridden methods
     void print(std::ostream& s) const override;
     void cleanup(SQLSelect& sql) override;
+    using T::eval;
     double eval(bool& missing) const override;
     void output(SQLOutput& s) const override;
 

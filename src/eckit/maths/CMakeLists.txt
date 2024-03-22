@@ -19,6 +19,9 @@ ecbuild_add_library(
     HEADER_DESTINATION  ${INSTALL_INCLUDE_DIR}/eckit/maths
     SOURCES             ${eckit_maths_sources}
     PRIVATE_LIBS        ${eckit_maths_private_libs}
-    PUBLIC_INCLUDES     "${EIGEN3_INCLUDE_DIRS}"
     PUBLIC_LIBS         eckit)
 
+if( HAVE_EIGEN )
+    # Add include directories with "SYSTEM" to avoid warnings from within Eigen headers
+    target_include_directories(eckit_maths SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIRS})
+endif()

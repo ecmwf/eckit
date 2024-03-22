@@ -32,7 +32,7 @@ public:
 
     virtual NullGroupContent* union_group(const GroupContent&) const { return new NullGroupContent(); }
 
-    virtual size_t size() const { return -1; }
+    virtual size_t size() const { return 0; }
 
     virtual int rank() const { return -1; }
 

@@ -25,6 +25,7 @@ public:
     ~FunctionRMS();
 
     // -- Overridden methods
+    using FunctionExpression::eval;
     double eval(bool& missing) const override;
 
     std::shared_ptr<SQLExpression> clone() const override;

@@ -8,6 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+// Disable warning change of sign which is triggered on purpose
+#if defined(__INTEL_COMPILER)
+#pragma warning ( disable:68 )
+#elif defined(__NVCOMPILER)
+#pragma diag_suppress 68
+#endif
 
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"

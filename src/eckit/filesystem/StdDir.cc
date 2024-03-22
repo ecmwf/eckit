@@ -46,6 +46,14 @@ struct dirent* StdDir::dirent() {
     ///       however readdir() isn't thread-safe yet, not even in glic implementation
     ///       until then we prefer to use readdir_r
 #if eckit_HAVE_READDIR_R
+// Disable deprecation warning of using readdir_r
+#if defined(__INTEL_COMPILER)
+#pragma warning ( disable:1478 )
+#elif defined(__NVCOMPILER)
+#pragma diag_suppress 1216
+#elif defined(__GNUC__)
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
     ::readdir_r(d_, &buf, &e);
 #else
     e = ::readdir(d_);

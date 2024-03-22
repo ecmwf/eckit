@@ -35,6 +35,7 @@ private:
     FunctionTIMESTAMP& operator=(const FunctionTIMESTAMP&);
 
     // -- Overridden methods
+    using FunctionIntegerExpression::eval;
     double eval(bool& missing) const override;
 
     // -- Friends

@@ -180,9 +180,10 @@ else()
                         REQUIRED_PACKAGES "LAPACK QUIET" )
 endif()
 
-### OpenSSL (for SHA1)
+### OpenSSL (for SHA1 and MD4)
 
 ecbuild_add_option( FEATURE SSL
+                    DEFAULT OFF # We only use deprecated functionality from OpenSSL
                     DESCRIPTION "OpenSSL support"
                     REQUIRED_PACKAGES OpenSSL )
 

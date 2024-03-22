@@ -286,10 +286,7 @@ static bool processCode(int c, context* s) {
             if (strlen(s->curr->edit)) {
                 return processCode(BACKSPACE, s);
             }
-            else {
-                return processCode(0, s);
-            }
-            break;
+            return processCode(0, s);
 
         case BACKSPACE:
         case CONTROL_H:
@@ -421,14 +418,12 @@ static bool processCode(int c, context* s) {
         case CR:
             write(1, "\r\n", 2);
             return true;
-            break;
 
         case CONTROL_C:
             write(1, "\r\n", 2);
             s->pos = 0;
             return processCode(0,
                                s);  // CONTROL_C behaves as CONTROL_D -- for backward compatibility to previous marsadm
-            break;
 
         case CONTROL_G:
             break;

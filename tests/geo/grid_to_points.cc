@@ -22,7 +22,7 @@ namespace eckit::geo::test {
 
 CASE("HEALPix") {
     SECTION("HEALPix::to_points") {
-        std::unique_ptr<const Grid> grid(new grid::reduced::HEALPix(2, Ordering::healpix_ring));
+        std::unique_ptr<const Grid> grid(new grid::reducedglobal::HEALPix(2, Ordering::healpix_ring));
 
         static const std::vector<PointLonLat> expected_points_ring{
             {45, 66.443535691},

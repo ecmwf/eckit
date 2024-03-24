@@ -18,11 +18,6 @@
 namespace eckit::geo::grid {
 
 
-size_t ReducedGlobal::size() const {
-    return niacc().back();
-}
-
-
 std::vector<Point> ReducedGlobal::to_points() const {
     std::vector<Point> points;
     points.reserve(size());

@@ -48,7 +48,6 @@ public:
 
     // -- Overridden methods
 
-    size_t size() const override;
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 

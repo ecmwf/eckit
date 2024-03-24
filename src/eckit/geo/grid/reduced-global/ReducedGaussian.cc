@@ -62,6 +62,11 @@ Grid::iterator ReducedGaussian::cend() const {
 }
 
 
+size_t ReducedGaussian::size() const {
+    return niacc().back();
+}
+
+
 size_t ReducedGaussian::ni(size_t j) const {
     return pl_.at(j + j_);
 }

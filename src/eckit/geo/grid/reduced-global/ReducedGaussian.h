@@ -53,6 +53,7 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
+    size_t size() const override;
     size_t ni(size_t j) const override;
     size_t nj() const override;
 

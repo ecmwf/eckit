@@ -109,23 +109,30 @@ std::string Library::libraryPath() const {
     return libraryPath_;
 }
 
-Channel& Library::debugChannel() const {
-    AutoLock<Mutex> lock(mutex_);
+// Store a pointer to the channel, rather than the object itself, as otherwise it can be
+// moved by std::map...
+thread_local std::map<const Library*, std::unique_ptr<Channel>> debugChannels;
 
-    if (debugChannel_) {
-        return *debugChannel_;
+Channel& Library::debugChannel() const {
+
+    auto it = debugChannels.find(this);
+    if (it != debugChannels.end()) {
+        return *it->second;
     }
 
     std::string s = prefix_ + "_DEBUG";
 
+    std::unique_ptr<Channel> newChannel;
     if (debug_) {
-        debugChannel_.reset(new Channel(new PrefixTarget(s)));
+        newChannel = std::make_unique<Channel>(new PrefixTarget(s));
     }
     else {
-        debugChannel_.reset(new Channel());
+        newChannel = std::make_unique<Channel>();
     }
 
-    return *debugChannel_;
+    Channel& retval(*newChannel);
+    debugChannels.emplace(this, newChannel.release());
+    return retval;
 }
 
 const Configuration& Library::configuration() const {

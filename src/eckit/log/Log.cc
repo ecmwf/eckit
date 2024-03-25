@@ -173,8 +173,9 @@ struct CreateDebugChannel : public CreateLogChannel {
 };
 
 Channel& Log::debug() {
-    if (!Main::ready()) {
 
+
+    if (!Main::ready()) {
 
         const char* e = getenv("DEBUG");
 
@@ -187,8 +188,8 @@ Channel& Log::debug() {
     }
 
     if (!Main::instance().debug_) {
-        static Channel empty;
-        return empty;
+        static ThreadSingleton<Channel> empty;
+        return empty.instance();
     }
 
 

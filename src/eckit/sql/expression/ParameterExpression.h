@@ -43,6 +43,7 @@ private:
     void prepare(SQLSelect& sql) override;
     void cleanup(SQLSelect& sql) override;
 
+    using SQLExpression::eval;
     double eval(bool& missing) const override;
     const type::SQLType* type() const override;
     bool isConstant() const override;

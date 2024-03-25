@@ -84,8 +84,8 @@ public:
 
 class ArrayMetadata {
 public:
-    using ArrayShape = ArrayShape;
-    using DataType   = DataType;
+    using ArrayShape = eckit::codec::ArrayShape;
+    using DataType   = eckit::codec::DataType;
 
     static std::string type() { return "array"; }
 

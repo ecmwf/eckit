@@ -64,8 +64,6 @@ static History history_;
 // For Lex
 static bool eckit_cmd_debug_;
 
-static long pos_ = 0;
-
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace CmdYacc {
@@ -94,7 +92,6 @@ void eckit_cmd_error(const char* msg) {
 
 void CmdParser::parse(const std::string& line, std::ostream& out) {
     command_ = line;
-    pos_     = 0;
     out_     = &out;
 
     if (command_.size() > 0) {
@@ -153,7 +150,6 @@ void CmdParser::parse(std::istream& in, std::ostream& out, const Prompter& promp
         }
 
         command_ = p;
-        pos_     = 0;
 
         if (command_.size() > 0) {
             // Prepare for parse

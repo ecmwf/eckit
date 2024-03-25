@@ -18,6 +18,7 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/log/JSON.h"
 #include "eckit/exception/Exceptions.h"
 
 
@@ -50,8 +51,10 @@ public:  // methods
     void reserve(size_t s) { values_.reserve(s); }
 
     void insert(const V& v) {
+        if (!values_.empty() && v <= values_.back()) {
+            sorted_ = false;
+        }
         values_.push_back(v);
-        sorted_ = false;
     }
 
     /// @TODO shoudl we implement this?
@@ -128,6 +131,15 @@ public:  // methods
         }
     }
 
+    void json(JSON& s) const {
+        s.startList();
+        const_iterator it = cbegin();
+        for (; it != cend(); ++it) {
+            s << *it;
+        }
+        s.endList();
+    }
+
     bool operator==(const DenseSet& rhs) const { return !operator!=(rhs); }
 
     bool operator!=(const DenseSet& rhs) const { return values_ != rhs.values_; }
@@ -135,6 +147,46 @@ public:  // methods
     friend std::ostream& operator<<(std::ostream& s, const DenseSet& m) {
         m.print(s);
         return s;
+    }
+
+    friend JSON& operator<<(JSON& s, const DenseSet& m) {
+        m.json(s);
+        return s;
+    }
+
+    void merge(const DenseSet& other) {
+
+        if (other.empty()) return;
+
+        if (empty()) {
+            values_ = other.values_;
+            sorted_ = other.sorted_;
+            return;
+        }
+
+        ASSERT(sorted_);
+        ASSERT(other.sorted_);
+
+        int i = 0;
+        int j = 0;
+
+        // n.b. resizes would invalidate iterators --> use indices instead
+
+        while (j < other.values_.size()) {
+
+            if (i >= values_.size() || values_[i] > other.values_[j]) {
+                if (values_.capacity() == values_.size()) {
+                    values_.reserve(std::max(values_.size(), other.values_.size())*2);
+                }
+                values_.insert(values_.begin()+i, other.values_[j]);
+                i++;
+                j++;
+            } else if (values_[i] == other.values_[j]) {
+                j++;
+            } else { // if (*it1 < *it2)
+                i++;
+            }
+        }
     }
 
 private:              // members

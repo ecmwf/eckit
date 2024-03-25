@@ -186,7 +186,7 @@ public:
 };
 
 /// For compatibility
-using MethodNotYetImplemented = NotImplemented;
+using MethodNotYetImplemented [[deprecated("Use eckit::NotImplemented directly")]] = NotImplemented;
 
 class FunctionalityNotSupported : public NotImplemented {
 public:

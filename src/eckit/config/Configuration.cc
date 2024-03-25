@@ -299,7 +299,7 @@ bool Configuration::get(const std::string& name, LocalConfiguration& value) cons
     return found;
 }
 
-const Value& Configuration::get() const {
+const Value& Configuration::getValue() const {
     return *root_;
 }
 
@@ -581,10 +581,7 @@ void Configuration::json(JSON& s) const {
 
 std::vector<std::string> Configuration::keys() const {
     std::vector<std::string> result;
-    ValueMap m = *root_;
-    for (ValueMap::const_iterator j = m.begin(); j != m.end(); ++j) {
-        result.push_back((*j).first);
-    }
+    eckit::fromValue(result, root_->keys());
     return result;
 }
 

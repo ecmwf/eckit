@@ -122,15 +122,21 @@ CASE("ReducedGaussianOctahedral") {
         EXPECT(grid3->boundingBox().isPeriodicWestEast());
 
         // (exclude Greenwhich meridian)
-        std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(area::BoundingBox(90., -180., 0., -1.)));
+        std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(area::BoundingBox(90., -180., 0., -1.e-6)));
+
         auto n4 = grid4->size();
 
         EXPECT_EQUAL(n4, n3 / 4);
 
-#if 0
         const std::vector<Point> ref{
-            ...
-        };
+            PointLonLat{-180., 59.444408289}, PointLonLat{-162., 59.444408289}, PointLonLat{-144., 59.444408289},
+            PointLonLat{-126., 59.444408289}, PointLonLat{-108., 59.444408289}, PointLonLat{-90., 59.444408289},
+            PointLonLat{-72., 59.444408289},  PointLonLat{-54., 59.444408289},  PointLonLat{-36., 59.444408289},
+            PointLonLat{-18., 59.444408289},  PointLonLat{-180., 19.875719147}, PointLonLat{-165., 19.875719147},
+            PointLonLat{-150., 19.875719147}, PointLonLat{-135., 19.875719147}, PointLonLat{-120., 19.875719147},
+            PointLonLat{-105., 19.875719147}, PointLonLat{-90., 19.875719147},  PointLonLat{-75., 19.875719147},
+            PointLonLat{-60., 19.875719147},  PointLonLat{-45., 19.875719147},  PointLonLat{-30., 19.875719147},
+            PointLonLat{-15., 19.875719147}};
 
         auto points4 = grid4->to_points();
 
@@ -140,7 +146,6 @@ CASE("ReducedGaussianOctahedral") {
         for (size_t i = 0; i < points4.size(); ++i) {
             EXPECT(points_equal(points4[i], ref[i]));
         }
-#endif
     }
 
 

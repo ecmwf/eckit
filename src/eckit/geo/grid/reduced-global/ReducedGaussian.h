@@ -13,6 +13,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/ReducedGlobal.h"
@@ -71,7 +72,7 @@ private:
     size_t j_;
     size_t Nj_;
 
-    std::unique_ptr<Range> x_;
+    std::vector<std::unique_ptr<Range>> x_;
     std::unique_ptr<Range> y_;
 
     // -- Methods

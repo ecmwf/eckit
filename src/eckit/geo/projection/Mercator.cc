@@ -13,6 +13,7 @@
 #include "eckit/geo/projection/Mercator.h"
 
 #include <cmath>
+#include <limits>
 
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
@@ -85,10 +86,14 @@ double Mercator::calculate_phi(double t) const {
 Point2 Mercator::fwd(const PointLonLat& p) const {
     auto phi = util::DEGREE_TO_RADIAN * p.lat;
     auto lam = util::DEGREE_TO_RADIAN * p.lon;
+    auto s   = std::sin(phi);
 
-    return {x0_ + m_ * (lam - lam0_),
-            y0_ - m_ * std::log(std::tan(M_PI_4 - 0.5 * phi) /
-                                std::pow(((1. - e_ * std::sin(phi)) / (1. + e_ * std::sin(phi))), 0.5 * e_))};
+    return {
+        x0_ + m_ * (lam - lam0_),
+        types::is_approximately_equal(s, 1.) ? std::numeric_limits<double>::infinity()
+        : types::is_approximately_equal(s, -1.)
+            ? -std::numeric_limits<double>::infinity()
+            : y0_ - m_ * std::log(std::tan(M_PI_4 - 0.5 * phi) / std::pow(((1. - e_ * s) / (1. + e_ * s)), 0.5 * e_))};
 }
 
 

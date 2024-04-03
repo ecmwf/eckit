@@ -10,6 +10,7 @@
  */
 
 
+#include <limits>
 #include <memory>
 
 #include "eckit/geo/figure/Sphere.h"
@@ -24,11 +25,19 @@ using P = std::unique_ptr<Projection>;
 
 
 CASE("projection: mercator") {
-    PointLonLat first{262.036, 14.7365};
+    SECTION("mercator (poles)") {
+        projection::Mercator projection(0., 14., new figure::Sphere(1.), {0., 0.});
+
+        auto a = projection.fwd(PointLonLat{0., 90.});
+        EXPECT(a.Y > std::numeric_limits<double>::max());
+
+        auto b = projection.fwd(PointLonLat{0., -90.});
+        EXPECT(b.Y < std::numeric_limits<double>::lowest());
+    }
 
 
     SECTION("mercator (1)") {
-        projection::Mercator projection(0., 14., new figure::Sphere(6371229.), first);
+        projection::Mercator projection(0., 14., new figure::Sphere(6371229.), {262.036, 14.7365});
 
         Point2 a{0., 0.};
         auto b = projection.inv(a);
@@ -39,7 +48,7 @@ CASE("projection: mercator") {
 
 
     SECTION("mercator (2)") {
-        projection::Mercator projection(-180., 0., new figure::Sphere(1.), {0, 0});
+        projection::Mercator projection(-180., 0., new figure::Sphere(1.), {0., 0.});
 
         PointLonLat a{-75., 35.};
         auto b = projection.fwd({-75, 35});

@@ -229,11 +229,11 @@ area::BoundingBox bounding_box(Point2 min, Point2 max, Projection& projection) {
     // not at the corners by refining iteratively
 
     if (!bounds.includesNorthPole()) {
-        bounds.includesNorthPole(rect.contains(std::get<Point2>(projection.fwd(PointLonLat{0., 90.}))));
+        bounds.includesNorthPole(rect.contains(std::get<Point2>(projection.fwd(PointLonLat{0., 90. - h_ll}))));
     }
 
     if (!bounds.includesSouthPole()) {
-        bounds.includesSouthPole(rect.contains(std::get<Point2>(projection.fwd(PointLonLat{0., -90.}))));
+        bounds.includesSouthPole(rect.contains(std::get<Point2>(projection.fwd(PointLonLat{0., -90. + h_ll}))));
     }
 
     for (auto [A, B] : segments) {

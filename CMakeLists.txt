@@ -146,7 +146,7 @@ ecbuild_add_option( FEATURE XXHASH
 ### eckit::codec
 
 ecbuild_add_option( FEATURE ECKIT_CODEC
-                    DEFAULT OFF
+                    DEFAULT ON
                     DESCRIPTION "eckit::codec encoding/decoding library" )
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
@@ -312,8 +312,8 @@ add_subdirectory( tests )
 add_subdirectory( regressions )
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
-					   SOURCES AUTHORS README.md NOTICE LICENSE
-					   INSTALL ChangeLog COPYING )
+                       SOURCES AUTHORS README.md NOTICE LICENSE
+                       INSTALL ChangeLog COPYING )
 
 ############################################################################################
 # finalize

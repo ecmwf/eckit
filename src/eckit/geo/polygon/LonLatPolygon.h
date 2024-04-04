@@ -58,9 +58,8 @@ public:
     /// @brief Point-in-polygon test based on winding number
     /// @ref http://geomalgorithms.com/a03-_inclusion.html
     /// @param[in] P given point
-    /// @param[in] normalise_angle normalise point angles
     /// @return if point is in polygon
-    bool contains(const PointLonLat& P, bool normalise_angle = false) const;
+    bool contains(const PointLonLat& P) const;
 
 private:
     // -- Methods

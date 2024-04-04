@@ -10,12 +10,11 @@
 
 #include "eckit/geo/polygon/LonLatPolygon.h"
 
-
-#include "eckit/geo/Point2.h"
-
+#include <cmath>
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/CoordinateHelpers.h"
 #include "eckit/types/FloatCompare.h"
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -34,15 +33,15 @@ inline bool is_approximately_greater_or_equal(double a, double b) {
     return a >= b || is_approximately_equal(a, b);
 }
 
-inline double cross_product_analog(const Point2& A, const Point2& B, const Point2& C) {
-    return (A.X - C.X) * (B.Y - C.Y) - (A.Y - C.Y) * (B.X - C.X);
+inline double cross_product_analog(const PointLonLat& A, const PointLonLat& B, const PointLonLat& C) {
+    return (A.lon - C.lon) * (B.lat - C.lat) - (A.lat - C.lat) * (B.lon - C.lon);
 }
 
 inline int on_direction(double a, double b, double c) {
     return a <= b && b <= c ? 1 : c <= b && b <= a ? -1 : 0;
 };
 
-inline int on_side(const Point2& P, const Point2& A, const Point2& B) {
+inline int on_side(const PointLonLat& P, const PointLonLat& A, const PointLonLat& B) {
     const auto p = cross_product_analog(P, A, B);
     return is_approximately_equal(p, 0) ? 0 : p > 0 ? 1 : -1;
 }
@@ -52,7 +51,7 @@ inline int on_side(const Point2& P, const Point2& A, const Point2& B) {
 //----------------------------------------------------------------------------------------------------------------------
 
 LonLatPolygon::LonLatPolygon(const container_type& points, bool includePoles) :
-    container_type(points), max_(0., 90.), min_(0., -90.) {
+    container_type(points), max_(points.front()), min_(points.front()) {
     ASSERT(points.size() > 1);
     ASSERT(is_approximately_equal(points.front().lon, points.back().lon) &&
            is_approximately_equal(points.front().lat, points.back().lat));
@@ -68,7 +67,7 @@ LonLatPolygon::LonLatPolygon(const container_type& points, bool includePoles) :
             // if new point is aligned with existing edge (cross product ~= 0) make the edge longer
             const auto& B = back();
             const auto& C = operator[](size() - 2);
-            if (is_approximately_equal(0., cross_product_analog({A.lon, A.lat}, {B.lon, B.lat}, {C.lon, C.lat}))) {
+            if (is_approximately_equal(0., cross_product_analog(A, B, C))) {
                 back() = A;
                 continue;
             }
@@ -106,8 +105,8 @@ std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
     return out;
 }
 
-bool LonLatPolygon::contains(const PointLonLat& P, bool normalise_angle) const {
-    const auto Q = normalise_angle ? PointLonLat::make(P.lon, P.lat, min_.lon) : P;
+bool LonLatPolygon::contains(const PointLonLat& P) const {
+    auto Q = PointLonLat::make(P.lon, P.lat, min_.lon);
 
     // check poles
     if (includeNorthPole_ && is_approximately_equal(Q.lat, 90.)) {
@@ -144,7 +143,7 @@ bool LonLatPolygon::contains(const PointLonLat& P, bool normalise_angle) const {
             // - intersecting "down" on backward crossing & P below edge
             const auto direction = on_direction(A.lat, Q.lat, B.lat);
             if (direction != 0) {
-                const auto side = on_side({Q.lon, Q.lat}, {A.lon, A.lat}, {B.lon, B.lat});
+                const auto side = on_side(Q, A, B);
                 if (side == 0 && on_direction(A.lon, Q.lon, B.lon) != 0) {
                     return true;
                 }
@@ -160,7 +159,7 @@ bool LonLatPolygon::contains(const PointLonLat& P, bool normalise_angle) const {
             return true;
         }
 
-        Q.lon += 360;
+        Q.lon += 360.;
     } while (Q.lon <= max_.lon);
 
     return false;

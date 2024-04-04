@@ -8,26 +8,54 @@
  * does it submit to any jurisdiction.
  */
 
-#include <vector>
 
 #include "eckit/geo/Point2.h"
-#include "eckit/types/FloatCompare.h"
-#include "eckit/value/Value.h"
 
-//----------------------------------------------------------------------------------------------------------------------
+#include <cmath>
+
+#include "eckit/types/FloatCompare.h"
+
 
 namespace eckit::geo {
 
-//----------------------------------------------------------------------------------------------------------------------
+
+static const Point2 ZERO;
+
+
+double Point2::norm() const {
+    return distance(ZERO);
+}
+
+
+Point2 Point2::normalize() const {
+    const auto l = norm();
+    return types::is_approximately_equal(l, 0., EPS) ? ZERO : Point2{X / l, Y / l};
+}
+
+
+Point2 Point2::middle(const Point2& p) const {
+    return (*this + p) * 0.5;
+}
+
+
+double Point2::distance(const Point2& p, size_t axis) const {
+    return std::abs(x(axis) - p.x(axis));
+}
+
+
+double Point2::distance(const Point2& p) const {
+    return std::sqrt(distance2(p));
+}
+
+
+double Point2::distance2(const Point2& p) const {
+    return (X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y);
+}
+
 
 bool points_equal(const Point2& a, const Point2& b, double eps) {
     return types::is_approximately_equal(a.X, b.X, eps) && types::is_approximately_equal(a.Y, b.Y, eps);
 }
 
-Point2::operator Value() const {
-    return Value::makeList(std::vector<Value>{x_[XX], x_[YY]});
-}
-
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo

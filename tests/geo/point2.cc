@@ -10,6 +10,8 @@
  */
 
 
+#include <cmath>
+
 #include "eckit/geo/Point2.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -21,51 +23,51 @@ namespace eckit::geo::test {
 CASE("Point2 initialisation") {
     Point2 z;
 
-    EXPECT(z[XX] == 0.);
-    EXPECT(z[YY] == 0.);
+    EXPECT(z.X == 0.);
+    EXPECT(z.Y == 0.);
 
-    Point2 q = {4., 5.};
+    Point2 q{4., 5.};
 
-    EXPECT(q[XX] == 4.);
-    EXPECT(q[YY] == 5.);
+    EXPECT(q.X == 4.);
+    EXPECT(q.Y == 5.);
 
     Point2 r(q);
 
-    EXPECT(r[XX] == 4.);
-    EXPECT(r[YY] == 5.);
+    EXPECT(r.X == 4.);
+    EXPECT(r.Y == 5.);
 }
 
 
 CASE("Point2 addition") {
-    Point2 p1 = {1., 2.};
-    Point2 p2 = {2., 4.};
+    Point2 p1{1., 2.};
+    Point2 p2{2., 4.};
 
     Point2 r = p1 + p2;
 
-    EXPECT(r[XX] == 3.);
-    EXPECT(r[YY] == 6.);
+    EXPECT(r.X == 3.);
+    EXPECT(r.Y == 6.);
 }
 
 
 CASE("Point2 subtraction") {
-    Point2 p1 = {2., 5.};
-    Point2 p2 = {1., 2.};
+    Point2 p1{2., 5.};
+    Point2 p2{1., 2.};
 
     Point2 r = p1 - p2;
 
-    EXPECT(r[XX] == 1.);
-    EXPECT(r[YY] == 3.);
+    EXPECT(r.X == 1.);
+    EXPECT(r.Y == 3.);
 }
 
 
 CASE("Point2 scaling") {
-    Point2 p1 = {1., 2.};
+    Point2 p1{1., 2.};
     Point2 p2(p1);
 
     Point2 r = p1 * 42.;
 
-    EXPECT(r[XX] == 42.);
-    EXPECT(r[YY] == 84.);
+    EXPECT(r.X == 42.);
+    EXPECT(r.Y == 84.);
 
     Point2 oo;
 
@@ -77,50 +79,40 @@ CASE("Point2 scaling") {
 
 
 CASE("Point2 equality") {
-    Point2 p1 = {1., 2.};
-    Point2 p2 = {1., 2.};
+    Point2 p1{1., 2.};
+    Point2 p2{1., 2.};
 
     EXPECT(p1 == p2);
 }
 
 
 CASE("Point2 inequality") {
-    Point2 p1 = {1., 3.};
-    Point2 p2 = {1., 4.};
+    Point2 p1{1., 3.};
+    Point2 p2{1., 4.};
 
     EXPECT(p1 != p2);
 }
 
 
-CASE("Point2 comparison") {
-    Point2 p1 = {2., 1.};
-    Point2 p2 = {1., 2.};
-
-    // EXPECT(p2 < p1);
-}
-
-
 CASE("Point2 distance comparison") {
-    Point2 p1 = {2., 1.};
-    Point2 p2 = {1., 2.};
+    Point2 p1{2., 1.};
+    Point2 p2{1., 2.};
+    Point2 p3{5., 5.};
 
-    EXPECT(types::is_approximately_equal(sqrt(2.), p1.distance(p2)));
-
-    Point2 p3 = {5., 5.};
-
-    EXPECT(types::is_approximately_equal(p1.distance(p3), 5.));
+    EXPECT(types::is_approximately_equal(std::sqrt(2.), p1.distance(p2)));
+    EXPECT(types::is_approximately_equal(5., p1.distance(p3)));
 }
 
 
 CASE("Point2 distance2 comparison") {
-    Point2 p1 = {2., 1.};
-    Point2 p2 = {1., 2.};
+    Point2 p1{2., 1.};
+    Point2 p2{1., 2.};
+    Point2 p3{5., 5.};
 
     EXPECT(types::is_approximately_equal(p1.distance2(p2), 2.));
-
-    Point2 p3 = {5., 5.};
-
     EXPECT(types::is_approximately_equal(p1.distance2(p3), 25.));
+
+    EXPECT(p2.distance2(p1) < p3.distance2(p1));
 }
 
 

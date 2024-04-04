@@ -101,10 +101,8 @@ private:
 
 struct Derivate {
     Derivate(const Projection& p, Point2 A, Point2 B, double h, double refLongitude = 0.) :
-        projection_(p),
-        H_{Point2::mul(Point2::normalize(Point2::sub(B, A)), h)},
-        invnH_(1. / Point2::norm(H_)),
-        refLongitude_(refLongitude) {}
+        projection_(p), H_{Point2::normalize(B - A) * h}, invnH_(1. / Point2::norm(H_)), refLongitude_(refLongitude) {}
+
     virtual ~Derivate() = default;
 
     Derivate(const Derivate&)       = delete;

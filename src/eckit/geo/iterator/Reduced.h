@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "eckit/geo/Iterator.h"
 
 

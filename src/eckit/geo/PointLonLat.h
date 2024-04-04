@@ -24,48 +24,40 @@ class PointLonLat final : protected std::array<double, 2> {
 private:
     // -- Types
 
-    using P = std::array<double, 2>;
+    using container_type = std::array<double, 2>;
+    using container_type::value_type;
 
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     PointLonLat(double lon, double lat);
 
     PointLonLat(const PointLonLat& other) :
-        P(other) {}
+        container_type(other) {}
 
     PointLonLat(PointLonLat&& other) :
-        P(other) {}
+        container_type(other) {}
 
     // -- Destructor
 
     ~PointLonLat() = default;
 
-    // -- Convertors
-    // None
-
     // -- Operators
 
     PointLonLat& operator=(const PointLonLat& other) {
-        P::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
     PointLonLat& operator=(PointLonLat&& other) {
-        P::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
     // -- Members
 
-    double& lon = P::operator[](0);
-    double& lat = P::operator[](1);
+    value_type& lon = container_type::operator[](0);
+    value_type& lat = container_type::operator[](1);
 
     // -- Methods
 
@@ -76,9 +68,6 @@ public:
     static PointLonLat make(double lon, double lat, double lon_minimum = 0, double eps = EPS);
 
     PointLonLat antipode() const { return make(lon, lat + 180.); }
-
-    // -- Overridden methods
-    // None
 
     // -- Class members
 
@@ -101,16 +90,16 @@ public:
     }
 
     friend PointLonLat operator-(const PointLonLat& p, const PointLonLat& q) { return {p.lon - q.lon, p.lat - q.lat}; }
-
     friend PointLonLat operator+(const PointLonLat& p, const PointLonLat& q) { return {p.lon + q.lon, p.lat + q.lat}; }
-
     friend PointLonLat operator*(const PointLonLat& p, double d) { return {p.lon * d, p.lat * d}; }
 
     friend bool operator<(const PointLonLat& p, const PointLonLat& q) {
-        return static_cast<const P&>(p) < static_cast<const P&>(q);
+        return static_cast<const container_type&>(p) < static_cast<const container_type&>(q);
     }
 };
 
+
 bool points_equal(const PointLonLat&, const PointLonLat&, double eps = PointLonLat::EPS);
+
 
 }  // namespace eckit::geo

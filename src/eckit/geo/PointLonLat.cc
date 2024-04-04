@@ -22,7 +22,7 @@ namespace eckit::geo {
 
 
 PointLonLat::PointLonLat(double lon, double lat) :
-    P{lon, lat} {
+    container_type{lon, lat} {
     if (!(-90. <= lat && lat <= 90.)) {
         throw BadValue("PointLonLat: invalid latitude");
     }

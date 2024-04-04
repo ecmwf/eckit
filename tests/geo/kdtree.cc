@@ -133,26 +133,26 @@ CASE("test_eckit_container_kdtree_constructor") {
 
     SECTION("test single closest point") {
         // a point similar to an existing one
-        EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(Point::add(ref, Point{0.1, 0.1})).point());
+        EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(ref + Point{0.1, 0.1}).point());
 
         // exact match to a point
         EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(ref).point());
 
         // off the scale, i.e. not within a group of points (+)
         EXPECT_POINT_EQUAL(points.back().point(),
-                           kd.nearestNeighbour(Point::add(points.back().point(), Point{1000., 0.})).point());
+                           kd.nearestNeighbour(points.back().point() + Point{1000., 0.}).point());
 
         // off the scale, i.e. not within a group of points (-)
         EXPECT_POINT_EQUAL(points.front().point(),
-                           kd.nearestNeighbour(Point::add(points.front().point(), Point{-1000., 0.})).point());
+                           kd.nearestNeighbour(points.front().point() + Point{-1000., 0.}).point());
     }
 
     SECTION("test N nearest") {
         // move this point so it lies between four equally, make sure we differ by 0.5 along each axis
-        auto test = Point::add(ref, Point{0.5, 0.5});
+        auto test = ref + Point{0.5, 0.5};
 
         for (auto& near : kd.kNearestNeighbours(test, 4)) {
-            auto diff = Point::sub(near.point(), test);
+            auto diff = near.point() - test;
             for (size_t i = 0; i < Point::dimensions(); ++i) {
                 EXPECT(Point::distance(Point{0., 0.}, diff, i) == 0.5);
             }
@@ -163,13 +163,13 @@ CASE("test_eckit_container_kdtree_constructor") {
         // Test a custom visitor. The purpose of doing that in this test is to ensure that the public
         // interface of KDTree is sufficient to write a custom class traversing the tree.
         auto a      = Point{0.25, 0.25};
-        auto lbound = Point::sub(ref, a);
-        auto ubound = Point::add(ref, a);
+        auto lbound = ref - a;
+        auto ubound = ref + a;
         EXPECT(isAnyPointInBoxInterior(kd, lbound, ubound));
 
         auto b = Point{0.5, 0.5};
-        lbound = Point::add(lbound, b);
-        ubound = Point::add(ubound, b);
+        lbound = lbound + b;
+        ubound = ubound + b;
         EXPECT_NOT(isAnyPointInBoxInterior(kd, lbound, ubound));
     }
 }
@@ -196,26 +196,26 @@ CASE("test_eckit_container_kdtree_insert") {
 
     SECTION("test single closest point") {
         // a point similar to an existing one
-        EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(Point::add(ref, Point{0.1, 0.1})).point());
+        EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(ref + Point{0.1, 0.1}).point());
 
         // exact match to a point
         EXPECT_POINT_EQUAL(ref, kd.nearestNeighbour(ref).point());
 
         // off the scale, i.e. not within a group of points (+)
         EXPECT_POINT_EQUAL(points.back().point(),
-                           kd.nearestNeighbour(Point::add(points.back().point(), Point{1000., 0.})).point());
+                           kd.nearestNeighbour(points.back().point() + Point{1000., 0.}).point());
 
         // off the scale, i.e. not within a group of points (-)
         EXPECT_POINT_EQUAL(points.front().point(),
-                           kd.nearestNeighbour(Point::add(points.front().point(), Point{-1000., 0.})).point());
+                           kd.nearestNeighbour(points.front().point() + Point{-1000., 0.}).point());
     }
 
     SECTION("test N nearest") {
         // move this point so it lies between four equally, make sure we differ by 0.5 along each axis
-        auto test = Point::add(ref, Point{0.5, 0.5});
+        auto test = ref + Point{0.5, 0.5};
 
         for (auto& near : kd.kNearestNeighbours(test, 4)) {
-            auto diff = Point::sub(near.point(), test);
+            auto diff = near.point() - test;
             for (size_t i = 0; i < Point::dimensions(); ++i) {
                 EXPECT(Point::distance(Point{0., 0.}, diff, i) == 0.5);
             }
@@ -240,7 +240,7 @@ CASE("test_kdtree_mapped") {
     auto passTest = [&](Tree& kd, const Point& p) -> bool {
         // perturb it a little
         // we should find the same point
-        auto nr = kd.nearestNeighbour(Point::add(p, Point{0.1, 0.1})).point();
+        auto nr = kd.nearestNeighbour(p + Point{0.1, 0.1}).point();
         for (size_t i = 0; i < Point::dimensions(); ++i) {
             if (nr.x(i) != p.x(i)) {
                 return false;

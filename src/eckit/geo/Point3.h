@@ -8,89 +8,95 @@
  * does it submit to any jurisdiction.
  */
 
+
 #pragma once
 
-#include "eckit/geo/KPoint.h"
+#include <array>
+#include <ostream>
 
-//------------------------------------------------------------------------------------------------------
 
 namespace eckit::geo {
 
-//------------------------------------------------------------------------------------------------------
 
-class Point3 final : public KPoint<3> {
-    using BasePoint = KPoint<3>;
+class Point3 final : protected std::array<double, 3> {
+private:
+    // -- Types
+
+    using container_type = std::array<double, 3>;
+    using container_type::value_type;
 
 public:
-    Point3() = default;
+    // -- Constructors
 
-    Point3(const BasePoint& p) :
-        BasePoint(p) {}
+    Point3() :
+        Point3(0., 0., 0.) {}
 
-    explicit Point3(const double* p) :
-        BasePoint(p) {}
-
-    Point3(double x, double y, double z) {
-        x_[XX] = x;
-        x_[YY] = y;
-        x_[ZZ] = z;
-    }
+    Point3(double x, double y, double z) :
+        container_type{x, y, z} {}
 
     Point3(const Point3& other) :
-        Point3(other.X, other.Y, other.Z) {}
+        container_type(other) {}
 
     Point3(Point3&& other) :
-        Point3(other.X, other.Y, other.Z) {}
+        container_type(other) {}
+
+    // -- Destructor
 
     ~Point3() = default;
 
-    double& X = x_[XX];
+    // -- Operators
 
-    double& Y = x_[YY];
-
-    double& Z = x_[ZZ];
+    using container_type::operator[];
 
     Point3& operator=(const Point3& other) {
-        x_[0] = other[0];
-        x_[1] = other[1];
-        x_[2] = other[2];
+        container_type::operator=(other);
         return *this;
     }
 
     Point3& operator=(Point3&& other) {
-        x_[0] = other[0];
-        x_[1] = other[1];
-        x_[2] = other[2];
+        container_type::operator=(other);
         return *this;
     }
 
-    double operator[](const size_t& i) const {
-        assert(i < 3);
-        return x_[i];
-    }
-    double& operator[](const size_t& i) {
-        assert(i < 3);
-        return x_[i];
+    // -- Members
+
+    double& X = container_type::operator[](0);
+    double& Y = container_type::operator[](1);
+    double& Z = container_type::operator[](2);
+
+    // -- Methods
+
+    static double distance(const Point3& p, const Point3& q, size_t axis) { return p.distance(q, axis); }
+    static double distance(const Point3& p, const Point3& q) { return p.distance(q); }
+    static double distance2(const Point3& p, const Point3& q) { return p.distance2(q); }
+
+    double distance(const Point3&, size_t axis) const;
+    double distance(const Point3&) const;
+    double distance2(const Point3&) const;
+
+    double x(size_t axis) const { return container_type::operator[](axis); }
+
+    // -- Class members
+
+    static constexpr size_t DIMS = 3;
+    static constexpr double EPS  = 1e-9;
+
+    // -- Friends
+
+    friend std::ostream& operator<<(std::ostream& out, const Point3& p) {
+        return out << '{' << p.X << ", " << p.X << ", " << p.Z << '}';
     }
 
-    template <typename T>
-    void assign(const T& p) {
-        x_[XX] = p[XX];
-        x_[YY] = p[YY];
-        x_[ZZ] = p[ZZ];
-    }
+    friend Point3 operator-(const Point3& p, const Point3& q) { return {p.X - q.X, p.Y - q.Y, p.Z - q.Z}; }
+    friend Point3 operator+(const Point3& p, const Point3& q) { return {p.X + q.X, p.Y + q.Y, p.Z + q.Z}; }
+    friend Point3 operator*(const Point3& p, double d) { return {p.X * d, p.Y * d, p.Z * d}; }
 
-    static Point3 cross(const Point3& p1, const Point3& p2) {
-        return {p1[YY] * p2[ZZ] - p1[ZZ] * p2[YY],
-                p1[ZZ] * p2[XX] - p1[XX] * p2[ZZ],
-                p1[XX] * p2[YY] - p1[YY] * p2[XX]};
-    }
+    friend bool operator==(const Point3& p, const Point3& q) { return p.X == q.X && p.Y == q.Y && p.Z == q.Z; }
+    friend bool operator!=(const Point3& p, const Point3& q) { return !operator==(p, q); }
 };
 
-//------------------------------------------------------------------------------------------------------
 
-bool points_equal(const Point3&, const Point3&, double eps = 1.e-9);
+bool points_equal(const Point3&, const Point3&, double eps = Point3::EPS);
 
-//------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo

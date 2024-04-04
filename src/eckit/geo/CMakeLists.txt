@@ -27,8 +27,6 @@ list(APPEND eckit_geo_srcs
     Increments.cc
     Increments.h
     Iterator.h
-    KPoint.cc
-    KPoint.h
     LibEcKitGeo.cc
     LibEcKitGeo.h
     Ordering.h

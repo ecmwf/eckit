@@ -92,7 +92,7 @@ CASE("unit sphere") {
         EXPECT(p.Y == 0);
         EXPECT(p.Z == 0);
 
-        EXPECT(Point3::equal(p, q));
+        EXPECT(p == q);
     }
 
 
@@ -104,7 +104,7 @@ CASE("unit sphere") {
         EXPECT(p.Y == R);
         EXPECT(p.Z == 0);
 
-        EXPECT(Point3::equal(p, q));
+        EXPECT(p == q);
     }
 
 
@@ -116,7 +116,7 @@ CASE("unit sphere") {
         EXPECT(p.Y == 0);
         EXPECT(p.Z == 0);
 
-        EXPECT(Point3::equal(p, q));
+        EXPECT(p == q);
     }
 
 
@@ -128,7 +128,7 @@ CASE("unit sphere") {
         EXPECT(p.Y == -R);
         EXPECT(p.Z == 0);
 
-        EXPECT(Point3::equal(p, q));
+        EXPECT(p == q);
     }
 
 
@@ -140,7 +140,7 @@ CASE("unit sphere") {
         EXPECT(types::is_approximately_equal(p.Y, L));
         EXPECT(p.Z == 0);
 
-        EXPECT(Point3::equal(p, q));
+        EXPECT(p == q);
     }
 
 
@@ -152,7 +152,7 @@ CASE("unit sphere") {
         EXPECT(types::is_approximately_equal(p.Y, L));
         EXPECT(p.Z == 0);
 
-        EXPECT(Point3::equal(p, q));
+        EXPECT(p == q);
     }
 
 
@@ -164,7 +164,7 @@ CASE("unit sphere") {
         EXPECT(types::is_approximately_equal(p.Y, -L));
         EXPECT(p.Z == 0);
 
-        EXPECT(Point3::equal(p, q));
+        EXPECT(p == q);
     }
 
 
@@ -176,7 +176,7 @@ CASE("unit sphere") {
         EXPECT(types::is_approximately_equal(p.Y, -L));
         EXPECT(p.Z == 0);
 
-        EXPECT(Point3::equal(p, q));
+        EXPECT(p == q);
     }
 
 

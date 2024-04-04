@@ -13,7 +13,6 @@ foreach(_test
         increments
         iterator
         kdtree
-        kpoint
         point
         point2
         point3

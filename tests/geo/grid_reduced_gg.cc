@@ -72,21 +72,17 @@ CASE("ReducedGaussianOctahedral") {
     SECTION("points") {
         ReducedGaussian grid(1);
 
-        const std::vector<Point> ref{
-            PointLonLat{0., 35.264389683},    PointLonLat{18., 35.264389683},   PointLonLat{36., 35.264389683},
-            PointLonLat{54., 35.264389683},   PointLonLat{72., 35.264389683},   PointLonLat{90., 35.264389683},
-            PointLonLat{108., 35.264389683},  PointLonLat{126., 35.264389683},  PointLonLat{144., 35.264389683},
-            PointLonLat{162., 35.264389683},  PointLonLat{180., 35.264389683},  PointLonLat{198., 35.264389683},
-            PointLonLat{216., 35.264389683},  PointLonLat{234., 35.264389683},  PointLonLat{252., 35.264389683},
-            PointLonLat{270., 35.264389683},  PointLonLat{288., 35.264389683},  PointLonLat{306., 35.264389683},
-            PointLonLat{324., 35.264389683},  PointLonLat{342., 35.264389683},  PointLonLat{0., -35.264389683},
-            PointLonLat{18., -35.264389683},  PointLonLat{36., -35.264389683},  PointLonLat{54., -35.264389683},
-            PointLonLat{72., -35.264389683},  PointLonLat{90., -35.264389683},  PointLonLat{108., -35.264389683},
-            PointLonLat{126., -35.264389683}, PointLonLat{144., -35.264389683}, PointLonLat{162., -35.264389683},
-            PointLonLat{180., -35.264389683}, PointLonLat{198., -35.264389683}, PointLonLat{216., -35.264389683},
-            PointLonLat{234., -35.264389683}, PointLonLat{252., -35.264389683}, PointLonLat{270., -35.264389683},
-            PointLonLat{288., -35.264389683}, PointLonLat{306., -35.264389683}, PointLonLat{324., -35.264389683},
-            PointLonLat{342., -35.264389683},
+        const std::vector<PointLonLat> ref{
+            {0., 35.264389683},    {18., 35.264389683},   {36., 35.264389683},   {54., 35.264389683},
+            {72., 35.264389683},   {90., 35.264389683},   {108., 35.264389683},  {126., 35.264389683},
+            {144., 35.264389683},  {162., 35.264389683},  {180., 35.264389683},  {198., 35.264389683},
+            {216., 35.264389683},  {234., 35.264389683},  {252., 35.264389683},  {270., 35.264389683},
+            {288., 35.264389683},  {306., 35.264389683},  {324., 35.264389683},  {342., 35.264389683},
+            {0., -35.264389683},   {18., -35.264389683},  {36., -35.264389683},  {54., -35.264389683},
+            {72., -35.264389683},  {90., -35.264389683},  {108., -35.264389683}, {126., -35.264389683},
+            {144., -35.264389683}, {162., -35.264389683}, {180., -35.264389683}, {198., -35.264389683},
+            {216., -35.264389683}, {234., -35.264389683}, {252., -35.264389683}, {270., -35.264389683},
+            {288., -35.264389683}, {306., -35.264389683}, {324., -35.264389683}, {342., -35.264389683},
         };
 
         auto points = grid.to_points();
@@ -94,9 +90,19 @@ CASE("ReducedGaussianOctahedral") {
         EXPECT(points.size() == grid.size());
         ASSERT(points.size() == ref.size());
 
+        auto it = grid.begin();
         for (size_t i = 0; i < points.size(); ++i) {
-            EXPECT(points_equal(points[i], ref[i]));
+            EXPECT(points_equal(ref[i], points[i]));
+            EXPECT(points_equal(ref[i], *it));
+            ++it;
         }
+        EXPECT(it == grid.end());
+
+        size_t i = 0;
+        for (const auto& it : grid) {
+            EXPECT(points_equal(ref[i++], it));
+        }
+        EXPECT(i == grid.size());
     }
 
 
@@ -128,24 +134,33 @@ CASE("ReducedGaussianOctahedral") {
 
         EXPECT_EQUAL(n4, n3 / 4);
 
-        const std::vector<Point> ref{
-            PointLonLat{-180., 59.444408289}, PointLonLat{-162., 59.444408289}, PointLonLat{-144., 59.444408289},
-            PointLonLat{-126., 59.444408289}, PointLonLat{-108., 59.444408289}, PointLonLat{-90., 59.444408289},
-            PointLonLat{-72., 59.444408289},  PointLonLat{-54., 59.444408289},  PointLonLat{-36., 59.444408289},
-            PointLonLat{-18., 59.444408289},  PointLonLat{-180., 19.875719147}, PointLonLat{-165., 19.875719147},
-            PointLonLat{-150., 19.875719147}, PointLonLat{-135., 19.875719147}, PointLonLat{-120., 19.875719147},
-            PointLonLat{-105., 19.875719147}, PointLonLat{-90., 19.875719147},  PointLonLat{-75., 19.875719147},
-            PointLonLat{-60., 19.875719147},  PointLonLat{-45., 19.875719147},  PointLonLat{-30., 19.875719147},
-            PointLonLat{-15., 19.875719147}};
+        const std::vector<PointLonLat> ref{
+            {-180., 59.444408289}, {-162., 59.444408289}, {-144., 59.444408289}, {-126., 59.444408289},
+            {-108., 59.444408289}, {-90., 59.444408289},  {-72., 59.444408289},  {-54., 59.444408289},
+            {-36., 59.444408289},  {-18., 59.444408289},  {-180., 19.875719147}, {-165., 19.875719147},
+            {-150., 19.875719147}, {-135., 19.875719147}, {-120., 19.875719147}, {-105., 19.875719147},
+            {-90., 19.875719147},  {-75., 19.875719147},  {-60., 19.875719147},  {-45., 19.875719147},
+            {-30., 19.875719147},  {-15., 19.875719147},
+        };
 
         auto points4 = grid4->to_points();
 
-        EXPECT(points4.size() == grid4->size());
+        EXPECT(points4.size() == n4);
         ASSERT(points4.size() == ref.size());
 
+        auto it = grid4->begin();
         for (size_t i = 0; i < points4.size(); ++i) {
-            EXPECT(points_equal(points4[i], ref[i]));
+            EXPECT(points_equal(ref[i], points4[i]));
+            EXPECT(points_equal(ref[i], *it));
+            ++it;
         }
+        EXPECT(it == grid4->end());
+
+        size_t i = 0;
+        for (const auto& it : *grid4) {
+            EXPECT(points_equal(ref[i++], it));
+        }
+        EXPECT_EQUAL(i, n4);
     }
 
 

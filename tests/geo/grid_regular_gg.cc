@@ -48,15 +48,15 @@ CASE("RegularGaussian") {
     SECTION("points") {
         grid::regular::RegularGaussian grid(1);
 
-        const std::vector<Point> ref{
-            PointLonLat{0., 35.264389683},
-            PointLonLat{90., 35.264389683},
-            PointLonLat{180., 35.264389683},
-            PointLonLat{270., 35.264389683},
-            PointLonLat{0., -35.264389683},
-            PointLonLat{90., -35.264389683},
-            PointLonLat{180., -35.264389683},
-            PointLonLat{270., -35.264389683},
+        const std::vector<PointLonLat> ref{
+            {0., 35.264389683},
+            {90., 35.264389683},
+            {180., 35.264389683},
+            {270., 35.264389683},
+            {0., -35.264389683},
+            {90., -35.264389683},
+            {180., -35.264389683},
+            {270., -35.264389683},
         };
 
         auto points = grid.to_points();
@@ -64,9 +64,19 @@ CASE("RegularGaussian") {
         EXPECT(points.size() == grid.size());
         ASSERT(points.size() == ref.size());
 
+        auto it = grid.begin();
         for (size_t i = 0; i < points.size(); ++i) {
-            EXPECT(points_equal(points[i], ref[i]));
+            EXPECT(points_equal(ref[i], points[i]));
+            EXPECT(points_equal(ref[i], *it));
+            ++it;
         }
+        EXPECT(it == grid.end());
+
+        size_t i = 0;
+        for (const auto& it : grid) {
+            EXPECT(points_equal(ref[i++], it));
+        }
+        EXPECT(i == grid.size());
     }
 
 
@@ -108,23 +118,23 @@ CASE("RegularGaussian") {
 
         EXPECT_EQUAL(n5, 4 * 4);  // Ni * Nj
 
-        const std::vector<Point> ref{
-            PointLonLat{-180., 59.444408289},
-            PointLonLat{-135., 59.444408289},
-            PointLonLat{-90., 59.444408289},
-            PointLonLat{-45., 59.444408289},
-            PointLonLat{-180., 19.875719147},
-            PointLonLat{-135., 19.875719147},
-            PointLonLat{-90., 19.875719147},
-            PointLonLat{-45., 19.875719147},
-            PointLonLat{-180., -19.875719147},
-            PointLonLat{-135., -19.875719147},
-            PointLonLat{-90., -19.875719147},
-            PointLonLat{-45., -19.875719147},
-            PointLonLat{-180., -59.444408289},
-            PointLonLat{-135., -59.444408289},
-            PointLonLat{-90., -59.444408289},
-            PointLonLat{-45., -59.444408289},
+        const std::vector<PointLonLat> ref{
+            {-180., 59.444408289},
+            {-135., 59.444408289},
+            {-90., 59.444408289},
+            {-45., 59.444408289},
+            {-180., 19.875719147},
+            {-135., 19.875719147},
+            {-90., 19.875719147},
+            {-45., 19.875719147},
+            {-180., -19.875719147},
+            {-135., -19.875719147},
+            {-90., -19.875719147},
+            {-45., -19.875719147},
+            {-180., -59.444408289},
+            {-135., -59.444408289},
+            {-90., -59.444408289},
+            {-45., -59.444408289},
         };
 
         auto points5 = grid5->to_points();
@@ -132,9 +142,19 @@ CASE("RegularGaussian") {
         EXPECT(points5.size() == grid5->size());
         ASSERT(points5.size() == ref.size());
 
+        auto it = grid5->begin();
         for (size_t i = 0; i < points5.size(); ++i) {
-            EXPECT(points_equal(points5[i], ref[i]));
+            EXPECT(points_equal(ref[i], points5[i]));
+            EXPECT(points_equal(ref[i], *it));
+            ++it;
         }
+        EXPECT(it == grid5->end());
+
+        size_t i = 0;
+        for (const auto& it : *grid5) {
+            EXPECT(points_equal(ref[i++], it));
+        }
+        EXPECT_EQUAL(i, n5);
     }
 
 

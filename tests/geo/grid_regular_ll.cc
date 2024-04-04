@@ -48,15 +48,15 @@ CASE("non-global") {
      */
     grid::regular::RegularLL grid({1, 2}, {1, -1, -1, 2});
 
-    const std::vector<Point> ref{
-        PointLonLat{-1, 1},
-        PointLonLat{0, 1},
-        PointLonLat{1, 1},
-        PointLonLat{2, 1},
-        PointLonLat{-1, -1},
-        PointLonLat{0, -1},
-        PointLonLat{1, -1},
-        PointLonLat{2, -1},
+    const std::vector<PointLonLat> ref{
+        {-1., 1.},
+        {0., 1.},
+        {1., 1.},
+        {2., 1.},
+        {-1., -1.},
+        {0., -1.},
+        {1., -1.},
+        {2., -1.},
     };
 
     auto points = grid.to_points();
@@ -64,9 +64,19 @@ CASE("non-global") {
     EXPECT(points.size() == grid.size());
     ASSERT(points.size() == ref.size());
 
+    auto it = grid.begin();
     for (size_t i = 0; i < points.size(); ++i) {
-        EXPECT(points_equal(points[i], ref[i]));
+        EXPECT(points_equal(ref[i], points[i]));
+        EXPECT(points_equal(ref[i], *it));
+        ++it;
     }
+    EXPECT(it == grid.end());
+
+    size_t i = 0;
+    for (const auto& it : grid) {
+        EXPECT(points_equal(ref[i++], it));
+    }
+    EXPECT(i == grid.size());
 }
 
 

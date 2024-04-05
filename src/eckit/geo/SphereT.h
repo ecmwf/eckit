@@ -68,10 +68,8 @@ struct SphereT {
     }
 
     // Convert spherical to Cartesian coordinates
-    inline static Point3 convertSphericalToCartesian(const PointLonLat& P,
-                                                     double height        = 0.,
-                                                     bool normalise_angle = false) {
-        return Sphere::convertSphericalToCartesian(DATUM::radius(), P, height, normalise_angle);
+    inline static Point3 convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {
+        return Sphere::convertSphericalToCartesian(DATUM::radius(), P, height);
     }
 
     // Convert Cartesian to spherical coordinates

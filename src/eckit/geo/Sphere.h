@@ -8,18 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
+
 #pragma once
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit::geo {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 class Point3;
 class PointLonLat;
 
-//----------------------------------------------------------------------------------------------------------------------
 
 struct Sphere {
     /// Great-circle central angle between two points in radians
@@ -47,16 +45,12 @@ struct Sphere {
     static void greatCircleLongitudeGivenLatitude(
         const PointLonLat&, const PointLonLat&, double lat, double& lon1, double& lon2);
 
-    // Convert spherical to Cartesian coordinates
-    static Point3 convertSphericalToCartesian(double radius,
-                                              const PointLonLat&,
-                                              double height        = 0.,
-                                              bool normalise_angle = false);
+    /// Convert spherical to Cartesian coordinates
+    static Point3 convertSphericalToCartesian(double radius, const PointLonLat&, double height = 0.);
 
-    // Convert Cartesian to spherical coordinates
+    /// Convert Cartesian to spherical coordinates
     static PointLonLat convertCartesianToSpherical(double radius, const Point3&);
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo

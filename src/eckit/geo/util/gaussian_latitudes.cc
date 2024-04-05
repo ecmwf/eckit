@@ -18,6 +18,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Cache.h"
+#include "eckit/geo/util.h"
 
 
 namespace eckit::geo::util {
@@ -99,7 +100,7 @@ const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
 
         // Convert colatitude [rad] to latitude [degree], symmetry
         const auto j = 2 * N - 1 - i;
-        lats[i]      = (increasing ? (x - M_PI_2) : (M_PI_2 - x)) * 180. * M_1_PI;
+        lats[i]      = (increasing ? (x - M_PI_2) : (M_PI_2 - x)) * RADIAN_TO_DEGREE;
         lats[j]      = -lats[i];
     }
 

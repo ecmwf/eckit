@@ -8,28 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef EllipsoidOfRevolution_H
-#define EllipsoidOfRevolution_H
 
-//----------------------------------------------------------------------------------------------------------------------
+#pragma once
+
 
 namespace eckit::geo {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 class Point3;
 class PointLonLat;
 
-//----------------------------------------------------------------------------------------------------------------------
 
 struct EllipsoidOfRevolution {
     // Convert elliptic coordinates to Cartesian
-    static Point3 convertSphericalToCartesian(
-        double a, double b, const PointLonLat&, double height = 0., bool normalise_angle = false);
+    static Point3 convertSphericalToCartesian(double a, double b, const PointLonLat&, double height = 0.);
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo
-
-#endif

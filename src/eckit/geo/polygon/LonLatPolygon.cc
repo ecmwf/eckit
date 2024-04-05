@@ -118,12 +118,7 @@ std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
 
 bool LonLatPolygon::contains(const Point2& Plonlat, bool normalise_angle) const {
     if (!normalise_angle) {
-        if (const auto lat = Plonlat[LAT]; !(-90. <= lat && lat <= 90.)) {
-            std::ostringstream oss;
-            oss.precision(std::numeric_limits<double>::max_digits10);
-            oss << "Invalid latitude " << lat;
-            throw BadValue(oss.str(), Here());
-        }
+        PointLonLat::assert_latitude_range({Plonlat[LON], Plonlat[LAT]});
     }
 
     Point2 Q{PointLonLat::normalise_angle_to_minimum(Plonlat[LON], min_[LON]), Plonlat[LAT]};

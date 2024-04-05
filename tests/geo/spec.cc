@@ -347,6 +347,17 @@ CASE("spec") {
 
         EXPECT(unknown_pl->spec() == R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
     }
+
+
+    SECTION("grid: HEALPix") {
+        std::unique_ptr<const Grid> h2(GridFactory::build(spec::Custom({{"grid", "h2"}})));
+
+        EXPECT(h2->spec() == R"({"grid":"H2"})");
+
+        std::unique_ptr<const Grid> h2n(GridFactory::build(spec::Custom({{"grid", "H2"}, {"ordering", "nested"}})));
+
+        EXPECT(h2n->spec() == R"({"grid":"H2","ordering":"nested"})");
+    }
 }
 
 

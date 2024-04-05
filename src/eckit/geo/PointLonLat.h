@@ -30,7 +30,8 @@ private:
 public:
     // -- Constructors
 
-    PointLonLat(double lon, double lat);
+    PointLonLat(double lon, double lat) :
+        container_type{lon, lat} {}
 
     PointLonLat(const PointLonLat& other) :
         container_type(other) {}
@@ -64,6 +65,8 @@ public:
     static double normalise_angle_to_minimum(double, double minimum);
 
     static double normalise_angle_to_maximum(double, double maximum);
+
+    static void assert_latitude_range(const PointLonLat&);
 
     static PointLonLat make(double lon, double lat, double lon_minimum = 0, double eps = EPS);
 

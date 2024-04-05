@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "eckit/geo/Point2.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/polygon/LonLatPolygon.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/testing/Test.h"
@@ -110,7 +111,6 @@ CASE("LonLatPolygon") {
     }
 
 
-#if 0
     SECTION("Contains North pole") {
         const std::vector<Polygon::value_type> points{{0, 90}, {0, 0}, {1, 0}, {1, 90}, {0, 90}};
 
@@ -126,10 +126,8 @@ CASE("LonLatPolygon") {
         EXPECT_NOT(poly2.contains({0, -90}));
         EXPECT_NOT(poly2.contains({10, -90}));
     }
-#endif
 
 
-#if 0
     SECTION("Contains South pole") {
         const std::vector<Polygon::value_type> points{{0, -90}, {0, 0}, {1, 0}, {1, -90}, {0, -90}};
 
@@ -145,7 +143,6 @@ CASE("LonLatPolygon") {
         EXPECT(poly2.contains({0, -90}));
         EXPECT_NOT(poly2.contains({10, -90}));
     }
-#endif
 
 
     SECTION("Contains South and North poles") {
@@ -246,7 +243,6 @@ CASE("LonLatPolygon") {
     }
 
 
-#if 0
     SECTION("Simple rectangular polygon") {
         double lonmin = 0;
         double lonmax = 360;
@@ -258,45 +254,42 @@ CASE("LonLatPolygon") {
 
         Polygon poly({{lonmin, latmax}, {lonmax, latmax}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
 
+        EXPECT(poly.contains({lonmin, latmax}));
+        EXPECT(poly.contains({lonmid, latmax}));
+        EXPECT(poly.contains({lonmax, latmax}));
+        EXPECT(poly.contains({lonmax, latmid}));
+        EXPECT(poly.contains({lonmax, latmin}));
+        EXPECT(poly.contains({lonmid, latmin}));
+        EXPECT(poly.contains({lonmin, latmin}));
+        EXPECT(poly.contains({lonmin, latmid}));
 
-        SECTION("Contains edges") {
-            EXPECT(poly.contains({lonmin, latmax}));
-            EXPECT(poly.contains({lonmid, latmax}));
-            EXPECT(poly.contains({lonmax, latmax}));
-            EXPECT(poly.contains({lonmax, latmid}));
-            EXPECT(poly.contains({lonmax, latmin}));
-            EXPECT(poly.contains({lonmid, latmin}));
-            EXPECT(poly.contains({lonmin, latmin}));
-            EXPECT(poly.contains({lonmin, latmid}));
-        }
+        // Test contains in/outward of edges
+        constexpr auto eps = 0.001;
 
+        for (size_t i = 0; i <= 100; ++i) {
+            const auto lon = lonmin + static_cast<double>(i) * (lonmax - lonmin) / 100.;
+            EXPECT(poly.contains({lon, latmin + eps}));
+            EXPECT(poly.contains({lon, latmax - eps}));
+            EXPECT_NOT(poly.contains({lon, latmin - eps}));
+            EXPECT_NOT(poly.contains({lon, latmax + eps}));
 
-        SECTION("Contains in/outward of edges") {
-            constexpr auto eps = 0.001;
-
-            for (size_t i = 0; i <= 100; ++i) {
-                const auto lon = lonmin + static_cast<double>(i) * (lonmax - lonmin) / 99.;
-                EXPECT(poly.contains({lon, latmin + eps}));
-                EXPECT(poly.contains({lon, latmax - eps}));
-                EXPECT_NOT(poly.contains({lon, latmin - eps}));
-                EXPECT_NOT(poly.contains({lon, latmax + eps}));
-
-                const auto lat = latmin + static_cast<double>(i) * (latmax - latmin) / 99.;
-                EXPECT(poly.contains({lonmin + eps, lat}));
-                EXPECT(poly.contains({lonmax - eps, lat}));
-                EXPECT_NOT(poly.contains({lonmin - eps, lat}));
-                EXPECT_NOT(poly.contains({lonmax + eps, lat}));
-            }
+            const auto lat = latmin + static_cast<double>(i) * (latmax - latmin) / 100.;
+            EXPECT(poly.contains({lonmin + eps, lat}));
+            EXPECT(poly.contains({lonmax - eps, lat}));
+            EXPECT(poly.contains({lonmin - eps, lat}));
+            EXPECT(poly.contains({lonmax + eps, lat}));
         }
 
         // Test points at non-canonical coordinates
         // Default behavior throws
-        EXPECT_THROWS_AS(poly.contains({lonmid, 180. - latmid}), BadValue);
+        EXPECT_THROWS_AS(poly.contains({lonmid, 91.}), BadValue);
 
-        EXPECT(poly.contains({lonmid + 360., latmid}));
-        EXPECT(poly.contains({lonmid, 180. - latmid}));
+        auto A = PointLonLat::make(lonmid + 360., latmid, lonmin);
+        EXPECT(poly.contains({A.lon, A.lat}));
+
+        auto B = PointLonLat::make(lonmid, 180. - latmid, lonmin);
+        EXPECT(poly.contains({B.lon, B.lat}));
     }
-#endif
 
 
     SECTION("Parallelogram") {
@@ -356,7 +349,6 @@ CASE("LonLatPolygon") {
     }
 
 
-#if 0
     SECTION("Partitioning (includePoles=false)") {
         auto mid = [](double a, double b) { return (a + b) / 2.; };
 
@@ -414,7 +406,6 @@ CASE("LonLatPolygon") {
             EXPECT(counts[i + 9] == 1);
         }
     }
-#endif
 }
 
 

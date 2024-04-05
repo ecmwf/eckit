@@ -182,8 +182,7 @@ CASE("unit sphere") {
 
     SECTION("lat 100") {
         // Default behavior throws
-        EXPECT_THROWS_AS(PointLonLat(0., 100.), BadValue);
-        EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({0., 100.}), BadValue);
+        EXPECT_THROWS_AS(PointLonLat::assert_latitude_range(PointLonLat(0., 100.)), BadValue);
 
         auto p = UnitSphere::convertSphericalToCartesian(PointLonLat::make(0., 100.), 0.);
         auto q = UnitSphere::convertSphericalToCartesian(PointLonLat::make(180., 80.), 0.);
@@ -197,8 +196,7 @@ CASE("unit sphere") {
 
     SECTION("lat 290") {
         // Default behavior throws
-        EXPECT_THROWS_AS(PointLonLat(15., 290.), BadValue);
-        EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({15., 290.}), BadValue);
+        EXPECT_THROWS_AS(PointLonLat::assert_latitude_range(PointLonLat(15., 290.)), BadValue);
 
         auto p = UnitSphere::convertSphericalToCartesian(PointLonLat::make(15., 290.), 0.);
         auto q = UnitSphere::convertSphericalToCartesian(PointLonLat::make(15., -70.), 0.);
@@ -212,8 +210,7 @@ CASE("unit sphere") {
 
     SECTION("lat -120") {
         // Default behavior throws
-        EXPECT_THROWS_AS(PointLonLat(45., -120.), BadValue);
-        EXPECT_THROWS_AS(UnitSphere::convertSphericalToCartesian({45., -120.}), BadValue);
+        EXPECT_THROWS_AS(PointLonLat::assert_latitude_range(PointLonLat(45., -120.)), BadValue);
 
         auto p = UnitSphere::convertSphericalToCartesian(PointLonLat::make(45., -120.), 0.);
         auto q = UnitSphere::convertSphericalToCartesian(PointLonLat::make(225., -60.), 0.);

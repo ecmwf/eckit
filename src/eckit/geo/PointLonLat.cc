@@ -13,20 +13,14 @@
 #include "eckit/geo/PointLonLat.h"
 
 #include <cmath>
+#include <limits>
+#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo {
-
-
-PointLonLat::PointLonLat(double lon, double lat) :
-    container_type{lon, lat} {
-    if (!(-90. <= lat && lat <= 90.)) {
-        throw BadValue("PointLonLat: invalid latitude");
-    }
-}
 
 
 double PointLonLat::normalise_angle_to_minimum(double a, double minimum) {
@@ -42,6 +36,16 @@ double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
 
     auto diff = a - maximum;
     return -360. < diff && diff <= 0. ? a : modulo_360(a - maximum) + maximum;
+}
+
+
+void PointLonLat::assert_latitude_range(const PointLonLat& P) {
+    if (!(-90. <= P.lat && P.lat <= 90.)) {
+        std::ostringstream oss;
+        oss.precision(std::numeric_limits<double>::max_digits10);
+        oss << "Invalid latitude " << P.lat;
+        throw BadValue(oss.str(), Here());
+    }
 }
 
 

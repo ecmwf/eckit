@@ -28,7 +28,6 @@ public:
     // -- Methods
 
     Fraction increment() const;
-    bool periodic() const { return periodic_; }
 
     // -- Overridden methods
 
@@ -48,7 +47,9 @@ protected:
     // -- Methods
 
     static Fraction adjust(const Fraction& target, const Fraction& inc, bool up);
-    void periodic(bool p) { periodic_ = p; }
+
+    void setPeriodic(bool p) { periodic_ = p; }
+    bool getPeriodic() const { return periodic_; }
 
 private:
     // -- Members

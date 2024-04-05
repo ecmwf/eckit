@@ -41,6 +41,8 @@ public:
     double b() const { return b_; }
     double eps() const { return eps_; }
 
+    virtual bool periodic() const { return false; }
+
     virtual Range* flip() const                             = 0;
     virtual Range* crop(double crop_a, double crop_b) const = 0;
     virtual const std::vector<double>& values() const       = 0;

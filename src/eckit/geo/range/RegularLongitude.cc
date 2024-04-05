@@ -34,10 +34,16 @@ RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _re
     const Fraction inc(_inc);
 
     auto n = 1 + (std::min(Fraction(b() - a()), PERIOD) / inc).integralPart();
-    periodic(n * inc >= PERIOD);
+    setPeriodic(n * inc >= PERIOD);
 
-    b(Fraction(a()) + (n - 1) * inc);
-    resize(periodic() ? (PERIOD / inc).integralPart() : n);
+    if (periodic()) {
+        b(a() + PERIOD);
+        resize((PERIOD / inc).integralPart());
+    }
+    else {
+        b(Fraction(a()) + (n - 1) * inc);
+        resize(n);
+    }
 }
 
 
@@ -57,7 +63,7 @@ Range* RegularLongitude::crop(double crop_a, double crop_b) const {
 
         RegularLongitude crop(inc, crop_a, crop_b, a(), eps());
         if (crop.periodic()) {
-            auto _a = PointLonLat::normalise_angle_to_minimum(crop_a, crop.a());
+            auto _a = std::max(a(), PointLonLat::normalise_angle_to_minimum(crop_a, crop.a()));
             auto _b = PointLonLat::normalise_angle_to_minimum(crop_b, _a);
             return new RegularLongitude(inc, _a, _b, a(), eps());
         }

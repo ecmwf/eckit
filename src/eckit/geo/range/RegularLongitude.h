@@ -35,6 +35,8 @@ public:
     Range* crop(double crop_a, double crop_b) const override;
     Range* flip() const override;
 
+    bool periodic() const override { return getPeriodic(); }
+
 private:
     // -- Constructors
 

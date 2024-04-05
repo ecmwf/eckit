@@ -10,7 +10,6 @@
  */
 
 
-#include <iostream>
 #include <vector>
 
 #include "eckit/geo/Search.h"
@@ -20,39 +19,51 @@
 namespace eckit::geo::test {
 
 
-CASE("") {
-    std::vector<Search3::Value> points{
-        {{0, 0, 0}, 0},
-    };
-
-    Search3 search;
-    search.build(points);
-
-    std::cout << search.nearestNeighbour({0.1, 0, 0}) << std::endl;
-    std::cout << search.nearestNeighbour({0.9, 0, 0}) << std::endl;
-
-    search.insert({{1, 0, 0}, 1});
-
-    std::cout << search.nearestNeighbour({0.1, 0, 0}) << std::endl;
-    std::cout << search.nearestNeighbour({0.9, 0, 0}) << std::endl;
-}
-
-
-CASE("") {
+CASE("Search2") {
     std::vector<Search2::Value> points{
-        {{0, 0}, 0},
+        {{0., 0.}, 0},
     };
 
     Search2 search;
     search.build(points);
 
-    std::cout << search.nearestNeighbour({0.1, 0}) << std::endl;
-    std::cout << search.nearestNeighbour({0.9, 0}) << std::endl;
+    auto a = search.nearestNeighbour({0.1, 0.});
+    EXPECT_EQUAL(a.payload(), 0);
 
-    search.insert({{1, 0}, 1});
+    auto b = search.nearestNeighbour({0.9, 0.});
+    EXPECT_EQUAL(b.payload(), 0);
 
-    std::cout << search.nearestNeighbour({0.1, 0}) << std::endl;
-    std::cout << search.nearestNeighbour({0.9, 0}) << std::endl;
+    search.insert({{1., 0.}, 1});
+
+    auto c = search.nearestNeighbour({0.1, 0.});
+    EXPECT_EQUAL(c.payload(), 0);
+
+    auto d = search.nearestNeighbour({0.9, 0.});
+    EXPECT_EQUAL(d.payload(), 1);
+}
+
+
+CASE("Search3") {
+    std::vector<Search3::Value> points{
+        {{0., 0., 0.}, 0},
+    };
+
+    Search3 search;
+    search.build(points);
+
+    auto a = search.nearestNeighbour({0.1, 0., 0.});
+    EXPECT_EQUAL(a.payload(), 0);
+
+    auto b = search.nearestNeighbour({0.9, 0., 0.});
+    EXPECT_EQUAL(b.payload(), 0);
+
+    search.insert({{1., 0., 0.}, 1});
+
+    auto c = search.nearestNeighbour({0.1, 0., 0.});
+    EXPECT_EQUAL(c.payload(), 0);
+
+    auto d = search.nearestNeighbour({0.9, 0., 0.});
+    EXPECT_EQUAL(d.payload(), 1);
 }
 
 

@@ -66,7 +66,6 @@ CASE("RegularGaussian") {
 
         auto it = grid.begin();
         for (size_t i = 0; i < points.size(); ++i) {
-            std::cout << ref[i] << '\n' <<points[i] << std::endl;
             EXPECT(points_equal(ref[i], points[i]));
             EXPECT(points_equal(ref[i], *it));
             ++it;

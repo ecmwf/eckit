@@ -17,11 +17,11 @@
 #include <ios>
 #include <iostream>
 #include <map>
+#include <regex>
 #include <string>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/utils/Regex.h"
 
 
 namespace eckit::geo {
@@ -140,7 +140,9 @@ bool GeneratorT<C>::exists(const key_t& k) const {
 template <class C>
 bool GeneratorT<C>::matches(const std::string& k) const {
     lock_type lock;
-    return std::any_of(store_.begin(), store_.end(), [&](const auto& p) { return Regex(p.first).match(k); });
+    return std::any_of(store_.begin(), store_.end(), [&](const auto& p) -> bool {
+        return std::regex_match(k, std::regex(p.first));
+    });
 }
 
 template <class C>
@@ -179,7 +181,7 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::strin
     auto end = store_.cend();
     auto i   = end;
     for (auto j = store_.cbegin(); j != end; ++j) {
-        if (Regex(j->first).match(k)) {
+        if (std::regex_match(k, std::regex(j->first))) {
             if (i != end) {
                 throw SeriousBug("Generator name '" + k + "' matches '" + i->first + "' and '" + j->first + "'");
             }

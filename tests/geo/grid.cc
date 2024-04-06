@@ -42,7 +42,7 @@ CASE("GridFactory::build") {
     if (LibEcKitGeo::caching()) {
         SECTION("Grid::build_from_uid") {
             spec::Custom spec({
-                {"uid", "a832a12030c73928133553ec3a8d2a7e"},
+                {"uid", "d5bde4f52ff3a9bea5629cd9ac514410"},
             });
 
             const auto footprint = Cache::total_footprint();

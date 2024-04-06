@@ -26,8 +26,12 @@ bool is_equal(float a, float b, float epsilon, int maxUlps) {
     return eckit::types::is_approximately_equal(a, b, epsilon, maxUlps);
 }
 
-bool is_equal(float a, float b, float epsilon = 0.00001F) {
+bool is_equal(float a, float b, float epsilon) {
     return eckit::types::is_approximately_equal(a, b, epsilon);
+}
+
+bool is_equal(float a, float b) {
+    return eckit::types::is_approximately_equal(a, b, 0.00001f);
 }
 
 const float dEps = std::numeric_limits<float>::epsilon();
@@ -42,30 +46,6 @@ const float sNaN = std::numeric_limits<float>::signaling_NaN();
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("test_epsilon_zero") {
-    Log::info() << "test_tolerance_limit" << std::endl;
-
-    {
-        constexpr auto eps = std::numeric_limits<double>::epsilon();
-        EXPECT_EQUAL(1., 1.);  // sanity check
-        EXPECT(types::is_approximately_equal<double>(1., 1., 0.));
-        EXPECT_NOT(types::is_approximately_equal<double>(1., 1. + eps, 0.));
-        EXPECT_NOT(types::is_approximately_equal<double>(1., 1.1 + eps, 0.1));
-        EXPECT(types::is_approximately_equal<double>(1., 1.1, 0.1 + eps));
-    }
-
-    {
-        // constexpr auto eps = std::numeric_limits<double>::epsilon();
-        // EXPECT_EQUAL(1.F, 1.F);  // sanity check
-        // EXPECT(types::is_approximately_equal<float>(1.F, 1.F, 0.F));
-        // EXPECT(types::is_approximately_equal<float>(1.F, 1.1F, 0.1F));
-        // EXPECT_NOT(types::is_approximately_equal<float>(1.F, 1.F + eps, 0.F));
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-#if 0
 CASE("test_large_numbers") {
     Log::info() << "test_large_numbers" << std::endl;
 
@@ -337,7 +317,6 @@ CASE("test_comparisons_ulps") {
     EXPECT(!is_equal(-dMin, 0, 0, 0));
     EXPECT(!is_equal(0, -dMin, 0, 0));
 }
-#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

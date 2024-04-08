@@ -16,6 +16,7 @@
 #include <bitset>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <tuple>
 
 #include "eckit/geo/iterator/Reduced.h"
@@ -217,6 +218,42 @@ private:
 };
 
 
+class NestedIterator final : public geo::Iterator {
+public:
+    explicit NestedIterator(const HEALPix& grid, size_t index = 0) :
+        points_(grid.to_points()), index_(index), index_size_(grid.size()) {}
+
+    explicit NestedIterator() :
+        index_(std::numeric_limits<size_t>::max()), index_size_(std::numeric_limits<size_t>::max()) {}
+
+private:
+    const std::vector<Point> points_;
+
+    size_t index_;
+    const size_t index_size_;
+
+    bool operator==(const Iterator& other) const override {
+        const auto* another = dynamic_cast<const NestedIterator*>(&other);
+        return another != nullptr && (operator bool() ? index_ == another->index_ : !another->operator bool());
+    }
+
+    bool operator++() override {
+        index_++;
+        return index_ < index_size_;
+    }
+
+    bool operator+=(diff_t d) override {
+        index_ += d;
+        return index_ < index_size_;
+    }
+
+    explicit operator bool() const override { return index_ < index_size_; }
+    Point operator*() const override { return points_.at(index_); }
+
+    size_t index() const override { return index_; }
+};
+
+
 }  // unnamed namespace
 
 
@@ -232,8 +269,8 @@ HEALPix::HEALPix(const Spec& spec) :
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) :
-    ReducedGlobal(area::BoundingBox::make_global_prime()), N_(Nside), ordering_(ordering) {
-    ASSERT(N_ > 0);
+    ReducedGlobal(area::BoundingBox::make_global_prime()), Nside_(Nside), ordering_(ordering) {
+    ASSERT(Nside_ > 0);
     ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested,
                "HEALPix: supported orderings: ring, nested");
 
@@ -252,7 +289,7 @@ Renumber HEALPix::reorder(Ordering ordering) const {
     }
 
     if (ordering == Ordering::healpix_ring) {
-        const Reorder reorder(static_cast<int>(N_));
+        const Reorder reorder(static_cast<int>(Nside_));
         Renumber ren(size());
         for (int i = 0, N = static_cast<int>(size()); i < N; ++i) {
             ren[i] = reorder.nest_to_ring(i);
@@ -261,7 +298,7 @@ Renumber HEALPix::reorder(Ordering ordering) const {
     }
 
     if (ordering == Ordering::healpix_nested) {
-        const Reorder reorder(static_cast<int>(N_));
+        const Reorder reorder(static_cast<int>(Nside_));
         Renumber ren(size());
         for (int i = 0, N = static_cast<int>(size()); i < N; ++i) {
             ren[i] = reorder.ring_to_nest(i);
@@ -274,29 +311,31 @@ Renumber HEALPix::reorder(Ordering ordering) const {
 
 
 Grid::iterator HEALPix::cbegin() const {
-    return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this, 0)} : NOTIMP;
+    return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this)}
+                                               : iterator{new NestedIterator(*this)};
 }
 
 
 Grid::iterator HEALPix::cend() const {
-    return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this, size())} : NOTIMP;
+    return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this, size())}
+                                               : iterator{new NestedIterator()};
 }
 
 
 size_t HEALPix::ni(size_t j) const {
     ASSERT(j < nj());
-    return j < N_ ? 4 * (j + 1) : j < 3 * N_ ? 4 * N_ : ni(nj() - 1 - j);
+    return j < Nside_ ? 4 * (j + 1) : j < 3 * Nside_ ? 4 * Nside_ : ni(nj() - 1 - j);
 }
 
 
 size_t HEALPix::nj() const {
-    return 4 * N_ - 1;
+    return 4 * Nside_ - 1;
 }
 
 
 Spec* HEALPix::spec(const std::string& name) {
     auto Nside = Translator<std::string, size_t>{}(name.substr(1));
-    return new spec::Custom({{"type", "HEALPix"}, {"Nside", Nside}, {"orderingConvention", "ring"}});
+    return new spec::Custom({{"type", "HEALPix"}, {"Nside", Nside}, {"ordering", "ring"}});
 }
 
 
@@ -307,7 +346,28 @@ area::BoundingBox HEALPix::boundingBox() const {
 
 
 size_t HEALPix::size() const {
-    return 12 * N_ * N_;
+    return 12 * Nside_ * Nside_;
+}
+
+
+std::vector<Point> HEALPix::to_points() const {
+    const auto points = ReducedGlobal::to_points();
+
+    if (ordering_ == Ordering::healpix_ring) {
+        return points;
+    }
+
+    ASSERT(ordering_ == Ordering::healpix_nested);
+
+    std::vector<Point> points_nested;
+    points_nested.reserve(size());
+
+    const Reorder reorder(static_cast<int>(Nside_));
+    for (size_t i = 0; i < size(); ++i) {
+        points_nested.emplace_back(std::get<PointLonLat>(points[reorder.nest_to_ring(static_cast<int>(i))]));
+    }
+
+    return points_nested;
 }
 
 
@@ -334,9 +394,10 @@ const std::vector<double>& HEALPix::latitudes() const {
 
         auto i = latitudes_.begin();
         auto j = latitudes_.rbegin();
-        for (size_t ring = 1; ring < 2 * N_; ++ring, ++i, ++j) {
-            const auto f = ring < N_ ? 1. - static_cast<double>(ring * ring) / (3 * static_cast<double>(N_ * N_))
-                                     : 4. / 3. - 2 * static_cast<double>(ring) / (3 * static_cast<double>(N_));
+        for (size_t ring = 1; ring < 2 * Nside_; ++ring, ++i, ++j) {
+            const auto f = ring < Nside_
+                               ? 1. - static_cast<double>(ring * ring) / (3 * static_cast<double>(Nside_ * Nside_))
+                               : 4. / 3. - 2 * static_cast<double>(ring) / (3 * static_cast<double>(Nside_));
 
             *i = 90. - util::RADIAN_TO_DEGREE * std::acos(f);
             *j = -*i;
@@ -352,7 +413,7 @@ const std::vector<double>& HEALPix::latitudes() const {
 std::vector<double> HEALPix::longitudes(size_t j) const {
     const auto Ni    = ni(j);
     const auto step  = 360. / static_cast<double>(Ni);
-    const auto start = j < N_ || 3 * N_ - 1 < j || static_cast<bool>((j + N_) % 2) ? step / 2. : 0.;
+    const auto start = j < Nside_ || 3 * Nside_ - 1 < j || static_cast<bool>((j + Nside_) % 2) ? step / 2. : 0.;
 
     std::vector<double> lons(Ni);
     std::generate_n(lons.begin(), Ni, [start, step, n = 0ULL]() mutable {
@@ -364,7 +425,7 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
 
 
 void HEALPix::spec(spec::Custom& custom) const {
-    custom.set("grid", "H" + std::to_string(N_));
+    custom.set("grid", "H" + std::to_string(Nside_));
     custom.set("ordering", ordering_ == Ordering::healpix_ring ? "ring" : "nested");
 }
 

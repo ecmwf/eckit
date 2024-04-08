@@ -41,7 +41,8 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    size_t Nside() const { return Nside_; }
 
     // -- Overridden methods
 
@@ -49,12 +50,15 @@ public:
     iterator cend() const override;
 
     size_t size() const override;
+
+    std::vector<Point> to_points() const override;
+
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
     Ordering order() const override { return ordering_; }
     Renumber reorder(Ordering) const override;
-    Grid* make_grid_reordered(Ordering ordering) const override { return new HEALPix(N_, ordering); }
+    Grid* make_grid_reordered(Ordering ordering) const override { return new HEALPix(Nside_, ordering); }
 
     // -- Class members
 
@@ -66,7 +70,7 @@ public:
 private:
     // -- Members
 
-    const size_t N_;
+    const size_t Nside_;
     const Ordering ordering_;
 
     mutable std::vector<double> latitudes_;

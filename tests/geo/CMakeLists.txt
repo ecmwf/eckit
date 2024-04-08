@@ -5,6 +5,7 @@ foreach(_test
         figure_sphere
         great_circle
         grid
+        grid_healpix
         grid_reduced_gg
         grid_regular_gg
         grid_regular_ll

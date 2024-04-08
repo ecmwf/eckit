@@ -191,6 +191,7 @@ private:
     // -- Friends
 
     friend bool operator==(const Grid& a, const Grid& b) { return a.spec() == b.spec(); }
+    friend bool operator!=(const Grid& a, const Grid& b) { return !(a == b); }
 };
 
 

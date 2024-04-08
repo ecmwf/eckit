@@ -365,13 +365,12 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
 
 void HEALPix::spec(spec::Custom& custom) const {
     custom.set("grid", "H" + std::to_string(N_));
-    if (ordering_ != Ordering::healpix_ring) {
-        custom.set("ordering", "nested");
-    }
+    custom.set("ordering", ordering_ == Ordering::healpix_ring ? "ring" : "nested");
 }
 
 
-static const GridRegisterType<HEALPix> __grid_type("HEALPix");
+static const GridRegisterType<HEALPix> __grid_type_1("HEALPix");
+static const GridRegisterType<HEALPix> __grid_type_2("healpix");
 static const GridRegisterName<HEALPix> __grid_pattern("[hH][1-9][0-9]*");
 
 

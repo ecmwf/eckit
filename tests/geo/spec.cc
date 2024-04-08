@@ -352,7 +352,7 @@ CASE("spec") {
     SECTION("grid: HEALPix") {
         std::unique_ptr<const Grid> h2(GridFactory::build(spec::Custom({{"grid", "h2"}})));
 
-        EXPECT(h2->spec() == R"({"grid":"H2"})");
+        EXPECT(h2->spec() == R"({"grid":"H2","ordering":"ring"})");
 
         std::unique_ptr<const Grid> h2n(GridFactory::build(spec::Custom({{"grid", "H2"}, {"ordering", "nested"}})));
 

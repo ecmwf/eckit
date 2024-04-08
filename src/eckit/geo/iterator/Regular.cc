@@ -20,7 +20,6 @@ namespace eckit::geo::iterator {
 
 
 Regular::Regular(const Grid& grid, size_t index) :
-    geo::Iterator(grid),
     grid_(dynamic_cast<const grid::Regular&>(grid)),
     longitudes_(grid_.longitudes()),
     latitudes_(grid_.latitudes()),

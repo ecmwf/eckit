@@ -20,7 +20,6 @@ namespace eckit::geo::iterator {
 
 
 Unstructured::Unstructured(const Grid& grid, size_t index) :
-    geo::Iterator(grid),
     index_(index),
     index_size_(grid.size()),
     longitudes_(dynamic_cast<const grid::Unstructured&>(grid).longitudes()),

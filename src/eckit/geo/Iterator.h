@@ -79,7 +79,7 @@ public:
 protected:
     // -- Constructors
 
-    explicit Iterator(const Grid&) {}
+    Iterator() = default;
 
     // -- Members
     // None

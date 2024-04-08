@@ -23,7 +23,6 @@ namespace eckit::geo::iterator {
 
 
 Reduced::Reduced(const Grid& grid, size_t index) :
-    geo::Iterator(grid),
     grid_(dynamic_cast<const grid::ReducedGlobal&>(grid)),
     latitudes_(grid_.latitudes()),
     niacc_(grid_.niacc()),

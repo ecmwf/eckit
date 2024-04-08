@@ -223,7 +223,7 @@ public:
     explicit NestedIterator(const HEALPix& grid, size_t index = 0) :
         points_(grid.to_points()), index_(index), index_size_(grid.size()) {}
 
-    explicit NestedIterator() :
+    NestedIterator() :
         index_(std::numeric_limits<size_t>::max()), index_size_(std::numeric_limits<size_t>::max()) {}
 
 private:
@@ -257,15 +257,12 @@ private:
 }  // unnamed namespace
 
 
-static Ordering ordering_from_string(const std::string& str) {
-    return str == "ring"     ? Ordering::healpix_ring
-           : str == "nested" ? Ordering::healpix_nested
-                             : throw AssertionFailed("HEALPix: supported orderings: ring, nested", Here());
-}
-
-
 HEALPix::HEALPix(const Spec& spec) :
-    HEALPix(spec.get_unsigned("Nside"), ordering_from_string(spec.get_string("ordering", "ring"))) {}
+    HEALPix(spec.get_unsigned("Nside"), [](const std::string& str) {
+        return str == "ring"     ? Ordering::healpix_ring
+               : str == "nested" ? Ordering::healpix_nested
+                                 : throw AssertionFailed("HEALPix: supported orderings: ring, nested", Here());
+    }(spec.get_string("ordering", "ring"))) {}
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) :
@@ -288,25 +285,14 @@ Renumber HEALPix::reorder(Ordering ordering) const {
         return Grid::no_reorder(size());
     }
 
-    if (ordering == Ordering::healpix_ring) {
-        const Reorder reorder(static_cast<int>(Nside_));
-        Renumber ren(size());
-        for (int i = 0, N = static_cast<int>(size()); i < N; ++i) {
-            ren[i] = reorder.nest_to_ring(i);
-        }
-        return ren;
-    }
+    const Reorder reorder(static_cast<int>(Nside_));
+    const auto N = static_cast<int>(size());
 
-    if (ordering == Ordering::healpix_nested) {
-        const Reorder reorder(static_cast<int>(Nside_));
-        Renumber ren(size());
-        for (int i = 0, N = static_cast<int>(size()); i < N; ++i) {
-            ren[i] = reorder.ring_to_nest(i);
-        }
-        return ren;
+    Renumber ren(N);
+    for (int i = 0; i < N; ++i) {
+        ren[i] = ordering == Ordering::healpix_ring ? reorder.nest_to_ring(i) : reorder.ring_to_nest(i);
     }
-
-    throw AssertionFailed("HEALPix: supported orderings: ring, nested", Here());
+    return ren;
 }
 
 
@@ -356,8 +342,6 @@ std::vector<Point> HEALPix::to_points() const {
     if (ordering_ == Ordering::healpix_ring) {
         return points;
     }
-
-    ASSERT(ordering_ == Ordering::healpix_nested);
 
     std::vector<Point> points_nested;
     points_nested.reserve(size());

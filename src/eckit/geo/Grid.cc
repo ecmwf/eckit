@@ -12,6 +12,7 @@
 
 #include "eckit/geo/Grid.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <ostream>
@@ -80,17 +81,24 @@ std::vector<Point> Grid::to_points() const {
     std::vector<Point> points;
     points.reserve(size());
 
-    for (const auto& p : *this) {
-        const auto& q = std::get<PointLonLat>(p);
-        points.push_back(p);
-    }
+    std::for_each(cbegin(), cend(), [&points](const auto& p) { points.emplace_back(p); });
 
     return points;
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> Grid::to_latlon() const {
-    throw NotImplemented("Grid::to_latlon");
+std::pair<std::vector<double>, std::vector<double> > Grid::to_latlon() const {
+    std::pair<std::vector<double>, std::vector<double> > ll;
+    ll.first.reserve(size());
+    ll.second.reserve(size());
+
+    std::for_each(cbegin(), cend(), [&ll](const auto& p) {
+        auto q = std::get<PointLonLat>(p);
+        ll.first.emplace_back(q.lat);
+        ll.second.emplace_back(q.lon);
+    });
+
+    return ll;
 }
 
 

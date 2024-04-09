@@ -361,12 +361,13 @@ CASE("spec") {
 
 
     SECTION("grid: ORCA") {
+        Grid::uid_t uid = "d5bde4f52ff3a9bea5629cd9ac514410";
+
         std::unique_ptr<const Grid> o1(GridFactory::build(spec::Custom({{"grid", "ORCA2_T"}})));
 
-        EXPECT(o1->spec() == R"({"grid":"d5bde4f52ff3a9bea5629cd9ac514410"})");
+        EXPECT(o1->spec() == R"({"uid":")" + uid + R"("})");
 
-        std::unique_ptr<const Grid> o2(
-            GridFactory::build(spec::Custom({{"grid", "d5bde4f52ff3a9bea5629cd9ac514410"}})));
+        std::unique_ptr<const Grid> o2(GridFactory::build(spec::Custom({{"uid", uid}})));
 
         EXPECT(o1->spec() == o2->spec());
     }

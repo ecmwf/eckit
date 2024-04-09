@@ -35,6 +35,12 @@ foreach(_test
 endforeach()
 
 ecbuild_add_test(
+    TARGET    eckit_test_geo_grid_orca
+    SOURCES   grid_orca.cc
+    LIBS      eckit_geo
+    CONDITION eckit_HAVE_ECKIT_CODEC )
+
+ecbuild_add_test(
     TARGET  eckit_test_geo_tool_grid_spec_1_1
     COMMAND eckit_grid_spec ARGS "grid: 1/1.0" [=[--check=[{]"grid":\[1,1\][}]]=] )
 

@@ -12,6 +12,8 @@
 
 #include "eckit/geo/grid/unstructured/ORCA.h"
 
+#include <memory>
+
 #include "eckit/codec/codec.h"
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
@@ -145,6 +147,15 @@ ORCA::ORCA(const Spec& spec) :
         spec)) {}
 
 
+ORCA::ORCA(uid_t uid) :
+    ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom(spec::Custom::container_type{{"uid", uid}})))) {}
+
+
+std::string ORCA::arrangement() const {
+    return arrangement_to_string(arrangement_);
+}
+
+
 Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     MD5 hash;
     hash.add(arrangement_to_string(arrangement));
@@ -261,18 +272,49 @@ size_t ORCA::ORCARecord::write(const PathName& p, const std::string& compression
 
 
 Grid::iterator ORCA::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0)};
+    return iterator{new geo::iterator::Unstructured(*this, 0, record_.longitudes_, record_.latitudes_)};
 }
 
 
 Grid::iterator ORCA::cend() const {
-    return iterator{new geo::iterator::Unstructured(*this, size())};
+    return iterator{new geo::iterator::Unstructured(*this)};
 }
 
 
 area::BoundingBox ORCA::boundingBox() const {
     static const auto __bbox(area::BoundingBox::make_global_prime());
     return __bbox;
+}
+
+
+Grid::uid_t ORCA::calculate_uid() const {
+    MD5 hash(arrangement_to_string(arrangement_));
+
+    if (const auto len = static_cast<long>(size() * sizeof(double)); eckit_LITTLE_ENDIAN) {
+        hash.add(record_.latitudes_.data(), len);
+        hash.add(record_.longitudes_.data(), len);
+    }
+    else {
+        auto ll = to_latlon();
+        byteswap(ll.first.data(), size());
+        byteswap(ll.second.data(), size());
+
+        hash.add(ll.first.data(), len);
+        hash.add(ll.second.data(), len);
+    }
+
+    return hash;
+}
+
+
+std::vector<Point> ORCA::to_points() const {
+    std::vector<Point> p;
+    p.reserve(size());
+
+    for (size_t i = 0; i < size(); ++i) {
+        p.emplace_back(PointLonLat{record_.longitudes_[i], record_.latitudes_[i]});
+    }
+    return p;
 }
 
 
@@ -287,7 +329,7 @@ Spec* ORCA::spec(const std::string& name) {
 
 
 void ORCA::spec(spec::Custom& custom) const {
-    custom.set("grid", uid_);
+    custom.set("uid", uid_);
 }
 
 

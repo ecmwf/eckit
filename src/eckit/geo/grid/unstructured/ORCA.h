@@ -69,6 +69,7 @@ public:
     // -- Constructors
 
     explicit ORCA(const Spec&);
+    explicit ORCA(uid_t);
 
     // -- Destructor
     // None
@@ -84,6 +85,11 @@ public:
     size_t ni() const { return record_.ni(); }
     size_t nj() const { return record_.nj(); }
 
+    std::string name() const { return name_; }
+    std::string arrangement() const;
+
+    uid_t calculate_uid() const;
+
     // -- Overridden methods
 
     iterator cbegin() const override;
@@ -98,10 +104,8 @@ public:
     bool includesSouthPole() const override { return true; }  // FIXME: not sure this is semanticaly correct
     bool isPeriodicWestEast() const override { return true; }
 
+    std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
-
-    const std::vector<double>& longitudes() const override { return record_.longitudes_; }
-    const std::vector<double>& latitudes() const override { return record_.latitudes_; }
 
     // -- Class members
     // None

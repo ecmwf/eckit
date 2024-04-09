@@ -46,8 +46,8 @@ bool Unstructured::operator++() {
 }
 
 
-bool Unstructured::operator+=(diff_t d) {
-    if (auto di = static_cast<diff_t>(index_); 0 <= di + d && di + d < static_cast<diff_t>(index_size_)) {
+bool Unstructured::operator+=(difference_type d) {
+    if (auto di = static_cast<difference_type>(index_); 0 <= di + d && di + d < static_cast<difference_type>(index_size_)) {
         index_ = static_cast<size_t>(di + d);
         return true;
     }

@@ -59,7 +59,7 @@ public:
             ASSERT(unique_ptr::operator bool());
         }
 
-        using diff_t = unique_ptr::element_type::diff_t;
+        using difference_type = unique_ptr::element_type::difference_type;
 
         Iterator(const Iterator&) = delete;
         Iterator(Iterator&&)      = delete;
@@ -73,10 +73,10 @@ public:
         bool operator!=(const Iterator& other) const { return get()->operator!=(*(other.get())); }
 
         bool operator++() { return get()->operator++(); }
-        bool operator+=(diff_t d) { return get()->operator+=(d); }
+        bool operator+=(difference_type d) { return get()->operator+=(d); }
 
         bool operator--() { return get()->operator--(); }
-        bool operator-=(diff_t d) { return get()->operator-=(d); }
+        bool operator-=(difference_type d) { return get()->operator-=(d); }
 
         explicit operator bool() const { return get()->operator bool(); }
         Point operator*() const { return get()->operator*(); }

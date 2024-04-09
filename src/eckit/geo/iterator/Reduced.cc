@@ -57,8 +57,9 @@ bool Reduced::operator++() {
 }
 
 
-bool Reduced::operator+=(diff_t d) {
-    if (auto di = static_cast<diff_t>(index_); 0 <= di + d && di + d < static_cast<diff_t>(index_size_)) {
+bool Reduced::operator+=(difference_type d) {
+    if (auto di = static_cast<difference_type>(index_);
+        0 <= di + d && di + d < static_cast<difference_type>(index_size_)) {
         if (index_ = static_cast<size_t>(di + d); !(niacc_[j_] <= index_ && index_ < niacc_[j_ + 1])) {
             longitudes_j_ = grid_.longitudes(j_ = j(index_));
         }

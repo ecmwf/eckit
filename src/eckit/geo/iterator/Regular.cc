@@ -55,7 +55,7 @@ bool Regular::operator++() {
 }
 
 
-bool Regular::operator+=(diff_t d) {
+bool Regular::operator+=(difference_type d) {
     NOTIMP;
 }
 

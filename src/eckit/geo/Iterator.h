@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <type_traits>
+#include <cstddef>
 
 #include "eckit/geo/Point.h"
 
@@ -29,7 +29,7 @@ class Iterator {
 public:
     // -- Types
 
-    using diff_t = std::make_signed<size_t>::type;
+    using difference_type = std::ptrdiff_t;
 
     // -- Exceptions
     // None
@@ -54,11 +54,11 @@ public:
     virtual bool operator==(const Iterator&) const = 0;
     bool operator!=(const Iterator& other) const { return !operator==(other); }
 
-    virtual bool operator++()       = 0;
-    virtual bool operator+=(diff_t) = 0;
+    virtual bool operator++()                = 0;
+    virtual bool operator+=(difference_type) = 0;
 
     virtual bool operator--() { return operator-=(1); }
-    virtual bool operator-=(diff_t diff) { return operator+=(-diff); }
+    virtual bool operator-=(difference_type diff) { return operator+=(-diff); }
 
     virtual explicit operator bool() const = 0;
     virtual Point operator*() const        = 0;

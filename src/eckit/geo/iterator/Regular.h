@@ -76,7 +76,7 @@ private:
 
     bool operator==(const Iterator&) const override;
     bool operator++() override;
-    bool operator+=(diff_t) override;
+    bool operator+=(difference_type) override;
     explicit operator bool() const override;
     Point operator*() const override;
 

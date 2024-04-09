@@ -12,6 +12,9 @@
 
 #include "eckit/geo/iterator/Unstructured.h"
 
+#include <utility>
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/Unstructured.h"
 
@@ -19,15 +22,71 @@
 namespace eckit::geo::iterator {
 
 
-Unstructured::Unstructured(const Grid& grid, size_t index) :
-    index_(index),
-    index_size_(grid.size()),
-    longitudes_(dynamic_cast<const grid::Unstructured&>(grid).longitudes()),
-    latitudes_(dynamic_cast<const grid::Unstructured&>(grid).latitudes()),
-    uid_(dynamic_cast<const grid::Unstructured&>(grid).uid()) {
-    ASSERT(index_size_ == longitudes_.size());
-    ASSERT(index_size_ == latitudes_.size());
+namespace {
+
+
+struct LonLatReference : Unstructured::Container {
+    explicit LonLatReference(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
+        longitudes(longitudes), latitudes(latitudes) {
+        ASSERT(longitudes.size() == latitudes.size());
+    }
+
+    Point get(size_t index) const override { return PointLonLat{longitudes.at(index), latitudes.at(index)}; }
+    size_t size() const override { return longitudes.size(); }
+
+    const std::vector<double>& longitudes;
+    const std::vector<double>& latitudes;
+};
+
+
+struct PointsReference : Unstructured::Container {
+    explicit PointsReference(const std::vector<Point>& points) :
+        points(points) {}
+
+    Point get(size_t index) const override { return points.at(index); }
+    size_t size() const override { return points.size(); }
+
+    const std::vector<Point>& points;
+};
+
+
+struct PointsMove : Unstructured::Container {
+    explicit PointsMove(std::vector<Point>&& points) :
+        points(points) {}
+
+    Point get(size_t index) const override { return points.at(index); }
+    size_t size() const override { return points.size(); }
+
+    const std::vector<Point> points;
+};
+
+
+}  // namespace
+
+
+Unstructured::Unstructured(const Grid& grid,
+                           size_t index,
+                           const std::vector<double>& longitudes,
+                           const std::vector<double>& latitudes) :
+    container_(new LonLatReference(longitudes, latitudes)), index_(index), size_(container_->size()), uid_(grid.uid()) {
+    ASSERT(container_->size() == grid.size());
 }
+
+
+Unstructured::Unstructured(const Grid& grid, size_t index, const std::vector<Point>& points) :
+    container_(new PointsReference(points)), index_(index), size_(container_->size()), uid_(grid.uid()) {
+    ASSERT(container_->size() == grid.size());
+}
+
+
+Unstructured::Unstructured(const Grid& grid, size_t index, std::vector<Point>&& points) :
+    container_(new PointsMove(std::move(points))), index_(index), size_(container_->size()), uid_(grid.uid()) {
+    ASSERT(container_->size() == grid.size());
+}
+
+
+Unstructured::Unstructured(const Grid& grid) :
+    index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
 
 
 bool Unstructured::operator==(const geo::Iterator& other) const {
@@ -37,33 +96,34 @@ bool Unstructured::operator==(const geo::Iterator& other) const {
 
 
 bool Unstructured::operator++() {
-    if (index_++; index_ < index_size_) {
+    if (index_++; index_ < size_) {
         return true;
     }
 
-    index_ = index_size_;  // ensure it's invalid
+    index_ = size_;  // ensure it's invalid
     return false;
 }
 
 
 bool Unstructured::operator+=(difference_type d) {
-    if (auto di = static_cast<difference_type>(index_); 0 <= di + d && di + d < static_cast<difference_type>(index_size_)) {
+    if (auto di = static_cast<difference_type>(index_); 0 <= di + d && di + d < static_cast<difference_type>(size_)) {
         index_ = static_cast<size_t>(di + d);
         return true;
     }
 
-    index_ = index_size_;  // ensure it's invalid
+    index_ = size_;  // ensure it's invalid
     return false;
 }
 
 
 Unstructured::operator bool() const {
-    return index_ < index_size_;
+    return index_ < size_;
 }
 
 
 Point Unstructured::operator*() const {
-    return PointLonLat{longitudes_.at(index_), latitudes_.at(index_)};
+    ASSERT(container_);
+    return container_->get(index_);
 }
 
 

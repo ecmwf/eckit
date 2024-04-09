@@ -16,10 +16,10 @@
 #include <bitset>
 #include <cmath>
 #include <cstdint>
-#include <limits>
 #include <tuple>
 
 #include "eckit/geo/iterator/Reduced.h"
+#include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/utils/Translator.h"
@@ -218,42 +218,6 @@ private:
 };
 
 
-class NestedIterator final : public geo::Iterator {
-public:
-    explicit NestedIterator(const HEALPix& grid, size_t index = 0) :
-        points_(grid.to_points()), index_(index), index_size_(grid.size()) {}
-
-    NestedIterator() :
-        index_(std::numeric_limits<size_t>::max()), index_size_(std::numeric_limits<size_t>::max()) {}
-
-private:
-    const std::vector<Point> points_;
-
-    size_t index_;
-    const size_t index_size_;
-
-    bool operator==(const Iterator& other) const override {
-        const auto* another = dynamic_cast<const NestedIterator*>(&other);
-        return another != nullptr && (operator bool() ? index_ == another->index_ : !another->operator bool());
-    }
-
-    bool operator++() override {
-        index_++;
-        return index_ < index_size_;
-    }
-
-    bool operator+=(diff_t d) override {
-        index_ += d;
-        return index_ < index_size_;
-    }
-
-    explicit operator bool() const override { return index_ < index_size_; }
-    Point operator*() const override { return points_.at(index_); }
-
-    size_t index() const override { return index_; }
-};
-
-
 }  // unnamed namespace
 
 
@@ -297,14 +261,14 @@ Renumber HEALPix::reorder(Ordering ordering) const {
 
 
 Grid::iterator HEALPix::cbegin() const {
-    return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this)}
-                                               : iterator{new NestedIterator(*this)};
+    return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this, 0)}
+                                               : iterator{new geo::iterator::Unstructured(*this, 0, to_points())};
 }
 
 
 Grid::iterator HEALPix::cend() const {
     return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this, size())}
-                                               : iterator{new NestedIterator()};
+                                               : iterator{new geo::iterator::Unstructured(*this)};
 }
 
 

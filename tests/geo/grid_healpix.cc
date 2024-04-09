@@ -21,7 +21,7 @@
 namespace eckit::geo::test {
 
 
-CASE("HEALPIX") {
+CASE("HEALPix") {
     using grid::reducedglobal::HEALPix;
 
 

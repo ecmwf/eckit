@@ -12,8 +12,6 @@
 
 #include "eckit/geo/grid/Regular.h"
 
-// #include <>
-
 
 namespace eckit::geo::grid {
 

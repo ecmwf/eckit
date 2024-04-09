@@ -24,6 +24,7 @@
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/utils/MD5.h"
 
 
 namespace eckit::geo {
@@ -58,7 +59,7 @@ size_t Grid::size() const {
 
 
 Grid::uid_t Grid::uid() const {
-    throw NotImplemented("Grid::uid", Here());
+    return MD5(spec());
 }
 
 

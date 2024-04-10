@@ -12,20 +12,8 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
-#include "eckit/geo/iterator/Unstructured.h"
-
 
 namespace eckit::geo::grid {
-
-
-Grid::iterator Unstructured::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this)};
-}
-
-
-Grid::iterator Unstructured::cend() const {
-    return iterator{new geo::iterator::Unstructured(*this, size())};
-}
 
 
 Unstructured::Unstructured(const Spec& spec) :

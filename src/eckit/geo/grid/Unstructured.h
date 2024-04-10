@@ -24,80 +24,11 @@ namespace eckit::geo::grid {
 
 
 class Unstructured : public Grid {
-public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
-    // -- Constructors
-    // None
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-
-    iterator cbegin() const override;
-    iterator cend() const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 protected:
-    // -- Constructors
-
     explicit Unstructured(const Spec&);
     explicit Unstructured(const area::BoundingBox&);
 
-    // -- Members
-    // None
-
-    // -- Methods
-
-    virtual const std::vector<double>& longitudes() const = 0;
-    virtual const std::vector<double>& latitudes() const  = 0;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-
     friend class geo::iterator::Unstructured;
 };
 

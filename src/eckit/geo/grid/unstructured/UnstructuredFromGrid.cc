@@ -20,54 +20,17 @@
 namespace eckit::geo::grid::unstructured {
 
 
-namespace {
-
-
-std::vector<double> points_lat(const std::vector<Point>& points) {
-    std::vector<double> l(points.size());
-    std::transform(points.begin(), points.end(), l.begin(), [](const Point& p) {
-        return std::get<PointLonLat>(p).lat;
-    });
-    return l;
-}
-
-
-std::vector<double> points_lon(const std::vector<Point>& points) {
-    std::vector<double> l(points.size());
-    std::transform(points.begin(), points.end(), l.begin(), [](const Point& p) {
-        return std::get<PointLonLat>(p).lon;
-    });
-    return l;
-}
-
-
-}  // namespace
-
-
-UnstructuredFromGrid::UnstructuredFromGrid(const std::vector<Point>& points) :
-    Unstructured(area::BoundingBox::make_global_prime()),
-    latitudes_(points_lat(points)),
-    longitudes_(points_lon(points)) {
-    ASSERT(size() > 0);
-}
+UnstructuredFromGrid::UnstructuredFromGrid(std::vector<Point>&& points) :
+    Unstructured(area::BoundingBox::make_global_prime()), points_(points) {}
 
 
 Grid::iterator UnstructuredFromGrid::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0)};
+    return iterator{new geo::iterator::Unstructured(*this, 0, points_)};
 }
 
 
 Grid::iterator UnstructuredFromGrid::cend() const {
-    return iterator{new geo::iterator::Unstructured(*this, size())};
-}
-
-
-std::vector<Point> UnstructuredFromGrid::to_points() const {
-    std::vector<Point> p;
-    for (size_t i = 0; i < size(); ++i) {
-        p[i] = PointLonLat{longitudes_[i], latitudes_[i]};
-    }
-    return p;
+    return iterator{new geo::iterator::Unstructured(*this)};
 }
 
 

@@ -13,7 +13,6 @@
 #pragma once
 
 #include <cstddef>
-#include <cstdint>
 
 #include "eckit/geo/grid/Unstructured.h"
 
@@ -36,7 +35,7 @@ public:
 
     // -- Constructors
 
-    explicit UnstructuredFromGrid(const std::vector<Point>&);
+    explicit UnstructuredFromGrid(std::vector<Point>&&);
 
     // -- Destructor
     // None
@@ -55,18 +54,14 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t size() const override { return latitudes_.size(); }
+    size_t size() const override { return points_.size(); }
     uid_t uid() const override;
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }
 
-    std::vector<Point> to_points() const override;
-    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override { return {latitudes_, longitudes_}; }
-
-    const std::vector<double>& longitudes() const override { return longitudes_; }
-    const std::vector<double>& latitudes() const override { return latitudes_; }
+    std::vector<Point> to_points() const override { return points_; }
 
     // -- Class members
     // None
@@ -78,8 +73,7 @@ public:
 private:
     // -- Members
 
-    mutable std::vector<double> latitudes_;
-    mutable std::vector<double> longitudes_;
+    const std::vector<Point> points_;
 
     // -- Methods
     // None

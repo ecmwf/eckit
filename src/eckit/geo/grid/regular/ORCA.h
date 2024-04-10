@@ -16,7 +16,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#include "eckit/geo/grid/Unstructured.h"
+#include "eckit/geo/grid/Regular.h"
 
 
 namespace eckit {
@@ -24,10 +24,10 @@ class PathName;
 }
 
 
-namespace eckit::geo::grid::unstructured {
+namespace eckit::geo::grid::regular {
 
 
-class ORCA final : public Unstructured {
+class ORCA final : public Regular {
 public:
     // -- Types
 
@@ -82,8 +82,8 @@ public:
 
     // -- Methods
 
-    size_t ni() const { return record_.ni(); }
-    size_t nj() const { return record_.nj(); }
+    size_t ni() const override { return record_.ni(); }
+    size_t nj() const override { return record_.nj(); }
 
     std::string name() const { return name_; }
     std::string arrangement() const;
@@ -97,7 +97,6 @@ public:
 
     area::BoundingBox boundingBox() const override;
 
-    size_t size() const override { return ni() * nj(); }
     uid_t uid() const override { return uid_; }
 
     bool includesNorthPole() const override { return true; }
@@ -106,6 +105,9 @@ public:
 
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+
+    const std::vector<double>& longitudes() const override { return record_.longitudes_; }
+    const std::vector<double>& latitudes() const override { return record_.latitudes_; }
 
     // -- Class members
     // None
@@ -140,4 +142,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::unstructured
+}  // namespace eckit::geo::grid::regular

@@ -145,7 +145,7 @@ if(eckit_HAVE_PROJ)
 endif()
 
 if(eckit_HAVE_ECKIT_CODEC)
-    list(APPEND eckit_geo_srcs grid/unstructured/ORCA.cc grid/unstructured/ORCA.h)
+    list(APPEND eckit_geo_srcs grid/regular/ORCA.cc grid/regular/ORCA.h)
     list(APPEND eckit_geo_libs eckit_codec)
 endif()
 

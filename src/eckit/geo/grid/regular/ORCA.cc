@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/unstructured/ORCA.h"
+#include "eckit/geo/grid/regular/ORCA.h"
 
 #include <memory>
 
@@ -37,7 +37,7 @@
 #endif
 
 
-namespace eckit::geo::grid::unstructured {
+namespace eckit::geo::grid::regular {
 
 
 namespace {
@@ -137,7 +137,7 @@ const ORCA::ORCARecord& orca_record(const PathName& p, const Spec& spec) {
 
 
 ORCA::ORCA(const Spec& spec) :
-    Unstructured(spec),
+    Regular(spec),
     name_(spec.get_string("orca_name")),
     uid_(spec.get_string("orca_uid")),
     arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
@@ -337,4 +337,4 @@ static const GridRegisterType<ORCA> __grid_type("ORCA");
 static const GridRegisterName<ORCA> __grid_pattern(GridRegisterName<ORCA>::uid_pattern);
 
 
-}  // namespace eckit::geo::grid::unstructured
+}  // namespace eckit::geo::grid::regular

@@ -365,7 +365,7 @@ CASE("spec") {
 
         std::unique_ptr<const Grid> o1(GridFactory::build(spec::Custom({{"grid", "ORCA2_T"}})));
 
-        EXPECT(o1->spec() == R"({"uid":")" + uid + R"("})");
+        EXPECT(o1->spec() == R"({"type":"ORCA","uid":")" + uid + R"("})");
 
         std::unique_ptr<const Grid> o2(GridFactory::build(spec::Custom({{"uid", uid}})));
 

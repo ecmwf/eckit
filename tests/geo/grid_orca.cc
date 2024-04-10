@@ -51,7 +51,7 @@ CASE("ORCA") {
 
         EXPECT(grid3.uid() == uid);
         EXPECT(grid3.calculate_uid() == uid);
-        EXPECT(static_cast<const Grid&>(grid3).spec() == R"({"uid":")" + uid + R"("})");
+        EXPECT(static_cast<const Grid&>(grid3).spec() == R"({"type":"ORCA","uid":")" + uid + R"("})");
 
         EXPECT(grid1->spec() == grid2->spec());
     }
@@ -60,11 +60,13 @@ CASE("ORCA") {
     SECTION("equals") {
         std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + uid + "}"));
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", uid}})));
-        ORCA grid3(uid);
+        std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", uid}})));
+        ORCA grid4(uid);
 
         EXPECT(*grid1 == *grid2);
-        EXPECT(*grid2 == grid3);
-        EXPECT(grid3 == *grid1);
+        EXPECT(*grid2 == *grid3);
+        EXPECT(*grid3 == grid4);
+        EXPECT(grid4 == *grid1);
     }
 }
 

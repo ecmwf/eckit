@@ -39,8 +39,10 @@ std::vector<PathName> LibEcKitGeo::etcGrid() {
     static const auto paths = [](const std::string& s) -> std::vector<PathName> {
         const auto ss = StringTools::split(":", s);
         return {ss.begin(), ss.end()};
-    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-grid;$ECKIT_GEO_GRID", "~eckit/etc/eckit/geo/grid.yaml")};
-    return path;
+    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-grid;$ECKIT_GEO_GRID",
+                                                       "~eckit/etc/eckit/geo/grid.yaml:"
+                                                       "~eckit/etc/eckit/geo/ORCA.yaml:"));
+    return paths;
 }
 
 

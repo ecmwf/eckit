@@ -12,16 +12,42 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/spec/Custom.h"
+
 
 namespace eckit::geo::grid {
 
 
-Unstructured::Unstructured(const Spec& spec) :
-    Grid(spec) {}
+Unstructured::Unstructured(std::vector<Point>&& points) :
+    Grid(area::BoundingBox::make_global_prime()), points_(points) {}
 
 
-Unstructured::Unstructured(const area::BoundingBox& bbox) :
-    Grid(bbox) {}
+Grid::iterator Unstructured::cbegin() const {
+    return iterator{new geo::iterator::Unstructured(*this, 0, points_)};
+}
+
+
+Grid::iterator Unstructured::cend() const {
+    return iterator{new geo::iterator::Unstructured(*this)};
+}
+
+
+Spec* Unstructured::spec(const std::string& name) {
+    return SpecByUID::instance().get(name).spec();
+}
+
+
+void Unstructured::spec(spec::Custom& custom) const {
+    custom.set("type", "unstructured");
+    custom.set("uid", uid());
+}
+
+
+Grid::uid_t Unstructured::uid() const {
+    NOTIMP;
+}
 
 
 }  // namespace eckit::geo::grid

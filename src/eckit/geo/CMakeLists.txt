@@ -77,8 +77,6 @@ list(APPEND eckit_geo_srcs
     grid/regular/RegularLL.h
     grid/regular/XYToLonLat.cc
     grid/regular/XYToLonLat.h
-    grid/unstructured/UnstructuredFromGrid.cc
-    grid/unstructured/UnstructuredFromGrid.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include "eckit/geo/Grid.h"
 
 
@@ -23,12 +25,71 @@ class Unstructured;
 namespace eckit::geo::grid {
 
 
-class Unstructured : public Grid {
-protected:
-    explicit Unstructured(const Spec&);
-    explicit Unstructured(const area::BoundingBox&);
+class Unstructured final : public Grid {
+public:
+    // -- Types
+    // None
+
+    // -- Exceptions
+    // None
+
+    // -- Constructors
+
+    explicit Unstructured(std::vector<Point>&&);
+
+    // -- Destructor
+    // None
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+
+    iterator cbegin() const override;
+    iterator cend() const override;
+
+    size_t size() const override { return points_.size(); }
+    uid_t uid() const override;
+
+    bool includesNorthPole() const override { return true; }
+    bool includesSouthPole() const override { return true; }
+    bool isPeriodicWestEast() const override { return true; }
+
+    std::vector<Point> to_points() const override { return points_; }
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+
+    static Spec* spec(const std::string& name);
 
 private:
+    // -- Members
+
+    const std::vector<Point> points_;
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+
+    void spec(spec::Custom&) const override;
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+
     friend class geo::iterator::Unstructured;
 };
 

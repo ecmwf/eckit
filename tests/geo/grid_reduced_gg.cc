@@ -12,8 +12,7 @@
 
 #include <memory>
 
-#include "eckit/geo/Grid.h"
-#include "eckit/geo/grid/reduced-global/ReducedGaussian.h"
+#include "eckit/geo/grid/ReducedGaussian.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
@@ -23,9 +22,6 @@ namespace eckit::geo::test {
 
 
 CASE("ReducedGaussianOctahedral") {
-    using grid::reducedglobal::ReducedGaussian;
-
-
     SECTION("gridspec") {
         // different ways to instantiate the same grid (O2)
         for (auto spec : {
@@ -60,7 +56,7 @@ CASE("ReducedGaussianOctahedral") {
                 GridFactory::build(spec::Custom({{"grid", "o" + std::to_string(test.N)}})));
             std::unique_ptr<const Grid> grid2(
                 GridFactory::build(spec::Custom({{"type", "reduced_gg"}, {"N", test.N}})));
-            ReducedGaussian grid3(test.N);
+            grid::ReducedGaussian grid3(test.N);
 
             EXPECT(grid1->size() == test.size);
             EXPECT(grid2->size() == test.size);
@@ -70,7 +66,7 @@ CASE("ReducedGaussianOctahedral") {
 
 
     SECTION("points") {
-        ReducedGaussian grid(1);
+        grid::ReducedGaussian grid(1);
 
         const std::vector<PointLonLat> ref{
             {0., 35.264389683},    {18., 35.264389683},   {36., 35.264389683},   {54., 35.264389683},
@@ -167,8 +163,8 @@ CASE("ReducedGaussianOctahedral") {
     SECTION("equals") {
         std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "o3"}})));
         std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("N: 3"));
-        std::unique_ptr<const Grid> grid3(new ReducedGaussian(3));
-        std::unique_ptr<const Grid> grid4(new ReducedGaussian(pl_type{20, 24, 28, 28, 24, 20}));
+        std::unique_ptr<const Grid> grid3(new grid::ReducedGaussian(3));
+        std::unique_ptr<const Grid> grid4(new grid::ReducedGaussian(pl_type{20, 24, 28, 28, 24, 20}));
 
         EXPECT(*grid1 == *grid2);
         EXPECT(*grid2 == *grid3);

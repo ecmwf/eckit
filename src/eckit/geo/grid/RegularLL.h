@@ -12,16 +12,20 @@
 
 #pragma once
 
-#include <memory>
-
-#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/range/RegularLatitude.h"
+#include "eckit/geo/range/RegularLongitude.h"
 
 
-namespace eckit::geo::grid::regular {
+namespace eckit::geo {
+class Increments;
+}  // namespace eckit::geo
 
 
-class RegularGaussian final : public Regular {
+namespace eckit::geo::grid {
+
+
+class RegularLL final : public Regular {
 public:
     // -- Types
     // None
@@ -31,8 +35,9 @@ public:
 
     // -- Constructors
 
-    explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
+    explicit RegularLL(const Spec&);
+    explicit RegularLL(const Increments&, const area::BoundingBox& = {});
+    RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
 
     // -- Destructor
     // None
@@ -51,8 +56,8 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override { return x_->size(); }
-    size_t nj() const override { return y_->size(); }
+    size_t ni() const override { return lon_.size(); }
+    size_t nj() const override { return lat_.size(); }
 
     // -- Class members
     // None
@@ -64,22 +69,18 @@ public:
 private:
     // -- Members
 
-    const size_t N_;
-
-    std::unique_ptr<Range> x_;
-    std::unique_ptr<Range> y_;
+    const range::RegularLongitude lon_;
+    const range::RegularLatitude lat_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    const std::vector<double>& longitudes() const override;
-    const std::vector<double>& latitudes() const override;
+    const std::vector<double>& longitudes() const override { return lon_.values(); }
+    const std::vector<double>& latitudes() const override { return lat_.values(); }
 
     void spec(spec::Custom&) const override;
-
-    Grid* make_grid_cropped(const area::BoundingBox&) const override;
 
     // -- Class members
     // None
@@ -92,4 +93,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::grid

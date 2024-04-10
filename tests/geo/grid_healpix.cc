@@ -12,8 +12,7 @@
 
 #include <memory>
 
-#include "eckit/geo/Grid.h"
-#include "eckit/geo/grid/reduced-global/HEALPix.h"
+#include "eckit/geo/grid/HEALPix.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -22,9 +21,6 @@ namespace eckit::geo::test {
 
 
 CASE("HEALPix") {
-    using grid::reducedglobal::HEALPix;
-
-
     SECTION("gridspec") {
         spec::Custom spec({{"grid", "h2"}});
         std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
@@ -47,7 +43,7 @@ CASE("HEALPix") {
                 GridFactory::build(spec::Custom({{"grid", "h" + std::to_string(test.N)}})));
             std::unique_ptr<const Grid> grid2(
                 GridFactory::build(spec::Custom({{"type", "HEALPix"}, {"Nside", test.N}})));
-            HEALPix grid3(test.N);
+            grid::HEALPix grid3(test.N);
 
             EXPECT(grid1->size() == test.size);
             EXPECT(grid2->size() == test.size);
@@ -58,12 +54,12 @@ CASE("HEALPix") {
 
     SECTION("points") {
 
-        std::unique_ptr<const Grid> ring(new HEALPix(2));
+        std::unique_ptr<const Grid> ring(new grid::HEALPix(2));
 
         EXPECT(ring->order() == Ordering::healpix_ring);
 
 
-        std::unique_ptr<const Grid> nested(new HEALPix(2, Ordering::healpix_nested));
+        std::unique_ptr<const Grid> nested(new grid::HEALPix(2, Ordering::healpix_nested));
 
         EXPECT(nested->order() == Ordering::healpix_nested);
 
@@ -169,7 +165,7 @@ CASE("HEALPix") {
     SECTION("equals") {
         std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "h2"}})));
         std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("{type: HEALPix, Nside: 2}"));
-        std::unique_ptr<const Grid> grid3(new HEALPix(2));
+        std::unique_ptr<const Grid> grid3(new grid::HEALPix(2));
 
         EXPECT(*grid1 == *grid2);
         EXPECT(*grid2 == *grid3);
@@ -177,7 +173,7 @@ CASE("HEALPix") {
 
         std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "h2"}, {"ordering", "nested"}})));
         std::unique_ptr<const Grid> grid5(GridFactory::make_from_string("{type: HEALPix, Nside: 2, ordering: nested}"));
-        std::unique_ptr<const Grid> grid6(new HEALPix(2, Ordering::healpix_nested));
+        std::unique_ptr<const Grid> grid6(new grid::HEALPix(2, Ordering::healpix_nested));
 
         EXPECT(*grid4 != *grid1);
 

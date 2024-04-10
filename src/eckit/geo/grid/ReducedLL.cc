@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/reduced-local/ReducedLL.h"
+#include "eckit/geo/grid/ReducedLL.h"
 
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/RegularLatitude.h"
@@ -18,7 +18,7 @@
 #include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::grid::reducedlocal {
+namespace eckit::geo::grid {
 
 
 ReducedLL::ReducedLL(const Spec& spec) :
@@ -74,4 +74,4 @@ void ReducedLL::spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::grid::reducedlocal
+}  // namespace eckit::geo::grid

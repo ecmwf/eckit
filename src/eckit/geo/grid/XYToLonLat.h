@@ -17,7 +17,7 @@
 #include "eckit/geo/grid/Regular.h"
 
 
-namespace eckit::geo::grid::regular {
+namespace eckit::geo::grid {
 
 
 class XYToLonLat : public Regular {
@@ -137,4 +137,4 @@ struct LambertAzimuthalEqualArea final : public XYToLonLat {
 };
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::grid

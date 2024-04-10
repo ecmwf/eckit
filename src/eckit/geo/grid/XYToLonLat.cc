@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/regular/XYToLonLat.h"
+#include "eckit/geo/grid/XYToLonLat.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Spec.h"
@@ -19,7 +19,7 @@
 #include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::grid::regular {
+namespace eckit::geo::grid {
 
 
 XYToLonLat::XYToLonLat(const Spec& spec) :
@@ -121,4 +121,4 @@ void LambertAzimuthalEqualArea::spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::grid

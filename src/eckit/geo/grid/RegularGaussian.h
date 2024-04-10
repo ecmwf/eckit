@@ -15,14 +15,13 @@
 #include <memory>
 
 #include "eckit/geo/Range.h"
-#include "eckit/geo/grid/ReducedLocal.h"
-#include "eckit/geo/util.h"
+#include "eckit/geo/grid/Regular.h"
 
 
-namespace eckit::geo::grid::reducedlocal {
+namespace eckit::geo::grid {
 
 
-class ReducedLL : public ReducedLocal {
+class RegularGaussian final : public Regular {
 public:
     // -- Types
     // None
@@ -32,8 +31,8 @@ public:
 
     // -- Constructors
 
-    explicit ReducedLL(const Spec&);
-    explicit ReducedLL(const pl_type&, const area::BoundingBox& = area::BoundingBox::make_global_prime());
+    explicit RegularGaussian(const Spec&);
+    explicit RegularGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
 
     // -- Destructor
     // None
@@ -52,19 +51,20 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni(size_t j) const override;
-    size_t nj() const override;
+    size_t ni() const override { return x_->size(); }
+    size_t nj() const override { return y_->size(); }
 
     // -- Class members
     // None
 
     // -- Class methods
-    // None
+
+    static Spec* spec(const std::string& name);
 
 private:
     // -- Members
 
-    const pl_type pl_;
+    const size_t N_;
 
     std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
@@ -74,10 +74,12 @@ private:
 
     // -- Overridden methods
 
+    const std::vector<double>& longitudes() const override;
     const std::vector<double>& latitudes() const override;
-    std::vector<double> longitudes(size_t j) const override;
 
     void spec(spec::Custom&) const override;
+
+    Grid* make_grid_cropped(const area::BoundingBox&) const override;
 
     // -- Class members
     // None
@@ -90,4 +92,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::reducedlocal
+}  // namespace eckit::geo::grid

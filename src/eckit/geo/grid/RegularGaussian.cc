@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/regular/RegularGaussian.h"
+#include "eckit/geo/grid/RegularGaussian.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
@@ -20,7 +20,7 @@
 #include "eckit/utils/Translator.h"
 
 
-namespace eckit::geo::grid::regular {
+namespace eckit::geo::grid {
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
@@ -82,4 +82,4 @@ static const GridRegisterType<RegularGaussian> __grid_type("regular_gg");
 static const GridRegisterName<RegularGaussian> __grid_pattern("[fF][1-9][0-9]*");
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::grid

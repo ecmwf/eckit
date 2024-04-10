@@ -12,13 +12,17 @@
 
 #pragma once
 
-#include "eckit/geo/grid/Regular.h"
+#include <memory>
+
+#include "eckit/geo/Range.h"
+#include "eckit/geo/grid/ReducedLocal.h"
+#include "eckit/geo/util.h"
 
 
-namespace eckit::geo::grid::regular {
+namespace eckit::geo::grid {
 
 
-class IrregularLL final : public Regular {
+class ReducedLL : public ReducedLocal {
 public:
     // -- Types
     // None
@@ -28,7 +32,8 @@ public:
 
     // -- Constructors
 
-    explicit IrregularLL(const Spec&);
+    explicit ReducedLL(const Spec&);
+    explicit ReducedLL(const pl_type&, const area::BoundingBox& = area::BoundingBox::make_global_prime());
 
     // -- Destructor
     // None
@@ -47,7 +52,7 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override;
+    size_t ni(size_t j) const override;
     size_t nj() const override;
 
     // -- Class members
@@ -58,15 +63,21 @@ public:
 
 private:
     // -- Members
-    // None
+
+    const pl_type pl_;
+
+    std::unique_ptr<Range> x_;
+    std::unique_ptr<Range> y_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
-    const std::vector<double>& longitudes() const override;
     const std::vector<double>& latitudes() const override;
+    std::vector<double> longitudes(size_t j) const override;
+
+    void spec(spec::Custom&) const override;
 
     // -- Class members
     // None
@@ -79,4 +90,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::grid

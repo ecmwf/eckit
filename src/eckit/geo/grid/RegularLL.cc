@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/regular/RegularLL.h"
+#include "eckit/geo/grid/RegularLL.h"
 
 #include <regex>
 
@@ -22,7 +22,7 @@
 #include "eckit/utils/Translator.h"
 
 
-namespace eckit::geo::grid::regular {
+namespace eckit::geo::grid {
 
 
 RegularLL::RegularLL(const Spec& spec) :
@@ -86,4 +86,4 @@ static const GridRegisterType<RegularLL> __grid_type("regular_ll");
 static const GridRegisterName<RegularLL> __grid_pattern(PATTERN);
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::grid

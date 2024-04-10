@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/reduced-global/HEALPix.h"
+#include "eckit/geo/grid/HEALPix.h"
 
 #include <algorithm>
 #include <bitset>
@@ -25,7 +25,7 @@
 #include "eckit/utils/Translator.h"
 
 
-namespace eckit::geo::grid::reducedglobal {
+namespace eckit::geo::grid {
 
 
 namespace {
@@ -383,4 +383,4 @@ static const GridRegisterType<HEALPix> __grid_type_2("healpix");
 static const GridRegisterName<HEALPix> __grid_pattern("[hH][1-9][0-9]*");
 
 
-}  // namespace eckit::geo::grid::reducedglobal
+}  // namespace eckit::geo::grid

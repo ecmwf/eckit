@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/grid/regular/RegularGaussian.h"
+#include "eckit/geo/grid/RegularGaussian.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
@@ -36,7 +36,7 @@ CASE("RegularGaussian") {
                 GridFactory::build(spec::Custom({{"grid", "f" + std::to_string(test.N)}})));
             std::unique_ptr<const Grid> grid2(
                 GridFactory::build(spec::Custom({{"type", "regular_gg"}, {"N", test.N}})));
-            grid::regular::RegularGaussian grid3(test.N);
+            grid::RegularGaussian grid3(test.N);
 
             EXPECT(grid1->size() == test.size);
             EXPECT(grid2->size() == test.size);
@@ -46,7 +46,7 @@ CASE("RegularGaussian") {
 
 
     SECTION("points") {
-        grid::regular::RegularGaussian grid(1);
+        grid::RegularGaussian grid(1);
 
         const std::vector<PointLonLat> ref{
             {0., 35.264389683},
@@ -160,7 +160,7 @@ CASE("RegularGaussian") {
 
     SECTION("equals") {
         std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "f3"}})));
-        std::unique_ptr<const Grid> grid2(new grid::regular::RegularGaussian(3));
+        std::unique_ptr<const Grid> grid2(new grid::RegularGaussian(3));
 
         EXPECT(*grid1 == *grid2);
     }

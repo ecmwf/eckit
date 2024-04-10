@@ -12,18 +12,13 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
-#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/ReducedGlobal.h"
-#include "eckit/geo/util.h"
 
 
-namespace eckit::geo::grid::reducedglobal {
+namespace eckit::geo::grid {
 
 
-class ReducedGaussian : public ReducedGlobal {
+class HEALPix final : public ReducedGlobal {
 public:
     // -- Types
     // None
@@ -33,9 +28,8 @@ public:
 
     // -- Constructors
 
-    explicit ReducedGaussian(const Spec&);
-    explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = area::BoundingBox::make_global_prime());
-    explicit ReducedGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
+    explicit HEALPix(const Spec&);
+    explicit HEALPix(size_t Nside, Ordering = Ordering::healpix_ring);
 
     // -- Destructor
     // None
@@ -47,7 +41,8 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    size_t Nside() const { return Nside_; }
 
     // -- Overridden methods
 
@@ -55,11 +50,19 @@ public:
     iterator cend() const override;
 
     size_t size() const override;
+
+    std::vector<Point> to_points() const override;
+
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
+    Ordering order() const override { return ordering_; }
+    Renumber reorder(Ordering) const override;
+    Grid* make_grid_reordered(Ordering ordering) const override { return new HEALPix(Nside_, ordering); }
+
     // -- Class members
-    // None
+
+    static Spec* spec(const std::string& name);
 
     // -- Class methods
     // None
@@ -67,25 +70,28 @@ public:
 private:
     // -- Members
 
-    const size_t N_;
-    const pl_type pl_;
-    size_t j_;
-    size_t Nj_;
+    const size_t Nside_;
+    const Ordering ordering_;
 
-    std::vector<std::unique_ptr<Range>> x_;
-    std::unique_ptr<Range> y_;
+    mutable std::vector<double> latitudes_;
 
     // -- Methods
     // None
 
     // -- Overridden methods
 
+    area::BoundingBox boundingBox() const override;
+
+    bool includesNorthPole() const override { return true; }
+    bool includesSouthPole() const override { return true; }
+    bool isPeriodicWestEast() const override { return true; }
+
+    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t j) const override;
 
     void spec(spec::Custom&) const override;
-
-    Grid* make_grid_cropped(const area::BoundingBox&) const override;
 
     // -- Class members
     // None
@@ -98,4 +104,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::reducedglobal
+}  // namespace eckit::geo::grid

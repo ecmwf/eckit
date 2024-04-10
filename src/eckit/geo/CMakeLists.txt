@@ -48,28 +48,26 @@ list(APPEND eckit_geo_srcs
     figure/OblateSpheroid.h
     figure/Sphere.cc
     figure/Sphere.h
+    grid/HEALPix.cc
+    grid/HEALPix.h
+    grid/ReducedGaussian.cc
+    grid/ReducedGaussian.h
     grid/ReducedGlobal.cc
     grid/ReducedGlobal.h
+    grid/ReducedLL.cc
+    grid/ReducedLL.h
     grid/ReducedLocal.cc
     grid/ReducedLocal.h
     grid/Regular.cc
     grid/Regular.h
+    grid/RegularGaussian.cc
+    grid/RegularGaussian.h
+    grid/RegularLL.cc
+    grid/RegularLL.h
     grid/Unstructured.cc
     grid/Unstructured.h
-    grid/reduced-global/HEALPix.cc
-    grid/reduced-global/HEALPix.h
-    grid/reduced-global/ReducedGaussian.cc
-    grid/reduced-global/ReducedGaussian.h
-    grid/reduced-local/ReducedLL.cc
-    grid/reduced-local/ReducedLL.h
-    grid/regular/IrregularLL.cc
-    grid/regular/IrregularLL.h
-    grid/regular/RegularGaussian.cc
-    grid/regular/RegularGaussian.h
-    grid/regular/RegularLL.cc
-    grid/regular/RegularLL.h
-    grid/regular/XYToLonLat.cc
-    grid/regular/XYToLonLat.h
+    grid/XYToLonLat.cc
+    grid/XYToLonLat.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc
@@ -135,7 +133,7 @@ if(eckit_HAVE_PROJ)
 endif()
 
 if(eckit_HAVE_ECKIT_CODEC)
-    list(APPEND eckit_geo_srcs grid/regular/ORCA.cc grid/regular/ORCA.h)
+    list(APPEND eckit_geo_srcs grid/ORCA.cc grid/ORCA.h)
     list(APPEND eckit_geo_libs eckit_codec)
     list(APPEND eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/ORCA.yaml")
 endif()

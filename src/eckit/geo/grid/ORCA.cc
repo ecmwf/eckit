@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/regular/ORCA.h"
+#include "eckit/geo/grid/ORCA.h"
 
 #include <memory>
 
@@ -37,7 +37,7 @@
 #endif
 
 
-namespace eckit::geo::grid::regular {
+namespace eckit::geo::grid {
 
 
 namespace {
@@ -338,4 +338,4 @@ static const GridRegisterType<ORCA> __grid_type("ORCA");
 static const GridRegisterName<ORCA> __grid_pattern(GridRegisterName<ORCA>::uid_pattern);
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::grid

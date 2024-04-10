@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "eckit/geo/grid/regular/ORCA.h"
+#include "eckit/geo/grid/ORCA.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -21,8 +21,6 @@ namespace eckit::geo::test {
 
 
 CASE("ORCA") {
-    using grid::regular::ORCA;
-
     const Grid::uid_t uid = "d5bde4f52ff3a9bea5629cd9ac514410";
     const std::vector<long> dimensions{182, 149};
 
@@ -47,7 +45,7 @@ CASE("ORCA") {
         EXPECT(grid2->size() == dimensions[0] * dimensions[1]);
         EXPECT(grid2->uid() == uid);
 
-        ORCA grid3(uid);
+        grid::ORCA grid3(uid);
 
         EXPECT(grid3.uid() == uid);
         EXPECT(grid3.calculate_uid() == uid);
@@ -61,7 +59,7 @@ CASE("ORCA") {
         std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + uid + "}"));
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", uid}})));
         std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", uid}})));
-        ORCA grid4(uid);
+        grid::ORCA grid4(uid);
 
         EXPECT(*grid1 == *grid2);
         EXPECT(*grid2 == *grid3);

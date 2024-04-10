@@ -24,7 +24,7 @@ class PathName;
 }
 
 
-namespace eckit::geo::grid::regular {
+namespace eckit::geo::grid {
 
 
 class ORCA final : public Regular {
@@ -142,4 +142,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::regular
+}  // namespace eckit::geo::grid

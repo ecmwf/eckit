@@ -74,7 +74,7 @@ Grid* RegularGaussian::make_grid_cropped(const area::BoundingBox& crop) const {
         return new RegularGaussian(N_, bbox);
     }
 
-    throw eckit::Exception("RegularGaussian: cannot crop grid (empty intersection)");
+    throw Exception("RegularGaussian: cannot crop grid (empty intersection)");
 }
 
 

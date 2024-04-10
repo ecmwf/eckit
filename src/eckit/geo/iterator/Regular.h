@@ -67,7 +67,7 @@ private:
     size_t index_;
     const size_t ni_;
     const size_t nj_;
-    const size_t index_size_;
+    const size_t size_;
 
     // -- Methods
     // None

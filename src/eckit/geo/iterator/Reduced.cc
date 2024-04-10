@@ -27,8 +27,8 @@ Reduced::Reduced(const Grid& grid, size_t index) :
     latitudes_(grid_.latitudes()),
     niacc_(grid_.niacc()),
     index_(index),
-    index_size_(grid.size()) {
-    if (index_ < index_size_) {
+    size_(grid.size()) {
+    if (index_ < size_) {
         longitudes_j_ = grid_.longitudes(j_ = j(index_));
         ASSERT(niacc_[j_] <= index && index_ < niacc_[j_ + 1]);
         ASSERT(latitudes_.size() == grid_.nj());
@@ -43,7 +43,7 @@ bool Reduced::operator==(const Iterator& other) const {
 
 
 bool Reduced::operator++() {
-    if (index_++; index_ < index_size_) {
+    if (index_++; index_ < size_) {
         if (!(index_ < niacc_[j_ + 1])) {
             longitudes_j_ = grid_.longitudes(++j_);
         }
@@ -52,14 +52,13 @@ bool Reduced::operator++() {
         return true;
     }
 
-    index_ = index_size_;  // ensure it's invalid
+    index_ = size_;  // ensure it's invalid
     return false;
 }
 
 
 bool Reduced::operator+=(difference_type d) {
-    if (auto di = static_cast<difference_type>(index_);
-        0 <= di + d && di + d < static_cast<difference_type>(index_size_)) {
+    if (auto di = static_cast<difference_type>(index_); 0 <= di + d && di + d < static_cast<difference_type>(size_)) {
         if (index_ = static_cast<size_t>(di + d); !(niacc_[j_] <= index_ && index_ < niacc_[j_ + 1])) {
             longitudes_j_ = grid_.longitudes(j_ = j(index_));
         }
@@ -68,13 +67,13 @@ bool Reduced::operator+=(difference_type d) {
         return true;
     }
 
-    index_ = index_size_;  // ensure it's invalid
+    index_ = size_;  // ensure it's invalid
     return false;
 }
 
 
 Reduced::operator bool() const {
-    return index_ < index_size_;
+    return index_ < size_;
 }
 
 
@@ -84,7 +83,7 @@ Point Reduced::operator*() const {
 
 
 size_t Reduced::j(size_t idx) const {
-    ASSERT(idx < index_size_);
+    ASSERT(idx < size_);
 
     auto dist = std::distance(niacc_.begin(), std::upper_bound(niacc_.begin(), niacc_.end(), idx));
     ASSERT(1 <= dist && dist <= niacc_.size() - 1);

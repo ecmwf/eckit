@@ -67,7 +67,7 @@ private:
     const std::vector<size_t>& niacc_;
     size_t j_;
     size_t index_;
-    const size_t index_size_;
+    const size_t size_;
 
     // -- Methods
     // None

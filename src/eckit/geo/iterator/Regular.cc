@@ -28,7 +28,7 @@ Regular::Regular(const Grid& grid, size_t index) :
     index_(index),
     ni_(longitudes_.size()),
     nj_(latitudes_.size()),
-    index_size_(ni_ * nj_) {
+    size_(ni_ * nj_) {
     ASSERT(longitudes_.size() == grid_.ni());
     ASSERT(latitudes_.size() == grid_.nj());
 }
@@ -41,7 +41,7 @@ bool Regular::operator==(const Iterator& other) const {
 
 
 bool Regular::operator++() {
-    if (index_++, i_++; index_ < index_size_) {
+    if (index_++, i_++; index_ < size_) {
         if (i_ >= ni_) {
             i_ = 0;
             j_++;
@@ -50,7 +50,7 @@ bool Regular::operator++() {
         return true;
     }
 
-    index_ = index_size_;  // ensure it's invalid
+    index_ = size_;  // ensure it's invalid
     return false;
 }
 
@@ -61,7 +61,7 @@ bool Regular::operator+=(difference_type d) {
 
 
 Regular::operator bool() const {
-    return index_ < index_size_;
+    return index_ < size_;
 }
 
 

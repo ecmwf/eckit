@@ -26,7 +26,15 @@ public:
     // -- Types
 
     struct Container {
-        virtual ~Container()                  = default;
+        Container()          = default;
+        virtual ~Container() = default;
+
+        Container(const Container&) = delete;
+        Container(Container&&)      = delete;
+
+        Container& operator=(const Container&) = delete;
+        Container& operator=(Container&&)      = delete;
+
         virtual Point get(size_t index) const = 0;
         virtual size_t size() const           = 0;
     };

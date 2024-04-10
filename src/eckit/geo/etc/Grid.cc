@@ -75,9 +75,25 @@ const Grid& Grid::instance() {
 }
 
 
-Grid::Grid(const PathName& path) {
+Grid::Grid(const std::vector<PathName>& paths) {
     auto* custom = new spec::Custom;
     spec_.reset(custom);
+
+    for (const auto& path : paths) {
+        if (path.exists()) {
+            load(path);
+        }
+    }
+}
+
+
+void Grid::load(const PathName& path) {
+    if (!spec_) {
+        spec_.reset(new spec::Custom);
+    }
+
+    auto* custom = dynamic_cast<spec::Custom*>(spec_.get());
+    ASSERT(custom != nullptr);
 
     struct SpecByUIDGenerator final : SpecByUID::generator_t {
         explicit SpecByUIDGenerator(spec::Custom* spec) :

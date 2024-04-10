@@ -16,6 +16,7 @@
 #include "eckit/eckit_version.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/eckit_geo_config.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit {
@@ -34,9 +35,11 @@ LibEcKitGeo& LibEcKitGeo::instance() {
 }
 
 
-PathName LibEcKitGeo::etcGrid() {
-    static const PathName path{
-        LibResource<std::string, LibEcKitGeo>("eckit-geo-grid;$ECKIT_GEO_GRID", "~eckit/etc/eckit/geo/grid.yaml")};
+std::vector<PathName> LibEcKitGeo::etcGrid() {
+    static const auto paths = [](const std::string& s) -> std::vector<PathName> {
+        const auto ss = StringTools::split(":", s);
+        return {ss.begin(), ss.end()};
+    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-grid;$ECKIT_GEO_GRID", "~eckit/etc/eckit/geo/grid.yaml")};
     return path;
 }
 

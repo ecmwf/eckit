@@ -13,6 +13,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 
 namespace eckit {
@@ -64,14 +65,15 @@ public:
 private:
     // -- Constructors
 
-    explicit Grid(const PathName&);
+    explicit Grid(const std::vector<PathName>&);
 
     // -- Members
 
     std::unique_ptr<Spec> spec_;
 
     // -- Methods
-    // None
+
+    void load(const PathName&);
 
     // -- Overridden methods
     // None

@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <vector>
+
 #include "eckit/system/Library.h"
 
 
@@ -47,7 +49,7 @@ public:
 
     static LibEcKitGeo& instance();
 
-    static eckit::PathName etcGrid();
+    static std::vector<PathName> etcGrid();
 
     static bool caching();
     static std::string cacheDir();

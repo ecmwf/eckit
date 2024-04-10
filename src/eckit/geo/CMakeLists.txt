@@ -1,12 +1,5 @@
 
-configure_file(eckit_geo_config.h.in eckit_geo_config.h @ONLY)
-install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h
-    DESTINATION ${INSTALL_INCLUDE_DIR}/eckit
-)
-
 list(APPEND eckit_geo_srcs
-    ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h
     Area.cc
     Area.h
     Cache.cc
@@ -126,8 +119,6 @@ list(APPEND eckit_geo_srcs
     util/mutex.h
     util/reduced_classical_pl.cc
     util/reduced_octahedral_pl.cc
-    util/regex.cc
-    util/regex.h
 )
 
 set(eckit_geo_include_dirs
@@ -136,6 +127,7 @@ set(eckit_geo_include_dirs
 )
 
 set(eckit_geo_libs eckit_maths)
+set(eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/grid.yaml")
 
 if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
@@ -145,7 +137,17 @@ endif()
 if(eckit_HAVE_ECKIT_CODEC)
     list(APPEND eckit_geo_srcs grid/regular/ORCA.cc grid/regular/ORCA.h)
     list(APPEND eckit_geo_libs eckit_codec)
+    list(APPEND eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/ORCA.yaml")
 endif()
+
+string(REPLACE ";" ":" eckit_GEO_ETC_GRID "${eckit_GEO_ETC_GRID}")
+configure_file(eckit_geo_config.h.in eckit_geo_config.h @ONLY)
+
+list(APPEND eckit_geo_srcs ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h)
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h
+    DESTINATION ${INSTALL_INCLUDE_DIR}/eckit
+)
 
 ecbuild_add_library(
     TARGET             eckit_geo

@@ -39,16 +39,14 @@ std::vector<PathName> LibEcKitGeo::etcGrid() {
     static const auto paths = [](const std::string& s) -> std::vector<PathName> {
         const auto ss = StringTools::split(":", s);
         return {ss.begin(), ss.end()};
-    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-grid;$ECKIT_GEO_GRID",
-                                                       "~eckit/etc/eckit/geo/grid.yaml:"
-                                                       "~eckit/etc/eckit/geo/ORCA.yaml:"));
+    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-etc-grid;$ECKIT_GEO_ETC_GRID", eckit_GEO_ETC_GRID));
     return paths;
 }
 
 
 bool LibEcKitGeo::caching() {
-    static const bool yes{LibResource<bool, LibEcKitGeo>("eckit-geo-caching;$ECKIT_GEO_CACHING",
-                                                         eckit_HAVE_GEO_CACHING != 0 ? true : false)};
+    static const bool yes{
+        LibResource<bool, LibEcKitGeo>("eckit-geo-caching;$ECKIT_GEO_CACHING", eckit_HAVE_GEO_CACHING != 0)};
     return yes;
 }
 

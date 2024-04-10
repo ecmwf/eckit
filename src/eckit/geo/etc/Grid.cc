@@ -12,61 +12,16 @@
 
 #include "eckit/geo/etc/Grid.h"
 
-#include <algorithm>
-#include <memory>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/util.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/value/Value.h"
 
 
 namespace eckit::geo::etc {
-
-
-namespace {
-
-
-template <typename T>
-spec::Custom::value_type __from_value(const Value& value) {
-    T to;
-    fromValue(to, value);
-    return {to};
-}
-
-
-void set_custom_value(spec::Custom& custom, const std::string& key, const Value& value) {
-    using number_type = pl_type::value_type;
-
-    auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
-
-    auto val = value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })
-                   ? __from_value<std::vector<double>>(value)
-               : value.isList() && list_of(value, [](const Value& v) { return v.isNumber(); })
-                   ? __from_value<std::vector<number_type>>(value)
-               : value.isList()   ? __from_value<std::vector<std::string>>(value)
-               : value.isDouble() ? __from_value<double>(value)
-               : value.isNumber() ? __from_value<number_type>(value)
-                                  : __from_value<std::string>(value);
-
-    std::visit([&](const auto& val) { custom.set(key, val); }, val);
-}
-
-
-spec::Custom* spec_from_value_map(const ValueMap& map) {
-    auto* spec = new spec::Custom;
-    for (const auto& kv : map) {
-        set_custom_value(*spec, kv.first, kv.second);
-    }
-    return spec;
-}
-
-
-}  // namespace
 
 
 const Grid& Grid::instance() {
@@ -88,12 +43,16 @@ Grid::Grid(const std::vector<PathName>& paths) {
 
 
 void Grid::load(const PathName& path) {
-    if (!spec_) {
-        spec_.reset(new spec::Custom);
-    }
-
-    auto* custom = dynamic_cast<spec::Custom*>(spec_.get());
+    auto* custom = dynamic_cast<spec::Custom*>((spec_ ? spec_ : (spec_ = std::make_unique<spec::Custom>())).get());
     ASSERT(custom != nullptr);
+
+    auto spec_from_value_map = [](const ValueMap& map) {
+        auto* custom = new spec::Custom;
+        for (const auto& kv : map) {
+            custom->set(kv.first, kv.second);
+        }
+        return custom;
+    };
 
     struct SpecByUIDGenerator final : SpecByUID::generator_t {
         explicit SpecByUIDGenerator(spec::Custom* spec) :
@@ -135,7 +94,7 @@ void Grid::load(const PathName& path) {
                 continue;
             }
 
-            set_custom_value(*custom, key, kv.second);
+            custom->set(key, kv.second);
         }
     }
 }

@@ -92,7 +92,7 @@ public:
     void purge() final { container_.clear(); }
 
 private:
-    mutable std::map<Key, Value> container_;
+    mutable std::map<key_type, value_type> container_;
 
     util::recursive_mutex* mutex_;
 };

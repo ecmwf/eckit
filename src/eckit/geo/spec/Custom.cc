@@ -16,6 +16,7 @@
 #include <type_traits>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util.h"
 #include "eckit/log/JSON.h"
 #include "eckit/value/Content.h"  // for ValueList, ValueMap
 #include "eckit/value/Value.h"
@@ -122,6 +123,14 @@ bool __get_v_real(const Custom::container_type& map, const std::string& name, T&
                                                                 : false;
     }
     return false;
+}
+
+
+template <typename T>
+Custom::value_type __from_value(const Value& value) {
+    T to;
+    fromValue(to, value);
+    return {to};
 }
 
 
@@ -282,6 +291,24 @@ void Custom::set(const std::string& name, const std::vector<double>& value) {
 
 void Custom::set(const std::string& name, const std::vector<std::string>& value) {
     map_[name] = value;
+}
+
+
+void Custom::set(const std::string& key, const Value& value) {
+    using number_type = pl_type::value_type;
+
+    auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
+
+    auto val = value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })
+                   ? __from_value<std::vector<double>>(value)
+               : value.isList() && list_of(value, [](const Value& v) { return v.isNumber(); })
+                   ? __from_value<std::vector<number_type>>(value)
+               : value.isList()   ? __from_value<std::vector<std::string>>(value)
+               : value.isDouble() ? __from_value<double>(value)
+               : value.isNumber() ? __from_value<number_type>(value)
+                                  : __from_value<std::string>(value);
+
+    std::visit([&](const auto& val) { set(key, val); }, val);
 }
 
 

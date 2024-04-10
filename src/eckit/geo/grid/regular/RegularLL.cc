@@ -12,13 +12,12 @@
 
 #include "eckit/geo/grid/regular/RegularLL.h"
 
+#include <regex>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/iterator/Regular.h"
-#include "eckit/geo/range/RegularLatitude.h"
-#include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/util/regex.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
 
@@ -68,15 +67,14 @@ void RegularLL::spec(spec::Custom& custom) const {
 
 
 #define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)([eE][-+][0-9]+)?"
-static const std::string __pattern("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
+static const std::string PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 #undef POSITIVE_REAL
 
 
 Spec* RegularLL::spec(const std::string& name) {
-
-    auto match = util::regex_match(__pattern, name);
-    ASSERT(match);
-    ASSERT(match.size() == 9);  // because of sub-matches
+    std::smatch match;
+    std::regex_match(name, match, std::regex(PATTERN));
+    ASSERT(match.size() == 9);
 
     auto d = Translator<std::string, double>{};
 
@@ -85,7 +83,7 @@ Spec* RegularLL::spec(const std::string& name) {
 
 
 static const GridRegisterType<RegularLL> __grid_type("regular_ll");
-static const GridRegisterName<RegularLL> __grid_pattern(__pattern);
+static const GridRegisterName<RegularLL> __grid_pattern(PATTERN);
 
 
 }  // namespace eckit::geo::grid::regular

@@ -99,6 +99,8 @@ public:
     void set(const std::string& name, const std::vector<double>& value);
     void set(const std::string& name, const std::vector<std::string>& value);
 
+    void set(const std::string& name, const Value& value);
+
     // -- Overridden methods
 
     bool has(const std::string& name) const override;

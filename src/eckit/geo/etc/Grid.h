@@ -51,8 +51,6 @@ public:
 
     static const Grid& instance();
 
-    const Spec& spec() const { return *spec_; }
-
     // -- Overridden methods
     // None
 

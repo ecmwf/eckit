@@ -20,29 +20,31 @@
 namespace eckit::geo {
 
 
-static Increments make_from_spec(const Spec& spec) {
-    if (std::vector<double> grid; spec.get("grid", grid) && grid.size() == 2) {
-        return {grid[0], grid[1]};
+Increments Increments::make_from_spec(const Spec& spec) {
+    value_type x = 0;
+    value_type y = 0;
+    if (std::vector<value_type> value; spec.get("increments", value) || spec.get("grid", value) && value.size() == 2) {
+        x = value[0];
+        y = value[1];
+    }
+    else if (!spec.get("dx", x) || !spec.get("dy", y)) {
+        throw SpecNotFound("'increments' = ['dx', 'dy'] expected");
     }
 
-    throw BadParameter("Increments: expected list of size 2");
+    return {x, y};
 }
 
 
-Increments::Increments(double west_east, double south_north) :
-    array{west_east, south_north} {
-    ASSERT(!types::is_equal(operator[](0), 0.));
-    ASSERT(!types::is_equal(operator[](1), 0.));
+Increments::Increments(value_type dx, value_type dy) :
+    array{dx, dy} {
+    if (!(dx != 0) || !(dy != 0)) {
+        throw BadValue("'shape' = ['dx', 'dy'] != 0 expected");
+    }
 }
-
-
-Increments::Increments(const Spec& spec) :
-    Increments(make_from_spec(spec)) {}
 
 
 bool Increments::operator==(const Increments& other) const {
-    return west_east == other.west_east && south_north == other.south_north;
+    return types::is_approximately_equal(dx, other.dx) && types::is_approximately_equal(dy, other.dy);
 }
-
 
 }  // namespace eckit::geo

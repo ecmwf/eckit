@@ -12,12 +12,17 @@
 
 #pragma once
 
+#include <vector>
+
 #include "eckit/geo/Iterator.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo {
+class Range;
+namespace grid {
 class Regular;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::iterator {
@@ -33,7 +38,7 @@ public:
 
     // -- Constructors
 
-    explicit Regular(const Grid&, size_t index = 0);
+    explicit Regular(const grid::Regular&, size_t index = 0);
 
     // -- Destructor
     // None
@@ -60,13 +65,13 @@ private:
     // -- Members
 
     const grid::Regular& grid_;
-    const std::vector<double>& longitudes_;
-    const std::vector<double>& latitudes_;
+    const std::vector<double>& x_;
+    const std::vector<double>& y_;
     size_t i_;
     size_t j_;
     size_t index_;
-    const size_t ni_;
-    const size_t nj_;
+    const size_t nx_;
+    const size_t ny_;
     const size_t size_;
 
     // -- Methods

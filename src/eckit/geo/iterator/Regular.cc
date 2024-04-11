@@ -19,19 +19,16 @@
 namespace eckit::geo::iterator {
 
 
-Regular::Regular(const Grid& grid, size_t index) :
-    grid_(dynamic_cast<const grid::Regular&>(grid)),
-    longitudes_(grid_.longitudes()),
-    latitudes_(grid_.latitudes()),
+Regular::Regular(const grid::Regular& grid, size_t index) :
+    grid_(grid),
+    x_(grid.x().values()),
+    y_(grid.y().values()),
     i_(0),
     j_(0),
     index_(index),
-    ni_(longitudes_.size()),
-    nj_(latitudes_.size()),
-    size_(ni_ * nj_) {
-    ASSERT(longitudes_.size() == grid_.nx());
-    ASSERT(latitudes_.size() == grid_.ny());
-}
+    nx_(x_.size()),
+    ny_(y_.size()),
+    size_(nx_ * nx_) {}
 
 
 bool Regular::operator==(const Iterator& other) const {
@@ -42,7 +39,7 @@ bool Regular::operator==(const Iterator& other) const {
 
 bool Regular::operator++() {
     if (index_++, i_++; index_ < size_) {
-        if (i_ >= ni_) {
+        if (i_ >= nx_) {
             i_ = 0;
             j_++;
         }
@@ -66,7 +63,7 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return PointLonLat{longitudes_.at(i_), latitudes_.at(j_)};
+    return PointLonLat{x_.at(i_), y_.at(j_)};
 }
 
 

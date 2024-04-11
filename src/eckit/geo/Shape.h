@@ -24,58 +24,62 @@ class Spec;
 namespace eckit::geo {
 
 
-class Increments : public std::array<double, 2> {
+class Shape final : public std::array<size_t, 2> {
 public:
     // -- Constructors
 
-    explicit Increments(const Spec& spec) :
-        Increments(make_from_spec(spec)) {}
+    explicit Shape(const Spec& spec) :
+        Shape(make_from_spec(spec)) {}
 
-    Increments(value_type dx, value_type dy);
+    Shape(value_type nx, value_type ny);
 
-    Increments(const Increments& other) :
+    Shape() :
+        Shape(0, 0) {}
+
+    Shape(const Shape& other) :
         array(other) {}
 
-    Increments(Increments&& other) :
+    Shape(Shape&& other) :
         array(other) {}
 
     // -- Destructor
 
-    ~Increments() = default;
+    ~Shape() = default;
 
     // -- Operators
 
-    bool operator==(const Increments& other) const;
-    bool operator!=(const Increments& other) const { return !operator==(other); }
+    bool operator==(const Shape& other) const { return nx == other.nx && ny == other.ny; }
 
-    Increments& operator=(const Increments& other) {
+    bool operator!=(const Shape& other) const { return !operator==(other); }
+
+    Shape& operator=(const Shape& other) {
         array::operator=(other);
         return *this;
     }
 
-    Increments& operator=(Increments&& other) {
+    Shape& operator=(Shape&& other) {
         array::operator=(other);
         return *this;
     }
 
     // Members
 
-    value_type& dx = array::operator[](0);
-    value_type& dy = array::operator[](1);
+    value_type& nx = array::operator[](0);
+    value_type& ny = array::operator[](1);
 
     // -- Methods
 
-    std::array<value_type, 2> deconstruct() const { return {dx, dy}; }
+    std::array<value_type, 2> deconstruct() const { return {nx, ny}; }
 
     // -- Class methods
 
-    static Increments make_from_spec(const Spec&);
+    static Shape make_from_spec(const Spec&);
 
 private:
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& os, const Increments& inc) {
-        return os << "[" << inc.dx << "," << inc.dy << "]";
+    friend std::ostream& operator<<(std::ostream& os, const Shape& inc) {
+        return os << "[" << inc.nx << "," << inc.ny << "]";
     }
 };
 

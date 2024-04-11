@@ -106,9 +106,6 @@ public:
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
-    const std::vector<double>& longitudes() const override { return record_.longitudes_; }
-    const std::vector<double>& latitudes() const override { return record_.latitudes_; }
-
     // -- Class members
     // None
 

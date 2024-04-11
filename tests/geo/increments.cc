@@ -35,30 +35,30 @@ CASE("assignment") {
     Increments a(10, 1);
 
     Increments b(20, 2);
-    EXPECT_NOT_EQUAL(a.west_east, b.west_east);
+    EXPECT_NOT_EQUAL(a.dx, b.dx);
     EXPECT_NOT_EQUAL(a, b);
 
     b = a;
-    EXPECT_EQUAL(a.west_east, b.west_east);
+    EXPECT_EQUAL(a.dx, b.dx);
     EXPECT_EQUAL(a, b);
 
-    b.west_east = 30;
-    EXPECT_EQUAL(b.west_east, 30);
-    EXPECT_EQUAL(a.west_east, 10);
+    b.dx = 30;
+    EXPECT_EQUAL(b.dx, 30);
+    EXPECT_EQUAL(a.dx, 10);
 
     Increments c(a);
-    EXPECT_EQUAL(a.west_east, c.west_east);
+    EXPECT_EQUAL(a.dx, c.dx);
     EXPECT_EQUAL(a, c);
 
-    c.west_east = 40;
-    EXPECT_EQUAL(c.west_east, 40);
-    EXPECT_EQUAL(a.west_east, 10);
+    c.dx = 40;
+    EXPECT_EQUAL(c.dx, 40);
+    EXPECT_EQUAL(a.dx, 10);
 
     auto d(std::move(a));
-    EXPECT_EQUAL(d.west_east, 10);
+    EXPECT_EQUAL(d.dx, 10);
 
-    d.west_east = 50;
-    EXPECT_EQUAL(d.west_east, 50);
+    d.dx = 50;
+    EXPECT_EQUAL(d.dx, 50);
 }
 
 

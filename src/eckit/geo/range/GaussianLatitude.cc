@@ -18,6 +18,7 @@
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
@@ -57,6 +58,11 @@ Range* GaussianLatitude::crop(double crop_a, double crop_b) const {
     }
 
     return new GaussianLatitude(N_, std::move(v), eps());
+}
+
+
+Fraction GaussianLatitude::increment() const {
+    NOTIMP;
 }
 
 

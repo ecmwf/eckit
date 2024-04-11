@@ -34,6 +34,8 @@ list(APPEND eckit_geo_srcs
     Range.h
     Renumber.h
     Search.h
+    Shape.cc
+    Shape.h
     Spec.cc
     Spec.h
     Sphere.cc
@@ -60,14 +62,8 @@ list(APPEND eckit_geo_srcs
     grid/ReducedLocal.h
     grid/Regular.cc
     grid/Regular.h
-    grid/RegularGaussian.cc
-    grid/RegularGaussian.h
-    grid/RegularLL.cc
-    grid/RegularLL.h
     grid/Unstructured.cc
     grid/Unstructured.h
-    grid/XYToLonLat.cc
-    grid/XYToLonLat.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc

@@ -12,12 +12,21 @@
 
 #pragma once
 
+#include <memory>
+#include <utility>
+
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Range.h"
+#include "eckit/geo/Shape.h"
 
 
-namespace eckit::geo::iterator {
+namespace eckit::geo {
+class Increments;
+namespace iterator {
 class Regular;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::grid {
@@ -25,81 +34,72 @@ namespace eckit::geo::grid {
 
 class Regular : public Grid {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
-    // None
 
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
+    explicit Regular(const Spec& spec) :
+        Grid(spec) {}
 
     // -- Methods
 
-    virtual size_t nx() const = 0;
-    virtual size_t ny() const = 0;
+    virtual double dx() const;
+    virtual double dy() const;
+
+    virtual size_t nx() const { return x_->size(); }
+    virtual size_t ny() const { return y_->size(); }
 
     // -- Overridden methods
 
+    iterator cbegin() const override;
+    iterator cend() const override;
+
     size_t size() const final { return nx() * ny(); }
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
+    const Range& x() const;
+    const Range& y() const;
 
 protected:
     // -- Constructors
 
-    explicit Regular(const Spec&);
-    explicit Regular(const area::BoundingBox& = area::BoundingBox::make_global_prime());
-
-    // -- Members
-    // None
+    Regular(std::pair<Range*, Range*> xy, const area::BoundingBox&);
 
     // -- Methods
 
-    virtual const std::vector<double>& longitudes() const = 0;
-    virtual const std::vector<double>& latitudes() const  = 0;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
+    static std::pair<Range*, Range*> make_cartesian_ranges_from_spec(const Spec& spec);
 
 private:
     // -- Members
-    // None
 
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
+    std::unique_ptr<Range> x_;
+    std::unique_ptr<Range> y_;
 
     // -- Friends
 
     friend class geo::iterator::Regular;
+};
+
+
+struct RegularLL final : public Regular {
+    explicit RegularLL(const Spec&);
+    explicit RegularLL(const Increments&, const area::BoundingBox& = {});
+    RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
+
+    static Spec* spec(const std::string& name);
+    void spec(spec::Custom&) const override;
+};
+
+
+struct RegularGaussian final : public Regular {
+    explicit RegularGaussian(const Spec&);
+    explicit RegularGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
+
+    Grid* make_grid_cropped(const area::BoundingBox& crop) const override;
+    static Spec* spec(const std::string& name);
+    void spec(spec::Custom&) const override;
+
+    size_t N() const { return N_; }
+
+private:
+    const size_t N_;
 };
 
 

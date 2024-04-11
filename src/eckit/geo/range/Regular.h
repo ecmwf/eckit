@@ -15,11 +15,6 @@
 #include "eckit/geo/Range.h"
 
 
-namespace eckit {
-class Fraction;
-}
-
-
 namespace eckit::geo::range {
 
 
@@ -27,7 +22,7 @@ class Regular : public Range {
 public:
     // -- Methods
 
-    Fraction increment() const;
+    Fraction increment() const override;
 
     // -- Overridden methods
 
@@ -36,12 +31,12 @@ public:
 protected:
     // -- Constructors
 
-    explicit Regular(double inc, double a, double b, double ref, double eps);
+    Regular(double inc, double a, double b, double ref, double eps);
 
-    explicit Regular(size_t n, double a, double b, bool periodic, double eps) :
+    Regular(size_t n, double a, double b, bool periodic, double eps) :
         Range(n, a, b, eps), periodic_(periodic) {}
 
-    explicit Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
+    Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
         Range(n, a, b, eps), values_(values), periodic_(periodic) {}
 
     // -- Methods

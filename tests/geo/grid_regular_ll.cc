@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "eckit/geo/grid/RegularLL.h"
+#include "eckit/geo/grid/Regular.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 

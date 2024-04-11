@@ -45,12 +45,12 @@ public:
 
     // -- Methods
 
-    virtual size_t ni() const = 0;
-    virtual size_t nj() const = 0;
+    virtual size_t nx() const = 0;
+    virtual size_t ny() const = 0;
 
     // -- Overridden methods
 
-    size_t size() const override { return ni() * nj(); }
+    size_t size() const final { return nx() * ny(); }
 
     // -- Class members
     // None

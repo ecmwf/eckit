@@ -22,49 +22,50 @@
 namespace eckit::geo::grid {
 
 
-XYToLonLat::XYToLonLat(const Spec& spec) :
-    XYToLonLat(Internal(spec)) {}
+namespace {
 
 
-XYToLonLat::XYToLonLat(Internal&& internal) :
-    internal_(internal) {}
-
-
-XYToLonLat::XYToLonLat(double dx, double dy, size_t nx, size_t ny) :
-    XYToLonLat(Internal{dx, dy, nx, ny}) {}
-
-
-XYToLonLat::Internal::Internal(const Spec& spec) :
-    grid{0., 0.}, shape{0, 0} {
-    if (std::vector<size_t> value; spec.get("shape", value) && value.size() == 2) {
-        shape = {value[0], value[1]};
-    }
-    else if (!spec.get("nx", shape[0]) || !spec.get("ny", shape[1])) {
-        throw SpecNotFound("'shape': ['nx', 'ny'] expected");
-    }
-
+std::array<double, 2> grid_from_spec(const Spec& spec) {
+    std::array<double, 2> grid{0, 0};
     if (std::vector<double> value; spec.get("grid", value) && value.size() == 2) {
-        grid = {value[0], value[1]};
+        grid[0] = value[0];
+        grid[1] = value[1];
     }
     else if (!spec.get("dx", grid[0]) || !spec.get("dy", grid[1])) {
-        throw SpecNotFound("'grid': ['dx', 'dy'] expected");
+        throw SpecNotFound("'grid' = ['dx', 'dy'] expected");
     }
 
-    check();
+    if (!(grid[0] > 0) || !(grid[1] > 0)) {
+        throw BadValue("'grid' = ['dx', 'dy'] > 0 expected");
+    }
+
+    return grid;
 }
 
-XYToLonLat::Internal::Internal(double dx, double dy, size_t nx, size_t ny) :
-    grid{dx, dy}, shape{nx, ny} {
-    check();
+
+std::array<size_t, 2> shape_from_spec(const Spec& spec) {
+    std::array<size_t, 2> shape{0, 0};
+    if (std::vector<size_t> value; spec.get("shape", value) && value.size() == 2) {
+        shape[0] = value[0];
+        shape[1] = value[1];
+    }
+    else if (!spec.get("nx", shape[0]) || !spec.get("ny", shape[1])) {
+        throw SpecNotFound("'shape' = ['nx', 'ny'] expected");
+    }
+
+    if (!(shape[0] > 0) || !(shape[1] > 0)) {
+        throw BadValue("'shape' = ['nx', 'ny'] > 0 expected");
+    }
+
+    return shape;
 }
 
 
-void XYToLonLat::Internal::check() const {
-    ASSERT_MSG(grid[0] > 0 && grid[1] > 0,
-               "'grid' > 0 failed, got grid: [" + std::to_string(grid[0]) + ", " + std::to_string(grid[0]) + "]");
-    ASSERT_MSG(shape[0] > 0 && shape[1] > 0,
-               "'shape' > 0 failed, got shape: [" + std::to_string(shape[0]) + ", " + std::to_string(shape[0]) + "]");
-}
+}  // namespace
+
+
+XYToLonLat::XYToLonLat(const Spec& spec) :
+    Regular(spec), grid_(grid_from_spec(spec)), shape_(shape_from_spec(spec)) {}
 
 
 Grid::iterator XYToLonLat::cbegin() const {
@@ -93,8 +94,8 @@ static const GridRegisterType<Mercator> __grid_type2("mercator");
 
 void Mercator::spec(spec::Custom& custom) const {
     custom.set("type", "mercator");
-    custom.set("grid", std::vector<double>{dj(), di()});
-    custom.set("shape", std::vector<long>{static_cast<long>(nj()), static_cast<long>(ni())});
+    custom.set("grid", std::vector<double>{dy(), dx()});
+    custom.set("shape", std::vector<long>{static_cast<long>(ny()), static_cast<long>(nx())});
 
     // FIXME a lot more stuff to add here!
     //...
@@ -108,8 +109,8 @@ void Mercator::spec(spec::Custom& custom) const {
 
 void LambertAzimuthalEqualArea::spec(spec::Custom& custom) const {
     custom.set("type", "lambert_azimuthal_equal_area");
-    custom.set("grid", std::vector<double>{dj(), di()});
-    custom.set("shape", std::vector<long>{static_cast<long>(nj()), static_cast<long>(ni())});
+    custom.set("grid", std::vector<double>{dy(), dx()});
+    custom.set("shape", std::vector<long>{static_cast<long>(ny()), static_cast<long>(nx())});
 
     // FIXME a lot more stuff to add here!
     //...

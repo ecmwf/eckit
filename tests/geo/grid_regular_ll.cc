@@ -32,8 +32,8 @@ CASE("global") {
 
     for (const auto& grid : {grid::RegularLL({1., 1.}, {89.5, 0.5, -89.5, 359.5}),
                              grid::RegularLL({1., 1.}, {90., 0., -90, 360.}, {0.5, 0.5})}) {
-        EXPECT(grid.ni() == 360);
-        EXPECT(grid.nj() == 180);
+        EXPECT(grid.nx() == 360);
+        EXPECT(grid.ny() == 180);
         EXPECT(grid.size() == 360 * 180);
     }
 }

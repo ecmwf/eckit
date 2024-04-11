@@ -43,22 +43,16 @@ public:
 
     // -- Methods
 
-    double dx() const { return internal_.grid[0]; };
-    double dy() const { return internal_.grid[1]; };
+    double dx() const { return grid_[0]; };
+    double dy() const { return grid_[1]; };
 
-    size_t nx() const { return internal_.shape[0]; }
-    size_t ny() const { return internal_.shape[1]; }
-
-    double di() const { return dy(); };
-    double dj() const { return dx(); };
+    size_t nx() const override { return shape_[1]; }
+    size_t ny() const override { return shape_[0]; }
 
     // -- Overridden methods
 
     iterator cbegin() const override;
     iterator cend() const override;
-
-    size_t ni() const override { return ny(); }
-    size_t nj() const override { return nx(); }
 
     // -- Class members
     // None
@@ -67,24 +61,6 @@ public:
     // None
 
 protected:
-    // -- Types
-
-    struct Internal {
-        explicit Internal(const Spec&);
-        Internal(double dx, double dy, size_t nx, size_t ny);
-
-        void check() const;
-
-        std::array<double, 2> grid;
-        std::array<size_t, 2> shape;
-    };
-
-    // -- Constructors
-
-    explicit XYToLonLat(Internal&&);
-
-    XYToLonLat(double dx, double dy, size_t nx, size_t ny);
-
     // -- Members
     // None
 
@@ -103,7 +79,8 @@ protected:
 private:
     // -- Members
 
-    const Internal internal_;
+    std::array<double, 2> grid_;
+    std::array<size_t, 2> shape_;
 
     // -- Methods
     // None

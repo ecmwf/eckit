@@ -82,8 +82,8 @@ public:
 
     // -- Methods
 
-    size_t ni() const override { return record_.ni(); }
-    size_t nj() const override { return record_.nj(); }
+    size_t nx() const override { return record_.nj(); }
+    size_t ny() const override { return record_.ni(); }
 
     std::string name() const { return name_; }
     std::string arrangement() const;

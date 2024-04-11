@@ -51,8 +51,8 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni() const override { return x_->size(); }
-    size_t nj() const override { return y_->size(); }
+    size_t nx() const override { return x_->size(); }
+    size_t ny() const override { return y_->size(); }
 
     // -- Class members
     // None

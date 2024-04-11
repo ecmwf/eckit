@@ -29,8 +29,8 @@ Regular::Regular(const Grid& grid, size_t index) :
     ni_(longitudes_.size()),
     nj_(latitudes_.size()),
     size_(ni_ * nj_) {
-    ASSERT(longitudes_.size() == grid_.ni());
-    ASSERT(latitudes_.size() == grid_.nj());
+    ASSERT(longitudes_.size() == grid_.nx());
+    ASSERT(latitudes_.size() == grid_.ny());
 }
 
 

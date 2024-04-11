@@ -26,7 +26,7 @@ ReducedLL::ReducedLL(const Spec& spec) :
 
 
 ReducedLL::ReducedLL(const pl_type& pl, const area::BoundingBox& bbox) :
-    ReducedLocal(bbox), pl_(pl), y_(new range::RegularLatitude(pl_.size(), bbox.north, bbox.south)) {
+    Reduced(bbox), pl_(pl), y_(new range::RegularLatitude(pl_.size(), bbox.north, bbox.south)) {
     ASSERT(y_);
 }
 

@@ -230,7 +230,7 @@ HEALPix::HEALPix(const Spec& spec) :
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) :
-    ReducedGlobal(area::BoundingBox::make_global_prime()), Nside_(Nside), ordering_(ordering) {
+    Reduced(area::BoundingBox::make_global_prime()), Nside_(Nside), ordering_(ordering) {
     ASSERT(Nside_ > 0);
     ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested,
                "HEALPix: supported orderings: ring, nested");
@@ -301,7 +301,7 @@ size_t HEALPix::size() const {
 
 
 std::vector<Point> HEALPix::to_points() const {
-    const auto points = ReducedGlobal::to_points();
+    const auto points = Reduced::to_points();
 
     if (ordering_ == Ordering::healpix_ring) {
         return points;

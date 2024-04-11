@@ -16,14 +16,14 @@
 #include <iterator>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/grid/ReducedGlobal.h"
+#include "eckit/geo/grid/Reduced.h"
 
 
 namespace eckit::geo::iterator {
 
 
 Reduced::Reduced(const Grid& grid, size_t index) :
-    grid_(dynamic_cast<const grid::ReducedGlobal&>(grid)),
+    grid_(dynamic_cast<const grid::Reduced&>(grid)),
     latitudes_(grid_.latitudes()),
     niacc_(grid_.niacc()),
     index_(index),

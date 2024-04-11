@@ -16,14 +16,14 @@
 #include <vector>
 
 #include "eckit/geo/Range.h"
-#include "eckit/geo/grid/ReducedGlobal.h"
+#include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/util.h"
 
 
 namespace eckit::geo::grid {
 
 
-class ReducedGaussian : public ReducedGlobal {
+class ReducedGaussian : public Reduced {
 public:
     // -- Types
     // None
@@ -80,10 +80,10 @@ private:
 
     // -- Overridden methods
 
-    const std::vector<double>& latitudes() const override;
-    std::vector<double> longitudes(size_t j) const override;
-
     void spec(spec::Custom&) const override;
+
+    const std::vector<double>& latitudes() const override;
+    std::vector<double> longitudes(size_t i) const override;
 
     Grid* make_grid_cropped(const area::BoundingBox&) const override;
 

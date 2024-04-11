@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/ReducedGlobal.h"
+#include "eckit/geo/grid/Reduced.h"
 
 #include "eckit/exception/Exceptions.h"
 
@@ -18,7 +18,7 @@
 namespace eckit::geo::grid {
 
 
-std::vector<Point> ReducedGlobal::to_points() const {
+std::vector<Point> Reduced::to_points() const {
     std::vector<Point> points;
     points.reserve(size());
 
@@ -39,7 +39,7 @@ std::vector<Point> ReducedGlobal::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> ReducedGlobal::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlon() const {
     const auto N = size();
 
     std::pair<std::vector<double>, std::vector<double>> latlon;
@@ -63,15 +63,7 @@ std::pair<std::vector<double>, std::vector<double>> ReducedGlobal::to_latlon() c
 }
 
 
-ReducedGlobal::ReducedGlobal(const Spec& spec) :
-    Grid(spec) {}
-
-
-ReducedGlobal::ReducedGlobal(const area::BoundingBox& bbox) :
-    Grid(bbox) {}
-
-
-const std::vector<size_t>& ReducedGlobal::niacc() const {
+const std::vector<size_t>& Reduced::niacc() const {
     if (niacc_.empty()) {
         niacc_.resize(1 + nj());
         niacc_.front() = 0;

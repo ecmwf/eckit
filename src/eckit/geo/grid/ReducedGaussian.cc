@@ -37,7 +37,7 @@ ReducedGaussian::ReducedGaussian(const Spec& spec) :
 
 
 ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox) :
-    ReducedGlobal(bbox),
+    Reduced(bbox),
     N_(N(pl)),
     pl_(pl),
     j_(0),

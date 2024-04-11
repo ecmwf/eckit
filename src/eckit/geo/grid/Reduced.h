@@ -23,48 +23,25 @@ class Reduced;
 namespace eckit::geo::grid {
 
 
-class ReducedGlobal : public Grid {
+class Reduced : public Grid {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
-    // -- Constructors
-    // None
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
     // -- Methods
-    // None
+
+    size_t size() const override { return niacc().back(); }
 
     // -- Overridden methods
 
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 protected:
     // -- Constructors
 
-    explicit ReducedGlobal(const Spec&);
-    explicit ReducedGlobal(const area::BoundingBox&);
+    explicit Reduced(const Spec& spec) :
+        Grid(spec) {}
 
-    // -- Members
-    // None
+    explicit Reduced(const area::BoundingBox& bbox) :
+        Grid(bbox) {}
 
     // -- Methods
 
@@ -73,34 +50,15 @@ protected:
     virtual size_t ni(size_t j) const = 0;
     virtual size_t nj() const         = 0;
 
-    virtual const std::vector<double>& latitudes() const   = 0;
-    virtual std::vector<double> longitudes(size_t i) const = 0;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
     mutable std::vector<size_t> niacc_;
 
-    // -- Methods
-    // None
+    // Methods
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
+    virtual const std::vector<double>& latitudes() const   = 0;
+    virtual std::vector<double> longitudes(size_t i) const = 0;
 
     // -- Friends
 

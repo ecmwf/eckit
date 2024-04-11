@@ -52,14 +52,12 @@ list(APPEND eckit_geo_srcs
     figure/Sphere.h
     grid/HEALPix.cc
     grid/HEALPix.h
+    grid/Reduced.cc
+    grid/Reduced.h
     grid/ReducedGaussian.cc
     grid/ReducedGaussian.h
-    grid/ReducedGlobal.cc
-    grid/ReducedGlobal.h
     grid/ReducedLL.cc
     grid/ReducedLL.h
-    grid/ReducedLocal.cc
-    grid/ReducedLocal.h
     grid/Regular.cc
     grid/Regular.h
     grid/Unstructured.cc

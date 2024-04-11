@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "eckit/geo/grid/ReducedGlobal.h"
+#include "eckit/geo/grid/Reduced.h"
 
 
 namespace eckit::geo::grid {
 
 
-class HEALPix final : public ReducedGlobal {
+class HEALPix final : public Reduced {
 public:
     // -- Types
     // None
@@ -51,10 +51,11 @@ public:
 
     size_t size() const override;
 
-    std::vector<Point> to_points() const override;
-
     size_t ni(size_t j) const override;
     size_t nj() const override;
+
+    std::vector<Point> to_points() const override;
+    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
     Ordering order() const override { return ordering_; }
     Renumber reorder(Ordering) const override;
@@ -86,12 +87,10 @@ private:
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }
 
-    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+    void spec(spec::Custom&) const override;
 
     const std::vector<double>& latitudes() const override;
-    std::vector<double> longitudes(size_t j) const override;
-
-    void spec(spec::Custom&) const override;
+    std::vector<double> longitudes(size_t i) const override;
 
     // -- Class members
     // None

@@ -15,14 +15,14 @@
 #include <memory>
 
 #include "eckit/geo/Range.h"
-#include "eckit/geo/grid/ReducedLocal.h"
+#include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/util.h"
 
 
 namespace eckit::geo::grid {
 
 
-class ReducedLL : public ReducedLocal {
+class ReducedLL : public Reduced {
 public:
     // -- Types
     // None

@@ -37,8 +37,7 @@ public:
 
     BoundingBox(double north, double west, double south, double east);
 
-    BoundingBox() :
-        BoundingBox(make_global_prime()) {}
+    BoundingBox();
 
     BoundingBox(const BoundingBox& other) :
         array(other) {}
@@ -83,10 +82,6 @@ public:
     bool empty() const;
     double area(double radius) const;
 
-    static BoundingBox make(const BoundingBox&, const Projection&);
-    static BoundingBox make_global_prime();
-    static BoundingBox make_global_antiprime();
-
     // -- Overridden methods
 
     void spec(spec::Custom&) const override;
@@ -95,7 +90,12 @@ public:
     // None
 
     // -- Class methods
-    // None
+
+    static BoundingBox calculate(const BoundingBox&, const Projection&);
+
+    static BoundingBox* make_global_prime();
+    static BoundingBox* make_global_antiprime();
+    static BoundingBox* make_from_spec(const Spec&);
 
     // -- Members
 

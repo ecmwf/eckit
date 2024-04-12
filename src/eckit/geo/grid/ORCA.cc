@@ -281,12 +281,6 @@ Grid::iterator ORCA::cend() const {
 }
 
 
-area::BoundingBox ORCA::boundingBox() const {
-    static const auto __bbox(area::BoundingBox::make_global_prime());
-    return __bbox;
-}
-
-
 Grid::uid_t ORCA::calculate_uid() const {
     MD5 hash(arrangement_to_string(arrangement_));
 

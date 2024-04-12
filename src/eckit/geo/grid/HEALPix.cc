@@ -230,7 +230,7 @@ HEALPix::HEALPix(const Spec& spec) :
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) :
-    Reduced(area::BoundingBox::make_global_prime()), Nside_(Nside), ordering_(ordering) {
+    Reduced(area::BoundingBox{}), Nside_(Nside), ordering_(ordering) {
     ASSERT(Nside_ > 0);
     ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested,
                "HEALPix: supported orderings: ring, nested");
@@ -286,12 +286,6 @@ size_t HEALPix::nj() const {
 Spec* HEALPix::spec(const std::string& name) {
     auto Nside = Translator<std::string, size_t>{}(name.substr(1));
     return new spec::Custom({{"type", "HEALPix"}, {"Nside", Nside}, {"ordering", "ring"}});
-}
-
-
-area::BoundingBox HEALPix::boundingBox() const {
-    static const auto __bbox(area::BoundingBox::make_global_prime());
-    return __bbox;
 }
 
 

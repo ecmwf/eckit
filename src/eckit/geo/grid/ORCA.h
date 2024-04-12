@@ -95,8 +95,6 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    area::BoundingBox boundingBox() const override;
-
     uid_t uid() const override { return uid_; }
 
     bool includesNorthPole() const override { return true; }

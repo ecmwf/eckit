@@ -34,8 +34,8 @@ public:
     // -- Constructors
 
     explicit ReducedGaussian(const Spec&);
-    explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = area::BoundingBox::make_global_prime());
-    explicit ReducedGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
+    explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = {});
+    explicit ReducedGaussian(size_t N, const area::BoundingBox& = {});
 
     // -- Destructor
     // None

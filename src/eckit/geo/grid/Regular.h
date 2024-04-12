@@ -90,9 +90,10 @@ struct RegularLL final : public Regular {
 
 struct RegularGaussian final : public Regular {
     explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N, const area::BoundingBox& = area::BoundingBox::make_global_prime());
+    explicit RegularGaussian(size_t N, const area::BoundingBox& = {});
 
     Grid* make_grid_cropped(const area::BoundingBox& crop) const override;
+
     static Spec* spec(const std::string& name);
     void spec(spec::Custom&) const override;
 

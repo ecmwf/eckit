@@ -13,7 +13,6 @@
 #include "eckit/geo/Grid.h"
 
 #include <algorithm>
-#include <memory>
 #include <numeric>
 #include <ostream>
 
@@ -39,11 +38,11 @@ class lock_type {
 
 
 Grid::Grid(const Spec& spec) :
-    bbox_(spec) {}
+    bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
 Grid::Grid(const area::BoundingBox& bbox) :
-    bbox_(bbox) {}
+    bbox_(new area::BoundingBox(bbox)) {}
 
 
 std::string Grid::spec() const {
@@ -119,7 +118,7 @@ Grid* Grid::make_grid_reordered(Ordering) const {
 
 
 Area* Grid::area() const {
-    return new area::BoundingBox(bbox_);
+    return new area::BoundingBox(*bbox_);
 }
 
 
@@ -133,8 +132,12 @@ Grid* Grid::make_grid_cropped(const Area&) const {
 }
 
 
-area::BoundingBox Grid::boundingBox() const {
-    return bbox_;
+const area::BoundingBox& Grid::boundingBox() const {
+    if (!bbox_) {
+        bbox_.reset(calculate_bbox());
+        ASSERT(bbox_);
+    }
+    return *bbox_;
 }
 
 

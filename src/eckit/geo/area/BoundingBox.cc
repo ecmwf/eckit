@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
@@ -31,13 +32,13 @@ static const BoundingBox GLOBE_PRIME{90., 0., -90., 360.};
 static const BoundingBox GLOBE_ANTIPRIME{90., -180., -90., 180.};
 
 
-BoundingBox BoundingBox::make_global_prime() {
-    return GLOBE_PRIME;
+BoundingBox* BoundingBox::make_global_prime() {
+    return new BoundingBox(GLOBE_PRIME);
 }
 
 
-BoundingBox BoundingBox::make_global_antiprime() {
-    return GLOBE_ANTIPRIME;
+BoundingBox* BoundingBox::make_global_antiprime() {
+    return new BoundingBox(GLOBE_ANTIPRIME);
 }
 
 
@@ -48,12 +49,12 @@ void BoundingBox::spec(spec::Custom& custom) const {
 }
 
 
-static BoundingBox make_from_spec(const Spec& spec) {
-    const auto [n, w, s, e] = BoundingBox::make_global_prime().deconstruct();
+BoundingBox* BoundingBox::make_from_spec(const Spec& spec) {
+    const auto [n, w, s, e] = GLOBE_PRIME.deconstruct();
 
     if (std::vector<double> area{n, w, s, e}; spec.get("area", area)) {
         ASSERT_MSG(area.size() == 4, "BoundingBox: 'area' expected list of size 4");
-        return {area[0], area[1], area[2], area[3]};
+        return new BoundingBox{area[0], area[1], area[2], area[3]};
     }
 
     std::array<double, 4> area{n, w, s, e};
@@ -64,12 +65,12 @@ static BoundingBox make_from_spec(const Spec& spec) {
     auto new_west = spec.get("east", area[3]) && !spec.has("west");
     ASSERT(!new_east || !new_west);
 
-    return {area[0], new_west ? area[3] - 360. : area[1], area[2], new_east ? area[1] + 360. : area[3]};
+    return new BoundingBox{area[0], new_west ? area[3] - 360. : area[1], area[2], new_east ? area[1] + 360. : area[3]};
 }
 
 
 BoundingBox::BoundingBox(const Spec& spec) :
-    BoundingBox(make_from_spec(spec)) {}
+    BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {}
 
 
 BoundingBox::BoundingBox(double n, double w, double s, double e) :
@@ -87,6 +88,10 @@ BoundingBox::BoundingBox(double n, double w, double s, double e) :
     ASSERT_MSG(types::is_approximately_lesser_or_equal(east, west + 360.),
                "BoundingBox: longitude range (east <= west + 360)");
 }
+
+
+BoundingBox::BoundingBox() :
+    BoundingBox(GLOBE_PRIME) {}
 
 
 bool BoundingBox::operator==(const BoundingBox& other) const {
@@ -203,7 +208,7 @@ double BoundingBox::area(double radius) const {
 }
 
 
-BoundingBox BoundingBox::make(const BoundingBox&, const Projection&) {
+BoundingBox BoundingBox::calculate(const BoundingBox&, const Projection&) {
     NOTIMP;
 }
 

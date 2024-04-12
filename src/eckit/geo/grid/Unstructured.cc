@@ -21,7 +21,7 @@ namespace eckit::geo::grid {
 
 
 Unstructured::Unstructured(std::vector<Point>&& points) :
-    Grid(area::BoundingBox::make_global_prime()), points_(points) {}
+    Grid(area::BoundingBox{}), points_(points) {}
 
 
 Grid::iterator Unstructured::cbegin() const {

@@ -23,6 +23,7 @@
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Ordering.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/Renumber.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/spec/Generator.h"
@@ -136,7 +137,7 @@ public:
     virtual Renumber crop(const Area&) const;
     virtual Grid* make_grid_cropped(const Area&) const;
 
-    virtual area::BoundingBox boundingBox() const;
+    virtual const area::BoundingBox& boundingBox() const;
     virtual Renumber crop(const area::BoundingBox&) const;
     virtual Grid* make_grid_cropped(const area::BoundingBox&) const;
 
@@ -157,8 +158,6 @@ protected:
 
     // -- Methods
 
-    void bbox(const area::BoundingBox& bbox) { bbox_ = bbox; }
-
     static Renumber no_reorder(size_t size);
 
     // -- Overridden methods
@@ -173,11 +172,14 @@ protected:
 private:
     // -- Members
 
-    area::BoundingBox bbox_;
+    mutable std::unique_ptr<const area::BoundingBox> bbox_;
+    std::unique_ptr<Projection> projection_;
 
     // -- Methods
 
     virtual void spec(spec::Custom&) const;
+
+    virtual area::BoundingBox* calculate_bbox() const { return new area::BoundingBox{}; }
 
     // -- Overridden methods
     // None

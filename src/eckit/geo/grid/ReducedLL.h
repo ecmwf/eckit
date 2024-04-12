@@ -33,7 +33,7 @@ public:
     // -- Constructors
 
     explicit ReducedLL(const Spec&);
-    explicit ReducedLL(const pl_type&, const area::BoundingBox& = area::BoundingBox::make_global_prime());
+    explicit ReducedLL(const pl_type&, const area::BoundingBox& = {});
 
     // -- Destructor
     // None

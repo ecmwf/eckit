@@ -151,6 +151,24 @@ ecbuild_add_option( FEATURE ECKIT_CODEC
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
 
+### eckit::maths
+
+ecbuild_add_option( FEATURE CONVEX_HULL
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::maths library convex hull/Delaunay triangulation"
+                    REQUIRED_PACKAGES "Qhull COMPONENTS C CXX" )
+
+if( eckit_HAVE_CONVEX_HULL )
+    find_package( Qhull REQUIRED CONFIG )
+
+    if( NOT TARGET Qhull::qhullcpp OR NOT TARGET Qhull::qhullstatic_r )
+        message( FATAL_ERROR "eckit::maths ENABLE_CONVEX_HULL requires Qhull C/C++ libraries" )
+    endif()
+
+    add_library(Qhull::Qhull INTERFACE IMPORTED)
+    target_link_libraries(Qhull::Qhull INTERFACE Qhull::qhullcpp Qhull::qhullstatic_r )
+endif()
+
 ### eckit::geo
 
 ecbuild_add_option( FEATURE ECKIT_GEO

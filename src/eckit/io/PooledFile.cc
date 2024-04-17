@@ -8,25 +8,48 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/io/PooledFile.h"
+
 #include <cstdio>
+#include <map>
 #include <memory>
+#include <mutex>
 #include <string>
-#include <thread>
+#include <sstream>
+#include <utility>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/PooledFile.h"
 #include "eckit/log/Bytes.h"
 
+namespace eckit {
+class PoolFileEntry;
+}
+
+namespace {
+
+class Pool {
+
+private:
+    Pool() {}
+    std::map<eckit::PathName, std::unique_ptr<eckit::PoolFileEntry>> filePool_;
+    std::mutex filePoolMutex_;
+
+public:
+    static Pool& instance() {
+        static Pool pool;
+        return pool;
+    }
+    eckit::PoolFileEntry* get(const eckit::PathName& name);
+    void erase(const eckit::PathName& name);
+};
+
+}
 
 namespace eckit {
-
-class PoolFileEntry;
-
-static thread_local std::map<PathName, std::unique_ptr<PoolFileEntry>> pool_;
 
 struct PoolFileEntryStatus {
 
@@ -73,12 +96,12 @@ public:
 
     void remove(const PooledFile* file) {
         auto s = statuses_.find(file);
-        if (s != statuses_.end()) {
-            statuses_.erase(s);
-        }
+        ASSERT(s != statuses_.end());
+
+        statuses_.erase(s);
         if (statuses_.size() == 0) {
             doClose();
-            pool_.erase(name_);
+            Pool::instance().erase(name_);
             // No code after !!!
         }
     }
@@ -113,10 +136,10 @@ public:
 
     void close(const PooledFile* file) {
         auto s = statuses_.find(file);
-        if (s != statuses_.end()) {
-            ASSERT(s->second.opened_);
-            s->second.opened_ = false;
-        }
+        ASSERT(s != statuses_.end());
+
+        ASSERT(s->second.opened_);
+        s->second.opened_ = false;
     }
 
     int fileno(const PooledFile* file) const {
@@ -193,14 +216,8 @@ public:
 
 
 PooledFile::PooledFile(const PathName& name) :
-    name_(name), entry_(nullptr) {
-    auto j = pool_.find(name);
-    if (j == pool_.end()) {
-        pool_.emplace(std::make_pair(name, std::unique_ptr<PoolFileEntry>(new PoolFileEntry(name))));
-        j = pool_.find(name);
-    }
+    name_(name), entry_(Pool::instance().get(name)) {
 
-    entry_ = (*j).second.get();
     entry_->add(this);
 }
 
@@ -262,3 +279,21 @@ PooledFileError::PooledFileError(const std::string& file, const std::string& msg
     FileError(msg + " : error on pooled file " + file, loc) {}
 
 }  // namespace eckit
+
+namespace {
+
+eckit::PoolFileEntry* Pool::get(const eckit::PathName& name) {
+    std::lock_guard<std::mutex> lock(filePoolMutex_);
+    auto j = filePool_.find(name);
+    if (j == filePool_.end()) {
+        filePool_.emplace(name, new eckit::PoolFileEntry(name));
+        j = filePool_.find(name);
+    }
+    return (*j).second.get();
+}
+void Pool::erase(const eckit::PathName& name) {
+    std::lock_guard<std::mutex> lock(filePoolMutex_);
+    filePool_.erase(name);
+}
+
+}

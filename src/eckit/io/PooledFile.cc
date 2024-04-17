@@ -8,17 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/io/PooledFile.h"
+
 #include <cstdio>
+#include <map>
 #include <memory>
+#include <mutex>
 #include <string>
-#include <thread>
+#include <sstream>
+#include <utility>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/PooledFile.h"
 #include "eckit/log/Bytes.h"
 
 namespace eckit {
@@ -282,7 +286,7 @@ eckit::PoolFileEntry* Pool::get(const eckit::PathName& name) {
     std::lock_guard<std::mutex> lock(filePoolMutex_);
     auto j = filePool_.find(name);
     if (j == filePool_.end()) {
-        filePool_.emplace(std::make_pair(name, std::unique_ptr<eckit::PoolFileEntry>(new eckit::PoolFileEntry(name))));
+        filePool_.emplace(name, new eckit::PoolFileEntry(name));
         j = filePool_.find(name);
     }
     return (*j).second.get();

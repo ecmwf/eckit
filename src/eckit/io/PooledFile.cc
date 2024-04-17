@@ -26,7 +26,8 @@ namespace eckit {
 
 class PoolFileEntry;
 
-static thread_local std::map<PathName, std::unique_ptr<PoolFileEntry>> pool_;
+static std::map<PathName, std::unique_ptr<PoolFileEntry>> pool_;
+static std::mutex poolMutex_;
 
 struct PoolFileEntryStatus {
 
@@ -73,10 +74,11 @@ public:
 
     void remove(const PooledFile* file) {
         auto s = statuses_.find(file);
-        if (s != statuses_.end()) {
-            statuses_.erase(s);
-        }
+        ASSERT(s != statuses_.end());
+
+        statuses_.erase(s);
         if (statuses_.size() == 0) {
+            std::lock_guard<std::mutex> lock(poolMutex_);
             doClose();
             pool_.erase(name_);
             // No code after !!!
@@ -113,10 +115,10 @@ public:
 
     void close(const PooledFile* file) {
         auto s = statuses_.find(file);
-        if (s != statuses_.end()) {
-            ASSERT(s->second.opened_);
-            s->second.opened_ = false;
-        }
+        ASSERT(s != statuses_.end());
+        
+        ASSERT(s->second.opened_);
+        s->second.opened_ = false;
     }
 
     int fileno(const PooledFile* file) const {
@@ -194,6 +196,8 @@ public:
 
 PooledFile::PooledFile(const PathName& name) :
     name_(name), entry_(nullptr) {
+
+    std::lock_guard<std::mutex> lock(poolMutex_);
     auto j = pool_.find(name);
     if (j == pool_.end()) {
         pool_.emplace(std::make_pair(name, std::unique_ptr<PoolFileEntry>(new PoolFileEntry(name))));

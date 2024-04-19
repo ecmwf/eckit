@@ -25,18 +25,16 @@ namespace {
 
 std::vector<double> points_lat(const std::vector<Point>& points) {
     std::vector<double> l(points.size());
-    std::transform(points.begin(), points.end(), l.begin(), [](const Point& p) {
-        return std::get<PointLonLat>(p).lat;
-    });
+    std::transform(points.begin(), points.end(), l.begin(),
+                   [](const Point& p) { return std::get<PointLonLat>(p).lat; });
     return l;
 }
 
 
 std::vector<double> points_lon(const std::vector<Point>& points) {
     std::vector<double> l(points.size());
-    std::transform(points.begin(), points.end(), l.begin(), [](const Point& p) {
-        return std::get<PointLonLat>(p).lon;
-    });
+    std::transform(points.begin(), points.end(), l.begin(),
+                   [](const Point& p) { return std::get<PointLonLat>(p).lon; });
     return l;
 }
 
@@ -63,11 +61,14 @@ Grid::iterator UnstructuredFromGrid::cend() const {
 
 
 std::vector<Point> UnstructuredFromGrid::to_points() const {
-    std::vector<Point> p;
+    std::vector<Point> points;
+    points.reserve(size());
+
     for (size_t i = 0; i < size(); ++i) {
-        p[i] = PointLonLat{longitudes_[i], latitudes_[i]};
+        points.emplace_back(PointLonLat{longitudes_[i], latitudes_[i]});
     }
-    return p;
+
+    return points;
 }
 
 

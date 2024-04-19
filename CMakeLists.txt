@@ -155,8 +155,8 @@ set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
 
 ecbuild_add_option( FEATURE CONVEX_HULL
                     DEFAULT OFF
-                    DESCRIPTION "eckit::maths library convex hull/Delaunay triangulation"
-                    REQUIRED_PACKAGES "Qhull COMPONENTS C CXX" )
+                    DESCRIPTION "eckit::maths library convex hull/Delaunay triangulation" )
+                    # REQUIRED_PACKAGES "Qhull COMPONENTS C CXX"
 
 if( eckit_HAVE_CONVEX_HULL )
     find_package( Qhull REQUIRED CONFIG )
@@ -213,7 +213,7 @@ endif()
 
 ecbuild_add_option( FEATURE CURL
                     DESCRIPTION "Curl library for transfering data with URLs"
-                    REQUIRED_PACKAGES "CURL VERSION 7.20" )
+                    REQUIRED_PACKAGES "CURL 7.20" )
 
 if(HAVE_CURL)
   ecbuild_info("Curl version ${CURL_VERSION_STRING} -- libs [${CURL_LIBRARIES}] incs [${CURL_INCLUDE_DIRS}]")
@@ -229,6 +229,7 @@ ecbuild_add_option( FEATURE JEMALLOC
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA
+                    DEFAULT OFF
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "CUDA GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )
@@ -287,10 +288,7 @@ ecbuild_add_option( FEATURE AIO
 ecbuild_add_option( FEATURE PROJ
                     DEFAULT OFF
                     DESCRIPTION "support PROJ-based projections"
-                    REQUIRED_PACKAGES "PROJ VERSION 9.2" )
-
-### ecCodes
-ecbuild_add_option( FEATURE ECCODES REQUIRED_PACKAGES eccodes DESCRIPTION "FIXME: remove" )
+                    REQUIRED_PACKAGES "PROJ 9.2" )
 
 ### c math library, needed when including "math.h"
 

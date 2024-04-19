@@ -4,8 +4,6 @@ list(APPEND eckit_geo_srcs
     Area.h
     Cache.cc
     Cache.h
-    Domain.cc
-    Domain.h
     Earth.h
     EllipsoidOfRevolution.cc
     EllipsoidOfRevolution.h

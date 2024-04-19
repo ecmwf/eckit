@@ -23,7 +23,7 @@
 namespace eckit::geo {
 
 
-using Point = std::variant<PointLonLat, Point2, Point3>;
+using Point = std::variant<std::monostate, PointLonLat, Point2, Point3>;
 
 bool points_equal(const Point&, const Point&);
 bool points_equal(const Point&, const Point&, double eps);

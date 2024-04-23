@@ -14,6 +14,7 @@
 #include <cstddef>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "eckit/filesystem/PathName.h"
@@ -35,25 +36,25 @@ class Environment;
 
 /// @returns the communicator registered with associated name, or default communicator when NULL is
 /// passed
-Comm& comm(const char* name = nullptr);
+Comm& comm(std::string_view name = {});
 
 Comm& self();
 
 /// Set a communicator as default
-void setCommDefault(const char* name);
+void setCommDefault(std::string_view name);
 
 /// Register a communicator comming from Fortran code
-void addComm(const char* name, int comm);
+void addComm(std::string_view name, int comm);
 
 /// Register an existing communicator
-void addComm(const char* name, Comm* comm);
+void addComm(std::string_view name, Comm* comm);
 
 /// Unregister and delete specific comm
 /// @pre Comm is registered in the environment
-void deleteComm(const char* name);
+void deleteComm(std::string_view name);
 
 /// Check if a communicator is registered
-bool hasComm(const char* name);
+bool hasComm(std::string_view name);
 
 std::vector<std::string> listComms();
 
@@ -78,7 +79,7 @@ class Comm : private eckit::NonCopyable {
     friend class Environment;
 
 public:  // class methods
-    static Comm& comm(const char* name = nullptr);
+    static Comm& comm(std::string_view name = {});
 
 public:  // methods
     std::string name() const { return name_; }
@@ -477,7 +478,7 @@ private:  // methods
     }
 
 protected:  // methods
-    Comm(const std::string& name);
+    Comm(std::string_view name);
 
     virtual ~Comm();
 
@@ -492,21 +493,21 @@ class CommFactory {
     friend class eckit::mpi::Environment;
 
     std::string builder_;
-    virtual Comm* make(const std::string& name)      = 0;
-    virtual Comm* make(const std::string& name, int) = 0;
+    virtual Comm* make(std::string_view name)      = 0;
+    virtual Comm* make(std::string_view name, int) = 0;
 
 protected:
-    CommFactory(const std::string& builder);
+    CommFactory(std::string_view builder);
     virtual ~CommFactory();
 
-    static Comm* build(const std::string& name, const std::string& builder);
-    static Comm* build(const std::string& name, const std::string& builder, int);
+    static Comm* build(std::string_view name, std::string_view builder);
+    static Comm* build(std::string_view name, std::string_view builder, int);
 };
 
 template <class T>
 class CommBuilder : public CommFactory {
-    Comm* make(const std::string& name) override { return new T(name); }
-    Comm* make(const std::string& name, int comm) override { return new T(name, comm); }
+    Comm* make(std::string_view name) override { return new T(name); }
+    Comm* make(std::string_view name, int comm) override { return new T(name, comm); }
 
 public:
     CommBuilder(const std::string& builder) :

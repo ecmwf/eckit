@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 #include <fstream>
 #include <numeric>
 
@@ -999,6 +1000,8 @@ CASE("test_iProbe") {
 
         --count;
     }
+
+    std::sort(data.begin(), data.begin() + nproc);
 
     for (int i = 0; i < nproc; i++) {
         EXPECT(i == data[i]);

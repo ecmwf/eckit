@@ -32,30 +32,26 @@ namespace {
 
 
 struct CodecFijNest {
-    static constexpr uint64_t __masks[] = {0x00000000ffffffff,
-                                           0x0000ffff0000ffff,
-                                           0x00ff00ff00ff00ff,
-                                           0x0f0f0f0f0f0f0f0f,
-                                           0x3333333333333333,
-                                           0x5555555555555555};
+    static constexpr uint64_t MASKS[] = {0x00000000ffffffff, 0x0000ffff0000ffff, 0x00ff00ff00ff00ff,
+                                         0x0f0f0f0f0f0f0f0f, 0x3333333333333333, 0x5555555555555555};
 
     inline static int nest_encode_bits(int n) {
-        auto b = static_cast<uint64_t>(n) & __masks[0];
-        b      = (b ^ (b << 16)) & __masks[1];
-        b      = (b ^ (b << 8)) & __masks[2];
-        b      = (b ^ (b << 4)) & __masks[3];
-        b      = (b ^ (b << 2)) & __masks[4];
-        b      = (b ^ (b << 1)) & __masks[5];
+        auto b = static_cast<uint64_t>(n) & MASKS[0];
+        b      = (b ^ (b << 16)) & MASKS[1];
+        b      = (b ^ (b << 8)) & MASKS[2];
+        b      = (b ^ (b << 4)) & MASKS[3];
+        b      = (b ^ (b << 2)) & MASKS[4];
+        b      = (b ^ (b << 1)) & MASKS[5];
         return static_cast<int>(b);
     }
 
     inline static int nest_decode_bits(int n) {
-        auto b = static_cast<uint64_t>(n) & __masks[5];
-        b      = (b ^ (b >> 1)) & __masks[4];
-        b      = (b ^ (b >> 2)) & __masks[3];
-        b      = (b ^ (b >> 4)) & __masks[2];
-        b      = (b ^ (b >> 8)) & __masks[1];
-        b      = (b ^ (b >> 16)) & __masks[0];
+        auto b = static_cast<uint64_t>(n) & MASKS[5];
+        b      = (b ^ (b >> 1)) & MASKS[4];
+        b      = (b ^ (b >> 2)) & MASKS[3];
+        b      = (b ^ (b >> 4)) & MASKS[2];
+        b      = (b ^ (b >> 8)) & MASKS[1];
+        b      = (b ^ (b >> 16)) & MASKS[0];
         return static_cast<int>(b);
     }
 
@@ -171,9 +167,7 @@ public:
         auto [f, i, j] = CodecFijNest::nest_to_fij(n, k_);
         ASSERT(f < 12 && i < Nside_ && j < Nside_);
 
-        auto to_ring_local = [&](int f,
-                                 int i,
-                                 int j,
+        auto to_ring_local = [&](int f, int i, int j,
                                  int Nring,  //!< number of pixels in ring
                                  int shift   //!< if ring's first pixel is/is not at phi=0
                                  ) -> int {
@@ -229,8 +223,7 @@ HEALPix::HEALPix(const Spec& spec) :
     }(spec.get_string("ordering", "ring"))) {}
 
 
-HEALPix::HEALPix(size_t Nside, Ordering ordering) :
-    Reduced(area::BoundingBox{}), Nside_(Nside), ordering_(ordering) {
+HEALPix::HEALPix(size_t Nside, Ordering ordering) : Reduced(area::BoundingBox{}), Nside_(Nside), ordering_(ordering) {
     ASSERT(Nside_ > 0);
     ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested,
                "HEALPix: supported orderings: ring, nested");
@@ -358,9 +351,8 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
     const auto start = j < Nside_ || 3 * Nside_ - 1 < j || static_cast<bool>((j + Nside_) % 2) ? step / 2. : 0.;
 
     std::vector<double> lons(Ni);
-    std::generate_n(lons.begin(), Ni, [start, step, n = 0ULL]() mutable {
-        return start + static_cast<double>(n++) * step;
-    });
+    std::generate_n(lons.begin(), Ni,
+                    [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
 
     return lons;
 }
@@ -372,9 +364,9 @@ void HEALPix::spec(spec::Custom& custom) const {
 }
 
 
-static const GridRegisterType<HEALPix> __grid_type_1("HEALPix");
-static const GridRegisterType<HEALPix> __grid_type_2("healpix");
-static const GridRegisterName<HEALPix> __grid_pattern("[hH][1-9][0-9]*");
+static const GridRegisterType<HEALPix> GRIDTYPE1("HEALPix");
+static const GridRegisterType<HEALPix> GRIDTYPE2("healpix");
+static const GridRegisterName<HEALPix> GRIDNAME("[hH][1-9][0-9]*");
 
 
 }  // namespace eckit::geo::grid

@@ -18,7 +18,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<LonLatToXY> __projection("ll_to_xy");
+static ProjectionBuilder<LonLatToXY> PROJECTION("ll_to_xy");
 
 
 Spec* LonLatToXY::spec() const {

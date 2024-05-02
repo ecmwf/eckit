@@ -21,7 +21,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<LonLatToXYZ> __projection("ll_to_xyz");
+static ProjectionBuilder<LonLatToXYZ> PROJECTION("ll_to_xyz");
 
 
 LonLatToXYZ::LonLatToXYZ(double a, double b) {
@@ -31,8 +31,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
         using S = Sphere;
         const double R_;
 
-        explicit LonLatToSphereXYZ(double R) :
-            R_(R) {}
+        explicit LonLatToSphereXYZ(double R) : R_(R) {}
         Point3 operator()(const PointLonLat& p) const override { return S::convertSphericalToCartesian(R_, p, 0.); }
         PointLonLat operator()(const Point3& q) const override { return S::convertCartesianToSpherical(R_, q); }
         Spec* spec() const override { return new spec::Custom{{{"R", R_}}}; }
@@ -43,8 +42,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
         const double a_;
         const double b_;
 
-        explicit LonLatToSpheroidXYZ(double a, double b) :
-            a_(a), b_(b) {}
+        explicit LonLatToSpheroidXYZ(double a, double b) : a_(a), b_(b) {}
         Point3 operator()(const PointLonLat& p) const override { return S::convertSphericalToCartesian(a_, b_, p, 0.); }
         PointLonLat operator()(const Point3& q) const override { NOTIMP; }
         Spec* spec() const override { return new spec::Custom{{{"a", a_}, {"b", b_}}}; }
@@ -55,8 +53,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
 }
 
 
-LonLatToXYZ::LonLatToXYZ(double R) :
-    LonLatToXYZ(R, R) {}
+LonLatToXYZ::LonLatToXYZ(double R) : LonLatToXYZ(R, R) {}
 
 
 LonLatToXYZ::LonLatToXYZ(const Spec& spec) :

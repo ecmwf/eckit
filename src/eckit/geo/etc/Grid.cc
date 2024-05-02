@@ -25,8 +25,8 @@ namespace eckit::geo::etc {
 
 
 const Grid& Grid::instance() {
-    static const Grid __instance(LibEcKitGeo::etcGrid());
-    return __instance;
+    static const Grid INSTANCE(LibEcKitGeo::etcGrid());
+    return INSTANCE;
 }
 
 
@@ -55,16 +55,14 @@ void Grid::load(const PathName& path) {
     };
 
     struct SpecByUIDGenerator final : SpecByUID::generator_t {
-        explicit SpecByUIDGenerator(spec::Custom* spec) :
-            spec_(spec) {}
+        explicit SpecByUIDGenerator(spec::Custom* spec) : spec_(spec) {}
         Spec* spec() const override { return new spec::Custom(*spec_); }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
         std::unique_ptr<spec::Custom> spec_;
     };
 
     struct SpecByNameGenerator final : SpecByName::generator_t {
-        explicit SpecByNameGenerator(spec::Custom* spec) :
-            spec_(spec) {}
+        explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) {}
         Spec* spec(SpecByName::generator_t::arg1_t) const override { return new spec::Custom(*spec_); }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
         std::unique_ptr<spec::Custom> spec_;

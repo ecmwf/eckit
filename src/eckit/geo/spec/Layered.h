@@ -38,30 +38,29 @@ public:
     // -- Overridden methods
 
     bool has(const std::string& name) const override {
-        return !hide_.contains(name) &&
-               (std::any_of(front_.begin(),
-                            front_.end(),
-                            [&](const decltype(front_)::value_type& c) { return c->has(name); }) ||
-                spec_.has(name) || std::any_of(back_.begin(), back_.end(), [&](const decltype(back_)::value_type& c) {
-                    return c->has(name);
-                }));
+        return !hide_.contains(name)
+               && (std::any_of(front_.begin(), front_.end(),
+                               [&](const decltype(front_)::value_type& c) { return c->has(name); })
+                   || spec_.has(name)
+                   || std::any_of(back_.begin(), back_.end(),
+                                  [&](const decltype(back_)::value_type& c) { return c->has(name); }));
     }
 
-    bool get(const std::string& name, std::string& value) const override { return __get(name, value); }
-    bool get(const std::string& name, bool& value) const override { return __get(name, value); }
-    bool get(const std::string& name, int& value) const override { return __get(name, value); }
-    bool get(const std::string& name, long& value) const override { return __get(name, value); }
-    bool get(const std::string& name, long long& value) const override { return __get(name, value); }
-    bool get(const std::string& name, size_t& value) const override { return __get(name, value); }
-    bool get(const std::string& name, float& value) const override { return __get(name, value); }
-    bool get(const std::string& name, double& value) const override { return __get(name, value); }
-    bool get(const std::string& name, std::vector<int>& value) const override { return __get(name, value); }
-    bool get(const std::string& name, std::vector<long>& value) const override { return __get(name, value); }
-    bool get(const std::string& name, std::vector<long long>& value) const override { return __get(name, value); }
-    bool get(const std::string& name, std::vector<size_t>& value) const override { return __get(name, value); }
-    bool get(const std::string& name, std::vector<float>& value) const override { return __get(name, value); }
-    bool get(const std::string& name, std::vector<double>& value) const override { return __get(name, value); }
-    bool get(const std::string& name, std::vector<std::string>& value) const override { return __get(name, value); }
+    bool get(const std::string& name, std::string& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, bool& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, int& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, long& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, long long& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, size_t& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, float& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, double& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, std::vector<int>& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, std::vector<long>& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, std::vector<long long>& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, std::vector<size_t>& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, std::vector<float>& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, std::vector<double>& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, std::vector<std::string>& value) const override { return get_t(name, value); }
 
 private:
     // -- Members
@@ -77,15 +76,13 @@ private:
     // -- Methods
 
     template <typename T>
-    bool __get(const std::string& name, T& value) const {
-        return !hide_.contains(name) &&
-               (std::any_of(front_.rbegin(),
-                            front_.rend(),
-                            [&](const decltype(front_)::value_type& c) { return c->get(name, value); }) ||
-                spec_.get(name, value) ||
-                std::any_of(back_.begin(), back_.end(), [&](const decltype(back_)::value_type& c) {
-                    return c->get(name, value);
-                }));
+    bool get_t(const std::string& name, T& value) const {
+        return !hide_.contains(name)
+               && (std::any_of(front_.rbegin(), front_.rend(),
+                               [&](const decltype(front_)::value_type& c) { return c->get(name, value); })
+                   || spec_.get(name, value)
+                   || std::any_of(back_.begin(), back_.end(),
+                                  [&](const decltype(back_)::value_type& c) { return c->get(name, value); }));
     }
 
     // -- Overridden methods

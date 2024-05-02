@@ -23,7 +23,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<Mercator> __projection("mercator");
+static ProjectionBuilder<Mercator> PROJECTION("mercator");
 
 
 Mercator::Mercator(double meridian, double parallel, Figure* figure, PointLonLat first) :
@@ -53,16 +53,16 @@ Mercator::Mercator(double meridian, double parallel, Figure* figure, PointLonLat
 
     w_  = 1. / m_;
     x0_ = m_ * (lam0_ - lam1);
-    y0_ = m_ * std::log(std::tan(M_PI_4 - 0.5 * phi1) /
-                        std::pow(((1. - e_ * std::sin(phi1)) / (1. + e_ * std::sin(phi1))), 0.5 * e_));
+    y0_ = m_
+          * std::log(std::tan(M_PI_4 - 0.5 * phi1)
+                     / std::pow(((1. - e_ * std::sin(phi1)) / (1. + e_ * std::sin(phi1))), 0.5 * e_));
 
     ASSERT(types::is_approximately_equal(phi1, calculate_phi(std::exp(y0_ * w_)), eps_));
 }
 
 
 Mercator::Mercator(const Spec& spec) :
-    Mercator(spec.get_double("meridian"),
-             spec.get_double("parallel"),
+    Mercator(spec.get_double("meridian"), spec.get_double("parallel"),
              FigureFactory::instance().get(spec.get_string("figure")).create(spec),
              PointLonLat{spec.get_double("lon0"), spec.get_double("lat0")}) {}
 

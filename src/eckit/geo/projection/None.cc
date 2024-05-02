@@ -18,7 +18,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<None> __projection("none");
+static ProjectionBuilder<None> PROJECTION("none");
 
 
 Spec* None::spec() const {

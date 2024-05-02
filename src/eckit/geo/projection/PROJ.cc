@@ -19,7 +19,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<PROJ> __projection("proj");
+static ProjectionBuilder<PROJ> PROJECTION("proj");
 
 
 PROJ::PROJ(const std::string& source, const std::string& target, double lon_minimum) :
@@ -41,8 +41,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 
         Point convert(const PJ_COORD& c) const final { return PointLonLat::make(c.enu.e, c.enu.n, lon_minimum_); }
 
-        explicit LonLat(double lon_minimum) :
-            lon_minimum_(lon_minimum) {}
+        explicit LonLat(double lon_minimum) : lon_minimum_(lon_minimum) {}
         const double lon_minimum_;
     };
 

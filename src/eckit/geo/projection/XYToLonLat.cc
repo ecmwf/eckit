@@ -18,8 +18,8 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<XYToLonLat> __projection1("xy_to_ll");
-static ProjectionBuilder<XYToLonLat> __projection2("plate-carree");
+static ProjectionBuilder<XYToLonLat> PROJECTION1("xy_to_ll");
+static ProjectionBuilder<XYToLonLat> PROJECTION2("plate-carree");
 
 
 Spec* XYToLonLat::spec() const {

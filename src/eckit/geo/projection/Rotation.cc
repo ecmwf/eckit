@@ -25,15 +25,13 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<Rotation> __projection("rotation");
+static ProjectionBuilder<Rotation> PROJECTION("rotation");
 
 
-Rotation::Rotation() :
-    Rotation(-90., 0., 0.) {}
+Rotation::Rotation() : Rotation(-90., 0., 0.) {}
 
 
-Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
-    rotated_(true) {
+Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) : rotated_(true) {
     using M = maths::Matrix3<double>;
 
     struct NonRotated final : Implementation {
@@ -42,16 +40,14 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     };
 
     struct RotationAngle final : Implementation {
-        explicit RotationAngle(double angle) :
-            angle_(angle) {}
+        explicit RotationAngle(double angle) : angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override { return {p.lon + angle_, p.lat}; }
         Spec* spec() const override { return new spec::Custom{{{"angle", angle_}}}; }
         const double angle_;
     };
 
     struct RotationMatrix final : Implementation {
-        explicit RotationMatrix(M&& R) :
-            RotationMatrix(std::move(R), 0, 0, 0) {}
+        explicit RotationMatrix(M&& R) : RotationMatrix(std::move(R), 0, 0, 0) {}
         RotationMatrix(M&& R, double south_pole_lon, double south_pole_lat, double angle) :
             R_(R), south_pole_lon_(south_pole_lon), south_pole_lat_(south_pole_lat), angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override {
@@ -95,29 +91,21 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     // q = Rz Ry Ra p = [  cosφ sinφ   ] [  cosϑ   sinϑ ] [  cosα sinα   ] p
     //                  [ -sinφ cosφ   ] [       1      ] [ -sinα cosα   ]
     //                  [            1 ] [ -sinϑ   cosϑ ] [            1 ]
-    fwd_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp,
-                                              sa * cp * ct + ca * sp,
+    fwd_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp,
                                               cp * st,  //
-                                              -sa * cp - ca * ct * sp,
-                                              ca * cp - sa * ct * sp,
+                                              -sa * cp - ca * ct * sp, ca * cp - sa * ct * sp,
                                               -sp * st,  //
-                                              -ca * st,
-                                              -sa * st,
-                                              ct});
+                                              -ca * st, -sa * st, ct});
 
     // Un-rotate (rotate by -φ, -ϑ, -α):
     // p = Ra Ry Rz q = [ cosα -sinα   ] [ cosϑ   -sinϑ ] [ cosφ -sinφ   ] q
     //                  [ sinα  cosα   ] [      1       ] [ sinφ  cosφ   ]
     //                  [            1 ] [ sinϑ    cosϑ ] [            1 ]
-    inv_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp,
-                                              -sa * cp - ca * ct * sp,
+    inv_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp,
                                               -ca * st,  //
-                                              sa * cp * ct + ca * sp,
-                                              ca * cp - sa * ct * sp,
+                                              sa * cp * ct + ca * sp, ca * cp - sa * ct * sp,
                                               -sa * st,  //
-                                              cp * st,
-                                              -sp * st,
-                                              ct});
+                                              cp * st, -sp * st, ct});
 }
 
 

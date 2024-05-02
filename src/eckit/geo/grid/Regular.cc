@@ -12,6 +12,8 @@
 
 #include "eckit/geo/grid/Regular.h"
 
+#include <regex>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/Spec.h"
@@ -128,8 +130,7 @@ void RegularLL::spec(spec::Custom& custom) const {
 }
 
 
-RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), area::BoundingBox(spec)) {}
+RegularGaussian::RegularGaussian(const Spec& spec) : RegularGaussian(spec.get_unsigned("N"), area::BoundingBox(spec)) {}
 
 
 RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
@@ -200,13 +201,13 @@ struct LambertAzimuthalEqualArea final : public Regular {
 };
 
 
-static const GridRegisterName<RegularLL> __grid_pattern1(REGULAR_LL_PATTERN);
-static const GridRegisterName<RegularGaussian> __grid_pattern2("[fF][1-9][0-9]*");
+static const GridRegisterName<RegularLL> GRIDNAME1(REGULAR_LL_PATTERN);
+static const GridRegisterName<RegularGaussian> GRIDNAME2("[fF][1-9][0-9]*");
 
-static const GridRegisterType<RegularLL> __grid_type1("regular_ll");
-static const GridRegisterType<RegularGaussian> __grid_type2("regular_gg");
-static const GridRegisterType<Mercator> __grid_type3("mercator");
-static const GridRegisterType<LambertAzimuthalEqualArea> __grid_type4("lambert_azimuthal_equal_area");
+static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
+static const GridRegisterType<RegularGaussian> GRIDTYPE2("regular_gg");
+static const GridRegisterType<Mercator> GRIDTYPE3("mercator");
+static const GridRegisterType<LambertAzimuthalEqualArea> GRIDTYPE4("lambert_azimuthal_equal_area");
 
 
 }  // namespace eckit::geo::grid

@@ -183,9 +183,9 @@ Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
 
 
 ORCA::ORCARecord::bytes_t ORCA::ORCARecord::footprint() const {
-    return sizeof(dimensions_.front()) * dimensions_.size() + sizeof(halo_.front()) * halo_.size() +
-           sizeof(pivot_.front()) * pivot_.size() + sizeof(longitudes_.front()) * longitudes_.size() +
-           sizeof(latitudes_.front()) * latitudes_.size() + sizeof(flags_.front()) * flags_.size();
+    return sizeof(dimensions_.front()) * dimensions_.size() + sizeof(halo_.front()) * halo_.size()
+           + sizeof(pivot_.front()) * pivot_.size() + sizeof(longitudes_.front()) * longitudes_.size()
+           + sizeof(latitudes_.front()) * latitudes_.size() + sizeof(flags_.front()) * flags_.size();
 }
 
 
@@ -328,8 +328,8 @@ void ORCA::spec(spec::Custom& custom) const {
 }
 
 
-static const GridRegisterType<ORCA> __grid_type("ORCA");
-static const GridRegisterName<ORCA> __grid_pattern(GridRegisterName<ORCA>::uid_pattern);
+static const GridRegisterType<ORCA> GRIDTYPE("ORCA");
+static const GridRegisterName<ORCA> GRIDNAME(GridRegisterName<ORCA>::uid_pattern);
 
 
 }  // namespace eckit::geo::grid

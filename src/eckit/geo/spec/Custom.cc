@@ -29,28 +29,28 @@ namespace {
 
 
 template <typename From, typename To>
-bool __get_s(const From& from, To& to) {
+bool get_t_s(const From& from, To& to) {
     to = static_cast<To>(from);
     return true;
 }
 
 
 template <typename From>
-bool __get_s(const From& from, std::string& to) {
+bool get_t_s(const From& from, std::string& to) {
     to = std::to_string(from);
     return true;
 }
 
 
 template <typename From>
-bool __get_s(const From& from, From& to) {
+bool get_t_s(const From& from, From& to) {
     to = from;
     return true;
 }
 
 
 template <typename From, typename To>
-bool __get_v(const std::vector<From>& from, std::vector<To>& to) {
+bool get_t_v(const std::vector<From>& from, std::vector<To>& to) {
     to.clear();
     for (const auto& f : from) {
         to.emplace_back(static_cast<To>(f));
@@ -60,20 +60,20 @@ bool __get_v(const std::vector<From>& from, std::vector<To>& to) {
 
 
 template <typename From>
-bool __get_v(const std::vector<From>& from, std::vector<From>& to) {
+bool get_t_v(const std::vector<From>& from, std::vector<From>& to) {
     to = from;
     return true;
 }
 
 
 template <typename T>
-bool __get_s_integral(const Custom::container_type& map, const std::string& name, T& value) {
+bool get_t_s_integral(const Custom::container_type& map, const std::string& name, T& value) {
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
-        return std::holds_alternative<int>(v)         ? __get_s(std::get<int>(v), value)
-               : std::holds_alternative<long>(v)      ? __get_s(std::get<long>(v), value)
-               : std::holds_alternative<long long>(v) ? __get_s(std::get<long long>(v), value)
-               : std::holds_alternative<size_t>(v)    ? __get_s(std::get<size_t>(v), value)
+        return std::holds_alternative<int>(v)         ? get_t_s(std::get<int>(v), value)
+               : std::holds_alternative<long>(v)      ? get_t_s(std::get<long>(v), value)
+               : std::holds_alternative<long long>(v) ? get_t_s(std::get<long long>(v), value)
+               : std::holds_alternative<size_t>(v)    ? get_t_s(std::get<size_t>(v), value)
                                                       : false;
     }
     return false;
@@ -81,15 +81,15 @@ bool __get_s_integral(const Custom::container_type& map, const std::string& name
 
 
 template <typename T>
-bool __get_s_real(const Custom::container_type& map, const std::string& name, T& value) {
-    if (__get_s_integral(map, name, value)) {
+bool get_t_s_real(const Custom::container_type& map, const std::string& name, T& value) {
+    if (get_t_s_integral(map, name, value)) {
         return true;
     }
 
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
-        return std::holds_alternative<float>(v)    ? __get_s(std::get<float>(v), value)
-               : std::holds_alternative<double>(v) ? __get_s(std::get<double>(v), value)
+        return std::holds_alternative<float>(v)    ? get_t_s(std::get<float>(v), value)
+               : std::holds_alternative<double>(v) ? get_t_s(std::get<double>(v), value)
                                                    : false;
     }
     return false;
@@ -97,13 +97,13 @@ bool __get_s_real(const Custom::container_type& map, const std::string& name, T&
 
 
 template <typename T>
-bool __get_v_integral(const Custom::container_type& map, const std::string& name, T& value) {
+bool get_t_v_integral(const Custom::container_type& map, const std::string& name, T& value) {
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
-        return std::holds_alternative<std::vector<int>>(v)         ? __get_v(std::get<std::vector<int>>(v), value)
-               : std::holds_alternative<std::vector<long>>(v)      ? __get_v(std::get<std::vector<long>>(v), value)
-               : std::holds_alternative<std::vector<long long>>(v) ? __get_v(std::get<std::vector<long long>>(v), value)
-               : std::holds_alternative<std::vector<size_t>>(v)    ? __get_v(std::get<std::vector<size_t>>(v), value)
+        return std::holds_alternative<std::vector<int>>(v)         ? get_t_v(std::get<std::vector<int>>(v), value)
+               : std::holds_alternative<std::vector<long>>(v)      ? get_t_v(std::get<std::vector<long>>(v), value)
+               : std::holds_alternative<std::vector<long long>>(v) ? get_t_v(std::get<std::vector<long long>>(v), value)
+               : std::holds_alternative<std::vector<size_t>>(v)    ? get_t_v(std::get<std::vector<size_t>>(v), value)
                                                                    : false;
     }
     return false;
@@ -111,15 +111,15 @@ bool __get_v_integral(const Custom::container_type& map, const std::string& name
 
 
 template <typename T>
-bool __get_v_real(const Custom::container_type& map, const std::string& name, T& value) {
-    if (__get_v_integral(map, name, value)) {
+bool get_t_v_real(const Custom::container_type& map, const std::string& name, T& value) {
+    if (get_t_v_integral(map, name, value)) {
         return true;
     }
 
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
-        return std::holds_alternative<std::vector<float>>(v)    ? __get_v(std::get<std::vector<float>>(v), value)
-               : std::holds_alternative<std::vector<double>>(v) ? __get_v(std::get<std::vector<double>>(v), value)
+        return std::holds_alternative<std::vector<float>>(v)    ? get_t_v(std::get<std::vector<float>>(v), value)
+               : std::holds_alternative<std::vector<double>>(v) ? get_t_v(std::get<std::vector<double>>(v), value)
                                                                 : false;
     }
     return false;
@@ -127,7 +127,7 @@ bool __get_v_real(const Custom::container_type& map, const std::string& name, T&
 
 
 template <typename T>
-Custom::value_type __from_value(const Value& value) {
+Custom::value_type from_value_t(const Value& value) {
     T to;
     fromValue(to, value);
     return {to};
@@ -143,18 +143,15 @@ JSON& operator<<(JSON& out, const Custom::value_type& value) {
 }  // namespace
 
 
-Custom::key_type::key_type(const std::string& s) :
-    std::string{s} {
+Custom::key_type::key_type(const std::string& s) : std::string{s} {
     std::transform(begin(), end(), begin(), [](unsigned char c) -> unsigned char { return std::tolower(c); });
 }
 
 
-Custom::Custom(const Custom::container_type& map) :
-    map_(map) {}
+Custom::Custom(const Custom::container_type& map) : map_(map) {}
 
 
-Custom::Custom(Custom::container_type&& map) :
-    map_(map) {}
+Custom::Custom(Custom::container_type&& map) : map_(map) {}
 
 
 Custom::Custom(const Value& value) {
@@ -182,12 +179,10 @@ Custom::Custom(const Value& value) {
 }
 
 
-Custom::Custom(const Custom& custom) :
-    Custom(custom.map_) {}
+Custom::Custom(const Custom& custom) : Custom(custom.map_) {}
 
 
-Custom::Custom(Custom&& custom) :
-    Custom(custom.map_) {}
+Custom::Custom(Custom&& custom) : Custom(custom.map_) {}
 
 
 Custom& Custom::operator=(Custom&& custom) {
@@ -300,13 +295,13 @@ void Custom::set(const std::string& key, const Value& value) {
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
 
     auto val = value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })
-                   ? __from_value<std::vector<double>>(value)
+                   ? from_value_t<std::vector<double>>(value)
                : value.isList() && list_of(value, [](const Value& v) { return v.isNumber(); })
-                   ? __from_value<std::vector<number_type>>(value)
-               : value.isList()   ? __from_value<std::vector<std::string>>(value)
-               : value.isDouble() ? __from_value<double>(value)
-               : value.isNumber() ? __from_value<number_type>(value)
-                                  : __from_value<std::string>(value);
+                   ? from_value_t<std::vector<number_type>>(value)
+               : value.isList()   ? from_value_t<std::vector<std::string>>(value)
+               : value.isDouble() ? from_value_t<double>(value)
+               : value.isNumber() ? from_value_t<number_type>(value)
+                                  : from_value_t<std::string>(value);
 
     std::visit([&](const auto& val) { set(key, val); }, val);
 }
@@ -324,7 +319,7 @@ bool Custom::get(const std::string& name, std::string& value) const {
             return true;
         }
 
-        return __get_s_real(map_, name, value);
+        return get_t_s_real(map_, name, value);
     }
     return false;
 }
@@ -337,7 +332,7 @@ bool Custom::get(const std::string& name, bool& value) const {
             return true;
         }
 
-        if (int i = 0; __get_s_integral<int>(map_, name, i)) {
+        if (int i = 0; get_t_s_integral<int>(map_, name, i)) {
             value = i != 0;
             return true;
         }
@@ -347,62 +342,62 @@ bool Custom::get(const std::string& name, bool& value) const {
 
 
 bool Custom::get(const std::string& name, int& value) const {
-    return __get_s_integral(map_, name, value);
+    return get_t_s_integral(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, long& value) const {
-    return __get_s_integral(map_, name, value);
+    return get_t_s_integral(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, long long& value) const {
-    return __get_s_integral(map_, name, value);
+    return get_t_s_integral(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, size_t& value) const {
-    return __get_s_integral(map_, name, value);
+    return get_t_s_integral(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, float& value) const {
-    return __get_s_real(map_, name, value);
+    return get_t_s_real(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, double& value) const {
-    return __get_s_real(map_, name, value);
+    return get_t_s_real(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, std::vector<int>& value) const {
-    return __get_v_integral(map_, name, value);
+    return get_t_v_integral(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, std::vector<long>& value) const {
-    return __get_v_integral(map_, name, value);
+    return get_t_v_integral(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, std::vector<long long>& value) const {
-    return __get_v_integral(map_, name, value);
+    return get_t_v_integral(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, std::vector<size_t>& value) const {
-    return __get_v_integral(map_, name, value);
+    return get_t_v_integral(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, std::vector<float>& value) const {
-    return __get_v_real(map_, name, value);
+    return get_t_v_real(map_, name, value);
 }
 
 
 bool Custom::get(const std::string& name, std::vector<double>& value) const {
-    return __get_v_real(map_, name, value);
+    return get_t_v_real(map_, name, value);
 }
 
 

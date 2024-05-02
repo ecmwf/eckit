@@ -12,6 +12,8 @@
 
 #include "eckit/geo/Figure.h"
 
+#include <cmath>
+
 #include "eckit/exception/Exceptions.h"
 
 

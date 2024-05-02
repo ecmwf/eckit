@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstring>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -38,8 +39,7 @@ void longitude_in_range(double reference, double& lon) {
 
 
 struct BoundLonLat {
-    BoundLonLat(PointLonLat min, PointLonLat max) :
-        min_(min), max_(max) {}
+    BoundLonLat(PointLonLat min, PointLonLat max) : min_(min), max_(max) {}
 
     explicit operator area::BoundingBox() const { return {max_.lat, min_.lon, min_.lat, max_.lon}; }
 
@@ -150,8 +150,8 @@ struct DerivateCentral final : Derivate {
 
 
 struct DerivateFactory {
-    static const Derivate* build(
-        const std::string& type, const Projection& p, Point2 A, Point2 B, double h, double refLongitude = 0.) {
+    static const Derivate* build(const std::string& type, const Projection& p, Point2 A, Point2 B, double h,
+                                 double refLongitude = 0.) {
         ASSERT(0. < h);
 
         if (A.distance2(B) < h * h) {
@@ -177,8 +177,8 @@ private:
     }
 
     // This is 'const' as Grid should always be immutable
-    const Derivate* build_(
-        const std::string& type, const Projection& p, Point2 A, Point2 B, double h, double refLongitude) const;
+    const Derivate* build_(const std::string& type, const Projection& p, Point2 A, Point2 B, double h,
+                           double refLongitude) const;
 
     void list_(std::ostream&) const;
 };
@@ -306,7 +306,7 @@ area::BoundingBox bounding_box(Point2 min, Point2 max, Projection& projection) {
 
 
     // 4. return bounding box
-    return {bounds};
+    return area::BoundingBox{bounds};
 }
 
 

@@ -14,8 +14,6 @@
 
 #include <memory>
 
-#include <proj.h>
-
 #include "eckit/geo/Projection.h"
 
 
@@ -25,35 +23,6 @@ namespace eckit::geo::projection {
 /// Calculate coordinates using PROJ
 class PROJ final : public Projection {
 public:
-    // -- Types
-
-    struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
-        using t = std::unique_ptr<PJ, decltype(&proj_destroy)>;
-        explicit pj_t(PJ* ptr) :
-            t(ptr, &proj_destroy) {}
-        explicit operator PJ*() const { return t::get(); }
-    };
-
-    struct ctx_t : std::unique_ptr<PJ_CONTEXT, decltype(&proj_context_destroy)> {
-        using t = std::unique_ptr<PJ_CONTEXT, decltype(&proj_context_destroy)>;
-        explicit ctx_t(PJ_CONTEXT* ptr) :
-            t(ptr, &proj_context_destroy) {}
-        explicit operator PJ_CONTEXT*() const { return t::get(); }
-    };
-
-    struct Convert {
-        Convert()          = default;
-        virtual ~Convert() = default;
-
-        Convert(const Convert&)        = delete;
-        Convert(Convert&&)             = delete;
-        void operator=(const Convert&) = delete;
-        void operator=(Convert&&)      = delete;
-
-        virtual PJ_COORD convert(const Point&) const = 0;
-        virtual Point convert(const PJ_COORD&) const = 0;
-    };
-
     // -- Exceptions
     // None
 
@@ -92,10 +61,14 @@ public:
     // None
 
 private:
+    // -- Types
+
+    struct Implementation;
+    struct Convert;
+
     // -- Members
 
-    pj_t proj_;
-    ctx_t ctx_;
+    std::unique_ptr<Implementation> implementation_;
 
     const std::string source_;
     const std::string target_;

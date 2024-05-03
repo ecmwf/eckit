@@ -12,6 +12,8 @@
 
 #include "eckit/geo/projection/PROJ.h"
 
+#include <proj.h>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 
@@ -22,16 +24,50 @@ namespace eckit::geo::projection {
 static ProjectionBuilder<PROJ> PROJECTION("proj");
 
 
+template <typename T, typename D>
+struct proj_ptr_container_t : std::unique_ptr<T, D> {
+    using t = std::unique_ptr<T, D>;
+    explicit proj_ptr_container_t(T* ptr) : t(ptr, D()) {}
+    explicit operator T*() const { return t::get(); }
+};
+
+
+using pj_t  = proj_ptr_container_t<PJ, decltype(&proj_destroy)>;
+using ctx_t = proj_ptr_container_t<PJ_CONTEXT, decltype(&proj_context_destroy)>;
+
+
+struct PROJ::Implementation {
+    explicit Implementation(PJ* pj_ptr, PJ_CONTEXT* pjc_ptr = PJ_DEFAULT_CTX) : proj(pj_ptr), ctx(pjc_ptr) {}
+    pj_t proj;
+    ctx_t ctx;
+};
+
+
+struct PROJ::Convert {
+    Convert()          = default;
+    virtual ~Convert() = default;
+
+    Convert(const Convert&)        = delete;
+    Convert(Convert&&)             = delete;
+    void operator=(const Convert&) = delete;
+    void operator=(Convert&&)      = delete;
+
+    virtual PJ_COORD convert(const Point&) const = 0;
+    virtual Point convert(const PJ_COORD&) const = 0;
+};
+
+
 PROJ::PROJ(const std::string& source, const std::string& target, double lon_minimum) :
-    proj_(nullptr), ctx_(PJ_DEFAULT_CTX), source_(source), target_(target) {
+    implementation_(nullptr), source_(source), target_(target) {
+    ASSERT(implementation_);
     ASSERT(!source.empty());
 
     // projection, normalised
-    pj_t p(proj_create_crs_to_crs(ctx_.get(), source_.c_str(), target_.c_str(), nullptr));
+    pj_t p(proj_create_crs_to_crs(implementation_->ctx.get(), source_.c_str(), target_.c_str(), nullptr));
     ASSERT(p);
 
-    proj_.reset(proj_normalize_for_visualization(ctx_.get(), p.get()));
-    ASSERT(proj_);
+    implementation_->proj.reset(proj_normalize_for_visualization(implementation_->ctx.get(), p.get()));
+    ASSERT(implementation_->proj);
 
     struct LonLat final : Convert {
         PJ_COORD convert(const Point& p) const final {
@@ -113,12 +149,12 @@ std::string PROJ::ellipsoid(const std::string& string) {
 
 
 Point PROJ::fwd(const Point& p) const {
-    return to_->convert(proj_trans(proj_.get(), PJ_FWD, from_->convert(p)));
+    return to_->convert(proj_trans(implementation_->proj.get(), PJ_FWD, from_->convert(p)));
 }
 
 
 Point PROJ::inv(const Point& q) const {
-    return from_->convert(proj_trans(proj_.get(), PJ_INV, to_->convert(q)));
+    return from_->convert(proj_trans(implementation_->proj.get(), PJ_INV, to_->convert(q)));
 }
 
 

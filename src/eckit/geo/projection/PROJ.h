@@ -64,7 +64,6 @@ private:
     // -- Types
 
     struct Implementation;
-    struct Convert;
 
     // -- Members
 
@@ -72,9 +71,6 @@ private:
 
     const std::string source_;
     const std::string target_;
-
-    std::unique_ptr<Convert> from_;
-    std::unique_ptr<Convert> to_;
 
     // -- Methods
     // None

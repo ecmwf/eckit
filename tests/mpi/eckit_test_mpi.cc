@@ -942,6 +942,9 @@ CASE("test_probe") {
 
     comm.barrier();
 
+    std::stringstream errstr;
+    bool error = false;
+
     auto count = nproc;
     while (count > 0) {
         auto status = comm.probe(comm.anySource(), comm.anyTag());
@@ -952,11 +955,20 @@ CASE("test_probe") {
         EXPECT(sz == 1);
 
         comm.receive(&data[status.source()], sz, status.source(), status.tag());
+        errstr << "[test_probe:" << irank << "] receive data["<<status.source()<<"] = " << data[status.source()] << "  -- EXPECTED: " << status.source() << '\n';
+        if( data[status.source()] != status.source()) {
+            error = true;
+        }
         --count;
     }
 
-    for (int i = 0; i < nproc; i++) {
-        EXPECT(i == data[i]);
+    if (error) {
+        errstr << "[test_probe:" << irank << "] data = [ ";
+        for( auto& v: data ) {
+            errstr << v << " ";
+        }
+        errstr << " ]\n";
+        std::cout << errstr.str() << std::endl;
     }
 
     std::vector<mpi::Status> sts = comm.waitAll(requests);
@@ -964,6 +976,9 @@ CASE("test_probe") {
     for (auto& st : sts) {
         EXPECT(st.error() == 0);
     }
+
+    comm.barrier();
+    EXPECT(!error);
 }
 
 CASE("test_iProbe") {
@@ -982,6 +997,9 @@ CASE("test_iProbe") {
 
     comm.barrier();
 
+    std::stringstream errstr;
+    bool error = false;
+
     auto count = nproc;
     while (count > 0) {
         auto status = comm.iProbe(comm.anySource(), comm.anyTag());
@@ -996,12 +1014,20 @@ CASE("test_iProbe") {
         EXPECT(sz == 1);
 
         comm.receive(&data[status.source()], sz, status.source(), status.tag());
-
+        errstr << "[test_iProbe:" << irank << "] receive data["<<status.source()<<"] = " << data[status.source()] << "  -- EXPECTED: " << status.source() << '\n';
+        if( data[status.source()] != status.source()) {
+            error = true;
+        }
         --count;
     }
 
-    for (int i = 0; i < nproc; i++) {
-        EXPECT(i == data[i]);
+    if (error) {
+        errstr << "[test_iProbe:" << irank << "] data = [ ";
+        for( auto& v: data ) {
+            errstr << v << " ";
+        }
+        errstr << " ]\n";
+        std::cout << errstr.str() << std::endl;
     }
 
     std::vector<mpi::Status> sts = comm.waitAll(requests);
@@ -1009,6 +1035,9 @@ CASE("test_iProbe") {
     for (auto& st : sts) {
         EXPECT(st.error() == 0);
     }
+
+    comm.barrier();
+    EXPECT(!error);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

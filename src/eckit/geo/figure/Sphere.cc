@@ -32,6 +32,11 @@ Sphere::Sphere(double R) : R_(R) {
 Sphere::Sphere(const Spec& spec) : Sphere(spec.get_double("R")) {}
 
 
+double Sphere::area() const {
+    return 4. * M_PI * R_ * R_;
+}
+
+
 double Sphere::area(const area::BoundingBox& bbox) const {
     auto lonf = bbox.isPeriodicWestEast() ? 1. : ((bbox.east - bbox.west) / PointLonLat::GLOBE);
     ASSERT(0. <= lonf && lonf <= 1.);
@@ -42,7 +47,7 @@ double Sphere::area(const area::BoundingBox& bbox) const {
     auto latf = 0.5 * (sn - ss);
     ASSERT(0. <= latf && latf <= 1.);
 
-    return 4. * M_PI * R_ * R_ * latf * lonf;
+    return area() * latf * lonf;
 }
 
 

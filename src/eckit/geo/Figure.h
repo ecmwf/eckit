@@ -64,6 +64,9 @@ public:
     virtual double a() const;
     virtual double b() const;
 
+    /// @brief Calculate surface area ([[R]**2])
+    virtual double area() const;
+
     /// @brief Calculate the bounding box prescribed area ([[R]**2])
     virtual double area(const area::BoundingBox&) const;
 

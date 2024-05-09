@@ -23,16 +23,16 @@
 namespace eckit::geo {
 
 
-double PointLonLat::normalise_angle_to_minimum(double a, double minimum) {
-    auto modulo_360 = [](double a) { return a - 360. * std::floor(a / 360.); };
+PointLonLat::value_type PointLonLat::normalise_angle_to_minimum(value_type a, value_type minimum) {
+    auto modulo_360 = [](auto a) { return a - 360. * std::floor(a / 360.); };
 
     auto diff = a - minimum;
     return 0. <= diff && diff < 360. ? a : modulo_360(diff) + minimum;
 }
 
 
-double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
-    auto modulo_360 = [](double a) { return a - 360. * std::ceil(a / 360.); };
+PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, value_type maximum) {
+    auto modulo_360 = [](auto a) { return a - 360. * std::ceil(a / 360.); };
 
     auto diff = a - maximum;
     return -360. < diff && diff <= 0. ? a : modulo_360(a - maximum) + maximum;
@@ -42,14 +42,14 @@ double PointLonLat::normalise_angle_to_maximum(double a, double maximum) {
 void PointLonLat::assert_latitude_range(const PointLonLat& P) {
     if (!(-90. <= P.lat && P.lat <= 90.)) {
         std::ostringstream oss;
-        oss.precision(std::numeric_limits<double>::max_digits10);
+        oss.precision(std::numeric_limits<value_type>::max_digits10);
         oss << "Invalid latitude " << P.lat;
         throw BadValue(oss.str(), Here());
     }
 }
 
 
-PointLonLat PointLonLat::make(double lon, double lat, double lon_minimum, double eps) {
+PointLonLat PointLonLat::make(value_type lon, value_type lat, value_type lon_minimum, value_type eps) {
     lat = normalise_angle_to_minimum(lat, -90.);
 
     if (types::is_strictly_greater(lat, 90., eps)) {
@@ -64,7 +64,7 @@ PointLonLat PointLonLat::make(double lon, double lat, double lon_minimum, double
 }
 
 
-bool points_equal(const PointLonLat& a, const PointLonLat& b, double eps) {
+bool points_equal(const PointLonLat& a, const PointLonLat& b, PointLonLat::value_type eps) {
     auto c = PointLonLat::make(a.lon, a.lat, 0., eps);
     auto d = PointLonLat::make(b.lon, b.lat, 0., eps);
     return types::is_approximately_equal(c.lon, d.lon, eps) && types::is_approximately_equal(c.lat, d.lat, eps);

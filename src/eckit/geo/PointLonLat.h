@@ -21,23 +21,19 @@ namespace eckit::geo {
 
 
 class PointLonLat final : protected std::array<double, 2> {
-private:
+public:
     // -- Types
 
-    using container_type = std::array<double, 2>;
+    using container_type = array;
     using container_type::value_type;
 
-public:
     // -- Constructors
 
-    PointLonLat(double lon, double lat) :
-        container_type{lon, lat} {}
+    PointLonLat(value_type lon, value_type lat) : container_type{lon, lat} {}
 
-    PointLonLat(const PointLonLat& other) :
-        container_type(other) {}
+    PointLonLat(const PointLonLat& other) : container_type(other) {}
 
-    PointLonLat(PointLonLat&& other) :
-        container_type(other) {}
+    PointLonLat(PointLonLat&& other) : container_type(other) {}
 
     // -- Destructor
 
@@ -57,24 +53,24 @@ public:
 
     // -- Members
 
-    value_type& lon = container_type::operator[](0);
-    value_type& lat = container_type::operator[](1);
+    const value_type& lon = container_type::operator[](0);
+    const value_type& lat = container_type::operator[](1);
 
     // -- Methods
 
-    static double normalise_angle_to_minimum(double, double minimum);
+    static value_type normalise_angle_to_minimum(value_type, value_type minimum);
 
-    static double normalise_angle_to_maximum(double, double maximum);
+    static value_type normalise_angle_to_maximum(value_type, value_type maximum);
 
     static void assert_latitude_range(const PointLonLat&);
 
-    static PointLonLat make(double lon, double lat, double lon_minimum = 0, double eps = EPS);
+    static PointLonLat make(value_type lon, value_type lat, value_type lon_minimum = 0, value_type eps = EPS);
 
     PointLonLat antipode() const { return make(lon, lat + 180.); }
 
     // -- Class members
 
-    static constexpr double EPS = 1e-9;
+    static constexpr value_type EPS = 1e-9;
 
     // -- Class methods
 
@@ -94,7 +90,7 @@ public:
 
     friend PointLonLat operator-(const PointLonLat& p, const PointLonLat& q) { return {p.lon - q.lon, p.lat - q.lat}; }
     friend PointLonLat operator+(const PointLonLat& p, const PointLonLat& q) { return {p.lon + q.lon, p.lat + q.lat}; }
-    friend PointLonLat operator*(const PointLonLat& p, double d) { return {p.lon * d, p.lat * d}; }
+    friend PointLonLat operator*(const PointLonLat& p, value_type d) { return {p.lon * d, p.lat * d}; }
 
     friend bool operator<(const PointLonLat& p, const PointLonLat& q) {
         return static_cast<const container_type&>(p) < static_cast<const container_type&>(q);
@@ -102,7 +98,7 @@ public:
 };
 
 
-bool points_equal(const PointLonLat&, const PointLonLat&, double eps = PointLonLat::EPS);
+bool points_equal(const PointLonLat&, const PointLonLat&, PointLonLat::value_type eps = PointLonLat::EPS);
 
 
 }  // namespace eckit::geo

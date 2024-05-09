@@ -27,14 +27,16 @@
 namespace eckit::geo::util {
 
 
-void longitude_in_range(double reference, double& lon) {
+PointLonLat longitude_in_range(double reference, const PointLonLat& p) {
     // keep longitude difference (to reference) range below +-180 degree
+    auto lon = p.lon;
     while (lon > reference + 180.) {
         lon -= 360.;
     }
     while (lon <= reference - 180.) {
         lon += 360.;
     }
+    return {lon, p.lat};
 }
 
 
@@ -52,9 +54,8 @@ struct BoundLonLat {
         max_     = first_ ? add : PointLonLat::componentsMax(max_, add);
         first_   = false;
 
-        min_.lat = std::max(min_.lat, -90.);
-        max_.lat = std::min(max_.lat, 90.);
-        max_.lon = std::min(max_.lon, min_.lon + 360.);
+        min_ = {min_.lon, std::max(min_.lat, -90.)};
+        max_ = {std::min(max_.lon, min_.lon + 360.), std::min(max_.lat, 90.)};
         ASSERT(min_.lon <= max_.lon && min_.lat <= max_.lat);
 
         includesSouthPole(types::is_approximately_equal(min_.lat, -90.));
@@ -64,14 +65,14 @@ struct BoundLonLat {
 
     bool crossesDateLine(bool yes) {
         if ((crossesDateLine_ = crossesDateLine_ || yes)) {
-            max_.lon = min_.lon + 360.;
+            max_ = {min_.lon + 360., max_.lat};
         }
         return crossesDateLine_;
     }
 
     bool includesNorthPole(bool yes) {
         if ((includesNorthPole_ = includesNorthPole_ || yes)) {
-            max_.lat = 90.;
+            max_ = {max_.lon, 90.};
         }
         crossesDateLine(includesNorthPole_);
         return includesNorthPole_;
@@ -79,7 +80,7 @@ struct BoundLonLat {
 
     bool includesSouthPole(bool yes) {
         if ((includesSouthPole_ = includesSouthPole_ || yes)) {
-            min_.lat = -90.;
+            min_ = {min_.lon, -90.};
         }
         crossesDateLine(includesSouthPole_);
         return includesSouthPole_;
@@ -113,9 +114,7 @@ struct Derivate {
     virtual PointLonLat d(Point2) const = 0;
 
     PointLonLat f(const Point2& p) const {
-        auto q = std::get<PointLonLat>(projection_.inv(p));
-        longitude_in_range(refLongitude_, q.lon);
-        return q;
+        return longitude_in_range(refLongitude_, std::get<PointLonLat>(projection_.inv(p)));
     }
 
     inline const Point2& H() const { return H_; }
@@ -217,8 +216,7 @@ area::BoundingBox bounding_box(Point2 min, Point2 max, Projection& projection) {
 
     BoundLonLat bounds(centre_ll, centre_ll);
     for (const auto& [A, dummy] : segments) {
-        auto q = std::get<PointLonLat>(projection.inv(A));
-        longitude_in_range(centre_lon, q.lon);
+        auto q = longitude_in_range(centre_lon, std::get<PointLonLat>(projection.inv(A)));
         bounds.extend(q, PointLonLat{h_ll, h_ll});
     }
 

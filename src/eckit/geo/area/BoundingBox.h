@@ -16,6 +16,7 @@
 #include <ostream>
 
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo {
@@ -75,7 +76,7 @@ public:
 
     bool intersects(BoundingBox&) const;
 
-    bool contains(double lat, double lon) const;
+    bool contains(const PointLonLat&) const;
     bool contains(const BoundingBox&) const;
     bool empty() const;
     double area(double radius) const;

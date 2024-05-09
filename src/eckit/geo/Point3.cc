@@ -19,24 +19,24 @@
 namespace eckit::geo {
 
 
-double Point3::distance(const Point3& p, size_t axis) const {
+Point3::value_type Point3::distance(const Point3& p, size_t axis) const {
     return std::abs(x(axis) - p.x(axis));
 }
 
 
-double Point3::distance(const Point3& p) const {
+Point3::value_type Point3::distance(const Point3& p) const {
     return std::sqrt(distance2(p));
 }
 
 
-double Point3::distance2(const Point3& p) const {
+Point3::value_type Point3::distance2(const Point3& p) const {
     return (X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y) + (Z - p.Z) * (Z - p.Z);
 }
 
 
-bool points_equal(const Point3& a, const Point3& b, double eps) {
-    return types::is_approximately_equal(a.X, b.X, eps) && types::is_approximately_equal(a.Y, b.Y, eps) &&
-           types::is_approximately_equal(a.Z, b.Z, eps);
+bool points_equal(const Point3& a, const Point3& b, Point3::value_type eps) {
+    return types::is_approximately_equal(a.X, b.X, eps) && types::is_approximately_equal(a.Y, b.Y, eps)
+           && types::is_approximately_equal(a.Z, b.Z, eps);
 }
 
 

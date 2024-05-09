@@ -119,14 +119,14 @@ bool BoundingBox::containsSouthPole() const {
 }
 
 
-bool BoundingBox::contains(double lat, double lon) const {
-    return lat <= north && lat >= south && PointLonLat::normalise_angle_to_minimum(lon, west) <= east;
+bool BoundingBox::contains(const PointLonLat& p) const {
+    return p.lat <= north && p.lat >= south && PointLonLat::normalise_angle_to_minimum(p.lon, west) <= east;
 }
 
 
 bool BoundingBox::contains(const BoundingBox& other) const {
     if (other.empty()) {
-        return contains(other.south, other.west);
+        return contains({other.south, other.west});
     }
 
     // check for West/East range (if non-periodic), then other's corners
@@ -134,8 +134,8 @@ bool BoundingBox::contains(const BoundingBox& other) const {
         return false;
     }
 
-    return contains(other.north, other.west) && contains(other.north, other.east) &&
-           contains(other.south, other.west) && contains(other.south, other.east);
+    return contains({other.north, other.west}) && contains({other.north, other.east})
+           && contains({other.south, other.west}) && contains({other.south, other.east});
 }
 
 

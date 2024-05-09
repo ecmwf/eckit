@@ -19,26 +19,21 @@ namespace eckit::geo {
 
 
 class Point2 final : protected std::array<double, 2> {
-private:
+public:
     // -- Types
 
-    using container_type = std::array<double, 2>;
+    using container_type = array;
     using container_type::value_type;
 
-public:
     // -- Constructors
 
-    Point2() :
-        Point2(0., 0.) {}
+    Point2() : Point2(0., 0.) {}
 
-    Point2(double x, double y) :
-        container_type{x, y} {}
+    Point2(value_type x, value_type y) : container_type{x, y} {}
 
-    Point2(const Point2& other) :
-        container_type(other) {}
+    Point2(const Point2& other) : container_type(other) {}
 
-    Point2(Point2&& other) :
-        container_type(other) {}
+    Point2(Point2&& other) : container_type(other) {}
 
     // -- Destructor
 
@@ -60,33 +55,33 @@ public:
 
     // -- Members
 
-    double& X = container_type::operator[](0);
-    double& Y = container_type::operator[](1);
+    const value_type& X = container_type::operator[](0);
+    const value_type& Y = container_type::operator[](1);
 
     // -- Methods
 
     static size_t dimensions() { return DIMS; }
 
-    static double norm(const Point2& p) { return p.norm(); }
+    static value_type norm(const Point2& p) { return p.norm(); }
     static Point2 normalize(const Point2& p) { return p.normalize(); }
     static Point2 middle(const Point2& p, const Point2& q) { return p.middle(q); }
-    static double distance(const Point2& p, const Point2& q, size_t axis) { return p.distance(q, axis); }
-    static double distance(const Point2& p, const Point2& q) { return p.distance(q); }
-    static double distance2(const Point2& p, const Point2& q) { return p.distance2(q); }
+    static value_type distance(const Point2& p, const Point2& q, size_t axis) { return p.distance(q, axis); }
+    static value_type distance(const Point2& p, const Point2& q) { return p.distance(q); }
+    static value_type distance2(const Point2& p, const Point2& q) { return p.distance2(q); }
 
-    double norm() const;
+    value_type norm() const;
     Point2 normalize() const;
     Point2 middle(const Point2&) const;
-    double distance(const Point2&, size_t axis) const;
-    double distance(const Point2&) const;
-    double distance2(const Point2&) const;
+    value_type distance(const Point2&, size_t axis) const;
+    value_type distance(const Point2&) const;
+    value_type distance2(const Point2&) const;
 
-    double x(size_t axis) const { return container_type::operator[](axis); }
+    value_type x(size_t axis) const { return container_type::operator[](axis); }
 
     // -- Class members
 
-    static constexpr size_t DIMS = 2;
-    static constexpr double EPS  = 1e-9;
+    static constexpr size_t DIMS    = 2;
+    static constexpr value_type EPS = 1e-9;
 
     // -- Friends
 
@@ -96,14 +91,14 @@ public:
 
     friend Point2 operator-(const Point2& p, const Point2& q) { return {p.X - q.X, p.Y - q.Y}; }
     friend Point2 operator+(const Point2& p, const Point2& q) { return {p.X + q.X, p.Y + q.Y}; }
-    friend Point2 operator*(const Point2& p, double d) { return {p.X * d, p.Y * d}; }
+    friend Point2 operator*(const Point2& p, value_type d) { return {p.X * d, p.Y * d}; }
 
     friend bool operator==(const Point2& p, const Point2& q) { return p.X == q.X && p.Y == q.Y; }
     friend bool operator!=(const Point2& p, const Point2& q) { return !operator==(p, q); }
 };
 
 
-bool points_equal(const Point2&, const Point2&, double eps = Point2::EPS);
+bool points_equal(const Point2&, const Point2&, Point2::value_type eps = Point2::EPS);
 
 
 }  // namespace eckit::geo

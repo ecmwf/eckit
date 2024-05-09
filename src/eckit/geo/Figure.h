@@ -26,6 +26,9 @@ class Spec;
 namespace eckit::geo {
 
 
+/**
+ * @brief Figure: describe a combination of "shape" (sphere, ellipsoid, geoid) and "size" (radius, a, b, elevation)
+ */
 class Figure {
 public:
     // -- Types

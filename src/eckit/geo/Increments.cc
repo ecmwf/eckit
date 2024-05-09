@@ -21,17 +21,24 @@ namespace eckit::geo {
 
 
 Increments Increments::make_from_spec(const Spec& spec) {
-    value_type x = 0;
-    value_type y = 0;
-    if (std::vector<value_type> value; spec.get("increments", value) || spec.get("grid", value) && value.size() == 2) {
-        x = value[0];
-        y = value[1];
-    }
-    else if (!spec.get("dx", x) || !spec.get("dy", y)) {
-        throw SpecNotFound("'increments' = ['dx', 'dy'] expected", Here());
+    if (std::vector<value_type> value; spec.get("increments", value) && value.size() == 2) {
+        return {value[0], value[1]};
     }
 
-    return {x, y};
+    if (std::vector<value_type> value; spec.get("grid", value) && value.size() == 2) {
+        return {value[0], value[1]};
+    }
+
+    if (value_type x = 0, y = 0; spec.get("dx", x) && spec.get("dy", y)) {
+        return {x, y};
+    }
+
+    if (value_type x = 0, y = 0; spec.get("west_east_increment", x) && spec.get("south_north_increment", y)) {
+        return {x, y};
+    }
+
+    throw SpecNotFound(
+        "'increments' = 'grid' = ['dx', 'dy'] = ['west_east_increment', 'south_north_increment'] expected", Here());
 }
 
 

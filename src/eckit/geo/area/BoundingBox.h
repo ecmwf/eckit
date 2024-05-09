@@ -97,6 +97,7 @@ public:
     const double& south = operator[](2);
     const double& east  = operator[](3);
 
+private:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& os, const BoundingBox& bbox) {

@@ -18,47 +18,39 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Point3.h"
 
+
 namespace eckit::maths {
+
 
 template <typename T>
 class Matrix3 final : protected std::array<T, 9> {
-private:
-    // -- Types
-
-    using P = std::array<T, 9>;
-
 public:
     // -- Types
-    // None
 
-    // -- Exceptions
-    // None
+    using container_type = std::array<T, 9>;
 
+public:
     // -- Constructors
 
     Matrix3(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz) :
-        P{xx, xy, xz, yx, yy, yz, zx, zy, zz} {}
-    Matrix3(const Matrix3& other) :
-        P(other) {}
-    Matrix3(Matrix3&& other) :
-        P(other) {}
+        container_type{xx, xy, xz, yx, yy, yz, zx, zy, zz} {}
+
+    Matrix3(const Matrix3& other) : container_type(other) {}
+    Matrix3(Matrix3&& other) : container_type(other) {}
 
     // -- Destructor
 
     ~Matrix3() = default;
 
-    // -- Convertors
-    // None
-
     // -- Operators
 
     Matrix3& operator=(const Matrix3<T>& other) {
-        P::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
     Matrix3& operator=(Matrix3<T>&& other) {
-        P::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
@@ -75,23 +67,23 @@ public:
 
     // -- Members
 
-    T& XX = P::operator[](0);
-    T& XY = P::operator[](1);
-    T& XZ = P::operator[](2);
-    T& YX = P::operator[](3);
-    T& YY = P::operator[](4);
-    T& YZ = P::operator[](5);
-    T& ZX = P::operator[](6);
-    T& ZY = P::operator[](7);
-    T& ZZ = P::operator[](8);
+    const T& XX = container_type::operator[](0);
+    const T& XY = container_type::operator[](1);
+    const T& XZ = container_type::operator[](2);
+    const T& YX = container_type::operator[](3);
+    const T& YY = container_type::operator[](4);
+    const T& YZ = container_type::operator[](5);
+    const T& ZX = container_type::operator[](6);
+    const T& ZY = container_type::operator[](7);
+    const T& ZZ = container_type::operator[](8);
 
     // -- Methods
 
-    using P::size;
-    using P::begin;
-    using P::end;
-    using P::cbegin;
-    using P::cend;
+    using container_type::begin;
+    using container_type::cbegin;
+    using container_type::cend;
+    using container_type::end;
+    using container_type::size;
 
     static Matrix3<T> identity() { return {1, 0, 0, 0, 1, 0, 0, 0, 1}; }
 
@@ -104,16 +96,9 @@ public:
                 (YX * ZY - YY * ZX) / det, (XY * ZX - XX * ZY) / det, (XX * YY - XY * YX) / det};
     }
 
-    T determinant() const { return XX*YY*ZZ-XZ*YY*ZX+XY*YZ*ZX+XZ*YX*ZY-XX*YZ*ZY-XY*YX*ZZ;    }
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
+    T determinant() const {
+        return XX * YY * ZZ - XZ * YY * ZX + XY * YZ * ZX + XZ * YX * ZY - XX * YZ * ZY - XY * YX * ZZ;
+    }
 
     // -- Friends
 
@@ -122,5 +107,6 @@ public:
                    << "}, {" << m.ZX << ", " << m.ZY << ", " << m.ZZ << "}}";
     }
 };
+
 
 }  // namespace eckit::maths

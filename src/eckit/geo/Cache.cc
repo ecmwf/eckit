@@ -23,10 +23,10 @@ static util::recursive_mutex MUTEX;
 static std::vector<Cache*> CACHES;
 
 
-Cache::bytes_t Cache::total_footprint() {
+Cache::bytes_size_t Cache::total_footprint() {
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
-    return std::accumulate(CACHES.begin(), CACHES.end(), static_cast<bytes_t>(0),
-                           [](bytes_t sum, const auto* cache) { return sum + cache->footprint(); });
+    return std::accumulate(CACHES.begin(), CACHES.end(), static_cast<bytes_size_t>(0),
+                           [](bytes_size_t sum, const auto* cache) { return sum + cache->footprint(); });
 }
 
 

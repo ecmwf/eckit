@@ -24,17 +24,17 @@ namespace eckit::geo {
 
 class Cache {
 public:
-    using bytes_t = decltype(sizeof(int));
+    using bytes_size_t = decltype(sizeof(int));
 
-    static bytes_t total_footprint();
+    static bytes_size_t total_footprint();
     static void total_purge();
 
 protected:
     Cache();
 
 private:
-    virtual bytes_t footprint() const = 0;
-    virtual void purge()              = 0;
+    virtual bytes_size_t footprint() const = 0;
+    virtual void purge()                   = 0;
 };
 
 
@@ -74,9 +74,9 @@ public:
         return container_[key];
     }
 
-    bytes_t footprint() const final {
+    bytes_size_t footprint() const final {
         util::lock_guard<util::recursive_mutex> lock(*mutex_);
-        return std::accumulate(container_.begin(), container_.end(), 0, [](bytes_t sum, const auto& kv) {
+        return std::accumulate(container_.begin(), container_.end(), 0, [](bytes_size_t sum, const auto& kv) {
             if constexpr (has_footprint_v<value_type>) {
                 return sum + kv.second.footprint();
             }

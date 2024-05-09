@@ -22,12 +22,10 @@ namespace eckit::geo::spec {
 static const Custom EMPTY;
 
 
-Layered::Layered() :
-    Layered(EMPTY) {}
+Layered::Layered() : Layered(EMPTY) {}
 
 
-Layered::Layered(const Spec& spec) :
-    spec_(spec) {}
+Layered::Layered(const Spec& spec) : spec_(spec) {}
 
 
 void Layered::hide(const std::string& name) {

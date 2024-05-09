@@ -51,8 +51,8 @@ const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
             }
 
             for (size_t j = 2; j <= i - (i % 2); j += 2) {
-                zfn[i - j] = zfn[i - j + 2] * static_cast<double>((j - 1) * (2 * i - j + 2)) /
-                             static_cast<double>(j * (2 * i - j + 1));
+                zfn[i - j] = zfn[i - j + 2] * static_cast<double>((j - 1) * (2 * i - j + 2))
+                             / static_cast<double>(j * (2 * i - j + 1));
             }
         }
 
@@ -94,8 +94,8 @@ const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
         }
 
         if (!converged) {
-            throw BadValue("Could not calculate latitude within accuracy/iterations: " + std::to_string(eps) + "/" +
-                           std::to_string(Nmax));
+            throw BadValue("Could not calculate latitude within accuracy/iterations: " + std::to_string(eps) + "/"
+                           + std::to_string(Nmax));
         }
 
         // Convert colatitude [rad] to latitude [degree], symmetry

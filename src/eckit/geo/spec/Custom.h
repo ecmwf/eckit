@@ -31,25 +31,12 @@ public:
 
     struct key_type : std::string {
         key_type(const std::string&);
-        key_type(const char* s) :
-            key_type(std::string{s}) {};
+        key_type(const char* s) : key_type(std::string{s}) {};
     };
 
-    using value_type = std::variant<std::string,
-                                    bool,
-                                    int,
-                                    long,
-                                    long long,
-                                    size_t,
-                                    float,
-                                    double,
-                                    std::vector<int>,
-                                    std::vector<long>,
-                                    std::vector<long long>,
-                                    std::vector<size_t>,
-                                    std::vector<float>,
-                                    std::vector<double>,
-                                    std::vector<std::string>>;
+    using value_type = std::variant<std::string, bool, int, long, long long, size_t, float, double, std::vector<int>,
+                                    std::vector<long>, std::vector<long long>, std::vector<size_t>, std::vector<float>,
+                                    std::vector<double>, std::vector<std::string>>;
 
     using container_type = std::map<key_type, value_type>;
 

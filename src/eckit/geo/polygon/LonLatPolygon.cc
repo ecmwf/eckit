@@ -61,11 +61,10 @@ inline Point2 componentsMax(const Point2& A, const Point2& B) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePoles) :
-    container_type(points) {
+LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePoles) : container_type(points) {
     ASSERT(points.size() > 1);
-    ASSERT(is_approximately_equal(points.front()[LON], points.back()[LON]) &&
-           is_approximately_equal(points.front()[LAT], points.back()[LAT]));
+    ASSERT(is_approximately_equal(points.front()[LON], points.back()[LON])
+           && is_approximately_equal(points.front()[LAT], points.back()[LAT]));
 
     if (points.size() > 2) {
         clear();  // assumes reserved size is kept
@@ -132,13 +131,13 @@ bool LonLatPolygon::contains(const Point2& Plonlat, bool normalise_angle) const 
     }
 
     // check bounding box
-    if (!is_approximately_greater_or_equal(Q[LAT], min_[LAT]) ||
-        !is_approximately_greater_or_equal(max_[LAT], Q[LAT])) {
+    if (!is_approximately_greater_or_equal(Q[LAT], min_[LAT])
+        || !is_approximately_greater_or_equal(max_[LAT], Q[LAT])) {
         return false;
     }
     if (quickCheckLongitude_) {
-        if (!is_approximately_greater_or_equal(Q[LON], min_[LON]) ||
-            !is_approximately_greater_or_equal(max_[LON], Q[LON])) {
+        if (!is_approximately_greater_or_equal(Q[LON], min_[LON])
+            || !is_approximately_greater_or_equal(max_[LON], Q[LON])) {
             return false;
         }
     }

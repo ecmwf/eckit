@@ -39,11 +39,9 @@ public:
 
     BoundingBox();
 
-    BoundingBox(const BoundingBox& other) :
-        array(other) {}
+    BoundingBox(const BoundingBox& other) : array(other) {}
 
-    BoundingBox(BoundingBox&& other) :
-        array(other) {}
+    BoundingBox(BoundingBox&& other) : array(other) {}
 
     // -- Destructor
 

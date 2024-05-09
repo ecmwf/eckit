@@ -35,8 +35,7 @@ Increments Increments::make_from_spec(const Spec& spec) {
 }
 
 
-Increments::Increments(value_type dx, value_type dy) :
-    array{dx, dy} {
+Increments::Increments(value_type dx, value_type dy) : array{dx, dy} {
     if (!(dx != 0) || !(dy != 0)) {
         throw BadValue("'shape' = ['dx', 'dy'] != 0 expected");
     }

@@ -25,9 +25,8 @@ std::vector<double> linspace(double start, double stop, size_t num, bool endpoin
     const auto step = num > 1 ? (stop - start) / static_cast<double>(endpoint ? (num - 1) : num) : 0;
 
     std::vector<double> l(num);
-    std::generate_n(l.begin(), num, [start, step, n = 0ULL]() mutable {
-        return start + static_cast<double>(n++) * step;
-    });
+    std::generate_n(l.begin(), num,
+                    [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
 
     return l;
 }

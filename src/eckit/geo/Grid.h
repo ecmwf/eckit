@@ -55,10 +55,7 @@ public:
     using ARG1      = const Spec&;
 
     struct Iterator final : std::unique_ptr<geo::Iterator> {
-        explicit Iterator(geo::Iterator* it) :
-            unique_ptr(it) {
-            ASSERT(unique_ptr::operator bool());
-        }
+        explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
 
         using difference_type = unique_ptr::element_type::difference_type;
 

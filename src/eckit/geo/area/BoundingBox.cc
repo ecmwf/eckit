@@ -69,12 +69,10 @@ BoundingBox* BoundingBox::make_from_spec(const Spec& spec) {
 }
 
 
-BoundingBox::BoundingBox(const Spec& spec) :
-    BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {}
+BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {}
 
 
-BoundingBox::BoundingBox(double n, double w, double s, double e) :
-    array{n, w, s, e} {
+BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s, e} {
     ASSERT_MSG(types::is_approximately_lesser_or_equal(-90., south), "BoundingBox: latitude range (-90 <= south)");
     ASSERT_MSG(types::is_approximately_lesser_or_equal(south, north), "BoundingBox: latitude range (south <= north)");
     ASSERT_MSG(types::is_approximately_lesser_or_equal(north, 90.), "BoundingBox: latitude range (north <= 90)");
@@ -90,22 +88,22 @@ BoundingBox::BoundingBox(double n, double w, double s, double e) :
 }
 
 
-BoundingBox::BoundingBox() :
-    BoundingBox(GLOBE_PRIME) {}
+BoundingBox::BoundingBox() : BoundingBox(GLOBE_PRIME) {}
 
 
 bool BoundingBox::operator==(const BoundingBox& other) const {
-    return types::is_approximately_equal(north, other.north, PointLonLat::EPS) &&
-           types::is_approximately_equal(south, other.south, PointLonLat::EPS) &&
-           types::is_approximately_equal(west, other.west, PointLonLat::EPS) &&
-           types::is_approximately_equal(east, other.east, PointLonLat::EPS);
+    return types::is_approximately_equal(north, other.north, PointLonLat::EPS)
+           && types::is_approximately_equal(south, other.south, PointLonLat::EPS)
+           && types::is_approximately_equal(west, other.west, PointLonLat::EPS)
+           && types::is_approximately_equal(east, other.east, PointLonLat::EPS);
 }
 
 
 bool BoundingBox::isPeriodicWestEast() const {
 
-    return west != east &&
-           types::is_approximately_equal(west, PointLonLat::normalise_angle_to_minimum(east, west), PointLonLat::EPS);
+    return west != east
+           && types::is_approximately_equal(west, PointLonLat::normalise_angle_to_minimum(east, west),
+                                            PointLonLat::EPS);
 }
 
 

@@ -37,11 +37,9 @@ public:
 protected:
     // -- Constructors
 
-    explicit Reduced(const Spec& spec) :
-        Grid(spec) {}
+    explicit Reduced(const Spec& spec) : Grid(spec) {}
 
-    explicit Reduced(const area::BoundingBox& bbox) :
-        Grid(bbox) {}
+    explicit Reduced(const area::BoundingBox& bbox) : Grid(bbox) {}
 
     // -- Methods
 

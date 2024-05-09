@@ -40,8 +40,7 @@ struct LonLatReference : Unstructured::Container {
 
 
 struct PointsReference : Unstructured::Container {
-    explicit PointsReference(const std::vector<Point>& points) :
-        points(points) {}
+    explicit PointsReference(const std::vector<Point>& points) : points(points) {}
 
     Point get(size_t index) const override { return points.at(index); }
     size_t size() const override { return points.size(); }
@@ -51,8 +50,7 @@ struct PointsReference : Unstructured::Container {
 
 
 struct PointsMove : Unstructured::Container {
-    explicit PointsMove(std::vector<Point>&& points) :
-        points(points) {}
+    explicit PointsMove(std::vector<Point>&& points) : points(points) {}
 
     Point get(size_t index) const override { return points.at(index); }
     size_t size() const override { return points.size(); }
@@ -64,9 +62,7 @@ struct PointsMove : Unstructured::Container {
 }  // namespace
 
 
-Unstructured::Unstructured(const Grid& grid,
-                           size_t index,
-                           const std::vector<double>& longitudes,
+Unstructured::Unstructured(const Grid& grid, size_t index, const std::vector<double>& longitudes,
                            const std::vector<double>& latitudes) :
     container_(new LonLatReference(longitudes, latitudes)), index_(index), size_(container_->size()), uid_(grid.uid()) {
     ASSERT(container_->size() == grid.size());
@@ -85,8 +81,7 @@ Unstructured::Unstructured(const Grid& grid, size_t index, std::vector<Point>&& 
 }
 
 
-Unstructured::Unstructured(const Grid& grid) :
-    index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
+Unstructured::Unstructured(const Grid& grid) : index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
 
 
 bool Unstructured::operator==(const geo::Iterator& other) const {

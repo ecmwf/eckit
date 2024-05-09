@@ -20,14 +20,12 @@
 namespace eckit::geo::figure {
 
 
-Sphere::Sphere(double R) :
-    R_(R) {
+Sphere::Sphere(double R) : R_(R) {
     ASSERT_MSG(types::is_strictly_greater(R_, 0.), "Sphere requires R > 0");
 }
 
 
-Sphere::Sphere(const Spec& spec) :
-    Sphere(spec.get_double("R")) {}
+Sphere::Sphere(const Spec& spec) : Sphere(spec.get_double("R")) {}
 
 
 }  // namespace eckit::geo::figure

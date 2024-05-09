@@ -21,8 +21,7 @@
 namespace eckit::geo::grid {
 
 
-ReducedLL::ReducedLL(const Spec& spec) :
-    ReducedLL(spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
+ReducedLL::ReducedLL(const Spec& spec) : ReducedLL(spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
 
 
 ReducedLL::ReducedLL(const pl_type& pl, const area::BoundingBox& bbox) :

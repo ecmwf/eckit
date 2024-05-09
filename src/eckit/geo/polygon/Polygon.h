@@ -28,8 +28,7 @@ public:
 
     Polygon() = default;
 
-    Polygon(std::initializer_list<value_type> l) :
-        container_type(l) {}
+    Polygon(std::initializer_list<value_type> l) : container_type(l) {}
 
     using container_type::push_back;
     using container_type::push_front;

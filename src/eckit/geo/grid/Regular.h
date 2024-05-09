@@ -36,8 +36,7 @@ class Regular : public Grid {
 public:
     // -- Constructors
 
-    explicit Regular(const Spec& spec) :
-        Grid(spec) {}
+    explicit Regular(const Spec& spec) : Grid(spec) {}
 
     // -- Methods
 

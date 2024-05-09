@@ -24,16 +24,15 @@ RegularLatitude::RegularLatitude(double _inc, double _a, double _b, double _ref,
     Regular(_inc, _a, _b, _ref, _eps) {}
 
 
-RegularLatitude::RegularLatitude(size_t n, double _a, double _b, double _eps) :
-    Regular(n, _a, _b, false, _eps) {
+RegularLatitude::RegularLatitude(size_t n, double _a, double _b, double _eps) : Regular(n, _a, _b, false, _eps) {
     ASSERT(-90. <= a() && a() <= 90.);
     ASSERT(-90. <= b() && b() <= 90.);
 }
 
 
 Range* RegularLatitude::crop(double crop_a, double crop_b) const {
-    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
-           (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
+    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b)
+           || (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
 
     if (types::is_approximately_equal(crop_a, crop_b, eps())) {
         NOTIMP;  // FIXME

@@ -25,8 +25,7 @@ public:
     // -- Constructors
 
     explicit RegularLongitude(double inc, double a, double b, double ref, double eps = 0.);
-    explicit RegularLongitude(double inc, double a, double b, double eps = 0.) :
-        RegularLongitude(inc, a, b, a, eps) {}
+    explicit RegularLongitude(double inc, double a, double b, double eps = 0.) : RegularLongitude(inc, a, b, a, eps) {}
 
     explicit RegularLongitude(size_t n, double a, double b, double eps = 0.);
 

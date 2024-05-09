@@ -44,9 +44,7 @@ public:
 
     // -- Constructors
 
-    explicit Unstructured(const Grid&,
-                          size_t index,
-                          const std::vector<double>& longitudes,
+    explicit Unstructured(const Grid&, size_t index, const std::vector<double>& longitudes,
                           const std::vector<double>& latitudes);
     explicit Unstructured(const Grid&, size_t index, const std::vector<Point>&);
     explicit Unstructured(const Grid&, size_t index, std::vector<Point>&&);

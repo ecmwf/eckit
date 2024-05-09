@@ -28,19 +28,15 @@ class Shape final : public std::array<size_t, 2> {
 public:
     // -- Constructors
 
-    explicit Shape(const Spec& spec) :
-        Shape(make_from_spec(spec)) {}
+    explicit Shape(const Spec& spec) : Shape(make_from_spec(spec)) {}
 
     Shape(value_type nx, value_type ny);
 
-    Shape() :
-        Shape(0, 0) {}
+    Shape() : Shape(0, 0) {}
 
-    Shape(const Shape& other) :
-        array(other) {}
+    Shape(const Shape& other) : array(other) {}
 
-    Shape(Shape&& other) :
-        array(other) {}
+    Shape(Shape&& other) : array(other) {}
 
     // -- Destructor
 

@@ -28,16 +28,13 @@ class Increments : public std::array<double, 2> {
 public:
     // -- Constructors
 
-    explicit Increments(const Spec& spec) :
-        Increments(make_from_spec(spec)) {}
+    explicit Increments(const Spec& spec) : Increments(make_from_spec(spec)) {}
 
     Increments(value_type dx, value_type dy);
 
-    Increments(const Increments& other) :
-        array(other) {}
+    Increments(const Increments& other) : array(other) {}
 
-    Increments(Increments&& other) :
-        array(other) {}
+    Increments(Increments&& other) : array(other) {}
 
     // -- Destructor
 

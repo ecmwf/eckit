@@ -34,8 +34,7 @@ Shape Shape::make_from_spec(const Spec& spec) {
 }
 
 
-Shape::Shape(value_type nx, value_type ny) :
-    array{nx, ny} {
+Shape::Shape(value_type nx, value_type ny) : array{nx, ny} {
     if (!(nx > 0) || !(ny > 0)) {
         throw BadValue("'shape' = ['nx', 'ny'] > 0 expected");
     }

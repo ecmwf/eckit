@@ -20,14 +20,12 @@
 namespace eckit::geo::figure {
 
 
-OblateSpheroid::OblateSpheroid(double a, double b) :
-    a_(a), b_(b) {
+OblateSpheroid::OblateSpheroid(double a, double b) : a_(a), b_(b) {
     ASSERT_MSG(types::is_strictly_greater(b_, 0.) && b_ <= a_, "OblateSpheroid requires 0 < b <= a");
 }
 
 
-OblateSpheroid::OblateSpheroid(const Spec& spec) :
-    OblateSpheroid(spec.get_double("a"), spec.get_double("b")) {}
+OblateSpheroid::OblateSpheroid(const Spec& spec) : OblateSpheroid(spec.get_double("a"), spec.get_double("b")) {}
 
 
 double OblateSpheroid::R() const {

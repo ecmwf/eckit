@@ -37,12 +37,10 @@ class lock_type {
 };
 
 
-Grid::Grid(const Spec& spec) :
-    bbox_(area::BoundingBox::make_from_spec(spec)) {}
+Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
-Grid::Grid(const area::BoundingBox& bbox) :
-    bbox_(new area::BoundingBox(bbox)) {}
+Grid::Grid(const area::BoundingBox& bbox) : bbox_(new area::BoundingBox(bbox)) {}
 
 
 std::string Grid::spec() const {

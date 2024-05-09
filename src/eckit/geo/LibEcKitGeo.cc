@@ -25,8 +25,7 @@ namespace eckit {
 REGISTER_LIBRARY(LibEcKitGeo);
 
 
-LibEcKitGeo::LibEcKitGeo() :
-    Library("eckit_geo") {}
+LibEcKitGeo::LibEcKitGeo() : Library("eckit_geo") {}
 
 
 LibEcKitGeo& LibEcKitGeo::instance() {

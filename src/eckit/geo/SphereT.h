@@ -62,8 +62,8 @@ struct SphereT {
     }
 
     // Great-circle intermediate longitude(s) provided two circle points and intermediate latitude in degrees
-    inline static void greatCircleLongitudeGivenLatitude(
-        const PointLonLat& A, const PointLonLat& B, double lat, double& lon1, double& lon2) {
+    inline static void greatCircleLongitudeGivenLatitude(const PointLonLat& A, const PointLonLat& B, double lat,
+                                                         double& lon1, double& lon2) {
         return Sphere::greatCircleLongitudeGivenLatitude(A, B, lat, lon1, lon2);
     }
 

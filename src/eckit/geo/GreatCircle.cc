@@ -32,8 +32,7 @@ static bool pole(const double lat) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-GreatCircle::GreatCircle(const PointLonLat& Alonlat, const PointLonLat& Blonlat) :
-    A_(Alonlat), B_(Blonlat) {
+GreatCircle::GreatCircle(const PointLonLat& Alonlat, const PointLonLat& Blonlat) : A_(Alonlat), B_(Blonlat) {
     const bool Apole       = pole(A_.lat);
     const bool Bpole       = pole(B_.lat);
     const double lon12_deg = PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -180.);
@@ -64,8 +63,8 @@ std::vector<double> GreatCircle::latitude(double lon) const {
     const double lambda2p = util::DEGREE_TO_RADIAN * (lon - B_.lon);
     const double lambda   = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, -180.);
 
-    double lat =
-        std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
+    double lat
+        = std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
     return {util::RADIAN_TO_DEGREE * lat};
 }
 

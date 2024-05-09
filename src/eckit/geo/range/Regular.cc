@@ -24,8 +24,7 @@
 namespace eckit::geo::range {
 
 
-Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) :
-    Range(2, _a, _b, eps), periodic_(false) {
+Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) : Range(2, _a, _b, eps), periodic_(false) {
     ASSERT(0. <= _inc);
 
     Fraction inc(_inc);

@@ -26,9 +26,7 @@ namespace eckit::geo::util {
 using difference_type = std::make_signed_t<size_t>;
 
 
-std::pair<difference_type, difference_type> monotonic_crop(const std::vector<double>& values,
-                                                           double min,
-                                                           double max,
+std::pair<difference_type, difference_type> monotonic_crop(const std::vector<double>& values, double min, double max,
                                                            double eps) {
     if (values.empty() || min > max) {
         return {};
@@ -42,9 +40,8 @@ std::pair<difference_type, difference_type> monotonic_crop(const std::vector<dou
     if (increasing) {
         ASSERT(std::is_sorted(b, e));
 
-        auto lt = [eps](double a, double b) {
-            return a < b && (0. == eps || !types::is_approximately_equal(a, b, eps));
-        };
+        auto lt
+            = [eps](double a, double b) { return a < b && (0. == eps || !types::is_approximately_equal(a, b, eps)); };
 
         return {std::distance(b, std::lower_bound(b, e, min, lt)), std::distance(b, std::upper_bound(b, e, max, lt))};
     }

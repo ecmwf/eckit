@@ -48,7 +48,7 @@ private:
     struct has_footprint : std::false_type {};
 
     template <typename V>
-    struct has_footprint<V, std::void_t<footprint_t<V>>> : std::true_type {};
+    struct has_footprint<V, std::void_t<footprint_t<V>>> : std::true_type{};
 
     template <typename V>
     static inline constexpr bool has_footprint_v = has_footprint<V>::value;
@@ -57,10 +57,7 @@ public:
     using key_type   = Key;
     using value_type = Value;
 
-    CacheT() :
-        mutex_(new util::recursive_mutex) {
-        ASSERT(mutex_ != nullptr);
-    }
+    CacheT() : mutex_(new util::recursive_mutex) { ASSERT(mutex_ != nullptr); }
 
     bool contains(const key_type& key) const {
         util::lock_guard<util::recursive_mutex> lock(*mutex_);

@@ -33,8 +33,7 @@ protected:
 
     Regular(double inc, double a, double b, double ref, double eps);
 
-    Regular(size_t n, double a, double b, bool periodic, double eps) :
-        Range(n, a, b, eps), periodic_(periodic) {}
+    Regular(size_t n, double a, double b, bool periodic, double eps) : Range(n, a, b, eps), periodic_(periodic) {}
 
     Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
         Range(n, a, b, eps), values_(values), periodic_(periodic) {}

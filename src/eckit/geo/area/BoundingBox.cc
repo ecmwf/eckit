@@ -100,7 +100,6 @@ bool BoundingBox::operator==(const BoundingBox& other) const {
 
 
 bool BoundingBox::isPeriodicWestEast() const {
-
     return west != east
            && types::is_approximately_equal(west, PointLonLat::normalise_angle_to_minimum(east, west),
                                             PointLonLat::EPS);
@@ -108,14 +107,14 @@ bool BoundingBox::isPeriodicWestEast() const {
 
 
 bool BoundingBox::containsNorthPole() const {
-    static const auto NORTH_POLE = PointLonLat::make(0., 90.);
-    return points_equal({0., north}, NORTH_POLE);
+    static const auto POLE = PointLonLat::make(PointLonLat::EQUATOR, PointLonLat::NORTH_POLE);
+    return points_equal({PointLonLat::EQUATOR, north}, POLE);
 }
 
 
 bool BoundingBox::containsSouthPole() const {
-    static const auto SOUTH_POLE = PointLonLat::make(0., -90.);
-    return points_equal({0., south}, SOUTH_POLE);
+    static const auto POLE = PointLonLat::make(PointLonLat::EQUATOR, PointLonLat::SOUTH_POLE);
+    return points_equal({PointLonLat::EQUATOR, south}, POLE);
 }
 
 

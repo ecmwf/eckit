@@ -24,23 +24,23 @@ namespace eckit::geo {
 
 
 PointLonLat::value_type PointLonLat::normalise_angle_to_minimum(value_type a, value_type minimum) {
-    auto modulo_360 = [](auto a) { return a - 360. * std::floor(a / 360.); };
+    static const auto modulo_globe = [](auto a) { return a - GLOBE * std::floor(a / GLOBE); };
 
     auto diff = a - minimum;
-    return 0. <= diff && diff < 360. ? a : modulo_360(diff) + minimum;
+    return 0. <= diff && diff < GLOBE ? a : modulo_globe(diff) + minimum;
 }
 
 
 PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, value_type maximum) {
-    auto modulo_360 = [](auto a) { return a - 360. * std::ceil(a / 360.); };
+    auto modulo_360 = [](auto a) { return a - GLOBE * std::ceil(a / GLOBE); };
 
     auto diff = a - maximum;
-    return -360. < diff && diff <= 0. ? a : modulo_360(a - maximum) + maximum;
+    return -GLOBE < diff && diff <= 0. ? a : modulo_360(a - maximum) + maximum;
 }
 
 
 void PointLonLat::assert_latitude_range(const PointLonLat& P) {
-    if (!(-90. <= P.lat && P.lat <= 90.)) {
+    if (!(SOUTH_POLE <= P.lat && P.lat <= NORTH_POLE)) {
         std::ostringstream oss;
         oss.precision(std::numeric_limits<value_type>::max_digits10);
         oss << "Invalid latitude " << P.lat;
@@ -50,23 +50,23 @@ void PointLonLat::assert_latitude_range(const PointLonLat& P) {
 
 
 PointLonLat PointLonLat::make(value_type lon, value_type lat, value_type lon_minimum, value_type eps) {
-    lat = normalise_angle_to_minimum(lat, -90.);
+    lat = normalise_angle_to_minimum(lat, SOUTH_POLE);
 
-    if (types::is_strictly_greater(lat, 90., eps)) {
-        lat = 180. - lat;
-        lon += 180.;
+    if (types::is_strictly_greater(lat, NORTH_POLE, eps)) {
+        lat = GLOBE / 2. - lat;
+        lon += GLOBE / 2.;
     }
 
-    return types::is_approximately_equal(lat, 90., eps) ? PointLonLat{0., 90.}
-           : types::is_approximately_equal(lat, -90., eps)
-               ? PointLonLat{0., -90.}
+    return types::is_approximately_equal(lat, NORTH_POLE, eps) ? PointLonLat{0., NORTH_POLE}
+           : types::is_approximately_equal(lat, SOUTH_POLE, eps)
+               ? PointLonLat{EQUATOR, SOUTH_POLE}
                : PointLonLat{normalise_angle_to_minimum(lon, lon_minimum), lat};
 }
 
 
 bool points_equal(const PointLonLat& a, const PointLonLat& b, PointLonLat::value_type eps) {
-    auto c = PointLonLat::make(a.lon, a.lat, 0., eps);
-    auto d = PointLonLat::make(b.lon, b.lat, 0., eps);
+    const auto c = PointLonLat::make(a.lon, a.lat, PointLonLat::EQUATOR, eps);
+    const auto d = PointLonLat::make(b.lon, b.lat, PointLonLat::EQUATOR, eps);
     return types::is_approximately_equal(c.lon, d.lon, eps) && types::is_approximately_equal(c.lat, d.lat, eps);
 }
 

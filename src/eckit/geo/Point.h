@@ -31,17 +31,4 @@ bool points_equal(const Point&, const Point&, double eps);
 std::ostream& operator<<(std::ostream&, const Point&);
 
 
-constexpr double GLOBE        = 360.;
-constexpr double GREENWICH    = 0.;
-constexpr double ANTIMERIDIAN = -180.;
-constexpr double EQUATOR      = 0.;
-constexpr double NORTH_POLE   = 90.;
-constexpr double SOUTH_POLE   = -90.;
-
-
-// FIXME remove
-using Longitude = double;
-using Latitude  = double;
-
-
 }  // namespace eckit::geo

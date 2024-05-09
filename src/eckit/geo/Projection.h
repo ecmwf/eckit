@@ -37,9 +37,6 @@ public:
     using builder_t = BuilderT1<Projection>;
     using ARG1      = const Spec&;
 
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     Projection() noexcept         = default;
@@ -49,9 +46,6 @@ public:
     // -- Destructor
 
     virtual ~Projection() = default;
-
-    // -- Convertors
-    // None
 
     // -- Operators
 
@@ -66,50 +60,6 @@ public:
     virtual Point inv(const Point&) const = 0;
 
     virtual Spec* spec() const = 0;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-private:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

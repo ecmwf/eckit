@@ -29,36 +29,7 @@ namespace eckit::geo::etc {
 
 class Grid final {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
-    // -- Constructors
-    // None
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-
     static const Grid& instance();
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 private:
     // -- Constructors
@@ -72,18 +43,6 @@ private:
     // -- Methods
 
     void load(const PathName&);
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

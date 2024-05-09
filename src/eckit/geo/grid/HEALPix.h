@@ -20,25 +20,10 @@ namespace eckit::geo::grid {
 
 class HEALPix final : public Reduced {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit HEALPix(const Spec&);
     explicit HEALPix(size_t Nside, Ordering = Ordering::healpix_ring);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -65,9 +50,6 @@ public:
 
     static Spec* spec(const std::string& name);
 
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
@@ -75,9 +57,6 @@ private:
     const Ordering ordering_;
 
     mutable std::vector<double> latitudes_;
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
@@ -89,15 +68,6 @@ private:
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t i) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

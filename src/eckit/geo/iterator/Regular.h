@@ -30,36 +30,9 @@ namespace eckit::geo::iterator {
 
 class Regular final : public Iterator {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit Regular(const grid::Regular&, size_t index = 0);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 private:
     // -- Members
@@ -74,9 +47,6 @@ private:
     const size_t ny_;
     const size_t size_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     bool operator==(const Iterator&) const override;
@@ -86,15 +56,6 @@ private:
     Point operator*() const override;
 
     size_t index() const override { return index_; }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

@@ -23,23 +23,11 @@ namespace eckit::geo::projection {
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
 class Rotation final : public Projection {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     Rotation();
     Rotation(double south_pole_lon, double south_pole_lat, double angle);
     explicit Rotation(const Spec&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -50,12 +38,6 @@ public:
     // -- Overridden methods
 
     Spec* spec() const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 private:
     // -- Types
@@ -79,22 +61,10 @@ private:
     std::unique_ptr<Implementation> inv_;
     bool rotated_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     Point fwd(const Point& p) const override { return (*fwd_)(std::get<PointLonLat>(p)); }
     Point inv(const Point& q) const override { return (*inv_)(std::get<PointLonLat>(q)); }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

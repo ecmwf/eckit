@@ -24,28 +24,10 @@ namespace eckit::geo::grid {
 
 class ReducedLL : public Reduced {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit ReducedLL(const Spec&);
     explicit ReducedLL(const pl_type&, const area::BoundingBox& = {});
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
@@ -55,12 +37,6 @@ public:
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
@@ -69,24 +45,12 @@ private:
     std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t j) const override;
 
     void spec(spec::Custom&) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

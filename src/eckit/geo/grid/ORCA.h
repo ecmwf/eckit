@@ -63,22 +63,10 @@ public:
         std::vector<std::byte> flags_;
     };
 
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit ORCA(const Spec&);
     explicit ORCA(uid_t);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -104,9 +92,6 @@ public:
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
-    // -- Class members
-    // None
-
     // -- Class methods
 
     static Spec* spec(const std::string& name);
@@ -119,21 +104,9 @@ private:
     Arrangement arrangement_;
     const ORCARecord& record_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     void spec(spec::Custom&) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

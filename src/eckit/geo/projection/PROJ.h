@@ -23,22 +23,10 @@ namespace eckit::geo::projection {
 /// Calculate coordinates using PROJ
 class PROJ final : public Projection {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     PROJ(const std::string& source, const std::string& target, double lon_minimum = 0.);
     explicit PROJ(const Spec&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -54,12 +42,6 @@ public:
 
     Spec* spec() const override;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Types
 
@@ -71,21 +53,6 @@ private:
 
     const std::string source_;
     const std::string target_;
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

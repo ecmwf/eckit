@@ -27,36 +27,9 @@ namespace eckit::geo::iterator {
 
 class Reduced final : public geo::Iterator {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit Reduced(const Grid&, size_t index = 0);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 private:
     // -- Members
@@ -68,9 +41,6 @@ private:
     size_t j_;
     size_t index_;
     const size_t size_;
-
-    // -- Methods
-    // None
 
     // -- Overridden operators
 
@@ -84,15 +54,6 @@ private:
 
     size_t index() const override { return index_; }
     size_t j(size_t idx) const;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

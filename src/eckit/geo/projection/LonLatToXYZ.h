@@ -23,23 +23,11 @@ namespace eckit::geo::projection {
 /// Calculate coordinates of a point on a sphere or spheroid, in [x, y, z]
 class LonLatToXYZ final : public Projection {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     LonLatToXYZ(double a, double b);
     explicit LonLatToXYZ(double R);
     explicit LonLatToXYZ(const Spec&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -49,12 +37,6 @@ public:
     // -- Overridden methods
 
     Spec* spec() const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 private:
     // -- Types
@@ -77,22 +59,10 @@ private:
 
     std::unique_ptr<Implementation> impl_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     Point fwd(const Point& p) const override { return (*impl_)(std::get<PointLonLat>(p)); }
     Point inv(const Point& q) const override { return (*impl_)(std::get<Point3>(q)); }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

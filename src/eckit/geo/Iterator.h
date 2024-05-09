@@ -31,9 +31,6 @@ public:
 
     using difference_type = std::ptrdiff_t;
 
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     Iterator(const Iterator&) = delete;
@@ -42,9 +39,6 @@ public:
     // -- Destructor
 
     virtual ~Iterator() = default;
-
-    // -- Convertors
-    // None
 
     // -- Operators
 
@@ -67,53 +61,10 @@ public:
 
     virtual size_t index() const = 0;
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 protected:
     // -- Constructors
 
     Iterator() = default;
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-private:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

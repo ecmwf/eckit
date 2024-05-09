@@ -39,9 +39,6 @@ public:
         virtual size_t size() const           = 0;
     };
 
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit Unstructured(const Grid&, size_t index, const std::vector<double>& longitudes,
@@ -51,30 +48,6 @@ public:
 
     explicit Unstructured(const Grid&);
 
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden operators
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
@@ -82,9 +55,6 @@ private:
     size_t index_;
     const size_t size_;
     const std::string uid_;
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
@@ -96,15 +66,6 @@ private:
     Point operator*() const override;
 
     size_t index() const override { return index_; }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

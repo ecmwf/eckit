@@ -24,23 +24,11 @@ namespace eckit::geo::projection {
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
 class Mercator final : public Projection {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     Mercator(double meridian, double parallel, Figure*, PointLonLat first = {0, 0});
 
     explicit Mercator(const Spec&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -50,12 +38,6 @@ public:
     // -- Overridden methods
 
     Spec* spec() const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 private:
     // -- Members
@@ -84,15 +66,6 @@ private:
 
     Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

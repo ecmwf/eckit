@@ -20,28 +20,10 @@ namespace eckit::geo::projection {
 
 class None final : public Projection {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit None() = default;
     explicit None(const Spec&) {}
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
@@ -49,34 +31,6 @@ public:
 
     inline Point fwd(const Point& p) const override { return p; }
     inline Point inv(const Point& q) const override { return q; }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-private:
-    // -- Types
-    // None
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

@@ -39,9 +39,6 @@ public:
     using builder_t = BuilderT1<Figure>;
     using ARG1      = const Spec&;
 
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     Figure() noexcept     = default;
@@ -53,9 +50,6 @@ public:
     // -- Destructor
 
     virtual ~Figure() = default;
-
-    // -- Convertors
-    // None
 
     // -- Operators
 
@@ -74,50 +68,6 @@ public:
     virtual double area(const area::BoundingBox&) const;
 
     double eccentricity() const;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-private:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

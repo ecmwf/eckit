@@ -30,9 +30,6 @@ namespace eckit::geo::area {
 
 class BoundingBox : public Area, protected std::array<double, 4> {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit BoundingBox(const Spec&);
@@ -48,9 +45,6 @@ public:
     // -- Destructor
 
     ~BoundingBox() override = default;
-
-    // -- Convertors
-    // None
 
     // -- Operators
 
@@ -88,9 +82,6 @@ public:
 
     void spec(spec::Custom&) const override;
 
-    // -- Class members
-    // None
-
     // -- Class methods
 
     static BoundingBox calculate(const BoundingBox&, const Projection&);
@@ -101,22 +92,10 @@ public:
 
     // -- Members
 
-    double& north = operator[](0);
-    double& west  = operator[](1);
-    double& south = operator[](2);
-    double& east  = operator[](3);
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
+    const double& north = operator[](0);
+    const double& west  = operator[](1);
+    const double& south = operator[](2);
+    const double& east  = operator[](3);
 
     // -- Friends
 

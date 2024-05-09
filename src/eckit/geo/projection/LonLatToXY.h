@@ -20,22 +20,10 @@ namespace eckit::geo::projection {
 
 class LonLatToXY final : public Projection {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit LonLatToXY() = default;
     explicit LonLatToXY(const Spec&) {}
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -46,35 +34,11 @@ public:
 
     Spec* spec() const override;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
-    // -- Types
-    // None
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

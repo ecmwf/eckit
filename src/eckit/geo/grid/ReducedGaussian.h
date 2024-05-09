@@ -25,29 +25,11 @@ namespace eckit::geo::grid {
 
 class ReducedGaussian : public Reduced {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit ReducedGaussian(const Spec&);
     explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = {});
     explicit ReducedGaussian(size_t N, const area::BoundingBox& = {});
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
@@ -57,12 +39,6 @@ public:
     size_t size() const override;
     size_t ni(size_t j) const override;
     size_t nj() const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 private:
     // -- Members
@@ -75,9 +51,6 @@ private:
     std::vector<std::unique_ptr<Range>> x_;
     std::unique_ptr<Range> y_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     void spec(spec::Custom&) const override;
@@ -86,15 +59,6 @@ private:
     std::vector<double> longitudes(size_t i) const override;
 
     Grid* make_grid_cropped(const area::BoundingBox&) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

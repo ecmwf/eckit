@@ -84,9 +84,6 @@ public:
 
     using iterator = Iterator;
 
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit Grid(const Spec&);
@@ -97,9 +94,6 @@ public:
     // -- Destructor
 
     virtual ~Grid() = default;
-
-    // -- Convertors
-    // None
 
     // -- Operators
 
@@ -138,12 +132,6 @@ public:
     virtual Renumber crop(const area::BoundingBox&) const;
     virtual Grid* make_grid_cropped(const area::BoundingBox&) const;
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
     // -- Class methods
 
     static std::string className() { return "grid"; }
@@ -157,15 +145,6 @@ protected:
 
     static Renumber no_reorder(size_t size);
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
@@ -177,15 +156,6 @@ private:
     virtual void spec(spec::Custom&) const;
 
     virtual area::BoundingBox* calculate_bbox() const { return new area::BoundingBox{}; }
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
     // -- Friends
 

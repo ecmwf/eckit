@@ -27,24 +27,6 @@ namespace eckit {
 
 class LibEcKitGeo final : public system::Library {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
-    // -- Constructors
-    // None
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
     // -- Methods
 
     static LibEcKitGeo& instance();
@@ -54,40 +36,16 @@ public:
     static bool caching();
     static std::string cacheDir();
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Constructors
 
     LibEcKitGeo();
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
     const void* addr() const override;
     std::string version() const override;
     std::string gitsha1(unsigned int count) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

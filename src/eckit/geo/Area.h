@@ -36,9 +36,6 @@ public:
     using builder_t = BuilderT1<Area>;
     using ARG1      = const Spec&;
 
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     Area() noexcept   = default;
@@ -48,9 +45,6 @@ public:
     // -- Destructor
 
     virtual ~Area() = default;
-
-    // -- Convertors
-    // None
 
     // -- Operators
 
@@ -62,50 +56,6 @@ public:
     static std::string className() { return "area"; }
 
     virtual void spec(spec::Custom&) const;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-protected:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-private:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

@@ -20,28 +20,10 @@ namespace eckit::geo::figure {
 
 class Sphere final : public Figure {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit Sphere(double R);
     explicit Sphere(const Spec&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
@@ -51,31 +33,10 @@ public:
 
     double area(const area::BoundingBox&) const override;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
     const double R_;
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

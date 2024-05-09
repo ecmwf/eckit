@@ -27,27 +27,9 @@ namespace eckit::geo::grid {
 
 class Unstructured final : public Grid {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit Unstructured(std::vector<Point>&&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
@@ -63,9 +45,6 @@ public:
 
     std::vector<Point> to_points() const override { return points_; }
 
-    // -- Class members
-    // None
-
     // -- Class methods
 
     static Spec* spec(const std::string& name);
@@ -75,18 +54,9 @@ private:
 
     const std::vector<Point> points_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     void spec(spec::Custom&) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
     // -- Friends
 

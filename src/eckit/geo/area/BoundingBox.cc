@@ -78,7 +78,7 @@ BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s
 
     if (!types::is_approximately_equal(west, east)) {
         auto e = PointLonLat::normalise_angle_to_minimum(east, west);
-        east   = types::is_approximately_equal(e, west) ? (e + 360.) : e;
+        operator=({north, west, south, types::is_approximately_equal(e, west) ? (e + 360.) : e});
     }
 
     ASSERT_MSG(types::is_approximately_lesser_or_equal(west, east), "BoundingBox: longitude range (west <= east)");

@@ -53,7 +53,7 @@ CASE("assignment") {
     EXPECT_EQUAL(a.north, b.north);
     EXPECT_EQUAL(a, b);
 
-    b.north = 30;
+    b = {30., b.west, b.south, b.east};
     EXPECT_EQUAL(b.north, 30);
     EXPECT_EQUAL(a.north, 10);
 
@@ -61,14 +61,14 @@ CASE("assignment") {
     EXPECT_EQUAL(a.north, c.north);
     EXPECT_EQUAL(a, c);
 
-    c.north = 40;
+    c = {40., c.west, c.south, c.east};
     EXPECT_EQUAL(c.north, 40);
     EXPECT_EQUAL(a.north, 10);
 
     auto d(std::move(a));
     EXPECT_EQUAL(d.north, 10);
 
-    d.north = 50;
+    d = {50., d.west, d.south, d.east};
     EXPECT_EQUAL(d.north, 50);
 }
 

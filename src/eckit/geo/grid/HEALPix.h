@@ -44,11 +44,11 @@ public:
 
     Ordering order() const override { return ordering_; }
     Renumber reorder(Ordering) const override;
-    Grid* make_grid_reordered(Ordering ordering) const override { return new HEALPix(Nside_, ordering); }
+    [[nodiscard]] Grid* make_grid_reordered(Ordering ordering) const override { return new HEALPix(Nside_, ordering); }
 
     // -- Class members
 
-    static Spec* spec(const std::string& name);
+    [[nodiscard]] static Spec* spec(const std::string& name);
 
 private:
     // -- Members

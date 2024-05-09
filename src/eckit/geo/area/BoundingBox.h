@@ -86,9 +86,9 @@ public:
 
     static BoundingBox calculate(const BoundingBox&, const Projection&);
 
-    static BoundingBox* make_global_prime();
-    static BoundingBox* make_global_antiprime();
-    static BoundingBox* make_from_spec(const Spec&);
+    [[nodiscard]] static BoundingBox* make_global_prime();
+    [[nodiscard]] static BoundingBox* make_global_antiprime();
+    [[nodiscard]] static BoundingBox* make_from_spec(const Spec&);
 
     // -- Members
 

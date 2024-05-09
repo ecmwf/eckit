@@ -27,8 +27,8 @@ public:
 
     // -- Overridden methods
 
-    Range* crop(double crop_a, double crop_b) const override;
-    Range* flip() const override { return new RegularLatitude(size(), b(), a(), eps()); }
+    [[nodiscard]] Range* crop(double crop_a, double crop_b) const override;
+    [[nodiscard]] Range* flip() const override { return new RegularLatitude(size(), b(), a(), eps()); }
 };
 
 

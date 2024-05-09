@@ -42,15 +42,15 @@ public:
 
     // -- Overridden methods
 
-    Spec* spec() const override;
+    [[nodiscard]] Spec* spec() const override;
 
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
     // -- Class methods
 
-    static Projection* compose_back(Projection*, const Spec&);
-    static Projection* compose_front(const Spec&, Projection*);
+    [[nodiscard]] static Projection* compose_back(Projection*, const Spec&);
+    [[nodiscard]] static Projection* compose_front(const Spec&, Projection*);
 };
 
 

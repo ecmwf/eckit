@@ -37,7 +37,7 @@ public:
 
     // -- Overridden methods
 
-    Spec* spec() const override;
+    [[nodiscard]] Spec* spec() const override;
 
 private:
     // -- Types

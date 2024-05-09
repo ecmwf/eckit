@@ -48,10 +48,10 @@ public:
 
     virtual bool periodic() const { return false; }
 
-    virtual Range* flip() const                             = 0;
-    virtual Range* crop(double crop_a, double crop_b) const = 0;
-    virtual Fraction increment() const                      = 0;
-    virtual const std::vector<double>& values() const       = 0;
+    [[nodiscard]] virtual Range* flip() const                             = 0;
+    [[nodiscard]] virtual Range* crop(double crop_a, double crop_b) const = 0;
+    virtual Fraction increment() const                                    = 0;
+    virtual const std::vector<double>& values() const                     = 0;
 
 protected:
     // -- Constructors

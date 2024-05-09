@@ -27,7 +27,7 @@ public:
 
     // -- Overridden methods
 
-    Spec* spec() const override;
+    [[nodiscard]] Spec* spec() const override;
 
     inline Point fwd(const Point& p) const override { return p; }
     inline Point inv(const Point& q) const override { return q; }

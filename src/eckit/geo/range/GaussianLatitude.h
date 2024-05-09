@@ -30,8 +30,9 @@ public:
 
     // -- Overridden methods
 
-    Range* flip() const override;
-    Range* crop(double crop_a, double crop_b) const override;
+    [[nodiscard]] Range* flip() const override;
+    [[nodiscard]] Range* crop(double crop_a, double crop_b) const override;
+
     Fraction increment() const override;
     const std::vector<double>& values() const override;
 

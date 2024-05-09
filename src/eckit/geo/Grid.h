@@ -122,15 +122,16 @@ public:
 
     virtual Ordering order() const;
     virtual Renumber reorder(Ordering) const;
-    virtual Grid* make_grid_reordered(Ordering) const;
 
     virtual Area* area() const;
     virtual Renumber crop(const Area&) const;
-    virtual Grid* make_grid_cropped(const Area&) const;
 
     virtual const area::BoundingBox& boundingBox() const;
     virtual Renumber crop(const area::BoundingBox&) const;
-    virtual Grid* make_grid_cropped(const area::BoundingBox&) const;
+
+    [[nodiscard]] virtual Grid* make_grid_reordered(Ordering) const;
+    [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
+    [[nodiscard]] virtual Grid* make_grid_cropped(const area::BoundingBox&) const;
 
     // -- Class methods
 
@@ -155,7 +156,7 @@ private:
 
     virtual void spec(spec::Custom&) const;
 
-    virtual area::BoundingBox* calculate_bbox() const { return new area::BoundingBox{}; }
+    [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const { return new area::BoundingBox{}; }
 
     // -- Friends
 
@@ -181,21 +182,21 @@ using GridRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
 
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
-    static const Grid* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+    [[nodiscard]] static const Grid* build(const Spec& spec) { return instance().make_from_spec_(spec); }
 
     // This is 'const' as Grid should always be immutable
-    static const Grid* make_from_string(const std::string&);
+    [[nodiscard]] static const Grid* make_from_string(const std::string&);
 
-    static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
     static void list(std::ostream& out) { return instance().list_(out); }
 
 private:
     static GridFactory& instance();
 
     // This is 'const' as Grid should always be immutable
-    const Grid* make_from_spec_(const Spec&) const;
+    [[nodiscard]] const Grid* make_from_spec_(const Spec&) const;
 
-    Spec* make_spec_(const Spec&) const;
+    [[nodiscard]] Spec* make_spec_(const Spec&) const;
     void list_(std::ostream&) const;
 };
 

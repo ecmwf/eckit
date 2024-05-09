@@ -247,7 +247,7 @@ class SpecGeneratorT0 : public SpecGenerator {
 public:
     // -- Methods
 
-    virtual Spec* spec() const = 0;
+    [[nodiscard]] virtual Spec* spec() const = 0;
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ public:
 
     // -- Methods
 
-    virtual Spec* spec(arg1_t) const = 0;
+    [[nodiscard]] virtual Spec* spec(arg1_t) const = 0;
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -276,7 +276,7 @@ public:
 
     // -- Methods
 
-    virtual Spec* spec(arg1_t, arg2_t) const = 0;
+    [[nodiscard]] virtual Spec* spec(arg1_t, arg2_t) const = 0;
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -304,7 +304,7 @@ public:
 
     // -- Overridden methods
 
-    Spec* spec() const override { return T::spec(); }
+    [[nodiscard]] Spec* spec() const override { return T::spec(); }
 
 private:
     // -- Members
@@ -337,7 +337,7 @@ public:
 
     // -- Overridden methods
 
-    Spec* spec(typename SpecGeneratorT1<ARG1>::arg1_t p1) const override { return T::spec(p1); }
+    [[nodiscard]] Spec* spec(typename SpecGeneratorT1<ARG1>::arg1_t p1) const override { return T::spec(p1); }
 
 private:
     // -- Members
@@ -370,7 +370,8 @@ public:
 
     // -- Overridden methods
 
-    Spec* spec(typename SpecGeneratorT1<ARG1>::arg1_t p1, typename SpecGeneratorT1<ARG1>::arg2_t p2) const override {
+    [[nodiscard]] Spec* spec(typename SpecGeneratorT1<ARG1>::arg1_t p1,
+                             typename SpecGeneratorT1<ARG1>::arg2_t p2) const override {
         return T::spec(p1, p2);
     }
 

@@ -59,7 +59,7 @@ public:
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
 
-    virtual Spec* spec() const = 0;
+    [[nodiscard]] virtual Spec* spec() const = 0;
 };
 
 

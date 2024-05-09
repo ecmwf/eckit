@@ -47,7 +47,7 @@ public:
 
     // -- Class methods
 
-    static Spec* spec(const std::string& name);
+    [[nodiscard]] static Spec* spec(const std::string& name);
 
 private:
     // -- Members

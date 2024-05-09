@@ -43,7 +43,7 @@ private:
 
     // -- Overridden methods
 
-    const void* addr() const override;
+    [[nodiscard]] const void* addr() const override;
     std::string version() const override;
     std::string gitsha1(unsigned int count) const override;
 };

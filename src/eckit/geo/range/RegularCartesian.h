@@ -28,8 +28,8 @@ public:
 
     // -- Overridden methods
 
-    Range* crop(double crop_a, double crop_b) const override;
-    Range* flip() const override;
+    [[nodiscard]] Range* crop(double crop_a, double crop_b) const override;
+    [[nodiscard]] Range* flip() const override;
 };
 
 

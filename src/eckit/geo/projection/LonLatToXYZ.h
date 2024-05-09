@@ -52,7 +52,7 @@ private:
 
         virtual Point3 operator()(const PointLonLat&) const = 0;
         virtual PointLonLat operator()(const Point3&) const = 0;
-        virtual Spec* spec() const                          = 0;
+        [[nodiscard]] virtual Spec* spec() const            = 0;
     };
 
     // -- Members

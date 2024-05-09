@@ -82,7 +82,7 @@ struct RegularLL final : public Regular {
     explicit RegularLL(const Increments&, const area::BoundingBox& = {});
     RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
 
-    static Spec* spec(const std::string& name);
+    [[nodiscard]] static Spec* spec(const std::string& name);
     void spec(spec::Custom&) const override;
 };
 
@@ -91,9 +91,9 @@ struct RegularGaussian final : public Regular {
     explicit RegularGaussian(const Spec&);
     explicit RegularGaussian(size_t N, const area::BoundingBox& = {});
 
-    Grid* make_grid_cropped(const area::BoundingBox& crop) const override;
+    [[nodiscard]] Grid* make_grid_cropped(const area::BoundingBox& crop) const override;
 
-    static Spec* spec(const std::string& name);
+    [[nodiscard]] static Spec* spec(const std::string& name);
     void spec(spec::Custom&) const override;
 
     size_t N() const { return N_; }

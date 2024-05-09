@@ -74,7 +74,7 @@ public:
         for (auto j = store_.cbegin(); j != end; ++j) {
             if (!(j->first.empty()) && j->second->match(spec)) {
                 if (i != end) {
-                    throw SeriousBug("Generator matches names '" + i->first + "' and '" + j->first + "'");
+                    throw SeriousBug("Generator matches names '" + i->first + "' and '" + j->first + "'", Here());
                 }
                 i = j;
             }
@@ -182,7 +182,8 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::strin
     for (auto j = store_.cbegin(); j != end; ++j) {
         if (std::regex_match(k, std::regex(j->first))) {
             if (i != end) {
-                throw SeriousBug("Generator name '" + k + "' matches '" + i->first + "' and '" + j->first + "'");
+                throw SeriousBug("Generator name '" + k + "' matches '" + i->first + "' and '" + j->first + "'",
+                                 Here());
             }
             i = j;
         }

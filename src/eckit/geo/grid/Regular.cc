@@ -147,7 +147,7 @@ Grid* RegularGaussian::make_grid_cropped(const area::BoundingBox& crop) const {
         return new RegularGaussian(N_, bbox);
     }
 
-    throw Exception("RegularGaussian: cannot crop grid (empty intersection)");
+    throw UserError("RegularGaussian: cannot crop grid (empty intersection)", Here());
 }
 
 

@@ -27,7 +27,7 @@ Shape Shape::make_from_spec(const Spec& spec) {
         y = value[1];
     }
     else if (!spec.get("nx", x) || !spec.get("ny", y)) {
-        throw SpecNotFound("'shape' = ['nx', 'ny'] expected");
+        throw SpecNotFound("'shape' = ['nx', 'ny'] expected", Here());
     }
 
     return {x, y};
@@ -36,7 +36,7 @@ Shape Shape::make_from_spec(const Spec& spec) {
 
 Shape::Shape(value_type nx, value_type ny) : array{nx, ny} {
     if (!(nx > 0) || !(ny > 0)) {
-        throw BadValue("'shape' = ['nx', 'ny'] > 0 expected");
+        throw BadValue("'shape' = ['nx', 'ny'] > 0 expected", Here());
     }
 }
 

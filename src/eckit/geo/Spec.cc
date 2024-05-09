@@ -30,13 +30,13 @@ static T _get_d(const Spec& spec, const std::string& name, const T& _default) {
 template <typename T>
 static T _get_t(const Spec& spec, const std::string& name) {
     T value{};
-    return spec.get(name, value) ? value : throw SpecNotFound(name);
+    return spec.get(name, value) ? value : throw SpecNotFound(name, Here());
 }
 
 
-SpecNotFound::SpecNotFound(const std::string& name) {
+SpecNotFound::SpecNotFound(const std::string& name, const CodeLocation& loc) : Exception(loc) {
     std::ostringstream s;
-    s << "SpecNotFound: [" << name << "]";
+    s << "SpecNotFound: [" << name << "], in " << loc;
     reason(s.str());
 }
 

@@ -1347,7 +1347,7 @@ const pl_type& reduced_classical_pl(size_t N) {
 
     auto pl_half = CLASSICAL_PLS.find(N);
     if (pl_half == CLASSICAL_PLS.end()) {
-        throw BadValue("reduced_classical_pl: unknown N=" + std::to_string(N));
+        throw BadValue("reduced_classical_pl: unknown N=" + std::to_string(N), Here());
     }
 
     ASSERT(pl_half->second.size() == N);

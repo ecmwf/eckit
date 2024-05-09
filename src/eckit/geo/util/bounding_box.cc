@@ -164,7 +164,7 @@ struct DerivateFactory {
         return type == "forwards"    ? static_cast<Derivate*>(new DerivateForwards(p, A, B, h, refLongitude))
                : type == "backwards" ? static_cast<Derivate*>(new DerivateBackwards(p, A, B, h, refLongitude))
                : type == "central"   ? static_cast<Derivate*>(new DerivateCentral(p, A, B, h, refLongitude))
-                                     : throw;
+                                     : throw BadValue("DerivateFactory: unknown method", Here());
     }
 
     static void list(std::ostream& out) { return instance().list_(out); }

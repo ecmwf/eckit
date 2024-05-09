@@ -79,7 +79,7 @@ double Mercator::calculate_phi(double t) const {
         }
     }
 
-    throw SeriousBug("Mercator: phi calculation failed to converge");
+    throw SeriousBug("Mercator: phi calculation failed to converge", Here());
 }
 
 

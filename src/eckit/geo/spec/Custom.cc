@@ -159,7 +159,7 @@ Custom::Custom(const Value& value) {
         return value.isNumber()   ? value_type(static_cast<int>(value))
                : value.isDouble() ? value_type(static_cast<double>(value))
                : value.isString() ? static_cast<std::string>(value)
-                                  : throw BadValue(value);
+                                  : throw BadValue(value, Here());
     };
 
     auto vector = [](const Value& value) -> value_type {
@@ -168,7 +168,7 @@ Custom::Custom(const Value& value) {
         return list.front().isNumber()   ? value_type(std::vector<int>(list.begin(), list.end()))
                : list.front().isDouble() ? value_type(std::vector<double>(list.begin(), list.end()))
                : list.front().isString() ? std::vector<std::string>(list.begin(), list.end())
-                                         : throw BadValue(value);
+                                         : throw BadValue(value, Here());
     };
 
     ASSERT(value.isMap());

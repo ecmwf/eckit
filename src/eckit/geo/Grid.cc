@@ -183,7 +183,7 @@ const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
     }
 
     list(Log::error() << "Grid: cannot build grid without 'type', choices are: ");
-    throw SpecNotFound("Grid: cannot build grid without 'type'");
+    throw SpecNotFound("Grid: cannot build grid without 'type'", Here());
 }
 
 

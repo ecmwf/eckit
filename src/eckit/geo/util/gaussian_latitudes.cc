@@ -95,7 +95,8 @@ const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
 
         if (!converged) {
             throw BadValue("Could not calculate latitude within accuracy/iterations: " + std::to_string(eps) + "/"
-                           + std::to_string(Nmax));
+                               + std::to_string(Nmax),
+                           Here());
         }
 
         // Convert colatitude [rad] to latitude [degree], symmetry

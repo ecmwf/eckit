@@ -102,7 +102,7 @@ PathName orca_path(const PathName& path, const std::string& url) {
                 tmp.unlink(true);
             }
 
-            throw UserError("ORCA: download error");
+            throw UserError("ORCA: download error", Here());
         }
 
         PathName::rename(tmp, path);
@@ -218,7 +218,7 @@ void ORCA::ORCARecord::read(const PathName& p) {
         return;
     }
 
-    throw SeriousBug("ORCA::read: unsupported version");
+    throw SeriousBug("ORCA::read: unsupported version", Here());
 }
 
 

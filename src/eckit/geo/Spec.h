@@ -27,7 +27,7 @@ namespace eckit::geo {
 
 class SpecNotFound : public Exception {
 public:
-    explicit SpecNotFound(const std::string&);
+    explicit SpecNotFound(const std::string&, const CodeLocation&);
 };
 
 

@@ -51,7 +51,7 @@ std::string Grid::spec() const {
 
 
 size_t Grid::size() const {
-    throw NotImplemented("Grid::size", Here());
+    NOTIMP;
 }
 
 
@@ -61,17 +61,17 @@ Grid::uid_t Grid::uid() const {
 
 
 bool Grid::includesNorthPole() const {
-    throw NotImplemented("Grid::includesNorthPole", Here());
+    NOTIMP;
 }
 
 
 bool Grid::includesSouthPole() const {
-    throw NotImplemented("Grid::includesSouthPole", Here());
+    NOTIMP;
 }
 
 
 bool Grid::isPeriodicWestEast() const {
-    throw NotImplemented("Grid::isPeriodicWestEast", Here());
+    NOTIMP;
 }
 
 
@@ -101,17 +101,17 @@ std::pair<std::vector<double>, std::vector<double> > Grid::to_latlon() const {
 
 
 Ordering Grid::order() const {
-    throw NotImplemented("Grid::order");
+    NOTIMP;
 }
 
 
 Renumber Grid::reorder(Ordering) const {
-    throw NotImplemented("Grid::reorder");
+    NOTIMP;
 }
 
 
 Grid* Grid::make_grid_reordered(Ordering) const {
-    throw NotImplemented("Grid::make_grid_reordered");
+    NOTIMP;
 }
 
 
@@ -121,12 +121,12 @@ Area* Grid::area() const {
 
 
 Renumber Grid::crop(const Area&) const {
-    throw NotImplemented("Grid::crop");
+    NOTIMP;
 }
 
 
 Grid* Grid::make_grid_cropped(const Area&) const {
-    throw NotImplemented("Grid::make_grid_cropped");
+    NOTIMP;
 }
 
 
@@ -157,7 +157,7 @@ Renumber Grid::no_reorder(size_t size) {
 
 
 void Grid::spec(spec::Custom&) const {
-    throw NotImplemented("Grid::spec");
+    NOTIMP;
 }
 
 

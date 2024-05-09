@@ -19,7 +19,7 @@ namespace eckit::geo {
 
 
 void Area::spec(spec::Custom&) const {
-    throw NotImplemented("Area::spec");
+    NOTIMP;
 }
 
 

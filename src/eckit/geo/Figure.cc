@@ -21,22 +21,22 @@ namespace eckit::geo {
 
 
 double Figure::R() const {
-    throw NotImplemented("Figure::R", Here());
+    NOTIMP;
 }
 
 
 double Figure::a() const {
-    throw NotImplemented("Figure::a", Here());
+    NOTIMP;
 }
 
 
 double Figure::b() const {
-    throw NotImplemented("Figure::b", Here());
+    NOTIMP;
 }
 
 
 double Figure::area(const area::BoundingBox&) const {
-    throw NotImplemented("Figure::area", Here());
+    NOTIMP;
 }
 
 

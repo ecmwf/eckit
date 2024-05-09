@@ -32,8 +32,7 @@ CASE("HEALPix") {
 
     SECTION("sizes") {
         struct test_t {
-            explicit test_t(size_t N) :
-                N(N), size(12 * N * N) {}
+            explicit test_t(size_t N) : N(N), size(12 * N * N) {}
             size_t N;
             size_t size;
         } tests[]{test_t{2}, test_t{3}, test_t{64}};

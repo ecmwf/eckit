@@ -76,8 +76,9 @@ private:
 
         const size_t axis = node->axis();
 
-        return (lbound.x(axis) < point.x(axis) && isAnyPointInBoxInterior(node->left(alloc), alloc, lbound, ubound)) ||
-               (ubound.x(axis) > point.x(axis) && isAnyPointInBoxInterior(node->right(alloc), alloc, lbound, ubound));
+        return (lbound.x(axis) < point.x(axis) && isAnyPointInBoxInterior(node->left(alloc), alloc, lbound, ubound))
+               || (ubound.x(axis) > point.x(axis)
+                   && isAnyPointInBoxInterior(node->right(alloc), alloc, lbound, ubound));
     }
 
     /// \brief Returns true if \p point is in the interior of the axis-aligned box
@@ -97,8 +98,7 @@ private:
 /// \brief Returns true if any point in \p tree is in the interior of the axis-aligned box
 /// with bottom-left and top-right corners at \p lbound and \p ubound.
 template <typename TreeTraits>
-bool isAnyPointInBoxInterior(const KDTreeX<TreeTraits>& tree,
-                             const typename KDTreeX<TreeTraits>::Point& lbound,
+bool isAnyPointInBoxInterior(const KDTreeX<TreeTraits>& tree, const typename KDTreeX<TreeTraits>::Point& lbound,
                              const typename KDTreeX<TreeTraits>::Point& ubound) {
     return PointInBoxInteriorFinder<TreeTraits>::isAnyPointInBoxInterior(tree, lbound, ubound);
 }

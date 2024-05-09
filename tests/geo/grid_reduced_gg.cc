@@ -45,8 +45,7 @@ CASE("ReducedGaussianOctahedral") {
 
     SECTION("sizes") {
         struct test_t {
-            explicit test_t(size_t N) :
-                N(N), size(4 * N * (N + 9)) {}
+            explicit test_t(size_t N) : N(N), size(4 * N * (N + 9)) {}
             size_t N;
             size_t size;
         } tests[]{test_t{2}, test_t{3}, test_t{64}};

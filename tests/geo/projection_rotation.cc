@@ -49,8 +49,7 @@ CASE("rotation (2)") {
     for (auto a : delta) {
         for (auto b : delta) {
             for (auto c : delta) {
-                projection::Rotation rot(0. + static_cast<double>(b),
-                                         -90. + static_cast<double>(a),
+                projection::Rotation rot(0. + static_cast<double>(b), -90. + static_cast<double>(a),
                                          static_cast<double>(c));
                 EXPECT(rot.rotated() == (a % 360 != 0 || (b - c) % 360 != 0));
 

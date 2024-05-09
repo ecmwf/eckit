@@ -100,8 +100,8 @@ CASE("LonLatPolygon") {
 
     SECTION("Construction") {
         const std::vector<Polygon::value_type> points1{{0, 0}, {1, 1}, {2, 2}, {0, 0}};
-        const std::vector<Polygon::value_type>
-            points2{{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}, {0, 0}};
+        const std::vector<Polygon::value_type> points2{{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2},
+                                                       {1, 2}, {0, 2}, {0, 1}, {0, 0}};
 
         EXPECT_EQUAL(Polygon(points1).size(), 2);
         EXPECT_EQUAL(Polygon(points1.begin(), points1.end()).size(), 2);
@@ -367,14 +367,8 @@ CASE("LonLatPolygon") {
 
 
         std::vector<Polygon::value_type> points;
-        const std::vector<double> list_lons{lon[0],
-                                            mid(lon[0], lon[1]),
-                                            lon[1],
-                                            mid(lon[1], lon[2]),
-                                            lon[2],
-                                            mid(lon[2], lon[3]),
-                                            lon[3],
-                                            mid(lon[3], lon[4])};
+        const std::vector<double> list_lons{lon[0], mid(lon[0], lon[1]), lon[1], mid(lon[1], lon[2]),
+                                            lon[2], mid(lon[2], lon[3]), lon[3], mid(lon[3], lon[4])};
         const std::vector<double> list_lats{lat[0], mid(lat[0], lat[1]), lat[1], mid(lat[1], lat[2]), lat[2]};
 
         for (double lon : list_lons) {

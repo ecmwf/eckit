@@ -20,8 +20,9 @@
 
 
 namespace eckit::geo {
+class Figure;
 class Projection;
-}
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::area {
@@ -79,7 +80,9 @@ public:
     bool contains(const PointLonLat&) const;
     bool contains(const BoundingBox&) const;
     bool empty() const;
-    double area(double radius) const;
+
+    /// @brief Calculate the bounding box prescribed area ([[R]**2])
+    double area(const Figure&) const;
 
     // -- Overridden methods
 

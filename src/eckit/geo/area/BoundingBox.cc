@@ -13,15 +13,14 @@
 #include "eckit/geo/area/BoundingBox.h"
 
 #include <algorithm>
-#include <cmath>
 #include <memory>
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/Sphere.h"
 #include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -191,17 +190,8 @@ bool BoundingBox::empty() const {
 }
 
 
-double BoundingBox::area(double radius) const {
-    double lonf = isPeriodicWestEast() ? 1. : ((east - west) / 360.);
-    ASSERT(0. <= lonf && lonf <= 1.);
-
-    const auto sn = std::sin(north * util::DEGREE_TO_RADIAN);
-    const auto ss = std::sin(south * util::DEGREE_TO_RADIAN);
-
-    double latf = 0.5 * (sn - ss);
-    ASSERT(0. <= latf && latf <= 1.);
-
-    return Sphere::area(radius) * latf * lonf;
+double BoundingBox::area(const Figure& figure) const {
+    return figure.area(*this);
 }
 
 

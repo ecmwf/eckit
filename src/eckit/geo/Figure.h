@@ -19,8 +19,11 @@
 
 
 namespace eckit::geo {
-class Spec;
+namespace area {
+class BoundingBox;
 }
+class Spec;
+}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -66,6 +69,9 @@ public:
     virtual double R() const;
     virtual double a() const;
     virtual double b() const;
+
+    /// @brief Calculate the bounding box prescribed area ([[R]**2])
+    virtual double area(const area::BoundingBox&) const;
 
     double eccentricity() const;
 

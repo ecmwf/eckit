@@ -12,8 +12,12 @@
 
 #include "eckit/geo/figure/Sphere.h"
 
+#include <cmath>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Spec.h"
+#include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -26,6 +30,20 @@ Sphere::Sphere(double R) : R_(R) {
 
 
 Sphere::Sphere(const Spec& spec) : Sphere(spec.get_double("R")) {}
+
+
+double Sphere::area(const area::BoundingBox& bbox) const {
+    auto lonf = bbox.isPeriodicWestEast() ? 1. : ((bbox.east - bbox.west) / PointLonLat::GLOBE);
+    ASSERT(0. <= lonf && lonf <= 1.);
+
+    const auto sn = std::sin(bbox.north * util::DEGREE_TO_RADIAN);
+    const auto ss = std::sin(bbox.south * util::DEGREE_TO_RADIAN);
+
+    auto latf = 0.5 * (sn - ss);
+    ASSERT(0. <= latf && latf <= 1.);
+
+    return 4. * M_PI * R_ * R_ * latf * lonf;
+}
 
 
 }  // namespace eckit::geo::figure

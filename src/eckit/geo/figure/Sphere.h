@@ -49,6 +49,7 @@ public:
     double a() const override { return R_; }
     double b() const override { return R_; }
 
+    double area(const area::BoundingBox&) const override;
 
     // -- Class members
     // None

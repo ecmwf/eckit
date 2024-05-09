@@ -35,6 +35,11 @@ double Figure::b() const {
 }
 
 
+double Figure::area(const area::BoundingBox&) const {
+    throw NotImplemented("Figure::area", Here());
+}
+
+
 double Figure::eccentricity() const {
     return std::sqrt(1. - (b() * b()) / (a() * a()));
 }

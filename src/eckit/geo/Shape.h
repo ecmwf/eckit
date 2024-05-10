@@ -26,6 +26,10 @@ namespace eckit::geo {
 
 class Shape final : public std::array<size_t, 2> {
 public:
+    // -- Types
+
+    using container_type = array;
+
     // -- Constructors
 
     explicit Shape(const Spec& spec) : Shape(make_from_spec(spec)) {}
@@ -34,9 +38,9 @@ public:
 
     Shape() : Shape(0, 0) {}
 
-    Shape(const Shape& other) : array(other) {}
+    Shape(const Shape& other) : container_type(other) {}
 
-    Shape(Shape&& other) : array(other) {}
+    Shape(Shape&& other) : container_type(other) {}
 
     // -- Destructor
 
@@ -49,23 +53,23 @@ public:
     bool operator!=(const Shape& other) const { return !operator==(other); }
 
     Shape& operator=(const Shape& other) {
-        array::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
     Shape& operator=(Shape&& other) {
-        array::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
     // Members
 
-    value_type& nx = array::operator[](0);
-    value_type& ny = array::operator[](1);
+    const value_type& nx = container_type::operator[](0);
+    const value_type& ny = container_type::operator[](1);
 
     // -- Methods
 
-    std::array<value_type, 2> deconstruct() const { return {nx, ny}; }
+    container_type deconstruct() const { return {nx, ny}; }
 
     // -- Class methods
 

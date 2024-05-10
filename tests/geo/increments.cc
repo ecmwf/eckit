@@ -42,7 +42,7 @@ CASE("assignment") {
     EXPECT_EQUAL(a.dx, b.dx);
     EXPECT_EQUAL(a, b);
 
-    b.dx = 30;
+    b = {30, b.dy};
     EXPECT_EQUAL(b.dx, 30);
     EXPECT_EQUAL(a.dx, 10);
 
@@ -50,14 +50,14 @@ CASE("assignment") {
     EXPECT_EQUAL(a.dx, c.dx);
     EXPECT_EQUAL(a, c);
 
-    c.dx = 40;
+    c = {40, c.dy};
     EXPECT_EQUAL(c.dx, 40);
     EXPECT_EQUAL(a.dx, 10);
 
     auto d(std::move(a));
     EXPECT_EQUAL(d.dx, 10);
 
-    d.dx = 50;
+    d = {50, d.dy};
     EXPECT_EQUAL(d.dx, 50);
 }
 

@@ -26,15 +26,19 @@ namespace eckit::geo {
 
 class Increments : public std::array<double, 2> {
 public:
+    // -- Types
+
+    using container_type = array;
+
     // -- Constructors
 
     explicit Increments(const Spec& spec) : Increments(make_from_spec(spec)) {}
 
     Increments(value_type dx, value_type dy);
 
-    Increments(const Increments& other) : array(other) {}
+    Increments(const Increments& other) : container_type(other) {}
 
-    Increments(Increments&& other) : array(other) {}
+    Increments(Increments&& other) : container_type(other) {}
 
     // -- Destructor
 
@@ -46,23 +50,23 @@ public:
     bool operator!=(const Increments& other) const { return !operator==(other); }
 
     Increments& operator=(const Increments& other) {
-        array::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
     Increments& operator=(Increments&& other) {
-        array::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
     // Members
 
-    value_type& dx = array::operator[](0);
-    value_type& dy = array::operator[](1);
+    const value_type& dx = container_type::operator[](0);
+    const value_type& dy = container_type::operator[](1);
 
     // -- Methods
 
-    std::array<value_type, 2> deconstruct() const { return {dx, dy}; }
+    container_type deconstruct() const { return {dx, dy}; }
 
     // -- Class methods
 

@@ -16,6 +16,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Increments.h"
+#include "eckit/geo/Shape.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/etc/Grid.h"
 #include "eckit/geo/iterator/Regular.h"
@@ -77,7 +78,7 @@ std::pair<Range*, Range*> Regular::make_cartesian_ranges_from_spec(const Spec& s
     // FIXME This is a hack, we should not be using these keys
     Point2 a{spec.get_double("longitudeOfFirstGridPointInDegrees"),
              spec.get_double("latitudeOfFirstGridPointInDegrees")};
-    Point2 b{a.X + inc.dx * (shape.nx - 1), a.Y - inc.dy * (shape.ny - 1)};
+    Point2 b{a.X + inc.dx * static_cast<double>(shape.nx - 1), a.Y - inc.dy * static_cast<double>(shape.ny - 1)};
 
     return {new range::RegularCartesian(shape.nx, a.X, b.X), new range::RegularCartesian(shape.ny, a.Y, b.Y)};
 }

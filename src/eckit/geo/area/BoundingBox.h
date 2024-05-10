@@ -30,6 +30,10 @@ namespace eckit::geo::area {
 
 class BoundingBox : public Area, protected std::array<double, 4> {
 public:
+    // -- Types
+
+    using container_type = array;
+
     // -- Constructors
 
     explicit BoundingBox(const Spec&);
@@ -38,9 +42,9 @@ public:
 
     BoundingBox();
 
-    BoundingBox(const BoundingBox& other) : array(other) {}
+    BoundingBox(const BoundingBox& other) : container_type(other) {}
 
-    BoundingBox(BoundingBox&& other) : array(other) {}
+    BoundingBox(BoundingBox&& other) : container_type(other) {}
 
     // -- Destructor
 
@@ -52,18 +56,18 @@ public:
     bool operator!=(const BoundingBox& other) const { return !operator==(other); }
 
     BoundingBox& operator=(const BoundingBox& other) {
-        array::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
     BoundingBox& operator=(BoundingBox&& other) {
-        array::operator=(other);
+        container_type::operator=(other);
         return *this;
     }
 
     // -- Methods
 
-    std::array<double, 4> deconstruct() const { return {north, west, south, east}; }
+    container_type deconstruct() const { return {north, west, south, east}; }
 
     bool isPeriodicWestEast() const;
     bool containsNorthPole() const;

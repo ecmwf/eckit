@@ -18,7 +18,6 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/Range.h"
-#include "eckit/geo/Shape.h"
 
 
 namespace eckit::geo {

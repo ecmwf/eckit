@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/projection/Mercator.h"
+#include "eckit/geo/projection/figure/Mercator.h"
 
 #include <cmath>
 #include <limits>
@@ -20,7 +20,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo::projection::figure {
 
 
 static ProjectionBuilder<Mercator> PROJECTION_1("mercator");
@@ -109,4 +109,4 @@ Spec* Mercator::spec() const {
 }
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::projection::figure

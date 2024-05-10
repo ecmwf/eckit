@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/projection/PolarStereographic.h"
+#include "eckit/geo/projection/figure/PolarStereographic.h"
 
 #include <cmath>
 
@@ -18,7 +18,7 @@
 #include "eckit/geo/util.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo::projection::figure {
 
 
 PolarStereographic::PolarStereographic(const Spec&) {}
@@ -83,4 +83,4 @@ void init() {
 }  // namespace
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::projection::figure

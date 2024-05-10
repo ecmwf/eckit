@@ -73,26 +73,28 @@ list(APPEND eckit_geo_srcs
     polygon/Polygon.h
     projection/Composer.cc
     projection/Composer.h
-    projection/LambertAzimuthalEqualArea.cc
-    projection/LambertAzimuthalEqualArea.h
-    projection/LambertConformalConic.cc
-    projection/LambertConformalConic.h
     projection/LonLatToXY.cc
     projection/LonLatToXY.h
     projection/LonLatToXYZ.cc
     projection/LonLatToXYZ.h
-    projection/Mercator.cc
-    projection/Mercator.h
     projection/None.cc
     projection/None.h
-    projection/PolarStereographic.cc
-    projection/PolarStereographic.h
+    projection/ProjectionOnFigure.cc
+    projection/ProjectionOnFigure.h
     projection/Rotation.cc
     projection/Rotation.h
-    projection/SpaceView.cc
-    projection/SpaceView.h
     projection/XYToLonLat.cc
     projection/XYToLonLat.h
+    projection/figure/LambertAzimuthalEqualArea.cc
+    projection/figure/LambertAzimuthalEqualArea.h
+    projection/figure/LambertConformalConic.cc
+    projection/figure/LambertConformalConic.h
+    projection/figure/Mercator.cc
+    projection/figure/Mercator.h
+    projection/figure/PolarStereographic.cc
+    projection/figure/PolarStereographic.h
+    projection/figure/SpaceView.cc
+    projection/figure/SpaceView.h
     range/GaussianLatitude.cc
     range/GaussianLatitude.h
     range/Regular.cc

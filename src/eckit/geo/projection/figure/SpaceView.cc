@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/projection/SpaceView.h"
+#include "eckit/geo/projection/figure/SpaceView.h"
 
 #include <cmath>
 
@@ -18,7 +18,7 @@
 #include "eckit/geo/util.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo::projection::figure {
 
 
 SpaceView::SpaceView(const Spec&) {
@@ -110,4 +110,4 @@ void init() {
 }  // namespace
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::projection::figure

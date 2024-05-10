@@ -12,13 +12,17 @@
 
 #pragma once
 
-#include "eckit/geo/Projection.h"
+#include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo::projection::figure {
 
 
-class PolarStereographic final : public Projection {
+/**
+ * @brief SpaceView projection
+ * @ref LRIT/HRIT Global Specification (CGMS 03, Issue 2.6, 12.08.1999)
+ */
+class SpaceView final : public ProjectionOnFigure {
 public:
     // -- Types
     // None
@@ -28,7 +32,7 @@ public:
 
     // -- Constructors
 
-    explicit PolarStereographic(const Spec&);
+    explicit SpaceView(const Spec&);
 
     // -- Destructor
     // None
@@ -77,4 +81,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::projection::figure

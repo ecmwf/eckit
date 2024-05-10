@@ -15,14 +15,14 @@
 #include <memory>
 
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/Projection.h"
+#include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo::projection::figure {
 
 
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
-class Mercator final : public Projection {
+class Mercator final : public ProjectionOnFigure {
 public:
     // -- Constructors
 
@@ -69,4 +69,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::projection::figure

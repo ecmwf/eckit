@@ -12,18 +12,15 @@
 
 #pragma once
 
-#include "eckit/geo/Projection.h"
+#include <array>
+
+#include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo::projection::figure {
 
 
-/**
- * @brief LambertConformalConic projection
- * @ref Map Projections: A Working Manual, John P. Snyder (1987)
- * @ref Wolfram MathWorld (http://mathworld.wolfram.com/LambertConformalConicProjection.html)
- */
-class LambertConformalConic final : public Projection {
+class LambertAzimuthalEqualArea final : public ProjectionOnFigure {
 public:
     // -- Types
     // None
@@ -33,7 +30,8 @@ public:
 
     // -- Constructors
 
-    explicit LambertConformalConic(const Spec&);
+    explicit LambertAzimuthalEqualArea(const Spec&);
+    LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first);
 
     // -- Destructor
     // None
@@ -60,8 +58,19 @@ public:
     // None
 
 private:
+    // -- Types
+
     // -- Members
-    // None
+
+    const PointLonLat centre_;     // central meridian/standard parallel [degree]
+    const PointLonLatR centre_r_;  // central meridian/standard parallel [radian]
+
+    const PointLonLat first_;     // first point [degree]
+    const PointLonLatR first_r_;  // first point [radian]
+
+    const sincos_t phi0_;
+    const sincos_t phi_;
+    const sincos_t dlam_;
 
     // -- Methods
     // None
@@ -82,4 +91,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::projection::figure

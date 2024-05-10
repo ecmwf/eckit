@@ -10,36 +10,26 @@
  */
 
 
-#include "eckit/geo/projection/LambertAzimuthalEqualArea.h"
+#include "eckit/geo/projection/figure/LambertAzimuthalEqualArea.h"
 
 #include <cmath>
 
-#include "eckit/geo/Earth.h"
+#include "eckit/geo/geometry/Earth.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo::projection::figure {
 
 
 static ProjectionBuilder<LambertAzimuthalEqualArea> PROJECTION_1("lambert_azimuthal_equal_area");
 static ProjectionBuilder<LambertAzimuthalEqualArea> PROJECTION_2("laea");
 
 
-LambertAzimuthalEqualArea::sincos_t::sincos_t(value_type r) : array{std::sin(r), std::cos(r)} {}
-
-
-LambertAzimuthalEqualArea::PointLonLatR::PointLonLatR(value_type lonr, value_type latr) : array{lonr, latr} {}
-
-
-LambertAzimuthalEqualArea::PointLonLatR::PointLonLatR(const PointLonLat& p) :
-    PointLonLatR{p.lon * util::DEGREE_TO_RADIAN, p.lat * util::DEGREE_TO_RADIAN} {}
-
-
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
     LambertAzimuthalEqualArea({spec.get_double("lon_0"), spec.get_double("lat_0")},
-                              {spec.get_double("lon_first"), spec.get_double("lat_first")}) {}
+                              {spec.get_double("first_lon"), spec.get_double("first_lat")}) {}
 
 
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first) :
@@ -49,12 +39,11 @@ LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLo
     first_r_(first),
     phi0_(centre_r_.latr),
     phi_(first_r_.latr),
-    dlam_(first_r_.lonr - centre_r_.lonr),
-    R_(Earth::radius()) {}
+    dlam_(first_r_.lonr - centre_r_.lonr) {}
 
 
 Point2 LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
-    const auto kp = R_ * std::sqrt(2. / (1. + phi0_.sin * phi_.sin + phi0_.cos * phi_.cos * dlam_.cos));
+    const auto kp = figure().R() * std::sqrt(2. / (1. + phi0_.sin * phi_.sin + phi0_.cos * phi_.cos * dlam_.cos));
 
     auto x = kp * phi_.cos * dlam_.sin;
     auto y = kp * (phi0_.cos * phi_.sin - phi0_.sin * phi_.cos * dlam_.cos);
@@ -65,7 +54,7 @@ Point2 LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
 
 PointLonLat LambertAzimuthalEqualArea::inv(const Point2& p) const {
     if (auto x = p.X, y = p.Y, rho = std::sqrt(x * x + y * y); !types::is_approximately_equal(rho, 0.)) {
-        const sincos_t c(2. * std::asin(rho / (2. * R_)));
+        const sincos_t c(2. * std::asin(rho / (2. * figure().R())));
 
         const auto lonr = centre_r_.lonr + std::atan2(x * c.sin, rho * phi0_.cos * c.cos - y * phi0_.sin * c.sin);
         const auto latr = std::asin(c.cos * phi0_.sin + y * c.sin * phi0_.cos / rho);
@@ -86,4 +75,4 @@ Spec* LambertAzimuthalEqualArea::spec() const {
 }
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::projection::figure

@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <array>
+
 #include "eckit/geo/Projection.h"
 
 
@@ -29,6 +31,7 @@ public:
     // -- Constructors
 
     explicit LambertAzimuthalEqualArea(const Spec&);
+    LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first);
 
     // -- Destructor
     // None
@@ -55,8 +58,35 @@ public:
     // None
 
 private:
+    // -- Types
+
+    struct PointLonLatR final : protected std::array<double, 2> {
+        PointLonLatR(value_type lonr, value_type latr);
+        explicit PointLonLatR(const PointLonLat&);
+
+        const value_type& lonr = array::operator[](0);
+        const value_type& latr = array::operator[](1);
+    };
+
+    struct sincos_t final : std::array<double, 2> {
+        explicit sincos_t(value_type r);
+
+        const value_type& sin = array::operator[](0);
+        const value_type& cos = array::operator[](1);
+    };
+
     // -- Members
-    // None
+
+    const PointLonLat centre_;     // central longitude/standard parallel [degree]
+    const PointLonLatR centre_r_;  // central_longitude/standard parallel [radian]
+
+    const PointLonLat first_;     // first point [degree]
+    const PointLonLatR first_r_;  // first point [radian]
+
+    const sincos_t phi0_;
+    const sincos_t phi_;
+    const sincos_t dlam_;
+    const double R_;
 
     // -- Methods
     // None

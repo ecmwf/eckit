@@ -8,8 +8,8 @@
  * virtue of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
  */
 
-#include "grib_api_internal.h"
 #include <cmath>
+#include "grib_api_internal.h"
 
 /*
    This is used by make_class.pl
@@ -36,55 +36,53 @@ or edit "iterator.class" and rerun ./make_class.pl
 */
 
 
-static void init_class              (grib_iterator_class*);
+static void init_class(grib_iterator_class*);
 
-static int init               (grib_iterator* i,grib_handle*,grib_arguments*);
-static int next               (grib_iterator* i, double *lat, double *lon, double *val);
-static int destroy            (grib_iterator* i);
+static int init(grib_iterator* i, grib_handle*, grib_arguments*);
+static int next(grib_iterator* i, double* lat, double* lon, double* val);
+static int destroy(grib_iterator* i);
 
 
-typedef struct grib_iterator_space_view{
-  grib_iterator it;
+typedef struct grib_iterator_space_view {
+    grib_iterator it;
     /* Members defined in gen */
     int carg;
     const char* missingValue;
     /* Members defined in space_view */
-    double *lats;
-    double *lons;
+    double* lats;
+    double* lons;
     long Nj;
 } grib_iterator_space_view;
 
 extern grib_iterator_class* grib_iterator_class_gen;
 
 static grib_iterator_class _grib_iterator_class_space_view = {
-    &grib_iterator_class_gen,                    /* super                     */
-    "space_view",                    /* name                      */
-    sizeof(grib_iterator_space_view),/* size of instance          */
-    0,                           /* inited */
-    &init_class,                 /* init_class */
-    &init,                     /* constructor               */
-    &destroy,                  /* destructor                */
-    &next,                     /* Next Value                */
-    0,                 /*  Previous Value           */
-    0,                    /* Reset the counter         */
-    0,                 /* has next values           */
+    &grib_iterator_class_gen,         /* super                     */
+    "space_view",                     /* name                      */
+    sizeof(grib_iterator_space_view), /* size of instance          */
+    0,                                /* inited */
+    &init_class,                      /* init_class */
+    &init,                            /* constructor               */
+    &destroy,                         /* destructor                */
+    &next,                            /* Next Value                */
+    0,                                /*  Previous Value           */
+    0,                                /* Reset the counter         */
+    0,                                /* has next values           */
 };
 
 grib_iterator_class* grib_iterator_class_space_view = &_grib_iterator_class_space_view;
 
 
-static void init_class(grib_iterator_class* c)
-{
-    c->previous    =    (*(c->super))->previous;
-    c->reset    =    (*(c->super))->reset;
-    c->has_next    =    (*(c->super))->has_next;
+static void init_class(grib_iterator_class* c) {
+    c->previous = (*(c->super))->previous;
+    c->reset    = (*(c->super))->reset;
+    c->has_next = (*(c->super))->has_next;
 }
 /* END_CLASS_IMP */
 
 #define ITER "Space view Geoiterator"
 
-static int next(grib_iterator* iter, double* lat, double* lon, double* val)
-{
+static int next(grib_iterator* iter, double* lat, double* lon, double* val) {
     grib_iterator_space_view* self = (grib_iterator_space_view*)iter;
 
     if ((long)iter->e >= (long)(iter->nv - 1))
@@ -127,11 +125,13 @@ static int next(grib_iterator* iter, double* lat, double* lon, double* val)
 //                 *dx = *dy = 1184;
 //                 *xp = *yp = 635;
 //             }
-//             else if (satelliteIdentifier == 259 && channelNumber == 4 && *dx == 1185) { /* GOES-15 (West) channel 4 */
+//             else if (satelliteIdentifier == 259 && channelNumber == 4 && *dx == 1185) { /* GOES-15 (West) channel 4
+//             */
 //                 *dx = *dy = 880;
 //                 *xp = *yp = 450;
 //             }
-//             else if (satelliteIdentifier == 57 && *dx == 1732) { /* MSG (Meteosat second generation), non-HRV channels */
+//             else if (satelliteIdentifier == 57 && *dx == 1732) { /* MSG (Meteosat second generation), non-HRV
+//             channels */
 //                 *dx = *dy = 1811;
 //                 *xp = *yp = 928;
 //             }
@@ -142,11 +142,10 @@ static int next(grib_iterator* iter, double* lat, double* lon, double* val)
 #define RAD2DEG 57.29577951308232087684 /* 180 over pi */
 #define DEG2RAD 0.01745329251994329576  /* pi over 180 */
 
-static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args)
-{
+static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     /* REFERENCE:
-    *  LRIT/HRIT Global Specification (CGMS 03, Issue 2.6, 12.08.1999)
-    */
+     *  LRIT/HRIT Global Specification (CGMS 03, Issue 2.6, 12.08.1999)
+     */
     int ret = GRIB_SUCCESS;
     double *lats, *lons; /* arrays of latitudes and longitudes */
     double latOfSubSatellitePointInDegrees, lonOfSubSatellitePointInDegrees;
@@ -208,12 +207,15 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args)
     }
 
     if (iter->nv != nx * ny) {
-        grib_context_log(h->context, GRIB_LOG_ERROR, "%s: Wrong number of points (%zu!=%ldx%ld)", ITER, iter->nv, nx, ny);
+        grib_context_log(h->context, GRIB_LOG_ERROR, "%s: Wrong number of points (%zu!=%ldx%ld)", ITER, iter->nv, nx,
+                         ny);
         return GRIB_WRONG_GRID;
     }
-    if ((ret = grib_get_double_internal(h, sLatOfSubSatellitePointInDegrees, &latOfSubSatellitePointInDegrees)) != GRIB_SUCCESS)
+    if ((ret = grib_get_double_internal(h, sLatOfSubSatellitePointInDegrees, &latOfSubSatellitePointInDegrees))
+        != GRIB_SUCCESS)
         return ret;
-    if ((ret = grib_get_double_internal(h, sLonOfSubSatellitePointInDegrees, &lonOfSubSatellitePointInDegrees)) != GRIB_SUCCESS)
+    if ((ret = grib_get_double_internal(h, sLonOfSubSatellitePointInDegrees, &lonOfSubSatellitePointInDegrees))
+        != GRIB_SUCCESS)
         return ret;
     if ((ret = grib_get_double_internal(h, sDx, &dx)) != GRIB_SUCCESS)
         return ret;
@@ -256,7 +258,8 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args)
     }
 
     if (nrInRadiusOfEarth == 0) {
-        grib_context_log(h->context, GRIB_LOG_ERROR, "%s: Key %s must be greater than zero", ITER, sNrInRadiusOfEarthScaled);
+        grib_context_log(h->context, GRIB_LOG_ERROR, "%s: Key %s must be greater than zero", ITER,
+                         sNrInRadiusOfEarthScaled);
         return GRIB_GEOCALCULUS_PROBLEM;
     }
 
@@ -267,8 +270,8 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args)
     lop = lonOfSubSatellitePointInDegrees;
     if (lap != 0.0) {
         grib_context_log(h->context, GRIB_LOG_ERROR,
-                         "%s: Key %s must be 0 (satellite must be located in the equator plane)",
-                         ITER, sLatOfSubSatellitePointInDegrees);
+                         "%s: Key %s must be 0 (satellite must be located in the equator plane)", ITER,
+                         sLatOfSubSatellitePointInDegrees);
         return GRIB_GEOCALCULUS_PROBLEM;
     }
 
@@ -378,8 +381,7 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args)
     return ret;
 }
 
-static int destroy(grib_iterator* iter)
-{
+static int destroy(grib_iterator* iter) {
     grib_iterator_space_view* self = (grib_iterator_space_view*)iter;
     const grib_context* c          = iter->h->context;
 

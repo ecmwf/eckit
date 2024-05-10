@@ -8,8 +8,8 @@
  * virtue of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
  */
 
-#include "grib_api_internal.h"
 #include <cmath>
+#include "grib_api_internal.h"
 
 /*
    This is used by make_class.pl
@@ -36,55 +36,53 @@ or edit "iterator.class" and rerun ./make_class.pl
 */
 
 
-static void init_class              (grib_iterator_class*);
+static void init_class(grib_iterator_class*);
 
-static int init               (grib_iterator* i,grib_handle*,grib_arguments*);
-static int next               (grib_iterator* i, double *lat, double *lon, double *val);
-static int destroy            (grib_iterator* i);
+static int init(grib_iterator* i, grib_handle*, grib_arguments*);
+static int next(grib_iterator* i, double* lat, double* lon, double* val);
+static int destroy(grib_iterator* i);
 
 
-typedef struct grib_iterator_polar_stereographic{
-  grib_iterator it;
+typedef struct grib_iterator_polar_stereographic {
+    grib_iterator it;
     /* Members defined in gen */
     int carg;
     const char* missingValue;
     /* Members defined in polar_stereographic */
-    double *lats;
-    double *lons;
+    double* lats;
+    double* lons;
     long Nj;
 } grib_iterator_polar_stereographic;
 
 extern grib_iterator_class* grib_iterator_class_gen;
 
 static grib_iterator_class _grib_iterator_class_polar_stereographic = {
-    &grib_iterator_class_gen,                    /* super                     */
-    "polar_stereographic",                    /* name                      */
-    sizeof(grib_iterator_polar_stereographic),/* size of instance          */
-    0,                           /* inited */
-    &init_class,                 /* init_class */
-    &init,                     /* constructor               */
-    &destroy,                  /* destructor                */
-    &next,                     /* Next Value                */
-    0,                 /*  Previous Value           */
-    0,                    /* Reset the counter         */
-    0,                 /* has next values           */
+    &grib_iterator_class_gen,                  /* super                     */
+    "polar_stereographic",                     /* name                      */
+    sizeof(grib_iterator_polar_stereographic), /* size of instance          */
+    0,                                         /* inited */
+    &init_class,                               /* init_class */
+    &init,                                     /* constructor               */
+    &destroy,                                  /* destructor                */
+    &next,                                     /* Next Value                */
+    0,                                         /*  Previous Value           */
+    0,                                         /* Reset the counter         */
+    0,                                         /* has next values           */
 };
 
 grib_iterator_class* grib_iterator_class_polar_stereographic = &_grib_iterator_class_polar_stereographic;
 
 
-static void init_class(grib_iterator_class* c)
-{
-    c->previous    =    (*(c->super))->previous;
-    c->reset    =    (*(c->super))->reset;
-    c->has_next    =    (*(c->super))->has_next;
+static void init_class(grib_iterator_class* c) {
+    c->previous = (*(c->super))->previous;
+    c->reset    = (*(c->super))->reset;
+    c->has_next = (*(c->super))->has_next;
 }
 /* END_CLASS_IMP */
 
 #define ITER "Polar stereographic Geoiterator"
 
-static int next(grib_iterator* iter, double* lat, double* lon, double* val)
-{
+static int next(grib_iterator* iter, double* lat, double* lon, double* val) {
     grib_iterator_polar_stereographic* self = (grib_iterator_polar_stereographic*)iter;
 
     if ((long)iter->e >= (long)(iter->nv - 1))
@@ -100,8 +98,7 @@ static int next(grib_iterator* iter, double* lat, double* lon, double* val)
 }
 
 /* Data struct for Forward and Inverse Projections */
-typedef struct proj_data_t
-{
+typedef struct proj_data_t {
     double centre_lon;     /* central longitude */
     double centre_lat;     /* central latitude */
     double sign;           /* sign variable */
@@ -117,8 +114,7 @@ typedef struct proj_data_t
 #define PI_OVER_2 1.5707963267948966    /* half pi */
 #define EPSILON 1.0e-10
 
-static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args)
-{
+static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     int ret = 0;
     double *lats, *lons; /* arrays for latitudes and longitudes */
     double lonFirstInDegrees, latFirstInDegrees, radius;
@@ -132,8 +128,12 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args)
     double ts;                                /* value of small t */
     double height;                            /* height above ellipsoid */
     double x0, y0, lonFirst, latFirst;
-    proj_data_t fwd_proj_data = {0,};
-    proj_data_t inv_proj_data = {0,};
+    proj_data_t fwd_proj_data = {
+        0,
+    };
+    proj_data_t inv_proj_data = {
+        0,
+    };
 
     grib_iterator_polar_stereographic* self = (grib_iterator_polar_stereographic*)iter;
 
@@ -165,7 +165,8 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args)
         return ret;
 
     if (iter->nv != nx * ny) {
-        grib_context_log(h->context, GRIB_LOG_ERROR, "%s: Wrong number of points (%zu!=%ldx%ld)", ITER, iter->nv, nx, ny);
+        grib_context_log(h->context, GRIB_LOG_ERROR, "%s: Wrong number of points (%zu!=%ldx%ld)", ITER, iter->nv, nx,
+                         ny);
         return GRIB_WRONG_GRID;
     }
     if ((ret = grib_get_double_internal(h, s_latFirstInDegrees, &latFirstInDegrees)) != GRIB_SUCCESS)
@@ -294,77 +295,75 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args)
         y += Dy;
     }
 
-//     /*standardParallel = (southPoleOnPlane == 1) ? -90 : +90;*/
-//     if (jPointsAreConsecutive)
-//     {
-//         x=xFirst;
-//         for (i=0;i<nx;i++) {
-//             y=yFirst;
-//             for (j=0;j<ny;j++) {
-//                 rho=sqrt(x*x+y*y);
-//                 if (rho == 0) {
-//                     /* indeterminate case */
-//                     *lats = standardParallel;
-//                     *lons = centralLongitude;
-//                 }
-//                 else {
-//                     c=2*atan2(rho,(2.0*radius));
-//                     cosc=cos(c);
-//                     sinc=sin(c);
-//                     *lats = asin( cosc*sinphi1 + y*sinc*cosphi1/rho ) * RAD2DEG;
-//                     *lons = (lambda0+atan2(x*sinc, rho*cosphi1*cosc - y*sinphi1*sinc)) * RAD2DEG;
-//                 }
-//                 while (*lons<0)   *lons += 360;
-//                 while (*lons>360) *lons -= 360;
-//                 lons++;
-//                 lats++;
-//                 y+=Dy;
-//             }
-//             x+=Dx;
-//         }
-//     }
-//     else
-//     {
-//         y=yFirst;
-//         for (j=0;j<ny;j++) {
-//             x=xFirst;
-//             for (i=0;i<nx;i++) {
-//                 /* int index =i+j*nx; */
-//                 rho=sqrt(x*x+y*y);
-//                 if (rho == 0) {
-//                     /* indeterminate case */
-//                     *lats = standardParallel;
-//                     *lons = centralLongitude;
-//                 }
-//                 else {
-//                     c=2*atan2(rho,(2.0*radius));
-//                     cosc=cos(c);
-//                     sinc=sin(c);
-//                     *lats = asin( cosc*sinphi1 + y*sinc*cosphi1/rho ) * RAD2DEG;
-//                     *lons = (lambda0+atan2(x*sinc, rho*cosphi1*cosc - y*sinphi1*sinc)) * RAD2DEG;
-//                 }
-//                 while (*lons<0)   *lons += 360;
-//                 while (*lons>360) *lons -= 360;
-//                 lons++;
-//                 lats++;
-//                 x+=Dx;
-//             }
-//             y+=Dy;
-//         }
-//     }
+    //     /*standardParallel = (southPoleOnPlane == 1) ? -90 : +90;*/
+    //     if (jPointsAreConsecutive)
+    //     {
+    //         x=xFirst;
+    //         for (i=0;i<nx;i++) {
+    //             y=yFirst;
+    //             for (j=0;j<ny;j++) {
+    //                 rho=sqrt(x*x+y*y);
+    //                 if (rho == 0) {
+    //                     /* indeterminate case */
+    //                     *lats = standardParallel;
+    //                     *lons = centralLongitude;
+    //                 }
+    //                 else {
+    //                     c=2*atan2(rho,(2.0*radius));
+    //                     cosc=cos(c);
+    //                     sinc=sin(c);
+    //                     *lats = asin( cosc*sinphi1 + y*sinc*cosphi1/rho ) * RAD2DEG;
+    //                     *lons = (lambda0+atan2(x*sinc, rho*cosphi1*cosc - y*sinphi1*sinc)) * RAD2DEG;
+    //                 }
+    //                 while (*lons<0)   *lons += 360;
+    //                 while (*lons>360) *lons -= 360;
+    //                 lons++;
+    //                 lats++;
+    //                 y+=Dy;
+    //             }
+    //             x+=Dx;
+    //         }
+    //     }
+    //     else
+    //     {
+    //         y=yFirst;
+    //         for (j=0;j<ny;j++) {
+    //             x=xFirst;
+    //             for (i=0;i<nx;i++) {
+    //                 /* int index =i+j*nx; */
+    //                 rho=sqrt(x*x+y*y);
+    //                 if (rho == 0) {
+    //                     /* indeterminate case */
+    //                     *lats = standardParallel;
+    //                     *lons = centralLongitude;
+    //                 }
+    //                 else {
+    //                     c=2*atan2(rho,(2.0*radius));
+    //                     cosc=cos(c);
+    //                     sinc=sin(c);
+    //                     *lats = asin( cosc*sinphi1 + y*sinc*cosphi1/rho ) * RAD2DEG;
+    //                     *lons = (lambda0+atan2(x*sinc, rho*cosphi1*cosc - y*sinphi1*sinc)) * RAD2DEG;
+    //                 }
+    //                 while (*lons<0)   *lons += 360;
+    //                 while (*lons>360) *lons -= 360;
+    //                 lons++;
+    //                 lats++;
+    //                 x+=Dx;
+    //             }
+    //             y+=Dy;
+    //         }
+    //     }
 
     iter->e = -1;
 
     /* Apply the scanning mode flags which may require data array to be transformed */
-    ret = transform_iterator_data(h->context, iter->data,
-                                  iScansNegatively, jScansPositively, jPointsAreConsecutive, alternativeRowScanning,
-                                  iter->nv, nx, ny);
+    ret = transform_iterator_data(h->context, iter->data, iScansNegatively, jScansPositively, jPointsAreConsecutive,
+                                  alternativeRowScanning, iter->nv, nx, ny);
 
     return ret;
 }
 
-static int destroy(grib_iterator* i)
-{
+static int destroy(grib_iterator* i) {
     grib_iterator_polar_stereographic* self = (grib_iterator_polar_stereographic*)i;
     const grib_context* c                   = i->h->context;
 

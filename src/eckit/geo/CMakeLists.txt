@@ -72,6 +72,10 @@ list(APPEND eckit_geo_srcs
     polygon/Polygon.h
     projection/Composer.cc
     projection/Composer.h
+    projection/LambertAzimuthalEqualArea.cc
+    projection/LambertAzimuthalEqualArea.h
+    projection/LambertConformalConic.cc
+    projection/LambertConformalConic.h
     projection/LonLatToXY.cc
     projection/LonLatToXY.h
     projection/LonLatToXYZ.cc
@@ -80,8 +84,12 @@ list(APPEND eckit_geo_srcs
     projection/Mercator.h
     projection/None.cc
     projection/None.h
+    projection/PolarStereographic.cc
+    projection/PolarStereographic.h
     projection/Rotation.cc
     projection/Rotation.h
+    projection/SpaceView.cc
+    projection/SpaceView.h
     projection/XYToLonLat.cc
     projection/XYToLonLat.h
     range/GaussianLatitude.cc

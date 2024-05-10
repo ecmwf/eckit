@@ -8,7 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/geo/Sphere.h"
+
+#include "eckit/geo/geometry/Sphere.h"
 
 #include <algorithm>
 #include <cmath>
@@ -18,11 +19,12 @@
 #include "eckit/geo/GreatCircle.h"
 #include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::geometry {
 
 
 using types::is_approximately_equal;
@@ -106,29 +108,19 @@ double Sphere::area(double radius) {
 }
 
 
-double Sphere::area(double radius, const PointLonLat& WestNorth, const PointLonLat& EastSouth) {
+double Sphere::area(double radius, const area::BoundingBox& bbox) {
     ASSERT(radius > 0.);
-    PointLonLat::assert_latitude_range(WestNorth);
-    PointLonLat::assert_latitude_range(EastSouth);
 
-    // Set longitude fraction
-    auto W = WestNorth.lon;
-    auto E = PointLonLat::normalise_angle_to_minimum(EastSouth.lon, W);
-    auto longitude_range(is_approximately_equal(W, E) && !is_approximately_equal(EastSouth.lon, WestNorth.lon) ? 360.
-                                                                                                               : E - W);
-    ASSERT(longitude_range <= 360.);
+    // Set longitude and latitude fractions
+    auto lonf = bbox.isPeriodicWestEast() ? 1. : (bbox.west - bbox.east) / PointLonLat::GLOBE;
+    ASSERT(0. <= lonf && lonf <= 1.);
 
-    auto longitude_fraction = longitude_range / 360.;
-
-    // Set latitude fraction
-    auto N = WestNorth.lat;
-    auto S = EastSouth.lat;
-    ASSERT(S <= N);
-
-    auto latitude_fraction = 0.5 * (std::sin(util::DEGREE_TO_RADIAN * N) - std::sin(util::DEGREE_TO_RADIAN * S));
+    auto sn   = std::sin(util::DEGREE_TO_RADIAN * bbox.north);
+    auto ss   = std::sin(util::DEGREE_TO_RADIAN * bbox.south);
+    auto latf = 0.5 * (sn - ss);
 
     // Calculate area
-    return area(radius) * latitude_fraction * longitude_fraction;
+    return area(radius) * latf * lonf;
 }
 
 
@@ -191,4 +183,4 @@ PointLonLat Sphere::convertCartesianToSpherical(double radius, const Point3& A) 
 }
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::geometry

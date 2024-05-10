@@ -8,7 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/geo/EllipsoidOfRevolution.h"
+
+#include "eckit/geo/geometry/OblateSpheroid.h"
 
 #include <cmath>
 
@@ -18,12 +19,17 @@
 #include "eckit/geo/util.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::geometry {
 
 
-Point3 EllipsoidOfRevolution::convertSphericalToCartesian(double a, double b, const PointLonLat& P, double height) {
-    ASSERT(a > 0.);
-    ASSERT(b > 0.);
+double OblateSpheroid::eccentricity(double a, double b) {
+    ASSERT(0. < b && b <= a);
+    return std::sqrt(1. - b * b / (a * a));
+}
+
+
+Point3 OblateSpheroid::convertSphericalToCartesian(double a, double b, const PointLonLat& P, double height) {
+    ASSERT(0. < b && 0. < a);
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
@@ -43,4 +49,4 @@ Point3 EllipsoidOfRevolution::convertSphericalToCartesian(double a, double b, co
 }
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::geometry

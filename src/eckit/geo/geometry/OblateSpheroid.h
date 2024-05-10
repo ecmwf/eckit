@@ -13,16 +13,24 @@
 
 
 namespace eckit::geo {
-
-
 class Point3;
 class PointLonLat;
+}  // namespace eckit::geo
 
 
-struct EllipsoidOfRevolution {
-    // Convert elliptic coordinates to Cartesian
+namespace eckit::geo::geometry {
+
+
+struct OblateSpheroid {
+    /// Elliptic eccentricity
+    static double eccentricity(double a, double b);
+
+    /// Surface area [m ** 2]
+    static double area(double a, double b);
+
+    /// Convert geocentric coordinates to Cartesian
     static Point3 convertSphericalToCartesian(double a, double b, const PointLonLat&, double height = 0.);
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::geometry

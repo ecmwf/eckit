@@ -15,6 +15,7 @@
 #include <cmath>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/geometry/OblateSpheroid.h"
 
 
 namespace eckit::geo {
@@ -35,18 +36,8 @@ double Figure::b() const {
 }
 
 
-double Figure::area() const {
-    NOTIMP;
-}
-
-
-double Figure::area(const area::BoundingBox&) const {
-    NOTIMP;
-}
-
-
 double Figure::eccentricity() const {
-    return std::sqrt(1. - (b() * b()) / (a() * a()));
+    return geometry::OblateSpheroid::eccentricity(a(), b());
 }
 
 

@@ -8,29 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef UnitSphere_H
-#define UnitSphere_H
 
-#include "eckit/geo/SphereT.h"
+#pragma once
 
-//------------------------------------------------------------------------------------------------------
+#include "eckit/geo/geometry/SphereT.h"
 
-namespace eckit::geo {
 
-//------------------------------------------------------------------------------------------------------
+namespace eckit::geo::geometry {
+
 
 /// Definition of a unit datum
 struct DatumUnit {
     static constexpr double radius() { return 1.; }
 };
 
-//------------------------------------------------------------------------------------------------------
 
 /// Definition of a unit sphere
 using UnitSphere = SphereT<DatumUnit>;
 
-//------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit::geo
-
-#endif
+}  // namespace eckit::geo::geometry

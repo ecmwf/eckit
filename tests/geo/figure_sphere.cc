@@ -14,8 +14,9 @@
 
 #include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/SphereT.h"
-#include "eckit/geo/UnitSphere.h"
+#include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/geometry/SphereT.h"
+#include "eckit/geo/geometry/UnitSphere.h"
 #include "eckit/testing/Test.h"
 
 
@@ -23,6 +24,8 @@ namespace eckit::geo::test {
 
 
 CASE("unit sphere") {
+    using geometry::UnitSphere;
+
     const auto R = UnitSphere::radius();
     const auto L = R * std::sqrt(2) / 2.;
 
@@ -76,8 +79,8 @@ CASE("unit sphere") {
 
 
     SECTION("area hemispheres") {
-        auto area_hemisphere_north = UnitSphere::area({-180., 90.}, {180., 0.});
-        auto area_hemisphere_south = UnitSphere::area({-180., 0.}, {180., -90.});
+        auto area_hemisphere_north = UnitSphere::area({90., -180., 0., 180.});
+        auto area_hemisphere_south = UnitSphere::area({0., -180., -90., 180.});
 
         EXPECT(area_hemisphere_north == 0.5 * UnitSphere::area());
         EXPECT(area_hemisphere_north == area_hemisphere_south);
@@ -228,7 +231,8 @@ CASE("two-unit sphere") {
         static double radius() { return 2.; }
     };
 
-    using TwoUnitsSphere = SphereT<DatumTwoUnits>;
+    using geometry::UnitSphere;
+    using TwoUnitsSphere = geometry::SphereT<DatumTwoUnits>;
 
     const PointLonLat P1(-71.6, -33.);  // Valparaíso
     const PointLonLat P2(121.8, 31.4);  // Shanghai
@@ -254,8 +258,10 @@ CASE("two-unit sphere") {
 
 
     SECTION("sub areas") {
-        auto area_1 = UnitSphere::area(P2, P1);
-        auto area_2 = TwoUnitsSphere::area(P2, P1);
+        area::BoundingBox bbox({P2.lat, P1.lon, P1.lat, P2.lon});
+
+        auto area_1 = UnitSphere::area(bbox);
+        auto area_2 = TwoUnitsSphere::area(bbox);
         EXPECT(4. * area_1 == area_2);
     }
 }

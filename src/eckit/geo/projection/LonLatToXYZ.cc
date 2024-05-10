@@ -12,8 +12,8 @@
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
 
-#include "eckit/geo/EllipsoidOfRevolution.h"
-#include "eckit/geo/Sphere.h"
+#include "eckit/geo/geometry/OblateSpheroid.h"
+#include "eckit/geo/geometry/Sphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -28,7 +28,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
     ASSERT_MSG(types::is_strictly_greater(b, 0.) && b <= a, "LonLatToXYZ requires 0 < b <= a");
 
     struct LonLatToSphereXYZ final : Implementation {
-        using S = Sphere;
+        using S = geometry::Sphere;
         const double R_;
 
         explicit LonLatToSphereXYZ(double R) : R_(R) {}
@@ -38,7 +38,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
     };
 
     struct LonLatToSpheroidXYZ final : Implementation {
-        using S = EllipsoidOfRevolution;
+        using S = geometry::OblateSpheroid;
         const double a_;
         const double b_;
 

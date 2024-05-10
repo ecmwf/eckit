@@ -15,7 +15,7 @@
 #include <cmath>
 #include <utility>
 
-#include "eckit/geo/UnitSphere.h"
+#include "eckit/geo/geometry/UnitSphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
@@ -51,7 +51,8 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
         RotationMatrix(M&& R, double south_pole_lon, double south_pole_lat, double angle) :
             R_(R), south_pole_lon_(south_pole_lon), south_pole_lat_(south_pole_lat), angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override {
-            return UnitSphere::convertCartesianToSpherical(R_ * UnitSphere::convertSphericalToCartesian(p));
+            return geometry::UnitSphere::convertCartesianToSpherical(
+                R_ * geometry::UnitSphere::convertSphericalToCartesian(p));
         }
         Spec* spec() const override {
             return new spec::Custom{{{"projection", "rotation"},

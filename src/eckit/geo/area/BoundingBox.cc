@@ -19,7 +19,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/Sphere.h"
+#include "eckit/geo/geometry/Sphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -187,11 +187,6 @@ bool BoundingBox::intersects(BoundingBox& other) const {
 
 bool BoundingBox::empty() const {
     return types::is_approximately_equal(north, south) || types::is_approximately_equal(west, east);
-}
-
-
-double BoundingBox::area(const Figure& figure) const {
-    return figure.area(*this);
 }
 
 

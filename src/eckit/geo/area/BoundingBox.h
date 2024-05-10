@@ -79,9 +79,6 @@ public:
     bool contains(const BoundingBox&) const;
     bool empty() const;
 
-    /// @brief Calculate the bounding box prescribed area ([[R]**2])
-    double area(const Figure&) const;
-
     // -- Overridden methods
 
     void spec(spec::Custom&) const override;

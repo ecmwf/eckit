@@ -12,8 +12,6 @@
 
 #include "eckit/geo/figure/OblateSpheroid.h"
 
-#include <cmath>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/types/FloatCompare.h"
@@ -23,7 +21,7 @@ namespace eckit::geo::figure {
 
 
 OblateSpheroid::OblateSpheroid(double a, double b) : a_(a), b_(b) {
-    ASSERT_MSG(types::is_strictly_greater(b_, 0.) && b_ <= a_, "OblateSpheroid requires 0 < b <= a");
+    ASSERT_MSG(0. < b && b_ <= a_, "OblateSpheroid requires 0 < b <= a");
 }
 
 
@@ -33,17 +31,6 @@ OblateSpheroid::OblateSpheroid(const Spec& spec) : OblateSpheroid(spec.get_doubl
 double OblateSpheroid::R() const {
     ASSERT_MSG(types::is_approximately_equal(a_, b_), "OblateSpheroid::R requires a ~= b");
     return a_;
-}
-
-
-double OblateSpheroid::area() const {
-    auto e = eccentricity();
-    if (types::is_approximately_equal(e, 1.)) {
-        return 2. * M_PI * a_ * a_;
-    }
-
-    ASSERT(types::is_strictly_greater(e, 0.));
-    return 2. * M_PI * a_ * a_ * (1. + (1 - e * e) / e * std::atan2(e, 1 - e * e));
 }
 
 

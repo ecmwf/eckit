@@ -31,8 +31,6 @@ public:
     double a() const override { return a_; }
     double b() const override { return b_; }
 
-    double area() const override;
-
 private:
     // -- Members
 

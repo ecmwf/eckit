@@ -1,3 +1,4 @@
+cmake_options: -DENABLE_ECKIT_GEO=ON -DENABLE_PROJ=ON
 dependencies: |
   ecmwf/ecbuild
 dependency_branch: develop

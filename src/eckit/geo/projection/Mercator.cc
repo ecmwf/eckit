@@ -23,7 +23,8 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<Mercator> PROJECTION("mercator");
+static ProjectionBuilder<Mercator> PROJECTION_1("mercator");
+static ProjectionBuilder<Mercator> PROJECTION_2("merc");
 
 
 Mercator::Mercator(double meridian, double parallel, Figure* figure, PointLonLat first) :
@@ -104,7 +105,7 @@ PointLonLat Mercator::inv(const Point2& q) const {
 
 
 Spec* Mercator::spec() const {
-    return new spec::Custom{{{"lad", parallel_}, {"orientation", meridian_}}};
+    return new spec::Custom{{{"projection", "mercator"}, {"lad", parallel_}, {"orientation", meridian_}}};
 }
 
 

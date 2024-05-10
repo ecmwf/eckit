@@ -1,101 +1,47 @@
 /*
- * (C) Copyright 2005- ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  *
- * In applying this licence, ECMWF does not waive the privileges and immunities granted to it by
- * virtue of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
+
+#include "eckit/geo/projection/PolarStereographic.h"
+
 #include <cmath>
-#include "grib_api_internal.h"
 
-/*
-   This is used by make_class.pl
-
-   START_CLASS_DEF
-   CLASS      = iterator
-   SUPER      = grib_iterator_class_gen
-   IMPLEMENTS = destroy
-   IMPLEMENTS = init;next
-   MEMBERS     =   double *lats
-   MEMBERS     =   double *lons
-   MEMBERS     =   long Nj
-   END_CLASS_DEF
-*/
-
-/* START_CLASS_IMP */
-
-/*
-
-Don't edit anything between START_CLASS_IMP and END_CLASS_IMP
-Instead edit values between START_CLASS_DEF and END_CLASS_DEF
-or edit "iterator.class" and rerun ./make_class.pl
-
-*/
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util.h"
 
 
-static void init_class(grib_iterator_class*);
-
-static int init(grib_iterator* i, grib_handle*, grib_arguments*);
-static int next(grib_iterator* i, double* lat, double* lon, double* val);
-static int destroy(grib_iterator* i);
+namespace eckit::geo::projection {
 
 
-typedef struct grib_iterator_polar_stereographic {
-    grib_iterator it;
-    /* Members defined in gen */
-    int carg;
-    const char* missingValue;
-    /* Members defined in polar_stereographic */
-    double* lats;
-    double* lons;
-    long Nj;
-} grib_iterator_polar_stereographic;
-
-extern grib_iterator_class* grib_iterator_class_gen;
-
-static grib_iterator_class _grib_iterator_class_polar_stereographic = {
-    &grib_iterator_class_gen,                  /* super                     */
-    "polar_stereographic",                     /* name                      */
-    sizeof(grib_iterator_polar_stereographic), /* size of instance          */
-    0,                                         /* inited */
-    &init_class,                               /* init_class */
-    &init,                                     /* constructor               */
-    &destroy,                                  /* destructor                */
-    &next,                                     /* Next Value                */
-    0,                                         /*  Previous Value           */
-    0,                                         /* Reset the counter         */
-    0,                                         /* has next values           */
-};
-
-grib_iterator_class* grib_iterator_class_polar_stereographic = &_grib_iterator_class_polar_stereographic;
+PolarStereographic::PolarStereographic(const Spec&) {}
 
 
-static void init_class(grib_iterator_class* c) {
-    c->previous = (*(c->super))->previous;
-    c->reset    = (*(c->super))->reset;
-    c->has_next = (*(c->super))->has_next;
+Point PolarStereographic::fwd(const Point&) const {
+    NOTIMP;
 }
-/* END_CLASS_IMP */
 
-#define ITER "Polar stereographic Geoiterator"
 
-static int next(grib_iterator* iter, double* lat, double* lon, double* val) {
-    grib_iterator_polar_stereographic* self = (grib_iterator_polar_stereographic*)iter;
-
-    if ((long)iter->e >= (long)(iter->nv - 1))
-        return 0;
-    iter->e++;
-
-    *lat = self->lats[iter->e];
-    *lon = self->lons[iter->e];
-    if (val && iter->data) {
-        *val = iter->data[iter->e];
-    }
-    return 1;
+Point PolarStereographic::inv(const Point&) const {
+    NOTIMP;
 }
+
+
+Spec* PolarStereographic::spec() const {
+    NOTIMP;
+}
+
+
+#if 0
+static constexpr double EPSILON = 1e-10;
+
 
 /* Data struct for Forward and Inverse Projections */
 typedef struct proj_data_t {
@@ -109,10 +55,6 @@ typedef struct proj_data_t {
     double false_easting;  /* x offset in meters */
 } proj_data_t;
 
-#define RAD2DEG 57.29577951308232087684 /* 180 over pi */
-#define DEG2RAD 0.01745329251994329576  /* pi over 180 */
-#define PI_OVER_2 1.5707963267948966    /* half pi */
-#define EPSILON 1.0e-10
 
 static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     int ret = 0;
@@ -192,10 +134,10 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     if ((ret = grib_get_long_internal(h, s_alternativeRowScanning, &alternativeRowScanning)) != GRIB_SUCCESS)
         return ret;
 
-    centralLongitude = centralLongitudeInDegrees * DEG2RAD;
-    centralLatitude  = centralLatitudeInDegrees * DEG2RAD;
-    lonFirst         = lonFirstInDegrees * DEG2RAD;
-    latFirst         = latFirstInDegrees * DEG2RAD;
+    centralLongitude = centralLongitudeInDegrees * util::DEGREE_TO_RADIAN;
+    centralLatitude  = centralLatitudeInDegrees * util::DEGREE_TO_RADIAN;
+    lonFirst         = lonFirstInDegrees * util::DEGREE_TO_RADIAN;
+    latFirst         = latFirstInDegrees * util::DEGREE_TO_RADIAN;
 
     /* Forward projection initialisation */
     fwd_proj_data.false_northing = 0;
@@ -207,17 +149,17 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     else
         fwd_proj_data.sign = +1.0;
     fwd_proj_data.ind = 0;
-    if (fabs(fabs(centralLatitude) - PI_OVER_2) > EPSILON) {
+    if (fabs(fabs(centralLatitude) - M_PI_2) > EPSILON) {
         /* central latitude different from 90 i.e. not north/south polar */
         fwd_proj_data.ind = 1;
         con1              = fwd_proj_data.sign * centralLatitude;
         fwd_proj_data.mcs = cos(con1);
-        fwd_proj_data.tcs = tan(0.5 * (PI_OVER_2 - con1));
+        fwd_proj_data.tcs = tan(0.5 * (M_PI_2 - con1));
     }
 
     /* Forward projection from initial lat,lon to initial x,y */
     con1 = fwd_proj_data.sign * (lonFirst - fwd_proj_data.centre_lon);
-    ts   = tan(0.5 * (PI_OVER_2 - fwd_proj_data.sign * latFirst));
+    ts   = tan(0.5 * (M_PI_2 - fwd_proj_data.sign * latFirst));
     if (fwd_proj_data.ind)
         height = radius * fwd_proj_data.mcs * ts / fwd_proj_data.tcs;
     else
@@ -238,11 +180,11 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     else
         inv_proj_data.sign = +1.0;
     inv_proj_data.ind = 0;
-    if (fabs(fabs(centralLatitude) - PI_OVER_2) > EPSILON) {
+    if (fabs(fabs(centralLatitude) - M_PI_2) > EPSILON) {
         inv_proj_data.ind = 1;
         con1              = inv_proj_data.sign * inv_proj_data.centre_lat;
         inv_proj_data.mcs = cos(con1);
-        inv_proj_data.tcs = tan(0.5 * (PI_OVER_2 - con1));
+        inv_proj_data.tcs = tan(0.5 * (M_PI_2 - con1));
     }
     self->lats = (double*)grib_context_malloc(h->context, iter->nv * sizeof(double));
     if (!self->lats) {
@@ -273,7 +215,7 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
                 ts = rh * inv_proj_data.tcs / (radius * inv_proj_data.mcs);
             else
                 ts = rh / (radius * 2.0);
-            *lats = inv_proj_data.sign * (PI_OVER_2 - 2 * atan(ts));
+            *lats = inv_proj_data.sign * (M_PI_2 - 2 * atan(ts));
             if (rh == 0) {
                 *lons = inv_proj_data.sign * inv_proj_data.centre_lon;
             }
@@ -281,8 +223,8 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
                 double temp = atan2(_x, -_y);
                 *lons       = inv_proj_data.sign * temp + inv_proj_data.centre_lon;
             }
-            *lats = *lats * RAD2DEG;
-            *lons = *lons * RAD2DEG;
+            *lats = *lats * util::RADIAN_TO_DEGREE;
+            *lons = *lons * util::RADIAN_TO_DEGREE;
             while (*lons < 0)
                 *lons += 360;
             while (*lons > 360)
@@ -295,65 +237,6 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
         y += Dy;
     }
 
-    //     /*standardParallel = (southPoleOnPlane == 1) ? -90 : +90;*/
-    //     if (jPointsAreConsecutive)
-    //     {
-    //         x=xFirst;
-    //         for (i=0;i<nx;i++) {
-    //             y=yFirst;
-    //             for (j=0;j<ny;j++) {
-    //                 rho=sqrt(x*x+y*y);
-    //                 if (rho == 0) {
-    //                     /* indeterminate case */
-    //                     *lats = standardParallel;
-    //                     *lons = centralLongitude;
-    //                 }
-    //                 else {
-    //                     c=2*atan2(rho,(2.0*radius));
-    //                     cosc=cos(c);
-    //                     sinc=sin(c);
-    //                     *lats = asin( cosc*sinphi1 + y*sinc*cosphi1/rho ) * RAD2DEG;
-    //                     *lons = (lambda0+atan2(x*sinc, rho*cosphi1*cosc - y*sinphi1*sinc)) * RAD2DEG;
-    //                 }
-    //                 while (*lons<0)   *lons += 360;
-    //                 while (*lons>360) *lons -= 360;
-    //                 lons++;
-    //                 lats++;
-    //                 y+=Dy;
-    //             }
-    //             x+=Dx;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         y=yFirst;
-    //         for (j=0;j<ny;j++) {
-    //             x=xFirst;
-    //             for (i=0;i<nx;i++) {
-    //                 /* int index =i+j*nx; */
-    //                 rho=sqrt(x*x+y*y);
-    //                 if (rho == 0) {
-    //                     /* indeterminate case */
-    //                     *lats = standardParallel;
-    //                     *lons = centralLongitude;
-    //                 }
-    //                 else {
-    //                     c=2*atan2(rho,(2.0*radius));
-    //                     cosc=cos(c);
-    //                     sinc=sin(c);
-    //                     *lats = asin( cosc*sinphi1 + y*sinc*cosphi1/rho ) * RAD2DEG;
-    //                     *lons = (lambda0+atan2(x*sinc, rho*cosphi1*cosc - y*sinphi1*sinc)) * RAD2DEG;
-    //                 }
-    //                 while (*lons<0)   *lons += 360;
-    //                 while (*lons>360) *lons -= 360;
-    //                 lons++;
-    //                 lats++;
-    //                 x+=Dx;
-    //             }
-    //             y+=Dy;
-    //         }
-    //     }
-
     iter->e = -1;
 
     /* Apply the scanning mode flags which may require data array to be transformed */
@@ -362,12 +245,7 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
 
     return ret;
 }
+#endif
 
-static int destroy(grib_iterator* i) {
-    grib_iterator_polar_stereographic* self = (grib_iterator_polar_stereographic*)i;
-    const grib_context* c                   = i->h->context;
 
-    grib_context_free(c, self->lats);
-    grib_context_free(c, self->lons);
-    return GRIB_SUCCESS;
-}
+}  // namespace eckit::geo::projection

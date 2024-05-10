@@ -1,124 +1,54 @@
 /*
- * (C) Copyright 2005- ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  *
- * In applying this licence, ECMWF does not waive the privileges and immunities granted to it by
- * virtue of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
+
+#include "eckit/geo/projection/LambertAzimuthalEqualArea.h"
+
 #include <cmath>
-#include "grib_api_internal.h"
 
-/*
-   This is used by make_class.pl
-
-   START_CLASS_DEF
-   CLASS      = iterator
-   SUPER      = grib_iterator_class_gen
-   IMPLEMENTS = destroy
-   IMPLEMENTS = init;next
-   MEMBERS     =   double *lats
-   MEMBERS     =   double *lons
-   MEMBERS     =   long Nj
-   END_CLASS_DEF
-*/
-
-/* START_CLASS_IMP */
-
-/*
-
-Don't edit anything between START_CLASS_IMP and END_CLASS_IMP
-Instead edit values between START_CLASS_DEF and END_CLASS_DEF
-or edit "iterator.class" and rerun ./make_class.pl
-
-*/
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util.h"
 
 
-static void init_class(grib_iterator_class*);
-
-static int init(grib_iterator* i, grib_handle*, grib_arguments*);
-static int next(grib_iterator* i, double* lat, double* lon, double* val);
-static int destroy(grib_iterator* i);
+namespace eckit::geo::projection {
 
 
-typedef struct grib_iterator_lambert_azimuthal_equal_area {
-    grib_iterator it;
-    /* Members defined in gen */
-    int carg;
-    const char* missingValue;
-    /* Members defined in lambert_azimuthal_equal_area */
-    double* lats;
-    double* lons;
-    long Nj;
-} grib_iterator_lambert_azimuthal_equal_area;
-
-extern grib_iterator_class* grib_iterator_class_gen;
-
-static grib_iterator_class _grib_iterator_class_lambert_azimuthal_equal_area = {
-    &grib_iterator_class_gen,                           /* super                     */
-    "lambert_azimuthal_equal_area",                     /* name                      */
-    sizeof(grib_iterator_lambert_azimuthal_equal_area), /* size of instance          */
-    0,                                                  /* inited */
-    &init_class,                                        /* init_class */
-    &init,                                              /* constructor               */
-    &destroy,                                           /* destructor                */
-    &next,                                              /* Next Value                */
-    0,                                                  /*  Previous Value           */
-    0,                                                  /* Reset the counter         */
-    0,                                                  /* has next values           */
-};
-
-grib_iterator_class* grib_iterator_class_lambert_azimuthal_equal_area
-    = &_grib_iterator_class_lambert_azimuthal_equal_area;
+LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec&) {}
 
 
-static void init_class(grib_iterator_class* c) {
-    c->previous = (*(c->super))->previous;
-    c->reset    = (*(c->super))->reset;
-    c->has_next = (*(c->super))->has_next;
-}
-/* END_CLASS_IMP */
-
-#define ITER "Lambert azimuthal equal area Geoiterator"
-
-static int next(grib_iterator* iter, double* lat, double* lon, double* val) {
-    grib_iterator_lambert_azimuthal_equal_area* self = (grib_iterator_lambert_azimuthal_equal_area*)iter;
-
-    if ((long)iter->e >= (long)(iter->nv - 1))
-        return 0;
-    iter->e++;
-
-    *lat = self->lats[iter->e];
-    *lon = self->lons[iter->e];
-    if (val && iter->data) {
-        *val = iter->data[iter->e];
-    }
-    return 1;
+Point LambertAzimuthalEqualArea::fwd(const Point&) const {
+    NOTIMP;
 }
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846 /* Whole pie */
-#endif
 
-#ifndef M_PI_2
-#define M_PI_2 1.57079632679489661923 /* Half a pie */
-#endif
+Point LambertAzimuthalEqualArea::inv(const Point&) const {
+    NOTIMP;
+}
 
-#ifndef M_PI_4
-#define M_PI_4 0.78539816339744830962 /* Quarter of a pie */
-#endif
 
-#define RAD2DEG 57.29577951308232087684 /* 180 over pi */
-#define DEG2RAD 0.01745329251994329576  /* pi over 180 */
+Spec* LambertAzimuthalEqualArea::spec() const {
+    NOTIMP;
+}
 
-#define P00 .33333333333333333333 /*   1 /     3 */
-#define P01 .17222222222222222222 /*  31 /   180 */
-#define P02 .10257936507936507937 /* 517 /  5040 */
-#define P10 .06388888888888888888 /*  23 /   360 */
-#define P11 .06640211640211640212 /* 251 /  3780 */
-#define P20 .01677689594356261023 /* 761 / 45360 */
+
+#if 0
+static constexpr double EPSILON = 1e-10;
+
+static constexpr double P00 = .33333333333333333333;  //   1 /     3
+static constexpr double P01 = .17222222222222222222;  //  31 /   180
+static constexpr double P02 = .10257936507936507937;  // 517 /  5040
+static constexpr double P10 = .06388888888888888888;  //  23 /   360
+static constexpr double P11 = .06640211640211640212;  // 251 /  3780
+static constexpr double P20 = .01677689594356261023;  // 761 / 45360
+
 
 static void pj_authset(double es, double* APA) {
     double t;
@@ -131,16 +61,18 @@ static void pj_authset(double es, double* APA) {
     APA[1] += t * P11;
     APA[2] = t * P20;
 }
+
+
 static double pj_authlat(double beta, const double* APA) {
     double t = beta + beta;
     return (beta + APA[0] * sin(t) + APA[1] * sin(t + t) + APA[2] * sin(t + t + t));
 }
 
+
 static double pj_qsfn(double sinphi, double e, double one_es) {
     double con, div1, div2;
-    const double EPSILON = 1.0e-7;
 
-    if (e >= EPSILON) {
+    if (e >= 1.0e-7) {
         con  = e * sinphi;
         div1 = 1.0 - con * con;
         div2 = 1.0 + con;
@@ -155,7 +87,7 @@ static double pj_qsfn(double sinphi, double e, double one_es) {
         return (sinphi + sinphi);
 }
 
-#define EPS10 1.e-10
+
 static int init_oblate(grib_handle* h, grib_iterator_lambert_azimuthal_equal_area* self, size_t nv, long nx, long ny,
                        double Dx, double Dy, double earthMinorAxisInMetres, double earthMajorAxisInMetres,
                        double latFirstInRadians, double lonFirstInRadians, double centralLongitudeInRadians,
@@ -187,12 +119,12 @@ static int init_oblate(grib_handle* h, grib_iterator_lambert_azimuthal_equal_are
     q      = pj_qsfn(sinphi, e, one_es);
 
     t = fabs(standardParallelInRadians);
-    if (t > M_PI_2 + EPS10) {
+    if (t > M_PI_2 + EPSILON) {
         return GRIB_GEOCALCULUS_PROBLEM;
     }
-    /* if (fabs(t - M_HALFPI) < EPS10)
+    /* if (fabs(t - M_HALFPI) < EPSILON)
         Q->mode = P->phi0 < 0. ? S_POLE : N_POLE;
-       else if (fabs(t) < EPS10)
+       else if (fabs(t) < EPSILON)
         Q->mode = EQUIT;
        else
         Q->mode = OBLIQ;
@@ -217,7 +149,7 @@ static int init_oblate(grib_handle* h, grib_iterator_lambert_azimuthal_equal_are
     cosb2 = 1.0 - sinb * sinb;
     cosb  = cosb2 > 0 ? sqrt(cosb2) : 0;
     b     = 1. + Q__sinb1 * sinb + Q__cosb1 * cosb * coslam;
-    if (fabs(b) < EPS10) {
+    if (fabs(b) < EPSILON) {
         return GRIB_GEOCALCULUS_PROBLEM;
     }
     b = sqrt(2.0 / b);
@@ -252,7 +184,7 @@ static int init_oblate(grib_handle* h, grib_iterator_lambert_azimuthal_equal_are
                 xy_x /= Q__dd;
                 xy_y *= Q__dd;
                 rho = hypot(xy_x, xy_y);
-                Assert(rho >= EPS10); /* TODO(masn): check */
+                ASSERT(rho >= EPSILON); /* TODO(masn): check */
                 const double asin_arg = (0.5 * rho / Q__rq);
                 if (asin_arg < -1.0 || asin_arg > 1.0) {
                     grib_context_log(h->context, GRIB_LOG_ERROR, "Invalid value: arcsin argument=%g", asin_arg);
@@ -272,8 +204,8 @@ static int init_oblate(grib_handle* h, grib_iterator_lambert_azimuthal_equal_are
                 lp__lam = atan2(xy_x, xy_y);         /* longitude */
                 lp__phi = pj_authlat(asin(ab), APA); /* latitude */
 
-                *lats = lp__phi * RAD2DEG;
-                *lons = (lp__lam + centralLongitudeInRadians) * RAD2DEG;
+                *lats = lp__phi * util::RADIAN_TO_DEGREE;
+                *lons = (lp__lam + centralLongitudeInRadians) * util::RADIAN_TO_DEGREE;
 
                 lons++;
                 lats++;
@@ -286,6 +218,7 @@ static int init_oblate(grib_handle* h, grib_iterator_lambert_azimuthal_equal_are
 
     return GRIB_SUCCESS;
 }
+
 
 static int init_sphere(grib_handle* h, grib_iterator_lambert_azimuthal_equal_area* self, size_t nv, long nx, long ny,
                        double Dx, double Dy, double radius, double latFirstInRadians, double lonFirstInRadians,
@@ -390,6 +323,7 @@ static int init_sphere(grib_handle* h, grib_iterator_lambert_azimuthal_equal_are
     return GRIB_SUCCESS;
 }
 
+
 static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     int err       = 0;
     int is_oblate = 0;
@@ -484,12 +418,7 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
 
     return GRIB_SUCCESS;
 }
+#endif
 
-static int destroy(grib_iterator* iter) {
-    grib_iterator_lambert_azimuthal_equal_area* self = (grib_iterator_lambert_azimuthal_equal_area*)iter;
-    const grib_context* c                            = iter->h->context;
 
-    grib_context_free(c, self->lats);
-    grib_context_free(c, self->lons);
-    return GRIB_SUCCESS;
-}
+}  // namespace eckit::geo::projection

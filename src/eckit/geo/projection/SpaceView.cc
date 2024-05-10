@@ -1,147 +1,45 @@
 /*
- * (C) Copyright 2005- ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  *
- * In applying this licence, ECMWF does not waive the privileges and immunities granted to it by
- * virtue of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
+
+#include "eckit/geo/projection/SpaceView.h"
+
 #include <cmath>
-#include "grib_api_internal.h"
 
-/*
-   This is used by make_class.pl
-
-   START_CLASS_DEF
-   CLASS      = iterator
-   SUPER      = grib_iterator_class_gen
-   IMPLEMENTS = destroy
-   IMPLEMENTS = init;next
-   MEMBERS     =   double *lats
-   MEMBERS     =   double *lons
-   MEMBERS     =   long Nj
-   END_CLASS_DEF
-*/
-
-/* START_CLASS_IMP */
-
-/*
-
-Don't edit anything between START_CLASS_IMP and END_CLASS_IMP
-Instead edit values between START_CLASS_DEF and END_CLASS_DEF
-or edit "iterator.class" and rerun ./make_class.pl
-
-*/
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util.h"
 
 
-static void init_class(grib_iterator_class*);
-
-static int init(grib_iterator* i, grib_handle*, grib_arguments*);
-static int next(grib_iterator* i, double* lat, double* lon, double* val);
-static int destroy(grib_iterator* i);
+namespace eckit::geo::projection {
 
 
-typedef struct grib_iterator_space_view {
-    grib_iterator it;
-    /* Members defined in gen */
-    int carg;
-    const char* missingValue;
-    /* Members defined in space_view */
-    double* lats;
-    double* lons;
-    long Nj;
-} grib_iterator_space_view;
-
-extern grib_iterator_class* grib_iterator_class_gen;
-
-static grib_iterator_class _grib_iterator_class_space_view = {
-    &grib_iterator_class_gen,         /* super                     */
-    "space_view",                     /* name                      */
-    sizeof(grib_iterator_space_view), /* size of instance          */
-    0,                                /* inited */
-    &init_class,                      /* init_class */
-    &init,                            /* constructor               */
-    &destroy,                         /* destructor                */
-    &next,                            /* Next Value                */
-    0,                                /*  Previous Value           */
-    0,                                /* Reset the counter         */
-    0,                                /* has next values           */
-};
-
-grib_iterator_class* grib_iterator_class_space_view = &_grib_iterator_class_space_view;
+SpaceView::SpaceView(const Spec&) {}
 
 
-static void init_class(grib_iterator_class* c) {
-    c->previous = (*(c->super))->previous;
-    c->reset    = (*(c->super))->reset;
-    c->has_next = (*(c->super))->has_next;
-}
-/* END_CLASS_IMP */
-
-#define ITER "Space view Geoiterator"
-
-static int next(grib_iterator* iter, double* lat, double* lon, double* val) {
-    grib_iterator_space_view* self = (grib_iterator_space_view*)iter;
-
-    if ((long)iter->e >= (long)(iter->nv - 1))
-        return 0;
-    iter->e++;
-
-    *lat = self->lats[iter->e];
-    *lon = self->lons[iter->e];
-    if (val && iter->data) {
-        *val = iter->data[iter->e];
-    }
-    return 1;
+Point SpaceView::fwd(const Point&) const {
+    NOTIMP;
 }
 
-// static void adjustBadlyEncodedEcmwfGribs(grib_handle* h,
-//                                     long* nx, long* ny, double* dx, double* dy, double* xp, double* yp)
-// {
-//     /* Correct the information provided in the headers of certain satellite imagery that
-//      * we have available. This is specific to ECMWF.
-//      * Obtained through trial-and-error to get the best match with the coastlines.
-//      *
-//      * Copied from Magics GribSatelliteInterpretor::AdjustBadlyEncodedGribs()
-//      */
-//     long centre = 0;
-//     int err     = grib_get_long(h, "centre", &centre);
-//     if (!err && centre == 98) {
-//         int err1 = 0, err2 = 0, err3 = 0;
-//         long satelliteIdentifier, channelNumber, functionCode;
-//         /* These keys are defined in the ECMWF local definition 24 - Satellite image simulation */
-//         err1 = grib_get_long(h, "satelliteIdentifier", &satelliteIdentifier);
-//         err2 = grib_get_long(h, "channelNumber", &channelNumber);
-//         err3 = grib_get_long(h, "functionCode", &functionCode);
-//         if (!err1 && !err2 && !err3) {
-//             if (satelliteIdentifier == 54 && channelNumber == 2 && *dx == 1179) { /* Meteosat 7, channel 2 */
-//                 *nx = *ny = 900;
-//                 *dx = *dy = 853;
-//                 *xp = *yp = 450;
-//             }
-//             else if (satelliteIdentifier == 54 && channelNumber == 3 && *dx == 1179) { /* Meteosat 7, channel 3 */
-//                 *dx = *dy = 1184;
-//                 *xp = *yp = 635;
-//             }
-//             else if (satelliteIdentifier == 259 && channelNumber == 4 && *dx == 1185) { /* GOES-15 (West) channel 4
-//             */
-//                 *dx = *dy = 880;
-//                 *xp = *yp = 450;
-//             }
-//             else if (satelliteIdentifier == 57 && *dx == 1732) { /* MSG (Meteosat second generation), non-HRV
-//             channels */
-//                 *dx = *dy = 1811;
-//                 *xp = *yp = 928;
-//             }
-//         }
-//     }
-// }
 
-#define RAD2DEG 57.29577951308232087684 /* 180 over pi */
-#define DEG2RAD 0.01745329251994329576  /* pi over 180 */
+Point SpaceView::inv(const Point&) const {
+    NOTIMP;
+}
 
+
+Spec* SpaceView::spec() const {
+    NOTIMP;
+}
+
+
+#if 0
 static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     /* REFERENCE:
      *  LRIT/HRIT Global Specification (CGMS 03, Issue 2.6, 12.08.1999)
@@ -364,8 +262,8 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
                 S2      = Sn * sin_x * cos_y;
                 S3      = Sn * sin_y;
                 Sxy     = sqrt(S1 * S1 + S2 * S2);
-                lons[i] = atan(S2 / S1) * (RAD2DEG) + lop;
-                lats[i] = atan(factor_2 * S3 / Sxy) * (RAD2DEG);
+                lons[i] = atan(S2 / S1) * (util::RADIAN_TO_DEGREE) + lop;
+                lats[i] = atan(factor_2 * S3 / Sxy) * (util::RADIAN_TO_DEGREE);
                 /*fprintf(stderr, "lat=%g   lon=%g\n", lats[i], lons[i]);*/
             }
             while (lons[i] < 0)
@@ -380,12 +278,7 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
 
     return ret;
 }
+#endif
 
-static int destroy(grib_iterator* iter) {
-    grib_iterator_space_view* self = (grib_iterator_space_view*)iter;
-    const grib_context* c          = iter->h->context;
 
-    grib_context_free(c, self->lats);
-    grib_context_free(c, self->lons);
-    return GRIB_SUCCESS;
-}
+}  // namespace eckit::geo::projection

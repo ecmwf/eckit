@@ -28,7 +28,6 @@ public:
 
     // -- Constructors
 
-    PolarStereographic();
     explicit PolarStereographic(const Spec&);
 
     // -- Destructor

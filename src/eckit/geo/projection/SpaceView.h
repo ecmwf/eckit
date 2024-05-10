@@ -28,7 +28,6 @@ public:
 
     // -- Constructors
 
-    SpaceView();
     explicit SpaceView(const Spec&);
 
     // -- Destructor

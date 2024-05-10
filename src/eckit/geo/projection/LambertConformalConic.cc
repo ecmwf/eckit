@@ -1,102 +1,47 @@
 /*
- * (C) Copyright 2005- ECMWF.
+ * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  *
- * In applying this licence, ECMWF does not waive the privileges and immunities granted to it by
- * virtue of its status as an intergovernmental organisation nor does it submit to any jurisdiction.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
  */
 
+
+#include "eckit/geo/projection/LambertConformalConic.h"
+
 #include <cmath>
-#include "grib_api_internal.h"
 
-/*
-   This is used by make_class.pl
-
-   START_CLASS_DEF
-   CLASS      = iterator
-   SUPER      = grib_iterator_class_gen
-   IMPLEMENTS = destroy
-   IMPLEMENTS = init;next
-   MEMBERS     =   double *lats
-   MEMBERS     =   double *lons
-   MEMBERS     =   long Nj
-   END_CLASS_DEF
-*/
-
-/* START_CLASS_IMP */
-
-/*
-
-Don't edit anything between START_CLASS_IMP and END_CLASS_IMP
-Instead edit values between START_CLASS_DEF and END_CLASS_DEF
-or edit "iterator.class" and rerun ./make_class.pl
-
-*/
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util.h"
 
 
-static void init_class(grib_iterator_class*);
-
-static int init(grib_iterator* i, grib_handle*, grib_arguments*);
-static int next(grib_iterator* i, double* lat, double* lon, double* val);
-static int destroy(grib_iterator* i);
+namespace eckit::geo::projection {
 
 
-typedef struct grib_iterator_lambert_conformal {
-    grib_iterator it;
-    /* Members defined in gen */
-    int carg;
-    const char* missingValue;
-    /* Members defined in lambert_conformal */
-    double* lats;
-    double* lons;
-    long Nj;
-} grib_iterator_lambert_conformal;
-
-extern grib_iterator_class* grib_iterator_class_gen;
-
-static grib_iterator_class _grib_iterator_class_lambert_conformal = {
-    &grib_iterator_class_gen,                /* super                     */
-    "lambert_conformal",                     /* name                      */
-    sizeof(grib_iterator_lambert_conformal), /* size of instance          */
-    0,                                       /* inited */
-    &init_class,                             /* init_class */
-    &init,                                   /* constructor               */
-    &destroy,                                /* destructor                */
-    &next,                                   /* Next Value                */
-    0,                                       /*  Previous Value           */
-    0,                                       /* Reset the counter         */
-    0,                                       /* has next values           */
-};
-
-grib_iterator_class* grib_iterator_class_lambert_conformal = &_grib_iterator_class_lambert_conformal;
+LambertConformalConic::LambertConformalConic(const Spec&) {}
 
 
-static void init_class(grib_iterator_class* c) {
-    c->previous = (*(c->super))->previous;
-    c->reset    = (*(c->super))->reset;
-    c->has_next = (*(c->super))->has_next;
+Point LambertConformalConic::fwd(const Point&) const {
+    NOTIMP;
 }
-/* END_CLASS_IMP */
 
-#define ITER "Lambert conformal Geoiterator"
-#define EPSILON 1.0e-10
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846  // Whole pie
-#endif
+Point LambertConformalConic::inv(const Point&) const {
+    NOTIMP;
+}
 
-#ifndef M_PI_2
-#define M_PI_2 1.57079632679489661923  // Half a pie
-#endif
 
-#ifndef M_PI_4
-#define M_PI_4 0.78539816339744830962  // Quarter of a pie
-#endif
+Spec* LambertConformalConic::spec() const {
+    NOTIMP;
+}
 
-#define RAD2DEG 57.29577951308232087684  // 180 over pi
-#define DEG2RAD 0.01745329251994329576   // pi over 180
+
+#if 0
+static constexpr double EPSILON = 1e-10;
+
 
 // Adjust longitude (in radians) to range -180 to 180
 static double adjust_lon_radians(double lon) {
@@ -106,6 +51,7 @@ static double adjust_lon_radians(double lon) {
         lon += 2 * M_PI;
     return lon;
 }
+
 
 // Function to compute the latitude angle, phi2, for the inverse
 // From the book "Map Projections-A Working Manual-John P. Snyder (1987)"
@@ -133,12 +79,14 @@ static double compute_phi(double eccent,  // Spheroid eccentricity
     return 0;
 }
 
+
 // Compute the constant small m which is the radius of
 // a parallel of latitude, phi, divided by the semimajor axis
 static double compute_m(double eccent, double sinphi, double cosphi) {
     const double con = eccent * sinphi;
     return ((cosphi / (sqrt(1.0 - con * con))));
 }
+
 
 // Compute the constant small t for use in the forward computations
 static double compute_t(double eccent,  // Eccentricity of the spheroid
@@ -151,15 +99,17 @@ static double compute_t(double eccent,  // Eccentricity of the spheroid
     return (tan(0.5 * (M_PI_2 - phi)) / con);
 }
 
+
 static double calculate_eccentricity(double minor, double major) {
     const double temp = minor / major;
     return sqrt(1.0 - temp * temp);
 }
 
+
 static void xy2lonlat(double radius, double n, double f, double rho0_bare, double LoVInRadians, double x, double y,
                       double* lonDeg, double* latDeg) {
-    DEBUG_ASSERT(radius > 0);
-    DEBUG_ASSERT(n != 0.0);
+    ASSERT(radius > 0);
+    ASSERT(n != 0.0);
     x /= radius;
     y /= radius;
     y          = rho0_bare - y;
@@ -172,14 +122,15 @@ static void xy2lonlat(double radius, double n, double f, double rho0_bare, doubl
         }
         double latRadians = 2. * atan(pow(f / rho, 1.0 / n)) - M_PI_2;
         double lonRadians = atan2(x, y) / n;
-        *lonDeg           = (lonRadians + LoVInRadians) * RAD2DEG;
-        *latDeg           = latRadians * RAD2DEG;
+        *lonDeg           = (lonRadians + LoVInRadians) * util::RADIAN_TO_DEGREE;
+        *latDeg           = latRadians * util::RADIAN_TO_DEGREE;
     }
     else {
         *lonDeg = 0.0;
-        *latDeg = (n > 0.0 ? M_PI_2 : -M_PI_2) * RAD2DEG;
+        *latDeg = (n > 0.0 ? M_PI_2 : -M_PI_2) * util::RADIAN_TO_DEGREE;
     }
 }
+
 
 static int init_sphere(const grib_handle* h, grib_iterator_lambert_conformal* self, size_t nv, long nx, long ny,
                        double LoVInDegrees, double Dx, double Dy, double radius, double latFirstInRadians,
@@ -254,8 +205,8 @@ static int init_sphere(const grib_handle* h, grib_iterator_lambert_conformal* se
             angle = atan2(x, tmp); /* See ECC-524 */
             rho   = sqrt(x * x + tmp2);
             if (n <= 0) rho = -rho;
-            lonDeg = LoVInDegrees + (angle / n) * RAD2DEG;
-            latDeg = (2.0 * atan(pow(radius * f / rho, 1.0 / n)) - M_PI_2) * RAD2DEG;
+            lonDeg = LoVInDegrees + (angle / n) * util::RADIAN_TO_DEGREE;
+            latDeg = (2.0 * atan(pow(radius * f / rho, 1.0 / n)) - M_PI_2) * util::RADIAN_TO_DEGREE;
             lonDeg = normalise_longitude_in_degrees(lonDeg);
             self->lons[index] = lonDeg;
             self->lats[index] = latDeg;
@@ -264,6 +215,7 @@ static int init_sphere(const grib_handle* h, grib_iterator_lambert_conformal* se
 #endif
     return GRIB_SUCCESS;
 }
+
 
 // Oblate spheroid
 static int init_oblate(const grib_handle* h, grib_iterator_lambert_conformal* self, size_t nv, long nx, long ny,
@@ -383,16 +335,17 @@ static int init_oblate(const grib_handle* h, grib_iterator_lambert_conformal* se
             }
             lonRad = adjust_lon_radians(theta / ns + LoVInRadians);
             if (i == 0 && j == 0) {
-                DEBUG_ASSERT(fabs(latFirstInRadians - latRad) <= EPSILON);
+                ASSERT(fabs(latFirstInRadians - latRad) <= EPSILON);
             }
-            latDeg            = latRad * RAD2DEG;  // Convert to degrees
-            lonDeg            = normalise_longitude_in_degrees(lonRad * RAD2DEG);
+            latDeg            = latRad * util::RADIAN_TO_DEGREE;  // Convert to degrees
+            lonDeg            = normalise_longitude_in_degrees(lonRad * util::RADIAN_TO_DEGREE);
             self->lons[index] = lonDeg;
             self->lats[index] = latDeg;
         }
     }
     return GRIB_SUCCESS;
 }
+
 
 static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     int err = 0, is_oblate = 0;
@@ -480,12 +433,12 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
     //
     // See Wolfram MathWorld: http://mathworld.wolfram.com/LambertConformalConicProjection.html
     //
-    latFirstInRadians = latFirstInDegrees * DEG2RAD;
-    lonFirstInRadians = lonFirstInDegrees * DEG2RAD;
-    Latin1InRadians   = Latin1InDegrees * DEG2RAD;
-    Latin2InRadians   = Latin2InDegrees * DEG2RAD;
-    LaDInRadians      = LaDInDegrees * DEG2RAD;
-    LoVInRadians      = LoVInDegrees * DEG2RAD;
+    latFirstInRadians = latFirstInDegrees * util::DEGREE_TO_RADIAN;
+    lonFirstInRadians = lonFirstInDegrees * util::DEGREE_TO_RADIAN;
+    Latin1InRadians   = Latin1InDegrees * util::DEGREE_TO_RADIAN;
+    Latin2InRadians   = Latin2InDegrees * util::DEGREE_TO_RADIAN;
+    LaDInRadians      = LaDInDegrees * util::DEGREE_TO_RADIAN;
+    LoVInRadians      = LoVInDegrees * util::DEGREE_TO_RADIAN;
 
     if (is_oblate) {
         err = init_oblate(h, self, iter->nv, nx, ny, LoVInDegrees, Dx, Dy, earthMinorAxisInMetres,
@@ -506,27 +459,7 @@ static int init(grib_iterator* iter, grib_handle* h, grib_arguments* args) {
                                   alternativeRowScanning, iter->nv, nx, ny);
     return err;
 }
+#endif
 
-static int next(grib_iterator* iter, double* lat, double* lon, double* val) {
-    grib_iterator_lambert_conformal* self = (grib_iterator_lambert_conformal*)iter;
 
-    if ((long)iter->e >= (long)(iter->nv - 1))
-        return 0;
-    iter->e++;
-
-    *lat = self->lats[iter->e];
-    *lon = self->lons[iter->e];
-    if (val && iter->data) {
-        *val = iter->data[iter->e];
-    }
-    return 1;
-}
-
-static int destroy(grib_iterator* i) {
-    grib_iterator_lambert_conformal* self = (grib_iterator_lambert_conformal*)i;
-    const grib_context* c                 = i->h->context;
-
-    grib_context_free(c, self->lats);
-    grib_context_free(c, self->lons);
-    return GRIB_SUCCESS;
-}
+}  // namespace eckit::geo::projection

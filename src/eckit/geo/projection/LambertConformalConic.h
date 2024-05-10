@@ -28,7 +28,6 @@ public:
 
     // -- Constructors
 
-    LambertConformalConic();
     explicit LambertConformalConic(const Spec&);
 
     // -- Destructor

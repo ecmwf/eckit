@@ -24,12 +24,12 @@ namespace eckit::geo::projection {
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec&) {}
 
 
-Point LambertAzimuthalEqualArea::fwd(const Point&) const {
+Point2 LambertAzimuthalEqualArea::fwd(const PointLonLat&) const {
     NOTIMP;
 }
 
 
-Point LambertAzimuthalEqualArea::inv(const Point&) const {
+PointLonLat LambertAzimuthalEqualArea::inv(const Point2&) const {
     NOTIMP;
 }
 

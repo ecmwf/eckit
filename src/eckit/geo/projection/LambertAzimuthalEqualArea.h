@@ -40,12 +40,11 @@ public:
     // None
 
     // -- Methods
-    // None
+
+    Point2 fwd(const PointLonLat& p) const;
+    PointLonLat inv(const Point2& q) const;
 
     // -- Overridden methods
-
-    Point fwd(const Point&) const override;
-    Point inv(const Point&) const override;
 
     [[nodiscard]] Spec* spec() const override;
 
@@ -63,7 +62,9 @@ private:
     // None
 
     // -- Overridden methods
-    // None
+
+    Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
+    Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
 
     // -- Class members
     // None

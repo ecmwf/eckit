@@ -31,12 +31,12 @@ LambertConformalConic::LambertConformalConic(const Spec&) {
 }
 
 
-Point LambertConformalConic::fwd(const Point&) const {
+Point2 LambertConformalConic::fwd(const PointLonLat&) const {
     NOTIMP;
 }
 
 
-Point LambertConformalConic::inv(const Point&) const {
+PointLonLat LambertConformalConic::inv(const Point2&) const {
     NOTIMP;
 }
 

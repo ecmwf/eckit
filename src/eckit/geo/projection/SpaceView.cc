@@ -35,12 +35,12 @@ SpaceView::SpaceView(const Spec&) {
 }
 
 
-Point SpaceView::fwd(const Point&) const {
+Point2 SpaceView::fwd(const PointLonLat&) const {
     NOTIMP;
 }
 
 
-Point SpaceView::inv(const Point&) const {
+PointLonLat SpaceView::inv(const Point2&) const {
     NOTIMP;
 }
 

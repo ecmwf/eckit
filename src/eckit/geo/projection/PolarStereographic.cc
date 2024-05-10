@@ -24,12 +24,12 @@ namespace eckit::geo::projection {
 PolarStereographic::PolarStereographic(const Spec&) {}
 
 
-Point PolarStereographic::fwd(const Point&) const {
+Point2 PolarStereographic::fwd(const PointLonLat&) const {
     NOTIMP;
 }
 
 
-Point PolarStereographic::inv(const Point&) const {
+PointLonLat PolarStereographic::inv(const Point2&) const {
     NOTIMP;
 }
 

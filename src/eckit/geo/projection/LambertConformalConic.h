@@ -18,6 +18,11 @@
 namespace eckit::geo::projection {
 
 
+/**
+ * @brief LambertConformalConic projection
+ * @ref Map Projections: A Working Manual, John P. Snyder (1987)
+ * @ref Wolfram MathWorld (http://mathworld.wolfram.com/LambertConformalConicProjection.html)
+ */
 class LambertConformalConic final : public Projection {
 public:
     // -- Types

@@ -22,20 +22,14 @@ namespace eckit::geo {
 
 class PointLonLat final : protected std::array<double, 2> {
 public:
-    // FIXME move into PointLonLat
-    static constexpr double GLOBE        = 360.;
-    static constexpr double GREENWICH    = 0.;
-    static constexpr double ANTIMERIDIAN = -180.;
-    static constexpr double EQUATOR      = 0.;
-    static constexpr double NORTH_POLE   = 90.;
-    static constexpr double SOUTH_POLE   = -90.;
-
     // -- Types
 
     using container_type = array;
     using container_type::value_type;
 
     // -- Constructors
+
+    PointLonLat() : PointLonLat(0., 0.) {}
 
     PointLonLat(value_type lon, value_type lat) : container_type{lon, lat} {}
 
@@ -72,11 +66,19 @@ public:
 
     static void assert_latitude_range(const PointLonLat&);
 
-    static PointLonLat make(value_type lon, value_type lat, value_type lon_minimum = EQUATOR, value_type eps = EPS);
+    [[nodiscard]] static PointLonLat make(value_type lon, value_type lat, value_type lon_minimum = EQUATOR,
+                                          value_type eps = EPS);
 
     PointLonLat antipode() const { return make(lon, lat + GLOBE / 2.); }
 
     // -- Class members
+
+    static constexpr double GLOBE        = 360.;
+    static constexpr double GREENWICH    = 0.;
+    static constexpr double ANTIMERIDIAN = -180.;
+    static constexpr double EQUATOR      = 0.;
+    static constexpr double NORTH_POLE   = 90.;
+    static constexpr double SOUTH_POLE   = -90.;
 
     static constexpr value_type EPS = 1e-9;
 

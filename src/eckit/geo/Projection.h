@@ -14,6 +14,7 @@
 
 #include <string>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
@@ -28,6 +29,12 @@ class Custom;
 
 
 namespace eckit::geo {
+
+
+class ProjectionProblem : public Exception {
+public:
+    explicit ProjectionProblem(const std::string&, const CodeLocation&);
+};
 
 
 class Projection {

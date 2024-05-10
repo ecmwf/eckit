@@ -32,10 +32,10 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_minimum(value_type a, va
 
 
 PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, value_type maximum) {
-    auto modulo_360 = [](auto a) { return a - GLOBE * std::ceil(a / GLOBE); };
+    auto modulo_globe = [](auto a) { return a - GLOBE * std::ceil(a / GLOBE); };
 
     auto diff = a - maximum;
-    return -GLOBE < diff && diff <= 0. ? a : modulo_360(a - maximum) + maximum;
+    return -GLOBE < diff && diff <= 0. ? a : modulo_globe(a - maximum) + maximum;
 }
 
 
@@ -43,7 +43,7 @@ void PointLonLat::assert_latitude_range(const PointLonLat& P) {
     if (!(SOUTH_POLE <= P.lat && P.lat <= NORTH_POLE)) {
         std::ostringstream oss;
         oss.precision(std::numeric_limits<value_type>::max_digits10);
-        oss << "Invalid latitude " << P.lat;
+        oss << "Invalid latitude [degree] " << P.lat;
         throw BadValue(oss.str(), Here());
     }
 }

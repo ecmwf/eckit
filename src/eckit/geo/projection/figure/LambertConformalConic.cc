@@ -15,7 +15,6 @@
 #include <cmath>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/geometry/Earth.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -25,16 +24,19 @@ namespace eckit::geo::projection::figure {
 
 
 LambertConformalConic::LambertConformalConic(const Spec& spec) :
-    LambertConformalConic({spec.get_double("lon_0"), spec.get_double("lat_0")}, spec.get_double("lat_1"),
+    LambertConformalConic({spec.get_double("lon_0"), spec.get_double("lat_0")},
+                          {spec.get_double("first_lon"), spec.get_double("first_lat")}, spec.get_double("lat_1"),
                           spec.get_double("lat_2")) {}
 
 
-LambertConformalConic::LambertConformalConic(PointLonLat centre, double lat_1, double lat_2) :
+LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1, double lat_2) :
     centre_(centre),
     centre_r_(centre),
+    first_(first),
+    first_r_(first),
     lat_1_(lat_1),
-    lat_2_(lat_2),
     lat_1_r_(lat_1 * util::DEGREE_TO_RADIAN),
+    lat_2_(lat_2),
     lat_2_r_(lat_2 * util::DEGREE_TO_RADIAN) {
     ASSERT(!eckit::types::is_approximately_equal(figure().R(), 0.));
 
@@ -44,56 +46,48 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, double lat_1, d
             Here());
     }
 
-    double latFirstInRadians = 0.;
-    double lonFirstInRadians = 0.;
-    double LaDInRadians      = 0.;
-    double LoVInRadians      = 0.;
+    n_ = eckit::types::is_approximately_equal(lat_1, lat_2)
+             ? std::sin(lat_1_r_)
+             : std::log(std::cos(lat_1_r_) / std::cos(lat_2_r_))
+                   / std::log(std::tan(M_PI_4 + lat_2_r_ / 2.) / std::tan(M_PI_4 + lat_1_r_ / 2.));
 
-    auto n = eckit::types::is_approximately_equal(lat_1, lat_2)
-                 ? sin(lat_1_r_)
-                 : log(cos(lat_1_r_) / cos(lat_2_r_)) / log(tan(M_PI_4 + lat_2_r_ / 2.) / tan(M_PI_4 + lat_1_r_ / 2.));
+    if (eckit::types::is_approximately_equal(n_, 0.)) {
+        throw ProjectionProblem("LambertConformalConic: cannot corretly calculate n_", Here());
+    }
 
-    auto f         = (cos(lat_1_r_) * pow(tan(M_PI_4 + lat_1_r_ / 2.), n)) / n;
-    auto rho0_bare = f * pow(tan(M_PI_4 + LaDInRadians / 2.), -n);
-    auto rho       = figure().R() * f * pow(tan(M_PI_4 + latFirstInRadians / 2.), -n);
-    auto rho0      = figure().R() * rho0_bare;  // scaled
-
-    auto dlam = lonFirstInRadians - LoVInRadians;
-
-    auto x0 = rho * sin(n * dlam);
-    auto y0 = rho0 - rho * cos(n * dlam);
+    f_         = (std::cos(lat_1_r_) * std::pow(std::tan(M_PI_4 + lat_1_r_ / 2.), n_)) / n_;
+    rho0_bare_ = f_ * std::pow(std::tan(M_PI_4 + centre_r_.latr / 2.), -n_);
 }
 
 
-Point2 LambertConformalConic::fwd(const PointLonLat&) const {
-    NOTIMP;
+Point2 LambertConformalConic::fwd(const PointLonLat& p) const {
+    PointLonLatR q(p);
+
+    auto rho  = figure().R() * f_ * std::pow(std::tan(M_PI_4 + q.latr / 2.), -n_);
+    auto rho0 = figure().R() * rho0_bare_;  // scaled
+    auto dlam = q.lonr - centre_r_.lonr;
+
+    return {rho * std::sin(n_ * dlam), rho0 - rho * std::cos(n_ * dlam)};
 }
 
 
 PointLonLat LambertConformalConic::inv(const Point2& p) const {
-    double n            = 0.;
-    double f            = 0;
-    double rho0_bare    = 0;
-    double LoVInRadians = 0;
+    auto x = p.X / figure().R();
+    auto y = rho0_bare_ - p.Y / figure().R();
 
-    ASSERT(n != 0.);
-
-    double x = p.X / figure().R();
-    double y = rho0_bare - p.Y / figure().R();
-
-    if (double rho = std::hypot(x, y); rho != 0.) {
-        if (n < 0.) {
+    if (auto rho = std::hypot(x, y); rho != 0.) {
+        if (n_ < 0.) {
             rho = -rho;
             x   = -x;
             y   = -y;
         }
-        double lonr = std::atan2(x, y) / n + LoVInRadians;
-        double latr = 2. * std::atan(pow(f / rho, 1. / n)) - M_PI_2;
+        auto lonr = std::atan2(x, y) / n_ + centre_r_.lonr;
+        auto latr = 2. * std::atan(std::pow(f_ / rho, 1. / n_)) - M_PI_2;
 
         return PointLonLat::make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr);
     }
 
-    return PointLonLat::make(0., n > 0 ? PointLonLat::NORTH_POLE : PointLonLat::SOUTH_POLE);
+    return PointLonLat::make(0., n_ > 0 ? PointLonLat::NORTH_POLE : PointLonLat::SOUTH_POLE);
 }
 
 

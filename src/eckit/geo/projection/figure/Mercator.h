@@ -12,9 +12,6 @@
 
 #pragma once
 
-#include <memory>
-
-#include "eckit/geo/Figure.h"
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
@@ -26,7 +23,7 @@ class Mercator final : public ProjectionOnFigure {
 public:
     // -- Constructors
 
-    Mercator(double meridian, double parallel, Figure*, PointLonLat first = {0, 0});
+    explicit Mercator(PointLonLat centre, PointLonLat first = {0, 0}, Figure* = nullptr);
 
     explicit Mercator(const Spec&);
 
@@ -42,11 +39,9 @@ public:
 private:
     // -- Members
 
-    const double meridian_;  // angle [degree] between Eastward direction and the Equator, range [0, 90]
-    const double parallel_;  // latitude [degree] of projection intersecting ellipsoid
-
-    const std::unique_ptr<Figure> figure_;
-    PointLonLat first_;
+    const PointLonLat centre_;  // angle [degree] between Eastward direction and the Equator, range [0, 90], latitude
+                                // [degree] of projection intersecting ellipsoid
+    const PointLonLat first_;
 
     const double eps_;
     const size_t max_iter_;

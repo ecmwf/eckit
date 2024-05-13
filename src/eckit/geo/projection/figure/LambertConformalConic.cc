@@ -38,20 +38,20 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat fir
     lat_1_r_(lat_1 * util::DEGREE_TO_RADIAN),
     lat_2_(lat_2),
     lat_2_r_(lat_2 * util::DEGREE_TO_RADIAN) {
-    ASSERT(!eckit::types::is_approximately_equal(figure().R(), 0.));
+    ASSERT(!types::is_approximately_equal(figure().R(), 0.));
 
-    if (eckit::types::is_approximately_equal(lat_1, -lat_2)) {
+    if (types::is_approximately_equal(lat_1, -lat_2)) {
         throw ProjectionProblem(
             "LambertConformalConic: cannot have equal latitudes for standard parallels on opposite sides of equator",
             Here());
     }
 
-    n_ = eckit::types::is_approximately_equal(lat_1, lat_2)
+    n_ = types::is_approximately_equal(lat_1, lat_2)
              ? std::sin(lat_1_r_)
              : std::log(std::cos(lat_1_r_) / std::cos(lat_2_r_))
                    / std::log(std::tan(M_PI_4 + lat_2_r_ / 2.) / std::tan(M_PI_4 + lat_1_r_ / 2.));
 
-    if (eckit::types::is_approximately_equal(n_, 0.)) {
+    if (types::is_approximately_equal(n_, 0.)) {
         throw ProjectionProblem("LambertConformalConic: cannot corretly calculate n_", Here());
     }
 
@@ -75,7 +75,7 @@ PointLonLat LambertConformalConic::inv(const Point2& p) const {
     auto x = p.X / figure().R();
     auto y = rho0_bare_ - p.Y / figure().R();
 
-    if (auto rho = std::hypot(x, y); rho != 0.) {
+    if (auto rho = std::hypot(x, y); !types::is_approximately_equal(rho, 0.)) {
         if (n_ < 0.) {
             rho = -rho;
             x   = -x;

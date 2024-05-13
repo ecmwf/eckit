@@ -27,29 +27,29 @@ static ProjectionBuilder<Mercator> PROJECTION_1("mercator");
 static ProjectionBuilder<Mercator> PROJECTION_2("merc");
 
 
-Mercator::Mercator(double meridian, double parallel, Figure* figure, PointLonLat first) :
-    meridian_(PointLonLat::normalise_angle_to_minimum(meridian, -180.)),
-    parallel_(parallel),
-    figure_(figure),
+Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
+    ProjectionOnFigure(figure_ptr),
+    centre_(PointLonLat::make(centre.lon, centre.lat, PointLonLat::ANTIMERIDIAN)),
     first_(first),
     eps_(1e-10),
     max_iter_(15) {
     // Map Projections: A Working Manual, John P. Snyder (1987)
     // - Equation (7-9) to calculate phi iteratively
     // - Equation (15-11) to calculate t
-    ASSERT(figure_);
 
-    ASSERT_MSG(!types::is_approximately_equal(first.lat, 90.) && !types::is_approximately_equal(first.lat, -90.),
-               "Mercator: projection cannot be calculated at the poles");
+    if (types::is_approximately_equal(first.lat, PointLonLat::NORTH_POLE)
+        || types::is_approximately_equal(first.lat, PointLonLat::SOUTH_POLE)) {
+        throw ProjectionProblem("Mercator: projection cannot be calculated at the poles", Here());
+    }
 
-    e_    = figure_->eccentricity();
-    lam0_ = util::DEGREE_TO_RADIAN * meridian_;
+    e_    = figure().eccentricity();
+    lam0_ = util::DEGREE_TO_RADIAN * centre_.lon;
 
-    auto phi0 = util::DEGREE_TO_RADIAN * parallel_;
+    auto phi0 = util::DEGREE_TO_RADIAN * centre_.lat;
     auto lam1 = util::DEGREE_TO_RADIAN * first.lon;
     auto phi1 = util::DEGREE_TO_RADIAN * first.lat;
 
-    m_ = figure_->a() * std::cos(phi0) / (std::sqrt(1. - e_ * e_ * std::sin(phi0) * std::sin(phi0)));
+    m_ = figure().a() * std::cos(phi0) / (std::sqrt(1. - e_ * e_ * std::sin(phi0) * std::sin(phi0)));
     ASSERT(!types::is_approximately_equal(m_, 0.));
 
     w_  = 1. / m_;
@@ -63,13 +63,14 @@ Mercator::Mercator(double meridian, double parallel, Figure* figure, PointLonLat
 
 
 Mercator::Mercator(const Spec& spec) :
-    Mercator(spec.get_double("meridian"), spec.get_double("parallel"),
-             FigureFactory::instance().get(spec.get_string("figure")).create(spec),
-             PointLonLat{spec.get_double("lon0"), spec.get_double("lat0")}) {}
+    Mercator({spec.get_double("lon_0"), spec.get_double("lat_ts")},
+             {spec.get_double("first_lon"), spec.get_double("first_lat")},
+             FigureFactory::instance().get(spec.get_string("figure")).create(spec)) {}
 
 
 double Mercator::calculate_phi(double t) const {
     auto phi = M_PI_2 - 2 * std::atan(t);
+
     for (size_t i = 0; i <= max_iter_; i++) {
         auto es   = e_ * std::sin(phi);
         auto dphi = M_PI_2 - 2 * std::atan(t * (std::pow(((1. - es * es) / (1. + es * es)), 0.5 * e_))) - phi;
@@ -105,7 +106,7 @@ PointLonLat Mercator::inv(const Point2& q) const {
 
 
 Spec* Mercator::spec() const {
-    return new spec::Custom{{{"projection", "mercator"}, {"lad", parallel_}, {"orientation", meridian_}}};
+    return new spec::Custom{{{"projection", "mercator"}, {"lat_ts", centre_.lat}, {"lon_0", centre_.lon}}};
 }
 
 

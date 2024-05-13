@@ -38,6 +38,7 @@ public:
 
 protected:
     // -- Overridden methods
+    using FunctionExpression::eval;
     double eval(bool& missing) const override;
 
 private:

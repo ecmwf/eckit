@@ -114,6 +114,39 @@ Regex& Regex::operator=(const Regex& other) {
     return *this;
 }
 
+std::string Regex::escape(std::string_view str) {
+    std::string ret;
+    // Reserve twice the size of str for worst-case
+    ret.reserve(str.size()*2);
+
+    for (const char& c: str) {
+        switch(c) {
+            case '.':
+            case '^':
+            case '$':
+            case '*':
+            case '+':
+            case '-':
+            case '?':
+            case '(':
+            case ')':
+            case '[':
+            case ']':
+            case '{':
+            case '}':
+            case '\\':
+            case '|':
+                ret.insert(ret.end(), '\\');
+                [[fallthrough]];
+            default:
+                ret.insert(ret.end(), c);
+        }
+    }
+
+    return ret;
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

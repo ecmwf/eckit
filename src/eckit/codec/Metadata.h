@@ -57,14 +57,8 @@ public:
 
     // extended LocalConfiguration:
     using LocalConfiguration::set;
-    Metadata& set(const LocalConfiguration& other) {
-        auto& root             = const_cast<Value&>(get());
-        const auto& other_root = other.get();
-        std::vector<std::string> other_keys;
-        fromValue(other_keys, other_root.keys());
-        for (auto& key : other_keys) {
-            root[key] = other_root[key];
-        }
+    Metadata& set(const Configuration& other) {
+        LocalConfiguration::set(other);
         return *this;
     }
 
@@ -79,17 +73,8 @@ public:
 
 
     Metadata& remove(const std::string& name) {
-        auto& root = const_cast<Value&>(get());
-        root.remove(name);
+        LocalConfiguration::remove(name);
         return *this;
-    }
-
-
-    std::vector<std::string> keys() const {
-        // Preserves order of keys
-        std::vector<std::string> result;
-        fromValue(result, get().keys());
-        return result;
     }
 };
 

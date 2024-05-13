@@ -44,17 +44,6 @@ CmdArgs::CmdArgs(std::function<void(const std::string&)> usage, std::vector<Opti
     init(usage, args_count, minimum_args, throw_on_error);
 }
 
-namespace {
-
-std::vector<std::string> split_at(const std::string& s, char separator) {
-    if (auto found = s.find_first_of(separator); found != std::string::npos) {
-        return {s.substr(0, found), s.substr(found + 1)};
-    }
-    return {s};
-}
-
-}  // namespace
-
 void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count, int minimum_args,
                    bool throw_on_error) {
     const Main& ctx = Main::instance();

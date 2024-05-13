@@ -229,13 +229,10 @@ void HttpResource::dispatch(eckit::Stream&, std::istream&, HttpStream& out, Url&
 
                 std::ostringstream oss;
                 oss << "Unsupported HTTP method " << method << " url=" << url;
-                throw eckit::MethodNotYetImplemented(oss.str());
+                throw eckit::NotImplemented(oss.str());
             }
             catch (eckit::HttpError& e) {
                 error(url, out, e, e.status());
-            }
-            catch (eckit::MethodNotYetImplemented& e) {
-                error(url, out, e, HttpError::NOT_IMPLEMENTED);
             }
             catch (eckit::NotImplemented& e) {
                 error(url, out, e, HttpError::NOT_IMPLEMENTED);

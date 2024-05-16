@@ -8,15 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+
 #include <iostream>
 
 #include "eckit/geo/polygon/Polygon.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit::geo::polygon {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 bool Polygon::congruent(const Polygon& p) const {
     if (empty()) {
@@ -61,6 +60,5 @@ void Polygon::print(std::ostream& s) const {
     s << ']';
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo::polygon

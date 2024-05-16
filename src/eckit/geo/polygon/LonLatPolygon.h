@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+
 #pragma once
 
 #include <iosfwd>
@@ -15,15 +16,14 @@
 
 #include "eckit/geo/Point2.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit::geo::polygon {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 class LonLatPolygon : protected std::vector<Point2> {
 public:
     // -- Types
+
     using container_type = std::vector<Point2>;
     using container_type::value_type;
 
@@ -77,6 +77,5 @@ private:
     bool quickCheckLongitude_;
 };
 
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo::polygon

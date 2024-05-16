@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+
 #include "eckit/geo/polygon/LonLatPolygon.h"
 
 #include <algorithm>
@@ -17,11 +18,9 @@
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/types/FloatCompare.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit::geo::polygon {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace {
 
@@ -59,7 +58,6 @@ inline Point2 componentsMax(const Point2& A, const Point2& B) {
 
 }  // namespace
 
-//----------------------------------------------------------------------------------------------------------------------
 
 LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePoles) : container_type(points) {
     ASSERT(points.size() > 1);
@@ -180,6 +178,5 @@ bool LonLatPolygon::contains(const Point2& Plonlat, bool normalise_angle) const 
     return false;
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo::polygon

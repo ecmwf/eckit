@@ -21,7 +21,7 @@ namespace eckit::geo::test {
 
 
 CASE("projection: mercator (poles)") {
-    projection::figure::Mercator projection(0., 14., new figure::Sphere(1.), {0., 0.});
+    projection::figure::Mercator projection({0., 14.}, {0., 0.}, new figure::Sphere(1.));
 
     auto a = projection.fwd(PointLonLat{0., 90.});
     EXPECT(a.Y > std::numeric_limits<double>::max());
@@ -32,7 +32,7 @@ CASE("projection: mercator (poles)") {
 
 
 CASE("projection: mercator (1)") {
-    projection::figure::Mercator projection(0., 14., new figure::Sphere(6371229.), {262.036, 14.7365});
+    projection::figure::Mercator projection({0., 14.}, {262.036, 14.7365}, new figure::Sphere(6371229.));
 
     Point2 a{0., 0.};
     auto b = projection.inv(a);
@@ -43,7 +43,7 @@ CASE("projection: mercator (1)") {
 
 
 CASE("projection: mercator (2)") {
-    projection::figure::Mercator projection(-180., 0., new figure::Sphere(1.), {0., 0.});
+    projection::figure::Mercator projection({-180., 0.}, {0., 0.}, new figure::Sphere(1.));
 
     PointLonLat a{-75., 35.};
     auto b = projection.fwd(a);

@@ -16,7 +16,6 @@
 #include <memory>
 
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/Projection.h"
 
 
@@ -33,13 +32,6 @@ protected:
 
         const value_type& lonr = array::operator[](0);
         const value_type& latr = array::operator[](1);
-    };
-
-    struct sincos_t final : std::array<double, 2> {
-        explicit sincos_t(value_type r);
-
-        const value_type& sin = array::operator[](0);
-        const value_type& cos = array::operator[](1);
     };
 
     // -- Constructors

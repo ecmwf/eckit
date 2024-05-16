@@ -12,16 +12,12 @@
 
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
-#include <cmath>
-
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/geometry/Earth.h"
 #include "eckit/geo/util.h"
 
 
 namespace eckit::geo::projection {
-
-
-ProjectionOnFigure::sincos_t::sincos_t(value_type r) : array{std::sin(r), std::sqrt(1. - std::sin(r) * std::sin(r))} {}
 
 
 ProjectionOnFigure::PointLonLatR::PointLonLatR(value_type lonr, value_type latr) : array{lonr, latr} {}

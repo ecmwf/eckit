@@ -12,9 +12,8 @@
 
 #pragma once
 
-#include <array>
-
 #include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/util/sincos.h"
 
 
 namespace eckit::geo::projection::figure {
@@ -68,9 +67,9 @@ private:
     const PointLonLat first_;     // first point [degree]
     const PointLonLatR first_r_;  // first point [radian]
 
-    const sincos_t phi0_;
-    const sincos_t phi_;
-    const sincos_t dlam_;
+    const util::sincos_t phi0_;
+    const util::sincos_t phi_;
+    const util::sincos_t dlam_;
 
     // -- Methods
     // None

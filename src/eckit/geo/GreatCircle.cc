@@ -16,26 +16,25 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
+#include "eckit/geo/util/sincos.h"
 #include "eckit/types/FloatCompare.h"
 
-//----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit::geo {
 
-//----------------------------------------------------------------------------------------------------------------------
 
 using types::is_approximately_equal;
 
-static bool pole(const double lat) {
+
+static bool is_pole(const double lat) {
     return is_approximately_equal(std::abs(lat), 90.);
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 GreatCircle::GreatCircle(const PointLonLat& Alonlat, const PointLonLat& Blonlat) : A_(Alonlat), B_(Blonlat) {
-    const bool Apole       = pole(A_.lat);
-    const bool Bpole       = pole(B_.lat);
-    const double lon12_deg = PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -180.);
+    const bool Apole       = is_pole(A_.lat);
+    const bool Bpole       = is_pole(B_.lat);
+    const double lon12_deg = PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, PointLonLat::ANTIMERIDIAN);
 
     const bool lon_same     = Apole || Bpole || is_approximately_equal(lon12_deg, 0.);
     const bool lon_opposite = Apole || Bpole || is_approximately_equal(std::abs(lon12_deg), 180.);
@@ -52,6 +51,7 @@ GreatCircle::GreatCircle(const PointLonLat& Alonlat, const PointLonLat& Blonlat)
     crossesPoles_ = lon_same || lon_opposite;
 }
 
+
 std::vector<double> GreatCircle::latitude(double lon) const {
     if (crossesPoles()) {
         return {};
@@ -61,28 +61,31 @@ std::vector<double> GreatCircle::latitude(double lon) const {
     const double lat2     = util::DEGREE_TO_RADIAN * B_.lat;
     const double lambda1p = util::DEGREE_TO_RADIAN * (lon - A_.lon);
     const double lambda2p = util::DEGREE_TO_RADIAN * (lon - B_.lon);
-    const double lambda   = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, -180.);
+    const double lambda
+        = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, PointLonLat::ANTIMERIDIAN);
 
     double lat
         = std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
     return {util::RADIAN_TO_DEGREE * lat};
 }
 
+
 std::vector<double> GreatCircle::longitude(double lat) const {
     if (crossesPoles()) {
-        const double lon = pole(A_.lat) ? B_.lon : A_.lon;
-        if (pole(lat)) {
+        const double lon = is_pole(A_.lat) ? B_.lon : A_.lon;
+        if (is_pole(lat)) {
             return {lon};
         }
 
         return {lon, lon + 180.};
     }
 
-    const double lon12 = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -180.);
-    const double lon1  = util::DEGREE_TO_RADIAN * A_.lon;
-    const double lat1  = util::DEGREE_TO_RADIAN * A_.lat;
-    const double lat2  = util::DEGREE_TO_RADIAN * B_.lat;
-    const double lat3  = util::DEGREE_TO_RADIAN * lat;
+    const double lon12
+        = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, PointLonLat::ANTIMERIDIAN);
+    const double lon1 = util::DEGREE_TO_RADIAN * A_.lon;
+    const double lat1 = util::DEGREE_TO_RADIAN * A_.lat;
+    const double lat2 = util::DEGREE_TO_RADIAN * B_.lat;
+    const double lat3 = util::DEGREE_TO_RADIAN * lat;
 
     const double X = std::sin(lat1) * std::cos(lat2) * std::sin(lon12);
     const double Y = std::sin(lat1) * std::cos(lat2) * std::cos(lon12) - std::cos(lat1) * std::sin(lat2);
@@ -110,24 +113,20 @@ std::vector<double> GreatCircle::longitude(double lat) const {
     return {};
 }
 
+
 bool GreatCircle::crossesPoles() const {
     return crossesPoles_;
 }
 
+
 std::pair<double, double> GreatCircle::calculate_course(const PointLonLat& A, const PointLonLat& B) {
-    const auto sdl = std::sin(util::DEGREE_TO_RADIAN * (B.lon - A.lon));
-    const auto cdl = std::cos(util::DEGREE_TO_RADIAN * (B.lon - A.lon));
-    const auto spA = std::sin(util::DEGREE_TO_RADIAN * A.lat);
-    const auto cpA = std::cos(util::DEGREE_TO_RADIAN * A.lat);
-    const auto spB = std::sin(util::DEGREE_TO_RADIAN * B.lat);
-    const auto cpB = std::cos(util::DEGREE_TO_RADIAN * B.lat);
+    const util::sincos_t dl(util::DEGREE_TO_RADIAN * (A.lon - B.lon));
+    const util::sincos_t scA(util::DEGREE_TO_RADIAN * A.lat);
+    const util::sincos_t scB(util::DEGREE_TO_RADIAN * B.lat);
 
-    const auto alpha1 = util::RADIAN_TO_DEGREE * std::atan2(cpB * sdl, cpA * spB - spA * cpB * cdl);
-    const auto alpha2 = util::RADIAN_TO_DEGREE * std::atan2(cpA * sdl, -cpB * spA + spB * cpA * cdl);
-
-    return {alpha1, alpha2};
+    return {util::RADIAN_TO_DEGREE * std::atan2(scB.cos * dl.sin, scA.cos * scB.sin - scA.sin * scB.cos * dl.cos),
+            util::RADIAN_TO_DEGREE * std::atan2(scA.cos * dl.sin, -scB.cos * scA.sin + scB.sin * scA.cos * dl.cos)};
 }
 
-//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geo

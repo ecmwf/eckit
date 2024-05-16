@@ -54,7 +54,7 @@ Point2 LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
 
 PointLonLat LambertAzimuthalEqualArea::inv(const Point2& p) const {
     if (auto x = p.X, y = p.Y, rho = std::sqrt(x * x + y * y); !types::is_approximately_equal(rho, 0.)) {
-        const sincos_t c(2. * std::asin(rho / (2. * figure().R())));
+        const util::sincos_t c(2. * std::asin(rho / (2. * figure().R())));
 
         const auto lonr = centre_r_.lonr + std::atan2(x * c.sin, rho * phi0_.cos * c.cos - y * phi0_.sin * c.sin);
         const auto latr = std::asin(c.cos * phi0_.sin + y * c.sin * phi0_.cos / rho);

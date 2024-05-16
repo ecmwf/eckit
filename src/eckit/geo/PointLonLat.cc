@@ -27,7 +27,7 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_minimum(value_type a, va
     static const auto modulo_globe = [](auto a) { return a - GLOBE * std::floor(a / GLOBE); };
 
     auto diff = a - minimum;
-    return 0. <= diff && diff < GLOBE ? a : modulo_globe(diff) + minimum;
+    return 0. <= diff && diff < GLOBE ? a : (modulo_globe(diff) + minimum);
 }
 
 
@@ -35,7 +35,7 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, va
     auto modulo_globe = [](auto a) { return a - GLOBE * std::ceil(a / GLOBE); };
 
     auto diff = a - maximum;
-    return -GLOBE < diff && diff <= 0. ? a : modulo_globe(a - maximum) + maximum;
+    return -GLOBE < diff && diff <= 0. ? a : (modulo_globe(diff) + maximum);
 }
 
 

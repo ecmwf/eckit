@@ -24,6 +24,8 @@ list(APPEND eckit_geo_srcs
     Point3.h
     PointLonLat.cc
     PointLonLat.h
+    PointLonLatR.cc
+    PointLonLatR.h
     Projection.cc
     Projection.h
     Range.cc

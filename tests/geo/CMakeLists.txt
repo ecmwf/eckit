@@ -18,6 +18,7 @@ foreach(_test
         point2
         point3
         pointlonlat
+        pointlonlatr
         projection
         projection_ll_to_xyz
         projection_mercator

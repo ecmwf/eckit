@@ -12,6 +12,8 @@
 
 #include "eckit/geo/PointLonLatR.h"
 
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -46,6 +48,11 @@ PointLonLatR PointLonLatR::make(value_type lon, value_type lat, value_type lon_m
            : types::is_approximately_equal(lat, SOUTH_POLE, eps)
                ? PointLonLatR{EQUATOR, SOUTH_POLE}
                : PointLonLatR{normalise_angle_to_minimum(lon, lon_minimum), lat};
+}
+
+
+PointLonLatR PointLonLatR::make_from(const PointLonLat& p) {
+    return make(util::DEGREE_TO_RADIAN * p.lon, util::DEGREE_TO_RADIAN * p.lat);
 }
 
 

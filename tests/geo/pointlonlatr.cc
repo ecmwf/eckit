@@ -11,6 +11,8 @@
 
 
 #include "eckit/geo/PointLonLatR.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -116,6 +118,22 @@ CASE("PointLonLatR normalise angles") {
         2. + PointLonLatR::GLOBE * 11,
         PointLonLatR::normalise_angle_to_minimum(2. + PointLonLatR::GLOBE * 11, PointLonLatR::GLOBE * 11),
         PointLonLatR::EPS));
+}
+
+
+CASE("PointLonLatR conversion to/from PointLonLat") {
+    PointLonLatR p{0., 0.};
+    EXPECT(points_equal(p, PointLonLatR::make_from(PointLonLat{0., 0.})));
+
+    PointLonLatR q{0., PointLonLatR::NORTH_POLE};
+    EXPECT(points_equal(q, PointLonLatR::make_from(PointLonLat{1., PointLonLat::NORTH_POLE})));
+
+    PointLonLatR r{42. * PointLonLatR::GLOBE, PointLonLatR::SOUTH_POLE};
+    EXPECT(
+        points_equal(r, PointLonLatR::make_from(PointLonLat{0., PointLonLat::SOUTH_POLE - 42. * PointLonLat::GLOBE})));
+
+    PointLonLatR s{10. * util::DEGREE_TO_RADIAN, 42. * PointLonLatR::GLOBE};
+    EXPECT(points_equal(s, PointLonLatR::make_from(PointLonLat{10. - 42. * PointLonLat::GLOBE, 0.})));
 }
 
 

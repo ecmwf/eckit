@@ -18,6 +18,11 @@
 
 
 namespace eckit::geo {
+class PointLonLat;
+}
+
+
+namespace eckit::geo {
 
 
 class PointLonLatR final : protected std::array<double, 2> {
@@ -66,6 +71,8 @@ public:
 
     [[nodiscard]] static PointLonLatR make(value_type lon, value_type lat, value_type lon_minimum = EQUATOR,
                                            value_type eps = EPS);
+
+    [[nodiscard]] static PointLonLatR make_from(const PointLonLat&);
 
     PointLonLatR antipode() const { return make(lonr, latr + GLOBE / 2.); }
 

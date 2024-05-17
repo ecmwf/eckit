@@ -18,12 +18,13 @@
 #include "eckit/geo/Point2.h"
 #include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointLonLatR.h"
 
 
 namespace eckit::geo {
 
 
-using Point = std::variant<std::monostate, PointLonLat, Point2, Point3>;
+using Point = std::variant<std::monostate, Point2, Point3, PointLonLat, PointLonLatR>;
 
 bool points_equal(const Point&, const Point&);
 bool points_equal(const Point&, const Point&, double eps);

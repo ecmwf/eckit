@@ -36,7 +36,7 @@ public:
 
     // -- Overridden methods
 
-    Spec* spec() const override;
+    void spec(spec::Custom&) const override;
 
 private:
     // -- Types
@@ -52,7 +52,7 @@ private:
 
         virtual Point3 operator()(const PointLonLat&) const = 0;
         virtual PointLonLat operator()(const Point3&) const = 0;
-        [[nodiscard]] virtual Spec* spec() const            = 0;
+        virtual void spec(spec::Custom&) const              = 0;
     };
 
     // -- Members

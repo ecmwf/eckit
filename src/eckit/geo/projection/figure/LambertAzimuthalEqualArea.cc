@@ -14,9 +14,7 @@
 
 #include <cmath>
 
-#include "eckit/geo/geometry/Earth.h"
 #include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -34,9 +32,9 @@ LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
 
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first) :
     centre_(centre),
-    centre_r_(centre),
+    centre_r_(PointLonLatR::make_from_lonlat(centre.lon, centre.lat)),
     first_(first),
-    first_r_(first),
+    first_r_(PointLonLatR::make_from_lonlat(first.lon, first.lat)),
     phi0_(centre_r_.latr),
     phi_(first_r_.latr),
     dlam_(first_r_.lonr - centre_r_.lonr) {}
@@ -53,25 +51,23 @@ Point2 LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
 
 
 PointLonLat LambertAzimuthalEqualArea::inv(const Point2& p) const {
-    if (auto x = p.X, y = p.Y, rho = std::sqrt(x * x + y * y); !types::is_approximately_equal(rho, 0.)) {
-        const util::sincos_t c(2. * std::asin(rho / (2. * figure().R())));
+    auto rho = std::sqrt(p.X * p.X + p.Y * p.Y);
+    const util::sincos_t c(2. * std::asin(rho / (2. * figure().R())));
 
-        const auto lonr = centre_r_.lonr + std::atan2(x * c.sin, rho * phi0_.cos * c.cos - y * phi0_.sin * c.sin);
-        const auto latr = std::asin(c.cos * phi0_.sin + y * c.sin * phi0_.cos / rho);
-
-        return PointLonLat::make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr);
-    }
-
-    return PointLonLat::make(centre_.lon, centre_.lat);
+    return PointLonLat::make_from_lonlatr(
+        centre_r_.lonr + std::atan2(p.X * c.sin, rho * phi0_.cos * c.cos - p.Y * phi0_.sin * c.sin),
+        std::asin(c.cos * phi0_.sin + p.Y * c.sin * phi0_.cos / rho));
 }
 
 
-Spec* LambertAzimuthalEqualArea::spec() const {
-    return new spec::Custom({{"projection", "laea"},
-                             {"lon_0", centre_.lon},
-                             {"lat_0", centre_.lat},
-                             {"lon_first", first_.lon},
-                             {"lat_first", first_.lat}});
+void LambertAzimuthalEqualArea::spec(spec::Custom& custom) const {
+    ProjectionOnFigure::spec(custom);
+
+    custom.set("projection", "laea");
+    custom.set("lon_0", centre_.lon);
+    custom.set("lat_0", centre_.lat);
+    custom.set("lon_first", first_.lon);
+    custom.set("lat_first", first_.lat);
 }
 
 

@@ -34,7 +34,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
         explicit LonLatToSphereXYZ(double R) : R_(R) {}
         Point3 operator()(const PointLonLat& p) const override { return S::convertSphericalToCartesian(R_, p, 0.); }
         PointLonLat operator()(const Point3& q) const override { return S::convertCartesianToSpherical(R_, q); }
-        Spec* spec() const override { return new spec::Custom{{{"R", R_}}}; }
+        void spec(spec::Custom& custom) const override { custom.set("R", R_); }
     };
 
     struct LonLatToSpheroidXYZ final : Implementation {
@@ -45,7 +45,10 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) {
         explicit LonLatToSpheroidXYZ(double a, double b) : a_(a), b_(b) {}
         Point3 operator()(const PointLonLat& p) const override { return S::convertSphericalToCartesian(a_, b_, p, 0.); }
         PointLonLat operator()(const Point3& q) const override { NOTIMP; }
-        Spec* spec() const override { return new spec::Custom{{{"a", a_}, {"b", b_}}}; }
+        void spec(spec::Custom& custom) const override {
+            custom.set("a", a_);
+            custom.set("b", b_);
+        }
     };
 
     impl_.reset(types::is_approximately_equal(a, b) ? static_cast<Implementation*>(new LonLatToSphereXYZ(a))
@@ -60,8 +63,8 @@ LonLatToXYZ::LonLatToXYZ(const Spec& spec) :
     LonLatToXYZ(spec.get_double("a", spec.get_double("R", 1.)), spec.get_double("b", spec.get_double("R", 1.))) {}
 
 
-Spec* LonLatToXYZ::spec() const {
-    return impl_->spec();
+void LonLatToXYZ::spec(spec::Custom& custom) const {
+    impl_->spec(custom);
 }
 
 

@@ -40,7 +40,7 @@ public:
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
-    [[nodiscard]] Spec* spec() const override;
+    void spec(spec::Custom&) const override;
 
 private:
     // -- Types

@@ -12,19 +12,13 @@
 
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
-#include "eckit/geo/PointLonLat.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/geometry/Earth.h"
-#include "eckit/geo/util.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
-
-
-ProjectionOnFigure::PointLonLatR::PointLonLatR(value_type lonr, value_type latr) : array{lonr, latr} {}
-
-
-ProjectionOnFigure::PointLonLatR::PointLonLatR(const PointLonLat& p) :
-    PointLonLatR{p.lon * util::DEGREE_TO_RADIAN, p.lat * util::DEGREE_TO_RADIAN} {}
 
 
 // FIXME refactor figures into a single hierarchy
@@ -40,7 +34,20 @@ struct Earth final : Figure {
 ProjectionOnFigure::ProjectionOnFigure(const Spec&) : ProjectionOnFigure() {}
 
 
-ProjectionOnFigure::ProjectionOnFigure(Figure* figure_ptr) : figure_(figure_ptr != nullptr ? figure_ptr : new Earth) {}
+ProjectionOnFigure::ProjectionOnFigure(Figure* figure_ptr) : figure_(figure_ptr != nullptr ? figure_ptr : new Earth) {
+    ASSERT(figure_);
+}
+
+
+void ProjectionOnFigure::spec(spec::Custom& custom) const {
+    // FIXME OO figure
+    if (types::is_approximately_equal(figure_->a(), figure_->b())) {
+        custom.set("R", figure_->R());
+        return;
+    }
+    custom.set("a", figure_->a());
+    custom.set("b", figure_->b());
+}
 
 
 }  // namespace eckit::geo::projection

@@ -30,10 +30,10 @@ LambertConformalConic::LambertConformalConic(const Spec& spec) :
 
 
 LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1, double lat_2) :
-    centre_(centre),
-    centre_r_(centre),
-    first_(first),
-    first_r_(first),
+    centre_(PointLonLat::make(centre.lon, centre.lat)),
+    centre_r_(PointLonLatR::make_from_lonlat(centre.lon, centre.lat)),
+    first_(PointLonLat::make(first.lon, first.lat)),
+    first_r_(PointLonLatR::make_from_lonlat(first.lon, first.lat)),
     lat_1_(lat_1),
     lat_1_r_(lat_1 * util::DEGREE_TO_RADIAN),
     lat_2_(lat_2),
@@ -61,7 +61,7 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat fir
 
 
 Point2 LambertConformalConic::fwd(const PointLonLat& p) const {
-    PointLonLatR q(p);
+    auto q = PointLonLatR::make_from_lonlat(p.lon, p.lat);
 
     auto rho  = figure().R() * f_ * std::pow(std::tan(M_PI_4 + q.latr / 2.), -n_);
     auto rho0 = figure().R() * rho0_bare_;  // scaled
@@ -91,8 +91,15 @@ PointLonLat LambertConformalConic::inv(const Point2& p) const {
 }
 
 
-Spec* LambertConformalConic::spec() const {
-    NOTIMP;
+void LambertConformalConic::spec(spec::Custom& custom) const {
+    ProjectionOnFigure::spec(custom);
+
+    custom.set("lon_0", centre_.lon);
+    custom.set("lat_0", centre_.lat);
+    custom.set("first_lon", first_.lon);
+    custom.set("first_lat", first_.lat);
+    custom.set("lat_1", lat_1_);
+    custom.set("lat_2", lat_1_);
 }
 
 

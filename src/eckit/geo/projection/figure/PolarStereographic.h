@@ -29,6 +29,7 @@ public:
     // -- Constructors
 
     explicit PolarStereographic(const Spec&);
+    PolarStereographic(PointLonLat centre, PointLonLat first = {0, 0}, Figure* = nullptr);
 
     // -- Destructor
     // None
@@ -46,7 +47,7 @@ public:
 
     // -- Overridden methods
 
-    [[nodiscard]] Spec* spec() const override;
+    void spec(spec::Custom&) const override;
 
     // -- Class members
     // None
@@ -56,7 +57,17 @@ public:
 
 private:
     // -- Members
-    // None
+
+    const PointLonLat centre_;     // projection centre [degree]
+    const PointLonLatR centre_r_;  // projection centre [radian]
+
+    const PointLonLat first_;     // first point [degree]
+    const PointLonLatR first_r_;  // first point [radian]
+
+    const double sign_;
+    const double F_;
+    double x0_;
+    double y0_;
 
     // -- Methods
     // None

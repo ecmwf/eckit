@@ -14,73 +14,66 @@
 
 #include <cmath>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geo/util.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection::figure {
 
 
-PolarStereographic::PolarStereographic(const Spec&) {}
+PolarStereographic::PolarStereographic(const Spec& spec) :
+    PolarStereographic({spec.get_double("lon_0"), spec.get_double("lat_0")},
+                       {spec.get_double("first_lon"), spec.get_double("first_lat")}) {}
 
 
-Point2 PolarStereographic::fwd(const PointLonLat&) const {
-    NOTIMP;
+PolarStereographic::PolarStereographic(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
+    ProjectionOnFigure(figure_ptr),
+    centre_(PointLonLat::make(centre.lon, centre.lat)),
+    centre_r_(PointLonLatR::make_from_lonlat(centre.lon, centre.lat)),
+    first_(first),
+    first_r_(PointLonLatR::make_from_lonlat(first.lon, first.lat)),
+    sign_(centre_.lat < 0. ? -1. : 1.),
+    F_(types::is_approximately_equal(centre_.lat, PointLonLat::NORTH_POLE, PointLonLat::EPS)
+               || types::is_approximately_equal(centre_.lat, PointLonLat::SOUTH_POLE, PointLonLat::EPS)
+           ? 0.5
+           : std::tan(0.5 * (M_PI_2 - sign_ * centre_r_.latr)) / std::cos(sign_ * centre_r_.latr)) {
+    auto z = fwd(first_);
+    x0_    = z.X;
+    y0_    = z.Y;
 }
 
 
-PointLonLat PolarStereographic::inv(const Point2&) const {
-    NOTIMP;
+Point2 PolarStereographic::fwd(const PointLonLat& q) const {
+    auto p = PointLonLatR::make_from_lonlat(q.lon, q.lat);
+
+    auto a      = sign_ * (p.lonr - centre_r_.lonr);
+    auto tsf    = std::tan(0.5 * (M_PI_2 - sign_ * p.latr));
+    auto height = figure().R() * tsf / F_;
+
+    return {-sign_ * height * std::sin(a), sign_ * height * std::cos(a)};
 }
 
 
-Spec* PolarStereographic::spec() const {
-    NOTIMP;
+PointLonLat PolarStereographic::inv(const Point2& q) const {
+    Point2 p{q.X - x0_, q.Y - y0_};
+
+    auto rh  = std::sqrt(p.X * p.X + p.Y * p.Y);
+    auto tsi = rh / figure().R() * F_;
+
+    return PointLonLat::make_from_lonlatr(sign_ * std::atan2(sign_ * p.X, -sign_ * p.Y) + centre_r_.lonr,
+                                          sign_ * (M_PI_2 - 2 * std::atan(tsi)));
 }
 
 
-namespace {
+void PolarStereographic::spec(spec::Custom& custom) const {
+    ProjectionOnFigure::spec(custom);
 
-
-void init() {
-    static constexpr double EPSILON = 1e-10;
-
-    const double radius           = 1.;
-    const double centralLongitude = util::DEGREE_TO_RADIAN * 0. /*centralLongitudeInDegrees*/;
-    const double centralLatitude  = util::DEGREE_TO_RADIAN * 0. /*centralLatitudeInDegrees*/;
-    const double lonFirst         = util::DEGREE_TO_RADIAN * 0. /*lonFirstInDegrees*/;
-    const double latFirst         = util::DEGREE_TO_RADIAN * 0. /*latFirstInDegrees*/;
-
-    const double sign = centralLatitude < 0 ? -1. : 1.;
-    const bool ind    = fabs(fabs(centralLatitude) - M_PI_2) > EPSILON;
-
-    const double mcs = ind ? cos(sign * centralLatitude) : 0.;
-    const double tcs = ind ? tan(0.5 * (M_PI_2 - sign * centralLatitude)) : 0.;
-
-    /* Forward projection from initial lat,lon to initial x,y */
-    double tsf    = tan(0.5 * (M_PI_2 - sign * latFirst));
-    double height = ind ? radius * mcs * tsf / tcs : 2.0 * radius * tsf;
-
-    double a  = sign * (lonFirst - centralLongitude);
-    double x0 = -sign * height * sin(a);
-    double y0 = sign * height * cos(a);
-
-    /* Inverse projection from x,y to lat,lon */
-    double x = 0;
-    double y = 0;
-    Point2 p{(x - x0) * sign, (y - y0) * sign};
-
-    double rh  = sqrt(p.X * p.X + p.Y * p.Y);
-    double tsi = ind ? rh * tcs / (radius * mcs) : rh / (radius * 2.0);
-
-    double latr = sign * (M_PI_2 - 2 * atan(tsi));
-    double lonr = rh == 0 ? sign * centralLongitude : sign * atan2(p.X, -p.Y) + centralLongitude;
-
-    PointLonLat::make(lonr * util::RADIAN_TO_DEGREE, latr * util::RADIAN_TO_DEGREE);
+    custom.set("projection", "stere");
+    custom.set("lon_0", centre_.lon);
+    custom.set("lat_0", centre_.lat);
+    custom.set("lon_first", first_.lon);
+    custom.set("lat_first", first_.lat);
 }
-
-
-}  // namespace
 
 
 }  // namespace eckit::geo::projection::figure

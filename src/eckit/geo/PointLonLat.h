@@ -74,7 +74,7 @@ public:
     [[nodiscard]] static PointLonLat make(value_type lon, value_type lat, value_type lon_minimum = EQUATOR,
                                           value_type eps = EPS);
 
-    [[nodiscard]] static PointLonLat make_from(const PointLonLatR&);
+    [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr);
 
     PointLonLat antipode() const { return make(lon, lat + GLOBE / 2.); }
 

@@ -36,13 +36,16 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 
     struct NonRotated final : Implementation {
         PointLonLat operator()(const PointLonLat& p) const override { return p; }
-        Spec* spec() const override { return nullptr; }
+        void spec(spec::Custom& custom) const override {}
     };
 
     struct RotationAngle final : Implementation {
         explicit RotationAngle(double angle) : angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override { return {p.lon + angle_, p.lat}; }
-        Spec* spec() const override { return new spec::Custom{{{"projection", "rotation"}, {"angle", angle_}}}; }
+        void spec(spec::Custom& custom) const override {
+            custom.set("projection", "rotation");
+            custom.set("angle", angle_);
+        }
         const double angle_;
     };
 
@@ -54,11 +57,11 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
             return geometry::UnitSphere::convertCartesianToSpherical(
                 R_ * geometry::UnitSphere::convertSphericalToCartesian(p));
         }
-        Spec* spec() const override {
-            return new spec::Custom{{{"projection", "rotation"},
-                                     {"south_pole_lon", south_pole_lon_},
-                                     {"south_pole_lat", south_pole_lat_},
-                                     {"angle", angle_}}};
+        void spec(spec::Custom& custom) const override {
+            custom.set("projection", "rotation");
+            custom.set("south_pole_lon", south_pole_lon_);
+            custom.set("south_pole_lat", south_pole_lat_);
+            custom.set("angle", angle_);
         }
         const M R_;
         const double south_pole_lon_;
@@ -116,8 +119,8 @@ Rotation::Rotation(const Spec& spec) :
     Rotation(spec.get_double("south_pole_lon"), spec.get_double("south_pole_lat"), spec.get_double("angle", 0)) {}
 
 
-Spec* Rotation::spec() const {
-    return fwd_->spec();
+void Rotation::spec(spec::Custom& custom) const {
+    return fwd_->spec(custom);
 }
 
 

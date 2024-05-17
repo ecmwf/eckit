@@ -22,8 +22,8 @@ static ProjectionBuilder<XYToLonLat> PROJECTION1("xy_to_ll");
 static ProjectionBuilder<XYToLonLat> PROJECTION2("plate-carree");
 
 
-Spec* XYToLonLat::spec() const {
-    return new spec::Custom({{"projection", "plate-carree"}});
+void XYToLonLat::spec(spec::Custom& custom) const {
+    custom.set("projection", "plate-carree");
 }
 
 

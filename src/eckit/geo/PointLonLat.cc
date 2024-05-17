@@ -17,7 +17,6 @@
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/PointLonLatR.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -66,8 +65,8 @@ PointLonLat PointLonLat::make(value_type lon, value_type lat, value_type lon_min
 }
 
 
-PointLonLat PointLonLat::make_from(const PointLonLatR& p) {
-    return make(util::RADIAN_TO_DEGREE * p.lonr, util::RADIAN_TO_DEGREE * p.latr);
+PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr) {
+    return make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr);
 }
 
 

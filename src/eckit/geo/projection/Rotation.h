@@ -37,7 +37,7 @@ public:
 
     // -- Overridden methods
 
-    [[nodiscard]] Spec* spec() const override;
+    void spec(spec::Custom&) const override;
 
 private:
     // -- Types
@@ -52,7 +52,7 @@ private:
         void operator=(Implementation&&)      = delete;
 
         virtual PointLonLat operator()(const PointLonLat&) const = 0;
-        virtual Spec* spec() const                               = 0;
+        virtual void spec(spec::Custom&) const                   = 0;
     };
 
     // -- Members

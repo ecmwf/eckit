@@ -27,7 +27,8 @@ static ProjectionBuilder<PROJ> PROJECTION("proj");
 namespace {
 
 
-constexpr auto CTX = PJ_DEFAULT_CTX;
+constexpr auto CTX               = PJ_DEFAULT_CTX;
+static const std::string DEFAULT = "EPSG:4326";
 
 
 struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
@@ -145,8 +146,8 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 
 
 PROJ::PROJ(const Spec& spec) :
-    PROJ(spec.get_string("source", "EPSG:4326"),  // default to WGS 84
-         spec.get_string("target", "EPSG:4326"),  // ...
+    PROJ(spec.get_string("source", DEFAULT),  // default to WGS 84
+         spec.get_string("target", DEFAULT),  // ...
          spec.get_double("lon_minimum", 0)) {}
 
 
@@ -175,8 +176,14 @@ Point PROJ::inv(const Point& q) const {
 }
 
 
-Spec* PROJ::spec() const {
-    return new spec::Custom{{{"projection", "proj"}, {"source", source_}, {"target", target_}}};
+void PROJ::spec(spec::Custom& custom) const {
+    custom.set("projection", "proj");
+    if (source_ != DEFAULT) {
+        custom.set("source", source_);
+    }
+    if (target_ != DEFAULT) {
+        custom.set("target", target_);
+    }
 }
 
 

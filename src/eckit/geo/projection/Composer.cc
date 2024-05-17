@@ -55,7 +55,7 @@ std::vector<Point> Composer::inv_points(const Point& p) const {
 }
 
 
-Spec* Composer::spec() const {
+void Composer::spec(spec::Custom& custom) const {
     NOTIMP;
 }
 

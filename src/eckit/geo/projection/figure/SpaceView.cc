@@ -15,6 +15,7 @@
 #include <cmath>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 
 
@@ -45,7 +46,8 @@ PointLonLat SpaceView::inv(const Point2&) const {
 }
 
 
-Spec* SpaceView::spec() const {
+void SpaceView::spec(spec::Custom& custom) const {
+    ProjectionOnFigure::spec(custom);
     NOTIMP;
 }
 

@@ -72,7 +72,7 @@ public:
     [[nodiscard]] static PointLonLatR make(value_type lon, value_type lat, value_type lon_minimum = EQUATOR,
                                            value_type eps = EPS);
 
-    [[nodiscard]] static PointLonLatR make_from(const PointLonLat&);
+    [[nodiscard]] static PointLonLatR make_from_lonlat(value_type lon, value_type lat);
 
     PointLonLatR antipode() const { return make(lonr, latr + GLOBE / 2.); }
 

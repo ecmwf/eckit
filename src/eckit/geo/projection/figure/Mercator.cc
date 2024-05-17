@@ -42,12 +42,13 @@ Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
         throw ProjectionProblem("Mercator: projection cannot be calculated at the poles", Here());
     }
 
-    e_    = figure().eccentricity();
-    lam0_ = util::DEGREE_TO_RADIAN * centre_.lon;
-
+    auto lam0 = util::DEGREE_TO_RADIAN * centre_.lon;
     auto phi0 = util::DEGREE_TO_RADIAN * centre_.lat;
     auto lam1 = util::DEGREE_TO_RADIAN * first.lon;
     auto phi1 = util::DEGREE_TO_RADIAN * first.lat;
+
+    e_    = figure().eccentricity();
+    lam0_ = lam0;
 
     m_ = figure().a() * std::cos(phi0) / (std::sqrt(1. - e_ * e_ * std::sin(phi0) * std::sin(phi0)));
     ASSERT(!types::is_approximately_equal(m_, 0.));
@@ -105,8 +106,12 @@ PointLonLat Mercator::inv(const Point2& q) const {
 }
 
 
-Spec* Mercator::spec() const {
-    return new spec::Custom{{{"projection", "mercator"}, {"lat_ts", centre_.lat}, {"lon_0", centre_.lon}}};
+void Mercator::spec(spec::Custom& custom) const {
+    ProjectionOnFigure::spec(custom);
+
+    custom.set("projection", "mercator");
+    custom.set("lat_ts", centre_.lat);
+    custom.set("lon_0", centre_.lon);
 }
 
 

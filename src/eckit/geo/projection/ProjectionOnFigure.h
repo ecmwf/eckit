@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <array>
 #include <memory>
 
 #include "eckit/geo/Figure.h"
@@ -24,16 +23,6 @@ namespace eckit::geo::projection {
 
 class ProjectionOnFigure : public Projection {
 protected:
-    // -- Types
-
-    struct PointLonLatR final : protected std::array<double, 2> {
-        PointLonLatR(value_type lonr, value_type latr);
-        explicit PointLonLatR(const PointLonLat&);
-
-        const value_type& lonr = array::operator[](0);
-        const value_type& latr = array::operator[](1);
-    };
-
     // -- Constructors
 
     explicit ProjectionOnFigure(const Spec&);
@@ -42,6 +31,10 @@ protected:
     // -- Methods
 
     const Figure& figure() const { return *figure_; }
+
+    // -- Overridden methods
+
+    void spec(spec::Custom&) const override;
 
 private:
     // -- Members

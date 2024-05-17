@@ -42,7 +42,7 @@ public:
 
     // -- Overridden methods
 
-    [[nodiscard]] Spec* spec() const override;
+    void spec(spec::Custom&) const override;
 
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;

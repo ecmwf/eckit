@@ -32,7 +32,7 @@ public:
 
     // -- Overridden methods
 
-    [[nodiscard]] Spec* spec() const override;
+    void spec(spec::Custom&) const override;
 
 private:
     // -- Overridden methods

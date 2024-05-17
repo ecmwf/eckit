@@ -21,9 +21,4 @@ namespace eckit::geo::projection {
 static ProjectionBuilder<None> PROJECTION("none");
 
 
-Spec* None::spec() const {
-    return nullptr;
-}
-
-
 }  // namespace eckit::geo::projection

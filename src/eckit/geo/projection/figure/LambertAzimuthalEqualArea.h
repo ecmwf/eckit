@@ -48,7 +48,7 @@ public:
 
     // -- Overridden methods
 
-    [[nodiscard]] Spec* spec() const override;
+    void spec(spec::Custom&) const override;
 
     // -- Class members
     // None
@@ -57,8 +57,6 @@ public:
     // None
 
 private:
-    // -- Types
-
     // -- Members
 
     const PointLonLat centre_;     // central meridian/standard parallel [degree]

@@ -85,6 +85,8 @@ list(APPEND eckit_geo_srcs
     projection/ProjectionOnFigure.h
     projection/Rotation.cc
     projection/Rotation.h
+    projection/Stretch.cc
+    projection/Stretch.h
     projection/XYToLonLat.cc
     projection/XYToLonLat.h
     projection/figure/LambertAzimuthalEqualArea.cc

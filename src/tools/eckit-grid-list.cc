@@ -18,8 +18,7 @@ namespace eckit::tools {
 
 
 struct EckitGridList final : EckitTool {
-    EckitGridList(int argc, char** argv) :
-        EckitTool(argc, argv) {}
+    EckitGridList(int argc, char** argv) : EckitTool(argc, argv) {}
 
     void execute(const option::CmdArgs&) override {
         geo::GridFactory::list(Log::info());

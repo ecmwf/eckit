@@ -31,8 +31,8 @@ namespace eckit::geo::test {
 
 CASE("HEALPix") {
     SECTION("HEALPix::reorder") {
-        std::unique_ptr<const Grid> ring(
-            GridFactory::build(*std::unique_ptr<Spec>(new spec::Custom({{"grid", "H2"}}))));
+        std::unique_ptr<Spec> spec(new spec::Custom({{"grid", "H2"}}));
+        std::unique_ptr<const Grid> ring(GridFactory::build(*spec));
 
         static const Renumber expected_ren_ring_to_nested{
             3,  7,  11, 15, 2,  1,  6,  5,  10, 9,  14, 13, 19, 0,  23, 4,  27, 8,  31, 12, 17, 22, 21, 26,

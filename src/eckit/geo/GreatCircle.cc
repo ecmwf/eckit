@@ -120,7 +120,7 @@ bool GreatCircle::crossesPoles() const {
 
 
 std::pair<double, double> GreatCircle::calculate_course(const PointLonLat& A, const PointLonLat& B) {
-    const util::sincos_t dl(util::DEGREE_TO_RADIAN * (A.lon - B.lon));
+    const util::sincos_t dl(util::DEGREE_TO_RADIAN * (B.lon - A.lon));
     const util::sincos_t scA(util::DEGREE_TO_RADIAN * A.lat);
     const util::sincos_t scB(util::DEGREE_TO_RADIAN * B.lat);
 

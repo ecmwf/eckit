@@ -9,6 +9,7 @@
  */
 
 #include <sstream>
+#include <iomanip>
 
 #include "eckit/eckit.h"
 
@@ -27,6 +28,12 @@ TimeStamp::TimeStamp(time_t t, const std::string& format) :
     time_(t), format_(format) {}
 
 std::ostream& operator<<(std::ostream& s, const TimeStamp& x) {
+
+    if (x.format_ == "hex") {
+        s << std::setw(16) << std::setfill('0') << std::hex << (uint64_t) x.time_;
+        return s;
+    }
+
     char buf[80];
 #if eckit_HAVE_GMTIME_R
     struct tm t;

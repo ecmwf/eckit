@@ -25,6 +25,10 @@
 namespace eckit::geo::test {
 
 
+const PointLonLat VALPARAISO(-71.6, -33.);
+const PointLonLat SHANGHAI(121.8, 31.4);
+
+
 CASE("great circle intersections") {
     using types::is_approximately_equal;
     using types::is_approximately_greater_or_equal;
@@ -63,9 +67,7 @@ CASE("great circle intersections") {
 
     SECTION("example intersection with meridian and parallel") {
         // latitude at Valparaíso-Shanghai mid-point
-        const PointLonLat P1(-71.6, -33.);
-        const PointLonLat P2(121.8, 31.4);
-        GreatCircle gc(P1, P2);
+        GreatCircle gc(VALPARAISO, SHANGHAI);
 
         const PointLonLat mid(-159.18, -6.81);
 
@@ -206,14 +208,16 @@ CASE("great circle intersections") {
 
 CASE("great circle course") {
     SECTION("Valparaíso-Shanghai") {
-        const auto [course1, course2] = GreatCircle::calculate_course({-71.6, -33.}, {121.8, 31.4});
+        GreatCircle gc(VALPARAISO, SHANGHAI);
+        const auto [course1, course2] = gc.course();
 
         EXPECT_APPROX(-94.41, course1, 0.01);
         EXPECT_APPROX(-78.42, course2, 0.01);
     }
 
     SECTION("polar") {
-        const auto [course3, course4] = GreatCircle::calculate_course({0., 89.}, {180., 89.});
+        GreatCircle gc({0., 89.}, {180., 89.});
+        const auto [course3, course4] = gc.course();
 
         EXPECT_APPROX(0., course3, 1.e-14);
         EXPECT_APPROX(180., std::abs(course4), 1.e-14);

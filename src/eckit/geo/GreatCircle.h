@@ -31,9 +31,7 @@ public:
     /// Great circle longitude given latitude, see http://www.edwilliams.org/avform.htm#Par
     std::vector<double> longitude(double lat) const;
 
-    // Calculate great circle course between two points
-    std::pair<double, double> course(const PointLonLat& A, const PointLonLat& B) { return calculate_course(A_, B_); }
-
+    /// If great circle crosses the poles (meridian/anti-meridian)
     bool crossesPoles() const;
 
     /**
@@ -45,7 +43,7 @@ public:
      *
      * @ref https://en.wikipedia.org/wiki/Great-circle_navigation
      */
-    static std::pair<double, double> calculate_course(const PointLonLat&, const PointLonLat&);
+    std::pair<double, double> course() const;
 
 private:
     const PointLonLat A_;

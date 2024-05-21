@@ -119,10 +119,10 @@ bool GreatCircle::crossesPoles() const {
 }
 
 
-std::pair<double, double> GreatCircle::calculate_course(const PointLonLat& A, const PointLonLat& B) {
-    const util::sincos_t dl(util::DEGREE_TO_RADIAN * (B.lon - A.lon));
-    const util::sincos_t scA(util::DEGREE_TO_RADIAN * A.lat);
-    const util::sincos_t scB(util::DEGREE_TO_RADIAN * B.lat);
+std::pair<double, double> GreatCircle::course() const {
+    const util::sincos_t dl(util::DEGREE_TO_RADIAN * (B_.lon - A_.lon));
+    const util::sincos_t scA(util::DEGREE_TO_RADIAN * A_.lat);
+    const util::sincos_t scB(util::DEGREE_TO_RADIAN * B_.lat);
 
     return {util::RADIAN_TO_DEGREE * std::atan2(scB.cos * dl.sin, scA.cos * scB.sin - scA.sin * scB.cos * dl.cos),
             util::RADIAN_TO_DEGREE * std::atan2(scA.cos * dl.sin, -scB.cos * scA.sin + scB.sin * scA.cos * dl.cos)};

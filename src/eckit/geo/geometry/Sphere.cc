@@ -148,13 +148,12 @@ Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& P, 
      * See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
      * numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line).
      *
-     * cos α = sqrt( 1 - sin^2 α) is better conditioned than explicit cos α, and
+     * cos φ = sqrt( 1 - sin^2 φ) is better conditioned than explicit cos φ, and
      * coupled with λ in [-180°, 180°[ the accuracy of the trigonometric
      * functions is the same (before converting/multiplying its angle argument
      * to radian) and explicitly chosing -180° over 180° for longitude.
      *
-     * These three conditionings combined project very accurately to the sphere
-     * poles and quadrants.
+     * These conditionings combined project accurately to sphere poles and quadrants.
      */
 
     const auto Q      = PointLonLat::make(P.lon, P.lat, -180.);

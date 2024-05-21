@@ -74,20 +74,20 @@ CASE("RegularGaussian") {
 
 
     SECTION("crop") {
-        spec::Custom spec({{"grid", "f2"}});
-        std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+        spec::Custom a({{"grid", "f2"}});
+        std::unique_ptr<const Grid> grid1(GridFactory::build(a));
         auto n1 = grid1->size();
 
         EXPECT_EQUAL(n1, 32);
 
-        spec.set("south", 0.);
-        std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
+        a.set("south", 0.);
+        std::unique_ptr<const Grid> grid2(GridFactory::build(a));
         auto n2 = grid2->size();
 
         EXPECT_EQUAL(n2, n1 / 2);
 
-        spec = spec::Custom{{{"grid", "f2"}, {"west", -180}}};
-        std::unique_ptr<const Grid> grid3(GridFactory::build(spec));
+        spec::Custom b{{{"grid", "f2"}, {"west", -180}}};
+        std::unique_ptr<const Grid> grid3(GridFactory::build(b));
         auto n3 = grid3->size();
 
         EXPECT_EQUAL(n3, n1);
@@ -105,8 +105,8 @@ CASE("RegularGaussian") {
 
         EXPECT_EQUAL(n4, 5 * 4);  // Ni * Nj
 
-        spec.set("east", -1.);
-        std::unique_ptr<const Grid> grid5(GridFactory::build(spec));
+        b.set("east", -1.);
+        std::unique_ptr<const Grid> grid5(GridFactory::build(b));
         auto n5 = grid5->size();
 
         EXPECT_EQUAL(n5, 4 * 4);  // Ni * Nj

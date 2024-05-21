@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <initializer_list>
 #include <map>
 #include <variant>
 
@@ -31,7 +32,7 @@ public:
 
     struct key_type : std::string {
         key_type(const std::string&);
-        key_type(const char* s) : key_type(std::string{s}) {};
+        key_type(const char* s) : key_type(std::string{s}) {}
     };
 
     using value_type = std::variant<std::string, bool, int, long, long long, size_t, float, double, std::vector<int>,
@@ -42,27 +43,19 @@ public:
 
     // -- Constructors
 
-    explicit Custom(const container_type& = {});
+    Custom() = default;
+    Custom(std::initializer_list<container_type::value_type> init) : map_{init} {}
+
+    explicit Custom(const container_type&);
     explicit Custom(container_type&&);
 
-    explicit Custom(const Value&);
-
-    Custom(const Custom&);
-    Custom(Custom&&);
-
-    // -- Destructor
-
-    ~Custom() override = default;
-
     // -- Operators
-
-    Custom& operator=(const Custom&);
-    Custom& operator=(Custom&&);
 
     bool operator==(const Custom&) const;
 
     // -- Methods
 
+    const container_type& container() const { return map_; }
     bool empty() const { return map_.empty(); }
     void clear() { map_.clear(); }
 
@@ -107,6 +100,10 @@ public:
     bool get(const std::string& name, std::vector<float>& value) const override;
     bool get(const std::string& name, std::vector<double>& value) const override;
     bool get(const std::string& name, std::vector<std::string>& value) const override;
+
+    // -- Class methods
+
+    static Custom* make_from_value(const Value&);
 
 private:
     // -- Members

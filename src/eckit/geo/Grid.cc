@@ -162,7 +162,7 @@ void Grid::spec(spec::Custom&) const {
 
 
 const Grid* GridFactory::make_from_string(const std::string& str) {
-    std::unique_ptr<Spec> spec(new spec::Custom(YAMLParser::decodeString(str)));
+    std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
 }
 

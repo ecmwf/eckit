@@ -85,10 +85,10 @@ CASE("Spec <- Custom") {
                 EXPECT(a.get(key, value_as_long) && value_as_long == static_cast<long>(one));
                 EXPECT(a.get(key, value_as_size_t) && value_as_size_t == static_cast<size_t>(one));
 
-                EXPECT_EQUAL(a.get_string(key), std::to_string(1));
+                EXPECT(a.get_string(key) == std::to_string(1));
             }
             else {
-                EXPECT_EQUAL(a.get_string(key), std::to_string(1.));
+                EXPECT(a.get_string(key) == std::to_string(1.));
             }
         }
     }
@@ -139,26 +139,26 @@ CASE("Spec <- Custom") {
         EXPECT(c.get_string("foo") == std::to_string(two));
 
         c.set("bar", one);
-        EXPECT_EQUAL(c.get_int("bar"), one);
+        EXPECT(c.get_int("bar") == one);
         EXPECT(::eckit::types::is_approximately_equal(c.get_double("bar"), static_cast<double>(one)));
         EXPECT(c.get_string("bar") == "1");
 
         c.set("foo", three);
-        EXPECT_EQUAL(c.get_string("foo"), three);
+        EXPECT(c.get_string("foo") == three);
 
 
-        spec::Custom d(c);
+        spec::Custom d(c.container());
 
         EXPECT(d.has("foo"));
-        EXPECT_EQUAL(d.get_string("foo"), three);
+        EXPECT(d.get_string("foo") == three);
         EXPECT_THROWS_AS(d.get_int("foo"), SpecNotFound);     // cannot access as int
         EXPECT_THROWS_AS(d.get_double("foo"), SpecNotFound);  // cannot access as real
 
         d.set("foo", one);
-        EXPECT_EQUAL(d.get_int("foo"), one);
+        EXPECT(d.get_int("foo") == one);
 
 
-        spec::Custom e(d);
+        spec::Custom e(d.container());
 
         ASSERT(e.has("foo"));
         ASSERT(e.has("bar"));
@@ -229,16 +229,16 @@ CASE("Spec <- Layered") {
     b.unhide("foo");
     ASSERT(b.has("foo"));
 
-    EXPECT_EQUAL(a.get_int("foo"), one);
+    EXPECT(a.get_int("foo") == one);
 
     auto value = b.get_int("foo");
-    EXPECT_EQUAL(value, one);
+    EXPECT(value == one);
 }
 
 
 CASE("spec") {
     SECTION("user -> type") {
-        using C = spec::Custom;
+        using C = spec::Custom::container_type;
         using v = std::vector<double>;
 
         static const C BAD;
@@ -291,21 +291,24 @@ CASE("spec") {
              C()},
         };
 
-        for (const auto& [user, gridspec] : tests) {
-            Log::info() << user << " -> " << gridspec << std::endl;
+        for (const auto& [user, ref] : tests) {
+            spec::Custom userspec(user);
+            spec::Custom refspec(ref);
+
+            Log::info() << userspec << " -> " << refspec << std::endl;
 
             try {
-                std::unique_ptr<const Spec> spec(GridFactory::make_spec(user));
+                std::unique_ptr<const Spec> spec(GridFactory::make_spec(userspec));
                 EXPECT(spec);
 
                 std::unique_ptr<const Grid> grid(GridFactory::build(*spec));
                 EXPECT(grid);
             }
             catch (const SpecNotFound& e) {
-                EXPECT(gridspec.empty() /*BAD*/);
+                EXPECT(refspec.empty() /*BAD*/);
             }
             catch (const BadParameter& e) {
-                EXPECT(gridspec.empty() /*BAD*/);
+                EXPECT(refspec.empty() /*BAD*/);
             }
         }
     }

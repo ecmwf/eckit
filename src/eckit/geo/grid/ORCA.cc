@@ -147,8 +147,7 @@ ORCA::ORCA(const Spec& spec) :
         spec)) {}
 
 
-ORCA::ORCA(uid_t uid) :
-    ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom(spec::Custom::container_type{{"uid", uid}})))) {}
+ORCA::ORCA(uid_t uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
 std::string ORCA::arrangement() const {

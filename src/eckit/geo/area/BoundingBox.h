@@ -42,9 +42,9 @@ public:
 
     BoundingBox();
 
-    BoundingBox(const BoundingBox& other) : container_type(other) {}
+    BoundingBox(const BoundingBox& other) : Area(other), container_type(other) {}
 
-    BoundingBox(BoundingBox&& other) : container_type(other) {}
+    BoundingBox(BoundingBox&& other) : Area(other), container_type(other) {}
 
     // -- Destructor
 

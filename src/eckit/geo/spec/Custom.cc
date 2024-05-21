@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cctype>
 #include <type_traits>
+#include <utility>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
@@ -154,7 +155,9 @@ Custom::Custom(const Custom::container_type& map) : map_(map) {}
 Custom::Custom(Custom::container_type&& map) : map_(map) {}
 
 
-Custom::Custom(const Value& value) {
+Custom* Custom::make_from_value(const Value& value) {
+    ASSERT(value.isMap());
+
     auto scalar = [](const Value& value) -> value_type {
         return value.isNumber()   ? value_type(static_cast<int>(value))
                : value.isDouble() ? value_type(static_cast<double>(value))
@@ -171,23 +174,13 @@ Custom::Custom(const Value& value) {
                                          : throw BadValue(value, Here());
     };
 
-    ASSERT(value.isMap());
+    Custom::container_type container;
     for (const auto& [key, value] : static_cast<ValueMap>(value)) {
         const std::string name = key;
-        map_[name]             = value.isList() ? vector(value) : scalar(value);
+        container[name]        = value.isList() ? vector(value) : scalar(value);
     }
-}
 
-
-Custom::Custom(const Custom& custom) : Custom(custom.map_) {}
-
-
-Custom::Custom(Custom&& custom) : Custom(custom.map_) {}
-
-
-Custom& Custom::operator=(Custom&& custom) {
-    map_.swap(custom.map_);
-    return *this;
+    return new Custom(std::move(container));
 }
 
 
@@ -205,12 +198,6 @@ bool Custom::operator==(const Custom& other) const {
         auto _b = other.map_.find(_a.first);
         return _b != other.map_.end() && custom_value_equal(_a.second, _b->second);
     });
-}
-
-
-Custom& Custom::operator=(const Custom& custom) {
-    map_ = custom.map_;
-    return *this;
 }
 
 

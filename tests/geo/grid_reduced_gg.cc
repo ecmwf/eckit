@@ -24,7 +24,7 @@ namespace eckit::geo::test {
 CASE("ReducedGaussianOctahedral") {
     SECTION("gridspec") {
         // different ways to instantiate the same grid (O2)
-        for (auto spec : {
+        for (const auto& spec : {
                  spec::Custom({{"grid", "o2"}}),
                  spec::Custom({{"N", 2}}),
                  spec::Custom({{"pl", pl_type{20, 24, 24, 20}}}),
@@ -34,8 +34,10 @@ CASE("ReducedGaussianOctahedral") {
 
             EXPECT_EQUAL(n1, 88);
 
-            spec.set("south", 0);
-            std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
+            spec::Custom hemisphere(spec.container());
+            hemisphere.set("south", 0);
+
+            std::unique_ptr<const Grid> grid2(GridFactory::build(hemisphere));
             auto n2 = grid2->size();
 
             EXPECT_EQUAL(n2, n1 / 2);
@@ -102,20 +104,20 @@ CASE("ReducedGaussianOctahedral") {
 
 
     SECTION("crop") {
-        spec::Custom spec({{"grid", "o2"}});
-        std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+        spec::Custom a({{"grid", "o2"}});
+        std::unique_ptr<const Grid> grid1(GridFactory::build(a));
         auto n1 = grid1->size();
 
         EXPECT_EQUAL(n1, 88);
 
-        spec.set("south", 0.);
-        std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
+        a.set("south", 0.);
+        std::unique_ptr<const Grid> grid2(GridFactory::build(a));
         auto n2 = grid2->size();
 
         EXPECT_EQUAL(n2, n1 / 2);
 
-        spec = spec::Custom{{{"grid", "o2"}, {"west", -180}}};
-        std::unique_ptr<const Grid> grid3(GridFactory::build(spec));
+        spec::Custom b{{{"grid", "o2"}, {"west", -180}}};
+        std::unique_ptr<const Grid> grid3(GridFactory::build(b));
         auto n3 = grid3->size();
 
         EXPECT_EQUAL(n3, n1);

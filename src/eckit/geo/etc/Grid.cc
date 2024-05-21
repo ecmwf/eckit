@@ -46,25 +46,21 @@ void Grid::load(const PathName& path) {
     auto* custom = dynamic_cast<spec::Custom*>((spec_ ? spec_ : (spec_ = std::make_unique<spec::Custom>())).get());
     ASSERT(custom != nullptr);
 
-    auto spec_from_value_map = [](const ValueMap& map) {
-        auto* custom = new spec::Custom;
-        for (const auto& kv : map) {
-            custom->set(kv.first, kv.second);
-        }
-        return custom;
-    };
-
     struct SpecByUIDGenerator final : SpecByUID::generator_t {
-        explicit SpecByUIDGenerator(spec::Custom* spec) : spec_(spec) {}
-        Spec* spec() const override { return new spec::Custom(*spec_); }
+        explicit SpecByUIDGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
+        Spec* spec() const override { return new spec::Custom(spec_->container()); }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
+
+    private:
         std::unique_ptr<spec::Custom> spec_;
     };
 
     struct SpecByNameGenerator final : SpecByName::generator_t {
-        explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) {}
-        Spec* spec(SpecByName::generator_t::arg1_t) const override { return new spec::Custom(*spec_); }
+        explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
+        Spec* spec(SpecByName::generator_t::arg1_t) const override { return new spec::Custom(spec_->container()); }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
+
+    private:
         std::unique_ptr<spec::Custom> spec_;
     };
 
@@ -77,8 +73,9 @@ void Grid::load(const PathName& path) {
             if (key == "grid_uids") {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
-                    SpecByUID::instance().regist(m.begin()->first.as<std::string>(),
-                                                 new SpecByUIDGenerator(spec_from_value_map(m.begin()->second)));
+                    SpecByUID::instance().regist(
+                        m.begin()->first.as<std::string>(),
+                        new SpecByUIDGenerator(spec::Custom::make_from_value(m.begin()->second)));
                 }
                 continue;
             }
@@ -86,8 +83,9 @@ void Grid::load(const PathName& path) {
             if (key == "grid_names") {
                 for (ValueMap m : static_cast<ValueList>(kv.second)) {
                     ASSERT(m.size() == 1);
-                    SpecByName::instance().regist(m.begin()->first.as<std::string>(),
-                                                  new SpecByNameGenerator(spec_from_value_map(m.begin()->second)));
+                    SpecByName::instance().regist(
+                        m.begin()->first.as<std::string>(),
+                        new SpecByNameGenerator(spec::Custom::make_from_value(m.begin()->second)));
                 }
                 continue;
             }

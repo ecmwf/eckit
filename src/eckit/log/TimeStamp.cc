@@ -10,6 +10,7 @@
 
 #include <sstream>
 #include <iomanip>
+#include <cstdint>
 
 #include "eckit/eckit.h"
 
@@ -30,7 +31,7 @@ TimeStamp::TimeStamp(time_t t, const std::string& format) :
 std::ostream& operator<<(std::ostream& s, const TimeStamp& x) {
 
     if (x.format_ == "hex") {
-        s << std::setw(16) << std::setfill('0') << std::hex << (uint64_t) x.time_;
+        s << std::setw(16) << std::setfill('0') << std::hex << static_cast<std::uint64_t>(x.time_);
         return s;
     }
 

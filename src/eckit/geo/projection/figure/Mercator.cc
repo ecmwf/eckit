@@ -65,8 +65,7 @@ Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
 
 Mercator::Mercator(const Spec& spec) :
     Mercator({spec.get_double("lon_0"), spec.get_double("lat_ts")},
-             {spec.get_double("first_lon"), spec.get_double("first_lat")},
-             FigureFactory::instance().get(spec.get_string("figure")).create(spec)) {}
+             {spec.get_double("first_lon"), spec.get_double("first_lat")}, FigureFactory::build(spec)) {}
 
 
 double Mercator::calculate_phi(double t) const {

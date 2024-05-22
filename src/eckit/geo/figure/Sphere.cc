@@ -13,18 +13,24 @@
 #include "eckit/geo/figure/Sphere.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Spec.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::figure {
 
 
 Sphere::Sphere(double R) : R_(R) {
-    ASSERT_MSG(R_ > 0., "Sphere requires R > 0");
+    ASSERT_MSG(types::is_strictly_greater(R_, 0.), "Sphere requires R > 0");
 }
 
 
 Sphere::Sphere(const Spec& spec) : Sphere(spec.get_double("R")) {}
+
+
+void Sphere::spec(spec::Custom& custom) const {
+    custom.set("R", R_);
+}
 
 
 }  // namespace eckit::geo::figure

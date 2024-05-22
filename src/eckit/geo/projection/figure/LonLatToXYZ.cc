@@ -63,8 +63,7 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) :
                                                     : new geo::figure::OblateSpheroid(a, b)) {}
 
 
-LonLatToXYZ::LonLatToXYZ(const Spec& spec) :
-    LonLatToXYZ(FigureFactory::instance().get(spec.get_string("figure")).create(spec)) {}
+LonLatToXYZ::LonLatToXYZ(const Spec& spec) : LonLatToXYZ(FigureFactory::build(spec)) {}
 
 
 void LonLatToXYZ::spec(spec::Custom& custom) const {

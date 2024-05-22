@@ -31,12 +31,14 @@ public:
     double a() const override { return R_; }
     double b() const override { return R_; }
 
-    void spec(spec::Custom&) const override {}
-
 private:
     // -- Members
 
     const double R_;
+
+    // -- Overridden methods
+
+    void spec(spec::Custom&) const override;
 };
 
 

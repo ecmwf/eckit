@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <iosfwd>
 #include <string>
 
 #include "eckit/memory/Builder.h"
@@ -78,7 +79,16 @@ private:
 };
 
 
-using FigureFactory = Factory<Figure>;
+struct FigureFactory {
+    [[nodiscard]] static Figure* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+    [[nodiscard]] static Figure* make_from_string(const std::string&);
+
+private:
+    static FigureFactory& instance();
+
+    [[nodiscard]] Figure* make_from_spec_(const Spec&) const;
+};
+
 
 template <typename T>
 using FigureBuilder = ConcreteBuilderT1<Figure, T>;

@@ -10,33 +10,13 @@
  */
 
 
-#pragma once
-
-#include "eckit/geo/figure/Sphere.h"
+#include "eckit/geo/figure/Earth.h"
 
 
 namespace eckit::geo::figure {
 
 
-struct DatumIFS {
-    static constexpr double radius() { return 6371229.; }
-};
-
-
-struct DatumGRIB1 {
-    static constexpr double radius() { return 6367470.; }
-};
-
-
-struct DatumWGS84SemiMajorAxis {
-    static constexpr double radius() { return 6378137.; }
-};
-
-
-struct Earth final : public Sphere {
-    explicit Earth() : Sphere(DatumIFS::radius()) {}
-    explicit Earth(const Spec&) : Earth() {}
-};
+static const ConcreteBuilderT1<Figure, Earth> REGISTER("earth");
 
 
 }  // namespace eckit::geo::figure

@@ -76,6 +76,11 @@ private:
     // -- Methods
 
     virtual void spec(spec::Custom&) const;
+
+    // -- Friends
+
+    friend bool operator==(const Figure& a, const Figure& b) { return a.spec() == b.spec(); }
+    friend bool operator!=(const Figure& a, const Figure& b) { return !(a == b); }
 };
 
 
@@ -91,7 +96,7 @@ private:
 
 
 template <typename T>
-using FigureBuilder = ConcreteBuilderT1<Figure, T>;
+using FigureBuilder = ConcreteBuilderT0<Figure, T>;
 
 
 }  // namespace eckit::geo

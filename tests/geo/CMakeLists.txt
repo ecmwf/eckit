@@ -2,6 +2,7 @@ foreach(_test
         area_boundingbox
         area_polygon
         cache
+        figure
         geometry_sphere
         great_circle
         grid

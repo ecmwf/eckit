@@ -40,6 +40,7 @@ list(APPEND eckit_geo_srcs
     area/BoundingBox.h
     etc/Grid.cc
     etc/Grid.h
+    figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc
     figure/OblateSpheroid.h

@@ -82,6 +82,10 @@ Figure* FigureFactory::make_from_string(const std::string& str) {
 Figure* FigureFactory::make_from_spec_(const Spec& spec) const {
     lock_type lock;
 
+    if (std::string figure; spec.get("figure", figure)) {
+        return Factory<Figure>::instance().get(figure).create(spec);
+    }
+
     if (double a = 0., b = 0.; spec.get("a", a) && spec.get("b", b)) {
         return types::is_approximately_equal(a, b) ? static_cast<Figure*>(new figure::Sphere(a))
                                                    : new figure::OblateSpheroid(a, b);

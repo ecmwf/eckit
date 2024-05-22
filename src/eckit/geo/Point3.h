@@ -79,7 +79,7 @@ public:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const Point3& p) {
-        return out << '{' << p.X << ", " << p.X << ", " << p.Z << '}';
+        return out << '{' << p.X << ", " << p.Y << ", " << p.Z << '}';
     }
 
     friend Point3 operator-(const Point3& p, const Point3& q) { return {p.X - q.X, p.Y - q.Y, p.Z - q.Z}; }

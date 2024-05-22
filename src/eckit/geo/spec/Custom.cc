@@ -185,18 +185,24 @@ Custom* Custom::make_from_value(const Value& value) {
 
 
 bool Custom::operator==(const Custom& other) const {
-    auto custom_value_equal = [](const auto& a, const auto& b) -> bool {
-        if constexpr (std::is_same_v<decltype(a), decltype(b)>) {
-            return a == b;
-        }
-        else {
-            return false;
-        }
+    auto custom_value_equal
+        = [](const Custom& ca, const Custom& cb, const Custom::key_type& name, const auto& type_instance) -> bool {
+        auto a = type_instance;
+        auto b = type_instance;
+        return ca.get(name, a) && cb.get(name, b) && a == b;
     };
 
+    // check every local key exists in other and is convertible to an equal value
     return std::all_of(map_.begin(), map_.end(), [&](const auto& _a) {
-        auto _b = other.map_.find(_a.first);
-        return _b != other.map_.end() && custom_value_equal(_a.second, _b->second);
+        const auto& name = _a.first;
+        auto _b          = other.map_.find(name);
+        return _b != other.map_.end()
+               && (custom_value_equal(*this, other, name, long{})
+                   || custom_value_equal(*this, other, name, std::vector<long>{})
+                   || custom_value_equal(*this, other, name, double{})
+                   || custom_value_equal(*this, other, name, std::vector<double>{})
+                   || custom_value_equal(*this, other, name, std::string{})
+                   || custom_value_equal(*this, other, name, std::vector<std::string>{}));
     });
 }
 

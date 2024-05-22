@@ -31,9 +31,10 @@ foreach(_test
         spec
         util )
     ecbuild_add_test(
-        TARGET  eckit_test_geo_${_test}
-        SOURCES ${_test}.cc
-        LIBS    eckit_geo )
+        TARGET      eckit_test_geo_${_test}
+        SOURCES     ${_test}.cc
+        LIBS        eckit_geo
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" )
 endforeach()
 
 ecbuild_add_test(

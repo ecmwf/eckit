@@ -69,10 +69,11 @@ public:
 
     static value_type normalise_angle_to_maximum(value_type, value_type maximum);
 
-    [[nodiscard]] static PointLonLatR make(value_type lon, value_type lat, value_type lon_minimum = EQUATOR,
+    [[nodiscard]] static PointLonLatR make(value_type lonr, value_type latr, value_type lonr_minimum = EQUATOR,
                                            value_type eps = EPS);
 
-    [[nodiscard]] static PointLonLatR make_from_lonlat(value_type lon, value_type lat);
+    [[nodiscard]] static PointLonLatR make_from_lonlat(value_type lon, value_type lat,
+                                                       value_type lon_minimum = EQUATOR);
 
     PointLonLatR antipode() const { return make(lonr, latr + GLOBE / 2.); }
 

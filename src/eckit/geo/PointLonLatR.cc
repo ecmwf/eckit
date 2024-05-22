@@ -35,23 +35,23 @@ PointLonLatR::value_type PointLonLatR::normalise_angle_to_maximum(value_type a, 
 }
 
 
-PointLonLatR PointLonLatR::make(value_type lon, value_type lat, value_type lon_minimum, value_type eps) {
-    lat = normalise_angle_to_minimum(lat, SOUTH_POLE);
+PointLonLatR PointLonLatR::make(value_type lonr, value_type latr, value_type lonr_minimum, value_type eps) {
+    latr = normalise_angle_to_minimum(latr, SOUTH_POLE);
 
-    if (types::is_strictly_greater(lat, NORTH_POLE, eps)) {
-        lat = GLOBE / 2. - lat;
-        lon += GLOBE / 2.;
+    if (types::is_strictly_greater(latr, NORTH_POLE, eps)) {
+        latr = GLOBE / 2. - latr;
+        lonr += GLOBE / 2.;
     }
 
-    return types::is_approximately_equal(lat, NORTH_POLE, eps) ? PointLonLatR{0., NORTH_POLE}
-           : types::is_approximately_equal(lat, SOUTH_POLE, eps)
+    return types::is_approximately_equal(latr, NORTH_POLE, eps) ? PointLonLatR{0., NORTH_POLE}
+           : types::is_approximately_equal(latr, SOUTH_POLE, eps)
                ? PointLonLatR{EQUATOR, SOUTH_POLE}
-               : PointLonLatR{normalise_angle_to_minimum(lon, lon_minimum), lat};
+               : PointLonLatR{normalise_angle_to_minimum(lonr, lonr_minimum), latr};
 }
 
 
-PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat) {
-    return make(util::DEGREE_TO_RADIAN * lon, util::DEGREE_TO_RADIAN * lat);
+PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, value_type lon_minimum) {
+    return make(util::DEGREE_TO_RADIAN * lon, util::DEGREE_TO_RADIAN * lat, util::DEGREE_TO_RADIAN * lon_minimum);
 }
 
 

@@ -10,9 +10,10 @@
  */
 
 
+#include <cmath>
 #include <memory>
 
-#include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/geo/projection/figure/LonLatToXYZ.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -20,59 +21,89 @@
 namespace eckit::geo::test {
 
 
-using P = std::unique_ptr<Projection>;
-
-
 CASE("projection: ll_to_xyz") {
-    Point p = PointLonLat{1, 1};
-    P s1(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom({{"R", 1.}})));
-    P s2(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom({{"a", 1.}, {"b", 1.}})));
-    P s3(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom({{"a", 1.}, {"b", 0.5}})));
+    using P = std::unique_ptr<Projection>;
 
-    EXPECT(points_equal(p, s1->inv(s1->fwd(p))));
-    EXPECT(points_equal(p, s2->inv(s2->fwd(p))));
-    EXPECT(points_equal(s1->fwd(p), s2->fwd(p)));
+    constexpr double R = 1.;
+    const auto L       = R * std::sqrt(2.) / 2.;
 
-    Point q = PointLonLat{1, 0};
-
-    EXPECT(points_equal(s1->fwd(q), s3->fwd(q)));
-    EXPECT(points_equal(s2->fwd(q), s3->fwd(q)));
-
-    struct {
+    struct test_t {
         PointLonLat a;
         Point3 b;
-    } tests[] = {
-        {{0, 0}, {1, 0, 0}},      {{90, 0}, {0, 1, 0}},      {{180, 0}, {-1, 0, 0}}, {{270, 0}, {0, -1, 0}},
-        {{0, -90}, {0, 0, -0.5}}, {{42, -90}, {0, 0, -0.5}}, {{0, 90}, {0, 0, 0.5}}, {{42, 90}, {0, 0, 0.5}},
     };
 
-    for (const auto& test : tests) {
-        EXPECT(points_equal(s3->fwd(test.a), test.b));
-    }
-}
+    test_t test_sphere[] = {
+        {{0, 0}, {R, 0, 0}},     //
+        {{90, 0}, {0, R, 0}},    //
+        {{180, 0}, {-R, 0, 0}},  //
+        {{270, 0}, {0, -R, 0}},  //
+    };
+
+    test_t test_oblate_spheroid[] = {
+        {{0, -90}, {0, 0, -0.5}},   //
+        {{42, -90}, {0, 0, -0.5}},  //
+        {{0, 90}, {0, 0, 0.5}},     //
+        {{42, 90}, {0, 0, 0.5}},    //
+    };
 
 
-CASE("projection: ll_to_xyz") {
-    const PointLonLat p(723., 1.);  // <- FIXME
+    SECTION("oblate/prolate spheroid") {
+        // oblate spheroid (supported)
+        EXPECT(P(new projection::figure::LonLatToXYZ(1., 0.5)));
 
-    projection::LonLatToXYZ to_xyz_r(1.);
-
-    auto q = to_xyz_r.fwd(p);
-    auto r = to_xyz_r.inv(q);
-    Log::info() << "p(lat, lon): " << p << " -> p(x,y,z): " << q << " -> p(lat, lon): " << r << std::endl;
-
-    EXPECT(points_equal(p, r));
-
-    // oblate spheroid (supported)
-    projection::LonLatToXYZ to_xyz_ab(3., 2.);
-
-    for (const auto& lon : {0., 90., 180., 270.}) {
-        PointLonLat p{lon, 0.};
-        Log::info() << "p(lat, lon): " << p << " -> p_ab(x,y,z): " << to_xyz_ab.fwd(p) << std::endl;
+        // problate spheroid (not supported)
+        EXPECT_THROWS(projection::figure::LonLatToXYZ(0.5, 1.));
     }
 
-    // problate spheroid (not supported)
-    EXPECT_THROWS(projection::LonLatToXYZ(2., 3.));
+
+    P to_xyz_1(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom({{"R", 1.}})));
+    P to_xyz_2(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom({{"a", 1.}, {"b", 1.}})));
+    P to_xyz_3(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom({{"a", 1.}, {"b", 0.5}})));
+
+
+    SECTION("spec") {
+        auto x = to_xyz_1->spec();
+    }
+
+
+    SECTION("") {
+        Point p = PointLonLat{1, 1};
+
+        EXPECT(points_equal(p, to_xyz_1->inv(to_xyz_1->fwd(p))));
+        EXPECT(points_equal(p, to_xyz_2->inv(to_xyz_2->fwd(p))));
+        EXPECT(points_equal(to_xyz_1->fwd(p), to_xyz_2->fwd(p)));
+
+        Point q = PointLonLat{1, 0};
+
+        EXPECT(points_equal(to_xyz_1->fwd(q), to_xyz_3->fwd(q)));
+        EXPECT(points_equal(to_xyz_2->fwd(q), to_xyz_3->fwd(q)));
+
+        for (const auto& test : test_sphere) {
+            EXPECT(points_equal(to_xyz_1->fwd(test.a), test.b));
+            EXPECT(points_equal(to_xyz_2->fwd(test.a), test.b));
+            EXPECT(points_equal(to_xyz_3->fwd(test.a), test.b));
+        }
+
+        for (const auto& test : test_oblate_spheroid) {
+            EXPECT(points_equal(to_xyz_3->fwd(test.a), test.b));
+        }
+    }
+
+
+    SECTION("") {
+        const PointLonLat p(723., 1.);  // <- FIXME
+
+        auto q = to_xyz_1->fwd(p);
+        auto r = to_xyz_1->inv(q);
+        Log::info() << "p(lat, lon): " << p << " -> p(x,y,z): " << q << " -> p(lat, lon): " << r << std::endl;
+
+        EXPECT(points_equal(p, r));
+
+        for (const auto& lon : {0., 90., 180., 270.}) {
+            PointLonLat p{lon, 0.};
+            Log::info() << "p(lat, lon): " << p << " -> p_ab(x,y,z): " << to_xyz_3->fwd(p) << std::endl;
+        }
+    }
 }
 
 

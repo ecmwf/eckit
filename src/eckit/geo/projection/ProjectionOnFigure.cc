@@ -13,7 +13,7 @@
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/geometry/Earth.h"
+#include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -21,20 +21,11 @@
 namespace eckit::geo::projection {
 
 
-// FIXME refactor figures into a single hierarchy
-struct Earth final : Figure {
-    Earth() = default;
-
-    double R() const override { return geometry::Earth::radius(); }
-    double a() const override { return geometry::Earth::radius(); }
-    double b() const override { return geometry::Earth::radius(); }
-};
-
-
 ProjectionOnFigure::ProjectionOnFigure(const Spec&) : ProjectionOnFigure() {}
 
 
-ProjectionOnFigure::ProjectionOnFigure(Figure* figure_ptr) : figure_(figure_ptr != nullptr ? figure_ptr : new Earth) {
+ProjectionOnFigure::ProjectionOnFigure(Figure* figure_ptr) :
+    figure_(figure_ptr != nullptr ? figure_ptr : new figure::Earth) {
     ASSERT(figure_);
 }
 

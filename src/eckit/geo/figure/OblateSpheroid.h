@@ -31,6 +31,8 @@ public:
     double a() const override { return a_; }
     double b() const override { return b_; }
 
+    void spec(spec::Custom&) const override {}
+
 private:
     // -- Members
 

@@ -61,12 +61,19 @@ public:
 
     // -- Methods
 
-    static std::string className() { return "projection"; }
-
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
 
-    virtual void spec(spec::Custom&) const = 0;
+    std::string spec() const;
+
+    // -- Class methods
+
+    static std::string className() { return "projection"; }
+
+private:
+    // -- Methods
+
+    virtual void spec(spec::Custom&) const { NOTIMP; }
 };
 
 

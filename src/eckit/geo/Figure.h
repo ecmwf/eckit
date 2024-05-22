@@ -22,6 +22,9 @@ namespace eckit::geo {
 namespace area {
 class BoundingBox;
 }
+namespace spec {
+class Custom;
+}
 class Spec;
 }  // namespace eckit::geo
 
@@ -64,7 +67,14 @@ public:
     virtual double a() const;
     virtual double b() const;
 
+    virtual std::string spec() const;
+
     double eccentricity() const;
+
+private:
+    // -- Methods
+
+    virtual void spec(spec::Custom&) const;
 };
 
 

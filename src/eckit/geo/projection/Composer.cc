@@ -12,8 +12,10 @@
 
 #include "eckit/geo/projection/Composer.h"
 
+#include <vector>
+
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Spec.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
@@ -56,7 +58,12 @@ std::vector<Point> Composer::inv_points(const Point& p) const {
 
 
 void Composer::spec(spec::Custom& custom) const {
-    NOTIMP;
+    std::vector<std::string> specs;
+    for (const auto* proj : *this) {
+        specs.emplace_back(proj->spec());
+    }
+
+    custom.set("projections", specs);
 }
 
 

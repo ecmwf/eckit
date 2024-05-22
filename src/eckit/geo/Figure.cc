@@ -12,10 +12,9 @@
 
 #include "eckit/geo/Figure.h"
 
-#include <cmath>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/geometry/OblateSpheroid.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo {
@@ -36,8 +35,20 @@ double Figure::b() const {
 }
 
 
+std::string Figure::spec() const {
+    spec::Custom gridspec;
+    spec(gridspec);
+    return gridspec.str();
+}
+
+
 double Figure::eccentricity() const {
     return geometry::OblateSpheroid::eccentricity(a(), b());
+}
+
+
+void Figure::spec(spec::Custom&) const {
+    NOTIMP;
 }
 
 

@@ -14,6 +14,8 @@
 
 #include <sstream>
 
+#include "eckit/geo/spec/Custom.h"
+
 
 namespace eckit::geo {
 
@@ -23,6 +25,13 @@ ProjectionProblem::ProjectionProblem(const std::string& what, const CodeLocation
     s << "ProjectionProblem: [" << what << "], in " << loc;
     reason(s.str());
 };
+
+
+std::string Projection::spec() const {
+    spec::Custom gridspec;
+    spec(gridspec);
+    return gridspec.str();
+}
 
 
 }  // namespace eckit::geo

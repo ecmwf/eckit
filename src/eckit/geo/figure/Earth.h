@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "eckit/geo/geometry/SphereT.h"
+#include "eckit/geo/figure/Sphere.h"
 
 
-namespace eckit::geo::geometry {
+namespace eckit::geo::figure {
 
 
 struct DatumIFS {
@@ -33,7 +33,9 @@ struct DatumWGS84SemiMajorAxis {
 };
 
 
-using Earth = SphereT<DatumIFS>;
+struct Earth final : public Sphere {
+    explicit Earth() : Sphere(DatumIFS::radius()) {}
+};
 
 
-}  // namespace eckit::geo::geometry
+}  // namespace eckit::geo::figure

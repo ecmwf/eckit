@@ -14,19 +14,22 @@
 
 #include <memory>
 
-#include "eckit/geo/Projection.h"
+#include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo::projection::figure {
 
 
 /// Calculate coordinates of a point on a sphere or spheroid, in [x, y, z]
-class LonLatToXYZ final : public Projection {
+class LonLatToXYZ final : public ProjectionOnFigure {
 public:
     // -- Constructors
 
-    LonLatToXYZ(double a, double b);
+    explicit LonLatToXYZ(Figure* = nullptr);
+
     explicit LonLatToXYZ(double R);
+    explicit LonLatToXYZ(double a, double b);
+
     explicit LonLatToXYZ(const Spec&);
 
     // -- Methods
@@ -52,7 +55,6 @@ private:
 
         virtual Point3 operator()(const PointLonLat&) const = 0;
         virtual PointLonLat operator()(const Point3&) const = 0;
-        virtual void spec(spec::Custom&) const              = 0;
     };
 
     // -- Members
@@ -66,4 +68,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::projection::figure

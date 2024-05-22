@@ -21,7 +21,7 @@ namespace eckit::geo::figure {
 
 
 OblateSpheroid::OblateSpheroid(double a, double b) : a_(a), b_(b) {
-    ASSERT_MSG(0. < b && b_ <= a_, "OblateSpheroid requires 0 < b <= a");
+    ASSERT_MSG(types::is_strictly_greater(b, 0.) && b_ <= a_, "OblateSpheroid requires 0 < b <= a");
 }
 
 

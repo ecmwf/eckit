@@ -22,86 +22,106 @@ namespace eckit::geo::test {
 
 
 CASE("projection: ll_to_xyz") {
-    using P = std::unique_ptr<Projection>;
-
-    constexpr double R = 1.;
-    const auto L       = R * std::sqrt(2.) / 2.;
+    struct P : std::unique_ptr<Projection> {
+        explicit P(Projection* ptr) : unique_ptr(ptr) { ASSERT(unique_ptr::operator bool()); }
+    };
 
     struct test_t {
         PointLonLat a;
         Point3 b;
     };
 
-    test_t test_sphere[] = {
-        {{0, 0}, {R, 0, 0}},     //
-        {{90, 0}, {0, R, 0}},    //
-        {{180, 0}, {-R, 0, 0}},  //
-        {{270, 0}, {0, -R, 0}},  //
-    };
-
-    test_t test_oblate_spheroid[] = {
-        {{0, -90}, {0, 0, -0.5}},   //
-        {{42, -90}, {0, 0, -0.5}},  //
-        {{0, 90}, {0, 0, 0.5}},     //
-        {{42, 90}, {0, 0, 0.5}},    //
-    };
+    constexpr double R = 1.;
+    const auto L       = R * std::sqrt(2.) / 2.;
 
 
-    SECTION("oblate/prolate spheroid") {
-        // oblate spheroid (supported)
-        EXPECT(P(new projection::figure::LonLatToXYZ(1., 0.5)));
+    // spherical projections
+    P to_xyz_1(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom{{"R", 1.}}));
+    P to_xyz_2(new projection::figure::LonLatToXYZ(1., 1.));
 
-        // problate spheroid (not supported)
-        EXPECT_THROWS(projection::figure::LonLatToXYZ(0.5, 1.));
-    }
+    EXPECT(*to_xyz_1 == *to_xyz_2);
+    EXPECT(*to_xyz_1 == projection::figure::LonLatToXYZ(1.));
 
 
-    P to_xyz_1(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom({{"R", 1.}})));
-    P to_xyz_2(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom({{"a", 1.}, {"b", 1.}})));
-    P to_xyz_3(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom({{"a", 1.}, {"b", 0.5}})));
+    // oblate spheroid projections
+    P to_xyz_3(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
+    P to_xyz_4(new projection::figure::LonLatToXYZ(1., 0.5));
+
+    EXPECT(*to_xyz_3 == *to_xyz_4);
+
+
+    // problate spheroid (not supported)
+    EXPECT_THROWS(projection::figure::LonLatToXYZ(0.5, 1.));
 
 
     SECTION("spec") {
-        auto x = to_xyz_1->spec();
+        EXPECT(to_xyz_1->spec() == R"({"r":1})");
+        EXPECT(to_xyz_2->spec() == R"({"r":1})");
+        EXPECT(to_xyz_3->spec() == R"({"a":1,"b":0.5})");
+        EXPECT(to_xyz_4->spec() == R"({"a":1,"b":0.5})");
     }
 
 
-    SECTION("") {
-        Point p = PointLonLat{1, 1};
+    SECTION("roundtrip") {
+        for (const auto& p : {
+                 PointLonLat{1, 1},
+                 PointLonLat{1, 0},
+                 PointLonLat(723., 1.),
+             }) {
+            EXPECT(points_equal(p, to_xyz_1->inv(to_xyz_1->fwd(p))));
+            EXPECT(points_equal(p, to_xyz_2->inv(to_xyz_2->fwd(p))));
 
-        EXPECT(points_equal(p, to_xyz_1->inv(to_xyz_1->fwd(p))));
-        EXPECT(points_equal(p, to_xyz_2->inv(to_xyz_2->fwd(p))));
-        EXPECT(points_equal(to_xyz_1->fwd(p), to_xyz_2->fwd(p)));
+            EXPECT(points_equal(to_xyz_1->fwd(p), to_xyz_2->fwd(p)));
+            EXPECT(points_equal(to_xyz_2->fwd(p), to_xyz_1->fwd(p)));
 
-        Point q = PointLonLat{1, 0};
+            if (p.lat == 0) {
+                auto q = to_xyz_3->fwd(p);
+                EXPECT(points_equal(to_xyz_1->fwd(p), q));
+                EXPECT(points_equal(to_xyz_2->inv(q), p));
+            }
+        }
+    }
 
-        EXPECT(points_equal(to_xyz_1->fwd(q), to_xyz_3->fwd(q)));
-        EXPECT(points_equal(to_xyz_2->fwd(q), to_xyz_3->fwd(q)));
 
-        for (const auto& test : test_sphere) {
+    SECTION("sphere (ll -> xyz, xyz -> ll)") {
+        for (const auto& test : {
+                 test_t{{0, 90}, {0, 0, R}},  //
+                 {{0, -90}, {0, 0, -R}},      //
+                 {{0, 0}, {R, 0, 0}},         //
+                 {{-360, 0}, {R, 0, 0}},      //
+                 {{90, 0}, {0, R, 0}},        //
+                 {{-270, 0}, {0, R, 0}},      //
+                 {{180, 0}, {-R, 0, 0}},      //
+                 {{-180, 0}, {-R, 0, 0}},     //
+                 {{270, 0}, {0, -R, 0}},      //
+                 {{-90, 0}, {0, -R, 0}},      //
+                 {{45, 0}, {L, L, 0}},        //
+                 {{-315, 0}, {L, L, 0}},      //
+                 {{135, 0}, {-L, L, 0}},      //
+                 {{-225, 0}, {-L, L, 0}},     //
+                 {{225, 0}, {-L, -L, 0}},     //
+                 {{-135, 0}, {-L, -L, 0}},    //
+                 {{315, 0}, {L, -L, 0}},      //
+                 {{-45, 0}, {L, -L, 0}},      //
+             }) {
             EXPECT(points_equal(to_xyz_1->fwd(test.a), test.b));
-            EXPECT(points_equal(to_xyz_2->fwd(test.a), test.b));
-            EXPECT(points_equal(to_xyz_3->fwd(test.a), test.b));
-        }
+            EXPECT(points_equal(to_xyz_1->inv(test.b), test.a));
 
-        for (const auto& test : test_oblate_spheroid) {
-            EXPECT(points_equal(to_xyz_3->fwd(test.a), test.b));
+            EXPECT(points_equal(to_xyz_2->fwd(test.a), test.b));
+            EXPECT(points_equal(to_xyz_2->inv(test.b), test.a));
         }
     }
 
 
-    SECTION("") {
-        const PointLonLat p(723., 1.);  // <- FIXME
-
-        auto q = to_xyz_1->fwd(p);
-        auto r = to_xyz_1->inv(q);
-        Log::info() << "p(lat, lon): " << p << " -> p(x,y,z): " << q << " -> p(lat, lon): " << r << std::endl;
-
-        EXPECT(points_equal(p, r));
-
-        for (const auto& lon : {0., 90., 180., 270.}) {
-            PointLonLat p{lon, 0.};
-            Log::info() << "p(lat, lon): " << p << " -> p_ab(x,y,z): " << to_xyz_3->fwd(p) << std::endl;
+    SECTION("spheroid (ll -> xyz)") {
+        for (const auto& test : {
+                 test_t{{0, -90}, {0, 0, -0.5}},  //
+                 {{42, -90}, {0, 0, -0.5}},       //
+                 {{0, 90}, {0, 0, 0.5}},          //
+                 {{42, 90}, {0, 0, 0.5}},         //
+             }) {
+            EXPECT(points_equal(to_xyz_3->fwd(test.a), test.b));
+            EXPECT(points_equal(to_xyz_4->fwd(test.a), test.b));
         }
     }
 }

@@ -74,6 +74,11 @@ private:
     // -- Methods
 
     virtual void spec(spec::Custom&) const { NOTIMP; }
+
+    // -- Friends
+
+    friend bool operator==(const Projection& a, const Projection& b) { return a.spec() == b.spec(); }
+    friend bool operator!=(const Projection& a, const Projection& b) { return !(a == b); }
 };
 
 

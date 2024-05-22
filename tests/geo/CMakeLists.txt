@@ -2,7 +2,7 @@ foreach(_test
         area_boundingbox
         area_polygon
         cache
-        figure_sphere
+        geometry_sphere
         great_circle
         grid
         grid_healpix

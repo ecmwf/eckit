@@ -48,7 +48,7 @@ private:
     struct has_footprint : std::false_type {};
 
     template <typename V>
-    struct has_footprint<V, std::void_t<footprint_t<V>>> : std::true_type{};
+    struct has_footprint<V, std::void_t<footprint_t<V>>> : std::true_type {};
 
     template <typename V>
     static inline constexpr bool has_footprint_v = has_footprint<V>::value;

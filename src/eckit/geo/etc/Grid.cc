@@ -31,8 +31,7 @@ const Grid& Grid::instance() {
 
 
 Grid::Grid(const std::vector<PathName>& paths) {
-    auto* custom = new spec::Custom;
-    spec_.reset(custom);
+    spec_ = std::make_unique<spec::Custom>();
 
     for (const auto& path : paths) {
         if (path.exists()) {

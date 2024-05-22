@@ -11,6 +11,7 @@
 
 
 #include <memory>
+#include <type_traits>
 #include <utility>
 
 #include "eckit/geo/Grid.h"
@@ -23,6 +24,76 @@
 
 
 namespace eckit::geo::test {
+
+
+template <typename T>
+struct is_vector : std::false_type {};
+
+
+template <typename T, typename Alloc>
+struct is_vector<std::vector<T, Alloc>> : std::true_type {};
+
+
+template <typename T>
+constexpr bool is_vector_v = is_vector<T>::value;
+
+
+template <typename T>
+void test_t() {
+    T a;
+    T b;
+    T c;
+
+    if constexpr (std::is_same_v<T, std::vector<std::string>>) {
+        a = b = {"1", "2", "3"};
+        c     = {"7", "8", "9", "10"};
+    }
+    else if constexpr (std::is_same_v<T, std::string>) {
+        a = b = "1";
+        c     = "7";
+    }
+    else if constexpr (is_vector_v<T>) {
+        a = b = {1, 2, 3};
+        c     = {7, 8, 9, 10};
+    }
+    else {
+        a = b = 1;
+        c     = 7;
+    }
+
+    EXPECT_NOT(a != b);
+    EXPECT(a == b);
+    EXPECT_NOT(a < b);
+    EXPECT(a <= b);
+    EXPECT_NOT(a > b);
+    EXPECT(a >= b);
+
+    EXPECT(a != c);
+    EXPECT_NOT(a == c);
+    EXPECT(a < c);
+    EXPECT(a <= c);
+    EXPECT_NOT(a > c);
+    EXPECT_NOT(a >= c);
+}
+
+
+CASE("Custom::value_type") {
+    test_t<std::string>();
+    // test_t<bool>();
+    test_t<int>();
+    test_t<long>();
+    test_t<long long>();
+    test_t<size_t>();
+    test_t<float>();
+    test_t<double>();
+    test_t<std::vector<int>>();
+    test_t<std::vector<long>>();
+    test_t<std::vector<long long>>();
+    test_t<std::vector<size_t>>();
+    test_t<std::vector<float>>();
+    test_t<std::vector<double>>();
+    test_t<std::vector<std::string>>();
+}
 
 
 CASE("Spec <- Custom") {
@@ -315,7 +386,7 @@ CASE("spec") {
 
 
     SECTION("grid: name -> spec -> grid: name") {
-        for (const std::string name : {"LAEA-EFAS-5km", "SMUFF-OPERA-2km"}) {
+        for (const std::string& name : {"LAEA-EFAS-5km", "SMUFF-OPERA-2km"}) {
             std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", name}})));
             EXPECT(grid);
 

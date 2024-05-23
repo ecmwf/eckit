@@ -18,6 +18,7 @@
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::test {
@@ -28,7 +29,7 @@ struct F : std::unique_ptr<Figure> {
 };
 
 
-CASE("figure: sphere") {
+CASE("Sphere") {
     F f1(FigureFactory::build(spec::Custom{{"R", 1.}}));
     F f2(FigureFactory::build(spec::Custom{{"a", 1.}, {"b", 1.}}));
     F f3(new figure::Sphere(1.));
@@ -38,24 +39,30 @@ CASE("figure: sphere") {
     EXPECT(*f1 == *f2);
     EXPECT(*f1 == *f3);
 
+    auto e = f1->eccentricity();
+    EXPECT(types::is_approximately_equal(e, 0.));
+
     EXPECT(f1->spec() == R"({"r":1})");
 }
 
 
-CASE("figure: oblate spheroid") {
+CASE("Oblate spheroid") {
     F f1(FigureFactory::build(spec::Custom{{"b", 0.5}, {"a", 1.}}));
     F f2(new figure::OblateSpheroid(1., 0.5));
 
-    EXPECT_THROWS_AS(figure::OblateSpheroid(0.5, 1.), AssertionFailed);
+    EXPECT_THROWS_AS(figure::OblateSpheroid(0.5, 1.), AssertionFailed);  // prolate spheroid
     EXPECT_THROWS_AS(figure::OblateSpheroid(1., -1.), AssertionFailed);
 
     EXPECT(*f1 == *f2);
+
+    auto e = f1->eccentricity();
+    EXPECT(types::is_strictly_greater(e, 0.));
 
     EXPECT(f1->spec() == R"({"a":1,"b":0.5})");
 }
 
 
-CASE("figure: oblate spheroid") {
+CASE("Earth") {
     F f1(FigureFactory::build(spec::Custom{{"figure", "earth"}}));
     F f2(new figure::Earth);
 

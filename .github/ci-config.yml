@@ -1,4 +1,4 @@
-cmake_options: -DENABLE_ECKIT_GEO=ON -DENABLE_CURL=ON -DENABLE_LZ4=ON
+cmake_options: -DENABLE_ECKIT_GEO=ON
 dependencies: |
   ecmwf/ecbuild
 dependency_branch: develop

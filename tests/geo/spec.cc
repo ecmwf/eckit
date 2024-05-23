@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util.h"
@@ -442,6 +443,7 @@ CASE("spec") {
     }
 
 
+#if eckit_HAVE_GEO_GRID_ORCA
     SECTION("grid: ORCA") {
         Grid::uid_t uid = "d5bde4f52ff3a9bea5629cd9ac514410";
 
@@ -453,6 +455,7 @@ CASE("spec") {
 
         EXPECT(o1->spec() == o2->spec());
     }
+#endif
 }
 
 

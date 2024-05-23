@@ -35,16 +35,17 @@ public:
         key_type(const char* s) : key_type(std::string{s}) {}
     };
 
-    using value_type = std::variant<std::string, bool, int, long, long long, size_t, float, double, std::vector<int>,
-                                    std::vector<long>, std::vector<long long>, std::vector<size_t>, std::vector<float>,
-                                    std::vector<double>, std::vector<std::string>>;
+    using value_type
+        = std::variant<std::string, bool, int, long, long long, size_t, float, double, std::vector<int>,
+                       std::vector<long>, std::vector<long long>, std::vector<size_t>, std::vector<float>,
+                       std::vector<double>, std::vector<std::string>, const char* /* converted to std::string */>;
 
     using container_type = std::map<key_type, value_type>;
 
     // -- Constructors
 
     Custom() = default;
-    Custom(std::initializer_list<container_type::value_type> init) : map_{init} {}
+    Custom(std::initializer_list<container_type::value_type>);
 
     explicit Custom(const container_type&);
     explicit Custom(container_type&&);

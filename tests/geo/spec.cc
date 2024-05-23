@@ -96,6 +96,14 @@ CASE("Custom::value_type") {
 }
 
 
+CASE("Custom::container_type") {
+    spec::Custom spec({{std::string{"foo"}, "bar"}});
+
+    std::string bar;
+    EXPECT(spec.get("foo", bar) && bar == "bar");
+}
+
+
 CASE("Spec <- Custom") {
     constexpr int zero      = 0;
     constexpr int one       = 1;

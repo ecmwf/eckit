@@ -141,6 +141,15 @@ JSON& operator<<(JSON& out, const Custom::value_type& value) {
 }
 
 
+void sanitise(Custom::container_type& container) {
+    std::for_each(container.begin(), container.end(), [](auto& p) {
+        if (auto& value = p.second; std::holds_alternative<const char*>(value)) {
+            value = std::string{std::get<const char*>(value)};
+        }
+    });
+}
+
+
 }  // namespace
 
 
@@ -149,10 +158,19 @@ Custom::key_type::key_type(const std::string& s) : std::string{s} {
 }
 
 
-Custom::Custom(const Custom::container_type& map) : map_(map) {}
+Custom::Custom(std::initializer_list<container_type::value_type> init) : map_(init) {
+    sanitise(map_);
+}
 
 
-Custom::Custom(Custom::container_type&& map) : map_(map) {}
+Custom::Custom(const Custom::container_type& map) : map_(map) {
+    sanitise(map_);
+}
+
+
+Custom::Custom(Custom::container_type&& map) : map_(map) {
+    sanitise(map_);
+}
 
 
 Custom* Custom::make_from_value(const Value& value) {

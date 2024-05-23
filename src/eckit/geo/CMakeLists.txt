@@ -141,7 +141,7 @@ if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_libs PROJ::proj)
 endif()
 
-if(eckit_HAVE_ECKIT_CODEC)
+if(eckit_HAVE_ECKIT_GEO_GRID_ORCA)
     list(APPEND eckit_geo_srcs grid/ORCA.cc grid/ORCA.h)
     list(APPEND eckit_geo_libs eckit_codec)
     list(APPEND eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/ORCA.yaml")

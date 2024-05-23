@@ -70,7 +70,7 @@ void Grid::load(const PathName& path) {
             const auto key = kv.first.as<std::string>();
 
             if (key == "grid_uids") {
-                for (ValueMap m : static_cast<ValueList>(kv.second)) {
+                for (ValueMap m : kv.second.as<std::vector<Value>>()) {
                     ASSERT(m.size() == 1);
                     SpecByUID::instance().regist(
                         m.begin()->first.as<std::string>(),
@@ -80,7 +80,7 @@ void Grid::load(const PathName& path) {
             }
 
             if (key == "grid_names") {
-                for (ValueMap m : static_cast<ValueList>(kv.second)) {
+                for (ValueMap m : kv.second.as<std::vector<Value>>()) {
                     ASSERT(m.size() == 1);
                     SpecByName::instance().regist(
                         m.begin()->first.as<std::string>(),

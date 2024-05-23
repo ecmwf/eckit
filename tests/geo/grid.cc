@@ -39,6 +39,7 @@ CASE("GridFactory::build") {
     }
 
 
+#if eckit_HAVE_GEO_GRID_ORCA
     if (LibEcKitGeo::caching()) {
         SECTION("Grid::build_from_uid") {
             spec::Custom spec({
@@ -62,6 +63,7 @@ CASE("GridFactory::build") {
             EXPECT_EQUAL(size_a, size_b);
         }
     }
+#endif
 
 
     SECTION("Grid::build_from_increments (global)") {

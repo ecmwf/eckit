@@ -39,7 +39,7 @@ foreach(_test
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CACHE_PATH}" )
 endforeach()
 
-if(eckit_HAVE_ECKIT_GEO_GRID_ORCA)
+if(eckit_HAVE_GEO_GRID_ORCA)
     set(URL "https://get.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_T.atlas")
     set(FILE "${CACHE_PATH}/eckit/geo/grid/orca/d5bde4f52ff3a9bea5629cd9ac514410.atlas")
     set(MD5 "f279b48c171409f46bfd27dff98d454a")

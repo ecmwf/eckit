@@ -166,8 +166,9 @@ Custom* Custom::make_from_value(const Value& value) {
     };
 
     auto vector = [](const Value& value) -> value_type {
-        const ValueList list(value);
+        const auto list(value.as<ValueList>());
         ASSERT(!list.empty());
+
         return list.front().isNumber()   ? value_type(std::vector<int>(list.begin(), list.end()))
                : list.front().isDouble() ? value_type(std::vector<double>(list.begin(), list.end()))
                : list.front().isString() ? std::vector<std::string>(list.begin(), list.end())

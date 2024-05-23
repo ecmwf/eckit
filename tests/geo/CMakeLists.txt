@@ -37,11 +37,20 @@ foreach(_test
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" )
 endforeach()
 
-ecbuild_add_test(
-    TARGET    eckit_test_geo_grid_orca
-    SOURCES   grid_orca.cc
-    LIBS      eckit_geo
-    CONDITION eckit_HAVE_ECKIT_CODEC )
+if(eckit_HAVE_ECKIT_CODEC)
+    file( DOWNLOAD
+        "https://get.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_T.atlas"
+        "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache/eckit/geo/grid/orca/d5bde4f52ff3a9bea5629cd9ac514410.atlas"
+        EXPECTED_MD5 "f279b48c171409f46bfd27dff98d454a"
+        SHOW_PROGRESS
+        TIMEOUT 30 )
+    
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_grid_orca
+        SOURCES     grid_orca.cc
+        LIBS        eckit_geo
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" )
+endif()
 
 ecbuild_add_test(
     TARGET  eckit_test_geo_tool_grid_spec_1_1

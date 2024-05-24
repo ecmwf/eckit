@@ -142,7 +142,8 @@ private:
 };
 
 static const ConcreteBuilderT2<Base2, A2> builder_A2;
-static const ConcreteBuilderT2<Base2, B2> builder_B2;
+static const ConcreteBuilderT2<Base2, B2> builder_B2_1;
+static const ConcreteBuilderT2<Base2, B2> builder_B2_2("eckit_test.B2.x");
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -197,7 +198,7 @@ CASE("test_eckit_memory_factory_2") {
     EXPECT(Factory<Base2>::build_type() == "eckit_test.Base2");
     const auto& factory = Factory<Base2>::instance();
 
-    EXPECT(factory.size() == 2);
+    EXPECT(factory.size() == 3);
 
     EXPECT(factory.exists("eckit_test.A2"));
     EXPECT(factory.exists("eckit_test.B2"));
@@ -209,12 +210,15 @@ CASE("test_eckit_memory_factory_2") {
 
     std::unique_ptr<Base2> p1(factory.get("eckit_test.A2").create(s, 42));
     std::unique_ptr<Base2> p2(factory.get("eckit_test.B2").create(s, 42));
+    std::unique_ptr<Base2> p3(factory.get("eckit_test.B2.x").create(s, -42));
 
     EXPECT(p1);
     EXPECT(p2);
+    EXPECT(p3);
 
     EXPECT(p1->foo() == "eckit_test.A2.lolo.42");
     EXPECT(p2->foo() == "eckit_test.B2.lolo.42");
+    EXPECT(p3->foo() == "eckit_test.B2.lolo.-42");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

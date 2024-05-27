@@ -18,12 +18,13 @@
 #include "eckit/runtime/Main.h"
 
 #include "eckit/log/TimeStamp.h"
+#include "eckit/net/IPAddress.h"
 
 namespace eckit {
 
 
-SysLog::SysLog(const std::string& msg, int msgid, Facility f, Severity s) :
-    facility_(f), severity_(s), appName_(Main::instance().name()), msgid_(msgid), msg_(msg) {
+SysLog::SysLog(const std::string& msg, int msgid, Facility f, Severity s)
+    : facility_(f), severity_(s), appName_(Main::instance().name()), msgid_(msgid), msg_(msg) {
     timestamp_ = TimeStamp("%Y-%m-%dT%H:%M:%SZ");  ///< assumes we are in UTC
 }
 
@@ -43,11 +44,26 @@ int SysLog::procid() const {
     return ::getpid();
 }
 
-std::string SysLog::structuredData() const {
-    std::ostringstream s;
 
-    /// @todo Implement the structured message meta-description as described in RFC5424 secion 6.3
-    s << nilvalue();
+std::string SysLog::structuredData() const {
+    if (software_.empty() && swVersion_.empty() && enterpriseId_.empty()) {
+        return std::string(1, nilvalue());
+    }
+    // RFC 5424 section 6.3 (only origin)
+    std::ostringstream s;
+    std::string ip = net::IPAddress::myIPAddress().asString();
+
+    s << "[origin ip=\"" << ip << "\"";
+    if (!enterpriseId_.empty()) {
+        s << " enterpriseId=\"" << enterpriseId_ << "\"";
+    }
+    if (!software_.empty()) {
+        s << " software=\"" << software_ << "\"";
+        if (!swVersion_.empty()) {
+            s << " swVersion=\"" << swVersion_ << "\"";
+        }
+    }
+    s << "]";
 
     return s.str();
 }

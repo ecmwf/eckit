@@ -75,7 +75,7 @@ SysLog::operator std::string() const {
     static char sep = ' ';
 
     os  // RFC 5424 section 6.2 (Header)
-        << "<" << priotity() << ">" << version() << sep << timestamp() << sep << fqdn() << sep << appName() << sep
+        << "<" << priority() << ">" << version() << sep << timestamp() << sep << fqdn() << sep << appName() << sep
         << procid() << sep << msgid()
         << sep
         // RFC 5424 section 6.3

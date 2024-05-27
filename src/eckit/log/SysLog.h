@@ -72,7 +72,7 @@ public:  // methods
 
     SysLog(const std::string& msg, int msgid = 0, Facility f = SysLog::User, Severity s = SysLog::Info);
 
-    unsigned priotity() const { return facility_ * 8 + severity_; }
+    unsigned priority() const { return facility_ * 8 + severity_; }
 
     unsigned version() const { return 1; }
 

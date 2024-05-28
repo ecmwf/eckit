@@ -29,7 +29,7 @@ namespace net {
 
 class Endpoint {
 
-public:                            // methods
+public:  // methods
     Endpoint(const URI& uri);      // gets hostname:port from uri
     Endpoint(const std::string&);  // parses the std::string formated as hostname:port
     Endpoint(const std::string& host, int port);

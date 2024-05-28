@@ -290,6 +290,12 @@ Abort::Abort(const std::string& r, const CodeLocation& loc) :
 Retry::Retry(const std::string& r) :
     Exception(std::string("Retry: ") + r) {}
 
+PermissionDenied::PermissionDenied(const std::string& r): Exception(std::string("Permission denied: ") + r) { }
+
+NotFound::NotFound(const std::string& r): Exception(std::string("Not found: ") + r) { }
+
+AlreadyExists::AlreadyExists(const std::string& r): Exception(std::string("Already exists: ") + r) { }
+
 Cancel::Cancel(const std::string& r) :
     Exception(std::string("Cancel: ") + r) {}
 

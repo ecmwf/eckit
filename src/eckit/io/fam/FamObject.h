@@ -36,17 +36,10 @@ class FamObject {
 public:  // types
     using UPtr = std::unique_ptr<FamObject>;
 
-    // using Detail = std::unique_ptr<FamObjectDetail>;
-
-    // public:  // factory methods
-    //     static auto proxy(const FamConfig& config, const Descriptor& object) -> UPtr;
-
 public:  // methods
     explicit FamObject(std::unique_ptr<FamObjectDetail> object) noexcept;
 
     ~FamObject();
-
-    // auto proxy(const Descriptor& object) -> UPtr;
 
     bool operator==(const FamObject& other) const;
 
@@ -70,7 +63,7 @@ public:  // methods
 
     auto property() const -> FamProperty { return {size(), permissions(), name()}; }
 
-    void put(const void* data, fam::size_t offset, fam::size_t length) const;
+    void put(const void* buffer, fam::size_t offset, fam::size_t length) const;
 
     void get(void* buffer, fam::size_t offset, fam::size_t length) const;
 
@@ -82,8 +75,8 @@ public:  // methods
     }
 
     template<typename T>
-    void put(const T& data, const fam::size_t offset) const {
-        put(&data, offset, sizeof(T));
+    void put(const T& buffer, const fam::size_t offset) const {
+        put(&buffer, offset, sizeof(T));
     }
 
     template<typename T>

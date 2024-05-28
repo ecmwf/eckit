@@ -46,8 +46,8 @@ void FamObject::deallocate() {
 //----------------------------------------------------------------------------------------------------------------------
 // DATA
 
-void FamObject::put(const void* data, const fam::size_t offset, const fam::size_t length) const {
-    impl_->put(data, offset, length);
+void FamObject::put(const void* buffer, const fam::size_t offset, const fam::size_t length) const {
+    impl_->put(buffer, offset, length);
 }
 
 void FamObject::get(void* buffer, const fam::size_t offset, const fam::size_t length) const {

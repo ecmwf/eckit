@@ -106,6 +106,13 @@ if( NOT TARGET OpenMP::OpenMP_CXX )
     set( eckit_HAVE_OMP 0 )
 endif()
 
+### OpenFAM Support
+
+ecbuild_add_option( FEATURE OPENFAM
+                    DEFAULT OFF
+                    REQUIRED_PACKAGES "OpenFAM REQUIRED" "gRPC REQUIRED"
+                    DESCRIPTION "Enables OpenFAM support" )
+
 ### RADOS
 
 ecbuild_add_option( FEATURE RADOS

@@ -269,6 +269,33 @@ message/Splitter.cc
 message/Splitter.h
 )
 
+if(HAVE_OPENFAM)
+list(APPEND eckit_io_srcs
+io/fam/detail/FamSessionDetail.cc
+io/fam/FamConfig.cc
+io/fam/FamConfig.h
+io/fam/FamHandle.cc
+io/fam/FamHandle.h
+io/fam/FamList.cc
+io/fam/FamList.h
+io/fam/FamListIterator.cc
+io/fam/FamListIterator.h
+io/fam/FamName.cc
+io/fam/FamName.h
+io/fam/FamObject.cc
+io/fam/FamObject.h
+io/fam/FamObjectName.cc
+io/fam/FamObjectName.h
+io/fam/FamProperty.h
+io/fam/FamRegion.cc
+io/fam/FamRegion.h
+io/fam/FamSession.cc
+io/fam/FamSession.h
+io/fam/FamURIManager.cc
+io/fam/FamURIManager.h
+)
+endif(HAVE_OPENFAM)
+
 if(HAVE_RADOS)
 list( APPEND eckit_io_srcs
 io/rados/RadosHandle.cc
@@ -953,6 +980,7 @@ ecbuild_add_library(
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+              $<${HAVE_OPENFAM}:OpenFAM::openfam>
 
           PUBLIC_LIBS
               ${CMATH_LIBRARIES}
@@ -984,4 +1012,3 @@ add_subdirectory( web )
 if( HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
 endif()
-

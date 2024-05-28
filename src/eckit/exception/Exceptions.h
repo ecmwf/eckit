@@ -170,6 +170,21 @@ public:
     Retry(const std::string&);
 };
 
+class PermissionDenied: public Exception {
+public:
+    PermissionDenied(const std::string&);
+};
+
+class NotFound: public Exception {
+public:
+    NotFound(const std::string&);
+};
+
+class AlreadyExists: public Exception {
+public:
+    AlreadyExists(const std::string&);
+};
+
 class UserError : public Exception {
 public:
     UserError(const std::string&, const CodeLocation&);

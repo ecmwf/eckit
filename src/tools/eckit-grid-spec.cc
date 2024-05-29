@@ -25,9 +25,9 @@
 
 namespace eckit {
 
-class EckitGrid final : public EckitTool {
+class EckitGridSpec final : public EckitTool {
 public:
-    EckitGrid(int argc, char** argv) : EckitTool(argc, argv) {
+    EckitGridSpec(int argc, char** argv) : EckitTool(argc, argv) {
         options_.push_back(new option::SimpleOption<std::string>("check", "regex to check against result"));
     }
 
@@ -70,6 +70,6 @@ private:
 
 
 int main(int argc, char** argv) {
-    eckit::EckitGrid app(argc, argv);
+    eckit::EckitGridSpec app(argc, argv);
     return app.start();
 }

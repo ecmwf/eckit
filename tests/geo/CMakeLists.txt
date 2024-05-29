@@ -35,8 +35,7 @@ foreach(_test
     ecbuild_add_test(
         TARGET      eckit_test_geo_${_test}
         SOURCES     ${_test}.cc
-        LIBS        eckit_geo
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CACHE_PATH}" )
+        LIBS        eckit_geo )
 endforeach()
 
 if(eckit_HAVE_GEO_GRID_ORCA)

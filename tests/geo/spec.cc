@@ -441,21 +441,6 @@ CASE("spec") {
 
         EXPECT(h2n->spec() == R"({"grid":"H2","ordering":"nested"})");
     }
-
-
-#if eckit_HAVE_GEO_GRID_ORCA
-    SECTION("grid: ORCA") {
-        Grid::uid_t uid = "d5bde4f52ff3a9bea5629cd9ac514410";
-
-        std::unique_ptr<const Grid> o1(GridFactory::build(spec::Custom({{"grid", "ORCA2_T"}})));
-
-        EXPECT(o1->spec() == R"({"type":"ORCA","uid":")" + uid + R"("})");
-
-        std::unique_ptr<const Grid> o2(GridFactory::build(spec::Custom({{"uid", uid}})));
-
-        EXPECT(o1->spec() == o2->spec());
-    }
-#endif
 }
 
 

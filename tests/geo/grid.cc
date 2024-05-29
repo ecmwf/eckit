@@ -39,33 +39,6 @@ CASE("GridFactory::build") {
     }
 
 
-#if eckit_HAVE_GEO_GRID_ORCA
-    if (LibEcKitGeo::caching()) {
-        SECTION("Grid::build_from_uid") {
-            spec::Custom spec({
-                {"uid", "d5bde4f52ff3a9bea5629cd9ac514410"},
-            });
-
-            const auto footprint = Cache::total_footprint();
-
-            std::unique_ptr<const Grid> a(GridFactory::build(spec));
-
-            const auto footprint_a = Cache::total_footprint();
-            EXPECT(footprint < footprint_a);
-
-            std::unique_ptr<const Grid> b(GridFactory::build(spec));
-
-            const auto footprint_b = Cache::total_footprint();
-            EXPECT_EQUAL(footprint_a, footprint_b);
-
-            const auto size_a = a->size();
-            const auto size_b = b->size();
-            EXPECT_EQUAL(size_a, size_b);
-        }
-    }
-#endif
-
-
     SECTION("Grid::build_from_increments (global)") {
         std::unique_ptr<const Grid> global(GridFactory::build(spec::Custom({
             {"type", "regular_ll"},

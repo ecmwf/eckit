@@ -12,6 +12,8 @@
 
 #include <memory>
 
+#include "eckit/geo/Cache.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/grid/ORCA.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -20,52 +22,80 @@
 namespace eckit::geo::test {
 
 
-CASE("ORCA") {
-    const Grid::uid_t uid = "d5bde4f52ff3a9bea5629cd9ac514410";
-    const std::vector<long> dimensions{182, 149};
+static const Grid::uid_t uid = "d5bde4f52ff3a9bea5629cd9ac514410";
+static const std::vector<long> dimensions{182, 149};
 
 
-    SECTION("gridspec") {
+CASE("spec") {
+    std::unique_ptr<Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", uid}})));
 
+    EXPECT(spec->get_string("type") == "ORCA");
+    EXPECT(spec->get_string("orca_name") == "ORCA2");
+    EXPECT(spec->get_string("orca_arrangement") == "T");
+    EXPECT(spec->get_string("orca_uid") == uid);
+    EXPECT(spec->get_long_vector("dimensions") == dimensions);
+
+    std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + uid + "}"));
+
+    EXPECT(grid1->size() == dimensions[0] * dimensions[1]);
+    EXPECT(grid1->uid() == uid);
+
+    std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", uid}})));
+
+    EXPECT(grid2->size() == dimensions[0] * dimensions[1]);
+    EXPECT(grid2->uid() == uid);
+
+    grid::ORCA grid3(uid);
+
+    EXPECT(grid3.uid() == uid);
+    EXPECT(grid3.calculate_uid() == uid);
+    EXPECT(static_cast<const Grid&>(grid3).spec() == R"({"type":"ORCA","uid":")" + uid + R"("})");
+
+    EXPECT(grid1->spec() == grid2->spec());
+
+    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "ORCA2_T"}})));
+
+    EXPECT(grid4->spec() == R"({"type":"ORCA","uid":")" + uid + R"("})");
+
+    std::unique_ptr<const Grid> grid5(GridFactory::build(spec::Custom({{"uid", uid}})));
+
+    EXPECT(grid4->spec() == grid5->spec());
+}
+
+
+CASE("caching") {
+    if (LibEcKitGeo::caching()) {
         std::unique_ptr<Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", uid}})));
 
-        EXPECT(spec->get_string("type") == "ORCA");
-        EXPECT(spec->get_string("orca_name") == "ORCA2");
-        EXPECT(spec->get_string("orca_arrangement") == "T");
-        EXPECT(spec->get_string("orca_uid") == uid);
-        EXPECT(spec->get_long_vector("dimensions") == dimensions);
+        const auto footprint = Cache::total_footprint();
 
-        std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + uid + "}"));
+        std::unique_ptr<const Grid> grid1(GridFactory::build(*spec));
 
-        EXPECT(grid1->size() == dimensions[0] * dimensions[1]);
-        EXPECT(grid1->uid() == uid);
+        const auto footprint_1 = Cache::total_footprint();
+        EXPECT(footprint < footprint_1);
 
-        std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", uid}})));
+        std::unique_ptr<const Grid> grid2(GridFactory::build(*spec));
 
-        EXPECT(grid2->size() == dimensions[0] * dimensions[1]);
-        EXPECT(grid2->uid() == uid);
+        const auto footprint_2 = Cache::total_footprint();
+        EXPECT_EQUAL(footprint_1, footprint_2);
 
-        grid::ORCA grid3(uid);
-
-        EXPECT(grid3.uid() == uid);
-        EXPECT(grid3.calculate_uid() == uid);
-        EXPECT(static_cast<const Grid&>(grid3).spec() == R"({"type":"ORCA","uid":")" + uid + R"("})");
-
-        EXPECT(grid1->spec() == grid2->spec());
+        const auto size_a = grid1->size();
+        const auto size_b = grid2->size();
+        EXPECT_EQUAL(size_a, size_b);
     }
+}
 
 
-    SECTION("equals") {
-        std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + uid + "}"));
-        std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", uid}})));
-        std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", uid}})));
-        grid::ORCA grid4(uid);
+CASE("equals") {
+    std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + uid + "}"));
+    std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", uid}})));
+    std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", uid}})));
+    grid::ORCA grid4(uid);
 
-        EXPECT(*grid1 == *grid2);
-        EXPECT(*grid2 == *grid3);
-        EXPECT(*grid3 == grid4);
-        EXPECT(grid4 == *grid1);
-    }
+    EXPECT(*grid1 == *grid2);
+    EXPECT(*grid2 == *grid3);
+    EXPECT(*grid3 == grid4);
+    EXPECT(grid4 == *grid1);
 }
 
 

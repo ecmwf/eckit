@@ -26,6 +26,28 @@ static const Grid::uid_t uid = "d5bde4f52ff3a9bea5629cd9ac514410";
 static const std::vector<long> dimensions{182, 149};
 
 
+CASE("caching") {
+    if (LibEcKitGeo::caching()) {
+        SECTION("Grid::build_from_uid") {
+            spec::Custom spec({{"uid", uid}});
+
+            const auto footprint_1 = Cache::total_footprint();
+
+            std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+
+            const auto footprint_2 = Cache::total_footprint();
+            EXPECT(footprint_1 < footprint_2);
+
+            std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
+
+            EXPECT(footprint_2 == Cache::total_footprint());
+
+            EXPECT(grid1->size() == grid2->size());
+        }
+    }
+}
+
+
 CASE("spec") {
     std::unique_ptr<Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", uid}})));
 
@@ -60,29 +82,6 @@ CASE("spec") {
     std::unique_ptr<const Grid> grid5(GridFactory::build(spec::Custom({{"uid", uid}})));
 
     EXPECT(grid4->spec() == grid5->spec());
-}
-
-
-CASE("caching") {
-    if (LibEcKitGeo::caching()) {
-        std::unique_ptr<Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", uid}})));
-
-        const auto footprint = Cache::total_footprint();
-
-        std::unique_ptr<const Grid> grid1(GridFactory::build(*spec));
-
-        const auto footprint_1 = Cache::total_footprint();
-        EXPECT(footprint < footprint_1);
-
-        std::unique_ptr<const Grid> grid2(GridFactory::build(*spec));
-
-        const auto footprint_2 = Cache::total_footprint();
-        EXPECT_EQUAL(footprint_1, footprint_2);
-
-        const auto size_a = grid1->size();
-        const auto size_b = grid2->size();
-        EXPECT_EQUAL(size_a, size_b);
-    }
 }
 
 

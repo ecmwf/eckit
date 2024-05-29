@@ -18,6 +18,12 @@ ecbuild_add_executable( TARGET      eckit_codec_list
                         SOURCES     eckit-codec-list.cc
                         LIBS        eckit_codec eckit_option )
 
+ecbuild_add_executable( TARGET      eckit_grid
+                        OUTPUT_NAME eckit-grid
+                        CONDITION   eckit_HAVE_ECKIT_GEO
+                        SOURCES     eckit-grid.cc
+                        LIBS        eckit_geo eckit_option )
+
 ecbuild_add_executable( TARGET      eckit_grid_list
                         OUTPUT_NAME eckit-grid-list
                         CONDITION   eckit_HAVE_ECKIT_GEO

@@ -13,29 +13,24 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   test_openfam.cc
+/// @file   test_fam.cc
 /// @author Metin Cakircali
 /// @date   May 2024
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/io/Buffer.h"
-#include "eckit/io/fam/FamConfig.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/testing/Test.h"
 
-using namespace std;
 using namespace eckit;
 using namespace eckit::testing;
 
 namespace eckit::test {
 
-const FamConfig testConfig {{"127.0.0.1", 8880}, "EckitTestOpenFAMSessionName"};
+const FamConfig testConfig {{"127.0.0.1", 8880}, "EckitTestFAMSessionName"};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-constexpr const auto nameSession = "TEST_FAM_SESSION";
-constexpr const auto nameRegion  = "TEST_FAM_REGION";
-constexpr const auto nameObject  = "TEST_FAM_OBJECT";
+constexpr const auto regionName = "ECKIT_TEST_FAM_REGION";
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -49,10 +44,10 @@ void destroyRegions(const std::vector<std::string>& regionNames) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("region: lookup, create, and destroy") {  // NOLINT
-    destroyRegions({nameRegion});
+CASE("region: lookup, create, and destroy") {
+    destroyRegions({regionName});
 
-    const FamProperty property {1024, 0640, nameRegion};
+    const FamProperty property {1024, 0640, regionName};
 
     // not found
     EXPECT_THROWS_AS(FamRegion::lookup(property.name, testConfig), NotFound);
@@ -63,7 +58,7 @@ CASE("region: lookup, create, and destroy") {  // NOLINT
 
     EXPECT(region->property() == property);
 
-    EXPECT_NO_THROW(region = FamRegion::lookup(nameRegion, testConfig));
+    EXPECT_NO_THROW(region = FamRegion::lookup(regionName, testConfig));
 
     EXPECT(region->property() == property);
 
@@ -77,12 +72,10 @@ CASE("region: lookup, create, and destroy") {  // NOLINT
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    using namespace eckit::test;
-
     auto ret = run_tests(argc, argv);
 
     // cleanup
-    destroyRegions({nameRegion});
+    test::destroyRegions({test::regionName});
 
     return ret;
 }

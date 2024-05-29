@@ -48,8 +48,8 @@ ecbuild_add_test( TARGET      eckit_test_multihandle
                   SOURCES     test_multihandle.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_openfam
-                  SOURCES     test_openfam.cc
+ecbuild_add_test( TARGET      eckit_test_fam
+                  SOURCES     test_fam.cc
                   CONDITION   HAVE_OPENFAM
                   LIBS        eckit )
 

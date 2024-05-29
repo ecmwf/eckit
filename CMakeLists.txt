@@ -51,6 +51,16 @@ set( THREADS_HAVE_PTHREAD_ARG FALSE )
 find_package( Threads REQUIRED )
 set( THREADS_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} )
 
+ecbuild_add_option( FEATURE ECKIT_MEMORY_FACTORY_BUILDERS_DEBUG
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::Factory builders debug"
+                    ADVANCED )
+
+ecbuild_add_option( FEATURE ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
+                    DEFAULT ON
+                    DESCRIPTION "eckit::Factory empty destruction (system dependant)"
+                    ADVANCED )
+
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI

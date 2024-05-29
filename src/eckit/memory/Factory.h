@@ -21,6 +21,7 @@
 #include <map>
 #include <vector>
 
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
@@ -82,13 +83,14 @@ public:
     std::vector<key_t> keys() const;
 
 private:
-    // Constructors
+    // -- Constructors
 
     Factory() = default;
 
-    // Destructor
-
+#if eckit_HAVE_ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
+    // -- Destructor
     ~Factory() { ASSERT(store_.empty()); }
+#endif
 
     // -- Members
 

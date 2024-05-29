@@ -16,10 +16,10 @@
 
 #pragma once
 
+#include "eckit/eckit_config.h"
 #include "eckit/memory/Factory.h"
 
-// #define DEBUG_ECKIT_BUILDERS
-#ifdef DEBUG_ECKIT_BUILDERS
+#if eckit_HAVE_ECKIT_MEMORY_FACTORY_BUILDERS_DEBUG
 #include "eckit/exception/Exceptions.h"
 #define DEBUG_BUILDER(x) std::cerr << " DEBUG (" << x << ") " << Here() << std::endl;
 #else
@@ -141,14 +141,12 @@ public:
 
     // -- Constructors
 
-    ConcreteBuilderT0() :
-        key_(name()) {
+    ConcreteBuilderT0() : key_(name()) {
         DEBUG_BUILDER("ConcreteBuilderT0() -- " << T::className());
         Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
 
-    explicit ConcreteBuilderT0(const typename base_t::key_t& k) :
-        key_(k) {
+    explicit ConcreteBuilderT0(const typename base_t::key_t& k) : key_(k) {
         DEBUG_BUILDER("ConcreteBuilderT0() -- " << T::className());
         Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
@@ -160,7 +158,9 @@ public:
 
     ~ConcreteBuilderT0() override {
         DEBUG_BUILDER("~ConcreteBuilderT0() -- " << T::className());
+#if eckit_HAVE_ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
         Factory<typename base_t::product_t>::instance().unregist(key_);
+#endif
     }
 
     // -- Operators
@@ -199,14 +199,12 @@ public:
 
     // -- Constructors
 
-    ConcreteBuilderT1() :
-        key_(name()) {
+    ConcreteBuilderT1() : key_(name()) {
         DEBUG_BUILDER("ConcreteBuilderT1() -- " << T::className());
         Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
 
-    explicit ConcreteBuilderT1(const typename base_t::key_t& k) :
-        key_(k) {
+    explicit ConcreteBuilderT1(const typename base_t::key_t& k) : key_(k) {
         DEBUG_BUILDER("ConcreteBuilderT1() -- " << T::className());
         Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
@@ -218,7 +216,9 @@ public:
 
     ~ConcreteBuilderT1() override {
         DEBUG_BUILDER("~ConcreteBuilderT1() -- " << T::className());
+#if ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
         Factory<typename base_t::product_t>::instance().unregist(key_);
+#endif
     }
 
     // -- Operators
@@ -258,14 +258,12 @@ public:
 
     // -- Constructors
 
-    ConcreteBuilderT2() :
-        key_(name()) {
+    ConcreteBuilderT2() : key_(name()) {
         DEBUG_BUILDER("ConcreteBuilderT2() -- " << T::className());
         Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
 
-    explicit ConcreteBuilderT2(const typename base_t::key_t& k) :
-        key_(k) {
+    explicit ConcreteBuilderT2(const typename base_t::key_t& k) : key_(k) {
         DEBUG_BUILDER("ConcreteBuilderT2() -- " << T::className());
         Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
@@ -277,7 +275,9 @@ public:
 
     ~ConcreteBuilderT2() override {
         DEBUG_BUILDER("~ConcreteBuilderT2() -- " << T::className());
+#if eckit_HAVE_ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
         Factory<typename base_t::product_t>::instance().unregist(key_);
+#endif
     }
 
     // -- Operators
@@ -288,7 +288,9 @@ public:
     // -- Overridden methods
 
     typename base_t::key_t name() const override { return T::className(); }
-    typename base_t::product_t* create(typename base_t::ARG1 p1, typename base_t::ARG2 p2) const override { return new T(p1, p2); }
+    typename base_t::product_t* create(typename base_t::ARG1 p1, typename base_t::ARG2 p2) const override {
+        return new T(p1, p2);
+    }
 
 
 private:

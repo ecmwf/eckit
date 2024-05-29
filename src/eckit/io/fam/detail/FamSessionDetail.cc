@@ -168,9 +168,7 @@ auto FamSessionDetail::lookupObject(const std::string& regionName,
 auto FamSessionDetail::allocateObject(FamRegionDescriptor& region,
                                       const FamProperty&   property) -> std::unique_ptr<FamObjectDetail> {
     // guard
-    // ASSERT(region);
     ASSERT(property.size > 0);
-    ASSERT(isValidName(property.name));
 
     auto allocate =
         static_cast<FamObjectDescriptor* (openfam::fam::*)(const char*, uint64_t, mode_t, FamRegionDescriptor*)>(

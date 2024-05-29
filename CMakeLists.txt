@@ -57,7 +57,7 @@ ecbuild_add_option( FEATURE ECKIT_MEMORY_FACTORY_BUILDERS_DEBUG
                     ADVANCED )
 
 ecbuild_add_option( FEATURE ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
-                    DEFAULT ON
+                    DEFAULT OFF
                     DESCRIPTION "eckit::Factory empty destruction (system dependant)"
                     ADVANCED )
 

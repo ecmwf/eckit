@@ -53,6 +53,11 @@ ecbuild_add_test( TARGET      eckit_test_fam
                   CONDITION   HAVE_OPENFAM
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_famlist
+                  SOURCES     test_famlist.cc
+                  CONDITION   HAVE_OPENFAM
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_partfilehandle
                   SOURCES     test_partfilehandle.cc
                   LIBS        eckit )

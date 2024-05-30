@@ -29,9 +29,9 @@ protected:  // methods
     template <class T>
     friend class CommBuilder;
 
-    Parallel(const std::string& name);
-    Parallel(const std::string& name, MPI_Comm comm, bool);
-    Parallel(const std::string& name, int comm);
+    Parallel(std::string_view name);
+    Parallel(std::string_view name, MPI_Comm comm, bool);
+    Parallel(std::string_view name, int comm);
 
     ~Parallel() override;
 

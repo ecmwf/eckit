@@ -18,6 +18,13 @@
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Tokenizer.h"
 
+namespace {
+    static thread_local std::regex digits_time_("^-?[0-9]+$");
+    static thread_local std::regex float_hours_("^-?[0-9]*\\.[0-9]+$");
+    static thread_local std::regex hhmmss_("^([0-9]+):([0-5]?[0-9])(:[0-5]?[0-9])?$");
+    static thread_local std::regex ddhhmmss_("^-?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?$");
+}
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -45,7 +52,7 @@ Time::Time(const std::string& s, bool extended) {
     long dd = 0;
     std::smatch m;
     
-    if (std::regex_match (s, m, std::regex("^-?[0-9]+$"))) { // only digits
+    if (std::regex_match (s, m, digits_time_)) {
         long t = std::stol(s);
         int sign = (s[0] == '-' ? 1 : 0);
         if (extended || s.length() <= 2+sign) {     // cases: h, hh, (or hhh..h for step parsing)
@@ -62,7 +69,7 @@ Time::Time(const std::string& s, bool extended) {
         }
     }
     else {
-        if (std::regex_match (s, m, std::regex("^-?[0-9]*\\.[0-9]+$"))) { // floating point (hours)
+        if (std::regex_match (s, m, float_hours_)) {
             long sec = std::round(std::stod(s)*3600);
             hh = sec/3600;
             sec -= hh*3600;
@@ -71,7 +78,7 @@ Time::Time(const std::string& s, bool extended) {
             ss = sec;
         }
         else {
-            if (std::regex_match (s, m, std::regex("^([0-9]+):([0-5]?[0-9])(:[0-5]?[0-9])?$"))) {
+            if (std::regex_match (s, m, hhmmss_)) {
                 for (int i=1; i<m.size(); i++) {
                     if (m[i].matched) {
                         switch (i) {
@@ -85,7 +92,7 @@ Time::Time(const std::string& s, bool extended) {
                 }
             }
             else {
-                if (std::regex_match (s, m, std::regex("^-?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?$"))) {
+                if (std::regex_match (s, m, ddhhmmss_)) {
                     for (int i=1; i<m.size(); i++) {
                         if (m[i].matched) {
                             std::string aux = m[i].str();

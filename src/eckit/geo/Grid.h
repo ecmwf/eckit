@@ -26,6 +26,7 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Renumber.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
@@ -35,10 +36,6 @@ namespace eckit {
 class JSON;
 namespace geo {
 class Area;
-class Spec;
-namespace spec {
-class Custom;
-}
 }  // namespace geo
 }  // namespace eckit
 
@@ -108,17 +105,21 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    std::string spec() const;
+    const Spec& spec() const;
+    std::string spec_str() const { return spec().str(); }
+    [[nodiscard]] virtual spec::Custom* calculate_spec() const;
 
     virtual size_t size() const;
-    virtual uid_t uid() const;
+
+    uid_t uid() const;
+    [[nodiscard]] virtual uid_t calculate_uid() const;
 
     virtual bool includesNorthPole() const;
     virtual bool includesSouthPole() const;
     virtual bool isPeriodicWestEast() const;
 
-    virtual std::vector<Point> to_points() const;
-    virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
+    [[nodiscard]] virtual std::vector<Point> to_points() const;
+    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
 
     virtual Ordering order() const;
     virtual Renumber reorder(Ordering) const;
@@ -150,6 +151,9 @@ private:
     // -- Members
 
     mutable std::unique_ptr<const area::BoundingBox> bbox_;
+    mutable std::unique_ptr<const spec::Custom> spec_;
+    mutable uid_t uid_;
+
     std::unique_ptr<Projection> projection_;
 
     // -- Methods
@@ -160,7 +164,7 @@ private:
 
     // -- Friends
 
-    friend bool operator==(const Grid& a, const Grid& b) { return a.spec() == b.spec(); }
+    friend bool operator==(const Grid& a, const Grid& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Grid& a, const Grid& b) { return !(a == b); }
 };
 

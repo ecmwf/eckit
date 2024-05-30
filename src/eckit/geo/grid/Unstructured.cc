@@ -44,9 +44,4 @@ void Unstructured::spec(spec::Custom& custom) const {
 }
 
 
-Grid::uid_t Unstructured::uid() const {
-    NOTIMP;
-}
-
-
 }  // namespace eckit::geo::grid

@@ -59,7 +59,7 @@ private:
             return geo::GridFactory::build(*spec);
         }(user));
 
-        out << "spec" << grid->spec();
+        out << "spec" << grid->spec_str();
         out << "uid" << grid->uid();
         out << "size" << grid->size();
 

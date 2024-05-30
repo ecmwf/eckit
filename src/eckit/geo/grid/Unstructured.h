@@ -37,7 +37,6 @@ public:
     iterator cend() const override;
 
     size_t size() const override { return points_.size(); }
-    uid_t uid() const override;
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }

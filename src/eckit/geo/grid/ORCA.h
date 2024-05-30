@@ -76,14 +76,12 @@ public:
     std::string name() const { return name_; }
     std::string arrangement() const;
 
-    uid_t calculate_uid() const;
-
     // -- Overridden methods
 
     iterator cbegin() const override;
     iterator cend() const override;
 
-    uid_t uid() const override { return uid_; }
+    uid_t calculate_uid() const override;
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }  // FIXME: not sure this is semanticaly correct

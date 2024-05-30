@@ -42,7 +42,7 @@ private:
         }
 
         std::unique_ptr<const geo::Grid> grid(geo::GridFactory::make_from_string(user));
-        auto spec = grid->spec();
+        auto spec = grid->spec_str();
         Log::info() << spec << std::endl;
     }
 

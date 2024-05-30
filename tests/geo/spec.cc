@@ -399,7 +399,7 @@ CASE("spec") {
             std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", name}})));
             EXPECT(grid);
 
-            auto gridspec = grid->spec();
+            auto gridspec = grid->spec_str();
             EXPECT(gridspec == R"({"grid":")" + name + R"("})");
         }
     }
@@ -408,38 +408,38 @@ CASE("spec") {
     SECTION("grid: reduced_gg") {
         std::unique_ptr<const Grid> o16(GridFactory::build(spec::Custom({{"grid", "o16"}})));
 
-        EXPECT(o16->spec() == R"({"grid":"O16"})");
+        EXPECT(o16->spec_str() == R"({"grid":"O16"})");
 
         std::unique_ptr<const Grid> n16(GridFactory::build(spec::Custom({{"grid", "n16"}})));
 
-        EXPECT(n16->spec() == R"({"grid":"N16"})");
+        EXPECT(n16->spec_str() == R"({"grid":"N16"})");
 
         std::unique_ptr<const Grid> known_pl_1(GridFactory::build(
             spec::Custom({{"pl", pl_type{20, 27, 32, 40, 45, 48, 60, 60, 64, 64, 64, 64, 64, 64, 64, 64,
                                          64, 64, 64, 64, 64, 64, 64, 64, 60, 60, 48, 45, 40, 32, 27, 20}}})));
 
-        EXPECT(known_pl_1->spec() == R"({"grid":"N16"})");
+        EXPECT(known_pl_1->spec_str() == R"({"grid":"N16"})");
 
         std::unique_ptr<const Grid> known_pl_2(
             GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 20}}})));
 
-        EXPECT(known_pl_2->spec() == R"({"grid":"O4"})");
+        EXPECT(known_pl_2->spec_str() == R"({"grid":"O4"})");
 
         std::unique_ptr<const Grid> unknown_pl(
             GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 99}}})));
 
-        EXPECT(unknown_pl->spec() == R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
+        EXPECT(unknown_pl->spec_str() == R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
     }
 
 
     SECTION("grid: HEALPix") {
         std::unique_ptr<const Grid> h2(GridFactory::build(spec::Custom({{"grid", "h2"}})));
 
-        EXPECT(h2->spec() == R"({"grid":"H2","ordering":"ring"})");
+        EXPECT(h2->spec_str() == R"({"grid":"H2","ordering":"ring"})");
 
         std::unique_ptr<const Grid> h2n(GridFactory::build(spec::Custom({{"grid", "H2"}, {"ordering", "nested"}})));
 
-        EXPECT(h2n->spec() == R"({"grid":"H2","ordering":"nested"})");
+        EXPECT(h2n->spec_str() == R"({"grid":"H2","ordering":"nested"})");
     }
 }
 

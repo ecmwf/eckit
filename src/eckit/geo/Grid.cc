@@ -18,7 +18,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/etc/Grid.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -43,10 +42,23 @@ Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 Grid::Grid(const area::BoundingBox& bbox) : bbox_(new area::BoundingBox(bbox)) {}
 
 
-std::string Grid::spec() const {
-    spec::Custom gridspec;
-    this->spec(gridspec);
-    return gridspec.str();
+const Spec& Grid::spec() const {
+    if (!spec_) {
+        spec_.reset(calculate_spec());
+    }
+
+    ASSERT(spec_);
+    return *spec_;
+}
+
+
+spec::Custom* Grid::calculate_spec() const {
+    auto* custom = new spec::Custom;
+    ASSERT(custom != nullptr);
+
+    spec(*custom);
+
+    return custom;
 }
 
 
@@ -56,7 +68,14 @@ size_t Grid::size() const {
 
 
 Grid::uid_t Grid::uid() const {
-    return MD5(spec());
+    return uid_.empty() ? (uid_ = calculate_uid()) : uid_;
+}
+
+
+Grid::uid_t Grid::calculate_uid() const {
+    auto id = MD5{spec_str()}.digest();
+    ASSERT(id.length() == MD5_DIGEST_LENGTH * 2);
+    return id;
 }
 
 

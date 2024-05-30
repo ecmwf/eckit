@@ -84,10 +84,10 @@ PointLonLat LambertConformalConic::inv(const Point2& p) const {
         auto lonr = std::atan2(x, y) / n_ + centre_r_.lonr;
         auto latr = 2. * std::atan(std::pow(f_ / rho, 1. / n_)) - M_PI_2;
 
-        return PointLonLat::make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr);
+        return PointLonLat::make_from_lonlatr(lonr, latr);
     }
 
-    return PointLonLat::make(0., n_ > 0 ? PointLonLat::NORTH_POLE : PointLonLat::SOUTH_POLE);
+    return PointLonLat::make(0., n_ > 0 ? PointLonLat::RIGHT_ANGLE : -PointLonLat::RIGHT_ANGLE);
 }
 
 

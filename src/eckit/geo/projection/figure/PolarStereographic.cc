@@ -33,8 +33,8 @@ PolarStereographic::PolarStereographic(PointLonLat centre, PointLonLat first, Fi
     first_(first),
     first_r_(PointLonLatR::make_from_lonlat(first.lon, first.lat)),
     sign_(centre_.lat < 0. ? -1. : 1.),
-    F_(types::is_approximately_equal(centre_.lat, PointLonLat::NORTH_POLE, PointLonLat::EPS)
-               || types::is_approximately_equal(centre_.lat, PointLonLat::SOUTH_POLE, PointLonLat::EPS)
+    F_(types::is_approximately_equal(centre_.lat, PointLonLat::RIGHT_ANGLE, PointLonLat::EPS)
+               || types::is_approximately_equal(centre_.lat, -PointLonLat::RIGHT_ANGLE, PointLonLat::EPS)
            ? 0.5
            : std::tan(0.5 * (M_PI_2 - sign_ * centre_r_.latr)) / std::cos(sign_ * centre_r_.latr)) {
     auto z = fwd(first_);

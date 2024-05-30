@@ -29,7 +29,7 @@ static ProjectionBuilder<Mercator> PROJECTION_2("merc");
 
 Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
     ProjectionOnFigure(figure_ptr),
-    centre_(PointLonLat::make(centre.lon, centre.lat, PointLonLat::ANTIMERIDIAN)),
+    centre_(PointLonLat::make(centre.lon, centre.lat, -PointLonLat::FLAT_ANGLE)),
     first_(first),
     eps_(1e-10),
     max_iter_(15) {
@@ -37,8 +37,8 @@ Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
     // - Equation (7-9) to calculate phi iteratively
     // - Equation (15-11) to calculate t
 
-    if (types::is_approximately_equal(first.lat, PointLonLat::NORTH_POLE)
-        || types::is_approximately_equal(first.lat, PointLonLat::SOUTH_POLE)) {
+    if (types::is_approximately_equal(first.lat, PointLonLat::RIGHT_ANGLE)
+        || types::is_approximately_equal(first.lat, -PointLonLat::RIGHT_ANGLE)) {
         throw ProjectionProblem("Mercator: projection cannot be calculated at the poles", Here());
     }
 

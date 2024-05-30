@@ -34,7 +34,7 @@ static bool is_pole(const double lat) {
 GreatCircle::GreatCircle(const PointLonLat& Alonlat, const PointLonLat& Blonlat) : A_(Alonlat), B_(Blonlat) {
     const bool Apole       = is_pole(A_.lat);
     const bool Bpole       = is_pole(B_.lat);
-    const double lon12_deg = PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, PointLonLat::ANTIMERIDIAN);
+    const double lon12_deg = PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -PointLonLat::FLAT_ANGLE);
 
     const bool lon_same     = Apole || Bpole || is_approximately_equal(lon12_deg, 0.);
     const bool lon_opposite = Apole || Bpole || is_approximately_equal(std::abs(lon12_deg), 180.);
@@ -62,7 +62,7 @@ std::vector<double> GreatCircle::latitude(double lon) const {
     const double lambda1p = util::DEGREE_TO_RADIAN * (lon - A_.lon);
     const double lambda2p = util::DEGREE_TO_RADIAN * (lon - B_.lon);
     const double lambda
-        = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, PointLonLat::ANTIMERIDIAN);
+        = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, -PointLonLat::FLAT_ANGLE);
 
     double lat
         = std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
@@ -81,7 +81,7 @@ std::vector<double> GreatCircle::longitude(double lat) const {
     }
 
     const double lon12
-        = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, PointLonLat::ANTIMERIDIAN);
+        = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -PointLonLat::FLAT_ANGLE);
     const double lon1 = util::DEGREE_TO_RADIAN * A_.lon;
     const double lat1 = util::DEGREE_TO_RADIAN * A_.lat;
     const double lat2 = util::DEGREE_TO_RADIAN * B_.lat;

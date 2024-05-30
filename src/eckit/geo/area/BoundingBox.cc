@@ -106,14 +106,12 @@ bool BoundingBox::isPeriodicWestEast() const {
 
 
 bool BoundingBox::containsNorthPole() const {
-    static const auto POLE = PointLonLat::make(PointLonLat::EQUATOR, PointLonLat::NORTH_POLE);
-    return points_equal({PointLonLat::EQUATOR, north}, POLE);
+    return types::is_approximately_equal(north, NORTH_POLE.lat, PointLonLat::EPS);
 }
 
 
 bool BoundingBox::containsSouthPole() const {
-    static const auto POLE = PointLonLat::make(PointLonLat::EQUATOR, PointLonLat::SOUTH_POLE);
-    return points_equal({PointLonLat::EQUATOR, south}, POLE);
+    return types::is_approximately_equal(south, SOUTH_POLE.lat, PointLonLat::EPS);
 }
 
 

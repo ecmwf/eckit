@@ -20,32 +20,32 @@ namespace eckit::geo {
 
 
 PointLonLatR::value_type PointLonLatR::normalise_angle_to_minimum(value_type a, value_type minimum) {
-    static const auto modulo_globe = [](auto a) { return a - GLOBE * std::floor(a / GLOBE); };
+    static const auto modulus = [](auto a) { return a - FULL_ANGLE * std::floor(a / FULL_ANGLE); };
 
     auto diff = a - minimum;
-    return 0. <= diff && diff < GLOBE ? a : (modulo_globe(diff) + minimum);
+    return 0. <= diff && diff < FULL_ANGLE ? a : (modulus(diff) + minimum);
 }
 
 
 PointLonLatR::value_type PointLonLatR::normalise_angle_to_maximum(value_type a, value_type maximum) {
-    auto modulo_globe = [](auto a) { return a - GLOBE * std::ceil(a / GLOBE); };
+    auto modulus = [](auto a) { return a - FULL_ANGLE * std::ceil(a / FULL_ANGLE); };
 
     auto diff = a - maximum;
-    return -GLOBE < diff && diff <= 0. ? a : (modulo_globe(diff) + maximum);
+    return -FULL_ANGLE < diff && diff <= 0. ? a : (modulus(diff) + maximum);
 }
 
 
 PointLonLatR PointLonLatR::make(value_type lonr, value_type latr, value_type lonr_minimum, value_type eps) {
-    latr = normalise_angle_to_minimum(latr, SOUTH_POLE);
+    latr = normalise_angle_to_minimum(latr, -RIGHT_ANGLE);
 
-    if (types::is_strictly_greater(latr, NORTH_POLE, eps)) {
-        latr = GLOBE / 2. - latr;
-        lonr += GLOBE / 2.;
+    if (types::is_strictly_greater(latr, RIGHT_ANGLE, eps)) {
+        latr = FULL_ANGLE / 2. - latr;
+        lonr += FULL_ANGLE / 2.;
     }
 
-    return types::is_approximately_equal(latr, NORTH_POLE, eps) ? PointLonLatR{0., NORTH_POLE}
-           : types::is_approximately_equal(latr, SOUTH_POLE, eps)
-               ? PointLonLatR{EQUATOR, SOUTH_POLE}
+    return types::is_approximately_equal(latr, RIGHT_ANGLE, eps) ? PointLonLatR{0., RIGHT_ANGLE}
+           : types::is_approximately_equal(latr, -RIGHT_ANGLE, eps)
+               ? PointLonLatR{ZERO_ANGLE, -RIGHT_ANGLE}
                : PointLonLatR{normalise_angle_to_minimum(lonr, lonr_minimum), latr};
 }
 
@@ -56,9 +56,14 @@ PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, valu
 
 
 bool points_equal(const PointLonLatR& a, const PointLonLatR& b, PointLonLatR::value_type eps) {
-    const auto c = PointLonLatR::make(a.lonr, a.latr, PointLonLatR::EQUATOR, eps);
-    const auto d = PointLonLatR::make(b.lonr, b.latr, PointLonLatR::EQUATOR, eps);
+    const auto c = PointLonLatR::make(a.lonr, a.latr, PointLonLatR::ZERO_ANGLE, eps);
+    const auto d = PointLonLatR::make(b.lonr, b.latr, PointLonLatR::ZERO_ANGLE, eps);
     return types::is_approximately_equal(c.lonr, d.lonr, eps) && types::is_approximately_equal(c.latr, d.latr, eps);
 }
+
+
+const PointLonLatR NORTH_POLE_R{PointLonLatR::ZERO_ANGLE, PointLonLatR::RIGHT_ANGLE};
+const PointLonLatR SOUTH_POLE_R{PointLonLatR::ZERO_ANGLE, -PointLonLatR::RIGHT_ANGLE};
+
 
 }  // namespace eckit::geo

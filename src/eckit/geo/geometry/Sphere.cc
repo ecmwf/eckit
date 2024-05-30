@@ -112,7 +112,7 @@ double Sphere::area(double radius, const area::BoundingBox& bbox) {
     ASSERT(radius > 0.);
 
     // Set longitude and latitude fractions
-    auto lonf = bbox.isPeriodicWestEast() ? 1. : (bbox.east - bbox.west) / PointLonLat::GLOBE;
+    auto lonf = bbox.isPeriodicWestEast() ? 1. : (bbox.east - bbox.west) / PointLonLat::FULL_ANGLE;
     ASSERT(0. <= lonf && lonf <= 1.);
 
     auto sn   = std::sin(util::DEGREE_TO_RADIAN * bbox.north);

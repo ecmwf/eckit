@@ -71,23 +71,21 @@ public:
 
     static void assert_latitude_range(const PointLonLat&);
 
-    [[nodiscard]] static PointLonLat make(value_type lon, value_type lat, value_type lon_minimum = EQUATOR,
+    [[nodiscard]] static PointLonLat make(value_type lon, value_type lat, value_type lon_minimum = ZERO_ANGLE,
                                           value_type eps = EPS);
 
-    [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr);
+    [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr,
+                                                       value_type lonr_minimum = ZERO_ANGLE);
 
-    PointLonLat antipode() const { return make(lon, lat + GLOBE / 2.); }
+    PointLonLat antipode() const { return make(lon, lat + FULL_ANGLE / 2.); }
 
     // -- Class members
 
-    static constexpr double GLOBE        = 360.;
-    static constexpr double GREENWICH    = 0.;
-    static constexpr double ANTIMERIDIAN = -180.;
-    static constexpr double EQUATOR      = 0.;
-    static constexpr double NORTH_POLE   = 90.;
-    static constexpr double SOUTH_POLE   = -90.;
-
-    static constexpr value_type EPS = 1e-9;
+    static constexpr value_type FULL_ANGLE  = 360.;
+    static constexpr value_type FLAT_ANGLE  = 180.;
+    static constexpr value_type RIGHT_ANGLE = 90.;
+    static constexpr value_type ZERO_ANGLE  = 0.;
+    static constexpr value_type EPS         = 1e-9;
 
     // -- Class methods
 
@@ -116,6 +114,10 @@ public:
 
 
 bool points_equal(const PointLonLat&, const PointLonLat&, PointLonLat::value_type eps = PointLonLat::EPS);
+
+
+extern const PointLonLat NORTH_POLE;
+extern const PointLonLat SOUTH_POLE;
 
 
 }  // namespace eckit::geo

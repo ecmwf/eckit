@@ -39,8 +39,8 @@ PointLonLatR PointLonLatR::make(value_type lonr, value_type latr, value_type lon
     latr = normalise_angle_to_minimum(latr, -RIGHT_ANGLE);
 
     if (types::is_strictly_greater(latr, RIGHT_ANGLE, eps)) {
-        latr = FULL_ANGLE / 2. - latr;
-        lonr += FULL_ANGLE / 2.;
+        latr = FLAT_ANGLE - latr;
+        lonr += FLAT_ANGLE;
     }
 
     return types::is_approximately_equal(latr, RIGHT_ANGLE, eps) ? PointLonLatR{0., RIGHT_ANGLE}

@@ -54,8 +54,8 @@ PointLonLat PointLonLat::make(value_type lon, value_type lat, value_type lon_min
     lat = normalise_angle_to_minimum(lat, -RIGHT_ANGLE);
 
     if (types::is_strictly_greater(lat, RIGHT_ANGLE, eps)) {
-        lat = FULL_ANGLE / 2. - lat;
-        lon += FULL_ANGLE / 2.;
+        lat = FLAT_ANGLE - lat;
+        lon += FLAT_ANGLE;
     }
 
     return types::is_approximately_equal(lat, RIGHT_ANGLE, eps) ? PointLonLat{0., RIGHT_ANGLE}

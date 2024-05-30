@@ -31,6 +31,8 @@ foreach(_test
         range
         search
         spec
+        spec_custom
+        spec_layered
         util )
     ecbuild_add_test(
         TARGET      eckit_test_geo_${_test}

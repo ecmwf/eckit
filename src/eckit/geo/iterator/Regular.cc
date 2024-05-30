@@ -67,4 +67,9 @@ Point Regular::operator*() const {
 }
 
 
+void Regular::spec(spec::Custom&) const {
+    // FIXME implement
+}
+
+
 }  // namespace eckit::geo::iterator

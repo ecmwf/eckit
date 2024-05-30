@@ -122,4 +122,9 @@ Point Unstructured::operator*() const {
 }
 
 
+void Unstructured::spec(spec::Custom&) const {
+    // FIXME implement
+}
+
+
 }  // namespace eckit::geo::iterator

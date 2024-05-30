@@ -38,7 +38,8 @@ public:
 
     // -- Constructors
 
-    Area() noexcept   = default;
+    Area() noexcept = default;
+
     Area(const Area&) = default;
     Area(Area&&)      = default;
 
@@ -50,6 +51,11 @@ public:
 
     Area& operator=(const Area&) = default;
     Area& operator=(Area&&)      = default;
+
+    // -- Methods
+
+    [[nodiscard]] spec::Custom* spec() const;
+    std::string spec_str() const;
 
     // -- Class methods
 

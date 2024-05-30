@@ -64,6 +64,8 @@ public:
 
     virtual size_t index() const = 0;
 
+    [[nodiscard]] spec::Custom* spec() const;
+
 protected:
     // -- Constructors
 
@@ -71,7 +73,7 @@ protected:
 
     // -- Methods
 
-    virtual void spec(spec::Custom&) const;
+    virtual void spec(spec::Custom&) const = 0;
 
     // -- Friends
 

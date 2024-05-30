@@ -124,10 +124,12 @@ public:
     virtual Ordering order() const;
     virtual Renumber reorder(Ordering) const;
 
-    virtual Area* area() const;
+    virtual const Area& area() const;
+    [[nodiscard]] virtual Area* calculate_area() const;
     virtual Renumber crop(const Area&) const;
 
     virtual const area::BoundingBox& boundingBox() const;
+    [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
     virtual Renumber crop(const area::BoundingBox&) const;
 
     [[nodiscard]] virtual Grid* make_grid_reordered(Ordering) const;
@@ -150,8 +152,8 @@ protected:
 private:
     // -- Members
 
-    std::unique_ptr<Area> area_;
-    std::unique_ptr<Projection> projection_;
+    mutable std::unique_ptr<const Area> area_;
+    mutable std::unique_ptr<const Projection> projection_;
 
     mutable std::unique_ptr<const area::BoundingBox> bbox_;
     mutable std::unique_ptr<const spec::Custom> spec_;
@@ -160,11 +162,8 @@ private:
     // -- Methods
 
     virtual void grid_spec(spec::Custom&) const;
-    virtual void iterator_spec(spec::Custom&) const;
     virtual void area_spec(spec::Custom&) const;
     virtual void projection_spec(spec::Custom&) const;
-
-    [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const { return new area::BoundingBox{}; }
 
     // -- Friends
 

@@ -63,7 +63,8 @@ public:
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
 
-    std::string spec() const;
+    [[nodiscard]] spec::Custom* spec() const;
+    std::string spec_str() const;
 
     // -- Class methods
 
@@ -78,7 +79,7 @@ private:
 
     friend class Grid;
 
-    friend bool operator==(const Projection& a, const Projection& b) { return a.spec() == b.spec(); }
+    friend bool operator==(const Projection& a, const Projection& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Projection& a, const Projection& b) { return !(a == b); }
 };
 

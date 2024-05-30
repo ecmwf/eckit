@@ -12,10 +12,28 @@
 
 #include "eckit/geo/Area.h"
 
+#include <memory>
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo {
+
+
+spec::Custom* Area::spec() const {
+    auto* custom = new spec::Custom;
+    ASSERT(custom != nullptr);
+
+    spec(*custom);
+    return custom;
+}
+
+
+std::string Area::spec_str() const {
+    std::unique_ptr<const spec::Custom> custom(spec());
+    return custom->str();
+}
 
 
 void Area::spec(spec::Custom&) const {

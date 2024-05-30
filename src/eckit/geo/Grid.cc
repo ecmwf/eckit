@@ -45,9 +45,9 @@ Grid::Grid(const area::BoundingBox& bbox) : bbox_(new area::BoundingBox(bbox)) {
 const Spec& Grid::spec() const {
     if (!spec_) {
         spec_.reset(calculate_spec());
+        ASSERT(spec_);
     }
 
-    ASSERT(spec_);
     return *spec_;
 }
 
@@ -57,7 +57,6 @@ spec::Custom* Grid::calculate_spec() const {
     ASSERT(custom != nullptr);
 
     grid_spec(*custom);
-    iterator_spec(*custom);
     area_spec(*custom);
     projection_spec(*custom);
 
@@ -137,8 +136,19 @@ Grid* Grid::make_grid_reordered(Ordering) const {
 }
 
 
-Area* Grid::area() const {
-    return new area::BoundingBox(*bbox_);
+const Area& Grid::area() const {
+    if (!area_) {
+        area_.reset(calculate_area());
+        ASSERT(area_);
+    }
+
+    return *area_;
+}
+
+
+Area* Grid::calculate_area() const {
+    // FIXME temporary implementation
+    return calculate_bbox();
 }
 
 
@@ -157,7 +167,14 @@ const area::BoundingBox& Grid::boundingBox() const {
         bbox_.reset(calculate_bbox());
         ASSERT(bbox_);
     }
+
     return *bbox_;
+}
+
+
+area::BoundingBox* Grid::calculate_bbox() const {
+    // FIXME temporary implementation
+    return new area::BoundingBox;
 }
 
 
@@ -180,11 +197,6 @@ Renumber Grid::no_reorder(size_t size) {
 
 void Grid::grid_spec(spec::Custom&) const {
     NOTIMP;
-}
-
-
-void Grid::iterator_spec(spec::Custom& custom) const {
-    cbegin()->spec(custom);
 }
 
 

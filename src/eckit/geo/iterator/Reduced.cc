@@ -92,4 +92,9 @@ size_t Reduced::j(size_t idx) const {
 }
 
 
+void Reduced::spec(spec::Custom&) const {
+    // FIXME implement
+}
+
+
 }  // namespace eckit::geo::iterator

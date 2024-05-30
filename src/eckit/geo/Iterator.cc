@@ -13,13 +13,18 @@
 #include "eckit/geo/Iterator.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo {
 
 
-void Iterator::spec(spec::Custom&) const {
-    NOTIMP;
+spec::Custom* Iterator::spec() const {
+    auto* custom = new spec::Custom;
+    ASSERT(custom != nullptr);
+
+    spec(*custom);
+    return custom;
 }
 
 

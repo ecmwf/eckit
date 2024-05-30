@@ -56,6 +56,8 @@ private:
     Point operator*() const override;
 
     size_t index() const override { return index_; }
+
+    void spec(spec::Custom&) const override;
 };
 
 

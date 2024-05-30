@@ -12,6 +12,7 @@
 
 #include "eckit/geo/Projection.h"
 
+#include <memory>
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
@@ -28,10 +29,18 @@ ProjectionProblem::ProjectionProblem(const std::string& what, const CodeLocation
 };
 
 
-std::string Projection::spec() const {
-    spec::Custom gridspec;
-    spec(gridspec);
-    return gridspec.str();
+spec::Custom* Projection::spec() const {
+    auto* custom = new spec::Custom;
+    ASSERT(custom != nullptr);
+
+    spec(*custom);
+    return custom;
+}
+
+
+std::string Projection::spec_str() const {
+    std::unique_ptr<const spec::Custom> custom(spec());
+    return custom->str();
 }
 
 

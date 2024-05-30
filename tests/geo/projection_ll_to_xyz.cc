@@ -55,10 +55,10 @@ CASE("projection: ll_to_xyz") {
 
 
     SECTION("spec") {
-        EXPECT(to_xyz_1->spec() == R"({"r":1})");
-        EXPECT(to_xyz_2->spec() == R"({"r":1})");
-        EXPECT(to_xyz_3->spec() == R"({"a":1,"b":0.5})");
-        EXPECT(to_xyz_4->spec() == R"({"a":1,"b":0.5})");
+        EXPECT(to_xyz_1->spec_str() == R"({"r":1})");
+        EXPECT(to_xyz_2->spec_str() == R"({"r":1})");
+        EXPECT(to_xyz_3->spec_str() == R"({"a":1,"b":0.5})");
+        EXPECT(to_xyz_4->spec_str() == R"({"a":1,"b":0.5})");
     }
 
 

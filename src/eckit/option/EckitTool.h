@@ -15,7 +15,6 @@
 
 #pragma once
 
-#include "eckit/filesystem/PathName.h"
 #include "eckit/option/Option.h"
 #include "eckit/runtime/Tool.h"
 
@@ -28,7 +27,7 @@ class CmdArgs;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class EckitTool : public eckit::Tool {
+class EckitTool : public Tool {
 
 protected:  // methods
     EckitTool(int argc, char** argv);
@@ -40,14 +39,14 @@ protected:  // members
     std::vector<eckit::option::Option*> options_;
 
 private:  // methods
-    virtual void init(const eckit::option::CmdArgs& args);
-    virtual void execute(const eckit::option::CmdArgs& args) = 0;
-    virtual void finish(const eckit::option::CmdArgs& args);
+    virtual void init(const option::CmdArgs&) {}
+    virtual void execute(const option::CmdArgs&) = 0;
+    virtual void finish(const option::CmdArgs&) {}
 
     virtual int numberOfPositionalArguments() const { return -1; }
     virtual int minimumPositionalArguments() const { return -1; }
 
-    virtual void run();
+    void run() override;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

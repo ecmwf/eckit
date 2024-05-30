@@ -10,16 +10,13 @@
 
 
 #include <memory>
-#include <regex>
 #include <sstream>
 #include <string>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
-#include "eckit/option/SimpleOption.h"
 #include "eckit/parser/YAMLParser.h"
 
 
@@ -27,9 +24,7 @@ namespace eckit {
 
 class EckitGridSpec final : public EckitTool {
 public:
-    EckitGridSpec(int argc, char** argv) : EckitTool(argc, argv) {
-        options_.push_back(new option::SimpleOption<std::string>("check", "regex to check against result"));
-    }
+    EckitGridSpec(int argc, char** argv) : EckitTool(argc, argv) {}
 
 private:
     void execute(const option::CmdArgs& args) override {
@@ -49,11 +44,6 @@ private:
         std::unique_ptr<const geo::Grid> grid(geo::GridFactory::make_from_string(user));
         auto spec = grid->spec();
         Log::info() << spec << std::endl;
-
-        if (std::string check; args.get("check", check)) {
-            std::regex regex(check);
-            ASSERT_MSG(std::regex_match(spec, regex), "Check failed: '" + check + "'");
-        }
     }
 
     void usage(const std::string& tool) const override {

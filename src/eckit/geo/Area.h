@@ -51,11 +51,18 @@ public:
     Area& operator=(const Area&) = default;
     Area& operator=(Area&&)      = default;
 
-    // -- Methods
+    // -- Class methods
 
     static std::string className() { return "area"; }
 
+private:
+    // -- Methods
+
     virtual void spec(spec::Custom&) const;
+
+    // -- Friends
+
+    friend class Grid;
 };
 
 

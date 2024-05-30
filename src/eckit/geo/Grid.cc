@@ -56,7 +56,10 @@ spec::Custom* Grid::calculate_spec() const {
     auto* custom = new spec::Custom;
     ASSERT(custom != nullptr);
 
-    spec(*custom);
+    grid_spec(*custom);
+    iterator_spec(*custom);
+    area_spec(*custom);
+    projection_spec(*custom);
 
     return custom;
 }
@@ -175,8 +178,27 @@ Renumber Grid::no_reorder(size_t size) {
 }
 
 
-void Grid::spec(spec::Custom&) const {
+void Grid::grid_spec(spec::Custom&) const {
     NOTIMP;
+}
+
+
+void Grid::iterator_spec(spec::Custom& custom) const {
+    cbegin()->spec(custom);
+}
+
+
+void Grid::area_spec(spec::Custom& custom) const {
+    if (area_) {
+        area_->spec(custom);
+    }
+}
+
+
+void Grid::projection_spec(spec::Custom& custom) const {
+    if (projection_) {
+        projection_->spec(custom);
+    }
 }
 
 

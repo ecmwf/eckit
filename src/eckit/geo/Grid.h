@@ -150,15 +150,19 @@ protected:
 private:
     // -- Members
 
+    std::unique_ptr<Area> area_;
+    std::unique_ptr<Projection> projection_;
+
     mutable std::unique_ptr<const area::BoundingBox> bbox_;
     mutable std::unique_ptr<const spec::Custom> spec_;
     mutable uid_t uid_;
 
-    std::unique_ptr<Projection> projection_;
-
     // -- Methods
 
-    virtual void spec(spec::Custom&) const;
+    virtual void grid_spec(spec::Custom&) const;
+    virtual void iterator_spec(spec::Custom&) const;
+    virtual void area_spec(spec::Custom&) const;
+    virtual void projection_spec(spec::Custom&) const;
 
     [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const { return new area::BoundingBox{}; }
 

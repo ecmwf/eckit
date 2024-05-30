@@ -14,7 +14,6 @@
 
 #include <string>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Point.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
@@ -73,9 +72,11 @@ public:
 private:
     // -- Methods
 
-    virtual void spec(spec::Custom&) const { NOTIMP; }
+    virtual void spec(spec::Custom&) const;
 
     // -- Friends
+
+    friend class Grid;
 
     friend bool operator==(const Projection& a, const Projection& b) { return a.spec() == b.spec(); }
     friend bool operator!=(const Projection& a, const Projection& b) { return !(a == b); }

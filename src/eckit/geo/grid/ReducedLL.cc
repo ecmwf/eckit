@@ -66,7 +66,7 @@ std::vector<double> ReducedLL::longitudes(size_t j) const {
 }
 
 
-void ReducedLL::spec(spec::Custom& custom) const {
+void ReducedLL::grid_spec(spec::Custom& custom) const {
     custom.set("type", "reduced_ll");
     custom.set("pl", pl_);
     boundingBox().spec(custom);

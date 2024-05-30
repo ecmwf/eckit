@@ -10,32 +10,15 @@
  */
 
 
-#include "eckit/geo/Projection.h"
-
-#include <sstream>
+#include "eckit/geo/Iterator.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo {
 
 
-ProjectionProblem::ProjectionProblem(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    std::ostringstream s;
-    s << "ProjectionProblem: [" << what << "], in " << loc;
-    reason(s.str());
-};
-
-
-std::string Projection::spec() const {
-    spec::Custom gridspec;
-    spec(gridspec);
-    return gridspec.str();
-}
-
-
-void Projection::spec(spec::Custom&) const {
+void Iterator::spec(spec::Custom&) const {
     NOTIMP;
 }
 

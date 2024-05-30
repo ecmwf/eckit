@@ -19,7 +19,10 @@
 
 namespace eckit::geo {
 class Grid;
+namespace spec {
+class Custom;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -65,6 +68,14 @@ protected:
     // -- Constructors
 
     Iterator() = default;
+
+    // -- Methods
+
+    virtual void spec(spec::Custom&) const;
+
+    // -- Friends
+
+    friend class Grid;
 };
 
 

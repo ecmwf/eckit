@@ -161,9 +161,7 @@ private:
 
     // -- Methods
 
-    virtual void grid_spec(spec::Custom&) const;
-    virtual void area_spec(spec::Custom&) const;
-    virtual void projection_spec(spec::Custom&) const;
+    virtual void spec(spec::Custom&) const;
 
     // -- Friends
 

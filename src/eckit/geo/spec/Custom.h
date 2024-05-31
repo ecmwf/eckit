@@ -64,43 +64,44 @@ public:
 
     void set(const std::string& name, const char* value) { set(name, std::string{value}); }
 
-    void set(const std::string& name, const std::string& value);
-    void set(const std::string& name, bool value);
-    void set(const std::string& name, int value);
-    void set(const std::string& name, long value);
-    void set(const std::string& name, long long value);
-    void set(const std::string& name, size_t value);
-    void set(const std::string& name, float value);
-    void set(const std::string& name, double value);
-    void set(const std::string& name, const std::vector<int>& value);
-    void set(const std::string& name, const std::vector<long>& value);
-    void set(const std::string& name, const std::vector<long long>& value);
-    void set(const std::string& name, const std::vector<size_t>& value);
-    void set(const std::string& name, const std::vector<float>& value);
-    void set(const std::string& name, const std::vector<double>& value);
-    void set(const std::string& name, const std::vector<std::string>& value);
+    void set(const std::string& name, const std::string&);
+    void set(const std::string& name, bool);
+    void set(const std::string& name, int);
+    void set(const std::string& name, long);
+    void set(const std::string& name, long long);
+    void set(const std::string& name, size_t);
+    void set(const std::string& name, float);
+    void set(const std::string& name, double);
+    void set(const std::string& name, const std::vector<int>&);
+    void set(const std::string& name, const std::vector<long>&);
+    void set(const std::string& name, const std::vector<long long>&);
+    void set(const std::string& name, const std::vector<size_t>&);
+    void set(const std::string& name, const std::vector<float>&);
+    void set(const std::string& name, const std::vector<double>&);
+    void set(const std::string& name, const std::vector<std::string>&);
 
-    void set(const std::string& name, const Value& value);
+    void set(const std::string& name, const Value&);
+    void set(const std::string& name, const Custom&);
 
     // -- Overridden methods
 
     bool has(const std::string& name) const override;
 
-    bool get(const std::string& name, std::string& value) const override;
-    bool get(const std::string& name, bool& value) const override;
-    bool get(const std::string& name, int& value) const override;
-    bool get(const std::string& name, long& value) const override;
-    bool get(const std::string& name, long long& value) const override;
-    bool get(const std::string& name, size_t& value) const override;
-    bool get(const std::string& name, float& value) const override;
-    bool get(const std::string& name, double& value) const override;
-    bool get(const std::string& name, std::vector<int>& value) const override;
-    bool get(const std::string& name, std::vector<long>& value) const override;
-    bool get(const std::string& name, std::vector<long long>& value) const override;
-    bool get(const std::string& name, std::vector<size_t>& value) const override;
-    bool get(const std::string& name, std::vector<float>& value) const override;
-    bool get(const std::string& name, std::vector<double>& value) const override;
-    bool get(const std::string& name, std::vector<std::string>& value) const override;
+    bool get(const std::string& name, std::string&) const override;
+    bool get(const std::string& name, bool&) const override;
+    bool get(const std::string& name, int&) const override;
+    bool get(const std::string& name, long&) const override;
+    bool get(const std::string& name, long long&) const override;
+    bool get(const std::string& name, size_t&) const override;
+    bool get(const std::string& name, float&) const override;
+    bool get(const std::string& name, double&) const override;
+    bool get(const std::string& name, std::vector<int>&) const override;
+    bool get(const std::string& name, std::vector<long>&) const override;
+    bool get(const std::string& name, std::vector<long long>&) const override;
+    bool get(const std::string& name, std::vector<size_t>&) const override;
+    bool get(const std::string& name, std::vector<float>&) const override;
+    bool get(const std::string& name, std::vector<double>&) const override;
+    bool get(const std::string& name, std::vector<std::string>&) const override;
 
     // -- Class methods
 

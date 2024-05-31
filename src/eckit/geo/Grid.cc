@@ -56,9 +56,23 @@ spec::Custom* Grid::calculate_spec() const {
     auto* custom = new spec::Custom;
     ASSERT(custom != nullptr);
 
-    grid_spec(*custom);
-    area_spec(*custom);
-    projection_spec(*custom);
+    spec(*custom);
+
+    if (area_) {
+        static const auto AREA_DEFAULT(area::BoundingBox{}.spec_str());
+
+        std::unique_ptr<spec::Custom> area(area_->spec());
+        if (area->str() != AREA_DEFAULT) {
+            custom->set("area", area->str());
+        }
+    }
+
+    if (projection_) {
+        std::unique_ptr<spec::Custom> projection(projection_->spec());
+        if (!projection->str().empty()) {
+            custom->set("projection", projection->str());
+        }
+    }
 
     return custom;
 }
@@ -195,22 +209,8 @@ Renumber Grid::no_reorder(size_t size) {
 }
 
 
-void Grid::grid_spec(spec::Custom&) const {
+void Grid::spec(spec::Custom&) const {
     NOTIMP;
-}
-
-
-void Grid::area_spec(spec::Custom& custom) const {
-    if (area_) {
-        area_->spec(custom);
-    }
-}
-
-
-void Grid::projection_spec(spec::Custom& custom) const {
-    if (projection_) {
-        projection_->spec(custom);
-    }
 }
 
 

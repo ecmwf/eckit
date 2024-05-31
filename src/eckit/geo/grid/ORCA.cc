@@ -321,7 +321,7 @@ Spec* ORCA::spec(const std::string& name) {
 }
 
 
-void ORCA::grid_spec(spec::Custom& custom) const {
+void ORCA::spec(spec::Custom& custom) const {
     custom.set("type", "ORCA");
     custom.set("uid", uid_);
 }

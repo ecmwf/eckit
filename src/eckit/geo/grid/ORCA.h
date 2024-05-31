@@ -104,7 +104,7 @@ private:
 
     // -- Overridden methods
 
-    void grid_spec(spec::Custom&) const override;
+    void spec(spec::Custom&) const override;
 };
 
 

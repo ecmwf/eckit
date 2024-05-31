@@ -125,7 +125,7 @@ Spec* RegularLL::spec(const std::string& name) {
 }
 
 
-void RegularLL::grid_spec(spec::Custom& custom) const {
+void RegularLL::spec(spec::Custom& custom) const {
     custom.set("grid", std::vector<double>{dx(), dy()});
     boundingBox().spec(custom);
 }
@@ -158,7 +158,7 @@ Spec* RegularGaussian::spec(const std::string& name) {
 }
 
 
-void RegularGaussian::grid_spec(spec::Custom& custom) const {
+void RegularGaussian::spec(spec::Custom& custom) const {
     custom.set("grid", "F" + std::to_string(N_));
     boundingBox().spec(custom);
 }
@@ -167,7 +167,7 @@ void RegularGaussian::grid_spec(spec::Custom& custom) const {
 struct Mercator final : public Regular {
     explicit Mercator(const Spec& spec) :
         Regular(Regular::make_cartesian_ranges_from_spec(spec), area::BoundingBox{spec}) {}
-    void grid_spec(spec::Custom& custom) const override {
+    void spec(spec::Custom& custom) const override {
         custom.set("type", "mercator");
         custom.set("grid", std::vector<double>{dx(), dy()});
         custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
@@ -186,7 +186,7 @@ struct Mercator final : public Regular {
 struct LambertAzimuthalEqualArea final : public Regular {
     explicit LambertAzimuthalEqualArea(const Spec& spec) :
         Regular(Regular::make_cartesian_ranges_from_spec(spec), area::BoundingBox{spec}) {}
-    void grid_spec(spec::Custom& custom) const override {
+    void spec(spec::Custom& custom) const override {
         custom.set("type", "lambert_azimuthal_equal_area");
         custom.set("grid", std::vector<double>{dx(), dy()});
         custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});

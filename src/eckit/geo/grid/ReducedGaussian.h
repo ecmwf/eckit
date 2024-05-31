@@ -53,7 +53,7 @@ private:
 
     // -- Overridden methods
 
-    void grid_spec(spec::Custom&) const override;
+    void spec(spec::Custom&) const override;
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t i) const override;

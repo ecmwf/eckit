@@ -134,16 +134,13 @@ Custom::value_type from_value_t(const Value& value) {
 }
 
 
-JSON& operator<<(JSON& out, const Custom::value_type& value) {
-    std::visit([&](const auto& arg) { out << arg; }, value);
-    return out;
-}
-
-
 void sanitise(Custom::container_type& container) {
     std::for_each(container.begin(), container.end(), [](auto& p) {
         if (auto& value = p.second; std::holds_alternative<const char*>(value)) {
             value = std::string{std::get<const char*>(value)};
+        }
+        else if (std::holds_alternative<Custom::custom_type>(value)) {
+            ASSERT(std::get<Custom::custom_type>(value));
         }
     });
 }
@@ -195,7 +192,10 @@ Custom* Custom::make_from_value(const Value& value) {
     Custom::container_type container;
     for (const auto& [key, value] : static_cast<ValueMap>(value)) {
         const std::string name = key;
-        container[name]        = value.isList() ? vector(value) : scalar(value);
+
+        container[name] = value.isMap()    ? custom_type(Custom::make_from_value(value))
+                          : value.isList() ? vector(value)
+                                           : scalar(value);
     }
 
     return new Custom(std::move(container));
@@ -318,6 +318,30 @@ void Custom::set(const std::string& key, const Value& value) {
 }
 
 
+void Custom::set(const std::string& name, Custom* value) {
+    ASSERT(value != nullptr);
+    map_[name] = custom_type(value);
+}
+
+
+bool Custom::get(const std::string& name, custom_type& value) const {
+    if (auto it = map_.find(name); it != map_.cend()) {
+        if (std::holds_alternative<custom_type>(it->second)) {
+            value = std::get<custom_type>(it->second);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+void Custom::set(const std::string& name, const custom_type& value) {
+    ASSERT(value);
+    map_[name] = value;
+}
+
+
 bool Custom::has(const std::string& name) const {
     return map_.find(name) != map_.cend();
 }
@@ -425,10 +449,24 @@ bool Custom::get(const std::string& name, std::vector<std::string>& value) const
 
 void Custom::json(JSON& j) const {
     j.startObject();
-    for (const auto& nv : map_) {
-        j << nv.first << nv.second;
+    for (const auto& [key, value] : map_) {
+        j << key;
+        std::visit([&](const auto& arg) { j << arg; }, value);
     }
     j.endObject();
+}
+
+
+JSON& operator<<(JSON& j, const Custom::custom_type& value) {
+    ASSERT(value);
+    j.startObject();
+    for (const auto& [key, value] : value->container()) {
+        j << key;
+        std::visit([&](const auto& arg) { j << arg; }, value);
+    }
+
+    j.endObject();
+    return j;
 }
 
 

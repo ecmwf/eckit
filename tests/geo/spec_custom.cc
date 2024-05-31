@@ -16,11 +16,15 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/parser/YAMLParser.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::test {
+
+
+using spec::Custom;
 
 
 template <typename T>
@@ -94,10 +98,57 @@ CASE("Custom::value_type") {
 
 
 CASE("Custom::container_type") {
-    spec::Custom spec({{std::string{"foo"}, "bar"}});
+    Custom spec({{std::string{"foo"}, "bar"}});
 
     std::string bar;
     EXPECT(spec.get("foo", bar) && bar == "bar");
+}
+
+
+CASE("Custom::custom_type") {
+    Custom custom1({{"custom1", Custom::custom_type(new Custom({{"foo", "bar"}, {"boo", "far"}}))}});
+
+    EXPECT(custom1.str() == R"({"custom1":{"boo":"far","foo":"bar"}})");
+
+    Custom custom2({{"custom2", Custom::custom_type(new Custom(custom1.container()))}});
+
+    EXPECT(custom2.str() == R"({"custom2":{"custom1":{"boo":"far","foo":"bar"}}})");
+
+    Custom customer1({{"customer", Custom::custom_type(Custom::make_from_value(
+                                       YAMLParser::decodeString("{name: John Smith, age: 33}")))}});
+
+    EXPECT(customer1.str() == R"({"customer":{"age":33,"name":"John Smith"}})");
+
+    Custom customer2({{"customer", Custom::custom_type(Custom::make_from_value(YAMLParser::decodeString(R"(
+name: John Smith
+age: 33
+)")))}});
+
+    EXPECT(customer2.str() == customer1.str());
+
+    Custom nested({{"a", Custom::custom_type(Custom::make_from_value(YAMLParser::decodeString(R"(
+b:
+    c: 1
+    d: "2"
+)")))}});
+
+    EXPECT(nested.str() == R"({"a":{"b":{"c":1,"d":"2"}}})");
+
+    Custom::custom_type a;
+
+    EXPECT(not a && not nested.get("a?", a) && nested.get("a", a) && a);
+
+    Custom::custom_type b;
+
+    EXPECT(not b && a->get("b", b) && b);
+
+    int c = 0;
+
+    EXPECT(b->get("c", c) && c == 1);
+
+    std::string d;
+
+    EXPECT(b->get("d", d) && d == "2");
 }
 
 
@@ -109,7 +160,7 @@ CASE("Spec <- Custom") {
 
 
     SECTION("access") {
-        std::unique_ptr<Spec> spec(new spec::Custom({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
+        std::unique_ptr<Spec> spec(new Custom({{"a", -123}, {"b", "B"}, {"c", 123UL}}));
 
         int a = 0;
         EXPECT(spec->get("a", a));
@@ -128,14 +179,14 @@ CASE("Spec <- Custom") {
         EXPECT_EQUAL(b2, b);
 
         int d = 0;
-        dynamic_cast<spec::Custom*>(spec.get())->set("B", 321);
+        dynamic_cast<Custom*>(spec.get())->set("B", 321);
         EXPECT(spec->get("b", d));
         EXPECT_EQUAL(d, 321);
     }
 
 
     SECTION("conversion (1)") {
-        spec::Custom a({
+        Custom a({
             {"double", static_cast<double>(one)},
             {"float", static_cast<float>(one)},
             {"int", static_cast<int>(one)},
@@ -170,7 +221,7 @@ CASE("Spec <- Custom") {
 
 
     SECTION("conversion (2)") {
-        spec::Custom b({
+        Custom b({
             {"true", true},
             {"false", false},
             {"zero", 0},
@@ -204,7 +255,7 @@ CASE("Spec <- Custom") {
 
 
     SECTION("conversion (3)") {
-        spec::Custom c;
+        Custom c;
         EXPECT_NOT(c.has("foo"));
 
         c.set("foo", two);
@@ -222,7 +273,7 @@ CASE("Spec <- Custom") {
         EXPECT(c.get_string("foo") == three);
 
 
-        spec::Custom d(c.container());
+        Custom d(c.container());
 
         EXPECT(d.has("foo"));
         EXPECT(d.get_string("foo") == three);
@@ -233,7 +284,7 @@ CASE("Spec <- Custom") {
         EXPECT(d.get_int("foo") == one);
 
 
-        spec::Custom e(d.container());
+        Custom e(d.container());
 
         ASSERT(e.has("foo"));
         ASSERT(e.has("bar"));
@@ -241,7 +292,7 @@ CASE("Spec <- Custom") {
 
 
     SECTION("conversion (4)") {
-        spec::Custom e({{"zero", zero}, {"one", one}, {"two", two}});
+        Custom e({{"zero", zero}, {"one", one}, {"two", two}});
 
         bool maybe = true;
         EXPECT(!e.get("?", maybe) && maybe);    // non-existant key
@@ -254,28 +305,28 @@ CASE("Spec <- Custom") {
 
     SECTION("json") {
         // test ordering
-        std::unique_ptr<Spec> a(new spec::Custom({{"c", "c"}, {"a", "a"}, {"b", 1}}));
+        std::unique_ptr<Spec> a(new Custom({{"c", "c"}, {"a", "a"}, {"b", 1}}));
 
         const std::string a_str = a->str();
         const std::string a_ref = R"({"a":"a","b":1,"c":"c"})";
         EXPECT_EQUAL(a_str, a_ref);
 
         // test types
-        std::unique_ptr<Spec> b(new spec::Custom({{"string", "string"},
-                                                  {"bool", true},
-                                                  {"int", static_cast<int>(1)},
-                                                  {"long", static_cast<long>(2)},
-                                                  {"long long", static_cast<long long>(3)},
-                                                  {"size_t", static_cast<std::size_t>(4)},
-                                                  {"float", static_cast<float>(5)},
-                                                  {"double", static_cast<double>(6)},
-                                                  {"vector<int>", std::vector<int>{1, 1}},
-                                                  {"vector<long>", std::vector<long>{2, 2}},
-                                                  {"vector<long long>", std::vector<long long>{3, 3}},
-                                                  {"vector<size_t>", std::vector<std::size_t>{4, 4}},
-                                                  {"vector<float>", std::vector<float>{5, 5}},
-                                                  {"vector<double>", std::vector<double>{6, 6}},
-                                                  {"vector<string>", std::vector<std::string>{"string", "string"}}}));
+        std::unique_ptr<Spec> b(new Custom({{"string", "string"},
+                                            {"bool", true},
+                                            {"int", static_cast<int>(1)},
+                                            {"long", static_cast<long>(2)},
+                                            {"long long", static_cast<long long>(3)},
+                                            {"size_t", static_cast<std::size_t>(4)},
+                                            {"float", static_cast<float>(5)},
+                                            {"double", static_cast<double>(6)},
+                                            {"vector<int>", std::vector<int>{1, 1}},
+                                            {"vector<long>", std::vector<long>{2, 2}},
+                                            {"vector<long long>", std::vector<long long>{3, 3}},
+                                            {"vector<size_t>", std::vector<std::size_t>{4, 4}},
+                                            {"vector<float>", std::vector<float>{5, 5}},
+                                            {"vector<double>", std::vector<double>{6, 6}},
+                                            {"vector<string>", std::vector<std::string>{"string", "string"}}}));
 
         const std::string b_str = b->str();
         const std::string b_ref

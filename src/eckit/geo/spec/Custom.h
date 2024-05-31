@@ -13,6 +13,7 @@
 
 #include <initializer_list>
 #include <map>
+#include <memory>
 #include <variant>
 
 #include "eckit/geo/Spec.h"
@@ -35,10 +36,14 @@ public:
         key_type(const char* s) : key_type(std::string{s}) {}
     };
 
-    using value_type
-        = std::variant<std::string, bool, int, long, long long, size_t, float, double, std::vector<int>,
-                       std::vector<long>, std::vector<long long>, std::vector<size_t>, std::vector<float>,
-                       std::vector<double>, std::vector<std::string>, const char* /* converted to std::string */>;
+    struct custom_type : std::shared_ptr<Custom> {
+        using shared_ptr::shared_ptr;
+    };
+
+    using value_type = std::variant<std::string, bool, int, long, long long, size_t, float, double, std::vector<int>,
+                                    std::vector<long>, std::vector<long long>, std::vector<size_t>, std::vector<float>,
+                                    std::vector<double>, std::vector<std::string>, custom_type,
+                                    const char* /* converted to std::string */>;
 
     using container_type = std::map<key_type, value_type>;
 
@@ -81,7 +86,9 @@ public:
     void set(const std::string& name, const std::vector<std::string>&);
 
     void set(const std::string& name, const Value&);
-    void set(const std::string& name, const Custom&);
+    void set(const std::string& name, Custom*);
+
+    bool get(const std::string& name, custom_type&) const;
 
     // -- Overridden methods
 
@@ -111,7 +118,14 @@ private:
     // -- Members
 
     container_type map_;
+
+    // -- Methods
+
+    void set(const std::string& name, const custom_type&);
 };
+
+
+JSON& operator<<(JSON&, const Custom::custom_type&);
 
 
 }  // namespace eckit::geo::spec

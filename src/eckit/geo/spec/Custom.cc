@@ -324,6 +324,12 @@ void Custom::set(const std::string& name, Custom* value) {
 }
 
 
+bool Custom::has_custom(const std::string& name) const {
+    auto it = map_.find(name);
+    return it != map_.cend() && std::holds_alternative<custom_type>(it->second);
+}
+
+
 const Custom::custom_type& Custom::custom(const std::string& name) const {
     if (auto it = map_.find(name); it != map_.cend()) {
         if (std::holds_alternative<custom_type>(it->second)) {

@@ -134,7 +134,12 @@ b:
 
     EXPECT(nested.str() == R"({"a":{"b":{"c":1,"d":"2"}}})");
 
+    EXPECT(nested.has_custom("a"));
+    EXPECT_NOT(nested.has_custom("a?"));
     EXPECT_THROWS_AS(nested.custom("a?"), SpecNotFound);
+
+    EXPECT(nested.custom("a")->has_custom("b"));
+    EXPECT_NOT(nested.custom("a")->has_custom("b?"));
     EXPECT_THROWS_AS(nested.custom("a")->custom("b?"), SpecNotFound);
 
     const auto& b = nested.custom("a")->custom("b");

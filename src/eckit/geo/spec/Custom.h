@@ -68,6 +68,7 @@ public:
 
     void json(JSON&) const override;
 
+    bool has_custom(const std::string& name) const;
     const custom_type& custom(const std::string& name) const;
 
     void set(const std::string& name, const std::string&);

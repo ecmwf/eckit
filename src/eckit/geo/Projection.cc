@@ -13,7 +13,6 @@
 #include "eckit/geo/Projection.h"
 
 #include <memory>
-#include <sstream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
@@ -23,9 +22,7 @@ namespace eckit::geo {
 
 
 ProjectionProblem::ProjectionProblem(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    std::ostringstream s;
-    s << "ProjectionProblem: [" << what << "], in " << loc;
-    reason(s.str());
+    reason("ProjectionProblem: [" + what + "], in " + loc.asString());
 };
 
 

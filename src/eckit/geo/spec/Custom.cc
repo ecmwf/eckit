@@ -324,15 +324,17 @@ void Custom::set(const std::string& name, Custom* value) {
 }
 
 
-bool Custom::get(const std::string& name, custom_type& value) const {
+const Custom::custom_type& Custom::custom(const std::string& name) const {
     if (auto it = map_.find(name); it != map_.cend()) {
         if (std::holds_alternative<custom_type>(it->second)) {
-            value = std::get<custom_type>(it->second);
-            return true;
+            const auto& value = std::get<custom_type>(it->second);
+            ASSERT(value);
+
+            return value;
         }
     }
 
-    return false;
+    throw SpecNotFound("Custom::get(" + name + ") -> custom_type& ", Here());
 }
 
 

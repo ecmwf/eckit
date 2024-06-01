@@ -58,6 +58,7 @@ public:
     // -- Operators
 
     bool operator==(const Custom&) const;
+    bool operator!=(const Custom& other) const { return !operator==(other); }
 
     // -- Methods
 
@@ -67,7 +68,7 @@ public:
 
     void json(JSON&) const override;
 
-    void set(const std::string& name, const char* value) { set(name, std::string{value}); }
+    const custom_type& custom(const std::string& name) const;
 
     void set(const std::string& name, const std::string&);
     void set(const std::string& name, bool);
@@ -85,10 +86,9 @@ public:
     void set(const std::string& name, const std::vector<double>&);
     void set(const std::string& name, const std::vector<std::string>&);
 
+    void set(const std::string& name, const char* value) { set(name, std::string{value}); }
     void set(const std::string& name, const Value&);
     void set(const std::string& name, Custom*);
-
-    bool get(const std::string& name, custom_type&) const;
 
     // -- Overridden methods
 

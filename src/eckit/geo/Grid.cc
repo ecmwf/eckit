@@ -63,14 +63,15 @@ spec::Custom* Grid::calculate_spec() const {
 
         std::unique_ptr<spec::Custom> area(area_->spec());
         if (area->str() != AREA_DEFAULT) {
-            custom->set("area", area->str());
+            custom->set("area", area.release());
         }
     }
 
     if (projection_) {
         std::unique_ptr<spec::Custom> projection(projection_->spec());
+
         if (!projection->str().empty()) {
-            custom->set("projection", projection->str());
+            custom->set("projection", projection.release());
         }
     }
 

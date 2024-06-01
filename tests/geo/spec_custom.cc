@@ -134,21 +134,37 @@ b:
 
     EXPECT(nested.str() == R"({"a":{"b":{"c":1,"d":"2"}}})");
 
-    Custom::custom_type a;
+    EXPECT_THROWS_AS(nested.custom("a?"), SpecNotFound);
+    EXPECT_THROWS_AS(nested.custom("a")->custom("b?"), SpecNotFound);
 
-    EXPECT(not a && not nested.get("a?", a) && nested.get("a", a) && a);
-
-    Custom::custom_type b;
-
-    EXPECT(not b && a->get("b", b) && b);
+    const auto& b = nested.custom("a")->custom("b");
+    ASSERT(b);
 
     int c = 0;
-
-    EXPECT(b->get("c", c) && c == 1);
-
     std::string d;
 
+    EXPECT(b->get("c", c) && c == 1);
     EXPECT(b->get("d", d) && d == "2");
+}
+
+
+CASE("Custom::operator==") {
+    Custom a({{"foo", "bar"}, {"boo", "far"}});
+    Custom b({{"bOo", "far"}, {"Foo", "bar"}});
+    Custom c({{"foo", "bar"}, {"boo", "faR"}});
+
+    EXPECT(a == b);
+    EXPECT(a != c);
+    EXPECT_NOT(a != b);
+    EXPECT_NOT(a == c);
+
+    // not commutative
+    Custom d({{"foo", "bar"}, {"boo", "far"}, {"roo", "fab"}});
+
+    EXPECT(a == d);
+    EXPECT(d != a);
+    EXPECT_NOT(a != d);
+    EXPECT_NOT(d == a);
 }
 
 

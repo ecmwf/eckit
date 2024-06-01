@@ -35,9 +35,7 @@ static T _get_t(const Spec& spec, const std::string& name) {
 
 
 SpecNotFound::SpecNotFound(const std::string& name, const CodeLocation& loc) : Exception(loc) {
-    std::ostringstream s;
-    s << "SpecNotFound: [" << name << "], in " << loc;
-    reason(s.str());
+    reason("SpecNotFound: [" + name + "], in " + loc.asString());
 }
 
 

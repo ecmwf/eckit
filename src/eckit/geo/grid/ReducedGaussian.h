@@ -58,7 +58,7 @@ private:
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t i) const override;
 
-    [[nodiscard]] Grid* make_grid_cropped(const area::BoundingBox&) const override;
+    [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 };
 
 

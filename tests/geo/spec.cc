@@ -26,13 +26,12 @@ namespace eckit::geo::test {
 
 
 CASE("user -> type") {
-    using C = spec::Custom::container_type;
     using v = std::vector<double>;
 
-    static const C BAD;
+    static const spec::Custom::container_type BAD;
     ASSERT(BAD.empty());
 
-    static std::pair<C, C> tests[]{
+    static std::pair<spec::Custom::container_type, spec::Custom::container_type> tests[]{
         {{{"N", 2}}, {{"N", 2}, {"type", "reduced_gg"}}},
         {{{"area", v{90, -180, -90, 180}}, {"grid", v{2, 2}}}, {{"type", "regular_ll"}}},
         {{{"area", v{90, -180, -90, 180}}}, BAD},

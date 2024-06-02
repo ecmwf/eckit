@@ -29,6 +29,7 @@ namespace eckit::geo::area {
 
 static const BoundingBox GLOBE_PRIME{90., 0., -90., 360.};
 static const BoundingBox GLOBE_ANTIPRIME{90., -180., -90., 180.};
+static const BoundingBox& DEFAULT = GLOBE_PRIME;
 
 
 BoundingBox* BoundingBox::make_global_prime() {
@@ -42,14 +43,15 @@ BoundingBox* BoundingBox::make_global_antiprime() {
 
 
 void BoundingBox::spec(spec::Custom& custom) const {
-    if (operator!=(GLOBE_PRIME)) {
-        custom.set("area", std::vector<double>{north, west, south, east});
+    if (operator!=(DEFAULT)) {
+        custom.set("type", "bounding-box");
+        custom.set("bounding-box", std::vector<double>{north, west, south, east});
     }
 }
 
 
 BoundingBox* BoundingBox::make_from_spec(const Spec& spec) {
-    const auto [n, w, s, e] = GLOBE_PRIME.deconstruct();
+    const auto [n, w, s, e] = DEFAULT.deconstruct();
 
     if (std::vector<double> area{n, w, s, e}; spec.get("area", area)) {
         ASSERT_MSG(area.size() == 4, "BoundingBox: 'area' expected list of size 4");
@@ -87,7 +89,7 @@ BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s
 }
 
 
-BoundingBox::BoundingBox() : BoundingBox(GLOBE_PRIME) {}
+BoundingBox::BoundingBox() : BoundingBox(DEFAULT) {}
 
 
 bool BoundingBox::operator==(const BoundingBox& other) const {

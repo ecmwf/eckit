@@ -107,7 +107,6 @@ public:
 
     const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
-    [[nodiscard]] virtual spec::Custom* calculate_spec() const;
 
     virtual size_t size() const;
 
@@ -125,16 +124,13 @@ public:
     virtual Renumber reorder(Ordering) const;
 
     virtual const Area& area() const;
-    [[nodiscard]] virtual Area* calculate_area() const;
     virtual Renumber crop(const Area&) const;
 
     virtual const area::BoundingBox& boundingBox() const;
     [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
-    virtual Renumber crop(const area::BoundingBox&) const;
 
     [[nodiscard]] virtual Grid* make_grid_reordered(Ordering) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
-    [[nodiscard]] virtual Grid* make_grid_cropped(const area::BoundingBox&) const;
 
     // -- Class methods
 
@@ -147,21 +143,22 @@ protected:
 
     // -- Methods
 
+    virtual void spec(spec::Custom&) const;
+
     static Renumber no_reorder(size_t size);
+
+    void area(Area* ptr) { area_.reset(ptr); }
+    void projection(Projection* ptr) { projection_.reset(ptr); }
 
 private:
     // -- Members
 
-    mutable std::unique_ptr<const Area> area_;
-    mutable std::unique_ptr<const Projection> projection_;
+    mutable std::unique_ptr<Area> area_;
+    mutable std::unique_ptr<Projection> projection_;
 
-    mutable std::unique_ptr<const area::BoundingBox> bbox_;
-    mutable std::unique_ptr<const spec::Custom> spec_;
+    mutable std::unique_ptr<area::BoundingBox> bbox_;
+    mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;
-
-    // -- Methods
-
-    virtual void spec(spec::Custom&) const;
 
     // -- Friends
 

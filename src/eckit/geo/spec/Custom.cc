@@ -139,8 +139,8 @@ void sanitise(Custom::container_type& container) {
         if (auto& value = p.second; std::holds_alternative<const char*>(value)) {
             value = std::string{std::get<const char*>(value)};
         }
-        else if (std::holds_alternative<Custom::custom_type>(value)) {
-            ASSERT(std::get<Custom::custom_type>(value));
+        else if (std::holds_alternative<Custom::custom_ptr>(value)) {
+            ASSERT(std::get<Custom::custom_ptr>(value));
         }
     });
 }
@@ -193,7 +193,7 @@ Custom* Custom::make_from_value(const Value& value) {
     for (const auto& [key, value] : static_cast<ValueMap>(value)) {
         const std::string name = key;
 
-        container[name] = value.isMap()    ? custom_type(Custom::make_from_value(value))
+        container[name] = value.isMap()    ? custom_ptr(Custom::make_from_value(value))
                           : value.isList() ? vector(value)
                                            : scalar(value);
     }
@@ -320,20 +320,20 @@ void Custom::set(const std::string& key, const Value& value) {
 
 void Custom::set(const std::string& name, Custom* value) {
     ASSERT(value != nullptr);
-    map_[name] = custom_type(value);
+    map_[name] = custom_ptr(value);
 }
 
 
 bool Custom::has_custom(const std::string& name) const {
     auto it = map_.find(name);
-    return it != map_.cend() && std::holds_alternative<custom_type>(it->second);
+    return it != map_.cend() && std::holds_alternative<custom_ptr>(it->second);
 }
 
 
-const Custom::custom_type& Custom::custom(const std::string& name) const {
+const Custom::custom_ptr& Custom::custom(const std::string& name) const {
     if (auto it = map_.find(name); it != map_.cend()) {
-        if (std::holds_alternative<custom_type>(it->second)) {
-            const auto& value = std::get<custom_type>(it->second);
+        if (std::holds_alternative<custom_ptr>(it->second)) {
+            const auto& value = std::get<custom_ptr>(it->second);
             ASSERT(value);
 
             return value;
@@ -344,7 +344,7 @@ const Custom::custom_type& Custom::custom(const std::string& name) const {
 }
 
 
-void Custom::set(const std::string& name, const custom_type& value) {
+void Custom::set(const std::string& name, const custom_ptr& value) {
     ASSERT(value);
     map_[name] = value;
 }
@@ -465,7 +465,7 @@ void Custom::json(JSON& j) const {
 }
 
 
-JSON& operator<<(JSON& j, const Custom::custom_type& value) {
+JSON& operator<<(JSON& j, const Custom::custom_ptr& value) {
     ASSERT(value);
     j.startObject();
     for (const auto& [key, value] : value->container()) {

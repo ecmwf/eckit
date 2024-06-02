@@ -106,27 +106,27 @@ CASE("Custom::container_type") {
 
 
 CASE("Custom::custom_type") {
-    Custom custom1({{"custom1", Custom::custom_type(new Custom({{"foo", "bar"}, {"boo", "far"}}))}});
+    Custom custom1({{"custom1", Custom::custom_ptr(new Custom({{"foo", "bar"}, {"boo", "far"}}))}});
 
     EXPECT(custom1.str() == R"({"custom1":{"boo":"far","foo":"bar"}})");
 
-    Custom custom2({{"custom2", Custom::custom_type(new Custom(custom1.container()))}});
+    Custom custom2({{"custom2", Custom::custom_ptr(new Custom(custom1.container()))}});
 
     EXPECT(custom2.str() == R"({"custom2":{"custom1":{"boo":"far","foo":"bar"}}})");
 
-    Custom customer1({{"customer", Custom::custom_type(Custom::make_from_value(
+    Custom customer1({{"customer", Custom::custom_ptr(Custom::make_from_value(
                                        YAMLParser::decodeString("{name: John Smith, age: 33}")))}});
 
     EXPECT(customer1.str() == R"({"customer":{"age":33,"name":"John Smith"}})");
 
-    Custom customer2({{"customer", Custom::custom_type(Custom::make_from_value(YAMLParser::decodeString(R"(
+    Custom customer2({{"customer", Custom::custom_ptr(Custom::make_from_value(YAMLParser::decodeString(R"(
 name: John Smith
 age: 33
 )")))}});
 
     EXPECT(customer2.str() == customer1.str());
 
-    Custom nested({{"a", Custom::custom_type(Custom::make_from_value(YAMLParser::decodeString(R"(
+    Custom nested({{"a", Custom::custom_ptr(Custom::make_from_value(YAMLParser::decodeString(R"(
 b:
     c: 1
     d: "2"

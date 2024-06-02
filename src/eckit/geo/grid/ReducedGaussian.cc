@@ -109,6 +109,8 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
 
 
 void ReducedGaussian::spec(spec::Custom& custom) const {
+    Reduced::spec(custom);
+
     if (pl_ == util::reduced_octahedral_pl(N_)) {
         custom.set("grid", "O" + std::to_string(N_));
     }
@@ -118,14 +120,12 @@ void ReducedGaussian::spec(spec::Custom& custom) const {
             custom.set("pl", pl_);
         }
     }
-
-    boundingBox().spec(custom);
 }
 
 
-Grid* ReducedGaussian::make_grid_cropped(const area::BoundingBox& crop) const {
-    if (auto bbox(boundingBox()); crop.intersects(bbox)) {
-        return new ReducedGaussian(pl_, bbox);
+Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
+    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
+        return new ReducedGaussian(pl_, cropped);
     }
 
     throw UserError("ReducedGaussian: cannot crop grid (empty intersection)", Here());

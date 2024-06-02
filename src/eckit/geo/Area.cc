@@ -36,9 +36,4 @@ std::string Area::spec_str() const {
 }
 
 
-void Area::spec(spec::Custom&) const {
-    NOTIMP;
-}
-
-
 }  // namespace eckit::geo

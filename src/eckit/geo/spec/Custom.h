@@ -31,18 +31,18 @@ class Custom final : public Spec {
 public:
     // -- Types
 
+    struct custom_ptr : std::shared_ptr<Custom> {
+        using shared_ptr::shared_ptr;
+    };
+
     struct key_type : std::string {
         key_type(const std::string&);
         key_type(const char* s) : key_type(std::string{s}) {}
     };
 
-    struct custom_type : std::shared_ptr<Custom> {
-        using shared_ptr::shared_ptr;
-    };
-
     using value_type = std::variant<std::string, bool, int, long, long long, size_t, float, double, std::vector<int>,
                                     std::vector<long>, std::vector<long long>, std::vector<size_t>, std::vector<float>,
-                                    std::vector<double>, std::vector<std::string>, custom_type,
+                                    std::vector<double>, std::vector<std::string>, custom_ptr,
                                     const char* /* converted to std::string */>;
 
     using container_type = std::map<key_type, value_type>;
@@ -69,7 +69,7 @@ public:
     void json(JSON&) const override;
 
     bool has_custom(const std::string& name) const;
-    const custom_type& custom(const std::string& name) const;
+    const custom_ptr& custom(const std::string& name) const;
 
     void set(const std::string& name, const std::string&);
     void set(const std::string& name, bool);
@@ -122,11 +122,11 @@ private:
 
     // -- Methods
 
-    void set(const std::string& name, const custom_type&);
+    void set(const std::string& name, const custom_ptr&);
 };
 
 
-JSON& operator<<(JSON&, const Custom::custom_type&);
+JSON& operator<<(JSON&, const Custom::custom_ptr&);
 
 
 }  // namespace eckit::geo::spec

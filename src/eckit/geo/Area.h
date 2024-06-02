@@ -19,6 +19,9 @@
 
 
 namespace eckit::geo {
+namespace area {
+class BoundingBox;
+}
 class Spec;
 namespace spec {
 class Custom;
@@ -57,6 +60,8 @@ public:
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;
 
+    virtual bool intersects(area::BoundingBox&) const = 0;
+
     // -- Class methods
 
     static std::string className() { return "area"; }
@@ -64,7 +69,7 @@ public:
 private:
     // -- Methods
 
-    virtual void spec(spec::Custom&) const;
+    virtual void spec(spec::Custom&) const = 0;
 
     // -- Friends
 

@@ -73,8 +73,6 @@ public:
     bool containsNorthPole() const;
     bool containsSouthPole() const;
 
-    bool intersects(BoundingBox&) const;
-
     bool contains(const PointLonLat&) const;
     bool contains(const BoundingBox&) const;
     bool empty() const;
@@ -82,6 +80,7 @@ public:
     // -- Overridden methods
 
     void spec(spec::Custom&) const override;
+    bool intersects(BoundingBox&) const override;
 
     // -- Class methods
 

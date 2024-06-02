@@ -44,38 +44,12 @@ Grid::Grid(const area::BoundingBox& bbox) : bbox_(new area::BoundingBox(bbox)) {
 
 const Spec& Grid::spec() const {
     if (!spec_) {
-        spec_.reset(calculate_spec());
+        spec_ = std::make_unique<spec::Custom>();
         ASSERT(spec_);
+        spec(*spec_);
     }
 
     return *spec_;
-}
-
-
-spec::Custom* Grid::calculate_spec() const {
-    auto* custom = new spec::Custom;
-    ASSERT(custom != nullptr);
-
-    spec(*custom);
-
-    if (area_) {
-        static const auto AREA_DEFAULT(area::BoundingBox{}.spec_str());
-
-        std::unique_ptr<spec::Custom> area(area_->spec());
-        if (area->str() != AREA_DEFAULT) {
-            custom->set("area", area.release());
-        }
-    }
-
-    if (projection_) {
-        std::unique_ptr<spec::Custom> projection(projection_->spec());
-
-        if (!projection->str().empty()) {
-            custom->set("projection", projection.release());
-        }
-    }
-
-    return custom;
 }
 
 
@@ -153,17 +127,11 @@ Grid* Grid::make_grid_reordered(Ordering) const {
 
 const Area& Grid::area() const {
     if (!area_) {
-        area_.reset(calculate_area());
+        area_ = std::make_unique<area::BoundingBox>();
         ASSERT(area_);
     }
 
     return *area_;
-}
-
-
-Area* Grid::calculate_area() const {
-    // FIXME temporary implementation
-    return calculate_bbox();
 }
 
 
@@ -193,16 +161,6 @@ area::BoundingBox* Grid::calculate_bbox() const {
 }
 
 
-Renumber Grid::crop(const area::BoundingBox& bbox) const {
-    return crop(static_cast<const Area&>(bbox));
-}
-
-
-Grid* Grid::make_grid_cropped(const area::BoundingBox& bbox) const {
-    return make_grid_cropped(static_cast<const Area&>(bbox));
-}
-
-
 Renumber Grid::no_reorder(size_t size) {
     Renumber ren(size);
     std::iota(ren.begin(), ren.end(), 0);
@@ -210,8 +168,23 @@ Renumber Grid::no_reorder(size_t size) {
 }
 
 
-void Grid::spec(spec::Custom&) const {
-    NOTIMP;
+void Grid::spec(spec::Custom& custom) const {
+    if (area_) {
+        static const auto AREA_DEFAULT(area::BoundingBox{}.spec_str());
+
+        std::unique_ptr<spec::Custom> area(area_->spec());
+        if (area->str() != AREA_DEFAULT) {
+            custom.set("area", area.release());
+        }
+    }
+
+    if (projection_) {
+        std::unique_ptr<spec::Custom> projection(projection_->spec());
+
+        if (!projection->str().empty()) {
+            custom.set("projection", projection.release());
+        }
+    }
 }
 
 

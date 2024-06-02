@@ -28,6 +28,12 @@ double OblateSpheroid::eccentricity(double a, double b) {
 }
 
 
+double OblateSpheroid::flattening(double a, double b) {
+    ASSERT(0. < b && b <= a);
+    return (a - b) / a;
+}
+
+
 Point3 OblateSpheroid::convertSphericalToCartesian(double a, double b, const PointLonLat& P, double height) {
     ASSERT(0. < b && 0. < a);
 

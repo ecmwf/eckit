@@ -18,7 +18,7 @@
 namespace eckit::geo::figure {
 
 
-class OblateSpheroid final : public Figure {
+class OblateSpheroid : public Figure {
 public:
     // -- Constructors
 
@@ -36,10 +36,6 @@ private:
 
     const double a_;
     const double b_;
-
-    // -- Overridden methods
-
-    void spec(spec::Custom&) const override;
 };
 
 

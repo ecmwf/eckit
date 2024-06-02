@@ -25,6 +25,9 @@ struct OblateSpheroid {
     /// Elliptic eccentricity
     static double eccentricity(double a, double b);
 
+    /// Flattening
+    static double flattening(double a, double b);
+
     /// Surface area [m ** 2]
     static double area(double a, double b);
 

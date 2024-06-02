@@ -34,7 +34,7 @@ CASE("Sphere") {
     F f2(FigureFactory::build(spec::Custom{{"a", 1.}, {"b", 1.}}));
     F f3(new figure::Sphere(1.));
 
-    EXPECT_THROWS_AS(figure::Sphere(-1.), AssertionFailed);
+    EXPECT_THROWS_AS(figure::Sphere(-1.), BadValue);
 
     EXPECT(*f1 == *f2);
     EXPECT(*f1 == *f3);
@@ -42,7 +42,7 @@ CASE("Sphere") {
     auto e = f1->eccentricity();
     EXPECT(types::is_approximately_equal(e, 0.));
 
-    EXPECT(f1->spec() == R"({"r":1})");
+    EXPECT(f1->spec_str() == R"({"r":1})");
 }
 
 
@@ -50,25 +50,31 @@ CASE("Oblate spheroid") {
     F f1(FigureFactory::build(spec::Custom{{"b", 0.5}, {"a", 1.}}));
     F f2(new figure::OblateSpheroid(1., 0.5));
 
-    EXPECT_THROWS_AS(figure::OblateSpheroid(0.5, 1.), AssertionFailed);  // prolate spheroid
-    EXPECT_THROWS_AS(figure::OblateSpheroid(1., -1.), AssertionFailed);
+    EXPECT_THROWS_AS(figure::OblateSpheroid(0.5, 1.), BadValue);  // prolate spheroid
+    EXPECT_THROWS_AS(figure::OblateSpheroid(1., -1.), BadValue);
 
     EXPECT(*f1 == *f2);
 
     auto e = f1->eccentricity();
     EXPECT(types::is_strictly_greater(e, 0.));
 
-    EXPECT(f1->spec() == R"({"a":1,"b":0.5})");
+    EXPECT(f1->spec_str() == R"({"a":1,"b":0.5})");
 }
 
 
 CASE("Earth") {
-    F f1(FigureFactory::build(spec::Custom{{"figure", "earth"}}));
+    F f1(FigureFactory::build(spec::Custom{{"r", 6371229.}}));
     F f2(new figure::Earth);
 
     EXPECT(*f1 == *f2);
+    EXPECT(f1->spec_str() == R"({"figure":"earth"})");
+    EXPECT(types::is_approximately_equal(f1->R(), 6371229., 1e-8));
 
-    EXPECT(f1->spec() == R"({"r":6.37123e+06})");
+    F f4(FigureFactory::build(spec::Custom{{"figure", "wgs84"}}));
+
+    EXPECT(f4->spec_str() == R"({"figure":"wgs84"})");
+    EXPECT(types::is_approximately_equal(1. / f4->flattening(), 298.257223563, 1e-8));
+    EXPECT_THROWS_AS(f4->R(), BadValue);
 }
 
 

@@ -13,8 +13,10 @@
 #include "eckit/geo/Figure.h"
 
 #include <memory>
+#include <utility>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/geometry/OblateSpheroid.h"
@@ -50,10 +52,18 @@ double Figure::b() const {
 }
 
 
-std::string Figure::spec() const {
-    spec::Custom gridspec;
-    spec(gridspec);
-    return gridspec.str();
+spec::Custom* Figure::spec() const {
+    auto* custom = new spec::Custom;
+    ASSERT(custom != nullptr);
+
+    spec(*custom);
+    return custom;
+}
+
+
+std::string Figure::spec_str() const {
+    std::unique_ptr<const spec::Custom> custom(spec());
+    return custom->str();
 }
 
 
@@ -62,8 +72,32 @@ double Figure::eccentricity() const {
 }
 
 
-void Figure::spec(spec::Custom&) const {
-    NOTIMP;
+double Figure::flattening() const {
+    return geometry::OblateSpheroid::flattening(a(), b());
+}
+
+
+void Figure::spec(spec::Custom& custom) const {
+    static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
+        {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
+        {std::shared_ptr<Figure>{new figure::GRS80}, "grs80"},
+        {std::shared_ptr<Figure>{new figure::WGS84}, "wgs84"},
+    };
+
+    for (const auto& [figure, name] : KNOWN) {
+        if (types::is_approximately_equal(figure->a(), a()) && types::is_approximately_equal(figure->b(), b())) {
+            custom.set("figure", name);
+            return;
+        }
+    }
+
+    if (types::is_approximately_equal(a(), b())) {
+        custom.set("R", R());
+    }
+    else {
+        custom.set("a", a());
+        custom.set("b", b());
+    }
 }
 
 

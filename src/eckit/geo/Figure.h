@@ -68,9 +68,11 @@ public:
     virtual double a() const;
     virtual double b() const;
 
-    virtual std::string spec() const;
+    [[nodiscard]] spec::Custom* spec() const;
+    std::string spec_str() const;
 
     double eccentricity() const;
+    double flattening() const;
 
 private:
     // -- Methods
@@ -79,7 +81,7 @@ private:
 
     // -- Friends
 
-    friend bool operator==(const Figure& a, const Figure& b) { return a.spec() == b.spec(); }
+    friend bool operator==(const Figure& a, const Figure& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Figure& a, const Figure& b) { return !(a == b); }
 };
 

@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
 
 
@@ -19,23 +20,42 @@ namespace eckit::geo::figure {
 
 
 struct DatumIFS {
-    static constexpr double radius() { return 6371229.; }
+    static constexpr double radius = 6371229.;
 };
 
 
 struct DatumGRIB1 {
-    static constexpr double radius() { return 6367470.; }
+    static constexpr double radius = 6367470.;
 };
 
 
-struct DatumWGS84SemiMajorAxis {
-    static constexpr double radius() { return 6378137.; }
+struct DatumGRS80 {
+    static constexpr double a = 6378137.;
+    static constexpr double b = 6356752.314140;
+};
+
+
+struct DatumWGS84 {
+    static constexpr double a = 6378137.;
+    static constexpr double b = 6356752.314245;
 };
 
 
 struct Earth final : public Sphere {
-    explicit Earth() : Sphere(DatumIFS::radius()) {}
+    explicit Earth() : Sphere(DatumIFS::radius) {}
     explicit Earth(const Spec&) : Earth() {}
+};
+
+
+struct GRS80 final : public OblateSpheroid {
+    explicit GRS80() : OblateSpheroid(DatumGRS80::a, DatumGRS80::b) {}
+    explicit GRS80(const Spec&) : GRS80() {}
+};
+
+
+struct WGS84 final : public OblateSpheroid {
+    explicit WGS84() : OblateSpheroid(DatumWGS84::a, DatumWGS84::b) {}
+    explicit WGS84(const Spec&) : WGS84() {}
 };
 
 

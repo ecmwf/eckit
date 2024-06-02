@@ -35,10 +35,6 @@ private:
     // -- Members
 
     const double R_;
-
-    // -- Overridden methods
-
-    void spec(spec::Custom&) const override;
 };
 
 

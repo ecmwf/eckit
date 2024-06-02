@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "eckit/geo/grid/RegularLonLat.h"
+#include "eckit/geo/grid/Regular.h"
 
 
-namespace eckit::geo::grid::regularlonlat {
+namespace eckit::geo::grid {
 
 
-struct RegularLL final : public RegularLonLat {
+struct RegularLL final : public Regular {
     explicit RegularLL(const Spec&);
     explicit RegularLL(const Increments&, const area::BoundingBox& = {});
     RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
@@ -30,4 +30,4 @@ struct RegularLL final : public RegularLonLat {
 };
 
 
-}  // namespace eckit::geo::grid::regularlonlat
+}  // namespace eckit::geo::grid

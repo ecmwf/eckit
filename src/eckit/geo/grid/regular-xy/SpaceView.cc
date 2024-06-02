@@ -10,25 +10,25 @@
  */
 
 
-#include "eckit/geo/grid/regular-lonlat/LambertConformalConic.h"
+#include "eckit/geo/grid/regular-xy/SpaceView.h"
 
 #include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::grid::regularlonlat {
+namespace eckit::geo::grid::regularxy {
 
 
-static const GridRegisterType<LambertConformalConic> GRIDTYPE("lambert");
+static const GridRegisterType<SpaceView> GRIDTYPE("space_view");
 
 
-void LambertConformalConic::spec(spec::Custom& custom) const {
-    RegularLonLat::spec(custom);
+void SpaceView::spec(spec::Custom& custom) const {
+    RegularXY::spec(custom);
 
-    custom.set("type", "lambert");
+    custom.set("type", "space_view");
 
     // FIXME a lot more stuff to add here!
     //...
 }
 
 
-}  // namespace eckit::geo::grid::regularlonlat
+}  // namespace eckit::geo::grid::regularxy

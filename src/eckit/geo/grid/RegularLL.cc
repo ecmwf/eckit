@@ -10,17 +10,18 @@
  */
 
 
-#include "eckit/geo/grid/regular-lonlat/RegularLL.h"
+#include "eckit/geo/grid/RegularLL.h"
 
-// #include "eckit/geo/Increments.h"
-// #include "eckit/types/Fraction.h"
+#include <vector>
+
+#include "eckit/geo/Increments.h"
 #include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/utils/Translator.h"
 
 
-namespace eckit::geo::grid::regularlonlat {
+namespace eckit::geo::grid {
 
 
 #define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)([eE][-+][0-9]+)?"
@@ -30,8 +31,13 @@ static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REA
 
 RegularLL::RegularLL(const Spec& spec) :
     RegularLL(Increments{spec}, area::BoundingBox{spec}, [&spec]() -> PointLonLat {
-        if (double lon = 0., lat = 0.; spec.get("reference_lon", lon) && spec.get("reference_lat", lat)) {
-            return {lon, lat};
+        std::vector<PointLonLat::value_type> v(2);
+        if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
+            return {v[0], v[1]};
+        }
+
+        if (spec.get("reference_lonlat", v) && v.size() == 2) {
+            return {v[0], v[1]};
         }
 
         area::BoundingBox area{spec};
@@ -46,9 +52,9 @@ RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox) :
 
 
 RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref) :
-    RegularLonLat({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon, 0.),
-                   new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat, 0.)},
-                  bbox) {
+    Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon, 0.),
+             new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat, 0.)},
+            bbox) {
     ASSERT(size() > 0);
 }
 
@@ -65,7 +71,7 @@ Spec* RegularLL::spec(const std::string& name) {
 
 
 void RegularLL::spec(spec::Custom& custom) const {
-    RegularLonLat::spec(custom);
+    Regular::spec(custom);
 
     custom.set("grid", std::vector<double>{dx(), dy()});
 }
@@ -84,4 +90,4 @@ static const GridRegisterName<RegularLL> GRIDNAME(REGULAR_LL_PATTERN);
 static const GridRegisterType<RegularLL> GRIDTYPE("regular_ll");
 
 
-}  // namespace eckit::geo::grid::regularlonlat
+}  // namespace eckit::geo::grid

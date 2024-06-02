@@ -120,7 +120,7 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
 
-    virtual Ordering order() const;
+    virtual Ordering ordering() const;
     virtual Renumber reorder(Ordering) const;
 
     virtual const Area& area() const;
@@ -139,7 +139,7 @@ public:
 protected:
     // -- Constructors
 
-    explicit Grid(const area::BoundingBox&);
+    explicit Grid(const area::BoundingBox&, Ordering = Ordering::DEFAULT);
 
     // -- Methods
 
@@ -159,6 +159,8 @@ private:
     mutable std::unique_ptr<area::BoundingBox> bbox_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;
+
+    Ordering ordering_;
 
     // -- Friends
 

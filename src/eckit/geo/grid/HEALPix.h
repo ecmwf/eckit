@@ -42,7 +42,7 @@ public:
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
-    Ordering order() const override { return ordering_; }
+    Ordering ordering() const override { return ordering_; }
     Renumber reorder(Ordering) const override;
     [[nodiscard]] Grid* make_grid_reordered(Ordering ordering) const override { return new HEALPix(Nside_, ordering); }
 

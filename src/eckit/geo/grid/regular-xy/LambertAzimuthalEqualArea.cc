@@ -10,19 +10,19 @@
  */
 
 
-#include "eckit/geo/grid/regular-lonlat/LambertAzimuthalEqualArea.h"
+#include "eckit/geo/grid/regular-xy/LambertAzimuthalEqualArea.h"
 
 #include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::grid::regularlonlat {
+namespace eckit::geo::grid::regularxy {
 
 
 static const GridRegisterType<LambertAzimuthalEqualArea> GRIDTYPE("lambert_azimuthal_equal_area");
 
 
 void LambertAzimuthalEqualArea::spec(spec::Custom& custom) const {
-    RegularLonLat::spec(custom);
+    RegularXY::spec(custom);
 
     custom.set("type", "lambert_azimuthal_equal_area");
 
@@ -31,4 +31,4 @@ void LambertAzimuthalEqualArea::spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::grid::regularlonlat
+}  // namespace eckit::geo::grid::regularxy

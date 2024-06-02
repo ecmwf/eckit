@@ -20,23 +20,22 @@ namespace eckit::geo {
 
 
 Shape Shape::make_from_spec(const Spec& spec) {
-    value_type x = 0;
-    value_type y = 0;
-    if (std::vector<value_type> value; spec.get("shape", value) && value.size() == 2) {
-        x = value[0];
-        y = value[1];
-    }
-    else if (!spec.get("nx", x) || !spec.get("ny", y)) {
-        throw SpecNotFound("'shape' = ['nx', 'ny'] expected", Here());
+    if (std::vector<value_type> shape; spec.get("shape", shape) && shape.size() == 2) {
+        return {shape[0], shape[1]};
     }
 
-    return {x, y};
+    if (value_type nx = 0, ny = 0;
+        (spec.get("nlon", nx) && spec.get("nlat", ny)) || (spec.get("nlon", nx) && spec.get("nlat", ny))) {
+        return {nx, ny};
+    }
+
+    throw SpecNotFound("'shape' = ['nlon', 'nlat'] = ['nx', 'ny'] expected", Here());
 }
 
 
 Shape::Shape(value_type nx, value_type ny) : array{nx, ny} {
     if (!(nx > 0) || !(ny > 0)) {
-        throw BadValue("'shape' = ['nx', 'ny'] > 0 expected", Here());
+        throw BadValue("'shape' = ['nlon', 'nlat'] = ['nx', 'ny'] > 0 expected", Here());
     }
 }
 

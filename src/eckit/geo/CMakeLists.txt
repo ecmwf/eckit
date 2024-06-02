@@ -16,6 +16,7 @@ list(APPEND eckit_geo_srcs
     Iterator.h
     LibEcKitGeo.cc
     LibEcKitGeo.h
+    Ordering.cc
     Ordering.h
     Point.cc
     Point.h
@@ -59,30 +60,28 @@ list(APPEND eckit_geo_srcs
     grid/Reduced.h
     grid/ReducedGaussian.cc
     grid/ReducedGaussian.h
-    grid/ReducedLonLat.cc
-    grid/ReducedLonLat.h
+    grid/ReducedLL.cc
+    grid/ReducedLL.h
     grid/Regular.cc
     grid/Regular.h
     grid/RegularGaussian.cc
     grid/RegularGaussian.h
-    grid/RegularLonLat.cc
-    grid/RegularLonLat.h
+    grid/RegularLL.cc
+    grid/RegularLL.h
+    grid/RegularXY.cc
+    grid/RegularXY.h
     grid/Unstructured.cc
     grid/Unstructured.h
-    grid/reduced-lonlat/ReducedLL.cc
-    grid/reduced-lonlat/ReducedLL.h
-    grid/regular-lonlat/LambertAzimuthalEqualArea.cc
-    grid/regular-lonlat/LambertAzimuthalEqualArea.h
-    grid/regular-lonlat/LambertConformalConic.cc
-    grid/regular-lonlat/LambertConformalConic.h
-    grid/regular-lonlat/Mercator.cc
-    grid/regular-lonlat/Mercator.h
-    grid/regular-lonlat/PolarStereographic.cc
-    grid/regular-lonlat/PolarStereographic.h
-    grid/regular-lonlat/RegularLL.cc
-    grid/regular-lonlat/RegularLL.h
-    grid/regular-lonlat/SpaceView.cc
-    grid/regular-lonlat/SpaceView.h
+    grid/regular-xy/LambertAzimuthalEqualArea.cc
+    grid/regular-xy/LambertAzimuthalEqualArea.h
+    grid/regular-xy/LambertConformalConic.cc
+    grid/regular-xy/LambertConformalConic.h
+    grid/regular-xy/Mercator.cc
+    grid/regular-xy/Mercator.h
+    grid/regular-xy/PolarStereographic.cc
+    grid/regular-xy/PolarStereographic.h
+    grid/regular-xy/SpaceView.cc
+    grid/regular-xy/SpaceView.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc

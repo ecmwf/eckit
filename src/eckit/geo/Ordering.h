@@ -14,44 +14,51 @@
 
 
 namespace eckit::geo {
+class Spec;
+}
+
+
+namespace eckit::geo {
 
 
 enum Ordering
 {
-    regular_i_positively_j_negatively_ij_i_single_direction,
-    regular_i_negatively_j_negatively_ij_i_single_direction,
-    regular_i_positively_j_positively_ij_i_single_direction,
-    regular_i_negatively_j_positively_ij_i_single_direction,
-    regular_i_positively_j_negatively_ji_i_single_direction,
-    regular_i_negatively_j_negatively_ji_i_single_direction,
-    regular_i_positively_j_positively_ji_i_single_direction,
-    regular_i_negatively_j_positively_ji_i_single_direction,
-    regular_i_positively_j_negatively_ij_i_alternating_direction,
-    regular_i_negatively_j_negatively_ij_i_alternating_direction,
-    regular_i_positively_j_positively_ij_i_alternating_direction,
-    regular_i_negatively_j_positively_ij_i_alternating_direction,
-    regular_i_positively_j_negatively_ji_i_alternating_direction,
-    regular_i_negatively_j_negatively_ji_i_alternating_direction,
-    regular_i_positively_j_positively_ji_i_alternating_direction,
-    regular_i_negatively_j_positively_ji_i_alternating_direction,
+    scan_i_positively_j_negatively_ij_i_single_direction,
+    scan_i_negatively_j_negatively_ij_i_single_direction,
+    scan_i_positively_j_positively_ij_i_single_direction,
+    scan_i_negatively_j_positively_ij_i_single_direction,
+    scan_i_positively_j_negatively_ji_i_single_direction,
+    scan_i_negatively_j_negatively_ji_i_single_direction,
+    scan_i_positively_j_positively_ji_i_single_direction,
+    scan_i_negatively_j_positively_ji_i_single_direction,
+    scan_i_positively_j_negatively_ij_i_alternating_direction,
+    scan_i_negatively_j_negatively_ij_i_alternating_direction,
+    scan_i_positively_j_positively_ij_i_alternating_direction,
+    scan_i_negatively_j_positively_ij_i_alternating_direction,
+    scan_i_positively_j_negatively_ji_i_alternating_direction,
+    scan_i_negatively_j_negatively_ji_i_alternating_direction,
+    scan_i_positively_j_positively_ji_i_alternating_direction,
+    scan_i_negatively_j_positively_ji_i_alternating_direction,
     // TODO regular_ ... shift
-
-    reduced_i_positively_j_negatively,
-    reduced_i_negatively_j_negatively,
-    reduced_i_positively_j_positively,
-    reduced_i_negatively_j_positively,
-    // TODO reduced_ ... shift
 
     healpix_ring,
     healpix_nested,
 
-    regular_ordering     = regular_i_positively_j_negatively_ij_i_single_direction,
-    regular_ordering_end = regular_i_negatively_j_positively_ji_i_alternating_direction,
-    reduced_ordering     = reduced_i_positively_j_negatively,
-    reduced_ordering_end = reduced_i_negatively_j_positively,
+    scan_ordering        = scan_i_positively_j_negatively_ij_i_single_direction,
+    scan_ordering_end    = scan_i_negatively_j_positively_ji_i_alternating_direction,
     healpix_ordering     = healpix_ring,
     healpix_ordering_end = healpix_nested,
+
+    DEFAULT = scan_i_positively_j_negatively_ij_i_single_direction
 };
+
+
+Ordering make_ordering_from_spec(const Spec&);
+
+bool ordering_is_i_positive(Ordering);
+bool ordering_is_j_positive(Ordering);
+bool ordering_is_ij(Ordering);
+bool ordering_is_alternating(Ordering);
 
 
 }  // namespace eckit::geo

@@ -9,8 +9,7 @@ grid_names:
         gaussianNumber: 1280
         standardParallelInDegrees: 52.
         centralLongitudeInDegrees: 10.
-        latitudeOfFirstGridPointInDegrees: 66.982143
-        longitudeOfFirstGridPointInDegrees: -35.034024
+        first_lonlat: [-35.034024,66.982143]
         shape: [1000, 950]
 
     - SMUFF-OPERA-2km:
@@ -19,7 +18,6 @@ grid_names:
         shapeOfTheEarth: 5
         grid: [2000., 2000.]
         gaussianNumber: 1280
-        latitudeOfFirstGridPointInDegrees: 67.035186732680
-        longitudeOfFirstGridPointInDegrees: -39.535385563614
+        first_lonlat: [-39.535385563614, 67.035186732680]
         shape: [1900, 2200]
 

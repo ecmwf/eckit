@@ -10,25 +10,25 @@
  */
 
 
-#include "eckit/geo/grid/regular-lonlat/Mercator.h"
+#include "eckit/geo/grid/regular-xy/LambertConformalConic.h"
 
 #include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::grid::regularlonlat {
+namespace eckit::geo::grid::regularxy {
 
 
-static const GridRegisterType<Mercator> GRIDTYPE("mercator");
+static const GridRegisterType<LambertConformalConic> GRIDTYPE("lambert");
 
 
-void eckit::geo::grid::regularlonlat::Mercator::spec(spec::Custom& custom) const {
-    RegularLonLat::spec(custom);
+void LambertConformalConic::spec(spec::Custom& custom) const {
+    RegularXY::spec(custom);
 
-    custom.set("type", "mercator");
+    custom.set("type", "lambert");
 
     // FIXME a lot more stuff to add here!
     //...
 }
 
 
-}  // namespace eckit::geo::grid::regularlonlat
+}  // namespace eckit::geo::grid::regularxy

@@ -49,7 +49,7 @@ CASE("HEALPix") {
             24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
         };
 
-        auto order_ring = ring->order();
+        auto order_ring = ring->ordering();
         EXPECT_EQUAL(order_ring, Ordering::healpix_ring);
 
         auto ren_to_ring = ring->reorder(Ordering::healpix_ring);
@@ -61,7 +61,7 @@ CASE("HEALPix") {
 
         std::unique_ptr<const Grid> nested(ring->make_grid_reordered(Ordering::healpix_nested));
 
-        auto order_nested = nested->order();
+        auto order_nested = nested->ordering();
         EXPECT_EQUAL(order_nested, Ordering::healpix_nested);
 
         ren_to_nested = nested->reorder(Ordering::healpix_nested);

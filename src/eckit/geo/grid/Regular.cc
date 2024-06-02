@@ -12,18 +12,10 @@
 
 #include "eckit/geo/grid/Regular.h"
 
-#include <regex>
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Increments.h"
-#include "eckit/geo/Shape.h"
-#include "eckit/geo/Spec.h"
-#include "eckit/geo/etc/Grid.h"
 #include "eckit/geo/iterator/Regular.h"
-#include "eckit/geo/range/RegularCartesian.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/Fraction.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid {
@@ -65,19 +57,6 @@ Regular::Regular(std::pair<Range*, Range*> xy, const area::BoundingBox& bbox) :
     Grid(bbox), x_(xy.first), y_(xy.second) {
     ASSERT(x_ && x_->size() > 0);
     ASSERT(y_ && y_->size() > 0);
-}
-
-
-std::pair<Range*, Range*> Regular::make_cartesian_ranges_from_spec(const Spec& spec) {
-    Increments inc(spec);
-    Shape shape(spec);
-
-    // FIXME This is a hack, we should not be using these keys
-    Point2 a{spec.get_double("longitudeOfFirstGridPointInDegrees"),
-             spec.get_double("latitudeOfFirstGridPointInDegrees")};
-    Point2 b{a.X + inc.dx * static_cast<double>(shape.nx - 1), a.Y - inc.dy * static_cast<double>(shape.ny - 1)};
-
-    return {new range::RegularCartesian(shape.nx, a.X, b.X), new range::RegularCartesian(shape.ny, a.Y, b.Y)};
 }
 
 

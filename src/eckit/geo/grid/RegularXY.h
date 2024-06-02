@@ -12,14 +12,15 @@
 
 #pragma once
 
-#include "eckit/geo/PointLonLat.h"
+#include <utility>
+
 #include "eckit/geo/grid/Regular.h"
 
 
 namespace eckit::geo::grid {
 
 
-class RegularLonLat : public Regular {
+class RegularXY : public Regular {
 public:
     // -- Constructors
 
@@ -33,9 +34,20 @@ public:
     size_t nlon() const { return x().size(); }
     size_t nlat() const { return y().size(); }
 
+protected:
+    // -- Methods
+
+    [[nodiscard]] static std::pair<Range*, Range*> make_xy_ranges_from_spec(const Spec&);
+
     // -- Overridden methods
 
     void spec(spec::Custom&) const override;
+
+private:
+    // -- Members
+
+    PointLonLat first_lonlat;
+    Point2 first_xy;
 };
 
 

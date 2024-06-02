@@ -10,25 +10,25 @@
  */
 
 
-#include "eckit/geo/grid/regular-lonlat/SpaceView.h"
+#include "eckit/geo/grid/regular-xy/PolarStereographic.h"
 
 #include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::grid::regularlonlat {
+namespace eckit::geo::grid::regularxy {
 
 
-static const GridRegisterType<SpaceView> GRIDTYPE("space_view");
+static const GridRegisterType<PolarStereographic> GRIDTYPE("polar_stereographic");
 
 
-void SpaceView::spec(spec::Custom& custom) const {
-    RegularLonLat::spec(custom);
+void PolarStereographic::spec(spec::Custom& custom) const {
+    RegularXY::spec(custom);
 
-    custom.set("type", "space_view");
+    custom.set("type", "polar_stereographic");
 
     // FIXME a lot more stuff to add here!
     //...
 }
 
 
-}  // namespace eckit::geo::grid::regularlonlat
+}  // namespace eckit::geo::grid::regularxy

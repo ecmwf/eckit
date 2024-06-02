@@ -36,10 +36,12 @@ class lock_type {
 };
 
 
-Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
+Grid::Grid(const Spec& spec) :
+    bbox_(area::BoundingBox::make_from_spec(spec)), ordering_(make_ordering_from_spec(spec)) {}
 
 
-Grid::Grid(const area::BoundingBox& bbox) : bbox_(new area::BoundingBox(bbox)) {}
+Grid::Grid(const area::BoundingBox& bbox, Ordering ordering) :
+    bbox_(new area::BoundingBox(bbox)), ordering_(ordering) {}
 
 
 const Spec& Grid::spec() const {
@@ -117,7 +119,7 @@ std::pair<std::vector<double>, std::vector<double> > Grid::to_latlon() const {
 }
 
 
-Ordering Grid::order() const {
+Ordering Grid::ordering() const {
     NOTIMP;
 }
 

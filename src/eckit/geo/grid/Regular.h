@@ -44,6 +44,8 @@ public:
     virtual size_t nx() const { return x_->size(); }
     virtual size_t ny() const { return y_->size(); }
 
+    [[nodiscard]] static std::pair<Range*, Range*> make_lonlat_ranges_from_spec(const Spec&);
+
     // -- Overridden methods
 
     iterator cbegin() const override;
@@ -58,10 +60,6 @@ protected:
     // -- Constructors
 
     Regular(std::pair<Range*, Range*> xy, const area::BoundingBox&);
-
-    // -- Methods
-
-    static std::pair<Range*, Range*> make_cartesian_ranges_from_spec(const Spec& spec);
 
     // -- Overridden methods
 

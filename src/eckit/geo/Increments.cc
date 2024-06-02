@@ -21,30 +21,29 @@ namespace eckit::geo {
 
 
 Increments Increments::make_from_spec(const Spec& spec) {
-    if (std::vector<value_type> value; spec.get("increments", value) && value.size() == 2) {
-        return {value[0], value[1]};
+    if (std::vector<value_type> grid; (spec.get("increments", grid) || spec.get("grid", grid)) && grid.size() == 2) {
+        return {grid[0], grid[1]};
     }
 
-    if (std::vector<value_type> value; spec.get("grid", value) && value.size() == 2) {
-        return {value[0], value[1]};
-    }
-
-    if (value_type x = 0, y = 0; spec.get("dx", x) && spec.get("dy", y)) {
-        return {x, y};
-    }
-
-    if (value_type x = 0, y = 0; spec.get("west_east_increment", x) && spec.get("south_north_increment", y)) {
-        return {x, y};
+    if (value_type dx = 0, dy = 0; (spec.get("west_east_increment", dx) && spec.get("south_north_increment", dy))
+                                   || (spec.get("dlon", dx) && spec.get("dlat", dy))
+                                   || (spec.get("dx", dx) && spec.get("dy", dy))) {
+        return {dx, dy};
     }
 
     throw SpecNotFound(
-        "'increments' = 'grid' = ['dx', 'dy'] = ['west_east_increment', 'south_north_increment'] expected", Here());
+        "'increments' = 'grid' = ['dx', 'dy'] = ['west_east_increment', 'south_north_increment'] = ['dlon', 'dlat'] = "
+        "['dx', 'dy'] expected",
+        Here());
 }
 
 
 Increments::Increments(value_type dx, value_type dy) : array{dx, dy} {
     if (!(dx != 0) || !(dy != 0)) {
-        throw BadValue("'shape' = ['dx', 'dy'] != 0 expected", Here());
+        throw BadValue(
+            "'increments' = 'grid' = ['west_east_increment', 'south_north_increment'] = ['dlon', 'dlat'] = ['dx', "
+            "'dy'] != 0 expected",
+            Here());
     }
 }
 

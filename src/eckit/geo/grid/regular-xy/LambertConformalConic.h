@@ -10,7 +10,20 @@
  */
 
 
-#include "eckit/geo/grid/ReducedLonLat.h"
+#pragma once
+
+#include "eckit/geo/grid/RegularXY.h"
 
 
-namespace eckit::geo::grid {}  // namespace eckit::geo::grid
+namespace eckit::geo::grid::regularxy {
+
+
+struct LambertConformalConic final : public RegularXY {
+    explicit LambertConformalConic(const Spec& spec) :
+        RegularXY(RegularXY::make_xy_ranges_from_spec(spec), area::BoundingBox{spec}) {}
+
+    void spec(spec::Custom& custom) const override;
+};
+
+
+}  // namespace eckit::geo::grid::regularxy

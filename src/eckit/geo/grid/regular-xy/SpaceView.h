@@ -12,18 +12,18 @@
 
 #pragma once
 
-#include "eckit/geo/grid/RegularLonLat.h"
+#include "eckit/geo/grid/RegularXY.h"
 
 
-namespace eckit::geo::grid::regularlonlat {
+namespace eckit::geo::grid::regularxy {
 
 
-struct LambertConformalConic final : public RegularLonLat {
-    explicit LambertConformalConic(const Spec& spec) :
-        RegularLonLat(RegularLonLat::make_cartesian_ranges_from_spec(spec), area::BoundingBox{spec}) {}
+struct SpaceView final : public RegularXY {
+    explicit SpaceView(const Spec& spec) :
+        RegularXY(RegularXY::make_xy_ranges_from_spec(spec), area::BoundingBox{spec}) {}
 
     void spec(spec::Custom& custom) const override;
 };
 
 
-}  // namespace eckit::geo::grid::regularlonlat
+}  // namespace eckit::geo::grid::regularxy

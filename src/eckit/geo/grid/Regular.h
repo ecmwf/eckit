@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/Range.h"
 
 
@@ -64,6 +63,10 @@ protected:
 
     static std::pair<Range*, Range*> make_cartesian_ranges_from_spec(const Spec& spec);
 
+    // -- Overridden methods
+
+    void spec(spec::Custom&) const override;
+
 private:
     // -- Members
 
@@ -73,34 +76,6 @@ private:
     // -- Friends
 
     friend class geo::iterator::Regular;
-};
-
-
-struct RegularLL final : public Regular {
-    explicit RegularLL(const Spec&);
-    explicit RegularLL(const Increments&, const area::BoundingBox& = {});
-    RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
-
-    [[nodiscard]] static Spec* spec(const std::string& name);
-    void spec(spec::Custom&) const override;
-
-    [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
-};
-
-
-struct RegularGaussian final : public Regular {
-    explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N, const area::BoundingBox& = {});
-
-    [[nodiscard]] static Spec* spec(const std::string& name);
-    void spec(spec::Custom&) const override;
-
-    size_t N() const { return N_; }
-
-    [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
-
-private:
-    const size_t N_;
 };
 
 

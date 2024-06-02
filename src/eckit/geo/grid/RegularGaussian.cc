@@ -1,0 +1,62 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+
+#include "eckit/geo/grid/RegularGaussian.h"
+
+#include "eckit/geo/range/GaussianLatitude.h"
+#include "eckit/geo/range/RegularLongitude.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/utils/Translator.h"
+
+
+namespace eckit::geo::grid {
+
+
+RegularGaussian::RegularGaussian(const Spec& spec) : RegularGaussian(spec.get_unsigned("N"), area::BoundingBox(spec)) {}
+
+
+RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
+    Regular({range::RegularLongitude(4 * N, 0., 360.).crop(bbox.west, bbox.east),
+             range::GaussianLatitude(N, false).crop(bbox.north, bbox.south)},
+            bbox),
+    N_(N) {
+    ASSERT(size() > 0);
+}
+
+
+Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
+    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
+        return new RegularGaussian(N_, cropped);
+    }
+
+    throw UserError("RegularGaussian: cannot crop grid (empty intersection)", Here());
+}
+
+
+Spec* RegularGaussian::spec(const std::string& name) {
+    auto N = Translator<std::string, size_t>{}(name.substr(1));
+    return new spec::Custom({{"type", "regular_gg"}, {"N", N}});
+}
+
+
+void RegularGaussian::spec(spec::Custom& custom) const {
+    Regular::spec(custom);
+
+    custom.set("grid", "F" + std::to_string(N_));
+}
+
+
+static const GridRegisterName<RegularGaussian> GRIDNAME("[fF][1-9][0-9]*");
+static const GridRegisterType<RegularGaussian> GRIDTYPE("regular_gg");
+
+
+}  // namespace eckit::geo::grid

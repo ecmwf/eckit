@@ -59,12 +59,30 @@ list(APPEND eckit_geo_srcs
     grid/Reduced.h
     grid/ReducedGaussian.cc
     grid/ReducedGaussian.h
-    grid/ReducedLL.cc
-    grid/ReducedLL.h
+    grid/ReducedLonLat.cc
+    grid/ReducedLonLat.h
     grid/Regular.cc
     grid/Regular.h
+    grid/RegularGaussian.cc
+    grid/RegularGaussian.h
+    grid/RegularLonLat.cc
+    grid/RegularLonLat.h
     grid/Unstructured.cc
     grid/Unstructured.h
+    grid/reduced-lonlat/ReducedLL.cc
+    grid/reduced-lonlat/ReducedLL.h
+    grid/regular-lonlat/LambertAzimuthalEqualArea.cc
+    grid/regular-lonlat/LambertAzimuthalEqualArea.h
+    grid/regular-lonlat/LambertConformalConic.cc
+    grid/regular-lonlat/LambertConformalConic.h
+    grid/regular-lonlat/Mercator.cc
+    grid/regular-lonlat/Mercator.h
+    grid/regular-lonlat/PolarStereographic.cc
+    grid/regular-lonlat/PolarStereographic.h
+    grid/regular-lonlat/RegularLL.cc
+    grid/regular-lonlat/RegularLL.h
+    grid/regular-lonlat/SpaceView.cc
+    grid/regular-lonlat/SpaceView.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc

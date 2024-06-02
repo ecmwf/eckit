@@ -46,7 +46,14 @@ const Spec& Grid::spec() const {
     if (!spec_) {
         spec_ = std::make_unique<spec::Custom>();
         ASSERT(spec_);
-        spec(*spec_);
+
+        auto& custom = *spec_;
+        spec(custom);
+
+        if (std::string name; SpecByName::instance().match(custom, name)) {
+            custom.clear();
+            custom.set("grid", name);
+        }
     }
 
     return *spec_;

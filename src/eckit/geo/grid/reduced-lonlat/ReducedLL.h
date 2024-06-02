@@ -15,14 +15,14 @@
 #include <memory>
 
 #include "eckit/geo/Range.h"
-#include "eckit/geo/grid/Reduced.h"
+#include "eckit/geo/grid/ReducedLonLat.h"
 #include "eckit/geo/util.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::reducedlonlat {
 
 
-class ReducedLL : public Reduced {
+class ReducedLL : public ReducedLonLat {
 public:
     // -- Constructors
 
@@ -54,4 +54,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::reducedlonlat

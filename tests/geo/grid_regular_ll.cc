@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/grid/regular-lonlat/RegularLL.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -20,18 +20,21 @@
 namespace eckit::geo::test {
 
 
+using RegularLL = grid::regularlonlat::RegularLL;
+
+
 CASE("global") {
-    std::unique_ptr<Grid> grid1(new grid::RegularLL(spec::Custom{{{"grid", std::vector<double>{1, 1}}}}));
+    std::unique_ptr<Grid> grid1(new RegularLL(spec::Custom{{{"grid", std::vector<double>{1, 1}}}}));
 
     EXPECT(grid1->size() == 360 * 181);
 
-    std::unique_ptr<Grid> grid2(new grid::RegularLL(
+    std::unique_ptr<Grid> grid2(new RegularLL(
         spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}}));
 
     EXPECT(grid2->size() == 5 * 10);
 
-    for (const auto& grid : {grid::RegularLL({1., 1.}, {89.5, 0.5, -89.5, 359.5}),
-                             grid::RegularLL({1., 1.}, {90., 0., -90, 360.}, {0.5, 0.5})}) {
+    for (const auto& grid :
+         {RegularLL({1., 1.}, {89.5, 0.5, -89.5, 359.5}), RegularLL({1., 1.}, {90., 0., -90, 360.}, {0.5, 0.5})}) {
         EXPECT(grid.nx() == 360);
         EXPECT(grid.ny() == 180);
         EXPECT(grid.size() == 360 * 180);
@@ -46,7 +49,7 @@ CASE("non-global") {
      * -1  .  .  .  .
      *    -1  0  1  2
      */
-    grid::RegularLL grid({1, 2}, {1, -1, -1, 2});
+    RegularLL grid({1, 2}, {1, -1, -1, 2});
 
     const std::vector<PointLonLat> ref{
         {-1., 1.}, {0., 1.}, {1., 1.}, {2., 1.}, {-1., -1.}, {0., -1.}, {1., -1.}, {2., -1.},

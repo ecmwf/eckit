@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/ReducedLL.h"
+#include "eckit/geo/grid/reduced-lonlat/ReducedLL.h"
 
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/RegularLatitude.h"
@@ -18,14 +18,14 @@
 #include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::reducedlonlat {
 
 
 ReducedLL::ReducedLL(const Spec& spec) : ReducedLL(spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
 
 
 ReducedLL::ReducedLL(const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox), pl_(pl), y_(new range::RegularLatitude(pl_.size(), bbox.north, bbox.south)) {
+    ReducedLonLat(bbox), pl_(pl), y_(new range::RegularLatitude(pl_.size(), bbox.north, bbox.south)) {
     ASSERT(y_);
 }
 
@@ -74,4 +74,4 @@ void ReducedLL::spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::reducedlonlat

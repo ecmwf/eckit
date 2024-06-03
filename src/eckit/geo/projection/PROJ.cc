@@ -15,6 +15,7 @@
 #include <proj.h>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/spec/Custom.h"
 
 
@@ -151,8 +152,9 @@ PROJ::PROJ(const Spec& spec) :
          spec.get_double("lon_minimum", 0)) {}
 
 
-std::string PROJ::ellipsoid(const std::string& string) {
-    pj_t identity(proj_create_crs_to_crs(CTX, string.c_str(), string.c_str(), nullptr));
+Figure* PROJ::make_figure() const {
+    pj_t identity(proj_create_crs_to_crs(CTX, target_.c_str(), target_.c_str(), nullptr));
+
     pj_t crs(proj_get_target_crs(CTX, identity.get()));
     pj_t ellipsoid(proj_get_ellipsoid(CTX, crs.get()));
     ASSERT(ellipsoid);
@@ -162,7 +164,7 @@ std::string PROJ::ellipsoid(const std::string& string) {
     ASSERT(proj_ellipsoid_get_parameters(CTX, ellipsoid.get(), &a, &b, nullptr, nullptr));
     ASSERT(0 < b && b <= a);
 
-    return b < a ? "+a=" + std::to_string(a) + " +b=" + std::to_string(b) : "+R=" + std::to_string(a);
+    return FigureFactory::build(spec::Custom{{{"a", a}, {"b", b}}});
 }
 
 

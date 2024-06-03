@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "eckit/geo/Point.h"
@@ -20,6 +21,7 @@
 
 
 namespace eckit::geo {
+class Figure;
 class Spec;
 namespace spec {
 class Custom;
@@ -63,6 +65,9 @@ public:
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
 
+    [[nodiscard]] virtual Figure* make_figure() const;
+    const Figure& figure() const;
+
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;
 
@@ -73,6 +78,10 @@ public:
     [[nodiscard]] static Projection* make_from_spec(const Spec&);
 
 private:
+    // -- Members
+
+    mutable std::shared_ptr<Figure> figure_;
+
     // -- Methods
 
     virtual void spec(spec::Custom&) const;

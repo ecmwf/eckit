@@ -94,8 +94,6 @@ list(APPEND eckit_geo_srcs
     polygon/Polygon.h
     projection/Composer.cc
     projection/Composer.h
-    projection/LonLatToXY.cc
-    projection/LonLatToXY.h
     projection/None.cc
     projection/None.h
     projection/ProjectionOnFigure.cc

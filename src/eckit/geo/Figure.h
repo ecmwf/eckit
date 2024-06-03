@@ -46,8 +46,8 @@ public:
     // -- Constructors
 
     Figure() noexcept     = default;
-    Figure(const Figure&) = default;
-    Figure(Figure&&)      = default;
+    Figure(const Figure&) = delete;
+    Figure(Figure&&)      = delete;
 
     explicit Figure(const Spec&);
 
@@ -57,8 +57,8 @@ public:
 
     // -- Operators
 
-    Figure& operator=(const Figure&) = default;
-    Figure& operator=(Figure&&)      = default;
+    Figure& operator=(const Figure&) = delete;
+    Figure& operator=(Figure&&)      = delete;
 
     // -- Methods
 

@@ -30,6 +30,11 @@ ProjectionOnFigure::ProjectionOnFigure(Figure* figure_ptr) :
 }
 
 
+Figure* ProjectionOnFigure::make_figure() const {
+    return FigureFactory::build(spec::Custom{{"a", figure_->a()}, {"b", figure_->b()}});
+}
+
+
 void ProjectionOnFigure::spec(spec::Custom& custom) const {
     // FIXME OO figure
     if (types::is_approximately_equal(figure_->a(), figure_->b())) {

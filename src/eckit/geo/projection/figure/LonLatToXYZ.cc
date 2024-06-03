@@ -28,30 +28,31 @@ static ProjectionBuilder<LonLatToXYZ> PROJECTION("ll_to_xyz");
 
 LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {
     struct LonLatToSphereXYZ final : Implementation {
-        const Figure& figure_;
+        const double R;
 
-        explicit LonLatToSphereXYZ(const Figure& figure) : figure_(figure) {}
+        explicit LonLatToSphereXYZ(double _R) : R(_R) {}
         Point3 operator()(const PointLonLat& p) const override {
-            return geometry::Sphere::convertSphericalToCartesian(figure_.R(), p, 0.);
+            return geometry::Sphere::convertSphericalToCartesian(R, p, 0.);
         }
         PointLonLat operator()(const Point3& q) const override {
-            return geometry::Sphere::convertCartesianToSpherical(figure_.R(), q);
+            return geometry::Sphere::convertCartesianToSpherical(R, q);
         }
     };
 
     struct LonLatToSpheroidXYZ final : Implementation {
-        const Figure& figure_;
+        const double a;
+        const double b;
 
-        explicit LonLatToSpheroidXYZ(const Figure& figure) : figure_(figure) {}
+        explicit LonLatToSpheroidXYZ(double _a, double _b) : a(_a), b(_b) {}
         Point3 operator()(const PointLonLat& p) const override {
-            return geometry::OblateSpheroid::convertSphericalToCartesian(figure_.a(), figure_.b(), p, 0.);
+            return geometry::OblateSpheroid::convertSphericalToCartesian(a, b, p, 0.);
         }
         PointLonLat operator()(const Point3& q) const override { NOTIMP; }
     };
 
     impl_.reset(types::is_approximately_equal(figure().eccentricity(), 0.)
-                    ? static_cast<Implementation*>(new LonLatToSphereXYZ(figure()))
-                    : new LonLatToSpheroidXYZ(figure()));
+                    ? static_cast<Implementation*>(new LonLatToSphereXYZ(figure().R()))
+                    : new LonLatToSpheroidXYZ(figure().a(), figure().b()));
 }
 
 

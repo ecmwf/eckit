@@ -23,7 +23,7 @@ static ProjectionBuilder<XYToLonLat> PROJECTION2("plate-carree");
 
 
 void XYToLonLat::spec(spec::Custom& custom) const {
-    custom.set("projection", "plate-carree");
+    custom.set("projection", "ll_to_xy");
 }
 
 

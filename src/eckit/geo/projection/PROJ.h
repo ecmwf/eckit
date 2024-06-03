@@ -40,6 +40,7 @@ public:
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
+    [[nodiscard]] Figure* make_figure() const override;
     void spec(spec::Custom&) const override;
 
 private:

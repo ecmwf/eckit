@@ -28,12 +28,9 @@ protected:
     explicit ProjectionOnFigure(const Spec&);
     explicit ProjectionOnFigure(Figure* = nullptr);
 
-    // -- Methods
-
-    const Figure& figure() const { return *figure_; }
-
     // -- Overridden methods
 
+    [[nodiscard]] Figure* make_figure() const override;
     void spec(spec::Custom&) const override;
 
 private:

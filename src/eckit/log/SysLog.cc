@@ -18,6 +18,7 @@
 #include "eckit/runtime/Main.h"
 
 #include "eckit/log/TimeStamp.h"
+#include "eckit/net/IPAddress.h"
 
 namespace eckit {
 
@@ -43,11 +44,26 @@ int SysLog::procid() const {
     return ::getpid();
 }
 
-std::string SysLog::structuredData() const {
-    std::ostringstream s;
 
-    /// @todo Implement the structured message meta-description as described in RFC5424 secion 6.3
-    s << nilvalue();
+std::string SysLog::structuredData() const {
+    if (software_.empty() && swVersion_.empty() && enterpriseId_.empty()) {
+        return std::string(1, nilvalue());
+    }
+    // RFC 5424 section 6.3 (only origin)
+    std::ostringstream s;
+    std::string ip = net::IPAddress::myIPAddress().asString();
+
+    s << "[origin ip=\"" << ip << "\"";
+    if (!enterpriseId_.empty()) {
+        s << " enterpriseId=\"" << enterpriseId_ << "\"";
+    }
+    if (!software_.empty()) {
+        s << " software=\"" << software_ << "\"";
+        if (!swVersion_.empty()) {
+            s << " swVersion=\"" << swVersion_ << "\"";
+        }
+    }
+    s << "]";
 
     return s.str();
 }
@@ -59,7 +75,7 @@ SysLog::operator std::string() const {
     static char sep = ' ';
 
     os  // RFC 5424 section 6.2 (Header)
-        << "<" << priotity() << ">" << version() << sep << timestamp() << sep << fqdn() << sep << appName() << sep
+        << "<" << priority() << ">" << version() << sep << timestamp() << sep << fqdn() << sep << appName() << sep
         << procid() << sep << msgid()
         << sep
         // RFC 5424 section 6.3

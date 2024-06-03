@@ -36,6 +36,8 @@ public:
     static bool caching();
     static std::string cacheDir();
 
+    static bool proj();
+
 private:
     // -- Constructors
 

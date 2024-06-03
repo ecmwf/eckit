@@ -57,6 +57,13 @@ std::string LibEcKitGeo::cacheDir() {
 }
 
 
+bool LibEcKitGeo::proj() {
+    static const bool yes{
+        LibResource<bool, LibEcKitGeo>("eckit-geo-proj-projections;$ECKIT_GEO_PROJ_PROJECTIONS", eckit_HAVE_PROJ != 0)};
+    return yes;
+}
+
+
 const void* LibEcKitGeo::addr() const {
     return this;
 }

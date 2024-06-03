@@ -20,3 +20,5 @@
 #cmakedefine eckit_GEO_CACHE_PATH "@eckit_GEO_CACHE_PATH@"
 #cmakedefine eckit_GEO_ETC_GRID "@eckit_GEO_ETC_GRID@"
 
+#cmakedefine01 eckit_HAVE_PROJ
+

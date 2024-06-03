@@ -70,6 +70,8 @@ public:
 
     static std::string className() { return "projection"; }
 
+    [[nodiscard]] static Projection* make_from_spec(const Spec&);
+
 private:
     // -- Methods
 

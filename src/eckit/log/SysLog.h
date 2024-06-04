@@ -72,7 +72,7 @@ public:  // methods
 
     SysLog(const std::string& msg, int msgid = 0, Facility f = SysLog::User, Severity s = SysLog::Info);
 
-    unsigned priotity() const { return facility_ * 8 + severity_; }
+    unsigned priority() const { return facility_ * 8 + severity_; }
 
     unsigned version() const { return 1; }
 
@@ -99,6 +99,11 @@ public:  // methods
         return s;
     }
 
+    /// Optional fields for structured data (RFC 5424 section 6.3)
+    void software(const std::string& software) { software_ = software; }
+    void swVersion(const std::string& version) { swVersion_ = version; }
+    void enterpriseId(const std::string& id) { enterpriseId_ = id; }
+
 private:  // methods
     void print(std::ostream& out) const;
 
@@ -112,6 +117,11 @@ private:  // members
     int msgid_;
 
     std::string msg_;
+
+    // optional fields for structured data
+    std::string software_;
+    std::string swVersion_;
+    std::string enterpriseId_;
 };
 
 }  // namespace eckit

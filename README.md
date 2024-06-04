@@ -85,6 +85,3 @@ make install
 # 4. Check installation
 $installdir/bin/eckit-version
 ```
-
-
-

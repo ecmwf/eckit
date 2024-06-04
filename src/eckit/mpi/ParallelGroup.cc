@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <string_view>
+
 #include "eckit/mpi/ParallelGroup.h"
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Parallel.h"
@@ -16,7 +18,7 @@ namespace eckit {
 namespace mpi {
 
 
-void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc);
+void MPICall(int code, std::string_view mpifunc, const eckit::CodeLocation& loc);
 #define MPI_CALL(a) MPICall(a, #a, Here())
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -35,8 +37,7 @@ ParallelGroup::ParallelGroup(MPI_Group group) :
     group_(group) {}
 
 void ParallelGroup::print(std::ostream& os) const {
-    os << "ParallelGroup("
-       << ")";
+    os << "ParallelGroup()";
 }
 
 int ParallelGroup::group() const {

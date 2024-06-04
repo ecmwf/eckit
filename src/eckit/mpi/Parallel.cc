@@ -55,7 +55,7 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc) {
+void MPICall(int code, std::string_view mpifunc, const eckit::CodeLocation& loc) {
     if (code != MPI_SUCCESS) {
 
         char error[10240];
@@ -169,7 +169,7 @@ size_t getSize(MPI_Comm comm) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Parallel::Parallel(const std::string& name) :
+Parallel::Parallel(std::string_view name) :
     Comm(name) /* don't use member initialisation list */ {
 
     pthread_once(&once, init);
@@ -185,7 +185,7 @@ Parallel::Parallel(const std::string& name) :
     size_ = getSize(comm_);
 }
 
-Parallel::Parallel(const std::string& name, MPI_Comm comm, bool) :
+Parallel::Parallel(std::string_view name, MPI_Comm comm, bool) :
     Comm(name) /* don't use member initialisation list */ {
 
     pthread_once(&once, init);
@@ -201,7 +201,7 @@ Parallel::Parallel(const std::string& name, MPI_Comm comm, bool) :
     size_ = getSize(comm_);
 }
 
-Parallel::Parallel(const std::string& name, int comm) :
+Parallel::Parallel(std::string_view name, int comm) :
     Comm(name) {
 
     pthread_once(&once, init);

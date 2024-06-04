@@ -73,7 +73,8 @@ void FamList::push_back(const void* data, const fam::size_t length) {
 
     // set tail's prev to new object
     const auto prevOffset = tail_->swap(offsetof(FamNode, prev.offset), newObject->offset());
-    auto       oldObject  = region_->proxyObject(prevOffset);
+
+    const auto oldObject = region_->proxyObject(prevOffset);
 
     // set old object's next to new object
     oldObject->put(newObject->descriptor(), offsetof(FamNode, next));

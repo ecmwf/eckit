@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <array>
 #include <ostream>
 
@@ -71,11 +70,10 @@ public:
 
     static void assert_latitude_range(const PointLonLat&);
 
-    [[nodiscard]] static PointLonLat make(value_type lon, value_type lat, value_type lon_minimum = ZERO_ANGLE,
+    [[nodiscard]] static PointLonLat make(value_type lon, value_type lat, value_type lon_minimum = 0.,
                                           value_type eps = EPS);
 
-    [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr,
-                                                       value_type lonr_minimum = ZERO_ANGLE);
+    [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr, value_type lonr_minimum = 0.);
 
     PointLonLat antipode() const { return make(lon, lat + FULL_ANGLE / 2.); }
 
@@ -84,18 +82,12 @@ public:
     static constexpr value_type FULL_ANGLE  = 360.;
     static constexpr value_type FLAT_ANGLE  = 180.;
     static constexpr value_type RIGHT_ANGLE = 90.;
-    static constexpr value_type ZERO_ANGLE  = 0.;
     static constexpr value_type EPS         = 1e-9;
 
     // -- Class methods
 
-    static PointLonLat componentsMin(const PointLonLat& p, const PointLonLat& q) {
-        return {std::min(p.lon, q.lon), std::min(p.lat, q.lat)};
-    }
-
-    static PointLonLat componentsMax(const PointLonLat& p, const PointLonLat& q) {
-        return {std::max(p.lon, q.lon), std::max(p.lat, q.lat)};
-    }
+    static PointLonLat componentsMin(const PointLonLat& p, const PointLonLat& q);
+    static PointLonLat componentsMax(const PointLonLat& p, const PointLonLat& q);
 
     // -- Friends
 

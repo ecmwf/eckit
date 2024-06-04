@@ -12,6 +12,7 @@
 
 #include "eckit/geo/PointLonLat.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <sstream>
@@ -58,9 +59,9 @@ PointLonLat PointLonLat::make(value_type lon, value_type lat, value_type lon_min
         lon += FLAT_ANGLE;
     }
 
-    return types::is_approximately_equal(lat, RIGHT_ANGLE, eps) ? PointLonLat{0., RIGHT_ANGLE}
+    return types::is_approximately_equal(lat, RIGHT_ANGLE, eps) ? NORTH_POLE
            : types::is_approximately_equal(lat, -RIGHT_ANGLE, eps)
-               ? PointLonLat{ZERO_ANGLE, -RIGHT_ANGLE}
+               ? SOUTH_POLE
                : PointLonLat{normalise_angle_to_minimum(lon, lon_minimum), lat};
 }
 
@@ -70,15 +71,25 @@ PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, val
 }
 
 
+PointLonLat PointLonLat::componentsMin(const PointLonLat& p, const PointLonLat& q) {
+    return {std::min(p.lon, q.lon), std::min(p.lat, q.lat)};
+}
+
+
+PointLonLat PointLonLat::componentsMax(const PointLonLat& p, const PointLonLat& q) {
+    return {std::max(p.lon, q.lon), std::max(p.lat, q.lat)};
+}
+
+
 bool points_equal(const PointLonLat& a, const PointLonLat& b, PointLonLat::value_type eps) {
-    const auto c = PointLonLat::make(a.lon, a.lat, PointLonLat::ZERO_ANGLE, eps);
-    const auto d = PointLonLat::make(b.lon, b.lat, PointLonLat::ZERO_ANGLE, eps);
+    const auto c = PointLonLat::make(a.lon, a.lat, 0., eps);
+    const auto d = PointLonLat::make(b.lon, b.lat, 0., eps);
     return types::is_approximately_equal(c.lon, d.lon, eps) && types::is_approximately_equal(c.lat, d.lat, eps);
 }
 
 
-const PointLonLat NORTH_POLE{PointLonLat::ZERO_ANGLE, PointLonLat::RIGHT_ANGLE};
-const PointLonLat SOUTH_POLE{PointLonLat::ZERO_ANGLE, -PointLonLat::RIGHT_ANGLE};
+const PointLonLat NORTH_POLE{0., PointLonLat::RIGHT_ANGLE};
+const PointLonLat SOUTH_POLE{0., -PointLonLat::RIGHT_ANGLE};
 
 
 }  // namespace eckit::geo

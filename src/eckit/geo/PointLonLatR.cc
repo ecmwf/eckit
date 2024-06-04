@@ -43,9 +43,9 @@ PointLonLatR PointLonLatR::make(value_type lonr, value_type latr, value_type lon
         lonr += FLAT_ANGLE;
     }
 
-    return types::is_approximately_equal(latr, RIGHT_ANGLE, eps) ? PointLonLatR{0., RIGHT_ANGLE}
+    return types::is_approximately_equal(latr, RIGHT_ANGLE, eps) ? NORTH_POLE_R
            : types::is_approximately_equal(latr, -RIGHT_ANGLE, eps)
-               ? PointLonLatR{ZERO_ANGLE, -RIGHT_ANGLE}
+               ? SOUTH_POLE_R
                : PointLonLatR{normalise_angle_to_minimum(lonr, lonr_minimum), latr};
 }
 
@@ -56,14 +56,14 @@ PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, valu
 
 
 bool points_equal(const PointLonLatR& a, const PointLonLatR& b, PointLonLatR::value_type eps) {
-    const auto c = PointLonLatR::make(a.lonr, a.latr, PointLonLatR::ZERO_ANGLE, eps);
-    const auto d = PointLonLatR::make(b.lonr, b.latr, PointLonLatR::ZERO_ANGLE, eps);
+    const auto c = PointLonLatR::make(a.lonr, a.latr, 0., eps);
+    const auto d = PointLonLatR::make(b.lonr, b.latr, 0., eps);
     return types::is_approximately_equal(c.lonr, d.lonr, eps) && types::is_approximately_equal(c.latr, d.latr, eps);
 }
 
 
-const PointLonLatR NORTH_POLE_R{PointLonLatR::ZERO_ANGLE, PointLonLatR::RIGHT_ANGLE};
-const PointLonLatR SOUTH_POLE_R{PointLonLatR::ZERO_ANGLE, -PointLonLatR::RIGHT_ANGLE};
+const PointLonLatR NORTH_POLE_R{0., PointLonLatR::RIGHT_ANGLE};
+const PointLonLatR SOUTH_POLE_R{0., -PointLonLatR::RIGHT_ANGLE};
 
 
 }  // namespace eckit::geo

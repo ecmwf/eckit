@@ -69,11 +69,10 @@ public:
 
     static value_type normalise_angle_to_maximum(value_type, value_type maximum);
 
-    [[nodiscard]] static PointLonLatR make(value_type lonr, value_type latr, value_type lonr_minimum = ZERO_ANGLE,
+    [[nodiscard]] static PointLonLatR make(value_type lonr, value_type latr, value_type lonr_minimum = 0.,
                                            value_type eps = EPS);
 
-    [[nodiscard]] static PointLonLatR make_from_lonlat(value_type lon, value_type lat,
-                                                       value_type lon_minimum = ZERO_ANGLE);
+    [[nodiscard]] static PointLonLatR make_from_lonlat(value_type lon, value_type lat, value_type lon_minimum = 0.);
 
     PointLonLatR antipode() const { return make(lonr, latr + FULL_ANGLE / 2.); }
 
@@ -82,7 +81,6 @@ public:
     static constexpr value_type FULL_ANGLE  = 2. * M_PI;
     static constexpr value_type FLAT_ANGLE  = M_PI;
     static constexpr value_type RIGHT_ANGLE = M_PI_2;
-    static constexpr value_type ZERO_ANGLE  = 0.;
     static constexpr value_type EPS         = 1e-10;
 
     // -- Class methods

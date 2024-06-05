@@ -20,6 +20,14 @@ ecbuild_add_executable( TARGET      eckit_codec_list
                                     EckitCodecTool.h
                         LIBS        eckit_codec eckit_option )
 
+ecbuild_add_executable( TARGET      eckit_codec_to_sparse_matrix
+                        OUTPUT_NAME eckit-codec-to-sparse-matrix
+                        CONDITION   eckit_HAVE_ECKIT_CODEC
+                        SOURCES     eckit-codec-to-sparse-matrix.cc
+                                    EckitCodecTool.cc
+                                    EckitCodecTool.h
+                        LIBS        eckit_codec eckit_option eckit_linalg )
+
 ### NOT TO INSTALL
 
 ecbuild_add_executable( TARGET      dhcopy

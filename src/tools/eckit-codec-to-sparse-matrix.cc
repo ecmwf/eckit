@@ -20,7 +20,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/linalg/SparseMatrix.h"
-#include "eckit/linalg/Triplet.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/SimpleOption.h"
 
@@ -30,6 +29,50 @@ namespace eckit::tools {
 
 static_assert(std::is_same_v<linalg::Scalar, double>, "Scalar == double");
 static_assert(std::is_same_v<linalg::Index, std::int32_t>, "Index == std::int32_t");
+
+
+class InPlaceAllocator : public linalg::SparseMatrix::Allocator {
+public:
+    using Layout = linalg::SparseMatrix::Layout;
+    using Shape  = linalg::SparseMatrix::Shape;
+    using Index  = linalg::Index;
+    using Scalar = linalg::Scalar;
+    using Size   = linalg::Size;
+
+    InPlaceAllocator(Size Nr, Size Nc, Size nnz, Index* ia, Index* ja, Scalar* a) :
+        Nr_(Nr), Nc_(Nc), nnz_(nnz), ia_(ia), ja_(ja), a_(a) {
+        ASSERT(ia_ != nullptr);
+        ASSERT(ja_ != nullptr);
+        ASSERT(a_ != nullptr);
+    }
+
+    Layout allocate(Shape& shape) override {
+        shape.size_ = nnz_;
+        shape.rows_ = Nr_;
+        shape.cols_ = Nc_;
+
+        Layout layout;
+        layout.outer_ = ia_;
+        layout.inner_ = ja_;
+        layout.data_  = a_;
+
+        return layout;
+    }
+
+    void deallocate(Layout, Shape) override {}
+
+    void print(std::ostream&) const override { NOTIMP; }
+
+    bool inSharedMemory() const override { return false; }
+
+private:
+    const Size Nr_;
+    const Size Nc_;
+    const Size nnz_;
+    Index* ia_;  // NOTE: not owned
+    Index* ja_;
+    Scalar* a_;
+};
 
 
 struct EckitCodecToSparseMatrix : public EckitCodecTool {
@@ -91,14 +134,15 @@ struct EckitCodecToSparseMatrix : public EckitCodecTool {
 
             if (std::string nnz_key; args.get("nnz", nnz_key)) {
                 std::uint64_t nnz = 0;
-                reader.read(nnz_key, nnz);
-                reader.wait();
+                reader.read(nnz_key, nnz).wait();
 
-                ASSERT(ja.size() == nnz);
                 ASSERT(a.size() == nnz);
             }
 
+            ASSERT(0 < Nr);
+            ASSERT(0 < Nc);
             ASSERT(ia.size() == (Nr + 1));
+            ASSERT(ja.size() == a.size());
         }
         else {
             throw SeriousBug("unsupported version: " + std::to_string(version), Here());
@@ -116,16 +160,10 @@ struct EckitCodecToSparseMatrix : public EckitCodecTool {
             return vs;
         };
 
-        std::vector<linalg::Triplet> triplets;
-        triplets.reserve(a.size());
-
-        for (linalg::Size r = 0; r < size(Nr); ++r) {
-            for (linalg::Size j = ia[r]; j < ia[r + 1]; ++j) {
-                triplets.emplace_back(r, ja[j], a[j]);
-            }
-        }
-
-        linalg::SparseMatrix M(size(Nr), size(Nc), triplets);
+        // create matrix
+        linalg::SparseMatrix M(
+            new InPlaceAllocator(size(Nr), size(Nc), size(a.size()), const_cast<linalg::Index*>(ia.data()),
+                                 const_cast<linalg::Index*>(ja.data()), const_cast<linalg::Scalar*>(a.data())));
 
         // eckit::linalg::SparseMatrix file
         eckit::PathName fmat(args(1));

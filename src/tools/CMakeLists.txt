@@ -16,6 +16,8 @@ ecbuild_add_executable( TARGET      eckit_codec_list
                         OUTPUT_NAME eckit-codec-list
                         CONDITION   eckit_HAVE_ECKIT_CODEC
                         SOURCES     eckit-codec-list.cc
+                                    EckitCodecTool.cc
+                                    EckitCodecTool.h
                         LIBS        eckit_codec eckit_option )
 
 ### NOT TO INSTALL

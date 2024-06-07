@@ -23,6 +23,7 @@
 #include "eckit/io/fam/FamList.h"
 #include "eckit/testing/Test.h"
 
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -35,11 +36,22 @@ namespace eckit::test {
 
 namespace {
 
+constexpr const fam::size_t numThreads = 8;
+constexpr const fam::size_t listSize   = 200;
+
 constexpr const auto regionName = "ECKIT_TEST_FAM_REGION";
 constexpr const auto listName   = "ECKIT_TEST_FAM_CATALOGUE";
-constexpr const auto listSize   = 100;
 
 const FamConfig testConfig {{"127.0.0.1", 8880}, "EckitTestFAMSessionName"};
+
+std::vector<std::string> testData;
+std::mutex               testMutex;
+
+auto makeTestData(const int number) -> std::string {
+    std::ostringstream oss;
+    oss << "[tid:" << std::this_thread::get_id() << "] ECKIT TEST DATA #" << number;
+    return oss.str();
+}
 
 void createList() {
     FamRegion::SPtr region;
@@ -49,10 +61,12 @@ void createList() {
     FamList lst(region, listName);
 
     for (auto i = 0; i < listSize; i++) {
-        std::ostringstream oss;
-        oss << "[tid:" << std::this_thread::get_id() << "] THIS IS ECKIT TEST DATA #" << i;
-        const auto& buffer = oss.str();
+        const auto buffer = makeTestData(i);
+        // insert the buffer into the FAM list
         lst.push_back(buffer.data(), buffer.size());
+        // insert the buffer into the control list
+        const std::lock_guard<std::mutex> lock(testMutex);
+        testData.emplace_back(buffer);
     }
 }
 
@@ -60,28 +74,59 @@ void createList() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("FamList: create concurrently") {
+CASE("FamList: empty list") {
+    FamRegion::SPtr region;
+
+    EXPECT_NO_THROW(region = FamRegion::lookup(regionName, testConfig));
+
+    const auto lst = FamList(region, listName);
+
+    EXPECT(lst.empty());
+
+    EXPECT(lst.size() == 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamList: create a list and insert " + std::to_string(listSize) + " items concurrently by " +
+     std::to_string(numThreads) + " threads") {
     std::vector<std::thread> threads;
 
-    const size_t numThreads = 5;
-    for (size_t i = 0; i < numThreads; i++) { threads.emplace_back(createList); }
+    threads.reserve(numThreads);
+
+    for (auto i = 0; i < numThreads; i++) { threads.emplace_back(createList); }
 
     for (auto&& thread : threads) { thread.join(); }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("FamList: validate size and values after creation") {
+    FamRegion::SPtr region;
+
+    EXPECT_NO_THROW(region = FamRegion::lookup(regionName, testConfig));
+
+    const auto lst = FamList(region, listName);
+
+    EXPECT_NOT(lst.empty());
+
+    EXPECT(lst.size() == numThreads * listSize);
+
+    for (const auto& buffer : lst) {
+        EXPECT(std::find(testData.cbegin(), testData.cend(), buffer.view()) != testData.cend());
+    }
+}
+
 }  // namespace eckit::test
+
+//----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
     using namespace eckit;
 
-    FamRegion::SPtr region = FamRegion::ensureCreated({1024, 0640, test::regionName}, test::testConfig);
+    auto region = FamRegion::ensureCreated({1024, 0640, test::regionName}, test::testConfig);
 
     auto ret = run_tests(argc, argv);
-
-    FamList lst(region, test::listName);
-    for (const auto&& item : lst) { Log::info() << item.view() << '\n'; }
 
     // cleanup
     region->destroy();

@@ -55,7 +55,7 @@ public:  // methods
 
     auto name() const -> const char*;
 
-    auto index() const -> uint64_t;
+    auto index() const -> std::uint64_t;
 
     auto size() const -> fam::size_t;
 

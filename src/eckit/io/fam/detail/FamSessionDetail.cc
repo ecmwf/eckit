@@ -281,6 +281,14 @@ auto FamSessionDetail::compareSwap(FamObjectDescriptor& object,
 //----------------------------------------------------------------------------------------------------------------------
 // forward instantiations
 
+template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> int32_t;
+template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> int64_t;
+template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> openfam::int128_t;
+template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> uint32_t;
+template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> uint64_t;
+template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> float;
+template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> double;
+
 template void FamSessionDetail::set(FamObjectDescriptor&, const fam::size_t, const int32_t);
 template void FamSessionDetail::set(FamObjectDescriptor&, const fam::size_t, const int64_t);
 template void FamSessionDetail::set(FamObjectDescriptor&, const fam::size_t, const openfam::int128_t);
@@ -289,13 +297,12 @@ template void FamSessionDetail::set(FamObjectDescriptor&, const fam::size_t, con
 template void FamSessionDetail::set(FamObjectDescriptor&, const fam::size_t, const float);
 template void FamSessionDetail::set(FamObjectDescriptor&, const fam::size_t, const double);
 
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> int32_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> int64_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> openfam::int128_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> uint32_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> uint64_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> float;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> double;
+template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, const int32_t);
+template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, const int64_t);
+template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, const uint32_t);
+template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, const uint64_t);
+template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, const float);
+template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, const double);
 
 template auto FamSessionDetail::swap(FamObjectDescriptor&, const fam::size_t, const int32_t) -> int32_t;
 template auto FamSessionDetail::swap(FamObjectDescriptor&, const fam::size_t, const int64_t) -> int64_t;

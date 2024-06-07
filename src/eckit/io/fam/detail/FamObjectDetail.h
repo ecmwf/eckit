@@ -35,11 +35,15 @@ public:  // methods
         ASSERT(object_);
     }
 
-    void replace(const FamGlobalDescriptor& object) { object_ = std::make_unique<FamObjectDescriptor>(object); }
+    void replaceWith(const FamDescriptor& object) {
+        object_ = std::make_unique<FamObjectDescriptor>(FamGlobalDescriptor {object.region, object.offset});
+    }
 
     auto object() -> FamObjectDescriptor* { return object_.get(); }
 
     auto object() const -> const FamObjectDescriptor* { return object_.get(); }
+
+    auto descriptor() const -> FamGlobalDescriptor { return object_->get_global_descriptor(); }
 
     auto name() const -> std::string { return object_->get_name() ? object_->get_name() : ""; }
 

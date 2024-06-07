@@ -25,10 +25,17 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+// ITERATOR
 
 class FamListIterator {
+public:  // types
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type        = FamObject::UPtr;
+    using pointer           = FamObject*;
+    using reference         = Buffer&;
+
 public:  // methods
-    explicit FamListIterator(FamObject::UPtr object);
+    FamListIterator(value_type object);
 
     // iterate forwards
     auto operator++() -> FamListIterator&;
@@ -40,12 +47,30 @@ public:  // methods
 
     auto operator!=(const FamListIterator& other) const -> bool { return !operator==(other); }
 
-    auto operator->() const -> FamObject*;
+    auto operator->() -> pointer;
 
-    auto operator*() const -> Buffer;
+    auto operator*() -> reference;
 
 private:  // members
-    FamObject::UPtr obj_;
+    bool   invalid_ {true};
+    Buffer buffer_ {0};
+
+    value_type object_;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+// CONST ITERATOR
+
+class FamListConstIterator: public FamListIterator {
+    using FamListIterator::FamListIterator;
+
+    using pointer   = const FamObject*;
+    using reference = const Buffer&;
+
+public:  // methods
+    auto operator->() -> pointer { return FamListIterator::operator->(); }
+
+    auto operator*() -> reference { return FamListIterator::operator*(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

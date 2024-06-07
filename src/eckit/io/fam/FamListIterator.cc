@@ -17,47 +17,46 @@
 
 #include "detail/FamNode.h"
 #include "detail/FamSessionDetail.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
-constexpr const auto sessionName = "FamList-Iterator";
+using namespace fam;
 
 //----------------------------------------------------------------------------------------------------------------------
+// ITERATOR
 
-FamListIterator::FamListIterator(FamObject::UPtr object): obj_ {std::move(object)} { }
+FamListIterator::FamListIterator(value_type object): object_ {std::move(object)} {
+    ASSERT(object_);
+}
 
 auto FamListIterator::operator++() -> FamListIterator& {
-    const auto next = getNext(*obj_);
-
-    if (next.offset > 0) { obj_->replace(next); }
-
+    if (const auto next = getNext(*object_); next.offset > 0) {
+        invalid_ = true;
+        object_->replaceWith(next);
+    }
     return *this;
 }
 
 auto FamListIterator::operator--() -> FamListIterator& {
-    const auto prev = getPrev(*obj_);
-
-    if (prev.offset > 0) { obj_->replace(prev); }
-
+    if (const auto prev = getPrev(*object_); prev.offset > 0) {
+        invalid_ = true;
+        object_->replaceWith(prev);
+    }
     return *this;
 }
 
-auto FamListIterator::operator->() const -> FamObject* {
-    return obj_.get();
-}
-
-auto FamListIterator::operator*() const -> Buffer {
-    const auto length = obj_->get<fam::size_t>(offsetof(FamNode, length));
-
-    auto buffer = Buffer(length);
-
-    obj_->get(buffer.data(), sizeof(FamNode), buffer.size());
-
-    return buffer;
-}
-
 auto FamListIterator::operator==(const FamListIterator& other) const -> bool {
-    return *obj_ == *other.obj_;
+    return *other.object_ == *object_;
+}
+
+auto FamListIterator::operator->() -> pointer {
+    return object_.get();
+}
+
+auto FamListIterator::operator*() -> reference {
+    if (invalid_) { getBuffer(*object_, buffer_); }
+    return buffer_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

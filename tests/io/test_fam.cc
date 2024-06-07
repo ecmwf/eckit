@@ -20,51 +20,39 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/testing/Test.h"
+#include "fam_common.h"
 
 using namespace eckit;
 using namespace eckit::testing;
 
 namespace eckit::test {
 
-const FamConfig testConfig {{"127.0.0.1", 8880}, "EckitTestFAMSessionName"};
+using namespace fam;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-constexpr const auto regionName = "ECKIT_TEST_FAM_REGION";
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void destroyRegions(const std::vector<std::string>& regionNames) {
-    for (auto&& name : regionNames) {
-        try {
-            FamRegion::lookup(name, testConfig)->destroy();
-        } catch (const NotFound& e) { Log::info() << "Nothing to do\n"; }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-CASE("region: lookup, create, and destroy") {
+CASE("FamRegion: lookup, create, and destroy") {
+    // cleanup
     destroyRegions({regionName});
 
     const FamProperty property {1024, 0640, regionName};
 
     // not found
-    EXPECT_THROWS_AS(FamRegion::lookup(property.name, testConfig), NotFound);
+    EXPECT_THROWS_AS(FamRegion::lookup(property.name, config), NotFound);
 
     FamRegion::UPtr region;
 
-    EXPECT_NO_THROW(region = FamRegion::create(property, testConfig));
+    EXPECT_NO_THROW(region = FamRegion::create(property, config));
 
     EXPECT(region->property() == property);
 
-    EXPECT_NO_THROW(region = FamRegion::lookup(regionName, testConfig));
+    EXPECT_NO_THROW(region = FamRegion::lookup(regionName, config));
 
     EXPECT(region->property() == property);
 
     EXPECT_NO_THROW(region->destroy());
 
-    EXPECT_THROWS_AS(FamRegion::lookup(property.name, testConfig), NotFound);
+    EXPECT_THROWS_AS(FamRegion::lookup(property.name, config), NotFound);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -75,7 +63,7 @@ int main(int argc, char** argv) {
     auto ret = run_tests(argc, argv);
 
     // cleanup
-    test::destroyRegions({test::regionName});
+    test::fam::destroyRegions({test::regionName});
 
     return ret;
 }

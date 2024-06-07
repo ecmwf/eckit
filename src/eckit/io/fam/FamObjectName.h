@@ -38,9 +38,9 @@ public:  // methods
 
     auto size() const -> fam::size_t;
 
-    auto exists() const -> bool override;
+    auto exists() -> bool override;
 
-    void lookup() override;
+    auto lookup() -> bool override;
 
     void create(const FamProperty& property) override;
 
@@ -51,7 +51,7 @@ public:  // methods
     void get(void* buffer, fam::size_t offset, fam::size_t length) const;
 
     [[nodiscard]]
-    auto dataHandle() const -> DataHandle*;
+    auto dataHandle(const Offset& offset = 0) const -> DataHandle*;
 
     [[nodiscard]]
     auto dataHandle(const Offset& offset, const Length& length) const -> DataHandle*;
@@ -64,8 +64,6 @@ public:  // methods
 
 private:  // methods
     void print(std::ostream& out) const override;
-
-    void validateNames() const;
 
 private:  // members
     std::string regionName_;

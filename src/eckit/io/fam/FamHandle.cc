@@ -25,10 +25,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamHandle::FamHandle(FamObjectName name): name_ {std::move(name)} { }
-
 FamHandle::FamHandle(FamObjectName name, const Offset& offset, const Length& length):
     name_ {std::move(name)}, pos_ {offset}, len_ {length} { }
+
+FamHandle::FamHandle(FamObjectName name, const Offset& offset): FamHandle(std::move(name), offset, 0) { }
 
 void FamHandle::print(std::ostream& out) const {
     out << "FamHandle[name=" << name_ << ",position=" << pos_ << ",mode=";

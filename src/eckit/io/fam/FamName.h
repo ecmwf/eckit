@@ -42,9 +42,9 @@ public:  // methods
 
     virtual auto asString() const -> std::string;
 
-    virtual auto exists() const -> bool = 0;
+    virtual auto exists() -> bool = 0;
 
-    virtual void lookup() = 0;
+    virtual auto lookup() -> bool = 0;
 
     virtual void create(const FamProperty& property) = 0;
 

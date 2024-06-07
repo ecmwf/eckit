@@ -72,6 +72,11 @@ void FamObject::add(const fam::size_t offset, const T value) const {
 }
 
 template<typename T>
+void FamObject::subtract(const fam::size_t offset, const T value) const {
+    impl_->subtract<T>(offset, value);
+}
+
+template<typename T>
 auto FamObject::swap(const fam::size_t offset, const T value) const -> T {  // NOLINT
     return impl_->swap<T>(offset, value);
 }
@@ -139,6 +144,13 @@ template void FamObject::add(const fam::size_t, const uint32_t) const;
 template void FamObject::add(const fam::size_t, const uint64_t) const;
 template void FamObject::add(const fam::size_t, const float) const;
 template void FamObject::add(const fam::size_t, const double) const;
+
+template void FamObject::subtract(const fam::size_t, const int32_t) const;
+template void FamObject::subtract(const fam::size_t, const int64_t) const;
+template void FamObject::subtract(const fam::size_t, const uint32_t) const;
+template void FamObject::subtract(const fam::size_t, const uint64_t) const;
+template void FamObject::subtract(const fam::size_t, const float) const;
+template void FamObject::subtract(const fam::size_t, const double) const;
 
 template auto FamObject::swap(const fam::size_t, const int32_t) const -> int32_t;
 template auto FamObject::swap(const fam::size_t, const int64_t) const -> int64_t;

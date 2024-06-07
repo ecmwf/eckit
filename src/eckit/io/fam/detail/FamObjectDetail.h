@@ -53,6 +53,8 @@ public:  // methods
 
     auto status() const -> int { return object_->get_desc_status(); }
 
+    auto stat() const -> FamProperty { return session_->statObject(*object_); }
+
     void deallocate() { session_->deallocateObject(*object_); }
 
     void put(const void* buffer, const fam::size_t offset, const fam::size_t length) {
@@ -76,6 +78,11 @@ public:  // methods
     template<typename T>
     void add(const fam::size_t offset, const T value) {
         session_->add(*object_, offset, value);
+    }
+
+    template<typename T>
+    void subtract(const fam::size_t offset, const T value) {
+        session_->subtract(*object_, offset, value);
     }
 
     template<typename T>

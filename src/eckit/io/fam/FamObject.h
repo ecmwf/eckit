@@ -45,7 +45,7 @@ public:  // methods
 
     bool operator!=(const FamObject& other) const { return !operator==(other); }
 
-    void replace(const FamDescriptor& object);
+    void replaceWith(const FamDescriptor& object);
 
     void deallocate();
 

@@ -34,9 +34,8 @@ bool FamObject::operator==(const FamObject& other) const {
     return (desc.regionId == oDesc.regionId && desc.offset == oDesc.offset);
 }
 
-void FamObject::replace(const FamDescriptor& object) {
-    /// @todo unnecessary conversion here
-    impl_->replace({object.region, object.offset});
+void FamObject::replaceWith(const FamDescriptor& object) {
+    impl_->replaceWith(object);
 }
 
 void FamObject::deallocate() {
@@ -84,12 +83,12 @@ auto FamObject::compareSwap(const fam::size_t offset, const T oldValue, const T 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamObject::regionId() const -> uint64_t {
-    return impl_->object()->get_global_descriptor().regionId;
+auto FamObject::regionId() const -> std::uint64_t {
+    return impl_->descriptor().regionId;
 }
 
-auto FamObject::offset() const -> uint64_t {
-    return impl_->object()->get_global_descriptor().offset;
+auto FamObject::offset() const -> std::uint64_t {
+    return impl_->descriptor().offset;
 }
 
 auto FamObject::size() const -> fam::size_t {
@@ -118,6 +117,14 @@ std::ostream& operator<<(std::ostream& out, const FamObject& object) {
 //----------------------------------------------------------------------------------------------------------------------
 // forward instantiations
 
+template auto FamObject::fetch(const fam::size_t) const -> int32_t;
+template auto FamObject::fetch(const fam::size_t) const -> int64_t;
+template auto FamObject::fetch(const fam::size_t) const -> openfam::int128_t;
+template auto FamObject::fetch(const fam::size_t) const -> uint32_t;
+template auto FamObject::fetch(const fam::size_t) const -> uint64_t;
+template auto FamObject::fetch(const fam::size_t) const -> float;
+template auto FamObject::fetch(const fam::size_t) const -> double;
+
 template void FamObject::set(const fam::size_t, const int32_t) const;
 template void FamObject::set(const fam::size_t, const int64_t) const;
 template void FamObject::set(const fam::size_t, const openfam::int128_t) const;
@@ -126,13 +133,12 @@ template void FamObject::set(const fam::size_t, const uint64_t) const;
 template void FamObject::set(const fam::size_t, const float) const;
 template void FamObject::set(const fam::size_t, const double) const;
 
-template auto FamObject::fetch(const fam::size_t) const -> int32_t;
-template auto FamObject::fetch(const fam::size_t) const -> int64_t;
-template auto FamObject::fetch(const fam::size_t) const -> openfam::int128_t;
-template auto FamObject::fetch(const fam::size_t) const -> uint32_t;
-template auto FamObject::fetch(const fam::size_t) const -> uint64_t;
-template auto FamObject::fetch(const fam::size_t) const -> float;
-template auto FamObject::fetch(const fam::size_t) const -> double;
+template void FamObject::add(const fam::size_t, const int32_t) const;
+template void FamObject::add(const fam::size_t, const int64_t) const;
+template void FamObject::add(const fam::size_t, const uint32_t) const;
+template void FamObject::add(const fam::size_t, const uint64_t) const;
+template void FamObject::add(const fam::size_t, const float) const;
+template void FamObject::add(const fam::size_t, const double) const;
 
 template auto FamObject::swap(const fam::size_t, const int32_t) const -> int32_t;
 template auto FamObject::swap(const fam::size_t, const int64_t) const -> int64_t;

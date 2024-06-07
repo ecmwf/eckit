@@ -39,7 +39,7 @@ using perm_t = mode_t;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @todo duplication of Fam_Global_Descriptor
+/// @note mirrors Fam_Global_Descriptor
 struct FamDescriptor {
     std::uint64_t region {0};
     std::uint64_t offset {0};

@@ -73,7 +73,7 @@ auto FamRegion::name() const -> const char* {
     return impl_->name();
 }
 
-auto FamRegion::index() const -> uint64_t {
+auto FamRegion::index() const -> std::uint64_t {
     return impl_->region()->get_global_descriptor().regionId;
 }
 

@@ -52,6 +52,9 @@ struct FamProperty {
     fam::perm_t perm {0640};
     std::string name {""};
 
+    std::uint32_t uid {0};
+    std::uint32_t gid {0};
+
     auto operator==(const FamProperty& other) const -> bool {
         return (size == other.size && perm == other.perm && name == other.name);
     }

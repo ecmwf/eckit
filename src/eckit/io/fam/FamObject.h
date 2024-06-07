@@ -89,6 +89,9 @@ public:  // methods
     void add(fam::size_t offset, T value) const;
 
     template<typename T>
+    void subtract(fam::size_t offset, T value) const;
+
+    template<typename T>
     auto swap(fam::size_t offset, T value) const -> T;
 
     template<typename T>

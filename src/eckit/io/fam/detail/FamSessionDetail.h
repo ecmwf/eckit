@@ -80,7 +80,7 @@ public:  // methods
 
     void deallocateObject(FamObjectDescriptor& object);
 
-    void statObject(const FamObjectDescriptor& object, Fam_Stat* info) const;
+    auto statObject(FamObjectDescriptor& object) -> FamProperty;
 
     void put(FamObjectDescriptor& object, const void* buffer, fam::size_t offset, fam::size_t length);
 
@@ -97,6 +97,9 @@ public:  // methods
 
     template<typename T>
     void add(FamObjectDescriptor& object, fam::size_t offset, T value);
+
+    template<typename T>
+    void subtract(FamObjectDescriptor& object, fam::size_t offset, T value);
 
     template<typename T>
     auto swap(FamObjectDescriptor& object, fam::size_t offset, T value) -> T;

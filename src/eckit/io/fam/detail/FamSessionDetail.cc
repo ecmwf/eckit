@@ -183,8 +183,13 @@ void FamSessionDetail::deallocateObject(FamObjectDescriptor& object) {
     invokeFam(fam_, &openfam::fam::fam_deallocate, &object);
 }
 
-void FamSessionDetail::statObject(const FamObjectDescriptor& /* object */, Fam_Stat* /* stat */) const {  // NOLINT
-    NOTIMP;
+auto FamSessionDetail::statObject(FamObjectDescriptor& object) -> FamProperty {
+    Fam_Stat info;
+
+    auto fnPtr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
+    invokeFam(fam_, fnPtr, &object, &info);
+
+    return {info.size, info.perm, info.name, info.uid, info.gid};
 }
 
 void FamSessionDetail::put(FamObjectDescriptor& object,
@@ -263,6 +268,12 @@ void FamSessionDetail::add(FamObjectDescriptor& object, const fam::size_t offset
 }
 
 template<typename T>
+void FamSessionDetail::subtract(FamObjectDescriptor& object, const fam::size_t offset, const T value) {
+    auto fptr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_subtract);
+    invokeFam(fam_, fptr, &object, offset, value);
+}
+
+template<typename T>
 auto FamSessionDetail::swap(FamObjectDescriptor& object, const fam::size_t offset, const T value) -> T {  // NOLINT
     auto fptr = static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_swap);
     return invokeFam(fam_, fptr, &object, offset, value);
@@ -303,6 +314,13 @@ template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, con
 template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, const uint64_t);
 template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, const float);
 template void FamSessionDetail::add(FamObjectDescriptor&, const fam::size_t, const double);
+
+template void FamSessionDetail::subtract(FamObjectDescriptor&, const fam::size_t, const int32_t);
+template void FamSessionDetail::subtract(FamObjectDescriptor&, const fam::size_t, const int64_t);
+template void FamSessionDetail::subtract(FamObjectDescriptor&, const fam::size_t, const uint32_t);
+template void FamSessionDetail::subtract(FamObjectDescriptor&, const fam::size_t, const uint64_t);
+template void FamSessionDetail::subtract(FamObjectDescriptor&, const fam::size_t, const float);
+template void FamSessionDetail::subtract(FamObjectDescriptor&, const fam::size_t, const double);
 
 template auto FamSessionDetail::swap(FamObjectDescriptor&, const fam::size_t, const int32_t) -> int32_t;
 template auto FamSessionDetail::swap(FamObjectDescriptor&, const fam::size_t, const int64_t) -> int64_t;

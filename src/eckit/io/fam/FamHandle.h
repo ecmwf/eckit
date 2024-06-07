@@ -30,9 +30,9 @@ class FamHandle: public DataHandle {
 public:  // methods
     enum class Mode { CLOSED, READ, WRITE };
 
-    explicit FamHandle(FamObjectName name);
-
     FamHandle(FamObjectName name, const Offset& offset, const Length& length);
+
+    FamHandle(FamObjectName name, const Offset& offset = 0);
 
     Length openForRead() override;
 

@@ -19,9 +19,10 @@
 
 #pragma once
 
+#include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamObject.h"
 
-namespace eckit {
+namespace eckit::fam {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -32,15 +33,35 @@ struct FamNode {
 };
 
 //----------------------------------------------------------------------------------------------------------------------
+// HELPERS
 
 inline auto getNext(const FamObject& object) -> FamDescriptor {
     return object.get<FamDescriptor>(offsetof(FamNode, next));
+}
+
+inline auto getNextOffset(const FamObject& object) -> std::uint64_t {
+    return object.get<std::uint64_t>(offsetof(FamNode, next.offset));
 }
 
 inline auto getPrev(const FamObject& object) -> FamDescriptor {
     return object.get<FamDescriptor>(offsetof(FamNode, prev));
 }
 
+inline auto getPrevOffset(const FamObject& object) -> std::uint64_t {
+    return object.get<std::uint64_t>(offsetof(FamNode, prev.offset));
+}
+
+inline auto getLength(const FamObject& object) -> fam::size_t {
+    return object.get<fam::size_t>(offsetof(FamNode, length));
+}
+
+inline void getBuffer(const FamObject& object, Buffer& buffer) {
+    if (const auto length = getLength(object); length > 0) {
+        buffer.resize(length);
+        object.get(buffer.data(), sizeof(FamNode), length);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+}  // namespace eckit::fam

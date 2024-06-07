@@ -23,45 +23,66 @@
 #include <fam/fam.h>
 
 #include <iostream>
-#include <list>
 #include <string>
 
 namespace eckit {
 
+using namespace fam;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 FamList::FamList(FamRegion::SPtr region, const std::string& name):
-    region_ {std::move(region)}, head_ {initSentinel(name + "-head")}, tail_ {initSentinel(name + "-tail")} {
+    region_ {std::move(region)}, head_ {initSentinel(name + "-head", sizeof(FamNode))},
+    tail_ {initSentinel(name + "-tail", sizeof(FamNode))}, size_ {initSentinel(name + "-size", sizeof(fam::size_t))} {
     // set head's next to tail's prev
-    if (getNext(*head_).offset == 0) { head_->put(tail_->descriptor(), offsetof(FamNode, next)); }
+    if (getNextOffset(*head_) == 0) { head_->put(tail_->descriptor(), offsetof(FamNode, next)); }
     // set tail's prev to head's next
-    if (getPrev(*tail_).offset == 0) { tail_->put(head_->descriptor(), offsetof(FamNode, prev)); }
+    if (getPrevOffset(*tail_) == 0) { tail_->put(head_->descriptor(), offsetof(FamNode, prev)); }
 }
 
 FamList::~FamList() = default;
 
-auto FamList::initSentinel(const std::string& name) -> FamObject::UPtr {
+auto FamList::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject::UPtr {
     try {
-        return region_->allocateObject(sizeof(FamNode), name);
+        return region_->allocateObject(size, name);
     } catch (const AlreadyExists&) { return region_->lookupObject(name); }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+// iterators
 
-auto FamList::begin() -> iterator {
-    return iterator(region_->proxyObject(getNext(*head_).offset));
+auto FamList::begin() const -> iterator {
+    return {region_->proxyObject(getNextOffset(*head_))};
 }
 
-auto FamList::end() -> iterator {
-    return iterator(region_->proxyObject(tail_->descriptor().offset));
+auto FamList::cbegin() const -> const_iterator {
+    return {region_->proxyObject(getNextOffset(*head_))};
 }
 
-auto FamList::cbegin() -> const_iterator {
-    return iterator(region_->proxyObject(getNext(*head_).offset));
+auto FamList::end() const -> iterator {
+    return {region_->proxyObject(tail_->offset())};
 }
 
-auto FamList::cend() -> const_iterator {
-    return iterator(region_->proxyObject(tail_->descriptor().offset));
+auto FamList::cend() const -> const_iterator {
+    return {region_->proxyObject(tail_->offset())};
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// accessors
+
+auto FamList::front() const -> Buffer {
+    return std::move(*begin());
+}
+
+auto FamList::back() const -> Buffer {
+    return std::move(*--end());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// modifiers
+
+void FamList::push_front(const void* /* data */, const fam::size_t /* length */) {
+    NOTIMP;
 }
 
 void FamList::push_back(const void* data, const fam::size_t length) {
@@ -85,24 +106,24 @@ void FamList::push_back(const void* data, const fam::size_t length) {
     // finally the data
     newObject->put(length, offsetof(FamNode, length));
     newObject->put(data, sizeof(FamNode), length);
-}
 
-void FamList::pop_back() {
-    NOTIMP;
-}
-
-void FamList::push_front(const void* /* data */, const fam::size_t /* length */) {
-    NOTIMP;
+    // increment size
+    size_->add(0, 1UL);
 }
 
 void FamList::pop_front() {
     NOTIMP;
 }
 
+void FamList::pop_back() {
+    NOTIMP;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
+// capacity
 
 auto FamList::size() const -> fam::size_t {
-    NOTIMP;
+    return size_->get<fam::size_t>(0);
 }
 
 auto FamList::empty() const -> bool {

@@ -32,9 +32,8 @@ namespace eckit {
 
 class FamList {
 public:  // types
-    using iterator = FamListIterator;
-
-    using const_iterator = FamListIterator;
+    using iterator       = FamListIterator;
+    using const_iterator = FamListConstIterator;
 
 public:  // methods
     FamList(FamRegion::SPtr region, const std::string& name);
@@ -44,38 +43,40 @@ public:  // methods
 
     ~FamList();
 
+    // capacity
+
     auto size() const -> fam::size_t;
 
     auto empty() const -> bool;
 
     // iterators
 
-    auto begin() -> iterator;
+    auto begin() const -> iterator;
 
-    auto end() -> iterator;
+    auto cbegin() const -> const_iterator;
 
-    auto cbegin() -> const_iterator;
+    auto end() const -> iterator;
 
-    auto cend() -> const_iterator;
+    auto cend() const -> const_iterator;
 
-    // back
+    // accessors
 
-    auto back() -> Buffer { return *--end(); }
+    auto front() const -> Buffer;
+
+    auto back() const -> Buffer;
+
+    // modifiers
 
     void push_back(const void* data, fam::size_t length);
-
-    void pop_back();
-
-    // front
-
-    auto front() -> Buffer { return *begin(); }
 
     void push_front(const void* data, fam::size_t length);
 
     void pop_front();
 
+    void pop_back();
+
 private:  // methods
-    auto initSentinel(const std::string& name) -> FamObject::UPtr;
+    auto initSentinel(const std::string& name, fam::size_t size) const -> FamObject::UPtr;
 
     void print(std::ostream& out) const;
 
@@ -85,6 +86,7 @@ private:  // members
     FamRegion::SPtr region_;
     FamObject::UPtr head_;
     FamObject::UPtr tail_;
+    FamObject::UPtr size_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

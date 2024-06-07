@@ -22,7 +22,7 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamObject.h"
 
-namespace eckit::fam {
+namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,38 +30,38 @@ struct FamNode {
     FamDescriptor next;
     FamDescriptor prev;
     fam::size_t   length {0};
+
+    //----------------------------------------------------------------------------------------------------------------------
+    // HELPERS (DO NOT add any virtual function here)
+
+    static auto getNext(const FamObject& object) -> FamDescriptor {
+        return object.get<FamDescriptor>(offsetof(FamNode, next));
+    }
+
+    static auto getNextOffset(const FamObject& object) -> std::uint64_t {
+        return object.get<std::uint64_t>(offsetof(FamNode, next.offset));
+    }
+
+    static auto getPrev(const FamObject& object) -> FamDescriptor {
+        return object.get<FamDescriptor>(offsetof(FamNode, prev));
+    }
+
+    static auto getPrevOffset(const FamObject& object) -> std::uint64_t {
+        return object.get<std::uint64_t>(offsetof(FamNode, prev.offset));
+    }
+
+    static auto getLength(const FamObject& object) -> fam::size_t {
+        return object.get<fam::size_t>(offsetof(FamNode, length));
+    }
+
+    static void getBuffer(const FamObject& object, Buffer& buffer) {
+        if (const auto length = getLength(object); length > 0) {
+            buffer.resize(length);
+            object.get(buffer.data(), sizeof(FamNode), length);
+        }
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
-// HELPERS
 
-inline auto getNext(const FamObject& object) -> FamDescriptor {
-    return object.get<FamDescriptor>(offsetof(FamNode, next));
-}
-
-inline auto getNextOffset(const FamObject& object) -> std::uint64_t {
-    return object.get<std::uint64_t>(offsetof(FamNode, next.offset));
-}
-
-inline auto getPrev(const FamObject& object) -> FamDescriptor {
-    return object.get<FamDescriptor>(offsetof(FamNode, prev));
-}
-
-inline auto getPrevOffset(const FamObject& object) -> std::uint64_t {
-    return object.get<std::uint64_t>(offsetof(FamNode, prev.offset));
-}
-
-inline auto getLength(const FamObject& object) -> fam::size_t {
-    return object.get<fam::size_t>(offsetof(FamNode, length));
-}
-
-inline void getBuffer(const FamObject& object, Buffer& buffer) {
-    if (const auto length = getLength(object); length > 0) {
-        buffer.resize(length);
-        object.get(buffer.data(), sizeof(FamNode), length);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-}  // namespace eckit::fam
+}  // namespace eckit

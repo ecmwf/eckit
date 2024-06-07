@@ -27,17 +27,15 @@
 
 namespace eckit {
 
-using namespace fam;
-
 //----------------------------------------------------------------------------------------------------------------------
 
 FamList::FamList(FamRegion::SPtr region, const std::string& name):
     region_ {std::move(region)}, head_ {initSentinel(name + "-head", sizeof(FamNode))},
     tail_ {initSentinel(name + "-tail", sizeof(FamNode))}, size_ {initSentinel(name + "-size", sizeof(fam::size_t))} {
     // set head's next to tail's prev
-    if (getNextOffset(*head_) == 0) { head_->put(tail_->descriptor(), offsetof(FamNode, next)); }
+    if (FamNode::getNextOffset(*head_) == 0) { head_->put(tail_->descriptor(), offsetof(FamNode, next)); }
     // set tail's prev to head's next
-    if (getPrevOffset(*tail_) == 0) { tail_->put(head_->descriptor(), offsetof(FamNode, prev)); }
+    if (FamNode::getPrevOffset(*tail_) == 0) { tail_->put(head_->descriptor(), offsetof(FamNode, prev)); }
 }
 
 FamList::~FamList() = default;
@@ -52,11 +50,11 @@ auto FamList::initSentinel(const std::string& name, const fam::size_t size) cons
 // iterators
 
 auto FamList::begin() const -> iterator {
-    return {region_->proxyObject(getNextOffset(*head_))};
+    return {region_->proxyObject(FamNode::getNextOffset(*head_))};
 }
 
 auto FamList::cbegin() const -> const_iterator {
-    return {region_->proxyObject(getNextOffset(*head_))};
+    return {region_->proxyObject(FamNode::getNextOffset(*head_))};
 }
 
 auto FamList::end() const -> iterator {
@@ -127,7 +125,7 @@ auto FamList::size() const -> fam::size_t {
 }
 
 auto FamList::empty() const -> bool {
-    return (head_->offset() == getPrev(*tail_).offset);
+    return (FamNode::getNextOffset(*head_) == tail_->offset());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

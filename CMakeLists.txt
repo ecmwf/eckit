@@ -211,6 +211,7 @@ ecbuild_add_option( FEATURE JEMALLOC
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA
+                    DEFAULT OFF
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "CUDA GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )

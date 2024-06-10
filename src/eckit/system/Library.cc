@@ -36,8 +36,7 @@ namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Library::Library(const std::string& name) :
-    name_(name), prefix_(name), debug_(false) {
+Library::Library(const std::string& name) : name_(name), prefix_(name), debug_(false) {
 
     LibraryManager::enregister(name, this);
 
@@ -120,19 +119,10 @@ Channel& Library::debugChannel() const {
         return *it->second;
     }
 
-    std::string s = prefix_ + "_DEBUG";
-
-    std::unique_ptr<Channel> newChannel;
-    if (debug_) {
-        newChannel = std::make_unique<Channel>(new PrefixTarget(s));
-    }
-    else {
-        newChannel = std::make_unique<Channel>();
-    }
-
-    Channel& retval(*newChannel);
-    debugChannels.emplace(this, newChannel.release());
-    return retval;
+    return *debugChannels
+                .emplace(this, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
+                                      : std::make_unique<Channel>())                                     //
+                .first->second.get();
 }
 
 const Configuration& Library::configuration() const {
@@ -149,7 +139,8 @@ const Configuration& Library::configuration() const {
 
     Log::debug() << "Parsing Lib " << name_ << " config file " << cfgpath << std::endl;
 
-    eckit::Configuration* cfg = cfgpath.exists() ? new eckit::YAMLConfiguration(cfgpath) : new eckit::YAMLConfiguration(std::string(""));
+    eckit::Configuration* cfg
+        = cfgpath.exists() ? new eckit::YAMLConfiguration(cfgpath) : new eckit::YAMLConfiguration(std::string(""));
 
     Log::debug() << "Lib " << name_ << " configuration: " << *cfg << std::endl;
 

@@ -75,7 +75,7 @@ public:
 
     [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr, value_type lonr_minimum = 0.);
 
-    PointLonLat antipode() const { return make(lon, lat + FULL_ANGLE / 2.); }
+    PointLonLat antipode() const { return make(lon, lat + FLAT_ANGLE); }
 
     // -- Class members
 

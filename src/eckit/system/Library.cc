@@ -108,22 +108,33 @@ std::string Library::libraryPath() const {
     return libraryPath_;
 }
 
-// Store a pointer to the channel, rather than the object itself, as otherwise it can be
-// moved by std::map...
-thread_local std::map<const Library*, std::unique_ptr<Channel>> debugChannels;
 
 Channel& Library::debugChannel() const {
+    // * Store a pointer to the channel, rather than the object itself, as otherwise
+    //   it can be moved by std::map...
+    // * Use a thread_local (static) to avoid race condition if logging is used from different threads
+    // * perform an allocation through unique_ptr (around the whole map) to allow accessing
+    //   the debugChannel even when the library is being destructed.
+    //   Without this additional wrapper log calls from a destructor may SEGFAULT
+    //   when the library is shutdown
+    thread_local static std::unique_ptr<std::map<const Library*, std::unique_ptr<Channel>>> debugChannels;
 
-    auto it = debugChannels.find(this);
-    if (it != debugChannels.end()) {
+    if (!debugChannels) {
+        debugChannels = std::make_unique<std::map<const Library*, std::unique_ptr<Channel>>>();
+    }
+
+
+    auto it = debugChannels->find(this);
+    if (it != debugChannels->end()) {
         return *it->second;
     }
 
     return *debugChannels
-                .emplace(this, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
-                                      : std::make_unique<Channel>())                                     //
+                ->emplace(this, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
+                                       : std::make_unique<Channel>())                                     //
                 .first->second.get();
 }
+
 
 const Configuration& Library::configuration() const {
     AutoLock<Mutex> lock(mutex_);

@@ -15,21 +15,18 @@
 
 #pragma once
 
-#include <cassert>
 #include <iosfwd>
 #include <memory>
 #include <vector>
 
-#include "eckit/io/MemoryHandle.h"
 #include "eckit/linalg/Triplet.h"
 #include "eckit/linalg/types.h"
-#include "eckit/memory/MemoryBuffer.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
-class Stream;
+class MemoryBuffer;
 class PathName;
+class Stream;
 }  // namespace eckit
 
 namespace eckit::linalg {
@@ -38,11 +35,9 @@ namespace eckit::linalg {
 
 /// Sparse matrix in CRS (compressed row storage) format
 class SparseMatrix {
-public:  // types
+public:
     struct Layout {
-
-        Layout() :
-            data_(nullptr), outer_(nullptr), inner_(nullptr) {}
+        Layout() = default;
 
         void reset() {
             data_  = nullptr;
@@ -50,16 +45,14 @@ public:  // types
             inner_ = nullptr;
         }
 
-        Scalar* data_;  ///< matrix entries, sized with number of non-zeros (nnz)
-        Index* outer_;  ///< start of rows,  sized number of rows + 1
-        Index* inner_;  ///< column indices, sized with number of non-zeros (nnz)
+        Scalar* data_ = nullptr;  ///< matrix entries, sized with number of non-zeros (nnz)
+        Index* outer_ = nullptr;  ///< start of rows, sized number of rows + 1
+        Index* inner_ = nullptr;  ///< column indices, sized with number of non-zeros (nnz)
     };
 
 
     struct Shape {
-
-        Shape() :
-            size_(0), rows_(0), cols_(0) {}
+        Shape() = default;
 
         void reset() {
             size_ = 0;
@@ -76,14 +69,14 @@ public:  // types
         /// @returns number of non-zeros
         Size nonZeros() const { return size_; }
 
-        /// data size is the number of non-zeros
+        /// @returns number of non-zeros
         Size dataSize() const { return nonZeros(); }
 
-        /// inner size is the number of non-zeros
+        /// @returns number of non-zeros
         Size innerSize() const { return nonZeros(); }
 
         /// @returns outer size is number of rows + 1
-        Size outerSize() const { return Size(rows_ + 1); }
+        Size outerSize() const { return static_cast<Size>(rows_ + 1); }
 
         size_t allocSize() const { return sizeofData() + sizeofOuter() + sizeofInner(); }
 
@@ -91,16 +84,11 @@ public:  // types
         size_t sizeofOuter() const { return outerSize() * sizeof(Index); }
         size_t sizeofInner() const { return innerSize() * sizeof(Index); }
 
-        Size size_;  ///< Size of the container (AKA number of non-zeros nnz)
-        Size rows_;  ///< Number of rows
-        Size cols_;  ///< Number of columns
+        Size size_ = 0;  ///< Size of the container (AKA number of non-zeros nnz)
+        Size rows_ = 0;  ///< Number of rows
+        Size cols_ = 0;  ///< Number of columns
 
-        void print(std::ostream& os) const {
-            os << "Shape["
-               << "nnz=" << size_ << ","
-               << "rows=" << rows_ << ","
-               << "cols=" << cols_ << "]";
-        }
+        void print(std::ostream& os) const;
 
         friend std::ostream& operator<<(std::ostream& os, const Shape& p) {
             p.print(os);
@@ -116,10 +104,9 @@ public:  // types
         /// @note that shape may be modified by the allocator, e.g. loading of pre-computed matrices
         virtual Layout allocate(Shape&) = 0;
 
-        /// Layout and Shape parameters may be ignored
         virtual void deallocate(Layout, Shape) = 0;
 
-        /// Is the memory shared
+        /// @returns if allocation is in shared memory
         virtual bool inSharedMemory() const = 0;
 
         virtual void print(std::ostream&) const = 0;
@@ -130,23 +117,23 @@ public:  // types
         }
     };
 
-public:  // methods
+public:
     // -- Constructors
 
     /// Default constructor, empty matrix
-    SparseMatrix(Allocator* alloc = nullptr);
+    explicit SparseMatrix(Allocator* = nullptr);
 
     /// Constructs an identity matrix with provided dimensions
-    SparseMatrix(Size rows, Size cols, Allocator* alloc = nullptr);
+    SparseMatrix(Size rows, Size cols, Allocator* = nullptr);
 
     /// Constructor from triplets
-    SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets);
+    SparseMatrix(Size rows, Size cols, const std::vector<Triplet>&);
 
     /// Constructor from Stream
-    SparseMatrix(Stream& v);
+    explicit SparseMatrix(Stream&);
 
     /// Constructor from MemoryBuffer
-    SparseMatrix(const MemoryBuffer&);
+    explicit SparseMatrix(const MemoryBuffer&);
 
     /// Move constructor
     SparseMatrix(SparseMatrix&&);
@@ -161,7 +148,7 @@ public:  // methods
 
 public:
     /// Prune entries with exactly the given value
-    SparseMatrix& prune(Scalar val = Scalar(0));
+    SparseMatrix& prune(Scalar = 0);
 
     /// Set matrix to the identity
     SparseMatrix& setIdentity(Size rows, Size cols);
@@ -174,15 +161,15 @@ public:
 
     // -- I/O
 
-    void save(const eckit::PathName& path) const;
-    void load(const eckit::PathName& path);
+    void save(const eckit::PathName&) const;
+    void load(const eckit::PathName&);
 
-    void dump(eckit::MemoryBuffer& buffer) const;
+    void dump(eckit::MemoryBuffer&) const;
     void dump(void* buffer, size_t size) const;
 
-    static void load(const void* buffer, size_t bufferSize, Layout& layout, Shape& shape);  ///< from dump()
+    static void load(const void* buffer, size_t bufferSize, Layout&, Shape&);  ///< from dump()
 
-    void swap(SparseMatrix& other);
+    void swap(SparseMatrix&);
 
     /// @returns number of rows
     Size rows() const { return shape_.rows_; }
@@ -194,7 +181,7 @@ public:
     Size nonZeros() const { return shape_.size_; }
 
     /// @returns true if this matrix does not contain non-zero entries
-    bool empty() const { return !nonZeros(); }
+    bool empty() const { return nonZeros() == 0; }
 
     /// @returns read-only view of the data vector
     const Scalar* data() const { return spm_.data_; }
@@ -209,13 +196,12 @@ public:
     void cols(Size cols);
 
     /// Reserve memory for given number of non-zeros (invalidates all data arrays)
-    /// @note variables into this method must be by value
     void reserve(Size rows, Size cols, Size nnz);
 
-    /// Returns the footprint of the matrix in memory
+    /// @returns footprint of the matrix in memory
     size_t footprint() const;
 
-    /// Is the memory shared
+    /// @returns if allocation is in shared memory
     bool inSharedMemory() const;
 
     void dump(std::ostream&) const;
@@ -230,12 +216,16 @@ public:
     }
 
 public:  // iterators
+    struct iterator;
+
     struct const_iterator {
+        const_iterator(const SparseMatrix&);
+        const_iterator(const SparseMatrix&, Size row);
 
-        const_iterator(const SparseMatrix& matrix);
-        const_iterator(const SparseMatrix& matrix, Size row);
+        const_iterator(const const_iterator&) = default;
+        const_iterator(const_iterator&&)      = default;
 
-        const_iterator(const const_iterator& other) { *this = other; }
+        virtual ~const_iterator() = default;
 
         Size col() const;
         Size row() const;
@@ -244,7 +234,9 @@ public:  // iterators
 
         const_iterator& operator++();
         const_iterator operator++(int);
-        const_iterator& operator=(const const_iterator& other);
+
+        const_iterator& operator=(const const_iterator&) = default;
+        const_iterator& operator=(const_iterator&&)      = default;
 
         bool operator!=(const const_iterator& other) const { return !operator==(other); }
         bool operator==(const const_iterator& other) const;
@@ -253,54 +245,53 @@ public:  // iterators
 
         void print(std::ostream&) const;
 
-        bool lastOfRow() const { return ((index_ + 1) == Size(matrix_->outer()[row_ + 1])); }
+        bool lastOfRow() const { return ((index_ + 1) == static_cast<Size>(matrix_->outer()[row_ + 1])); }
 
-    protected:
+    private:
+        friend struct iterator;
+
         SparseMatrix* matrix_;
         Size index_;
         Size row_;
     };
 
-    struct iterator : const_iterator {
-        iterator(SparseMatrix& matrix) :
-            const_iterator(matrix) {}
-        iterator(SparseMatrix& matrix, Size row) :
-            const_iterator(matrix, row) {}
+    struct iterator final : const_iterator {
+        using const_iterator::const_iterator;
         Scalar& operator*();
     };
 
     /// const iterators to begin/end of row
-    const_iterator begin(Size row) const { return const_iterator(*this, row); }
-    const_iterator end(Size row) const { return const_iterator(*this, row + 1); }
+    const_iterator begin(Size row) const { return {*this, row}; }
+    const_iterator end(Size row) const { return {*this, row + 1}; }
 
     /// const iterators to begin/end of matrix
-    const_iterator begin() const { return const_iterator(*this); }
-    const_iterator end() const { return const_iterator(*this, rows()); }
+    const_iterator begin() const { return {*this}; }
+    const_iterator end() const { return {*this, rows()}; }
 
     /// iterators to begin/end of row
-    iterator begin(Size row) { return iterator(*this, row); }
-    iterator end(Size row) { return iterator(*this, row + 1); }
+    iterator begin(Size row) { return {*this, row}; }
+    iterator end(Size row) { return {*this, row + 1}; }
 
     /// const iterators to begin/end of matrix
-    iterator begin() { return iterator(*this); }
-    iterator end() { return iterator(*this, rows()); }
+    iterator begin() { return {*this}; }
+    iterator end() { return {*this, rows()}; }
 
-private:  // methods
+private:
     /// Resets the matrix to a deallocated state
     void reset();
 
     /// Serialise to a Stream
-    void encode(Stream& s) const;
+    void encode(Stream&) const;
 
     /// Deserialise from a Stream
-    void decode(Stream& s);
+    void decode(Stream&);
 
-private:  // members
-    Layout spm_;
+private:
+    Layout spm_;  ///< Matrix layout
 
-    Shape shape_;
+    Shape shape_;  ///< Matrix shape
 
-    std::unique_ptr<SparseMatrix::Allocator> owner_;  ///< memory manager / allocator
+    std::unique_ptr<SparseMatrix::Allocator> owner_;  ///< Matrix memory manager/allocator
 
     friend Stream& operator<<(Stream&, const SparseMatrix&);
 };

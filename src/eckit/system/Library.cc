@@ -37,7 +37,7 @@ namespace eckit::system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Library::Library(const std::string& name) : name_(name), prefix_(name), debug_(false) {
+Library::Library(const std::string& name) : name_(name), prefix_(name), debug_(false), debugChannelCtl_{std::make_shared<DebugChannelControl>()} {
 
     LibraryManager::enregister(name, this);
 
@@ -110,18 +110,59 @@ std::string Library::libraryPath() const {
 }
 
 
-Channel& Library::debugChannel() const {
-    static ThreadSingleton<std::map<const Library*, std::unique_ptr<Channel>>> debugChannels;
+Library::ThreadSentinel::ThreadSentinel(std::thread::id id) : id_{id} {}
 
-    auto it = debugChannels.instance().find(this);
-    if (it != debugChannels.instance().end()) {
-        return *it->second;
+Library::ThreadSentinel::~ThreadSentinel() {
+    for (auto& ctl : libCtl_) {
+        AutoLock<Mutex> lock(ctl->mutex);
+        ctl->deadThreads.push_back(id_);
     }
+}
 
-    return *debugChannels.instance()
-                .emplace(this, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
-                                      : std::make_unique<Channel>())                                     //
-                .first->second.get();
+Channel& Library::debugChannel() const {
+    // THIS IS DIRTY
+    //
+    // Usually we would like to use thread local channels directly and perform a lookup by library
+    // However, some downstream libraries are full of other static obejcts that write to debug from their destructors
+    // due to poor destruction ordering SEGFAULTS are occuring.
+    // Hence we lookup locks for each thread and safe the thread id of dying threads.
+    // Then at a later point the map is cleaned up
+    // A shared pointer is required to prevent that ~ThreadSentinel access potentially destructed
+    // library members
+    //
+    // In principal we have the same problem with all the other logs, but with the library specific debug channel we experience it
+    // very often in ctests on the CI
+    //
+    // Improvements: Use library specific thread locals by deriving from a specialized header only `LibrarySpecification<>` class that provides
+    // the statics and implements `Library` with overriden debugChannel for compatibility
+    // Requires downstream changes. Will not solve dependency problem
+    thread_local ThreadSentinel threadSentinel{};
+    thread_local std::thread::id tid{std::this_thread::get_id()};
+    
+    {
+        // TODO need a shared_lock (does not build on MAC currently), maybe build RW lock with atomics
+        AutoLock<Mutex> lock(debugChannelCtl_->mutex);
+
+        auto it = debugChannelCtl_->channels.find(tid);
+        if (it != debugChannelCtl_->channels.end()) {
+            return *it->second;
+        }
+    }
+    {
+        AutoLock<Mutex> lock(debugChannelCtl_->mutex);
+        threadSentinel.libCtl_.push_back(debugChannelCtl_);
+        
+        // Frequent clean ups
+        for (const auto& deadTid: debugChannelCtl_->deadThreads) {
+            debugChannelCtl_->channels.erase(deadTid);
+        }
+        debugChannelCtl_->deadThreads.clear();
+        
+        return *debugChannelCtl_->channels
+                    .emplace(tid, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
+                                         : std::make_unique<Channel>())                                     //
+                    .first->second.get();
+    }
 }
 
 

@@ -18,9 +18,13 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <thread>
+#include <unordered_map>
+#include <deque>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/log/Channel.h"
 
 namespace eckit {
 
@@ -102,8 +106,22 @@ private:  // members
 
     mutable std::string libraryPath_;
     mutable std::string prefixDirectory_;
-
+    
     mutable std::unique_ptr<eckit::Configuration> configuration_;
+    
+    struct DebugChannelControl {
+        eckit::Mutex mutex;
+        std::deque<std::thread::id> deadThreads;
+        std::unordered_map<std::thread::id, std::unique_ptr<Channel>> channels;
+    };
+    struct ThreadSentinel {
+        ThreadSentinel(std::thread::id=std::this_thread::get_id());
+        ~ThreadSentinel();
+        
+        std::thread::id id_;
+        std::deque<std::shared_ptr<DebugChannelControl>> libCtl_;
+    };
+    mutable std::shared_ptr<DebugChannelControl> debugChannelCtl_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

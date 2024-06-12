@@ -38,9 +38,7 @@ class DataHandle;
 
 class FamName {
 public:  // methods
-    FamName(FamSession::SPtr session, const std::string& path);
-
-    FamName(const net::Endpoint& endpoint, const std::string& path);
+    FamName(FamSession::SPtr session, const std::string& path) noexcept;
 
     explicit FamName(const URI& uri);
 
@@ -60,7 +58,7 @@ public:  // methods
 
     auto lookupRegion() const -> FamRegion;
 
-    auto createRegion(fam::size_t regionSize, fam::perm_t regionPerms, bool overwrite = false) -> FamRegion;
+    auto createRegion(fam::size_t regionSize, fam::perm_t regionPerm, bool overwrite = false) const -> FamRegion;
 
     auto existsRegion() const -> bool;
 
@@ -70,7 +68,7 @@ public:  // methods
 
     auto lookupObject() const -> FamObject;
 
-    auto allocateObject(fam::size_t objectSize, const bool overwrite = false) -> FamObject;
+    auto allocateObject(fam::size_t objectSize, const bool overwrite = false) const -> FamObject;
 
     auto existsObject() const -> bool;
 

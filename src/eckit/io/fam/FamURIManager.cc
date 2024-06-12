@@ -15,11 +15,12 @@
 
 #include "eckit/io/fam/FamURIManager.h"
 
-#include "eckit/io/fam/FamObjectName.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/fam/FamName.h"
 
 namespace eckit {
 
-static FamURIManager manager_fam("fam");
+const static FamURIManager manager_fam("fam");
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -28,23 +29,29 @@ FamURIManager::FamURIManager(const std::string& name): URIManager(name) { }
 FamURIManager::~FamURIManager() = default;
 
 bool FamURIManager::exists(const URI& uri) {
-    return FamObjectName(uri).exists();
+    return FamName(uri).existsObject();
 }
 
 DataHandle* FamURIManager::newWriteHandle(const URI& uri) {
-    return FamObjectName(uri).dataHandle();
+    return FamName(uri).dataHandle();
 }
 
 DataHandle* FamURIManager::newReadHandle(const URI& uri) {
-    return FamObjectName(uri).dataHandle();
+    return FamName(uri).dataHandle();
 }
 
 DataHandle* FamURIManager::newReadHandle(const URI& uri, const OffsetList&, const LengthList&) {
-    return FamObjectName(uri).dataHandle();
+    return FamName(uri).dataHandle();
 }
 
 std::string FamURIManager::asString(const URI& uri) const {
-    return FamObjectName(uri).asString();
+    std::string query = uri.query();
+    if (!query.empty()) { query = "?" + query; }
+
+    std::string fragment = uri.fragment();
+    if (!fragment.empty()) { fragment = "#" + fragment; }
+
+    return uri.scheme() + ":" + uri.name() + query + fragment;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -90,11 +90,11 @@ auto FamRegion::lookupObject(const std::string& objectName) const -> FamObject {
 }
 
 auto FamRegion::allocateObject(const fam::size_t  objectSize,
-                               const fam::perm_t  objectPerms,
+                               const fam::perm_t  objectPerm,
                                const std::string& objectName,
                                const bool         overwrite) const -> FamObject {
-    if (overwrite) { return session_->ensureAllocateObject(*region_, objectSize, objectPerms, objectName); }
-    return session_->allocateObject(*region_, objectSize, objectPerms, objectName);
+    if (overwrite) { return session_->ensureAllocateObject(*region_, objectSize, objectPerm, objectName); }
+    return session_->allocateObject(*region_, objectSize, objectPerm, objectName);
 }
 
 void FamRegion::deallocateObject(const std::string& objectName) const {

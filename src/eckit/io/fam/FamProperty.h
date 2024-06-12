@@ -25,17 +25,18 @@
 #include <ostream>
 #include <string>
 
+namespace openfam {
+class Fam_Descriptor;
+class Fam_Region_Descriptor;
+}  // namespace openfam
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 // TYPES
 
-namespace fam {
-
-using size_t = std::uint64_t;
-using perm_t = mode_t;
-
-}  // namespace fam
+using FamObjectDescriptor = openfam::Fam_Descriptor;
+using FamRegionDescriptor = openfam::Fam_Region_Descriptor;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -44,6 +45,13 @@ struct FamDescriptor {
     std::uint64_t region {0};
     std::uint64_t offset {0};
 };
+
+namespace fam {
+
+using size_t = std::uint64_t;
+using perm_t = mode_t;
+
+}  // namespace fam
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -60,7 +68,8 @@ struct FamProperty {
     }
 
     friend std::ostream& operator<<(std::ostream& os, const FamProperty& prop) {
-        os << "Property-<size:" << prop.size << "><perm:" << prop.perm << "><name:" << prop.name << ">";
+        os << "Property[size=" << prop.size << ", perm=" << prop.perm << ",name=" << prop.name << ",uid=" << prop.uid
+           << ",gid=" << prop.gid << "]";
         return os;
     }
 };

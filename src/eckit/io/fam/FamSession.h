@@ -28,12 +28,14 @@
 namespace eckit {
 
 class FamSessionDetail;
-using Session = std::shared_ptr<FamSessionDetail>;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// @brief Manages a list of FamSessionDetail.
 class FamSession {
+public:  // types
+    using SPtr = std::shared_ptr<FamSessionDetail>;
+
 public:  // methods
     FamSession(const FamSession&)            = delete;
     FamSession& operator=(const FamSession&) = delete;
@@ -42,9 +44,9 @@ public:  // methods
 
     static auto instance() -> FamSession&;
 
-    auto get(const FamConfig& config) -> Session;
+    auto get(const FamConfig& config) -> FamSession::SPtr;
 
-    auto getOrAdd(const FamConfig& config) -> Session;
+    auto getOrAdd(const FamConfig& config) -> FamSession::SPtr;
 
     void remove(const FamConfig& config);
 
@@ -58,7 +60,7 @@ private:  // methods
     ~FamSession();
 
 private:  // members
-    std::list<Session> registry_;
+    std::list<SPtr> registry_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

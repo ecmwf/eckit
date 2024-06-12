@@ -30,12 +30,12 @@ namespace eckit {
 class FamListIterator {
 public:  // types
     using iterator_category = std::bidirectional_iterator_tag;
-    using value_type        = FamObject::UPtr;
+    using value_type        = FamObject;
     using pointer           = FamObject*;
     using reference         = Buffer&;
 
 public:  // methods
-    FamListIterator(value_type object);
+    FamListIterator(const value_type& object);
 
     // iterate forwards
     auto operator++() -> FamListIterator&;
@@ -53,7 +53,7 @@ public:  // methods
 
 private:  // members
     bool   invalid_ {true};
-    Buffer buffer_ {0};
+    Buffer data_ {0};
 
     value_type object_;
 };

@@ -20,7 +20,7 @@
 #pragma once
 
 #include "eckit/io/fam/FamListIterator.h"
-#include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamName.h"
 
 #include <memory>
 #include <ostream>
@@ -36,10 +36,9 @@ public:  // types
     using const_iterator = FamListConstIterator;
 
 public:  // methods
-    FamList(FamRegion::SPtr region, const std::string& name);
+    FamList(const FamRegion& region, const std::string& name);
 
-    FamList(FamList&& other)            = default;
-    FamList& operator=(FamList&& other) = default;
+    FamList(const FamName& name);
 
     ~FamList();
 
@@ -76,17 +75,19 @@ public:  // methods
     void pop_back();
 
 private:  // methods
-    auto initSentinel(const std::string& name, fam::size_t size) const -> FamObject::UPtr;
+    auto initSentinel(const std::string& name, fam::size_t size) const -> FamObject;
+
+    // auto region() const -> FamRegion& { return region_; }
 
     void print(std::ostream& out) const;
 
     friend std::ostream& operator<<(std::ostream& out, const FamList& list);
 
 private:  // members
-    FamRegion::SPtr region_;
-    FamObject::UPtr head_;
-    FamObject::UPtr tail_;
-    FamObject::UPtr size_;
+    FamRegion region_;
+    FamObject head_;
+    FamObject tail_;
+    FamObject size_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

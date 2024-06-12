@@ -19,7 +19,11 @@
 
 #pragma once
 
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamSession.h"
 
 #include <iosfwd>
@@ -28,43 +32,73 @@
 
 namespace eckit {
 
+class DataHandle;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamName {
 public:  // methods
-    explicit FamName(const net::Endpoint& endpoint, std::string name);
+    FamName(FamSession::SPtr session, const std::string& path);
+
+    FamName(const net::Endpoint& endpoint, const std::string& path);
 
     explicit FamName(const URI& uri);
 
-    virtual ~FamName();
+    explicit FamName(const std::string& uri);
 
-    auto uri() const -> URI;
+    virtual ~FamName();
 
     virtual auto asString() const -> std::string;
 
-    virtual auto exists() -> bool = 0;
+    auto uri() const -> URI;
 
-    virtual auto lookup() -> bool = 0;
+    auto with(std::string_view regionName) -> FamName&;
 
-    virtual void create(const FamProperty& property) = 0;
+    auto with(std::string_view regionName, std::string_view objectName) -> FamName&;
 
-    virtual void destroy() = 0;
+    // region
+
+    auto lookupRegion() const -> FamRegion;
+
+    auto createRegion(fam::size_t regionSize, fam::perm_t regionPerms, bool overwrite = false) -> FamRegion;
+
+    auto existsRegion() const -> bool;
+
+    auto nameRegion() const -> const std::string& { return regionName_; }
+
+    // object
+
+    auto lookupObject() const -> FamObject;
+
+    auto allocateObject(fam::size_t objectSize, const bool overwrite = false) -> FamObject;
+
+    auto existsObject() const -> bool;
+
+    auto nameObject() const -> const std::string& { return objectName_; }
+
+    // datahandle
+
+    [[nodiscard]]
+    auto dataHandle(bool overwrite = false) const -> DataHandle*;
+
+    [[nodiscard]]
+    auto dataHandle(const Offset& offset, const Length& length) const -> DataHandle*;
 
 protected:  // methods
-    [[nodiscard]]
-    auto parseName() const -> std::vector<std::string>;
-
     auto config() const -> const FamConfig&;
 
-    auto session() const -> Session;
-
     virtual void print(std::ostream& out) const;
+
+private:  // methods
+    void parsePath(const std::string& path);
 
     friend std::ostream& operator<<(std::ostream& out, const FamName& name);
 
 private:  // members
-    const FamConfig   config_;
-    const std::string name_;
+    FamSession::SPtr session_;
+
+    std::string regionName_;
+    std::string objectName_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

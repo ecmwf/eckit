@@ -19,9 +19,13 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/fam/FamName.h"
 #include "eckit/io/fam/FamRegion.h"
 
 #include <sys/time.h>
+
+#include <string>
 
 namespace eckit::test {
 
@@ -30,12 +34,10 @@ namespace eckit::test {
 
 namespace fam {
 
-const FamConfig config {{"127.0.0.1", 8880}, "EckitFAMTestSessionName"};
-
-constexpr const auto regionName = "ECKIT_TEST_FAM_REGION";
+using namespace std::string_literals;
 
 // This returns a random number as string.
-auto randomNumber() -> std::string {
+inline auto randomNumber() -> std::string {
     struct timeval tv;
     ::gettimeofday(&tv, nullptr);
     // ::getpid() ?
@@ -43,21 +45,31 @@ auto randomNumber() -> std::string {
     return std::to_string(::random());
 }
 
-auto region() -> FamRegion::SPtr {
-    static FamRegion::SPtr region;
-    if (!region) { region = FamRegion::ensureCreated({1024, 0640, regionName}, config); }
-    return region;
-}
+const auto testEndpoint = "fam://127.0.0.1:8880"s;
 
-void destroyRegions(const std::vector<std::string>& regionNames) {
-    for (auto&& name : regionNames) {
-        try {
-            FamRegion::lookup(name, config)->destroy();
-        } catch (const PermissionDenied&) {
-            Log::info() << "Cannot destroy [" << name << "] region!\n";
-        } catch (const NotFound&) { Log::info() << "Nothing to do..\n"; }
+class TestFam {
+public:
+    ~TestFam() { destroyRegions(); }
+
+    void destroyRegions() {
+        for (auto&& region : regions_) { region->destroy(); }
     }
-}
+
+    auto makeRandomRegionName() -> std::string { return "ECKIT_TEST_FAM_REGION_" + randomNumber(); }
+
+    auto makeRandomRegion(const eckit::fam::size_t size) -> FamRegion::SPtr {
+        auto region = name_.with(makeRandomRegionName()).createRegion(size, 0640, true);
+        Log::info() << "Random region: " << region.name() << '\n';
+        return regions_.emplace_back(region.clone());
+    }
+
+    auto getLastRegion() -> FamRegion::SPtr { return regions_.back(); }
+
+private:
+    FamName name_ {testEndpoint};
+
+    std::vector<FamRegion::SPtr> regions_;
+};
 
 }  // namespace fam
 

@@ -20,7 +20,9 @@
 #pragma once
 
 #include "eckit/io/fam/FamConfig.h"
+#include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegion.h"
 
 #include <fam/fam.h>
 
@@ -28,15 +30,6 @@
 #include <string>
 
 namespace eckit {
-
-//----------------------------------------------------------------------------------------------------------------------
-
-using FamGlobalDescriptor = Fam_Global_Descriptor;
-using FamObjectDescriptor = openfam::Fam_Descriptor;
-using FamRegionDescriptor = openfam::Fam_Region_Descriptor;
-
-class FamObjectDetail;
-class FamRegionDetail;
 
 //----------------------------------------------------------------------------------------------------------------------
 // SESSION
@@ -59,28 +52,64 @@ public:  // methods
     //------------------------------------------------------------------------------------------------------------------
     // REGION
 
-    auto lookupRegion(const std::string& name) -> std::unique_ptr<FamRegionDetail>;
+    [[nodiscard]]
+    auto lookupRegion(const std::string& regionName) -> FamRegion;
 
-    auto createRegion(const FamProperty& property) -> std::unique_ptr<FamRegionDetail>;
+    [[nodiscard]]
+    auto createRegion(const fam::size_t  regionSize,
+                      const fam::perm_t  regionPerm,
+                      const std::string& regionName) -> FamRegion;
+
+    [[nodiscard]]
+    auto createRegion(const FamProperty& property) -> FamRegion {
+        return createRegion(property.size, property.perm, property.name);
+    }
 
     void resizeRegion(FamRegionDescriptor& region, fam::size_t size);
 
     void destroyRegion(FamRegionDescriptor& region);
 
+    void destroyRegion(const std::string& regionName);
+
+    [[nodiscard]]
+    auto ensureCreateRegion(const fam::size_t  regionSize,
+                            const fam::perm_t  regionPerm,
+                            const std::string& regionName) -> FamRegion;
+
+    auto stat(FamRegionDescriptor& region) -> FamProperty;
+
     //------------------------------------------------------------------------------------------------------------------
     // OBJECT
 
-    auto proxyObject(const FamGlobalDescriptor& descriptor) -> std::unique_ptr<FamObjectDetail>;
+    [[nodiscard]]
+    auto proxyObject(std::uint64_t region, std::uint64_t offset) -> FamObject;
 
-    auto proxyObject(const FamGlobalDescriptor& descriptor, fam::size_t size) -> std::unique_ptr<FamObjectDetail>;
+    [[nodiscard]]
+    auto lookupObject(const std::string& regionName, const std::string& objectName) -> FamObject;
 
-    auto lookupObject(const std::string& regionName, const std::string& objectName) -> std::unique_ptr<FamObjectDetail>;
+    [[nodiscard]]
+    auto allocateObject(FamRegionDescriptor& region,
+                        fam::size_t          objectSize,
+                        fam::perm_t          objectPerm,
+                        const std::string&   objectName = "") -> FamObject;
 
-    auto allocateObject(FamRegionDescriptor& region, const FamProperty& property) -> std::unique_ptr<FamObjectDetail>;
+    [[nodiscard]]
+    auto allocateObject(FamRegionDescriptor& region, const FamProperty& property) -> FamObject {
+        return allocateObject(region, property.size, property.perm, property.name);
+    }
 
     void deallocateObject(FamObjectDescriptor& object);
 
-    auto statObject(FamObjectDescriptor& object) -> FamProperty;
+    void deallocateObject(const std::string& regionName, const std::string& objectName);
+
+    /// IMPORTANT: This method will deallocate any existing object with the same name
+    [[nodiscard]]
+    auto ensureAllocateObject(FamRegionDescriptor& region,
+                              fam::size_t          objectSize,
+                              fam::perm_t          objectPerm,
+                              const std::string&   objectName) -> FamObject;
+
+    auto stat(FamObjectDescriptor& object) -> FamProperty;
 
     void put(FamObjectDescriptor& object, const void* buffer, fam::size_t offset, fam::size_t length);
 

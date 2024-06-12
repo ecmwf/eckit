@@ -17,10 +17,9 @@
 
 #include "detail/FamNode.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/FamName.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
-
-#include <fam/fam.h>
 
 #include <iostream>
 #include <string>
@@ -29,40 +28,43 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamList::FamList(FamRegion::SPtr region, const std::string& name):
-    region_ {std::move(region)}, head_ {initSentinel(name + "-head", sizeof(FamNode))},
-    tail_ {initSentinel(name + "-tail", sizeof(FamNode))}, size_ {initSentinel(name + "-size", sizeof(fam::size_t))} {
+FamList::FamList(const FamRegion& region, const std::string& listName):
+    region_ {region}, head_ {initSentinel(listName + "-head", sizeof(FamNode))},
+    tail_ {initSentinel(listName + "-tail", sizeof(FamNode))},
+    size_ {initSentinel(listName + "-size", sizeof(fam::size_t))} {
     // set head's next to tail's prev
-    if (FamNode::getNextOffset(*head_) == 0) { head_->put(tail_->descriptor(), offsetof(FamNode, next)); }
+    if (FamNode::getNextOffset(head_) == 0) { head_.put(tail_.descriptor(), offsetof(FamNode, next)); }
     // set tail's prev to head's next
-    if (FamNode::getPrevOffset(*tail_) == 0) { tail_->put(head_->descriptor(), offsetof(FamNode, prev)); }
+    if (FamNode::getPrevOffset(tail_) == 0) { tail_.put(head_.descriptor(), offsetof(FamNode, prev)); }
 }
+
+FamList::FamList(const FamName& name): FamList(name.lookupRegion(), name.nameObject()) { }
 
 FamList::~FamList() = default;
 
-auto FamList::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject::UPtr {
+auto FamList::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject {
     try {
-        return region_->allocateObject(size, name);
-    } catch (const AlreadyExists&) { return region_->lookupObject(name); }
+        return region_.allocateObject(size, name);
+    } catch (const AlreadyExists&) { return region_.lookupObject(name); }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // iterators
 
 auto FamList::begin() const -> iterator {
-    return {region_->proxyObject(FamNode::getNextOffset(*head_))};
+    return {region_.proxyObject(FamNode::getNextOffset(head_))};
 }
 
 auto FamList::cbegin() const -> const_iterator {
-    return {region_->proxyObject(FamNode::getNextOffset(*head_))};
+    return {region_.proxyObject(FamNode::getNextOffset(head_))};
 }
 
 auto FamList::end() const -> iterator {
-    return {region_->proxyObject(tail_->offset())};
+    return {region_.proxyObject(tail_.offset())};
 }
 
 auto FamList::cend() const -> const_iterator {
-    return {region_->proxyObject(tail_->offset())};
+    return {region_.proxyObject(tail_.offset())};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -85,28 +87,28 @@ void FamList::push_front(const void* /* data */, const fam::size_t /* length */)
 
 void FamList::push_back(const void* data, const fam::size_t length) {
     // allocate an object
-    auto newObject = region_->allocateObject(sizeof(FamNode) + length);
+    auto newObject = region_.allocateObject(sizeof(FamNode) + length);
 
     // set new object's next to tail
-    newObject->put(tail_->descriptor(), offsetof(FamNode, next));
+    newObject.put(tail_.descriptor(), offsetof(FamNode, next));
 
     // set tail's prev to new object
-    const auto prevOffset = tail_->swap(offsetof(FamNode, prev.offset), newObject->offset());
+    const auto prevOffset = tail_.swap(offsetof(FamNode, prev.offset), newObject.offset());
 
-    const auto oldObject = region_->proxyObject(prevOffset);
+    const auto oldObject = region_.proxyObject(prevOffset);
 
     // set old object's next to new object
-    oldObject->put(newObject->descriptor(), offsetof(FamNode, next));
+    oldObject.put(newObject.descriptor(), offsetof(FamNode, next));
 
     // set new object's prev to old object
-    newObject->put(oldObject->descriptor(), offsetof(FamNode, prev));
+    newObject.put(oldObject.descriptor(), offsetof(FamNode, prev));
 
     // finally the data
-    newObject->put(length, offsetof(FamNode, length));
-    newObject->put(data, sizeof(FamNode), length);
+    newObject.put(length, offsetof(FamNode, length));
+    newObject.put(data, sizeof(FamNode), length);
 
     // increment size
-    size_->add(0, 1UL);
+    size_.add(0, 1UL);
 }
 
 void FamList::pop_front() {
@@ -121,17 +123,17 @@ void FamList::pop_back() {
 // capacity
 
 auto FamList::size() const -> fam::size_t {
-    return size_->get<fam::size_t>(0);
+    return size_.get<fam::size_t>(0);
 }
 
 auto FamList::empty() const -> bool {
-    return (FamNode::getNextOffset(*head_) == tail_->offset());
+    return (FamNode::getNextOffset(head_) == tail_.offset());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void FamList::print(std::ostream& out) const {
-    out << *region_;
+    out << "FamList[size=" << size() << ", region=" << region_ << ", head=" << head_ << ", tail=" << tail_ << "]";
 }
 
 std::ostream& operator<<(std::ostream& out, const FamList& list) {

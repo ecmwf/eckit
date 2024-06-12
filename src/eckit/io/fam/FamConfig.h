@@ -34,7 +34,7 @@ struct FamConfig {
     friend std::ostream& operator<<(std::ostream& out, const FamConfig& config);
 
     net::Endpoint endpoint {"127.0.0.1", -1};
-    std::string   sessionName;
+    std::string   sessionName {"EckitFamSession"};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

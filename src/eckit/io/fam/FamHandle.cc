@@ -83,8 +83,6 @@ void FamHandle::openForWrite(const Length& length) {
 
     len_ = handle_->size();
 
-    ASSERT(length == size());
-
     // try {
     //     name_.create(static_cast<fam::size_t>(length));
     // } catch (const AlreadyExists& e) {

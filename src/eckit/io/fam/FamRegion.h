@@ -67,7 +67,7 @@ public:  // methods
 
     [[nodiscard]]
     auto allocateObject(fam::size_t        objectSize,
-                        fam::perm_t        objectPerms,
+                        fam::perm_t        objectPerm,
                         const std::string& objectName = "",
                         bool               overwrite  = false) const -> FamObject;
 

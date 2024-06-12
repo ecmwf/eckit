@@ -24,30 +24,38 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace eckit {
 
-class FamObjectDetail;
+class FamSessionDetail;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamObject {
 public:  // types
     using UPtr = std::unique_ptr<FamObject>;
+    using SPtr = std::shared_ptr<FamObject>;
 
 public:  // methods
-    explicit FamObject(std::unique_ptr<FamObjectDetail> object) noexcept;
+    FamObject(FamSessionDetail& session, std::unique_ptr<FamObjectDescriptor> object);
 
     ~FamObject();
+
+    // operators
 
     bool operator==(const FamObject& other) const;
 
     bool operator!=(const FamObject& other) const { return !operator==(other); }
 
+    auto clone() const -> UPtr;
+
     void replaceWith(const FamDescriptor& object);
 
-    void deallocate();
+    void deallocate() const;
+
+    auto exists() const -> bool;
+
+    // properties
 
     auto regionId() const -> std::uint64_t;
 
@@ -61,7 +69,9 @@ public:  // methods
 
     auto name() const -> std::string;
 
-    auto property() const -> FamProperty { return {size(), permissions(), name()}; }
+    auto property() const -> FamProperty;
+
+    // data access
 
     void put(const void* buffer, fam::size_t offset, fam::size_t length) const;
 
@@ -78,6 +88,8 @@ public:  // methods
     void put(const T& buffer, const fam::size_t offset) const {
         put(&buffer, offset, sizeof(T));
     }
+
+    // atomic operations
 
     template<typename T>
     void set(fam::size_t offset, T value) const;
@@ -103,7 +115,8 @@ private:  // methods
     friend std::ostream& operator<<(std::ostream& out, const FamObject& object);
 
 private:  // members
-    std::unique_ptr<FamObjectDetail> impl_;
+    std::shared_ptr<FamSessionDetail>    session_;
+    std::shared_ptr<FamObjectDescriptor> object_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

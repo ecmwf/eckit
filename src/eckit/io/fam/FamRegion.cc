@@ -15,14 +15,9 @@
 
 #include "eckit/io/fam/FamRegion.h"
 
-#include "detail/FamObjectDetail.h"
-#include "detail/FamRegionDetail.h"
 #include "detail/FamSessionDetail.h"
-#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamSession.h"
-#include "eckit/log/Log.h"
 
 #include <memory>
 #include <string>
@@ -30,99 +25,87 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-// FACTORY
 
-auto FamRegion::lookup(const std::string& name, const FamConfig& config) -> UPtr {
-    auto session = FamSession::instance().getOrAdd(config);
-    return std::make_unique<FamRegion>(session->lookupRegion(name));
+FamRegion::FamRegion(FamSessionDetail& session, std::unique_ptr<FamRegionDescriptor> region):
+    session_ {session.getShared()}, region_(std::move(region)) {
+    ASSERT(region_);
 }
-
-auto FamRegion::create(const FamProperty& property, const FamConfig& config) -> UPtr {
-    auto session = FamSession::instance().getOrAdd(config);
-    return std::make_unique<FamRegion>(session->createRegion(property));
-}
-
-auto FamRegion::ensureCreated(const FamProperty& property, const FamConfig& config) -> UPtr {
-    auto session = FamSession::instance().getOrAdd(config);
-    try {
-        return std::make_unique<FamRegion>(session->createRegion(property));
-    } catch (const AlreadyExists& e) {
-        Log::debug<LibEcKit>() << "Destroying region: " << property.name << '\n';
-        session->lookupRegion(property.name)->destroy();
-        return std::make_unique<FamRegion>(session->createRegion(property));
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-FamRegion::FamRegion(std::unique_ptr<FamRegionDetail> region) noexcept: impl_(std::move(region)) { }
 
 FamRegion::~FamRegion() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+auto FamRegion::clone() const -> UPtr {
+    auto clone = std::make_unique<FamRegionDescriptor>(region_->get_global_descriptor());
+    clone->set_size(region_->get_size());
+    clone->set_perm(region_->get_perm());
+    clone->set_name(region_->get_name());
+    clone->set_desc_status(region_->get_desc_status());
+    clone->set_redundancyLevel(region_->get_redundancyLevel());
+    clone->set_memoryType(region_->get_memoryType());
+    clone->set_interleaveEnable(region_->get_interleaveEnable());
+    return std::make_unique<FamRegion>(*session_, std::move(clone));
+}
+
 void FamRegion::destroy() const {
-    impl_->destroy();
+    session_->destroyRegion(*region_);
 }
 
 auto FamRegion::exists() const -> bool {
-    return (impl_->region()->get_desc_status() == Fam_Descriptor_Status::DESC_INIT_DONE);
+    return (region_->get_desc_status() != Fam_Descriptor_Status::DESC_INVALID);
 }
 
-auto FamRegion::name() const -> const char* {
-    return impl_->name();
-}
+//----------------------------------------------------------------------------------------------------------------------
+// PROPERTIES
 
 auto FamRegion::index() const -> std::uint64_t {
-    return impl_->region()->get_global_descriptor().regionId;
+    return region_->get_global_descriptor().regionId;
 }
 
 auto FamRegion::size() const -> fam::size_t {
-    return impl_->region()->get_size();
+    return region_->get_size();
 }
 
 auto FamRegion::permissions() const -> fam::perm_t {
-    return impl_->region()->get_perm();
+    return region_->get_perm();
+}
+
+auto FamRegion::name() const -> std::string {
+    return region_->get_name() ? region_->get_name() : "";
+}
+
+auto FamRegion::property() const -> FamProperty {
+    return {size(), permissions(), name()};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // OBJECT factory methods
 
-auto FamRegion::proxyObject(const fam::size_t offset) const -> FamObject::UPtr {
-    return std::make_unique<FamObject>(impl_->proxyObject(offset));
+auto FamRegion::proxyObject(const std::uint64_t offset) const -> FamObject {
+    return session_->proxyObject(index(), offset);
 }
 
-auto FamRegion::lookupObject(const std::string& name) const -> FamObject::UPtr {
-    return std::make_unique<FamObject>(impl_->lookupObject(name));
+auto FamRegion::lookupObject(const std::string& objectName) const -> FamObject {
+    return session_->lookupObject(name(), objectName);
 }
 
-auto FamRegion::allocateObject(const FamProperty& property) const -> FamObject::UPtr {
-    return std::make_unique<FamObject>(impl_->allocateObject(property));
+auto FamRegion::allocateObject(const fam::size_t  objectSize,
+                               const fam::perm_t  objectPerms,
+                               const std::string& objectName,
+                               const bool         overwrite) const -> FamObject {
+    if (overwrite) { return session_->ensureAllocateObject(*region_, objectSize, objectPerms, objectName); }
+    return session_->allocateObject(*region_, objectSize, objectPerms, objectName);
 }
 
-auto FamRegion::allocateObject(const fam::size_t size, const std::string& name) const -> FamObject::UPtr {
-    return std::make_unique<FamObject>(impl_->allocateObject(size, name));
-}
-
-void FamRegion::deallocateObject(const std::string& name) const {
-    impl_->lookupObject(name)->deallocate();
-}
-
-auto FamRegion::ensureAllocatedObject(const FamProperty& property) const -> FamObject::UPtr {
-    try {
-        return allocateObject(property);
-    } catch (const AlreadyExists& e) {
-        Log::debug<LibEcKit>() << "Deallocating object: " << property.name << '\n';
-        deallocateObject(property.name);
-        return allocateObject(property);
-    }
+void FamRegion::deallocateObject(const std::string& objectName) const {
+    session_->deallocateObject(region_->get_name(), objectName);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void FamRegion::print(std::ostream& out) const {
     out << "FamRegion[" << property() << ",status=";
-    switch (impl_->status()) {
+    switch (region_->get_desc_status()) {
         case Fam_Descriptor_Status::DESC_INVALID:                     out << "invalid"; break;
         case Fam_Descriptor_Status::DESC_INIT_DONE:                   out << "initialized"; break;
         case Fam_Descriptor_Status::DESC_INIT_DONE_BUT_KEY_NOT_VALID: out << "initialized_invalidkey"; break;

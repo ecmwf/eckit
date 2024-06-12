@@ -55,10 +55,12 @@ public:
         for (auto&& region : regions_) { region->destroy(); }
     }
 
-    auto makeRandomRegionName() -> std::string { return "ECKIT_TEST_FAM_REGION_" + randomNumber(); }
+    static auto makeRandomText(const std::string& text = "") -> std::string {
+        return "ECKIT_TEST_FAM_" + text + '_' + randomNumber();
+    }
 
     auto makeRandomRegion(const eckit::fam::size_t size) -> FamRegion::SPtr {
-        auto region = name_.with(makeRandomRegionName()).createRegion(size, 0640, true);
+        auto region = name_.with(makeRandomText("REGION")).createRegion(size, 0640, true);
         Log::info() << "Random region: " << region.name() << '\n';
         return regions_.emplace_back(region.clone());
     }

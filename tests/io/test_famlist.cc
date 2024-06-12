@@ -41,15 +41,16 @@ namespace {
 fam::TestFam tester;
 
 constexpr const auto numThreads = 8;
-constexpr const auto listSize   = 20;
-const auto           listName   = "ECKIT_TEST_FAM_LIST_" + test::fam::randomNumber();
+constexpr const auto listSize   = 200;
+const auto           listName   = test::fam::TestFam::makeRandomText("LIST");
+const auto           listData   = test::fam::TestFam::makeRandomText("DATA");
 
 std::vector<std::string> testData;
 std::mutex               testMutex;
 
 auto makeTestData(const int number) -> std::string_view {
     std::ostringstream oss;
-    oss << "[tid:" << std::this_thread::get_id() << "] ECKIT FAM TEST DATA #" << number;
+    oss << "tid:" << std::this_thread::get_id() << " #" << number << '-' << listData;
     // add to the control list
     const std::lock_guard<std::mutex> lock(testMutex);
     return testData.emplace_back(oss.str());
@@ -76,11 +77,15 @@ CASE("FamList: create an empty list and validate size, empty, front, back") {
 
     EXPECT(lst.size() == 0);
 
-    EXPECT(lst.front().size() == 0);
-    EXPECT(lst.front().data() == nullptr);
+    Buffer front;
+    EXPECT_NO_THROW(front = lst.front());
+    EXPECT(front.size() == 0);
+    EXPECT(front.data() == nullptr);
 
-    EXPECT(lst.back().size() == 0);
-    EXPECT(lst.back().data() == nullptr);
+    Buffer back;
+    EXPECT_NO_THROW(back = lst.back());
+    EXPECT(back.size() == 0);
+    EXPECT(back.data() == nullptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

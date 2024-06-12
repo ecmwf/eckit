@@ -19,10 +19,14 @@
 
 #pragma once
 
+#include "eckit/filesystem/URI.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/fam/FamObjectName.h"
+
+#include <memory>
 
 namespace eckit {
+
+class FamObject;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,9 +34,9 @@ class FamHandle: public DataHandle {
 public:  // methods
     enum class Mode { CLOSED, READ, WRITE };
 
-    FamHandle(FamObjectName name, const Offset& offset, const Length& length);
+    FamHandle(const std::string& uri, const Offset& position, const Length& length, bool overwrite);
 
-    FamHandle(FamObjectName name, const Offset& offset = 0);
+    FamHandle(const std::string& uri, bool overwrite = false);
 
     Length openForRead() override;
 
@@ -46,28 +50,32 @@ public:  // methods
 
     void close() override;
 
-    Length size() override;
-
-    Length estimate() override;
-
-    Offset position() override { return pos_; }
-
     Offset seek(const Offset& offset) override;
 
     auto canSeek() const -> bool override { return true; }
 
-private:  // methods
-    void print(std::ostream& out) const override;
+    Offset position() override { return pos_; }
 
+    Length estimate() override { return len_; }
+
+    Length size() override;
+
+private:  // methods
     void open(Mode mode);
 
+    void print(std::ostream& out) const override;
+
 private:  // members
-    FamObjectName name_;
+    URI uri_;
 
     Offset pos_ {0};
     Length len_ {0};
 
+    bool overwrite_ {false};
+
     Mode mode_ {Mode::CLOSED};
+
+    std::unique_ptr<FamObject> handle_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

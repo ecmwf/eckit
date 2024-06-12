@@ -29,14 +29,11 @@ constexpr const auto scheme = "fam";
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamName::FamName(FamSession::SPtr session, const std::string& path): session_ {std::move(session)} {
+FamName::FamName(FamSession::SPtr session, const std::string& path) noexcept: session_ {std::move(session)} {
     parsePath(path);
 }
 
-FamName::FamName(const net::Endpoint& endpoint, const std::string& path):
-    FamName(FamSession::instance().getOrAdd({endpoint}), path) { }
-
-FamName::FamName(const URI& uri): FamName(uri, uri.name()) {
+FamName::FamName(const URI& uri): FamName(FamSession::instance().getOrAdd({uri}), uri.name()) {
     ASSERT(uri.scheme() == scheme);
 }
 
@@ -72,10 +69,11 @@ auto FamName::lookupRegion() const -> FamRegion {
     return session_->lookupRegion(regionName_);
 }
 
-auto FamName::createRegion(const fam::size_t regionSize, const fam::perm_t regionPerms, const bool overwrite) -> FamRegion {
-    Log::debug<LibEcKit>() << "Creating region " << regionName_ << '\n';
-    if (overwrite) { return session_->ensureCreateRegion(regionSize, regionPerms, regionName_); }
-    return session_->createRegion(regionSize, regionPerms, regionName_);
+auto FamName::createRegion(const fam::size_t regionSize,
+                           const fam::perm_t regionPerm,
+                           const bool        overwrite) const -> FamRegion {
+    if (overwrite) { return session_->ensureCreateRegion(regionSize, regionPerm, regionName_); }
+    return session_->createRegion(regionSize, regionPerm, regionName_);
 }
 
 auto FamName::existsRegion() const -> bool {
@@ -96,8 +94,7 @@ auto FamName::lookupObject() const -> FamObject {
     return session_->lookupObject(regionName_, objectName_);
 }
 
-auto FamName::allocateObject(const fam::size_t objectSize, const bool overwrite) -> FamObject {
-    Log::debug<LibEcKit>() << "Allocating object " << objectName_ << '\n';
+auto FamName::allocateObject(const fam::size_t objectSize, const bool overwrite) const -> FamObject {
     return lookupRegion().allocateObject(objectSize, objectName_, overwrite);
 }
 
@@ -131,9 +128,8 @@ auto FamName::config() const -> const FamConfig& {
 void FamName::parsePath(const std::string& path) {
     const auto names = Tokenizer("/").tokenize(path);
     const auto size  = names.size();
-    // if (size == 0 || size > 2) { throw UserError("Could not parse path=" + path, Here()); }
-    if (size > 1) { regionName_ = names[0]; }
-    if (size == 2) { objectName_ = names[1]; }
+    if (size > 0) { regionName_ = names[0]; }
+    if (size > 1) { objectName_ = names[1]; }
 }
 
 void FamName::print(std::ostream& out) const {

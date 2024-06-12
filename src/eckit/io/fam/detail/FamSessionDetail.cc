@@ -123,6 +123,8 @@ auto FamSessionDetail::createRegion(const fam::size_t  regionSize,
     ASSERT(regionSize > 0);
     ASSERT(isValidName(regionName));
 
+    LOG_DEBUG_LIB(LibEcKit) << "Create region: name=" << regionName << ", size=" << regionSize << '\n';
+
     auto* region = invokeFam(fam_, &openfam::fam::fam_create_region, regionName.c_str(), regionSize, regionPerm, nullptr);
 
     return {*this, std::unique_ptr<FamRegionDescriptor>(region)};
@@ -131,10 +133,14 @@ auto FamSessionDetail::createRegion(const fam::size_t  regionSize,
 void FamSessionDetail::resizeRegion(FamRegionDescriptor& region, const fam::size_t size) {
     ASSERT(size > 0);
 
+    LOG_DEBUG_LIB(LibEcKit) << "Resize region: name=" << region.get_name() << ", new size=" << size << '\n';
+
     invokeFam(fam_, &openfam::fam::fam_resize_region, &region, size);
 }
 
 void FamSessionDetail::destroyRegion(FamRegionDescriptor& region) {
+    LOG_DEBUG_LIB(LibEcKit) << "Destroy region: name=" << region.get_name() << '\n';
+
     invokeFam(fam_, &openfam::fam::fam_destroy_region, &region);
 }
 
@@ -148,7 +154,6 @@ auto FamSessionDetail::ensureCreateRegion(const fam::size_t  regionSize,
     try {
         return createRegion(regionSize, regionPerm, regionName);
     } catch (const AlreadyExists& e) {
-        Log::debug<LibEcKit>() << "Overwriting region => " << regionName << '\n';
         destroyRegion(regionName);
         return createRegion(regionSize, regionPerm, regionName);
     }
@@ -185,6 +190,9 @@ auto FamSessionDetail::allocateObject(FamRegionDescriptor& region,
                                       const std::string&   objectName) -> FamObject {
     ASSERT(objectSize > 0);
 
+    // LOG_DEBUG_LIB(LibEcKit) << "Allocate object: name=" << objectName << ", size=" << objectSize
+    //                         << ", region=" << region.get_name() << '\n';
+
     auto allocate =
         static_cast<FamObjectDescriptor* (openfam::fam::*)(const char*, uint64_t, mode_t, FamRegionDescriptor*)>(
             &openfam::fam::fam_allocate);
@@ -195,6 +203,8 @@ auto FamSessionDetail::allocateObject(FamRegionDescriptor& region,
 }
 
 void FamSessionDetail::deallocateObject(FamObjectDescriptor& object) {
+    LOG_DEBUG_LIB(LibEcKit) << "Deallocate object: name=" << object.get_name() << '\n';
+
     invokeFam(fam_, &openfam::fam::fam_deallocate, &object);
 }
 
@@ -209,7 +219,6 @@ auto FamSessionDetail::ensureAllocateObject(FamRegionDescriptor& region,
     try {
         return allocateObject(region, objectSize, objectPerm, objectName);
     } catch (const AlreadyExists& e) {
-        Log::debug<LibEcKit>() << "Overwriting object => " << objectName << '\n';
         deallocateObject(region.get_name(), objectName);
         return allocateObject(region, objectSize, objectPerm, objectName);
     }

@@ -15,51 +15,129 @@
 
 #include "eckit/io/fam/FamName.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/fam/FamHandle.h"
+#include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/log/Log.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 
-constexpr auto sessionName = "EckitFamNameSession";
+constexpr const auto scheme = "fam";
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamName::FamName(const net::Endpoint& endpoint, std::string name):
-    config_ {FamConfig {endpoint, sessionName}}, name_ {std::move(name)} { }
+FamName::FamName(FamSession::SPtr session, const std::string& path): session_ {std::move(session)} {
+    parsePath(path);
+}
+
+FamName::FamName(const net::Endpoint& endpoint, const std::string& path):
+    FamName(FamSession::instance().getOrAdd({endpoint}), path) { }
 
 FamName::FamName(const URI& uri): FamName(uri, uri.name()) {
-    ASSERT(uri.scheme() == "fam");
+    ASSERT(uri.scheme() == scheme);
 }
+
+FamName::FamName(const std::string& uri): FamName(URI {uri}) { }
 
 FamName::~FamName() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamName::uri() const -> URI {
-    return URI("fam://" + asString());
+auto FamName::asString() const -> std::string {
+    return std::string(config().endpoint) + '/' + regionName_ + '/' + objectName_;
 }
 
-auto FamName::asString() const -> std::string {
-    return std::string(config_.endpoint);
+auto FamName::uri() const -> URI {
+    return {scheme, asString()};
+}
+
+auto FamName::with(std::string_view regionName) -> FamName& {
+    regionName_ = regionName;
+    return *this;
+}
+
+auto FamName::with(std::string_view regionName, std::string_view objectName) -> FamName& {
+    regionName_ = regionName;
+    objectName_ = objectName;
+    return *this;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// REGION
+
+auto FamName::lookupRegion() const -> FamRegion {
+    return session_->lookupRegion(regionName_);
+}
+
+auto FamName::createRegion(const fam::size_t regionSize, const fam::perm_t regionPerms, const bool overwrite) -> FamRegion {
+    Log::debug<LibEcKit>() << "Creating region " << regionName_ << '\n';
+    if (overwrite) { return session_->ensureCreateRegion(regionSize, regionPerms, regionName_); }
+    return session_->createRegion(regionSize, regionPerms, regionName_);
+}
+
+auto FamName::existsRegion() const -> bool {
+    try {
+        return lookupRegion().exists();
+    } catch (const NotFound&) {
+        Log::debug<LibEcKit>() << "FAM region [" << regionName_ << "] was not found!\n";
+    } catch (const PermissionDenied&) {
+        Log::debug<LibEcKit>() << "FAM region [" << regionName_ << "] is not accessible!\n";
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// OBJECT
+
+auto FamName::lookupObject() const -> FamObject {
+    return session_->lookupObject(regionName_, objectName_);
+}
+
+auto FamName::allocateObject(const fam::size_t objectSize, const bool overwrite) -> FamObject {
+    Log::debug<LibEcKit>() << "Allocating object " << objectName_ << '\n';
+    return lookupRegion().allocateObject(objectSize, objectName_, overwrite);
+}
+
+auto FamName::existsObject() const -> bool {
+    try {
+        return lookupObject().exists();
+    } catch (const NotFound&) {
+        Log::debug<LibEcKit>() << "FAM object [" << objectName_ << "] was not found!\n";
+    } catch (const PermissionDenied&) {
+        Log::debug<LibEcKit>() << "FAM object [" << objectName_ << "] is not accessible!\n";
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+auto FamName::dataHandle(const bool overwrite) const -> DataHandle* {
+    return new FamHandle(asString(), overwrite);
+}
+
+auto FamName::dataHandle(const Offset& offset, const Length& length) const -> DataHandle* {
+    return new FamHandle(asString(), offset, length, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto FamName::config() const -> const FamConfig& {
-    return config_;
+    return session_->config();
 }
 
-auto FamName::parseName() const -> std::vector<std::string> {
-    return Tokenizer("/").tokenize(name_);
-}
-
-auto FamName::session() const -> Session {
-    return FamSession::instance().getOrAdd(config_);
+void FamName::parsePath(const std::string& path) {
+    const auto names = Tokenizer("/").tokenize(path);
+    const auto size  = names.size();
+    // if (size == 0 || size > 2) { throw UserError("Could not parse path=" + path, Here()); }
+    if (size > 1) { regionName_ = names[0]; }
+    if (size == 2) { objectName_ = names[1]; }
 }
 
 void FamName::print(std::ostream& out) const {
-    out << config_ << ",name=" << name_;
+    out << session_ << ", region=" << regionName_ << ", object=" << objectName_;
 }
 
 std::ostream& operator<<(std::ostream& out, const FamName& name) {

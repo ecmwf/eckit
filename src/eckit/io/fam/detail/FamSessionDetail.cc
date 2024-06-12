@@ -15,8 +15,6 @@
 
 #include "FamSessionDetail.h"
 
-#include "FamObjectDetail.h"
-#include "FamRegionDetail.h"
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamConfig.h"
@@ -53,7 +51,7 @@ auto invokeFam(openfam::fam& fam, Func&& fnPtr, Args&&... args) {
     }
 }
 
-auto isValidName(const std::string& str) -> bool {
+auto isValidName(std::string_view str) -> bool {
     if (str.empty()) { return false; }
     return std::all_of(str.begin(), str.end(), [](char c) { return std::isprint(c) > 0 && std::isspace(c) == 0; });
 }
@@ -111,28 +109,26 @@ std::ostream& operator<<(std::ostream& out, const FamSessionDetail& session) {
 //----------------------------------------------------------------------------------------------------------------------
 // REGION
 
-auto FamSessionDetail::lookupRegion(const std::string& name) -> std::unique_ptr<FamRegionDetail> {
-    // guard
-    ASSERT(isValidName(name));
+auto FamSessionDetail::lookupRegion(const std::string& regionName) -> FamRegion {
+    ASSERT(isValidName(regionName));
 
-    auto* region = invokeFam(fam_, &openfam::fam::fam_lookup_region, name.c_str());
+    auto* region = invokeFam(fam_, &openfam::fam::fam_lookup_region, regionName.c_str());
 
-    return std::make_unique<FamRegionDetail>(*this, std::unique_ptr<FamRegionDescriptor>(region));
+    return {*this, std::unique_ptr<FamRegionDescriptor>(region)};
 }
 
-auto FamSessionDetail::createRegion(const FamProperty& property) -> std::unique_ptr<FamRegionDetail> {
-    // guard
-    ASSERT(property.size > 0);
-    ASSERT(isValidName(property.name));
+auto FamSessionDetail::createRegion(const fam::size_t  regionSize,
+                                    const fam::perm_t  regionPerm,
+                                    const std::string& regionName) -> FamRegion {
+    ASSERT(regionSize > 0);
+    ASSERT(isValidName(regionName));
 
-    auto* region =
-        invokeFam(fam_, &openfam::fam::fam_create_region, property.name.c_str(), property.size, property.perm, nullptr);
+    auto* region = invokeFam(fam_, &openfam::fam::fam_create_region, regionName.c_str(), regionSize, regionPerm, nullptr);
 
-    return std::make_unique<FamRegionDetail>(*this, std::unique_ptr<FamRegionDescriptor>(region));
+    return {*this, std::unique_ptr<FamRegionDescriptor>(region)};
 }
 
 void FamSessionDetail::resizeRegion(FamRegionDescriptor& region, const fam::size_t size) {
-    // guard
     ASSERT(size > 0);
 
     invokeFam(fam_, &openfam::fam::fam_resize_region, &region, size);
@@ -142,48 +138,84 @@ void FamSessionDetail::destroyRegion(FamRegionDescriptor& region) {
     invokeFam(fam_, &openfam::fam::fam_destroy_region, &region);
 }
 
+void FamSessionDetail::destroyRegion(const std::string& regionName) {
+    lookupRegion(regionName).destroy();
+}
+
+auto FamSessionDetail::ensureCreateRegion(const fam::size_t  regionSize,
+                                          const fam::perm_t  regionPerm,
+                                          const std::string& regionName) -> FamRegion {
+    try {
+        return createRegion(regionSize, regionPerm, regionName);
+    } catch (const AlreadyExists& e) {
+        Log::debug<LibEcKit>() << "Overwriting region => " << regionName << '\n';
+        destroyRegion(regionName);
+        return createRegion(regionSize, regionPerm, regionName);
+    }
+}
+
+auto FamSessionDetail::stat(FamRegionDescriptor& region) -> FamProperty {
+    Fam_Stat info;
+
+    auto fnPtr = static_cast<void (openfam::fam::*)(FamRegionDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
+    invokeFam(fam_, fnPtr, &region, &info);
+
+    return {info.size, info.perm, info.name, info.uid, info.gid};
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 //  OBJECT
 
-auto FamSessionDetail::proxyObject(const FamGlobalDescriptor& descriptor) -> std::unique_ptr<FamObjectDetail> {
-    return std::make_unique<FamObjectDetail>(*this, std::make_unique<FamObjectDescriptor>(descriptor));
+auto FamSessionDetail::proxyObject(const std::uint64_t region, const std::uint64_t offset) -> FamObject {
+    return {*this, std::make_unique<FamObjectDescriptor>(Fam_Global_Descriptor {region, offset})};
 }
 
-auto FamSessionDetail::proxyObject(const FamGlobalDescriptor& descriptor,
-                                   const fam::size_t          size) -> std::unique_ptr<FamObjectDetail> {
-    return std::make_unique<FamObjectDetail>(*this, std::make_unique<FamObjectDescriptor>(descriptor, size));
-}
-
-auto FamSessionDetail::lookupObject(const std::string& regionName,
-                                    const std::string& objectName) -> std::unique_ptr<FamObjectDetail> {
-    // guard
+auto FamSessionDetail::lookupObject(const std::string& regionName, const std::string& objectName) -> FamObject {
     ASSERT(isValidName(regionName));
     ASSERT(isValidName(objectName));
 
     auto* object = invokeFam(fam_, &openfam::fam::fam_lookup, objectName.c_str(), regionName.c_str());
 
-    return std::make_unique<FamObjectDetail>(*this, std::unique_ptr<FamObjectDescriptor>(object));
+    return {*this, std::unique_ptr<FamObjectDescriptor>(object)};
 }
 
 auto FamSessionDetail::allocateObject(FamRegionDescriptor& region,
-                                      const FamProperty&   property) -> std::unique_ptr<FamObjectDetail> {
-    // guard
-    ASSERT(property.size > 0);
+                                      const fam::size_t    objectSize,
+                                      const fam::perm_t    objectPerm,
+                                      const std::string&   objectName) -> FamObject {
+    ASSERT(objectSize > 0);
 
     auto allocate =
         static_cast<FamObjectDescriptor* (openfam::fam::*)(const char*, uint64_t, mode_t, FamRegionDescriptor*)>(
             &openfam::fam::fam_allocate);
 
-    auto* object = invokeFam(fam_, allocate, property.name.c_str(), property.size, property.perm, &region);
+    auto* object = invokeFam(fam_, allocate, objectName.c_str(), objectSize, objectPerm, &region);
 
-    return std::make_unique<FamObjectDetail>(*this, std::unique_ptr<FamObjectDescriptor>(object));
+    return {*this, std::unique_ptr<FamObjectDescriptor>(object)};
 }
 
 void FamSessionDetail::deallocateObject(FamObjectDescriptor& object) {
     invokeFam(fam_, &openfam::fam::fam_deallocate, &object);
 }
 
-auto FamSessionDetail::statObject(FamObjectDescriptor& object) -> FamProperty {
+void FamSessionDetail::deallocateObject(const std::string& regionName, const std::string& objectName) {
+    lookupObject(regionName, objectName).deallocate();
+}
+
+auto FamSessionDetail::ensureAllocateObject(FamRegionDescriptor& region,
+                                            const fam::size_t    objectSize,
+                                            const fam::perm_t    objectPerm,
+                                            const std::string&   objectName) -> FamObject {
+    try {
+        return allocateObject(region, objectSize, objectPerm, objectName);
+    } catch (const AlreadyExists& e) {
+        Log::debug<LibEcKit>() << "Overwriting object => " << objectName << '\n';
+        deallocateObject(region.get_name(), objectName);
+        return allocateObject(region, objectSize, objectPerm, objectName);
+    }
+}
+
+auto FamSessionDetail::stat(FamObjectDescriptor& object) -> FamProperty {
     Fam_Stat info;
 
     auto fnPtr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
@@ -196,16 +228,14 @@ void FamSessionDetail::put(FamObjectDescriptor& object,
                            const void*          buffer,
                            const fam::size_t    offset,
                            const fam::size_t    length) {
-    // guard
     ASSERT(buffer);
     ASSERT(length > 0);
 
-    /// @note we have to remove "const" qualifier from buffer NOLINT
+    /// @note we have to remove "const" qualifier from buffer
     invokeFam(fam_, &openfam::fam::fam_put_blocking, const_cast<void*>(buffer), &object, offset, length);
 }
 
 void FamSessionDetail::get(FamObjectDescriptor& object, void* buffer, const fam::size_t offset, const fam::size_t length) {
-    // guard
     ASSERT(buffer);
     ASSERT(length > 0);
 

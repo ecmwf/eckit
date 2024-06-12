@@ -54,7 +54,7 @@ struct FamNode {
         return object.get<fam::size_t>(offsetof(FamNode, length));
     }
 
-    static void getBuffer(const FamObject& object, Buffer& buffer) {
+    static void getData(const FamObject& object, Buffer& buffer) {
         if (const auto length = getLength(object); length > 0) {
             buffer.resize(length);
             object.get(buffer.data(), sizeof(FamNode), length);

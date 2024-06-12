@@ -86,6 +86,10 @@ Stream& operator>>(Stream& s, Offset& x) {
     return s;
 }
 
+void Offset::dump(DumpLoad& a) const {
+    a.dump(value_);
+}
+
 void Offset::load(DumpLoad& a) {
     a.load(value_);
 }

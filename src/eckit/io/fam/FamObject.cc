@@ -15,7 +15,8 @@
 
 #include "eckit/io/fam/FamObject.h"
 
-#include "detail/FamObjectDetail.h"
+#include "detail/FamSessionDetail.h"
+#include "eckit/exception/Exceptions.h"
 
 #include <memory>
 #include <string>
@@ -24,33 +25,85 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamObject::FamObject(std::unique_ptr<FamObjectDetail> object) noexcept: impl_ {std::move(object)} { }
+FamObject::FamObject(FamSessionDetail& session, std::unique_ptr<FamObjectDescriptor> object):
+    session_ {session.getShared()}, object_ {std::move(object)} {
+    ASSERT(session_);
+    ASSERT(object_);
+}
 
 FamObject::~FamObject() = default;
 
+auto FamObject::clone() const -> UPtr {
+    auto clone = std::make_unique<FamObjectDescriptor>(object_->get_global_descriptor());
+    clone->set_used_memsrv_cnt(object_->get_used_memsrv_cnt());
+    clone->set_memserver_ids(object_->get_memserver_ids());
+    clone->set_size(object_->get_size());
+    clone->set_perm(object_->get_perm());
+    clone->set_name(object_->get_name());
+    clone->set_desc_status(object_->get_desc_status());
+    clone->set_interleave_size(object_->get_interleave_size());
+    clone->set_uid(object_->get_uid());
+    clone->set_gid(object_->get_gid());
+    return std::make_unique<FamObject>(*session_, std::move(clone));
+}
+
 bool FamObject::operator==(const FamObject& other) const {
-    const auto desc  = impl_->object()->get_global_descriptor();
-    const auto oDesc = other.impl_->object()->get_global_descriptor();
+    const auto desc  = object_->get_global_descriptor();
+    const auto oDesc = other.object_->get_global_descriptor();
     return (desc.regionId == oDesc.regionId && desc.offset == oDesc.offset);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+// OPERATIONS
+
 void FamObject::replaceWith(const FamDescriptor& object) {
-    impl_->replaceWith(object);
+    object_ = std::make_unique<FamObjectDescriptor>(Fam_Global_Descriptor {object.region, object.offset});
 }
 
-void FamObject::deallocate() {
-    impl_->deallocate();
+void FamObject::deallocate() const {
+    session_->deallocateObject(*object_);
+}
+
+auto FamObject::exists() const -> bool {
+    return (object_->get_desc_status() != Fam_Descriptor_Status::DESC_INVALID);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// PROPERTIES
+
+auto FamObject::regionId() const -> std::uint64_t {
+    return object_->get_global_descriptor().regionId;
+}
+
+auto FamObject::offset() const -> std::uint64_t {
+    return object_->get_global_descriptor().offset;
+}
+
+auto FamObject::size() const -> fam::size_t {
+    return object_->get_size();
+}
+
+auto FamObject::permissions() const -> fam::perm_t {
+    return object_->get_perm();
+}
+
+auto FamObject::name() const -> std::string {
+    return object_->get_name() ? object_->get_name() : "";
+}
+
+auto FamObject::property() const -> FamProperty {
+    return {size(), permissions(), name(), object_->get_uid(), object_->get_gid()};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // DATA
 
 void FamObject::put(const void* buffer, const fam::size_t offset, const fam::size_t length) const {
-    impl_->put(buffer, offset, length);
+    session_->put(*object_, buffer, offset, length);
 }
 
 void FamObject::get(void* buffer, const fam::size_t offset, const fam::size_t length) const {
-    impl_->get(buffer, offset, length);
+    session_->get(*object_, buffer, offset, length);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -58,60 +111,38 @@ void FamObject::get(void* buffer, const fam::size_t offset, const fam::size_t le
 
 template<typename T>
 auto FamObject::fetch(const fam::size_t offset) const -> T {
-    return impl_->fetch<T>(offset);
+    return session_->fetch<T>(*object_, offset);
 }
 
 template<typename T>
 void FamObject::set(const fam::size_t offset, const T value) const {
-    impl_->set<T>(offset, value);
+    session_->set<T>(*object_, offset, value);
 }
 
 template<typename T>
 void FamObject::add(const fam::size_t offset, const T value) const {
-    impl_->add<T>(offset, value);
+    session_->add<T>(*object_, offset, value);
 }
 
 template<typename T>
 void FamObject::subtract(const fam::size_t offset, const T value) const {
-    impl_->subtract<T>(offset, value);
+    session_->subtract<T>(*object_, offset, value);
 }
 
 template<typename T>
 auto FamObject::swap(const fam::size_t offset, const T value) const -> T {  // NOLINT
-    return impl_->swap<T>(offset, value);
+    return session_->swap<T>(*object_, offset, value);
 }
 
 template<typename T>
 auto FamObject::compareSwap(const fam::size_t offset, const T oldValue, const T newValue) const -> T {
-    return impl_->compareSwap<T>(offset, oldValue, newValue);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-auto FamObject::regionId() const -> std::uint64_t {
-    return impl_->descriptor().regionId;
-}
-
-auto FamObject::offset() const -> std::uint64_t {
-    return impl_->descriptor().offset;
-}
-
-auto FamObject::size() const -> fam::size_t {
-    return impl_->size();
-}
-
-auto FamObject::permissions() const -> fam::perm_t {
-    return impl_->permissions();
-}
-
-auto FamObject::name() const -> std::string {
-    return impl_->name();
+    return session_->compareSwap<T>(*object_, offset, oldValue, newValue);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void FamObject::print(std::ostream& out) const {
-    out << "FamObject[" << *impl_ << "]";
+    out << "FamObject[" << property() << ", region=" << regionId() << ", offset=" << offset() << "]";
 }
 
 std::ostream& operator<<(std::ostream& out, const FamObject& object) {

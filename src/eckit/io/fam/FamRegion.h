@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "eckit/io/fam/FamConfig.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 
@@ -28,8 +27,6 @@
 
 namespace eckit {
 
-class FamRegionDetail;
-
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamRegion {
@@ -37,23 +34,18 @@ public:  // types
     using UPtr = std::unique_ptr<FamRegion>;
     using SPtr = std::shared_ptr<FamRegion>;
 
-public:  // factory methods
-    static auto lookup(const std::string& name, const FamConfig& config) -> UPtr;
-
-    static auto create(const FamProperty& property, const FamConfig& config) -> UPtr;
-
-    static auto ensureCreated(const FamProperty& property, const FamConfig& config) -> UPtr;
-
 public:  // methods
-    explicit FamRegion(std::unique_ptr<FamRegionDetail> region) noexcept;
+    FamRegion(FamSessionDetail& session, std::unique_ptr<FamRegionDescriptor> region);
 
     ~FamRegion();
+
+    auto clone() const -> UPtr;
 
     void destroy() const;
 
     auto exists() const -> bool;
 
-    auto name() const -> const char*;
+    // properties
 
     auto index() const -> std::uint64_t;
 
@@ -61,22 +53,33 @@ public:  // methods
 
     auto permissions() const -> fam::perm_t;
 
-    auto property() const -> FamProperty { return {size(), permissions(), name()}; }
+    auto name() const -> std::string;
 
-    // OBJECT factory methods
+    auto property() const -> FamProperty;
 
-    auto proxyObject(fam::size_t offset) const -> FamObject::UPtr;
+    // object methods
 
-    auto lookupObject(const std::string& name) const -> FamObject::UPtr;
+    [[nodiscard]]
+    auto proxyObject(std::uint64_t offset) const -> FamObject;
 
-    auto allocateObject(const FamProperty& property) const -> FamObject::UPtr;
+    [[nodiscard]]
+    auto lookupObject(const std::string& objectName) const -> FamObject;
 
-    /// @note inherits permissions from region
-    auto allocateObject(fam::size_t size, const std::string& name = "") const -> FamObject::UPtr;
+    [[nodiscard]]
+    auto allocateObject(fam::size_t        objectSize,
+                        fam::perm_t        objectPerms,
+                        const std::string& objectName = "",
+                        bool               overwrite  = false) const -> FamObject;
 
-    void deallocateObject(const std::string& name) const;
+    /// IMPOTANT: this uses the region's permissions for the object
+    [[nodiscard]]
+    auto allocateObject(fam::size_t        objectSize,
+                        const std::string& objectName = "",
+                        bool               overwrite  = false) const -> FamObject {
+        return allocateObject(objectSize, permissions(), objectName, overwrite);
+    }
 
-    auto ensureAllocatedObject(const FamProperty& property) const -> FamObject::UPtr;
+    void deallocateObject(const std::string& objectName) const;
 
 private:  // methods
     void print(std::ostream& out) const;
@@ -84,7 +87,8 @@ private:  // methods
     friend std::ostream& operator<<(std::ostream& out, const FamRegion& region);
 
 private:  // members
-    std::unique_ptr<FamRegionDetail> impl_;
+    std::shared_ptr<FamSessionDetail>    session_;
+    std::shared_ptr<FamRegionDescriptor> region_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

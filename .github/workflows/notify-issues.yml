@@ -2,9 +2,7 @@ name: Notify Issues
 
 on:
   issues:
-    types:
-      - "opened"
-      - "reopened"
+    types: [opened, reopened]
 
 jobs:
   notify:

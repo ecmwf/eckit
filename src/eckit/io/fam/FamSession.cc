@@ -35,11 +35,8 @@ FamSession::~FamSession() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamSession::get(const FamConfig& config) -> Session {
-    // guard
+auto FamSession::get(const FamConfig& config) -> SPtr {
     ASSERT(!config.sessionName.empty());
-
-    // Log::debug<LibEcKit>() << "Getting FAM session=" << config.sessionName << '\n';
 
     for (auto&& session : registry_) {
         if (session->config() == config) { return session; }
@@ -49,11 +46,10 @@ auto FamSession::get(const FamConfig& config) -> Session {
     throw UserError("Couldn't find session: " + config.sessionName);
 }
 
-auto FamSession::getOrAdd(const FamConfig& config) -> Session {
+auto FamSession::getOrAdd(const FamConfig& config) -> SPtr {
     try {
         return get(config);
     } catch (const Exception&) {
-        // Log::debug<LibEcKit>() << "Adding FAM session=" << config.sessionName << '\n';
         // add new session
         auto session = std::make_shared<FamSessionDetail>(config);
         registry_.emplace_back(session);

@@ -17,6 +17,7 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/FamName.h"
 #include "eckit/log/Log.h"
 
 #include <utility>
@@ -25,34 +26,73 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamHandle::FamHandle(FamObjectName name, const Offset& offset, const Length& length):
-    name_ {std::move(name)}, pos_ {offset}, len_ {length} { }
+FamHandle::FamHandle(const std::string& uri, const Offset& position, const Length& length, const bool overwrite):
+    uri_ {uri}, pos_ {position}, len_ {length}, overwrite_ {overwrite} { }
 
-FamHandle::FamHandle(FamObjectName name, const Offset& offset): FamHandle(std::move(name), offset, 0) { }
+FamHandle::FamHandle(const std::string& uri, const bool overwrite): FamHandle(uri, 0, 0, overwrite) { }
 
-void FamHandle::print(std::ostream& out) const {
-    out << "FamHandle[name=" << name_ << ",position=" << pos_ << ",mode=";
-    switch (mode_) {
-        case Mode::CLOSED: out << "closed"; break;
-        case Mode::READ:   out << "read"; break;
-        case Mode::WRITE:  out << "write"; break;
-    }
-    out << "]";
+//----------------------------------------------------------------------------------------------------------------------
+
+void FamHandle::open(const Mode mode) {
+    ASSERT(mode_ == Mode::CLOSED);
+    pos_  = 0;
+    mode_ = mode;
+}
+
+void FamHandle::close() {
+    if (mode_ == Mode::WRITE) { flush(); }
+    mode_ = Mode::CLOSED;
+    pos_  = 0;
+    handle_.reset();
+}
+
+void FamHandle::flush() {
+    Log::debug<LibEcKit>() << "FamHandle::flush() ?! noop\n";
+}
+
+Offset FamHandle::seek(const Offset& offset) {
+    pos_ = pos_ + offset;
+
+    ASSERT(0 <= pos_ && size() >= pos_);
+
+    return pos_;
+}
+
+Length FamHandle::size() {
+    return handle_ ? Length(handle_->size()) : estimate();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 Length FamHandle::openForRead() {
     open(Mode::READ);
-
+    handle_ = FamName(uri_).lookupObject().clone();
     return estimate();
 }
 
-void FamHandle::openForWrite(const Length& /*length*/) {
+void FamHandle::openForWrite(const Length& length) {
     open(Mode::WRITE);
 
-    /// @todo any checks ?
-    // ASSERT(name_.bucketExists());
+    try {
+        handle_ = FamName(uri_).lookupObject().clone();
+        if (overwrite_) { ASSERT(length == size()); }
+    } catch (const NotFound& e) {
+        Log::debug<LibEcKit>() << "FamHandle::openForWrite() " << e.what() << '\n';
+        handle_ = FamName(uri_).allocateObject(static_cast<fam::size_t>(length)).clone();
+    }
+
+    len_ = handle_->size();
+
+    ASSERT(length == size());
+
+    // try {
+    //     name_.create(static_cast<fam::size_t>(length));
+    // } catch (const AlreadyExists& e) {
+    //     Log::debug<LibEcKit>() << "FamHandle::openForWrite() " << e.what() << '\n';
+    //     ASSERT(overwrite_ && length == size());
+    //     name_.object()->deallocate();
+    //     name_.create(static_cast<fam::size_t>(length));
+    // }
 
     /// @todo slow code, use of length ?
     // if (length > 0 && name_.exists()) { ASSERT(size() == length); }
@@ -66,7 +106,7 @@ long FamHandle::read(void* buffer, const long length) {
 
     if (size() <= pos_) { return 0; }
 
-    name_.get(buffer, pos_, length);
+    handle_->get(buffer, pos_, length);
     // const auto len = name_.get(buffer, pos_, length);
 
     pos_ += length;
@@ -76,9 +116,8 @@ long FamHandle::read(void* buffer, const long length) {
 
 long FamHandle::write(const void* buffer, const long length) {
     ASSERT(mode_ == Mode::WRITE);
-    ASSERT(!name_.exists());
 
-    name_.put(buffer, pos_, length);
+    handle_->put(buffer, pos_, length);
     // const auto len = name_.put(buffer, length);
 
     pos_ += length;
@@ -88,38 +127,14 @@ long FamHandle::write(const void* buffer, const long length) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void FamHandle::open(const Mode mode) {
-    ASSERT(mode_ == Mode::CLOSED);
-    pos_  = 0;
-    mode_ = mode;
-}
-
-void FamHandle::close() {
-    if (mode_ == Mode::WRITE) { flush(); }
-    pos_  = 0;
-    mode_ = Mode::CLOSED;
-}
-
-void FamHandle::flush() {
-    Log::debug<LibEcKit>() << "flushed?! noop\n";
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-Length FamHandle::size() {
-    return name_.size();
-}
-
-Length FamHandle::estimate() {
-    return size();
-}
-
-Offset FamHandle::seek(const Offset& offset) {
-    pos_ = pos_ + offset;
-
-    ASSERT(0 <= pos_ && size() >= pos_);
-
-    return pos_;
+void FamHandle::print(std::ostream& out) const {
+    out << "FamHandle[uri=" << uri_ << ", position=" << pos_ << ", mode=";
+    switch (mode_) {
+        case Mode::CLOSED: out << "closed"; break;
+        case Mode::READ:   out << "read"; break;
+        case Mode::WRITE:  out << "write"; break;
+    }
+    out << "]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

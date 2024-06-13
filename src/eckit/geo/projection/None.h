@@ -18,7 +18,7 @@
 namespace eckit::geo::projection {
 
 
-class None final : public Projection {
+class None : public Projection {
 public:
     // -- Constructors
 
@@ -27,10 +27,10 @@ public:
 
     // -- Overridden methods
 
-    void spec(spec::Custom&) const override {}
-
     inline Point fwd(const Point& p) const override { return p; }
     inline Point inv(const Point& q) const override { return q; }
+
+    void fill_spec(spec::Custom&) const override {}
 };
 
 

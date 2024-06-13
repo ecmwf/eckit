@@ -35,7 +35,7 @@ Figure* ProjectionOnFigure::make_figure() const {
 }
 
 
-void ProjectionOnFigure::spec(spec::Custom& custom) const {
+void ProjectionOnFigure::fill_spec(spec::Custom& custom) const {
     // FIXME OO figure
     if (types::is_approximately_equal(figure_->a(), figure_->b())) {
         custom.set("R", figure_->R());

@@ -21,7 +21,7 @@
 namespace eckit::geo::projection {
 
 
-class Composer final : public Projection, private std::deque<Projection*> {
+class Composer : public Projection, private std::deque<Projection*> {
 public:
     // -- Constructors
 
@@ -42,7 +42,7 @@ public:
 
     // -- Overridden methods
 
-    void spec(spec::Custom&) const override;
+    void fill_spec(spec::Custom&) const override;
 
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;

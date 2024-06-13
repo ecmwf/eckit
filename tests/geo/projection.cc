@@ -13,22 +13,48 @@
 #include <memory>
 
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/figure/UnitSphere.h"
+#include "eckit/geo/projection/Reverse.h"
+#include "eckit/geo/projection/figure/LonLatToXYZ.h"  // to test Reverse
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-using P = std::unique_ptr<Projection>;
-
-
 CASE("projection: none") {
     Point p = PointLonLat{1, 1};
-    P projection(ProjectionFactory::instance().get("none").create(spec::Custom{}));
+    std::unique_ptr<Projection> projection(ProjectionFactory::instance().get("none").create(spec::Custom{}));
 
     EXPECT(points_equal(p, projection->inv(p)));
     EXPECT(points_equal(p, projection->fwd(p)));
+}
+
+
+CASE("projection: reverse") {
+    projection::figure::LonLatToXYZ ab(new figure::UnitSphere);
+    projection::Reverse<projection::figure::LonLatToXYZ> ba(new figure::UnitSphere);
+
+    PointLonLat p = NORTH_POLE;
+    Point3 q{0., 0., 1.};
+
+    EXPECT(points_equal(q, ab.fwd(p)));
+    EXPECT(points_equal(p, ba.fwd(q)));
+
+    EXPECT(points_equal(p, ab.inv(q)));
+    EXPECT(points_equal(q, ba.inv(p)));
+
+    // ensure fwd(Point3) -> PointLonLat, inv(PointLonLat) -> Point3
+    try {
+        points_equal(p, std::get<PointLonLat>(ba.fwd(q)));
+        points_equal(q, std::get<Point3>(ba.inv(p)));
+    }
+    catch (...) {
+        EXPECT(false);
+    }
+
+    ASSERT(std::unique_ptr<Spec>(ab.spec())->get_string("projection") == "ll_to_xyz");
+    EXPECT(std::unique_ptr<Spec>(ba.spec())->get_string("projection") == "reverse_ll_to_xyz");
 }
 
 

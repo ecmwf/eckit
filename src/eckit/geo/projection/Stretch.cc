@@ -44,7 +44,7 @@ double Stretch::stretch(double a, double c) {
 }
 
 
-void Stretch::spec(spec::Custom& spec) const {
+void Stretch::fill_spec(spec::Custom& spec) const {
     spec.set("projection", "stretch");
     spec.set("stretching_factor", c_);
 }

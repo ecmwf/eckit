@@ -21,7 +21,7 @@ namespace eckit::geo::projection {
 
 
 /// Calculate coordinates using PROJ
-class PROJ final : public Projection {
+class PROJ : public Projection {
 public:
     // -- Constructors
 
@@ -33,15 +33,12 @@ public:
     const std::string& source() const { return source_; }
     const std::string& target() const { return target_; }
 
-    static std::string ellipsoid(const std::string& string);
-
     // -- Overridden methods
 
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
     [[nodiscard]] Figure* make_figure() const override;
-    void spec(spec::Custom&) const override;
 
 private:
     // -- Types
@@ -54,6 +51,10 @@ private:
 
     const std::string source_;
     const std::string target_;
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
 };
 
 

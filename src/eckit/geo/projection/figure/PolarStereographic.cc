@@ -65,8 +65,8 @@ PointLonLat PolarStereographic::inv(const Point2& q) const {
 }
 
 
-void PolarStereographic::spec(spec::Custom& custom) const {
-    ProjectionOnFigure::spec(custom);
+void PolarStereographic::fill_spec(spec::Custom& custom) const {
+    ProjectionOnFigure::fill_spec(custom);
 
     custom.set("projection", "stere");
     custom.set("lon_0", centre_.lon);

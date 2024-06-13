@@ -17,6 +17,7 @@
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/geometry/OblateSpheroid.h"
 #include "eckit/geo/geometry/Sphere.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -67,8 +68,10 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) :
 LonLatToXYZ::LonLatToXYZ(const Spec& spec) : LonLatToXYZ(FigureFactory::build(spec)) {}
 
 
-void LonLatToXYZ::spec(spec::Custom& custom) const {
-    ProjectionOnFigure::spec(custom);
+void LonLatToXYZ::fill_spec(spec::Custom& custom) const {
+    ProjectionOnFigure::fill_spec(custom);
+
+    custom.set("projection", "ll_to_xyz");
 }
 
 

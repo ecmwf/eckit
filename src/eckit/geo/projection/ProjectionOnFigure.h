@@ -22,16 +22,17 @@ namespace eckit::geo::projection {
 
 
 class ProjectionOnFigure : public Projection {
+public:
+    // -- Overridden methods
+
+    [[nodiscard]] Figure* make_figure() const override;
+    void fill_spec(spec::Custom&) const override;
+
 protected:
     // -- Constructors
 
     explicit ProjectionOnFigure(const Spec&);
     explicit ProjectionOnFigure(Figure* = nullptr);
-
-    // -- Overridden methods
-
-    [[nodiscard]] Figure* make_figure() const override;
-    void spec(spec::Custom&) const override;
 
 private:
     // -- Members

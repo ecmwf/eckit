@@ -84,7 +84,7 @@ private:
 
     // -- Methods
 
-    virtual void spec(spec::Custom&) const;
+    virtual void fill_spec(spec::Custom&) const;
 
     // -- Friends
 

@@ -10,21 +10,18 @@
  */
 
 
-#include "eckit/geo/projection/XYToLonLat.h"
+#pragma once
 
-#include "eckit/geo/spec/Custom.h"
-
-
-namespace eckit::geo::projection {
+#include "eckit/geo/figure/Sphere.h"
 
 
-static ProjectionBuilder<XYToLonLat> PROJECTION1("xy_to_ll");
-static ProjectionBuilder<XYToLonLat> PROJECTION2("plate-carree");
+namespace eckit::geo::figure {
 
 
-void XYToLonLat::fill_spec(spec::Custom& custom) const {
-    custom.set("projection", "ll_to_xy");
-}
+struct UnitSphere final : public Sphere {
+    explicit UnitSphere() : Sphere(1.) {}
+    explicit UnitSphere(const Spec&) : UnitSphere() {}
+};
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::figure

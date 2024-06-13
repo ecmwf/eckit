@@ -48,6 +48,8 @@ list(APPEND eckit_geo_srcs
     figure/OblateSpheroid.h
     figure/Sphere.cc
     figure/Sphere.h
+    figure/UnitSphere.cc
+    figure/UnitSphere.h
     geometry/OblateSpheroid.cc
     geometry/OblateSpheroid.h
     geometry/Sphere.cc
@@ -98,6 +100,7 @@ list(APPEND eckit_geo_srcs
     projection/None.h
     projection/ProjectionOnFigure.cc
     projection/ProjectionOnFigure.h
+    projection/Reverse.h
     projection/Rotation.cc
     projection/Rotation.h
     projection/Stretch.cc

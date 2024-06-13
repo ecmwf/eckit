@@ -46,8 +46,10 @@ PointLonLat SpaceView::inv(const Point2&) const {
 }
 
 
-void SpaceView::spec(spec::Custom& custom) const {
-    ProjectionOnFigure::spec(custom);
+void SpaceView::fill_spec(spec::Custom& custom) const {
+    ProjectionOnFigure::fill_spec(custom);
+
+    custom.set("projection", "geos");  //?
     NOTIMP;
 }
 

@@ -60,8 +60,8 @@ PointLonLat LambertAzimuthalEqualArea::inv(const Point2& p) const {
 }
 
 
-void LambertAzimuthalEqualArea::spec(spec::Custom& custom) const {
-    ProjectionOnFigure::spec(custom);
+void LambertAzimuthalEqualArea::fill_spec(spec::Custom& custom) const {
+    ProjectionOnFigure::fill_spec(custom);
 
     custom.set("projection", "laea");
     custom.set("lon_0", centre_.lon);

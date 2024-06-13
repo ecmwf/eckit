@@ -91,9 +91,10 @@ PointLonLat LambertConformalConic::inv(const Point2& p) const {
 }
 
 
-void LambertConformalConic::spec(spec::Custom& custom) const {
-    ProjectionOnFigure::spec(custom);
+void LambertConformalConic::fill_spec(spec::Custom& custom) const {
+    ProjectionOnFigure::fill_spec(custom);
 
+    custom.set("projection", "lcc");
     custom.set("lon_0", centre_.lon);
     custom.set("lat_0", centre_.lat);
     custom.set("first_lon", first_.lon);

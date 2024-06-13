@@ -57,7 +57,7 @@ std::vector<Point> Composer::inv_points(const Point& p) const {
 }
 
 
-void Composer::spec(spec::Custom& custom) const {
+void Composer::fill_spec(spec::Custom& custom) const {
     std::vector<std::string> specs;
     for (const auto* proj : *this) {
         specs.emplace_back(proj->spec_str());

@@ -13,36 +13,43 @@
 #pragma once
 
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
 
 
-class XYToLonLat : public Projection {
+template <class P>
+class Reverse : protected P {
 public:
+    // -- Types
+
+    using projection_type = P;
+
     // -- Constructors
 
-    explicit XYToLonLat() = default;
-    explicit XYToLonLat(const Spec&) {}
+    using P::P;
 
     // -- Methods
 
-    inline PointLonLat fwd(const Point2& p) const { return {p.X, p.Y}; }
-    inline Point2 inv(const PointLonLat& q) const { return {q.lon, q.lat}; }
+    using P::figure;
+    using P::make_figure;
+
+    using P::spec;
+    using P::spec_str;
 
     // -- Overridden methods
 
-    inline Point fwd(const Point& p) const override { return fwd(std::get<Point2>(p)); }
-    inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
+    Point fwd(const Point& p) const override { return P::inv(p); }
+    Point inv(const Point& p) const override { return P::fwd(p); }
 
-protected:
+private:
     // -- Overridden methods
 
-    void fill_spec(spec::Custom&) const override;
+    void fill_spec(spec::Custom& custom) const override {
+        P::fill_spec(custom);
+        custom.set("projection", "reverse_" + custom.get_string("projection"));
+    }
 };
-
-
-using PlateCaree = XYToLonLat;
-
 
 }  // namespace eckit::geo::projection

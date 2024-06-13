@@ -47,7 +47,7 @@ spec::Custom* Projection::spec() const {
     auto* custom = new spec::Custom;
     ASSERT(custom != nullptr);
 
-    spec(*custom);
+    fill_spec(*custom);
     return custom;
 }
 
@@ -63,7 +63,7 @@ Projection* Projection::make_from_spec(const Spec& spec) {
 }
 
 
-void Projection::spec(spec::Custom&) const {
+void Projection::fill_spec(spec::Custom&) const {
     NOTIMP;
 }
 

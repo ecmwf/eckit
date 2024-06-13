@@ -10,21 +10,13 @@
  */
 
 
-#include "eckit/geo/projection/XYToLonLat.h"
-
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/figure/UnitSphere.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo::figure {
 
 
-static ProjectionBuilder<XYToLonLat> PROJECTION1("xy_to_ll");
-static ProjectionBuilder<XYToLonLat> PROJECTION2("plate-carree");
+static const ConcreteBuilderT1<Figure, UnitSphere> REGISTER("unit-sphere");
 
 
-void XYToLonLat::fill_spec(spec::Custom& custom) const {
-    custom.set("projection", "ll_to_xy");
-}
-
-
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo::figure

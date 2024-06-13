@@ -178,7 +178,7 @@ Point PROJ::inv(const Point& q) const {
 }
 
 
-void PROJ::spec(spec::Custom& custom) const {
+void PROJ::fill_spec(spec::Custom& custom) const {
     custom.set("projection", "proj");
     if (source_ != DEFAULT) {
         custom.set("source", source_);

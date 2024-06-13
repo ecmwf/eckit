@@ -18,7 +18,7 @@
 namespace eckit::geo::projection::figure {
 
 
-class PolarStereographic final : public ProjectionOnFigure {
+class PolarStereographic : public ProjectionOnFigure {
 public:
     // -- Types
     // None
@@ -47,13 +47,19 @@ public:
 
     // -- Overridden methods
 
-    void spec(spec::Custom&) const override;
+    Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
+    Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
 
     // -- Class members
     // None
 
     // -- Class methods
     // None
+
+protected:
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
 
 private:
     // -- Members
@@ -71,11 +77,6 @@ private:
 
     // -- Methods
     // None
-
-    // -- Overridden methods
-
-    Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
-    Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
 
     // -- Class members
     // None

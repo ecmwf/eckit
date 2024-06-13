@@ -110,8 +110,14 @@ endif()
 
 ecbuild_add_option( FEATURE OPENFAM
                     DEFAULT OFF
-                    REQUIRED_PACKAGES "OpenFAM REQUIRED" "gRPC REQUIRED"
+                    REQUIRED_PACKAGES "OpenFAM REQUIRED" "protobuf REQUIRED" "gRPC REQUIRED"
                     DESCRIPTION "Enables OpenFAM support" )
+
+if( eckit_HAVE_OPENFAM )
+    find_package( protobuf CONFIG REQUIRED )
+    find_package( gRPC CONFIG REQUIRED )
+    find_package( OpenFAM 3.0.1 CONFIG REQUIRED )
+endif()
 
 ### RADOS
 

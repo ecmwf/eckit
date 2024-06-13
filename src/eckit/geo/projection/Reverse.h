@@ -20,12 +20,8 @@ namespace eckit::geo::projection {
 
 
 template <class P>
-class Reverse : protected P {
+class Reverse : protected P /* hide interface incosistentwith reversing inv/fwd */ {
 public:
-    // -- Types
-
-    using projection_type = P;
-
     // -- Constructors
 
     using P::P;
@@ -40,8 +36,8 @@ public:
 
     // -- Overridden methods
 
-    Point fwd(const Point& p) const override { return P::inv(p); }
-    Point inv(const Point& p) const override { return P::fwd(p); }
+    inline Point fwd(const Point& p) const override { return P::inv(p); }
+    inline Point inv(const Point& p) const override { return P::fwd(p); }
 
 private:
     // -- Overridden methods

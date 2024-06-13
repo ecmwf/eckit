@@ -34,13 +34,13 @@ public:
 
     // -- Methods
 
-    Point3 fwd(const PointLonLat& p) const { return (*impl_)(p); }
-    PointLonLat inv(const Point3& q) const { return (*impl_)(q); }
+    inline Point3 fwd(const PointLonLat& p) const { return (*impl_)(p); }
+    inline PointLonLat inv(const Point3& q) const { return (*impl_)(q); }
 
     // -- Overridden methods
 
-    Point fwd(const Point& p) const override { return (*impl_)(std::get<PointLonLat>(p)); }
-    Point inv(const Point& q) const override { return (*impl_)(std::get<Point3>(q)); }
+    inline Point fwd(const Point& p) const override { return (*impl_)(std::get<PointLonLat>(p)); }
+    inline Point inv(const Point& q) const override { return (*impl_)(std::get<Point3>(q)); }
 
 protected:
     // -- Overridden methods

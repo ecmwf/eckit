@@ -48,8 +48,8 @@ public:
 
     // -- Overridden methods
 
-    Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
-    Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
+    inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
+    inline Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
 
     // -- Class members
     // None

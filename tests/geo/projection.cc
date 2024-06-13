@@ -38,20 +38,12 @@ CASE("projection: reverse") {
     PointLonLat p = NORTH_POLE;
     Point3 q{0., 0., 1.};
 
-    EXPECT(points_equal(q, ab.fwd(p)));
-    EXPECT(points_equal(p, ba.fwd(q)));
-
-    EXPECT(points_equal(p, ab.inv(q)));
-    EXPECT(points_equal(q, ba.inv(p)));
+    ASSERT(points_equal(q, ab.fwd(p)));
+    ASSERT(points_equal(p, ab.inv(q)));
 
     // ensure fwd(Point3) -> PointLonLat, inv(PointLonLat) -> Point3
-    try {
-        points_equal(p, std::get<PointLonLat>(ba.fwd(q)));
-        points_equal(q, std::get<Point3>(ba.inv(p)));
-    }
-    catch (...) {
-        EXPECT(false);
-    }
+    EXPECT(points_equal(p, ba.fwd(q)));
+    EXPECT(points_equal(q, ba.inv(p)));
 
     ASSERT(std::unique_ptr<Spec>(ab.spec())->get_string("projection") == "ll_to_xyz");
     EXPECT(std::unique_ptr<Spec>(ba.spec())->get_string("projection") == "reverse_ll_to_xyz");

@@ -33,13 +33,13 @@ public:
 
     bool rotated() const { return rotated_; }
 
-    PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
-    PointLonLat inv(const PointLonLat& q) const { return (*inv_)(q); }
+    inline PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
+    inline PointLonLat inv(const PointLonLat& q) const { return (*inv_)(q); }
 
     // -- Overridden methods
 
-    Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
-    Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
+    inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
+    inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
 
 protected:
     // -- Overridden methods

@@ -32,7 +32,7 @@ struct FamNode {
     FamDescriptor prev;
     fam::size_t   length {0};
 
-    //----------------------------------------------------------------------------------------------------------------------
+    //------------------------------------------------------------------------------------------------------------------
     // HELPERS (DO NOT add any virtual function here)
 
     static auto getNext(const FamObject& object) -> FamDescriptor {

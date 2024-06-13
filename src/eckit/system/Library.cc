@@ -30,6 +30,7 @@
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+#include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit::system {
@@ -110,28 +111,16 @@ std::string Library::libraryPath() const {
 
 
 Channel& Library::debugChannel() const {
-    // * Store a pointer to the channel, rather than the object itself, as otherwise
-    //   it can be moved by std::map...
-    // * Use a thread_local (static) to avoid race condition if logging is used from different threads
-    // * perform an allocation through unique_ptr (around the whole map) to allow accessing
-    //   the debugChannel even when the library is being destructed.
-    //   Without this additional wrapper log calls from a destructor may SEGFAULT
-    //   when the library is shutdown
-    thread_local static std::unique_ptr<std::map<const Library*, std::unique_ptr<Channel>>> debugChannels;
+    static ThreadSingleton<std::map<const Library*, std::unique_ptr<Channel>>> debugChannels;
 
-    if (!debugChannels) {
-        debugChannels = std::make_unique<std::map<const Library*, std::unique_ptr<Channel>>>();
-    }
-
-
-    auto it = debugChannels->find(this);
-    if (it != debugChannels->end()) {
+    auto it = debugChannels.instance().find(this);
+    if (it != debugChannels.instance().end()) {
         return *it->second;
     }
 
-    return *debugChannels
-                ->emplace(this, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
-                                       : std::make_unique<Channel>())                                     //
+    return *debugChannels.instance()
+                .emplace(this, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
+                                      : std::make_unique<Channel>())                                     //
                 .first->second.get();
 }
 

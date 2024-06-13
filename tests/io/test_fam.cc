@@ -18,6 +18,7 @@
 /// @date   May 2024
 
 #include "eckit/config/LibEcKit.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/testing/Test.h"
 #include "fam_common.h"
@@ -26,15 +27,6 @@ using namespace eckit;
 using namespace eckit::testing;
 
 namespace eckit::test {
-
-// using namespace fam;
-
-// namespace {
-//
-// // fam::TestFam tester;
-// FamName name {testEndpoint};
-//
-// }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -134,6 +126,58 @@ CASE("FamObject: lookup, create, and destroy") {
 
         EXPECT_THROWS_AS(name.lookupRegion(), NotFound);
     }
+}
+
+CASE("FamObject: large data small object") {
+    const auto regionName = fam::TestFam::makeRandomText("REGION");
+    const auto regionSize = 64;
+    const auto regionPerm = static_cast<eckit::fam::perm_t>(0640);
+
+    const auto objectName = fam::TestFam::makeRandomText("OBJECT");
+    const auto objectSize = 32;
+    const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
+
+    auto name = FamName(fam::testEndpoint);
+
+    {
+        auto region = name.with(regionName).createRegion(regionSize, regionPerm, true);
+
+        // object bigger than region
+        EXPECT_THROWS_AS(region.allocateObject(regionSize + 1, objectPerm, objectName), OutOfStorage);
+        EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
+
+        EXPECT(regionSize >= objectSize);
+
+        // object fits
+        EXPECT_NO_THROW(region.allocateObject(objectSize, objectPerm, objectName));
+        EXPECT_NO_THROW(region.lookupObject(objectName));
+        EXPECT_NO_THROW(region.deallocateObject(objectName));
+        EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
+    }
+
+    // data ops
+
+    const auto testData = "ECKIT_TEST_FAM_DATA_2048413561EC"s;  // size=32
+
+    {  // write
+        auto object = name.with(regionName, objectName).allocateObject(objectSize, true);
+        EXPECT_NO_THROW(object.put(testData.data(), 0, testData.size()));
+    }
+
+    {  // read
+        auto object = name.lookupObject();
+
+        Buffer testBuffer(object.size());
+        testBuffer.zero();
+
+        EXPECT_NO_THROW(object.get(testBuffer.data(), 0, testBuffer.size()));
+
+        EXPECT(testData == testBuffer.view());
+    }
+
+    EXPECT_NO_THROW(name.lookupRegion().destroy());
+
+    EXPECT_THROWS_AS(name.lookupRegion(), NotFound);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

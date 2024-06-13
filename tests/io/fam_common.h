@@ -29,12 +29,12 @@
 
 namespace eckit::test {
 
+using namespace std::string_literals;
+
 //----------------------------------------------------------------------------------------------------------------------
 // HELPERS
 
 namespace fam {
-
-using namespace std::string_literals;
 
 // This returns a random number as string.
 inline auto randomNumber() -> std::string {

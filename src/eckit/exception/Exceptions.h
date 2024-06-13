@@ -185,6 +185,11 @@ public:
     AlreadyExists(const std::string&);
 };
 
+class OutOfStorage: public Exception {
+public:
+    OutOfStorage(const std::string&);
+};
+
 class UserError : public Exception {
 public:
     UserError(const std::string&, const CodeLocation&);

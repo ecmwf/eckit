@@ -296,6 +296,8 @@ NotFound::NotFound(const std::string& r): Exception(std::string("Not found: ") +
 
 AlreadyExists::AlreadyExists(const std::string& r): Exception(std::string("Already exists: ") + r) { }
 
+OutOfStorage::OutOfStorage(const std::string& r): Exception(std::string("Out of storage: ") + r) { }
+
 Cancel::Cancel(const std::string& r) :
     Exception(std::string("Cancel: ") + r) {}
 

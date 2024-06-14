@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cstddef>
+#include <iterator>
 #include <vector>
 
 #include "eckit/log/Log.h"
@@ -21,10 +23,16 @@ namespace eckit {
 // Version 2: warning all numbers must be signed but positive...
 
 template <class T>
-class dummy_iterator : public std::iterator<std::output_iterator_tag, T> {
+class dummy_iterator {
 public:
+    using iterator_category = std::output_iterator_tag;
+    using value_type        = T;
+    using difference_type   = std::ptrdiff_t;
+    using pointer           = value_type*;
+    using reference         = value_type&;
+
     dummy_iterator() {}
-    dummy_iterator<T>& operator=(const T& value) { return *this; }
+    dummy_iterator<T>& operator=(const value_type&) { return *this; }
     dummy_iterator<T>& operator*() { return *this; }
     dummy_iterator<T>& operator++() { return *this; }
     dummy_iterator<T>& operator++(int) { return *this; }

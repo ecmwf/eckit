@@ -143,13 +143,31 @@ ecbuild_add_option( FEATURE AEC
 ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "xxHash support for hashing" )
 
-### Codec options
+### eckit::codec
 
 ecbuild_add_option( FEATURE ECKIT_CODEC
-                    DEFAULT OFF
-                    DESCRIPTION "Encoding/Decoding library ported from atlas_io" )
+                    DEFAULT ON
+                    DESCRIPTION "eckit::codec encoding/decoding library" )
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
+
+### eckit::maths
+
+ecbuild_add_option( FEATURE CONVEX_HULL
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::maths library convex hull/Delaunay triangulation" )
+                    # REQUIRED_PACKAGES "Qhull COMPONENTS C CXX"
+
+if( eckit_HAVE_CONVEX_HULL )
+    find_package( Qhull REQUIRED CONFIG )
+
+    if( NOT TARGET Qhull::qhullcpp OR NOT TARGET Qhull::qhullstatic_r )
+        message( FATAL_ERROR "eckit::maths ENABLE_CONVEX_HULL requires Qhull C/C++ libraries" )
+    endif()
+
+    add_library(Qhull::Qhull INTERFACE IMPORTED)
+    target_link_libraries(Qhull::Qhull INTERFACE Qhull::qhullcpp Qhull::qhullstatic_r )
+endif()
 
 ### LAPACK
 
@@ -162,9 +180,10 @@ else()
                         REQUIRED_PACKAGES "LAPACK QUIET" )
 endif()
 
-### OpenSSL (for SHA1)
+### OpenSSL (for SHA1 and MD4)
 
 ecbuild_add_option( FEATURE SSL
+                    DEFAULT OFF # We only use deprecated functionality from OpenSSL
                     DESCRIPTION "OpenSSL support"
                     REQUIRED_PACKAGES OpenSSL )
 
@@ -192,6 +211,7 @@ ecbuild_add_option( FEATURE JEMALLOC
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA
+                    DEFAULT OFF
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "CUDA GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )
@@ -283,8 +303,8 @@ add_subdirectory( tests )
 add_subdirectory( regressions )
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
-					   SOURCES AUTHORS README.md NOTICE LICENSE
-					   INSTALL ChangeLog COPYING )
+                       SOURCES AUTHORS README.md NOTICE LICENSE
+                       INSTALL ChangeLog COPYING )
 
 ############################################################################################
 # finalize

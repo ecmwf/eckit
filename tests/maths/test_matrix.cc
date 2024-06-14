@@ -15,7 +15,6 @@
 
 #include "eckit/testing/Test.h"
 
-using namespace eckit::testing;
 using eckit::types::is_approximately_equal;
 
 namespace eckit::test {
@@ -299,7 +298,7 @@ CASE("Mappings to existing data") {
     // y = A * x
     {
         std::array<double, 2> vector_x{1, 2};
-        std::array<double, 3> vector_y;
+        std::array<double, 3> vector_y{};
 
         auto x = ColVector::ConstMapType(vector_x.data(), 2);
         EXPECT_EQUAL(x(0), 1.);
@@ -315,7 +314,7 @@ CASE("Mappings to existing data") {
     // y = x * A
     {
         std::array<double, 3> vector_x{1, 2, 3};
-        std::array<double, 2> vector_y;
+        std::array<double, 2> vector_y{};
 
         auto x = RowVector::ConstMapType(vector_x.data(), 3);
         EXPECT_EQUAL(x(0), 1.);
@@ -335,5 +334,5 @@ CASE("Mappings to existing data") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

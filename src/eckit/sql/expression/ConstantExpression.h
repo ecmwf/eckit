@@ -43,6 +43,7 @@ public:
     void cleanup(SQLSelect&) override { NOTIMP; }
 
     // -- For WHERE
+    using SQLExpression::eval;
     double eval(bool& missing) const override {
         missing = missing_;
         return value_;

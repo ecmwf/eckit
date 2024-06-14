@@ -124,8 +124,8 @@ private:  // internal classes
     typedef std::map<std::string, factory_t> factory_map;
     static factory_map& factories();
 
-    Params(Concept* concept) :
-        self_(concept) {}
+    Params(Concept* _concept) :
+        self_(_concept) {}
 
     struct Concept {
         virtual ~Concept() {}

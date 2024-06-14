@@ -18,12 +18,14 @@ namespace eckit::sql::expression {
 //----------------------------------------------------------------------------------------------------------------------
 
 ParameterExpression::ParameterExpression(int which) :
+    SQLExpression(),
     value_(0), which_(which) {
     // don't use any Log::* here
     //	std::cout << "new ParameterExpression " << name << std::endl;
 }
 
 ParameterExpression::ParameterExpression(const ParameterExpression& other) :
+    SQLExpression(),
     value_(other.value_), which_(other.which_) {}
 
 

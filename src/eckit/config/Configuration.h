@@ -18,6 +18,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <type_traits>
 #include "eckit/config/Parametrisation.h"
 
 
@@ -125,10 +126,77 @@ public:  // methods
     bool get(const std::string& name, LocalConfiguration&) const;
 
     /// @todo This method should be protected. As per note above,
-    ///       we don't wnat to expose eckit::Value out of Configuration.
-    const Value& get() const;
+    ///       we don't want to expose eckit::Value out of Configuration.
+    [[deprecated("eckit::Value should not be exposed via eckit::Configuration::get(). This method Will be removed in a next release.")]]
+    const Value& get() const {
+        return getValue();
+    }
 
     virtual void hash(eckit::Hash&) const;
+
+    // -- Introspection methods
+
+    bool isSubConfiguration(const std::string& name) const;
+
+    bool isIntegral(const std::string& name) const;
+
+    bool isBoolean(const std::string& name) const;
+
+    bool isFloatingPoint(const std::string& name) const;
+
+    bool isString(const std::string& name) const;
+
+    bool isList(const std::string& name) const;
+
+    bool isSubConfigurationList(const std::string& name) const;
+
+    bool isIntegralList(const std::string& name) const;
+
+    bool isBooleanList(const std::string& name) const;
+
+    bool isFloatingPointList(const std::string& name) const;
+
+    bool isStringList(const std::string& name) const;
+
+    template <typename T>
+    bool isConvertible(const std::string& name) const {
+        using _T = std::decay_t<T>;
+        if constexpr(std::is_base_of_v<LocalConfiguration,_T>) {
+            return isSubConfiguration(name);
+        }
+        else if constexpr(std::is_same_v<_T,int> || std::is_same_v<_T,long> || std::is_same_v<_T,long long> || std::is_same_v<_T,std::size_t>) {
+            return isIntegral(name) || isBoolean(name);
+        }
+        else if constexpr(std::is_same_v<_T,float> || std::is_same_v<_T,double>) {
+            return isFloatingPoint(name) || isIntegral(name) || isBoolean(name);
+        }
+        else if constexpr(std::is_same_v<_T,std::string>) {
+            return isString(name);
+        }
+        else if constexpr(is_vector<_T>::value) {
+            using _V = std::decay_t<typename _T::value_type>;
+            if constexpr(std::is_base_of_v<LocalConfiguration,_V>) {
+                return isSubConfigurationList(name);
+            }
+            else if constexpr(std::is_same_v<_V,int> || std::is_same_v<_V,long> || std::is_same_v<_V,long long> || std::is_same_v<_V,std::size_t>) {
+                return isIntegralList(name) || isBooleanList(name);
+            }
+            else if constexpr(std::is_same_v<_V,float> || std::is_same_v<_V,double>) {
+                return isFloatingPointList(name) || isIntegralList(name) || isBooleanList(name);
+            }
+            else if constexpr(std::is_same_v<_V,std::string>) {
+                return isStringList(name);
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    template <typename T>
+    bool isConvertible(const std::string& name, T&) const {
+        return isConvertible<T>(name);
+    }
 
 protected:  // methods
     Configuration(const eckit::Value&, char separator = '.');
@@ -144,7 +212,10 @@ protected:  // methods
 
     operator Value() const;
 
+    const Value& getValue() const;
+
 protected:  // members
+    friend class LocalConfiguration;
     std::unique_ptr<Value> root_;
     char separator_;
 
@@ -167,6 +238,21 @@ private:  // methods
         p.print(s);
         return s;
     }
+
+private:
+
+    // Helper structs for introspection of template T in isConvertible<T> method
+    template<class T>
+    struct is_vector {
+        using type = T ;
+        constexpr static bool value = false;
+    };
+
+    template<class T>
+    struct is_vector<std::vector<T>> {
+        using type = std::vector<T> ;
+        constexpr static bool value = true;
+    };
 };
 
 //----------------------------------------------------------------------------------------------------------------------

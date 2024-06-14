@@ -462,6 +462,7 @@ static Value toValue(std::string& s) {
                     s.erase(remove(s.begin(), s.end(), '_'), s.end());
                     return Value(strtol(s.substr(2).c_str(), 0, 16));
                 }
+                [[fallthrough]];
 
             case '1':
             case '2':
@@ -478,6 +479,7 @@ static Value toValue(std::string& s) {
                     long long d = Translator<std::string, long long>()(s);
                     return Value(d);
                 }
+                [[fallthrough]];
 
             case '.':
 

@@ -185,17 +185,31 @@ LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vec
 }
 
 
-LocalConfiguration& LocalConfiguration::set(const std::string& s, const LocalConfiguration& value) {
-    setValue(s, *value.root_);
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const Configuration& value) {
+    setValue(s, value.getValue());
     return *this;
 }
 
-LocalConfiguration& LocalConfiguration::set(const std::string& s, const std::vector<LocalConfiguration>& value) {
+LocalConfiguration& LocalConfiguration::set(const std::string& s, const Configuration* value[], size_t size) {
     ValueList values;
-    for (std::vector<LocalConfiguration>::const_iterator v = value.begin(); v != value.end(); ++v) {
-        values.push_back(*v->root_);
+    for (size_t i=0; i<size; ++i) {
+        values.push_back(value[i]->getValue());
     }
     setValue(s, values);
+    return *this;
+}
+
+LocalConfiguration& LocalConfiguration::set(const Configuration& other) {
+    eckit::Value& root             = *root_;
+    eckit::Value const& other_root = *other.root_;
+    for (auto& key : other.keys()) {
+        root[key] = other_root[key];
+    }
+    return *this;
+}
+
+LocalConfiguration& LocalConfiguration::remove(const std::string& name) {
+    root_->remove(name);
     return *this;
 }
 

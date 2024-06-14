@@ -26,7 +26,7 @@ static PathName tmp() {
     long max   = pathconf(tmpdir, _PC_PATH_MAX);
     char* path = new char[max];
 
-    sprintf(path, "%s/eckitXXXXXXXXXXX", tmpdir);
+    snprintf(path, max, "%s/eckitXXXXXXXXXXX", tmpdir);
     int fd;
     SYSCALL2(fd = ::mkstemp(path), path);
 

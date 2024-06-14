@@ -49,8 +49,9 @@ auto invokeFam(openfam::fam& fam, Func&& fnPtr, Args&&... args) {
         if (code == openfam::Fam_Error::FAM_ERR_NO_SPACE) { throw OutOfStorage(e.fam_error_msg()); }
         if (code == openfam::Fam_Error::FAM_ERR_OUTOFRANGE) { throw OutOfRange(e.fam_error_msg(), Here()); }
         if (code == openfam::Fam_Error::FAM_ERR_RPC) {
-            const std::string server = static_cast<const char*>(fam.fam_get_option("CIS_SERVER"));
-            throw RemoteException(e.fam_error_msg(), server);
+            std::string       optionName = "CIS_SERVER";
+            const std::string serverName = static_cast<const char*>(fam.fam_get_option(optionName.data()));
+            throw RemoteException(e.fam_error_msg(), serverName);
         }
         throw SeriousBug(e.fam_error_msg());
     }
@@ -78,7 +79,7 @@ FamSessionDetail::FamSessionDetail(FamConfig config): config_ {std::move(config)
         auto port    = std::to_string(config_.endpoint.port());
 
         Fam_Options options;
-        memset(static_cast<void*>(&options), 0, sizeof(Fam_Options));
+        ::memset(static_cast<void*>(&options), 0, sizeof(Fam_Options));
         options.runtime   = runtime.data();
         options.cisServer = host.data();
         options.grpcPort  = port.data();

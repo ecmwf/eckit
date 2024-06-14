@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "eckit/filesystem/URI.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamObject.h"
@@ -34,15 +35,30 @@ namespace eckit {
 
 class DataHandle;
 
+struct FamNamePath {
+    FamNamePath() = default;
+
+    FamNamePath(const std::string& path);
+    
+
+    bool operator==(const FamNamePath& other) const;
+
+    std::string region;
+    std::string object;
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamName {
+public:  // types
+    static constexpr const auto SCHEME = "fam";
+
 public:  // methods
-    FamName(FamSession::SPtr session, const std::string& path) noexcept;
+    FamName(FamSession::SPtr session, FamNamePath path) noexcept;
+
+    FamName(const net::Endpoint& endpoint, FamNamePath path);
 
     explicit FamName(const URI& uri);
-
-    explicit FamName(const std::string& uri);
 
     virtual ~FamName();
 
@@ -54,6 +70,8 @@ public:  // methods
 
     auto with(std::string_view regionName, std::string_view objectName) -> FamName&;
 
+    auto path() const -> const FamNamePath& { return path_; }
+
     // region
 
     auto lookupRegion() const -> FamRegion;
@@ -62,7 +80,7 @@ public:  // methods
 
     auto existsRegion() const -> bool;
 
-    auto nameRegion() const -> const std::string& { return regionName_; }
+    auto nameRegion() const -> const std::string& { return path_.region; }
 
     // object
 
@@ -72,7 +90,7 @@ public:  // methods
 
     auto existsObject() const -> bool;
 
-    auto nameObject() const -> const std::string& { return objectName_; }
+    auto nameObject() const -> const std::string& { return path_.object; }
 
     // datahandle
 
@@ -87,16 +105,12 @@ protected:  // methods
 
     virtual void print(std::ostream& out) const;
 
-private:  // methods
-    void parsePath(const std::string& path);
-
     friend std::ostream& operator<<(std::ostream& out, const FamName& name);
 
 private:  // members
     FamSession::SPtr session_;
 
-    std::string regionName_;
-    std::string objectName_;
+    FamNamePath path_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -25,6 +25,8 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 namespace {
 
 auto parsePath(const std::string& path) -> std::tuple<std::string, std::string> {
@@ -38,14 +40,18 @@ auto parsePath(const std::string& path) -> std::tuple<std::string, std::string> 
 
 }  // namespace
 
-//----------------------------------------------------------------------------------------------------------------------
-
 FamNamePath::FamNamePath(const std::string& path) {
     std::tie(region, object) = parsePath(path);
 }
 
 bool FamNamePath::operator==(const FamNamePath& other) const {
     return (region == other.region && object == other.object);
+}
+
+std::ostream& operator<<(std::ostream& out, const FamNamePath& path) {
+    if (!path.region.empty()) { out << "/" + path.region; }
+    if (!path.object.empty()) { out << "/" + path.object; }
+    return out;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -62,26 +68,16 @@ FamName::FamName(const URI& uri): FamName(uri, uri.name()) {
 
 FamName::~FamName() = default;
 
-// bool FamName::operator==(const FamName& other) const {
-//     return (config().endpoint == other.config().endpoint && path_ == other.path_);
-// }
-//
 //----------------------------------------------------------------------------------------------------------------------
 
 auto FamName::asString() const -> std::string {
-    std::string retVal = std::string(config().endpoint);
-
-    if (path_.region.empty()) { return retVal; }
-
-    retVal += '/' + path_.region;
-
-    if (!path_.object.empty()) { retVal += '/' + path_.object; }
-
-    return retVal;
+    std::ostringstream oss;
+    oss << SCHEME << "://" << config().endpoint << path_;
+    return oss.str();
 }
 
 auto FamName::uri() const -> URI {
-    return {SCHEME, asString()};
+    return URI {asString()};
 }
 
 auto FamName::with(std::string_view regionName) -> FamName& {

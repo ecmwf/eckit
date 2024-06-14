@@ -45,7 +45,7 @@ inline auto randomNumber() -> std::string {
     return std::to_string(::random());
 }
 
-const auto testEndpoint = "fam://127.0.0.1:8880"s;
+const auto testEndpoint = "127.0.0.1:8880"s;
 
 class TestFam {
 public:
@@ -61,14 +61,13 @@ public:
 
     auto makeRandomRegion(const eckit::fam::size_t size) -> FamRegion::SPtr {
         auto region = name_.with(makeRandomText("REGION")).createRegion(size, 0640, true);
-        Log::info() << "Random region: " << region.name() << '\n';
         return regions_.emplace_back(region.clone());
     }
 
     auto getLastRegion() -> FamRegion::SPtr { return regions_.back(); }
 
 private:
-    FamName name_ {testEndpoint};
+    FamName name_ {testEndpoint, {}};
 
     std::vector<FamRegion::SPtr> regions_;
 };

@@ -35,6 +35,8 @@
 
 namespace eckit::system {
 
+static std::map<const Library*, std::unique_ptr<Channel>> debugChannels;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 Library::Library(const std::string& name) : name_(name), prefix_(name), debug_(false) {
@@ -109,21 +111,22 @@ std::string Library::libraryPath() const {
     return libraryPath_;
 }
 
-
 Channel& Library::debugChannel() const {
-    static ThreadSingleton<std::map<const Library*, std::unique_ptr<Channel>>> debugChannels;
+    if (auto iter = debugChannels.find(this); iter != debugChannels.end()) { return *iter->second; }
 
-    auto it = debugChannels.instance().find(this);
-    if (it != debugChannels.instance().end()) {
-        return *it->second;
+    auto channel = std::make_unique<Channel>();
+
+    if (debug_) {
+        auto target = std::make_unique<PrefixTarget>(prefix_ + "_DEBUG");
+        channel     = std::make_unique<Channel>(target.release());  // not a thinko (ChannelBuffer takes ownership)
     }
 
-    return *debugChannels.instance()
-                .emplace(this, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
-                                      : std::make_unique<Channel>())                                     //
-                .first->second.get();
-}
+    auto result = debugChannels.emplace(this, std::move(channel));
 
+    ASSERT(result.second);
+
+    return *result.first->second;
+}
 
 const Configuration& Library::configuration() const {
     AutoLock<Mutex> lock(mutex_);

@@ -14,8 +14,8 @@
 
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/UnitSphere.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"  // to test Reverse
 #include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/projection/figure/LonLatToXYZ.h"  // to test Reverse
 #include "eckit/testing/Test.h"
 
 
@@ -32,8 +32,8 @@ CASE("projection: none") {
 
 
 CASE("projection: reverse") {
-    projection::figure::LonLatToXYZ ab(new figure::UnitSphere);
-    projection::Reverse<projection::figure::LonLatToXYZ> ba(new figure::UnitSphere);
+    projection::LonLatToXYZ ab(new figure::UnitSphere);
+    projection::Reverse<projection::LonLatToXYZ> ba(new figure::UnitSphere);
 
     PointLonLat p = NORTH_POLE;
     Point3 q{0., 0., 1.};

@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/projection/figure/LambertConformalConic.h"
+#include "eckit/geo/projection/LambertConformalConic.h"
 
 #include <cmath>
 
@@ -20,7 +20,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo::projection::figure {
+namespace eckit::geo::projection {
 
 
 LambertConformalConic::LambertConformalConic(const Spec& spec) :
@@ -104,4 +104,4 @@ void LambertConformalConic::fill_spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::projection::figure
+}  // namespace eckit::geo::projection

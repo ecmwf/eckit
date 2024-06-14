@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/projection/figure/LonLatToXYZ.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
 
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
@@ -21,7 +21,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo::projection::figure {
+namespace eckit::geo::projection {
 
 
 static ProjectionBuilder<LonLatToXYZ> PROJECTION("ll_to_xyz");
@@ -75,4 +75,4 @@ void LonLatToXYZ::fill_spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::projection::figure
+}  // namespace eckit::geo::projection

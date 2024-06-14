@@ -13,16 +13,13 @@
 #pragma once
 
 #include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/util/sincos.h"
 
 
-namespace eckit::geo::projection::figure {
+namespace eckit::geo::projection {
 
 
-/**
- * @brief SpaceView projection
- * @ref LRIT/HRIT Global Specification (CGMS 03, Issue 2.6, 12.08.1999)
- */
-class SpaceView : public ProjectionOnFigure {
+class LambertAzimuthalEqualArea : public ProjectionOnFigure {
 public:
     // -- Types
     // None
@@ -32,7 +29,8 @@ public:
 
     // -- Constructors
 
-    explicit SpaceView(const Spec&);
+    explicit LambertAzimuthalEqualArea(const Spec&);
+    LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first);
 
     // -- Destructor
     // None
@@ -66,7 +64,16 @@ protected:
 
 private:
     // -- Members
-    // None
+
+    const PointLonLat centre_;     // central meridian/standard parallel [degree]
+    const PointLonLatR centre_r_;  // central meridian/standard parallel [radian]
+
+    const PointLonLat first_;     // first point [degree]
+    const PointLonLatR first_r_;  // first point [radian]
+
+    const util::sincos_t phi0_;
+    const util::sincos_t phi_;
+    const util::sincos_t dlam_;
 
     // -- Methods
     // None
@@ -82,4 +89,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::projection::figure
+}  // namespace eckit::geo::projection

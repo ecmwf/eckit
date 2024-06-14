@@ -17,7 +17,7 @@
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
-namespace eckit::geo::projection::figure {
+namespace eckit::geo::projection {
 
 
 /// Calculate coordinates of a point on a sphere or spheroid, in [x, y, z]
@@ -69,4 +69,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::projection::figure
+}  // namespace eckit::geo::projection

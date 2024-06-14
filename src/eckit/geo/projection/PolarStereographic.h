@@ -15,15 +15,10 @@
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
-namespace eckit::geo::projection::figure {
+namespace eckit::geo::projection {
 
 
-/**
- * @brief LambertConformalConic projection
- * @ref Map Projections: A Working Manual, John P. Snyder (1987)
- * @ref Wolfram MathWorld (http://mathworld.wolfram.com/LambertConformalConicProjection.html)
- */
-class LambertConformalConic : public ProjectionOnFigure {
+class PolarStereographic : public ProjectionOnFigure {
 public:
     // -- Types
     // None
@@ -33,11 +28,8 @@ public:
 
     // -- Constructors
 
-    explicit LambertConformalConic(const Spec&);
-
-    LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1, double lat_2);
-    LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1) :
-        LambertConformalConic(centre, first, lat_1, lat_1) {}
+    explicit PolarStereographic(const Spec&);
+    PolarStereographic(PointLonLat centre, PointLonLat first = {0, 0}, Figure* = nullptr);
 
     // -- Destructor
     // None
@@ -72,20 +64,16 @@ protected:
 private:
     // -- Members
 
-    const PointLonLat centre_;     // central meridian/parallel [degree]
-    const PointLonLatR centre_r_;  // central meridian/parallel [radian]
+    const PointLonLat centre_;     // projection centre [degree]
+    const PointLonLatR centre_r_;  // projection centre [radian]
 
     const PointLonLat first_;     // first point [degree]
     const PointLonLatR first_r_;  // first point [radian]
 
-    const double lat_1_;
-    const double lat_1_r_;
-    const double lat_2_;
-    const double lat_2_r_;
-
-    double n_;
-    double f_;
-    double rho0_bare_;
+    const double sign_;
+    const double F_;
+    double x0_;
+    double y0_;
 
     // -- Methods
     // None
@@ -101,4 +89,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::projection::figure
+}  // namespace eckit::geo::projection

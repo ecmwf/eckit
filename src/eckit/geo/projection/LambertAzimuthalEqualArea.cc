@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/projection/figure/LambertAzimuthalEqualArea.h"
+#include "eckit/geo/projection/LambertAzimuthalEqualArea.h"
 
 #include <cmath>
 
@@ -18,7 +18,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo::projection::figure {
+namespace eckit::geo::projection {
 
 
 static ProjectionBuilder<LambertAzimuthalEqualArea> PROJECTION_1("lambert_azimuthal_equal_area");
@@ -71,4 +71,4 @@ void LambertAzimuthalEqualArea::fill_spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::projection::figure
+}  // namespace eckit::geo::projection

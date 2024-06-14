@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/projection/figure/PolarStereographic.h"
+#include "eckit/geo/projection/PolarStereographic.h"
 
 #include <cmath>
 
@@ -18,7 +18,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo::projection::figure {
+namespace eckit::geo::projection {
 
 
 PolarStereographic::PolarStereographic(const Spec& spec) :
@@ -76,4 +76,4 @@ void PolarStereographic::fill_spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::projection::figure
+}  // namespace eckit::geo::projection

@@ -15,7 +15,7 @@
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
-namespace eckit::geo::projection::figure {
+namespace eckit::geo::projection {
 
 
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
@@ -65,4 +65,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::projection::figure
+}  // namespace eckit::geo::projection

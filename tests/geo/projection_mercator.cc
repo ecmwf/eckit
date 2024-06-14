@@ -12,44 +12,31 @@
 
 #include <limits>
 
-#include "eckit/geo/figure/Sphere.h"
-#include "eckit/geo/projection/figure/Mercator.h"
+#include "eckit/geo/projection/Mercator.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-CASE("projection: mercator (poles)") {
-    projection::figure::Mercator projection({0., 14.}, {0., 0.}, new figure::Sphere(1.));
+CASE("projection: mercator") {
+    for (const auto& projection : {
+             projection::Mercator({0., 14.}, {262.036, 14.7365}),
+             projection::Mercator({-180., 0.}, {0., 0.}),
+             projection::Mercator({0., 14.}, {0., 0.}),
+         }) {
+        Point2 a{0., 0.};
+        EXPECT(points_equal(a, projection.fwd(projection.inv(a))));
 
-    auto a = projection.fwd(PointLonLat{0., 90.});
-    EXPECT(a.Y > std::numeric_limits<double>::max());
+        PointLonLat b{-75., 35.};
+        EXPECT(points_equal(b, projection.inv(projection.fwd(b))));
 
-    auto b = projection.fwd(PointLonLat{0., -90.});
-    EXPECT(b.Y < std::numeric_limits<double>::lowest());
-}
+        Point2 c = projection.fwd(NORTH_POLE);
+        EXPECT(c.Y > std::numeric_limits<double>::max());
 
-
-CASE("projection: mercator (1)") {
-    projection::figure::Mercator projection({0., 14.}, {262.036, 14.7365}, new figure::Sphere(6371229.));
-
-    Point2 a{0., 0.};
-    auto b = projection.inv(a);
-    auto c = projection.fwd(b);
-
-    EXPECT(points_equal(c, a));
-}
-
-
-CASE("projection: mercator (2)") {
-    projection::figure::Mercator projection({-180., 0.}, {0., 0.}, new figure::Sphere(1.));
-
-    PointLonLat a{-75., 35.};
-    auto b = projection.fwd(a);
-    auto c = projection.inv(b);
-
-    EXPECT(points_equal(c, a));
+        Point2 d = projection.fwd(SOUTH_POLE);
+        EXPECT(d.Y < std::numeric_limits<double>::lowest());
+    }
 }
 
 

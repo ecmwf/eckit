@@ -460,13 +460,13 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
     } while (false)
 
 #define EXPECT_EQUAL(a, b)                                                                                         \
-    EXPECT_MSG(a == b, [=]() {                                                                                     \
+    EXPECT_MSG(a == b, [&]() {                                                                                     \
         std::cerr << eckit::Colour::red << "FAILED " << #a " == " << #b << " evaluated as [" << a << "] == [" << b \
                   << "]" << eckit::Colour::reset << std::endl;                                                     \
     };)
 
 #define EXPECT_NOT_EQUAL(a, b)                                                                                     \
-    EXPECT_MSG(a != b, [=]() {                                                                                     \
+    EXPECT_MSG(a != b, [&]() {                                                                                     \
         std::cerr << eckit::Colour::red << "FAILED " << #a " != " << #b << " evaluated as [" << a << "] != [" << b \
                   << "]" << eckit::Colour::reset << std::endl;                                                     \
     };)

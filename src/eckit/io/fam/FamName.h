@@ -39,9 +39,12 @@ struct FamNamePath {
     FamNamePath() = default;
 
     FamNamePath(const std::string& path);
-    
+
+    FamNamePath(const char* path): FamNamePath(std::string(path)) { }
 
     bool operator==(const FamNamePath& other) const;
+
+    friend std::ostream& operator<<(std::ostream& out, const FamNamePath& path);
 
     std::string region;
     std::string object;
@@ -58,7 +61,7 @@ public:  // methods
 
     FamName(const net::Endpoint& endpoint, FamNamePath path);
 
-    explicit FamName(const URI& uri);
+    FamName(const URI& uri);
 
     virtual ~FamName();
 

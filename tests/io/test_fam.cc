@@ -30,12 +30,48 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("FamName: ctor") {
+    {
+        const URI uri {"fam://" + fam::testEndpoint + "/regionName/objectName"};
+
+        EXPECT_EQUAL(uri.scheme(), FamName::SCHEME);
+        EXPECT_EQUAL(uri.hostport(), fam::testEndpoint);
+        EXPECT_EQUAL(uri.name(), "/regionName/objectName");
+    }
+
+    {
+        const FamName name {fam::testEndpoint, "/regionName/objectName"};
+        EXPECT_EQUAL(name.uri().scheme(), FamName::SCHEME);
+        EXPECT_EQUAL(name.uri().hostport(), fam::testEndpoint);
+        EXPECT_EQUAL(name.uri().name(), "/regionName/objectName");
+
+        EXPECT_EQUAL(name.path().region, "regionName");
+        EXPECT_EQUAL(name.nameRegion(), "regionName");
+
+        EXPECT_EQUAL(name.path().object, "objectName");
+        EXPECT_EQUAL(name.nameObject(), "objectName");
+
+        EXPECT_EQUAL(name.asString(), "fam://" + fam::testEndpoint + "/regionName/objectName");
+    }
+
+    {
+        const URI uri {"fam://" + fam::testEndpoint + "/regionName"};
+        EXPECT_EQUAL(uri.name(), "/regionName");
+
+        const FamName name(uri);
+
+        EXPECT_EQUAL(name.uri(), uri);
+
+        EXPECT_EQUAL(name.asString(), "fam://" + fam::testEndpoint + "/regionName");
+    }
+}
+
 CASE("FamRegion: lookup, create, validate properties, and destroy") {
     const auto regionName = fam::TestFam::makeRandomText("REGION");
     const auto regionSize = 1024;
     const auto regionPerm = static_cast<eckit::fam::perm_t>(0640);
 
-    FamName name {fam::testEndpoint + '/' + regionName};
+    const FamName name {fam::testEndpoint, '/' + regionName};
 
     EXPECT_THROWS_AS(name.lookupRegion(), NotFound);
 
@@ -72,12 +108,12 @@ CASE("FamObject: lookup, create, and destroy") {
     const auto objectSize = 24;
     const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
 
+    const auto path = '/' + regionName + '/' + objectName;
+
     // FamName API
     {
-        const auto uri = fam::testEndpoint + '/' + regionName + '/' + objectName;
-
         // ctor string URI - region and object
-        const auto name = FamName(uri);
+        const auto name = FamName(fam::testEndpoint, path);
 
         EXPECT_THROWS_AS(name.lookupRegion(), NotFound);
         EXPECT_THROWS_AS(name.lookupObject(), NotFound);
@@ -98,7 +134,7 @@ CASE("FamObject: lookup, create, and destroy") {
     // FamRegion API
     {
         // ctor endpoint only
-        auto name = FamName(fam::testEndpoint);
+        auto name = FamName(fam::testEndpoint, path);
 
         auto region = name.with(regionName).lookupRegion();
 
@@ -137,7 +173,7 @@ CASE("FamObject: large data small object") {
     const auto objectSize = 32;
     const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
 
-    auto name = FamName(fam::testEndpoint);
+    auto name = FamName(fam::testEndpoint, '/' + regionName + '/' + objectName);
 
     {
         auto region = name.with(regionName).createRegion(regionSize, regionPerm, true);

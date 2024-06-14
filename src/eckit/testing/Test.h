@@ -453,8 +453,8 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 #define EXPECT_MSG(expr, msg_callback)                                               \
     do {                                                                             \
         if (!(expr)) {                                                               \
-            auto msg = msg_callback;                                                 \
-            msg();                                                                   \
+            auto _msg = msg_callback;                                                \
+            _msg();                                                                  \
             throw eckit::testing::TestException("Condition failed: " #expr, Here()); \
         }                                                                            \
     } while (false)

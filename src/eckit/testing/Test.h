@@ -453,20 +453,20 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 #define EXPECT_MSG(expr, msg_callback)                                               \
     do {                                                                             \
         if (!(expr)) {                                                               \
-            auto msg = msg_callback;                                                 \
-            msg();                                                                   \
+            auto _msg = msg_callback;                                                \
+            _msg();                                                                  \
             throw eckit::testing::TestException("Condition failed: " #expr, Here()); \
         }                                                                            \
     } while (false)
 
 #define EXPECT_EQUAL(a, b)                                                                                         \
-    EXPECT_MSG(a == b, [=]() {                                                                                     \
+    EXPECT_MSG(a == b, [&]() {                                                                                     \
         std::cerr << eckit::Colour::red << "FAILED " << #a " == " << #b << " evaluated as [" << a << "] == [" << b \
                   << "]" << eckit::Colour::reset << std::endl;                                                     \
     };)
 
 #define EXPECT_NOT_EQUAL(a, b)                                                                                     \
-    EXPECT_MSG(a != b, [=]() {                                                                                     \
+    EXPECT_MSG(a != b, [&]() {                                                                                     \
         std::cerr << eckit::Colour::red << "FAILED " << #a " != " << #b << " evaluated as [" << a << "] != [" << b \
                   << "]" << eckit::Colour::reset << std::endl;                                                     \
     };)

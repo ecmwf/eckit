@@ -21,7 +21,7 @@
 
 #include "eckit/net/Endpoint.h"
 
-#include <iosfwd>
+#include <ostream>
 #include <string>
 
 namespace eckit {
@@ -29,12 +29,17 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FamConfig {
-    bool operator==(const FamConfig& other) const;
-
-    friend std::ostream& operator<<(std::ostream& out, const FamConfig& config);
-
     net::Endpoint endpoint {"127.0.0.1", -1};
     std::string   sessionName {"EckitFamSession"};
+
+    bool operator==(const FamConfig& other) const {
+        return (endpoint == other.endpoint && sessionName == other.sessionName);
+    }
+
+    friend std::ostream& operator<<(std::ostream& out, const FamConfig& config) {
+        out << "endpoint=" << config.endpoint << ", sessionName=" << config.sessionName;
+        return out;
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

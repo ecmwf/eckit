@@ -269,7 +269,6 @@ list(APPEND eckit_message_srcs
 if(HAVE_OPENFAM)
 list(APPEND eckit_io_srcs
 io/fam/detail/FamSessionDetail.cc
-io/fam/FamConfig.cc
 io/fam/FamConfig.h
 io/fam/FamHandle.cc
 io/fam/FamHandle.h

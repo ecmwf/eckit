@@ -24,6 +24,7 @@
 #include "eckit/io/Offset.h"
 #include "eckit/net/Endpoint.h"
 
+#include <string>
 
 namespace eckit {
 
@@ -62,7 +63,9 @@ public:  // methods
     DataHandle* newReadHandle(const OffsetList&, const LengthList&) const;
     DataHandle* newReadHandle() const;
 
-    void endpoint(const eckit::net::Endpoint& endpoint) {
+    net::Endpoint endpoint() const { return {host_, port_}; }
+
+    void endpoint(const net::Endpoint& endpoint) {
         host_ = endpoint.host();
         port_ = endpoint.port();
     }

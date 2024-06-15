@@ -38,7 +38,7 @@ FamList::FamList(const FamRegion& region, const std::string& listName):
     if (FamNode::getPrevOffset(tail_) == 0) { tail_.put(head_.descriptor(), offsetof(FamNode, prev)); }
 }
 
-FamList::FamList(const FamName& name): FamList(name.lookupRegion(), name.nameObject()) { }
+FamList::FamList(const FamName& name): FamList(name.lookupRegion(), name.path().objectName) { }
 
 FamList::~FamList() = default;
 

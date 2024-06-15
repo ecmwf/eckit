@@ -45,11 +45,8 @@ CASE("FamName: ctor") {
         EXPECT_EQUAL(name.uri().hostport(), fam::testEndpoint);
         EXPECT_EQUAL(name.uri().name(), "/regionName/objectName");
 
-        EXPECT_EQUAL(name.path().region, "regionName");
-        EXPECT_EQUAL(name.nameRegion(), "regionName");
-
-        EXPECT_EQUAL(name.path().object, "objectName");
-        EXPECT_EQUAL(name.nameObject(), "objectName");
+        EXPECT_EQUAL(name.path().regionName, "regionName");
+        EXPECT_EQUAL(name.path().objectName, "objectName");
 
         EXPECT_EQUAL(name.asString(), "fam://" + fam::testEndpoint + "/regionName/objectName");
     }

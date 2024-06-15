@@ -64,7 +64,7 @@ public:
         return regions_.emplace_back(region.clone());
     }
 
-    auto getLastRegion() -> FamRegion::SPtr { return regions_.back(); }
+    auto getLastRegion() const -> FamRegion::SPtr { return regions_.back(); }
 
 private:
     FamName name_ {testEndpoint, {}};

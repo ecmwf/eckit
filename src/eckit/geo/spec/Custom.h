@@ -129,4 +129,7 @@ private:
 JSON& operator<<(JSON&, const Custom::custom_ptr&);
 
 
+std::string to_string(const Custom::value_type&);
+
+
 }  // namespace eckit::geo::spec

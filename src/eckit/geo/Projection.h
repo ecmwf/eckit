@@ -70,6 +70,7 @@ public:
 
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;
+    std::string proj_str() const;
 
     // -- Class methods
 
@@ -85,6 +86,7 @@ private:
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
+    virtual void fill_proj(std::string&) const;
 
     // -- Friends
 

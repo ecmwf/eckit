@@ -58,12 +58,29 @@ std::string Projection::spec_str() const {
 }
 
 
+std::string Projection::proj_str() const {
+    std::string str;
+    fill_proj(str);
+
+    if (!str.empty() && str.front() == ' ') {
+        str.erase(0, 1);
+    }
+
+    return str;
+}
+
+
 Projection* Projection::make_from_spec(const Spec& spec) {
     return ProjectionFactory::instance().get(spec.get_string(LibEcKitGeo::proj() ? "proj" : "type")).create(spec);
 }
 
 
 void Projection::fill_spec(spec::Custom&) const {
+    NOTIMP;
+}
+
+
+void Projection::fill_proj(std::string&) const {
     NOTIMP;
 }
 

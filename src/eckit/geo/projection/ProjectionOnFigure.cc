@@ -12,6 +12,9 @@
 
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
+#include <memory>
+#include <string>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/spec/Custom.h"
@@ -43,6 +46,14 @@ void ProjectionOnFigure::fill_spec(spec::Custom& custom) const {
     }
     custom.set("a", figure_->a());
     custom.set("b", figure_->b());
+}
+
+
+void ProjectionOnFigure::fill_proj(std::string& str) const {
+    std::unique_ptr<spec::Custom> spec(this->spec());
+    for (const auto& [key, value] : spec->container()) {
+        str += " +" + key + "=" + to_string(value);
+    }
 }
 
 

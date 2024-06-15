@@ -19,7 +19,7 @@
 namespace eckit::geo::test {
 
 
-CASE("projection: mercator") {
+CASE("projection inv(fwd(.)) == . and fwd(inv(.)) == .") {
     for (const auto& projection : {
              projection::Mercator({0., 14.}, {262.036, 14.7365}),
              projection::Mercator({-180., 0.}, {0., 0.}),
@@ -37,6 +37,24 @@ CASE("projection: mercator") {
         Point2 d = projection.fwd(SOUTH_POLE);
         EXPECT(d.Y < std::numeric_limits<double>::lowest());
     }
+}
+
+
+CASE("spec_str, proj_str") {
+    projection::Mercator proj1({0., 14.}, {262.036, 14.7365});
+
+    EXPECT(proj1.proj_str() == "+lat_ts=14 +proj=merc +r=6371229");
+    EXPECT(proj1.spec_str() == R"({"lat_ts":14,"proj":"merc","r":6.37123e+06})");
+
+    projection::Mercator proj2({-180., 0.}, {0., 0.});
+
+    EXPECT(proj2.proj_str() == "+lon_0=-180 +proj=merc +r=6371229");
+    EXPECT(proj2.spec_str() == R"({"lon_0":-180,"proj":"merc","r":6.37123e+06})");
+
+    projection::Mercator proj3({0., 14.}, {0., 0.});
+
+    EXPECT(proj3.proj_str() == "+lat_ts=14 +proj=merc +r=6371229");
+    EXPECT(proj3.spec_str() == R"({"lat_ts":14,"proj":"merc","r":6.37123e+06})");
 }
 
 

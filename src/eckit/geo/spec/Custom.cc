@@ -13,6 +13,8 @@
 
 #include <algorithm>
 #include <cctype>
+#include <iomanip>
+#include <sstream>
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"
@@ -60,8 +62,11 @@ bool get_t_v(const std::vector<From>& from, std::vector<To>& to) {
 
 
 template <typename From>
-bool get_t_v(const std::vector<From>& from, std::vector<From>& to) {
-    to = from;
+bool get_t_v(const std::vector<From>& from, std::vector<std::string>& to) {
+    to.clear();
+    for (const auto& f : from) {
+        to.emplace_back(std::to_string(f));
+    }
     return true;
 }
 
@@ -475,6 +480,29 @@ JSON& operator<<(JSON& j, const Custom::custom_ptr& value) {
 
     j.endObject();
     return j;
+}
+
+
+template <typename T>
+struct is_vector : std::false_type {};
+
+
+template <typename T, typename Alloc>
+struct is_vector<std::vector<T, Alloc>> : std::true_type {};
+
+
+template <typename T>
+constexpr bool is_vector_v = is_vector<T>::value;
+
+
+std::string to_string(const Custom::value_type& value) {
+    return std::visit(
+        [&](const auto& arg) {
+            std::ostringstream str;
+            str << std::setprecision(15) << arg;
+            return str.str();
+        },
+        value);
 }
 
 

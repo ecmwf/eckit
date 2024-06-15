@@ -42,12 +42,14 @@ struct FamNamePath {
 
     FamNamePath(const char* path): FamNamePath(std::string(path)) { }
 
+    FamNamePath(const URI& uri);
+
     bool operator==(const FamNamePath& other) const;
 
     friend std::ostream& operator<<(std::ostream& out, const FamNamePath& path);
 
-    std::string region;
-    std::string object;
+    std::string regionName;
+    std::string objectName;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -83,8 +85,6 @@ public:  // methods
 
     auto existsRegion() const -> bool;
 
-    auto nameRegion() const -> const std::string& { return path_.region; }
-
     // object
 
     auto lookupObject() const -> FamObject;
@@ -92,8 +92,6 @@ public:  // methods
     auto allocateObject(fam::size_t objectSize, const bool overwrite = false) const -> FamObject;
 
     auto existsObject() const -> bool;
-
-    auto nameObject() const -> const std::string& { return path_.object; }
 
     // datahandle
 

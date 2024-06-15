@@ -41,16 +41,20 @@ auto parsePath(const std::string& path) -> std::tuple<std::string, std::string> 
 }  // namespace
 
 FamNamePath::FamNamePath(const std::string& path) {
-    std::tie(region, object) = parsePath(path);
+    std::tie(regionName, objectName) = parsePath(path);
+}
+
+FamNamePath::FamNamePath(const URI& uri): FamNamePath(uri.name()) {
+    ASSERT(uri.scheme() == FamName::SCHEME);
 }
 
 bool FamNamePath::operator==(const FamNamePath& other) const {
-    return (region == other.region && object == other.object);
+    return (regionName == other.regionName && objectName == other.objectName);
 }
 
 std::ostream& operator<<(std::ostream& out, const FamNamePath& path) {
-    if (!path.region.empty()) { out << "/" + path.region; }
-    if (!path.object.empty()) { out << "/" + path.object; }
+    if (!path.regionName.empty()) { out << "/" + path.regionName; }
+    if (!path.objectName.empty()) { out << "/" + path.objectName; }
     return out;
 }
 
@@ -62,9 +66,7 @@ FamName::FamName(FamSession::SPtr session, FamNamePath path) noexcept:
 FamName::FamName(const net::Endpoint& endpoint, FamNamePath path):
     FamName(FamSession::instance().getOrAdd({endpoint}), std::move(path)) { }
 
-FamName::FamName(const URI& uri): FamName(uri, uri.name()) {
-    ASSERT(uri.scheme() == SCHEME);
-}
+FamName::FamName(const URI& uri): FamName(uri.endpoint(), uri) { }
 
 FamName::~FamName() = default;
 
@@ -81,13 +83,13 @@ auto FamName::uri() const -> URI {
 }
 
 auto FamName::with(std::string_view regionName) -> FamName& {
-    path_.region = regionName;
+    path_.regionName = regionName;
     return *this;
 }
 
 auto FamName::with(std::string_view regionName, std::string_view objectName) -> FamName& {
-    path_.region = regionName;
-    path_.object = objectName;
+    path_.regionName = regionName;
+    path_.objectName = objectName;
     return *this;
 }
 
@@ -95,23 +97,23 @@ auto FamName::with(std::string_view regionName, std::string_view objectName) -> 
 // REGION
 
 auto FamName::lookupRegion() const -> FamRegion {
-    return session_->lookupRegion(path_.region);
+    return session_->lookupRegion(path_.regionName);
 }
 
 auto FamName::createRegion(const fam::size_t regionSize,
                            const fam::perm_t regionPerm,
                            const bool        overwrite) const -> FamRegion {
-    if (overwrite) { return session_->ensureCreateRegion(regionSize, regionPerm, path_.region); }
-    return session_->createRegion(regionSize, regionPerm, path_.region);
+    if (overwrite) { return session_->ensureCreateRegion(regionSize, regionPerm, path_.regionName); }
+    return session_->createRegion(regionSize, regionPerm, path_.regionName);
 }
 
 auto FamName::existsRegion() const -> bool {
     try {
         return lookupRegion().exists();
     } catch (const NotFound&) {
-        Log::debug<LibEcKit>() << "FAM region [" << path_.region << "] was not found!\n";
+        Log::debug<LibEcKit>() << "FAM region [" << path_.regionName << "] was not found!\n";
     } catch (const PermissionDenied&) {
-        Log::debug<LibEcKit>() << "FAM region [" << path_.region << "] is not accessible!\n";
+        Log::debug<LibEcKit>() << "FAM region [" << path_.regionName << "] is not accessible!\n";
     }
     return false;
 }
@@ -120,20 +122,20 @@ auto FamName::existsRegion() const -> bool {
 // OBJECT
 
 auto FamName::lookupObject() const -> FamObject {
-    return session_->lookupObject(path_.region, path_.object);
+    return session_->lookupObject(path_.regionName, path_.objectName);
 }
 
 auto FamName::allocateObject(const fam::size_t objectSize, const bool overwrite) const -> FamObject {
-    return lookupRegion().allocateObject(objectSize, path_.object, overwrite);
+    return lookupRegion().allocateObject(objectSize, path_.objectName, overwrite);
 }
 
 auto FamName::existsObject() const -> bool {
     try {
         return lookupObject().exists();
     } catch (const NotFound&) {
-        Log::debug<LibEcKit>() << "FAM object [" << path_.object << "] was not found!\n";
+        Log::debug<LibEcKit>() << "FAM object [" << path_.objectName << "] was not found!\n";
     } catch (const PermissionDenied&) {
-        Log::debug<LibEcKit>() << "FAM object [" << path_.object << "] is not accessible!\n";
+        Log::debug<LibEcKit>() << "FAM object [" << path_.objectName << "] is not accessible!\n";
     }
     return false;
 }
@@ -155,7 +157,7 @@ auto FamName::config() const -> const FamConfig& {
 }
 
 void FamName::print(std::ostream& out) const {
-    out << session_ << ", region=" << path_.region << ", object=" << path_.object;
+    out << session_ << ", path=" << path_;
 }
 
 std::ostream& operator<<(std::ostream& out, const FamName& name) {

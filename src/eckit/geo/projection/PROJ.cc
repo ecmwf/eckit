@@ -14,6 +14,8 @@
 
 #include <proj.h>
 
+#include <map>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/spec/Custom.h"
@@ -29,7 +31,7 @@ namespace {
 
 
 constexpr auto CTX               = PJ_DEFAULT_CTX;
-static const std::string DEFAULT = "EPSG:4326";
+static const std::string DEFAULT = "EPSG:4326";  // wgs84, latitude/longitude coordinate system
 
 
 struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
@@ -175,6 +177,30 @@ Point PROJ::fwd(const Point& p) const {
 
 Point PROJ::inv(const Point& q) const {
     return implementation_->inv(q);
+}
+
+
+void PROJ::fill_proj(std::string& str, const spec::Custom& custom) {
+    struct rename_type : std::map<std::string, std::string> {
+        using map::map;
+        const std::string& operator()(const std::string& key) const {
+            const auto it = find(key);
+            return it != end() ? it->second : key;
+        }
+    };
+
+    static const rename_type RENAME_KEYS{
+        {"figure", "ellps"},
+        {"projection", "proj"},
+    };
+
+    static const rename_type RENAME_VALUES{
+        {"mercator", "merc"},
+    };
+
+    for (const auto& [key, value] : custom.container()) {
+        str += " +" + RENAME_KEYS(key) + "=" + RENAME_VALUES(to_string(value));
+    }
 }
 
 

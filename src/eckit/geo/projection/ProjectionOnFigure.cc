@@ -12,13 +12,9 @@
 
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
-#include <memory>
-#include <string>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/spec/Custom.h"
-#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
@@ -39,21 +35,7 @@ Figure* ProjectionOnFigure::make_figure() const {
 
 
 void ProjectionOnFigure::fill_spec(spec::Custom& custom) const {
-    // FIXME OO figure
-    if (types::is_approximately_equal(figure_->a(), figure_->b())) {
-        custom.set("R", figure_->R());
-        return;
-    }
-    custom.set("a", figure_->a());
-    custom.set("b", figure_->b());
-}
-
-
-void ProjectionOnFigure::fill_proj(std::string& str) const {
-    std::unique_ptr<spec::Custom> spec(this->spec());
-    for (const auto& [key, value] : spec->container()) {
-        str += " +" + key + "=" + to_string(value);
-    }
+    figure_->fill_spec(custom);
 }
 
 

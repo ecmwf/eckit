@@ -27,7 +27,6 @@ public:
 
     [[nodiscard]] Figure* make_figure() const override;
     void fill_spec(spec::Custom&) const override;
-    void fill_proj(std::string&) const override;
 
 protected:
     // -- Constructors

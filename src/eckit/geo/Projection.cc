@@ -17,7 +17,12 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/spec/Custom.h"
+
+#if eckit_HAVE_PROJ
+#include "eckit/geo/projection/PROJ.h"
+#endif
 
 
 namespace eckit::geo {
@@ -80,8 +85,11 @@ void Projection::fill_spec(spec::Custom&) const {
 }
 
 
-void Projection::fill_proj(std::string&) const {
-    NOTIMP;
+void Projection::fill_proj(std::string& str) const {
+#if eckit_HAVE_PROJ
+    std::unique_ptr<spec::Custom> custom(spec());
+    projection::PROJ::fill_proj(str, *custom);
+#endif
 }
 
 

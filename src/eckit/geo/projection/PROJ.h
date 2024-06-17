@@ -40,6 +40,10 @@ public:
 
     [[nodiscard]] Figure* make_figure() const override;
 
+    // -- Class methods
+
+    static void fill_proj(std::string&, const spec::Custom&);
+
 private:
     // -- Types
 

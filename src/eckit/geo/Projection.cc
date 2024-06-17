@@ -71,7 +71,7 @@ std::string Projection::proj_str() const {
 
 
 Projection* Projection::make_from_spec(const Spec& spec) {
-    return ProjectionFactory::instance().get(spec.get_string(LibEcKitGeo::proj() ? "proj" : "type")).create(spec);
+    return ProjectionFactory::instance().get(spec.get_string(LibEcKitGeo::proj() ? "proj" : "projection")).create(spec);
 }
 
 

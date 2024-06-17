@@ -200,6 +200,11 @@ ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
                     CONDITION HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
 
+ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
+                    DEFAULT OFF
+                    CONDITION HAVE_ECKIT_GEO
+                    DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
+
 set( eckit_GEO_CACHE_PATH "/tmp/cache" )
 
 ### LAPACK

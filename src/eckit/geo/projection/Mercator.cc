@@ -108,7 +108,7 @@ PointLonLat Mercator::inv(const Point2& q) const {
 void Mercator::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 
-    custom.set("proj", "merc");
+    custom.set("projection", "mercator");
     if (!types::is_approximately_equal(centre_.lat, 0.)) {
         custom.set("lat_ts", centre_.lat);
     }

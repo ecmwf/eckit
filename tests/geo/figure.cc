@@ -67,7 +67,7 @@ CASE("Earth") {
     F f2(new figure::Earth);
 
     EXPECT(*f1 == *f2);
-    EXPECT(f1->spec_str() == R"({"figure":"earth"})");
+    EXPECT(f1->spec_str() == R"({"r":6371229})");
     EXPECT(types::is_approximately_equal(f1->R(), 6371229., 1e-8));
 
     F f4(FigureFactory::build(spec::Custom{{"figure", "wgs84"}}));

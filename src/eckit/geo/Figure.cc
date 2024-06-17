@@ -79,7 +79,6 @@ double Figure::flattening() const {
 
 void Figure::fill_spec(spec::Custom& custom) const {
     static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
-        {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
         {std::shared_ptr<Figure>{new figure::GRS80}, "grs80"},
         {std::shared_ptr<Figure>{new figure::WGS84}, "wgs84"},
     };

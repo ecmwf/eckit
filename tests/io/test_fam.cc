@@ -30,6 +30,26 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+CASE("FamPath: ctor and unique identifier") {
+    {
+        const auto path = FamPath("/region/object");
+        EXPECT_EQUAL(path.generateUUID(), "650fa148-fc69-5d6f-a793-5b1190c77e1a");
+    }
+
+    EXPECT_THROWS_AS(FamPath(URI {"/region/object"}), eckit::Exception);
+
+    EXPECT_NO_THROW(FamPath(URI {"fam://" + fam::testEndpoint + "/regionName/objectName"}));
+
+    {
+        const auto uri = URI("fam", fam::testEndpoint, "/regionName/objectName");
+        EXPECT_EQUAL(uri.scheme(), FamPath::SCHEME);
+        EXPECT_EQUAL(uri.hostport(), fam::testEndpoint);
+        EXPECT_EQUAL(uri.name(), "/regionName/objectName");
+        EXPECT_NO_THROW(const auto path = FamPath(uri));
+    }
+}
+
 CASE("FamName: ctor") {
     {
         const URI uri {"fam://" + fam::testEndpoint + "/regionName/objectName"};

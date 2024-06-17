@@ -21,6 +21,8 @@
 #include "eckit/log/Log.h"
 #include "eckit/utils/Tokenizer.h"
 
+#include <uuid/uuid.h>
+
 #include <iostream>
 #include <tuple>
 
@@ -39,6 +41,9 @@ auto parsePath(const std::string& path) -> std::tuple<std::string, std::string> 
     }
 }
 
+/* ISO Object Identifier Namespace */
+const uuid_t nsOID = {0x6b, 0xa7, 0xb8, 0x12, 0x9d, 0xad, 0x11, 0xd1, 0x80, 0xb4, 0x00, 0xc0, 0x4f, 0xd4, 0x30, 0xc8};
+
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -49,6 +54,18 @@ FamPath::FamPath(const std::string& path) {
 
 FamPath::FamPath(const URI& uri): FamPath(uri.name()) {
     ASSERT(uri.scheme() == SCHEME);
+}
+
+auto FamPath::generateUUID() const -> std::string {
+    std::string result = "00000000-0000-0000-0000-000000000000";
+
+    const std::string name = std::string(regionName + objectName);
+
+    uuid_t oid;
+    uuid_generate_sha1(&oid[0], &nsOID[0], name.c_str(), name.length());
+    uuid_unparse(&oid[0], result.data());
+
+    return result;
 }
 
 std::ostream& operator<<(std::ostream& out, const FamPath& path) {

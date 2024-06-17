@@ -39,6 +39,8 @@ struct FamPath {
 
     FamPath(const URI& uri);
 
+    auto generateUUID() const -> std::string;
+
     bool operator==(const FamPath& other) const {
         return (regionName == other.regionName && objectName == other.objectName);
     }

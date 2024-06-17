@@ -21,8 +21,8 @@ namespace eckit::geo::grid::regularxy {
 static const GridRegisterType<LambertAzimuthalEqualArea> GRIDTYPE("lambert_azimuthal_equal_area");
 
 
-void LambertAzimuthalEqualArea::spec(spec::Custom& custom) const {
-    RegularXY::spec(custom);
+void LambertAzimuthalEqualArea::fill_spec(spec::Custom& custom) const {
+    RegularXY::fill_spec(custom);
 
     custom.set("type", "lambert_azimuthal_equal_area");
 

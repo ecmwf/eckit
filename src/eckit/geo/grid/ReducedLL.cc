@@ -66,8 +66,8 @@ std::vector<double> ReducedLL::longitudes(size_t j) const {
 }
 
 
-void ReducedLL::spec(spec::Custom& custom) const {
-    Reduced::spec(custom);
+void ReducedLL::fill_spec(spec::Custom& custom) const {
+    Reduced::fill_spec(custom);
 
     custom.set("type", "reduced_ll");
     custom.set("pl", pl_);

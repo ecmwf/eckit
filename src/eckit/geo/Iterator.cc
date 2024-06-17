@@ -23,7 +23,7 @@ spec::Custom* Iterator::spec() const {
     auto* custom = new spec::Custom;
     ASSERT(custom != nullptr);
 
-    spec(*custom);
+    fill_spec(*custom);
     return custom;
 }
 

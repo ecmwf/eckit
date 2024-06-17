@@ -36,13 +36,13 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 
     struct NonRotated final : Implementation {
         PointLonLat operator()(const PointLonLat& p) const override { return p; }
-        void spec(spec::Custom& custom) const override {}
+        void fill_spec(spec::Custom& custom) const override {}
     };
 
     struct RotationAngle final : Implementation {
         explicit RotationAngle(double angle) : angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override { return {p.lon + angle_, p.lat}; }
-        void spec(spec::Custom& custom) const override { custom.set("angle", angle_); }
+        void fill_spec(spec::Custom& custom) const override { custom.set("angle", angle_); }
         const double angle_;
     };
 
@@ -54,7 +54,7 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
             return geometry::UnitSphere::convertCartesianToSpherical(
                 R_ * geometry::UnitSphere::convertSphericalToCartesian(p));
         }
-        void spec(spec::Custom& custom) const override {
+        void fill_spec(spec::Custom& custom) const override {
             custom.set("south_pole_lon", south_pole_lon_);
             custom.set("south_pole_lat", south_pole_lat_);
             custom.set("angle", angle_);
@@ -116,7 +116,7 @@ Rotation::Rotation(const Spec& spec) :
 
 
 void Rotation::fill_spec(spec::Custom& custom) const {
-    fwd_->spec(custom);
+    fwd_->fill_spec(custom);
     custom.set("projection", "rotation");
 }
 

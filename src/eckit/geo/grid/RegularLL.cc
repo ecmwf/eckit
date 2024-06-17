@@ -70,8 +70,8 @@ Spec* RegularLL::spec(const std::string& name) {
 }
 
 
-void RegularLL::spec(spec::Custom& custom) const {
-    Regular::spec(custom);
+void RegularLL::fill_spec(spec::Custom& custom) const {
+    Regular::fill_spec(custom);
 
     custom.set("grid", std::vector<double>{dx(), dy()});
 }

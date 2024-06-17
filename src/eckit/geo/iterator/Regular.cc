@@ -67,7 +67,7 @@ Point Regular::operator*() const {
 }
 
 
-void Regular::spec(spec::Custom&) const {
+void Regular::fill_spec(spec::Custom&) const {
     // FIXME implement
 }
 

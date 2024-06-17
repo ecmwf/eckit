@@ -22,7 +22,7 @@ struct SpaceView final : public RegularXY {
     explicit SpaceView(const Spec& spec) :
         RegularXY(RegularXY::make_xy_ranges_from_spec(spec), area::BoundingBox{spec}) {}
 
-    void spec(spec::Custom& custom) const override;
+    void fill_spec(spec::Custom& custom) const override;
 };
 
 

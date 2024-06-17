@@ -143,7 +143,7 @@ protected:
 
     // -- Methods
 
-    virtual void spec(spec::Custom&) const;
+    virtual void fill_spec(spec::Custom&) const;
 
     static Renumber no_reorder(size_t size);
 

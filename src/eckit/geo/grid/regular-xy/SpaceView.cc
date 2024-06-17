@@ -21,8 +21,8 @@ namespace eckit::geo::grid::regularxy {
 static const GridRegisterType<SpaceView> GRIDTYPE("space_view");
 
 
-void SpaceView::spec(spec::Custom& custom) const {
-    RegularXY::spec(custom);
+void SpaceView::fill_spec(spec::Custom& custom) const {
+    RegularXY::fill_spec(custom);
 
     custom.set("type", "space_view");
 

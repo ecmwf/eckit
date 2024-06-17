@@ -92,7 +92,7 @@ size_t Reduced::j(size_t idx) const {
 }
 
 
-void Reduced::spec(spec::Custom&) const {
+void Reduced::fill_spec(spec::Custom&) const {
     // FIXME implement
 }
 

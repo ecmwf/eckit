@@ -24,7 +24,7 @@ struct RegularLL final : public Regular {
     RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
 
     [[nodiscard]] static Spec* spec(const std::string& name);
-    void spec(spec::Custom&) const override;
+    void fill_spec(spec::Custom&) const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 };

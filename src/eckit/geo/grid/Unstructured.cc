@@ -38,8 +38,8 @@ Spec* Unstructured::spec(const std::string& name) {
 }
 
 
-void Unstructured::spec(spec::Custom& custom) const {
-    Grid::spec(custom);
+void Unstructured::fill_spec(spec::Custom& custom) const {
+    Grid::fill_spec(custom);
 
     custom.set("type", "unstructured");
     custom.set("uid", uid());

@@ -48,8 +48,8 @@ Spec* RegularGaussian::spec(const std::string& name) {
 }
 
 
-void RegularGaussian::spec(spec::Custom& custom) const {
-    Regular::spec(custom);
+void RegularGaussian::fill_spec(spec::Custom& custom) const {
+    Regular::fill_spec(custom);
 
     custom.set("grid", "F" + std::to_string(N_));
 }

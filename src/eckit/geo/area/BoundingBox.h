@@ -79,7 +79,7 @@ public:
 
     // -- Overridden methods
 
-    void spec(spec::Custom&) const override;
+    void fill_spec(spec::Custom&) const override;
     bool intersects(BoundingBox&) const override;
 
     // -- Class methods

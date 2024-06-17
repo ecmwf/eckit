@@ -56,7 +56,7 @@ spec::Custom* Figure::spec() const {
     auto* custom = new spec::Custom;
     ASSERT(custom != nullptr);
 
-    spec(*custom);
+    fill_spec(*custom);
     return custom;
 }
 
@@ -77,7 +77,7 @@ double Figure::flattening() const {
 }
 
 
-void Figure::spec(spec::Custom& custom) const {
+void Figure::fill_spec(spec::Custom& custom) const {
     static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
         {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
         {std::shared_ptr<Figure>{new figure::GRS80}, "grs80"},

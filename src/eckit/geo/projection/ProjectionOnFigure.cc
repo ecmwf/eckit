@@ -24,7 +24,7 @@
 namespace eckit::geo::projection {
 
 
-ProjectionOnFigure::ProjectionOnFigure(const Spec&) : ProjectionOnFigure() {}
+ProjectionOnFigure::ProjectionOnFigure(const Spec&) {}
 
 
 ProjectionOnFigure::ProjectionOnFigure(Figure* figure_ptr) :

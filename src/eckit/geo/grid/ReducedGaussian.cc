@@ -108,8 +108,8 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
 }
 
 
-void ReducedGaussian::spec(spec::Custom& custom) const {
-    Reduced::spec(custom);
+void ReducedGaussian::fill_spec(spec::Custom& custom) const {
+    Reduced::fill_spec(custom);
 
     if (pl_ == util::reduced_octahedral_pl(N_)) {
         custom.set("grid", "O" + std::to_string(N_));

@@ -70,6 +70,7 @@ public:
 
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;
+    std::string proj_str() const;
 
     double eccentricity() const;
     double flattening() const;
@@ -77,7 +78,7 @@ public:
 private:
     // -- Methods
 
-    virtual void spec(spec::Custom&) const;
+    virtual void fill_spec(spec::Custom&) const;
 
     // -- Friends
 

@@ -358,7 +358,7 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
 }
 
 
-void HEALPix::spec(spec::Custom& custom) const {
+void HEALPix::fill_spec(spec::Custom& custom) const {
     custom.set("grid", "H" + std::to_string(Nside_));
     custom.set("ordering", ordering_ == Ordering::healpix_ring ? "ring" : "nested");
 }

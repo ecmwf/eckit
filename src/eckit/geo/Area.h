@@ -69,7 +69,7 @@ public:
 private:
     // -- Methods
 
-    virtual void spec(spec::Custom&) const = 0;
+    virtual void fill_spec(spec::Custom&) const = 0;
 
     // -- Friends
 

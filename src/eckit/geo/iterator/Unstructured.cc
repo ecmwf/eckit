@@ -122,7 +122,7 @@ Point Unstructured::operator*() const {
 }
 
 
-void Unstructured::spec(spec::Custom&) const {
+void Unstructured::fill_spec(spec::Custom&) const {
     // FIXME implement
 }
 

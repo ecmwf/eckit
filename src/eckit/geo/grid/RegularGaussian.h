@@ -23,7 +23,7 @@ struct RegularGaussian final : public Regular {
     explicit RegularGaussian(size_t N, const area::BoundingBox& = {});
 
     [[nodiscard]] static Spec* spec(const std::string& name);
-    void spec(spec::Custom&) const override;
+    void fill_spec(spec::Custom&) const override;
 
     size_t N() const { return N_; }
 

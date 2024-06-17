@@ -42,7 +42,7 @@ BoundingBox* BoundingBox::make_global_antiprime() {
 }
 
 
-void BoundingBox::spec(spec::Custom& custom) const {
+void BoundingBox::fill_spec(spec::Custom& custom) const {
     if (operator!=(DEFAULT)) {
         custom.set("type", "bounding-box");
         custom.set("bounding-box", std::vector<double>{north, west, south, east});

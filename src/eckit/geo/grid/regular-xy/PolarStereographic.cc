@@ -21,8 +21,8 @@ namespace eckit::geo::grid::regularxy {
 static const GridRegisterType<PolarStereographic> GRIDTYPE("polar_stereographic");
 
 
-void PolarStereographic::spec(spec::Custom& custom) const {
-    RegularXY::spec(custom);
+void PolarStereographic::fill_spec(spec::Custom& custom) const {
+    RegularXY::fill_spec(custom);
 
     custom.set("type", "polar_stereographic");
 

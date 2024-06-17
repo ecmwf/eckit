@@ -55,7 +55,7 @@ private:
 
     // -- Overridden methods
 
-    void spec(spec::Custom&) const override;
+    void fill_spec(spec::Custom&) const override;
 
     // -- Friends
 

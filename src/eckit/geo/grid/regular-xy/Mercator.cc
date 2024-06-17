@@ -21,8 +21,8 @@ namespace eckit::geo::grid::regularxy {
 static const GridRegisterType<Mercator> GRIDTYPE("mercator");
 
 
-void Mercator::spec(spec::Custom& custom) const {
-    RegularXY::spec(custom);
+void Mercator::fill_spec(spec::Custom& custom) const {
+    RegularXY::fill_spec(custom);
 
     custom.set("type", "mercator");
 

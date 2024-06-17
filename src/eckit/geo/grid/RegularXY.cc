@@ -50,8 +50,8 @@ std::pair<Range*, Range*> RegularXY::make_xy_ranges_from_spec(const Spec& spec) 
 }
 
 
-void RegularXY::spec(spec::Custom& custom) const {
-    Regular::spec(custom);
+void RegularXY::fill_spec(spec::Custom& custom) const {
+    Regular::fill_spec(custom);
 
     custom.set("grid", std::vector<double>{dx(), dy()});
     custom.set("first_lonlat", std::vector<double>{first_lonlat.lon, first_lonlat.lat});

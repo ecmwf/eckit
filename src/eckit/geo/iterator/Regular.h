@@ -57,7 +57,7 @@ private:
 
     size_t index() const override { return index_; }
 
-    void spec(spec::Custom&) const override;
+    void fill_spec(spec::Custom&) const override;
 };
 
 

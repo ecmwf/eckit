@@ -21,8 +21,8 @@ namespace eckit::geo::grid::regularxy {
 static const GridRegisterType<LambertConformalConic> GRIDTYPE("lambert");
 
 
-void LambertConformalConic::spec(spec::Custom& custom) const {
-    RegularXY::spec(custom);
+void LambertConformalConic::fill_spec(spec::Custom& custom) const {
+    RegularXY::fill_spec(custom);
 
     custom.set("type", "lambert");
 

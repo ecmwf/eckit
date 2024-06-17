@@ -41,7 +41,7 @@ protected:
 
     // -- Overridden methods
 
-    void spec(spec::Custom&) const override;
+    void fill_spec(spec::Custom&) const override;
 
 private:
     // -- Members

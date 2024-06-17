@@ -59,7 +59,7 @@ private:
         void operator=(Implementation&&)      = delete;
 
         virtual PointLonLat operator()(const PointLonLat&) const = 0;
-        virtual void spec(spec::Custom&) const                   = 0;
+        virtual void fill_spec(spec::Custom&) const              = 0;
     };
 
     // -- Members

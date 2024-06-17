@@ -50,7 +50,7 @@ const Spec& Grid::spec() const {
         ASSERT(spec_);
 
         auto& custom = *spec_;
-        spec(custom);
+        fill_spec(custom);
 
         if (std::string name; SpecByName::instance().match(custom, name)) {
             custom.clear();
@@ -177,7 +177,7 @@ Renumber Grid::no_reorder(size_t size) {
 }
 
 
-void Grid::spec(spec::Custom& custom) const {
+void Grid::fill_spec(spec::Custom& custom) const {
     if (area_) {
         static const auto AREA_DEFAULT(area::BoundingBox{}.spec_str());
 

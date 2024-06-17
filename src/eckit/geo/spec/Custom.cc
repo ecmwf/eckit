@@ -13,7 +13,6 @@
 
 #include <algorithm>
 #include <cctype>
-#include <iomanip>
 #include <sstream>
 #include <utility>
 
@@ -28,6 +27,9 @@ namespace eckit::geo::spec {
 
 
 namespace {
+
+
+constexpr int STREAM_PRECISION = 15;
 
 
 template <typename From, typename To>
@@ -462,6 +464,7 @@ bool Custom::get(const std::string& name, std::vector<std::string>& value) const
 
 void Custom::json(JSON& j) const {
     j.startObject();
+    j.precision(STREAM_PRECISION);
     for (const auto& [key, value] : map_) {
         j << key;
         std::visit([&](const auto& arg) { j << arg; }, value);
@@ -499,7 +502,8 @@ std::string to_string(const Custom::value_type& value) {
     return std::visit(
         [&](const auto& arg) {
             std::ostringstream str;
-            str << std::setprecision(15) << arg;
+            str.precision(STREAM_PRECISION);
+            str << arg;
             return str.str();
         },
         value);

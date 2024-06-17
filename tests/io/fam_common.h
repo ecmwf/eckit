@@ -60,7 +60,7 @@ public:
     }
 
     auto makeRandomRegion(const eckit::fam::size_t size) -> FamRegion::SPtr {
-        auto region = name_.with(makeRandomText("REGION")).createRegion(size, 0640, true);
+        auto region = name_.withRegion(makeRandomText("REGION")).createRegion(size, 0640, true);
         return regions_.emplace_back(region.clone());
     }
 

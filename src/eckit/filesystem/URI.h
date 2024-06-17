@@ -49,6 +49,7 @@ public:  // methods
     URI(const std::string& scheme, const URI& uri);
     URI(const std::string& scheme, const std::string& hostname, int port);
     URI(const std::string& scheme, const URI& uri, const std::string& hostname, int port);
+    URI(std::string scheme, const net::Endpoint& endpoint, std::string name) noexcept;
     URI(Stream& s);
 
     // Destructor

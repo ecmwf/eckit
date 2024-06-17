@@ -20,7 +20,7 @@
 
 namespace eckit {
 
-const static FamURIManager manager_fam(FamName::SCHEME);
+const static FamURIManager manager_fam(FamPath::SCHEME);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -51,6 +51,7 @@ std::string FamURIManager::asString(const URI& uri) const {
     std::string fragment = uri.fragment();
     if (!fragment.empty()) { fragment = "#" + fragment; }
 
+    /// @todo consider return FamName(uri).asString() + query + fragment;
     return uri.scheme() + ":" + uri.name() + query + fragment;
 }
 

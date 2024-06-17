@@ -19,63 +19,39 @@
 
 #pragma once
 
-#include "eckit/filesystem/URI.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamPath.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamSession.h"
 
 #include <iosfwd>
 #include <string>
-#include <vector>
 
 namespace eckit {
 
 class DataHandle;
 
-struct FamNamePath {
-    FamNamePath() = default;
-
-    FamNamePath(const std::string& path);
-
-    FamNamePath(const char* path): FamNamePath(std::string(path)) { }
-
-    FamNamePath(const URI& uri);
-
-    bool operator==(const FamNamePath& other) const;
-
-    friend std::ostream& operator<<(std::ostream& out, const FamNamePath& path);
-
-    std::string regionName;
-    std::string objectName;
-};
-
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamName {
-public:  // types
-    static constexpr const auto SCHEME = "fam";
-
 public:  // methods
-    FamName(FamSession::SPtr session, FamNamePath path) noexcept;
+    FamName(FamSession::SPtr session, FamPath path) noexcept;
 
-    FamName(const net::Endpoint& endpoint, FamNamePath path);
+    FamName(const net::Endpoint& endpoint, FamPath path);
 
     FamName(const URI& uri);
 
-    virtual ~FamName();
-
-    virtual auto asString() const -> std::string;
+    auto asString() const -> std::string;
 
     auto uri() const -> URI;
 
-    auto with(std::string_view regionName) -> FamName&;
+    auto withRegion(std::string_view regionName) -> FamName&;
 
-    auto with(std::string_view regionName, std::string_view objectName) -> FamName&;
+    auto withObject(std::string_view objectName) -> FamName&;
 
-    auto path() const -> const FamNamePath& { return path_; }
+    auto path() const -> const FamPath& { return path_; }
 
     // region
 
@@ -111,7 +87,7 @@ protected:  // methods
 private:  // members
     FamSession::SPtr session_;
 
-    FamNamePath path_;
+    FamPath path_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

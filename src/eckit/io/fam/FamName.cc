@@ -21,74 +21,40 @@
 #include "eckit/io/fam/FamHandle.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/log/Log.h"
-#include "eckit/utils/Tokenizer.h"
+
+#include <iostream>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace {
-
-auto parsePath(const std::string& path) -> std::tuple<std::string, std::string> {
-    const auto names = Tokenizer("/").tokenize(path);
-    switch (names.size()) {
-        case 1:  return {names[0], ""}; break;
-        case 2:  return {names[0], names[1]}; break;
-        default: return {}; break;
-    }
-}
-
-}  // namespace
-
-FamNamePath::FamNamePath(const std::string& path) {
-    std::tie(regionName, objectName) = parsePath(path);
-}
-
-FamNamePath::FamNamePath(const URI& uri): FamNamePath(uri.name()) {
-    ASSERT(uri.scheme() == FamName::SCHEME);
-}
-
-bool FamNamePath::operator==(const FamNamePath& other) const {
-    return (regionName == other.regionName && objectName == other.objectName);
-}
-
-std::ostream& operator<<(std::ostream& out, const FamNamePath& path) {
-    if (!path.regionName.empty()) { out << "/" + path.regionName; }
-    if (!path.objectName.empty()) { out << "/" + path.objectName; }
-    return out;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-FamName::FamName(FamSession::SPtr session, FamNamePath path) noexcept:
+FamName::FamName(FamSession::SPtr session, FamPath path) noexcept:
     session_ {std::move(session)}, path_ {std::move(path)} { }
 
-FamName::FamName(const net::Endpoint& endpoint, FamNamePath path):
+FamName::FamName(const net::Endpoint& endpoint, FamPath path):
     FamName(FamSession::instance().getOrAdd({endpoint}), std::move(path)) { }
 
 FamName::FamName(const URI& uri): FamName(uri.endpoint(), uri) { }
-
-FamName::~FamName() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto FamName::asString() const -> std::string {
     std::ostringstream oss;
-    oss << SCHEME << "://" << config().endpoint << path_;
+    oss << FamPath::SCHEME << "://" << config().endpoint << path_;
     return oss.str();
 }
 
 auto FamName::uri() const -> URI {
-    return URI {asString()};
+    // return URI {asString()};
+    return {FamPath::SCHEME, config().endpoint, path_.asString()};
 }
 
-auto FamName::with(std::string_view regionName) -> FamName& {
+auto FamName::withRegion(std::string_view regionName) -> FamName& {
     path_.regionName = regionName;
     return *this;
 }
 
-auto FamName::with(std::string_view regionName, std::string_view objectName) -> FamName& {
-    path_.regionName = regionName;
+auto FamName::withObject(std::string_view objectName) -> FamName& {
     path_.objectName = objectName;
     return *this;
 }
@@ -143,11 +109,11 @@ auto FamName::existsObject() const -> bool {
 //----------------------------------------------------------------------------------------------------------------------
 
 auto FamName::dataHandle(const bool overwrite) const -> DataHandle* {
-    return new FamHandle(asString(), overwrite);
+    return new FamHandle(*this, overwrite);
 }
 
 auto FamName::dataHandle(const Offset& offset, const Length& length) const -> DataHandle* {
-    return new FamHandle(asString(), offset, length, true);
+    return new FamHandle(*this, offset, length, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -34,14 +34,14 @@ CASE("FamName: ctor") {
     {
         const URI uri {"fam://" + fam::testEndpoint + "/regionName/objectName"};
 
-        EXPECT_EQUAL(uri.scheme(), FamName::SCHEME);
+        EXPECT_EQUAL(uri.scheme(), FamPath::SCHEME);
         EXPECT_EQUAL(uri.hostport(), fam::testEndpoint);
         EXPECT_EQUAL(uri.name(), "/regionName/objectName");
     }
 
     {
         const FamName name {fam::testEndpoint, "/regionName/objectName"};
-        EXPECT_EQUAL(name.uri().scheme(), FamName::SCHEME);
+        EXPECT_EQUAL(name.uri().scheme(), FamPath::SCHEME);
         EXPECT_EQUAL(name.uri().hostport(), fam::testEndpoint);
         EXPECT_EQUAL(name.uri().name(), "/regionName/objectName");
 
@@ -133,7 +133,7 @@ CASE("FamObject: lookup, create, and destroy") {
         // ctor endpoint only
         auto name = FamName(fam::testEndpoint, path);
 
-        auto region = name.with(regionName).lookupRegion();
+        auto region = name.withRegion(regionName).lookupRegion();
 
         EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
 
@@ -173,7 +173,7 @@ CASE("FamObject: large data small object") {
     auto name = FamName(fam::testEndpoint, '/' + regionName + '/' + objectName);
 
     {
-        auto region = name.with(regionName).createRegion(regionSize, regionPerm, true);
+        auto region = name.withRegion(regionName).createRegion(regionSize, regionPerm, true);
 
         // object bigger than region
         EXPECT_THROWS_AS(region.allocateObject(regionSize + 1, objectPerm, objectName), OutOfStorage);
@@ -193,7 +193,7 @@ CASE("FamObject: large data small object") {
     const auto testData = "ECKIT_TEST_FAM_DATA_2048413561EC"s;  // size=32
 
     {  // write
-        auto object = name.with(regionName, objectName).allocateObject(objectSize, true);
+        auto object = name.withObject(objectName).allocateObject(objectSize, true);
         EXPECT_NO_THROW(object.put(testData.data(), 0, testData.size()));
     }
 

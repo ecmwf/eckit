@@ -26,10 +26,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamHandle::FamHandle(const std::string& uri, const Offset& position, const Length& length, const bool overwrite):
-    uri_ {uri}, pos_ {position}, len_ {length}, overwrite_ {overwrite} { }
+FamHandle::FamHandle(const FamName& name, const Offset& position, const Length& length, const bool overwrite):
+    name_ {name}, pos_ {position}, len_ {length}, overwrite_ {overwrite} { }
 
-FamHandle::FamHandle(const std::string& uri, const bool overwrite): FamHandle(uri, 0, 0, overwrite) { }
+FamHandle::FamHandle(const FamName& name, const bool overwrite): FamHandle(name, 0, 0, overwrite) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -66,7 +66,7 @@ Length FamHandle::size() {
 
 Length FamHandle::openForRead() {
     open(Mode::READ);
-    handle_ = FamName(uri_).lookupObject().clone();
+    handle_ = name_.lookupObject().clone();
     return estimate();
 }
 
@@ -74,14 +74,15 @@ void FamHandle::openForWrite(const Length& length) {
     open(Mode::WRITE);
 
     try {
-        handle_ = FamName(uri_).lookupObject().clone();
-        if (overwrite_) { ASSERT(length == size()); }
+        handle_ = name_.lookupObject().clone();
+        if (overwrite_ && length > 0) { ASSERT(size() >= length); }
     } catch (const NotFound& e) {
         Log::debug<LibEcKit>() << "FamHandle::openForWrite() " << e.what() << '\n';
-        handle_ = FamName(uri_).allocateObject(static_cast<fam::size_t>(length)).clone();
+        ASSERT(length > 0);
+        handle_ = name_.allocateObject(length).clone();
     }
 
-    len_ = handle_->size();
+    len_ = size();
 
     // try {
     //     name_.create(static_cast<fam::size_t>(length));
@@ -126,7 +127,7 @@ long FamHandle::write(const void* buffer, const long length) {
 //----------------------------------------------------------------------------------------------------------------------
 
 void FamHandle::print(std::ostream& out) const {
-    out << "FamHandle[uri=" << uri_ << ", position=" << pos_ << ", mode=";
+    out << "FamHandle[name=" << name_ << ", position=" << pos_ << ", mode=";
     switch (mode_) {
         case Mode::CLOSED: out << "closed"; break;
         case Mode::READ:   out << "read"; break;

@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "eckit/filesystem/URI.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/fam/FamName.h"
 
 #include <memory>
 
@@ -34,9 +34,9 @@ class FamHandle: public DataHandle {
 public:  // methods
     enum class Mode { CLOSED, READ, WRITE };
 
-    FamHandle(const std::string& uri, const Offset& position, const Length& length, bool overwrite);
+    FamHandle(const FamName& name, const Offset& position, const Length& length, bool overwrite);
 
-    FamHandle(const std::string& uri, bool overwrite = false);
+    FamHandle(const FamName& name, bool overwrite = false);
 
     Length openForRead() override;
 
@@ -66,7 +66,7 @@ private:  // methods
     void print(std::ostream& out) const override;
 
 private:  // members
-    URI uri_;
+    const FamName name_;
 
     Offset pos_ {0};
     Length len_ {0};

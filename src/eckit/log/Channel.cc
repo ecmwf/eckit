@@ -17,80 +17,75 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Channel::Channel(LogTarget* target) :
-    std::ostream(new ChannelBuffer()), buffer_(dynamic_cast<ChannelBuffer*>(rdbuf())) {
+OutputChannel::OutputChannel(LogTarget* target):
+    Channel(new ChannelBuffer()), buffer_(dynamic_cast<ChannelBuffer*>(rdbuf())) {
     ASSERT(buffer_);
-    if (target) {
-        buffer_->setTarget(target);
-    }
-    //    std::cerr << "Channel::Channel()" << std::endl;
+    if (target) { buffer_->setTarget(target); }
 }
 
-
-Channel::~Channel() {
-    //    std::cerr << "Channel::~Channel() " << *this << std::endl;
+OutputChannel::~OutputChannel() {
+    buffer_->sync();
     delete buffer_;
 }
 
-bool Channel::operator!() const {
+bool OutputChannel::operator!() const {
     bool b = *this;
     return !b;
 }
 
-Channel::operator bool() const {
+OutputChannel::operator bool() const {
     return buffer_->active();
 }
 
-void Channel::setCallback(channel_callback_t cb, void* data) {
+void OutputChannel::setCallback(channel_callback_t cb, void* data) {
     ASSERT(cb);
     buffer_->setCallback(cb, data);
 }
 
-void Channel::addCallback(channel_callback_t cb, void* data) {
+void OutputChannel::addCallback(channel_callback_t cb, void* data) {
     ASSERT(cb);
     buffer_->addCallback(cb, data);
 }
 
-void Channel::setTarget(LogTarget* target) {
+void OutputChannel::setTarget(LogTarget* target) {
     ASSERT(target);
     buffer_->setTarget(target);
 }
 
-void Channel::addTarget(LogTarget* target) {
+void OutputChannel::addTarget(LogTarget* target) {
     ASSERT(target);
     buffer_->addTarget(target);
 }
 
-void Channel::setStream(std::ostream& out) {
+void OutputChannel::setStream(std::ostream& out) {
     buffer_->setStream(out);
 }
 
-void Channel::addStream(std::ostream& out) {
+void OutputChannel::addStream(std::ostream& out) {
     buffer_->addStream(out);
 }
 
-
-void Channel::setFile(const std::string& path) {
+void OutputChannel::setFile(const std::string& path) {
     buffer_->setFile(path);
 }
 
-void Channel::addFile(const std::string& path) {
+void OutputChannel::addFile(const std::string& path) {
     buffer_->addFile(path);
 }
 
-void Channel::reset() {
+void OutputChannel::reset() {
     buffer_->reset();
 }
 
-void Channel::print(std::ostream& s) const {
-    s << "Channel(buffer=" << *buffer_ << ")";
+void OutputChannel::print(std::ostream& s) const {
+    s << "OutputChannel(buffer=" << *buffer_ << ")";
 }
 
-void Channel::indent(const char* space) {
+void OutputChannel::indent(const char* space) {
     buffer_->indent(space);
 }
 
-void Channel::unindent() {
+void OutputChannel::unindent() {
     buffer_->unindent();
 }
 

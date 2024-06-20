@@ -105,8 +105,8 @@ public:  // methods
     static void print(std::ostream& os);
 
 private:     // methods
-    Log();   ///< Private, non-instanciatable class
-    ~Log();  ///< Private, non-instanciatable class
+    Log()  = default;  ///< Private, non-instanciatable class
+    ~Log() = default;  ///< Private, non-instanciatable class
 };
 
 //----------------------------------------------------------------------------------------------------------------------

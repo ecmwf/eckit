@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <atomic>
 
 #include "eckit/bases/Loader.h"
 #include "eckit/config/Resource.h"
@@ -31,6 +32,11 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+namespace {
+// atomic provides implicit lock for finished_ only
+std::atomic_bool finished_ {false};
+}  // namespace
 
 static StaticMutex local_mutex;
 static Main* instance_ = nullptr;
@@ -208,6 +214,14 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
     if (not instance_) {
         new Library(argc, argv, homeenv);
     }
+}
+
+bool Main::finalised() {
+    return finished_;
+}
+
+void Main::finalise() {
+    finished_ = true;
 }
 
 bool Main::debug() const {

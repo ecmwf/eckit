@@ -63,6 +63,14 @@ public:  // methods
     // To be used before main() to check if the instance is ready
     static bool ready();
 
+    /// Check if the Main object has been finalised
+    /// Without explicit finalize(), calling Main::debug() in dtor of static global objects may cause segaults.
+    static bool finalised();
+
+    /// Finalize the Main object.
+    /// Without explicit finalize(), calling Main::debug() in dtor of static global objects may cause segaults.
+    static void finalise();
+
     // Check if debugging was set to on (either through environment variable "DEBUG=1",
     // or command-line argument "--debug" or "-debug".
     virtual bool debug() const;

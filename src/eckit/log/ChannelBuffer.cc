@@ -23,8 +23,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ChannelBuffer::ChannelBuffer(const std::size_t size): std::streambuf(), target_(0), buffer_(size) {
-    ASSERT(size);
+ChannelBuffer::ChannelBuffer(std::size_t size): buffer_(size) {
+    init();
+}
+
+void ChannelBuffer::init() {
     setp(buffer_.data(), buffer_.data() + buffer_.size());
 }
 
@@ -38,7 +41,6 @@ ChannelBuffer::~ChannelBuffer() {
 bool ChannelBuffer::active() const {
     return target_ != 0;
 }
-
 
 void ChannelBuffer::setTarget(LogTarget* target) {
     ASSERT(target);
@@ -75,7 +77,7 @@ bool ChannelBuffer::dumpBuffer() {
         // Explicitly check that `pptr()` is not larger than end of buffer. Racecondition can end up adding larger values.
         target_->write(buffer_.data(), std::min(pptr(), buffer_.data() + buffer_.size()));
     }
-    setp(buffer_.data(), buffer_.data() + buffer_.size());
+    init();
     return true;
 }
 

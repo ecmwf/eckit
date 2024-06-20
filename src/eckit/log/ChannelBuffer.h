@@ -28,15 +28,12 @@ namespace eckit {
 
 class LogTarget;
 
-/// Stream buffer to be usedby Channel
+/// Stream buffer to be used by Channel
 class ChannelBuffer : public std::streambuf, private NonCopyable {
+private:  // types
+    static constexpr const size_t DEFAULT_SIZE = 1024;
 
 private:  // methods
-    /// constructor, taking ownership of stream
-    ChannelBuffer(std::size_t size = 1024);
-
-    ~ChannelBuffer() override;
-
     bool active() const;
 
     void reset();
@@ -57,6 +54,12 @@ private:  // methods
     void addCallback(channel_callback_t cb, void* data = 0);
 
 protected:  // methods
+    ChannelBuffer(std::size_t size = DEFAULT_SIZE);
+
+    ~ChannelBuffer() override;
+
+    void init();
+
     /// override this to change buffer behavior
     /// @returns true if no error occured
     virtual bool dumpBuffer();
@@ -69,20 +72,41 @@ protected:  // methods
     /// @see dumpBuffer
     int_type sync() override;
 
-protected:  // members
-    LogTarget* target_;
-
-    std::vector<char> buffer_;
-
-private:
     friend std::ostream& operator<<(std::ostream& os, const ChannelBuffer& c) {
         c.print(os);
         return os;
     }
 
-    void print(std::ostream& s) const;
+    virtual void print(std::ostream& s) const;
 
-    friend class OutputChannel;
+protected:  // members
+    LogTarget* target_ {nullptr};
+
+    std::vector<char> buffer_;
+
+    friend class Channel;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Channel buffer that voidify output streams
+class VoidBuffer: public ChannelBuffer {
+private:  // methods
+    VoidBuffer(): ChannelBuffer(0) { }
+
+    ~VoidBuffer() = default;
+
+protected:  // methods
+    bool dumpBuffer() override { return true; }
+
+    int_type overflow(int_type c) override { return c; }
+
+    int_type sync() override { return 0; }
+
+private:  // methods
+    void print(std::ostream& s) const override { s << "VoidBuffer"; }
+
+    friend class EmptyChannel;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

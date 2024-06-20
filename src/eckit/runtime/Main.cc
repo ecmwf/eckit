@@ -206,6 +206,7 @@ bool Main::ready() {
 }
 
 void Main::terminate() {
+    finalise();
     ::exit(0);
 }
 
@@ -214,6 +215,7 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
     if (not instance_) {
         new Library(argc, argv, homeenv);
     }
+    finished_ = false;
 }
 
 bool Main::finalised() {

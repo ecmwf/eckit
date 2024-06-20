@@ -190,16 +190,22 @@ void PROJ::fill_proj(std::string& str, const spec::Custom& custom) {
     };
 
     static const rename_type RENAME_KEYS{
-        {"figure", "ellps"},
         {"projection", "proj"},
+        {"figure", "ellps"},
+        {"r", "R"},
     };
 
     static const rename_type RENAME_VALUES{
         {"mercator", "merc"},
+        {"grs80", "GRS80"},
+        {"wgs84", "WGS84"},
     };
 
-    for (const auto& [key, value] : custom.container()) {
-        str += " +" + RENAME_KEYS(key) + "=" + RENAME_VALUES(to_string(value));
+    for (const auto& [k, v] : custom.container()) {
+        if (const auto& key = RENAME_KEYS(k); !key.empty()) {
+            const auto value = RENAME_VALUES(to_string(v));
+            str += " +" + key + "=" + value;
+        }
     }
 }
 

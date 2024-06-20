@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <cctype>
 #include <map>
+#include <mutex>
 
 #include "eckit/system/Library.h"
 
@@ -34,6 +35,12 @@
 #include "eckit/utils/Translator.h"
 
 namespace eckit::system {
+
+namespace {
+std::mutex                                  channelMutex_;
+thread_local EmptyChannel                   emptyChannel_;
+thread_local std::unique_ptr<OutputChannel> debugChannel_;
+}  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -109,28 +116,22 @@ std::string Library::libraryPath() const {
     return libraryPath_;
 }
 
-
 Channel& Library::debugChannel() const {
-    static ThreadSingleton<std::map<const Library*, std::unique_ptr<Channel>>> debugChannels;
-
-    auto it = debugChannels.instance().find(this);
-    if (it != debugChannels.instance().end()) {
-        return *it->second;
+    if (const AutoLock<Mutex> lock(mutex_); debug_) {
+        const std::lock_guard<std::mutex> lockChannel(channelMutex_);
+        if (!debugChannel_) {
+            debugChannel_ = std::make_unique<OutputChannel>(new PrefixTarget(prefix_ + "_DEBUG"));
+        }
+        return *debugChannel_;
     }
 
-    return *debugChannels.instance()
-                .emplace(this, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
-                                      : std::make_unique<Channel>())                                     //
-                .first->second.get();
+    return emptyChannel_;
 }
-
 
 const Configuration& Library::configuration() const {
     AutoLock<Mutex> lock(mutex_);
 
-    if (configuration_) {
-        return *configuration_;
-    }
+    if (configuration_) { return *configuration_; }
 
     std::string s = "$" + prefix_ + "_CONFIG_PATH";
     std::string p = "~" + name_ + "/etc/" + name_ + "/config.yaml";
@@ -139,12 +140,9 @@ const Configuration& Library::configuration() const {
 
     Log::debug() << "Parsing Lib " << name_ << " config file " << cfgpath << std::endl;
 
-    eckit::Configuration* cfg
-        = cfgpath.exists() ? new eckit::YAMLConfiguration(cfgpath) : new eckit::YAMLConfiguration(std::string(""));
+    configuration_ = std::make_unique<eckit::YAMLConfiguration>(cfgpath.exists() ? cfgpath : "");
 
-    Log::debug() << "Lib " << name_ << " configuration: " << *cfg << std::endl;
-
-    configuration_.reset(cfg);
+    Log::debug() << "Lib " << name_ << " configuration: " << *configuration_ << std::endl;
 
     return *configuration_;
 }

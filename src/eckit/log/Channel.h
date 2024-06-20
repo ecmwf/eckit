@@ -20,6 +20,7 @@
 
 namespace eckit {
 
+class VoidBuffer;
 class ChannelBuffer;
 class LogTarget;
 
@@ -27,73 +28,43 @@ typedef void (*channel_callback_t)(void* data, const char* msg);
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @brief Abstract output stream interface
-class Channel: public std::ostream, private NonCopyable {
-public:  // methods
-    virtual ~Channel() = default;
-
-    virtual void indent(const char* prefix) { }
-    virtual void unindent() { }
-
-    virtual void setStream(std::ostream&) { }
-    virtual void addStream(std::ostream&) { }
-
-    virtual void setFile(const std::string& path) { }
-    virtual void addFile(const std::string& path) { }
-
-    virtual void setCallback(channel_callback_t cb, void* data = 0) { }
-    virtual void addCallback(channel_callback_t cb, void* data = 0) { }
-
-    virtual void setTarget(LogTarget*) { }
-    virtual void addTarget(LogTarget*) { }
-
-    virtual void reset() { }
-
-protected:  // methods
-    Channel(std::streambuf* buffer): std::ostream(buffer) { }
-
-private:  // members
-    virtual void print(std::ostream& s) const = 0;
-
-    friend std::ostream& operator<<(std::ostream& os, const Channel& c) {
-        c.print(os);
-        return os;
-    }
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
 /// Output channel that is an std::ostream but more functional
 
-class OutputChannel: public Channel {
+class Channel: public std::ostream, private NonCopyable {
 public:  // methods
-    OutputChannel(LogTarget* = 0);
+    Channel(LogTarget* = 0);
 
-    ~OutputChannel() override;
+    virtual ~Channel();
 
     bool operator!() const;
     operator bool() const;
 
-    void indent(const char* space = "") override;  // not sure about default on override methods
-    void unindent() override;
+    void indent(const char* space = "");
+    void unindent();
 
-    void setStream(std::ostream& out) override;
-    void addStream(std::ostream& out) override;
+    void setStream(std::ostream& out);
+    void addStream(std::ostream& out);
 
-    void setFile(const std::string& path) override;
-    void addFile(const std::string& path) override;
+    void setFile(const std::string& path);
+    void addFile(const std::string& path);
 
-    void setCallback(channel_callback_t cb, void* data = 0) override;
-    void addCallback(channel_callback_t cb, void* data = 0) override;
+    void setCallback(channel_callback_t cb, void* data = 0);
+    void addCallback(channel_callback_t cb, void* data = 0);
 
-    void setTarget(LogTarget*) override;
-    void addTarget(LogTarget*) override;
+    void setTarget(LogTarget* target);
+    void addTarget(LogTarget* target);
 
-    void reset() override;
+    void reset();
+
+protected:  // methods
+    explicit Channel(VoidBuffer* dummy);
+
+private:  // methods
+    explicit Channel(ChannelBuffer* buffer);
+
+    virtual void print(std::ostream& s) const;
 
 private:  // members
-    void print(std::ostream& s) const override;
-
     ChannelBuffer* buffer_ {nullptr};
 
     friend class Log;
@@ -101,12 +72,11 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-
 class AutoIndent {
-    OutputChannel& channel_;
+    Channel& channel_;
 
 public:
-    AutoIndent(OutputChannel& channel, const char* prefix = ""): channel_(channel) { channel_.indent(prefix); }
+    AutoIndent(Channel& channel, const char* prefix = ""): channel_(channel) { channel_.indent(prefix); }
     ~AutoIndent() { channel_.unindent(); }
 };
 
@@ -114,14 +84,11 @@ public:
 
 class EmptyChannel: public Channel {
 public:  // methods
-    EmptyChannel(): Channel(nullptr) { }
+    EmptyChannel();
 
-    ~EmptyChannel() override = default;
+    ~EmptyChannel() = default;
 
-    bool operator!() const { return true; }
-    operator bool() const { return false; }
-
-private:  // members
+private:  // methods
     void print(std::ostream& s) const override { s << "EmptyChannel()"; }
 
     friend class Log;

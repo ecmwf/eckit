@@ -34,7 +34,7 @@ class Channel: public std::ostream, private NonCopyable {
 public:  // methods
     Channel(LogTarget* = 0);
 
-    virtual ~Channel();
+    ~Channel() override;
 
     bool operator!() const;
     operator bool() const;
@@ -63,6 +63,11 @@ private:  // methods
     explicit Channel(ChannelBuffer* buffer);
 
     virtual void print(std::ostream& s) const;
+
+    friend std::ostream& operator<<(std::ostream& os, const Channel& c) {
+        c.print(os);
+        return os;
+    }
 
 private:  // members
     ChannelBuffer* buffer_ {nullptr};

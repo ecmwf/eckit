@@ -19,6 +19,7 @@
 #include "eckit/deprecated.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/UserChannel.h"
+#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -29,8 +30,7 @@ typedef void (*channel_callback_t)(void* data, const char* msg);
 /// Singleton holding global streams for logging
 ///
 
-class Log {
-
+class Log: private NonCopyable {
 public:  // types
     /// Output formats
     enum
@@ -104,9 +104,8 @@ public:  // methods
 
     static void print(std::ostream& os);
 
-private:     // methods
-    Log()  = default;  ///< Private, non-instanciatable class
-    ~Log() = default;  ///< Private, non-instanciatable class
+    Log()  = delete;  ///< Private, non-instanciatable class
+    ~Log() = delete;  ///< Private, non-instanciatable class
 };
 
 //----------------------------------------------------------------------------------------------------------------------

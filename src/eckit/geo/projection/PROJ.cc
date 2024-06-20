@@ -31,7 +31,7 @@ namespace {
 
 
 constexpr auto CTX               = PJ_DEFAULT_CTX;
-static const std::string DEFAULT = "EPSG:4326";  // wgs84, latitude/longitude coordinate system
+static const std::string DEFAULT = "EPSG:4326";  // WGS84, latitude/longitude coordinate system
 
 
 struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
@@ -149,8 +149,8 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 
 
 PROJ::PROJ(const Spec& spec) :
-    PROJ(spec.get_string("source", spec.get_string("proj", DEFAULT)),  // default to WGS 84
-         spec.get_string("target", DEFAULT),                           // ...
+    PROJ(spec.get_string("source", spec.get_string("proj", DEFAULT)),
+         spec.get_string("target", DEFAULT),
          spec.get_double("lon_minimum", 0)) {}
 
 

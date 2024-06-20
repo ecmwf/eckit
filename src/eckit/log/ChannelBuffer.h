@@ -82,7 +82,7 @@ private:
 
     void print(std::ostream& s) const;
 
-    friend class Channel;
+    friend class OutputChannel;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

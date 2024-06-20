@@ -23,13 +23,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ChannelBuffer::ChannelBuffer(std::size_t size) : std::streambuf(), target_(0), buffer_(size) {
+ChannelBuffer::ChannelBuffer(const std::size_t size): std::streambuf(), target_(0), buffer_(size) {
     ASSERT(size);
     setp(buffer_.data(), buffer_.data() + buffer_.size());
 }
 
 ChannelBuffer::~ChannelBuffer() {
-    reset();
+    if (target_) {
+        target_->detach();
+        target_ = nullptr;
+    }
 }
 
 bool ChannelBuffer::active() const {

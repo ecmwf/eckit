@@ -25,7 +25,7 @@ Library::Library(int argc, char** argv, const char* homeenv) :
 Library::~Library() {}
 
 Channel* Library::createChannel() const {
-    return new Channel(new OStreamTarget(std::cout));
+    return new OutputChannel(new OStreamTarget(std::cout));
 }
 
 

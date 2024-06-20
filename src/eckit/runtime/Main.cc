@@ -34,8 +34,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
-// atomic provides implicit lock for finished_ only
-std::atomic_bool finished_ {false};
+// atomic provides implicit lock for finalised_ only
+std::atomic_bool finalised_ {false};
 }  // namespace
 
 static StaticMutex local_mutex;
@@ -215,15 +215,15 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
     if (not instance_) {
         new Library(argc, argv, homeenv);
     }
-    finished_ = false;
+    finalised_ = false;
 }
 
 bool Main::finalised() {
-    return finished_;
+    return finalised_;
 }
 
 void Main::finalise() {
-    finished_ = true;
+    finalised_ = true;
 }
 
 bool Main::debug() const {

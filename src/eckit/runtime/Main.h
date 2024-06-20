@@ -64,11 +64,11 @@ public:  // methods
     static bool ready();
 
     /// Check if the Main object has been finalised
-    /// Without explicit finalize(), calling Main::debug() in dtor of static global objects may cause segaults.
+    /// Without explicit finalise(), calling Main::debug() in dtor of static global objects may cause segaults.
     static bool finalised();
 
-    /// Finalize the Main object.
-    /// Without explicit finalize(), calling Main::debug() in dtor of static global objects may cause segaults.
+    /// Finalise the Main object.
+    /// Without explicit finalise(), calling Main::debug() in dtor of static global objects may cause segaults.
     static void finalise();
 
     // Check if debugging was set to on (either through environment variable "DEBUG=1",

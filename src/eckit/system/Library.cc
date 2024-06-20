@@ -131,7 +131,9 @@ Channel& Library::debugChannel() const {
 const Configuration& Library::configuration() const {
     AutoLock<Mutex> lock(mutex_);
 
-    if (configuration_) { return *configuration_; }
+    if (configuration_) {
+        return *configuration_;
+    }
 
     std::string s = "$" + prefix_ + "_CONFIG_PATH";
     std::string p = "~" + name_ + "/etc/" + name_ + "/config.yaml";
@@ -140,9 +142,12 @@ const Configuration& Library::configuration() const {
 
     Log::debug() << "Parsing Lib " << name_ << " config file " << cfgpath << std::endl;
 
-    configuration_ = std::make_unique<eckit::YAMLConfiguration>(cfgpath.exists() ? cfgpath : "");
+    eckit::Configuration* cfg
+        = cfgpath.exists() ? new eckit::YAMLConfiguration(cfgpath) : new eckit::YAMLConfiguration(std::string(""));
 
-    Log::debug() << "Lib " << name_ << " configuration: " << *configuration_ << std::endl;
+    Log::debug() << "Lib " << name_ << " configuration: " << *cfg << std::endl;
+
+    configuration_.reset(cfg);
 
     return *configuration_;
 }

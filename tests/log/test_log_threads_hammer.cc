@@ -55,6 +55,8 @@ public:
     }
 };
 
+auto& tester = SingletonTester::instance();
+
 constexpr const auto numThreads = 32;
 constexpr const auto logSize    = 1000;
 
@@ -89,8 +91,6 @@ CASE("Log: output " + std::to_string(logSize) + " logs by " + std::to_string(num
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    auto& tester = eckit::test::SingletonTester::instance();
-
     auto count = 0;
     for (auto i = 0; i < 5; i++) { count += run_tests(argc, argv); }
     return count;

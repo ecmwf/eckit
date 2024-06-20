@@ -37,9 +37,9 @@
 namespace eckit::system {
 
 namespace {
-std::mutex                                  channelMutex_;
-thread_local EmptyChannel                   emptyChannel_;
-thread_local std::unique_ptr<OutputChannel> debugChannel_;
+std::mutex                            channelMutex_;
+thread_local EmptyChannel             emptyChannel_;
+thread_local std::unique_ptr<Channel> debugChannel_;
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -117,10 +117,11 @@ std::string Library::libraryPath() const {
 }
 
 Channel& Library::debugChannel() const {
+    const std::lock_guard<std::mutex> lockChannel(channelMutex_);
+
     if (const AutoLock<Mutex> lock(mutex_); debug_) {
-        const std::lock_guard<std::mutex> lockChannel(channelMutex_);
         if (!debugChannel_) {
-            debugChannel_ = std::make_unique<OutputChannel>(new PrefixTarget(prefix_ + "_DEBUG"));
+            debugChannel_ = std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"));
         }
         return *debugChannel_;
     }

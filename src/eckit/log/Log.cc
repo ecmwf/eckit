@@ -88,7 +88,7 @@ thread_local EmptyChannel emptyChannel;
 //----------------------------------------------------------------------------------------------------------------------
 
 struct CreateStatusChannel {
-    Channel* operator()() { return new OutputChannel(new StatusTarget()); }
+    Channel* operator()() { return new Channel(new StatusTarget()); }
 };
 
 std::ostream& Log::status() {
@@ -97,7 +97,7 @@ std::ostream& Log::status() {
 }
 
 struct CreateMessageChannel {
-    Channel* operator()() { return new OutputChannel(new MessageTarget()); }
+    Channel* operator()() { return new Channel(new MessageTarget()); }
 };
 
 std::ostream& Log::message() {
@@ -107,68 +107,68 @@ std::ostream& Log::message() {
 
 Channel& Log::metrics() {
     if (!Main::ready()) {
-        thread_local OutputChannel preMainMetrics(new PrefixTarget("PRE-MAIN-METRICS", new OStreamTarget(std::cout)));
+        thread_local Channel preMainMetrics(new PrefixTarget("PRE-MAIN-METRICS", new OStreamTarget(std::cout)));
         return preMainMetrics;
     }
 
     if (Main::finalised()) {
-        thread_local OutputChannel postMainMetrics(new PrefixTarget("POST-MAIN-METRICS", new OStreamTarget(std::cout)));
+        thread_local Channel postMainMetrics(new PrefixTarget("POST-MAIN-METRICS", new OStreamTarget(std::cout)));
         return postMainMetrics;
     }
 
-    thread_local OutputChannel mainMetrics(Main::instance().createMetricsLogTarget());
+    thread_local Channel mainMetrics(Main::instance().createMetricsLogTarget());
     return mainMetrics;
 }
 
 Channel& Log::info() {
     if (!Main::ready()) {
-        thread_local OutputChannel preMainInfo(new PrefixTarget("PRE-MAIN-INFO", new OStreamTarget(std::cout)));
+        thread_local Channel preMainInfo(new PrefixTarget("PRE-MAIN-INFO", new OStreamTarget(std::cout)));
         return preMainInfo;
     }
 
     if (Main::finalised()) {
-        thread_local OutputChannel postMainInfo(new PrefixTarget("POST-MAIN-INFO", new OStreamTarget(std::cout)));
+        thread_local Channel postMainInfo(new PrefixTarget("POST-MAIN-INFO", new OStreamTarget(std::cout)));
         return postMainInfo;
     }
 
-    thread_local OutputChannel mainInfo(Main::instance().createInfoLogTarget());
+    thread_local Channel mainInfo(Main::instance().createInfoLogTarget());
     return mainInfo;
 }
 
 Channel& Log::error() {
     if (!Main::ready()) {
-        thread_local OutputChannel preMainError(new PrefixTarget("PRE-MAIN-ERROR", new OStreamTarget(std::cout)));
+        thread_local Channel preMainError(new PrefixTarget("PRE-MAIN-ERROR", new OStreamTarget(std::cout)));
         return preMainError;
     }
 
     if (Main::finalised()) {
-        thread_local OutputChannel postMainError(new PrefixTarget("POST-MAIN-ERROR", new OStreamTarget(std::cout)));
+        thread_local Channel postMainError(new PrefixTarget("POST-MAIN-ERROR", new OStreamTarget(std::cout)));
         return postMainError;
     }
 
-    thread_local OutputChannel mainError(Main::instance().createErrorLogTarget());
+    thread_local Channel mainError(Main::instance().createErrorLogTarget());
     return mainError;
 }
 
 Channel& Log::warning() {
     if (!Main::ready()) {
-        thread_local OutputChannel preMainWarning(new PrefixTarget("PRE-MAIN-WARNING", new OStreamTarget(std::cout)));
+        thread_local Channel preMainWarning(new PrefixTarget("PRE-MAIN-WARNING", new OStreamTarget(std::cout)));
         return preMainWarning;
     }
 
     if (Main::finalised()) {
-        thread_local OutputChannel postMainWarning(new PrefixTarget("POST-MAIN-WARNING", new OStreamTarget(std::cout)));
+        thread_local Channel postMainWarning(new PrefixTarget("POST-MAIN-WARNING", new OStreamTarget(std::cout)));
         return postMainWarning;
     }
 
-    thread_local OutputChannel mainWarning(Main::instance().createWarningLogTarget());
+    thread_local Channel mainWarning(Main::instance().createWarningLogTarget());
     return mainWarning;
 }
 
 Channel& Log::debug() {
     if (!Main::ready()) {
         if (const char* e = getenv("DEBUG"); e && bool(Translator<std::string, bool>()(e))) {
-            thread_local OutputChannel preMainDebug(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
+            thread_local Channel preMainDebug(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
             return preMainDebug;
         }
         return emptyChannel;
@@ -177,11 +177,11 @@ Channel& Log::debug() {
     if (!Main::instance().debug_) { return emptyChannel; }
 
     if (Main::finalised()) {
-        thread_local OutputChannel postMainDebug(new PrefixTarget("POST-MAIN-DEBUG", new OStreamTarget(std::cout)));
+        thread_local Channel postMainDebug(new PrefixTarget("POST-MAIN-DEBUG", new OStreamTarget(std::cout)));
         return postMainDebug;
     }
 
-    thread_local OutputChannel debugChannel(Main::instance().createDebugLogTarget());
+    thread_local Channel debugChannel(Main::instance().createDebugLogTarget());
     return debugChannel;
 }
 

@@ -100,7 +100,7 @@ CASE("test_multi_targets") {
 
     int t = 0;
 
-    OutputChannel mychannel;
+    Channel mychannel;
 
     mychannel << "testing [" << t++ << "]" << std::endl;
 

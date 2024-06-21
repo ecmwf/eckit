@@ -27,7 +27,9 @@ namespace eckit::geo {
 
 /**
  * @brief The PointLonLatR class
- * @details A point on a geographic coordinate system, in (longitude, latitude) coordinates [radian].
+ * @details A point on a geographic coordinate system, in (longitude, latitude) coordinates [radian]. They are fully
+ * circular in space (also latitude), longitude is typically limited to [0, 2 pi[ and latitude to [-pi, pi], with
+ * normalisation functions available, as well as conversion to and from degree-based coordinates.
  */
 class PointLonLatR final : protected std::array<double, 2> {
 public:

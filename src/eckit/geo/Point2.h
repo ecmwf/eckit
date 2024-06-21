@@ -20,7 +20,7 @@ namespace eckit::geo {
 
 /**
  * @brief The Point2 class
- * @details A point on two-dimensional space, in (X, Y) coordinates.
+ * @details A point on two-dimensional space, in (X, Y) coordinates, linear in space.
  */
 class Point2 final : protected std::array<double, 2> {
 public:

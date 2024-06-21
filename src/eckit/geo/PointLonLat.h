@@ -26,7 +26,9 @@ namespace eckit::geo {
 
 /**
  * @brief The PointLonLat class
- * @details A point on a geographic coordinate system, in (longitude, latitude) coordinates [degree].
+ * @details A point on a geographic coordinate system, in (longitude, latitude) coordinates [degree]; They are fully
+ * circular in space (also latitude), longitude is typically limited to [0, 360[ and latitude to [-90, 90], with
+ * normalisation functions available, as well as conversion to and from radian-based coordinates.
  */
 class PointLonLat final : protected std::array<double, 2> {
 public:

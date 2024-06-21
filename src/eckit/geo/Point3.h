@@ -20,7 +20,7 @@ namespace eckit::geo {
 
 /**
  * @brief The Point3 class
- * @details A point on three-dimensional space, in (X, Y, Z) coordinates.
+ * @details A point on three-dimensional space, in (X, Y, Z) coordinates, linear in space.
  */
 class Point3 final : protected std::array<double, 3> {
 public:

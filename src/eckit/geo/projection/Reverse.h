@@ -12,15 +12,18 @@
 
 #pragma once
 
-#include "eckit/geo/Projection.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo::projection {
 
 
+/**
+ * @brief Reverse class
+ * @details Used to reverse the forward and inverse methods of a projection.
+ */
 template <class P>
-class Reverse : protected P /* hide interface incosistentwith reversing inv/fwd */ {
+class Reverse : protected P {
 public:
     // -- Constructors
 
@@ -38,14 +41,6 @@ public:
 
     inline Point fwd(const Point& p) const override { return P::inv(p); }
     inline Point inv(const Point& p) const override { return P::fwd(p); }
-
-private:
-    // -- Overridden methods
-
-    void fill_spec(spec::Custom& custom) const override {
-        P::fill_spec(custom);
-        custom.set("projection", "reverse_" + custom.get_string("projection"));
-    }
 };
 
 }  // namespace eckit::geo::projection

@@ -42,7 +42,7 @@ public:
 
     // -- Class methods
 
-    static void fill_proj(std::string&, const spec::Custom&);
+    static std::string proj_str(const spec::Custom&);
 
 private:
     // -- Types

@@ -15,6 +15,8 @@
 #include <proj.h>
 
 #include <map>
+#include <set>
+#include <utility>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Figure.h"
@@ -149,8 +151,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 
 
 PROJ::PROJ(const Spec& spec) :
-    PROJ(spec.get_string("source", spec.get_string("proj", DEFAULT)),
-         spec.get_string("target", DEFAULT),
+    PROJ(spec.get_string("source", spec.get_string("proj", DEFAULT)), spec.get_string("target", DEFAULT),
          spec.get_double("lon_minimum", 0)) {}
 
 
@@ -180,33 +181,64 @@ Point PROJ::inv(const Point& q) const {
 }
 
 
-void PROJ::fill_proj(std::string& str, const spec::Custom& custom) {
-    struct rename_type : std::map<std::string, std::string> {
-        using map::map;
-        const std::string& operator()(const std::string& key) const {
-            const auto it = find(key);
-            return it != end() ? it->second : key;
-        }
+std::string PROJ::proj_str(const spec::Custom& custom) {
+    using key_value_type = std::pair<std::string, std::string>;
+
+    struct key_value_compare {
+        bool operator()(const key_value_type& a, const key_value_type& b) const {
+            if (a.first != b.first) {
+                // keys that come first in string
+                for (const std::string& key : {"proj"}) {
+                    if (a.first == key || b.first == key) {
+                        return a.first == key;
+                    }
+                }
+
+                // keys that come last in string
+                for (const std::string& key : {"R", "a", "b"}) {
+                    if (a.first == key || b.first == key) {
+                        return b.first == key;
+                    }
+                }
+            }
+
+            return a < b;
+        };
     };
 
-    static const rename_type RENAME_KEYS{
+    static const std::map<std::string, std::string> KEYS{
         {"projection", "proj"},
         {"figure", "ellps"},
         {"r", "R"},
     };
 
-    static const rename_type RENAME_VALUES{
+    static const std::map<std::string, std::string> VALUES{
         {"mercator", "merc"},
         {"grs80", "GRS80"},
         {"wgs84", "WGS84"},
     };
 
+    auto rename = [](const std::map<std::string, std::string>& map, const std::string& key) {
+        const auto it = map.find(key);
+        return it != map.end() ? it->second : key;
+    };
+
+    std::set<key_value_type, key_value_compare> set;
     for (const auto& [k, v] : custom.container()) {
-        if (const auto& key = RENAME_KEYS(k); !key.empty()) {
-            const auto value = RENAME_VALUES(to_string(v));
-            str += " +" + key + "=" + value;
+        if (const auto& key = rename(KEYS, k); !key.empty()) {
+            const auto& value = rename(VALUES, to_string(v));
+            set.emplace(key, value);
         }
     }
+
+    std::string str;
+    const auto* sep = "+";
+    for (const auto& [key, value] : set) {
+        str += sep + key + "=" + value;
+        sep = " +";
+    }
+
+    return str;
 }
 
 

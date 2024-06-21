@@ -64,14 +64,12 @@ std::string Projection::spec_str() const {
 
 
 std::string Projection::proj_str() const {
-    std::string str;
-    fill_proj(str);
-
-    if (!str.empty() && str.front() == ' ') {
-        str.erase(0, 1);
-    }
-
-    return str;
+#if eckit_HAVE_PROJ
+    std::unique_ptr<spec::Custom> custom(spec());
+    return projection::PROJ::proj_str(*custom);
+#else
+    NOTIMP;
+#endif
 }
 
 
@@ -82,14 +80,6 @@ Projection* Projection::make_from_spec(const Spec& spec) {
 
 void Projection::fill_spec(spec::Custom&) const {
     NOTIMP;
-}
-
-
-void Projection::fill_proj(std::string& str) const {
-#if eckit_HAVE_PROJ
-    std::unique_ptr<spec::Custom> custom(spec());
-    projection::PROJ::fill_proj(str, *custom);
-#endif
 }
 
 

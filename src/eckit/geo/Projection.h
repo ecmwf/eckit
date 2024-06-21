@@ -86,7 +86,6 @@ private:
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
-    virtual void fill_proj(std::string&) const;
 
     // -- Friends
 

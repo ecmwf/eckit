@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
@@ -41,6 +42,14 @@ public:
 
     inline Point fwd(const Point& p) const override { return P::inv(p); }
     inline Point inv(const Point& p) const override { return P::fwd(p); }
+
+private:
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom& custom) const override {
+        P::fill_spec(custom);
+        custom.set("projection", "reverse_" + custom.get_string("projection"));
+    }
 };
 
 }  // namespace eckit::geo::projection

@@ -214,6 +214,7 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 
     static const std::map<std::string, std::string> VALUES{
         {"mercator", "merc"},
+        {"reverse_mercator", "merc"},
         {"grs80", "GRS80"},
         {"wgs84", "WGS84"},
     };

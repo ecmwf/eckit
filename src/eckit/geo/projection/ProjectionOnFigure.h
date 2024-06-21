@@ -37,7 +37,7 @@ protected:
 private:
     // -- Members
 
-    const std::unique_ptr<Figure> figure_;
+    std::shared_ptr<Figure> figure_;
 };
 
 

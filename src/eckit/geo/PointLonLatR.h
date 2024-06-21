@@ -25,6 +25,10 @@ class PointLonLat;
 namespace eckit::geo {
 
 
+/**
+ * @brief The PointLonLatR class
+ * @details A point on a geographic coordinate system, in (longitude, latitude) coordinates [radian].
+ */
 class PointLonLatR final : protected std::array<double, 2> {
 public:
     // -- Types

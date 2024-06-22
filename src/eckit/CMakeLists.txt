@@ -289,6 +289,8 @@ io/rados/RadosObject.cc
 io/rados/RadosObject.h
 io/rados/RadosKeyValue.cc
 io/rados/RadosKeyValue.h
+io/rados/RadosPersistentKeyValue.cc
+io/rados/RadosPersistentKeyValue.h
 io/rados/RadosAttributes.cc
 io/rados/RadosAttributes.h
 io/rados/RadosException.cc

@@ -34,16 +34,26 @@ CASE("RadosKeyValue") {
     std::string key = "key";
     std::string val = "abcdefghijklmnopqrstuvwxyz";
 
-    RadosPool pool("mars");
+    std::string key2 = "key2";
+    std::string val2 = "zyxwvutsrqponmlkjihgfedcba";
+
+    RadosPool pool("kv_tests");
     /// @todo: auto pool destroyer
     pool.ensureCreated();
 
     RadosKeyValue kv(pool.name(), "default", "foobar");
 
+    // create
+    EXPECT_NOT(kv.exists());
+    kv.ensureCreated();
+    EXPECT(kv.exists());
+
     // put
     long res;
     res = kv.put(key, val.c_str(), val.size());
     EXPECT(res == val.size());
+    res = kv.put(key2, val2.c_str(), val2.size());
+    EXPECT(res == val2.size());
 
     // get
     char read_val[100] = "";
@@ -53,11 +63,18 @@ CASE("RadosKeyValue") {
 
     // list keys
     std::vector<std::string> keys = kv.keys();
-    EXPECT(keys.size() == 1);
+    EXPECT(keys.size() == 2);
     EXPECT(keys.front() == key);
+    EXPECT(keys.back() == key2);
+
+    // has
+    EXPECT(kv.has(key));
+    EXPECT(kv.has(key2));
+    EXPECT_NOT(kv.has("key3"));
 
     // remove
     kv.remove(key);
+    kv.remove(key2);
 
     // get non-existing key
     EXPECT_THROWS_AS(kv.get(key, read_val, sizeof(read_val)), eckit::RadosEntityNotFoundException);
@@ -68,7 +85,9 @@ CASE("RadosKeyValue") {
     EXPECT(keys.size() == 0);
 
     // destroy kv
+    EXPECT(kv.exists());
     kv.ensureDestroyed();
+    EXPECT_NOT(kv.exists());
 
     pool.destroy();
 

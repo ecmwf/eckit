@@ -14,6 +14,8 @@
 #pragma once
 
 #include "eckit/filesystem/URI.h"
+#include "eckit/serialisation/MemoryStream.h"
+
 #include "eckit/io/rados/RadosNamespace.h"
 
 namespace eckit {
@@ -33,16 +35,27 @@ public: // methods
     std::string str() const;
     bool exists() const;
 
+    void ensureCreated();
     void ensureDestroyed();
 
-    eckit::Length size(const std::string& key);
-    bool has(const std::string& key);
+    eckit::Length size(const std::string& key) const;
+    bool has(const std::string& key) const;
     long put(const std::string& key, const void*, const long&);
-    long get(const std::string& key, void*, const long&);
+    long get(const std::string& key, void*, const long&) const;
+    eckit::MemoryStream getMemoryStream(std::vector<char>& v, const std::string& key, const std::string& kvTitle) const;
     void remove(const std::string& key);
-    std::vector<std::string> keys(int keysPerQuery = 1000);
+    std::vector<std::string> keys(int keysPerQuery = 1000) const;
 
-private:
+protected: // methods
+
+    std::unique_ptr<eckit::RadosAIO> ensureCreated(bool ensure_persisted);
+    std::unique_ptr<eckit::RadosAIO> put(const std::string& key, const void* buf, const long& buflen, long& res, bool ensure_persisted);
+    std::unique_ptr<eckit::RadosAIO> remove(const std::string& key, bool ensure_persisted);
+
+private: // methods
+    std::unique_ptr<eckit::RadosIter> get(const std::string& key, char*& val, size_t& len) const;
+
+private: // members
     eckit::RadosNamespace ns_;
     std::string oid_;
 

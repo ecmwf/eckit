@@ -38,6 +38,46 @@ bool RadosKeyValue::exists() const {
     return eckit::RadosCluster::instance().exists(*this);
 }
 
+std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreated(bool ensure_persisted) {
+
+    eckit::RadosWriteOp op{};
+
+    rados_write_op_create(
+        op.op_, 
+        LIBRADOS_CREATE_IDEMPOTENT, 
+        NULL
+    );
+
+    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
+    std::unique_ptr<RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
+
+    RADOS_CALL(
+        rados_aio_write_op_operate(
+            op.op_, 
+            ctx, 
+            comp->comp_, 
+            name().c_str(), 
+            NULL, 
+            0  /// @note: flags
+        )
+    );
+
+    if (ensure_persisted) {
+        RADOS_CALL(rados_aio_wait_for_safe(comp->comp_));
+    } else {
+        RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    }
+
+    return comp;
+
+}
+
+void RadosKeyValue::ensureCreated() {
+
+    auto res = ensureCreated(false);
+
+}
+
 void RadosKeyValue::ensureDestroyed() {
 
     try {
@@ -48,61 +88,16 @@ void RadosKeyValue::ensureDestroyed() {
 
 }
 
-eckit::Length RadosKeyValue::size(const std::string& key) {
+eckit::Length RadosKeyValue::size(const std::string& key) const {
 
     NOTIMP;
     /// @note: not implemented as it would require retrieving the actual value 
     ///   with a read_op_omap_get_vals_by_keys2 call. Better force the user code
-    ///   to use get with an oversized buffer.
+    ///   to use the available get methods.
 
 }
 
-bool RadosKeyValue::has(const std::string& key) {
-
-    NOTIMP;
-    /// @note: can be implemented with rados_read_op_omap_get_keys2, as in list()
-    
-}
-
-long RadosKeyValue::put(const std::string& key, const void* buf, const long& len) {
-
-    eckit::RadosWriteOp op{};
-
-    const char *key_c = key.c_str();
-    size_t key_len = key.size();
-    size_t val_len = len;
-
-    rados_write_op_omap_set2(
-        op.op_, 
-        (char const * const *) &(key_c), 
-        (char const * const *) &(buf), 
-        &(key_len), 
-        &(val_len), 
-        1  /// @note: number of keys/values provided
-    );
-
-    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
-    eckit::RadosAIO comp{};
-
-    RADOS_CALL(
-        rados_aio_write_op_operate(
-            op.op_, 
-            ctx, 
-            comp.comp_, 
-            name().c_str(), 
-            NULL, 
-            0  /// @note: flags
-        )
-    );
-
-    RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
-    // RADOS_CALL(rados_aio_wait_for_safe(comp.comp_));
-
-    return len;
-
-}
-
-long RadosKeyValue::get(const std::string& key, void* buf, const long& len) { 
+bool RadosKeyValue::has(const std::string& key) const {
 
     eckit::RadosReadOp op{};
 
@@ -139,22 +134,126 @@ long RadosKeyValue::get(const std::string& key, void* buf, const long& len) {
 
     ASSERT(rc == 0);
 
-    if (rados_omap_iter_size(iter.it_) != 1)
+    return (rados_omap_iter_size(iter.it_) == 1);
+
+}
+
+std::unique_ptr<eckit::RadosAIO> RadosKeyValue::put(const std::string& key, const void* buf, const long& buflen, long& res, bool ensure_persisted) {
+
+    eckit::RadosWriteOp op{};
+
+    const char *key_c = key.c_str();
+    size_t key_len = key.size();
+    size_t val_len = buflen;
+
+    rados_write_op_omap_set2(
+        op.op_, 
+        (char const * const *) &(key_c), 
+        (char const * const *) &(buf), 
+        &(key_len), 
+        &(val_len), 
+        1  /// @note: number of keys/values provided
+    );
+
+    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
+    std::unique_ptr<eckit::RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
+
+    RADOS_CALL(
+        rados_aio_write_op_operate(
+            op.op_, 
+            ctx, 
+            comp->comp_, 
+            name().c_str(), 
+            NULL, 
+            0  /// @note: flags
+        )
+    );
+
+    if (ensure_persisted) {
+        RADOS_CALL(rados_aio_wait_for_safe(comp->comp_));
+    } else {
+        RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    }
+
+    res = buflen;
+
+    return comp;
+
+}
+
+long RadosKeyValue::put(const std::string& key, const void* buf, const long& len) {
+
+    long res;
+
+    put(key, buf, len, res, false);
+
+    return res;
+
+}
+
+/// @note: returns a RadosIter holding the value data, and sets val to point to the data in it
+std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, char*& val, size_t& len) const { 
+
+    eckit::RadosReadOp op{};
+
+    std::unique_ptr<eckit::RadosIter> iter = std::make_unique<eckit::RadosIter>();
+
+    const char *key_c = key.c_str();
+    size_t key_len = key.size();
+
+    int rc;
+
+    rados_read_op_omap_get_vals_by_keys2(
+        op.op_,
+        (char const * const *) &(key_c), 
+        1,  /// @note: number of keys/values requested
+        &(key_len), 
+        &(iter->it_),
+        &rc
+    );
+
+    rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
+    eckit::RadosAIO comp{};
+
+    RADOS_CALL(
+        rados_aio_read_op_operate(
+            op.op_, 
+            ctx, 
+            comp.comp_, 
+            name().c_str(),
+            0  /// @note: flags
+        )
+    );
+
+    RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
+
+    ASSERT(rc == 0);
+
+    if (rados_omap_iter_size(iter->it_) != 1)
         throw eckit::RadosEntityNotFoundException("Key '" + key + "' not found in KeyValue with name " + oid_);
 
     char *found_key;
-    char *found_val;
     size_t found_key_len;
-    size_t found_val_len;
 
-    RADOS_CALL(rados_omap_get_next2(iter.it_, &found_key, &found_val, &found_key_len, &found_val_len));
+    RADOS_CALL(rados_omap_get_next2(iter->it_, &found_key, &val, &found_key_len, &len));
 
     ASSERT(found_key);
-    ASSERT(found_val);
-    ASSERT(found_val_len > 0);
-    ASSERT(found_val_len <= len);
+    ASSERT(val);
+    ASSERT(len > 0);
     ASSERT(key.size() == found_key_len);
     ASSERT(std::memcmp(key.c_str(), found_key, found_key_len) == 0);
+
+    return iter;
+
+}
+
+long RadosKeyValue::get(const std::string& key, void* buf, const long& len) const { 
+
+    char *found_val;
+    size_t found_val_len;
+    auto val_mem = get(key, found_val, found_val_len);
+
+    ASSERT(found_val_len <= len);
 
     std::memcpy(buf, found_val, found_val_len);
 
@@ -162,7 +261,20 @@ long RadosKeyValue::get(const std::string& key, void* buf, const long& len) {
 
 }
 
-void RadosKeyValue::remove(const std::string& key) {
+eckit::MemoryStream RadosKeyValue::getMemoryStream(std::vector<char>& v, const std::string& key, const std::string& kvTitle) const {
+
+    char *found_val;
+    size_t found_val_len;
+    auto val_mem = get(key, found_val, found_val_len);
+
+    v.resize(found_val_len);
+    std::memcpy(&v[0], found_val, found_val_len);
+
+    return eckit::MemoryStream(&v[0], found_val_len);
+
+}
+
+std::unique_ptr<eckit::RadosAIO> RadosKeyValue::remove(const std::string& key, bool ensure_persisted) {
 
     eckit::RadosWriteOp op{};
 
@@ -177,25 +289,36 @@ void RadosKeyValue::remove(const std::string& key) {
     );
 
     rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
-    eckit::RadosAIO comp{};
+    std::unique_ptr<eckit::RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
     RADOS_CALL(
         rados_aio_write_op_operate(
             op.op_, 
             ctx, 
-            comp.comp_, 
+            comp->comp_, 
             name().c_str(), 
             NULL, 
             0  /// @note: flags
         )
     );
 
-    RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
-    // RADOS_CALL(rados_aio_wait_for_safe(comp.comp_));
+    if (ensure_persisted) {
+        RADOS_CALL(rados_aio_wait_for_safe(comp->comp_));
+    } else {
+        RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    }
+
+    return comp;
 
 }
 
-std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) {
+void RadosKeyValue::remove(const std::string& key) {
+
+    remove(key, false);
+
+}
+
+std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
 
     std::vector<std::string> res;
 
@@ -238,17 +361,17 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) {
         char *key;
         size_t key_len;
 
-        RADOS_CALL(
-            rados_omap_get_next2(
-                iter.it_, 
-                &key, 
-                NULL,  /// @note: where to store the value
-                &key_len, 
-                NULL  /// @note: where to store the value length
-            )
-        );
-
         for (int i = 0; i < rados_omap_iter_size(iter.it_); ++i) {
+
+            RADOS_CALL(
+                rados_omap_get_next2(
+                    iter.it_, 
+                    &key, 
+                    NULL,  /// @note: where to store the value
+                    &key_len, 
+                    NULL  /// @note: where to store the value length
+                )
+            );
 
             res.push_back(std::string(key, key + key_len));
 

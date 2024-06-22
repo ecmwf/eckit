@@ -18,6 +18,7 @@
 #include <cstdint>
 #include <tuple>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
@@ -277,6 +278,8 @@ size_t HEALPix::nj() const {
 
 
 Spec* HEALPix::spec(const std::string& name) {
+    ASSERT(name.size() > 1 && (name[0] == 'h' || name[0] == 'H'));
+
     auto Nside = Translator<std::string, size_t>{}(name.substr(1));
     return new spec::Custom({{"type", "HEALPix"}, {"Nside", Nside}, {"ordering", "ring"}});
 }

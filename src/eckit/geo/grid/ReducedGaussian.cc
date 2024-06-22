@@ -134,6 +134,8 @@ Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
 
 struct ReducedGaussianClassical {
     static Spec* spec(const std::string& name) {
+        ASSERT(name.size() > 1 && (name[0] == 'n' || name[0] == 'N'));
+
         auto N = Translator<std::string, size_t>{}(name.substr(1));
         return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
     }
@@ -142,6 +144,8 @@ struct ReducedGaussianClassical {
 
 struct ReducedGaussianOctahedral {
     static Spec* spec(const std::string& name) {
+        ASSERT(name.size() > 1 && (name[0] == 'o' || name[0] == 'O'));
+
         auto N = Translator<std::string, size_t>{}(name.substr(1));
         return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_octahedral_pl(N)}});
     }

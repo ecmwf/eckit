@@ -43,6 +43,8 @@ Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
 
 
 Spec* RegularGaussian::spec(const std::string& name) {
+    ASSERT(name.size() > 1 && (name[0] == 'f' || name[0] == 'F'));
+
     auto N = Translator<std::string, size_t>{}(name.substr(1));
     return new spec::Custom({{"type", "regular_gg"}, {"N", N}});
 }

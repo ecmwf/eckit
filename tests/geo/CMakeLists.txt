@@ -70,7 +70,7 @@ ecbuild_add_test(
 set_tests_properties(
     eckit_test_geo_tool_grid_spec_1_1
     PROPERTIES
-    PASS_REGULAR_EXPRESSION [=[{"grid":\[1,1\],"shape":\[360,181\]}]=] )
+    PASS_REGULAR_EXPRESSION [=[{"grid":\[1,1\]}]=] )
 
 ecbuild_add_test(
     TARGET  eckit_test_geo_tool_grid_spec_025_01
@@ -79,5 +79,5 @@ ecbuild_add_test(
 set_tests_properties(
     eckit_test_geo_tool_grid_spec_025_01
     PROPERTIES
-    PASS_REGULAR_EXPRESSION [=[{"grid":\[0\.25,0\.1\],"shape":\[1440,1801\]}]=] )
+    PASS_REGULAR_EXPRESSION [=[{"grid":\[0\.25,0\.1\]}]=] )
 

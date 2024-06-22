@@ -62,8 +62,6 @@ Regular::Regular(std::pair<Range*, Range*> xy, const area::BoundingBox& bbox) :
 
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
-
-    custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
 }
 
 

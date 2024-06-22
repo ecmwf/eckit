@@ -54,6 +54,7 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
     custom.set("grid", std::vector<double>{dx(), dy()});
+    custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
     custom.set("first_lonlat", std::vector<double>{first_lonlat.lon, first_lonlat.lat});
 }
 

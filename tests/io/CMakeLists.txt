@@ -72,13 +72,15 @@ ecbuild_add_test( TARGET      eckit_test_radoshandle
                   SOURCES     test_radoshandle.cc
                   CONDITION   HAVE_RADOS
                   INCLUDES    ${RADOS_INCLUDE_DIRS}
-                  LIBS        eckit )
+                  LIBS        eckit
+                  ENVIRONMENT ECKIT_RADOS_TEST_POOL=${ECKIT_RADOS_TEST_POOL} )
 
 ecbuild_add_test( TARGET      eckit_test_rados_kv
                   SOURCES     test_rados_kv.cc
                   CONDITION   HAVE_RADOS
                   INCLUDES    ${RADOS_INCLUDE_DIRS}
-                  LIBS        eckit )
+                  LIBS        eckit
+                  ENVIRONMENT ECKIT_RADOS_TEST_POOL=${ECKIT_RADOS_TEST_POOL} )
 
 ecbuild_add_test( TARGET      eckit_rados-performance
                   SOURCES     rados-performance.cc

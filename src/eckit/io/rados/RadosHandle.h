@@ -10,6 +10,7 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
+/// @author Nicolau Manubens
 /// @date   June 2019
 
 #pragma once

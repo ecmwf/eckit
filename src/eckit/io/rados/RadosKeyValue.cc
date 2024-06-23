@@ -38,7 +38,7 @@ bool RadosKeyValue::exists() const {
     return eckit::RadosCluster::instance().exists(*this);
 }
 
-std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreated(bool ensure_persisted) {
+std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() {
 
     eckit::RadosWriteOp op{};
 
@@ -62,19 +62,15 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreated(bool ensure_persis
         )
     );
 
-    if (ensure_persisted) {
-        RADOS_CALL(rados_aio_wait_for_safe(comp->comp_));
-    } else {
-        RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
-    }
-
     return comp;
 
 }
 
 void RadosKeyValue::ensureCreated() {
 
-    auto res = ensureCreated(false);
+    auto comp = ensureCreatedAsync();
+
+    RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
 
 }
 
@@ -138,7 +134,7 @@ bool RadosKeyValue::has(const std::string& key) const {
 
 }
 
-std::unique_ptr<eckit::RadosAIO> RadosKeyValue::put(const std::string& key, const void* buf, const long& buflen, long& res, bool ensure_persisted) {
+std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key, const void* buf, const long& buflen, long& res) {
 
     eckit::RadosWriteOp op{};
 
@@ -169,12 +165,6 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::put(const std::string& key, cons
         )
     );
 
-    if (ensure_persisted) {
-        RADOS_CALL(rados_aio_wait_for_safe(comp->comp_));
-    } else {
-        RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
-    }
-
     res = buflen;
 
     return comp;
@@ -185,7 +175,9 @@ long RadosKeyValue::put(const std::string& key, const void* buf, const long& len
 
     long res;
 
-    put(key, buf, len, res, false);
+    auto comp = putAsync(key, buf, len, res);
+
+    RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
 
     return res;
 
@@ -274,7 +266,7 @@ eckit::MemoryStream RadosKeyValue::getMemoryStream(std::vector<char>& v, const s
 
 }
 
-std::unique_ptr<eckit::RadosAIO> RadosKeyValue::remove(const std::string& key, bool ensure_persisted) {
+std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& key) {
 
     eckit::RadosWriteOp op{};
 
@@ -302,19 +294,15 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::remove(const std::string& key, b
         )
     );
 
-    if (ensure_persisted) {
-        RADOS_CALL(rados_aio_wait_for_safe(comp->comp_));
-    } else {
-        RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
-    }
-
     return comp;
 
 }
 
 void RadosKeyValue::remove(const std::string& key) {
 
-    remove(key, false);
+    auto comp = removeAsync(key);
+
+    RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
 
 }
 

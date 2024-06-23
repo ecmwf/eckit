@@ -15,7 +15,7 @@
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosPersistentHandle.h"
+#include "eckit/io/rados/RadosAsyncHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 
 
@@ -46,9 +46,9 @@ void RadosMultiObjWriteHandle::print(std::ostream& s) const {
 //     }
 // }
 
-RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::RadosObject& obj, bool persistent, 
+RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::RadosObject& obj, bool async, 
     const Length& maxObjectSize, size_t maxAioBuffSize, size_t maxHandleBuffSize) : 
-    object_(obj), persistent_(persistent), maxObjectSize_(maxObjectSize), 
+    object_(obj), async_(async), maxObjectSize_(maxObjectSize), 
     maxAioBuffSize_(maxAioBuffSize), maxHandleBuffSize_(maxHandleBuffSize), opened_(false) {
 
     if (!maxObjectSize_) {
@@ -75,9 +75,9 @@ void RadosMultiObjWriteHandle::openForWrite(const Length& length) {
     part_     = 0;
     opened_   = true;
 
-    /// @note: if the RadosMultiObjWriteHandle is configured to be persistent (via bool persistent),
+    /// @note: if the RadosMultiObjWriteHandle is configured to be async (via bool async),
     ///   a vector of open handles will be kept until flush or close.
-    ///   If it is configured to not be persistent, a single handle will be kept in the handles_ vector.
+    ///   If it is configured to not be async, a single handle will be kept in the handles_ vector.
     ///   Either way, the algorithm requires that the vector is initialised with an empty unique_ptr.
     handles_.push_back(std::unique_ptr<DataHandle>(nullptr));
 
@@ -113,7 +113,7 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
 
         if (l == 0) {
             ASSERT(handles_.back());
-            if (!persistent_) {
+            if (!async_) {
                 handles_.back()->close();
                 handles_.back().reset(0);
             } else {
@@ -130,8 +130,8 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
 
             RadosObject object(object_, part_++);
             std::cout << "RadosMultiObjWriteHandle::write open " << object.str() << std::endl;
-            if (persistent_) {
-                handles_.back().reset(new RadosPersistentHandle(object, false, maxAioBuffSize_));
+            if (async_) {
+                handles_.back().reset(new RadosAsyncHandle(object, maxAioBuffSize_));
             } else {
                 handles_.back().reset(new RadosHandle(object));
             }

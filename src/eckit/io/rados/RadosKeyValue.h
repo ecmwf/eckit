@@ -48,9 +48,9 @@ public: // methods
 
 protected: // methods
 
-    std::unique_ptr<eckit::RadosAIO> ensureCreated(bool ensure_persisted);
-    std::unique_ptr<eckit::RadosAIO> put(const std::string& key, const void* buf, const long& buflen, long& res, bool ensure_persisted);
-    std::unique_ptr<eckit::RadosAIO> remove(const std::string& key, bool ensure_persisted);
+    std::unique_ptr<eckit::RadosAIO> ensureCreatedAsync();
+    std::unique_ptr<eckit::RadosAIO> putAsync(const std::string& key, const void* buf, const long& buflen, long& res);
+    std::unique_ptr<eckit::RadosAIO> removeAsync(const std::string& key);
 
 private: // methods
     std::unique_ptr<eckit::RadosIter> get(const std::string& key, char*& val, size_t& len) const;

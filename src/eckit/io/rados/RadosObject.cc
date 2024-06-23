@@ -11,7 +11,7 @@
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosPersistentHandle.h"
+#include "eckit/io/rados/RadosAsyncHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/PartHandle.h"
@@ -96,9 +96,9 @@ eckit::DataHandle* RadosObject::dataHandle() const {
 
 }
 
-eckit::DataHandle* RadosObject::persistentDataHandle(bool persist_on_write, size_t maxAioBuffSize) const {
+eckit::DataHandle* RadosObject::asyncDataHandle(size_t maxAioBuffSize) const {
 
-    return new eckit::RadosPersistentHandle(*this, persist_on_write, maxAioBuffSize);
+    return new eckit::RadosAsyncHandle(*this, maxAioBuffSize);
 
 }
 
@@ -114,7 +114,7 @@ eckit::DataHandle* RadosObject::multipartWriteHandle(const eckit::Length& maxObj
 
 }
 
-eckit::DataHandle* RadosObject::persistentMultipartWriteHandle(const eckit::Length& maxObjectSize, 
+eckit::DataHandle* RadosObject::asyncMultipartWriteHandle(const eckit::Length& maxObjectSize, 
     size_t maxAioBuffSize, size_t maxHandleBuffSize) const {
 
     return new eckit::RadosMultiObjWriteHandle(*this, true, maxObjectSize, maxAioBuffSize, maxHandleBuffSize);

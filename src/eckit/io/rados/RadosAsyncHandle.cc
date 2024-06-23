@@ -8,19 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/io/rados/RadosPersistentHandle.h"
-// #include "eckit/exception/Exceptions.h"
+#include "eckit/io/rados/RadosAsyncHandle.h"
 
 namespace eckit {
 
-RadosPersistentHandle::RadosPersistentHandle(const RadosObject& object, bool persist_on_write, size_t maxAioBuffSize) :
-    RadosHandle(object), persist_on_write_(persist_on_write), maxAioBuffSize_(maxAioBuffSize) {}
+RadosAsyncHandle::RadosAsyncHandle(const RadosObject& object, size_t maxAioBuffSize) :
+    RadosHandle(object), maxAioBuffSize_(maxAioBuffSize) {}
 
-void RadosPersistentHandle::print(std::ostream& s) const {
-    s << "RadosPersistentHandle[" << object_.str() << ";";
+void RadosAsyncHandle::print(std::ostream& s) const {
+    s << "RadosAsyncHandle[" << object_.str() << ";";
 }
 
-long RadosPersistentHandle::write(const void* buffer, long length) {
+long RadosAsyncHandle::write(const void* buffer, long length) {
 
     ASSERT(length);
     ASSERT(opened_);
@@ -44,13 +43,6 @@ long RadosPersistentHandle::write(const void* buffer, long length) {
             )
         );
 
-        if (persist_on_write_) {
-            RADOS_CALL(rados_aio_wait_for_safe(comps_.back()->comp_));
-            comps_.pop_back();
-        } else {
-            RADOS_CALL(rados_aio_wait_for_complete(comps_.back()->comp_));
-        } 
-
         first_write_ = false;
 
     } else {
@@ -64,13 +56,6 @@ long RadosPersistentHandle::write(const void* buffer, long length) {
                 length, offset_
             )
         );
-        
-        if (persist_on_write_) {
-            RADOS_CALL(rados_aio_wait_for_safe(comps_.back()->comp_));
-            comps_.pop_back();
-        } else {
-            RADOS_CALL(rados_aio_wait_for_complete(comps_.back()->comp_));
-        }
 
     }
 
@@ -80,14 +65,12 @@ long RadosPersistentHandle::write(const void* buffer, long length) {
 
 }
 
-void RadosPersistentHandle::flush() {
-
-    if (persist_on_write_) return;
+void RadosAsyncHandle::flush() {
 
     /// @note: not correct! aio_flush waits for safe on all AIOs for an IoCtx for an entire pool/namespace
-    ///   where AIOs from multiple RadosPersistentHandles (belonging to a same process) for 
+    ///   where AIOs from multiple RadosAsyncHandles (belonging to a same process) for 
     ///   objects on the same pool could be ongoing.
-    ///   Alternative: wait_for_safe on each AIO in comps_.
+    ///   Alternative: wait_for_complete on each AIO in comps_.
     ///   Alternative: have an IoCtx for each application in RadosCluster
     ///   Alternative: call rados_aio_flush in RadosStore::flush for all IoCtx for all open handles.
     ///     Since they all ??must belong to a same pool and namespace?? a single aio_flush should suffice?
@@ -95,16 +78,14 @@ void RadosPersistentHandle::flush() {
     // comps_.clear();
 
     for (const auto& comp : comps_)
-        RADOS_CALL(rados_aio_wait_for_safe(comp->comp_));
+        RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
     comps_.clear();
 
 }
 
-void RadosPersistentHandle::close() {
+void RadosAsyncHandle::close() {
 
     RadosHandle::close();
-
-    if (persist_on_write_) ASSERT(comps_.size() == 0);
 
     comps_.clear();
 

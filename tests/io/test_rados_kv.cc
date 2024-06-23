@@ -10,6 +10,9 @@
 
 // #include <cstring>
 
+#include "eckit/eckit_config.h"
+#include "eckit/config/Resource.h"
+
 // #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosKeyValue.h"
 // #include "eckit/io/rados/RadosHandle.h"
@@ -29,67 +32,88 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("RadosKeyValue") {
+CASE("Rados KeyValue") {
 
-    std::string key = "key";
-    std::string val = "abcdefghijklmnopqrstuvwxyz";
-
-    std::string key2 = "key2";
-    std::string val2 = "zyxwvutsrqponmlkjihgfedcba";
-
-    RadosPool pool("kv_tests");
-    /// @todo: auto pool destroyer
+#ifdef eckit_HAVE_RADOS_ADMIN
+    std::string pool_name = "test_kv";
+    std::string nspace = "default";
+    RadosPool pool(pool_name);
+    pool.ensureDestroyed();
     pool.ensureCreated();
+#else
+    std::string pool_name;
+    std::string nspace = "test_kv";
+    pool_name = eckit::Resource<std::string>(
+        "eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name
+    );
+    EXPECT(pool_name.length() > 0);
+    RadosPool pool(pool_name);
+#endif
 
-    RadosKeyValue kv(pool.name(), "default", "foobar");
+    SECTION("RadosKeyValue operations") {
+            
+        std::string key = "key";
+        std::string val = "abcdefghijklmnopqrstuvwxyz";
 
-    // create
-    EXPECT_NOT(kv.exists());
-    kv.ensureCreated();
-    EXPECT(kv.exists());
+        std::string key2 = "key2";
+        std::string val2 = "zyxwvutsrqponmlkjihgfedcba";
 
-    // put
-    long res;
-    res = kv.put(key, val.c_str(), val.size());
-    EXPECT(res == val.size());
-    res = kv.put(key2, val2.c_str(), val2.size());
-    EXPECT(res == val2.size());
+        RadosKeyValue kv(pool.name(), "default", "foobar");
 
-    // get
-    char read_val[100] = "";
-    res = kv.get(key, read_val, sizeof(read_val));
-    EXPECT(res == val.size());
-    EXPECT(std::string(read_val) == val);
+        // create
+        EXPECT_NOT(kv.exists());
+        kv.ensureCreated();
+        EXPECT(kv.exists());
 
-    // list keys
-    std::vector<std::string> keys = kv.keys();
-    EXPECT(keys.size() == 2);
-    EXPECT(keys.front() == key);
-    EXPECT(keys.back() == key2);
+        // put
+        long res;
+        res = kv.put(key, val.c_str(), val.size());
+        EXPECT(res == val.size());
+        res = kv.put(key2, val2.c_str(), val2.size());
+        EXPECT(res == val2.size());
 
-    // has
-    EXPECT(kv.has(key));
-    EXPECT(kv.has(key2));
-    EXPECT_NOT(kv.has("key3"));
+        // get
+        char read_val[100] = "";
+        res = kv.get(key, read_val, sizeof(read_val));
+        EXPECT(res == val.size());
+        EXPECT(std::string(read_val) == val);
 
-    // remove
-    kv.remove(key);
-    kv.remove(key2);
+        // list keys
+        std::vector<std::string> keys = kv.keys();
+        EXPECT(keys.size() == 2);
+        EXPECT(keys.front() == key);
+        EXPECT(keys.back() == key2);
 
-    // get non-existing key
-    EXPECT_THROWS_AS(kv.get(key, read_val, sizeof(read_val)), eckit::RadosEntityNotFoundException);
+        // has
+        EXPECT(kv.has(key));
+        EXPECT(kv.has(key2));
+        EXPECT_NOT(kv.has("key3"));
 
-    // list keys for empty kv
-    keys.clear();
-    keys = kv.keys();
-    EXPECT(keys.size() == 0);
+        // remove
+        kv.remove(key);
+        kv.remove(key2);
 
-    // destroy kv
-    EXPECT(kv.exists());
-    kv.ensureDestroyed();
-    EXPECT_NOT(kv.exists());
+        // get non-existing key
+        EXPECT_THROWS_AS(kv.get(key, read_val, sizeof(read_val)), eckit::RadosEntityNotFoundException);
 
+        // list keys for empty kv
+        keys.clear();
+        keys = kv.keys();
+        EXPECT(keys.size() == 0);
+
+        // destroy kv
+        EXPECT(kv.exists());
+        kv.ensureDestroyed();
+        EXPECT_NOT(kv.exists());
+
+    }
+
+#ifdef eckit_HAVE_RADOS_ADMIN
     pool.destroy();
+#else
+    RadosNamespace ns(pool_name, nspace);
+    ns.destroy();
+#endif
 
 }
 

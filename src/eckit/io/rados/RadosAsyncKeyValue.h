@@ -19,12 +19,12 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class RadosPersistentKeyValue : public RadosKeyValue {
+class RadosAsyncKeyValue : public RadosKeyValue {
 
 public: // methods
 
-    RadosPersistentKeyValue(const eckit::URI&, bool persist_on_write = false, size_t maxAioBuffSize = 1024 * 1024);
-    RadosPersistentKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid, bool persist_on_write = false, size_t maxAioBuffSize = 1024 * 1024);
+    RadosAsyncKeyValue(const eckit::URI&, size_t maxAioBuffSize = 1024 * 1024);
+    RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid, size_t maxAioBuffSize = 1024 * 1024);
 
     void ensureCreated();
     /// @todo:
@@ -39,7 +39,6 @@ private: // members
 
     std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
 
-    bool persist_on_write_;
     size_t maxAioBuffSize_;
 
 };

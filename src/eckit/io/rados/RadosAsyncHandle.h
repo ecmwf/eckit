@@ -13,47 +13,31 @@
 
 #pragma once
 
-// #include <memory>
-
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
-/// @note: persists writes on flush by default, or on every write if requested
+/// @note: ensures writes are persisted on flush
 
-class RadosPersistentHandle : public eckit::RadosHandle {
-
-public:  // methods
-    RadosPersistentHandle(const RadosObject&, bool persist_on_write = false, size_t maxAioBuffSize = 1024 * 1024);
-
-    // ~RadosPersistentHandle() override;
+class RadosAsyncHandle : public eckit::RadosHandle {
 
 public:  // methods
-    // Length openForRead() override;
-    // void openForWrite(const Length&) override;
-    // void openForAppend(const Length&) override;
 
-    // long read(void*, long) override;
+    RadosAsyncHandle(const RadosObject&, size_t maxAioBuffSize = 1024 * 1024);
+
+public:  // methods
+
     long write(const void*, long) override;
     void close() override;
     void flush() override;
-    // void rewind() override;
-
-    // Length size() override { return len_; }
-    // Length estimate() override { return size(); }
-    // Offset position() override { return offset_; }
-    // Offset seek(const Offset&) override;
-    // virtual bool canSeek() const override { return true; }
 
     void print(std::ostream&) const override;
 
 private:  // members
 
     std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
-
-    bool persist_on_write_;
     size_t maxAioBuffSize_;
 
 };

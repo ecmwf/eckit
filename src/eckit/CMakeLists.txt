@@ -279,8 +279,8 @@ io/rados/RadosMultiObjReadHandle.cc
 io/rados/RadosMultiObjReadHandle.h
 io/rados/RadosMultiObjWriteHandle.cc
 io/rados/RadosMultiObjWriteHandle.h
-io/rados/RadosPersistentHandle.cc
-io/rados/RadosPersistentHandle.h
+io/rados/RadosAsyncHandle.cc
+io/rados/RadosAsyncHandle.h
 io/rados/RadosNamespace.cc
 io/rados/RadosNamespace.h
 io/rados/RadosPool.cc
@@ -289,8 +289,8 @@ io/rados/RadosObject.cc
 io/rados/RadosObject.h
 io/rados/RadosKeyValue.cc
 io/rados/RadosKeyValue.h
-io/rados/RadosPersistentKeyValue.cc
-io/rados/RadosPersistentKeyValue.h
+io/rados/RadosAsyncKeyValue.cc
+io/rados/RadosAsyncKeyValue.h
 io/rados/RadosAttributes.cc
 io/rados/RadosAttributes.h
 io/rados/RadosException.cc

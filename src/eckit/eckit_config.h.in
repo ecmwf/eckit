@@ -56,6 +56,8 @@
 #cmakedefine01 eckit_HAVE_ECKIT_SQL
 #cmakedefine01 eckit_HAVE_ECKIT_MPI
 
+#cmakedefine eckit_HAVE_RADOS_ADMIN
+
 // Backward compatibility with atlas < 0.30.0
 // Its use will be removed with ATLAS-367.
 #define ECKIT_HAVE_MKL         @eckit_HAVE_MKL@

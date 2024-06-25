@@ -33,8 +33,9 @@ public:
 
     void create() const { return RadosCluster::instance().createPool(pool_); }
     void ensureCreated() const { return RadosCluster::instance().ensurePool(pool_); }
-    void destroy() const { return RadosCluster::instance().destroyPool(pool_); }
+    void destroy() const;
     void ensureDestroyed() const;
+    std::vector<std::string> listNamespaces() const { return RadosCluster::instance().listNamespaces(pool_); }
 
 private:  // methods
     friend class RadosNamespace;

@@ -71,6 +71,7 @@ public:
     void remove(const RadosKeyValue&) const;
 
     std::vector<std::string> listPools() const;
+    std::vector<std::string> listNamespaces(const std::string& pool) const;
     std::vector<std::string> listObjects(const std::string& pool, const std::string& nspace) const;
 
 

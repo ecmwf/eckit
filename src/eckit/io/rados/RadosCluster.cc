@@ -29,9 +29,16 @@ public:
         RADOS_CALL(rados_ioctx_create(cluster, pool.c_str(), &io_));
         std::cout << "RadosIOCtx <= rados_ioctx_create(" << pool << ")" << std::endl;
 
-        std::cout << "RadosIOCtx => rados_ioctx_set_namespace(" << nspace << ")" << std::endl;
-        rados_ioctx_set_namespace(io_, nspace.c_str());
-        std::cout << "RadosIOCtx <= rados_ioctx_set_namespace(" << nspace << ")" << std::endl;
+        std::string nspace_name = nspace;
+        if (nspace == "") nspace_name = "LIBRADOS_ALL_NSPACES";
+
+        std::cout << "RadosIOCtx => rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
+        if (nspace == "") {
+            rados_ioctx_set_namespace(io_, LIBRADOS_ALL_NSPACES);
+        } else {
+            rados_ioctx_set_namespace(io_, nspace.c_str());
+        }
+        std::cout << "RadosIOCtx <= rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
     }
 
     ~RadosIOCtx() {
@@ -94,7 +101,7 @@ RadosIter::~RadosIter() {
 //----------------------------------------------------------------------------------------------------------------------
 
 const RadosCluster& RadosCluster::instance() {
-    thread_local RadosCluster instance_;
+    static RadosCluster instance_;
     return instance_;
 }
 
@@ -411,6 +418,36 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
     rados_nobjects_list_close(listctx);
 
     return res;
+    
+}
+
+std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) const {
+
+    std::set<std::string> res;
+
+    rados_ioctx_t ioctx = ioCtx(pool, "");
+    rados_list_ctx_t listctx;
+    RADOS_CALL(rados_nobjects_list_open(ioctx, &listctx));
+
+    const char * entry;
+    // size_t entry_size;
+    const char * nspace;
+    // size_t nspace_size;
+    bool end = false;
+    do {
+        try {
+            // RADOS_CALL(rados_nobjects_list_next2(listctx, &entry, NULL, &nspace, &entry_size, NULL, &nspace_size));
+            RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, &nspace));
+            // res.insert(std::string(nspace, nspace_size));
+            res.insert(std::string(nspace));
+        } catch (eckit::RadosEntityNotFoundException& e) {
+            end = true;
+        }
+    } while(!end);
+
+    rados_nobjects_list_close(listctx);
+
+    return std::vector<std::string>(res.begin(), res.end());
     
 }
 

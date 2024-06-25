@@ -9,6 +9,7 @@
  */
 
 #include "eckit/io/rados/RadosPool.h"
+#include "eckit/io/rados/RadosNamespace.h"
 
 // #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
@@ -30,6 +31,15 @@ RadosPool::RadosPool(const eckit::URI& uri) {
 }
 
 RadosPool::RadosPool(const std::string& pool) : pool_(pool) {}
+
+void RadosPool::destroy() const {
+    /// @note: explicitly destroy every object in the pool, as rados_pool_delete
+    ///   returns before the objects are destroyed, which is done in the background
+    for (const auto& ns : listNamespaces()) {
+        eckit::RadosNamespace(pool_, ns).destroy();
+    }
+    return RadosCluster::instance().destroyPool(pool_);
+}
 
 void RadosPool::ensureDestroyed() const {
 

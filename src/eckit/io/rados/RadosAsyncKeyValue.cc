@@ -22,7 +22,7 @@ void RadosAsyncKeyValue::ensureCreated() {
 
     std::unique_ptr<eckit::RadosAIO> comp = RadosKeyValue::ensureCreatedAsync();
     ASSERT(comps_.size() < maxAioBuffSize_);
-    comps_.push_back(std::move(comp));
+    comps_.emplace_back(comp.release());
 
 }
 
@@ -32,7 +32,7 @@ long RadosAsyncKeyValue::put(const std::string& key, const void* buf, const long
 
     std::unique_ptr<eckit::RadosAIO> comp = RadosKeyValue::putAsync(key, buf, len, res);
     ASSERT(comps_.size() < maxAioBuffSize_);
-    comps_.push_back(std::move(comp));
+    comps_.emplace_back(comp.release());
 
     return res;
 
@@ -42,7 +42,7 @@ void RadosAsyncKeyValue::remove(const std::string& key) {
 
     std::unique_ptr<eckit::RadosAIO> comp = RadosKeyValue::removeAsync(key);
     ASSERT(comps_.size() < maxAioBuffSize_);
-    comps_.push_back(std::move(comp));
+    comps_.emplace_back(comp.release());
 
     return;
 

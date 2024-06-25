@@ -32,6 +32,11 @@ static const BoundingBox GLOBE_ANTIPRIME{90., -180., -90., 180.};
 static const BoundingBox& DEFAULT = GLOBE_PRIME;
 
 
+static inline bool is_approximately_equal(BoundingBox::value_type a, BoundingBox::value_type b) {
+    return types::is_approximately_equal(a, b, PointLonLat::EPS);
+}
+
+
 BoundingBox* BoundingBox::make_global_prime() {
     return new BoundingBox(GLOBE_PRIME);
 }
@@ -51,69 +56,81 @@ void BoundingBox::fill_spec(spec::Custom& custom) const {
 
 
 BoundingBox* BoundingBox::make_from_spec(const Spec& spec) {
-    const auto [n, w, s, e] = DEFAULT.deconstruct();
+    auto [n, w, s, e] = DEFAULT.deconstruct();
 
     if (std::vector<double> area{n, w, s, e}; spec.get("area", area)) {
         ASSERT_MSG(area.size() == 4, "BoundingBox: 'area' expected list of size 4");
-        return new BoundingBox{area[0], area[1], area[2], area[3]};
+        return make_from_area(area[0], area[1], area[2], area[3]);
     }
 
-    std::array<double, 4> area{n, w, s, e};
-    spec.get("north", area[0]);
-    spec.get("south", area[2]);
+    spec.get("north", n);
+    spec.get("south", s);
 
-    auto new_east = spec.get("west", area[1]) && !spec.has("east");
-    auto new_west = spec.get("east", area[3]) && !spec.has("west");
-    ASSERT(!new_east || !new_west);
+    if (spec.get("west", w) && !spec.has("east")) {
+        e = w + PointLonLat::FULL_ANGLE;
+    }
 
-    return new BoundingBox{area[0], new_west ? area[3] - 360. : area[1], area[2], new_east ? area[1] + 360. : area[3]};
+    if (spec.get("east", e) && !spec.has("west")) {
+        w = e - PointLonLat::FULL_ANGLE;
+    }
+
+    return make_from_area(n, w, s, e);
+}
+
+
+BoundingBox* BoundingBox::make_from_area(value_type n, value_type w, value_type s, value_type e) {
+    if (n > NORTH_POLE.lat || is_approximately_equal(n, NORTH_POLE.lat)) {
+        n = NORTH_POLE.lat;
+    }
+
+    if (s < SOUTH_POLE.lat || is_approximately_equal(s, SOUTH_POLE.lat)) {
+        s = SOUTH_POLE.lat;
+    }
+
+    if (is_approximately_equal(w, e)) {
+        w = PointLonLat::normalise_angle_to_minimum(w, 0.);
+        e = w;
+    }
+    else {
+        w = PointLonLat::normalise_angle_to_minimum(w, 0.);
+        e = PointLonLat::normalise_angle_to_minimum(e, w);
+        if (is_approximately_equal(w, e)) {
+            e = w + PointLonLat::FULL_ANGLE;
+        }
+    }
+
+    return new BoundingBox{n, w, s, e};
 }
 
 
 BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {}
 
 
-BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s, e} {
-    ASSERT_MSG(types::is_approximately_lesser_or_equal(-90., south), "BoundingBox: latitude range (-90 <= south)");
-    ASSERT_MSG(types::is_approximately_lesser_or_equal(south, north), "BoundingBox: latitude range (south <= north)");
-    ASSERT_MSG(types::is_approximately_lesser_or_equal(north, 90.), "BoundingBox: latitude range (north <= 90)");
-
-    if (!types::is_approximately_equal(west, east)) {
-        auto e        = PointLonLat::normalise_angle_to_minimum(east, west);
-        operator[](3) = types::is_approximately_equal(e, west) ? (e + 360.) : e;
-    }
-
-    ASSERT_MSG(types::is_approximately_lesser_or_equal(west, east), "BoundingBox: longitude range (west <= east)");
-    ASSERT_MSG(types::is_approximately_lesser_or_equal(east, west + 360.),
-               "BoundingBox: longitude range (east <= west + 360)");
-}
+BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s, e} {}
 
 
 BoundingBox::BoundingBox() : BoundingBox(DEFAULT) {}
 
 
-bool BoundingBox::operator==(const BoundingBox& other) const {
-    return types::is_approximately_equal(north, other.north, PointLonLat::EPS)
-           && types::is_approximately_equal(south, other.south, PointLonLat::EPS)
-           && types::is_approximately_equal(west, other.west, PointLonLat::EPS)
-           && types::is_approximately_equal(east, other.east, PointLonLat::EPS);
+bool BoundingBox::isGlobal() const {
+    return isPeriodicWestEast() && containsNorthPole() && containsSouthPole();
 }
 
 
 bool BoundingBox::isPeriodicWestEast() const {
-    return west != east
-           && types::is_approximately_equal(west, PointLonLat::normalise_angle_to_minimum(east, west),
-                                            PointLonLat::EPS);
+    return west != east && is_approximately_equal(west, PointLonLat::normalise_angle_to_minimum(east, west));
 }
 
 
 bool BoundingBox::containsNorthPole() const {
-    return types::is_approximately_equal(north, NORTH_POLE.lat, PointLonLat::EPS);
+    // NOTE: latitudes < -90 or > 90 are not considered
+    return is_approximately_equal(north, NORTH_POLE.lat);
 }
 
 
 bool BoundingBox::containsSouthPole() const {
-    return types::is_approximately_equal(south, SOUTH_POLE.lat, PointLonLat::EPS);
+    // NOTE: latitudes < -90 or > 90 are not considered
+    return is_approximately_equal(south, SOUTH_POLE.lat);
 }
 
 
@@ -186,12 +203,16 @@ bool BoundingBox::intersects(BoundingBox& other) const {
 
 
 bool BoundingBox::empty() const {
-    return types::is_approximately_equal(north, south) || types::is_approximately_equal(west, east);
+    return is_approximately_equal(north, south) || is_approximately_equal(west, east);
 }
 
 
-BoundingBox BoundingBox::calculate(const BoundingBox&, const Projection&) {
-    NOTIMP;
+bool bounding_box_equal(const BoundingBox& a, const BoundingBox& b) {
+    const std::unique_ptr<BoundingBox> c(BoundingBox::make_from_area(a.north, a.west, a.south, a.east));
+    const std::unique_ptr<BoundingBox> d(BoundingBox::make_from_area(b.north, b.west, b.south, b.east));
+
+    return is_approximately_equal(c->north, d->north) && is_approximately_equal(c->south, d->south)
+           && is_approximately_equal(c->west, d->west) && is_approximately_equal(c->east, d->east);
 }
 
 

@@ -73,6 +73,20 @@ CASE("assignment") {
 }
 
 
+CASE("comparison") {
+    area::BoundingBox a(10, 1, -10, 100);
+    area::BoundingBox b(20, 2, -20, 200);
+
+    EXPECT(!area::bounding_box_equal(a, b));
+
+    for (const auto& c : {a, b}) {
+        const area::BoundingBox d{c.north, c.west + 42 * PointLonLat::FULL_ANGLE, c.south,
+                                  c.east + 41 * PointLonLat::FULL_ANGLE};
+        EXPECT(area::bounding_box_equal(c, d));
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

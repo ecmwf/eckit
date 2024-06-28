@@ -10,6 +10,8 @@
  */
 
 
+#include <memory>
+
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/testing/Test.h"
 
@@ -32,48 +34,74 @@ CASE("latitude (checks)") {
 
 
 CASE("longitude (normalisation)") {
-    for (auto west : {-900, -720, -540, -360, -180, 0, 180, 360, 540, 720, 900}) {
+    for (double west : {-900, -720, -540, -360, -180, 0, 180, 360, 540, 720, 900}) {
         area::BoundingBox a(90, west, 90, west);
-        EXPECT_EQUAL(a.west, west);
 
-        area::BoundingBox b(90, west, 90, west - 1);
-        EXPECT_EQUAL(b.east, west + 360 - 1);
+        EXPECT_EQUAL(a.west, west);
+        EXPECT(a.empty());
+
+        area::BoundingBox b{90, west, -90, west - 1};
+        std::unique_ptr<area::BoundingBox> c(
+            area::BoundingBox::make_from_area(90, west + 42 * 360., -90, west - 42 * 360. - 1));
+
+        EXPECT(c->east == c->west + 360 - 1);
+        EXPECT(b == *c);
     }
 }
 
 
 CASE("assignment") {
     area::BoundingBox a(10, 1, -10, 100);
-
     area::BoundingBox b(20, 2, -20, 200);
+
     EXPECT_NOT_EQUAL(a.north, b.north);
     EXPECT_NOT_EQUAL(a, b);
 
     b = a;
+
     EXPECT_EQUAL(a.north, b.north);
     EXPECT_EQUAL(a, b);
 
     b = {30., b.west, b.south, b.east};
+
     EXPECT_EQUAL(b.north, 30);
     EXPECT_EQUAL(a.north, 10);
 
     area::BoundingBox c(a);
+
     EXPECT_EQUAL(a.north, c.north);
     EXPECT_EQUAL(a, c);
 
     c = {40., c.west, c.south, c.east};
+
     EXPECT_EQUAL(c.north, 40);
     EXPECT_EQUAL(a.north, 10);
 
     auto d(std::move(a));
+
     EXPECT_EQUAL(d.north, 10);
 
     d = {50., d.west, d.south, d.east};
+
     EXPECT_EQUAL(d.north, 50);
 }
 
 
 CASE("comparison") {
+    area::BoundingBox a(10, 1, -10, 100);
+    area::BoundingBox b(20, 2, -20, 200);
+
+    EXPECT(!area::bounding_box_equal(a, b));
+
+    for (const auto& c : {a, b}) {
+        const area::BoundingBox d{c.north, c.west + 42 * PointLonLat::FULL_ANGLE, c.south,
+                                  c.east + 41 * PointLonLat::FULL_ANGLE};
+        EXPECT(area::bounding_box_equal(c, d));
+    }
+}
+
+
+CASE("intersects") {
     area::BoundingBox a(10, 1, -10, 100);
     area::BoundingBox b(20, 2, -20, 200);
 

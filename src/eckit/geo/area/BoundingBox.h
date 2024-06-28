@@ -106,6 +106,8 @@ private:
 };
 
 
+constexpr PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST = -PointLonLat::FLAT_ANGLE;
+
 extern const BoundingBox BOUNDING_BOX_GLOBE_PRIME;
 extern const BoundingBox BOUNDING_BOX_GLOBE_ANTIPRIME;
 

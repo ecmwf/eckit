@@ -75,6 +75,7 @@ BoundingBox* BoundingBox::make_from_spec(const Spec& spec) {
 
 
 BoundingBox* BoundingBox::make_from_area(value_type n, value_type w, value_type s, value_type e) {
+    // set latitudes inside usual range (not a normalisation like PointLonLat::make)
     if (n > NORTH_POLE.lat || is_approximately_equal(n, NORTH_POLE.lat)) {
         n = NORTH_POLE.lat;
     }
@@ -83,26 +84,35 @@ BoundingBox* BoundingBox::make_from_area(value_type n, value_type w, value_type 
         s = SOUTH_POLE.lat;
     }
 
-    if (is_approximately_equal(w, e)) {
-        w = PointLonLat::normalise_angle_to_minimum(w, 0.);
-        e = w;
-    }
-    else {
-        w = PointLonLat::normalise_angle_to_minimum(w, 0.);
-        e = PointLonLat::normalise_angle_to_minimum(e, w);
-        if (is_approximately_equal(w, e)) {
-            e = w + PointLonLat::FULL_ANGLE;
-        }
-    }
+    // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[
+    constexpr auto min = BOUNDING_BOX_NORMALISE_WEST;
+    const auto same    = is_approximately_equal(w, e);
+
+    w = is_approximately_equal(w, min) || is_approximately_equal(w, min + PointLonLat::FULL_ANGLE)
+            ? min
+            : PointLonLat::normalise_angle_to_minimum(w, min);
+
+    auto a = PointLonLat::normalise_angle_to_minimum(e, w);
+    e      = same ? w : is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
 
     return new BoundingBox{n, w, s, e};
 }
 
 
-BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {}
+BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {
+    ASSERT(south <= north);
+    ASSERT(west <= east);
+}
 
 
-BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s, e} {}
+BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s, e} {
+    // normalise east in [west, west + 2 pi[
+    auto a        = PointLonLat::normalise_angle_to_minimum(e, w);
+    operator[](3) = is_approximately_equal(w, e) ? w : is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
+
+    ASSERT(south <= north);
+    ASSERT(west <= east);
+}
 
 
 BoundingBox::BoundingBox() : BoundingBox(DEFAULT) {}

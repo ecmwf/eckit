@@ -19,8 +19,7 @@ namespace eckit::geo::grid::regularxy {
 
 
 struct SpaceView final : public RegularXY {
-    explicit SpaceView(const Spec& spec) :
-        RegularXY(RegularXY::make_xy_ranges_from_spec(spec), area::BoundingBox{spec}) {}
+    explicit SpaceView(const Spec& spec) : RegularXY(RegularXY::make_xy_ranges_from_spec(spec)) {}
 
     void fill_spec(spec::Custom& custom) const override;
 };

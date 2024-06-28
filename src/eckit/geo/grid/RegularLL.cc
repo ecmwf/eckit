@@ -12,6 +12,7 @@
 
 #include "eckit/geo/grid/RegularLL.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "eckit/geo/Increments.h"
@@ -74,6 +75,12 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
     custom.set("grid", std::vector<double>{dx(), dy()});
+
+    if (!boundingBox().isGlobal()) {
+        custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
+    }
+
+    boundingBox().fill_spec(custom);
 }
 
 
@@ -86,8 +93,22 @@ Grid* RegularLL::make_grid_cropped(const Area& crop) const {
 }
 
 
+area::BoundingBox* RegularLL::calculate_bbox() const {
+    // FIXME depends on ordering
+    auto n = std::max(y().a(), y().b());
+    auto s = std::min(y().a(), y().b());
+
+    auto w = x().a();
+    auto e = x().periodic() ? w + PointLonLat::FULL_ANGLE : x().b();
+
+    return new area::BoundingBox{n, w, s, e};
+}
+
+
 static const GridRegisterName<RegularLL> GRIDNAME(REGULAR_LL_PATTERN);
-static const GridRegisterType<RegularLL> GRIDTYPE("regular_ll");
+
+static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
+static const GridRegisterType<RegularLL> GRIDTYPE2("rotated_ll");
 
 
 }  // namespace eckit::geo::grid

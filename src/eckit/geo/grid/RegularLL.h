@@ -18,15 +18,23 @@
 namespace eckit::geo::grid {
 
 
-struct RegularLL final : public Regular {
+class RegularLL final : public Regular {
+public:
+    // -- Constructors
     explicit RegularLL(const Spec&);
     explicit RegularLL(const Increments&, const area::BoundingBox& = {});
     RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
 
+    // -- Methods
+
     [[nodiscard]] static Spec* spec(const std::string& name);
+
+    // -- Overridden methods
+
     void fill_spec(spec::Custom&) const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
+    [[nodiscard]] area::BoundingBox* calculate_bbox() const override;
 };
 
 

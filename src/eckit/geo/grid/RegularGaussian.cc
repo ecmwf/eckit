@@ -12,6 +12,8 @@
 
 #include "eckit/geo/grid/RegularGaussian.h"
 
+#include <memory>
+
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -21,7 +23,9 @@
 namespace eckit::geo::grid {
 
 
-RegularGaussian::RegularGaussian(const Spec& spec) : RegularGaussian(spec.get_unsigned("N"), area::BoundingBox(spec)) {}
+RegularGaussian::RegularGaussian(const Spec& spec) :
+    RegularGaussian(spec.get_unsigned("N"),
+                    *std::unique_ptr<area::BoundingBox>(area::BoundingBox::make_from_spec(spec))) {}
 
 
 RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
@@ -58,7 +62,9 @@ void RegularGaussian::fill_spec(spec::Custom& custom) const {
 
 
 static const GridRegisterName<RegularGaussian> GRIDNAME("[fF][1-9][0-9]*");
-static const GridRegisterType<RegularGaussian> GRIDTYPE("regular_gg");
+
+static const GridRegisterType<RegularGaussian> GRIDTYPE1("regular_gg");
+static const GridRegisterType<RegularGaussian> GRIDTYPE2("rotated_gg");
 
 
 }  // namespace eckit::geo::grid

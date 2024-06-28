@@ -46,6 +46,9 @@ public:
 
     [[nodiscard]] static std::pair<Range*, Range*> make_lonlat_ranges_from_spec(const Spec&);
 
+    const Range& x() const;
+    const Range& y() const;
+
     // -- Overridden methods
 
     iterator cbegin() const override;
@@ -53,13 +56,11 @@ public:
 
     size_t size() const final { return nx() * ny(); }
 
-    const Range& x() const;
-    const Range& y() const;
-
 protected:
     // -- Constructors
 
-    Regular(std::pair<Range*, Range*> xy, const area::BoundingBox&);
+    Regular(std::pair<Range*, Range*> xy, const area::BoundingBox& bbox);
+    Regular(std::pair<Range*, Range*> xy);
 
     // -- Overridden methods
 

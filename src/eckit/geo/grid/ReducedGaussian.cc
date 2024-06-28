@@ -152,9 +152,11 @@ struct ReducedGaussianOctahedral {
 };
 
 
-static const GridRegisterType<ReducedGaussian> GRIDTYPE("reduced_gg");
 static const GridRegisterName<ReducedGaussianClassical> GRIDNAME1("[nN][1-9][0-9]*");
 static const GridRegisterName<ReducedGaussianOctahedral> GRIDNAME2("[oO][1-9][0-9]*");
+
+static const GridRegisterType<ReducedGaussian> GRIDTYPE1("reduced_gg");
+static const GridRegisterType<ReducedGaussian> GRIDTYPE2("reduced_rotated_gg");
 
 
 }  // namespace eckit::geo::grid

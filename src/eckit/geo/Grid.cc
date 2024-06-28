@@ -40,6 +40,9 @@ Grid::Grid(const Spec& spec) :
     bbox_(area::BoundingBox::make_from_spec(spec)), ordering_(make_ordering_from_spec(spec)) {}
 
 
+Grid::Grid(Ordering ordering) : ordering_(ordering) {}
+
+
 Grid::Grid(const area::BoundingBox& bbox, Ordering ordering) :
     bbox_(new area::BoundingBox(bbox)), ordering_(ordering) {}
 
@@ -165,8 +168,7 @@ const area::BoundingBox& Grid::boundingBox() const {
 
 
 area::BoundingBox* Grid::calculate_bbox() const {
-    // FIXME temporary implementation
-    return new area::BoundingBox;
+    NOTIMP;
 }
 
 

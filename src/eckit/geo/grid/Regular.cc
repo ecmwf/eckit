@@ -60,6 +60,12 @@ Regular::Regular(std::pair<Range*, Range*> xy, const area::BoundingBox& bbox) :
 }
 
 
+Regular::Regular(std::pair<Range*, Range*> xy) : x_(xy.first), y_(xy.second) {
+    ASSERT(x_ && x_->size() > 0);
+    ASSERT(y_ && y_->size() > 0);
+}
+
+
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
 }

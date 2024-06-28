@@ -19,8 +19,7 @@ namespace eckit::geo::grid::regularxy {
 
 
 struct Mercator final : public RegularXY {
-    explicit Mercator(const Spec& spec) :
-        RegularXY(RegularXY::make_xy_ranges_from_spec(spec), area::BoundingBox{spec}) {}
+    explicit Mercator(const Spec& spec) : RegularXY(RegularXY::make_xy_ranges_from_spec(spec)) {}
 
     void fill_spec(spec::Custom& custom) const override;
 };

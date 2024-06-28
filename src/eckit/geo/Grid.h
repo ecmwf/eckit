@@ -140,6 +140,7 @@ protected:
     // -- Constructors
 
     explicit Grid(const area::BoundingBox&, Ordering = Ordering::DEFAULT);
+    explicit Grid(Ordering = Ordering::DEFAULT);
 
     // -- Methods
 

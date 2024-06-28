@@ -16,13 +16,7 @@
 #include <ostream>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/Point.h"
-
-
-namespace eckit::geo {
-class Figure;
-class Projection;
-}  // namespace eckit::geo
+#include "eckit/geo/PointLonLat.h"
 
 
 namespace eckit::geo::area {
@@ -110,6 +104,10 @@ private:
         return os << "[" << bbox.north << "," << bbox.west << "," << bbox.south << "," << bbox.east << "]";
     }
 };
+
+
+extern const BoundingBox BOUNDING_BOX_GLOBE_PRIME;
+extern const BoundingBox BOUNDING_BOX_GLOBE_ANTIPRIME;
 
 
 }  // namespace eckit::geo::area

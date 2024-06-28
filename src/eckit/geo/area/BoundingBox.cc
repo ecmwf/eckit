@@ -17,8 +17,6 @@
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Figure.h"
-#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/geometry/Sphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
@@ -27,9 +25,7 @@
 namespace eckit::geo::area {
 
 
-static const BoundingBox GLOBE_PRIME{90., 0., -90., 360.};
-static const BoundingBox GLOBE_ANTIPRIME{90., -180., -90., 180.};
-static const BoundingBox& DEFAULT = GLOBE_PRIME;
+static const auto& DEFAULT = BOUNDING_BOX_GLOBE_PRIME;
 
 
 static inline bool is_approximately_equal(BoundingBox::value_type a, BoundingBox::value_type b) {
@@ -38,12 +34,12 @@ static inline bool is_approximately_equal(BoundingBox::value_type a, BoundingBox
 
 
 BoundingBox* BoundingBox::make_global_prime() {
-    return new BoundingBox(GLOBE_PRIME);
+    return new BoundingBox(BOUNDING_BOX_GLOBE_PRIME);
 }
 
 
 BoundingBox* BoundingBox::make_global_antiprime() {
-    return new BoundingBox(GLOBE_ANTIPRIME);
+    return new BoundingBox(BOUNDING_BOX_GLOBE_ANTIPRIME);
 }
 
 
@@ -214,6 +210,13 @@ bool bounding_box_equal(const BoundingBox& a, const BoundingBox& b) {
     return is_approximately_equal(c->north, d->north) && is_approximately_equal(c->south, d->south)
            && is_approximately_equal(c->west, d->west) && is_approximately_equal(c->east, d->east);
 }
+
+
+const BoundingBox BOUNDING_BOX_GLOBE_PRIME{PointLonLat::RIGHT_ANGLE, 0., -PointLonLat::RIGHT_ANGLE,
+                                           PointLonLat::FULL_ANGLE};
+
+const BoundingBox BOUNDING_BOX_GLOBE_ANTIPRIME{PointLonLat::RIGHT_ANGLE, -PointLonLat::FLAT_ANGLE, -90.,
+                                               PointLonLat::FLAT_ANGLE};
 
 
 }  // namespace eckit::geo::area

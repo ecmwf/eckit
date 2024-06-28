@@ -18,7 +18,9 @@
 #include "eckit/testing/Test.h"
 
 #include <list>
-#include <mutex>
+#include <ostream>
+#include <sstream>
+#include <string>
 #include <thread>
 
 using namespace eckit;
@@ -44,11 +46,9 @@ class SingletonTester {
 public:
     static auto instance() -> SingletonTester& {
         static SingletonTester tester;
-
         Log::info() << "SingletonTester::instance()" << std::endl;
         Log::warning() << "SingletonTester::instance()" << std::endl;
         Log::error() << "SingletonTester::instance()" << std::endl;
-
         Log::debug() << "SingletonTester::instance()" << std::endl;
         Log::debug<LibEcKit>() << "SingletonTester::instance()" << std::endl;
         return tester;

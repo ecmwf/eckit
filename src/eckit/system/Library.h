@@ -103,6 +103,8 @@ private:  // members
     mutable std::string libraryPath_;
     mutable std::string prefixDirectory_;
 
+    mutable std::unique_ptr<Channel> debugChannel_;
+
     mutable std::unique_ptr<eckit::Configuration> configuration_;
 };
 

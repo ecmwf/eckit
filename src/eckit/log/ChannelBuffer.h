@@ -16,7 +16,10 @@
 #ifndef eckit_log_ChannelBuffer_h
 #define eckit_log_ChannelBuffer_h
 
+#include <cstddef>
+#include <ostream>
 #include <streambuf>
+#include <string>
 #include <vector>
 
 #include "eckit/log/Channel.h"
@@ -31,7 +34,7 @@ class LogTarget;
 /// Stream buffer to be used by Channel
 class ChannelBuffer : public std::streambuf, private NonCopyable {
 private:  // types
-    static constexpr const size_t DEFAULT_SIZE = 1024;
+    static constexpr const std::size_t DEFAULT_SIZE = 1024;
 
 private:  // methods
     bool active() const;
@@ -47,8 +50,8 @@ private:  // methods
     void setStream(std::ostream& out);
     void addStream(std::ostream& out);
 
-    void setFile(const std::string& path, size_t bufferSize = 4 * 1024);
-    void addFile(const std::string& path, size_t bufferSize = 4 * 1024);
+    void setFile(const std::string& path, std::size_t bufferSize = 4 * 1024);
+    void addFile(const std::string& path, std::size_t bufferSize = 4 * 1024);
 
     void setCallback(channel_callback_t cb, void* data = 0);
     void addCallback(channel_callback_t cb, void* data = 0);
@@ -92,19 +95,19 @@ protected:  // members
 /// Channel buffer that voidify output streams
 class VoidBuffer: public ChannelBuffer {
 private:  // methods
-    VoidBuffer(): ChannelBuffer(0) { }
+    VoidBuffer();
 
-    ~VoidBuffer() = default;
+    ~VoidBuffer();
 
 protected:  // methods
-    bool dumpBuffer() override { return true; }
+    bool dumpBuffer() override;
 
-    int_type overflow(int_type c) override { return c; }
+    int_type overflow(int_type ch) override;
 
-    int_type sync() override { return 0; }
+    int_type sync() override;
 
 private:  // methods
-    void print(std::ostream& s) const override { s << "VoidBuffer"; }
+    void print(std::ostream& os) const override;
 
     friend class EmptyChannel;
 };

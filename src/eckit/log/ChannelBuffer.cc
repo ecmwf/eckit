@@ -23,7 +23,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ChannelBuffer::ChannelBuffer(std::size_t size): buffer_(size) {
+ChannelBuffer::ChannelBuffer(const std::size_t size): buffer_(size) {
     init();
 }
 
@@ -113,11 +113,11 @@ void ChannelBuffer::setStream(std::ostream& out) {
     setTarget(new OStreamTarget(out));
 }
 
-void ChannelBuffer::addFile(const std::string& path, size_t bufferSize) {
+void ChannelBuffer::addFile(const std::string& path, const std::size_t bufferSize) {
     setTarget(new TeeTarget(target_, new FileTarget(path, bufferSize)));
 }
 
-void ChannelBuffer::setFile(const std::string& path, size_t bufferSize) {
+void ChannelBuffer::setFile(const std::string& path, const std::size_t bufferSize) {
     setTarget(new FileTarget(path, bufferSize));
 }
 
@@ -145,6 +145,28 @@ void ChannelBuffer::print(std::ostream& s) const {
         s << ", target=" << *target_;
     }
     s << ")";
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+VoidBuffer::VoidBuffer(): ChannelBuffer(0) { }
+
+VoidBuffer::~VoidBuffer() = default;
+
+bool VoidBuffer::dumpBuffer() {
+    return true;
+}
+
+std::streambuf::int_type VoidBuffer::overflow(std::streambuf::int_type ch) {
+    return ch;
+}
+
+std::streambuf::int_type VoidBuffer::sync() {
+    return 0;
+}
+
+void VoidBuffer::print(std::ostream& os) const {
+    os << "VoidBuffer";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

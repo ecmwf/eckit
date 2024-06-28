@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/MultiHandle.h"
@@ -56,7 +57,7 @@ Length RadosMultiObjReadHandle::openForRead() {
     ASSERT(!handle_);
 
     RadosAttributes attr = RadosCluster::instance().attributes(object_);
-    std::cout << "Attributes for " << object_.str() << " ===> " << attr << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "Attributes for " << object_.str() << " ===> " << attr << std::endl;
 
     ASSERT(attr.get("length", length_));
     ASSERT(attr.get("parts", parts_));
@@ -68,7 +69,7 @@ Length RadosMultiObjReadHandle::openForRead() {
 
     Length len = handle_->openForRead();
 
-    std::cout << "RadosMultiObjReadHandle::openForRead attr=" << length_ << ", open=" << len << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjReadHandle::openForRead attr=" << length_ << ", open=" << len << std::endl;
     ASSERT(len == length_);
 
     return length_;

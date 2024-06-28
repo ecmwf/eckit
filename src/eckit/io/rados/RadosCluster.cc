@@ -25,77 +25,77 @@ public:
     rados_ioctx_t io_;
 
     RadosIOCtx(rados_t cluster, const std::string& pool, const std::string& nspace) {
-        std::cout << "RadosIOCtx => rados_ioctx_create(" << pool << ")" << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx => rados_ioctx_create(" << pool << ")" << std::endl;
         RADOS_CALL(rados_ioctx_create(cluster, pool.c_str(), &io_));
-        std::cout << "RadosIOCtx <= rados_ioctx_create(" << pool << ")" << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx <= rados_ioctx_create(" << pool << ")" << std::endl;
 
         std::string nspace_name = nspace;
         if (nspace == "") nspace_name = "LIBRADOS_ALL_NSPACES";
 
-        std::cout << "RadosIOCtx => rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx => rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
         if (nspace == "") {
             rados_ioctx_set_namespace(io_, LIBRADOS_ALL_NSPACES);
         } else {
             rados_ioctx_set_namespace(io_, nspace.c_str());
         }
-        std::cout << "RadosIOCtx <= rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx <= rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
     }
 
     ~RadosIOCtx() {
-        std::cout << "~RadosIOCtx => rados_ioctx_destroy(io_ctx_)" << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "~RadosIOCtx => rados_ioctx_destroy(io_ctx_)" << std::endl;
         rados_ioctx_destroy(io_);
-        std::cout << "~RadosIOCtx <= rados_ioctx_destroy(io_ctx_)" << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "~RadosIOCtx <= rados_ioctx_destroy(io_ctx_)" << std::endl;
     }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 RadosAIO::RadosAIO() {
-    std::cout << "RadosAIO => rados_aio_create_completion()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosAIO => rados_aio_create_completion()" << std::endl;
     RADOS_CALL(rados_aio_create_completion(NULL, NULL, NULL, &comp_));
-    std::cout << "RadosAIO <= rados_aio_create_completion()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosAIO <= rados_aio_create_completion()" << std::endl;
 }
 
 RadosAIO::~RadosAIO() {
-    std::cout << "~RadosAIO => rados_aio_release()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "~RadosAIO => rados_aio_release()" << std::endl;
     rados_aio_release(comp_);
-    std::cout << "~RadosAIO <= rados_aio_release()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "~RadosAIO <= rados_aio_release()" << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 RadosWriteOp::RadosWriteOp() {
-    std::cout << "RadosWriteOp => rados_create_write_op()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosWriteOp => rados_create_write_op()" << std::endl;
     op_ = rados_create_write_op();
-    std::cout << "RadosWriteOp <= rados_create_write_op()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosWriteOp <= rados_create_write_op()" << std::endl;
 }
 
 RadosWriteOp::~RadosWriteOp() {
-    std::cout << "~RadosWriteOp => rados_release_write_op()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "~RadosWriteOp => rados_release_write_op()" << std::endl;
     rados_release_write_op(op_);
-    std::cout << "~RadosWriteOp <= rados_release_write_op()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "~RadosWriteOp <= rados_release_write_op()" << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 RadosReadOp::RadosReadOp() {
-    std::cout << "RadosReadOp => rados_create_read_op()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosReadOp => rados_create_read_op()" << std::endl;
     op_ = rados_create_read_op();
-    std::cout << "RadosReadOp <= rados_create_read_op()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosReadOp <= rados_create_read_op()" << std::endl;
 }
 
 RadosReadOp::~RadosReadOp() {
-    std::cout << "~RadosReadOp => rados_release_read_op()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "~RadosReadOp => rados_release_read_op()" << std::endl;
     rados_release_read_op(op_);
-    std::cout << "~RadosReadOp <= rados_release_read_op()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "~RadosReadOp <= rados_release_read_op()" << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 RadosIter::~RadosIter() {
-    std::cout << "~RadosIter => rados_omap_get_end()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "~RadosIter => rados_omap_get_end()" << std::endl;
     rados_omap_get_end(it_);
-    std::cout << "~RadosIter <= rados_omap_get_end()" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "~RadosIter <= rados_omap_get_end()" << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -132,7 +132,7 @@ RadosCluster::RadosCluster() :
 RadosCluster::~RadosCluster() {
 
 
-    std::cout << "RadosCluster::~RadosCluster" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::~RadosCluster" << std::endl;
 
     for (auto j = ctx_.begin(); j != ctx_.end(); ++j) {
         for (auto k = (*j).second.begin(); k != (*j).second.end(); k++) {
@@ -143,10 +143,10 @@ RadosCluster::~RadosCluster() {
 
     ctx_.clear();
 
-    std::cout << "RADOS_CALL => rados_shutdown(cluster_)" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL => rados_shutdown(cluster_)" << std::endl;
 
     rados_shutdown(cluster_);
-    std::cout << "RADOS_CALL <= rados_shutdown(cluster_)" << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL <= rados_shutdown(cluster_)" << std::endl;
 }
 
 void RadosCluster::error(int code, const char* msg, const char* file, int line, const char* func) {
@@ -276,7 +276,7 @@ void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& 
     auto a          = attr.attrs();
     for (auto j = a.begin(); j != a.end(); ++j) {
 
-        std::cout << "RadosCluster::attributes => [" << (*j).first << "] [" << (*j).second << "]";
+        LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::attributes => [" << (*j).first << "] [" << (*j).second << "]";
 
 
         RADOS_CALL(rados_setxattr(ioCtx(object), oid, (*j).first.c_str(), (*j).second.c_str(), (*j).second.size()));
@@ -303,16 +303,16 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
             break;
         }
 
-        std::cout << "RadosCluster::attributes <= [" << name << "] [";
+        LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::attributes <= [" << name << "] [";
         for (size_t i = 0; i < len; i++) {
             if (isprint(val[i])) {
-                std::cout << val[i];
+                LOG_DEBUG_LIB(LibEcKit) << val[i];
             }
             else {
-                std::cout << '.';
+                LOG_DEBUG_LIB(LibEcKit) << '.';
             }
         }
-        std::cout << ']' << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << ']' << std::endl;
 
         attr.set(name, std::string(val, val + len));
     }

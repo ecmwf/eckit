@@ -21,6 +21,7 @@
 
 #include <rados/librados.h>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/io/Length.h"
 
 #include "eckit/io/rados/RadosException.h"
@@ -102,7 +103,7 @@ public:
 
 static inline int rados_call(int code, const char* msg, const char* file, int line, const char* func) {
 
-    std::cout << "RADOS_CALL => " << msg << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL => " << msg << std::endl;
 
     if (code < 0) {
         std::cout << "RADOS_FAIL !! " << msg << std::endl;
@@ -111,7 +112,7 @@ static inline int rados_call(int code, const char* msg, const char* file, int li
         RadosCluster::error(code, msg, file, line, func);
     }
 
-    std::cout << "RADOS_CALL <= " << msg << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL <= " << msg << std::endl;
 
     return code;
 }

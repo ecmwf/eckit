@@ -11,6 +11,7 @@
 
 #include <map>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
@@ -94,7 +95,7 @@ long RadosMultiObjWriteHandle::read(void* buffer, long length) {
 
 long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
 
-    std::cout << "RadosMultiObjWriteHandle::write " << length << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write " << length << std::endl;
     ASSERT(opened_);
 
     if (length == 0) {
@@ -124,12 +125,12 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
             continue;
         }
 
-        std::cout << "RadosMultiObjWriteHandle::write " << len << " - " << maxObjectSize_ << " - " << written_ << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write " << len << " - " << maxObjectSize_ << " - " << written_ << std::endl;
 
         if (!handles_.back().get()) {
 
             RadosObject object(object_, part_++);
-            std::cout << "RadosMultiObjWriteHandle::write open " << object.str() << std::endl;
+            LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write open " << object.str() << std::endl;
             if (async_) {
                 handles_.back().reset(new RadosAsyncHandle(object, maxAioBuffSize_));
             } else {

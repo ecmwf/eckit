@@ -35,7 +35,7 @@ static Fraction regular_adjust(const Fraction& target, const Fraction& inc, bool
 };
 
 
-Range* RegularCartesian::crop(double crop_a, double crop_b) const {
+Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b)
            || (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
 
@@ -66,7 +66,7 @@ Range* RegularCartesian::crop(double crop_a, double crop_b) const {
 }
 
 
-Range* RegularCartesian::flip() const {
+Range* RegularCartesian::make_range_flipped() const {
     return new RegularCartesian(size(), b(), a(), eps());
 }
 

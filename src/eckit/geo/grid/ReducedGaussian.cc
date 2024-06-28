@@ -43,7 +43,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbo
     j_(0),
     Nj_(N_ * 2),
     x_(Nj_),
-    y_(range::GaussianLatitude(N_, false).crop(bbox.north, bbox.south)) {
+    y_(range::GaussianLatitude(N_, false).make_range_cropped(bbox.north, bbox.south)) {
     ASSERT(Nj_ == pl_.size());
     ASSERT(y_);
 }
@@ -75,7 +75,7 @@ size_t ReducedGaussian::ni(size_t j) const {
         ASSERT(Ni >= 0);
 
         range::RegularLongitude x(static_cast<size_t>(Ni), 0., 360.);
-        const_cast<std::vector<std::unique_ptr<Range>>&>(x_)[j].reset(x.crop(bbox.west, bbox.east));
+        const_cast<std::vector<std::unique_ptr<Range>>&>(x_)[j].reset(x.make_range_cropped(bbox.west, bbox.east));
         ASSERT(x_[j]);
     }
 
@@ -100,7 +100,7 @@ std::vector<double> ReducedGaussian::longitudes(size_t j) const {
         ASSERT(Ni >= 0);
 
         range::RegularLongitude x(static_cast<size_t>(Ni), 0., 360.);
-        const_cast<std::vector<std::unique_ptr<Range>>&>(x_)[j].reset(x.crop(bbox.west, bbox.east));
+        const_cast<std::vector<std::unique_ptr<Range>>&>(x_)[j].reset(x.make_range_cropped(bbox.west, bbox.east));
         ASSERT(x_[j]);
     }
 

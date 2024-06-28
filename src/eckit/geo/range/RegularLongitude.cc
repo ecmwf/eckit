@@ -51,7 +51,7 @@ RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) 
     Regular(n, _a, _b, types::is_approximately_lesser_or_equal<double>(PERIOD, std::abs(_b - _a)), _eps) {}
 
 
-Range* RegularLongitude::crop(double crop_a, double crop_b) const {
+Range* RegularLongitude::make_range_cropped(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b));
 
     if (a() < b()) {
@@ -87,7 +87,7 @@ Range* RegularLongitude::crop(double crop_a, double crop_b) const {
 }
 
 
-Range* RegularLongitude::flip() const {
+Range* RegularLongitude::make_range_flipped() const {
     std::vector<double> flipped(size());
     const auto& v = values();
     std::reverse_copy(v.begin(), v.end(), flipped.begin());

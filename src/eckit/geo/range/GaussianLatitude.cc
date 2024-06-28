@@ -31,7 +31,7 @@ GaussianLatitude::GaussianLatitude(size_t N, bool increasing, double eps) :
     Range(2 * N, increasing ? -90. : 90., increasing ? 90. : -90., eps), N_(N) {}
 
 
-Range* GaussianLatitude::flip() const {
+Range* GaussianLatitude::make_range_flipped() const {
     std::vector<double> flipped(size());
     const auto& v = values();
     std::reverse_copy(v.begin(), v.end(), flipped.begin());
@@ -40,7 +40,7 @@ Range* GaussianLatitude::flip() const {
 }
 
 
-Range* GaussianLatitude::crop(double crop_a, double crop_b) const {
+Range* GaussianLatitude::make_range_cropped(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b)
            || (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
 

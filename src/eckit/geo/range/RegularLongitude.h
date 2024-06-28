@@ -31,8 +31,8 @@ public:
 
     // -- Overridden methods
 
-    [[nodiscard]] Range* crop(double crop_a, double crop_b) const override;
-    [[nodiscard]] Range* flip() const override;
+    [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
+    [[nodiscard]] Range* make_range_flipped() const override;
 
     bool periodic() const override { return getPeriodic(); }
 

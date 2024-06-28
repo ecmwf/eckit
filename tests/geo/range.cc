@@ -133,20 +133,20 @@ CASE("range::RegularLongitude") {
 
         EXPECT(range.periodic());
 
-        const std::unique_ptr<Range> range1(range.crop(-180., 180.));
+        const std::unique_ptr<Range> range1(range.make_range_cropped(-180., 180.));
 
         EXPECT(range1->size() == 36);
         EXPECT(range1->a() == -180.);
         EXPECT(range1->b() == 180.);
         EXPECT(range1->periodic());
 
-        const std::unique_ptr<Range> range2(range.crop(-180., 170.));
+        const std::unique_ptr<Range> range2(range.make_range_cropped(-180., 170.));
 
         EXPECT(range2->size() == 36);
         EXPECT(range2->b() == 180.);  // because it's how we can distinguish without additional metadata
         EXPECT(range2->periodic());
 
-        const std::unique_ptr<Range> range3(range.crop(-180., 160.));
+        const std::unique_ptr<Range> range3(range.make_range_cropped(-180., 160.));
 
         EXPECT(range3->size() == 36 - 1);
         EXPECT(range3->b() == 160.);
@@ -159,28 +159,28 @@ CASE("range::RegularLongitude") {
 
         EXPECT_NOT(range.periodic());
 
-        const std::unique_ptr<Range> range1(range.crop(1., 179.));
+        const std::unique_ptr<Range> range1(range.make_range_cropped(1., 179.));
 
         EXPECT(range1->size() == 19 - 2);
         EXPECT(range1->a() == 10.);
         EXPECT(range1->b() == 170.);
         EXPECT_NOT(range1->periodic());
 
-        const std::unique_ptr<Range> range2(range.crop(1., 170.));
+        const std::unique_ptr<Range> range2(range.make_range_cropped(1., 170.));
 
         EXPECT(range2->size() == 19 - 2);
         EXPECT(range2->a() == 10.);
         EXPECT(range2->b() == 170.);
         EXPECT_NOT(range2->periodic());
 
-        const std::unique_ptr<Range> range3(range.crop(-180., 180.));
+        const std::unique_ptr<Range> range3(range.make_range_cropped(-180., 180.));
 
         EXPECT(range3->size() == 19);
         EXPECT(range3->a() == 0.);
         EXPECT(range3->b() == 180.);
         EXPECT_NOT(range3->periodic());
 
-        const std::unique_ptr<Range> range4(range.crop(-190., 170.));
+        const std::unique_ptr<Range> range4(range.make_range_cropped(-190., 170.));
 
         EXPECT(range4->size() == 19 - 1);
         EXPECT(range4->a() == 0.);
@@ -217,17 +217,23 @@ CASE("range::Gaussian") {
 
 
     SECTION("crop [50., -50.]") {
-        std::unique_ptr<Range> cropped(range::GaussianLatitude(2, false).crop(50., -50.));
+        std::unique_ptr<Range> cropped(range::GaussianLatitude(2, false).make_range_cropped(50., -50.));
         EXPECT(cropped->size() == ref.size() - 2);
 
         EXPECT_APPROX(cropped->values()[0], ref[1]);
         EXPECT_APPROX(cropped->values()[1], ref[2]);
 
-        EXPECT(std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-3).crop(59.444, -59.444))->size() == 4);
-        EXPECT(std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).crop(59.444, -59.444))->size() == 2);
-        EXPECT(std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).crop(59.444, -59.445))->size() == 3);
+        EXPECT(
+            std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-3).make_range_cropped(59.444, -59.444))->size()
+            == 4);
+        EXPECT(
+            std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).make_range_cropped(59.444, -59.444))->size()
+            == 2);
+        EXPECT(
+            std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).make_range_cropped(59.444, -59.445))->size()
+            == 3);
 
-        std::unique_ptr<Range> single(range::GaussianLatitude(2, false, 1e-3).crop(-59.444, -59.444));
+        std::unique_ptr<Range> single(range::GaussianLatitude(2, false, 1e-3).make_range_cropped(-59.444, -59.444));
         EXPECT(single->size() == 1);
 
         EXPECT_APPROX(single->values().front(), ref.back());
@@ -235,7 +241,7 @@ CASE("range::Gaussian") {
 
 
     SECTION("crop [90., 0.]") {
-        std::unique_ptr<Range> cropped(range::GaussianLatitude(2, false, 1e-3).crop(90., 0.));
+        std::unique_ptr<Range> cropped(range::GaussianLatitude(2, false, 1e-3).make_range_cropped(90., 0.));
         EXPECT(cropped->size() == ref.size() / 2);
 
         EXPECT_APPROX(cropped->values()[0], ref[0]);

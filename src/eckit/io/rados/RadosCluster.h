@@ -100,10 +100,10 @@ private:
     rados_t cluster_;
     mutable PoolCtxCache ctx_;
 
-    eckit::RadosIOStats stats_;
-    eckit::Timer timer_;
-    eckit::Timer rados_call_timer_;
-    eckit::Timer misc_timer_;
+    mutable eckit::RadosIOStats stats_;
+    mutable eckit::Timer timer_;
+    mutable eckit::Timer rados_call_timer_;
+    mutable eckit::Timer misc_timer_;
 
     void reset();
 

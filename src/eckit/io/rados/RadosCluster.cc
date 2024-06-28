@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/runtime/Main.h"
+
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosObject.h"
@@ -170,8 +172,8 @@ RadosCluster& RadosCluster::instance() {
     return instance_;
 }
 
-RadosCluster::RadosCluster() :
-    cluster_(0) {
+RadosCluster::RadosCluster() : cluster_(0), 
+    stats_(std::string("Rados profiling ") + eckit::Main::hostname() + ":" + eckit::Translator<int, std::string>()(::getpid())) {
 
     using namespace std::placeholders;
 

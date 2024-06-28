@@ -26,7 +26,7 @@ namespace eckit::geo {
 
 
 PointLonLat::value_type PointLonLat::normalise_angle_to_minimum(value_type a, value_type minimum) {
-    static const auto modulus = [](auto a) { return a - FULL_ANGLE * std::floor(a / FULL_ANGLE); };
+    const auto modulus = [](auto a) { return a - FULL_ANGLE * std::floor(a / FULL_ANGLE); };
 
     auto diff = a - minimum;
     return 0. <= diff && diff < FULL_ANGLE ? a : (modulus(diff) + minimum);
@@ -34,7 +34,7 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_minimum(value_type a, va
 
 
 PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, value_type maximum) {
-    auto modulus = [](auto a) { return a - FULL_ANGLE * std::ceil(a / FULL_ANGLE); };
+    const auto modulus = [](auto a) { return a - FULL_ANGLE * std::ceil(a / FULL_ANGLE); };
 
     auto diff = a - maximum;
     return -FULL_ANGLE < diff && diff <= 0. ? a : (modulus(diff) + maximum);

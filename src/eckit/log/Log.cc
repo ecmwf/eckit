@@ -11,7 +11,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <mutex>
 #include <string>
 #include <unistd.h>
 
@@ -83,7 +82,7 @@ static void handle_strerror_r(std::ostream& s, int e, ...) {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
-thread_local EmptyChannel emptyChannel;
+thread_local EmptyChannel emptyChannel_;
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -168,14 +167,14 @@ Channel& Log::warning() {
 
 Channel& Log::debug() {
     if (!Main::ready()) {
-        if (const char* e = getenv("DEBUG"); e && bool(Translator<std::string, bool>()(e))) {
+        if (const char* e = ::getenv("DEBUG"); e && bool(Translator<std::string, bool>()(e))) {
             thread_local Channel preMainDebug(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
             return preMainDebug;
         }
-        return emptyChannel;
+        return emptyChannel_;
     }
 
-    if (!Main::instance().debug_) { return emptyChannel; }
+    if (!Main::instance().debug_) { return emptyChannel_; }
 
     if (Main::finalised()) {
         thread_local Channel postMainDebug(new PrefixTarget("POST-MAIN-DEBUG", new OStreamTarget(std::cout)));

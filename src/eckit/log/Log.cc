@@ -8,11 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
+#include <cstdlib>
 #include <cstring>
+#include <iostream>
+#include <mutex>
+#include <string>
+#include <unistd.h>
 
-#include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/FileTarget.h"
 #include "eckit/log/Log.h"
@@ -24,7 +26,6 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
-#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Translator.h"
 

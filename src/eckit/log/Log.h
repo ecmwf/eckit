@@ -104,8 +104,8 @@ public:  // methods
 
     static void print(std::ostream& os);
 
-    Log()  = delete;  ///< Private, non-instanciatable class
-    ~Log() = delete;  ///< Private, non-instanciatable class
+    Log()  = delete;  ///< non-instanciatable class
+    ~Log() = delete;  ///< non-instanciatable class
 };
 
 //----------------------------------------------------------------------------------------------------------------------

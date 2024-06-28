@@ -27,9 +27,11 @@ public:
     RadosIOCtx(rados_t cluster, const std::string& pool, const std::string& nspace) {
 
         using namespace std::placeholders;
+        eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+        eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx => rados_ioctx_create(" << pool << ")" << std::endl;
-        eckit::StatsTimer st{"rados_ioctx_create", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+        eckit::StatsTimer st{"rados_ioctx_create", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         RADOS_CALL(rados_ioctx_create(cluster, pool.c_str(), &io_));
         st.stop();
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx <= rados_ioctx_create(" << pool << ")" << std::endl;
@@ -38,7 +40,7 @@ public:
         if (nspace == "") nspace_name = "LIBRADOS_ALL_NSPACES";
 
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx => rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
-        eckit::StatsTimer st2{"rados_ioctx_set_namespace", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+        eckit::StatsTimer st2{"rados_ioctx_set_namespace", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         if (nspace == "") {
             rados_ioctx_set_namespace(io_, LIBRADOS_ALL_NSPACES);
         } else {
@@ -51,9 +53,11 @@ public:
     ~RadosIOCtx() {
 
         using namespace std::placeholders;
+        eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+        eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
         LOG_DEBUG_LIB(LibEcKit) << "~RadosIOCtx => rados_ioctx_destroy(io_ctx_)" << std::endl;
-        eckit::StatsTimer st{"rados_ioctx_destroy", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+        eckit::StatsTimer st{"rados_ioctx_destroy", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         rados_ioctx_destroy(io_);
         st.stop();
         LOG_DEBUG_LIB(LibEcKit) << "~RadosIOCtx <= rados_ioctx_destroy(io_ctx_)" << std::endl;
@@ -64,10 +68,12 @@ public:
 
 RadosAIO::RadosAIO() {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     LOG_DEBUG_LIB(LibEcKit) << "RadosAIO => rados_aio_create_completion()" << std::endl;
-    eckit::StatsTimer st{"rados_aio_create_completion", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+    eckit::StatsTimer st{"rados_aio_create_completion", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(rados_aio_create_completion(NULL, NULL, NULL, &comp_));
     st.stop();
     LOG_DEBUG_LIB(LibEcKit) << "RadosAIO <= rados_aio_create_completion()" << std::endl;
@@ -75,10 +81,12 @@ RadosAIO::RadosAIO() {
 
 RadosAIO::~RadosAIO() {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     LOG_DEBUG_LIB(LibEcKit) << "~RadosAIO => rados_aio_release()" << std::endl;
-    eckit::StatsTimer st{"rados_aio_release", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+    eckit::StatsTimer st{"rados_aio_release", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     rados_aio_release(comp_);
     st.stop();
     LOG_DEBUG_LIB(LibEcKit) << "~RadosAIO <= rados_aio_release()" << std::endl;
@@ -88,10 +96,12 @@ RadosAIO::~RadosAIO() {
 
 RadosWriteOp::RadosWriteOp() {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     LOG_DEBUG_LIB(LibEcKit) << "RadosWriteOp => rados_create_write_op()" << std::endl;
-    eckit::StatsTimer st{"rados_create_write_op", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+    eckit::StatsTimer st{"rados_create_write_op", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     op_ = rados_create_write_op();
     st.stop();
     LOG_DEBUG_LIB(LibEcKit) << "RadosWriteOp <= rados_create_write_op()" << std::endl;
@@ -99,10 +109,12 @@ RadosWriteOp::RadosWriteOp() {
 
 RadosWriteOp::~RadosWriteOp() {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     LOG_DEBUG_LIB(LibEcKit) << "~RadosWriteOp => rados_release_write_op()" << std::endl;
-    eckit::StatsTimer st{"rados_release_write_op", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+    eckit::StatsTimer st{"rados_release_write_op", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     rados_release_write_op(op_);
     st.stop();
     LOG_DEBUG_LIB(LibEcKit) << "~RadosWriteOp <= rados_release_write_op()" << std::endl;
@@ -112,10 +124,12 @@ RadosWriteOp::~RadosWriteOp() {
 
 RadosReadOp::RadosReadOp() {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     LOG_DEBUG_LIB(LibEcKit) << "RadosReadOp => rados_create_read_op()" << std::endl;
-    eckit::StatsTimer st{"rados_create_read_op", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+    eckit::StatsTimer st{"rados_create_read_op", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     op_ = rados_create_read_op();
     st.stop();
     LOG_DEBUG_LIB(LibEcKit) << "RadosReadOp <= rados_create_read_op()" << std::endl;
@@ -123,10 +137,12 @@ RadosReadOp::RadosReadOp() {
 
 RadosReadOp::~RadosReadOp() {
 
-    using namespace std::placeholders;        
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+        eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     LOG_DEBUG_LIB(LibEcKit) << "~RadosReadOp => rados_release_read_op()" << std::endl;
-    eckit::StatsTimer st{"rados_release_read_op", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+    eckit::StatsTimer st{"rados_release_read_op", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     rados_release_read_op(op_);
     st.stop();
     LOG_DEBUG_LIB(LibEcKit) << "~RadosReadOp <= rados_release_read_op()" << std::endl;
@@ -136,10 +152,12 @@ RadosReadOp::~RadosReadOp() {
 
 RadosIter::~RadosIter() {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     LOG_DEBUG_LIB(LibEcKit) << "~RadosIter => rados_omap_get_end()" << std::endl;
-    eckit::StatsTimer st{"rados_omap_get_end", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
+    eckit::StatsTimer st{"rados_omap_get_end", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     rados_omap_get_end(it_);
     st.stop();
     LOG_DEBUG_LIB(LibEcKit) << "~RadosIter <= rados_omap_get_end()" << std::endl;
@@ -155,7 +173,7 @@ RadosCluster& RadosCluster::instance() {
 RadosCluster::RadosCluster() :
     cluster_(0) {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     static const std::string radosClusterName = Resource<std::string>("radosClusterName", "ceph");
     static const std::string radosClusterUser = Resource<std::string>("radosClusterUser", "client.admin");
@@ -186,7 +204,7 @@ RadosCluster::RadosCluster() :
 
 RadosCluster::~RadosCluster() {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::~RadosCluster" << std::endl;
 
@@ -271,7 +289,7 @@ rados_ioctx_t& RadosCluster::ioCtx(const RadosKeyValue& object) const {
 
 bool RadosCluster::poolExists(const std::string& pool) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     /// @note: this is making the strong assumption that if an ioCtx
     /// for a pool exists in ctx_, then the pool exists as well. This
@@ -298,7 +316,7 @@ bool RadosCluster::poolExists(const std::string& pool) const {
 
 void RadosCluster::createPool(const std::string& pool) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     eckit::StatsTimer st{"rados_pool_create", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
     RADOS_CALL(rados_pool_create(cluster_, pool.c_str()));
@@ -313,7 +331,9 @@ void RadosCluster::ensurePool(const std::string& pool) const {
 
 void RadosCluster::destroyPool(const std::string& pool) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     for (auto j = ctx_.begin(); j != ctx_.end(); ++j) {
 
@@ -338,7 +358,7 @@ void RadosCluster::destroyPool(const std::string& pool) const {
 
 void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& attr) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     const char* oid = object.name().c_str();
     auto a          = attr.attrs();
@@ -353,7 +373,7 @@ void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& 
 
 RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     RadosAttributes attr;
 
@@ -398,7 +418,7 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
 
 bool RadosCluster::exists(const RadosObject& object) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     uint64_t psize;
     time_t pmtime;
@@ -425,7 +445,7 @@ bool RadosCluster::exists(const RadosKeyValue& object) const {
 
 Length RadosCluster::size(const RadosObject& object) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     uint64_t psize;
     time_t pmtime;
@@ -436,7 +456,7 @@ Length RadosCluster::size(const RadosObject& object) const {
 
 void RadosCluster::remove(const RadosObject& object) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     eckit::StatsTimer st{"rados_remove", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
     RADOS_CALL(rados_remove(ioCtx(object), object.name().c_str()));
@@ -450,7 +470,7 @@ void RadosCluster::remove(const RadosKeyValue& object) const {
 
 void RadosCluster::truncate(const RadosObject& object, const Length& length) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     eckit::StatsTimer st{"rados_trunc", rados_call_timer_, std::bind(&eckit::RadosIOStats::logMdOperation, &stats_, _1, _2)};
     RADOS_CALL(rados_trunc(ioCtx(object), object.name().c_str(), length));
@@ -458,7 +478,7 @@ void RadosCluster::truncate(const RadosObject& object, const Length& length) con
 
 time_t RadosCluster::lastModified(const RadosObject& object) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     uint64_t psize;
     time_t pmtime;
@@ -469,7 +489,7 @@ time_t RadosCluster::lastModified(const RadosObject& object) const {
 
 std::vector<std::string> RadosCluster::listPools() const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     std::vector<std::string> res;
 
@@ -489,12 +509,14 @@ std::vector<std::string> RadosCluster::listPools() const {
         offset += res.back().size() + 1;
     }
 
-    return res;}
+    return res;
+    
+}
 
 /// @todo: this lists all regular objects as well as omaps with no distinction
 std::vector<std::string> RadosCluster::listObjects(const std::string& pool, const std::string& nspace) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     std::vector<std::string> res;
 
@@ -521,11 +543,13 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
     rados_nobjects_list_close(listctx);
     st3.stop();
 
-    return res;}
+    return res;
+    
+}
 
 std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) const {
 
-    using namespace std::placeholders;    
+    using namespace std::placeholders;
 
     std::set<std::string> res;
 
@@ -557,7 +581,9 @@ std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) c
     rados_nobjects_list_close(listctx);
     st3.stop();
 
-    return std::vector<std::string>(res.begin(), res.end());}
+    return std::vector<std::string>(res.begin(), res.end());
+    
+}
 
 void RadosCluster::removeAll(const RadosObject& object) const {
     RadosAttributes attr = attributes(object);

@@ -21,6 +21,7 @@ namespace eckit::geo::grid {
 class RegularLL final : public Regular {
 public:
     // -- Constructors
+
     explicit RegularLL(const Spec&);
     explicit RegularLL(const Increments&, const area::BoundingBox& = {});
     RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);

@@ -18,16 +18,26 @@
 namespace eckit::geo::grid {
 
 
-struct RegularGaussian final : public Regular {
+class RegularGaussian final : public Regular {
+public:
+    // -- Constructors
+
     explicit RegularGaussian(const Spec&);
     explicit RegularGaussian(size_t N, const area::BoundingBox& = {});
 
-    [[nodiscard]] static Spec* spec(const std::string& name);
-    void fill_spec(spec::Custom&) const override;
+    // -- Methods
 
     size_t N() const { return N_; }
 
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
+
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
+
+    // -- Class members
+
+    [[nodiscard]] static Spec* spec(const std::string& name);
 
 private:
     const size_t N_;

@@ -31,6 +31,10 @@ public:
     explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = {});
     explicit ReducedGaussian(size_t N, const area::BoundingBox& = {});
 
+    // -- Methods
+
+    size_t N() const { return N_; }
+
     // -- Overridden methods
 
     iterator cbegin() const override;

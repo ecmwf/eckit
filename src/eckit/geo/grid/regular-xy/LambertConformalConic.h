@@ -18,8 +18,13 @@
 namespace eckit::geo::grid::regularxy {
 
 
-struct LambertConformalConic final : public RegularXY {
+class LambertConformalConic final : public RegularXY {
+public:
+    // -- Constructors
+
     explicit LambertConformalConic(const Spec& spec) : RegularXY(RegularXY::make_xy_ranges_from_spec(spec)) {}
+
+    // -- Overridden methods
 
     void fill_spec(spec::Custom& custom) const override;
 };

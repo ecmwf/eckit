@@ -19,14 +19,13 @@
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/util.h"
 #include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid {
 
 
-static size_t N(const pl_type& pl) {
+static size_t calculate_n(const pl_type& pl) {
     ASSERT(!pl.empty() && pl.size() % 2 == 0);
     return pl.size() / 2;
 }
@@ -38,7 +37,7 @@ ReducedGaussian::ReducedGaussian(const Spec& spec) :
 
 ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox) :
     Reduced(bbox),
-    N_(N(pl)),
+    N_(calculate_n(pl)),
     pl_(pl),
     j_(0),
     Nj_(N_ * 2),

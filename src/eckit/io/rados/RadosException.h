@@ -21,6 +21,7 @@ namespace eckit {
 
 class RadosException : public eckit::Exception {
 public:
+    RadosException();
     RadosException(const std::string&);
     RadosException(const std::string&, const eckit::CodeLocation&);
 };
@@ -29,6 +30,7 @@ public:
 
 class RadosEntityNotFoundException : public RadosException {
 public:
+    RadosEntityNotFoundException();
     RadosEntityNotFoundException(const std::string&);
     RadosEntityNotFoundException(const std::string&, const eckit::CodeLocation&);
 };

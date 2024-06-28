@@ -82,7 +82,7 @@ public:
     void removeAll(const RadosObject&) const;
 
 
-    static const RadosCluster& instance();
+    static RadosCluster& instance();
 
     // profiling
     eckit::RadosIOStats& stats() { return stats_; }

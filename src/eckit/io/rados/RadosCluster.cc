@@ -165,7 +165,7 @@ RadosIter::~RadosIter() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const RadosCluster& RadosCluster::instance() {
+RadosCluster& RadosCluster::instance() {
     static RadosCluster instance_;
     return instance_;
 }

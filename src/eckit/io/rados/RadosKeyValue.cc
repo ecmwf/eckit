@@ -144,7 +144,7 @@ bool RadosKeyValue::has(const std::string& key) const {
             0  /// @note: flags
         )
     );
-    st2.stop(),
+    st2.stop();
 
     eckit::StatsTimer st3{"rados_kv_has_aio_wait_for_complete", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
@@ -439,7 +439,7 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
 
             res.push_back(std::string(key, key + key_len));
 
-            st4.start();
+            st4.start("rados_omap_get_next2", std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2));
         }
         st4.stop();
 

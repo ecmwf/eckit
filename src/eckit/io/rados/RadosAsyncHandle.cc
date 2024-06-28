@@ -21,6 +21,10 @@ void RadosAsyncHandle::print(std::ostream& s) const {
 
 long RadosAsyncHandle::write(const void* buffer, long length) {
 
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
     ASSERT(length);
     ASSERT(opened_);
     ASSERT(write_);
@@ -32,6 +36,8 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
     comps_.emplace_back(new eckit::RadosAIO());
 
     if (first_write_) {
+    
+        eckit::StatsTimer st{"rados_aio_write_full", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
 
         RADOS_CALL(
             rados_aio_write_full(
@@ -46,6 +52,8 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
         first_write_ = false;
 
     } else {
+
+        eckit::StatsTimer st{"rados_aio_write", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
 
         RADOS_CALL(
             rados_aio_write(
@@ -67,6 +75,10 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
 
 void RadosAsyncHandle::flush() {
 
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
     /// @note: not correct! aio_flush waits for safe on all AIOs for an IoCtx for an entire pool/namespace
     ///   where AIOs from multiple RadosAsyncHandles (belonging to a same process) for 
     ///   objects on the same pool could be ongoing.
@@ -77,8 +89,10 @@ void RadosAsyncHandle::flush() {
     // RADOS_CALL(rados_aio_flush(RadosCluster::instance().ioCtx(object_)));
     // comps_.clear();
 
-    for (const auto& comp : comps_)
+    for (const auto& comp : comps_) {
+        eckit::StatsTimer st{"rados_obj_aio_wait_for_complete", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    }
     comps_.clear();
 
 }

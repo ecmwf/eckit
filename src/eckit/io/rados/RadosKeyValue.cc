@@ -40,17 +40,24 @@ bool RadosKeyValue::exists() const {
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() {
 
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
     eckit::RadosWriteOp op{};
 
+    eckit::StatsTimer st{"rados_write_op_create", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     rados_write_op_create(
         op.op_, 
         LIBRADOS_CREATE_IDEMPOTENT, 
         NULL
     );
+    st.stop();
 
     rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
     std::unique_ptr<RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
+    eckit::StatsTimer st2{"rados_aio_write_op_operate", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(
         rados_aio_write_op_operate(
             op.op_, 
@@ -68,8 +75,13 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() {
 
 void RadosKeyValue::ensureCreated() {
 
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
     auto comp = ensureCreatedAsync();
 
+    eckit::StatsTimer st{"rados_kv_aio_wait_for_complete", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
 
 }
@@ -95,6 +107,10 @@ eckit::Length RadosKeyValue::size(const std::string& key) const {
 
 bool RadosKeyValue::has(const std::string& key) const {
 
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
     eckit::RadosReadOp op{};
 
     eckit::RadosIter iter{};
@@ -104,6 +120,7 @@ bool RadosKeyValue::has(const std::string& key) const {
 
     int rc;
 
+    eckit::StatsTimer st{"rados_read_op_omap_get_vals_by_keys2", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     rados_read_op_omap_get_vals_by_keys2(
         op.op_,
         (char const * const *) &(key_c), 
@@ -112,10 +129,12 @@ bool RadosKeyValue::has(const std::string& key) const {
         &(iter.it_),
         &rc
     );
+    st.stop();
 
     rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
     eckit::RadosAIO comp{};
 
+    eckit::StatsTimer st2{"rados_kv_aio_read_op_operate", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(
         rados_aio_read_op_operate(
             op.op_, 
@@ -125,16 +144,24 @@ bool RadosKeyValue::has(const std::string& key) const {
             0  /// @note: flags
         )
     );
+    st2.stop(),
 
+    eckit::StatsTimer st3{"rados_kv_has_aio_wait_for_complete", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
+    st3.stop();
 
     ASSERT(rc == 0);
 
+    eckit::StatsTimer st4{"rados_omap_iter_size", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     return (rados_omap_iter_size(iter.it_) == 1);
 
 }
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key, const void* buf, const long& buflen, long& res) {
+
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     eckit::RadosWriteOp op{};
 
@@ -142,6 +169,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key,
     size_t key_len = key.size();
     size_t val_len = buflen;
 
+    eckit::StatsTimer st{"rados_write_op_omap_set2", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     rados_write_op_omap_set2(
         op.op_, 
         (char const * const *) &(key_c), 
@@ -154,6 +182,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key,
     rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
     std::unique_ptr<eckit::RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
+    eckit::StatsTimer st2{"rados_aio_write_op_operate", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(
         rados_aio_write_op_operate(
             op.op_, 
@@ -164,6 +193,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key,
             0  /// @note: flags
         )
     );
+    st2.stop();
 
     res = buflen;
 
@@ -173,10 +203,15 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key,
 
 long RadosKeyValue::put(const std::string& key, const void* buf, const long& len) {
 
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
     long res;
 
     auto comp = putAsync(key, buf, len, res);
 
+    eckit::StatsTimer st{"rados_kv_put_aio_wait_for_complete", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
 
     return res;
@@ -185,6 +220,10 @@ long RadosKeyValue::put(const std::string& key, const void* buf, const long& len
 
 /// @note: returns a RadosIter holding the value data, and sets val to point to the data in it
 std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, char*& val, size_t& len) const { 
+
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     eckit::RadosReadOp op{};
 
@@ -195,6 +234,7 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
 
     int rc;
 
+    eckit::StatsTimer st{"rados_read_op_omap_get_vals_by_keys2", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     rados_read_op_omap_get_vals_by_keys2(
         op.op_,
         (char const * const *) &(key_c), 
@@ -203,10 +243,12 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
         &(iter->it_),
         &rc
     );
+    st.stop();
 
     rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
     eckit::RadosAIO comp{};
 
+    eckit::StatsTimer st2{"rados_aio_read_op_operate", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(
         rados_aio_read_op_operate(
             op.op_, 
@@ -216,18 +258,26 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
             0  /// @note: flags
         )
     );
+    st2.stop();
 
+    eckit::StatsTimer st3{"rados_kv_get_aio_wait_for_complete", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
+    st3.stop();
 
     ASSERT(rc == 0);
 
+    eckit::StatsTimer st4{"rados_omap_iter_size", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     if (rados_omap_iter_size(iter->it_) != 1)
-        throw eckit::RadosEntityNotFoundException("Key '" + key + "' not found in KeyValue with name " + oid_);
+        throw eckit::RadosEntityNotFoundException();
+        // throw eckit::RadosEntityNotFoundException("Key '" + key + "' not found in KeyValue with name " + oid_);
+    st4.stop();
 
     char *found_key;
     size_t found_key_len;
 
+    eckit::StatsTimer st5{"rados_omap_get_next2", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(rados_omap_get_next2(iter->it_, &found_key, &val, &found_key_len, &len));
+    st5.stop();
 
     ASSERT(found_key);
     ASSERT(val);
@@ -268,21 +318,28 @@ eckit::MemoryStream RadosKeyValue::getMemoryStream(std::vector<char>& v, const s
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& key) {
 
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
     eckit::RadosWriteOp op{};
 
     const char *key_c = key.c_str();
     size_t key_len = key.size();
 
+    eckit::StatsTimer st{"rados_write_op_omap_rm_keys2", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     rados_write_op_omap_rm_keys2(
         op.op_, 
         (char const * const *) &(key_c), 
         &(key_len),
         1  /// @note: number of keys/values provided
     );
+    st.stop();
 
     rados_ioctx_t& ctx = RadosCluster::instance().ioCtx(*this);
     std::unique_ptr<eckit::RadosAIO> comp = std::make_unique<eckit::RadosAIO>();
 
+    eckit::StatsTimer st2{"rados_aio_write_op_operate", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(
         rados_aio_write_op_operate(
             op.op_, 
@@ -300,13 +357,22 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& k
 
 void RadosKeyValue::remove(const std::string& key) {
 
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
     auto comp = removeAsync(key);
 
+    eckit::StatsTimer st{"rados_kv_rm_aio_wait_for_complete", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
 
 }
 
 std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
+
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     std::vector<std::string> res;
 
@@ -321,6 +387,7 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
 
         eckit::RadosIter iter{};
 
+        eckit::StatsTimer st{"rados_read_op_omap_get_keys2", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         rados_read_op_omap_get_keys2(
             op.op_, 
             NULL,  /// @note: start search after
@@ -329,9 +396,11 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
             &more, 
             &rc
         );
+        st.stop();
 
         eckit::RadosAIO comp{};
 
+        eckit::StatsTimer st2{"rados_aio_read_op_operate", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         RADOS_CALL(
             rados_aio_read_op_operate(
                 op.op_, 
@@ -341,16 +410,22 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
                 0  /// @note: flags
             )
         );
+        st2.stop();
 
+        eckit::StatsTimer st3{"rados_kv_ls_aio_wait_for_complete", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
+        st3.stop();
 
         ASSERT(rc == 0);
 
         char *key;
         size_t key_len;
 
+        eckit::StatsTimer st4{"rados_omap_iter_size", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         for (int i = 0; i < rados_omap_iter_size(iter.it_); ++i) {
+            st4.stop();
 
+            eckit::StatsTimer st5{"rados_omap_get_next2", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
             RADOS_CALL(
                 rados_omap_get_next2(
                     iter.it_, 
@@ -360,10 +435,13 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
                     NULL  /// @note: where to store the value length
                 )
             );
+            st5.stop();
 
             res.push_back(std::string(key, key + key_len));
 
+            st4.start();
         }
+        st4.stop();
 
     }
 

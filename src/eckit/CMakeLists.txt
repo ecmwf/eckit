@@ -295,6 +295,8 @@ io/rados/RadosAttributes.cc
 io/rados/RadosAttributes.h
 io/rados/RadosException.cc
 io/rados/RadosException.h
+io/rados/RadosIOStats.cc
+io/rados/RadosIOStats.h
 )
 endif()
 

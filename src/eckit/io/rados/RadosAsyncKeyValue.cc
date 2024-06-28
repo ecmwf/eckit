@@ -50,8 +50,14 @@ void RadosAsyncKeyValue::remove(const std::string& key) {
 
 void RadosAsyncKeyValue::flush() {
 
-    for (const auto& comp : comps_)
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
+    for (const auto& comp : comps_) {
+        eckit::StatsTimer st{"rados_kv_aio_wait_for_complete", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    }
     comps_.clear();
 
 }

@@ -84,6 +84,10 @@ void RadosHandle::openForWrite(const Length& length) {
 
 long RadosHandle::read(void* buffer, long length) {
 
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
+
     ASSERT(opened_);
     ASSERT(!write_);
 
@@ -94,6 +98,7 @@ long RadosHandle::read(void* buffer, long length) {
     // long maxLength = RadosCluster::instance().maxObjectSize();
     // long readLength = length > maxLength ? maxLength : length;
 
+    eckit::StatsTimer st{"rados_read", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
     int len = RADOS_CALL(
         rados_read(
             RadosCluster::instance().ioCtx(object_), 
@@ -102,6 +107,7 @@ long RadosHandle::read(void* buffer, long length) {
             length, offset_
         )
     );
+    st.stop();
 
     offset_ += len;
 
@@ -110,6 +116,10 @@ long RadosHandle::read(void* buffer, long length) {
 }
 
 long RadosHandle::write(const void* buffer, long length) {
+
+    using namespace std::placeholders;
+    eckit::Timer& timer = eckit::RadosCluster::instance().radosCallTimer();
+    eckit::RadosIOStats& stats = eckit::RadosCluster::instance().stats();
 
     ASSERT(length);
     ASSERT(opened_);
@@ -120,6 +130,7 @@ long RadosHandle::write(const void* buffer, long length) {
 
     if (first_write_) {
 
+        eckit::StatsTimer st{"rados_write_full", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         RADOS_CALL(
             rados_write_full(
                 RadosCluster::instance().ioCtx(object_), 
@@ -133,6 +144,7 @@ long RadosHandle::write(const void* buffer, long length) {
 
     } else {
 
+        eckit::StatsTimer st2{"rados_write", timer, std::bind(&eckit::RadosIOStats::logMdOperation, &stats, _1, _2)};
         RADOS_CALL(
             rados_write(
                 RadosCluster::instance().ioCtx(object_), 

@@ -25,6 +25,7 @@
 #include "eckit/io/Length.h"
 
 #include "eckit/io/rados/RadosException.h"
+#include "eckit/io/rados/RadosIOStats.h"
 
 namespace eckit {
 
@@ -83,6 +84,12 @@ public:
 
     static const RadosCluster& instance();
 
+    // profiling
+    eckit::RadosIOStats& stats() { return stats_; }
+    eckit::Timer& timer() { return timer_; }
+    eckit::Timer& radosCallTimer() { return rados_call_timer_; }
+    eckit::Timer& miscTimer() { return misc_timer_; }
+
 private:
     RadosCluster();
 
@@ -92,6 +99,11 @@ private:
 private:
     rados_t cluster_;
     mutable PoolCtxCache ctx_;
+
+    eckit::RadosIOStats stats_;
+    eckit::Timer timer_;
+    eckit::Timer rados_call_timer_;
+    eckit::Timer misc_timer_;
 
     void reset();
 

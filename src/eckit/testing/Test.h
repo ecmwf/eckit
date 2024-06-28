@@ -402,8 +402,6 @@ int run_tests_main(std::vector<Test>& tests, int argc, char* argv[], bool initEc
 
     eckit::Log::info() << failures << " tests failed out of " << tests.size() << "." << std::endl;
 
-    eckit::Main::finalise();
-
     return failures;
 }
 

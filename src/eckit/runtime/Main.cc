@@ -25,7 +25,6 @@
 #include "eckit/system/LibraryManager.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/utils/Translator.h"
 
@@ -45,6 +44,8 @@ static Main* instance_ = nullptr;
 
 Main::Main(int argc, char** argv, const char* homeenv) :
     taskID_(-1), argc_(argc), argv_(argv), home_("/"), debug_(false) {
+ 
+    std::atexit(finalise);
 
     if (instance_) {
         std::cerr << "Attempting to create a new instance of Main()" << std::endl;
@@ -206,7 +207,6 @@ bool Main::ready() {
 }
 
 void Main::terminate() {
-    finalise();
     ::exit(0);
 }
 
@@ -215,7 +215,6 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
     if (not instance_) {
         new Library(argc, argv, homeenv);
     }
-    finalised_ = false;
 }
 
 bool Main::finalised() {

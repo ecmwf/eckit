@@ -76,7 +76,7 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 
     custom.set("grid", std::vector<double>{dx(), dy()});
 
-    if (!boundingBox().isGlobal()) {
+    if (!boundingBox().global()) {
         custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
     }
 

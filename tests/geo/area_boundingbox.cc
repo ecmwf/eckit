@@ -101,6 +101,22 @@ CASE("comparison") {
 }
 
 
+CASE("properties") {
+    area::BoundingBox a{10, 1, -10, 100};
+    area::BoundingBox b{20, 2, -20, 200};
+    std::unique_ptr<area::BoundingBox> c(area::BoundingBox::make_global_prime());
+    std::unique_ptr<area::BoundingBox> d(area::BoundingBox::make_global_antiprime());
+    area::BoundingBox e;
+
+    for (const auto& bb : {a, b, *c, *d, e}) {
+        EXPECT(!bb.empty());
+        EXPECT(bb.contains({10, 0}));
+        EXPECT(bb.global() == bb.contains({0, 0}));
+        EXPECT(bb.global() == (bb.periodic() && bb.contains(NORTH_POLE) && bb.contains(SOUTH_POLE)));
+    }
+}
+
+
 CASE("intersects") {
     area::BoundingBox a(10, 1, -10, 100);
     area::BoundingBox b(20, 2, -20, 200);

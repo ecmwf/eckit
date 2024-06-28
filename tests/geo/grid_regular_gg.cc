@@ -94,11 +94,11 @@ CASE("crop") {
 
     auto bbox3 = grid3->boundingBox();
 
-    EXPECT(bbox3.isPeriodicWestEast());
+    EXPECT(bbox3.periodic());
 
     bbox3 = {bbox3.north, bbox3.west, bbox3.south, 0.};
 
-    EXPECT_NOT(bbox3.isPeriodicWestEast());
+    EXPECT_NOT(bbox3.periodic());
 
     std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(bbox3));
     auto n4 = grid4->size();

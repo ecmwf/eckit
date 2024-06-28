@@ -69,10 +69,8 @@ public:
 
     container_type deconstruct() const { return {north, west, south, east}; }
 
-    bool isGlobal() const;
-    bool isPeriodicWestEast() const;
-    bool containsNorthPole() const;
-    bool containsSouthPole() const;
+    bool global() const;
+    bool periodic() const;
 
     bool contains(const PointLonLat&) const;
     bool contains(const BoundingBox&) const;

@@ -85,7 +85,7 @@ CASE("projection: proj") {
             const P& projection;
             const Point2 min;
             const Point2 max;
-            const bool is_periodic_west_east;
+            const bool periodic;
             const bool contains_north_pole;
             const bool contains_south_pole;
         } tests_bbox[] = {
@@ -106,9 +106,13 @@ CASE("projection: proj") {
         for (const auto& test : tests_bbox) {
             auto bbox = util::bounding_box(test.min, test.max, *test.projection);
 
-            EXPECT_EQUAL(test.is_periodic_west_east, bbox.isPeriodicWestEast());
-            EXPECT_EQUAL(test.contains_north_pole, bbox.containsNorthPole());
-            EXPECT_EQUAL(test.contains_south_pole, bbox.containsSouthPole());
+            EXPECT_EQUAL(test.periodic, bbox.periodic());
+            EXPECT_EQUAL(test.contains_north_pole, bbox.contains(NORTH_POLE));
+            EXPECT_EQUAL(test.contains_south_pole, bbox.contains(SOUTH_POLE));
+
+            auto global = test.periodic && test.contains_north_pole && test.contains_south_pole;
+
+            EXPECT(global == bbox.global());
         }
     }
 }

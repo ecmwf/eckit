@@ -118,30 +118,32 @@ BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s
 BoundingBox::BoundingBox() : BoundingBox(DEFAULT) {}
 
 
-bool BoundingBox::isGlobal() const {
-    return isPeriodicWestEast() && containsNorthPole() && containsSouthPole();
+bool BoundingBox::global() const {
+    return periodic() && contains(NORTH_POLE) && contains(SOUTH_POLE);
 }
 
 
-bool BoundingBox::isPeriodicWestEast() const {
+bool BoundingBox::periodic() const {
     return west != east && is_approximately_equal(west, PointLonLat::normalise_angle_to_minimum(east, west));
 }
 
 
-bool BoundingBox::containsNorthPole() const {
-    // NOTE: latitudes < -90 or > 90 are not considered
-    return is_approximately_equal(north, NORTH_POLE.lat);
-}
-
-
-bool BoundingBox::containsSouthPole() const {
-    // NOTE: latitudes < -90 or > 90 are not considered
-    return is_approximately_equal(south, SOUTH_POLE.lat);
-}
-
-
 bool BoundingBox::contains(const PointLonLat& p) const {
-    return p.lat <= north && p.lat >= south && PointLonLat::normalise_angle_to_minimum(p.lon, west) <= east;
+    // NOTE: latitudes < -90 or > 90 are not considered
+    if (is_approximately_equal(p.lat, NORTH_POLE.lat)) {
+        return is_approximately_equal(p.lat, north);
+    }
+
+    if (is_approximately_equal(p.lat, SOUTH_POLE.lat)) {
+        return is_approximately_equal(p.lat, south);
+    }
+
+    if ((south < p.lat && p.lat < north) || is_approximately_equal(p.lat, north)
+        || is_approximately_equal(p.lat, south)) {
+        return PointLonLat::normalise_angle_to_minimum(p.lon, west) <= east;
+    }
+
+    return false;
 }
 
 
@@ -169,7 +171,7 @@ bool BoundingBox::intersects(BoundingBox& other) const {
         n = s;
     }
 
-    if (isPeriodicWestEast() && other.isPeriodicWestEast()) {
+    if (periodic() && other.periodic()) {
         other = {n, other.west, s, other.east};
         return intersectsSN;
     }
@@ -178,8 +180,8 @@ bool BoundingBox::intersects(BoundingBox& other) const {
     auto e = w;
 
     auto intersect = [](const BoundingBox& a, const BoundingBox& b, double& w, double& e) {
-        bool p = a.isPeriodicWestEast();
-        if (p || b.isPeriodicWestEast()) {
+        bool p = a.periodic();
+        if (p || b.periodic()) {
             w = (p ? b : a).west;
             e = (p ? b : a).east;
             return true;

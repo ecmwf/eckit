@@ -53,14 +53,8 @@ const Range& Regular::y() const {
 }
 
 
-Regular::Regular(std::pair<Range*, Range*> xy, const area::BoundingBox& bbox) :
-    Grid(bbox), x_(xy.first), y_(xy.second) {
-    ASSERT(x_ && x_->size() > 0);
-    ASSERT(y_ && y_->size() > 0);
-}
-
-
-Regular::Regular(std::pair<Range*, Range*> xy) : x_(xy.first), y_(xy.second) {
+Regular::Regular(Ranges xy, const area::BoundingBox& bbox, Projection* projection) :
+    Grid(bbox, projection), x_(xy.first), y_(xy.second) {
     ASSERT(x_ && x_->size() > 0);
     ASSERT(y_ && y_->size() > 0);
 }
@@ -68,6 +62,11 @@ Regular::Regular(std::pair<Range*, Range*> xy) : x_(xy.first), y_(xy.second) {
 
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
+}
+
+
+Regular::Ranges::Ranges(Range* x, Range* y) : pair{x, y} {
+    ASSERT(first != nullptr && second != nullptr);
 }
 
 

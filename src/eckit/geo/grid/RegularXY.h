@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <utility>
-
 #include "eckit/geo/grid/Regular.h"
 
 
@@ -37,7 +35,7 @@ public:
 protected:
     // -- Methods
 
-    [[nodiscard]] static std::pair<Range*, Range*> make_xy_ranges_from_spec(const Spec&);
+    [[nodiscard]] static Ranges make_ranges_from_spec(const Spec&);
 
     // -- Overridden methods
 

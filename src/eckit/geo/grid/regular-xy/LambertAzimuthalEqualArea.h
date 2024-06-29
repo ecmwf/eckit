@@ -22,7 +22,7 @@ class LambertAzimuthalEqualArea final : public RegularXY {
 public:
     // -- Constructors
 
-    explicit LambertAzimuthalEqualArea(const Spec& spec) : RegularXY(RegularXY::make_xy_ranges_from_spec(spec)) {}
+    explicit LambertAzimuthalEqualArea(const Spec& spec) : RegularXY(RegularXY::make_ranges_from_spec(spec)) {}
 
     // -- Overridden methods
 

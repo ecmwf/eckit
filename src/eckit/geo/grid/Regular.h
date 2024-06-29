@@ -44,8 +44,6 @@ public:
     virtual size_t nx() const { return x_->size(); }
     virtual size_t ny() const { return y_->size(); }
 
-    [[nodiscard]] static std::pair<Range*, Range*> make_lonlat_ranges_from_spec(const Spec&);
-
     const Range& x() const;
     const Range& y() const;
 
@@ -57,10 +55,15 @@ public:
     size_t size() const final { return nx() * ny(); }
 
 protected:
+    // -- Types
+
+    struct Ranges : std::pair<Range*, Range*> {
+        Ranges(Range*, Range*);
+    };
+
     // -- Constructors
 
-    Regular(std::pair<Range*, Range*> xy, const area::BoundingBox& bbox);
-    Regular(std::pair<Range*, Range*> xy);
+    explicit Regular(Ranges, const area::BoundingBox& = {}, Projection* = nullptr);
 
     // -- Overridden methods
 

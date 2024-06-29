@@ -24,7 +24,7 @@
 namespace eckit::geo::grid {
 
 
-std::pair<Range*, Range*> RegularXY::make_xy_ranges_from_spec(const Spec& spec) {
+Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
 #if 0
     Increments inc(spec);
     Shape shape(spec);

@@ -22,7 +22,7 @@ class Mercator final : public RegularXY {
 public:
     // -- Constructors
 
-    explicit Mercator(const Spec& spec) : RegularXY(RegularXY::make_xy_ranges_from_spec(spec)) {}
+    explicit Mercator(const Spec& spec) : RegularXY(RegularXY::make_ranges_from_spec(spec)) {}
 
     // -- Overridden methods
 

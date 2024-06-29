@@ -13,7 +13,6 @@
 #include "eckit/geo/Figure.h"
 
 #include <memory>
-#include <utility>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/figure/Earth.h"

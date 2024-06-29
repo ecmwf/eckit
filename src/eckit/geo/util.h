@@ -32,7 +32,6 @@ namespace util {
 
 constexpr double DEGREE_TO_RADIAN = M_PI / 180.;
 constexpr double RADIAN_TO_DEGREE = M_1_PI * 180.;
-constexpr double EPS              = 1e-12;
 
 
 template <typename T>

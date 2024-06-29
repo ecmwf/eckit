@@ -28,41 +28,30 @@ namespace eckit::geo::projection {
 static ProjectionBuilder<Rotation> PROJECTION("rotation");
 
 
-Rotation::Rotation() : Rotation(-90., 0., 0.) {}
+Rotation::Rotation(const PointLonLat& p, double angle) : Rotation(p.lon, p.lat, angle) {}
 
 
-Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) : rotated_(true) {
+Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
+    south_pole_(PointLonLat::make(south_pole_lon, south_pole_lat)), angle_(angle), rotated_(true) {
     using M = maths::Matrix3<double>;
 
     struct NonRotated final : Implementation {
         PointLonLat operator()(const PointLonLat& p) const override { return p; }
-        void fill_spec(spec::Custom& custom) const override {}
     };
 
     struct RotationAngle final : Implementation {
         explicit RotationAngle(double angle) : angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override { return {p.lon + angle_, p.lat}; }
-        void fill_spec(spec::Custom& custom) const override { custom.set("rotation_angle", angle_); }
         const double angle_;
     };
 
     struct RotationMatrix final : Implementation {
-        explicit RotationMatrix(M&& R) : RotationMatrix(std::move(R), 0, 0, 0) {}
-        RotationMatrix(M&& R, double south_pole_lon, double south_pole_lat, double angle) :
-            R_(R), south_pole_lon_(south_pole_lon), south_pole_lat_(south_pole_lat), angle_(angle) {}
+        explicit RotationMatrix(M&& R) : R_(R) {}
         PointLonLat operator()(const PointLonLat& p) const override {
             return geometry::UnitSphere::convertCartesianToSpherical(
                 R_ * geometry::UnitSphere::convertSphericalToCartesian(p));
         }
-        void fill_spec(spec::Custom& custom) const override {
-            custom.set("south_pole_lon", south_pole_lon_);
-            custom.set("south_pole_lat", south_pole_lat_);
-            custom.set("rotation_angle", angle_);
-        }
         const M R_;
-        const double south_pole_lon_;
-        const double south_pole_lat_;
-        const double angle_;
     };
 
     const auto alpha = util::DEGREE_TO_RADIAN * angle;
@@ -73,9 +62,9 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     const auto ct = std::cos(theta);
     const auto cp = std::cos(phi);
 
-    if (types::is_approximately_equal(ct, 1., util::EPS)) {
-        angle    = PointLonLat::normalise_angle_to_minimum(angle - south_pole_lon, -180.);
-        rotated_ = !types::is_approximately_equal(angle, 0., util::EPS);
+    if (types::is_approximately_equal(ct, 1., PointLonLat::EPS * util::DEGREE_TO_RADIAN)) {
+        angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_lon, -PointLonLat::FLAT_ANGLE);
+        rotated_ = !types::is_approximately_equal(angle_, 0., PointLonLat::EPS);
 
         fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
         inv_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(angle)) : new NonRotated);
@@ -93,7 +82,7 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     // q = Rz Ry Ra p = [  cosφ sinφ   ] [  cosϑ   sinϑ ] [  cosα sinα   ] p
     //                  [ -sinφ cosφ   ] [       1      ] [ -sinα cosα   ]
     //                  [            1 ] [ -sinϑ   cosϑ ] [            1 ]
-    fwd_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp,
+    fwd_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, sa * cp * ct + ca * sp,
                                               cp * st,  //
                                               -sa * cp - ca * ct * sp, ca * cp - sa * ct * sp,
                                               -sp * st,  //
@@ -103,21 +92,50 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     // p = Ra Ry Rz q = [ cosα -sinα   ] [ cosϑ   -sinϑ ] [ cosφ -sinφ   ] q
     //                  [ sinα  cosα   ] [      1       ] [ sinφ  cosφ   ]
     //                  [            1 ] [ sinϑ    cosϑ ] [            1 ]
-    inv_ = std::make_unique<RotationMatrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp,
+    inv_ = std::make_shared<RotationMatrix>(M{ca * cp * ct - sa * sp, -sa * cp - ca * ct * sp,
                                               -ca * st,  //
                                               sa * cp * ct + ca * sp, ca * cp - sa * ct * sp,
                                               -sa * st,  //
                                               cp * st, -sp * st, ct});
+
+    angle_ = PointLonLat::normalise_angle_to_minimum(angle_, -PointLonLat::FLAT_ANGLE);
 }
 
 
-Rotation::Rotation(const Spec& spec) :
-    Rotation(spec.get_double("south_pole_lon"), spec.get_double("south_pole_lat"), spec.get_double("rotation_angle", 0)) {}
+Rotation* Rotation::make_from_spec(const Spec& spec) {
+    double angle = 0.;
+    spec.get("rotation_angle", angle);
+
+    auto lon = SOUTH_POLE.lon;
+    auto lat = SOUTH_POLE.lat;
+    if (std::vector<double> r{lon, lat}; spec.get("rotation", r)) {
+        ASSERT_MSG(r.size() == 2, "Rotation: expected 'rotation' as a list of size 2");
+        lon = r[0];
+        lat = r[1];
+    }
+    else {
+        ASSERT_MSG(spec.get("south_pole_lon", lon) == spec.get("south_pole_lat", lat),
+                   "Rotation: expected 'south_pole_lon' and 'south_pole_lat'");
+    }
+
+    auto* r = new Rotation{lon, lat, angle};
+    if (!r->rotated()) {
+        delete r;
+        r = nullptr;
+    }
+
+    return r;
+}
 
 
 void Rotation::fill_spec(spec::Custom& custom) const {
-    fwd_->fill_spec(custom);
-    custom.set("projection", "rotation");
+    if (!points_equal(SOUTH_POLE, south_pole_)) {
+        custom.set("rotation", std::vector<double>{south_pole_.lon, south_pole_.lat});
+    }
+    if (!types::is_approximately_equal(angle_, 0., PointLonLat::EPS)) {
+        custom.set("rotation_angle", angle_);
+    }
+    // custom.set("projection", "rotation");  // it's a common projection (?)
 }
 
 

@@ -25,9 +25,22 @@ class Rotation : public Projection {
 public:
     // -- Constructors
 
-    Rotation();
-    Rotation(double south_pole_lon, double south_pole_lat, double angle);
-    explicit Rotation(const Spec&);
+    explicit Rotation(const Spec& spec) : Rotation(*std::unique_ptr<Rotation>(make_from_spec(spec))) {}
+
+    Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
+    Rotation(double south_pole_lon, double south_pole_lat, double angle = 0);
+
+    Rotation(const Rotation&) = default;
+    Rotation(Rotation&&)      = default;
+
+    // -- Destructor
+
+    ~Rotation() override = default;
+
+    // -- Operators
+
+    Rotation& operator=(const Rotation&) = default;
+    Rotation& operator=(Rotation&&)      = default;
 
     // -- Methods
 
@@ -40,6 +53,10 @@ public:
 
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
+
+    // -- Class methods
+
+    [[nodiscard]] static Rotation* make_from_spec(const Spec&);
 
 protected:
     // -- Overridden methods
@@ -59,13 +76,15 @@ private:
         void operator=(Implementation&&)      = delete;
 
         virtual PointLonLat operator()(const PointLonLat&) const = 0;
-        virtual void fill_spec(spec::Custom&) const              = 0;
     };
 
     // -- Members
 
-    std::unique_ptr<Implementation> fwd_;
-    std::unique_ptr<Implementation> inv_;
+    std::shared_ptr<Implementation> fwd_;
+    std::shared_ptr<Implementation> inv_;
+
+    PointLonLat south_pole_;
+    double angle_;
     bool rotated_;
 };
 

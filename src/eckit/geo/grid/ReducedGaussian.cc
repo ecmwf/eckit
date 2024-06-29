@@ -32,11 +32,11 @@ static size_t calculate_n(const pl_type& pl) {
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
+    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox(spec), projection::Rotation::make_from_spec(spec)) {}
 
 
-ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox),
+ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox, projection::Rotation* rotation) :
+    Reduced(bbox, rotation),
     N_(calculate_n(pl)),
     pl_(pl),
     j_(0),
@@ -48,8 +48,8 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbo
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const area::BoundingBox& bbox) :
-    ReducedGaussian(util::reduced_octahedral_pl(N), bbox) {}
+ReducedGaussian::ReducedGaussian(size_t N, const area::BoundingBox& bbox, projection::Rotation* rotation) :
+    ReducedGaussian(util::reduced_octahedral_pl(N), bbox, rotation) {}
 
 
 Grid::iterator ReducedGaussian::cbegin() const {

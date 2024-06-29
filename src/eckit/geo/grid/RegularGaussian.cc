@@ -25,13 +25,14 @@ namespace eckit::geo::grid {
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
     RegularGaussian(spec.get_unsigned("N"),
-                    *std::unique_ptr<area::BoundingBox>(area::BoundingBox::make_from_spec(spec))) {}
+                    *std::unique_ptr<area::BoundingBox>(area::BoundingBox::make_from_spec(spec)),
+                    projection::Rotation::make_from_spec(spec)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox) :
+RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox, projection::Rotation* rotation) :
     Regular({range::RegularLongitude(4 * N, 0., 360.).make_range_cropped(bbox.west, bbox.east),
              range::GaussianLatitude(N, false).make_range_cropped(bbox.north, bbox.south)},
-            bbox),
+            bbox, rotation),
     N_(N) {
     ASSERT(size() > 0);
 }

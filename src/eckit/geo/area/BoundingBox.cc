@@ -25,7 +25,7 @@
 namespace eckit::geo::area {
 
 
-static const auto& DEFAULT = BOUNDING_BOX_GLOBE_PRIME;
+const BoundingBox BOUNDING_BOX_DEFAULT;
 
 
 static inline bool is_approximately_equal(BoundingBox::value_type a, BoundingBox::value_type b) {
@@ -34,25 +34,26 @@ static inline bool is_approximately_equal(BoundingBox::value_type a, BoundingBox
 
 
 BoundingBox* BoundingBox::make_global_prime() {
-    return new BoundingBox(BOUNDING_BOX_GLOBE_PRIME);
+    return new BoundingBox{PointLonLat::RIGHT_ANGLE, 0., -PointLonLat::RIGHT_ANGLE, PointLonLat::FULL_ANGLE};
 }
 
 
 BoundingBox* BoundingBox::make_global_antiprime() {
-    return new BoundingBox(BOUNDING_BOX_GLOBE_ANTIPRIME);
+    return new BoundingBox{PointLonLat::RIGHT_ANGLE, -PointLonLat::FLAT_ANGLE, -PointLonLat::RIGHT_ANGLE,
+                           PointLonLat::FLAT_ANGLE};
 }
 
 
 void BoundingBox::fill_spec(spec::Custom& custom) const {
-    if (operator!=(DEFAULT)) {
-        custom.set("type", "bounding-box");
+    if (operator!=(BOUNDING_BOX_DEFAULT)) {
+        custom.set("area", "bounding-box");
         custom.set("bounding-box", std::vector<double>{north, west, south, east});
     }
 }
 
 
 BoundingBox* BoundingBox::make_from_spec(const Spec& spec) {
-    auto [n, w, s, e] = DEFAULT.deconstruct();
+    auto [n, w, s, e] = BOUNDING_BOX_DEFAULT.deconstruct();
 
     if (std::vector<double> area{n, w, s, e}; spec.get("area", area)) {
         ASSERT_MSG(area.size() == 4, "BoundingBox: 'area' expected list of size 4");
@@ -99,12 +100,6 @@ BoundingBox* BoundingBox::make_from_area(value_type n, value_type w, value_type 
 }
 
 
-BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {
-    ASSERT(south <= north);
-    ASSERT(west <= east);
-}
-
-
 BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s, e} {
     // normalise east in [west, west + 2 pi[
     auto a        = PointLonLat::normalise_angle_to_minimum(e, w);
@@ -115,7 +110,7 @@ BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s
 }
 
 
-BoundingBox::BoundingBox() : BoundingBox(DEFAULT) {}
+BoundingBox::BoundingBox() : BoundingBox(*std::unique_ptr<BoundingBox>(make_global_prime())) {}
 
 
 bool BoundingBox::global() const {
@@ -222,13 +217,6 @@ bool bounding_box_equal(const BoundingBox& a, const BoundingBox& b) {
     return is_approximately_equal(c->north, d->north) && is_approximately_equal(c->south, d->south)
            && is_approximately_equal(c->west, d->west) && is_approximately_equal(c->east, d->east);
 }
-
-
-const BoundingBox BOUNDING_BOX_GLOBE_PRIME{PointLonLat::RIGHT_ANGLE, 0., -PointLonLat::RIGHT_ANGLE,
-                                           PointLonLat::FULL_ANGLE};
-
-const BoundingBox BOUNDING_BOX_GLOBE_ANTIPRIME{PointLonLat::RIGHT_ANGLE, -PointLonLat::FLAT_ANGLE, -90.,
-                                               PointLonLat::FLAT_ANGLE};
 
 
 }  // namespace eckit::geo::area

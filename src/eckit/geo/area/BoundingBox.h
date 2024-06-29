@@ -36,7 +36,7 @@ public:
 
     // -- Constructors
 
-    explicit BoundingBox(const Spec&);
+    explicit BoundingBox(const Spec& spec) : BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {}
 
     BoundingBox(value_type north, value_type west, value_type south, value_type east);
 
@@ -105,9 +105,7 @@ private:
 
 
 constexpr PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST = -PointLonLat::FLAT_ANGLE;
-
-extern const BoundingBox BOUNDING_BOX_GLOBE_PRIME;
-extern const BoundingBox BOUNDING_BOX_GLOBE_ANTIPRIME;
+extern const BoundingBox BOUNDING_BOX_DEFAULT;
 
 
 }  // namespace eckit::geo::area

@@ -23,7 +23,7 @@ public:
     // -- Constructors
 
     explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N, const area::BoundingBox& = {});
+    explicit RegularGaussian(size_t N, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
 
     // -- Methods
 

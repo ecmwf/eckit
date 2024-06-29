@@ -43,8 +43,8 @@ Grid::Grid(const Spec& spec) :
 Grid::Grid(Ordering ordering) : ordering_(ordering) {}
 
 
-Grid::Grid(const area::BoundingBox& bbox, Ordering ordering) :
-    bbox_(new area::BoundingBox(bbox)), ordering_(ordering) {}
+Grid::Grid(const area::BoundingBox& bbox, Projection* projection, Ordering ordering) :
+    bbox_(new area::BoundingBox(bbox)), projection_(projection), ordering_(ordering) {}
 
 
 const Spec& Grid::spec() const {
@@ -181,7 +181,7 @@ Renumber Grid::no_reorder(size_t size) {
 
 void Grid::fill_spec(spec::Custom& custom) const {
     if (area_) {
-        static const auto AREA_DEFAULT(area::BoundingBox{}.spec_str());
+        static const auto AREA_DEFAULT(area::BOUNDING_BOX_DEFAULT.spec_str());
 
         std::unique_ptr<spec::Custom> area(area_->spec());
         if (area->str() != AREA_DEFAULT) {
@@ -190,11 +190,7 @@ void Grid::fill_spec(spec::Custom& custom) const {
     }
 
     if (projection_) {
-        std::unique_ptr<spec::Custom> projection(projection_->spec());
-
-        if (!projection->str().empty()) {
-            custom.set("projection", projection.release());
-        }
+        projection_->fill_spec(custom);
     }
 }
 

@@ -26,6 +26,7 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Renumber.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
@@ -139,7 +140,7 @@ public:
 protected:
     // -- Constructors
 
-    explicit Grid(const area::BoundingBox&, Ordering = Ordering::DEFAULT);
+    explicit Grid(const area::BoundingBox&, Projection* = nullptr, Ordering = Ordering::DEFAULT);
     explicit Grid(Ordering = Ordering::DEFAULT);
 
     // -- Methods
@@ -155,9 +156,8 @@ private:
     // -- Members
 
     mutable std::unique_ptr<Area> area_;
-    mutable std::unique_ptr<Projection> projection_;
-
     mutable std::unique_ptr<area::BoundingBox> bbox_;
+    mutable std::unique_ptr<Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;
 

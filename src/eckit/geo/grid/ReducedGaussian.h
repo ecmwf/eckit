@@ -28,8 +28,8 @@ public:
     // -- Constructors
 
     explicit ReducedGaussian(const Spec&);
-    explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = {});
-    explicit ReducedGaussian(size_t N, const area::BoundingBox& = {});
+    explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
+    explicit ReducedGaussian(size_t N, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
 
     // -- Methods
 

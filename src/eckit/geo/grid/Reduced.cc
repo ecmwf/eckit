@@ -63,6 +63,9 @@ std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlon() const {
 }
 
 
+Reduced::Reduced(const area::BoundingBox& bbox, Projection* projection) : Grid(bbox, projection) {}
+
+
 const std::vector<size_t>& Reduced::niacc() const {
     if (niacc_.empty()) {
         niacc_.resize(1 + nj());

@@ -23,8 +23,8 @@ public:
     // -- Constructors
 
     explicit RegularLL(const Spec&);
-    explicit RegularLL(const Increments&, const area::BoundingBox& = {});
-    RegularLL(const Increments&, const area::BoundingBox&, const PointLonLat& ref);
+    explicit RegularLL(const Increments&, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
+    RegularLL(const Increments&, const area::BoundingBox&, projection::Rotation*, const PointLonLat& ref);
 
     // -- Methods
 

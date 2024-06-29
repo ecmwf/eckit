@@ -31,31 +31,33 @@ static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REA
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(Increments{spec}, area::BoundingBox{spec}, [&spec]() -> PointLonLat {
-        std::vector<PointLonLat::value_type> v(2);
-        if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
-            return {v[0], v[1]};
-        }
+    RegularLL(Increments{spec}, area::BoundingBox{spec}, projection::Rotation::make_from_spec(spec),
+              [&spec]() -> PointLonLat {
+                  std::vector<PointLonLat::value_type> v(2);
+                  if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
+                      return {v[0], v[1]};
+                  }
 
-        if (spec.get("reference_lonlat", v) && v.size() == 2) {
-            return {v[0], v[1]};
-        }
+                  if (spec.get("reference_lonlat", v) && v.size() == 2) {
+                      return {v[0], v[1]};
+                  }
 
-        area::BoundingBox area{spec};
-        return {area.west, area.south};
-    }()) {
+                  area::BoundingBox area{spec};
+                  return {area.west, area.south};
+              }()) {
     ASSERT(size() > 0);
 }
 
 
-RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox) :
-    RegularLL(inc, bbox, {bbox.south, bbox.west}) {}
+RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, projection::Rotation* rotation) :
+    RegularLL(inc, bbox, rotation, {bbox.south, bbox.west}) {}
 
 
-RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref) :
+RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, projection::Rotation* rotation,
+                     const PointLonLat& ref) :
     Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon, 0.),
              new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat, 0.)},
-            bbox) {
+            bbox, rotation) {
     ASSERT(size() > 0);
 }
 

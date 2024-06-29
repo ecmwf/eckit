@@ -37,7 +37,7 @@ public:
 protected:
     // -- Constructors
 
-    using Grid::Grid;
+    explicit Reduced(const area::BoundingBox& = {}, Projection* = nullptr);
 
     // -- Methods
 

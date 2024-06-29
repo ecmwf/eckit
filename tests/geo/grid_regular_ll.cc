@@ -33,8 +33,8 @@ CASE("global") {
 
     EXPECT(grid2->size() == 5 * 10);
 
-    for (const auto& grid :
-         {RegularLL({1., 1.}, {89.5, 0.5, -89.5, 359.5}), RegularLL({1., 1.}, {90., 0., -90, 360.}, {0.5, 0.5})}) {
+    for (const auto& grid : {RegularLL({1., 1.}, {89.5, 0.5, -89.5, 359.5}),
+                             RegularLL({1., 1.}, {90., 0., -90, 360.}, nullptr, {0.5, 0.5})}) {
         EXPECT(grid.nx() == 360);
         EXPECT(grid.ny() == 180);
         EXPECT(grid.size() == 360 * 180);

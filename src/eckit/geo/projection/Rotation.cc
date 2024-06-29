@@ -42,7 +42,7 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     struct RotationAngle final : Implementation {
         explicit RotationAngle(double angle) : angle_(angle) {}
         PointLonLat operator()(const PointLonLat& p) const override { return {p.lon + angle_, p.lat}; }
-        void fill_spec(spec::Custom& custom) const override { custom.set("angle", angle_); }
+        void fill_spec(spec::Custom& custom) const override { custom.set("rotation_angle", angle_); }
         const double angle_;
     };
 
@@ -57,7 +57,7 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
         void fill_spec(spec::Custom& custom) const override {
             custom.set("south_pole_lon", south_pole_lon_);
             custom.set("south_pole_lat", south_pole_lat_);
-            custom.set("angle", angle_);
+            custom.set("rotation_angle", angle_);
         }
         const M R_;
         const double south_pole_lon_;
@@ -112,7 +112,7 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 
 
 Rotation::Rotation(const Spec& spec) :
-    Rotation(spec.get_double("south_pole_lon"), spec.get_double("south_pole_lat"), spec.get_double("angle", 0)) {}
+    Rotation(spec.get_double("south_pole_lon"), spec.get_double("south_pole_lat"), spec.get_double("rotation_angle", 0)) {}
 
 
 void Rotation::fill_spec(spec::Custom& custom) const {

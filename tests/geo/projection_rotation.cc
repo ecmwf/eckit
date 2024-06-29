@@ -229,7 +229,7 @@ CASE("rotation (5)") {
         {"projection", "rotation"},
         {"south_pole_lat", -90.},
         {"south_pole_lon", 0.},
-        {"angle", 45.},
+        {"rotation_angle", 45.},
     });
 
     // compose sequentially

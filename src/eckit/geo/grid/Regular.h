@@ -63,7 +63,7 @@ protected:
 
     // -- Constructors
 
-    explicit Regular(Ranges, const area::BoundingBox& = {}, Projection* = nullptr);
+    explicit Regular(Ranges, Projection* = nullptr);
 
     // -- Overridden methods
 

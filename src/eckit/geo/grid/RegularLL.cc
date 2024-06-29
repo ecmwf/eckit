@@ -57,7 +57,7 @@ RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, proje
                      const PointLonLat& ref) :
     Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon, 0.),
              new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat, 0.)},
-            bbox, rotation) {
+            rotation) {
     ASSERT(size() > 0);
 }
 

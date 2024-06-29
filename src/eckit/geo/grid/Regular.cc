@@ -12,6 +12,8 @@
 
 #include "eckit/geo/grid/Regular.h"
 
+#include <algorithm>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/spec/Custom.h"
@@ -19,6 +21,21 @@
 
 
 namespace eckit::geo::grid {
+
+
+namespace {
+
+
+area::BoundingBox make_bounding_box(const Range& lon, const Range& lat) {
+    auto n = std::max(lat.a(), lat.b());
+    auto w = std::min(lon.a(), lon.b());
+    auto s = std::min(lat.a(), lat.b());
+    auto e = std::max(lon.a(), lon.b());
+    return {n, w, s, e};
+}
+
+
+}  // namespace
 
 
 double Regular::dx() const {
@@ -53,8 +70,8 @@ const Range& Regular::y() const {
 }
 
 
-Regular::Regular(Ranges xy, const area::BoundingBox& bbox, Projection* projection) :
-    Grid(bbox, projection), x_(xy.first), y_(xy.second) {
+Regular::Regular(Ranges xy, Projection* projection) :
+    Grid(make_bounding_box(*xy.first, *xy.second), projection), x_(xy.first), y_(xy.second) {
     ASSERT(x_ && x_->size() > 0);
     ASSERT(y_ && y_->size() > 0);
 }

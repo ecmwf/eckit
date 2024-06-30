@@ -41,25 +41,25 @@ void RadosMultiObjWriteHandle::print(std::ostream& s) const {
 
 // RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(Stream& s) :
 //     DataHandle(s), object_(s), opened_(false) {
-//     s >> maxObjectSize_;
-//     if (!maxObjectSize_) {
-//         maxObjectSize_ = RadosCluster::instance().maxObjectSize();
+//     s >> maxPartSize_;
+//     if (!maxPartSize_) {
+//         maxPartSize_ = RadosCluster::instance().maxObjectSize();
 //     }
 // }
 
 RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::RadosObject& obj, bool async, 
-    const Length& maxObjectSize, size_t maxAioBuffSize, size_t maxHandleBuffSize) : 
-    object_(obj), async_(async), maxObjectSize_(maxObjectSize), 
+    const Length& maxPartSize, size_t maxAioBuffSize, size_t maxHandleBuffSize) : 
+    object_(obj), async_(async), maxPartSize_(maxPartSize), 
     maxAioBuffSize_(maxAioBuffSize), maxHandleBuffSize_(maxHandleBuffSize), opened_(false) {
 
-    if (!maxObjectSize_) {
-        maxObjectSize_ = RadosCluster::instance().maxObjectSize();
+    if (!maxPartSize_) {
+        maxPartSize_ = RadosCluster::instance().maxObjectSize();
     }
 
 }
 
-// RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::URI& uri, const Length& maxObjectSize) :
-//     RadosMultiObjWriteHandle(eckit::RadosObject(uri), maxObjectSize) {}
+// RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::URI& uri, const Length& maxPartSize) :
+//     RadosMultiObjWriteHandle(eckit::RadosObject(uri), maxPartSize) {}
 
 RadosMultiObjWriteHandle::~RadosMultiObjWriteHandle() {}
 
@@ -108,7 +108,7 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
 
     while (length > 0) {
 
-        Length len = std::min(Length(maxObjectSize_ - Length(written_)), Length(length));
+        Length len = std::min(Length(maxPartSize_ - Length(written_)), Length(length));
         long l     = (long)len;
         ASSERT(len == Length(l));
 
@@ -125,7 +125,7 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
             continue;
         }
 
-        LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write " << len << " - " << maxObjectSize_ << " - " << written_ << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write " << len << " - " << maxPartSize_ << " - " << written_ << std::endl;
 
         if (!handles_.back().get()) {
 

@@ -156,6 +156,18 @@ void RadosMultiObjWriteHandle::flush() {
         handle->flush();
     }
 
+    if (written_ > 0) {
+
+        RadosAttributes attrs;
+
+        attrs.set("length", position_);
+        attrs.set("parts", part_);
+        attrs.set("maxsize", maxPartSize_);
+
+        RadosCluster::instance().attributes(object_, attrs);
+
+    }
+
 }
 
 
@@ -166,18 +178,6 @@ void RadosMultiObjWriteHandle::close() {
     }
     handles_.clear();
 
-    if (opened_) {
-
-        RadosAttributes attrs;
-
-        attrs.set("length", position_);
-        attrs.set("parts", part_);
-        attrs.set("maxsize", maxObjectSize_);
-
-        RadosCluster::instance().attributes(object_, attrs);
-
-        opened_ = false;
-    }
 }
 
 void RadosMultiObjWriteHandle::rewind() {

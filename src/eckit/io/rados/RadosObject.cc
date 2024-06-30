@@ -108,16 +108,16 @@ eckit::DataHandle* RadosObject::rangeReadHandle(const eckit::Offset& off, const 
 
 }
 
-eckit::DataHandle* RadosObject::multipartWriteHandle(const eckit::Length& maxObjectSize) const {
+eckit::DataHandle* RadosObject::multipartWriteHandle(const eckit::Length& maxPartSize) const {
 
-    return new eckit::RadosMultiObjWriteHandle(*this, false, maxObjectSize);
+    return new eckit::RadosMultiObjWriteHandle(*this, false, maxPartSize);
 
 }
 
-eckit::DataHandle* RadosObject::asyncMultipartWriteHandle(const eckit::Length& maxObjectSize, 
+eckit::DataHandle* RadosObject::asyncMultipartWriteHandle(const eckit::Length& maxPartSize, 
     size_t maxAioBuffSize, size_t maxHandleBuffSize) const {
 
-    return new eckit::RadosMultiObjWriteHandle(*this, true, maxObjectSize, maxAioBuffSize, maxHandleBuffSize);
+    return new eckit::RadosMultiObjWriteHandle(*this, true, maxPartSize, maxAioBuffSize, maxHandleBuffSize);
 
 }
 

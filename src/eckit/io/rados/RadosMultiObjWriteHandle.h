@@ -25,9 +25,9 @@ namespace eckit {
 class RadosMultiObjWriteHandle : public eckit::DataHandle {
 
 public:  // methods
-    RadosMultiObjWriteHandle(const RadosObject&, bool async = false, const Length& maxObjectSize = 0, 
+    RadosMultiObjWriteHandle(const RadosObject&, bool async = false, const Length& maxPartSize = 0, 
         size_t maxAioBuffSize = 1024, size_t maxHandleBuffSize = 1024);
-    // RadosMultiObjWriteHandle(const eckit::URI&, const Length& maxObjectSize = 0);
+    // RadosMultiObjWriteHandle(const eckit::URI&, const Length& maxPartSize = 0);
     // RadosMultiObjWriteHandle(Stream&);
 
     ~RadosMultiObjWriteHandle() override;
@@ -62,7 +62,7 @@ private:  // members
     RadosObject object_;
 
     bool async_;
-    Length maxObjectSize_;
+    Length maxPartSize_;
     size_t maxAioBuffSize_;
     size_t maxHandleBuffSize_;
 

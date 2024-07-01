@@ -34,13 +34,15 @@ namespace eckit::test {
 namespace {
 
 class SingletonTester {
-    SingletonTester() {
-        Log::debug() << "--> SingletonTester()" << std::endl;
-        Log::debug<LibEcKit>() << "--> SingletonTester()" << std::endl;
+    std::ostream& outDebug;
+    std::ostream& outDebugLib;
+    SingletonTester(): outDebug(Log::debug()), outDebugLib(Log::debug<LibEcKit>()) {
+        outDebug << "--> SingletonTester()" << std::endl;
+        outDebugLib << "--> SingletonTester(LIB)" << std::endl;
     }
     ~SingletonTester() {
-        Log::debug() << "--> ~SingletonTester()" << std::endl;
-        Log::debug<LibEcKit>() << "--> ~SingletonTester()" << std::endl;
+        outDebug << "--> ~SingletonTester()" << std::endl;
+        outDebugLib << "--> ~SingletonTester(LIB)" << std::endl;
     }
 
 public:
@@ -60,10 +62,8 @@ auto& tester = SingletonTester::instance();
 constexpr const auto numThreads = 32;
 constexpr const auto logSize    = 1000;
 
-auto makeTestLog(std::string_view channel, const int number) -> std::string {
-    std::ostringstream oss;
-    oss << "channel: " << channel << " tid:" << std::this_thread::get_id() << " #" << number << '\n';
-    return oss.str();
+auto makeTestLog(const std::string& channel, const int number) -> std::string {
+    return "channel: " + channel + " #" + std::to_string(number) + '\n';
 }
 
 void runLoggers() {
@@ -81,7 +81,7 @@ void runLoggers() {
 CASE("Log: output " + std::to_string(logSize) + " logs by " + std::to_string(numThreads) + " threads") {
     std::list<std::thread> threads;
 
-    for (auto i = 0; i < numThreads; i++) { threads.emplace_back(runLoggers); }
+    for (auto i = 0; i < numThreads; i++) { EXPECT_NO_THROW(threads.emplace_back(runLoggers)); }
 
     for (auto&& thread : threads) { thread.join(); }
 }

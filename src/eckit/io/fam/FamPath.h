@@ -35,19 +35,15 @@ struct FamPath {
 
     FamPath(const std::string& path);
 
-    FamPath(const char* path): FamPath(std::string(path)) { }
+    FamPath(const char* path);
 
     FamPath(const URI& uri);
 
     auto generateUUID() const -> std::string;
 
-    bool operator==(const FamPath& other) const {
-        return (regionName == other.regionName && objectName == other.objectName);
-    }
+    bool operator==(const FamPath& other) const;
 
-    auto asString() const -> std::string {
-        return objectName.empty() ? '/' + regionName : '/' + regionName + '/' + objectName;
-    }
+    operator std::string() const { return objectName.empty() ? '/' + regionName : '/' + regionName + '/' + objectName; }
 
     friend std::ostream& operator<<(std::ostream& out, const FamPath& path);
 

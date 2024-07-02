@@ -45,12 +45,16 @@ auto FamName::asString() const -> std::string {
 }
 
 auto FamName::uri() const -> URI {
-    // return URI {asString()};
-    return {FamPath::SCHEME, endpoint_, path_.asString()};
+    return {FamPath::SCHEME, endpoint_, path_};
 }
 
 auto FamName::withEndpoint(const net::Endpoint& endpoint) -> FamName& {
     endpoint_ = endpoint;
+    return *this;
+}
+
+auto FamName::withPath(const FamPath& path) -> FamName& {
+    path_ = path;
     return *this;
 }
 

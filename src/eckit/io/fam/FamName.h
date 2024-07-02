@@ -45,13 +45,17 @@ public:  // methods
 
     auto uri() const -> URI;
 
+    auto endpoint() const -> const net::Endpoint& { return endpoint_; }
+
+    auto path() const -> const FamPath& { return path_; }
+
     auto withEndpoint(const net::Endpoint& endpoint) -> FamName&;
+
+    auto withPath(const FamPath& path) -> FamName&;
 
     auto withRegion(std::string_view regionName) -> FamName&;
 
     auto withObject(std::string_view objectName) -> FamName&;
-
-    auto path() const -> const FamPath& { return path_; }
 
     // region
 

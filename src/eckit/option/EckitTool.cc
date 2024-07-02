@@ -10,46 +10,35 @@
 
 #include "EckitTool.h"
 
-#include "eckit/log/Log.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/option/CmdArgs.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static EckitTool* instance_ = 0;
-
-EckitTool::EckitTool(int argc, char** argv) :
-    eckit::Tool(argc, argv, "ECKIT_HOME") {
-    ASSERT(instance_ == 0);
-    instance_ = this;
-}
+static EckitTool* INSTANCE = nullptr;
 
 static void usage(const std::string& tool) {
-    ASSERT(instance_);
-    instance_->usage(tool);
+    ASSERT(INSTANCE != nullptr);
+    INSTANCE->usage(tool);
+}
+
+EckitTool::EckitTool(int argc, char** argv) : Tool(argc, argv, "ECKIT_HOME") {
+    ASSERT(INSTANCE == nullptr);
+    INSTANCE = this;
 }
 
 void EckitTool::run() {
-
-    eckit::option::CmdArgs args(&eckit::usage,
-                                options_,
-                                numberOfPositionalArguments(),
-                                minimumPositionalArguments());
+    option::CmdArgs args(&eckit::usage, options_, numberOfPositionalArguments(), minimumPositionalArguments());
 
     init(args);
     execute(args);
     finish(args);
 }
 
-void EckitTool::usage(const std::string& tool) const {
-}
+void EckitTool::usage(const std::string& tool) const {}
 
-void EckitTool::init(const eckit::option::CmdArgs& args) {
-}
-
-void EckitTool::finish(const eckit::option::CmdArgs& args) {
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 

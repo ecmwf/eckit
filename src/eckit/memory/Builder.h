@@ -8,154 +8,177 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_memory_Builder_h
-#define eckit_memory_Builder_h
-
 /// @file Builder.h
 /// @author Tiago Quintino
+/// @author Pedro Maciel
 /// @date Jul 2014
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/memory/Factory.h"
-#include "eckit/value/Params.h"
 
-// #define DEBUG_ECKIT_BUILDERS
-#ifdef DEBUG_ECKIT_BUILDERS
+#pragma once
+
+#include "eckit/eckit_config.h"
+#include "eckit/memory/Factory.h"
+
+#if eckit_HAVE_ECKIT_MEMORY_FACTORY_BUILDERS_DEBUG
+#include "eckit/exception/Exceptions.h"
 #define DEBUG_BUILDER(x) std::cerr << " DEBUG (" << x << ") " << Here() << std::endl;
 #else
 #define DEBUG_BUILDER(x)
 #endif
 
-//-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //------------------------------------------------------------------------------------------------------
 
-class Builder : private NonCopyable {
+class Builder {
 public:
-    typedef std::string key_t;
+    // -- Types
 
-    virtual ~Builder();
+    using key_t = std::string;
+
+    // -- Constructors
+
+    Builder()               = default;
+    Builder(const Builder&) = delete;
+    Builder(Builder&&)      = delete;
+
+    // -- Destructor
+
+    virtual ~Builder() = default;
+
+    // -- Operators
+
+    void operator=(const Builder&) = delete;
+    void operator=(Builder&&)      = delete;
+
+    // -- Methods
 
     virtual key_t name() const       = 0;
     virtual key_t build_type() const = 0;
+
+private:
+    // -- Methods
+
+    virtual void print(std::ostream& os) const { os << "Builder(" << build_type() << "):" << name(); }
+
+    // -- Friends
 
     friend std::ostream& operator<<(std::ostream& os, const Builder& o) {
         o.print(os);
         return os;
     }
-
-private:  // methods
-    virtual void print(std::ostream& os) const { os << "Builder(" << build_type() << "):" << name(); }
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template <class Base>
 class BuilderT0 : public Builder {
+public:
+    // -- Types
 
-public:  // types
-    BuilderT0() {}
+    using product_t = Base;
 
-    ~BuilderT0() {}
+    // -- Methods
 
-    typedef Base product_t;
-    typedef product_t* product_ptr;
-    typedef Builder::key_t key_t;
-    typedef typename Factory<Base>::builder_ptr builder_ptr;
+    virtual product_t* create() const = 0;
 
-    virtual product_ptr create() const = 0;
+    // -- Overridden methods
 
-public:  // methods
-    virtual key_t build_type() const { return Base::className(); }
+    typename Builder::key_t build_type() const override { return Base::className(); }
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template <class Base>
 class BuilderT1 : public Builder {
+public:
+    // -- Types
 
-public:  // types
-    BuilderT1() {}
+    using product_t = Base;
 
-    ~BuilderT1() {}
+    using ARG1 = typename product_t::ARG1;
 
-    typedef Base product_t;
-    typedef product_t* product_ptr;
-    typedef Builder::key_t key_t;
-    typedef typename Factory<Base>::builder_ptr builder_ptr;
+    // -- Methods
 
-    typedef typename product_t::ARG1 ARG1;
+    virtual product_t* create(ARG1) const = 0;
 
-    virtual product_ptr create(ARG1 p1) const = 0;
+    // -- Overridden methods
 
-public:  // methods
-    virtual key_t build_type() const { return Base::className(); }
+    typename Builder::key_t build_type() const override { return Base::className(); }
 };
 
 //------------------------------------------------------------------------------------------------------
 
 template <class Base>
 class BuilderT2 : public Builder {
+public:
+    // -- Types
 
-public:  // types
-    BuilderT2(){};
+    using product_t = Base;
 
-    ~BuilderT2() {}
+    using ARG1 = typename product_t::ARG1;
+    using ARG2 = typename product_t::ARG2;
 
-    typedef Base product_t;
-    typedef product_t* product_ptr;
-    typedef Builder::key_t key_t;
-    typedef typename Factory<Base>::builder_ptr builder_ptr;
+    // -- Methods
 
-    typedef typename product_t::ARG1 ARG1;
-    typedef typename product_t::ARG2 ARG2;
+    virtual product_t* create(ARG1, ARG2) const = 0;
 
-    virtual product_ptr create(ARG1 p1, ARG2 p2) const = 0;
+    // -- Overridden methods
 
-public:  // methods
-    virtual key_t build_type() const { return Base::className(); }
+    typename Builder::key_t build_type() const override { return Base::className(); }
 };
+
 
 //------------------------------------------------------------------------------------------------------
 
 template <class Base, class T>
-class ConcreteBuilderT0 : public BuilderT0<Base> {
+class ConcreteBuilderT0 final : public BuilderT0<Base> {
+public:
+    // -- Types
 
-public:  // types
-    typedef BuilderT0<Base> base_t;
+    using base_t = BuilderT0<Base>;
 
-    typedef typename base_t::key_t key_t;
-    typedef typename base_t::product_t product_t;
-    typedef typename base_t::product_ptr product_ptr;
-    typedef typename base_t::builder_ptr builder_ptr;
+    // -- Constructors
 
-public:  // methods
-    ConcreteBuilderT0() :
-        k_(name()) {
+    ConcreteBuilderT0() : key_(name()) {
         DEBUG_BUILDER("ConcreteBuilderT0() -- " << T::className());
-        Factory<product_t>::instance().regist(k_, builder_ptr(this));
+        Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
 
-    ConcreteBuilderT0(const key_t& k) :
-        k_(k) {
+    explicit ConcreteBuilderT0(const typename base_t::key_t& k) : key_(k) {
         DEBUG_BUILDER("ConcreteBuilderT0() -- " << T::className());
-        Factory<product_t>::instance().regist(k_, builder_ptr(this));
+        Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
+
+    ConcreteBuilderT0(const ConcreteBuilderT0&) = delete;
+    ConcreteBuilderT0(ConcreteBuilderT0&&)      = delete;
+
+    // -- Destructor
 
     ~ConcreteBuilderT0() override {
         DEBUG_BUILDER("~ConcreteBuilderT0() -- " << T::className());
-        Factory<product_t>::instance().unregist(k_);
+#if eckit_HAVE_ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
+        Factory<typename base_t::product_t>::instance().unregist(key_);
+#endif
     }
 
-    typename base_t::key_t name() const override { return T::className(); }
+    // -- Operators
 
-    product_ptr create() const override { return new T(); }
+    void operator=(const ConcreteBuilderT0&) = delete;
+    void operator=(ConcreteBuilderT0&&)      = delete;
+
+    // -- Overridden methods
+
+    typename base_t::key_t name() const override { return T::className(); }
+    typename base_t::product_t* create() const override { return new T(); }
 
 private:
-    key_t k_;
+    // -- Members
+
+    typename base_t::key_t key_;
 };
+
 
 #define register_BuilderT0(ABSTRACT, CONCRETE, NAME)                           \
     static struct Register__##ABSTRACT##__##CONCRETE##__T0 {                   \
@@ -164,45 +187,57 @@ private:
         }                                                                      \
     } register_##ABSTRACT##__##CONCRETE##_T0
 
+
 //------------------------------------------------------------------------------------------------------
 
 template <class Base, class T>
-class ConcreteBuilderT1 : public BuilderT1<Base> {
-public:  // types
-    typedef BuilderT1<Base> base_t;
+class ConcreteBuilderT1 final : public BuilderT1<Base> {
+public:
+    // -- Types
 
-    typedef typename base_t::key_t key_t;
-    typedef typename base_t::product_t product_t;
-    typedef typename base_t::product_ptr product_ptr;
-    typedef typename base_t::builder_ptr builder_ptr;
+    using base_t = BuilderT1<Base>;
 
-    typedef typename base_t::ARG1 ARG1;
+    // -- Constructors
 
-public:  // methods
-    ConcreteBuilderT1() :
-        k_(name()) {
+    ConcreteBuilderT1() : key_(name()) {
         DEBUG_BUILDER("ConcreteBuilderT1() -- " << T::className());
-        Factory<product_t>::instance().regist(k_, builder_ptr(this));
+        Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
 
-    ConcreteBuilderT1(const key_t& k) :
-        k_(k) {
+    explicit ConcreteBuilderT1(const typename base_t::key_t& k) : key_(k) {
         DEBUG_BUILDER("ConcreteBuilderT1() -- " << T::className());
-        Factory<product_t>::instance().regist(k_, builder_ptr(this));
+        Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
+
+    ConcreteBuilderT1(const ConcreteBuilderT1&) = delete;
+    ConcreteBuilderT1(ConcreteBuilderT1&&)      = delete;
+
+    // -- Destructor
 
     ~ConcreteBuilderT1() override {
         DEBUG_BUILDER("~ConcreteBuilderT1() -- " << T::className());
-        Factory<product_t>::instance().unregist(k_);
+#if ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
+        Factory<typename base_t::product_t>::instance().unregist(key_);
+#endif
     }
 
-    typename base_t::key_t name() const override { return T::className(); }
+    // -- Operators
 
-    product_ptr create(ARG1 p1) const override { return new T(p1); }
+    void operator=(const ConcreteBuilderT1&) = delete;
+    void operator=(ConcreteBuilderT1&&)      = delete;
+
+    // -- Overridden methods
+
+    typename base_t::key_t name() const override { return T::className(); }
+    typename base_t::product_t* create(typename base_t::ARG1 p1) const override { return new T(p1); }
+
 
 private:
-    key_t k_;
+    // -- Members
+
+    typename base_t::key_t key_;
 };
+
 
 #define register_BuilderT1(ABSTRACT, CONCRETE, NAME)                           \
     static struct Register__##ABSTRACT##__##CONCRETE##__T1 {                   \
@@ -211,47 +246,59 @@ private:
         }                                                                      \
     } register_##ABSTRACT##__##CONCRETE##_T1
 
+
 //------------------------------------------------------------------------------------------------------
 
 template <class Base, class T>
-class ConcreteBuilderT2 : public BuilderT2<Base> {
+class ConcreteBuilderT2 final : public BuilderT2<Base> {
+public:
+    // -- Types
 
-public:  // types
-    typedef BuilderT2<Base> base_t;
+    using base_t = BuilderT2<Base>;
 
-    typedef typename base_t::key_t key_t;
-    typedef typename base_t::product_t product_t;
-    typedef typename base_t::product_ptr product_ptr;
-    typedef typename base_t::builder_ptr builder_ptr;
+    // -- Constructors
 
-    typedef typename base_t::ARG1 ARG1;
-    typedef typename base_t::ARG2 ARG2;
-
-public:  // methods
-    ConcreteBuilderT2() :
-        k_(name()) {
+    ConcreteBuilderT2() : key_(name()) {
         DEBUG_BUILDER("ConcreteBuilderT2() -- " << T::className());
-        Factory<product_t>::instance().regist(k_, builder_ptr(this));
+        Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
 
-    ConcreteBuilderT2(const key_t& k) :
-        k_(k) {
+    explicit ConcreteBuilderT2(const typename base_t::key_t& k) : key_(k) {
         DEBUG_BUILDER("ConcreteBuilderT2() -- " << T::className());
-        Factory<product_t>::instance().regist(k_, builder_ptr(this));
+        Factory<typename base_t::product_t>::instance().regist(key_, this);
     }
+
+    ConcreteBuilderT2(const ConcreteBuilderT2&) = delete;
+    ConcreteBuilderT2(ConcreteBuilderT2&&)      = delete;
+
+    // -- Destructor
 
     ~ConcreteBuilderT2() override {
         DEBUG_BUILDER("~ConcreteBuilderT2() -- " << T::className());
-        Factory<product_t>::instance().unregist(k_);
+#if eckit_HAVE_ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
+        Factory<typename base_t::product_t>::instance().unregist(key_);
+#endif
     }
 
-    typename base_t::key_t name() const override { return T::className(); }
+    // -- Operators
 
-    product_ptr create(ARG1 p1, ARG2 p2) const override { return new T(p1, p2); }
+    void operator=(const ConcreteBuilderT2&) = delete;
+    void operator=(ConcreteBuilderT2&&)      = delete;
+
+    // -- Overridden methods
+
+    typename base_t::key_t name() const override { return T::className(); }
+    typename base_t::product_t* create(typename base_t::ARG1 p1, typename base_t::ARG2 p2) const override {
+        return new T(p1, p2);
+    }
+
 
 private:
-    key_t k_;
+    // -- Members
+
+    typename base_t::key_t key_;
 };
+
 
 #define register_BuilderT2(ABSTRACT, CONCRETE, NAME)                           \
     static struct Register__##ABSTRACT##__##CONCRETE##__T2 {                   \
@@ -263,5 +310,3 @@ private:
 //------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_memory_Builder_h

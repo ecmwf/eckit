@@ -21,9 +21,9 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class LibEcKitCmd : public eckit::system::Library {
+    LibEcKitCmd();
 
 public:  // methods
-    LibEcKitCmd();
 
     static LibEcKitCmd& instance();
 

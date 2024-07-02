@@ -36,7 +36,7 @@ public:
 
     // -- Constructors
 
-    explicit BoundingBox(const Spec& spec) : BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {}
+    explicit BoundingBox(const Spec&);
 
     BoundingBox(value_type north, value_type west, value_type south, value_type east);
 

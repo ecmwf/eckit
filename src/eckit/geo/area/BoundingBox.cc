@@ -100,6 +100,9 @@ BoundingBox* BoundingBox::make_from_area(value_type n, value_type w, value_type 
 }
 
 
+BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {}
+
+
 BoundingBox::BoundingBox(double n, double w, double s, double e) : array{n, w, s, e} {
     // normalise east in [west, west + 2 pi[
     auto a        = PointLonLat::normalise_angle_to_minimum(e, w);

@@ -500,6 +500,12 @@ bool Configuration::isSubConfiguration(const std::string& name) const {
     return found && (v.isMap() || v.isOrderedMap());
 }
 
+bool Configuration::isNull(const std::string& name) const {
+    bool found     = false;
+    eckit::Value v = lookUp(name, found);
+    return found && (v.isNil());
+}
+
 bool Configuration::isIntegralList(const std::string& name) const {
     bool found = false;
     eckit::Value v = lookUp(name, found);

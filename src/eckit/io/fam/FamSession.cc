@@ -62,7 +62,7 @@ void FamSession::remove(const FamConfig& config) {
 }
 
 void FamSession::remove(const std::string& sessionName) {
-    registry_.remove_if([&sessionName](const auto& session) { return session->config().sessionName == sessionName; });
+    registry_.remove_if([&sessionName](const auto& session) { return session->name() == sessionName; });
 }
 
 void FamSession::clear() {

@@ -67,16 +67,16 @@ auto isValidName(std::string_view str) -> bool {
 //----------------------------------------------------------------------------------------------------------------------
 // SESSION
 
-FamSessionDetail::FamSessionDetail(FamConfig config): config_ {std::move(config)} {
-    ASSERT(isValidName(config_.sessionName));
+FamSessionDetail::FamSessionDetail(const FamConfig& config): name_ {config.sessionName} {
+    ASSERT(isValidName(name_));
 
-    Log::debug<LibEcKit>() << "Initializing FAM session: " << config_ << '\n';
+    Log::debug<LibEcKit>() << "Initializing FAM session: " << config << '\n';
 
     try {
         // pins
         auto runtime = std::string {"NONE"};
-        auto host    = config_.endpoint.host();
-        auto port    = std::to_string(config_.endpoint.port());
+        auto host    = config.endpoint.host();
+        auto port    = std::to_string(config.endpoint.port());
 
         Fam_Options options;
         ::memset(static_cast<void*>(&options), 0, sizeof(Fam_Options));
@@ -84,7 +84,7 @@ FamSessionDetail::FamSessionDetail(FamConfig config): config_ {std::move(config)
         options.cisServer = host.data();
         options.grpcPort  = port.data();
 
-        fam_.fam_initialize(config_.sessionName.c_str(), &options);
+        fam_.fam_initialize(name_.c_str(), &options);
     } catch (openfam::Fam_Exception& e) {
         fam_.fam_abort(-1);
         throw Exception(e.fam_error_msg(), Here());
@@ -92,11 +92,11 @@ FamSessionDetail::FamSessionDetail(FamConfig config): config_ {std::move(config)
 }
 
 FamSessionDetail::~FamSessionDetail() {
-    Log::debug<LibEcKit>() << "Finalizing FAM session: " << config_ << '\n';
+    Log::debug<LibEcKit>() << "Finalizing FAM session: " << name_ << '\n';
     try {
-        fam_.fam_finalize(config_.sessionName.c_str());
+        fam_.fam_finalize(name_.c_str());
     } catch (openfam::Fam_Exception& e) {
-        Log::error() << "Failed to finalize session: " << config_ << ", msg=" << e.fam_error_msg() << '\n';
+        Log::error() << "Failed to finalize session: " << name_ << ", msg=" << e.fam_error_msg() << '\n';
         fam_.fam_abort(-1);
     }
 }
@@ -104,7 +104,7 @@ FamSessionDetail::~FamSessionDetail() {
 //----------------------------------------------------------------------------------------------------------------------
 
 void FamSessionDetail::print(std::ostream& out) const {
-    out << "FamSessionDetail[" << config_ << "]";
+    out << "FamSessionDetail[name=" << name_ << "]";
 }
 
 std::ostream& operator<<(std::ostream& out, const FamSessionDetail& session) {
@@ -114,6 +114,15 @@ std::ostream& operator<<(std::ostream& out, const FamSessionDetail& session) {
 
 //----------------------------------------------------------------------------------------------------------------------
 // REGION
+
+auto FamSessionDetail::config() -> FamConfig {
+    const std::string host = static_cast<const char*>(fam_.fam_get_option("CIS_SERVER"));
+    const std::string port = static_cast<const char*>(fam_.fam_get_option("GRPC_PORT"));
+
+    const net::Endpoint endpoint {host, std::stoi(port)};
+
+    return {endpoint, name_};
+}
 
 auto FamSessionDetail::lookupRegion(const std::string& regionName) -> FamRegion {
     ASSERT(isValidName(regionName));

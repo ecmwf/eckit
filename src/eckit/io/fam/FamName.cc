@@ -28,25 +28,30 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamName::FamName(FamSession::SPtr session, FamPath path) noexcept:
-    session_ {std::move(session)}, path_ {std::move(path)} { }
-
-FamName::FamName(const net::Endpoint& endpoint, FamPath path):
-    FamName(FamSession::instance().getOrAdd({endpoint}), std::move(path)) { }
+FamName::FamName(const net::Endpoint& endpoint, FamPath path): endpoint_ {endpoint}, path_ {std::move(path)} { }
 
 FamName::FamName(const URI& uri): FamName(uri.endpoint(), uri) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
+auto FamName::session() const -> FamSession::SPtr {
+    return FamSession::instance().getOrAdd({endpoint_});
+}
+
 auto FamName::asString() const -> std::string {
     std::ostringstream oss;
-    oss << FamPath::SCHEME << "://" << config().endpoint << path_;
+    oss << FamPath::SCHEME << "://" << endpoint_ << path_;
     return oss.str();
 }
 
 auto FamName::uri() const -> URI {
     // return URI {asString()};
-    return {FamPath::SCHEME, config().endpoint, path_.asString()};
+    return {FamPath::SCHEME, endpoint_, path_.asString()};
+}
+
+auto FamName::withEndpoint(const net::Endpoint& endpoint) -> FamName& {
+    endpoint_ = endpoint;
+    return *this;
 }
 
 auto FamName::withRegion(std::string_view regionName) -> FamName& {
@@ -63,14 +68,14 @@ auto FamName::withObject(std::string_view objectName) -> FamName& {
 // REGION
 
 auto FamName::lookupRegion() const -> FamRegion {
-    return session_->lookupRegion(path_.regionName);
+    return session()->lookupRegion(path_.regionName);
 }
 
 auto FamName::createRegion(const fam::size_t regionSize,
                            const fam::perm_t regionPerm,
                            const bool        overwrite) const -> FamRegion {
-    if (overwrite) { return session_->ensureCreateRegion(regionSize, regionPerm, path_.regionName); }
-    return session_->createRegion(regionSize, regionPerm, path_.regionName);
+    if (overwrite) { return session()->ensureCreateRegion(regionSize, regionPerm, path_.regionName); }
+    return session()->createRegion(regionSize, regionPerm, path_.regionName);
 }
 
 auto FamName::existsRegion() const -> bool {
@@ -88,7 +93,7 @@ auto FamName::existsRegion() const -> bool {
 // OBJECT
 
 auto FamName::lookupObject() const -> FamObject {
-    return session_->lookupObject(path_.regionName, path_.objectName);
+    return session()->lookupObject(path_.regionName, path_.objectName);
 }
 
 auto FamName::allocateObject(const fam::size_t objectSize, const bool overwrite) const -> FamObject {
@@ -118,12 +123,8 @@ auto FamName::dataHandle(const Offset& offset, const Length& length) const -> Da
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamName::config() const -> const FamConfig& {
-    return session_->config();
-}
-
 void FamName::print(std::ostream& out) const {
-    out << session_ << ", path=" << path_;
+    out << "endpoint=" << endpoint_ << ", path=" << path_;
 }
 
 std::ostream& operator<<(std::ostream& out, const FamName& name) {

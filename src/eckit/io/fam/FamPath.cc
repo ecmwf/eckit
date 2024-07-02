@@ -52,6 +52,8 @@ FamPath::FamPath(const std::string& path) {
     std::tie(regionName, objectName) = parsePath(path);
 }
 
+FamPath::FamPath(const char* path): FamPath(std::string(path)) { }
+
 FamPath::FamPath(const URI& uri): FamPath(uri.name()) {
     ASSERT(uri.scheme() == SCHEME);
 }
@@ -68,8 +70,12 @@ auto FamPath::generateUUID() const -> std::string {
     return result;
 }
 
+bool FamPath::operator==(const FamPath& other) const {
+    return (regionName == other.regionName && objectName == other.objectName);
+}
+
 std::ostream& operator<<(std::ostream& out, const FamPath& path) {
-    out << path.asString();
+    out << std::string(path);
     return out;
 }
 

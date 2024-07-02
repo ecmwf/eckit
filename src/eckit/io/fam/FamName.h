@@ -37,8 +37,6 @@ class DataHandle;
 
 class FamName {
 public:  // methods
-    FamName(FamSession::SPtr session, FamPath path) noexcept;
-
     FamName(const net::Endpoint& endpoint, FamPath path);
 
     FamName(const URI& uri);
@@ -46,6 +44,8 @@ public:  // methods
     auto asString() const -> std::string;
 
     auto uri() const -> URI;
+
+    auto withEndpoint(const net::Endpoint& endpoint) -> FamName&;
 
     auto withRegion(std::string_view regionName) -> FamName&;
 
@@ -78,14 +78,14 @@ public:  // methods
     auto dataHandle(const Offset& offset, const Length& length) const -> DataHandle*;
 
 protected:  // methods
-    auto config() const -> const FamConfig&;
+    auto session() const -> FamSession::SPtr;
 
     virtual void print(std::ostream& out) const;
 
     friend std::ostream& operator<<(std::ostream& out, const FamName& name);
 
 private:  // members
-    FamSession::SPtr session_;
+    net::Endpoint endpoint_;
 
     FamPath path_;
 };

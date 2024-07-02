@@ -36,7 +36,7 @@ namespace eckit {
 
 class FamSessionDetail: public std::enable_shared_from_this<FamSessionDetail> {
 public:  // methods
-    FamSessionDetail(FamConfig config);
+    FamSessionDetail(const FamConfig& config);
 
     FamSessionDetail(const FamSessionDetail&)            = delete;
     FamSessionDetail& operator=(const FamSessionDetail&) = delete;
@@ -47,7 +47,9 @@ public:  // methods
 
     auto getShared() -> std::shared_ptr<FamSessionDetail> { return shared_from_this(); }
 
-    auto config() const -> const FamConfig& { return config_; }
+    auto name() const -> std::string { return name_; }
+
+    auto config() -> FamConfig;
 
     //------------------------------------------------------------------------------------------------------------------
     // REGION
@@ -144,7 +146,7 @@ private:  // methods
     void print(std::ostream& out) const;
 
 private:  // members
-    const FamConfig config_;
+    const std::string name_;
 
     openfam::fam fam_;
 };

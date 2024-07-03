@@ -347,6 +347,29 @@ base:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+CASE("YAML configuration with null value") {
+    const char* text = R"YAML(
+---
+base:
+  nothing : null
+)YAML";
+
+    std::string cfgtxt(text);
+
+    YAMLConfiguration conf(cfgtxt);
+
+    LocalConfiguration local;
+
+    EXPECT_NO_THROW(conf.get("base", local));
+
+    std::cerr << Colour::green << local << Colour::reset << std::endl;
+
+    EXPECT(local.isNull("nothing"));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 CASE("test_local_configuration") {
     LocalConfiguration local;
     {

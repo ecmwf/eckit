@@ -39,11 +39,11 @@ struct FamPath {
 
     FamPath(const URI& uri);
 
-    auto generateUUID() const -> std::string;
-
     bool operator==(const FamPath& other) const;
 
     operator std::string() const { return objectName.empty() ? '/' + regionName : '/' + regionName + '/' + objectName; }
+
+    auto generateUUID() const -> std::string;
 
     friend std::ostream& operator<<(std::ostream& out, const FamPath& path);
 

@@ -58,6 +58,10 @@ FamPath::FamPath(const URI& uri): FamPath(uri.name()) {
     ASSERT(uri.scheme() == SCHEME);
 }
 
+bool FamPath::operator==(const FamPath& other) const {
+    return (regionName == other.regionName && objectName == other.objectName);
+}
+
 auto FamPath::generateUUID() const -> std::string {
     std::string result = "00000000-0000-0000-0000-000000000000";
 
@@ -68,10 +72,6 @@ auto FamPath::generateUUID() const -> std::string {
     uuid_unparse(&oid[0], result.data());
 
     return result;
-}
-
-bool FamPath::operator==(const FamPath& other) const {
-    return (regionName == other.regionName && objectName == other.objectName);
 }
 
 std::ostream& operator<<(std::ostream& out, const FamPath& path) {

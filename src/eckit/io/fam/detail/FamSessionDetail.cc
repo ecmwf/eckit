@@ -93,7 +93,7 @@ FamSessionDetail::FamSessionDetail(const FamConfig& config): name_ {config.sessi
 }
 
 FamSessionDetail::~FamSessionDetail() {
-    Log::debug<LibEcKit>() << "Finalizing FAM session: " << name_ << '\n';
+    // Log::debug<LibEcKit>() << "Finalizing FAM session: " << name_ << '\n';
     try {
         fam_.fam_finalize(name_.c_str());
     } catch (openfam::Fam_Exception& e) {
@@ -139,8 +139,6 @@ auto FamSessionDetail::createRegion(const fam::size_t  regionSize,
     ASSERT(regionSize > 0);
     ASSERT(isValidName(regionName));
 
-    LOG_DEBUG_LIB(LibEcKit) << "Create region: name=" << regionName << ", size=" << regionSize << '\n';
-
     auto* region = invokeFam(fam_, &openfam::fam::fam_create_region, regionName.c_str(), regionSize, regionPerm, nullptr);
 
     return {*this, std::unique_ptr<FamRegionDescriptor>(region)};
@@ -149,14 +147,10 @@ auto FamSessionDetail::createRegion(const fam::size_t  regionSize,
 void FamSessionDetail::resizeRegion(FamRegionDescriptor& region, const fam::size_t size) {
     ASSERT(size > 0);
 
-    LOG_DEBUG_LIB(LibEcKit) << "Resize region: name=" << region.get_name() << ", new size=" << size << '\n';
-
     invokeFam(fam_, &openfam::fam::fam_resize_region, &region, size);
 }
 
 void FamSessionDetail::destroyRegion(FamRegionDescriptor& region) {
-    LOG_DEBUG_LIB(LibEcKit) << "Destroy region: name=" << region.get_name() << '\n';
-
     invokeFam(fam_, &openfam::fam::fam_destroy_region, &region);
 }
 
@@ -206,9 +200,6 @@ auto FamSessionDetail::allocateObject(FamRegionDescriptor& region,
                                       const std::string&   objectName) -> FamObject {
     ASSERT(objectSize > 0);
 
-    // LOG_DEBUG_LIB(LibEcKit) << "Allocate object: name=" << objectName << ", size=" << objectSize
-    //                         << ", region=" << region.get_name() << '\n';
-
     auto allocate =
         static_cast<FamObjectDescriptor* (openfam::fam::*)(const char*, uint64_t, mode_t, FamRegionDescriptor*)>(
             &openfam::fam::fam_allocate);
@@ -219,7 +210,6 @@ auto FamSessionDetail::allocateObject(FamRegionDescriptor& region,
 }
 
 void FamSessionDetail::deallocateObject(FamObjectDescriptor& object) {
-    // LOG_DEBUG_LIB(LibEcKit) << "Deallocate object: name=" << object.get_name() << '\n';
     invokeFam(fam_, &openfam::fam::fam_deallocate, &object);
 }
 

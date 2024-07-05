@@ -48,12 +48,13 @@ auto invokeFam(openfam::fam& fam, Func&& fnPtr, Args&&... args) {
         if (code == openfam::Fam_Error::FAM_ERR_INVALID) { throw BadValue(e.fam_error_msg()); }
         if (code == openfam::Fam_Error::FAM_ERR_NO_SPACE) { throw OutOfStorage(e.fam_error_msg()); }
         if (code == openfam::Fam_Error::FAM_ERR_OUTOFRANGE) { throw OutOfRange(e.fam_error_msg(), Here()); }
+        if (code == openfam::Fam_Error::FAM_ERR_METADATA) { throw NotFound(e.fam_error_msg()); }
         if (code == openfam::Fam_Error::FAM_ERR_RPC) {
             std::string       optionName = "CIS_SERVER";
             const std::string serverName = static_cast<const char*>(fam.fam_get_option(optionName.data()));
             throw RemoteException(e.fam_error_msg(), serverName);
         }
-        throw SeriousBug(e.fam_error_msg());
+        throw SeriousBug("Code=" + std::to_string(code) + ' ' + e.fam_error_msg());
     }
 }
 

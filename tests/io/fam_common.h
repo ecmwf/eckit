@@ -20,8 +20,9 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/fam/FamName.h"
+#include "eckit/io/fam/FamObjectName.h"
 #include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamRegionName.h"
 
 #include <sys/time.h>
 
@@ -60,14 +61,14 @@ public:
     }
 
     auto makeRandomRegion(const eckit::fam::size_t size) -> FamRegion::SPtr {
-        auto region = name_.withRegion(makeRandomText("REGION")).createRegion(size, 0640, true);
+        auto region = name_.withRegion(makeRandomText("REGION")).create(size, 0640, true);
         return regions_.emplace_back(region.clone());
     }
 
     auto getLastRegion() const -> FamRegion::SPtr { return regions_.back(); }
 
 private:
-    FamName name_ {testEndpoint, {}};
+    FamRegionName name_ {testEndpoint, {}};
 
     std::vector<FamRegion::SPtr> regions_;
 };

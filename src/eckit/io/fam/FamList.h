@@ -20,7 +20,7 @@
 #pragma once
 
 #include "eckit/io/fam/FamListIterator.h"
-#include "eckit/io/fam/FamName.h"
+#include "eckit/io/fam/FamRegionName.h"
 
 #include <memory>
 #include <ostream>
@@ -38,7 +38,7 @@ public:  // types
 public:  // methods
     FamList(const FamRegion& region, const std::string& name);
 
-    FamList(const FamName& name);
+    FamList(const FamRegionName& name);
 
     ~FamList();
 

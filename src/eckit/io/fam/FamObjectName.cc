@@ -28,30 +28,30 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 auto FamObjectName::withRegion(std::string_view regionName) -> FamObjectName& {
-    path().regionName = regionName;
+    path_.regionName = regionName;
     return *this;
 }
 
 auto FamObjectName::withObject(std::string_view objectName) -> FamObjectName& {
-    path().objectName = objectName;
+    path_.objectName = objectName;
     return *this;
 }
 
 auto FamObjectName::lookup() const -> FamObject {
-    return session()->lookupObject(path().regionName, path().objectName);
+    return session()->lookupObject(path_.regionName, path_.objectName);
 }
 
 auto FamObjectName::allocate(const fam::size_t objectSize, const bool overwrite) const -> FamObject {
-    return session()->lookupRegion(path().regionName).allocateObject(objectSize, path().objectName, overwrite);
+    return session()->lookupRegion(path_.regionName).allocateObject(objectSize, path_.objectName, overwrite);
 }
 
 auto FamObjectName::exists() const -> bool {
     try {
         return lookup().exists();
     } catch (const NotFound&) {
-        Log::debug<LibEcKit>() << "FAM object [" << path().objectName << "] was not found!\n";
+        Log::debug<LibEcKit>() << "FAM object [" << path_.objectName << "] was not found!\n";
     } catch (const PermissionDenied&) {
-        Log::debug<LibEcKit>() << "FAM object [" << path().objectName << "] is not accessible!\n";
+        Log::debug<LibEcKit>() << "FAM object [" << path_.objectName << "] is not accessible!\n";
     }
     return false;
 }

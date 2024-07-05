@@ -48,17 +48,13 @@ public:  // methods
     auto path() const -> const FamPath& { return path_; }
 
 protected:  // methods
-    auto path() -> FamPath& { return path_; }
-
-    auto endpoint() -> net::Endpoint& { return endpoint_; }
-
     auto session() const -> FamSession::SPtr;
 
     virtual void print(std::ostream& out) const;
 
     friend std::ostream& operator<<(std::ostream& out, const FamName& name);
 
-private:  // members
+protected:  // members
     net::Endpoint endpoint_;
 
     FamPath path_;

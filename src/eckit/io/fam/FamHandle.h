@@ -20,7 +20,7 @@
 #pragma once
 
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/fam/FamName.h"
+#include "eckit/io/fam/FamObjectName.h"
 
 #include <memory>
 
@@ -34,9 +34,9 @@ class FamHandle: public DataHandle {
 public:  // methods
     enum class Mode { CLOSED, READ, WRITE };
 
-    FamHandle(const FamName& name, const Offset& position, const Length& length, bool overwrite);
+    FamHandle(const FamObjectName& name, const Offset& position, const Length& length, bool overwrite);
 
-    FamHandle(const FamName& name, bool overwrite = false);
+    FamHandle(const FamObjectName& name, bool overwrite = false);
 
     Length openForRead() override;
 
@@ -66,7 +66,7 @@ private:  // methods
     void print(std::ostream& out) const override;
 
 private:  // members
-    const FamName name_;
+    const FamObjectName name_;
 
     Offset pos_ {0};
     Length len_ {0};

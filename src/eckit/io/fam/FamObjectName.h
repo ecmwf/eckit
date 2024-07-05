@@ -45,7 +45,8 @@ public:  // methods
 
     auto lookup() const -> FamObject;
 
-    auto allocate(fam::size_t objectSize, const bool overwrite = false) const -> FamObject;
+    /// @note we have API for permissions but we don't use it for now
+    auto allocate(fam::size_t objectSize, bool overwrite = false) const -> FamObject;
 
     auto exists() const -> bool override;
 

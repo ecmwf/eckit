@@ -33,6 +33,8 @@ struct FamPath {
 
     FamPath() = default;
 
+    FamPath(std::string region, std::string object);
+
     FamPath(const std::string& path);
 
     FamPath(const char* path);

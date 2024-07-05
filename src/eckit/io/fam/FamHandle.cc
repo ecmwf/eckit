@@ -17,19 +17,16 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/fam/FamName.h"
 #include "eckit/log/Log.h"
-
-#include <utility>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamHandle::FamHandle(const FamName& name, const Offset& position, const Length& length, const bool overwrite):
+FamHandle::FamHandle(const FamObjectName& name, const Offset& position, const Length& length, const bool overwrite):
     name_ {name}, pos_ {position}, len_ {length}, overwrite_ {overwrite} { }
 
-FamHandle::FamHandle(const FamName& name, const bool overwrite): FamHandle(name, 0, 0, overwrite) { }
+FamHandle::FamHandle(const FamObjectName& name, const bool overwrite): FamHandle(name, 0, 0, overwrite) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -66,7 +63,7 @@ Length FamHandle::size() {
 
 Length FamHandle::openForRead() {
     open(Mode::READ);
-    handle_ = name_.lookupObject().clone();
+    handle_ = name_.lookup().clone();
     return estimate();
 }
 
@@ -74,27 +71,15 @@ void FamHandle::openForWrite(const Length& length) {
     open(Mode::WRITE);
 
     try {
-        handle_ = name_.lookupObject().clone();
+        handle_ = name_.lookup().clone();
         if (overwrite_ && length > 0) { ASSERT(size() >= length); }
     } catch (const NotFound& e) {
         Log::debug<LibEcKit>() << "FamHandle::openForWrite() " << e.what() << '\n';
         ASSERT(length > 0);
-        handle_ = name_.allocateObject(length).clone();
+        handle_ = name_.allocate(length).clone();
     }
 
     len_ = size();
-
-    // try {
-    //     name_.create(static_cast<fam::size_t>(length));
-    // } catch (const AlreadyExists& e) {
-    //     Log::debug<LibEcKit>() << "FamHandle::openForWrite() " << e.what() << '\n';
-    //     ASSERT(overwrite_ && length == size());
-    //     name_.object()->deallocate();
-    //     name_.create(static_cast<fam::size_t>(length));
-    // }
-
-    /// @todo slow code, use of length ?
-    // if (length > 0 && name_.exists()) { ASSERT(size() == length); }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -106,7 +91,6 @@ long FamHandle::read(void* buffer, const long length) {
     if (size() <= pos_) { return 0; }
 
     handle_->get(buffer, pos_, length);
-    // const auto len = name_.get(buffer, pos_, length);
 
     pos_ += length;
 
@@ -117,7 +101,6 @@ long FamHandle::write(const void* buffer, const long length) {
     ASSERT(mode_ == Mode::WRITE);
 
     handle_->put(buffer, pos_, length);
-    // const auto len = name_.put(buffer, length);
 
     pos_ += length;
 

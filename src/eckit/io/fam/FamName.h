@@ -19,19 +19,13 @@
 
 #pragma once
 
-#include "eckit/io/Length.h"
-#include "eckit/io/Offset.h"
-#include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamPath.h"
-#include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamSession.h"
 
 #include <iosfwd>
 #include <string>
 
 namespace eckit {
-
-class DataHandle;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -41,6 +35,10 @@ public:  // methods
 
     FamName(const URI& uri);
 
+    virtual ~FamName();
+
+    virtual auto exists() const -> bool = 0;
+
     auto asString() const -> std::string;
 
     auto uri() const -> URI;
@@ -49,39 +47,11 @@ public:  // methods
 
     auto path() const -> const FamPath& { return path_; }
 
-    auto withEndpoint(const net::Endpoint& endpoint) -> FamName&;
-
-    auto withPath(const FamPath& path) -> FamName&;
-
-    auto withRegion(std::string_view regionName) -> FamName&;
-
-    auto withObject(std::string_view objectName) -> FamName&;
-
-    // region
-
-    auto lookupRegion() const -> FamRegion;
-
-    auto createRegion(fam::size_t regionSize, fam::perm_t regionPerm, bool overwrite = false) const -> FamRegion;
-
-    auto existsRegion() const -> bool;
-
-    // object
-
-    auto lookupObject() const -> FamObject;
-
-    auto allocateObject(fam::size_t objectSize, const bool overwrite = false) const -> FamObject;
-
-    auto existsObject() const -> bool;
-
-    // datahandle
-
-    [[nodiscard]]
-    auto dataHandle(bool overwrite = false) const -> DataHandle*;
-
-    [[nodiscard]]
-    auto dataHandle(const Offset& offset, const Length& length) const -> DataHandle*;
-
 protected:  // methods
+    auto path() -> FamPath& { return path_; }
+
+    auto endpoint() -> net::Endpoint& { return endpoint_; }
+
     auto session() const -> FamSession::SPtr;
 
     virtual void print(std::ostream& out) const;

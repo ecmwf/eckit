@@ -157,6 +157,8 @@ public:  // methods
     bool isFloatingPointList(const std::string& name) const;
 
     bool isStringList(const std::string& name) const;
+    
+    bool isNull(const std::string& name) const;
 
     template <typename T>
     bool isConvertible(const std::string& name) const {

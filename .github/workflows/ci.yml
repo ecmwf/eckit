@@ -85,7 +85,10 @@ jobs:
     if: ${{ always() && !github.event.pull_request.head.repo.fork && (github.event.action != 'labeled' || github.event.label.name == 'approved-for-ci') }}
     steps:
       - name: Trigger Teams notification
+        if: failure() && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         uses: ecmwf-actions/notify-teams@v1
         with:
           incoming_webhook: ${{ secrets.MS_TEAMS_INCOMING_WEBHOOK }}
           needs_context: ${{ toJSON(needs) }}
+          notify_on: |
+            failure

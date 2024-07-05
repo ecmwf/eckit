@@ -17,9 +17,9 @@
 
 #include "detail/FamNode.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/fam/FamName.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamRegionName.h"
 
 #include <iostream>
 #include <string>
@@ -38,7 +38,7 @@ FamList::FamList(const FamRegion& region, const std::string& listName):
     if (FamNode::getPrevOffset(tail_) == 0) { tail_.put(head_.descriptor(), offsetof(FamNode, prev)); }
 }
 
-FamList::FamList(const FamName& name): FamList(name.lookupRegion(), name.path().objectName) { }
+FamList::FamList(const FamRegionName& name): FamList(name.lookup(), name.path().objectName) { }
 
 FamList::~FamList() = default;
 

@@ -16,11 +16,11 @@
 #include "eckit/io/fam/FamURIManager.h"
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/fam/FamName.h"
+#include "eckit/io/fam/FamObjectName.h"
 
 namespace eckit {
 
-const static FamURIManager manager_fam(FamPath::SCHEME);
+const static FamURIManager manager(FamPath::SCHEME);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -29,19 +29,19 @@ FamURIManager::FamURIManager(const std::string& name): URIManager(name) { }
 FamURIManager::~FamURIManager() = default;
 
 bool FamURIManager::exists(const URI& uri) {
-    return FamName(uri).existsObject();
+    return FamObjectName(uri).exists();
 }
 
 DataHandle* FamURIManager::newWriteHandle(const URI& uri) {
-    return FamName(uri).dataHandle();
+    return FamObjectName(uri).dataHandle();
 }
 
 DataHandle* FamURIManager::newReadHandle(const URI& uri) {
-    return FamName(uri).dataHandle();
+    return FamObjectName(uri).dataHandle();
 }
 
-DataHandle* FamURIManager::newReadHandle(const URI& uri, const OffsetList&, const LengthList&) {
-    return FamName(uri).dataHandle();
+DataHandle* FamURIManager::newReadHandle(const URI& uri, const OffsetList& /*offsets*/, const LengthList& /*lengths*/) {
+    return FamObjectName(uri).dataHandle();
 }
 
 std::string FamURIManager::asString(const URI& uri) const {
@@ -51,7 +51,7 @@ std::string FamURIManager::asString(const URI& uri) const {
     std::string fragment = uri.fragment();
     if (!fragment.empty()) { fragment = "#" + fragment; }
 
-    /// @todo consider return FamName(uri).asString() + query + fragment;
+    /// @todo consider return FamObjectName(uri).asString() + query + fragment;
     return uri.scheme() + ":" + uri.name() + query + fragment;
 }
 

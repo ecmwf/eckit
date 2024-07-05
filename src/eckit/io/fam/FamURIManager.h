@@ -36,9 +36,9 @@ public:  // methods
 private:  // methods
     bool exists(const URI&) override;
 
-    DataHandle* newWriteHandle(const URI&) override;
-    DataHandle* newReadHandle(const URI&) override;
-    DataHandle* newReadHandle(const URI&, const OffsetList&, const LengthList&) override;
+    DataHandle* newWriteHandle(const URI& uri) override;
+    DataHandle* newReadHandle(const URI& uri) override;
+    DataHandle* newReadHandle(const URI& uri, const OffsetList& offsets, const LengthList& lengths) override;
 
     std::string asString(const URI& uri) const override;
 };

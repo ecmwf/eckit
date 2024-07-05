@@ -48,6 +48,9 @@ const uuid_t nsOID = {0x6b, 0xa7, 0xb8, 0x12, 0x9d, 0xad, 0x11, 0xd1, 0x80, 0xb4
 
 //----------------------------------------------------------------------------------------------------------------------
 
+FamPath::FamPath(std::string region, std::string object):
+    regionName {std::move(region)}, objectName {std::move(object)} { }
+
 FamPath::FamPath(const std::string& path) {
     std::tie(regionName, objectName) = parsePath(path);
 }

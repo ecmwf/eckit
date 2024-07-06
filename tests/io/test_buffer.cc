@@ -32,7 +32,7 @@ const char* msg = "Once upon a midnight dreary";
 CASE("Test eckit Buffer default constructor") {
     Buffer buf;
     EXPECT(buf.size() == 0);
-    EXPECT(buf.data() != nullptr);
+    EXPECT(buf.data() == nullptr);
 }
 
 CASE("Test eckit Buffer constructor 1") {

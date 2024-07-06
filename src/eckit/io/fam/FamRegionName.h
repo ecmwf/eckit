@@ -19,8 +19,7 @@
 
 #pragma once
 
-#include "eckit/io/fam/FamName.h"
-#include "eckit/io/fam/FamPath.h"
+#include "eckit/io/fam/FamObjectName.h"
 #include "eckit/io/fam/FamRegion.h"
 
 #include <iosfwd>
@@ -36,7 +35,9 @@ public:  // methods
 
     ~FamRegionName() = default;
 
-    auto withRegion(std::string_view regionName) -> FamRegionName&;
+    auto withRegion(const std::string& regionName) -> FamRegionName&;
+
+    auto object(const std::string& objectName) const -> FamObjectName;
 
     auto lookup() const -> FamRegion;
 

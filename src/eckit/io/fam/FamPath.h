@@ -31,6 +31,8 @@ class URI;
 struct FamPath {
     static constexpr const auto SCHEME = "fam";
 
+    static auto generateUUID(const std::string& name) -> std::string;
+
     FamPath() = default;
 
     FamPath(std::string region, std::string object);

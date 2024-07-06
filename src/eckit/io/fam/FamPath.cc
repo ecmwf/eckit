@@ -48,6 +48,18 @@ const uuid_t nsOID = {0x6b, 0xa7, 0xb8, 0x12, 0x9d, 0xad, 0x11, 0xd1, 0x80, 0xb4
 
 //----------------------------------------------------------------------------------------------------------------------
 
+auto FamPath::generateUUID(const std::string& name) -> std::string {
+    std::string result = "00000000-0000-0000-0000-000000000000";
+
+    uuid_t oid;
+    uuid_generate_sha1(&oid[0], &nsOID[0], name.c_str(), name.length());
+    uuid_unparse(&oid[0], result.data());
+
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 FamPath::FamPath(std::string region, std::string object):
     regionName {std::move(region)}, objectName {std::move(object)} { }
 
@@ -66,15 +78,7 @@ bool FamPath::operator==(const FamPath& other) const {
 }
 
 auto FamPath::generateUUID() const -> std::string {
-    std::string result = "00000000-0000-0000-0000-000000000000";
-
-    const std::string name = std::string(regionName + objectName);
-
-    uuid_t oid;
-    uuid_generate_sha1(&oid[0], &nsOID[0], name.c_str(), name.length());
-    uuid_unparse(&oid[0], result.data());
-
-    return result;
+    return generateUUID(regionName + objectName);
 }
 
 std::ostream& operator<<(std::ostream& out, const FamPath& path) {

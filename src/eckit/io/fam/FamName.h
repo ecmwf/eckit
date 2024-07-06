@@ -43,6 +43,8 @@ public:  // methods
 
     auto uri() const -> URI;
 
+    auto uriBelongs(const URI& uri) const -> bool;
+
     auto endpoint() const -> const net::Endpoint& { return endpoint_; }
 
     auto path() const -> const FamPath& { return path_; }

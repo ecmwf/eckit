@@ -47,6 +47,10 @@ auto FamName::uri() const -> URI {
     return {FamPath::SCHEME, endpoint_, path_};
 }
 
+auto FamName::uriBelongs(const URI& uri) const -> bool {
+    return (FamPath(uri).regionName == path_.regionName);
+}
+
 void FamName::print(std::ostream& out) const {
     out << "endpoint=" << endpoint_ << ", path=" << path_;
 }

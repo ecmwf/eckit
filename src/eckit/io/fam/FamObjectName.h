@@ -39,9 +39,12 @@ public:  // methods
 
     ~FamObjectName() = default;
 
-    auto withRegion(std::string_view regionName) -> FamObjectName&;
+    auto withRegion(const std::string& regionName) -> FamObjectName&;
 
-    auto withObject(std::string_view objectName) -> FamObjectName&;
+    auto withObject(const std::string& objectName) -> FamObjectName&;
+
+    /// @brief Replaces [objectName] with UUID (e.g., 34bd2214-2a97-5a8a-802f-76ebefd84816)
+    auto withUUID() -> FamObjectName&;
 
     auto lookup() const -> FamObject;
 

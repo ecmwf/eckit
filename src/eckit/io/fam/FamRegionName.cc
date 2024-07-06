@@ -26,9 +26,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamRegionName::withRegion(std::string_view regionName) -> FamRegionName& {
+auto FamRegionName::withRegion(const std::string& regionName) -> FamRegionName& {
     path_.regionName = regionName;
     return *this;
+}
+
+auto FamRegionName::object(const std::string& objectName) const -> FamObjectName {
+    return {endpoint_, {path_.regionName, objectName}};
 }
 
 auto FamRegionName::lookup() const -> FamRegion {
@@ -45,11 +49,9 @@ auto FamRegionName::create(const fam::size_t regionSize,
 auto FamRegionName::exists() const -> bool {
     try {
         return lookup().exists();
-    } catch (const NotFound&) {
-        Log::debug<LibEcKit>() << "FAM region [" << path_.regionName << "] was not found!\n";
-    } catch (const PermissionDenied&) {
-        Log::debug<LibEcKit>() << "FAM region [" << path_.regionName << "] is not accessible!\n";
-    }
+    } catch (const NotFound& notFound) {
+        Log::debug<LibEcKit>() << notFound << '\n';
+    } catch (const PermissionDenied& permissionDenied) { Log::debug<LibEcKit>() << permissionDenied << '\n'; }
     return false;
 }
 

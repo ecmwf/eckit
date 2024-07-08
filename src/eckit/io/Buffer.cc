@@ -25,6 +25,7 @@ static char* allocate(const size_t size) {
 
 static void deallocate(char* buffer) {
     delete[] buffer;
+    buffer = nullptr;
 }
 
 }  // namespace
@@ -85,16 +86,13 @@ void Buffer::create() {
 }
 
 void Buffer::destroy() {
-    if (buffer_) {
-        deallocate(buffer_);
-        buffer_ = nullptr;
-        size_   = 0;
-    }
+    deallocate(buffer_);
+    size_ = 0;
 }
 
 void Buffer::copy(const std::string& s) {
     ASSERT(buffer_);
-    ::strncpy(buffer_, s.c_str(), std::min(size_, s.size() + 1));
+    if (buffer_) { ::strncpy(buffer_, s.c_str(), std::min(size_, s.size() + 1)); }
 }
 
 void Buffer::copy(const void* p, size_t size, size_t pos) {

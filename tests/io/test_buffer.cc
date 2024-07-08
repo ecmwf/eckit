@@ -69,7 +69,8 @@ CASE("Test eckit Buffer move constructor") {
     const char* out = buf2;
     EXPECT(std::strcmp(msg, out) == 0);
 
-    EXPECT(static_cast<const char*>(buf1) == nullptr && buf1.size() == 0);
+    EXPECT_EQUAL(static_cast<const char*>(buf1), nullptr);
+    EXPECT_EQUAL(buf1.size(), 0);
 }
 
 CASE("Test eckit Buffer move assignment") {
@@ -82,8 +83,8 @@ CASE("Test eckit Buffer move assignment") {
     const char* out = buf2;
     EXPECT(std::strcmp(msg, out) == 0);
 
-    // EXPECT(static_cast<const char*>(buf1) == nullptr)
-    EXPECT(buf1.size() == 0);
+    EXPECT_EQUAL(static_cast<const char*>(buf1), nullptr);
+    EXPECT_EQUAL(buf1.size(), 0);
 }
 
 // This includes a self-move but is legitimate, if pointless, so it should be tested
@@ -122,7 +123,10 @@ CASE("Test eckit Buffer resize") {
     EXPECT_THROWS(buf.copy(msg, sz));
 
     EXPECT_NO_THROW(buf.resize(sz));
+    EXPECT_EQUAL(buf.size(), sz);
+
     EXPECT_NO_THROW(buf.copy(msg, sz));
+    EXPECT_EQUAL(std::strncmp(msg, static_cast<const char*>(buf), sz), 0);
 
     size_t newSize = 41;
     buf.resize(newSize, true);
@@ -140,6 +144,10 @@ CASE("Test eckit Buffer resize") {
     newSize = 41;
     buf.resize(newSize, false);
     EXPECT(buf.size() == newSize);
+
+    buf.resize(0, false);
+    EXPECT_EQUAL(buf.size(), 0);
+    EXPECT_EQUAL(buf.data(), nullptr);
 }
 
 CASE("Test construct from an empty") {

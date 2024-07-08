@@ -4,6 +4,7 @@
 #include <ctime>
 
 #include <algorithm>
+#include <memory>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/testing/Test.h"
@@ -32,7 +33,7 @@ const char* msg = "Once upon a midnight dreary";
 CASE("Test eckit Buffer default constructor") {
     Buffer buf;
     EXPECT(buf.size() == 0);
-    EXPECT(buf.data() != nullptr);
+    EXPECT(buf.data() == nullptr);
 }
 
 CASE("Test eckit Buffer constructor 1") {
@@ -139,6 +140,13 @@ CASE("Test eckit Buffer resize") {
     newSize = 41;
     buf.resize(newSize, false);
     EXPECT(buf.size() == newSize);
+}
+
+CASE("Test construct from an empty") {
+    std::unique_ptr<Buffer> buf;
+    EXPECT_NO_THROW(buf = std::make_unique<Buffer>(Buffer {0}));
+    EXPECT_EQUAL(buf->size(), 0);
+    EXPECT_EQUAL(buf->data(), nullptr);
 }
 
 CASE("Test copying and construction from of std::string") {

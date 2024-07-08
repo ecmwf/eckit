@@ -19,8 +19,8 @@ namespace eckit {
 
 namespace {
 
-static char* allocate(size_t size) {
-    return new char[size];
+static char* allocate(const size_t size) {
+    return size == 0 ? nullptr : new char[size];
 }
 
 static void deallocate(char* buffer) {
@@ -98,8 +98,8 @@ void Buffer::copy(const std::string& s) {
 }
 
 void Buffer::copy(const void* p, size_t size, size_t pos) {
-    ASSERT(buffer_ && size_ >= pos + size);
-    if (size) {
+    ASSERT(size_ >= pos + size);
+    if (buffer_ && size > 0) {
         ::memcpy(buffer_ + pos, p, size);
     }
 }

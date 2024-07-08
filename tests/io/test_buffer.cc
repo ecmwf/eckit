@@ -19,8 +19,8 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-unsigned char* random_bytestream(size_t sz) {
-    ::srand((unsigned int)::time(0));
+unsigned char* random_bytestream(const size_t sz) {
+    ::srand(static_cast<unsigned int>(::time(nullptr)));
     unsigned char* stream = static_cast<unsigned char*>(::malloc(sz));
     auto rnd              = []() -> unsigned char { return ::rand(); };
     std::generate(stream, stream + sz, rnd);
@@ -28,7 +28,7 @@ unsigned char* random_bytestream(size_t sz) {
     return stream;
 }
 
-const char* msg = "Once upon a midnight dreary";
+constexpr auto msg = "Once upon a midnight dreary";
 
 CASE("Test eckit Buffer default constructor") {
     Buffer buf;
@@ -116,7 +116,7 @@ CASE("Test eckit Buffer Zero") {
 
 // NOTE: resize allocates a new buffer whenever the new size is different -- this is inefficient
 CASE("Test eckit Buffer resize") {
-    const size_t sz = std::strlen(msg) + 1;
+    constexpr auto sz = std::char_traits<char>::length(msg) + 1;
     Buffer buf;
     EXPECT(buf.size() == 0);
 

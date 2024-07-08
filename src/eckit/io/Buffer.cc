@@ -23,7 +23,7 @@ static char* allocate(const size_t size) {
     return size == 0 ? nullptr : new char[size];
 }
 
-static void deallocate(char* buffer) {
+static void deallocate(const char* buffer) {
     delete[] buffer;
     buffer = nullptr;
 }
@@ -32,7 +32,7 @@ static void deallocate(char* buffer) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Buffer::Buffer(size_t size) :
+Buffer::Buffer(const size_t size) :
     buffer_{nullptr}, size_{size} {
     create();
 }
@@ -94,14 +94,14 @@ void Buffer::copy(const std::string& s) {
     if (buffer_) { ::strncpy(buffer_, s.c_str(), std::min(size_, s.size() + 1)); }
 }
 
-void Buffer::copy(const void* p, size_t size, size_t pos) {
+void Buffer::copy(const void* p, const size_t size, const size_t pos) {
     ASSERT(size_ >= pos + size);
     if (buffer_ && size > 0) {
         ::memcpy(buffer_ + pos, p, size);
     }
 }
 
-void Buffer::resize(size_t size, bool preserveData) {
+void Buffer::resize(const size_t size, const bool preserveData) {
     if (size != size_) {
         if (preserveData) {
             char* newbuffer = allocate(size);

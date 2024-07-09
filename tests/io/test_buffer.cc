@@ -29,6 +29,7 @@ unsigned char* random_bytestream(const size_t sz) {
 }
 
 constexpr auto msg = "Once upon a midnight dreary";
+constexpr auto msgLen = std::char_traits<char>::length(msg);
 
 CASE("Test eckit Buffer default constructor") {
     Buffer buf;
@@ -116,7 +117,7 @@ CASE("Test eckit Buffer Zero") {
 
 // NOTE: resize allocates a new buffer whenever the new size is different -- this is inefficient
 CASE("Test eckit Buffer resize") {
-    constexpr auto sz = std::char_traits<char>::length(msg) + 1;
+    constexpr auto sz = msgLen + 1;
     Buffer buf;
     EXPECT(buf.size() == 0);
 
@@ -154,11 +155,24 @@ CASE("Test eckit Buffer resize") {
     EXPECT(buf.data() == nullptr);
 }
 
-CASE("Test construct from an empty") {
-    std::unique_ptr<Buffer> buf;
-    EXPECT_NO_THROW(buf = std::make_unique<Buffer>(Buffer {0}));
-    EXPECT_EQUAL(buf->size(), 0);
-    EXPECT(buf->data() == nullptr);
+CASE("Test copy from temp buffer") {
+    struct BufferTester {
+        explicit BufferTester(const Buffer& buffer = Buffer {0}): buf_ {buffer, buffer.size()} { }
+
+        Buffer buf_;
+    };
+
+    std::unique_ptr<BufferTester> tester;
+
+    // empty
+    EXPECT_NO_THROW(tester = std::make_unique<BufferTester>());
+    EXPECT(tester->buf_.data() == nullptr);
+    EXPECT_EQUAL(tester->buf_.size(), 0);
+
+    // non-empty
+    EXPECT_NO_THROW(tester = std::make_unique<BufferTester>(Buffer {msg, msgLen}));
+    EXPECT_EQUAL(std::strncmp(msg, static_cast<const char*>(tester->buf_), msgLen), 0);
+    EXPECT_EQUAL(tester->buf_.size(), msgLen);
 }
 
 CASE("Test copying and construction from of std::string") {

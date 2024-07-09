@@ -69,7 +69,7 @@ CASE("Test eckit Buffer move constructor") {
     const char* out = buf2;
     EXPECT(std::strcmp(msg, out) == 0);
 
-    EXPECT_EQUAL(static_cast<const char*>(buf1), nullptr);
+    EXPECT(static_cast<const char*>(buf1) == nullptr);
     EXPECT_EQUAL(buf1.size(), 0);
 }
 
@@ -83,7 +83,7 @@ CASE("Test eckit Buffer move assignment") {
     const char* out = buf2;
     EXPECT(std::strcmp(msg, out) == 0);
 
-    EXPECT_EQUAL(static_cast<const char*>(buf1), nullptr);
+    EXPECT(static_cast<const char*>(buf1) == nullptr);
     EXPECT_EQUAL(buf1.size(), 0);
 }
 
@@ -147,14 +147,18 @@ CASE("Test eckit Buffer resize") {
 
     buf.resize(0, false);
     EXPECT_EQUAL(buf.size(), 0);
-    EXPECT_EQUAL(buf.data(), nullptr);
+    EXPECT(buf.data() == nullptr);
+
+    buf.resize(0, true);
+    EXPECT_EQUAL(buf.size(), 0);
+    EXPECT(buf.data() == nullptr);
 }
 
 CASE("Test construct from an empty") {
     std::unique_ptr<Buffer> buf;
     EXPECT_NO_THROW(buf = std::make_unique<Buffer>(Buffer {0}));
     EXPECT_EQUAL(buf->size(), 0);
-    EXPECT_EQUAL(buf->data(), nullptr);
+    EXPECT(buf->data() == nullptr);
 }
 
 CASE("Test copying and construction from of std::string") {

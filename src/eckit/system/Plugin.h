@@ -35,6 +35,9 @@ public:
     /// @brief Initialisation function called after loading the plugin dynamically with dlopen()
     virtual void init();
 
+    /// @brief Setup function which may be used for further context-specific initialisation
+    virtual void setup(void *);
+
     /// @brief Finalisation function called before unloading the plugin dynamically with dlclose()
     virtual void finalise();
 

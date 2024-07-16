@@ -25,11 +25,12 @@
 namespace eckit {
 
 class URI;
+class Stream;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FamPath {
-    static constexpr const auto SCHEME = "fam";
+    static constexpr const auto scheme = "fam";
 
     static auto generateUUID(const std::string& name) -> std::string;
 
@@ -43,13 +44,19 @@ struct FamPath {
 
     FamPath(const URI& uri);
 
-    bool operator==(const FamPath& other) const;
+    FamPath(Stream& stream);
 
-    operator std::string() const { return objectName.empty() ? '/' + regionName : '/' + regionName + '/' + objectName; }
+    bool operator==(const FamPath& other) const;
 
     auto generateUUID() const -> std::string;
 
-    friend std::ostream& operator<<(std::ostream& out, const FamPath& path);
+    void encode(Stream& stream) const;
+
+    auto asString() const -> std::string;
+
+    friend auto operator<<(std::ostream& out, const FamPath& path) -> std::ostream&;
+
+    friend auto operator<<(Stream& stream, const FamPath& name) -> Stream&;
 
     std::string regionName;
     std::string objectName;

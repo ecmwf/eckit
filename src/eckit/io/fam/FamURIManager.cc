@@ -20,7 +20,7 @@
 
 namespace eckit {
 
-const static FamURIManager manager(FamPath::SCHEME);
+const static FamURIManager manager(FamPath::scheme);
 
 //----------------------------------------------------------------------------------------------------------------------
 

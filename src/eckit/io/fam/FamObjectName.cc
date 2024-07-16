@@ -55,11 +55,7 @@ auto FamObjectName::exists() const -> bool {
     }
     catch (const NotFound& notFound) {
         Log::debug<LibEcKit>() << notFound << '\n';
-    }
-    catch (const PermissionDenied& permissionDenied) {
-        Log::debug<LibEcKit>() << permissionDenied << '\n';
-    }
-
+    } catch (const PermissionDenied& permissionDenied) { Log::debug<LibEcKit>() << permissionDenied << '\n'; }
     return false;
 }
 

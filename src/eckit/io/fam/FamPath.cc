@@ -18,7 +18,8 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
-#include "eckit/log/Log.h"
+// #include "eckit/log/Log.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Tokenizer.h"
 
 #include <uuid/uuid.h>
@@ -75,8 +76,13 @@ FamPath::FamPath(const std::string& path) {
 
 FamPath::FamPath(const char* path) : FamPath(std::string(path)) {}
 
-FamPath::FamPath(const URI& uri) : FamPath(uri.name()) {
-    ASSERT(uri.scheme() == SCHEME);
+FamPath::FamPath(const URI& uri): FamPath(uri.name()) {
+    ASSERT(uri.scheme() == scheme);
+}
+
+FamPath::FamPath(Stream& stream) {
+    stream >> regionName;
+    stream >> objectName;
 }
 
 bool FamPath::operator==(const FamPath& other) const {
@@ -87,9 +93,23 @@ auto FamPath::generateUUID() const -> std::string {
     return generateUUID(regionName + objectName);
 }
 
-std::ostream& operator<<(std::ostream& out, const FamPath& path) {
-    out << std::string(path);
+void FamPath::encode(Stream& stream) const {
+    stream << regionName;
+    stream << objectName;
+}
+
+auto FamPath::asString() const -> std::string {
+    return objectName.empty() ? '/' + regionName : '/' + regionName + '/' + objectName;
+}
+
+auto operator<<(std::ostream& out, const FamPath& path) -> std::ostream& {
+    out << path.asString();
     return out;
+}
+
+auto operator<<(Stream& stream, const FamPath& name) -> Stream& {
+    name.encode(stream);
+    return stream;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

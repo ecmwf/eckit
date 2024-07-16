@@ -17,6 +17,7 @@
 
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/serialisation/Stream.h"
 
 #include <ostream>
 #include <sstream>
@@ -29,6 +30,8 @@ FamName::FamName(const net::Endpoint& endpoint, FamPath path) : endpoint_{endpoi
 
 FamName::FamName(const URI& uri) : FamName(uri.endpoint(), uri) {}
 
+FamName::FamName(Stream& stream): endpoint_ {stream}, path_ {stream} { }
+
 FamName::~FamName() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -39,25 +42,29 @@ auto FamName::session() const -> FamSession::SPtr {
 
 auto FamName::asString() const -> std::string {
     std::ostringstream oss;
-    oss << FamPath::SCHEME << "://" << endpoint_ << path_;
+    oss << FamPath::scheme << "://" << endpoint_ << path_;
     return oss.str();
 }
 
 auto FamName::uri() const -> URI {
-    return {FamPath::SCHEME, endpoint_, path_};
-}
-
-auto FamName::uriBelongs(const URI& uri) const -> bool {
-    return (FamPath(uri).regionName == path_.regionName);
+    return {FamPath::scheme, endpoint_, path_.asString()};
 }
 
 void FamName::print(std::ostream& out) const {
     out << "endpoint=" << endpoint_ << ", path=" << path_;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 std::ostream& operator<<(std::ostream& out, const FamName& name) {
     name.print(out);
     return out;
+}
+
+auto operator<<(Stream& stream, const FamName& name) -> Stream& {
+    stream << name.endpoint_;
+    stream << name.path_;
+    return stream;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

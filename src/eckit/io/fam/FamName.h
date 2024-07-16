@@ -36,6 +36,8 @@ public:  // methods
 
     FamName(const URI& uri);
 
+    FamName(Stream& stream);
+
     virtual ~FamName();
 
     virtual auto exists() const -> bool = 0;
@@ -43,8 +45,6 @@ public:  // methods
     auto asString() const -> std::string;
 
     auto uri() const -> URI;
-
-    auto uriBelongs(const URI& uri) const -> bool;
 
     auto endpoint() const -> const net::Endpoint& { return endpoint_; }
 
@@ -56,7 +56,9 @@ protected:  // methods
 
     virtual void print(std::ostream& out) const;
 
-    friend std::ostream& operator<<(std::ostream& out, const FamName& name);
+    friend auto operator<<(std::ostream& out, const FamName& name) -> std::ostream&;
+
+    friend auto operator<<(Stream& stream, const FamName& name) -> Stream&;
 
 protected:  // members
 

@@ -45,6 +45,8 @@ public:  // methods
     auto create(fam::size_t regionSize, fam::perm_t regionPerm, bool overwrite = false) const -> FamRegion;
 
     auto exists() const -> bool override;
+
+    auto uriBelongs(const URI& uri) const -> bool;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

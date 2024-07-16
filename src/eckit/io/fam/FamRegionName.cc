@@ -17,6 +17,7 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/log/Log.h"
 
@@ -58,6 +59,11 @@ auto FamRegionName::exists() const -> bool {
         Log::debug<LibEcKit>() << permissionDenied << '\n';
     }
     return false;
+}
+
+auto FamRegionName::uriBelongs(const URI& uri) const -> bool {
+    /// @todo check if usage requires nothrow
+    return (uri.endpoint() == endpoint_ && FamPath(uri).regionName == path_.regionName);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

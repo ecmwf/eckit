@@ -27,6 +27,7 @@
 
 namespace eckit {
 
+class Buffer;
 class FamSessionDetail;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -88,6 +89,8 @@ public:  // methods
     void put(const T& buffer, const fam::size_t offset) const {
         put(&buffer, offset, sizeof(T));
     }
+
+    auto buffer(fam::size_t offset = 0) const -> Buffer;
 
     // atomic operations
 

@@ -68,10 +68,10 @@ private:  // methods
 private:  // members
     const FamObjectName name_;
 
+    const bool overwrite_ {false};
+
     Offset pos_ {0};
     Length len_ {0};
-
-    bool overwrite_ {false};
 
     Mode mode_ {Mode::CLOSED};
 

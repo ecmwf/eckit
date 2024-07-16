@@ -53,7 +53,7 @@ CASE("FamPath: ctor and uuid generation") {
 
     {
         const auto uri = URI("fam", fam::testEndpoint, "/regionName/objectName");
-        EXPECT_EQUAL(uri.scheme(), FamPath::SCHEME);
+        EXPECT_EQUAL(uri.scheme(), FamPath::scheme);
         EXPECT_EQUAL(uri.hostport(), fam::testEndpoint);
         EXPECT_EQUAL(uri.name(), "/regionName/objectName");
         EXPECT_NO_THROW(const auto path = FamPath(uri));
@@ -62,7 +62,7 @@ CASE("FamPath: ctor and uuid generation") {
     {
         const auto uri = URI("fam://" + fam::testEndpoint + "/regionName/objectName");
 
-        EXPECT_EQUAL(uri.scheme(), FamPath::SCHEME);
+        EXPECT_EQUAL(uri.scheme(), FamPath::scheme);
         EXPECT_EQUAL(uri.hostport(), fam::testEndpoint);
         EXPECT_EQUAL(uri.name(), "/regionName/objectName");
     }
@@ -73,7 +73,7 @@ CASE("FamRegionName: ctor, lookup, and allocate") {
 
     FamRegionName region(fam::testEndpoint, regionName);
 
-    EXPECT_EQUAL(region.uri().scheme(), FamPath::SCHEME);
+    EXPECT_EQUAL(region.uri().scheme(), FamPath::scheme);
     EXPECT_EQUAL(region.uri().hostport(), fam::testEndpoint);
     EXPECT_EQUAL(region.uri().name(), '/' + regionName);
     EXPECT_EQUAL(region.uri(), URI("fam://" + fam::testEndpoint + '/' + regionName));
@@ -104,11 +104,11 @@ CASE("FamObjectName: ctor, lookup, and allocate") {
 
     FamObjectName object(fam::testEndpoint, path);
 
-    EXPECT_EQUAL(object.uri().scheme(), FamPath::SCHEME);
+    EXPECT_EQUAL(object.uri().scheme(), FamPath::scheme);
     EXPECT_EQUAL(object.uri().hostport(), fam::testEndpoint);
-    EXPECT_EQUAL(object.uri().name(), std::string(path));
-    EXPECT_EQUAL(object.uri(), URI("fam", fam::testEndpoint, path));
-    EXPECT_EQUAL(object.asString(), "fam://" + fam::testEndpoint + std::string(path));
+    EXPECT_EQUAL(object.uri().name(), path.asString());
+    EXPECT_EQUAL(object.uri(), URI("fam", fam::testEndpoint, path.asString()));
+    EXPECT_EQUAL(object.asString(), "fam://" + fam::testEndpoint + path.asString());
     EXPECT_EQUAL(object.path(), path);
 
     EXPECT_THROWS_AS(object.lookup(), NotFound);

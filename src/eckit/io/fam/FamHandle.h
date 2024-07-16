@@ -75,12 +75,12 @@ private:  // members
 
     const FamObjectName name_;
 
-    Offset pos_{0};
-    Length len_{0};
+    const bool overwrite_ {false};
 
-    bool overwrite_{false};
+    Offset pos_ {0};
+    Length len_ {0};
 
-    Mode mode_{Mode::CLOSED};
+    Mode mode_ {Mode::CLOSED};
 
     std::unique_ptr<FamObject> handle_;
 };

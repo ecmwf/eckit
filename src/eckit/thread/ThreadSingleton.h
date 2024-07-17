@@ -83,6 +83,7 @@ ThreadSingleton<T, A>::~ThreadSingleton() {
     T* value = (T*)::pthread_getspecific(key_);
     if (value) {
         ::pthread_key_delete(key_);
+        once_ = PTHREAD_ONCE_INIT;
         delete value;
     }
 }

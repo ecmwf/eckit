@@ -16,6 +16,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
+#include "eckit/option/SimpleOption.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
 

@@ -76,7 +76,7 @@ public:
         Size innerSize() const { return nonZeros(); }
 
         /// @returns outer size is number of rows + 1
-        Size outerSize() const { return static_cast<Size>(rows_ + 1); }
+        Size outerSize() const { return rows_ + 1; }
 
         size_t allocSize() const { return sizeofData() + sizeofOuter() + sizeofInner(); }
 
@@ -88,7 +88,7 @@ public:
         Size rows_ = 0;  ///< Number of rows
         Size cols_ = 0;  ///< Number of columns
 
-        void print(std::ostream& os) const;
+        void print(std::ostream&) const;
 
         friend std::ostream& operator<<(std::ostream& os, const Shape& p) {
             p.print(os);
@@ -141,10 +141,14 @@ public:
     /// Copy constructor
     SparseMatrix(const SparseMatrix&);
 
+    /// Destructor
     ~SparseMatrix();
 
     /// Assignment operator (allocates and copies data)
     SparseMatrix& operator=(const SparseMatrix&);
+
+    /// Assignment operator (moves data)
+    SparseMatrix& operator=(SparseMatrix&&);
 
 public:
     /// Prune entries with exactly the given value
@@ -239,7 +243,7 @@ public:  // iterators
         const_iterator& operator=(const_iterator&&)      = default;
 
         bool operator!=(const const_iterator& other) const { return !operator==(other); }
-        bool operator==(const const_iterator& other) const;
+        bool operator==(const const_iterator&) const;
 
         const Scalar& operator*() const;
 

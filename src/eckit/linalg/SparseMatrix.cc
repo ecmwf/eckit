@@ -188,6 +188,12 @@ SparseMatrix& SparseMatrix::operator=(const SparseMatrix& other) {
 }
 
 
+SparseMatrix& SparseMatrix::operator=(SparseMatrix&& other) {
+    swap(other);
+    return *this;
+}
+
+
 SparseMatrix::~SparseMatrix() {
     reset();
 }

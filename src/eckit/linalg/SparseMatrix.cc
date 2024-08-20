@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <cstring>
 #include <ostream>
 
 #include "eckit/eckit.h"  // for endianness
@@ -168,9 +169,9 @@ SparseMatrix::SparseMatrix(const SparseMatrix& other) : owner_(new detail::Stand
 
         reserve(other.rows(), other.cols(), other.nonZeros());
 
-        ::memcpy(spm_.data_, other.spm_.data_, shape_.sizeofData());
-        ::memcpy(spm_.outer_, other.spm_.outer_, shape_.sizeofOuter());
-        ::memcpy(spm_.inner_, other.spm_.inner_, shape_.sizeofInner());
+        std::memcpy(spm_.data_, other.spm_.data_, shape_.sizeofData());
+        std::memcpy(spm_.outer_, other.spm_.outer_, shape_.sizeofOuter());
+        std::memcpy(spm_.inner_, other.spm_.inner_, shape_.sizeofInner());
     }
 }
 
@@ -447,9 +448,9 @@ SparseMatrix& SparseMatrix::prune(Scalar val) {
     SparseMatrix tmp;
     tmp.reserve(shape_.rows_, shape_.cols_, static_cast<Size>(nnz));
 
-    ::memcpy(tmp.spm_.data_, v.data(), nnz * sizeof(Scalar));
-    ::memcpy(tmp.spm_.outer_, spm_.outer_, shape_.outerSize() * sizeof(Index));
-    ::memcpy(tmp.spm_.inner_, inner.data(), nnz * sizeof(Index));
+    std::memcpy(tmp.spm_.data_, v.data(), nnz * sizeof(Scalar));
+    std::memcpy(tmp.spm_.outer_, spm_.outer_, shape_.outerSize() * sizeof(Index));
+    std::memcpy(tmp.spm_.inner_, inner.data(), nnz * sizeof(Index));
 
     swap(tmp);
 

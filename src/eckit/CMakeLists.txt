@@ -218,6 +218,8 @@ list( APPEND eckit_io_srcs
     io/SharedHandle.h
     io/SockBuf.cc
     io/SockBuf.h
+    io/SparseHandle.h
+    io/SparseHandle.cc
     io/StatsHandle.cc
     io/StatsHandle.h
     io/StdFile.cc

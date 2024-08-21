@@ -17,6 +17,7 @@
 
 #include <iosfwd>
 #include <memory>
+#include <type_traits>
 #include <vector>
 
 #include "eckit/linalg/Triplet.h"
@@ -36,6 +37,9 @@ namespace eckit::linalg {
 /// Sparse matrix in CRS (compressed row storage) format
 class SparseMatrix {
 public:
+    using UIndex = std::make_unsigned_t<Index>;
+
+
     struct Layout {
         Layout() = default;
 
@@ -45,9 +49,9 @@ public:
             inner_ = nullptr;
         }
 
-        Scalar* data_ = nullptr;  ///< matrix entries, sized with number of non-zeros (nnz)
-        Index* outer_ = nullptr;  ///< start of rows, sized number of rows + 1
-        Index* inner_ = nullptr;  ///< column indices, sized with number of non-zeros (nnz)
+        Scalar* data_  = nullptr;  ///< matrix entries, sized with number of non-zeros (nnz)
+        UIndex* outer_ = nullptr;  ///< start of rows, sized number of rows + 1
+        Index* inner_  = nullptr;  ///< column indices, sized with number of non-zeros (nnz)
     };
 
 
@@ -81,7 +85,7 @@ public:
         size_t allocSize() const { return sizeofData() + sizeofOuter() + sizeofInner(); }
 
         size_t sizeofData() const { return dataSize() * sizeof(Scalar); }
-        size_t sizeofOuter() const { return outerSize() * sizeof(Index); }
+        size_t sizeofOuter() const { return outerSize() * sizeof(UIndex); }
         size_t sizeofInner() const { return innerSize() * sizeof(Index); }
 
         Size size_ = 0;  ///< Size of the container (AKA number of non-zeros nnz)
@@ -191,7 +195,7 @@ public:
     const Scalar* data() const { return spm_.data_; }
 
     /// @returns read-only view of the outer index vector
-    const Index* outer() const { return spm_.outer_; }
+    const Index* outer() const { return static_cast<Index*>(static_cast<void*>(spm_.outer_)); }
 
     /// @returns read-only view of the inner index vector
     const Index* inner() const { return spm_.inner_; }
@@ -249,7 +253,7 @@ public:  // iterators
 
         void print(std::ostream&) const;
 
-        bool lastOfRow() const { return ((index_ + 1) == static_cast<Size>(matrix_->outer()[row_ + 1])); }
+        bool lastOfRow() const { return ((index_ + 1) == static_cast<Size>(matrix_->spm_.outer_[row_ + 1])); }
 
     private:
         friend struct iterator;

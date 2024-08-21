@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cstring>
+#include <limits>
 #include <ostream>
 
 #include "eckit/eckit.h"  // for endianness
@@ -29,6 +30,9 @@
 #include "eckit/serialisation/Stream.h"
 
 namespace eckit::linalg {
+
+// Extend range of Index for unsigned compression indices (should only be positive), preserving binary compatibility
+static_assert(sizeof(Index) == sizeof(SparseMatrix::UIndex), "sizeof(SparseMatrix::UIndex) == sizeof(Index)");
 
 #if eckit_LITTLE_ENDIAN
 static const bool littleEndian = true;
@@ -54,7 +58,7 @@ public:
         char* addr = membuff_;
 
         p.data_  = reinterpret_cast<Scalar*>(addr);
-        p.outer_ = reinterpret_cast<Index*>(addr + shape.sizeofData());
+        p.outer_ = reinterpret_cast<SparseMatrix::UIndex*>(addr + shape.sizeofData());
         p.inner_ = reinterpret_cast<Index*>(addr + shape.sizeofData() + shape.sizeofOuter());
 
         return p;
@@ -119,6 +123,11 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     // Count number of non-zeros, allocate memory 1 triplet per non-zero
     Size nnz = std::count_if(triplets.begin(), triplets.end(), [](const auto& tri) { return tri.nonZero(); });
 
+    if (auto max = static_cast<Size>(std::numeric_limits<UIndex>::max()); max < nnz) {
+        throw SeriousBug("SparseMatrix::SparseMatrix: too many non-zero entries, nnz=" + std::to_string(nnz)
+                         + ", max=" + std::to_string(max));
+    }
+
     reserve(rows, cols, nnz);
 
     Size pos = 0;
@@ -137,7 +146,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
 
             // start a new row
             while (tri.row() > row) {
-                spm_.outer_[++row] = static_cast<Index>(pos);
+                spm_.outer_[++row] = static_cast<UIndex>(pos);
             }
 
             spm_.inner_[pos] = static_cast<Index>(tri.col());
@@ -147,10 +156,10 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     }
 
     while (row < shape_.rows_) {
-        spm_.outer_[++row] = static_cast<Index>(pos);
+        spm_.outer_[++row] = static_cast<UIndex>(pos);
     }
 
-    ASSERT(Size(spm_.outer_[shape_.outerSize() - 1]) == nonZeros());
+    ASSERT(static_cast<Size>(spm_.outer_[shape_.outerSize() - 1]) == nonZeros());
 }
 
 
@@ -273,7 +282,7 @@ void SparseMatrix::load(const void* buffer, size_t bufferSize, Layout& layout, S
     char* addr = const_cast<char*>(b);
 
     layout.data_  = reinterpret_cast<Scalar*>(addr + info.data_);
-    layout.outer_ = reinterpret_cast<Index*>(addr + info.outer_);
+    layout.outer_ = reinterpret_cast<UIndex*>(addr + info.outer_);
     layout.inner_ = reinterpret_cast<Index*>(addr + info.inner_);
 
     // check offsets don't segfault
@@ -376,12 +385,12 @@ SparseMatrix& SparseMatrix::setIdentity(Size rows, Size cols) {
     reserve(rows, cols, nnz);
 
     for (Size i = 0; i < nnz; ++i) {
-        spm_.outer_[i] = static_cast<Index>(i);
+        spm_.outer_[i] = static_cast<UIndex>(i);
         spm_.inner_[i] = static_cast<Index>(i);
     }
 
     for (Size i = nnz; i <= shape_.rows_; ++i) {
-        spm_.outer_[i] = static_cast<Index>(nnz);
+        spm_.outer_[i] = static_cast<UIndex>(nnz);
     }
 
     for (Size i = 0; i < shape_.size_; ++i) {
@@ -400,7 +409,7 @@ SparseMatrix& SparseMatrix::transpose() {
     triplets.reserve(nonZeros());
 
     for (Size r = 0; r < shape_.rows_; ++r) {
-        for (Index c = spm_.outer_[r]; c < spm_.outer_[r + 1]; ++c) {
+        for (auto c = spm_.outer_[r]; c < spm_.outer_[r + 1]; ++c) {
             ASSERT(spm_.inner_[c] >= 0);
             triplets.emplace_back(static_cast<Size>(spm_.inner_[c]), r, spm_.data_[c]);
         }
@@ -437,10 +446,10 @@ SparseMatrix& SparseMatrix::prune(Scalar val) {
     std::vector<Scalar> v;
     std::vector<Index> inner;
 
-    Index nnz = 0;
+    Size nnz = 0;
     for (Size r = 0; r < shape_.rows_; ++r) {
         const auto start = spm_.outer_[r];
-        spm_.outer_[r]   = nnz;
+        spm_.outer_[r]   = static_cast<UIndex>(nnz);
         for (auto c = start; c < spm_.outer_[r + 1]; ++c) {
             if (spm_.data_[c] != val) {
                 v.push_back(spm_.data_[c]);
@@ -449,13 +458,13 @@ SparseMatrix& SparseMatrix::prune(Scalar val) {
             }
         }
     }
-    spm_.outer_[shape_.rows_] = nnz;
+    spm_.outer_[shape_.rows_] = static_cast<UIndex>(nnz);
 
     SparseMatrix tmp;
-    tmp.reserve(shape_.rows_, shape_.cols_, static_cast<Size>(nnz));
+    tmp.reserve(shape_.rows_, shape_.cols_, nnz);
 
     std::memcpy(tmp.spm_.data_, v.data(), nnz * sizeof(Scalar));
-    std::memcpy(tmp.spm_.outer_, spm_.outer_, shape_.outerSize() * sizeof(Index));
+    std::memcpy(tmp.spm_.outer_, spm_.outer_, shape_.outerSize() * sizeof(UIndex));
     std::memcpy(tmp.spm_.inner_, inner.data(), nnz * sizeof(Index));
 
     swap(tmp);
@@ -484,7 +493,7 @@ void SparseMatrix::encode(Stream& s) const {
                            << " rows " << rows() << " cols " << cols() << " nnz " << nonZeros() << " footprint "
                            << footprint() << std::endl;
 
-    s.writeLargeBlob(spm_.outer_, shape_.outerSize() * sizeof(Index));
+    s.writeLargeBlob(spm_.outer_, shape_.outerSize() * sizeof(UIndex));
     s.writeLargeBlob(spm_.inner_, shape_.innerSize() * sizeof(Index));
     s.writeLargeBlob(spm_.data_, shape_.dataSize() * sizeof(Scalar));
 }
@@ -525,7 +534,7 @@ void SparseMatrix::decode(Stream& s) {
                            << " rows " << rows << " cols " << cols << " nnz " << nnz << " footprint " << footprint()
                            << std::endl;
 
-    s.readLargeBlob(spm_.outer_, shape_.outerSize() * sizeof(Index));
+    s.readLargeBlob(spm_.outer_, shape_.outerSize() * sizeof(UIndex));
     s.readLargeBlob(spm_.inner_, shape_.innerSize() * sizeof(Index));
     s.readLargeBlob(spm_.data_, shape_.dataSize() * sizeof(Scalar));
 }
@@ -551,9 +560,8 @@ bool SparseMatrix::const_iterator::operator==(const SparseMatrix::const_iterator
 
 
 SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix) :
-    matrix_(const_cast<SparseMatrix*>(&matrix)), index_(0), row_(0) {
-    const Index* outer = matrix_->outer();
-    while (outer[row_ + 1] == 0) {
+    matrix_(const_cast<SparseMatrix*>(&matrix)), index_(0) {
+    for (row_ = 0; matrix_->spm_.outer_[row_ + 1] == 0;) {
         ++row_;
     }
 }
@@ -561,11 +569,10 @@ SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix) :
 
 SparseMatrix::const_iterator::const_iterator(const SparseMatrix& matrix, Size row) :
     matrix_(const_cast<SparseMatrix*>(&matrix)), row_(row) {
-    const Size rows = matrix_->rows();
-    if (row_ > rows) {
+    if (const Size rows = matrix_->rows(); row_ > rows) {
         row_ = rows;
     }
-    index_ = static_cast<Size>(matrix_->outer()[row_]);
+    index_ = static_cast<Size>(matrix_->spm_.outer_[row_]);
 }
 
 

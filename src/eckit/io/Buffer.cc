@@ -23,7 +23,7 @@ static char* allocate(const size_t size) {
     return size == 0 ? nullptr : new char[size];
 }
 
-static void deallocate(const char* buffer) {
+static void deallocate(char*& buffer) {
     delete[] buffer;
     buffer = nullptr;
 }

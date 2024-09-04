@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 #include <cstring>
 
 #include "eckit/exception/Exceptions.h"
@@ -32,19 +33,16 @@ static void deallocate(char*& buffer) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Buffer::Buffer(const size_t size) :
-    buffer_{nullptr}, size_{size} {
+Buffer::Buffer(const size_t size): size_ {size} {
     create();
 }
 
-Buffer::Buffer(const void* p, size_t len) :
-    buffer_{nullptr}, size_{len} {
+Buffer::Buffer(const void* p, size_t len): size_ {len} {
     create();
     copy(p, len);
 }
 
-Buffer::Buffer(const std::string& s) :
-    buffer_{nullptr}, size_{s.length() + 1} {
+Buffer::Buffer(const std::string& s): size_ {s.length() + 1} {
     create();
     copy(s);
 }

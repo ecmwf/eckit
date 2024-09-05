@@ -125,7 +125,7 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     if (auto max = static_cast<Size>(std::numeric_limits<UIndex>::max()); max < nnz) {
         throw OutOfRange("SparseMatrix::SparseMatrix: too many non-zero entries, nnz=" + std::to_string(nnz)
                              + ", max=" + std::to_string(max),
-            Here());
+                         Here());
     }
 
     reserve(rows, cols, nnz);
@@ -209,7 +209,9 @@ SparseMatrix::~SparseMatrix() {
 
 
 void SparseMatrix::reset() {
-    owner_->deallocate(spm_, shape_);
+    if (owner_) {
+        owner_->deallocate(spm_, shape_);
+    }
 
     spm_.reset();
     shape_.reset();

@@ -191,11 +191,14 @@ public:
     /// @returns true if this matrix does not contain non-zero entries
     bool empty() const { return nonZeros() == 0; }
 
+    /// @returns read-only view of the outer index vector
+    const UIndex* outerIndex() const { return spm_.outer_; }
+
     /// @returns read-only view of the data vector
     const Scalar* data() const { return spm_.data_; }
 
-    /// @returns read-only view of the outer index vector
-    const Index* outer() const { return static_cast<Index*>(static_cast<void*>(spm_.outer_)); }
+    /// @returns read-only view of the outer index vector (signed)
+    const Index* outer() const;
 
     /// @returns read-only view of the inner index vector
     const Index* inner() const { return spm_.inner_; }

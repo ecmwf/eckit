@@ -32,13 +32,10 @@
 namespace eckit::linalg {
 
 // Extend range of Index for unsigned compression indices (should only be positive), preserving binary compatibility
-static_assert(sizeof(Index) == sizeof(SparseMatrix::UIndex), "sizeof(SparseMatrix::UIndex) == sizeof(Index)");
+static_assert(sizeof(Index) == sizeof(SparseMatrix::UIndex), "sizeof(sizeof(Index) == SparseMatrix::UIndex)");
 
-#if eckit_LITTLE_ENDIAN
-static const bool littleEndian = true;
-#else
-static const bool littleEndian = false;
-#endif
+static constexpr bool littleEndian = eckit_LITTLE_ENDIAN != 0;
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -73,6 +70,7 @@ public:
     MemoryBuffer membuff_;
 };
 
+
 class BufferAllocator : public SparseMatrix::Allocator {
 public:
     BufferAllocator(const MemoryBuffer& buffer) : buffer_(buffer, buffer.size()) {}
@@ -93,6 +91,7 @@ public:
 
     MemoryBuffer buffer_;
 };
+
 
 }  // namespace detail
 
@@ -323,9 +322,9 @@ void SparseMatrix::dump(void* buffer, size_t size) const {
 
     mh.write(&info, sizeof(SPMInfo));
 
-    ASSERT(mh.write(spm_.data_, shape_.sizeofData()) == long(shape_.sizeofData()));
-    ASSERT(mh.write(spm_.outer_, shape_.sizeofOuter()) == long(shape_.sizeofOuter()));
-    ASSERT(mh.write(spm_.inner_, shape_.sizeofInner()) == long(shape_.sizeofInner()));
+    ASSERT(mh.write(spm_.data_, shape_.sizeofData()) == static_cast<long>(shape_.sizeofData()));
+    ASSERT(mh.write(spm_.outer_, shape_.sizeofOuter()) == static_cast<long>(shape_.sizeofOuter()));
+    ASSERT(mh.write(spm_.inner_, shape_.sizeofInner()) == static_cast<long>(shape_.sizeofInner()));
 }
 
 
@@ -334,6 +333,11 @@ void SparseMatrix::swap(SparseMatrix& other) {
     std::swap(shape_, other.shape_);
 
     owner_.swap(other.owner_);
+}
+
+
+const Index* SparseMatrix::outer() const {
+    return reinterpret_cast<Index*>(spm_.outer_);
 }
 
 
@@ -349,7 +353,7 @@ size_t SparseMatrix::footprint() const {
 
 
 bool SparseMatrix::inSharedMemory() const {
-    ASSERT(owner_.get());
+    ASSERT(owner_);
     return owner_->inSharedMemory();
 }
 

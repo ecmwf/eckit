@@ -19,7 +19,6 @@
 
 #include <list>
 #include <ostream>
-#include <sstream>
 #include <string>
 #include <thread>
 
@@ -34,15 +33,17 @@ namespace eckit::test {
 namespace {
 
 class SingletonTester {
-    std::ostream& outDebug;
-    std::ostream& outDebugLib;
-    SingletonTester(): outDebug(Log::debug()), outDebugLib(Log::debug<LibEcKit>()) {
-        outDebug << "--> SingletonTester()" << std::endl;
-        outDebugLib << "--> SingletonTester(LIB)" << std::endl;
+    // comment out for worst case scenario
+    // std::ostream& outDebug;
+    // std::ostream& outDebugLib;
+    // SingletonTester(): outDebug(Log::debug()), outDebugLib(Log::debug<LibEcKit>()) {
+    SingletonTester() {
+        Log::debug() << "--> SingletonTester()" << std::endl;
+        Log::debug<LibEcKit>() << "--> SingletonTester(LIB)" << std::endl;
     }
     ~SingletonTester() {
-        outDebug << "--> ~SingletonTester()" << std::endl;
-        outDebugLib << "--> ~SingletonTester(LIB)" << std::endl;
+        Log::debug() << "--> ~SingletonTester()" << std::endl;
+        Log::debug<LibEcKit>() << "--> ~SingletonTester(LIB)" << std::endl;
     }
 
 public:

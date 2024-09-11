@@ -127,6 +127,8 @@ Channel& Log::info() {
     }
 
     if (Main::finalised()) {
+        // This may still cause a SEGFAULT due to missing destruction order at the end of library life time 
+        // - only solution is then to use an empty channel which is harmless in a destructed state
         thread_local Channel postMainInfo(new PrefixTarget("POST-MAIN-INFO", new OStreamTarget(std::cout)));
         return postMainInfo;
     }
@@ -142,6 +144,8 @@ Channel& Log::error() {
     }
 
     if (Main::finalised()) {
+        // This may still cause a SEGFAULT due to missing destruction order at the end of library life time 
+        // - only solution is then to use an empty channel which is harmless in a destructed state
         thread_local Channel postMainError(new PrefixTarget("POST-MAIN-ERROR", new OStreamTarget(std::cout)));
         return postMainError;
     }
@@ -157,6 +161,8 @@ Channel& Log::warning() {
     }
 
     if (Main::finalised()) {
+        // This may still cause a SEGFAULT due to missing destruction order at the end of library life time 
+        // - only solution is then to use an empty channel which is harmless in a destructed state
         thread_local Channel postMainWarning(new PrefixTarget("POST-MAIN-WARNING", new OStreamTarget(std::cout)));
         return postMainWarning;
     }
@@ -177,6 +183,8 @@ Channel& Log::debug() {
     if (!Main::instance().debug_) { return emptyChannel_; }
 
     if (Main::finalised()) {
+        // This may still cause a SEGFAULT due to missing destruction order at the end of library life time 
+        // - only solution is then to use an empty channel which is harmless in a destructed state
         thread_local Channel postMainDebug(new PrefixTarget("POST-MAIN-DEBUG", new OStreamTarget(std::cout)));
         return postMainDebug;
     }

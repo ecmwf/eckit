@@ -82,7 +82,7 @@ static void handle_strerror_r(std::ostream& s, int e, ...) {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
-thread_local EmptyChannel emptyChannel_;
+thread_local EmptyChannel emptyChannel;
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -177,10 +177,10 @@ Channel& Log::debug() {
             thread_local Channel preMainDebug(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
             return preMainDebug;
         }
-        return emptyChannel_;
+        return emptyChannel;
     }
 
-    if (!Main::instance().debug_) { return emptyChannel_; }
+    if (!Main::instance().debug_) { return emptyChannel; }
 
     if (Main::finalised()) {
         // This may still cause a SEGFAULT due to missing destruction order at the end of library life time 

@@ -67,7 +67,7 @@ public:  // methods
     /// @deprecated Use LibraryManager instead
     static std::vector<std::string> list();
     /// @deprecated Use LibraryManager instead
-    static void list(std::ostream& s);
+    static void list(std::ostream& out);
     /// @deprecated Use LibraryManager instead
     static bool exists(const std::string& name);
     /// @deprecated Use LibraryManager instead

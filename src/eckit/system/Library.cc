@@ -14,28 +14,28 @@
 
 #include <algorithm>
 #include <cctype>
+#include <memory>
 
 #include "eckit/system/Library.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
 #include "eckit/system/LibraryManager.h"
-#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit::system {
 
 namespace {
-thread_local EmptyChannel emptyChannel_;
+thread_local EmptyChannel emptyChannel;
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -120,7 +120,7 @@ Channel& Library::debugChannel() const {
         return *debugChannel_;
     }
 
-    return emptyChannel_;
+    return emptyChannel;
 }
 
 const Configuration& Library::configuration() const {

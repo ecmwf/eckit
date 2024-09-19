@@ -13,7 +13,6 @@
 #include "eckit/geo/projection/Rotation.h"
 
 #include <cmath>
-#include <utility>
 
 #include "eckit/geo/geometry/UnitSphere.h"
 #include "eckit/geo/spec/Custom.h"

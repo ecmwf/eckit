@@ -20,7 +20,7 @@
 namespace eckit::geo::grid {
 
 
-Unstructured::Unstructured(std::vector<Point>&& points) : Grid(area::BoundingBox{}), points_(points) {}
+Unstructured::Unstructured(std::vector<Point>&& points) : Grid(area::BoundingBox{}), points_(std::move(points)) {}
 
 
 Grid::iterator Unstructured::cbegin() const {

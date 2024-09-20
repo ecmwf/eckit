@@ -86,6 +86,8 @@ list(APPEND eckit_geo_srcs
     grid/regular-xy/PolarStereographic.h
     grid/regular-xy/SpaceView.cc
     grid/regular-xy/SpaceView.h
+    grid/unstructured/Unstructured.cc
+    grid/unstructured/Unstructured.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc

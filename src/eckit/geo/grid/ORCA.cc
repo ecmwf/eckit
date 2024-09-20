@@ -19,22 +19,15 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
+#include "eckit/geo/Download.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
-#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/io/Length.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Timer.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/ByteSwap.h"
 #include "eckit/utils/MD5.h"
-
-#if eckit_HAVE_CURL
-#include "eckit/io/URLHandle.h"
-#endif
 
 
 namespace eckit::geo::grid {
@@ -74,59 +67,23 @@ class lock_type {
 CacheT<PathName, ORCA::ORCARecord> CACHE;
 
 
-PathName orca_path(const PathName& path, const std::string& url) {
-    // control concurrent download/access
-    lock_type lock;
-
-#if eckit_HAVE_CURL  // for eckit::URLHandle
-    if (!path.exists() && LibEcKitGeo::caching()) {
-        auto dir = path.dirName();
-        dir.mkdir();
-        ASSERT(dir.exists());
-
-        auto tmp = path + ".download";
-
-        Timer timer;
-        Log::info() << "ORCA: downloading '" << url << "' to '" << path << "'..." << std::endl;
-
-        Length length = 0;
-        try {
-            length = URLHandle(url).saveInto(tmp);
-        }
-        catch (...) {
-            length = 0;
-        }
-
-        if (length <= 0) {
-            if (tmp.exists()) {
-                tmp.unlink(true);
-            }
-
-            throw UserError("ORCA: download error", Here());
-        }
-
-        PathName::rename(tmp, path);
-        Log::info() << "ORCA: download of " << Bytes(static_cast<double>(length)) << " took " << timer.elapsed()
-                    << " s." << std::endl;
-    }
-#endif
-
-    ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
-    return path;
-}
-
-
-const ORCA::ORCARecord& orca_record(const PathName& p, const Spec& spec) {
+const ORCA::ORCARecord& orca_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
-    if (CACHE.contains(p)) {
-        return CACHE[p];
+    static Download download(LibEcKitGeo::cacheDir() + "/grid/orca", "orca-", ".codec");
+
+    auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
+    auto path = download.to_cached_path(url);
+    ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
+
+    if (CACHE.contains(path)) {
+        return CACHE[path];
     }
 
     // read and check against metadata (if present)
-    auto& record = CACHE[p];
-    record.read(p);
+    auto& record = CACHE[path];
+    record.read(path);
     record.check(spec);
 
     return record;
@@ -141,10 +98,7 @@ ORCA::ORCA(const Spec& spec) :
     name_(spec.get_string("orca_name")),
     uid_(spec.get_string("orca_uid")),
     arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
-    record_(orca_record(
-        orca_path(spec.get_string("path", LibEcKitGeo::cacheDir() + "/eckit/geo/grid/orca/" + uid_ + ".atlas"),
-                  spec.get_string("url_prefix", "") + spec.get_string("url")),
-        spec)) {}
+    record_(orca_record(spec)) {}
 
 
 ORCA::ORCA(uid_t uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}

@@ -22,6 +22,7 @@
 #include "eckit/system/ResourceUsage.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/testing/Test.h"
+#include "eckit/filesystem/TmpDir.h"
 
 using namespace std;
 using namespace eckit;
@@ -83,6 +84,37 @@ CASE("test_eckit_system_info") {
     EXPECT(std::string(execPath).size());
 
     Log::info() << "execPath is " << execPath << std::endl;
+}
+
+CASE("Test colon-seperated ECKIT_HOME expansion") {
+
+    eckit::TmpDir td;
+    LocalPathName tmpdir = td.localPath();
+ 
+    // create files $tmpdir/dir{i}/file{i}
+    for (int i = 0; i < 3; i++) {
+        LocalPathName dir = tmpdir + "/dir" + std::to_string(i);
+        LocalPathName file = dir + "/file" + std::to_string(i);
+        file.touch();
+    }
+    
+    std::stringstream ss;
+    ss << tmpdir << "/dir0:" << tmpdir << "/dir1:" << tmpdir << "/dir2";
+
+    setenv("ECKIT_HOME", ss.str().c_str(), 1);
+
+    EXPECT(LocalPathName("~eckit/file0").exists());
+    EXPECT(LocalPathName("~eckit/file1").exists());
+    EXPECT(LocalPathName("~eckit/file2").exists());
+
+    EXPECT(LocalPathName("~eckit/file0") == tmpdir + "/dir0/file0");
+    EXPECT(LocalPathName("~eckit/file1") == tmpdir + "/dir1/file1");
+    EXPECT(LocalPathName("~eckit/file2") == tmpdir + "/dir2/file2");
+
+    // add file3 to dir1 and dir2 and test that the first one is returned
+    LocalPathName(tmpdir + "/dir1/file3").touch();
+    LocalPathName(tmpdir + "/dir2/file3").touch();
+    EXPECT(LocalPathName("~eckit/file3") == tmpdir + "/dir1/file3");
 }
 
 CASE("test_eckit_system_library") {

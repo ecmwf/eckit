@@ -4,6 +4,7 @@ foreach(_test
         area_boundingbox
         area_polygon
         cache
+        download
         figure
         geometry_sphere
         great_circle
@@ -40,6 +41,10 @@ foreach(_test
         SOURCES     ${_test}.cc
         LIBS        eckit_geo )
 endforeach()
+
+if(NOT HAVE_CURL)
+    set_tests_properties(eckit_test_geo_download PROPERTIES DISABLED TRUE)
+endif()
 
 if(eckit_HAVE_GEO_GRID_ORCA)
     set(URL "https://get.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_T.atlas")

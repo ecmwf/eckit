@@ -52,7 +52,8 @@ bool LibEcKitGeo::caching() {
 
 std::string LibEcKitGeo::cacheDir() {
     static std::string path = PathName{
-        LibResource<PathName, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH)};
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH),
+        true};
     return path;
 }
 

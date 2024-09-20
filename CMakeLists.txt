@@ -205,7 +205,7 @@ ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
                     CONDITION HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
 
-set( eckit_GEO_CACHE_PATH "/tmp/cache" )
+set( eckit_GEO_CACHE_PATH "~/.local/share" )
 
 ### LAPACK
 

@@ -4,6 +4,8 @@ list(APPEND eckit_geo_srcs
     Area.h
     Cache.cc
     Cache.h
+    Download.cc
+    Download.h
     Figure.cc
     Figure.h
     GreatCircle.cc

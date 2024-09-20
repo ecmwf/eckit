@@ -1,6 +1,9 @@
 set(_files)
+
 list(APPEND _files "grid.yaml")
-list(APPEND _files "ORCA.yaml")
+if(eckit_HAVE_GEO_GRID_ORCA)
+    list(APPEND _files "ORCA.yaml")
+endif()
 
 set(_destination "etc/eckit/geo")
 

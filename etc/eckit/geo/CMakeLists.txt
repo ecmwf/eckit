@@ -1,6 +1,9 @@
 set(_files)
 
 list(APPEND _files "grid.yaml")
+if(eckit_HAVE_GEO_GRID_FESOM)
+    list(APPEND _files "FESOM.yaml")
+endif()
 if(eckit_HAVE_GEO_GRID_ORCA)
     list(APPEND _files "ORCA.yaml")
 endif()

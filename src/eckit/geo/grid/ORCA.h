@@ -16,6 +16,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "eckit/geo/Arrangement.h"
 #include "eckit/geo/grid/Regular.h"
 
 
@@ -30,15 +31,6 @@ namespace eckit::geo::grid {
 class ORCA final : public Regular {
 public:
     // -- Types
-
-    enum Arrangement
-    {
-        F,
-        T,
-        U,
-        V,
-        W,
-    };
 
     struct ORCARecord {
         explicit ORCARecord() = default;

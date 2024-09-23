@@ -36,26 +36,6 @@ namespace eckit::geo::grid {
 namespace {
 
 
-ORCA::Arrangement arrangement_from_string(const std::string& str) {
-    return str == "F"   ? ORCA::Arrangement::F
-           : str == "T" ? ORCA::Arrangement::T
-           : str == "U" ? ORCA::Arrangement::U
-           : str == "V" ? ORCA::Arrangement::V
-           : str == "W" ? ORCA::Arrangement::W
-                        : throw AssertionFailed("ORCA::Arrangement", Here());
-}
-
-
-std::string arrangement_to_string(ORCA::Arrangement a) {
-    return a == ORCA::Arrangement::F   ? "F"
-           : a == ORCA::Arrangement::T ? "T"
-           : a == ORCA::Arrangement::U ? "U"
-           : a == ORCA::Arrangement::V ? "V"
-           : a == ORCA::Arrangement::W ? "W"
-                                       : throw AssertionFailed("ORCA::Arrangement", Here());
-}
-
-
 util::recursive_mutex MUTEX;
 
 

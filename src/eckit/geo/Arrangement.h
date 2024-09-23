@@ -25,6 +25,8 @@ enum Arrangement
     U,
     V,
     W,
+    C,
+    N,
 };
 
 

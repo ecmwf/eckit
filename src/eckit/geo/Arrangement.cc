@@ -24,6 +24,8 @@ Arrangement arrangement_from_string(const std::string& str) {
            : str == "U" ? Arrangement::U
            : str == "V" ? Arrangement::V
            : str == "W" ? Arrangement::W
+           : str == "C" ? Arrangement::C
+           : str == "N" ? Arrangement::N
                         : throw AssertionFailed("Arrangement", Here());
 }
 
@@ -34,6 +36,8 @@ std::string arrangement_to_string(Arrangement a) {
            : a == Arrangement::U ? "U"
            : a == Arrangement::V ? "V"
            : a == Arrangement::W ? "W"
+           : a == Arrangement::C ? "C"
+           : a == Arrangement::N ? "N"
                                  : throw AssertionFailed("Arrangement", Here());
 }
 

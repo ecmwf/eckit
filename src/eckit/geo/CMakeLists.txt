@@ -2,6 +2,8 @@
 list(APPEND eckit_geo_srcs
     Area.cc
     Area.h
+    Arrangement.cc
+    Arrangement.h
     Cache.cc
     Cache.h
     Download.cc

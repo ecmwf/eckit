@@ -12,12 +12,20 @@
 
 #include "eckit/geo/grid/FESOM.h"
 
+#include <memory>
+#include <vector>
+
 #include "eckit/codec/codec.h"
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Cache.h"
 #include "eckit/geo/Download.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/geo/container/LonLatReference.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -29,20 +37,82 @@ void hash_coordinate(MD5&, const std::vector<double>&, bool _byteswap);
 namespace eckit::geo::grid {
 
 
-static std::string fesom_path(const Download::url_type& url) {
+namespace {
+
+
+util::recursive_mutex MUTEX;
+
+
+class lock_type {
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+CacheT<PathName, FESOM::FESOMRecord> CACHE;
+
+
+const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
+    // control concurrent reads/writes
+    lock_type lock;
+
     static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom", "fesom-", ".codec");
-    return download.to_cached_path(url);
+
+    auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
+    auto path = download.to_cached_path(url);
+    ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
+
+    if (CACHE.contains(path)) {
+        return CACHE[path];
+    }
+
+    // read and check uid
+    auto& record = CACHE[path];
+    record.read(path);
+
+    return record;
 }
+
+
+}  // namespace
 
 
 FESOM::FESOM(const Spec& spec) :
     Unstructured(spec),
     uid_(spec.get_string("fesom_uid")),
     arrangement_(arrangement_from_string(spec.get_string("fesom_arrangement"))),
-    path_(fesom_path(spec.get_string("url_prefix", "") + spec.get_string("url"))) {
-    codec::RecordReader reader(path_);
+    record_(fesom_record(spec)) {
+    resetContainer(new container::LonLatReference{record_.longitudes_, record_.latitudes_});
 
-    uint64_t version = -1;
+    if (spec.get_bool("fesom_uid_check", false)) {
+        auto uid = spec.get_string("fesom_uid");
+        ASSERT(uid.length() == 32);
+        ASSERT(uid == calculate_uid());
+    }
+}
+
+
+FESOM::FESOM(uid_t uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+
+
+std::string FESOM::arrangement() const {
+    return arrangement_to_string(arrangement_);
+}
+
+
+FESOM::FESOMRecord::bytes_t FESOM::FESOMRecord::footprint() const {
+    return sizeof(longitudes_.front()) * longitudes_.size() + sizeof(latitudes_.front()) * latitudes_.size();
+}
+
+
+size_t FESOM::FESOMRecord::n() const {
+    return latitudes_.size();
+}
+
+
+void FESOM::FESOMRecord::read(const PathName& p) {
+    codec::RecordReader reader(p);
+
+    uint64_t version = 0;
     reader.read("version", version).wait();
 
     if (version == 0) {
@@ -55,8 +125,6 @@ FESOM::FESOM(const Spec& spec) :
 
         ASSERT(n == latitudes_.size());
         ASSERT(n == longitudes_.size());
-
-        resetContainer(new container::LonLatReference{longitudes_, latitudes_});
         return;
     }
 
@@ -64,14 +132,19 @@ FESOM::FESOM(const Spec& spec) :
 }
 
 
-FESOM::FESOM(uid_t uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
-
-
 Grid::uid_t FESOM::calculate_uid() const {
     MD5 hash;
 
-    util::hash_coordinate(hash, latitudes_, !eckit_LITTLE_ENDIAN);
-    util::hash_coordinate(hash, longitudes_, !eckit_LITTLE_ENDIAN);
+    if (arrangement_ == Arrangement::FESOM_N) {
+        util::hash_coordinate(hash, record_.latitudes_, !eckit_LITTLE_ENDIAN);
+        util::hash_coordinate(hash, record_.longitudes_, !eckit_LITTLE_ENDIAN);
+    }
+    else if (arrangement_ == Arrangement::FESOM_C) {
+        NOTIMP;
+    }
+    else {
+        NOTIMP;
+    }
 
     auto d = hash.digest();
     ASSERT(d.length() == 32);
@@ -80,9 +153,12 @@ Grid::uid_t FESOM::calculate_uid() const {
 }
 
 
-void FESOM::fill_spec(spec::Custom& custom) const {
-    Grid::fill_spec(custom);
+Spec* FESOM::spec(const std::string& name) {
+    return SpecByUID::instance().get(name).spec();
+}
 
+
+void FESOM::fill_spec(spec::Custom& custom) const {
     custom.set("type", "FESOM");
     custom.set("uid", uid());
 }

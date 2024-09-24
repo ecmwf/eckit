@@ -12,22 +12,20 @@
 
 #pragma once
 
-#include "eckit/geo/grid/Unstructured.h"
+#include "eckit/geo/Container.h"
 
 
-namespace eckit::geo::grid::unstructured {
+namespace eckit::geo::container {
 
 
-class Unstructured final : public grid::Unstructured {
-public:
-    // -- Constructors
+struct PointsMove : Container {
+    explicit PointsMove(std::vector<Point>&& points) : points(points) {}
 
-    explicit Unstructured(const std::vector<Point>&);
+    Point get(size_t index) const override { return points.at(index); }
+    size_t size() const override { return points.size(); }
 
-    // -- Class methods
-
-    [[nodiscard]] static Unstructured* make_from_latlon(const std::vector<double>&, const std::vector<double>&);
+    const std::vector<Point> points;
 };
 
 
-}  // namespace eckit::geo::grid::unstructured
+}  // namespace eckit::geo::container

@@ -16,67 +16,36 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/container/LonLatReference.h"
+#include "eckit/geo/container/PointsMove.h"
+#include "eckit/geo/container/PointsReference.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 
 namespace eckit::geo::iterator {
 
 
-namespace {
-
-
-struct LonLatReference : Unstructured::Container {
-    explicit LonLatReference(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
-        longitudes(longitudes), latitudes(latitudes) {
-        ASSERT(longitudes.size() == latitudes.size());
-    }
-
-    Point get(size_t index) const override { return PointLonLat{longitudes.at(index), latitudes.at(index)}; }
-    size_t size() const override { return longitudes.size(); }
-
-    const std::vector<double>& longitudes;
-    const std::vector<double>& latitudes;
-};
-
-
-struct PointsReference : Unstructured::Container {
-    explicit PointsReference(const std::vector<Point>& points) : points(points) {}
-
-    Point get(size_t index) const override { return points.at(index); }
-    size_t size() const override { return points.size(); }
-
-    const std::vector<Point>& points;
-};
-
-
-struct PointsMove : Unstructured::Container {
-    explicit PointsMove(std::vector<Point>&& points) : points(points) {}
-
-    Point get(size_t index) const override { return points.at(index); }
-    size_t size() const override { return points.size(); }
-
-    const std::vector<Point> points;
-};
-
-
-}  // namespace
-
-
 Unstructured::Unstructured(const Grid& grid, size_t index, const std::vector<double>& longitudes,
                            const std::vector<double>& latitudes) :
-    container_(new LonLatReference(longitudes, latitudes)), index_(index), size_(container_->size()), uid_(grid.uid()) {
+    container_(new container::LonLatReference(longitudes, latitudes)),
+    index_(index),
+    size_(container_->size()),
+    uid_(grid.uid()) {
     ASSERT(container_->size() == grid.size());
 }
 
 
 Unstructured::Unstructured(const Grid& grid, size_t index, const std::vector<Point>& points) :
-    container_(new PointsReference(points)), index_(index), size_(container_->size()), uid_(grid.uid()) {
+    container_(new container::PointsReference(points)), index_(index), size_(container_->size()), uid_(grid.uid()) {
     ASSERT(container_->size() == grid.size());
 }
 
 
 Unstructured::Unstructured(const Grid& grid, size_t index, std::vector<Point>&& points) :
-    container_(new PointsMove(std::move(points))), index_(index), size_(container_->size()), uid_(grid.uid()) {
+    container_(new container::PointsMove(std::move(points))),
+    index_(index),
+    size_(container_->size()),
+    uid_(grid.uid()) {
     ASSERT(container_->size() == grid.size());
 }
 

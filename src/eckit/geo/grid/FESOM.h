@@ -19,7 +19,7 @@
 #include "eckit/geo/grid/Unstructured.h"
 
 
-namespace eckit::geo::grid::unstructured {
+namespace eckit::geo::grid {
 
 
 class FESOM final : public Unstructured {
@@ -46,4 +46,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid::unstructured
+}  // namespace eckit::geo::grid

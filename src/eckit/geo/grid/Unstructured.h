@@ -27,6 +27,13 @@ namespace eckit::geo::grid {
 
 class Unstructured : public Grid {
 public:
+    // -- Constructors
+
+    explicit Unstructured(const Spec& spec) : Grid(spec) {}
+
+    explicit Unstructured(const std::vector<Point>&);
+    Unstructured(const std::vector<double>& latitudes, const std::vector<double>& longitudes);
+
     // -- Overridden methods
 
     iterator cbegin() const override;
@@ -43,20 +50,15 @@ public:
     // -- Class methods
 
     [[nodiscard]] static Spec* spec(const std::string& name);
+    [[nodiscard]] static Unstructured* make_from_latlon(const std::vector<double>&, const std::vector<double>&);
 
 protected:
-    // -- Constructors
-
-    explicit Unstructured(const Spec& spec) : Grid(spec) {}
-    explicit Unstructured(const std::vector<Point>&);
-    explicit Unstructured(const std::vector<double>&, const std::vector<double>&);
-
-private:
     // -- Members
 
     std::vector<double> latitudes_;
     std::vector<double> longitudes_;
 
+private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;

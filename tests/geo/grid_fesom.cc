@@ -14,7 +14,7 @@
 
 #include "eckit/geo/Cache.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/grid/unstructured/FESOM.h"
+#include "eckit/geo/grid/FESOM.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 

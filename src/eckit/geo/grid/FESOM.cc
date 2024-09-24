@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/unstructured/FESOM.h"
+#include "eckit/geo/grid/FESOM.h"
 
 #include "eckit/codec/codec.h"
 #include "eckit/exception/Exceptions.h"
@@ -25,7 +25,7 @@ void hash_coordinate(MD5&, const std::vector<double>&, bool _byteswap);
 }
 
 
-namespace eckit::geo::grid::unstructured {
+namespace eckit::geo::grid {
 
 
 static std::string fesom_path(const Download::url_type& url) {
@@ -92,4 +92,4 @@ static const GridRegisterType<FESOM> GRIDTYPE("FESOM");
 // static const GridRegisterName<FESOM> GRIDNAME(GridRegisterName<FESOM>::uid_pattern);
 
 
-}  // namespace eckit::geo::grid::unstructured
+}  // namespace eckit::geo::grid

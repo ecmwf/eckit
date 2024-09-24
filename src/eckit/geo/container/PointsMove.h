@@ -19,12 +19,16 @@ namespace eckit::geo::container {
 
 
 struct PointsMove : Container {
-    explicit PointsMove(std::vector<Point>&& points) : points(points) {}
+    explicit PointsMove(std::vector<Point>&& points) : points_(points) {}
 
-    Point get(size_t index) const override { return points.at(index); }
-    size_t size() const override { return points.size(); }
+    Point get(size_t index) const override { return points_.at(index); }
+    size_t size() const override { return points_.size(); }
 
-    const std::vector<Point> points;
+    [[nodiscard]] std::vector<Point> to_points() const override { return points_; }
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+
+private:
+    const std::vector<Point> points_;
 };
 
 

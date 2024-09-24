@@ -85,6 +85,7 @@ CASE("spec") {
 
     std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "FESOM_pi"}})));
     /**/ Log::info() << grid4->calculate_uid() << std::endl;
+    /**/ Log::info() << grid4->spec_str() << std::endl;
 #if 0
     EXPECT(grid4->spec_str() == expected_spec_str);
 

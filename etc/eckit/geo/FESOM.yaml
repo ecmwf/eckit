@@ -9,9 +9,19 @@ grid_names:
       type: FESOM
       fesom_arrangement: N
       shape: 3140
-      fesom_uid: "974487fbace54b00d959d971e88b71e7"
+      fesom_uid: "79f022ea16dc2eb9333c5fb234b88164"
       url_prefix: *fesom_url_prefix
       url: pi.fesom.codec
 
+    - FESOM_DART: &FESOM_DART
+      type: FESOM
+      fesom_arrangement: N
+      shape: 3160340
+      fesom_uid: "35e958b1dfd9054bb86f283d75ccd7b4"
+      url_prefix: *fesom_url_prefix
+      url: DART.fesom.codec
+
 grid_uids:
-    - 974487fbace54b00d959d971e88b71e7: *FESOM_pi
+    - "79f022ea16dc2eb9333c5fb234b88164": *FESOM_pi
+    - "35e958b1dfd9054bb86f283d75ccd7b4": *FESOM_DART
+

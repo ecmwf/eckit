@@ -12,7 +12,9 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/container/LonLatReference.h"
+#include "eckit/geo/container/PointsMove.h"
+#include "eckit/geo/container/PointsReference.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 
@@ -21,7 +23,7 @@ namespace eckit::geo::grid {
 
 
 Grid::iterator Unstructured::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, longitudes_, latitudes_)};
+    return iterator{new geo::iterator::Unstructured(*this, 0, container_)};
 }
 
 
@@ -30,33 +32,33 @@ Grid::iterator Unstructured::cend() const {
 }
 
 
+Unstructured::Unstructured(const std::vector<double>& latitudes, const std::vector<double>& longitudes) :
+    container_{new container::LonLatReference{longitudes, latitudes}} {}
+
+
+Unstructured::Unstructured(const std::vector<Point>& points) : container_{new container::PointsReference{points}} {}
+
+
+Unstructured::Unstructured(std::vector<Point>&& points) : container_{new container::PointsMove{std::move(points)}} {}
+
+
+size_t Unstructured::size() const {
+    return container_->size();
+}
+
+
 std::vector<Point> Unstructured::to_points() const {
-    auto n = size();
-    std::vector<Point> points(n, PointLonLat{0., 0.});
+    return container_->to_points();
+}
 
-    for (size_t i = 0; i < n; ++i) {
-        points[i] = PointLonLat{longitudes_[i], latitudes_[i]};
-    }
 
-    return points;
+std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlon() const {
+    return container_->to_latlon();
 }
 
 
 Spec* Unstructured::spec(const std::string& name) {
     return SpecByUID::instance().get(name).spec();
-}
-
-
-Unstructured::Unstructured(const std::vector<Point>& points) {
-    auto n = points.size();
-    longitudes_.resize(n);
-    latitudes_.resize(n);
-
-    for (size_t i = 0; i < n; ++i) {
-        auto& p        = std::get<PointLonLat>(points[i]);
-        longitudes_[i] = p.lon;
-        latitudes_[i]  = p.lat;
-    }
 }
 
 

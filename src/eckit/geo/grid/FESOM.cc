@@ -16,6 +16,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Download.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/container/LonLatReference.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/utils/MD5.h"
 
@@ -48,15 +49,14 @@ FESOM::FESOM(const Spec& spec) :
         uint64_t n = 0;
         reader.read("n", n);
 
-        std::vector<double> longitudes;
-        std::vector<double> latitudes;
-        reader.read("latitude", latitudes);
-        reader.read("longitude", longitudes);
+        reader.read("latitude", latitudes_);
+        reader.read("longitude", longitudes_);
         reader.wait();
 
-        ASSERT(n == latitudes.size());
-        ASSERT(n == longitudes.size());
+        ASSERT(n == latitudes_.size());
+        ASSERT(n == longitudes_.size());
 
+        resetContainer(new container::LonLatReference{longitudes_, latitudes_});
         return;
     }
 

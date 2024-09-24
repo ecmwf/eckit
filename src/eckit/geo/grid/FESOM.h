@@ -40,6 +40,9 @@ private:
     Arrangement arrangement_;
     std::string path_;
 
+    std::vector<double> longitudes_;
+    std::vector<double> latitudes_;
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;

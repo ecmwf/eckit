@@ -15,37 +15,16 @@
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Container.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/container/LonLatReference.h"
-#include "eckit/geo/container/PointsMove.h"
-#include "eckit/geo/container/PointsReference.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 
 namespace eckit::geo::iterator {
 
 
-Unstructured::Unstructured(const Grid& grid, size_t index, const std::vector<double>& longitudes,
-                           const std::vector<double>& latitudes) :
-    container_(new container::LonLatReference(longitudes, latitudes)),
-    index_(index),
-    size_(container_->size()),
-    uid_(grid.uid()) {
-    ASSERT(container_->size() == grid.size());
-}
-
-
-Unstructured::Unstructured(const Grid& grid, size_t index, const std::vector<Point>& points) :
-    container_(new container::PointsReference(points)), index_(index), size_(container_->size()), uid_(grid.uid()) {
-    ASSERT(container_->size() == grid.size());
-}
-
-
-Unstructured::Unstructured(const Grid& grid, size_t index, std::vector<Point>&& points) :
-    container_(new container::PointsMove(std::move(points))),
-    index_(index),
-    size_(container_->size()),
-    uid_(grid.uid()) {
+Unstructured::Unstructured(const Grid& grid, size_t index, std::shared_ptr<Container> container) :
+    container_(container), index_(index), size_(container_->size()), uid_(grid.uid()) {
     ASSERT(container_->size() == grid.size());
 }
 

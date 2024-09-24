@@ -23,12 +23,12 @@ namespace eckit::geo::util {
 
 void hash_coordinate(MD5& hash, const std::vector<double>& c, bool _byteswap) {
     if (const auto len = static_cast<long>(c.size() * sizeof(double)); _byteswap) {
-        hash.add(c.data(), len);
-    }
-    else {
         auto d = c;
         byteswap(d);
         hash.add(d.data(), len);
+    }
+    else {
+        hash.add(c.data(), len);
     }
 }
 

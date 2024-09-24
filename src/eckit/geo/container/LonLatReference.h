@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Container.h"
 
 
@@ -20,14 +19,17 @@ namespace eckit::geo::container {
 
 
 struct LonLatReference : Container {
-    explicit LonLatReference(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
-        longitudes(longitudes), latitudes(latitudes) {
-        ASSERT(longitudes.size() == latitudes.size());
-    }
+    explicit LonLatReference(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
 
     Point get(size_t index) const override { return PointLonLat{longitudes.at(index), latitudes.at(index)}; }
     size_t size() const override { return longitudes.size(); }
 
+    [[nodiscard]] std::vector<Point> to_points() const override;
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlon() const override {
+        return {longitudes, latitudes};
+    }
+
+private:
     const std::vector<double>& longitudes;
     const std::vector<double>& latitudes;
 };

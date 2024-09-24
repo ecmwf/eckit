@@ -22,6 +22,7 @@
 #include "eckit/geo/Download.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
+#include "eckit/geo/container/LonLatReference.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
@@ -197,7 +198,8 @@ size_t ORCA::ORCARecord::write(const PathName& p, const std::string& compression
 
 
 Grid::iterator ORCA::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, record_.longitudes_, record_.latitudes_)};
+    return iterator{new geo::iterator::Unstructured(
+        *this, 0, std::make_shared<container::LonLatReference>(record_.longitudes_, record_.latitudes_))};
 }
 
 

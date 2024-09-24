@@ -13,7 +13,6 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include "eckit/geo/Iterator.h"
 
@@ -30,17 +29,13 @@ class Unstructured final : public Iterator {
 public:
     // -- Constructors
 
-    explicit Unstructured(const Grid&, size_t index, const std::vector<double>& longitudes,
-                          const std::vector<double>& latitudes);
-    explicit Unstructured(const Grid&, size_t index, const std::vector<Point>&);
-    explicit Unstructured(const Grid&, size_t index, std::vector<Point>&&);
-
+    Unstructured(const Grid&, size_t index, std::shared_ptr<Container>);
     explicit Unstructured(const Grid&);
 
 private:
     // -- Members
 
-    std::unique_ptr<Container> container_;
+    std::shared_ptr<Container> container_;
     size_t index_;
     const size_t size_;
     const std::string uid_;

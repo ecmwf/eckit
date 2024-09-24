@@ -13,13 +13,15 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 
+#include "eckit/geo/Container.h"
 #include "eckit/geo/Grid.h"
 
 
 namespace eckit::geo::iterator {
 class Unstructured;
-}
+}  // namespace eckit::geo::iterator
 
 
 namespace eckit::geo::grid {
@@ -31,21 +33,23 @@ public:
 
     explicit Unstructured(const Spec& spec) : Grid(spec) {}
 
+    explicit Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
     explicit Unstructured(const std::vector<Point>&);
-    Unstructured(const std::vector<double>& latitudes, const std::vector<double>& longitudes);
+    explicit Unstructured(std::vector<Point>&&);
 
     // -- Overridden methods
 
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t size() const override { return latitudes_.size(); }
+    size_t size() const override;
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }
 
-    std::vector<Point> to_points() const override;
+    [[nodiscard]] std::vector<Point> to_points() const override;
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
 
     // -- Class methods
 
@@ -53,12 +57,16 @@ public:
     [[nodiscard]] static Unstructured* make_from_latlon(const std::vector<double>&, const std::vector<double>&);
 
 protected:
-    // -- Members
+    // -- Methods
 
-    std::vector<double> latitudes_;
-    std::vector<double> longitudes_;
+    void resetContainer(Container* container) { container_.reset(container); }
+
 
 private:
+    // -- Members
+
+    std::shared_ptr<Container> container_;
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;

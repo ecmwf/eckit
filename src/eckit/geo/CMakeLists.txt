@@ -145,6 +145,7 @@ list(APPEND eckit_geo_srcs
     util/arange.cc
     util/bounding_box.cc
     util/gaussian_latitudes.cc
+    util/hash_coordinate.cc
     util/linspace.cc
     util/monotonic_crop.cc
     util/mutex.h

@@ -20,11 +20,8 @@
 namespace eckit::geo::grid {
 
 
-Unstructured::Unstructured(std::vector<Point>&& points) : Grid(area::BoundingBox{}), points_(std::move(points)) {}
-
-
 Grid::iterator Unstructured::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, points_)};
+    return iterator{new geo::iterator::Unstructured(*this, 0, longitudes_, latitudes_)};
 }
 
 
@@ -33,8 +30,35 @@ Grid::iterator Unstructured::cend() const {
 }
 
 
-Spec* Unstructured::spec(const std::string& name) {
+std::vector<Point> Unstructured::to_points() const
+{
+    auto n = size();
+    std::vector<Point> points(n, PointLonLat{0., 0.});
+
+    for (size_t i = 0; i< n; ++i) {
+        points[i] = PointLonLat{longitudes_[i], latitudes_[i]};
+    }
+
+    return points;
+}
+
+
+Spec* Unstructured::spec(const std::string& name)
+{
     return SpecByUID::instance().get(name).spec();
+}
+
+
+Unstructured::Unstructured(const std::vector<Point>& points) {
+    auto n = points.size();
+    longitudes_.resize(n);
+    latitudes_.resize(n);
+
+    for (size_t i = 0; i< n; ++i) {
+        auto& p = std::get<PointLonLat>(points[i]);
+        longitudes_[i] = p.lon;
+        latitudes_[i] = p.lat;
+    }
 }
 
 

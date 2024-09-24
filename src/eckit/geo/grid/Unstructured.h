@@ -32,13 +32,13 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t size() const override { return points_.size(); }
+    size_t size() const override { return latitudes_.size(); }
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }
 
-    std::vector<Point> to_points() const override { return points_; }
+    std::vector<Point> to_points() const override;
 
     // -- Class methods
 
@@ -47,13 +47,15 @@ public:
 protected:
     // -- Constructors
 
-    explicit Unstructured(std::vector<Point>&&);
     explicit Unstructured(const Spec& spec) : Grid(spec) {}
+    explicit Unstructured(const std::vector<Point>&);
+    explicit Unstructured(const std::vector<double>&, const std::vector<double>&);
 
 private:
     // -- Members
 
-    const std::vector<Point> points_;
+    std::vector<double> latitudes_;
+    std::vector<double> longitudes_;
 
     // -- Overridden methods
 

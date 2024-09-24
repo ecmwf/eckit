@@ -22,7 +22,11 @@ class Unstructured final : public grid::Unstructured {
 public:
     // -- Constructors
 
-    explicit Unstructured(std::vector<Point>&&);
+    explicit Unstructured(const std::vector<Point> &);
+
+    // -- Class methods
+
+    [[nodiscard]] static Unstructured* make_from_latlon(const std::vector<double> &, const std::vector<double> &);
 };
 
 

@@ -68,6 +68,14 @@ if(eckit_HAVE_GEO_GRID_ORCA)
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CACHE_PATH}" )
 endif()
 
+if(eckit_HAVE_GEO_GRID_FESOM)
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_grid_fesom
+        SOURCES     grid_fesom.cc
+        LIBS        eckit_geo
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CACHE_PATH}" )
+endif()
+
 ecbuild_add_test(
     TARGET  eckit_test_geo_tool_grid_spec_1_1
     COMMAND eckit_grid_spec ARGS "grid: 1/1.0" )

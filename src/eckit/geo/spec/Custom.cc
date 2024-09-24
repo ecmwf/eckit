@@ -197,7 +197,7 @@ Custom* Custom::make_from_value(const Value& value) {
     };
 
     Custom::container_type container;
-    for (const auto& [key, value] : static_cast<ValueMap>(value)) {
+    for (const auto& [key, value] : static_cast<const ValueMap&>(value)) {
         const std::string name = key;
 
         container[name] = value.isMap()    ? custom_ptr(Custom::make_from_value(value))

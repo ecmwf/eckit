@@ -26,8 +26,12 @@
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/utils/ByteSwap.h"
 #include "eckit/utils/MD5.h"
+
+
+namespace eckit::geo::util {
+void hash_coordinate(MD5&, const std::vector<double>&, bool _byteswap);
+}
 
 
 namespace eckit::geo::grid {
@@ -93,20 +97,8 @@ Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     MD5 hash;
     hash.add(arrangement_to_string(arrangement));
 
-    auto sized = static_cast<long>(longitudes_.size() * sizeof(double));
-
-    if constexpr (eckit_LITTLE_ENDIAN) {
-        hash.add(latitudes_.data(), sized);
-        hash.add(longitudes_.data(), sized);
-    }
-    else {
-        auto lonsw = longitudes_;
-        auto latsw = latitudes_;
-        eckit::byteswap(latsw.data(), latsw.size());
-        eckit::byteswap(lonsw.data(), lonsw.size());
-        hash.add(latsw.data(), sized);
-        hash.add(lonsw.data(), sized);
-    }
+    util::hash_coordinate(hash, latitudes_, !eckit_LITTLE_ENDIAN);
+    util::hash_coordinate(hash, longitudes_, !eckit_LITTLE_ENDIAN);
 
     auto d = hash.digest();
     ASSERT(d.length() == 32);
@@ -215,22 +207,7 @@ Grid::iterator ORCA::cend() const {
 
 
 Grid::uid_t ORCA::calculate_uid() const {
-    MD5 hash(arrangement_to_string(arrangement_));
-
-    if (const auto len = static_cast<long>(size() * sizeof(double)); eckit_LITTLE_ENDIAN) {
-        hash.add(record_.latitudes_.data(), len);
-        hash.add(record_.longitudes_.data(), len);
-    }
-    else {
-        auto ll = to_latlon();
-        byteswap(ll.first.data(), size());
-        byteswap(ll.second.data(), size());
-
-        hash.add(ll.first.data(), len);
-        hash.add(ll.second.data(), len);
-    }
-
-    return hash;
+    return record_.calculate_uid(arrangement_);
 }
 
 

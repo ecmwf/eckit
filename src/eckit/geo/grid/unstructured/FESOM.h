@@ -13,7 +13,9 @@
 #pragma once
 
 #include <cstddef>
+#include <vector>
 
+#include "eckit/geo/Arrangement.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 
@@ -22,32 +24,25 @@ namespace eckit::geo::grid::unstructured {
 
 class FESOM final : public Unstructured {
 public:
-    // -- Types
-
-    enum Arrangement
-    {
-        Nodes,
-        Centroids,
-    };
-
     // -- Constructors
 
     explicit FESOM(const Spec&);
     explicit FESOM(uid_t);
 
+    // -- Overridden methods
+
+    uid_t calculate_uid() const override;
+
 private:
     // -- Members
 
-    std::string name_;
     uid_t uid_;
     Arrangement arrangement_;
     std::string path_;
 
-#if 0
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-#endif
 };
 
 

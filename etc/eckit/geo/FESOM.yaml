@@ -1,2 +1,17 @@
 ---
 
+fesom_url_prefix: &fesom_url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/
+fesom_validate_uid: false  # Validates UID upon grid creation
+fesom_compute_uid: false  # Recompute UID and ignore encoded UID
+
+grid_names:
+    - FESOM_pi: &FESOM_pi
+      type: FESOM
+      fesom_arrangement: N
+      shape: 3140
+      fesom_uid: "974487fbace54b00d959d971e88b71e7"
+      url_prefix: *fesom_url_prefix
+      url: pi.fesom.codec
+
+grid_uids:
+    - 974487fbace54b00d959d971e88b71e7: *FESOM_pi

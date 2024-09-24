@@ -19,26 +19,26 @@ namespace eckit::geo {
 
 
 Arrangement arrangement_from_string(const std::string& str) {
-    return str == "F"   ? Arrangement::F
-           : str == "T" ? Arrangement::T
-           : str == "U" ? Arrangement::U
-           : str == "V" ? Arrangement::V
-           : str == "W" ? Arrangement::W
-           : str == "C" ? Arrangement::C
-           : str == "N" ? Arrangement::N
+    return str == "F"   ? Arrangement::ORCA_F
+           : str == "T" ? Arrangement::ORCA_T
+           : str == "U" ? Arrangement::ORCA_U
+           : str == "V" ? Arrangement::ORCA_V
+           : str == "W" ? Arrangement::ORCA_W
+           : str == "C" ? Arrangement::FESOM_C
+           : str == "N" ? Arrangement::FESOM_N
                         : throw AssertionFailed("Arrangement", Here());
 }
 
 
 std::string arrangement_to_string(Arrangement a) {
-    return a == Arrangement::F   ? "F"
-           : a == Arrangement::T ? "T"
-           : a == Arrangement::U ? "U"
-           : a == Arrangement::V ? "V"
-           : a == Arrangement::W ? "W"
-           : a == Arrangement::C ? "C"
-           : a == Arrangement::N ? "N"
-                                 : throw AssertionFailed("Arrangement", Here());
+    return a == Arrangement::ORCA_F    ? "F"
+           : a == Arrangement::ORCA_T  ? "T"
+           : a == Arrangement::ORCA_U  ? "U"
+           : a == Arrangement::ORCA_V  ? "V"
+           : a == Arrangement::ORCA_W  ? "W"
+           : a == Arrangement::FESOM_C ? "C"
+           : a == Arrangement::FESOM_N ? "N"
+                                       : throw AssertionFailed("Arrangement", Here());
 }
 
 

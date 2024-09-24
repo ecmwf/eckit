@@ -6,6 +6,7 @@ list(APPEND eckit_geo_srcs
     Arrangement.h
     Cache.cc
     Cache.h
+    Container.h
     Download.cc
     Download.h
     Figure.cc
@@ -44,6 +45,9 @@ list(APPEND eckit_geo_srcs
     Spec.h
     area/BoundingBox.cc
     area/BoundingBox.h
+    container/LonLatReference.h
+    container/PointsMove.h
+    container/PointsReference.h
     etc/Grid.cc
     etc/Grid.h
     figure/Earth.cc

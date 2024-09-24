@@ -30,12 +30,11 @@ Grid::iterator Unstructured::cend() const {
 }
 
 
-std::vector<Point> Unstructured::to_points() const
-{
+std::vector<Point> Unstructured::to_points() const {
     auto n = size();
     std::vector<Point> points(n, PointLonLat{0., 0.});
 
-    for (size_t i = 0; i< n; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         points[i] = PointLonLat{longitudes_[i], latitudes_[i]};
     }
 
@@ -43,8 +42,7 @@ std::vector<Point> Unstructured::to_points() const
 }
 
 
-Spec* Unstructured::spec(const std::string& name)
-{
+Spec* Unstructured::spec(const std::string& name) {
     return SpecByUID::instance().get(name).spec();
 }
 
@@ -54,10 +52,10 @@ Unstructured::Unstructured(const std::vector<Point>& points) {
     longitudes_.resize(n);
     latitudes_.resize(n);
 
-    for (size_t i = 0; i< n; ++i) {
-        auto& p = std::get<PointLonLat>(points[i]);
+    for (size_t i = 0; i < n; ++i) {
+        auto& p        = std::get<PointLonLat>(points[i]);
         longitudes_[i] = p.lon;
-        latitudes_[i] = p.lat;
+        latitudes_[i]  = p.lat;
     }
 }
 

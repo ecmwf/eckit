@@ -19,10 +19,8 @@ namespace eckit::geo::grid::unstructured {
 Unstructured::Unstructured(const std::vector<Point>& points) : grid::Unstructured(points) {}
 
 
-Unstructured *Unstructured::make_from_latlon(const std::vector<double> & latitudes,
-                                             const std::vector<double> & longitudes) {
-
-}
+Unstructured* Unstructured::make_from_latlon(const std::vector<double>& latitudes,
+                                             const std::vector<double>& longitudes) {}
 
 
 }  // namespace eckit::geo::grid::unstructured

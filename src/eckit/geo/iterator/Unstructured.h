@@ -18,27 +18,16 @@
 #include "eckit/geo/Iterator.h"
 
 
+namespace eckit::geo {
+class Container;
+}
+
+
 namespace eckit::geo::iterator {
 
 
 class Unstructured final : public Iterator {
 public:
-    // -- Types
-
-    struct Container {
-        Container()          = default;
-        virtual ~Container() = default;
-
-        Container(const Container&) = delete;
-        Container(Container&&)      = delete;
-
-        Container& operator=(const Container&) = delete;
-        Container& operator=(Container&&)      = delete;
-
-        virtual Point get(size_t index) const = 0;
-        virtual size_t size() const           = 0;
-    };
-
     // -- Constructors
 
     explicit Unstructured(const Grid&, size_t index, const std::vector<double>& longitudes,

@@ -20,13 +20,14 @@ namespace eckit::geo {
 
 enum Arrangement
 {
-    F,
-    T,
-    U,
-    V,
-    W,
-    C,
-    N,
+    ORCA_F,
+    ORCA_T,
+    ORCA_U,
+    ORCA_V,
+    ORCA_W,
+
+    FESOM_C,
+    FESOM_N,
 };
 
 

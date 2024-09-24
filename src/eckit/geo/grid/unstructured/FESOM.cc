@@ -12,77 +12,84 @@
 
 #include "eckit/geo/grid/unstructured/FESOM.h"
 
+#include "eckit/codec/codec.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Download.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/utils/MD5.h"
+
+
+namespace eckit::geo::util {
+void hash_coordinate(MD5&, const std::vector<double>&, bool _byteswap);
+}
 
 
 namespace eckit::geo::grid::unstructured {
 
 
-namespace {
-
-
-FESOM::Arrangement fesom_arrangement_from_string(const std::string& str) {
-    return str == "F"   ? FESOM::Arrangement::Nodes
-           : str == "T" ? FESOM::Arrangement::Centroids
-                        : throw AssertionFailed("FESOM::Arrangement", Here());
+static std::string fesom_path(const Download::url_type& url) {
+    static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom", "fesom-", ".codec");
+    return download.to_cached_path(url);
 }
-
-
-std::string fesom_arrangement_to_string(FESOM::Arrangement a) {
-    return a == FESOM::Arrangement::Nodes       ? "F"
-           : a == FESOM::Arrangement::Centroids ? "T"
-                                                : throw AssertionFailed("FESOM::Arrangement", Here());
-}
-
-
-std::string fesom_path(const Spec& spec, Grid::uid_t uid) {
-    auto path = spec.get_string("path", LibEcKitGeo::cacheDir() + "/eckit/geo/grid/fesom/" + uid + ".fesom.codec");
-    auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
-}
-
-
-}  // namespace
 
 
 FESOM::FESOM(const Spec& spec) :
     Unstructured(spec),
-    name_(spec.get_string("fesom_name")),
     uid_(spec.get_string("fesom_uid")),
-    arrangement_(fesom_arrangement_from_string(spec.get_string("fesom_arrangement"))),
-    path_(fesom_path(spec, uid_)) {}
+    arrangement_(arrangement_from_string(spec.get_string("fesom_arrangement"))),
+    path_(fesom_path(spec.get_string("url_prefix", "") + spec.get_string("url"))) {
+    codec::RecordReader reader(path_);
+
+    uint64_t version = -1;
+    reader.read("version", version).wait();
+
+    if (version == 0) {
+        uint64_t n = 0;
+        reader.read("n", n);
+
+        std::vector<double> longitudes;
+        std::vector<double> latitudes;
+        reader.read("latitude", latitudes);
+        reader.read("longitude", longitudes);
+        reader.wait();
+
+        ASSERT(n == latitudes.size());
+        ASSERT(n == longitudes.size());
+
+        return;
+    }
+
+    throw SeriousBug("FESOM: unsupported version", Here());
+}
 
 
 FESOM::FESOM(uid_t uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
-#if 0
-FESOM::FESOM(std::vector<Point>&& points) : Grid(area::BoundingBox{}), points_(points) {}
+Grid::uid_t FESOM::calculate_uid() const {
+    MD5 hash;
 
+    util::hash_coordinate(hash, latitudes_, !eckit_LITTLE_ENDIAN);
+    util::hash_coordinate(hash, longitudes_, !eckit_LITTLE_ENDIAN);
 
-Grid::iterator FESOM::cbegin() const {
-    return iterator{new geo::iterator::FESOM(*this, 0, points_)};
-}
+    auto d = hash.digest();
+    ASSERT(d.length() == 32);
 
-
-Grid::iterator FESOM::cend() const {
-    return iterator{new geo::iterator::FESOM(*this)};
-}
-
-
-Spec* FESOM::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+    return {d};
 }
 
 
 void FESOM::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
 
-    custom.set("type", "unstructured");
+    custom.set("type", "FESOM");
     custom.set("uid", uid());
 }
-#endif
+
+
+static const GridRegisterType<FESOM> GRIDTYPE("FESOM");
+// static const GridRegisterName<FESOM> GRIDNAME(GridRegisterName<FESOM>::uid_pattern);
 
 
 }  // namespace eckit::geo::grid::unstructured

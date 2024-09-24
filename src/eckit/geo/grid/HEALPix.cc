@@ -19,6 +19,7 @@
 #include <tuple>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/geo/container/PointsMove.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
@@ -256,7 +257,8 @@ Renumber HEALPix::reorder(Ordering ordering) const {
 
 Grid::iterator HEALPix::cbegin() const {
     return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this, 0)}
-                                               : iterator{new geo::iterator::Unstructured(*this, 0, to_points())};
+                                               : iterator{new geo::iterator::Unstructured(
+                                                     *this, 0, std::make_shared<container::PointsMove>(to_points()))};
 }
 
 

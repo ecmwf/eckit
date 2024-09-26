@@ -37,6 +37,10 @@ public:
     explicit Unstructured(const std::vector<Point>&);
     explicit Unstructured(std::vector<Point>&&);
 
+    // -- Methods
+
+    std::shared_ptr<Container> container() const { return container_; }
+
     // -- Overridden methods
 
     iterator cbegin() const override;

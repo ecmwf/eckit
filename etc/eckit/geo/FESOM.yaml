@@ -5,7 +5,7 @@ fesom_validate_uid: false  # Validates UID upon grid creation
 fesom_compute_uid: false  # Recompute UID and ignore encoded UID
 
 grid_names:
-    - FESOM_pi: &FESOM_pi
+    - pi: &FESOM_pi
       type: FESOM
       fesom_arrangement: N
       shape: 3140
@@ -13,7 +13,7 @@ grid_names:
       url_prefix: *fesom_url_prefix
       url: pi.fesom.codec
 
-    - FESOM_DART: &FESOM_DART
+    - DART: &FESOM_DART
       type: FESOM
       fesom_arrangement: N
       shape: 3160340

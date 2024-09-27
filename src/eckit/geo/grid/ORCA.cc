@@ -94,6 +94,11 @@ std::string ORCA::arrangement() const {
 }
 
 
+std::shared_ptr<Container> ORCA::container() const {
+    return std::shared_ptr<Container>(new container::LonLatReference{record_.longitudes_, record_.latitudes_});
+}
+
+
 Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     MD5 hash;
     hash.add(arrangement_to_string(arrangement));

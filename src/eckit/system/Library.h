@@ -77,7 +77,8 @@ public:  // methods
     void unlock() { mutex_.unlock(); }
 
 protected:  // methods
-    virtual std::string home() const;
+    
+    virtual const std::vector<std::string>& homes() const;
 
     virtual const void* addr() const;
 
@@ -94,7 +95,7 @@ private:  // methods
 private:  // members
     std::string name_;
     std::string prefix_;
-    std::string home_;  // if not set explicitly, will be empty
+    mutable std::vector<std::string> homes_;
 
     bool debug_;
 

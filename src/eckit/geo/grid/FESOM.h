@@ -13,6 +13,7 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/grid/Unstructured.h"

@@ -17,6 +17,7 @@
 #include <cstdint>
 
 #include "eckit/geo/Arrangement.h"
+#include "eckit/geo/Container.h"
 #include "eckit/geo/grid/Regular.h"
 
 
@@ -68,6 +69,8 @@ public:
     std::string name() const { return name_; }
     std::string arrangement() const;
 
+    std::shared_ptr<Container> container() const;
+
     // -- Overridden methods
 
     iterator cbegin() const override;
@@ -93,6 +96,7 @@ private:
     uid_t uid_;
     Arrangement arrangement_;
     const ORCARecord& record_;
+    std::shared_ptr<Container> container_;
 
     // -- Overridden methods
 

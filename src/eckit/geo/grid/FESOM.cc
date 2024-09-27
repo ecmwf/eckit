@@ -82,6 +82,7 @@ FESOM::FESOM(const Spec& spec) :
     arrangement_(arrangement_from_string(spec.get_string("fesom_arrangement"))),
     record_(fesom_record(spec)) {
     resetContainer(new container::LonLatReference{record_.longitudes_, record_.latitudes_});
+    ASSERT(container());
 
     if (spec.get_bool("fesom_uid_check", false)) {
         auto uid = spec.get_string("fesom_uid");

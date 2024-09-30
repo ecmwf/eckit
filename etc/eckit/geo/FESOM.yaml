@@ -5,7 +5,7 @@ fesom_validate_uid: false  # Validates UID upon grid creation
 fesom_compute_uid: false  # Recompute UID and ignore encoded UID
 
 grid_names:
-    - pi: &FESOM_pi
+    - pi: &pi
       type: FESOM
       fesom_arrangement: N
       shape: 3140
@@ -13,7 +13,7 @@ grid_names:
       url_prefix: *fesom_url_prefix
       url: pi.fesom.codec
 
-    - DART: &FESOM_DART
+    - DART: &DART
       type: FESOM
       fesom_arrangement: N
       shape: 3160340
@@ -21,7 +21,25 @@ grid_names:
       url_prefix: *fesom_url_prefix
       url: DART.fesom.codec
 
+    - NG5_C: &NG5_C
+      type: FESOM
+      fesom_arrangement: C
+      shape: 14741520
+      fesom_uid: "9b6c413e35230d72a4ab69242d0d0617"
+      url_prefix: *fesom_url_prefix
+      url: NG5_C.fesom.codec
+
+    - NG5_N: &NG5_N
+      type: FESOM
+      fesom_arrangement: N
+      shape: 7402886
+      fesom_uid: "7a33ecaebe22e7d5ca4abbd819a43240"
+      url_prefix: *fesom_url_prefix
+      url: NG5_N.fesom.codec
+
 grid_uids:
-    - "79f022ea16dc2eb9333c5fb234b88164": *FESOM_pi
-    - "35e958b1dfd9054bb86f283d75ccd7b4": *FESOM_DART
+    - "79f022ea16dc2eb9333c5fb234b88164": *pi
+    - "35e958b1dfd9054bb86f283d75ccd7b4": *DART
+    - "9b6c413e35230d72a4ab69242d0d0617": *NG5_C
+    - "7a33ecaebe22e7d5ca4abbd819a43240": *NG5_N
 

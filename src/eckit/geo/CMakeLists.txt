@@ -180,6 +180,13 @@ if(eckit_HAVE_GEO_GRID_FESOM)
     list(APPEND eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/FESOM.yaml")
 endif()
 
+if(eckit_HAVE_GEO_GRID_ICON)
+    list(APPEND eckit_geo_srcs grid/ICON.cc grid/ICON.h)
+    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
+    list(APPEND eckit_geo_libs eckit_codec)
+    list(APPEND eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/ICON.yaml")
+endif()
+
 if(eckit_HAVE_GEO_GRID_ORCA)
     list(APPEND eckit_geo_srcs grid/ORCA.cc grid/ORCA.h)
     list(REMOVE_ITEM eckit_geo_libs eckit_codec)

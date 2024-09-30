@@ -1,6 +1,6 @@
 ---
 
-fesom_url_prefix: &fesom_url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/
+fesom_url_prefix: &fesom_url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/fesom/
 fesom_validate_uid: false  # Validates UID upon grid creation
 fesom_compute_uid: false  # Recompute UID and ignore encoded UID
 

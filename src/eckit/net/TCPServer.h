@@ -15,6 +15,7 @@
 #ifndef eckit_TCPServer_h
 #define eckit_TCPServer_h
 
+#include <mutex>
 #include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Mutex.h"
 

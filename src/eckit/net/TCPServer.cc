@@ -36,6 +36,8 @@ TCPServer::~TCPServer() {
 
 TCPSocket& TCPServer::accept(const std::string& message, int timeout, bool* connected) {
 
+    std::lock_guard<std::recursive_mutex> lock(acceptMutex_);
+    
     bind();
 
     sockaddr_in from;

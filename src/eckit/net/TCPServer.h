@@ -58,6 +58,7 @@ private:  // methods
 private:  // members
     bool closeExec_;
     Mutex mutex_;
+    std::recursive_mutex acceptMutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

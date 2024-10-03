@@ -24,7 +24,7 @@ class PathName;
 }  // namespace eckit
 
 
-namespace eckit::geo::etc {
+namespace eckit::geo::share {
 
 
 class Grid final {
@@ -46,4 +46,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::etc
+}  // namespace eckit::geo::share

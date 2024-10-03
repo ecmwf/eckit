@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/etc/Grid.h"
+#include "eckit/geo/share/Grid.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
@@ -21,11 +21,11 @@
 #include "eckit/value/Value.h"
 
 
-namespace eckit::geo::etc {
+namespace eckit::geo::share {
 
 
 const Grid& Grid::instance() {
-    static const Grid INSTANCE(LibEcKitGeo::etcGrid());
+    static const Grid INSTANCE(LibEcKitGeo::shareGrid());
     return INSTANCE;
 }
 
@@ -95,4 +95,4 @@ void Grid::load(const PathName& path) {
 }
 
 
-}  // namespace eckit::geo::etc
+}  // namespace eckit::geo::share

@@ -34,11 +34,11 @@ LibEcKitGeo& LibEcKitGeo::instance() {
 }
 
 
-std::vector<PathName> LibEcKitGeo::etcGrid() {
+std::vector<PathName> LibEcKitGeo::shareGrid() {
     static const auto paths = [](const std::string& s) -> std::vector<PathName> {
         const auto ss = StringTools::split(":", s);
         return {ss.begin(), ss.end()};
-    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-etc-grid;$ECKIT_GEO_ETC_GRID", eckit_GEO_ETC_GRID));
+    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-grid;$ECKIT_GEO_SHARE_GRID", eckit_GEO_SHARE_GRID));
     return paths;
 }
 

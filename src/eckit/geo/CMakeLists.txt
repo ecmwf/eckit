@@ -52,8 +52,6 @@ list(APPEND eckit_geo_srcs
     container/PointsMove.h
     container/PointsReference.cc
     container/PointsReference.h
-    etc/Grid.cc
-    etc/Grid.h
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc
@@ -141,6 +139,8 @@ list(APPEND eckit_geo_srcs
     range/RegularLatitude.h
     range/RegularLongitude.cc
     range/RegularLongitude.h
+    share/Grid.cc
+    share/Grid.h
     spec/Custom.cc
     spec/Custom.h
     spec/Generator.h
@@ -166,7 +166,7 @@ set(eckit_geo_include_dirs
 )
 
 set(eckit_geo_libs eckit_maths)
-set(eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/grid.yaml")
+set(eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/grid.yaml")
 
 if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
@@ -177,24 +177,24 @@ if(eckit_HAVE_GEO_GRID_FESOM)
     list(APPEND eckit_geo_srcs grid/FESOM.cc grid/FESOM.h)
     list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
-    list(APPEND eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/FESOM.yaml")
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/FESOM.yaml")
 endif()
 
 if(eckit_HAVE_GEO_GRID_ICON)
     list(APPEND eckit_geo_srcs grid/ICON.cc grid/ICON.h)
     list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
-    list(APPEND eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/ICON.yaml")
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ICON.yaml")
 endif()
 
 if(eckit_HAVE_GEO_GRID_ORCA)
     list(APPEND eckit_geo_srcs grid/ORCA.cc grid/ORCA.h)
     list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
-    list(APPEND eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/ORCA.yaml")
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ORCA.yaml")
 endif()
 
-string(REPLACE ";" ":" eckit_GEO_ETC_GRID "${eckit_GEO_ETC_GRID}")
+string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")
 configure_file(eckit_geo_config.h.in eckit_geo_config.h @ONLY)
 
 list(APPEND eckit_geo_srcs ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h)

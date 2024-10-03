@@ -16,7 +16,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Container.h"
-#include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 

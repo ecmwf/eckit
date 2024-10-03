@@ -17,7 +17,7 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/etc/Grid.h"
+#include "eckit/geo/share/Grid.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -223,7 +223,7 @@ const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
 
 Spec* GridFactory::make_spec_(const Spec& spec) const {
     lock_type lock;
-    etc::Grid::instance();
+    share::Grid::instance();
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
@@ -267,7 +267,7 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
 
 void GridFactory::list_(std::ostream& out) const {
     lock_type lock;
-    etc::Grid::instance();
+    share::Grid::instance();
 
     out << SpecByUID::instance() << std::endl;
     out << SpecByName::instance() << std::endl;

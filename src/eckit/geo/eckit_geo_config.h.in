@@ -28,4 +28,4 @@ constexpr bool eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT = _to_bool(@eckit_HAVE_GEO
 
 
 constexpr const char* eckit_GEO_CACHE_PATH = "@eckit_GEO_CACHE_PATH@";
-constexpr const char* eckit_GEO_ETC_GRID   = "@eckit_GEO_ETC_GRID@";
+constexpr const char* eckit_GEO_SHARE_GRID = "@eckit_GEO_SHARE_GRID@";

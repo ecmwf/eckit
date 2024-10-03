@@ -58,7 +58,7 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
     static Download download(LibEcKitGeo::cacheDir() + "/grid/icon");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
-    auto path = download.to_cached_path(url, "icon-", ".codec");
+    auto path = download.to_cached_path(url, spec.get_string("icon_name"), ".ekc");
     ASSERT_MSG(path.exists(), "ICON: file '" + path + "' not found");
 
     if (CACHE.contains(path)) {

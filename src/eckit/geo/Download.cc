@@ -12,9 +12,11 @@
 
 #include "eckit/geo/Download.h"
 
+#include <fstream>
+#include <iterator>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Cache.h"
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Log.h"
@@ -33,11 +35,10 @@ static util::recursive_mutex MUTEX;
 static CacheT<MD5::digest_t, std::string> CACHE;
 
 
-Download::Download(const PathName& root, const std::string& prefix, const std::string& extension) :
-    root_{root}, prefix_{prefix}, extension_{extension} {}
+Download::Download(const PathName& root, bool html) : root_{root}, html_(html) {}
 
 
-Download::info_type Download::to_path(const url_type& url, const PathName& path) {
+Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
     // control concurrent download
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
@@ -57,12 +58,27 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path)
         length = 0;
     }
 
+    // no empty files
     if (length <= 0) {
         if (tmp.exists()) {
             tmp.unlink(true);
         }
 
         throw UserError("Download error: '" + url + "' to '" + path + "'", Here());
+    }
+
+    // no html response (eg. http standard response codes) in arbitrarily small files
+    if (!html) {
+        if (length < Length{10240}) {
+            ASSERT(tmp.exists());
+            std::string contents{std::istreambuf_iterator<char>(std::ifstream(tmp.asString()).rdbuf()), {}};
+
+            if (contents.find("<!DOCTYPE html>") != std::string::npos) {
+                tmp.unlink(true);
+
+                throw UserError("Download error: '" + url + "' to '" + path + "'", Here());
+            }
+        }
     }
 
     PathName::rename(tmp, path);
@@ -72,13 +88,13 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path)
 }
 
 
-PathName Download::to_cached_path(const url_type& url) const {
+PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& extension) const {
     // control concurrent access
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
     // set cache key, return path early if possible
     auto key  = MD5{url}.digest();
-    auto path = CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix_ + key + extension_;
+    auto path = CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix + key + extension;
 
     if (path.exists()) {
         return CACHE[key] = path;
@@ -86,7 +102,7 @@ PathName Download::to_cached_path(const url_type& url) const {
 
     // download, update cache, return path
     Log::info() << "Downloading '" << url << "' to '" << path << "'..." << std::endl;
-    auto info = Download::to_path(url, path);
+    auto info = Download::to_path(url, path, html_);
     Log::info() << "Download of " << info.bytes << " took " << info.time_s << "s." << std::endl;
 
     ASSERT_MSG(path.exists(), "Download: file '" + path + "' not found");

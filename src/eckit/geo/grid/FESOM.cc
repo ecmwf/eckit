@@ -55,10 +55,10 @@ const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
-    static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom", "fesom-", ".codec");
+    static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
-    auto path = download.to_cached_path(url);
+    auto path = download.to_cached_path(url, "fesom-", ".codec");
     ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
 
     if (CACHE.contains(path)) {

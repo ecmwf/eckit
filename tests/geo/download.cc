@@ -22,6 +22,20 @@ namespace eckit::geo::test {
 const std::string URL = "https://www.ecmwf.int/robots.txt";
 
 
+CASE("error handling") {
+    const PathName path("test.download");
+    if (path.exists()) {
+        path.unlink();
+    }
+
+    EXPECT_THROWS_AS(Download::to_path("https://does.not/exist", path), UserError);
+    EXPECT(not path.exists());
+
+    EXPECT_THROWS_AS(Download::to_path("https://get.ecmwf.int/repository/does/not/exist", path), UserError);
+    EXPECT(not path.exists());
+}
+
+
 CASE("download (non-cached)") {
     const PathName path("test.download");
     if (path.exists()) {
@@ -54,11 +68,11 @@ CASE("download (cached)") {
     const std::string prefix    = "prefix-";
     const std::string extension = ".extension";
 
-    Download download(root, "prefix-", ".extension");
+    Download download(root);
 
     download.rm_cache_root();
 
-    auto path = download.to_cached_path(URL);
+    auto path = download.to_cached_path(URL, prefix, extension);
 
     EXPECT(root.exists());
     EXPECT(path.exists());

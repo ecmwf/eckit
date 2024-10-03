@@ -55,10 +55,10 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
-    static Download download(LibEcKitGeo::cacheDir() + "/grid/icon", "icon-", ".codec");
+    static Download download(LibEcKitGeo::cacheDir() + "/grid/icon");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
-    auto path = download.to_cached_path(url);
+    auto path = download.to_cached_path(url, "icon-", ".codec");
     ASSERT_MSG(path.exists(), "ICON: file '" + path + "' not found");
 
     if (CACHE.contains(path)) {

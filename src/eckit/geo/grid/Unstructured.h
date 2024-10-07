@@ -53,7 +53,7 @@ public:
     bool isPeriodicWestEast() const override { return true; }
 
     [[nodiscard]] std::vector<Point> to_points() const override;
-    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     // -- Class methods
 

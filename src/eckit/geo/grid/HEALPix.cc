@@ -311,7 +311,7 @@ std::vector<Point> HEALPix::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlons() const {
     std::pair<std::vector<double>, std::vector<double>> latlon;
     latlon.first.reserve(size());
     latlon.second.reserve(size());

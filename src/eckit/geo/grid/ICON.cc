@@ -48,25 +48,23 @@ class lock_type {
 };
 
 
-CacheT<PathName, ICON::ICONRecord> CACHE;
-
-
 const ICON::ICONRecord& icon_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
+    static CacheT<PathName, ICON::ICONRecord> cache;
     static Download download(LibEcKitGeo::cacheDir() + "/grid/icon");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
-    auto path = download.to_cached_path(url, spec.get_string("icon_name"), ".ekc");
+    auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");
     ASSERT_MSG(path.exists(), "ICON: file '" + path + "' not found");
 
-    if (CACHE.contains(path)) {
-        return CACHE[path];
+    if (cache.contains(path)) {
+        return cache[path];
     }
 
     // read and check uid
-    auto& record = CACHE[path];
+    auto& record = cache[path];
     record.read(path);
 
     return record;

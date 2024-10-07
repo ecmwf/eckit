@@ -14,26 +14,29 @@
 
 #include <algorithm>
 #include <cctype>
-#include <map>
+#include <memory>
 
 #include "eckit/system/Library.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
 #include "eckit/system/LibraryManager.h"
-#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit::system {
+
+namespace {
+thread_local EmptyChannel emptyChannel;
+}  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -109,21 +112,16 @@ std::string Library::libraryPath() const {
     return libraryPath_;
 }
 
-
 Channel& Library::debugChannel() const {
-    static ThreadSingleton<std::map<const Library*, std::unique_ptr<Channel>>> debugChannels;
-
-    auto it = debugChannels.instance().find(this);
-    if (it != debugChannels.instance().end()) {
-        return *it->second;
+    if (const AutoLock<Mutex> lock(mutex_); debug_) {
+        if (!debugChannel_) {
+            debugChannel_ = std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"));
+        }
+        return *debugChannel_;
     }
 
-    return *debugChannels.instance()
-                .emplace(this, debug_ ? std::make_unique<Channel>(new PrefixTarget(prefix_ + "_DEBUG"))  //
-                                      : std::make_unique<Channel>())                                     //
-                .first->second.get();
+    return emptyChannel;
 }
-
 
 const Configuration& Library::configuration() const {
     AutoLock<Mutex> lock(mutex_);

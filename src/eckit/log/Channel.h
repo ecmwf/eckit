@@ -20,6 +20,7 @@
 
 namespace eckit {
 
+class VoidBuffer;
 class ChannelBuffer;
 class LogTarget;
 
@@ -29,8 +30,7 @@ typedef void (*channel_callback_t)(void* data, const char* msg);
 
 /// Output channel that is an std::ostream but more functional
 
-class Channel : public std::ostream, private NonCopyable {
-
+class Channel: public std::ostream, private NonCopyable {
 public:  // methods
     Channel(LogTarget* = 0);
 
@@ -39,7 +39,7 @@ public:  // methods
     bool operator!() const;
     operator bool() const;
 
-    void indent(const char* prefix = "");
+    void indent(const char* space = "");
     void unindent();
 
     void setStream(std::ostream& out);
@@ -51,36 +51,52 @@ public:  // methods
     void setCallback(channel_callback_t cb, void* data = 0);
     void addCallback(channel_callback_t cb, void* data = 0);
 
-    void setTarget(LogTarget*);
-    void addTarget(LogTarget*);
+    void setTarget(LogTarget* target);
+    void addTarget(LogTarget* target);
 
     void reset();
 
-private:  // members
+protected:  // methods
+    explicit Channel(VoidBuffer* dummy);
+
+private:  // methods
+    explicit Channel(ChannelBuffer* buffer);
+
+    virtual void print(std::ostream& s) const;
+
     friend std::ostream& operator<<(std::ostream& os, const Channel& c) {
         c.print(os);
         return os;
     }
 
-    void print(std::ostream& s) const;
-
-    ChannelBuffer* buffer_;
+private:  // members
+    ChannelBuffer* buffer_ {nullptr};
 
     friend class Log;
 };
 
-
 //----------------------------------------------------------------------------------------------------------------------
 
-
 class AutoIndent {
-
     Channel& channel_;
 
 public:
-    AutoIndent(Channel& channel, const char* prefix = "") :
-        channel_(channel) { channel_.indent(prefix); }
+    AutoIndent(Channel& channel, const char* prefix = ""): channel_(channel) { channel_.indent(prefix); }
     ~AutoIndent() { channel_.unindent(); }
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class EmptyChannel: public Channel {
+public:  // methods
+    EmptyChannel();
+
+    ~EmptyChannel() = default;
+
+private:  // methods
+    void print(std::ostream& s) const override { s << "EmptyChannel()"; }
+
+    friend class Log;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

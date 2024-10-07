@@ -25,7 +25,7 @@ struct LonLatReference : Container {
     size_t size() const override { return longitudes.size(); }
 
     [[nodiscard]] std::vector<Point> to_points() const override;
-    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlon() const override {
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override {
         return {longitudes, latitudes};
     }
 

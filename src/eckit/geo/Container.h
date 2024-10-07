@@ -25,7 +25,7 @@ class Container {
 protected:
     Container() = default;
 
-    static std::pair<std::vector<double>, std::vector<double>> to_latlon(const std::vector<Point>&);
+    static std::pair<std::vector<double>, std::vector<double>> to_latlons(const std::vector<Point>&);
 
 public:
     virtual ~Container() = default;
@@ -39,8 +39,8 @@ public:
     virtual Point get(size_t index) const = 0;
     virtual size_t size() const           = 0;
 
-    [[nodiscard]] virtual std::vector<Point> to_points() const                                  = 0;
-    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const = 0;
+    [[nodiscard]] virtual std::vector<Point> to_points() const                                   = 0;
+    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const = 0;
 };
 
 

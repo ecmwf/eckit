@@ -49,25 +49,23 @@ class lock_type {
 };
 
 
-CacheT<PathName, ORCA::ORCARecord> CACHE;
-
-
 const ORCA::ORCARecord& orca_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
+    static CacheT<PathName, ORCA::ORCARecord> cache;
     static Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
-    auto path = download.to_cached_path(url, spec.get_string("orca_name"), ".ekc");
+    auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");
     ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
 
-    if (CACHE.contains(path)) {
-        return CACHE[path];
+    if (cache.contains(path)) {
+        return cache[path];
     }
 
     // read and check against metadata (if present)
-    auto& record = CACHE[path];
+    auto& record = cache[path];
     record.read(path);
     record.check(spec);
 

@@ -1,41 +1,43 @@
 ---
 
-fesom_url_prefix: &fesom_url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/fesom/
-fesom_validate_uid: false  # Validates UID upon grid creation
-fesom_compute_uid: false  # Recompute UID and ignore encoded UID
+url_prefix: &url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/fesom/
 
 grid_names:
     - pi: &pi
       type: FESOM
+      name: pi
       fesom_arrangement: N
       shape: 3140
       fesom_uid: "79f022ea16dc2eb9333c5fb234b88164"
-      url_prefix: *fesom_url_prefix
-      url: pi.fesom.codec
+      url_prefix: *url_prefix
+      url: pi.fesom.ek
 
     - DART: &DART
       type: FESOM
+      name: DART
       fesom_arrangement: N
       shape: 3160340
       fesom_uid: "35e958b1dfd9054bb86f283d75ccd7b4"
-      url_prefix: *fesom_url_prefix
-      url: DART.fesom.codec
+      url_prefix: *url_prefix
+      url: DART.fesom.ek
 
     - NG5_C: &NG5_C
       type: FESOM
+      name: NG5_C
       fesom_arrangement: C
       shape: 14741520
       fesom_uid: "9b6c413e35230d72a4ab69242d0d0617"
-      url_prefix: *fesom_url_prefix
-      url: NG5_C.fesom.codec
+      url_prefix: *url_prefix
+      url: NG5_C.fesom.ek
 
     - NG5_N: &NG5_N
       type: FESOM
+      name: NG5_N
       fesom_arrangement: N
       shape: 7402886
       fesom_uid: "7a33ecaebe22e7d5ca4abbd819a43240"
-      url_prefix: *fesom_url_prefix
-      url: NG5_N.fesom.codec
+      url_prefix: *url_prefix
+      url: NG5_N.fesom.ek
 
 grid_uids:
     - "79f022ea16dc2eb9333c5fb234b88164": *pi

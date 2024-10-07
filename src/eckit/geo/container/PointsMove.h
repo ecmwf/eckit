@@ -25,7 +25,7 @@ struct PointsMove : Container {
     size_t size() const override { return points_.size(); }
 
     [[nodiscard]] std::vector<Point> to_points() const override { return points_; }
-    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
 private:
     const std::vector<Point> points_;

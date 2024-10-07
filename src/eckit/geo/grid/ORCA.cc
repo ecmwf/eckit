@@ -227,7 +227,7 @@ std::vector<Point> ORCA::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlons() const {
     return {record_.latitudes_, record_.longitudes_};
 }
 

@@ -39,7 +39,7 @@ std::vector<Point> Reduced::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlons() const {
     const auto N = size();
 
     std::pair<std::vector<double>, std::vector<double>> latlon;

@@ -119,7 +119,7 @@ public:
     virtual bool isPeriodicWestEast() const;
 
     [[nodiscard]] virtual std::vector<Point> to_points() const;
-    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
+    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
     virtual Ordering ordering() const;
     virtual Renumber reorder(Ordering) const;

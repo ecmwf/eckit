@@ -16,7 +16,7 @@
 namespace eckit::geo {
 
 
-std::pair<std::vector<double>, std::vector<double>> Container::to_latlon(const std::vector<Point>& points) {
+std::pair<std::vector<double>, std::vector<double>> Container::to_latlons(const std::vector<Point>& points) {
     std::pair<std::vector<double>, std::vector<double>> ll;
     ll.first.reserve(points.size());
     ll.second.reserve(points.size());

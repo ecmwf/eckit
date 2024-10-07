@@ -16,8 +16,8 @@
 namespace eckit::geo::container {
 
 
-std::pair<std::vector<double>, std::vector<double> > PointsMove::to_latlon() const {
-    return Container::to_latlon(points_);
+std::pair<std::vector<double>, std::vector<double> > PointsMove::to_latlons() const {
+    return Container::to_latlons(points_);
 }
 
 

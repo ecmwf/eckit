@@ -52,8 +52,8 @@ std::vector<Point> Unstructured::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlon() const {
-    return container_->to_latlon();
+std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlons() const {
+    return container_->to_latlons();
 }
 
 

@@ -32,10 +32,11 @@ namespace eckit {
 class EckitGrid final : public EckitTool {
 public:
     EckitGrid(int argc, char** argv) : EckitTool(argc, argv) {
-        options_.push_back(new option::SimpleOption<std::string>("grid", "grid spec"));
+        options_.push_back(new option::SimpleOption<std::string>("grid", "spec"));
         options_.push_back(new option::SimpleOption<bool>("minmax-ll", "Limits for (lon, lat) coordinates"));
         options_.push_back(new option::SimpleOption<bool>("calculate-bbox", "Calculate bounding box"));
         options_.push_back(new option::SimpleOption<bool>("calculate-uid", "Calculate UID"));
+        options_.push_back(new option::SimpleOption<bool>("validate-uid", "Validate UID"));
         options_.push_back(new option::SimpleOption<long>("precision", "Output precision"));
     }
 
@@ -49,23 +50,30 @@ private:
     int minimumPositionalArguments() const override { return 1; }
 
     void execute(const option::CmdArgs& args) override {
-        JSON out(Log::info());
+        std::stringstream stream;
+        JSON out(stream);
         out.precision(args.getInt("precision", 16));
         out.startObject();
 
-        std::string user;
+        std::string spec;
         for (const auto& arg : args) {
-            user += " " + arg;
+            spec += " " + arg;
         }
 
         std::unique_ptr<const geo::Grid> grid([](const std::string& str) -> const geo::Grid* {
             std::unique_ptr<geo::Spec> spec(geo::spec::Custom::make_from_value(YAMLParser::decodeString(str)));
             return geo::GridFactory::build(*spec);
-        }(user));
+        }(spec));
 
         out << "spec" << grid->spec_str();
         out << "uid" << grid->uid();
         out << "size" << grid->size();
+
+        {
+            auto bbox = grid->boundingBox();
+            out << "bounding box";
+            (out.startList() << bbox.north << bbox.west << bbox.south << bbox.east).endList();
+        }
 
         auto minmax_latlon = args.getBool("minmax-ll", false);
         if (minmax_latlon) {
@@ -88,12 +96,6 @@ private:
             (out.startList() << max.lon << max.lat).endList();
         }
 
-        {
-            auto bbox = grid->boundingBox();
-            out << "bounding box";
-            (out.startList() << bbox.north << bbox.west << bbox.south << bbox.east).endList();
-        }
-
         auto calculate_bbox = args.getBool("calculate-bbox", false);
         if (calculate_bbox) {
             std::unique_ptr<geo::area::BoundingBox> bbox{grid->calculate_bbox()};
@@ -107,6 +109,21 @@ private:
         }
 
         out.endObject();
+        Log::info() << stream.str() << std::endl;
+
+        auto validate_uid = args.getBool("validate-uid", false);
+        if (validate_uid) {
+            auto uid = grid->uid();
+            Log::info() << "uid: '" << uid << "'" << std::endl;
+
+            auto uid_calculated = grid->calculate_uid();
+            Log::info() << "uid (calculated): '" << uid_calculated << "'" << std::endl;
+
+            if (uid != uid_calculated) {
+                throw BadValue("'" + uid + "' != '" + uid_calculated + "'");
+            }
+        }
+
         Log::info() << std::endl;
     }
 };

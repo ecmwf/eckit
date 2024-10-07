@@ -9,13 +9,14 @@
  */
 
 
-#include <cmath>
+#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <string>
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
@@ -27,11 +28,14 @@
 
 namespace eckit {
 
+
 class EckitGrid final : public EckitTool {
 public:
     EckitGrid(int argc, char** argv) : EckitTool(argc, argv) {
         options_.push_back(new option::SimpleOption<std::string>("grid", "grid spec"));
-        options_.push_back(new option::SimpleOption<bool>("bounding-box", "Bounding box"));
+        options_.push_back(new option::SimpleOption<bool>("minmax-ll", "Limits for (lon, lat) coordinates"));
+        options_.push_back(new option::SimpleOption<bool>("calculate-bbox", "Calculate bounding box"));
+        options_.push_back(new option::SimpleOption<bool>("calculate-uid", "Calculate UID"));
         options_.push_back(new option::SimpleOption<long>("precision", "Output precision"));
     }
 
@@ -45,9 +49,9 @@ private:
     int minimumPositionalArguments() const override { return 1; }
 
     void execute(const option::CmdArgs& args) override {
-        std::stringstream stream;
-        eckit::JSON out(stream);
+        JSON out(Log::info());
         out.precision(args.getInt("precision", 16));
+        out.startObject();
 
         std::string user;
         for (const auto& arg : args) {
@@ -63,37 +67,25 @@ private:
         out << "uid" << grid->uid();
         out << "size" << grid->size();
 
+        auto minmax_latlon = args.getBool("minmax-ll", false);
+        if (minmax_latlon) {
+            auto [lat, lon] = grid->to_latlons();
+            ASSERT(lat.size() == lon.size());
+            ASSERT(!lat.empty());
 
-        // Earth's equator ~= 40075 km
-        auto deg_km
-            = [](double deg) { return std::to_string(deg) + " deg, " + std::to_string(deg * 40075. / 360.) + " km"; };
+            geo::PointLonLat min{lon.front(), lat.front()};
+            geo::PointLonLat max{min};
 
-        auto nx = 1;  // grid->nx();
-        auto ny = 1;  // grid->ny();
+            for (size_t i = 0; i < lat.size(); ++i) {
+                min = {std::min(min.lon, lon[i]), std::min(min.lat, lat[i])};
+                max = {std::max(max.lon, lon[i]), std::max(max.lat, lat[i])};
+            }
 
-        out << "shape";
-        (out.startList() << nx << ny).endList();
+            out << "min";
+            (out.startList() << min.lon << min.lat).endList();
 
-        // out << "resolution N-S" << deg_km((grid->y().front() - grid->y().back()) / (ny - 1));
-        // out << "resolution E-W equator" << deg_km(360. / static_cast<double>(grid->nx(ny / 2)));
-        // out << "resolution E-W midlat" << deg_km(360. * std::cos(grid->y(ny / 4) * M_PI / 180.) /
-        // static_cast<double>(grid->nx(ny / 4))) << "resolution E-W pole" << deg_km(360. *
-        // std::cos(grid->y().front() * M_PI / 180.) / static_cast<double>(grid->nx().front()));
-
-        out << "spectral truncation linear" << (ny - 1);
-        out << "spectral truncation quadratic" << (static_cast<int>(std::floor(2. / 3. * ny + 0.5)) - 1);
-        out << "spectral truncation cubic" << (static_cast<int>(std::floor(0.5 * ny + 0.5)) - 1);
-
-        {
-            auto points = grid->to_points();
-            auto first  = std::get<geo::PointLonLat>(points.front());
-            auto last   = std::get<geo::PointLonLat>(points.back());
-
-            out << "first";
-            (out.startList() << first.lon << first.lat).endList();
-
-            out << "last";
-            (out.startList() << last.lon << last.lat).endList();
+            out << "max";
+            (out.startList() << max.lon << max.lat).endList();
         }
 
         {
@@ -102,9 +94,23 @@ private:
             (out.startList() << bbox.north << bbox.west << bbox.south << bbox.east).endList();
         }
 
-        Log::info() << stream.str() << std::endl;
+        auto calculate_bbox = args.getBool("calculate-bbox", false);
+        if (calculate_bbox) {
+            std::unique_ptr<geo::area::BoundingBox> bbox{grid->calculate_bbox()};
+            out << "bounding box (calculated)";
+            (out.startList() << bbox->north << bbox->west << bbox->south << bbox->east).endList();
+        }
+
+        auto calculate_uid = args.getBool("calculate-uid", false);
+        if (calculate_uid) {
+            out << "uid (calculated)" << grid->calculate_uid();
+        }
+
+        out.endObject();
+        Log::info() << std::endl;
     }
 };
+
 
 }  // namespace eckit
 

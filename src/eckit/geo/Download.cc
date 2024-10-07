@@ -32,7 +32,11 @@ namespace eckit::geo {
 
 
 static util::recursive_mutex MUTEX;
-static CacheT<MD5::digest_t, std::string> CACHE;
+
+
+class lock_type {
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
 
 
 Download::Download(const PathName& root, bool html) : root_{root}, html_(html) {}
@@ -40,7 +44,7 @@ Download::Download(const PathName& root, bool html) : root_{root}, html_(html) {
 
 Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
     // control concurrent download
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
 
 #if eckit_HAVE_CURL  // for eckit::URLHandle
     auto tmp = path + ".part";
@@ -52,7 +56,7 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
     Timer timer;
     Length length = 0;
     try {
-        length = URLHandle(url).saveInto(tmp);
+        length = URLHandle{url}.saveInto(tmp);
     }
     catch (...) {
         length = 0;
@@ -90,11 +94,14 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
 
 PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& extension) const {
     // control concurrent access
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
+
+    static CacheT<MD5::digest_t, std::string> CACHE;
 
     // set cache key, return path early if possible
-    auto key  = MD5{url}.digest();
-    auto path = CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix + key + extension;
+    const auto key = MD5{url}.digest();
+    const auto path
+        = CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix + (prefix.empty() ? "" : "-") + key + extension;
 
     if (path.exists()) {
         return CACHE[key] = path;
@@ -112,7 +119,7 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
 
 void Download::rmdir(const PathName& p) const {
     // control concurrent access
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
 
     if (!p.exists()) {
         return;

@@ -12,6 +12,7 @@
 
 #include "eckit/geo/grid/ICON.h"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -27,11 +28,6 @@
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/utils/MD5.h"
-
-
-namespace eckit::geo::util {
-void hash_coordinate(MD5&, const std::vector<double>&, bool _byteswap);
-}
 
 
 namespace eckit::geo::grid {
@@ -133,25 +129,6 @@ void ICON::ICONRecord::read(const PathName& p) {
 
 Grid::uid_t ICON::calculate_uid() const {
     NOTIMP;
-    MD5 hash;
-
-#if 0
-    if (arrangement_ == Arrangement::ICON_N) {
-        util::hash_coordinate(hash, record_.latitudes_, !eckit_LITTLE_ENDIAN);
-        util::hash_coordinate(hash, record_.longitudes_, !eckit_LITTLE_ENDIAN);
-    }
-    else if (arrangement_ == Arrangement::ICON_C) {
-        NOTIMP;
-    }
-    else {
-        NOTIMP;
-    }
-#endif
-
-    auto d = hash.digest();
-    ASSERT(d.length() == 32);
-
-    return {d};
 }
 
 

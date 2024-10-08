@@ -31,7 +31,7 @@
 
 
 namespace eckit::geo::util {
-void hash_coordinate(MD5&, const std::vector<double>&, bool _byteswap);
+void hash_vector_double(MD5&, const std::vector<double>&);
 }
 
 
@@ -101,8 +101,8 @@ Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     MD5 hash;
     hash.add(arrangement_to_string(arrangement));
 
-    util::hash_coordinate(hash, latitudes_, !eckit_LITTLE_ENDIAN);
-    util::hash_coordinate(hash, longitudes_, !eckit_LITTLE_ENDIAN);
+    util::hash_vector_double(hash, latitudes_);
+    util::hash_vector_double(hash, longitudes_);
 
     auto d = hash.digest();
     ASSERT(d.length() == 32);

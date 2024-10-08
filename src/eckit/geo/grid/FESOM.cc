@@ -30,8 +30,9 @@
 
 
 namespace eckit::geo::util {
-void hash_coordinate(MD5&, const std::vector<double>&, bool _byteswap);
-}
+void hash_vector_double(MD5&, const std::vector<double>&);
+void hash_vector_size_t(MD5&, const std::vector<size_t>&);
+}  // namespace eckit::geo::util
 
 
 namespace eckit::geo::grid {
@@ -136,8 +137,8 @@ Grid::uid_t FESOM::calculate_uid() const {
 
     switch (arrangement_) {
     case Arrangement::FESOM_N:
-        util::hash_coordinate(hash, record_.latitudes_, !eckit_LITTLE_ENDIAN);
-        util::hash_coordinate(hash, record_.longitudes_, !eckit_LITTLE_ENDIAN);
+        util::hash_vector_double(hash, record_.latitudes_);
+        util::hash_vector_double(hash, record_.longitudes_);
         break;
 
     case Arrangement::FESOM_C:

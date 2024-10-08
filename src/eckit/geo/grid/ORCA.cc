@@ -244,7 +244,6 @@ void ORCA::fill_spec(spec::Custom& custom) const {
 
 
 static const GridRegisterType<ORCA> GRIDTYPE("ORCA");
-static const GridRegisterName<ORCA> GRIDNAME(GridRegisterName<ORCA>::uid_pattern);
 
 
 }  // namespace eckit::geo::grid

@@ -167,7 +167,6 @@ void ICON::fill_spec(spec::Custom& custom) const {
 
 
 static const GridRegisterType<ICON> GRIDTYPE("ICON");
-// static const GridRegisterName<ICON> GRIDNAME(GridRegisterName<ICON>::uid_pattern);
 
 
 }  // namespace eckit::geo::grid

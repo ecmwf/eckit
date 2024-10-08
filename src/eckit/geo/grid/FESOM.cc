@@ -134,15 +134,19 @@ void FESOM::FESOMRecord::read(const PathName& p) {
 Grid::uid_t FESOM::calculate_uid() const {
     MD5 hash;
 
-    if (arrangement_ == Arrangement::FESOM_N) {
+    switch (arrangement_) {
+    case Arrangement::FESOM_N:
         util::hash_coordinate(hash, record_.latitudes_, !eckit_LITTLE_ENDIAN);
         util::hash_coordinate(hash, record_.longitudes_, !eckit_LITTLE_ENDIAN);
-    }
-    else if (arrangement_ == Arrangement::FESOM_C) {
+        break;
+
+    case Arrangement::FESOM_C:
         NOTIMP;
-    }
-    else {
+        break;
+
+    default:
         NOTIMP;
+        break;
     }
 
     auto d = hash.digest();
@@ -164,7 +168,6 @@ void FESOM::fill_spec(spec::Custom& custom) const {
 
 
 static const GridRegisterType<FESOM> GRIDTYPE("FESOM");
-// static const GridRegisterName<FESOM> GRIDNAME(GridRegisterName<FESOM>::uid_pattern);
 
 
 }  // namespace eckit::geo::grid

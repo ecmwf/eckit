@@ -21,11 +21,11 @@ std::pair<std::vector<double>, std::vector<double>> Container::to_latlons(const 
     ll.first.reserve(points.size());
     ll.second.reserve(points.size());
 
-    std::for_each(points.begin(), points.end(), [&ll](const auto& p) {
+    for (const auto& p : points) {
         auto q = std::get<PointLonLat>(p);
         ll.first.emplace_back(q.lat);
         ll.second.emplace_back(q.lon);
-    });
+    }
 
     return ll;
 }

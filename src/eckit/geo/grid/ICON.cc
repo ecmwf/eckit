@@ -88,8 +88,9 @@ ICON::ICON(const Spec& spec) :
 ICON::ICON(uid_t uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
-ICON::ICON(const std::string& name, const std::string& arrangement) :
-    ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement}})))) {}
+ICON::ICON(const std::string& name, Arrangement a) :
+    ICON(*std::unique_ptr<Spec>(
+        GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement_to_string(a)}})))) {}
 
 
 std::string ICON::arrangement() const {

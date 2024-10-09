@@ -93,8 +93,9 @@ FESOM::FESOM(const Spec& spec) :
 FESOM::FESOM(uid_t uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
-FESOM::FESOM(const std::string& name, const std::string& arrangement) :
-    FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement}})))) {}
+FESOM::FESOM(const std::string& name, Arrangement a) :
+    FESOM(*std::unique_ptr<Spec>(
+        GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement_to_string(a)}})))) {}
 
 
 std::string FESOM::arrangement() const {

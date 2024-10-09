@@ -86,8 +86,9 @@ ORCA::ORCA(const Spec& spec) :
 ORCA::ORCA(uid_t uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
-ORCA::ORCA(const std::string& name, const std::string& arrangement) :
-    ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement}})))) {}
+ORCA::ORCA(const std::string& name, Arrangement a) :
+    ORCA(*std::unique_ptr<Spec>(
+        GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement_to_string(a)}})))) {}
 
 
 std::string ORCA::arrangement() const {

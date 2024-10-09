@@ -50,7 +50,7 @@ public:
     explicit ICON(const Spec&);
     explicit ICON(uid_t);
 
-    ICON(const std::string& name, const std::string& arrangement);
+    ICON(const std::string& name, Arrangement);
 
     // -- Methods
 

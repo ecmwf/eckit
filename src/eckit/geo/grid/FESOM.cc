@@ -12,6 +12,7 @@
 
 #include "eckit/geo/grid/FESOM.h"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -137,27 +138,53 @@ void FESOM::FESOMRecord::read(const PathName& p) {
 
 
 Grid::uid_t FESOM::calculate_uid() const {
-    MD5 hash;
-
-    switch (arrangement_) {
-    case Arrangement::FESOM_N:
+    if (arrangement_ == Arrangement::FESOM_N) {
+        MD5 hash;
         util::hash_vector_double(hash, record_.latitudes_);
         util::hash_vector_double(hash, record_.longitudes_);
-        break;
 
-    case Arrangement::FESOM_C:
-        NOTIMP;
-        break;
-
-    default:
-        NOTIMP;
-        break;
+        auto d = hash.digest();
+        ASSERT(d.length() == 32);
+        return Grid::uid_t{d};
     }
 
-    auto d = hash.digest();
-    ASSERT(d.length() == 32);
+    if (arrangement_ == Arrangement::FESOM_C) {
+        // control concurrent reads/writes
+        lock_type lock;
 
-    return {d};
+        static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
+
+        // bootstrap uid
+        std::unique_ptr<Spec> spec(SpecByUID::instance().get(uid_).spec());
+
+        // get coordinates from fesom_arrangement: N
+        auto [lat, lon] = FESOM(spec->get_string("name"), Arrangement::FESOM_N).to_latlons();
+
+        // get element indices (0-based) from fesom_arrangement: C (this one)
+        auto url  = spec->get_string("url_prefix", "") + spec->get_string("url_connectivity");
+        auto path = download.to_cached_path(url, spec->get_string("name", ""), ".ek");
+        ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
+
+        codec::RecordReader reader(path);
+
+        uint64_t version = 0;
+        reader.read("version", version).wait();
+        ASSERT(version == 0);
+
+        std::vector<size_t> elem2d;
+        reader.read("elem2d", elem2d).wait();
+
+        MD5 hash;
+        util::hash_vector_double(hash, lat);
+        util::hash_vector_double(hash, lon);
+        util::hash_vector_size_t(hash, elem2d);
+
+        auto d = hash.digest();
+        ASSERT(d.length() == 32);
+        return Grid::uid_t{d};
+    }
+
+    NOTIMP;
 }
 
 

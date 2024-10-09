@@ -10,7 +10,6 @@
  */
 
 
-#include <cstdint>
 #include <vector>
 
 #include "eckit/eckit_config.h"
@@ -45,11 +44,6 @@ void hash_vector_double(MD5& hash, const std::vector<double>& v) {
 
 
 void hash_vector_size_t(MD5& hash, const std::vector<size_t>& v) {
-    hash_vector(hash, v);
-}
-
-
-void hash_vector_uint64_t(MD5& hash, const std::vector<uint64_t>& v) {
     hash_vector(hash, v);
 }
 

@@ -50,7 +50,7 @@ public:
     explicit FESOM(const Spec&);
     explicit FESOM(uid_t);
 
-    FESOM(const std::string& name, const std::string& arrangement);
+    FESOM(const std::string& name, Arrangement);
 
     // -- Methods
 

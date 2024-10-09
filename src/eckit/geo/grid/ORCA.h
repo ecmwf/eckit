@@ -61,7 +61,7 @@ public:
     explicit ORCA(const Spec&);
     explicit ORCA(uid_t);
 
-    ORCA(const std::string& name, const std::string& arrangement);
+    ORCA(const std::string& name, Arrangement);
 
     // -- Methods
 

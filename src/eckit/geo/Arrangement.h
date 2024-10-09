@@ -20,19 +20,20 @@ namespace eckit::geo {
 
 enum Arrangement
 {
+    FESOM_C,
+    FESOM_N,
+
+    ICON_C,
+    ICON_T,
+    ICON_N,
+    ICON_E,
+
     ORCA_F,
     ORCA_T,
     ORCA_U,
     ORCA_V,
     ORCA_W,
-
-    FESOM_C,
-    FESOM_N,
 };
-
-
-Arrangement arrangement_from_string(const std::string&);
-std::string arrangement_to_string(Arrangement);
 
 
 }  // namespace eckit::geo

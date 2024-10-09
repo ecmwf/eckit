@@ -50,6 +50,8 @@ public:
     explicit ICON(const Spec&);
     explicit ICON(uid_t);
 
+    ICON(const std::string& name, const std::string& arrangement);
+
     // -- Methods
 
     std::string arrangement() const;
@@ -61,6 +63,9 @@ public:
     // -- Class methods
 
     [[nodiscard]] static Spec* spec(const std::string& name);
+
+    [[nodiscard]] static Arrangement arrangement_from_string(const std::string&);
+    [[nodiscard]] static std::string arrangement_to_string(Arrangement);
 
 private:
     // -- Members

@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "eckit/codec/codec.h"
-#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
@@ -94,6 +93,10 @@ FESOM::FESOM(const Spec& spec) :
 FESOM::FESOM(uid_t uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
+FESOM::FESOM(const std::string& name, const std::string& arrangement) :
+    FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement}})))) {}
+
+
 std::string FESOM::arrangement() const {
     return arrangement_to_string(arrangement_);
 }
@@ -159,6 +162,21 @@ Grid::uid_t FESOM::calculate_uid() const {
 
 Spec* FESOM::spec(const std::string& name) {
     return SpecByUID::instance().get(name).spec();
+}
+
+
+Arrangement FESOM::arrangement_from_string(const std::string& str) {
+    return str == "C"   ? Arrangement::FESOM_C
+           : str == "N" ? Arrangement::FESOM_N
+                        : throw SeriousBug("FESOM: unsupported arrangement '" + str + "'");
+}
+
+
+std::string FESOM::arrangement_to_string(Arrangement a) {
+    return a == Arrangement::FESOM_C ? "C"
+           : a == Arrangement::FESOM_N
+               ? "N"
+               : throw SeriousBug("ORCA: unsupported arrangement '" + std::to_string(a) + "'", Here());
 }
 
 

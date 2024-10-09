@@ -15,7 +15,6 @@
 #include <memory>
 
 #include "eckit/codec/codec.h"
-#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
@@ -85,6 +84,10 @@ ORCA::ORCA(const Spec& spec) :
 
 
 ORCA::ORCA(uid_t uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+
+
+ORCA::ORCA(const std::string& name, const std::string& arrangement) :
+    ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement}})))) {}
 
 
 std::string ORCA::arrangement() const {
@@ -234,6 +237,27 @@ std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlons() const {
 
 Spec* ORCA::spec(const std::string& name) {
     return SpecByUID::instance().get(name).spec();
+}
+
+
+Arrangement ORCA::arrangement_from_string(const std::string& str) {
+    return str == "F"   ? Arrangement::ORCA_F
+           : str == "T" ? Arrangement::ORCA_T
+           : str == "U" ? Arrangement::ORCA_U
+           : str == "V" ? Arrangement::ORCA_V
+           : str == "W" ? Arrangement::ORCA_W
+                        : throw SeriousBug("ORCA: unsupported arrangement '" + str + "'");
+}
+
+
+std::string ORCA::arrangement_to_string(Arrangement a) {
+    return a == Arrangement::ORCA_F   ? "F"
+           : a == Arrangement::ORCA_T ? "T"
+           : a == Arrangement::ORCA_U ? "U"
+           : a == Arrangement::ORCA_V ? "V"
+           : a == Arrangement::ORCA_W
+               ? "W"
+               : throw SeriousBug("ORCA: unsupported arrangement '" + std::to_string(a) + "'", Here());
 }
 
 

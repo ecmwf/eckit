@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "eckit/codec/codec.h"
-#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
@@ -89,6 +88,10 @@ ICON::ICON(const Spec& spec) :
 ICON::ICON(uid_t uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
+ICON::ICON(const std::string& name, const std::string& arrangement) :
+    ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement}})))) {}
+
+
 std::string ICON::arrangement() const {
     return arrangement_to_string(arrangement_);
 }
@@ -134,6 +137,25 @@ Grid::uid_t ICON::calculate_uid() const {
 
 Spec* ICON::spec(const std::string& name) {
     return SpecByUID::instance().get(name).spec();
+}
+
+
+Arrangement ICON::arrangement_from_string(const std::string& str) {
+    return str == "C"   ? Arrangement::ICON_C
+           : str == "T" ? Arrangement::ICON_T
+           : str == "N" ? Arrangement::ICON_N
+           : str == "E" ? Arrangement::ICON_E
+                        : throw SeriousBug("ICON: unsupported arrangement '" + str + "'");
+}
+
+
+std::string ICON::arrangement_to_string(Arrangement a) {
+    return a == Arrangement::ICON_C   ? "C"
+           : a == Arrangement::ICON_T ? "T"
+           : a == Arrangement::ICON_N ? "N"
+           : a == Arrangement::ICON_E
+               ? "E"
+               : throw SeriousBug("ICON: unsupported arrangement '" + std::to_string(a) + "'", Here());
 }
 
 

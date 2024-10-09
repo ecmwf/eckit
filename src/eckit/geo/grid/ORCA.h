@@ -61,6 +61,8 @@ public:
     explicit ORCA(const Spec&);
     explicit ORCA(uid_t);
 
+    ORCA(const std::string& name, const std::string& arrangement);
+
     // -- Methods
 
     size_t nx() const override { return record_.nj(); }
@@ -88,6 +90,9 @@ public:
     // -- Class methods
 
     [[nodiscard]] static Spec* spec(const std::string& name);
+
+    [[nodiscard]] static Arrangement arrangement_from_string(const std::string&);
+    [[nodiscard]] static std::string arrangement_to_string(Arrangement);
 
 private:
     // -- Members

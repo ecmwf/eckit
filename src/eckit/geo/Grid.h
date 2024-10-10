@@ -149,6 +149,8 @@ protected:
 
     static Renumber no_reorder(size_t size);
 
+    void reset_uid(uid_t = {});
+
     void area(Area* ptr) { area_.reset(ptr); }
     void projection(Projection* ptr) { projection_.reset(ptr); }
 

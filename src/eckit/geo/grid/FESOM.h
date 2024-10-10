@@ -54,6 +54,7 @@ public:
 
     // -- Methods
 
+    std::string name() const { return name_; }
     std::string arrangement() const;
 
     // -- Overridden methods
@@ -70,7 +71,7 @@ public:
 private:
     // -- Members
 
-    uid_t uid_;
+    std::string name_;
     Arrangement arrangement_;
     const FESOMRecord& record_;
 

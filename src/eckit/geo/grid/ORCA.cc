@@ -77,10 +77,16 @@ const ORCA::ORCARecord& orca_record(const Spec& spec) {
 
 ORCA::ORCA(const Spec& spec) :
     Regular(spec),
-    name_(spec.get_string("orca_name")),
-    uid_(spec.get_string("orca_uid")),
+    name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
-    record_(orca_record(spec)) {}
+    record_(orca_record(spec)),
+    container_(new container::LonLatReference{record_.longitudes_, record_.latitudes_}) {
+    ASSERT(container_);
+
+    if (spec.has("orca_uid")) {
+        reset_uid(spec.get_string("orca_uid"));
+    }
+}
 
 
 ORCA::ORCA(uid_t uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
@@ -93,11 +99,6 @@ ORCA::ORCA(const std::string& name, Arrangement a) :
 
 std::string ORCA::arrangement() const {
     return arrangement_to_string(arrangement_);
-}
-
-
-std::shared_ptr<Container> ORCA::container() const {
-    return std::shared_ptr<Container>(new container::LonLatReference{record_.longitudes_, record_.latitudes_});
 }
 
 
@@ -264,7 +265,7 @@ std::string ORCA::arrangement_to_string(Arrangement a) {
 
 void ORCA::fill_spec(spec::Custom& custom) const {
     custom.set("type", "ORCA");
-    custom.set("uid", uid_);
+    custom.set("uid", uid());
 }
 
 

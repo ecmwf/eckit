@@ -71,7 +71,7 @@ public:
     std::string name() const { return name_; }
     std::string arrangement() const;
 
-    std::shared_ptr<Container> container() const;
+    std::shared_ptr<Container> container() const { return container_; }
 
     // -- Overridden methods
 
@@ -98,7 +98,6 @@ private:
     // -- Members
 
     std::string name_;
-    uid_t uid_;
     Arrangement arrangement_;
     const ORCARecord& record_;
     std::shared_ptr<Container> container_;

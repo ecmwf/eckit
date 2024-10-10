@@ -77,16 +77,14 @@ const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
 
 FESOM::FESOM(const Spec& spec) :
     Unstructured(spec),
-    uid_(spec.get_string("fesom_uid")),
+    name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("fesom_arrangement"))),
     record_(fesom_record(spec)) {
     resetContainer(new container::LonLatReference{record_.longitudes_, record_.latitudes_});
     ASSERT(container());
 
-    if (spec.get_bool("fesom_uid_check", false)) {
-        auto uid = spec.get_string("fesom_uid");
-        ASSERT(uid.length() == 32);
-        ASSERT(uid == calculate_uid());
+    if (spec.has("fesom_uid")) {
+        reset_uid(spec.get_string("fesom_uid"));
     }
 }
 
@@ -155,7 +153,7 @@ Grid::uid_t FESOM::calculate_uid() const {
         static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
         // bootstrap uid
-        std::unique_ptr<Spec> spec(SpecByUID::instance().get(uid_).spec());
+        std::unique_ptr<Spec> spec(SpecByUID::instance().get(uid()).spec());
 
         // get coordinates from fesom_arrangement: N
         auto [lat, lon] = FESOM(spec->get_string("name"), Arrangement::FESOM_N).to_latlons();

@@ -71,16 +71,14 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
 
 ICON::ICON(const Spec& spec) :
     Unstructured(spec),
-    uid_(spec.get_string("icon_uid")),
-    // arrangement_(arrangement_from_string(spec.get_string("icon_arrangement"))),
+    name_(spec.get_string("name")),
+    arrangement_(arrangement_from_string(spec.get_string("icon_arrangement"))),
     record_(icon_record(spec)) {
     resetContainer(new container::LonLatReference{record_.longitudes_, record_.latitudes_});
     ASSERT(container());
 
-    if (spec.get_bool("icon_uid_check", false)) {
-        auto uid = spec.get_string("icon_uid");
-        ASSERT(uid.length() == 32);
-        ASSERT(uid == calculate_uid());
+    if (spec.has("icon_uid")) {
+        reset_uid(spec.get_string("icon_uid"));
     }
 }
 

@@ -179,6 +179,12 @@ Renumber Grid::no_reorder(size_t size) {
 }
 
 
+void Grid::reset_uid(uid_t _uid) {
+    ASSERT(_uid.empty() || _uid.length() == 32);
+    uid_ = _uid;
+}
+
+
 void Grid::fill_spec(spec::Custom& custom) const {
     if (area_) {
         static const auto AREA_DEFAULT(area::BOUNDING_BOX_DEFAULT.spec_str());

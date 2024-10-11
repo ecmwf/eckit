@@ -38,9 +38,9 @@ private:
     std::vector<double> longitudes_j_;
     const std::vector<double>& latitudes_;
     const std::vector<size_t>& niacc_;
+    const size_t size_;
     size_t j_;
     size_t index_;
-    const size_t size_;
 
     // -- Overridden operators
 

@@ -23,7 +23,7 @@
 #include "eckit/geo/Download.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
-#include "eckit/geo/container/LonLatReference.h"
+#include "eckit/geo/container/PointsLonLatReference.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/utils/MD5.h"
@@ -74,7 +74,7 @@ ICON::ICON(const Spec& spec) :
     name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("icon_arrangement"))),
     record_(icon_record(spec)) {
-    resetContainer(new container::LonLatReference{record_.longitudes_, record_.latitudes_});
+    resetContainer(new container::PointsLonLatReference{record_.longitudes_, record_.latitudes_});
     ASSERT(container());
 
     if (spec.has("icon_uid")) {

@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/container/LonLatReference.h"
+#include "eckit/geo/container/PointsLonLatReference.h"
 
 #include "eckit/exception/Exceptions.h"
 
@@ -18,12 +18,13 @@
 namespace eckit::geo::container {
 
 
-LonLatReference::LonLatReference(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
+PointsLonLatReference::PointsLonLatReference(const std::vector<double>& longitudes,
+                                             const std::vector<double>& latitudes) :
     longitudes(longitudes), latitudes(latitudes) {
     ASSERT(longitudes.size() == latitudes.size());
 }
 
-std::vector<Point> LonLatReference::to_points() const {
+std::vector<Point> PointsLonLatReference::to_points() const {
     std::vector<Point> points;
     points.reserve(longitudes.size());
 

@@ -21,20 +21,20 @@
 namespace eckit::geo {
 
 
-class Container {
+class PointsContainer {
 protected:
-    Container() = default;
+    PointsContainer() = default;
 
     static std::pair<std::vector<double>, std::vector<double>> to_latlons(const std::vector<Point>&);
 
 public:
-    virtual ~Container() = default;
+    virtual ~PointsContainer() = default;
 
-    Container(const Container&) = delete;
-    Container(Container&&)      = delete;
+    PointsContainer(const PointsContainer&) = delete;
+    PointsContainer(PointsContainer&&)      = delete;
 
-    Container& operator=(const Container&) = delete;
-    Container& operator=(Container&&)      = delete;
+    PointsContainer& operator=(const PointsContainer&) = delete;
+    PointsContainer& operator=(PointsContainer&&)      = delete;
 
     virtual Point get(size_t index) const = 0;
     virtual size_t size() const           = 0;

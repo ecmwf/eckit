@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include "eckit/geo/Container.h"
+#include "eckit/geo/PointsContainer.h"
 
 
 namespace eckit::geo::container {
 
 
-struct PointsMove : Container {
-    explicit PointsMove(std::vector<Point>&& points) : points_(points) {}
+struct Points : PointsContainer {
+    explicit Points(std::vector<Point>&& points) : points_(points) {}
 
     Point get(size_t index) const override { return points_.at(index); }
     size_t size() const override { return points_.size(); }

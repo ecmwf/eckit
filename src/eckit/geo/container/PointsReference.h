@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "eckit/geo/Container.h"
+#include "eckit/geo/PointsContainer.h"
 
 
 namespace eckit::geo::container {
 
 
-struct PointsReference : Container {
+struct PointsReference : PointsContainer {
     explicit PointsReference(const std::vector<Point>& points) : points_(points) {}
 
     Point get(size_t index) const override { return points_.at(index); }

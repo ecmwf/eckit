@@ -15,8 +15,8 @@
 #include <cstddef>
 #include <memory>
 
-#include "eckit/geo/Container.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/PointsContainer.h"
 
 
 namespace eckit::geo::iterator {
@@ -39,7 +39,7 @@ public:
 
     // -- Methods
 
-    std::shared_ptr<Container> container() const { return container_; }
+    std::shared_ptr<PointsContainer> container() const { return container_; }
 
     // -- Overridden methods
 
@@ -63,13 +63,13 @@ public:
 protected:
     // -- Methods
 
-    void resetContainer(Container* container) { container_.reset(container); }
+    void resetContainer(PointsContainer* container) { container_.reset(container); }
 
 
 private:
     // -- Members
 
-    std::shared_ptr<Container> container_;
+    std::shared_ptr<PointsContainer> container_;
 
     // -- Overridden methods
 

@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include "eckit/geo/Container.h"
+#include "eckit/geo/PointsContainer.h"
 
 
 namespace eckit::geo::container {
 
 
-struct LonLatReference : Container {
-    explicit LonLatReference(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
+struct PointsLonLatReference : PointsContainer {
+    explicit PointsLonLatReference(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
 
     Point get(size_t index) const override { return PointLonLat{longitudes.at(index), latitudes.at(index)}; }
     size_t size() const override { return longitudes.size(); }

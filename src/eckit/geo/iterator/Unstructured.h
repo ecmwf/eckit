@@ -18,7 +18,7 @@
 
 
 namespace eckit::geo {
-class Container;
+class PointsContainer;
 }
 
 
@@ -29,13 +29,13 @@ class Unstructured final : public Iterator {
 public:
     // -- Constructors
 
-    Unstructured(const Grid&, size_t index, std::shared_ptr<Container>);
+    Unstructured(const Grid&, size_t index, std::shared_ptr<PointsContainer>);
     explicit Unstructured(const Grid&);
 
 private:
     // -- Members
 
-    std::shared_ptr<Container> container_;
+    std::shared_ptr<PointsContainer> container_;
     size_t index_;
     const size_t size_;
     const std::string uid_;

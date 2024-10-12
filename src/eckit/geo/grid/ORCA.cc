@@ -21,7 +21,7 @@
 #include "eckit/geo/Download.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
-#include "eckit/geo/container/LonLatReference.h"
+#include "eckit/geo/container/PointsLonLatReference.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
@@ -80,7 +80,7 @@ ORCA::ORCA(const Spec& spec) :
     name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
     record_(orca_record(spec)),
-    container_(new container::LonLatReference{record_.longitudes_, record_.latitudes_}) {
+    container_(new container::PointsLonLatReference{record_.longitudes_, record_.latitudes_}) {
     ASSERT(container_);
 
     if (spec.has("orca_uid")) {
@@ -207,7 +207,7 @@ size_t ORCA::ORCARecord::write(const PathName& p, const std::string& compression
 
 Grid::iterator ORCA::cbegin() const {
     return iterator{new geo::iterator::Unstructured(
-        *this, 0, std::make_shared<container::LonLatReference>(record_.longitudes_, record_.latitudes_))};
+        *this, 0, std::make_shared<container::PointsLonLatReference>(record_.longitudes_, record_.latitudes_))};
 }
 
 

@@ -26,7 +26,7 @@ static const LinearAlgebraEigen __la("eigen");
 
 using vec_t = Eigen::VectorXd::MapType;
 using mat_t = Eigen::MatrixXd::MapType;
-using spm_t = Eigen::MappedSparseMatrix<Scalar, Eigen::RowMajor, Index>;
+using spm_t = Eigen::Map<Eigen::SparseMatrix<Scalar, Eigen::RowMajor, Index>>;
 
 
 void LinearAlgebraEigen::print(std::ostream& out) const {

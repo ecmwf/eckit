@@ -25,8 +25,6 @@ Stream::Stream(DataHandle* datahandle) : shared_(datahandle), ptr_(shared_.get()
 
 Stream::Stream(std::shared_ptr<DataHandle> datahandle) : shared_(datahandle), ptr_(shared_.get()) {}
 
-Stream::Stream(const Stream& other) = default;
-
 DataHandle& Stream::datahandle() {
     ASSERT(ptr_ != nullptr);
     return *ptr_;

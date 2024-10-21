@@ -17,18 +17,17 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Channel::Channel(LogTarget* target) :
-    std::ostream(new ChannelBuffer()), buffer_(dynamic_cast<ChannelBuffer*>(rdbuf())) {
+Channel::Channel(ChannelBuffer* buffer): std::ostream(buffer), buffer_(buffer) { }
+
+Channel::Channel(LogTarget* target): Channel(new ChannelBuffer()) {
     ASSERT(buffer_);
-    if (target) {
-        buffer_->setTarget(target);
-    }
-    //    std::cerr << "Channel::Channel()" << std::endl;
+    if (target) { buffer_->setTarget(target); }
 }
 
+Channel::Channel(VoidBuffer* dummy): std::ostream(nullptr), buffer_(dummy) { }
 
 Channel::~Channel() {
-    //    std::cerr << "Channel::~Channel() " << *this << std::endl;
+    buffer_->sync();
     delete buffer_;
 }
 
@@ -69,7 +68,6 @@ void Channel::addStream(std::ostream& out) {
     buffer_->addStream(out);
 }
 
-
 void Channel::setFile(const std::string& path) {
     buffer_->setFile(path);
 }
@@ -93,6 +91,10 @@ void Channel::indent(const char* space) {
 void Channel::unindent() {
     buffer_->unindent();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+EmptyChannel::EmptyChannel(): Channel(new VoidBuffer()) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 

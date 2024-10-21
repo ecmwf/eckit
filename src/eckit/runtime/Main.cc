@@ -12,6 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <string>
+#include <atomic>
 
 #include "eckit/bases/Loader.h"
 #include "eckit/config/Resource.h"
@@ -24,13 +25,17 @@
 #include "eckit/system/LibraryManager.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+namespace {
+// atomic provides implicit lock for finalised_ only
+std::atomic_bool finalised_ {false};
+}  // namespace
 
 static StaticMutex local_mutex;
 static Main* instance_ = nullptr;
@@ -39,6 +44,8 @@ static Main* instance_ = nullptr;
 
 Main::Main(int argc, char** argv, const char* homeenv) :
     taskID_(-1), argc_(argc), argv_(argv), home_("/"), debug_(false) {
+ 
+    std::atexit(finalise);
 
     if (instance_) {
         std::cerr << "Attempting to create a new instance of Main()" << std::endl;
@@ -208,6 +215,14 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
     if (not instance_) {
         new Library(argc, argv, homeenv);
     }
+}
+
+bool Main::finalised() {
+    return finalised_;
+}
+
+void Main::finalise() {
+    finalised_ = true;
 }
 
 bool Main::debug() const {

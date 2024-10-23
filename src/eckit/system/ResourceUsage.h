@@ -18,6 +18,7 @@
 #include <sys/resource.h>
 #include <cstddef>
 #include <iosfwd>
+#include <stddef.h>
 
 namespace eckit::system {
 

@@ -45,7 +45,12 @@ protected:
     // -- Overridden methods
     void prepare(SQLSelect& sql) override;
     void updateType(SQLSelect& sql) override;
-    using ColumnExpression::eval;
+
+    // Use SQLExpression's eval rather than ColumnExpression's
+    void eval(double* out, bool& missing) const override {
+        SQLExpression::eval(out, missing);
+    }
+
     double eval(bool& missing) const override;
     virtual void expandStars(const std::vector<std::reference_wrapper<const SQLTable>>&,
                              expression::Expressions&) override;

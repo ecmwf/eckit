@@ -1,5 +1,6 @@
 cmake_options: -DENABLE_ECKIT_GEO=ON
 dependencies: |
   ecmwf/ecbuild
+  MathisRosenhauer/libaec@master
 dependency_branch: develop
 parallelism_factor: 8

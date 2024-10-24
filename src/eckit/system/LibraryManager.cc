@@ -209,7 +209,9 @@ public:  // methods
             return plib;
         }
 
-        Log::warning() << "Failed to load library " << dynamicLibraryName << std::endl;
+        Log::warning() << "Failed to load library " << dynamicLibraryName
+                       << " dlerror: " << ::dlerror() << std::endl;
+
         return nullptr;
     }
 
@@ -233,6 +235,12 @@ public:  // methods
 
             // lets load since the associated library isn't registered
             void* libhandle = loadDynamicLibrary(lib);
+
+            if (!libhandle) {
+                std::ostringstream ss;
+                ss << "Failed to load library " << lib;
+                throw FailedSystemCall(ss.str().c_str(), Here());
+            }
 
             // the plugin should self-register when the library loads
             Plugin* plugin = lookupPlugin(name);

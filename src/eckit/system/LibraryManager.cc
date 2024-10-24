@@ -201,8 +201,7 @@ public:  // methods
         }
 
         // now we try with the system LD_LIBRARY_PATH environment variable
-        Log::warning() << "Loading library " << dynamicLibraryName << " from LD_LIBRARY_PATH or system paths"
-                       << "LD_LIBRARY_PATH=" << ::getenv("LD_LIBRARY_PATH")
+        Log::debug() << "Loading library " << dynamicLibraryName << " from LD_LIBRARY_PATH or system paths"
                        << std::endl;
         void* plib = ::dlopen(dynamicLibraryName.c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (plib) {
@@ -210,33 +209,28 @@ public:  // methods
             return plib;
         }
         Log::warning() << "Failed to load library " << dynamicLibraryName
-                       << "dlerror: " << ::dlerror()
+                       << " due to dlerror: " << ::dlerror()
                        << std::endl;
 
         return nullptr; // <-- this is awful, upstream function will throw with the wrong error message as a result
     }
 
     Plugin* lookupPlugin(const std::string& name) const {
-        std::cout << "XXX: lookupPlugin " << name << std::endl;
         auto it = plugins_.find(name);
         if (it != plugins_.end()) {
             std::string libname = it->second;
-            std::cout << "XXX: lookupPlugin: plugin found: name=" << name << " and libname=" << libname << std::endl;
             return dynamic_cast<Plugin*>(&lookup(libname));
         }
-        std::cout << "XXX: lookupPlugin: plugin not found :(" << std::endl;
         return nullptr;
     }
 
     Plugin& loadPlugin(const std::string& name, const std::string& libname = std::string()) {
-        std::cout << "XXX: loadPlugin " << name << " " << libname << std::endl;
         AutoLock<Mutex> lockme(mutex_);
 
         std::string lib = libname.empty() ? name : libname;
 
         // check if respective library is already loaded
         if (!exists(lib)) {
-            std::cout << "XXX: loadPlugin: lib not yet loaded (loading now) lib= " << lib << std::endl;
 
             // lets load since the associated library isn't registered
             void* libhandle = loadDynamicLibrary(lib);
@@ -249,7 +243,6 @@ public:  // methods
                 initPlugin(plugin);
                 return *plugin;
             }
-            std::cout << "XXX: plugin is null apparently" << std::endl;
             // If the plugin library still doesn't exist after a successful call of dlopen, then
             // we have managed to load something other than a (self-registering) eckit Plugin library
             std::ostringstream ss;

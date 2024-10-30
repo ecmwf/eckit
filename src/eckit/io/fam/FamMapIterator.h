@@ -13,70 +13,64 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   FamListIterator.h
+/// @file   FamMapIterator.h
 /// @author Metin Cakircali
-/// @date   Mar 2024
+/// @date   Jul 2024
 
 #pragma once
 
-#include "eckit/io/Buffer.h"
-#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamList.h"
+#include "eckit/io/fam/FamRegion.h"
+
+#include <memory>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 // ITERATOR
 
-class FamListIterator {
+class FamMapIterator {
 public:  // types
+    using iterator_category = std::forward_iterator_tag;
 
-    using iterator_category = std::bidirectional_iterator_tag;
-
-    using value_type = FamObject;
+    using value_type = FamList;
     using pointer    = value_type*;
-    using reference  = Buffer&;
+    using reference  = value_type&;
 
 public:  // methods
+    FamMapIterator(const FamRegion& region, fam::index_t offset);
 
-    FamListIterator(const value_type& object);
+    auto operator++() -> FamMapIterator&;
 
-    // iterate forwards
-    auto operator++() -> FamListIterator&;
+    auto operator==(const FamMapIterator& other) const -> bool { return other.node_ == node_; }
 
-    // iterate backwards
-    auto operator--() -> FamListIterator&;
-
-    auto operator==(const FamListIterator& other) const -> bool;
-
-    auto operator!=(const FamListIterator& other) const -> bool { return !operator==(other); }
+    auto operator!=(const FamMapIterator& other) const -> bool { return !operator==(other); }
 
     auto operator->() -> pointer;
 
     auto operator*() -> reference;
 
 private:  // members
+    FamRegion region_;
+    FamObject node_;
 
-    bool invalid_{true};
-    Buffer data_{0};
-
-    value_type object_;
+    std::unique_ptr<value_type> list_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 // CONST ITERATOR
 
-class FamListConstIterator : public FamListIterator {
-    using FamListIterator::FamListIterator;
+class FamMapConstIterator: public FamMapIterator {
+    using FamMapIterator::FamMapIterator;
 
-    using value_type = FamListIterator::value_type;
+    using value_type = FamMapIterator::value_type;
     using pointer    = const value_type*;
-    using reference  = const Buffer&;
+    using reference  = const value_type&;
 
 public:  // methods
+    auto operator->() -> pointer { return FamMapIterator::operator->(); }
 
-    auto operator->() -> pointer { return FamListIterator::operator->(); }
-
-    auto operator*() -> reference { return FamListIterator::operator*(); }
+    auto operator*() -> reference { return FamMapIterator::operator*(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -13,42 +13,34 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   FamRegionName.h
+/// @file   FamMapNode.h
 /// @author Metin Cakircali
-/// @date   May 2024
+/// @date   Jul 2024
 
 #pragma once
 
-#include "eckit/io/fam/FamObjectName.h"
-#include "eckit/io/fam/FamProperty.h"
+#include "FamNode.h"
+#include "eckit/io/fam/FamList.h"
 
-#include <iosfwd>
-#include <string>
+#include <memory>
 
 namespace eckit {
 
-class FamRegion;
-
 //----------------------------------------------------------------------------------------------------------------------
 
-class FamRegionName : public FamName {
-public:  // methods
+struct FamMapNode: public FamNode {
+    FamList::Descriptor desc;
 
-    using FamName::FamName;
+    //------------------------------------------------------------------------------------------------------------------
+    // HELPERS (DO NOT add any virtual function here)
 
-    ~FamRegionName() = default;
+    static auto getDescriptor(const FamObject& object) -> FamList::Descriptor {
+        return object.get<FamList::Descriptor>(offsetof(FamMapNode, desc));
+    }
 
-    auto withRegion(const std::string& regionName) -> FamRegionName&;
-
-    auto object(const std::string& objectName) const -> FamObjectName;
-
-    auto lookup() const -> FamRegion;
-
-    auto create(fam::size_t regionSize, fam::perm_t regionPerm, bool overwrite = false) const -> FamRegion;
-
-    auto exists() const -> bool override;
-
-    auto uriBelongs(const URI& uri) const -> bool;
+    static auto getList(const FamRegion& region, const FamObject& object) -> std::unique_ptr<FamList> {
+        return std::make_unique<FamList>(region, FamMapNode::getDescriptor(object));
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

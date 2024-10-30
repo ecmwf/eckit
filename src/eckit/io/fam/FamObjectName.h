@@ -22,7 +22,7 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamName.h"
-#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
 
 #include <iosfwd>
 #include <string>
@@ -30,6 +30,7 @@
 namespace eckit {
 
 class DataHandle;
+class FamObject;
 
 //----------------------------------------------------------------------------------------------------------------------
 

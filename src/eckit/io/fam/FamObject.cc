@@ -80,11 +80,11 @@ auto FamObject::exists() const -> bool {
 //----------------------------------------------------------------------------------------------------------------------
 // PROPERTIES
 
-auto FamObject::regionId() const -> std::uint64_t {
+auto FamObject::regionId() const -> fam::index_t {
     return object_->get_global_descriptor().regionId;
 }
 
-auto FamObject::offset() const -> std::uint64_t {
+auto FamObject::offset() const -> fam::index_t {
     return object_->get_global_descriptor().offset;
 }
 

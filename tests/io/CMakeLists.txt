@@ -54,7 +54,7 @@ ecbuild_add_test( TARGET      eckit_test_fam
                   LABELS      openfam
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_famlist
+ecbuild_add_test( TARGET      eckit_test_fam_list
                   SOURCES     test_famlist.cc
                   CONDITION   HAVE_OPENFAM
                   LABELS      openfam

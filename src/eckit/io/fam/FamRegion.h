@@ -49,7 +49,7 @@ public:  // methods
 
     // properties
 
-    auto index() const -> std::uint64_t;
+    auto index() const -> fam::index_t;
 
     auto size() const -> fam::size_t;
 
@@ -62,7 +62,7 @@ public:  // methods
     // object methods
 
     [[nodiscard]]
-    auto proxyObject(std::uint64_t offset) const -> FamObject;
+    auto proxyObject(fam::index_t offset) const -> FamObject;
 
     [[nodiscard]]
     auto lookupObject(const std::string& objectName) const -> FamObject;

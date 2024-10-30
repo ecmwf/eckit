@@ -13,42 +13,34 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   FamRegionName.h
-/// @author Metin Cakircali
-/// @date   May 2024
+#include "eckit/io/fam/FamHashTable.h"
 
-#pragma once
-
+#include "detail/FamHashNode.h"
+#include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamObjectName.h"
-#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegionName.h"
 
-#include <iosfwd>
-#include <string>
+// #include "detail/FamSessionDetail.h"
+// #include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
-class FamRegion;
-
 //----------------------------------------------------------------------------------------------------------------------
 
-class FamRegionName: public FamName {
-public:  // methods
-    using FamName::FamName;
+FamHashTable::FamHashTable(const FamRegionName& regionName, const std::string& tableName):
+    region_ {regionName.lookup()},
+    begin_ {initSentinel(tableName + "-hash-begin", sizeof(FamDescriptor))},
+    count_ {initSentinel(tableName + "-hash-count", sizeof(size_type))} { }
 
-    ~FamRegionName() = default;
-
-    auto withRegion(const std::string& regionName) -> FamRegionName&;
-
-    auto object(const std::string& objectName) const -> FamObjectName;
-
-    auto lookup() const -> FamRegion;
-
-    auto create(fam::size_t regionSize, fam::perm_t regionPerm, bool overwrite = false) const -> FamRegion;
-
-    auto exists() const -> bool override;
-
-    auto uriBelongs(const URI& uri) const -> bool;
-};
+auto FamHashTable::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject {
+    try {
+        return region_.allocateObject(size, name);
+    } catch (const AlreadyExists&) {
+        auto object = region_.lookupObject(name);
+        ASSERT(object.size() == size);
+        return object;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

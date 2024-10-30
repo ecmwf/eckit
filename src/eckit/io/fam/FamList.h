@@ -20,31 +20,44 @@
 #pragma once
 
 #include "eckit/io/fam/FamListIterator.h"
-#include "eckit/io/fam/FamRegionName.h"
+#include "eckit/io/fam/FamRegion.h"
 
-#include <memory>
-#include <ostream>
+#include <iosfwd>
 #include <string>
 
 namespace eckit {
+
+class FamRegionName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamList {
 public:  // types
+    using size_type      = fam::size_t;
     using iterator       = FamListIterator;
     using const_iterator = FamListConstIterator;
 
+    struct Descriptor {
+        fam::index_t region;  // region ID
+        fam::index_t head;    // offset of head sentinel
+        fam::index_t tail;    // offset of tail sentinel
+        fam::index_t size;    // offset of size sentinel
+    };
+
 public:  // methods
-    FamList(const FamRegion& region, const std::string& name);
+    FamList(const FamRegion& region, const Descriptor& desc);
+
+    FamList(const FamRegion& region, const std::string& listName);
 
     FamList(const FamRegionName& name);
 
     ~FamList();
 
+    auto descriptor() const -> Descriptor;
+
     // capacity
 
-    auto size() const -> fam::size_t;
+    auto size() const -> size_type;
 
     auto empty() const -> bool;
 
@@ -66,19 +79,17 @@ public:  // methods
 
     // modifiers
 
-    void push_back(const void* data, fam::size_t length);
+    // void clear() noexcept;
 
-    void push_front(const void* data, fam::size_t length);
+    void push_back(const void* data, size_type length);
+
+    void push_front(const void* data, size_type length);
 
     void pop_front();
 
     void pop_back();
 
 private:  // methods
-    auto initSentinel(const std::string& name, fam::size_t size) const -> FamObject;
-
-    // auto region() const -> FamRegion& { return region_; }
-
     void print(std::ostream& out) const;
 
     friend std::ostream& operator<<(std::ostream& out, const FamList& list);

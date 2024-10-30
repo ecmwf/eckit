@@ -17,6 +17,7 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/FamObject.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {

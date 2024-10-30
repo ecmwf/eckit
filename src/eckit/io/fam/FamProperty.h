@@ -40,18 +40,19 @@ using FamRegionDescriptor = openfam::Fam_Region_Descriptor;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @note mirrors Fam_Global_Descriptor
-struct FamDescriptor {
-    std::uint64_t region {0};
-    std::uint64_t offset {0};
-};
-
 namespace fam {
 
-using size_t = std::uint64_t;
-using perm_t = mode_t;
+using size_t  = std::uint64_t;
+using perm_t  = mode_t;
+using index_t = std::uint64_t;
 
 }  // namespace fam
+
+/// @note mirrors Fam_Global_Descriptor
+struct FamDescriptor {
+    fam::index_t region {0};
+    fam::index_t offset {0};
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 

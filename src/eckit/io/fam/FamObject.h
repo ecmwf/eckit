@@ -58,9 +58,9 @@ public:  // methods
 
     // properties
 
-    auto regionId() const -> std::uint64_t;
+    auto regionId() const -> fam::index_t;
 
-    auto offset() const -> std::uint64_t;
+    auto offset() const -> fam::index_t;
 
     auto descriptor() const -> FamDescriptor { return {regionId(), offset()}; }
 
@@ -79,7 +79,7 @@ public:  // methods
     void get(void* buffer, fam::size_t offset, fam::size_t length) const;
 
     template<typename T>
-    auto get(const fam::size_t offset) const -> T {
+    auto get(const fam::size_t offset = 0) const -> T {
         auto buffer = T {0};
         get(&buffer, offset, sizeof(T));
         return buffer;

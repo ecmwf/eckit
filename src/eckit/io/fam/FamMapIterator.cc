@@ -13,42 +13,37 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   FamRegionName.h
-/// @author Metin Cakircali
-/// @date   May 2024
+#include "eckit/io/fam/FamMapIterator.h"
 
-#pragma once
+#include "detail/FamMapNode.h"
 
-#include "eckit/io/fam/FamObjectName.h"
-#include "eckit/io/fam/FamProperty.h"
-
-#include <iosfwd>
-#include <string>
+// #include "detail/FamSessionDetail.h"
+// #include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
-class FamRegion;
-
 //----------------------------------------------------------------------------------------------------------------------
 
-class FamRegionName: public FamName {
-public:  // methods
-    using FamName::FamName;
+FamMapIterator::FamMapIterator(const FamRegion& region, const fam::index_t offset):
+    region_ {region}, node_ {region_.proxyObject(offset)} { }
 
-    ~FamRegionName() = default;
+auto FamMapIterator::operator++() -> FamMapIterator& {
+    if (const auto next = FamMapNode::getNext(node_); next.region > 0) {
+        node_.replaceWith(next);
+        list_.reset();
+    }
+    return *this;
+}
 
-    auto withRegion(const std::string& regionName) -> FamRegionName&;
+auto FamMapIterator::operator->() -> pointer {
+    if (list_) { list_ = FamMapNode::getList(region_, node_); }
+    return list_.get();
+}
 
-    auto object(const std::string& objectName) const -> FamObjectName;
-
-    auto lookup() const -> FamRegion;
-
-    auto create(fam::size_t regionSize, fam::perm_t regionPerm, bool overwrite = false) const -> FamRegion;
-
-    auto exists() const -> bool override;
-
-    auto uriBelongs(const URI& uri) const -> bool;
-};
+auto FamMapIterator::operator*() -> reference {
+    if (list_) { list_ = FamMapNode::getList(region_, node_); }
+    return *list_;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

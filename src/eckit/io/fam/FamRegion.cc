@@ -58,7 +58,7 @@ auto FamRegion::exists() const -> bool {
 //----------------------------------------------------------------------------------------------------------------------
 // PROPERTIES
 
-auto FamRegion::index() const -> std::uint64_t {
+auto FamRegion::index() const -> fam::index_t {
     return region_->get_global_descriptor().regionId;
 }
 
@@ -81,7 +81,7 @@ auto FamRegion::property() const -> FamProperty {
 //----------------------------------------------------------------------------------------------------------------------
 // OBJECT factory methods
 
-auto FamRegion::proxyObject(const std::uint64_t offset) const -> FamObject {
+auto FamRegion::proxyObject(const fam::index_t offset) const -> FamObject {
     return session_->proxyObject(index(), offset);
 }
 

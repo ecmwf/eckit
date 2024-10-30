@@ -13,33 +13,43 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   FamNode.h
+/// @file   FamListNode.h
 /// @author Metin Cakircali
 /// @date   Mar 2024
 
 #pragma once
 
-#include "eckit/io/fam/FamObject.h"
-
-#include <cstdint>  // uint8_t
+#include "FamNode.h"
+#include "eckit/io/Buffer.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct FamNode {
-    std::uint8_t  version {1};  // 1 byte
-    FamDescriptor next;
+struct FamListNode: public FamNode {
+    FamDescriptor prev;
+    fam::size_t   length {0};
 
     //------------------------------------------------------------------------------------------------------------------
     // HELPERS (DO NOT add any virtual function here)
 
-    static auto getNext(const FamObject& object) -> FamDescriptor {
-        return object.get<FamDescriptor>(offsetof(FamNode, next));
+    static auto getPrev(const FamObject& object) -> FamDescriptor {
+        return object.get<FamDescriptor>(offsetof(FamListNode, prev));
     }
 
-    static auto getNextOffset(const FamObject& object) -> std::uint64_t {
-        return object.get<std::uint64_t>(offsetof(FamNode, next.offset));
+    static auto getPrevOffset(const FamObject& object) -> std::uint64_t {
+        return object.get<std::uint64_t>(offsetof(FamListNode, prev.offset));
+    }
+
+    static auto getLength(const FamObject& object) -> fam::size_t {
+        return object.get<fam::size_t>(offsetof(FamListNode, length));
+    }
+
+    static void getData(const FamObject& object, Buffer& buffer) {
+        if (const auto length = getLength(object); length > 0) {
+            buffer.resize(length);
+            object.get(buffer.data(), sizeof(FamListNode), length);
+        }
     }
 };
 

@@ -276,6 +276,10 @@ io/fam/FamList.cc
 io/fam/FamList.h
 io/fam/FamListIterator.cc
 io/fam/FamListIterator.h
+io/fam/FamMap.cc
+io/fam/FamMap.h
+io/fam/FamMapIterator.cc
+io/fam/FamMapIterator.h
 io/fam/FamName.cc
 io/fam/FamName.h
 io/fam/FamObject.cc
@@ -1009,4 +1013,3 @@ endif()
 if( eckit_HAVE_ECKIT_GEO )
     add_subdirectory( geo )
 endif()
-

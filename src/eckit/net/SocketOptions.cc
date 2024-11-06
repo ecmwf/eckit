@@ -16,13 +16,9 @@
 namespace eckit::net {
 
 static void init(SocketOptions& opts) {
+
     static std::string bindAddr = Resource<std::string>("localBindingAddress", ""); /* "127.0.0.1" */
-
-    opts.bindAddress(bindAddr);
-
-    static int ListenBacklog = eckit::Resource<int>("socketOptionsListenBacklog", 5);
-
-    opts.listenBacklog(ListenBacklog);
+    static int ListenBacklog = eckit::Resource<int>("socketOptionsListenBacklog", 128);
 
     static bool reusePort  = eckit::Resource<bool>("socketOptionsReusePort", false);
     static bool reuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr", false);
@@ -34,6 +30,8 @@ static void init(SocketOptions& opts) {
     static int receiveBufferSize = eckit::Resource<int>("socketOptionsReceiveBufferSize", 0);
     static int sendBufferSize    = eckit::Resource<int>("socketOptionsSendBufferSize", 0);
 
+    opts.bindAddress(bindAddr);
+    opts.listenBacklog(ListenBacklog);
     opts.reusePort(reusePort);
     opts.reuseAddr(reuseAddr);
     opts.noLinger(noLinger);

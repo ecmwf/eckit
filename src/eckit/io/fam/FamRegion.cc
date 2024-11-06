@@ -15,7 +15,6 @@
 
 #include "eckit/io/fam/FamRegion.h"
 
-#include <cstdint>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -58,7 +57,7 @@ void FamRegion::destroy() const {
 }
 
 auto FamRegion::exists() const -> bool {
-    return (region_->get_desc_status() != openfam::Fam_Descriptor_Status::DESC_INVALID);
+    return (region_->get_desc_status() != FamDescriptorStatus::DESC_INVALID);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -112,16 +111,16 @@ void FamRegion::deallocateObject(const std::string& objectName) const {
 void FamRegion::print(std::ostream& out) const {
     out << "FamRegion[" << property() << ",status=";
     switch (region_->get_desc_status()) {
-        case openfam::Fam_Descriptor_Status::DESC_INVALID:
+        case FamDescriptorStatus::DESC_INVALID:
             out << "invalid";
             break;
-        case openfam::Fam_Descriptor_Status::DESC_INIT_DONE:
+        case FamDescriptorStatus::DESC_INIT_DONE:
             out << "initialized";
             break;
-        case openfam::Fam_Descriptor_Status::DESC_INIT_DONE_BUT_KEY_NOT_VALID:
+        case FamDescriptorStatus::DESC_INIT_DONE_BUT_KEY_NOT_VALID:
             out << "initialized_invalidkey";
             break;
-        case openfam::Fam_Descriptor_Status::DESC_UNINITIALIZED:
+        case FamDescriptorStatus::DESC_UNINITIALIZED:
             out << "uninitialized";
             break;
         default:

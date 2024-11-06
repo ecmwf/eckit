@@ -9,6 +9,7 @@
  */
 
 #include <ostream>
+#include <sys/socket.h>
 
 #include "eckit/config/Resource.h"
 #include "eckit/net/SocketOptions.h"
@@ -18,7 +19,7 @@ namespace eckit::net {
 static void init(SocketOptions& opts) {
 
     static std::string bindAddr = Resource<std::string>("localBindingAddress", ""); /* "127.0.0.1" */
-    static int ListenBacklog = eckit::Resource<int>("socketOptionsListenBacklog", 128);
+    static int ListenBacklog = eckit::Resource<int>("socketOptionsListenBacklog", SOMAXCONN);
 
     static bool reusePort  = eckit::Resource<bool>("socketOptionsReusePort", false);
     static bool reuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr", false);

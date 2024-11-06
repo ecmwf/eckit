@@ -31,6 +31,8 @@
 
 namespace eckit {
 
+using FamDescriptorStatus = openfam::Fam_Descriptor_Status;
+
 //----------------------------------------------------------------------------------------------------------------------
 // SESSION
 

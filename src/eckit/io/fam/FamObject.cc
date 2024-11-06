@@ -66,7 +66,7 @@ void FamObject::deallocate() const {
 }
 
 auto FamObject::exists() const -> bool {
-    return (object_->get_desc_status() != Fam_Descriptor_Status::DESC_INVALID);
+    return (object_->get_desc_status() != FamDescriptorStatus::DESC_INVALID);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -52,7 +52,7 @@ void FamRegion::destroy() const {
 }
 
 auto FamRegion::exists() const -> bool {
-    return (region_->get_desc_status() != Fam_Descriptor_Status::DESC_INVALID);
+    return (region_->get_desc_status() != FamDescriptorStatus::DESC_INVALID);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -106,10 +106,10 @@ void FamRegion::deallocateObject(const std::string& objectName) const {
 void FamRegion::print(std::ostream& out) const {
     out << "FamRegion[" << property() << ",status=";
     switch (region_->get_desc_status()) {
-        case Fam_Descriptor_Status::DESC_INVALID:                     out << "invalid"; break;
-        case Fam_Descriptor_Status::DESC_INIT_DONE:                   out << "initialized"; break;
-        case Fam_Descriptor_Status::DESC_INIT_DONE_BUT_KEY_NOT_VALID: out << "initialized_invalidkey"; break;
-        case Fam_Descriptor_Status::DESC_UNINITIALIZED:               out << "uninitialized"; break;
+        case FamDescriptorStatus::DESC_INVALID:                       out << "invalid"; break;
+        case FamDescriptorStatus::DESC_INIT_DONE:                     out << "initialized"; break;
+        case FamDescriptorStatus::DESC_INIT_DONE_BUT_KEY_NOT_VALID:   out << "initialized_invalidkey"; break;
+        case FamDescriptorStatus::DESC_UNINITIALIZED:                 out << "uninitialized"; break;
         default:                                                      out << "unknown"; break;
     }
     out << "]";

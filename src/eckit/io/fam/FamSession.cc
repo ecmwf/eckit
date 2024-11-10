@@ -36,25 +36,24 @@ FamSession::~FamSession() = default;
 //----------------------------------------------------------------------------------------------------------------------
 
 auto FamSession::get(const FamConfig& config) -> SPtr {
-    ASSERT(!config.sessionName.empty());
 
-    for (auto&& session : registry_) {
+    if (config.sessionName.empty()) { throw SeriousBug("FamSession::get() empty session name", Here()); }
+
+    for (auto& session : registry_) {
         if (session->config() == config) { return session; }
     }
 
-    // not found
-    throw UserError("Couldn't find session: " + config.sessionName);
+    return {};
 }
 
 auto FamSession::getOrAdd(const FamConfig& config) -> SPtr {
-    try {
-        return get(config);
-    } catch (const Exception&) {
-        // add new session
-        auto session = std::make_shared<FamSessionDetail>(config);
-        registry_.emplace_back(session);
-        return session;
-    }
+
+    if (auto session = get(config)) { return session; }
+
+    // add new session
+    auto session = std::make_shared<FamSessionDetail>(config);
+    registry_.emplace_back(session);
+    return session;
 }
 
 void FamSession::remove(const FamConfig& config) {

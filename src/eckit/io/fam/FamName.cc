@@ -15,11 +15,16 @@
 
 #include "eckit/io/fam/FamName.h"
 
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/fam/FamPath.h"
+#include "eckit/io/fam/FamSession.h"
+#include "eckit/net/Endpoint.h"
+#include "eckit/serialisation/Stream.h"
+
 #include <ostream>
 #include <sstream>
-
-#include "eckit/filesystem/URI.h"
-#include "eckit/serialisation/Stream.h"
+#include <string>
+#include <utility>
 
 namespace eckit {
 
@@ -60,10 +65,10 @@ std::ostream& operator<<(std::ostream& out, const FamName& name) {
     return out;
 }
 
-auto operator<<(Stream& stream, const FamName& name) -> Stream& {
-    stream << name.endpoint_;
-    stream << name.path_;
-    return stream;
+auto operator<<(Stream& out, const FamName& name) -> Stream& {
+    out << name.endpoint_;
+    out << name.path_;
+    return out;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

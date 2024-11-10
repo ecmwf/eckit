@@ -15,10 +15,11 @@
 
 #include "eckit/io/fam/FamPath.h"
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
-// #include "eckit/log/Log.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/utils/Tokenizer.h"
+
 #include <uuid/uuid.h>
 
 #include <iostream>

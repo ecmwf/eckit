@@ -21,7 +21,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <ostream>
 #include <string>
 
 #include <fam/fam.h>
@@ -30,6 +29,8 @@
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
+
+#include <iosfwd>
 
 namespace eckit {
 

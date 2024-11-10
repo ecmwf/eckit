@@ -22,31 +22,31 @@
 #include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/log/Log.h"
 
-#include <iostream>
+#include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto FamRegionName::withRegion(const std::string& regionName) -> FamRegionName& {
-    path_.regionName = regionName;
+    path().regionName = regionName;
     return *this;
 }
 
 auto FamRegionName::object(const std::string& objectName) const -> FamObjectName {
-    return {endpoint_, {path_.regionName, objectName}};
+    return {endpoint(), {path().regionName, objectName}};
 }
 
 auto FamRegionName::lookup() const -> FamRegion {
-    return session()->lookupRegion(path_.regionName);
+    return session()->lookupRegion(path().regionName);
 }
 
 auto FamRegionName::create(const fam::size_t regionSize, const fam::perm_t regionPerm, const bool overwrite) const
     -> FamRegion {
     if (overwrite) {
-        return session()->ensureCreateRegion(regionSize, regionPerm, path_.regionName);
+        return session()->ensureCreateRegion(regionSize, regionPerm, path().regionName);
     }
-    return session()->createRegion(regionSize, regionPerm, path_.regionName);
+    return session()->createRegion(regionSize, regionPerm, path().regionName);
 }
 
 auto FamRegionName::exists() const -> bool {
@@ -64,7 +64,7 @@ auto FamRegionName::exists() const -> bool {
 
 auto FamRegionName::uriBelongs(const URI& uri) const -> bool {
     /// @todo check if usage requires nothrow
-    return (uri.endpoint() == endpoint_ && FamPath(uri).regionName == path_.regionName);
+    return (uri.endpoint() == endpoint() && FamPath(uri).regionName == path().regionName);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

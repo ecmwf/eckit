@@ -50,29 +50,36 @@ using index_t = std::uint64_t;
 
 /// @note mirrors Fam_Global_Descriptor
 struct FamDescriptor {
-    fam::index_t region {0};
-    fam::index_t offset {0};
+    fam::index_t region{0};
+    fam::index_t offset{0};
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FamProperty {
+    FamProperty() = default;
+
+    FamProperty(fam::size_t size, fam::perm_t perm, std::string name, std::uint32_t uid, std::uint32_t gid);
+
+    FamProperty(fam::size_t size, fam::perm_t perm, const std::string& name);
+
+    FamProperty(fam::size_t size, fam::perm_t perm);
+
+    FamProperty(fam::size_t size, const std::string& perm);
+
+    void print(std::ostream& out) const;
+
+    auto operator==(const FamProperty& other) const -> bool {
+        return (size == other.size && perm == other.perm && name == other.name && uid == other.uid && gid == other.gid);
+    }
+
+    friend std::ostream& operator<<(std::ostream& out, const FamProperty& prop);
+
     fam::size_t size{0};
     fam::perm_t perm{0640};
     std::string name{""};
-
     std::uint32_t uid{0};
     std::uint32_t gid{0};
-
-    auto operator==(const FamProperty& other) const -> bool {
-        return (size == other.size && perm == other.perm && name == other.name);
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, const FamProperty& prop) {
-        os << "Property[size=" << prop.size << ", perm=" << prop.perm << ",name=" << prop.name << ",uid=" << prop.uid
-           << ",gid=" << prop.gid << "]";
-        return os;
-    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

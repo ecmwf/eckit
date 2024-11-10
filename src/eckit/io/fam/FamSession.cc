@@ -15,10 +15,13 @@
 
 #include "eckit/io/fam/FamSession.h"
 
-#include "eckit/config/LibEcKit.h"
+#include <memory>
+#include <string>
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/FamConfig.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
-#include "eckit/log/Log.h"
+#include "eckit/log/CodeLocation.h"
 
 namespace eckit {
 
@@ -36,28 +39,30 @@ FamSession::~FamSession() = default;
 //----------------------------------------------------------------------------------------------------------------------
 
 auto FamSession::get(const FamConfig& config) -> SPtr {
-    ASSERT(!config.sessionName.empty());
 
-    for (auto&& session : registry_) {
+    if (config.sessionName.empty()) {
+        throw SeriousBug("FamSession::get() empty session name", Here());
+    }
+
+    for (auto& session : registry_) {
         if (session->config() == config) {
             return session;
         }
     }
 
-    // not found
-    throw UserError("Couldn't find session: " + config.sessionName);
+    return {};
 }
 
 auto FamSession::getOrAdd(const FamConfig& config) -> SPtr {
-    try {
-        return get(config);
-    }
-    catch (const Exception&) {
-        // add new session
-        auto session = std::make_shared<FamSessionDetail>(config);
-        registry_.emplace_back(session);
+
+    if (auto session = get(config)) {
         return session;
     }
+
+    // add new session
+    auto session = std::make_shared<FamSessionDetail>(config);
+    registry_.emplace_back(session);
+    return session;
 }
 
 void FamSession::remove(const FamConfig& config) {

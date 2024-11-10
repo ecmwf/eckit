@@ -288,6 +288,7 @@ io/fam/FamObjectName.cc
 io/fam/FamObjectName.h
 io/fam/FamPath.cc
 io/fam/FamPath.h
+io/fam/FamProperty.cc
 io/fam/FamProperty.h
 io/fam/FamRegion.cc
 io/fam/FamRegion.h

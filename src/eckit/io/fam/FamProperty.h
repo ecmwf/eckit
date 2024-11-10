@@ -21,7 +21,7 @@
 
 #include <sys/types.h>  // mode_t
 
-#include <cstdint>  // uint64_t
+#include <cstdint>      // uint64_t
 #include <ostream>
 #include <string>
 
@@ -57,22 +57,29 @@ struct FamDescriptor {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FamProperty {
-    fam::size_t size {0};
-    fam::perm_t perm {0640};
-    std::string name {""};
+    FamProperty() = default;
 
-    std::uint32_t uid {0};
-    std::uint32_t gid {0};
+    FamProperty(fam::size_t size, fam::perm_t perm, std::string name, std::uint32_t uid, std::uint32_t gid);
+
+    FamProperty(fam::size_t size, fam::perm_t perm, const std::string& name);
+
+    FamProperty(fam::size_t size, fam::perm_t perm);
+
+    FamProperty(fam::size_t size, const std::string& perm);
+
+    void print(std::ostream& out) const;
 
     auto operator==(const FamProperty& other) const -> bool {
-        return (size == other.size && perm == other.perm && name == other.name);
+        return (size == other.size && perm == other.perm && name == other.name && uid == other.uid && gid == other.gid);
     }
 
-    friend std::ostream& operator<<(std::ostream& os, const FamProperty& prop) {
-        os << "Property[size=" << prop.size << ", perm=" << prop.perm << ",name=" << prop.name << ",uid=" << prop.uid
-           << ",gid=" << prop.gid << "]";
-        return os;
-    }
+    friend std::ostream& operator<<(std::ostream& out, const FamProperty& prop);
+
+    fam::size_t   size {0};
+    fam::perm_t   perm {0640};
+    std::string   name {""};
+    std::uint32_t uid {0};
+    std::uint32_t gid {0};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

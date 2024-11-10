@@ -26,6 +26,7 @@
 
 #include <fam/fam.h>
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 
@@ -36,7 +37,7 @@ using FamDescriptorStatus = openfam::Fam_Descriptor_Status;
 //----------------------------------------------------------------------------------------------------------------------
 // SESSION
 
-class FamSessionDetail: public std::enable_shared_from_this<FamSessionDetail> {
+class FamSessionDetail : public std::enable_shared_from_this<FamSessionDetail> {
 public:  // methods
     FamSessionDetail(const FamConfig& config);
 
@@ -60,9 +61,7 @@ public:  // methods
     auto lookupRegion(const std::string& regionName) -> FamRegion;
 
     [[nodiscard]]
-    auto createRegion(const fam::size_t  regionSize,
-                      const fam::perm_t  regionPerm,
-                      const std::string& regionName) -> FamRegion;
+    auto createRegion(fam::size_t regionSize, fam::perm_t regionPerm, const std::string& regionName) -> FamRegion;
 
     [[nodiscard]]
     auto createRegion(const FamProperty& property) -> FamRegion {
@@ -76,9 +75,7 @@ public:  // methods
     void destroyRegion(const std::string& regionName);
 
     [[nodiscard]]
-    auto ensureCreateRegion(const fam::size_t  regionSize,
-                            const fam::perm_t  regionPerm,
-                            const std::string& regionName) -> FamRegion;
+    auto ensureCreateRegion(fam::size_t regionSize, fam::perm_t regionPerm, const std::string& regionName) -> FamRegion;
 
     auto stat(FamRegionDescriptor& region) -> FamProperty;
 

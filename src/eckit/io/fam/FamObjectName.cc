@@ -28,25 +28,25 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 auto FamObjectName::withRegion(const std::string& regionName) -> FamObjectName& {
-    path_.regionName = regionName;
+    path().regionName = regionName;
     return *this;
 }
 
 auto FamObjectName::withObject(const std::string& objectName) -> FamObjectName& {
-    path_.objectName = objectName;
+    path().objectName = objectName;
     return *this;
 }
 
 auto FamObjectName::withUUID() -> FamObjectName& {
-    return withObject(path_.generateUUID());
+    return withObject(path().generateUUID());
 }
 
 auto FamObjectName::lookup() const -> FamObject {
-    return session()->lookupObject(path_.regionName, path_.objectName);
+    return session()->lookupObject(path().regionName, path().objectName);
 }
 
 auto FamObjectName::allocate(const fam::size_t objectSize, const bool overwrite) const -> FamObject {
-    return session()->lookupRegion(path_.regionName).allocateObject(objectSize, path_.objectName, overwrite);
+    return session()->lookupRegion(path().regionName).allocateObject(objectSize, path().objectName, overwrite);
 }
 
 auto FamObjectName::exists() const -> bool {

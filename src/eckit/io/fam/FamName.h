@@ -21,6 +21,7 @@
 
 #include "eckit/io/fam/FamPath.h"
 #include "eckit/io/fam/FamSession.h"
+#include "eckit/net/Endpoint.h"
 
 #include <iosfwd>
 #include <string>
@@ -41,6 +42,9 @@ public:  // methods
 
     virtual auto exists() const -> bool = 0;
 
+    /// @todo implement
+    // virtual auto lookup() const -> FamItem = 0;
+
     auto asString() const -> std::string;
 
     auto uri() const -> URI;
@@ -52,13 +56,15 @@ public:  // methods
 protected:  // methods
     auto session() const -> FamSession::SPtr;
 
+    auto path() -> FamPath& { return path_; }
+
     virtual void print(std::ostream& out) const;
 
     friend auto operator<<(std::ostream& out, const FamName& name) -> std::ostream&;
 
-    friend auto operator<<(Stream& stream, const FamName& name) -> Stream&;
+    friend auto operator<<(Stream& out, const FamName& name) -> Stream&;
 
-protected:  // members
+private:  // members
     net::Endpoint endpoint_;
 
     FamPath path_;

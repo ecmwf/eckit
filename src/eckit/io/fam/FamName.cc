@@ -16,21 +16,25 @@
 #include "eckit/io/fam/FamName.h"
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/io/fam/FamPath.h"
+#include "eckit/io/fam/FamSession.h"
+#include "eckit/net/Endpoint.h"
 #include "eckit/serialisation/Stream.h"
 
 #include <ostream>
 #include <sstream>
+#include <string>
+#include <utility>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamName::FamName(const net::Endpoint& endpoint, FamPath path): endpoint_ {endpoint}, path_ {std::move(path)} { }
+FamName::FamName(const net::Endpoint& endpoint, FamPath path) : endpoint_ {endpoint}, path_ {std::move(path)} { }
 
-FamName::FamName(const URI& uri): FamName(uri.endpoint(), uri) { }
+FamName::FamName(const URI& uri) : FamName(uri.endpoint(), uri) { }
 
-FamName::FamName(Stream& stream): endpoint_ {stream}, path_ {stream} { }
+FamName::FamName(Stream& stream) : endpoint_ {stream}, path_ {stream} { }
 
 FamName::~FamName() = default;
 
@@ -61,10 +65,10 @@ std::ostream& operator<<(std::ostream& out, const FamName& name) {
     return out;
 }
 
-auto operator<<(Stream& stream, const FamName& name) -> Stream& {
-    stream << name.endpoint_;
-    stream << name.path_;
-    return stream;
+auto operator<<(Stream& out, const FamName& name) -> Stream& {
+    out << name.endpoint_;
+    out << name.path_;
+    return out;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

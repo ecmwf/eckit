@@ -71,7 +71,7 @@ CASE("FamPath: ctor and uuid generation") {
 CASE("FamRegionName: ctor, lookup, and allocate") {
     const auto regionName = fam::TestFam::makeRandomText("REGION");
 
-    FamRegionName region(fam::testEndpoint, regionName);
+    const FamRegionName region(fam::testEndpoint, regionName);
 
     EXPECT_EQUAL(region.uri().scheme(), FamPath::scheme);
     EXPECT_EQUAL(region.uri().hostport(), fam::testEndpoint);
@@ -102,7 +102,7 @@ CASE("FamObjectName: ctor, lookup, and allocate") {
     // create region
     EXPECT_NO_THROW(FamRegionName(fam::testEndpoint, "").withRegion(path.regionName).create(1024, 0640));
 
-    FamObjectName object(fam::testEndpoint, path);
+    const FamObjectName object(fam::testEndpoint, path);
 
     EXPECT_EQUAL(object.uri().scheme(), FamPath::scheme);
     EXPECT_EQUAL(object.uri().hostport(), fam::testEndpoint);

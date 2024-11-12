@@ -967,6 +967,7 @@ ecbuild_add_library(
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
+              "${LIB_UUID_INCLUDE_DIRS}"
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
@@ -978,6 +979,7 @@ ecbuild_add_library(
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+              "${LIB_UUID_LIBRARIES}"
               $<${HAVE_OPENFAM}:OpenFAM::openfam>
 
           PUBLIC_LIBS

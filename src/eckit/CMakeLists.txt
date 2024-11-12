@@ -981,7 +981,7 @@ ecbuild_add_library(
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
               "${LIB_UUID_LIBRARIES}"
-              $<${HAVE_OPENFAM}:OpenFAM::openfam>
+              $<${HAVE_OPENFAM}:OpenFAM>
 
           PUBLIC_LIBS
               ${CMATH_LIBRARIES}

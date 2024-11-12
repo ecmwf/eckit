@@ -68,7 +68,7 @@ struct ModeIntegral : Mode<int> {
     ModeIntegral(bool disambiguateMax);
     ModeIntegral(const param::MIRParametrisation&);
 
-    virtual ~ModeIntegral() override = default;
+    ~ModeIntegral() override = default;
 
     void operator()(const double& value) override { binCount_[static_cast<int>(std::lround(value))]++; }
     void operator()(const float& value) override { binCount_[static_cast<int>(std::lround(value))]++; }
@@ -90,7 +90,7 @@ struct ModeReal : Mode<size_t> {
     ModeReal(bool disambiguateMax, const std::vector<double>& values = {0, 1}, const std::vector<double>& mins = {0.5});
     ModeReal(const param::MIRParametrisation&);
 
-    virtual ~ModeReal() override = default;
+    ~ModeReal() override = default;
 
     void operator()(const double& value) override {
         size_t bin = 0;

@@ -29,6 +29,7 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathNameFactory.h"
 #include "eckit/filesystem/StdDir.h"
 #include "eckit/io/FileHandle.h"
@@ -148,6 +149,9 @@ static void init() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+LocalPathName::LocalPathName(const PathName& path) :
+    LocalPathName(path.path(), false, true) {}
 
 LocalPathName LocalPathName::baseName(bool ext) const {
     const char* q = path_.c_str();

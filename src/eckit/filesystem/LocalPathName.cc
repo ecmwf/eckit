@@ -415,6 +415,18 @@ void operator>>(Stream& s, LocalPathName& path) {
     s >> path.path_;
 }
 
+LocalPathName operator/(const LocalPathName& p1, const LocalPathName& p2) {
+    bool tildeIsUserHome = false;
+    bool skipTildeExpansion = true;
+    return eckit::LocalPathName(p1.path() + "/" + p2.path(), tildeIsUserHome, skipTildeExpansion);
+}
+
+LocalPathName operator/(const LocalPathName& p1, const char* p2) {
+    bool tildeIsUserHome = false;
+    bool skipTildeExpansion = true;
+    return eckit::LocalPathName(p1.path() + "/" + p2, tildeIsUserHome, skipTildeExpansion);
+}
+
 LocalPathName LocalPathName::fullName() const {
     if (path_.length() > 0 && path_[0] != '/') {
         char buf[PATH_MAX];

@@ -11,6 +11,8 @@
 #include "eckit/config/Resource.h"
 #include "util.h"
 
+#include "eckit/linalg/allocator/InPlaceAllocator.h"
+
 using namespace eckit::linalg;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -72,7 +74,7 @@ CASE("eckit la sparse") {
     }
 
     SECTION("set from triplets with rows in wrong order") {
-        //  (not triggering right now since triplets are sorted)
+        //  (not triggering right now since triplets are expected to be sorted)
         // EXPECT_THROWS_AS( S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed );
     }
 
@@ -191,6 +193,24 @@ CASE("eckit la sparse") {
         Scalar data[4] = {1., 3., 4., 2.};
         SparseMatrix B(G.A);
         EXPECT(equal_sparse_matrix(B.transpose(), outer, inner, data));
+    }
+
+    SECTION("allocator in-place") {
+        SparseMatrix FA(
+            new allocator::InPlaceAllocator(F.A.rows(), F.A.cols(), F.A.nonZeros(), const_cast<Index*>(F.A.outer()),
+                                            const_cast<Index*>(F.A.inner()), const_cast<Scalar*>(F.A.data())));
+
+        EXPECT(F.A.outerIndex() == FA.outerIndex());
+        EXPECT(F.A.inner() == FA.inner());
+        EXPECT(F.A.data() == FA.data());
+
+        SparseMatrix GA(
+            new allocator::InPlaceAllocator(G.A.rows(), G.A.cols(), G.A.nonZeros(), const_cast<Index*>(G.A.outer()),
+                                            const_cast<Index*>(G.A.inner()), const_cast<Scalar*>(G.A.data())));
+
+        EXPECT(G.A.outerIndex() == GA.outerIndex());
+        EXPECT(G.A.inner() == GA.inner());
+        EXPECT(G.A.data() == GA.data());
     }
 }
 

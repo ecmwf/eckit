@@ -11,7 +11,7 @@
 #ifndef eckit_sql_SQLTypes_h
 #define eckit_sql_SQLTypes_h
 
-#include <stdint.h>
+#include <cstdint>
 #include <map>
 #include <string>
 #include <vector>

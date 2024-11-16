@@ -20,9 +20,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <vector>
 
 // http://flex.sourceforge.net/manual/Multiple-Input-Buffers.html#Multiple-Input-Buffers

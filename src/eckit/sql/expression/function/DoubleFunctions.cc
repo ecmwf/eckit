@@ -11,7 +11,7 @@
 
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-#include <float.h>
+#include <cfloat>
 #include <climits>
 #include <cmath>
 

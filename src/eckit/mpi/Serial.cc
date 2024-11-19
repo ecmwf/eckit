@@ -10,7 +10,7 @@
 
 #include "eckit/mpi/Serial.h"
 
-#include <errno.h>
+#include <cerrno>
 #include <unistd.h>
 
 #include <cstring>

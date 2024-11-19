@@ -11,7 +11,7 @@
 #include "eckit/eckit.h"
 
 #include <fcntl.h>
-#include <stdint.h>
+#include <cstdint>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>

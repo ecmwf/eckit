@@ -11,7 +11,7 @@
 #include "eckit/serialisation/Stream.h"
 
 #include <netinet/in.h>
-#include <stdint.h>
+#include <cstdint>
 #include <sys/types.h>
 
 #include <cassert>

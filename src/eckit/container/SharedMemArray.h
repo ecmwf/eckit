@@ -15,7 +15,7 @@
 #ifndef eckit_SharedMemArray_h
 #define eckit_SharedMemArray_h
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/os/Semaphore.h"

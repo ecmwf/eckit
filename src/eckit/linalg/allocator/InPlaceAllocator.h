@@ -9,6 +9,8 @@
  */
 
 
+#pragma once
+
 #include "eckit/linalg/SparseMatrix.h"
 
 

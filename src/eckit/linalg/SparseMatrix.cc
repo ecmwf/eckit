@@ -23,7 +23,8 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/MemoryHandle.h"
-#include "eckit/log/Bytes.h"
+#include "eckit/linalg/allocator/BufferAllocator.h"
+#include "eckit/linalg/allocator/StandardAllocator.h"
 #include "eckit/log/Log.h"
 #include "eckit/memory/MemoryBuffer.h"
 #include "eckit/serialisation/FileStream.h"
@@ -39,64 +40,6 @@ static constexpr bool littleEndian = eckit_LITTLE_ENDIAN != 0;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace detail {
-
-class StandardAllocator : public SparseMatrix::Allocator {
-public:
-    StandardAllocator() : membuff_(0) {}
-
-    SparseMatrix::Layout allocate(SparseMatrix::Shape& shape) override {
-        if (shape.allocSize() > membuff_.size()) {
-            membuff_.resize(shape.allocSize());
-        }
-
-        SparseMatrix::Layout p;
-
-        char* addr = membuff_;
-
-        p.data_  = reinterpret_cast<Scalar*>(addr);
-        p.outer_ = reinterpret_cast<SparseMatrix::UIndex*>(addr + shape.sizeofData());
-        p.inner_ = reinterpret_cast<Index*>(addr + shape.sizeofData() + shape.sizeofOuter());
-
-        return p;
-    }
-
-    void deallocate(SparseMatrix::Layout p, SparseMatrix::Shape) override {}
-    bool inSharedMemory() const override { return false; }
-    void print(std::ostream& out) const override {
-        out << "StandardAllocator[" << Bytes{static_cast<double>(membuff_.size())} << "]";
-    }
-
-    MemoryBuffer membuff_;
-};
-
-
-class BufferAllocator : public SparseMatrix::Allocator {
-public:
-    BufferAllocator(const MemoryBuffer& buffer) : buffer_(buffer, buffer.size()) {}
-
-    SparseMatrix::Layout allocate(SparseMatrix::Shape& shape) override {
-        SparseMatrix::Layout layout;
-
-        SparseMatrix::load(buffer_.data(), buffer_.size(), layout, shape);
-
-        return layout;
-    }
-
-    void deallocate(SparseMatrix::Layout, SparseMatrix::Shape) override {}
-    bool inSharedMemory() const override { return false; }
-    void print(std::ostream& out) const override {
-        out << "BufferAllocator[" << Bytes{static_cast<double>(buffer_.size())} << "]";
-    }
-
-    MemoryBuffer buffer_;
-};
-
-
-}  // namespace detail
-
-//----------------------------------------------------------------------------------------------------------------------
-
 void SparseMatrix::Shape::print(std::ostream& os) const {
     os << "Shape["
        << "nnz=" << size_ << ","
@@ -105,19 +48,19 @@ void SparseMatrix::Shape::print(std::ostream& os) const {
 }
 
 
-SparseMatrix::SparseMatrix(Allocator* alloc) : owner_(alloc != nullptr ? alloc : new detail::StandardAllocator) {
+SparseMatrix::SparseMatrix(Allocator* alloc) : owner_(alloc != nullptr ? alloc : new allocator::StandardAllocator) {
     spm_ = owner_->allocate(shape_);
 }
 
 
 SparseMatrix::SparseMatrix(Size rows, Size cols, Allocator* alloc) :
-    owner_(alloc != nullptr ? alloc : new detail::StandardAllocator) {
+    owner_(alloc != nullptr ? alloc : new allocator::StandardAllocator) {
     reserve(rows, cols, 1);
 }
 
 
 SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& triplets) :
-    owner_(new detail::StandardAllocator) {
+    owner_(new allocator::StandardAllocator) {
 
     // Count number of non-zeros, allocate memory 1 triplet per non-zero
     Size nnz = std::count_if(triplets.begin(), triplets.end(), [](const auto& tri) { return tri.nonZero(); });
@@ -163,17 +106,17 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
 }
 
 
-SparseMatrix::SparseMatrix(Stream& s) : owner_(new detail::StandardAllocator) {
+SparseMatrix::SparseMatrix(Stream& s) : owner_(new allocator::StandardAllocator) {
     decode(s);
 }
 
 
-SparseMatrix::SparseMatrix(const MemoryBuffer& buffer) : owner_(new detail::BufferAllocator(buffer)) {
+SparseMatrix::SparseMatrix(const MemoryBuffer& buffer) : owner_(new allocator::BufferAllocator(buffer)) {
     spm_ = owner_->allocate(shape_);
 }
 
 
-SparseMatrix::SparseMatrix(const SparseMatrix& other) : owner_(new detail::StandardAllocator) {
+SparseMatrix::SparseMatrix(const SparseMatrix& other) : owner_(new allocator::StandardAllocator) {
     if (!other.empty()) {  // in case we copy an other that was constructed empty
 
         reserve(other.rows(), other.cols(), other.nonZeros());
@@ -539,7 +482,7 @@ void SparseMatrix::decode(Stream& s) {
 
     reset();
 
-    owner_ = std::make_unique<detail::StandardAllocator>();
+    owner_ = std::make_unique<allocator::StandardAllocator>();
 
     reserve(rows, cols, nnz);
 

@@ -38,7 +38,7 @@ class bdist_wheel_ext(bdist_wheel):
     # what auditwheel is doing -- in our original compilation, thus address the incompatibility at the root
     def get_tag(self):
         python, abi, plat = bdist_wheel.get_tag(self)
-        return python, abi, "manylinux_2_28"
+        return python, abi, "manylinux_2_28_x86_64"
 
 def plain_setup():
     setup(

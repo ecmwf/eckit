@@ -266,6 +266,41 @@ list(APPEND eckit_message_srcs
     message/Splitter.h
 )
 
+if(HAVE_OPENFAM)
+list(APPEND eckit_io_srcs
+io/fam/detail/FamSessionDetail.cc
+io/fam/FamConfig.h
+io/fam/FamHandle.cc
+io/fam/FamHandle.h
+io/fam/FamList.cc
+io/fam/FamList.h
+io/fam/FamListIterator.cc
+io/fam/FamListIterator.h
+io/fam/FamMap.cc
+io/fam/FamMap.h
+io/fam/FamMapIterator.cc
+io/fam/FamMapIterator.h
+io/fam/FamName.cc
+io/fam/FamName.h
+io/fam/FamObject.cc
+io/fam/FamObject.h
+io/fam/FamObjectName.cc
+io/fam/FamObjectName.h
+io/fam/FamPath.cc
+io/fam/FamPath.h
+io/fam/FamProperty.cc
+io/fam/FamProperty.h
+io/fam/FamRegion.cc
+io/fam/FamRegion.h
+io/fam/FamRegionName.cc
+io/fam/FamRegionName.h
+io/fam/FamSession.cc
+io/fam/FamSession.h
+io/fam/FamURIManager.cc
+io/fam/FamURIManager.h
+)
+endif(HAVE_OPENFAM)
+
 if(HAVE_RADOS)
     list( APPEND eckit_io_srcs
         io/rados/RadosHandle.cc
@@ -933,6 +968,7 @@ ecbuild_add_library(
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
+              "${LIB_UUID_INCLUDE_DIRS}"
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
@@ -944,6 +980,8 @@ ecbuild_add_library(
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+              "${LIB_UUID_LIBRARIES}"
+              $<${HAVE_OPENFAM}:OpenFAM::openfam>
 
           PUBLIC_LIBS
               ${CMATH_LIBRARIES}

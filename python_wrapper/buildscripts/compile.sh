@@ -16,7 +16,7 @@ set -euo pipefail
 
 source $1
 
-mkdir /build && cd /build 
+rm -rf /build && mkdir /build && cd /build 
 /src/ecbuild/bin/ecbuild --prefix=/target/$NAME -- $CMAKE_PARAMS /src/$NAME
 make -j10
 make install

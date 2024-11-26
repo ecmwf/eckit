@@ -29,7 +29,13 @@ ln -s ../AUTHORS $PYPROJECT_DIR
 VERSION=$(cat /src/$NAME/VERSION)
 echo "__version__ = '$VERSION'" > $PYPROJECT_DIR/src/${NAME}libs/__init__.py
 
-PYTHONPATH=/buildscripts NAME=$NAME VERSION=$VERSION uv run --python $PYTHON python -m build --installer uv $PYPROJECT_DIR
+# if there were some dependencies on other libraries from ecmwf stack, we patch the rpath to locate them at runtime
+for e in $(find /target/$NAME/lib64 -name '*.so'); do
+    RPATH_MODIF=$(readelf -d $e | grep RPATH | sed 's/.*\[\(.*\)\]/\1/' | sed 's#/target/\([^/]*\)/lib64#$ORIGIN/../\1libs#g')
+    patchelf --set-rpath "$RPATH_MODIF" $e
+done
+
+PYTHONPATH=/buildscripts NAME=$NAME VERSION=$VERSION uv run --python $PYTHON python -m build --installer uv --wheel $PYPROJECT_DIR
 
 mkdir /build/wheel
-mv dist/*whl /build/wheel
+mv $PYPROJECT_DIR/dist/*whl /build/wheel

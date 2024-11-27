@@ -29,9 +29,10 @@ ln -s ../AUTHORS $PYPROJECT_DIR
 VERSION=$(cat /src/$NAME/VERSION)
 echo "__version__ = '$VERSION'" > $PYPROJECT_DIR/src/${NAME}libs/__init__.py
 
-# if there were some dependencies on other libraries from ecmwf stack, we patch the rpath to locate them at runtime
 for e in $(find /target/$NAME/lib64 -name '*.so'); do
-    RPATH_MODIF=$(readelf -d $e | grep RPATH | sed 's/.*\[\(.*\)\]/\1/' | sed 's#/target/\([^/]*\)/lib64#$ORIGIN/../\1libs#g')
+    # 1/ if there were some dependencies on other libraries from ecmwf stack, we patch the rpath to locate them at runtime
+    # 2/ we change $ORIGIN/../lib64 to just $ORIGIN, for the self-reference within the package
+    RPATH_MODIF=$(readelf -d $e | grep "RPATH\|RUNPATH" | sed 's/.*\[\(.*\)\]/\1/' | sed 's#/target/\([^/]*\)/lib64#$ORIGIN/../\1libs#g' | sed 's#$ORIGIN/../lib64#$ORIGIN#g')
     patchelf --set-rpath "$RPATH_MODIF" $e
 done
 

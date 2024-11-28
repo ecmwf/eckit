@@ -75,6 +75,14 @@ if( eckit_HAVE_MKL )
     list( APPEND eckit_la_plibs "${MKL_LIBRARIES}" )
 endif()
 
+if( eckit_HAVE_TORCH )
+    list( APPEND eckit_la_srcs
+          sparse/LinearAlgebraTorch.cc
+          sparse/LinearAlgebraTorch.h )
+    list( APPEND eckit_la_pincludes torch )
+    list( APPEND eckit_la_plibs torch )
+endif()
+
 if( eckit_HAVE_OMP )
     list( APPEND eckit_la_plibs OpenMP::OpenMP_CXX )
 endif()

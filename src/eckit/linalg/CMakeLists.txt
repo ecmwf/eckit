@@ -83,6 +83,14 @@ if( eckit_HAVE_MKL )
     list( APPEND eckit_la_plibs "${MKL_LIBRARIES}" )
 endif()
 
+if( eckit_HAVE_TORCH )
+    list( APPEND eckit_la_srcs
+          sparse/LinearAlgebraTorch.cc
+          sparse/LinearAlgebraTorch.h )
+    list( APPEND eckit_la_pincludes torch )
+    list( APPEND eckit_la_plibs torch )
+endif()
+
 if( eckit_HAVE_VIENNACL )
     list( APPEND eckit_la_srcs
           dense/LinearAlgebraViennaCL.cc

@@ -159,6 +159,11 @@ ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_openmp
                   CONDITION eckit_HAVE_OMP
                   ARGS      --log_level=message -linearAlgebraSparseBackend openmp )
 
+ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_torch
+                  COMMAND   eckit_test_linalg_sparse_backend
+                  CONDITION eckit_HAVE_TORCH
+                  ARGS      --log_level=message -linearAlgebraSparseBackend torch )
+
 #
 
 ecbuild_add_test( TARGET    eckit_test_linalg_sparse

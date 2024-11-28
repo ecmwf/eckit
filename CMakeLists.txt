@@ -296,6 +296,13 @@ set_package_properties( ViennaCL PROPERTIES
                         TYPE RECOMMENDED
                         PURPOSE "Dense and sparse matrix operations on OpenCL devices" )
 
+### Torch
+
+ecbuild_add_option( FEATURE TORCH
+                    DEFAULT OFF
+                    DESCRIPTION "Torch linear algebra operations"
+                    REQUIRED_PACKAGES Torch )
+
 ### LibRsync
 
 ecbuild_add_option( FEATURE RSYNC

@@ -14,7 +14,7 @@
 #ifndef eckit_container_Cache_h
 #define eckit_container_Cache_h
 
-#include <stdint.h>
+#include <cstdint>
 #include <sys/time.h>
 
 #include <iostream>

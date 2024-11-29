@@ -13,8 +13,8 @@
 
 #include "eckit/eckit.h"
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <map>
 #include <string>

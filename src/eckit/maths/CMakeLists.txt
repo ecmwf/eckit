@@ -24,7 +24,11 @@ ecbuild_add_library(
     PUBLIC_LIBS        eckit
 )
 
-if(HAVE_EIGEN)
+if(eckit_HAVE_EIGEN)
+    if(NOT EIGEN3_INCLUDE_DIRS AND TARGET Eigen3::Eigen)
+        get_target_property(EIGEN3_INCLUDE_DIRS Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+    endif()
+
     # Add include directories with "SYSTEM" to avoid warnings from within Eigen headers
     target_include_directories(eckit_maths SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIRS})
 endif()

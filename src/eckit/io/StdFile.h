@@ -15,7 +15,7 @@
 #ifndef eckit_io_StdFile_h
 #define eckit_io_StdFile_h
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/memory/NonCopyable.h"

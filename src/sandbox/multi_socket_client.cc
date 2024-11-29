@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string.h>
+#include <cstring>
 #include <unistd.h>
 #include <fstream>
 #include <sstream>

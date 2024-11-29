@@ -290,9 +290,6 @@ if( HAVE_RSYNC )
   set( LIBRSYNC_LIBRARIES rsync )
 endif()
 
-ecbuild_add_option( FEATURE SANDBOX
-                    DEFAULT OFF
-                    DESCRIPTION "Sandbox playground for prototyping code that may never see the light of day" )
 
 ### Performance tests
 

@@ -11,7 +11,7 @@
 #ifndef eckit_Exceptions_h
 #define eckit_Exceptions_h
 
-#include <errno.h>
+#include <cerrno>
 #include <iostream>
 #include <sstream>
 

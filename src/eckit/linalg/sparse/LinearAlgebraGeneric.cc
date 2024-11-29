@@ -44,7 +44,7 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
         return;
     }
 
-    const auto* const outer = A.outer();
+    const auto* const outer = A.outerIndex();
     const auto* const inner = A.inner();
     const auto* const val   = A.data();
 
@@ -78,7 +78,7 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
         return;
     }
 
-    const auto* const outer = A.outer();
+    const auto* const outer = A.outerIndex();
     const auto* const inner = A.inner();
     const auto* const val   = A.data();
 

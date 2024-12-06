@@ -9,4 +9,4 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
-docker build -t wheelmaker_2_28:0.1 .
+docker build -t wheelmaker_2_28:0.2 .

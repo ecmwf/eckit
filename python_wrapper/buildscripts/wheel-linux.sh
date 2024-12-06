@@ -13,6 +13,7 @@ set -euo pipefail
 # - $NAME -- name of the project being compiled. Used for /target/$NAME/lib64 where the shared libraries are expected, and for naming the python module `$NAME-libs`
 # - $CMAKE_PARAMS -- ignored
 # - $PYPROJECT_DIR -- where pyproject.toml/setup.py are expected, prefixed with src/$NAME. Param to `python -m build`
+# - $FINDLIBS_DEPENDENCIES -- names of python modules (presumably with dylibs) that this one depends on, to be utilized by `findlibs`
 # additionally:
 # - second param is the target python version, in the x.y format
 # - version, license, authors and readme are expected to be root-located in src/$NAME
@@ -28,11 +29,15 @@ ln -s ../README.md $PYPROJECT_DIR
 ln -s ../AUTHORS $PYPROJECT_DIR
 VERSION=$(cat /src/$NAME/VERSION)
 echo "__version__ = '$VERSION'" > $PYPROJECT_DIR/src/${NAME}libs/__init__.py
+echo "findlibs_dependencies = $FINDLIBS_DEPENDENCIES" >> $PYPROJECT_DIR/src/${NAME}libs/__init__.py
 
 for e in $(find /target/$NAME/lib64 -name '*.so'); do
     # 1/ if there were some dependencies on other libraries from ecmwf stack, we patch the rpath to locate them at runtime
+    # 1a/ we actually dont, we rely on findlibs_dependencies instead
+    # | sed 's#/target/\([^/]*\)/lib64#$ORIGIN/../\1libs#g' 
     # 2/ we change $ORIGIN/../lib64 to just $ORIGIN, for the self-reference within the package
-    RPATH_MODIF=$(readelf -d $e | grep "RPATH\|RUNPATH" | sed 's/.*\[\(.*\)\]/\1/' | sed 's#/target/\([^/]*\)/lib64#$ORIGIN/../\1libs#g' | sed 's#$ORIGIN/../lib64#$ORIGIN#g')
+    # TODO just force the $ORIGIN here universally?
+    RPATH_MODIF=$(readelf -d $e | grep "RPATH\|RUNPATH" | sed 's/.*\[\(.*\)\]/\1/' | sed 's#$ORIGIN/../lib64#$ORIGIN#g')
     patchelf --set-rpath "$RPATH_MODIF" $e
 done
 

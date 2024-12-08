@@ -24,6 +24,7 @@ namespace eckit::stats::comparator {
 class MissingValues : public Comparator {
 public:
     // -- Constructors
+
     using Comparator::Comparator;
 
 private:

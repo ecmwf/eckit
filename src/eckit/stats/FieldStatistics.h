@@ -18,33 +18,30 @@
 
 namespace eckit {
 class JSON;
-}
-
-namespace eckit::param {
-class MIRParametrisation;
-}  // namespace eckit::param
+class Parametrisation;
+}  // namespace eckit
 
 
 namespace eckit::stats {
 
 
-class Field {
+class FieldStatistics {
 public:
     // -- Constructors
 
-    explicit Field(const param::MIRParametrisation&);
+    explicit FieldStatistics(const Parametrisation&);
 
-    Field(const Field&) = delete;
-    Field(Field&&)      = delete;
+    FieldStatistics(const FieldStatistics&) = delete;
+    FieldStatistics(FieldStatistics&&)      = delete;
 
     // -- Destructor
 
-    virtual ~Field();
+    virtual ~FieldStatistics();
 
     // -- Operators
 
-    void operator=(const Field&) = delete;
-    void operator=(Field&&)      = delete;
+    void operator=(const FieldStatistics&) = delete;
+    void operator=(FieldStatistics&&)      = delete;
 
     // -- Methods
 
@@ -63,41 +60,41 @@ protected:
 private:
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& out, const Field& r) {
+    friend std::ostream& operator<<(std::ostream& out, const FieldStatistics& r) {
         r.print(out);
         return out;
     }
 
-    friend eckit::JSON& operator<<(eckit::JSON& out, const Field& r) {
+    friend eckit::JSON& operator<<(eckit::JSON& out, const FieldStatistics& r) {
         r.json(out);
         return out;
     }
 };
 
 
-class FieldFactory {
+class FieldStatisticsFactory {
     std::string name_;
-    virtual Field* make(const param::MIRParametrisation&) = 0;
+    virtual FieldStatistics* make(const Parametrisation&) = 0;
 
-    FieldFactory(const FieldFactory&)            = delete;
-    FieldFactory& operator=(const FieldFactory&) = delete;
+    FieldStatisticsFactory(const FieldStatisticsFactory&)            = delete;
+    FieldStatisticsFactory& operator=(const FieldStatisticsFactory&) = delete;
 
 protected:
-    FieldFactory(const std::string&);
-    virtual ~FieldFactory();
+    FieldStatisticsFactory(const std::string&);
+    virtual ~FieldStatisticsFactory();
 
 public:
     static void list(std::ostream&);
-    static Field* build(const std::string&, const param::MIRParametrisation&);
+    static FieldStatistics* build(const std::string&, const Parametrisation&);
 };
 
 
 template <class T>
-class FieldBuilder : public FieldFactory {
-    Field* make(const param::MIRParametrisation& param) override { return new T(param); }
+class FieldBuilder : public FieldStatisticsFactory {
+    FieldStatistics* make(const Parametrisation& param) override { return new T(param); }
 
 public:
-    FieldBuilder(const std::string& name) : FieldFactory(name) {}
+    FieldBuilder(const std::string& name) : FieldStatisticsFactory(name) {}
 };
 
 

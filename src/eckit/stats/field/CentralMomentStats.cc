@@ -15,7 +15,7 @@
 
 #include "eckit/log/JSON.h"
 
-#include "eckit/stats/Field.h"
+#include "eckit/stats/FieldStatistics.h"
 #include "eckit/stats/detail/CentralMomentsT.h"
 
 

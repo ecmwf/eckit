@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "eckit/stats/Field.h"
+#include "eckit/stats/FieldStatistics.h"
 #include "eckit/stats/detail/Counter.h"
 
 
@@ -21,8 +21,8 @@ namespace eckit::stats::field {
 
 /// Central moment statistics on values (mean, stddev, etc.)
 template <typename STATS>
-struct CentralMomentStatsT : detail::Counter, Field, STATS {
-    CentralMomentStatsT(const param::MIRParametrisation& param) : Counter(param), Field(param) {}
+struct CentralMomentStatsT : detail::Counter, FieldStatistics, STATS {
+    CentralMomentStatsT(const param::MIRParametrisation& param) : Counter(param), FieldStatistics(param) {}
     ~CentralMomentStatsT() override = default;
 
     double value() const override            = 0;

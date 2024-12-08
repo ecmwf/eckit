@@ -17,12 +17,13 @@
 #include <string>
 
 
+namespace eckit {
+class Parametrisation;
+}
+
 namespace mir {
 namespace data {
 class MIRField;
-}
-namespace param {
-class MIRParametrisation;
 }
 }  // namespace mir
 
@@ -34,7 +35,7 @@ class Method {
 public:
     // -- Constructors
 
-    Method(const param::MIRParametrisation&);
+    Method(const Parametrisation&);
     Method(const Method&) = delete;
 
     // -- Destructor
@@ -56,7 +57,7 @@ public:
 protected:
     // -- Members
 
-    const param::MIRParametrisation& parametrisation_;
+    const Parametrisation& parametrisation_;
 
     // -- Methods
 
@@ -74,7 +75,7 @@ protected:
 class MethodFactory {
 private:
     std::string name_;
-    virtual Method* make(const param::MIRParametrisation&) = 0;
+    virtual Method* make(const Parametrisation&) = 0;
 
     MethodFactory(const MethodFactory&)            = delete;
     MethodFactory& operator=(const MethodFactory&) = delete;
@@ -85,14 +86,14 @@ protected:
 
 public:
     static void list(std::ostream&);
-    static Method* build(const std::string&, const param::MIRParametrisation&);
+    static Method* build(const std::string&, const Parametrisation&);
 };
 
 
 template <class T>
 class MethodBuilder : public MethodFactory {
 private:
-    Method* make(const param::MIRParametrisation& param) override { return new T(param); }
+    Method* make(const Parametrisation& param) override { return new T(param); }
 
 public:
     MethodBuilder(const std::string& name) : MethodFactory(name) {}

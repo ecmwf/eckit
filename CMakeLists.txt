@@ -220,6 +220,13 @@ endif()
 set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" CACHE STRING "eckit::geo cache path default" )
 set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
 
+
+### eckit::stats
+
+ecbuild_add_option( FEATURE ECKIT_STATS
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::stats statistics library" )
+
 ### LAPACK
 
 if( eckit_HAVE_MKL )

@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/stats/Field.h"
+#include "eckit/stats/FieldStatistics.h"
 
 #include <cmath>
 #include <map>
@@ -35,10 +35,10 @@ static void init() {
 }
 
 
-Field::Field(const param::MIRParametrisation& /*unused*/) {}
+FieldStatistics::FieldStatistics(const param::MIRParametrisation& /*unused*/) {}
 
 
-void Field::json_tv(eckit::JSON& j, const std::string& type, double value) {
+void FieldStatistics::json_tv(eckit::JSON& j, const std::string& type, double value) {
     j.startObject();
     j << "type" << type;
     if (!std::isnan(value)) {
@@ -48,10 +48,10 @@ void Field::json_tv(eckit::JSON& j, const std::string& type, double value) {
 }
 
 
-Field::~Field() = default;
+FieldStatistics::~FieldStatistics() = default;
 
 
-FieldFactory::FieldFactory(const std::string& name) : name_(name) {
+FieldStatisticsFactory::FieldStatisticsFactory(const std::string& name) : name_(name) {
     util::call_once(once, init);
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
@@ -64,14 +64,14 @@ FieldFactory::FieldFactory(const std::string& name) : name_(name) {
 }
 
 
-FieldFactory::~FieldFactory() {
+FieldStatisticsFactory::~FieldStatisticsFactory() {
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     m->erase(name_);
 }
 
 
-void FieldFactory::list(std::ostream& out) {
+void FieldStatisticsFactory::list(std::ostream& out) {
     util::call_once(once, init);
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
@@ -84,7 +84,7 @@ void FieldFactory::list(std::ostream& out) {
 }
 
 
-Field* FieldFactory::build(const std::string& name, const param::MIRParametrisation& param) {
+FieldStatistics* FieldStatisticsFactory::build(const std::string& name, const param::MIRParametrisation& param) {
     util::call_once(once, init);
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 

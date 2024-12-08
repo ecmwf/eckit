@@ -10,22 +10,22 @@
  */
 
 
-#include "mir/stats/comparator/ComparatorT.h"
+#include "eckit/stats/comparator/ComparatorT.h"
 
 #include <cmath>
 #include <ostream>
 
-#include "mir/data/MIRField.h"
-#include "mir/repres/Iterator.h"
-#include "mir/repres/Representation.h"
-#include "mir/stats/detail/AngleT.h"
-#include "mir/stats/detail/CentralMomentsT.h"
-#include "mir/stats/detail/PNormsT.h"
-#include "mir/stats/detail/ScalarT.h"
-#include "mir/util/Exceptions.h"
+#include "eckit/data/MIRField.h"
+#include "eckit/repres/Iterator.h"
+#include "eckit/repres/Representation.h"
+#include "eckit/stats/detail/AngleT.h"
+#include "eckit/stats/detail/CentralMomentsT.h"
+#include "eckit/stats/detail/PNormsT.h"
+#include "eckit/stats/detail/ScalarT.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::stats::comparator {
+namespace eckit::stats::comparator {
 
 
 template <typename STATS>
@@ -45,8 +45,8 @@ std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data
         repres::RepresentationHandle rep2(field2.representation());
 
         if (!rep1->sameAs(*rep2)) {
-            return "* cannot use latitude limits for different representations (" + rep1->uniqueName() + " and " +
-                   rep2->uniqueName() + ")";
+            return "* cannot use latitude limits for different representations (" + rep1->uniqueName() + " and "
+                   + rep2->uniqueName() + ")";
         }
         ASSERT(rep1->numberOfPoints() == values1.size());
 
@@ -129,4 +129,4 @@ static const ComparatorBuilder<ComparatorT<detail::ScalarT<double>>> __comp5("sc
 static const ComparatorBuilder<ComparatorT<MinMax>> __comp6("min-max");
 
 
-}  // namespace mir::stats::comparator
+}  // namespace eckit::stats::comparator

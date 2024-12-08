@@ -10,20 +10,20 @@
  */
 
 
-#include "mir/stats/Distribution.h"
+#include "eckit/stats/Distribution.h"
 
 #include <sstream>
 
 #include "eckit/parser/YAMLParser.h"
 
-#include "mir/param/SimpleParametrisation.h"
-#include "mir/util/Exceptions.h"
-#include "mir/util/Log.h"
-#include "mir/util/Mutex.h"
-#include "mir/util/ValueMap.h"
+#include "eckit/param/SimpleParametrisation.h"
+#include "eckit/util/Exceptions.h"
+#include "eckit/util/Log.h"
+#include "eckit/util/Mutex.h"
+#include "eckit/util/ValueMap.h"
 
 
-namespace mir::stats {
+namespace eckit::stats {
 
 
 static util::once_flag once;
@@ -103,4 +103,4 @@ void DistributionFactory::list(std::ostream& out) {
 }
 
 
-}  // namespace mir::stats
+}  // namespace eckit::stats

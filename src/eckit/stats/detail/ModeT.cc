@@ -10,14 +10,14 @@
  */
 
 
-#include "mir/stats/detail/ModeT.h"
+#include "eckit/stats/detail/ModeT.h"
 
 #include <ostream>
 
-#include "mir/param/MIRParametrisation.h"
+#include "eckit/param/MIRParametrisation.h"
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 namespace {
 
@@ -165,4 +165,4 @@ void MedianIntegral::print(std::ostream& out) const {
 }
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

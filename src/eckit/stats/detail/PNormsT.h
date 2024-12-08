@@ -17,7 +17,7 @@
 #include <ostream>
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 /**
@@ -67,4 +67,4 @@ public:
 };
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

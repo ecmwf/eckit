@@ -20,19 +20,16 @@ namespace eckit {
 class JSON;
 }
 
-namespace mir::param {
+namespace eckit::param {
 class MIRParametrisation;
-}  // namespace mir::param
+}  // namespace eckit::param
 
 
-namespace mir::stats {
+namespace eckit::stats {
 
 
 class Field {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit Field(const param::MIRParametrisation&);
@@ -43,9 +40,6 @@ public:
     // -- Destructor
 
     virtual ~Field();
-
-    // -- Convertors
-    // None
 
     // -- Operators
 
@@ -58,19 +52,7 @@ public:
     virtual void count(const double&)                        = 0;
     virtual void reset(double missingValue, bool hasMissing) = 0;
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 protected:
-    // -- Members
-    // None
-
     // -- Methods
 
     virtual void json(eckit::JSON&) const   = 0;
@@ -78,31 +60,7 @@ protected:
 
     static void json_tv(eckit::JSON&, const std::string& type, double value);
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const Field& r) {
@@ -143,4 +101,4 @@ public:
 };
 
 
-}  // namespace mir::stats
+}  // namespace eckit::stats

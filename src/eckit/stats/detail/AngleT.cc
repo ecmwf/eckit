@@ -10,10 +10,10 @@
  */
 
 
-#include "mir/stats/detail/AngleT.h"
+#include "eckit/stats/detail/AngleT.h"
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 constexpr double D360 = 360;
@@ -45,4 +45,4 @@ AngleT<double, AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT() :
     rescale_(1.), descale_(1.), globe_(TWO * M_PI), min_(-M_PI) {}
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

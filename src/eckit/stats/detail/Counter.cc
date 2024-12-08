@@ -10,17 +10,17 @@
  */
 
 
-#include "mir/stats/detail/Counter.h"
+#include "eckit/stats/detail/Counter.h"
 
 #include <limits>
 #include <ostream>
 
-#include "mir/data/MIRField.h"
-#include "mir/param/MIRParametrisation.h"
-#include "mir/util/Exceptions.h"
+#include "eckit/data/MIRField.h"
+#include "eckit/param/MIRParametrisation.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 static double get_param(const param::MIRParametrisation& param, const std::string& key, double def) {
@@ -163,4 +163,4 @@ size_t Counter::maxIndex() const {
 }
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

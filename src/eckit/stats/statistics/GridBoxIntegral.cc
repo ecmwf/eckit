@@ -10,17 +10,17 @@
  */
 
 
-#include "mir/stats/statistics/GridBoxIntegral.h"
+#include "eckit/stats/statistics/GridBoxIntegral.h"
 
 #include <limits>
 
-#include "mir/data/MIRField.h"
-#include "mir/repres/Representation.h"
-#include "mir/util/Exceptions.h"
-#include "mir/util/GridBox.h"
+#include "eckit/data/MIRField.h"
+#include "eckit/repres/Representation.h"
+#include "eckit/util/Exceptions.h"
+#include "eckit/util/GridBox.h"
 
 
-namespace mir::stats::statistics {
+namespace eckit::stats::statistics {
 
 
 GridBoxIntegral::GridBoxIntegral(const param::MIRParametrisation& parametrisation) :
@@ -63,4 +63,4 @@ void GridBoxIntegral::print(std::ostream& out) const {
 static const StatisticsBuilder<GridBoxIntegral> __stats("grid-box-integral");
 
 
-}  // namespace mir::stats::statistics
+}  // namespace eckit::stats::statistics

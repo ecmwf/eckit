@@ -17,11 +17,11 @@
 #include <limits>
 #include <ostream>
 
-#include "mir/stats/detail/CentralMomentsT.h"
-#include "mir/util/Exceptions.h"
+#include "eckit/stats/detail/CentralMomentsT.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 enum AngleScale
@@ -108,4 +108,4 @@ template <>
 AngleT<double, AngleScale::RADIAN, AngleSpace::SYMMETRIC>::AngleT::AngleT();
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

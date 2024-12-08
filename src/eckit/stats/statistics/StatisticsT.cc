@@ -10,15 +10,15 @@
  */
 
 
-#include "mir/stats/statistics/StatisticsT.h"
+#include "eckit/stats/statistics/StatisticsT.h"
 
-#include "mir/stats/detail/AngleT.h"
-#include "mir/stats/detail/CentralMomentsT.h"
-#include "mir/stats/detail/PNormsT.h"
-#include "mir/stats/detail/ScalarT.h"
+#include "eckit/stats/detail/AngleT.h"
+#include "eckit/stats/detail/CentralMomentsT.h"
+#include "eckit/stats/detail/PNormsT.h"
+#include "eckit/stats/detail/ScalarT.h"
 
 
-namespace mir::stats::statistics {
+namespace eckit::stats::statistics {
 
 
 struct MinMax {};
@@ -61,4 +61,4 @@ static const StatisticsBuilder<StatisticsT<detail::ScalarT<double>>> __stats7("s
 static const StatisticsBuilder<StatisticsT<MinMax>> __stats8("min-max");
 
 
-}  // namespace mir::stats::statistics
+}  // namespace eckit::stats::statistics

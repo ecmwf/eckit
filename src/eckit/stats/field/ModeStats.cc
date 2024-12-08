@@ -10,16 +10,16 @@
  */
 
 
-#include "mir/stats/field/ModeStats.h"
+#include "eckit/stats/field/ModeStats.h"
 
 #include <ostream>
 
 #include "eckit/log/JSON.h"
 
-#include "mir/stats/detail/ModeT.h"
+#include "eckit/stats/detail/ModeT.h"
 
 
-namespace mir::stats::field {
+namespace eckit::stats::field {
 
 
 struct ModeReal final : ModeStatsT<detail::ModeReal> {
@@ -62,4 +62,4 @@ static const FieldBuilder<MedianIntegral> __builder_4("median-integral");
 static const FieldBuilder<ModeBoolean> __builder_5("median-boolean");  // (alias)
 
 
-}  // namespace mir::stats::field
+}  // namespace eckit::stats::field

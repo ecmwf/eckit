@@ -19,7 +19,7 @@
 #include <ostream>
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 /**
@@ -88,8 +88,8 @@ public:
             const T n    = T(count_ + other.count_);
             const T dx   = other.M1_ - M1_;
             const T dx_n = dx / n;
-            M4_ += other.M4_ + n1 * n2 * (n1 * n1 - n1 * n2 + n2 * n2) * dx_n * dx_n * dx_n * dx +
-                   6. * (n1 * n1 * other.M2_ + n2 * n2 * M2_) * dx_n * dx_n + 4. * (n1 * other.M3_ - n2 * M3_) * dx_n;
+            M4_ += other.M4_ + n1 * n2 * (n1 * n1 - n1 * n2 + n2 * n2) * dx_n * dx_n * dx_n * dx
+                   + 6. * (n1 * n1 * other.M2_ + n2 * n2 * M2_) * dx_n * dx_n + 4. * (n1 * other.M3_ - n2 * M3_) * dx_n;
             M3_ += other.M3_ + n1 * n2 * (n1 - n2) * dx_n * dx_n * dx + 3. * (n1 * other.M2_ - n2 * M2_) * dx_n;
             M2_ += other.M2_ + n1 * n2 * dx_n * dx;
             M1_ += n2 * dx_n;
@@ -108,4 +108,4 @@ public:
 };
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

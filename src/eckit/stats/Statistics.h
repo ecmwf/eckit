@@ -26,14 +26,11 @@ class MIRParametrisation;
 }  // namespace mir
 
 
-namespace mir::stats {
+namespace eckit::stats {
 
 
 class Statistics {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     Statistics(const param::MIRParametrisation&);
@@ -43,9 +40,6 @@ public:
 
     virtual ~Statistics();
 
-    // -- Convertors
-    // None
-
     // -- Operators
 
     void operator=(const Statistics&) = delete;
@@ -53,15 +47,6 @@ public:
     // -- Methods
 
     virtual void execute(const data::MIRField&) = 0;
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 protected:
     // -- Members
@@ -73,31 +58,7 @@ protected:
     /// Output
     virtual void print(std::ostream&) const = 0;
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const Statistics& r) {
@@ -135,4 +96,4 @@ public:
 };
 
 
-}  // namespace mir::stats
+}  // namespace eckit::stats

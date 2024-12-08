@@ -10,13 +10,13 @@
  */
 
 
-#include "mir/stats/detail/CentralMomentsT.h"
+#include "eckit/stats/detail/CentralMomentsT.h"
 
 #include <complex>
 #include <limits>
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 template <>
@@ -35,4 +35,4 @@ std::complex<float> CentralMomentsT<std::complex<float>>::mean() const {
 }
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

@@ -10,16 +10,16 @@
  */
 
 
-#include "mir/stats/distribution/DistributionT.h"
+#include "eckit/stats/distribution/DistributionT.h"
 
 #include <ostream>
 #include <random>
 
-#include "mir/param/MIRParametrisation.h"
-#include "mir/util/Exceptions.h"
+#include "eckit/param/MIRParametrisation.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::stats::distribution {
+namespace eckit::stats::distribution {
 
 
 static const DistributionBuilder<DistributionT<std::bernoulli_distribution>> __random1("bernoulli-distribution");
@@ -337,8 +337,8 @@ std::string DistributionT<std::fisher_f_distribution<double>>::to_string(
 template <>
 std::string DistributionT<std::gamma_distribution<double>>::to_string(
     typename std::gamma_distribution<double>::param_type& param) const {
-    return "gamma-distribution{alpha:" + std::to_string(param.alpha()) + "," + ",beta:" + std::to_string(param.beta()) +
-           "}";
+    return "gamma-distribution{alpha:" + std::to_string(param.alpha()) + "," + ",beta:" + std::to_string(param.beta())
+           + "}";
 }
 
 
@@ -359,32 +359,32 @@ std::string DistributionT<std::lognormal_distribution<double>>::to_string(
 template <>
 std::string DistributionT<std::negative_binomial_distribution<int>>::to_string(
     typename std::negative_binomial_distribution<int>::param_type& param) const {
-    return "negative-binomial-distribution{k:" + std::to_string(param.k()) + "," + ",p:" + std::to_string(param.p()) +
-           "}";
+    return "negative-binomial-distribution{k:" + std::to_string(param.k()) + "," + ",p:" + std::to_string(param.p())
+           + "}";
 }
 
 
 template <>
 std::string DistributionT<std::normal_distribution<double>>::to_string(
     typename std::normal_distribution<double>::param_type& param) const {
-    return "normal-distribution{mean:" + std::to_string(param.mean()) + "," +
-           ",stddev:" + std::to_string(param.stddev()) + "}";
+    return "normal-distribution{mean:" + std::to_string(param.mean()) + ","
+           + ",stddev:" + std::to_string(param.stddev()) + "}";
 }
 
 
 template <>
 std::string DistributionT<std::piecewise_constant_distribution<double>>::to_string(
     typename std::piecewise_constant_distribution<double>::param_type& param) const {
-    return "piecewise-constant-distribution{densities:" + put_vector(param.densities()) + "," +
-           ",intervals:" + put_vector(param.intervals()) + "}";
+    return "piecewise-constant-distribution{densities:" + put_vector(param.densities()) + ","
+           + ",intervals:" + put_vector(param.intervals()) + "}";
 }
 
 
 template <>
 std::string DistributionT<std::piecewise_linear_distribution<double>>::to_string(
     typename std::piecewise_linear_distribution<double>::param_type& param) const {
-    return "piecewise-linear-distribution{densities:" + put_vector(param.densities()) + "," +
-           ",intervals:" + put_vector(param.intervals()) + "}";
+    return "piecewise-linear-distribution{densities:" + put_vector(param.densities()) + ","
+           + ",intervals:" + put_vector(param.intervals()) + "}";
 }
 
 
@@ -423,4 +423,4 @@ std::string DistributionT<std::weibull_distribution<double>>::to_string(
 }
 
 
-}  // namespace mir::stats::distribution
+}  // namespace eckit::stats::distribution

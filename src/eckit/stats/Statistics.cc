@@ -10,17 +10,17 @@
  */
 
 
-#include "mir/stats/Statistics.h"
+#include "eckit/stats/Statistics.h"
 
 #include <map>
 #include <ostream>
 
-#include "mir/util/Exceptions.h"
-#include "mir/util/Log.h"
-#include "mir/util/Mutex.h"
+#include "eckit/util/Exceptions.h"
+#include "eckit/util/Log.h"
+#include "eckit/util/Mutex.h"
 
 
-namespace mir::stats {
+namespace eckit::stats {
 
 
 static util::recursive_mutex* local_mutex           = nullptr;
@@ -87,4 +87,4 @@ Statistics* StatisticsFactory::build(const std::string& name, const param::MIRPa
 }
 
 
-}  // namespace mir::stats
+}  // namespace eckit::stats

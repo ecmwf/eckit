@@ -14,10 +14,10 @@
 
 #include <ostream>
 
-#include "mir/stats/detail/CentralMomentsT.h"
+#include "eckit/stats/detail/CentralMomentsT.h"
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 /// Scalar statistics (composition)
@@ -33,4 +33,4 @@ struct ScalarT : public CentralMomentsT<T> {
 };
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

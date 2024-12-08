@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "mir/stats/detail/Counter.h"
+#include "eckit/stats/detail/Counter.h"
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 /// Counter accounting for missing values, for differences of two MIRFIelds
@@ -82,4 +82,4 @@ public:
 };
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include "mir/stats/Statistics.h"
-#include "mir/stats/detail/Counter.h"
+#include "eckit/stats/Statistics.h"
+#include "eckit/stats/detail/Counter.h"
 
 
-namespace mir::stats::statistics {
+namespace eckit::stats::statistics {
 
 
 /**
@@ -24,21 +24,9 @@ namespace mir::stats::statistics {
  */
 class SimplePackingEntropy : public Statistics, detail::Counter {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     SimplePackingEntropy(const param::MIRParametrisation&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -47,15 +35,6 @@ public:
     double scale() const;
     size_t bucketCount() const;
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
@@ -63,23 +42,11 @@ private:
     double scale_;
     size_t bucketCount_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     void execute(const data::MIRField&) override;
     void print(std::ostream&) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 
-}  // namespace mir::stats::statistics
+}  // namespace eckit::stats::statistics

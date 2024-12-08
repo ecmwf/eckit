@@ -10,19 +10,19 @@
  */
 
 
-#include "mir/stats/comparator/MissingValues.h"
+#include "eckit/stats/comparator/MissingValues.h"
 
 #include <memory>
 #include <ostream>
 #include <sstream>
 
-#include "mir/data/MIRField.h"
-#include "mir/repres/Iterator.h"
-#include "mir/repres/Representation.h"
-#include "mir/util/Exceptions.h"
+#include "eckit/data/MIRField.h"
+#include "eckit/repres/Iterator.h"
+#include "eckit/repres/Representation.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::stats::comparator {
+namespace eckit::stats::comparator {
 
 
 std::string MissingValues::execute(const data::MIRField& field1, const data::MIRField& field2) {
@@ -80,4 +80,4 @@ void MissingValues::print(std::ostream& out) const {
 static const ComparatorBuilder<MissingValues> __stats("missing-values");
 
 
-}  // namespace mir::stats::comparator
+}  // namespace eckit::stats::comparator

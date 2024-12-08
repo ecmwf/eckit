@@ -27,7 +27,7 @@ class MIRParametrisation;
 }  // namespace mir
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 /// Counter accounting for missing values
@@ -85,4 +85,4 @@ public:
 };
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

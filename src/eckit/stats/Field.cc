@@ -10,7 +10,7 @@
  */
 
 
-#include "mir/stats/Field.h"
+#include "eckit/stats/Field.h"
 
 #include <cmath>
 #include <map>
@@ -18,12 +18,12 @@
 
 #include "eckit/log/JSON.h"
 
-#include "mir/util/Exceptions.h"
-#include "mir/util/Log.h"
-#include "mir/util/Mutex.h"
+#include "eckit/util/Exceptions.h"
+#include "eckit/util/Log.h"
+#include "eckit/util/Mutex.h"
 
 
-namespace mir::stats {
+namespace eckit::stats {
 
 
 static util::recursive_mutex* local_mutex      = nullptr;
@@ -100,4 +100,4 @@ Field* FieldFactory::build(const std::string& name, const param::MIRParametrisat
 }
 
 
-}  // namespace mir::stats
+}  // namespace eckit::stats

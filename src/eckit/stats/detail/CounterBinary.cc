@@ -10,7 +10,7 @@
  */
 
 
-#include "mir/stats/detail/CounterBinary.h"
+#include "eckit/stats/detail/CounterBinary.h"
 
 #include <algorithm>
 #include <cmath>
@@ -21,11 +21,11 @@
 
 #include "eckit/types/FloatCompare.h"
 
-#include "mir/param/SameParametrisation.h"
-#include "mir/util/Exceptions.h"
+#include "eckit/param/SameParametrisation.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 CounterBinary::CounterBinary(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
@@ -61,8 +61,8 @@ CounterBinary::CounterBinary(const param::MIRParametrisation& param1, const para
     if (doPackingCompare_) {
         double packingError1 = 0.;
         double packingError2 = 0.;
-        ASSERT(param1.fieldParametrisation().get("packingError", packingError1) ||
-               param2.fieldParametrisation().get("packingError", packingError2));
+        ASSERT(param1.fieldParametrisation().get("packingError", packingError1)
+               || param2.fieldParametrisation().get("packingError", packingError2));
 
         packingError_ *= std::max(packingError1, packingError2);
         ASSERT(packingError_ > 0.);
@@ -288,4 +288,4 @@ size_t CounterBinary::missingIn2NotIn1() const {
 }
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

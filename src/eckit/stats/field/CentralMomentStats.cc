@@ -9,17 +9,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include "mir/stats/field/CentralMomentStats.h"
+#include "eckit/stats/field/CentralMomentStats.h"
 
 #include <ostream>
 
 #include "eckit/log/JSON.h"
 
-#include "mir/stats/Field.h"
-#include "mir/stats/detail/CentralMomentsT.h"
+#include "eckit/stats/Field.h"
+#include "eckit/stats/detail/CentralMomentsT.h"
 
 
-namespace mir::stats::field {
+namespace eckit::stats::field {
 
 
 struct Mean final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
@@ -78,4 +78,4 @@ static const FieldBuilder<StandardDeviation> __builder_5("stddev");
 static const FieldBuilder<Sum> __builder_6("sum");
 
 
-}  // namespace mir::stats::field
+}  // namespace eckit::stats::field

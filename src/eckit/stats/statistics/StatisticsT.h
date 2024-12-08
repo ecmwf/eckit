@@ -14,38 +14,23 @@
 
 #include <ostream>
 
-#include "mir/data/MIRField.h"
-#include "mir/stats/Statistics.h"
-#include "mir/stats/detail/Counter.h"
-#include "mir/util/Exceptions.h"
+#include "eckit/data/MIRField.h"
+#include "eckit/stats/Statistics.h"
+#include "eckit/stats/detail/Counter.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::stats::statistics {
+namespace eckit::stats::statistics {
 
 
 /// Generic statistics on a MIRField
 template <typename STATS>
 class StatisticsT : public Statistics, detail::Counter, STATS {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     StatisticsT(const param::MIRParametrisation& parametrisation) :
         Statistics(parametrisation), Counter(parametrisation) {}
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
@@ -61,19 +46,7 @@ public:
         }
     }
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     void print(std::ostream& out) const override {
@@ -83,16 +56,7 @@ private:
         STATS::print(out);
         out << "]";
     }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 
-}  // namespace mir::stats::statistics
+}  // namespace eckit::stats::statistics

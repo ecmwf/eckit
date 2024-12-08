@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include "mir/stats/Field.h"
-#include "mir/stats/detail/Counter.h"
+#include "eckit/stats/Field.h"
+#include "eckit/stats/detail/Counter.h"
 
 
-namespace mir::stats::field {
+namespace eckit::stats::field {
 
 
 /// Counting statistics on values (min, max, etc.)
@@ -32,4 +32,4 @@ struct CounterStats : detail::Counter, Field {
 };
 
 
-}  // namespace mir::stats::field
+}  // namespace eckit::stats::field

@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include "mir/stats/Field.h"
-#include "mir/stats/detail/Counter.h"
+#include "eckit/stats/Field.h"
+#include "eckit/stats/detail/Counter.h"
 
 
-namespace mir::stats::field {
+namespace eckit::stats::field {
 
 
 /// Mode statistics on values
@@ -41,4 +41,4 @@ struct ModeStatsT : detail::Counter, Field, STATS {
 };
 
 
-}  // namespace mir::stats::field
+}  // namespace eckit::stats::field

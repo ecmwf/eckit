@@ -10,18 +10,18 @@
  */
 
 
-#include "mir/stats/statistics/Spectral.h"
+#include "eckit/stats/statistics/Spectral.h"
 
 #include <cmath>
 #include <limits>
 #include <ostream>
 
-#include "mir/data/MIRField.h"
-#include "mir/repres/sh/SphericalHarmonics.h"
-#include "mir/util/Exceptions.h"
+#include "eckit/data/MIRField.h"
+#include "eckit/repres/sh/SphericalHarmonics.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::stats::statistics {
+namespace eckit::stats::statistics {
 
 
 Spectral::Spectral(const param::MIRParametrisation& parametrisation) : Statistics(parametrisation) {
@@ -107,4 +107,4 @@ void Spectral::print(std::ostream& out) const {
 static const StatisticsBuilder<Spectral> __stats("spectral");
 
 
-}  // namespace mir::stats::statistics
+}  // namespace eckit::stats::statistics

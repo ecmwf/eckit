@@ -15,16 +15,16 @@
 #include <ostream>
 #include <vector>
 
-#include "mir/stats/Method.h"
-#include "mir/stats/detail/Counter.h"
+#include "eckit/stats/Method.h"
+#include "eckit/stats/detail/Counter.h"
 
 
-namespace mir::data {
+namespace eckit::data {
 class MIRField;
-}  // namespace mir::data
+}  // namespace eckit::data
 
 
-namespace mir::stats::method {
+namespace eckit::stats::method {
 
 
 /// Generic statistics on a MIRField
@@ -36,24 +36,9 @@ private:
     using vector_t = std::vector<STATS>;
 
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     MethodT(const param::MIRParametrisation& parametrisation) : Method(parametrisation), Counter(parametrisation) {}
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
-
-    // -- Methods
-    // None
 
     // -- Overridden methods
 
@@ -63,16 +48,7 @@ public:
     void variance(data::MIRField&) const override;
     void stddev(data::MIRField&) const override;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
-    // -- Members
-    // None
-
     // -- Methods
 
     using vector_t::empty;
@@ -85,16 +61,7 @@ private:
         Counter::print(out);
         out << "]";
     }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 
-}  // namespace mir::stats::method
+}  // namespace eckit::stats::method

@@ -17,15 +17,15 @@
 #include <map>
 #include <vector>
 
-#include "mir/util/Exceptions.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::param {
+namespace eckit::param {
 class MIRParametrisation;
-}  // namespace mir::param
+}  // namespace eckit::param
 
 
-namespace mir::stats::detail {
+namespace eckit::stats::detail {
 
 
 /**
@@ -165,4 +165,4 @@ struct MedianIntegral : ModeIntegral {
 };
 
 
-}  // namespace mir::stats::detail
+}  // namespace eckit::stats::detail

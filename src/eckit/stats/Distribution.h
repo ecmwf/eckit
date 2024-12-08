@@ -17,12 +17,12 @@
 #include <string>
 
 
-namespace mir::param {
+namespace eckit::param {
 class MIRParametrisation;
-}  // namespace mir::param
+}  // namespace eckit::param
 
 
-namespace mir::stats {
+namespace eckit::stats {
 
 
 class Distribution {
@@ -36,59 +36,17 @@ public:
 
     virtual ~Distribution();
 
-    // -- Convertors
-    // None
-
     // -- Operators
     Distribution& operator=(const Distribution&) = delete;
     virtual double operator()() const            = 0;
     virtual void reset()                         = 0;
 
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 protected:
-    // -- Members
-    // None
-
     // -- Methods
 
     virtual void print(std::ostream&) const = 0;
 
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
-    // -- Members
-    // NOne
-
-    // -- Methods
-    // None
-
-    // -- Overridden methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& s, const Distribution& p) {
@@ -123,4 +81,4 @@ public:
 };
 
 
-}  // namespace mir::stats
+}  // namespace eckit::stats

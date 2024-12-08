@@ -10,20 +10,20 @@
  */
 
 
-#include "mir/stats/statistics/Integral.h"
+#include "eckit/stats/statistics/Integral.h"
 
 #include <cmath>
 #include <limits>
 
-#include "mir/data/MIRField.h"
-#include "mir/repres/Representation.h"
-#include "mir/util/Angles.h"
-#include "mir/util/Atlas.h"
-#include "mir/util/Exceptions.h"
-#include "mir/util/Types.h"
+#include "eckit/data/MIRField.h"
+#include "eckit/repres/Representation.h"
+#include "eckit/util/Angles.h"
+#include "eckit/util/Atlas.h"
+#include "eckit/util/Exceptions.h"
+#include "eckit/util/Types.h"
 
 
-namespace mir::stats::statistics {
+namespace eckit::stats::statistics {
 
 
 Integral::Integral(const param::MIRParametrisation& parametrisation) :
@@ -86,4 +86,4 @@ void Integral::print(std::ostream& out) const {
 static const StatisticsBuilder<Integral> __stats("integral");
 
 
-}  // namespace mir::stats::statistics
+}  // namespace eckit::stats::statistics

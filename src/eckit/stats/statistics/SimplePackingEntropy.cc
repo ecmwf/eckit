@@ -10,18 +10,18 @@
  */
 
 
-#include "mir/stats/statistics/SimplePackingEntropy.h"
+#include "eckit/stats/statistics/SimplePackingEntropy.h"
 
 #include <algorithm>
 #include <cmath>
 #include <limits>
 
-#include "mir/data/MIRField.h"
-#include "mir/param/MIRParametrisation.h"
-#include "mir/util/Exceptions.h"
+#include "eckit/data/MIRField.h"
+#include "eckit/param/MIRParametrisation.h"
+#include "eckit/util/Exceptions.h"
 
 
-namespace mir::stats::statistics {
+namespace eckit::stats::statistics {
 
 
 SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& parametrisation) :
@@ -118,4 +118,4 @@ void SimplePackingEntropy::print(std::ostream& out) const {
 static const StatisticsBuilder<SimplePackingEntropy> __stats("simple-packing-entropy");
 
 
-}  // namespace mir::stats::statistics
+}  // namespace eckit::stats::statistics

@@ -10,7 +10,7 @@
  */
 
 
-#include "mir/stats/comparator/Spectral.h"
+#include "eckit/stats/comparator/Spectral.h"
 
 #include <cmath>
 #include <limits>
@@ -18,11 +18,11 @@
 #include <ostream>
 #include <sstream>
 
-#include "mir/param/SameParametrisation.h"
-#include "mir/stats/statistics/Spectral.h"
+#include "eckit/param/SameParametrisation.h"
+#include "eckit/stats/statistics/Spectral.h"
 
 
-namespace mir::stats::comparator {
+namespace eckit::stats::comparator {
 
 
 Spectral::Spectral(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
@@ -99,4 +99,4 @@ void Spectral::print(std::ostream& out) const {
 static const ComparatorBuilder<Spectral> __stats("spectral");
 
 
-}  // namespace mir::stats::comparator
+}  // namespace eckit::stats::comparator

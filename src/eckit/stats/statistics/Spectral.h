@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "mir/stats/Statistics.h"
+#include "eckit/stats/Statistics.h"
 
 
-namespace mir::stats::statistics {
+namespace eckit::stats::statistics {
 
 
 /**
@@ -23,9 +23,6 @@ namespace mir::stats::statistics {
  */
 class Spectral : public Statistics {
 public:
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     Spectral(const param::MIRParametrisation&);
@@ -33,12 +30,6 @@ public:
     // -- Destructor
 
     ~Spectral() override;
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -52,12 +43,6 @@ public:
 
     void execute(const data::MIRField&) override;
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 private:
     // -- Members
 
@@ -66,22 +51,10 @@ private:
     double stddev_;
     double enorm_;
 
-    // -- Methods
-    // None
-
     // -- Overridden methods
 
     void print(std::ostream&) const override;
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 
-}  // namespace mir::stats::statistics
+}  // namespace eckit::stats::statistics

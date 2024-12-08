@@ -10,17 +10,17 @@
  */
 
 
-#include "mir/stats/method/MethodT.h"
+#include "eckit/stats/method/MethodT.h"
 
 #include <cmath>
 
-#include "mir/data/MIRField.h"
-#include "mir/stats/detail/AngleT.h"
-#include "mir/stats/detail/CentralMomentsT.h"
-#include "mir/stats/detail/ScalarT.h"
+#include "eckit/data/MIRField.h"
+#include "eckit/stats/detail/AngleT.h"
+#include "eckit/stats/detail/CentralMomentsT.h"
+#include "eckit/stats/detail/ScalarT.h"
 
 
-namespace mir::stats::method {
+namespace eckit::stats::method {
 
 
 template <typename STATS>
@@ -119,4 +119,4 @@ static const MethodBuilder<MethodT<detail::CentralMomentsT<double>>> __stats5("c
 static const MethodBuilder<MethodT<detail::ScalarT<double>>> __stats6("scalar");
 
 
-}  // namespace mir::stats::method
+}  // namespace eckit::stats::method

@@ -10,14 +10,14 @@
  */
 
 
-#include "mir/stats/field/CounterStats.h"
+#include "eckit/stats/field/CounterStats.h"
 
 #include <ostream>
 
 #include "eckit/log/JSON.h"
 
 
-namespace mir::stats::field {
+namespace eckit::stats::field {
 
 
 struct Count final : CounterStats {
@@ -67,4 +67,4 @@ static const FieldBuilder<Maximum> __builder_4("maximum");
 static const FieldBuilder<Minimum> __builder_5("minimum");
 
 
-}  // namespace mir::stats::field
+}  // namespace eckit::stats::field

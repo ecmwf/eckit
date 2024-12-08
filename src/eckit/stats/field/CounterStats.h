@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "eckit/stats/Field.h"
+#include "eckit/stats/FieldStatistics.h"
 #include "eckit/stats/detail/Counter.h"
 
 
@@ -20,8 +20,8 @@ namespace eckit::stats::field {
 
 
 /// Counting statistics on values (min, max, etc.)
-struct CounterStats : detail::Counter, Field {
-    CounterStats(const param::MIRParametrisation& param) : Counter(param), Field(param) {}
+struct CounterStats : detail::Counter, FieldStatistics {
+    CounterStats(const param::MIRParametrisation& param) : Counter(param), FieldStatistics(param) {}
 
     double value() const override            = 0;
     void json(eckit::JSON&) const override   = 0;

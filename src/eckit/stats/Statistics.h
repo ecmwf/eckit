@@ -16,14 +16,13 @@
 #include <string>
 
 
-namespace mir {
-namespace data {
+namespace eckit {
+class Parametrisation;
+}
+
+namespace mir::data {
 class MIRField;
 }
-namespace param {
-class MIRParametrisation;
-}
-}  // namespace mir
 
 
 namespace eckit::stats {
@@ -33,7 +32,7 @@ class Statistics {
 public:
     // -- Constructors
 
-    Statistics(const param::MIRParametrisation&);
+    Statistics(const Parametrisation&);
     Statistics(const Statistics&) = delete;
 
     // -- Destructor
@@ -51,7 +50,7 @@ public:
 protected:
     // -- Members
 
-    const param::MIRParametrisation& parametrisation_;
+    const Parametrisation& parametrisation_;
 
     // -- Methods
 
@@ -71,7 +70,7 @@ private:
 class StatisticsFactory {
 private:
     std::string name_;
-    virtual Statistics* make(const param::MIRParametrisation&) = 0;
+    virtual Statistics* make(const Parametrisation&) = 0;
 
     StatisticsFactory(const StatisticsFactory&)            = delete;
     StatisticsFactory& operator=(const StatisticsFactory&) = delete;
@@ -82,14 +81,14 @@ protected:
 
 public:
     static void list(std::ostream&);
-    static Statistics* build(const std::string&, const param::MIRParametrisation&);
+    static Statistics* build(const std::string&, const Parametrisation&);
 };
 
 
 template <class T>
 class StatisticsBuilder : public StatisticsFactory {
 private:
-    Statistics* make(const param::MIRParametrisation& param) override { return new T(param); }
+    Statistics* make(const Parametrisation& param) override { return new T(param); }
 
 public:
     StatisticsBuilder(const std::string& name) : StatisticsFactory(name) {}

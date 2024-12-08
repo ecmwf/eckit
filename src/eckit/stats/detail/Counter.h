@@ -17,14 +17,13 @@
 #include <limits>
 
 
-namespace mir {
-namespace data {
+namespace eckit {
+class Parametrisation;
+}
+
+namespace mir::data {
 class MIRField;
 }
-namespace param {
-class MIRParametrisation;
-}
-}  // namespace mir
 
 
 namespace eckit::stats::detail {
@@ -60,7 +59,7 @@ public:
     Counter(double missingValue, bool hasMissing, double lowerLimit = std::numeric_limits<double>::quiet_NaN(),
             double upperLimit = std::numeric_limits<double>::quiet_NaN());
 
-    Counter(const param::MIRParametrisation&);
+    Counter(const Parametrisation&);
 
     virtual ~Counter() = default;
 

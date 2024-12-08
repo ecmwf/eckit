@@ -15,9 +15,9 @@
 #include "eckit/stats/Distribution.h"
 
 
-namespace eckit::param {
-class MIRParametrisation;
-}  // namespace eckit::param
+namespace eckit {
+class Parametrisation;
+}  // namespace eckit
 
 
 namespace eckit::stats::distribution {
@@ -28,7 +28,7 @@ class DistributionT : public Distribution {
 public:
     // -- Constructors
 
-    DistributionT(const param::MIRParametrisation&);
+    DistributionT(const Parametrisation&);
 
 protected:
 private:
@@ -38,7 +38,7 @@ private:
 
     // -- Methods
 
-    typename DISTRIBUTION::param_type param(const param::MIRParametrisation&) const;
+    typename DISTRIBUTION::param_type param(const Parametrisation&) const;
     std::string to_string(typename DISTRIBUTION::param_type&) const;
 
     // -- Overridden methods

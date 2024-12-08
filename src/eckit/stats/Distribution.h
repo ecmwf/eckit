@@ -17,9 +17,9 @@
 #include <string>
 
 
-namespace eckit::param {
-class MIRParametrisation;
-}  // namespace eckit::param
+namespace eckit {
+class Parametrisation;
+}
 
 
 namespace eckit::stats {
@@ -37,6 +37,7 @@ public:
     virtual ~Distribution();
 
     // -- Operators
+
     Distribution& operator=(const Distribution&) = delete;
     virtual double operator()() const            = 0;
     virtual void reset()                         = 0;
@@ -57,9 +58,9 @@ private:
 
 
 class DistributionFactory {
-    DistributionFactory(const DistributionFactory&)              = delete;
-    void operator=(const DistributionFactory&)                   = delete;
-    virtual Distribution* make(const param::MIRParametrisation&) = 0;
+    DistributionFactory(const DistributionFactory&)    = delete;
+    void operator=(const DistributionFactory&)         = delete;
+    virtual Distribution* make(const Parametrisation&) = 0;
     const std::string name_;
 
 protected:
@@ -74,7 +75,7 @@ public:
 
 template <class T>
 class DistributionBuilder : public DistributionFactory {
-    Distribution* make(const param::MIRParametrisation& param) override { return new T(param); }
+    Distribution* make(const Parametrisation& param) override { return new T(param); }
 
 public:
     DistributionBuilder(const std::string& name) : DistributionFactory(name) {}

@@ -17,12 +17,12 @@
 #include <map>
 #include <vector>
 
-#include "eckit/util/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 
 
-namespace eckit::param {
-class MIRParametrisation;
-}  // namespace eckit::param
+namespace eckit {
+class Parametrisation;
+}
 
 
 namespace eckit::stats::detail {
@@ -66,7 +66,7 @@ protected:
 
 struct ModeIntegral : Mode<int> {
     ModeIntegral(bool disambiguateMax);
-    ModeIntegral(const param::MIRParametrisation&);
+    ModeIntegral(const Parametrisation&);
 
     ~ModeIntegral() override = default;
 
@@ -88,7 +88,7 @@ struct ModeIntegral : Mode<int> {
 
 struct ModeReal : Mode<size_t> {
     ModeReal(bool disambiguateMax, const std::vector<double>& values = {0, 1}, const std::vector<double>& mins = {0.5});
-    ModeReal(const param::MIRParametrisation&);
+    ModeReal(const Parametrisation&);
 
     ~ModeReal() override = default;
 
@@ -121,7 +121,7 @@ struct ModeReal : Mode<size_t> {
 
 struct ModeBoolean {
     ModeBoolean(bool disambiguateMax, double min = 0.5);
-    ModeBoolean(const param::MIRParametrisation&);
+    ModeBoolean(const Parametrisation&);
 
     void operator()(const double& value) {
         set_ = true;

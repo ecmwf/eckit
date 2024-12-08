@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "eckit/stats/Field.h"
+#include "eckit/stats/FieldStatistics.h"
 #include "eckit/stats/detail/Counter.h"
 
 
@@ -21,8 +21,8 @@ namespace eckit::stats::field {
 
 /// Mode statistics on values
 template <typename STATS>
-struct ModeStatsT : detail::Counter, Field, STATS {
-    ModeStatsT(const param::MIRParametrisation& param) : Counter(param), Field(param), STATS(param) {}
+struct ModeStatsT : detail::Counter, FieldStatistics, STATS {
+    ModeStatsT(const param::MIRParametrisation& param) : Counter(param), FieldStatistics(param), STATS(param) {}
 
     double value() const override            = 0;
     void json(eckit::JSON&) const override   = 0;

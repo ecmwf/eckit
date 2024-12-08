@@ -16,14 +16,13 @@
 #include <string>
 
 
-namespace mir {
-namespace data {
+namespace eckit {
+class Parametrisation;
+}
+
+namespace mir::data {
 class MIRField;
 }
-namespace param {
-class MIRParametrisation;
-}
-}  // namespace mir
 
 
 namespace eckit::stats {
@@ -33,7 +32,7 @@ class Comparator {
 public:
     // -- Constructors
 
-    Comparator(const param::MIRParametrisation&, const param::MIRParametrisation&);
+    Comparator(const Parametrisation&, const Parametrisation&);
     Comparator(const Comparator&) = delete;
 
     // -- Destructor
@@ -51,8 +50,8 @@ public:
 protected:
     // -- Members
 
-    const param::MIRParametrisation& parametrisation1_;
-    const param::MIRParametrisation& parametrisation2_;
+    const Parametrisation& parametrisation1_;
+    const Parametrisation& parametrisation2_;
 
     // -- Methods
 
@@ -70,7 +69,7 @@ private:
 
 class ComparatorFactory {
     std::string name_;
-    virtual Comparator* make(const param::MIRParametrisation&, const param::MIRParametrisation&) = 0;
+    virtual Comparator* make(const Parametrisation&, const Parametrisation&) = 0;
 
     ComparatorFactory(const ComparatorFactory&)            = delete;
     ComparatorFactory& operator=(const ComparatorFactory&) = delete;
@@ -81,13 +80,13 @@ protected:
 
 public:
     static void list(std::ostream&);
-    static Comparator* build(const std::string&, const param::MIRParametrisation&, const param::MIRParametrisation&);
+    static Comparator* build(const std::string&, const Parametrisation&, const Parametrisation&);
 };
 
 
 template <class T>
 class ComparatorBuilder : public ComparatorFactory {
-    Comparator* make(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) override {
+    Comparator* make(const Parametrisation& param1, const Parametrisation& param2) override {
         return new T(param1, param2);
     }
 

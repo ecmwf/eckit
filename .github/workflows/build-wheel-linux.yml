@@ -24,7 +24,7 @@ jobs:
 
     runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
     # TODO which manylinux do we want to build for? 2014? 2_28? 2_34? Matrix?
-    container: wheelmaker_2_28:0.1
+    container: eccr.ecmwf.int/wheelmaker/2_28:latest
 
     name: Build manylinux_2_28
 
@@ -41,7 +41,7 @@ jobs:
           path: /build/wheel/*.whl
 
       # TODO other python versions, once the above is correct.
-      # NOTE if Matrix, then break into (compile & upload) ; (wheel & upload)[matix] steps
+      # NOTE if Matrix, then break into (compile) && (wheel & upload)@[matix] steps
 
   test:
 
@@ -53,7 +53,7 @@ jobs:
 
     name: Test with ${{ matrix.python-version }}
     runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
-    container: wheelmaker_2_28:0.1
+    container: eccr.ecmwf.int/wheelmaker/2_28:latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v4
@@ -61,28 +61,27 @@ jobs:
           name: wheel-manylinux2_28-${{ matrix.python-version }}
       - run: /buildscripts/test-wheel.sh ${{ matrix.python-version }}
 
-# TODO enable and test
-#  deploy:
-#
-#    if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
-#    needs: [test, build]
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        python-version: ["3.11"] # ["3.8", "3.9", "3.10", "3.11", "3.12"] # TODO enable
-#
-#    name: Deploy wheel ${{ matrix.python-version }}
-#    runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
-#    container: wheelmaker_2_28:0.1
-#    steps:
-#      - run: mkdir artifact-${{ matrix.python-version }}
-#      - uses: actions/checkout@v2
-#      - uses: actions/download-artifact@v4
-#        with:
-#          name: wheel-manylinux2_28-${{ matrix.python-version }}
-#          path: artifact-${{ matrix.python-version }}
-#      - run: |
-#      		/buildsripts/upload-twine.sh ${{ matrix.python-version }}
-#        env:
-#          TWINE_USERNAME: __token__
-#          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+  deploy:
+
+    if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
+    needs: [test, build]
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11"] # ["3.8", "3.9", "3.10", "3.11", "3.12"] # TODO enable
+
+    name: Deploy wheel ${{ matrix.python-version }}
+    runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
+    container: eccr.ecmwf.int/wheelmaker/2_28:latest
+    steps:
+      - run: mkdir artifact-${{ matrix.python-version }}
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel-manylinux2_28-${{ matrix.python-version }}
+          path: artifact-${{ matrix.python-version }}
+      - run: |
+      		/buildsripts/upload-twine.sh ${{ matrix.python-version }}
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}

@@ -12,6 +12,7 @@
 
 #include "eckit/stats/method/MethodT.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "eckit/stats/Field.h"
@@ -21,6 +22,12 @@
 
 
 namespace eckit::stats::method {
+
+
+template <typename T>
+inline void eval(T& value, T stat, T missingValue) {
+    value = std::isnan(stat) == 0 ? stat : missingValue;
+}
 
 
 template <typename STATS>
@@ -34,10 +41,9 @@ void MethodT<STATS>::execute(const Field& field) {
     ASSERT(!empty());
     Counter::reset(field);
 
-    ASSERT(field.dimensions() == 1);
-    ASSERT(field.values(0).size() == size());
+    ASSERT(field.values().size() == size());
 
-    auto v = field.values(0).begin();
+    auto v = field.values().begin();
     for (auto& s : *this) {
         const auto& value = *(v++);
         if (Counter::count(value)) {
@@ -45,7 +51,7 @@ void MethodT<STATS>::execute(const Field& field) {
         }
     }
 
-    ASSERT(v == field.values(0).end());
+    ASSERT(v == field.values().end());
 }
 
 
@@ -53,19 +59,17 @@ template <typename STATS>
 void MethodT<STATS>::mean(Field& field) const {
     const auto missingValue = field.missingValue();
 
-    ASSERT(field.dimensions() == 1);
-    ASSERT(field.values(0).size() == size());
+    ASSERT(field.values().size() == size());
 
-    MIRValuesVector statistics(field.values(0).size());
+    Field::values_type statistics(field.values().size());
     auto v = statistics.begin();
 
     for (auto& s : *this) {
-        auto& value = *(v++);
-        auto stat   = s.mean();
-        value       = std::isnan(stat) == 0 ? stat : missingValue;
+        auto stat = s.mean();
+        *(v++)    = std::isnan(stat) == 0 ? stat : missingValue;
     }
 
-    field.update(statistics, 0, true);
+    field.update(statistics);
 }
 
 
@@ -73,18 +77,17 @@ template <typename STATS>
 void MethodT<STATS>::variance(Field& field) const {
     const auto missingValue = field.missingValue();
 
-    ASSERT(field.dimensions() == 1);
-    ASSERT(field.values(0).size() == size());
+    ASSERT(field.values().size() == size());
 
-    MIRValuesVector statistics(field.values(0).size());
+    Field::values_type statistics(field.values().size());
     auto v = statistics.begin();
 
     for (auto& s : *this) {
         auto stat = s.variance();
-        *v        = std::isnan(stat) == 0 ? stat : missingValue;
+        *(v++)    = std::isnan(stat) == 0 ? stat : missingValue;
     }
 
-    field.update(statistics, 0, true);
+    field.update(statistics);
 }
 
 
@@ -92,31 +95,32 @@ template <typename STATS>
 void MethodT<STATS>::stddev(Field& field) const {
     const auto missingValue = field.missingValue();
 
-    ASSERT(field.dimensions() == 1);
-    ASSERT(field.values(0).size() == size());
+    ASSERT(field.values().size() == size());
 
-    MIRValuesVector statistics(field.values(0).size());
+    Field::values_type statistics(field.values().size());
     auto v = statistics.begin();
 
     for (auto& s : *this) {
         auto stat = s.standardDeviation();
-        *v        = std::isnan(stat) == 0 ? stat : missingValue;
+        *(v++)    = std::isnan(stat) == 0 ? stat : missingValue;
     }
 
-    field.update(statistics, 0, true);
+    field.update(statistics);
 }
 
 
-static const MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::ASYMMETRIC>>>
-    __stats1("angle.degree.asymmetric");
-static const MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>
-    __stats2("angle.degree.symmetric");
-static const MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::ASYMMETRIC>>>
-    __stats3("angle.radian.asymmetric");
-static const MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>
-    __stats4("angle.radian.symmetric");
-static const MethodBuilder<MethodT<detail::CentralMomentsT<double>>> __stats5("central-moments");
-static const MethodBuilder<MethodT<detail::ScalarT<double>>> __stats6("scalar");
+static const MethodFactory* __stats[]{
+    new MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::ASYMMETRIC>>>(
+        "angle.degree.asymmetric"),
+    new MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>(
+        "angle.degree.symmetric"),
+    new MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::ASYMMETRIC>>>(
+        "angle.radian.asymmetric"),
+    new MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>(
+        "angle.radian.symmetric"),
+    new MethodBuilder<MethodT<detail::CentralMomentsT<double>>>("central-moments"),
+    new MethodBuilder<MethodT<detail::ScalarT<double>>>("scalar"),
+};
 
 
 }  // namespace eckit::stats::method

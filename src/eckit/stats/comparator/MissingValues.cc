@@ -23,35 +23,30 @@ namespace eckit::stats::comparator {
 
 
 std::string MissingValues::execute(const Field& field1, const Field& field2) {
+    std::ostringstream reasons;
+
     // if neither has missing values, don't check for missing
     if (!field1.hasMissing() && !field2.hasMissing()) {
         return "";
-    }
-
-    if (field1.dimensions() != field2.dimensions()) {
-        return "\n* different dimensions, cannot compare";
     }
 
     // check for when/where missing values are different
     auto missingValue1 = field1.missingValue();
     auto missingValue2 = field2.missingValue();
 
-    std::ostringstream reasons;
-    for (size_t d = 0; d < field1.dimensions(); ++d) {
-        const auto& values1 = field1.values(d);
-        const auto& values2 = field2.values(d);
-        ASSERT(values1.size() == values2.size());
+    const auto& values1 = field1.values();
+    const auto& values2 = field2.values();
+    ASSERT(values1.size() == values2.size());
 
-        for (size_t i = 0; i < values1.size(); ++i) {
-            bool miss1 = values1.at(i) == missingValue1;
-            bool miss2 = values2.at(i) == missingValue2;
+    for (size_t i = 0; i < values1.size(); ++i) {
+        bool miss1 = values1.at(i) == missingValue1;
+        bool miss2 = values2.at(i) == missingValue2;
 
-            if (miss1 != miss2) {
-                reasons << "\n* " << i << '\t' << (miss1 ? "missing" : std::to_string(values1[i])) << '\t'
-                        << (miss2 ? "missing" : std::to_string(values2[i]));
-            }
+        if (miss1 != miss2) {
+            reasons << "\n* " << i << '\t' << (miss1 ? "missing" : std::to_string(values1[i])) << '\t'
+                    << (miss2 ? "missing" : std::to_string(values2[i]));
         }
-    }
+        }
 
     return reasons.str();
 }

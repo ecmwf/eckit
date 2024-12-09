@@ -60,21 +60,18 @@ Spectral::~Spectral() = default;
 
 
 void Spectral::execute(const Field& field) {
-
-    ASSERT(field.dimensions() == 1);
     ASSERT(!field.hasMissing());
 
-    const auto& values = field.values(0);
+    const auto& values = field.values();
     ASSERT(!values.empty());
 
-    auto number_of_complex_coefficients
-        = [](size_t truncation) -> size_t { return (truncation + 1) * (truncation + 2) / 2; };
+    // number of complex coefficients
+    const auto N = values.size() / 2;
+    ASSERT(N * 2 == values.size());
 
-    // set truncation
-    // Note: assumes triangular truncation (from GribInput.cc)
-    const size_t J = field.truncation();
-    const size_t N = number_of_complex_coefficients(J);
-    ASSERT(2 * N == values.size());
+    // truncation (assumes triangular)
+    const auto J = static_cast<size_t>((-3. + std::sqrt(9. + 8. * N)) / 2.);
+    ASSERT((J + 1) * (J + 2) == N);
 
 
     // calculate mean, variance and energy norm

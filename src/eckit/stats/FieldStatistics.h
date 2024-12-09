@@ -90,11 +90,11 @@ public:
 
 
 template <class T>
-class FieldBuilder : public FieldStatisticsFactory {
+class FieldStatisticsBuilder : public FieldStatisticsFactory {
     FieldStatistics* make(const Parametrisation& param) override { return new T(param); }
 
 public:
-    FieldBuilder(const std::string& name) : FieldStatisticsFactory(name) {}
+    FieldStatisticsBuilder(const std::string& name) : FieldStatisticsFactory(name) {}
 };
 
 

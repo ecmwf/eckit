@@ -12,39 +12,73 @@
 
 #include "eckit/stats/Field.h"
 
+#include <algorithm>
+#include <utility>
+
 #include "eckit/exception/Exceptions.h"
 
 
 namespace eckit::stats {
 
 
-size_t Field::dimensions() const {
-    NOTIMP;
+namespace {
+
+
+using values_type = Field::values_type;
+using value_type  = Field::value_type;
+
+
+struct StoreReference : public Field::Storage {
+    StoreReference(values_type& values, value_type missingValue) : values_(values), missingValue_(missingValue) {}
+
+    const values_type& values() const override { return values_; }
+    value_type missingValue() const override { return missingValue_; }
+
+    void update(values_type& values) override { values_ = values; }
+
+    values_type& values_;
+    value_type missingValue_;
+};
+
+
+struct StoreInstance : public Field::Storage {
+    StoreInstance(values_type&& values, value_type missingValue) : values_(values), missingValue_(missingValue) {}
+
+    const values_type& values() const override { return values_; }
+    value_type missingValue() const override { return missingValue_; }
+
+    void update(values_type& values) override { values_ = values; }
+
+    values_type values_;
+    value_type missingValue_;
+};
+
+
+}  // namespace
+
+
+bool Field::Storage::hasMissing() const {
+    const auto miss = missingValue();
+    return std::any_of(values().cbegin(), values().cend(), [miss](auto v) { return v != miss; });
 }
 
 
-const MIRValuesVector& Field::values(size_t which) const {
-    NOTIMP;
+Field::Field(Storage* storage) : storage_(storage) {
+    ASSERT(storage_);
 }
 
 
-void Field::update(MIRValuesVector&, size_t which, bool recomputeHasMissing) {
-    NOTIMP;
+Field::Field(size_t N, value_type missingValue) :
+    storage_{new StoreInstance(values_type(N, missingValue), missingValue)} {}
+
+
+Field Field::make_reference(values_type& values, value_type missingValue) {
+    return {new StoreReference(values, missingValue)};
 }
 
 
-bool Field::hasMissing() const {
-    NOTIMP;
-}
-
-
-double Field::missingValue() const {
-    NOTIMP;
-}
-
-
-size_t Field::truncation() const {
-    NOTIMP;
+Field Field::make_instance(values_type&& values, value_type missingValue) {
+    return {new StoreInstance(std::move(values), missingValue)};
 }
 
 

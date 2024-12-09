@@ -12,26 +12,44 @@
 
 #pragma once
 
-#include <cstddef>
+#include <limits>
+#include <memory>
 #include <vector>
 
 
 namespace eckit::stats {
 
 
-using MIRValuesVector = std::vector<double>;
-
-
 class Field {
 public:
-    size_t dimensions() const;
-    const MIRValuesVector& values(size_t which) const;
-    void update(MIRValuesVector&, size_t which, bool recomputeHasMissing = false);
+    using values_type = std::vector<double>;
+    using value_type  = values_type::value_type;
 
-    bool hasMissing() const;
-    double missingValue() const;
+    struct Storage {
+        virtual ~Storage() = default;
 
-    size_t truncation() const;
+        virtual const values_type& values() const = 0;
+        virtual value_type missingValue() const   = 0;
+        virtual bool hasMissing() const;
+
+        virtual void update(values_type&) = 0;
+    };
+
+private:
+    Field(Storage*);
+    std::unique_ptr<Storage> storage_;
+
+public:
+    explicit Field(size_t N, value_type missingValue = std::numeric_limits<value_type>::quiet_NaN());
+
+    Field make_reference(values_type& values, value_type missingValue = std::numeric_limits<value_type>::quiet_NaN());
+    Field make_instance(values_type&& values, value_type missingValue = std::numeric_limits<value_type>::quiet_NaN());
+
+    const values_type& values() const { return storage_->values(); }
+    value_type missingValue() const { return storage_->missingValue(); }
+    bool hasMissing() const { return storage_->hasMissing(); }
+
+    void update(values_type& values) { storage_->update(values); }
 };
 
 

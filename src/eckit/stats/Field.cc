@@ -43,4 +43,9 @@ double Field::missingValue() const {
 }
 
 
+size_t Field::truncation() const {
+    NOTIMP;
+}
+
+
 }  // namespace eckit::stats

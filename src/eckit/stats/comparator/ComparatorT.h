@@ -14,10 +14,9 @@
 
 #include <iosfwd>
 #include <limits>
-#include <memory>
 #include <string>
 
-#include "eckit/param/SameParametrisation.h"
+#include "eckit/config/Parametrisation.h"
 #include "eckit/stats/Comparator.h"
 #include "eckit/stats/detail/CounterBinary.h"
 
@@ -41,10 +40,8 @@ public:
         CounterBinary(param1, param2),
         ignoreAboveLatitude_(std::numeric_limits<double>::quiet_NaN()),
         ignoreBelowLatitude_(std::numeric_limits<double>::quiet_NaN()) {
-
-        std::unique_ptr<Parametrisation> param(new param::SameParametrisation(param1, param2, false));
-        param->get("ignore-above-latitude", ignoreAboveLatitude_);
-        param->get("ignore-below-latitude", ignoreBelowLatitude_);
+        param1.get("ignore-above-latitude", ignoreAboveLatitude_);
+        param1.get("ignore-below-latitude", ignoreBelowLatitude_);
     }
 
     // -- Overridden methods

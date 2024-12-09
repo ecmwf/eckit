@@ -39,10 +39,6 @@ list( APPEND eckit_stats_srcs
     field/ModeStats.h
     method/MethodT.cc
     method/MethodT.h
-    statistics/GridBoxIntegral.cc
-    statistics/GridBoxIntegral.h
-    statistics/Integral.cc
-    statistics/Integral.h
     statistics/SimplePackingEntropy.cc
     statistics/SimplePackingEntropy.h
     statistics/Spectral.cc

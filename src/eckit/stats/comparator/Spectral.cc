@@ -14,11 +14,10 @@
 
 #include <cmath>
 #include <limits>
-#include <memory>
 #include <ostream>
 #include <sstream>
 
-#include "eckit/param/SameParametrisation.h"
+#include "eckit/config/Parametrisation.h"
 #include "eckit/stats/statistics/Spectral.h"
 
 
@@ -30,10 +29,8 @@ Spectral::Spectral(const Parametrisation& param1, const Parametrisation& param2)
     meanDiffMax_(std::numeric_limits<double>::quiet_NaN()),
     enormDiffMax_(std::numeric_limits<double>::quiet_NaN()) {
     reset();
-
-    std::unique_ptr<Parametrisation> param(new param::SameParametrisation(param1, param2, false));
-    param->get("spectral-mean-difference-max", meanDiffMax_);
-    param->get("spectral-energy-norm-difference-max", enormDiffMax_);
+    param1.get("spectral-mean-difference-max", meanDiffMax_);
+    param1.get("spectral-energy-norm-difference-max", enormDiffMax_);
 }
 
 
@@ -58,7 +55,6 @@ Spectral::~Spectral() = default;
 
 
 std::string Spectral::execute(const Field& field1, const Field& field2) {
-
     statistics::Spectral stats1(parametrisation1_);
     stats1.execute(field1);
 

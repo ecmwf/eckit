@@ -10,18 +10,13 @@
  */
 
 
-#include <map>
 #include <memory>
 #include <ostream>
 #include <vector>
 
-#include "eckit/config/Parametrisation.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/config/YAMLConfiguration.h"
 #include "eckit/log/Log.h"
 #include "eckit/stats/FieldStatistics.h"
-#include "eckit/stats/field/CentralMomentStats.h"
-#include "eckit/stats/field/CounterStats.h"
-#include "eckit/stats/field/ModeStats.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -61,49 +56,6 @@ struct case_t {
 };
 
 
-class SimpleParametrisation : public Parametrisation {
-    template <typename T>
-    bool _get(const std::string& name, T& value, const std::map<std::string, T>& map) const {
-        if (auto it = map.find(name); it != map.end()) {
-            value = it->second;
-            return true;
-        }
-        return false;
-    }
-
-public:
-    SimpleParametrisation() = default;
-
-    bool has(const std::string& name) const override {}
-
-    bool get(const std::string& name, std::string& value) const override { NOTIMP; }
-    bool get(const std::string& name, bool& value) const override { return _get(name, value, mapBool_); }
-    bool get(const std::string& name, int& value) const override { NOTIMP; }
-    bool get(const std::string& name, long& value) const override { NOTIMP; }
-    bool get(const std::string& name, size_t& value) const override { NOTIMP; }
-    bool get(const std::string& name, float& value) const override { NOTIMP; }
-    bool get(const std::string& name, double& value) const override { return _get(name, value, mapDouble_); }
-
-    bool get(const std::string& name, std::vector<int>& value) const override { NOTIMP; }
-    bool get(const std::string& name, std::vector<long>& value) const override { NOTIMP; }
-    bool get(const std::string& name, std::vector<size_t>& value) const override { NOTIMP; }
-    bool get(const std::string& name, std::vector<float>& value) const override { NOTIMP; }
-    bool get(const std::string& name, std::vector<double>& value) const override {
-        return _get(name, value, mapVecDouble_);
-    }
-    bool get(const std::string& name, std::vector<std::string>& value) const override { NOTIMP; }
-
-    void set(const std::string& name, bool value) { mapBool_[name] = value; }
-    void set(const std::string& name, double value) { mapDouble_[name] = value; }
-    void set(const std::string& name, const std::vector<double>& value) { mapVecDouble_[name] = value; }
-
-private:
-    std::map<std::string, bool> mapBool_;
-    std::map<std::string, double> mapDouble_;
-    std::map<std::string, std::vector<double>> mapVecDouble_;
-};
-
-
 CASE("mir::stats::FieldStatistics") {
     using eckit::stats::FieldStatistics;
     using eckit::stats::FieldStatisticsFactory;
@@ -118,8 +70,8 @@ CASE("mir::stats::FieldStatistics") {
 
     SECTION("ModeIntegral") {
         for (auto& c : cases) {
-            SimpleParametrisation param;
-            param.set("mode-disambiguate-max", c.disambiguateMax);
+            YAMLConfiguration param("{mode-disambiguate-max: " + std::string(c.disambiguateMax ? "true" : "false")
+                                    + "}");
 
             std::unique_ptr<FieldStatistics> mode(FieldStatisticsFactory::build("mode-integral", param));
 
@@ -137,8 +89,8 @@ CASE("mir::stats::FieldStatistics") {
 
     SECTION("MedianIntegral") {
         for (auto& c : cases) {
-            SimpleParametrisation param;
-            param.set("mode-disambiguate-max", c.disambiguateMax);
+            YAMLConfiguration param("{mode-disambiguate-max: " + std::string(c.disambiguateMax ? "true" : "false")
+                                    + "}");
 
             std::unique_ptr<FieldStatistics> median(FieldStatisticsFactory::build("median-integral", param));
 
@@ -156,7 +108,8 @@ CASE("mir::stats::FieldStatistics") {
 
     SECTION("Mean") {
         for (auto& c : cases) {
-            SimpleParametrisation param;
+            YAMLConfiguration param("{}");
+
             std::unique_ptr<FieldStatistics> mean(FieldStatisticsFactory::build("mean", param));
             Log::info() << "Test " << c << ':' << std::endl;
 
@@ -175,13 +128,22 @@ CASE("mir::stats::FieldStatistics") {
             const std::vector<double> modeValues{4., 5.};
             const std::vector<double> modeLimits{4.5};
 
-            SimpleParametrisation param;
-            param.set("counter-lower-limit", modeLimits.back());
-            param.set("counter-upper-limit", modeLimits.back());
+            auto vector_to_string = [](const auto& vec) {
+                std::string str;
+                const auto* sep = "[";
+                for (auto d : vec) {
+                    str += sep + std::to_string(d);
+                    sep = ", ";
+                }
+                str += "]";
+                return str;
+            };
 
-            param.set("mode-disambiguate-max", c.disambiguateMax);
-            param.set("mode-real-values", modeValues);
-            param.set("mode-real-min", modeLimits);
+            YAMLConfiguration param("{counter-lower-limit: " + std::to_string(modeLimits.back()) + ","
+                                    "counter-upper-limit: " + std::to_string(modeLimits.back()) + ","
+                                    "mode-disambiguate-max: " + std::string(c.disambiguateMax ? "true" : "false") + ","
+                                    "mode-real-values: " + vector_to_string(modeValues) + ","
+                                    "mode-real-min: " + vector_to_string(modeLimits) + "}");
 
             std::unique_ptr<FieldStatistics> above(FieldStatisticsFactory::build("count-above-upper-limit", param));
             std::unique_ptr<FieldStatistics> below(FieldStatisticsFactory::build("count-below-lower-limit", param));

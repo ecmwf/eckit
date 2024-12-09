@@ -17,8 +17,10 @@
 
 
 namespace eckit {
-class Field;
 class Parametrisation;
+namespace stats {
+class Field;
+}
 }  // namespace eckit
 
 

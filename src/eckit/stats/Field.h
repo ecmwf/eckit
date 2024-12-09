@@ -30,6 +30,8 @@ public:
 
     bool hasMissing() const;
     double missingValue() const;
+
+    size_t truncation() const;
 };
 
 

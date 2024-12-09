@@ -15,9 +15,9 @@
 #include <map>
 #include <ostream>
 
-#include "eckit/util/Exceptions.h"
-#include "eckit/util/Log.h"
-#include "eckit/util/Mutex.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
+#include "eckit/stats/util/Mutex.h"
 
 
 namespace eckit::stats {
@@ -32,7 +32,7 @@ static void init() {
 }
 
 
-Method::Method(const param::MIRParametrisation& parametrisation) : parametrisation_(parametrisation) {}
+Method::Method(const Parametrisation& parametrisation) : parametrisation_(parametrisation) {}
 
 
 Method::~Method() = default;
@@ -43,7 +43,7 @@ MethodFactory::MethodFactory(const std::string& name) : name_(name) {
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     if (m->find(name) != m->end()) {
-        throw exception::SeriousBug("MethodFactory: duplicate '" + name + "'");
+        throw SeriousBug("MethodFactory: duplicate '" + name + "'");
     }
 
     ASSERT(m->find(name) == m->end());
@@ -71,7 +71,7 @@ void MethodFactory::list(std::ostream& out) {
 }
 
 
-Method* MethodFactory::build(const std::string& name, const param::MIRParametrisation& params) {
+Method* MethodFactory::build(const std::string& name, const Parametrisation& params) {
     util::call_once(once, init);
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
@@ -80,7 +80,7 @@ Method* MethodFactory::build(const std::string& name, const param::MIRParametris
     auto j = m->find(name);
     if (j == m->end()) {
         list(Log::error() << "MethodFactory: unknown '" << name << "', choices are:\n");
-        throw exception::SeriousBug("MethodFactory: unknown '" + name + "'");
+        throw SeriousBug("MethodFactory: unknown '" + name + "'");
     }
 
     return j->second->make(params);

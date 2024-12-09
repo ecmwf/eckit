@@ -17,8 +17,8 @@
 #include <limits>
 #include <ostream>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/stats/detail/CentralMomentsT.h"
-#include "eckit/util/Exceptions.h"
 
 
 namespace eckit::stats::detail {

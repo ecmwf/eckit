@@ -25,7 +25,7 @@ struct MinMax {};
 
 
 template <>
-void StatisticsT<MinMax>::execute(const data::MIRField& field) {
+void StatisticsT<MinMax>::execute(const Field& field) {
     Counter::reset(field);
 
     ASSERT(field.dimensions() == 1);

@@ -3,6 +3,8 @@ list( APPEND eckit_stats_srcs
     Comparator.h
     Distribution.cc
     Distribution.h
+    Field.cc
+    Field.h
     FieldStatistics.cc
     FieldStatistics.h
     Method.cc
@@ -47,6 +49,7 @@ list( APPEND eckit_stats_srcs
     statistics/Spectral.h
     statistics/StatisticsT.cc
     statistics/StatisticsT.h
+    util/mutex.h
 )
 
 ecbuild_add_library(

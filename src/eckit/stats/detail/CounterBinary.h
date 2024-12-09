@@ -59,9 +59,9 @@ private:
     bool first_;
 
 public:
-    CounterBinary(const param::MIRParametrisation&, const param::MIRParametrisation&);
+    CounterBinary(const Parametrisation&, const Parametrisation&);
 
-    void reset(const data::MIRField&, const data::MIRField&);
+    void reset(const Field&, const Field&);
     void print(std::ostream&) const;
     bool count(double a, double b, double diff);
     std::string check() const;

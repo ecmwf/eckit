@@ -18,24 +18,24 @@
 
 #include "eckit/log/JSON.h"
 
-#include "eckit/util/Exceptions.h"
-#include "eckit/util/Log.h"
-#include "eckit/util/Mutex.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
+#include "eckit/stats/util/Mutex.h"
 
 
 namespace eckit::stats {
 
 
-static util::recursive_mutex* local_mutex      = nullptr;
-static std::map<std::string, FieldFactory*>* m = nullptr;
+static util::recursive_mutex* local_mutex                = nullptr;
+static std::map<std::string, FieldStatisticsFactory*>* m = nullptr;
 static util::once_flag once;
 static void init() {
     local_mutex = new util::recursive_mutex();
-    m           = new std::map<std::string, FieldFactory*>();
+    m           = new std::map<std::string, FieldStatisticsFactory*>();
 }
 
 
-FieldStatistics::FieldStatistics(const param::MIRParametrisation& /*unused*/) {}
+FieldStatistics::FieldStatistics(const Parametrisation& /*unused*/) {}
 
 
 void FieldStatistics::json_tv(eckit::JSON& j, const std::string& type, double value) {
@@ -56,7 +56,7 @@ FieldStatisticsFactory::FieldStatisticsFactory(const std::string& name) : name_(
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     if (m->find(name) != m->end()) {
-        throw exception::SeriousBug("FieldFactory: duplicate '" + name + "'");
+        throw SeriousBug("FieldStatisticsFactory: duplicate '" + name + "'");
     }
 
     ASSERT(m->find(name) == m->end());
@@ -84,16 +84,16 @@ void FieldStatisticsFactory::list(std::ostream& out) {
 }
 
 
-FieldStatistics* FieldStatisticsFactory::build(const std::string& name, const param::MIRParametrisation& param) {
+FieldStatistics* FieldStatisticsFactory::build(const std::string& name, const Parametrisation& param) {
     util::call_once(once, init);
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
-    Log::debug() << "FieldFactory: looking for '" << name << "'" << std::endl;
+    Log::debug() << "FieldStatisticsFactory: looking for '" << name << "'" << std::endl;
 
     auto j = m->find(name);
     if (j == m->end()) {
-        list(Log::error() << "FieldFactory: unknown '" << name << "', choices are: ");
-        throw exception::SeriousBug("FieldFactory: unknown '" + name + "'");
+        list(Log::error() << "FieldStatisticsFactory: unknown '" << name << "', choices are: ");
+        throw SeriousBug("FieldStatisticsFactory: unknown '" + name + "'");
     }
 
     return j->second->make(param);

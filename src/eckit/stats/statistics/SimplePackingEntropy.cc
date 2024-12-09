@@ -16,15 +16,15 @@
 #include <cmath>
 #include <limits>
 
-#include "eckit/data/MIRField.h"
-#include "eckit/param/MIRParametrisation.h"
-#include "eckit/util/Exceptions.h"
+#include "eckit/config/Parametrisation.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/stats/Field.h"
 
 
 namespace eckit::stats::statistics {
 
 
-SimplePackingEntropy::SimplePackingEntropy(const param::MIRParametrisation& parametrisation) :
+SimplePackingEntropy::SimplePackingEntropy(const Parametrisation& parametrisation) :
     Statistics(parametrisation),
     Counter(parametrisation),
     entropy_(std::numeric_limits<double>::quiet_NaN()),
@@ -66,7 +66,7 @@ size_t SimplePackingEntropy::bucketCount() const {
 }
 
 
-void SimplePackingEntropy::execute(const data::MIRField& field) {
+void SimplePackingEntropy::execute(const Field& field) {
     reset();
 
     ASSERT(field.dimensions() == 1);

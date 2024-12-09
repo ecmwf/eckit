@@ -14,7 +14,7 @@
 
 #include <ostream>
 
-#include "eckit/param/MIRParametrisation.h"
+#include "eckit/config/Parametrisation.h"
 
 
 namespace eckit::stats::detail {
@@ -47,7 +47,7 @@ void mode_values_and_mins_check(const std::vector<double>& values, const std::ve
 }
 
 
-bool mode_disambiguate_max(const param::MIRParametrisation& param) {
+bool mode_disambiguate_max(const Parametrisation& param) {
     bool disambiguateMax = true;
     param.get("mode-disambiguate-max", disambiguateMax);
     return disambiguateMax;
@@ -60,7 +60,7 @@ bool mode_disambiguate_max(const param::MIRParametrisation& param) {
 ModeIntegral::ModeIntegral(bool disambiguateMax) : Mode<int>(disambiguateMax) {}
 
 
-ModeIntegral::ModeIntegral(const param::MIRParametrisation& param) : Mode<int>(mode_disambiguate_max(param)) {}
+ModeIntegral::ModeIntegral(const Parametrisation& param) : Mode<int>(mode_disambiguate_max(param)) {}
 
 
 double ModeIntegral::mode() const {
@@ -81,7 +81,7 @@ ModeReal::ModeReal(bool disambiguateMax, const std::vector<double>& values, cons
 }
 
 
-ModeReal::ModeReal(const param::MIRParametrisation& param) : Mode<size_t>(mode_disambiguate_max(param)) {
+ModeReal::ModeReal(const Parametrisation& param) : Mode<size_t>(mode_disambiguate_max(param)) {
     param.get("mode-real-values", values_);
     param.get("mode-real-min", mins_);
     mode_values_and_mins_check(values_, mins_);
@@ -107,7 +107,7 @@ ModeBoolean::ModeBoolean(bool disambiguateMax, double min) : min_(min), disambig
 }
 
 
-ModeBoolean::ModeBoolean(const param::MIRParametrisation& param) {
+ModeBoolean::ModeBoolean(const Parametrisation& param) {
     reset();
     param.get("mode-disambiguate-max", disambiguateMax_);
     param.get("mode-boolean-min", min_);

@@ -21,14 +21,14 @@
 
 #include "eckit/types/FloatCompare.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/param/SameParametrisation.h"
-#include "eckit/util/Exceptions.h"
 
 
 namespace eckit::stats::detail {
 
 
-CounterBinary::CounterBinary(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
+CounterBinary::CounterBinary(const Parametrisation& param1, const Parametrisation& param2) :
     counter1_(param1),
     counter2_(param2),
     missing_(0),
@@ -42,7 +42,7 @@ CounterBinary::CounterBinary(const param::MIRParametrisation& param1, const para
     maxIndexValue2_(std::numeric_limits<double>::quiet_NaN()),
     first_(true) {
 
-    std::unique_ptr<param::MIRParametrisation> same(new param::SameParametrisation(param1, param2, false));
+    std::unique_ptr<Parametrisation> same(new param::SameParametrisation(param1, param2, false));
     constexpr double nan = std::numeric_limits<double>::quiet_NaN();
 
     same->get("ignore-different-missing-values", ignoreDifferentMissingValues_ = 0);
@@ -74,7 +74,7 @@ CounterBinary::CounterBinary(const param::MIRParametrisation& param1, const para
 }
 
 
-void CounterBinary::reset(const data::MIRField& field1, const data::MIRField& field2) {
+void CounterBinary::reset(const Field& field1, const Field& field2) {
     counter1_.reset(field1);
     counter2_.reset(field2);
 

@@ -19,7 +19,7 @@ namespace eckit::stats::comparator {
 
 
 /**
- * @brief Compare missing values on two MIRFields
+ * @brief Compare missing values on two Fields
  */
 class MissingValues : public Comparator {
 public:
@@ -30,7 +30,7 @@ public:
 private:
     // -- Overridden methods
 
-    std::string execute(const data::MIRField&, const data::MIRField&) override;
+    std::string execute(const Field&, const Field&) override;
     void print(std::ostream&) const override;
 };
 

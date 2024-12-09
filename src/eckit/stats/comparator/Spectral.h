@@ -19,13 +19,13 @@ namespace eckit::stats::comparator {
 
 
 /**
- * @brief Calculate spectral statistics on a MIRField
+ * @brief Calculate spectral statistics on a Field
  */
 class Spectral : public Comparator {
 public:
     // -- Constructors
 
-    Spectral(const param::MIRParametrisation&, const param::MIRParametrisation&);
+    Spectral(const Parametrisation&, const Parametrisation&);
 
     // -- Destructor
 
@@ -49,7 +49,7 @@ private:
 
     // -- Overridden methods
 
-    std::string execute(const data::MIRField&, const data::MIRField&) override;
+    std::string execute(const Field&, const Field&) override;
     void print(std::ostream&) const override;
 };
 

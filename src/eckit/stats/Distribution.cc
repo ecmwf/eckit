@@ -16,10 +16,10 @@
 
 #include "eckit/parser/YAMLParser.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
 #include "eckit/param/SimpleParametrisation.h"
-#include "eckit/util/Exceptions.h"
-#include "eckit/util/Log.h"
-#include "eckit/util/Mutex.h"
+#include "eckit/stats/util/Mutex.h"
 #include "eckit/util/ValueMap.h"
 
 
@@ -48,7 +48,7 @@ DistributionFactory::DistributionFactory(const std::string& name) : name_(name) 
     if (m->find(name) != m->end()) {
         std::ostringstream oss;
         oss << "DistributionFactory: duplicate '" << name << "'";
-        throw exception::SeriousBug(oss.str());
+        throw SeriousBug(oss.str());
     }
 
     (*m)[name] = this;
@@ -75,8 +75,7 @@ Distribution* DistributionFactory::build(const std::string& name) {
 
     Log::debug() << "DistributionFactory: looking for '" << key << "'" << std::endl;
 
-    auto j = m->find(key);
-    if (j == m->end()) {
+    if (auto j = m->find(key); j == m->end()) {
         list(Log::error() << "DistributionFactory: unknown '" << key << "', choices are: ");
         Log::warning() << std::endl;
     }

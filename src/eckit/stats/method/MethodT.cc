@@ -14,7 +14,7 @@
 
 #include <cmath>
 
-#include "eckit/data/MIRField.h"
+#include "eckit/stats/Field.h"
 #include "eckit/stats/detail/AngleT.h"
 #include "eckit/stats/detail/CentralMomentsT.h"
 #include "eckit/stats/detail/ScalarT.h"
@@ -30,7 +30,7 @@ void MethodT<STATS>::resize(size_t N) {
 
 
 template <typename STATS>
-void MethodT<STATS>::execute(const data::MIRField& field) {
+void MethodT<STATS>::execute(const Field& field) {
     ASSERT(!empty());
     Counter::reset(field);
 
@@ -50,7 +50,7 @@ void MethodT<STATS>::execute(const data::MIRField& field) {
 
 
 template <typename STATS>
-void MethodT<STATS>::mean(data::MIRField& field) const {
+void MethodT<STATS>::mean(Field& field) const {
     const auto missingValue = field.missingValue();
 
     ASSERT(field.dimensions() == 1);
@@ -70,7 +70,7 @@ void MethodT<STATS>::mean(data::MIRField& field) const {
 
 
 template <typename STATS>
-void MethodT<STATS>::variance(data::MIRField& field) const {
+void MethodT<STATS>::variance(Field& field) const {
     const auto missingValue = field.missingValue();
 
     ASSERT(field.dimensions() == 1);
@@ -89,7 +89,7 @@ void MethodT<STATS>::variance(data::MIRField& field) const {
 
 
 template <typename STATS>
-void MethodT<STATS>::stddev(data::MIRField& field) const {
+void MethodT<STATS>::stddev(Field& field) const {
     const auto missingValue = field.missingValue();
 
     ASSERT(field.dimensions() == 1);

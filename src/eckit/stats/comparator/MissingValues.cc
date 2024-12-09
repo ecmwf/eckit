@@ -16,16 +16,16 @@
 #include <ostream>
 #include <sstream>
 
-#include "eckit/data/MIRField.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/repres/Iterator.h"
 #include "eckit/repres/Representation.h"
-#include "eckit/util/Exceptions.h"
+#include "eckit/stats/Field.h"
 
 
 namespace eckit::stats::comparator {
 
 
-std::string MissingValues::execute(const data::MIRField& field1, const data::MIRField& field2) {
+std::string MissingValues::execute(const Field& field1, const Field& field2) {
 
 
     // if neither has missing values, don't check for missing

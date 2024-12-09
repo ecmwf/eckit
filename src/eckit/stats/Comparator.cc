@@ -15,9 +15,9 @@
 #include <map>
 #include <ostream>
 
-#include "eckit/util/Exceptions.h"
-#include "eckit/util/Log.h"
-#include "eckit/util/Mutex.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
+#include "eckit/stats/util/Mutex.h"
 
 
 namespace eckit::stats {
@@ -32,7 +32,7 @@ static void init() {
 }
 
 
-Comparator::Comparator(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
+Comparator::Comparator(const Parametrisation& param1, const Parametrisation& param2) :
     parametrisation1_(param1), parametrisation2_(param2) {}
 
 
@@ -44,7 +44,7 @@ ComparatorFactory::ComparatorFactory(const std::string& name) : name_(name) {
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     if (m->find(name) != m->end()) {
-        throw exception::SeriousBug("ComparatorFactory: duplicate '" + name + "'");
+        throw SeriousBug("ComparatorFactory: duplicate '" + name + "'");
     }
 
     ASSERT(m->find(name) == m->end());
@@ -72,8 +72,8 @@ void ComparatorFactory::list(std::ostream& out) {
 }
 
 
-Comparator* ComparatorFactory::build(const std::string& name, const param::MIRParametrisation& param1,
-                                     const param::MIRParametrisation& param2) {
+Comparator* ComparatorFactory::build(const std::string& name, const Parametrisation& param1,
+                                     const Parametrisation& param2) {
     util::call_once(once, init);
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
@@ -82,7 +82,7 @@ Comparator* ComparatorFactory::build(const std::string& name, const param::MIRPa
     auto j = m->find(name);
     if (j == m->end()) {
         list(Log::error() << "ComparatorFactory: unknown '" << name << "', choices are: ");
-        throw exception::SeriousBug("ComparatorFactory: unknown '" + name + "'");
+        throw SeriousBug("ComparatorFactory: unknown '" + name + "'");
     }
 
     return j->second->make(param1, param2);

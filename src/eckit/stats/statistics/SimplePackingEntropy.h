@@ -20,13 +20,13 @@ namespace eckit::stats::statistics {
 
 
 /**
- * @brief Calculate entropy statistics on a MIRField
+ * @brief Calculate entropy statistics on a Field
  */
 class SimplePackingEntropy : public Statistics, detail::Counter {
 public:
     // -- Constructors
 
-    SimplePackingEntropy(const param::MIRParametrisation&);
+    SimplePackingEntropy(const Parametrisation&);
 
     // -- Methods
 
@@ -44,7 +44,7 @@ private:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField&) override;
+    void execute(const Field&) override;
     void print(std::ostream&) const override;
 };
 

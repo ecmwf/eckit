@@ -15,8 +15,8 @@
 #include <ostream>
 #include <random>
 
-#include "eckit/param/MIRParametrisation.h"
-#include "eckit/util/Exceptions.h"
+#include "eckit/config/Parametrisation.h"
+#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit::stats::distribution {
@@ -58,7 +58,7 @@ namespace {
 
 
 template <typename T>
-T get_value(const param::MIRParametrisation& param, const std::string& key, T value) {
+T get_value(const Parametrisation& param, const std::string& key, T value) {
     param.get(key, value);
     return value;
 }
@@ -80,7 +80,7 @@ std::string put_vector(const std::vector<T>& v) {
 
 
 template <typename DISTRIBUTION>
-DistributionT<DISTRIBUTION>::DistributionT(const param::MIRParametrisation& parametrisation) {
+DistributionT<DISTRIBUTION>::DistributionT(const Parametrisation& parametrisation) {
     auto p = param(parametrisation);
     distribution_.param(p);
 }
@@ -111,43 +111,42 @@ void DistributionT<DISTRIBUTION>::print(std::ostream& out) const {
 
 
 template <typename DISTRIBUTION>
-typename DISTRIBUTION::param_type DistributionT<DISTRIBUTION>::param(
-    const param::MIRParametrisation& /*unused*/) const {
+typename DISTRIBUTION::param_type DistributionT<DISTRIBUTION>::param(const Parametrisation& /*unused*/) const {
     NOTIMP;  // ensure specialisation
 }
 
 
 template <>
 std::bernoulli_distribution::param_type DistributionT<std::bernoulli_distribution>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::bernoulli_distribution::param_type(get_value(p, "p", 0.5));
 }
 
 
 template <>
 std::binomial_distribution<int>::param_type DistributionT<std::binomial_distribution<int>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::binomial_distribution<int>::param_type(get_value(p, "t", 1), get_value(p, "p", 0.5));
 }
 
 
 template <>
 std::cauchy_distribution<double>::param_type DistributionT<std::cauchy_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::cauchy_distribution<double>::param_type(get_value(p, "a", 0.), get_value(p, "b", 1.));
 }
 
 
 template <>
 std::chi_squared_distribution<double>::param_type DistributionT<std::chi_squared_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::chi_squared_distribution<double>::param_type(get_value(p, "n", 1.));
 }
 
 
 template <>
 std::discrete_distribution<int>::param_type DistributionT<std::discrete_distribution<int>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     std::vector<double> d;
     p.get("probabilities", d);
     ASSERT(!d.empty());
@@ -157,63 +156,63 @@ std::discrete_distribution<int>::param_type DistributionT<std::discrete_distribu
 
 template <>
 std::exponential_distribution<double>::param_type DistributionT<std::exponential_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::exponential_distribution<double>::param_type(get_value(p, "lambda", 1.));
 }
 
 
 template <>
 std::extreme_value_distribution<double>::param_type DistributionT<std::extreme_value_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::extreme_value_distribution<double>::param_type(get_value(p, "a", 0.), get_value(p, "b", 1.));
 }
 
 
 template <>
 std::fisher_f_distribution<double>::param_type DistributionT<std::fisher_f_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::fisher_f_distribution<double>::param_type(get_value(p, "m", 1.), get_value(p, "n", 1.));
 }
 
 
 template <>
 std::gamma_distribution<double>::param_type DistributionT<std::gamma_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::gamma_distribution<double>::param_type(get_value(p, "alpha", 1.), get_value(p, "beta", 1.));
 }
 
 
 template <>
 std::geometric_distribution<int>::param_type DistributionT<std::geometric_distribution<int>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::geometric_distribution<int>::param_type(get_value(p, "p", 0.5));
 }
 
 
 template <>
 std::lognormal_distribution<double>::param_type DistributionT<std::lognormal_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::lognormal_distribution<double>::param_type(get_value(p, "m", 0.), get_value(p, "s", 1.));
 }
 
 
 template <>
 std::negative_binomial_distribution<int>::param_type DistributionT<std::negative_binomial_distribution<int>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::negative_binomial_distribution<int>::param_type(get_value(p, "k", 1), get_value(p, "p", 0.5));
 }
 
 
 template <>
 std::normal_distribution<double>::param_type DistributionT<std::normal_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::normal_distribution<double>::param_type(get_value(p, "mean", 0.), get_value(p, "stddev", 1.));
 }
 
 
 template <>
 std::piecewise_constant_distribution<double>::param_type
-DistributionT<std::piecewise_constant_distribution<double>>::param(const param::MIRParametrisation& p) const {
+DistributionT<std::piecewise_constant_distribution<double>>::param(const Parametrisation& p) const {
     std::vector<double> i;
     std::vector<double> w;
     p.get("intervals", i);
@@ -226,7 +225,7 @@ DistributionT<std::piecewise_constant_distribution<double>>::param(const param::
 
 template <>
 std::piecewise_linear_distribution<double>::param_type DistributionT<std::piecewise_linear_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     std::vector<double> i;
     std::vector<double> w;
     p.get("intervals", i);
@@ -239,35 +238,35 @@ std::piecewise_linear_distribution<double>::param_type DistributionT<std::piecew
 
 template <>
 std::poisson_distribution<int>::param_type DistributionT<std::poisson_distribution<int>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::poisson_distribution<int>::param_type(get_value(p, "mean", 1.));
 }
 
 
 template <>
 std::student_t_distribution<double>::param_type DistributionT<std::student_t_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::student_t_distribution<double>::param_type(get_value(p, "n", 1.));
 }
 
 
 template <>
 std::uniform_int_distribution<int>::param_type DistributionT<std::uniform_int_distribution<int>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::uniform_int_distribution<int>::param_type(get_value(p, "a", 0), get_value(p, "b", 1));
 }
 
 
 template <>
 std::uniform_real_distribution<double>::param_type DistributionT<std::uniform_real_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::uniform_real_distribution<double>::param_type(get_value(p, "a", 0.), get_value(p, "b", 1.));
 }
 
 
 template <>
 std::weibull_distribution<double>::param_type DistributionT<std::weibull_distribution<double>>::param(
-    const param::MIRParametrisation& p) const {
+    const Parametrisation& p) const {
     return std::weibull_distribution<double>::param_type(get_value(p, "a", 1.), get_value(p, "b", 1.));
 }
 

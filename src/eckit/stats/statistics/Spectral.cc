@@ -16,15 +16,15 @@
 #include <limits>
 #include <ostream>
 
-#include "eckit/data/MIRField.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/repres/sh/SphericalHarmonics.h"
-#include "eckit/util/Exceptions.h"
+#include "eckit/stats/Field.h"
 
 
 namespace eckit::stats::statistics {
 
 
-Spectral::Spectral(const param::MIRParametrisation& parametrisation) : Statistics(parametrisation) {
+Spectral::Spectral(const Parametrisation& parametrisation) : Statistics(parametrisation) {
     reset();
 }
 
@@ -60,7 +60,7 @@ double Spectral::enorm() const {
 Spectral::~Spectral() = default;
 
 
-void Spectral::execute(const data::MIRField& field) {
+void Spectral::execute(const Field& field) {
 
     ASSERT(field.dimensions() == 1);
     ASSERT(!field.hasMissing());

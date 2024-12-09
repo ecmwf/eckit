@@ -19,13 +19,13 @@ namespace eckit::stats::statistics {
 
 
 /**
- * @brief Calculate spectral statistics on a MIRField
+ * @brief Calculate spectral statistics on a Field
  */
 class Spectral : public Statistics {
 public:
     // -- Constructors
 
-    Spectral(const param::MIRParametrisation&);
+    Spectral(const Parametrisation&);
 
     // -- Destructor
 
@@ -41,7 +41,7 @@ public:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField&) override;
+    void execute(const Field&) override;
 
 private:
     // -- Members

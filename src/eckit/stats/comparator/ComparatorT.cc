@@ -15,21 +15,21 @@
 #include <cmath>
 #include <ostream>
 
-#include "eckit/data/MIRField.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/repres/Iterator.h"
 #include "eckit/repres/Representation.h"
+#include "eckit/stats/Field.h"
 #include "eckit/stats/detail/AngleT.h"
 #include "eckit/stats/detail/CentralMomentsT.h"
 #include "eckit/stats/detail/PNormsT.h"
 #include "eckit/stats/detail/ScalarT.h"
-#include "eckit/util/Exceptions.h"
 
 
 namespace eckit::stats::comparator {
 
 
 template <typename STATS>
-std::string ComparatorT<STATS>::execute(const data::MIRField& field1, const data::MIRField& field2) {
+std::string ComparatorT<STATS>::execute(const Field& field1, const Field& field2) {
     CounterBinary::reset(field1, field2);
     STATS::reset();
 
@@ -91,7 +91,7 @@ struct MinMax {};
 
 
 template <>
-std::string ComparatorT<MinMax>::execute(const data::MIRField& field1, const data::MIRField& field2) {
+std::string ComparatorT<MinMax>::execute(const Field& field1, const Field& field2) {
     CounterBinary::reset(field1, field2);
 
     ASSERT(field1.dimensions() == 1);

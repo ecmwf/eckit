@@ -10,18 +10,20 @@
  */
 
 
+#include <map>
 #include <memory>
 #include <ostream>
 #include <vector>
 
+#include "eckit/config/Parametrisation.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
+#include "eckit/stats/FieldStatistics.h"
+#include "eckit/stats/field/CentralMomentStats.h"
+#include "eckit/stats/field/CounterStats.h"
+#include "eckit/stats/field/ModeStats.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
-
-#include "mir/param/SimpleParametrisation.h"
-#include "mir/stats/field/CentralMomentStats.h"
-#include "mir/stats/field/CounterStats.h"
-#include "mir/stats/field/ModeStats.h"
-#include "mir/util/Log.h"
 
 
 constexpr double EPS = 1e-6;
@@ -35,7 +37,7 @@ constexpr double EPS = 1e-6;
     EXPECT(eckit::types::is_approximately_equal(static_cast<double>(a), static_cast<double>(b), EPS))
 
 
-namespace mir::tests::unit {
+namespace eckit::tests::stats {
 
 
 struct case_t {
@@ -59,7 +61,53 @@ struct case_t {
 };
 
 
-CASE("mir::stats::Field") {
+class SimpleParametrisation : public Parametrisation {
+    template <typename T>
+    bool _get(const std::string& name, T& value, const std::map<std::string, T>& map) const {
+        if (auto it = map.find(name); it != map.end()) {
+            value = it->second;
+            return true;
+        }
+        return false;
+    }
+
+public:
+    SimpleParametrisation() = default;
+
+    bool has(const std::string& name) const override {}
+
+    bool get(const std::string& name, std::string& value) const override { NOTIMP; }
+    bool get(const std::string& name, bool& value) const override { return _get(name, value, mapBool_); }
+    bool get(const std::string& name, int& value) const override { NOTIMP; }
+    bool get(const std::string& name, long& value) const override { NOTIMP; }
+    bool get(const std::string& name, size_t& value) const override { NOTIMP; }
+    bool get(const std::string& name, float& value) const override { NOTIMP; }
+    bool get(const std::string& name, double& value) const override { return _get(name, value, mapDouble_); }
+
+    bool get(const std::string& name, std::vector<int>& value) const override { NOTIMP; }
+    bool get(const std::string& name, std::vector<long>& value) const override { NOTIMP; }
+    bool get(const std::string& name, std::vector<size_t>& value) const override { NOTIMP; }
+    bool get(const std::string& name, std::vector<float>& value) const override { NOTIMP; }
+    bool get(const std::string& name, std::vector<double>& value) const override {
+        return _get(name, value, mapVecDouble_);
+    }
+    bool get(const std::string& name, std::vector<std::string>& value) const override { NOTIMP; }
+
+    void set(const std::string& name, bool value) { mapBool_[name] = value; }
+    void set(const std::string& name, double value) { mapDouble_[name] = value; }
+    void set(const std::string& name, const std::vector<double>& value) { mapVecDouble_[name] = value; }
+
+private:
+    std::map<std::string, bool> mapBool_;
+    std::map<std::string, double> mapDouble_;
+    std::map<std::string, std::vector<double>> mapVecDouble_;
+};
+
+
+CASE("mir::stats::FieldStatistics") {
+    using eckit::stats::FieldStatistics;
+    using eckit::stats::FieldStatisticsFactory;
+
     std::vector<case_t> cases{case_t{42., 42., 42, 42., 42., true, {42}},
                               case_t{4., 2., 2.4, 1., 4., true, {1, 1, 2, 4, 4}},
                               case_t{1., 2., 2.4, 1., 4., false, {1, 1, 2, 4, 4}},
@@ -70,10 +118,10 @@ CASE("mir::stats::Field") {
 
     SECTION("ModeIntegral") {
         for (auto& c : cases) {
-            param::SimpleParametrisation param;
+            SimpleParametrisation param;
             param.set("mode-disambiguate-max", c.disambiguateMax);
 
-            std::unique_ptr<stats::Field> mode(stats::FieldFactory::build("mode-integral", param));
+            std::unique_ptr<FieldStatistics> mode(FieldStatisticsFactory::build("mode-integral", param));
 
             Log::info() << "Test " << c << ':' << std::endl;
 
@@ -89,10 +137,10 @@ CASE("mir::stats::Field") {
 
     SECTION("MedianIntegral") {
         for (auto& c : cases) {
-            param::SimpleParametrisation param;
+            SimpleParametrisation param;
             param.set("mode-disambiguate-max", c.disambiguateMax);
 
-            std::unique_ptr<stats::Field> median(stats::FieldFactory::build("median-integral", param));
+            std::unique_ptr<FieldStatistics> median(FieldStatisticsFactory::build("median-integral", param));
 
             Log::info() << "Test " << c << ':' << std::endl;
 
@@ -108,8 +156,8 @@ CASE("mir::stats::Field") {
 
     SECTION("Mean") {
         for (auto& c : cases) {
-            param::SimpleParametrisation param;
-            std::unique_ptr<stats::Field> mean(stats::FieldFactory::build("mean", param));
+            SimpleParametrisation param;
+            std::unique_ptr<FieldStatistics> mean(FieldStatisticsFactory::build("mean", param));
             Log::info() << "Test " << c << ':' << std::endl;
 
             for (auto d : c.data) {
@@ -127,7 +175,7 @@ CASE("mir::stats::Field") {
             const std::vector<double> modeValues{4., 5.};
             const std::vector<double> modeLimits{4.5};
 
-            param::SimpleParametrisation param;
+            SimpleParametrisation param;
             param.set("counter-lower-limit", modeLimits.back());
             param.set("counter-upper-limit", modeLimits.back());
 
@@ -135,9 +183,9 @@ CASE("mir::stats::Field") {
             param.set("mode-real-values", modeValues);
             param.set("mode-real-min", modeLimits);
 
-            std::unique_ptr<stats::Field> above(stats::FieldFactory::build("count-above-upper-limit", param));
-            std::unique_ptr<stats::Field> below(stats::FieldFactory::build("count-below-lower-limit", param));
-            std::unique_ptr<stats::Field> mode(stats::FieldFactory::build("mode-real", param));
+            std::unique_ptr<FieldStatistics> above(FieldStatisticsFactory::build("count-above-upper-limit", param));
+            std::unique_ptr<FieldStatistics> below(FieldStatisticsFactory::build("count-below-lower-limit", param));
+            std::unique_ptr<FieldStatistics> mode(FieldStatisticsFactory::build("mode-real", param));
 
             Log::info() << "Test " << c << ':' << std::endl;
 
@@ -158,7 +206,7 @@ CASE("mir::stats::Field") {
 }
 
 
-}  // namespace mir::tests::unit
+}  // namespace eckit::tests::stats
 
 
 int main(int argc, char** argv) {

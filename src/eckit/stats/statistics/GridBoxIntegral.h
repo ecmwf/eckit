@@ -23,7 +23,7 @@ class GridBoxIntegral : public Statistics, detail::Counter {
 public:
     // -- Constructors
 
-    GridBoxIntegral(const param::MIRParametrisation&);
+    GridBoxIntegral(const Parametrisation&);
 
     // -- Methods
 
@@ -38,7 +38,7 @@ private:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField&) override;
+    void execute(const Field&) override;
     void print(std::ostream&) const override;
 };
 

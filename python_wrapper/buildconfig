@@ -11,6 +11,6 @@
 # TODO we duplicate information -- pyproject.toml's `name` and `packages` are derivable from $NAME and must stay consistent
 
 NAME="eckit"
-CMAKE_PARAMS="-DENABLE_MPI=0  -DENABLE_ECKIT_GEO=1"
+CMAKE_PARAMS="-DENABLE_MPI=0  -DENABLE_ECKIT_GEO=1 -DENABLE_BUILD_TOOLS=OFF"
 PYPROJECT_DIR="python_wrapper"
-FINDLIBS_DEPENDENCIES='[]'
+DEPENDENCIES='[]'

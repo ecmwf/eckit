@@ -19,69 +19,28 @@ on:
   # TODO automation trigger
 
 jobs:
-
   build:
-
+    name: Build manylinux_2_28
     runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
     # TODO which manylinux do we want to build for? 2014? 2_28? 2_34? Matrix?
-    container: eccr.ecmwf.int/wheelmaker/2_28:latest
-
-    name: Build manylinux_2_28
-
+    container:
+      image: eccr.ecmwf.int/wheelmaker/2_28:0.9
+      credentials:
+        username: ${{ secrets.ECMWF_DOCKER_REGISTRY_USERNAME }}
+        password: ${{ secrets.ECMWF_DOCKER_REGISTRY_ACCESS_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
-      - run: /buildscripts/compile.sh ./eckit/python_wrapper/buildconfig
-
-      ################################################################
-      - run: /buildscripts/wheel-linux.sh ./eckit/python_wrapper/buildconfig 3.11
-      - uses: actions/upload-artifact@v4
-        name: Upload wheel 3.11
-        with:
-          name: wheel-manylinux2_28-3.11
-          path: /build/wheel/*.whl
-
-      # TODO other python versions, once the above is correct.
-      # NOTE if Matrix, then break into (compile) && (wheel & upload)@[matix] steps
-
-  test:
-
-    needs: build
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11"] # ["3.8", "3.9", "3.10", "3.11", "3.12"] # TODO enable
-
-    name: Test with ${{ matrix.python-version }}
-    runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
-    container: eccr.ecmwf.int/wheelmaker/2_28:latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v4
-        with:
-          name: wheel-manylinux2_28-${{ matrix.python-version }}
-      - run: /buildscripts/test-wheel.sh ${{ matrix.python-version }}
-
-  deploy:
-
-    if: ${{ github.ref_type == 'tag' || github.event_name == 'release' }}
-    needs: [test, build]
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11"] # ["3.8", "3.9", "3.10", "3.11", "3.12"] # TODO enable
-
-    name: Deploy wheel ${{ matrix.python-version }}
-    runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
-    container: eccr.ecmwf.int/wheelmaker/2_28:latest
-    steps:
-      - run: mkdir artifact-${{ matrix.python-version }}
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v4
-        with:
-          name: wheel-manylinux2_28-${{ matrix.python-version }}
-          path: artifact-${{ matrix.python-version }}
-      - run: |
-      		/buildsripts/upload-twine.sh ${{ matrix.python-version }}
+        # TODO convert this to be matrix-friendly. Note it's a bit tricky since
+        # we'd ideally not reexecute the compile step multiple times, but it
+        # (non-essentially) depends on a matrix-based step
+        # NOTE we dont use action checkout because it doesnt cleanup after itself correctly
+      - run: git clone --depth=1 --branch="${GITHUB_REF#refs/heads/}" https://github.com/$GITHUB_REPOSITORY /proj
+      - run: cd /proj && /buildscripts/prepare_deps.sh ./python_wrapper/buildconfig 3.11
+      - run: cd /proj && /buildscripts/compile.sh ./python_wrapper/buildconfig
+      - run: cd /proj && /buildscripts/wheel-linux.sh ./python_wrapper/buildconfig 3.11
+      - run: cd /proj && /buildscripts/test-wheel.sh ./python_wrapper/buildconfig 3.11 /build/wheel/*whl
+      - run: cd /proj && /buildscripts/upload-pypi.sh /build/wheel/*whl
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        # NOTE temporary thing until all the mess gets cleared
+      - run: rm -rf ./* ./.git ./.github

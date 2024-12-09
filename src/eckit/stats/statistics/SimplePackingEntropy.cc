@@ -112,7 +112,7 @@ void SimplePackingEntropy::print(std::ostream& out) const {
 }
 
 
-static const StatisticsBuilder<SimplePackingEntropy> __stats("simple-packing-entropy");
+static const StatisticsBuilder<SimplePackingEntropy> STATISTICS("simple-packing-entropy");
 
 
 }  // namespace eckit::stats::statistics

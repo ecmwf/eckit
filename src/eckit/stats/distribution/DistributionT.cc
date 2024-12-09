@@ -22,7 +22,8 @@
 namespace eckit::stats::distribution {
 
 
-static const DistributionFactory* __distributions[]{
+namespace {
+const DistributionFactory* DISTRIBUTIONS[]{
     new DistributionBuilder<DistributionT<std::bernoulli_distribution>>("bernoulli-distribution"),
     new DistributionBuilder<DistributionT<std::binomial_distribution<int>>>("binomial-distribution"),
     new DistributionBuilder<DistributionT<std::cauchy_distribution<double>>>("cauchy-distribution"),
@@ -45,9 +46,6 @@ static const DistributionFactory* __distributions[]{
     new DistributionBuilder<DistributionT<std::uniform_real_distribution<double>>>("uniform-real-distribution"),
     new DistributionBuilder<DistributionT<std::weibull_distribution<double>>>("weibull-distribution"),
 };
-
-
-namespace {
 
 
 template <typename T>

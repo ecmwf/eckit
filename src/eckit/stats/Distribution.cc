@@ -12,15 +12,13 @@
 
 #include "eckit/stats/Distribution.h"
 
+#include <map>
 #include <sstream>
 
-#include "eckit/parser/YAMLParser.h"
-
+#include "eckit/config/YAMLConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
-#include "eckit/param/SimpleParametrisation.h"
 #include "eckit/stats/util/Mutex.h"
-#include "eckit/util/ValueMap.h"
 
 
 namespace eckit::stats {
@@ -75,18 +73,12 @@ Distribution* DistributionFactory::build(const std::string& name) {
 
     Log::debug() << "DistributionFactory: looking for '" << key << "'" << std::endl;
 
-    if (auto j = m->find(key); j == m->end()) {
-        list(Log::error() << "DistributionFactory: unknown '" << key << "', choices are: ");
-        Log::warning() << std::endl;
+    if (auto j = m->find(key); j != m->end()) {
+        return j->second->make(YAMLConfiguration{yaml});
     }
 
-    param::SimpleParametrisation args;
-    if (!yaml.empty()) {
-        util::ValueMap map(eckit::YAMLParser::decodeString(yaml));
-        map.set(args);
-    }
-
-    return j->second->make(args);
+    list(Log::error() << "DistributionFactory: unknown '" << key << "', choices are: ");
+    Log::warning() << std::endl;
 }
 
 

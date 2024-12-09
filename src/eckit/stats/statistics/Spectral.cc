@@ -17,7 +17,6 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/repres/sh/SphericalHarmonics.h"
 #include "eckit/stats/Field.h"
 
 
@@ -65,13 +64,16 @@ void Spectral::execute(const Field& field) {
     ASSERT(field.dimensions() == 1);
     ASSERT(!field.hasMissing());
 
-    const MIRValuesVector& values = field.values(0);
+    const auto& values = field.values(0);
     ASSERT(!values.empty());
+
+    auto number_of_complex_coefficients
+        = [](size_t truncation) -> size_t { return (truncation + 1) * (truncation + 2) / 2; };
 
     // set truncation
     // Note: assumes triangular truncation (from GribInput.cc)
-    const size_t J = field.representation()->truncation();
-    const size_t N = repres::sh::SphericalHarmonics::number_of_complex_coefficients(J);
+    const size_t J = field.truncation();
+    const size_t N = number_of_complex_coefficients(J);
     ASSERT(2 * N == values.size());
 
 

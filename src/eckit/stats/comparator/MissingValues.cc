@@ -12,13 +12,10 @@
 
 #include "eckit/stats/comparator/MissingValues.h"
 
-#include <memory>
 #include <ostream>
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/repres/Iterator.h"
-#include "eckit/repres/Representation.h"
 #include "eckit/stats/Field.h"
 
 
@@ -26,8 +23,6 @@ namespace eckit::stats::comparator {
 
 
 std::string MissingValues::execute(const Field& field1, const Field& field2) {
-
-
     // if neither has missing values, don't check for missing
     if (!field1.hasMissing() && !field2.hasMissing()) {
         return "";
@@ -36,14 +31,6 @@ std::string MissingValues::execute(const Field& field1, const Field& field2) {
     if (field1.dimensions() != field2.dimensions()) {
         return "\n* different dimensions, cannot compare";
     }
-
-    // setup representations (for the iterator)
-    repres::RepresentationHandle rep1(field1.representation());
-    repres::RepresentationHandle rep2(field2.representation());
-    if (!rep1->sameAs(*rep2)) {
-        return "\n* different representations, cannot compare";
-    }
-
 
     // check for when/where missing values are different
     auto missingValue1 = field1.missingValue();
@@ -55,14 +42,12 @@ std::string MissingValues::execute(const Field& field1, const Field& field2) {
         const auto& values2 = field2.values(d);
         ASSERT(values1.size() == values2.size());
 
-        for (const std::unique_ptr<repres::Iterator> it(rep1->iterator()); it->next();) {
-            auto i     = it->index();
+        for (size_t i = 0; i < values1.size(); ++i) {
             bool miss1 = values1.at(i) == missingValue1;
             bool miss2 = values2.at(i) == missingValue2;
 
             if (miss1 != miss2) {
-                reasons << "\n* " << i << '\t' << it->pointRotated() << '\t'
-                        << (miss1 ? "missing" : std::to_string(values1[i])) << '\t'
+                reasons << "\n* " << i << '\t' << (miss1 ? "missing" : std::to_string(values1[i])) << '\t'
                         << (miss2 ? "missing" : std::to_string(values2[i]));
             }
         }

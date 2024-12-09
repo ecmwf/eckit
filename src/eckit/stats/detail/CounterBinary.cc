@@ -21,8 +21,8 @@
 
 #include "eckit/types/FloatCompare.h"
 
+#include "eckit/config/Parametrisation.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/param/SameParametrisation.h"
 
 
 namespace eckit::stats::detail {
@@ -42,27 +42,25 @@ CounterBinary::CounterBinary(const Parametrisation& param1, const Parametrisatio
     maxIndexValue2_(std::numeric_limits<double>::quiet_NaN()),
     first_(true) {
 
-    std::unique_ptr<Parametrisation> same(new param::SameParametrisation(param1, param2, false));
     constexpr double nan = std::numeric_limits<double>::quiet_NaN();
 
-    same->get("ignore-different-missing-values", ignoreDifferentMissingValues_ = 0);
-    same->get("ignore-different-missing-values-factor", ignoreDifferentMissingValuesFactor_ = nan);
-    same->get("ignore-above-upper-limit", ignoreAboveUpperLimit_ = 0);
-    same->get("ignore-above-upper-limit-factor", ignoreAboveUpperLimitFactor_ = nan);
+    param1.get("ignore-different-missing-values", ignoreDifferentMissingValues_ = 0);
+    param1.get("ignore-different-missing-values-factor", ignoreDifferentMissingValuesFactor_ = nan);
+    param1.get("ignore-above-upper-limit", ignoreAboveUpperLimit_ = 0);
+    param1.get("ignore-above-upper-limit-factor", ignoreAboveUpperLimitFactor_ = nan);
 
-    hasLowerLimit_        = same->get("counter-lower-limit", lowerLimit_ = nan);
-    hasUpperLimit_        = same->get("counter-upper-limit", upperLimit_ = nan);
-    doAbsoluteCompare_    = same->get("absolute-error", absoluteError_ = nan);
-    doRelativeCompare_    = same->get("relative-error-factor", relativeErrorFactor_ = nan);
-    doRelativeMinCompare_ = same->get("relative-error-min", relativeErrorMin_ = nan);
-    doRelativeMaxCompare_ = same->get("relative-error-max", relativeErrorMax_ = nan);
-    doPackingCompare_     = same->get("packing-error-factor", packingError_ = nan);
+    hasLowerLimit_        = param1.get("counter-lower-limit", lowerLimit_ = nan);
+    hasUpperLimit_        = param1.get("counter-upper-limit", upperLimit_ = nan);
+    doAbsoluteCompare_    = param1.get("absolute-error", absoluteError_ = nan);
+    doRelativeCompare_    = param1.get("relative-error-factor", relativeErrorFactor_ = nan);
+    doRelativeMinCompare_ = param1.get("relative-error-min", relativeErrorMin_ = nan);
+    doRelativeMaxCompare_ = param1.get("relative-error-max", relativeErrorMax_ = nan);
+    doPackingCompare_     = param1.get("packing-error-factor", packingError_ = nan);
 
     if (doPackingCompare_) {
         double packingError1 = 0.;
         double packingError2 = 0.;
-        ASSERT(param1.fieldParametrisation().get("packingError", packingError1)
-               || param2.fieldParametrisation().get("packingError", packingError2));
+        ASSERT(param1.get("packingError", packingError1) || param2.get("packingError", packingError2));
 
         packingError_ *= std::max(packingError1, packingError2);
         ASSERT(packingError_ > 0.);

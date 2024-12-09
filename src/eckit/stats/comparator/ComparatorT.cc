@@ -16,8 +16,6 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/repres/Iterator.h"
-#include "eckit/repres/Representation.h"
 #include "eckit/stats/Field.h"
 #include "eckit/stats/detail/AngleT.h"
 #include "eckit/stats/detail/CentralMomentsT.h"
@@ -39,32 +37,6 @@ std::string ComparatorT<STATS>::execute(const Field& field1, const Field& field2
     const auto& values1 = field1.values(0);
     const auto& values2 = field2.values(0);
     ASSERT(values1.size() == values2.size());
-
-    if (!std::isnan(ignoreAboveLatitude_) || !std::isnan(ignoreBelowLatitude_)) {
-        repres::RepresentationHandle rep1(field1.representation());
-        repres::RepresentationHandle rep2(field2.representation());
-
-        if (!rep1->sameAs(*rep2)) {
-            return "* cannot use latitude limits for different representations (" + rep1->uniqueName() + " and "
-                   + rep2->uniqueName() + ")";
-        }
-        ASSERT(rep1->numberOfPoints() == values1.size());
-
-        for (const std::unique_ptr<repres::Iterator> it(rep1->iterator()); it->next();) {
-            const auto& p = it->pointUnrotated();
-            auto v1       = values1.at(it->index());
-            auto v2       = values2.at(it->index());
-
-            bool bad  = ignoreAboveLatitude_ < p.lat() || p.lat() < ignoreBelowLatitude_;
-            auto diff = bad ? 0. : STATS::difference(v1, v2);
-
-            if (CounterBinary::count(v1, v2, diff)) {
-                STATS::operator()(diff);
-            }
-        }
-
-        return CounterBinary::check();
-    }
 
     for (size_t i = 0; i < values1.size(); ++i) {
         auto diff = STATS::difference(values1[i], values2[i]);

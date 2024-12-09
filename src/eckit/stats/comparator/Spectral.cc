@@ -92,7 +92,7 @@ void Spectral::print(std::ostream& out) const {
 }
 
 
-static const ComparatorBuilder<Spectral> __stats("spectral");
+static const ComparatorBuilder<Spectral> COMPARATOR("spectral");
 
 
 }  // namespace eckit::stats::comparator

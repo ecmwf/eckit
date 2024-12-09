@@ -54,13 +54,15 @@ struct MedianIntegral final : ModeStatsT<detail::MedianIntegral> {
 };
 
 
-static const FieldStatisticsFactory* __fieldstatistics[]{
+namespace {
+const FieldStatisticsFactory* FIELDSTATISTICS[]{
     new FieldStatisticsBuilder<ModeReal>("mode-real"),
     new FieldStatisticsBuilder<ModeIntegral>("mode-integral"),
     new FieldStatisticsBuilder<ModeBoolean>("mode-boolean"),
     new FieldStatisticsBuilder<MedianIntegral>("median-integral"),
     new FieldStatisticsBuilder<ModeBoolean>("median-boolean"),  // (alias)
 };
+}
 
 
 }  // namespace eckit::stats::field

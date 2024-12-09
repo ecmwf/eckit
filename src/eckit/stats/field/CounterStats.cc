@@ -60,13 +60,15 @@ struct Minimum final : CounterStats {
 };
 
 
-static const FieldStatisticsFactory* __fieldstatistics[]{
+namespace {
+const FieldStatisticsFactory* FIELDSTATISTICS[]{
     new FieldStatisticsBuilder<Count>("count"),
     new FieldStatisticsBuilder<CountAboveUpperLimit>("count-above-upper-limit"),
     new FieldStatisticsBuilder<CountBelowLowerLimit>("count-below-lower-limit"),
     new FieldStatisticsBuilder<Maximum>("maximum"),
     new FieldStatisticsBuilder<Minimum>("minimum"),
 };
+}
 
 
 }  // namespace eckit::stats::field

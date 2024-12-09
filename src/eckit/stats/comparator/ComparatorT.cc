@@ -83,7 +83,8 @@ void ComparatorT<MinMax>::print(std::ostream& out) const {
 }
 
 
-static const ComparatorFactory* __comp[]{
+namespace {
+const ComparatorFactory* COMPARATORS[]{
     new ComparatorBuilder<
         ComparatorT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>("angle-degree"),
     new ComparatorBuilder<
@@ -92,8 +93,8 @@ static const ComparatorFactory* __comp[]{
     new ComparatorBuilder<ComparatorT<detail::PNormsT<double>>>("p-norms"),
     new ComparatorBuilder<ComparatorT<detail::ScalarT<double>>>("scalar"),
     new ComparatorBuilder<ComparatorT<MinMax>>("min-max"),
-
 };
+}
 
 
 }  // namespace eckit::stats::comparator

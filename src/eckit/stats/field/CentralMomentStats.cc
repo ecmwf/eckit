@@ -70,7 +70,8 @@ struct Sum final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
 };
 
 
-static const FieldStatisticsFactory* __fieldstatistics[]{
+namespace {
+const FieldStatisticsFactory* FIELDSTATISTICS[]{
     new FieldStatisticsBuilder<Mean>("mean"),
     new FieldStatisticsBuilder<Variance>("variance"),
     new FieldStatisticsBuilder<Skewness>("skewness"),
@@ -78,6 +79,7 @@ static const FieldStatisticsFactory* __fieldstatistics[]{
     new FieldStatisticsBuilder<StandardDeviation>("stddev"),
     new FieldStatisticsBuilder<Sum>("sum"),
 };
+}
 
 
 }  // namespace eckit::stats::field

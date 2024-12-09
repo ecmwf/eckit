@@ -42,7 +42,8 @@ void StatisticsT<MinMax>::print(std::ostream& out) const {
 }
 
 
-static const StatisticsFactory* __stats[]{
+namespace {
+const StatisticsFactory* STATISTICS[]{
     new StatisticsBuilder<
         StatisticsT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::ASYMMETRIC>>>(
         "angle-degree-asymmetric"),
@@ -60,6 +61,7 @@ static const StatisticsFactory* __stats[]{
     new StatisticsBuilder<StatisticsT<detail::ScalarT<double>>>("scalar"),
     new StatisticsBuilder<StatisticsT<MinMax>>("min-max"),
 };
+}
 
 
 }  // namespace eckit::stats::statistics

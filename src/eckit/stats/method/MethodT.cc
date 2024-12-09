@@ -109,7 +109,8 @@ void MethodT<STATS>::stddev(Field& field) const {
 }
 
 
-static const MethodFactory* __stats[]{
+namespace {
+const MethodFactory* METHODS[]{
     new MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::ASYMMETRIC>>>(
         "angle.degree.asymmetric"),
     new MethodBuilder<MethodT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>(
@@ -121,6 +122,7 @@ static const MethodFactory* __stats[]{
     new MethodBuilder<MethodT<detail::CentralMomentsT<double>>>("central-moments"),
     new MethodBuilder<MethodT<detail::ScalarT<double>>>("scalar"),
 };
+}
 
 
 }  // namespace eckit::stats::method

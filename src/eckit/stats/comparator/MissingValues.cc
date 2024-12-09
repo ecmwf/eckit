@@ -46,7 +46,7 @@ std::string MissingValues::execute(const Field& field1, const Field& field2) {
             reasons << "\n* " << i << '\t' << (miss1 ? "missing" : std::to_string(values1[i])) << '\t'
                     << (miss2 ? "missing" : std::to_string(values2[i]));
         }
-        }
+    }
 
     return reasons.str();
 }
@@ -57,7 +57,7 @@ void MissingValues::print(std::ostream& out) const {
 }
 
 
-static const ComparatorBuilder<MissingValues> __stats("missing-values");
+static const ComparatorBuilder<MissingValues> COMPARATOR("missing-values");
 
 
 }  // namespace eckit::stats::comparator

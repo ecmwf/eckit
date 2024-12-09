@@ -103,7 +103,7 @@ void Spectral::print(std::ostream& out) const {
 }
 
 
-static const StatisticsBuilder<Spectral> __stats("spectral");
+static const StatisticsBuilder<Spectral> STATISTICS("spectral");
 
 
 }  // namespace eckit::stats::statistics

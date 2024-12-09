@@ -19,11 +19,10 @@
 
 namespace eckit {
 class Parametrisation;
+namespace stats {
+class Field;
 }
-
-namespace mir::data {
-class MIRField;
-}
+}  // namespace eckit
 
 
 namespace eckit::stats::detail {
@@ -64,7 +63,7 @@ public:
     virtual ~Counter() = default;
 
     void reset(double missingValue, bool hasMissing);
-    void reset(const data::MIRField&);
+    void reset(const Field&);
 
     void print(std::ostream&) const;
     bool count(const double&);

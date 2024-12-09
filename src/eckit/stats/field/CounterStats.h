@@ -21,7 +21,7 @@ namespace eckit::stats::field {
 
 /// Counting statistics on values (min, max, etc.)
 struct CounterStats : detail::Counter, FieldStatistics {
-    CounterStats(const param::MIRParametrisation& param) : Counter(param), FieldStatistics(param) {}
+    CounterStats(const Parametrisation& param) : Counter(param), FieldStatistics(param) {}
 
     double value() const override            = 0;
     void json(eckit::JSON&) const override   = 0;

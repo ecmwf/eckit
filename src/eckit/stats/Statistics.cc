@@ -15,9 +15,9 @@
 #include <map>
 #include <ostream>
 
-#include "eckit/util/Exceptions.h"
-#include "eckit/util/Log.h"
-#include "eckit/util/Mutex.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
+#include "eckit/stats/util/Mutex.h"
 
 
 namespace eckit::stats {
@@ -32,7 +32,7 @@ static void init() {
 }
 
 
-Statistics::Statistics(const param::MIRParametrisation& parametrisation) : parametrisation_(parametrisation) {}
+Statistics::Statistics(const Parametrisation& parametrisation) : parametrisation_(parametrisation) {}
 
 
 Statistics::~Statistics() = default;
@@ -43,7 +43,7 @@ StatisticsFactory::StatisticsFactory(const std::string& name) : name_(name) {
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     if (m->find(name) != m->end()) {
-        throw exception::SeriousBug("StatisticsFactory: duplicate '" + name + "'");
+        throw SeriousBug("StatisticsFactory: duplicate '" + name + "'");
     }
 
     ASSERT(m->find(name) == m->end());
@@ -71,7 +71,7 @@ void StatisticsFactory::list(std::ostream& out) {
 }
 
 
-Statistics* StatisticsFactory::build(const std::string& name, const param::MIRParametrisation& params) {
+Statistics* StatisticsFactory::build(const std::string& name, const Parametrisation& params) {
     util::call_once(once, init);
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
@@ -80,7 +80,7 @@ Statistics* StatisticsFactory::build(const std::string& name, const param::MIRPa
     auto j = m->find(name);
     if (j == m->end()) {
         list(Log::error() << "StatisticsFactory: unknown '" << name << "', choices are:\n");
-        throw exception::SeriousBug("StatisticsFactory: unknown '" + name + "'");
+        throw SeriousBug("StatisticsFactory: unknown '" + name + "'");
     }
 
     return j->second->make(params);

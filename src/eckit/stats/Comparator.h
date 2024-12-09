@@ -17,12 +17,9 @@
 
 
 namespace eckit {
+class Field;
 class Parametrisation;
-}
-
-namespace mir::data {
-class MIRField;
-}
+}  // namespace eckit
 
 
 namespace eckit::stats {
@@ -45,7 +42,7 @@ public:
 
     // -- Methods
 
-    virtual std::string execute(const data::MIRField&, const data::MIRField&) = 0;
+    virtual std::string execute(const Field&, const Field&) = 0;
 
 protected:
     // -- Members

@@ -15,15 +15,15 @@
 #include <limits>
 #include <ostream>
 
-#include "eckit/data/MIRField.h"
-#include "eckit/param/MIRParametrisation.h"
-#include "eckit/util/Exceptions.h"
+#include "eckit/config/Parametrisation.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/stats/Field.h"
 
 
 namespace eckit::stats::detail {
 
 
-static double get_param(const param::MIRParametrisation& param, const std::string& key, double def) {
+static double get_param(const Parametrisation& param, const std::string& key, double def) {
     double value(def);
     param.get(key, value);
     return value;
@@ -48,7 +48,7 @@ Counter::Counter(double missingValue, bool hasMissing, double lowerLimit, double
     first_(true) {}
 
 
-Counter::Counter(const param::MIRParametrisation& parametrisation) :
+Counter::Counter(const Parametrisation& parametrisation) :
     Counter(std::numeric_limits<double>::quiet_NaN(), false,
             get_param(parametrisation, "counter-lower-limit", std::numeric_limits<double>::quiet_NaN()),
             get_param(parametrisation, "counter-upper-limit", std::numeric_limits<double>::quiet_NaN())) {}
@@ -71,7 +71,7 @@ void Counter::reset(double missingValue, bool hasMissing) {
 }
 
 
-void Counter::reset(const data::MIRField& field) {
+void Counter::reset(const Field& field) {
     ASSERT(field.dimensions() == 1);
     reset(field.missingValue(), field.hasMissing());
 }

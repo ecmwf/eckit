@@ -15,19 +15,15 @@
 #include <ostream>
 #include <vector>
 
+#include "eckit/stats/Field.h"
 #include "eckit/stats/Method.h"
 #include "eckit/stats/detail/Counter.h"
-
-
-namespace eckit::data {
-class MIRField;
-}  // namespace eckit::data
 
 
 namespace eckit::stats::method {
 
 
-/// Generic statistics on a MIRField
+/// Generic statistics on a Field
 template <typename STATS>
 class MethodT : public Method, public detail::Counter, protected std::vector<STATS> {
 private:
@@ -38,15 +34,15 @@ private:
 public:
     // -- Constructors
 
-    MethodT(const param::MIRParametrisation& parametrisation) : Method(parametrisation), Counter(parametrisation) {}
+    MethodT(const Parametrisation& parametrisation) : Method(parametrisation), Counter(parametrisation) {}
 
     // -- Overridden methods
 
     void resize(size_t) override;
-    void execute(const data::MIRField&) override;
-    void mean(data::MIRField&) const override;
-    void variance(data::MIRField&) const override;
-    void stddev(data::MIRField&) const override;
+    void execute(const Field&) override;
+    void mean(Field&) const override;
+    void variance(Field&) const override;
+    void stddev(Field&) const override;
 
 private:
     // -- Methods

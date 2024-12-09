@@ -15,18 +15,18 @@
 #include <cmath>
 #include <limits>
 
-#include "eckit/data/MIRField.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/repres/Representation.h"
+#include "eckit/stats/Field.h"
 #include "eckit/util/Angles.h"
 #include "eckit/util/Atlas.h"
-#include "eckit/util/Exceptions.h"
 #include "eckit/util/Types.h"
 
 
 namespace eckit::stats::statistics {
 
 
-Integral::Integral(const param::MIRParametrisation& parametrisation) :
+Integral::Integral(const Parametrisation& parametrisation) :
     Statistics(parametrisation), Counter(parametrisation), integral_(std::numeric_limits<double>::quiet_NaN()) {
     reset();
 }
@@ -37,7 +37,7 @@ void Integral::reset() {
 }
 
 
-void Integral::execute(const data::MIRField& field) {
+void Integral::execute(const Field& field) {
 
     ASSERT(field.dimensions() == 1);
     ASSERT(!field.hasMissing());

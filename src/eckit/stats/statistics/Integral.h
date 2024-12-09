@@ -24,7 +24,7 @@ class Integral : public Statistics, detail::Counter {
 public:
     // -- Constructors
 
-    Integral(const param::MIRParametrisation&);
+    Integral(const Parametrisation&);
 
     // -- Methods
 
@@ -39,7 +39,7 @@ private:
 
     // -- Overridden methods
 
-    void execute(const data::MIRField&) override;
+    void execute(const Field&) override;
     void print(std::ostream&) const override;
 };
 

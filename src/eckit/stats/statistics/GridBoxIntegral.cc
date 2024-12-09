@@ -14,16 +14,16 @@
 
 #include <limits>
 
-#include "eckit/data/MIRField.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/repres/Representation.h"
-#include "eckit/util/Exceptions.h"
+#include "eckit/stats/Field.h"
 #include "eckit/util/GridBox.h"
 
 
 namespace eckit::stats::statistics {
 
 
-GridBoxIntegral::GridBoxIntegral(const param::MIRParametrisation& parametrisation) :
+GridBoxIntegral::GridBoxIntegral(const Parametrisation& parametrisation) :
     Statistics(parametrisation), Counter(parametrisation), integral_(std::numeric_limits<double>::quiet_NaN()) {
     reset();
 }
@@ -34,7 +34,7 @@ void GridBoxIntegral::reset() {
 }
 
 
-void GridBoxIntegral::execute(const data::MIRField& field) {
+void GridBoxIntegral::execute(const Field& field) {
 
     ASSERT(field.dimensions() == 1);
     const repres::RepresentationHandle rep(field.representation());

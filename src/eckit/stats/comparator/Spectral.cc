@@ -25,13 +25,13 @@
 namespace eckit::stats::comparator {
 
 
-Spectral::Spectral(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
+Spectral::Spectral(const Parametrisation& param1, const Parametrisation& param2) :
     Comparator(param1, param2),
     meanDiffMax_(std::numeric_limits<double>::quiet_NaN()),
     enormDiffMax_(std::numeric_limits<double>::quiet_NaN()) {
     reset();
 
-    std::unique_ptr<param::MIRParametrisation> param(new param::SameParametrisation(param1, param2, false));
+    std::unique_ptr<Parametrisation> param(new param::SameParametrisation(param1, param2, false));
     param->get("spectral-mean-difference-max", meanDiffMax_);
     param->get("spectral-energy-norm-difference-max", enormDiffMax_);
 }
@@ -57,7 +57,7 @@ double Spectral::enormDiff() const {
 Spectral::~Spectral() = default;
 
 
-std::string Spectral::execute(const data::MIRField& field1, const data::MIRField& field2) {
+std::string Spectral::execute(const Field& field1, const Field& field2) {
 
     statistics::Spectral stats1(parametrisation1_);
     stats1.execute(field1);

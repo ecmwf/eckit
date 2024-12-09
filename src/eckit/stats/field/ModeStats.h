@@ -22,7 +22,7 @@ namespace eckit::stats::field {
 /// Mode statistics on values
 template <typename STATS>
 struct ModeStatsT : detail::Counter, FieldStatistics, STATS {
-    ModeStatsT(const param::MIRParametrisation& param) : Counter(param), FieldStatistics(param), STATS(param) {}
+    ModeStatsT(const Parametrisation& param) : Counter(param), FieldStatistics(param), STATS(param) {}
 
     double value() const override            = 0;
     void json(eckit::JSON&) const override   = 0;

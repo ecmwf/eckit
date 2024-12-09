@@ -22,7 +22,7 @@ namespace eckit::stats::field {
 /// Central moment statistics on values (mean, stddev, etc.)
 template <typename STATS>
 struct CentralMomentStatsT : detail::Counter, FieldStatistics, STATS {
-    CentralMomentStatsT(const param::MIRParametrisation& param) : Counter(param), FieldStatistics(param) {}
+    CentralMomentStatsT(const Parametrisation& param) : Counter(param), FieldStatistics(param) {}
     ~CentralMomentStatsT() override = default;
 
     double value() const override            = 0;

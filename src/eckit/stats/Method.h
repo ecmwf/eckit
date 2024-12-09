@@ -18,14 +18,9 @@
 
 
 namespace eckit {
+class Field;
 class Parametrisation;
-}
-
-namespace mir {
-namespace data {
-class MIRField;
-}
-}  // namespace mir
+}  // namespace eckit
 
 
 namespace eckit::stats {
@@ -48,11 +43,11 @@ public:
 
     // -- Methods
 
-    virtual void resize(size_t)                  = 0;
-    virtual void execute(const data::MIRField&)  = 0;
-    virtual void mean(data::MIRField&) const     = 0;
-    virtual void variance(data::MIRField&) const = 0;
-    virtual void stddev(data::MIRField&) const   = 0;
+    virtual void resize(size_t)         = 0;
+    virtual void execute(const Field&)  = 0;
+    virtual void mean(Field&) const     = 0;
+    virtual void variance(Field&) const = 0;
+    virtual void stddev(Field&) const   = 0;
 
 protected:
     // -- Members

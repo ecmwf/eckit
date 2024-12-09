@@ -14,27 +14,26 @@
 
 #include <ostream>
 
-#include "eckit/data/MIRField.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/stats/Field.h"
 #include "eckit/stats/Statistics.h"
 #include "eckit/stats/detail/Counter.h"
-#include "eckit/util/Exceptions.h"
 
 
 namespace eckit::stats::statistics {
 
 
-/// Generic statistics on a MIRField
+/// Generic statistics on a Field
 template <typename STATS>
 class StatisticsT : public Statistics, detail::Counter, STATS {
 public:
     // -- Constructors
 
-    StatisticsT(const param::MIRParametrisation& parametrisation) :
-        Statistics(parametrisation), Counter(parametrisation) {}
+    StatisticsT(const Parametrisation& parametrisation) : Statistics(parametrisation), Counter(parametrisation) {}
 
     // -- Overridden methods
 
-    void execute(const data::MIRField& field) override {
+    void execute(const Field& field) override {
         Counter::reset(field);
         STATS::reset();
 

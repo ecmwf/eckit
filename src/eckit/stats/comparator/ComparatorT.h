@@ -22,34 +22,34 @@
 #include "eckit/stats/detail/CounterBinary.h"
 
 
-namespace eckit::data {
-class MIRField;
-}  // namespace eckit::data
+namespace eckit::stats {
+class Field;
+}
 
 
 namespace eckit::stats::comparator {
 
 
-/// Generic comparison on two MIRFields
+/// Generic comparison on two Fields
 template <typename STATS>
 class ComparatorT : public Comparator, detail::CounterBinary, STATS {
 public:
     // -- Constructors
 
-    ComparatorT(const param::MIRParametrisation& param1, const param::MIRParametrisation& param2) :
+    ComparatorT(const Parametrisation& param1, const Parametrisation& param2) :
         Comparator(param1, param2),
         CounterBinary(param1, param2),
         ignoreAboveLatitude_(std::numeric_limits<double>::quiet_NaN()),
         ignoreBelowLatitude_(std::numeric_limits<double>::quiet_NaN()) {
 
-        std::unique_ptr<param::MIRParametrisation> param(new param::SameParametrisation(param1, param2, false));
+        std::unique_ptr<Parametrisation> param(new param::SameParametrisation(param1, param2, false));
         param->get("ignore-above-latitude", ignoreAboveLatitude_);
         param->get("ignore-below-latitude", ignoreBelowLatitude_);
     }
 
     // -- Overridden methods
 
-    std::string execute(const data::MIRField& field1, const data::MIRField& field2) override;
+    std::string execute(const Field& field1, const Field& field2) override;
 
 private:
     // -- Members

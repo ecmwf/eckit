@@ -22,36 +22,29 @@
 namespace eckit::stats::distribution {
 
 
-static const DistributionBuilder<DistributionT<std::bernoulli_distribution>> __random1("bernoulli-distribution");
-static const DistributionBuilder<DistributionT<std::binomial_distribution<int>>> __random2("binomial-distribution");
-static const DistributionBuilder<DistributionT<std::cauchy_distribution<double>>> __random3("cauchy-distribution");
-static const DistributionBuilder<DistributionT<std::chi_squared_distribution<double>>> __random4(
-    "chi-squared-distribution");
-static const DistributionBuilder<DistributionT<std::discrete_distribution<int>>> __random5("discrete-distribution");
-static const DistributionBuilder<DistributionT<std::exponential_distribution<double>>> __random6(
-    "exponential-distribution");
-static const DistributionBuilder<DistributionT<std::extreme_value_distribution<double>>> __random7(
-    "extreme-value-distribution");
-static const DistributionBuilder<DistributionT<std::fisher_f_distribution<double>>> __random8("fisher-f-distribution");
-static const DistributionBuilder<DistributionT<std::gamma_distribution<double>>> __random9("gamma-distribution");
-static const DistributionBuilder<DistributionT<std::geometric_distribution<int>>> __random10("geometric-distribution");
-static const DistributionBuilder<DistributionT<std::lognormal_distribution<double>>> __random11(
-    "lognormal-distribution");
-static const DistributionBuilder<DistributionT<std::negative_binomial_distribution<int>>> __random12(
-    "negative-binomial-distribution");
-static const DistributionBuilder<DistributionT<std::normal_distribution<double>>> __random13("normal-distribution");
-static const DistributionBuilder<DistributionT<std::piecewise_constant_distribution<double>>> __random14(
-    "piecewise-constant-distribution");
-static const DistributionBuilder<DistributionT<std::piecewise_linear_distribution<double>>> __random15(
-    "piecewise-linear-distribution");
-static const DistributionBuilder<DistributionT<std::poisson_distribution<int>>> __random16("poisson-distribution");
-static const DistributionBuilder<DistributionT<std::student_t_distribution<double>>> __random17(
-    "student-t-distribution");
-static const DistributionBuilder<DistributionT<std::uniform_int_distribution<int>>> __random18(
-    "uniform-int-distribution");
-static const DistributionBuilder<DistributionT<std::uniform_real_distribution<double>>> __random19(
-    "uniform-real-distribution");
-static const DistributionBuilder<DistributionT<std::weibull_distribution<double>>> __random20("weibull-distribution");
+static const DistributionFactory* __distributions[]{
+    new DistributionBuilder<DistributionT<std::bernoulli_distribution>>("bernoulli-distribution"),
+    new DistributionBuilder<DistributionT<std::binomial_distribution<int>>>("binomial-distribution"),
+    new DistributionBuilder<DistributionT<std::cauchy_distribution<double>>>("cauchy-distribution"),
+    new DistributionBuilder<DistributionT<std::chi_squared_distribution<double>>>("chi-squared-distribution"),
+    new DistributionBuilder<DistributionT<std::discrete_distribution<int>>>("discrete-distribution"),
+    new DistributionBuilder<DistributionT<std::exponential_distribution<double>>>("exponential-distribution"),
+    new DistributionBuilder<DistributionT<std::extreme_value_distribution<double>>>("extreme-value-distribution"),
+    new DistributionBuilder<DistributionT<std::fisher_f_distribution<double>>>("fisher-f-distribution"),
+    new DistributionBuilder<DistributionT<std::gamma_distribution<double>>>("gamma-distribution"),
+    new DistributionBuilder<DistributionT<std::geometric_distribution<int>>>("geometric-distribution"),
+    new DistributionBuilder<DistributionT<std::lognormal_distribution<double>>>("lognormal-distribution"),
+    new DistributionBuilder<DistributionT<std::negative_binomial_distribution<int>>>("negative-binomial-distribution"),
+    new DistributionBuilder<DistributionT<std::normal_distribution<double>>>("normal-distribution"),
+    new DistributionBuilder<DistributionT<std::piecewise_constant_distribution<double>>>(
+        "piecewise-constant-distribution"),
+    new DistributionBuilder<DistributionT<std::piecewise_linear_distribution<double>>>("piecewise-linear-distribution"),
+    new DistributionBuilder<DistributionT<std::poisson_distribution<int>>>("poisson-distribution"),
+    new DistributionBuilder<DistributionT<std::student_t_distribution<double>>>("student-t-distribution"),
+    new DistributionBuilder<DistributionT<std::uniform_int_distribution<int>>>("uniform-int-distribution"),
+    new DistributionBuilder<DistributionT<std::uniform_real_distribution<double>>>("uniform-real-distribution"),
+    new DistributionBuilder<DistributionT<std::weibull_distribution<double>>>("weibull-distribution"),
+};
 
 
 namespace {

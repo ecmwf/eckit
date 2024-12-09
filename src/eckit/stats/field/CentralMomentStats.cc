@@ -70,12 +70,14 @@ struct Sum final : CentralMomentStatsT<detail::CentralMomentsT<double>> {
 };
 
 
-static const FieldBuilder<Mean> __builder_1("mean");
-static const FieldBuilder<Variance> __builder_2("variance");
-static const FieldBuilder<Skewness> __builder_3("skewness");
-static const FieldBuilder<Kurtosis> __builder_4("kurtosis");
-static const FieldBuilder<StandardDeviation> __builder_5("stddev");
-static const FieldBuilder<Sum> __builder_6("sum");
+static const FieldStatisticsFactory* __fieldstatistics[]{
+    new FieldStatisticsBuilder<Mean>("mean"),
+    new FieldStatisticsBuilder<Variance>("variance"),
+    new FieldStatisticsBuilder<Skewness>("skewness"),
+    new FieldStatisticsBuilder<Kurtosis>("kurtosis"),
+    new FieldStatisticsBuilder<StandardDeviation>("stddev"),
+    new FieldStatisticsBuilder<Sum>("sum"),
+};
 
 
 }  // namespace eckit::stats::field

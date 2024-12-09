@@ -28,8 +28,7 @@ template <>
 void StatisticsT<MinMax>::execute(const Field& field) {
     Counter::reset(field);
 
-    ASSERT(field.dimensions() == 1);
-    for (const auto& value : field.values(0)) {
+    for (const auto& value : field.values()) {
         count(value);
     }
 }
@@ -43,22 +42,24 @@ void StatisticsT<MinMax>::print(std::ostream& out) const {
 }
 
 
-static const StatisticsBuilder<
-    StatisticsT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::ASYMMETRIC>>>
-    __stats1("angle-degree-asymmetric");
-static const StatisticsBuilder<
-    StatisticsT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>
-    __stats2("angle-degree-symmetric");
-static const StatisticsBuilder<
-    StatisticsT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::ASYMMETRIC>>>
-    __stats3("angle-radian-asymmetric");
-static const StatisticsBuilder<
-    StatisticsT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>
-    __stats4("angle-radian-symmetric");
-static const StatisticsBuilder<StatisticsT<detail::CentralMomentsT<double>>> __stats5("central-moments");
-static const StatisticsBuilder<StatisticsT<detail::PNormsT<double>>> __stats6("p-norms");
-static const StatisticsBuilder<StatisticsT<detail::ScalarT<double>>> __stats7("scalar");
-static const StatisticsBuilder<StatisticsT<MinMax>> __stats8("min-max");
+static const StatisticsFactory* __stats[]{
+    new StatisticsBuilder<
+        StatisticsT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::ASYMMETRIC>>>(
+        "angle-degree-asymmetric"),
+    new StatisticsBuilder<
+        StatisticsT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>(
+        "angle-degree-symmetric"),
+    new StatisticsBuilder<
+        StatisticsT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::ASYMMETRIC>>>(
+        "angle-radian-asymmetric"),
+    new StatisticsBuilder<
+        StatisticsT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>(
+        "angle-radian-symmetric"),
+    new StatisticsBuilder<StatisticsT<detail::CentralMomentsT<double>>>("central-moments"),
+    new StatisticsBuilder<StatisticsT<detail::PNormsT<double>>>("p-norms"),
+    new StatisticsBuilder<StatisticsT<detail::ScalarT<double>>>("scalar"),
+    new StatisticsBuilder<StatisticsT<MinMax>>("min-max"),
+};
 
 
 }  // namespace eckit::stats::statistics

@@ -37,8 +37,7 @@ public:
         Counter::reset(field);
         STATS::reset();
 
-        ASSERT(field.dimensions() == 1);
-        for (auto& value : field.values(0)) {
+        for (auto& value : field.values()) {
             if (count(value)) {
                 STATS::operator()(value);
             }

@@ -63,7 +63,7 @@ void MethodFactory::list(std::ostream& out) {
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     const char* sep = "";
-    for (auto& j : *m) {
+    for (const auto& j : *m) {
         out << sep << j.first;
         sep = ", ";
     }

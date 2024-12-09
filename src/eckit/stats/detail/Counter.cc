@@ -72,7 +72,6 @@ void Counter::reset(double missingValue, bool hasMissing) {
 
 
 void Counter::reset(const Field& field) {
-    ASSERT(field.dimensions() == 1);
     reset(field.missingValue(), field.hasMissing());
 }
 

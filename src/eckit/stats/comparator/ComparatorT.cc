@@ -31,11 +31,8 @@ std::string ComparatorT<STATS>::execute(const Field& field1, const Field& field2
     CounterBinary::reset(field1, field2);
     STATS::reset();
 
-    ASSERT(field1.dimensions() == 1);
-    ASSERT(field2.dimensions() == 1);
-
-    const auto& values1 = field1.values(0);
-    const auto& values2 = field2.values(0);
+    const auto& values1 = field1.values();
+    const auto& values2 = field2.values();
     ASSERT(values1.size() == values2.size());
 
     for (size_t i = 0; i < values1.size(); ++i) {
@@ -66,11 +63,8 @@ template <>
 std::string ComparatorT<MinMax>::execute(const Field& field1, const Field& field2) {
     CounterBinary::reset(field1, field2);
 
-    ASSERT(field1.dimensions() == 1);
-    ASSERT(field2.dimensions() == 1);
-
-    const auto& values1 = field1.values(0);
-    const auto& values2 = field2.values(0);
+    const auto& values1 = field1.values();
+    const auto& values2 = field2.values();
     ASSERT(values1.size() == values2.size());
 
     for (size_t i = 0; i < values1.size(); ++i) {
@@ -89,16 +83,17 @@ void ComparatorT<MinMax>::print(std::ostream& out) const {
 }
 
 
-static const ComparatorBuilder<
-    ComparatorT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>
-    __comp1("angle-degree");
-static const ComparatorBuilder<
-    ComparatorT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>
-    __comp2("angle-radian");
-static const ComparatorBuilder<ComparatorT<detail::CentralMomentsT<double>>> __comp3("central-moments");
-static const ComparatorBuilder<ComparatorT<detail::PNormsT<double>>> __comp4("p-norms");
-static const ComparatorBuilder<ComparatorT<detail::ScalarT<double>>> __comp5("scalar");
-static const ComparatorBuilder<ComparatorT<MinMax>> __comp6("min-max");
+static const ComparatorFactory* __comp[]{
+    new ComparatorBuilder<
+        ComparatorT<detail::AngleT<double, detail::AngleScale::DEGREE, detail::AngleSpace::SYMMETRIC>>>("angle-degree"),
+    new ComparatorBuilder<
+        ComparatorT<detail::AngleT<double, detail::AngleScale::RADIAN, detail::AngleSpace::SYMMETRIC>>>("angle-radian"),
+    new ComparatorBuilder<ComparatorT<detail::CentralMomentsT<double>>>("central-moments"),
+    new ComparatorBuilder<ComparatorT<detail::PNormsT<double>>>("p-norms"),
+    new ComparatorBuilder<ComparatorT<detail::ScalarT<double>>>("scalar"),
+    new ComparatorBuilder<ComparatorT<MinMax>>("min-max"),
+
+};
 
 
 }  // namespace eckit::stats::comparator

@@ -69,11 +69,8 @@ size_t SimplePackingEntropy::bucketCount() const {
 void SimplePackingEntropy::execute(const Field& field) {
     reset();
 
-    ASSERT(field.dimensions() == 1);
-    const auto& values = field.values(0);
-
     Counter::reset(field);
-    for (const auto& value : values) {
+    for (const auto& value : field.values()) {
         count(value);
     }
     const double _max = max();
@@ -90,7 +87,7 @@ void SimplePackingEntropy::execute(const Field& field) {
     const double one_over_log2 = 1. / M_LN2;
 
     Counter::reset(field);
-    for (const auto& value : values) {
+    for (const auto& value : field.values()) {
         if (count(value)) {
             auto b = size_t((value - _min) * scale_);
             ASSERT(b < bucketCount_);

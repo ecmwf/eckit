@@ -30,9 +30,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - run: /buildscripts/prepare_deps.sh ./eckit/python_wrapper/buildconfig 3.11
       - run: /buildscripts/compile.sh ./eckit/python_wrapper/buildconfig
-
-      ################################################################
       - run: /buildscripts/wheel-linux.sh ./eckit/python_wrapper/buildconfig 3.11
       - uses: actions/upload-artifact@v4
         name: Upload wheel 3.11

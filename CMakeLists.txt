@@ -27,7 +27,7 @@ ecbuild_add_option( FEATURE BUILD_TOOLS
 
 ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT OFF
-                    DESCRIPTION "Experimental features that havent graduated to production ready code" )
+                    DESCRIPTION "Experimental features that haven't graduated to production ready code" )
 
 ecbuild_add_option( FEATURE SANDBOX
                     DEFAULT OFF

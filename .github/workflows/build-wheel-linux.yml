@@ -24,7 +24,7 @@ jobs:
     runs-on: [self-hosted, Linux, platform-builder-Rocky-8.6]
     # TODO which manylinux do we want to build for? 2014? 2_28? 2_34? Matrix?
     container:
-      image: eccr.ecmwf.int/wheelmaker/2_28:0.10
+      image: eccr.ecmwf.int/wheelmaker/2_28:latest
       credentials:
         username: ${{ secrets.ECMWF_DOCKER_REGISTRY_USERNAME }}
         password: ${{ secrets.ECMWF_DOCKER_REGISTRY_ACCESS_TOKEN }}

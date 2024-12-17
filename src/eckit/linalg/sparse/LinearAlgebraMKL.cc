@@ -71,9 +71,9 @@ void LinearAlgebraMKL::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
     // We expect indices to be 0-based
     ASSERT(A.outer()[0] == 0);
 
-    const auto m = static_cast<const MKL_INT>(A.rows());
-    const auto n = static_cast<const MKL_INT>(C.cols());
-    const auto k = static_cast<const MKL_INT>(A.cols());
+    const auto m = static_cast<MKL_INT>(A.rows());
+    const auto n = static_cast<MKL_INT>(C.cols());
+    const auto k = static_cast<MKL_INT>(A.cols());
 
     // FIXME: with 0-based indexing, MKL assumes row-major ordering for B and C
     // We need to use 1-based indexing i.e. offset outer and inner indices by 1

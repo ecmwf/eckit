@@ -51,6 +51,16 @@ set( THREADS_HAVE_PTHREAD_ARG FALSE )
 find_package( Threads REQUIRED )
 set( THREADS_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} )
 
+ecbuild_add_option( FEATURE ECKIT_MEMORY_FACTORY_BUILDERS_DEBUG
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::Factory builders debug"
+                    ADVANCED )
+
+ecbuild_add_option( FEATURE ECKIT_MEMORY_FACTORY_EMPTY_DESTRUCTION
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::Factory empty destruction (system dependant)"
+                    ADVANCED )
+
 ### eckit::mpi
 
 ecbuild_add_option( FEATURE MPI
@@ -150,13 +160,59 @@ ecbuild_add_option( FEATURE AEC
 ecbuild_add_option( FEATURE XXHASH
                     DESCRIPTION "xxHash support for hashing" )
 
-### Codec options
+### eckit::codec
 
 ecbuild_add_option( FEATURE ECKIT_CODEC
-                    DEFAULT OFF
-                    DESCRIPTION "Encoding/Decoding library ported from atlas_io" )
+                    DEFAULT ON
+                    DESCRIPTION "eckit::codec encoding/decoding library" )
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
+
+### eckit::maths
+
+ecbuild_add_option( FEATURE CONVEX_HULL
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::maths library convex hull/Delaunay triangulation" )
+                    # REQUIRED_PACKAGES "Qhull COMPONENTS C CXX"
+
+if( eckit_HAVE_CONVEX_HULL )
+    find_package( Qhull REQUIRED CONFIG )
+
+    if( NOT TARGET Qhull::qhullcpp OR NOT TARGET Qhull::qhullstatic_r )
+        message( FATAL_ERROR "eckit::maths ENABLE_CONVEX_HULL requires Qhull C/C++ libraries" )
+    endif()
+
+    add_library(Qhull::Qhull INTERFACE IMPORTED)
+    target_link_libraries(Qhull::Qhull INTERFACE Qhull::qhullcpp Qhull::qhullstatic_r )
+endif()
+
+### eckit::geo
+
+ecbuild_add_option( FEATURE ECKIT_GEO
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::geo geometry library" )
+
+ecbuild_add_option( FEATURE GEO_GRID_ORCA
+                    DEFAULT ON
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
+                    DESCRIPTION "eckit::geo geometry library support for ORCA grids" )
+
+ecbuild_add_option( FEATURE GEO_CACHING
+                    DEFAULT OFF
+                    CONDITION HAVE_ECKIT_GEO
+                    DESCRIPTION "eckit::geo geometry library default caching behaviour" )
+
+ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
+                    DEFAULT OFF
+                    CONDITION HAVE_ECKIT_GEO
+                    DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
+
+ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
+                    DEFAULT OFF
+                    CONDITION HAVE_ECKIT_GEO
+                    DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
+
+set( eckit_GEO_CACHE_PATH "/tmp/cache" )
 
 ### LAPACK
 
@@ -169,9 +225,10 @@ else()
                         REQUIRED_PACKAGES "LAPACK QUIET" )
 endif()
 
-### OpenSSL (for SHA1)
+### OpenSSL (for SHA1 and MD4)
 
 ecbuild_add_option( FEATURE SSL
+                    DEFAULT OFF # We only use deprecated functionality from OpenSSL
                     DESCRIPTION "OpenSSL support"
                     REQUIRED_PACKAGES OpenSSL )
 
@@ -199,6 +256,7 @@ ecbuild_add_option( FEATURE JEMALLOC
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA
+                    DEFAULT OFF
                     CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "CUDA GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDA )
@@ -225,9 +283,6 @@ if( HAVE_RSYNC )
   set( LIBRSYNC_LIBRARIES rsync )
 endif()
 
-ecbuild_add_option( FEATURE SANDBOX
-                    DEFAULT OFF
-                    DESCRIPTION "Sandbox playground for prototyping code that may never see the light of day" )
 
 ### Performance tests
 
@@ -251,6 +306,13 @@ ecbuild_add_option( FEATURE AIO
                     DEFAULT ON
                     CONDITION ${AIO_FOUND}
                     DESCRIPTION "support for asynchronous IO")
+
+### PROJ support
+
+ecbuild_add_option( FEATURE PROJ
+                    DEFAULT OFF
+                    DESCRIPTION "support PROJ-based projections"
+                    REQUIRED_PACKAGES "PROJ 9.2" )
 
 ### c math library, needed when including "math.h"
 
@@ -283,15 +345,15 @@ include(cmake/compiler_warnings.cmake) # optionally handle compiler specific war
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 add_subdirectory( src )
-
 add_subdirectory( bamboo )
 add_subdirectory( doc )
+add_subdirectory( etc )
 add_subdirectory( tests )
 add_subdirectory( regressions )
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
-					   SOURCES AUTHORS README.md NOTICE LICENSE
-					   INSTALL ChangeLog COPYING )
+                       SOURCES AUTHORS README.md NOTICE LICENSE
+                       INSTALL ChangeLog COPYING )
 
 ############################################################################################
 # finalize

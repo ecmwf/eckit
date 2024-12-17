@@ -36,7 +36,7 @@ constexpr bool have_parallel() {
 
 class Environment {
 public:
-    static const char* getDefaultCommType() {
+    static std::string_view getDefaultCommType() {
         // Force a given communicator (only required if e.g. running serial applications with MPI)
         if (const char* forcedComm = ::getenv("ECKIT_MPI_FORCE")) {
             return forcedComm;
@@ -80,10 +80,10 @@ public:
         default_ = world;
     }
 
-    void setDefaut(const char* name) {
+    void setDefault(std::string_view name) {
         AutoLock<Mutex> lock(mutex_);
 
-        std::map<std::string, Comm*>::iterator itr = communicators.find(name);
+        auto itr = communicators.find(name);
         if (itr != communicators.end()) {
             default_ = itr->second;
             return;
@@ -95,10 +95,10 @@ public:
         for (itr = communicators.begin(); itr != communicators.end(); ++itr) {
             eckit::Log::error() << "   " << (*itr).first << std::endl;
         }
-        throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
+        throw eckit::SeriousBug("No communicator called " + std::string{name}, Here());
     }
 
-    bool hasComm(const char* name) {
+    bool hasComm(std::string_view name) {
         AutoLock<Mutex> lock(mutex_);
         std::map<std::string, Comm*>::iterator itr = communicators.find(name);
         if (itr != communicators.end()) {
@@ -120,17 +120,17 @@ public:
     void finaliseAllComms() {
         AutoLock<Mutex> lock(mutex_);
 
-        std::map<std::string, Comm*>::iterator itr = communicators.begin();
+        auto itr = communicators.begin();
         for (; itr != communicators.end(); ++itr) {
             delete itr->second;
         }
         communicators.clear();
     }
 
-    Comm& getComm(const char* name = nullptr) {
+    Comm& getComm(std::string_view name = {}) {
         AutoLock<Mutex> lock(mutex_);
 
-        if (!name && default_) {
+        if (name.empty() && default_) {
             return *default_; /* most common case first */
         }
 
@@ -138,12 +138,12 @@ public:
             initDefault();
         }
 
-        if (!name) {
+        if (name.empty()) {
             ASSERT(default_); /* sanity check init was successful */
             return *default_;
         }
 
-        std::map<std::string, Comm*>::iterator itr = communicators.find(name);
+        auto itr = communicators.find(name);
         if (itr != communicators.end()) {
             return *itr->second;
         }
@@ -153,30 +153,30 @@ public:
         for (itr = communicators.begin(); itr != communicators.end(); ++itr) {
             eckit::Log::error() << "   " << (*itr).first << std::endl;
         }
-        throw eckit::SeriousBug(std::string("No communicator called ") + name, Here());
+        throw eckit::SeriousBug("No communicator called " + std::string{name}, Here());
     }
 
-    void addComm(const char* name, int comm) {
+    void addComm(std::string_view name, int comm) {
         AutoLock<Mutex> lock(mutex_);
 
         if (hasComm(name)) {
-            throw SeriousBug("Communicator with name " + std::string(name) + " already exists", Here());
+            throw SeriousBug("Communicator with name " + std::string{name} + " already exists", Here());
         }
 
         Comm* pComm         = CommFactory::build(name, getDefaultCommType(), comm);
-        communicators[name] = pComm;
+        communicators.emplace(name, pComm);
     }
 
-    void addComm(const char* name, Comm* comm) {
+    void addComm(std::string_view name, Comm* comm) {
         AutoLock<Mutex> lock(mutex_);
 
         if (hasComm(name)) {
-            throw SeriousBug("Communicator with name " + std::string(name) + " already exists", Here());
+            throw SeriousBug("Communicator with name " + std::string{name} + " already exists", Here());
         }
-        communicators[name] = comm;
+        communicators.emplace(name, comm);
     }
 
-    void deleteComm(const char* name) {
+    void deleteComm(std::string_view name) {
         AutoLock<Mutex> lock(mutex_);
 
         auto itr = communicators.find(name);
@@ -188,7 +188,7 @@ public:
             // refuse to delete the default communicator
             if (default_ == comm) {
                 throw SeriousBug("Trying to delete the default Communicator with name "
-                                     + std::string(name),
+                                     + std::string{name},
                                  Here());
             }
 
@@ -198,7 +198,7 @@ public:
             communicators.erase(itr);
         }
         else {
-            throw SeriousBug("Communicator with name " + std::string(name) + " does not exist", Here());
+            throw SeriousBug("Communicator with name " + std::string{name} + " does not exist", Here());
         }
     }
 
@@ -215,7 +215,7 @@ public:
 
     Comm* default_;
 
-    std::map<std::string, Comm*> communicators;
+    std::map<std::string, Comm*, std::less<>> communicators;
 
     eckit::Mutex mutex_;
 };
@@ -224,21 +224,21 @@ public:
 
 class CommFactories {
 public:
-    void registFactory(const std::string& builder, CommFactory* f) {
+    void registFactory(std::string_view builder, CommFactory* f) {
         AutoLock<Mutex> lock(mutex_);
         ASSERT(factories.find(builder) == factories.end());
-        factories[builder] = f;
+        factories.emplace(builder, f);
     }
 
-    void unregistFactory(const std::string& builder) {
+    void unregistFactory(std::string_view builder) {
         AutoLock<Mutex> lock(mutex_);
-        factories.erase(builder);
+        factories.erase(std::string{builder});
     }
 
-    CommFactory& getFactory(const std::string& builder) {
+    CommFactory& getFactory(std::string_view builder) const {
         AutoLock<Mutex> lock(mutex_);
 
-        std::map<std::string, CommFactory*>::const_iterator j = factories.find(builder);
+        auto j = factories.find(builder);
 
         if (j != factories.end()) {
             return *(j->second);
@@ -250,7 +250,7 @@ public:
             eckit::Log::error() << "   " << (*j).first << std::endl;
         }
 
-        throw eckit::SeriousBug(std::string("No CommFactory called ") + builder, Here());
+        throw eckit::SeriousBug("No CommFactory called " + std::string{builder}, Here());
     }
 
     static CommFactories& instance() {
@@ -261,11 +261,11 @@ public:
 private:
     CommFactories() {}
 
-    std::map<std::string, CommFactory*> factories;
-    eckit::Mutex mutex_;
+    std::map<std::string, CommFactory*, std::less<>> factories;
+    mutable eckit::Mutex mutex_;
 };
 
-CommFactory::CommFactory(const std::string& builder) :
+CommFactory::CommFactory(std::string_view builder) :
     builder_(builder) {
     CommFactories::instance().registFactory(builder, this);
 }
@@ -274,43 +274,43 @@ CommFactory::~CommFactory() {
     CommFactories::instance().unregistFactory(builder_);
 }
 
-Comm* CommFactory::build(const std::string& name, const std::string& builder) {
+Comm* CommFactory::build(std::string_view name, std::string_view builder) {
     return CommFactories::instance().getFactory(builder).make(name);
 }
 
-Comm* CommFactory::build(const std::string& name, const std::string& builder, int comm) {
+Comm* CommFactory::build(std::string_view name, std::string_view builder, int comm) {
     return CommFactories::instance().getFactory(builder).make(name, comm);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Comm::Comm(const std::string& name) :
+Comm::Comm(std::string_view name) :
     name_(name) {}
 
 Comm::~Comm() {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Comm& comm(const char* name) {
+Comm& comm(std::string_view name) {
     return Environment::instance().getComm(name);
 }
 
-void setCommDefault(const char* name) {
-    Environment::instance().setDefaut(name);
+void setCommDefault(std::string_view name) {
+    Environment::instance().setDefault(name);
 }
 
-void addComm(const char* name, int comm) {
+void addComm(std::string_view name, int comm) {
     Environment::instance().addComm(name, comm);
 }
-void addComm(const char* name, Comm* comm) {
+void addComm(std::string_view name, Comm* comm) {
     Environment::instance().addComm(name, comm);
 }
 
-void deleteComm(const char* name) {
+void deleteComm(std::string_view name) {
     Environment::instance().deleteComm(name);
 }
 
-bool hasComm(const char* name) {
+bool hasComm(std::string_view name) {
     return Environment::instance().hasComm(name);
 }
 

@@ -30,8 +30,8 @@ protected:  // methods
     template <class T>
     friend class CommBuilder;
 
-    Serial(const std::string& name);
-    Serial(const std::string& name, int);
+    Serial(std::string_view name);
+    Serial(std::string_view name, int);
 
     ~Serial() override;
 

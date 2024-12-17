@@ -39,6 +39,7 @@ private:
 
     // -- Overridden methods
     const eckit::sql::type::SQLType* type() const override;
+    using FunctionExpression::eval;
     double eval(bool& missing) const override;
     std::shared_ptr<SQLExpression> simplify(bool&) override;
 

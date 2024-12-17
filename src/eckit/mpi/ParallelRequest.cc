@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <string_view>
+
 #include "eckit/mpi/ParallelRequest.h"
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Parallel.h"
@@ -16,7 +18,7 @@ namespace eckit {
 namespace mpi {
 
 
-void MPICall(int code, const char* mpifunc, const eckit::CodeLocation& loc);
+void MPICall(int code, std::string_view mpifunc, const eckit::CodeLocation& loc);
 #define MPI_CALL(a) MPICall(a, #a, Here())
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -1,8 +1,8 @@
-#include <limits.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <climits>
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <termios.h>
 #include <unistd.h>
 
@@ -124,8 +124,9 @@ typedef struct context {
 static bool processCode(int c, context* s);
 
 static void output(const context* s) {
-    char* buffer = (char*)malloc(strlen(s->prompt) + strlen(s->curr->edit) + 20);
-    sprintf(buffer, "\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->edit, strlen(s->prompt) + s->pos);
+    const size_t numBytes = strlen(s->prompt) + strlen(s->curr->edit) + 20;
+    char* buffer = (char*)malloc(numBytes);
+    snprintf(buffer, numBytes,"\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->edit, strlen(s->prompt) + s->pos);
     write(1, buffer, strlen(buffer));
     free(buffer);
 }
@@ -285,10 +286,7 @@ static bool processCode(int c, context* s) {
             if (strlen(s->curr->edit)) {
                 return processCode(BACKSPACE, s);
             }
-            else {
-                return processCode(0, s);
-            }
-            break;
+            return processCode(0, s);
 
         case BACKSPACE:
         case CONTROL_H:
@@ -420,14 +418,12 @@ static bool processCode(int c, context* s) {
         case CR:
             write(1, "\r\n", 2);
             return true;
-            break;
 
         case CONTROL_C:
             write(1, "\r\n", 2);
             s->pos = 0;
             return processCode(0,
                                s);  // CONTROL_C behaves as CONTROL_D -- for backward compatibility to previous marsadm
-            break;
 
         case CONTROL_G:
             break;

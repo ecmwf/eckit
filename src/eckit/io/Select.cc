@@ -8,6 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+// Disable warnings: warning #550-D: variable "__d0" was set but never used [set_but_not_used] in FD_ZERO(&r);
+#if defined(__NVCOMPILER)
+#pragma diag_suppress 550
+#endif
 
 #include <sys/ioctl.h>
 #include <unistd.h>

@@ -69,7 +69,7 @@ Now proceed with installation as follows:
 # Environment --- Edit as needed
 srcdir=$(pwd)
 builddir=build
-installdir=$HOME/local
+installdir=$HOME/.local
 
 # 1. Create the build directory:
 mkdir $builddir
@@ -85,6 +85,3 @@ make install
 # 4. Check installation
 $installdir/bin/eckit-version
 ```
-
-
-

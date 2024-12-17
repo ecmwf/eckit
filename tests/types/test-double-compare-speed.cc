@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Timer.h"

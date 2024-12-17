@@ -10,7 +10,7 @@
 
 #include "eckit/mpi/Serial.h"
 
-#include <errno.h>
+#include <cerrno>
 #include <unistd.h>
 
 #include <cstring>
@@ -134,13 +134,13 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Serial::Serial(const std::string& name) :
+Serial::Serial(std::string_view name) :
     Comm(name) {
     rank_ = 0;
     size_ = 1;
 }
 
-Serial::Serial(const std::string& name, int) :
+Serial::Serial(std::string_view name, int) :
     Comm(name) {
     rank_ = 0;
     size_ = 1;

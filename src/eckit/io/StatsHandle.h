@@ -67,6 +67,7 @@ public:
 
     DataHandle* clone() const override;
 
+    using DataHandle::saveInto;
     Length saveInto(DataHandle& other, TransferWatcher& watcher) override;
 
     std::string name() const override;

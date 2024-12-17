@@ -9,7 +9,7 @@
  */
 
 #include <fcntl.h>
-#include <signal.h>
+#include <csignal>
 #include <unistd.h>
 
 #include "eckit/exception/Exceptions.h"

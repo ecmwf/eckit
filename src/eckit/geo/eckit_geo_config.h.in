@@ -1,0 +1,25 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+
+#pragma once
+
+#cmakedefine01 eckit_HAVE_ECKIT_CODEC
+#cmakedefine01 eckit_HAVE_GEO_BITREPRODUCIBLE
+#cmakedefine01 eckit_HAVE_GEO_CACHING
+#cmakedefine01 eckit_HAVE_GEO_CONVEX_HULL
+#cmakedefine01 eckit_HAVE_GEO_GRID_ORCA
+#cmakedefine01 eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT
+#cmakedefine eckit_GEO_CACHE_PATH "@eckit_GEO_CACHE_PATH@"
+#cmakedefine eckit_GEO_ETC_GRID "@eckit_GEO_ETC_GRID@"
+
+#cmakedefine01 eckit_HAVE_PROJ
+

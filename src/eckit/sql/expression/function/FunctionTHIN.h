@@ -37,6 +37,7 @@ protected:
     void prepare(SQLSelect&) override;
     void cleanup(SQLSelect&) override;
     bool isConstant() const override;
+    using FunctionIntegerExpression::eval;
     double eval(bool& missing) const override;
     std::shared_ptr<SQLExpression> simplify(bool&) override;
     bool isAggregate() const override { return false; }

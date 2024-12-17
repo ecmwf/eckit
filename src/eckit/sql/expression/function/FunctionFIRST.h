@@ -40,6 +40,7 @@ private:
     void prepare(SQLSelect&) override;
     void cleanup(SQLSelect&) override;
     void partialResult() override;
+    using FunctionExpression::eval;
     double eval(bool& missing) const override;
     bool isAggregate() const override { return true; }
 

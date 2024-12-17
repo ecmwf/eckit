@@ -11,7 +11,7 @@
 #include "eckit/eckit.h"
 
 #include <fcntl.h>
-#include <limits.h>
+#include <climits>
 #include <unistd.h>
 
 #include <algorithm>

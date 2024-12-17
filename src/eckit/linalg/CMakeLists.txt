@@ -49,7 +49,6 @@ if( eckit_HAVE_EIGEN )
           dense/LinearAlgebraEigen.h
           sparse/LinearAlgebraEigen.cc
           sparse/LinearAlgebraEigen.h )
-    list( APPEND eckit_la_pincludes "${EIGEN3_INCLUDE_DIRS}" )
 endif()
 
 if( eckit_HAVE_LAPACK )
@@ -89,6 +88,15 @@ ecbuild_add_library( TARGET             eckit_linalg TYPE SHARED
                      PRIVATE_INCLUDES   ${eckit_la_pincludes}
                      PUBLIC_LIBS        eckit
                      PRIVATE_LIBS       ${eckit_la_plibs} )
+
+if( eckit_HAVE_EIGEN )
+    if(NOT EIGEN3_INCLUDE_DIRS AND TARGET Eigen3::Eigen)
+        get_target_property(EIGEN3_INCLUDE_DIRS Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+    endif()
+
+    # Add include directories with "SYSTEM" to avoid warnings from within Eigen headers
+    target_include_directories( eckit_linalg SYSTEM PRIVATE ${EIGEN3_INCLUDE_DIRS} )
+endif()
 
 if( CUDA_FOUND )
   set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )

@@ -73,6 +73,10 @@ eckit::Value Configuration::lookUp(const std::string& s, bool& found) const {
     eckit::Value result = *root_;
 
     for (size_t i = 0; i < path.size(); i++) {
+        if (!(result.isMap() || result.isOrderedMap())) {
+            found = false;
+            return result;
+        }
         const std::string& key = path[i];
         if (!result.contains(key)) {
             found = false;
@@ -299,7 +303,7 @@ bool Configuration::get(const std::string& name, LocalConfiguration& value) cons
     return found;
 }
 
-const Value& Configuration::get() const {
+const Value& Configuration::getValue() const {
     return *root_;
 }
 
@@ -460,6 +464,113 @@ LocalConfiguration Configuration::getSubConfiguration(const std::string& name) c
     return result;
 }
 
+bool Configuration::isIntegral(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    return found && v.isNumber();
+}
+
+bool Configuration::isBoolean(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    return found && v.isBool();
+}
+
+bool Configuration::isFloatingPoint(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    return found && v.isDouble();
+}
+
+bool Configuration::isString(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    return found && v.isString();
+}
+
+bool Configuration::isList(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    return found && v.isList();
+}
+
+bool Configuration::isSubConfiguration(const std::string& name) const {
+    bool found     = false;
+    eckit::Value v = lookUp(name, found);
+    return found && (v.isMap() || v.isOrderedMap());
+}
+
+bool Configuration::isNull(const std::string& name) const {
+    bool found     = false;
+    eckit::Value v = lookUp(name, found);
+    return found && (v.isNil());
+}
+
+bool Configuration::isIntegralList(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found && v.isList()) {
+        if (v.size() == 0) {
+            return true;
+        }
+        auto& firstElement = v[0];
+        return firstElement.isNumber();
+    }
+    return false;
+}
+
+bool Configuration::isBooleanList(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found && v.isList()) {
+        if (v.size() == 0) {
+            return true;
+        }
+        auto& firstElement = v[0];
+        return firstElement.isBool();
+    }
+    return false;
+}
+
+bool Configuration::isFloatingPointList(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found && v.isList()) {
+        if (v.size() == 0) {
+            return true;
+        }
+        auto& firstElement = v[0];
+        return firstElement.isDouble();
+    }
+    return false;
+}
+
+bool Configuration::isStringList(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found && v.isList()) {
+        if (v.size() == 0) {
+            return true;
+        }
+        auto& firstElement = v[0];
+        return firstElement.isString();
+    }
+    return false;
+}
+
+bool Configuration::isSubConfigurationList(const std::string& name) const {
+    bool found = false;
+    eckit::Value v = lookUp(name, found);
+    if (found && v.isList()) {
+        if (v.size() == 0) {
+            return true;
+        }
+        auto& firstElement = v[0];
+        return firstElement.isMap() || firstElement.isOrderedMap();
+    }
+    return false;
+}
+
 template <class T>
 void Configuration::_getWithDefault(const std::string& name, T& value, const T& defaultVal) const {
     if (!get(name, value)) {
@@ -581,10 +692,7 @@ void Configuration::json(JSON& s) const {
 
 std::vector<std::string> Configuration::keys() const {
     std::vector<std::string> result;
-    ValueMap m = *root_;
-    for (ValueMap::const_iterator j = m.begin(); j != m.end(); ++j) {
-        result.push_back((*j).first);
-    }
+    eckit::fromValue(result, root_->keys());
     return result;
 }
 

@@ -11,7 +11,7 @@
 #ifndef eckit_Exceptions_h
 #define eckit_Exceptions_h
 
-#include <errno.h>
+#include <cerrno>
 #include <iostream>
 #include <sstream>
 
@@ -186,7 +186,7 @@ public:
 };
 
 /// For compatibility
-using MethodNotYetImplemented = NotImplemented;
+using MethodNotYetImplemented [[deprecated("Use eckit::NotImplemented directly")]] = NotImplemented;
 
 class FunctionalityNotSupported : public NotImplemented {
 public:

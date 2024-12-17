@@ -27,3 +27,7 @@ ecbuild_add_test( TARGET      eckit_test_log_user_channels
                   ENABLED     OFF
                   SOURCES     test_log_user_channels.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_syslog
+                  SOURCES     test_syslog.cc
+                  LIBS        eckit )

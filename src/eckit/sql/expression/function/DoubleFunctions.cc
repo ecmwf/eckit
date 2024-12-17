@@ -11,7 +11,7 @@
 
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-#include <float.h>
+#include <cfloat>
 #include <climits>
 #include <cmath>
 
@@ -32,6 +32,7 @@ public:
 template <double (*FN)(double)>
 class UnaryFunction : public ArityFunction<UnaryFunction<FN>, 1> {
 
+    using FunctionExpression::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -49,6 +50,7 @@ public:
 template <double (*FN)(double, double)>
 class BinaryFunction : public ArityFunction<BinaryFunction<FN>, 2> {
 
+    using FunctionExpression::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -70,6 +72,7 @@ public:
 template <double (*FN)(double, double, double)>
 class TertiaryFunction : public ArityFunction<TertiaryFunction<FN>, 3> {
 
+    using FunctionExpression::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -95,6 +98,7 @@ public:
 template <double (*FN)(double, double, double, double)>
 class QuaternaryFunction : public ArityFunction<QuaternaryFunction<FN>, 4> {
 
+    using FunctionExpression::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -124,6 +128,7 @@ public:
 template <double (*FN)(double, double, double, double, double)>
 class QuinaryFunction : public ArityFunction<QuinaryFunction<FN>, 5> {
 
+    using FunctionExpression::eval;
     double eval(bool& m) const {
 
         double a0 = this->args_[0]->eval(m);
@@ -364,6 +369,7 @@ double ldexp_double(double l, double r) {
 
 class MultiplyFunction : public ArityFunction<MultiplyFunction, 2> {
 
+    using FunctionExpression::eval;
     double eval(bool& m) const {
 
         bool m0   = false;

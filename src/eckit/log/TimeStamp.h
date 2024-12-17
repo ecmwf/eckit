@@ -15,7 +15,7 @@
 #ifndef eckit_log_TimeStamp_h
 #define eckit_log_TimeStamp_h
 
-#include <time.h>
+#include <ctime>
 
 #include <iosfwd>
 #include <string>

@@ -23,19 +23,21 @@
 
 #include <aws/s3/S3Client.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <vector>
+
 namespace eckit {
 
 class S3ContextAWS;
+struct S3Config;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3ClientAWS: public S3Client {
+class S3ClientAWS final : public S3Client {
 public:  // methods
     explicit S3ClientAWS(const S3Config& config);
-
-    ~S3ClientAWS();
-
-    void configure(const S3Config& config);
 
     void createBucket(const std::string& bucket) const override;
 
@@ -47,11 +49,16 @@ public:  // methods
 
     auto listBuckets() const -> std::vector<std::string> override;
 
-    auto putObject(const std::string& bucket, const std::string& object, const void* buffer, uint64_t length) const
-        -> long long override;
+    auto putObject(const std::string& bucket,
+                   const std::string& object,
+                   const void*        buffer,
+                   uint64_t           length) const -> long long override;
 
-    auto getObject(const std::string& bucket, const std::string& object, void* buffer, const uint64_t offset,
-                   const uint64_t length) const -> long long override;
+    auto getObject(const std::string& bucket,
+                   const std::string& object,
+                   void*              buffer,
+                   uint64_t           offset,
+                   uint64_t           length) const -> long long override;
 
     void deleteObject(const std::string& bucket, const std::string& object) const override;
 
@@ -64,12 +71,14 @@ public:  // methods
     auto objectSize(const std::string& bucket, const std::string& object) const -> long long override;
 
 private:  // methods
-    auto getClient() const -> Aws::S3::S3Client&;
+    void configure() const;
+
+    auto client() const -> Aws::S3::S3Client&;
 
 private:  // members
     const S3ContextAWS& ctx_;
 
-    std::unique_ptr<Aws::S3::S3Client> client_;
+    mutable std::unique_ptr<Aws::S3::S3Client> client_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

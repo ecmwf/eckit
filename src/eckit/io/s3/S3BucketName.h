@@ -21,6 +21,12 @@
 #pragma once
 
 #include "eckit/io/s3/S3Name.h"
+#include "eckit/net/Endpoint.h"
+
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace eckit {
 
@@ -28,11 +34,11 @@ class S3ObjectName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3BucketName: public S3Name {
+class S3BucketName : public S3Name {
 public:  // methods
     explicit S3BucketName(const URI& uri);
 
-    S3BucketName(const net::Endpoint& endpoint, const std::string& bucket);
+    S3BucketName(const net::Endpoint& endpoint, std::string bucket);
 
     auto makeObject(const std::string& object) const -> std::unique_ptr<S3ObjectName>;
 
@@ -46,7 +52,7 @@ public:  // methods
 
     void ensureDestroyed();
 
-    /// @todo: return S3 object iterator but first add prefix
+    /// @todo return S3 object iterator but first add prefix
     auto listObjects() const -> std::vector<std::string>;
 
     auto asString() const -> std::string override;

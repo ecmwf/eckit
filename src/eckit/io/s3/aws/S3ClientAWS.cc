@@ -16,13 +16,26 @@
 #include "eckit/io/s3/aws/S3ClientAWS.h"
 
 #include "eckit/config/LibEcKit.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/s3/S3Credential.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/io/s3/aws/S3ContextAWS.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
+#include "eckit/net/IPAddress.h"
 
 #include <aws/core/auth/AWSCredentialsProvider.h>
+#include <aws/core/client/ClientConfiguration.h>
+#include <aws/core/utils/memory/AWSMemory.h>
+#include <aws/core/utils/memory/stl/AWSAllocator.h>
+#include <aws/core/utils/memory/stl/AWSStreamFwd.h>
+#include <aws/core/utils/memory/stl/AWSStringStream.h>
 #include <aws/core/utils/stream/PreallocatedStreamBuf.h>
+#include <aws/s3/S3Client.h>
+#include <aws/s3/S3EndpointProvider.h>
+#include <aws/s3/S3Errors.h>
+#include <aws/s3/model/CreateBucketConfiguration.h>
 #include <aws/s3/model/CreateBucketRequest.h>
 #include <aws/s3/model/Delete.h>
 #include <aws/s3/model/DeleteBucketRequest.h>
@@ -32,10 +45,15 @@
 #include <aws/s3/model/HeadBucketRequest.h>
 #include <aws/s3/model/HeadObjectRequest.h>
 #include <aws/s3/model/ListObjectsV2Request.h>
+#include <aws/s3/model/ObjectIdentifier.h>
 #include <aws/s3/model/PutObjectRequest.h>
 
+#include <cstdint>
 #include <iostream>
 #include <memory>
+#include <sstream>
+#include <string>
+#include <vector>
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -47,10 +65,10 @@ inline std::string awsErrorMessage(const std::string& msg, const Aws::S3::S3Erro
     return oss.str();
 }
 
-class BufferIOStream: public Aws::IOStream {
+class BufferIOStream : public Aws::IOStream {
 public:
-    BufferIOStream(void* buffer, const uint64_t length):
-        Aws::IOStream(new Aws::Utils::Stream::PreallocatedStreamBuf(reinterpret_cast<unsigned char*>(buffer), length)) {
+    BufferIOStream(void* buffer, const uint64_t length)
+        : Aws::IOStream(new Aws::Utils::Stream::PreallocatedStreamBuf(reinterpret_cast<unsigned char*>(buffer), length)) {
     }
 
     ~BufferIOStream() override { delete rdbuf(); }
@@ -62,52 +80,53 @@ public:
 
 namespace eckit {
 
-const auto ALLOC_TAG = "S3ClientAWS";
+const auto allocTag = "S3ClientAWS";
 
-S3ClientAWS::S3ClientAWS(const S3Config& config): S3Client(config), ctx_(S3ContextAWS::instance()) {
-    configure(config);
-}
-
-S3ClientAWS::~S3ClientAWS() = default;
+S3ClientAWS::S3ClientAWS(const S3Config& config) : S3Client(config), ctx_ {S3ContextAWS::instance()} { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void S3ClientAWS::configure(const S3Config& config) {
-    LOG_DEBUG_LIB(LibEcKit) << "Configure S3 AWS client..." << std::endl;
+void S3ClientAWS::configure() const {
+
+    LOG_DEBUG_LIB(LibEcKit) << "Configure S3 AWS client... ";
 
     Aws::Client::ClientConfigurationInitValues initVal;
     initVal.shouldDisableIMDS = true;
-    Aws::Client::ClientConfiguration configuration(initVal);
+    Aws::Client::ClientConfiguration configAWS(initVal);
 
     // we are not an ec2 instance
-    configuration.disableIMDS   = true;
-    configuration.disableImdsV1 = true;
+    configAWS.disableIMDS   = true;
+    configAWS.disableImdsV1 = true;
 
     // setup region
-    if (!config.region.empty()) { configuration.region = config.region; }
+    if (!config().region.empty()) { configAWS.region = config().region; }
 
     // configuration.scheme    = Aws::Http::Scheme::HTTPS;
-    configuration.verifySSL = false;
+    configAWS.verifySSL = false;
 
     // setup endpoint
-    if (!config.endpoint.host().empty()) { configuration.endpointOverride = config.endpoint.host(); }
-    if (config.endpoint.port() > 0) { configuration.endpointOverride += ":" + std::to_string(config.endpoint.port()); }
+    if (config().endpoint.host().empty()) { throw UserError("Empty endpoint hostname in configuration!", Here()); }
 
-    if (auto cred = S3Session::instance().getCredentials(config.endpoint)) {
-        // credentials provider
-        auto cProvider = Aws::MakeShared<Aws::Auth::SimpleAWSCredentialsProvider>(ALLOC_TAG, cred->keyID, cred->secret);
-        // endpoint provider
-        auto eProvider = Aws::MakeShared<Aws::S3::Endpoint::S3EndpointProvider>(ALLOC_TAG);
-        // client
-        client_ = std::make_unique<Aws::S3::S3Client>(cProvider, eProvider, configuration);
-    } else {
-        throw S3SeriousBug("No credentials found!", Here());
-    }
+    configAWS.endpointOverride = net::IPAddress::hostAddress(config().endpoint.host()).asString();
+
+    ASSERT(config().endpoint.port() > 0);
+    configAWS.endpointOverride += ":" + std::to_string(config().endpoint.port());
+
+    LOG_DEBUG_LIB(LibEcKit) << "endpoint=" << configAWS.endpointOverride << std::endl;
+
+    const auto cred = S3Session::instance().getCredential(config().endpoint);
+    // credentials provider
+    auto cProvider = Aws::MakeShared<Aws::Auth::SimpleAWSCredentialsProvider>(allocTag, cred->keyID, cred->secret);
+    // endpoint provider
+    auto eProvider = Aws::MakeShared<Aws::S3::Endpoint::S3EndpointProvider>(allocTag);
+    // client
+    client_ = std::make_unique<Aws::S3::S3Client>(cProvider, eProvider, configAWS);
 }
 
-auto S3ClientAWS::getClient() const -> Aws::S3::S3Client& {
-    if (client_) { return *client_; }
-    throw S3SeriousBug("Invalid client!", Here());
+auto S3ClientAWS::client() const -> Aws::S3::S3Client& {
+    if (!client_) { configure(); }
+    if (!client_) { throw S3SeriousBug("Invalid client!", Here()); }
+    return *client_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -117,7 +136,7 @@ void S3ClientAWS::createBucket(const std::string& bucket) const {
     Aws::S3::Model::CreateBucketRequest request;
     request.SetBucket(bucket);
 
-    auto outcome = getClient().CreateBucket(request);
+    auto outcome = client().CreateBucket(request);
 
     if (!outcome.IsSuccess()) {
         const auto& err   = outcome.GetError();
@@ -128,6 +147,8 @@ void S3ClientAWS::createBucket(const std::string& bucket) const {
         }
         throw S3SeriousBug(msg, Here());
     }
+
+    /// @todo do we wait for the bucket to propagate?
 
     LOG_DEBUG_LIB(LibEcKit) << "Created bucket=" << bucket << std::endl;
 }
@@ -142,7 +163,7 @@ void S3ClientAWS::deleteBucket(const std::string& bucket) const {
     Aws::S3::Model::DeleteBucketRequest request;
     request.SetBucket(bucket);
 
-    auto outcome = getClient().DeleteBucket(request);
+    auto outcome = client().DeleteBucket(request);
 
     if (!outcome.IsSuccess()) {
         const auto& err = outcome.GetError();
@@ -164,13 +185,13 @@ auto S3ClientAWS::bucketExists(const std::string& bucket) const -> bool {
 
     request.SetBucket(bucket);
 
-    return getClient().HeadBucket(request).IsSuccess();
+    return client().HeadBucket(request).IsSuccess();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
-    auto outcome = getClient().ListBuckets();
+    auto outcome = client().ListBuckets();
 
     if (outcome.IsSuccess()) {
         std::vector<std::string> buckets;
@@ -185,8 +206,10 @@ auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
 //----------------------------------------------------------------------------------------------------------------------
 // PUT OBJECT
 
-auto S3ClientAWS::putObject(const std::string& bucket, const std::string& object, const void* buffer,
-                            const uint64_t length) const -> long long {
+auto S3ClientAWS::putObject(const std::string& bucket,
+                            const std::string& object,
+                            const void*        buffer,
+                            const uint64_t     length) const -> long long {
     Aws::S3::Model::PutObjectRequest request;
 
     request.SetBucket(bucket);
@@ -194,14 +217,14 @@ auto S3ClientAWS::putObject(const std::string& bucket, const std::string& object
     // request.SetContentLength(length);
 
     if (buffer && length > 0) {
-        auto streamBuffer = Aws::MakeShared<BufferIOStream>(ALLOC_TAG, const_cast<void*>(buffer), length);
+        auto streamBuffer = Aws::MakeShared<BufferIOStream>(allocTag, const_cast<void*>(buffer), length);
         request.SetBody(streamBuffer);
     } else {
         // empty object
-        request.SetBody(Aws::MakeShared<Aws::StringStream>(ALLOC_TAG));
+        request.SetBody(Aws::MakeShared<Aws::StringStream>(allocTag));
     }
 
-    auto outcome = getClient().PutObject(request);
+    auto outcome = client().PutObject(request);
 
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Put object=" << object << " [len=" << length << "] to bucket=" << bucket << std::endl;
@@ -216,17 +239,20 @@ auto S3ClientAWS::putObject(const std::string& bucket, const std::string& object
 //----------------------------------------------------------------------------------------------------------------------
 // GET OBJECT
 
-auto S3ClientAWS::getObject(const std::string& bucket, const std::string& object, void* buffer, const uint64_t offset,
+auto S3ClientAWS::getObject(const std::string& bucket,
+                            const std::string& object,
+                            void*              buffer,
+                            const uint64_t /*offset*/,
                             const uint64_t length) const -> long long {
     Aws::S3::Model::GetObjectRequest request;
 
     request.SetBucket(bucket);
     request.SetKey(object);
-    request.SetResponseStreamFactory([&buffer, length]() { return Aws::New<BufferIOStream>(ALLOC_TAG, buffer, length); });
+    request.SetResponseStreamFactory([&buffer, length]() { return Aws::New<BufferIOStream>(allocTag, buffer, length); });
     /// @todo range and streambuf
     // request.SetRange(std::to_string(offset) + "-" + std::to_string(offset + length));
 
-    auto outcome = getClient().GetObject(request);
+    auto outcome = client().GetObject(request);
 
     if (outcome.IsSuccess()) {
         LOG_DEBUG_LIB(LibEcKit) << "Get object=" << object << " from bucket=" << bucket << std::endl;
@@ -248,7 +274,7 @@ void S3ClientAWS::deleteObject(const std::string& bucket, const std::string& obj
     request.SetBucket(bucket);
     request.SetKey(object);
 
-    auto outcome = getClient().DeleteObject(request);
+    auto outcome = client().DeleteObject(request);
 
     if (!outcome.IsSuccess()) {
         auto msg = awsErrorMessage("Failed to delete object=" + object + " in bucket=" + bucket, outcome.GetError());
@@ -273,7 +299,7 @@ void S3ClientAWS::deleteObjects(const std::string& bucket, const std::vector<std
 
     request.SetDelete(deleteObject);
 
-    auto outcome = getClient().DeleteObjects(request);
+    auto outcome = client().DeleteObjects(request);
 
     if (!outcome.IsSuccess()) {
         auto msg = awsErrorMessage("Failed to delete objects in bucket=" + bucket, outcome.GetError());
@@ -291,7 +317,7 @@ auto S3ClientAWS::listObjects(const std::string& bucket) const -> std::vector<st
 
     request.SetBucket(bucket);
 
-    auto outcome = getClient().ListObjectsV2(request);
+    auto outcome = client().ListObjectsV2(request);
 
     if (!outcome.IsSuccess()) {
         const auto& err = outcome.GetError();
@@ -316,7 +342,7 @@ auto S3ClientAWS::objectExists(const std::string& bucket, const std::string& obj
     request.SetBucket(bucket);
     request.SetKey(object);
 
-    return getClient().HeadObject(request).IsSuccess();
+    return client().HeadObject(request).IsSuccess();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -327,7 +353,7 @@ auto S3ClientAWS::objectSize(const std::string& bucket, const std::string& objec
     request.SetBucket(bucket);
     request.SetKey(object);
 
-    auto outcome = getClient().HeadObject(request);
+    auto outcome = client().HeadObject(request);
 
     if (outcome.IsSuccess()) { return outcome.GetResult().GetContentLength(); }
 

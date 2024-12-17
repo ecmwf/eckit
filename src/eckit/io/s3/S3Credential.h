@@ -19,16 +19,48 @@
 
 #pragma once
 
+#include "eckit/net/Endpoint.h"
+
 #include <string>
+#include <vector>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// @brief S3 credential information for a given endpoint
+///
+/// @example Example YAML S3 credential file:
+///
+/// ECKIT_S3_CREDENTIALS_FILE = ~/.config/eckit/S3Credentials.yaml
+///
+/// ---
+/// credentials:
+///   - endpoint: '127.0.0.1:9000'
+///     accessKeyID: 'minio'
+///     secretKey: 'minio1234'
+///
+///   - endpoint: 'minio:9000'
+///     accessKeyID: 'minio'
+///     secretKey: 'minio1234'
+///
+///   - endpoint: 'localhost:9000'
+///     accessKeyID: 'asd2'
+///     secretKey: 'asd2'
+///
 struct S3Credential {
-    std::string endpoint {"127.0.0.1"};
-    std::string keyID;
-    std::string secret;
+
+    static auto fromFile(std::string path) -> std::vector<S3Credential>;
+
+    auto operator==(const S3Credential& other) const -> bool {
+        return endpoint == other.endpoint && keyID == other.keyID && secret == other.secret;
+    }
+
+    auto operator!=(const S3Credential& other) const -> bool { return !(*this == other); }
+
+    net::Endpoint endpoint;
+    std::string   keyID;
+    std::string   secret;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

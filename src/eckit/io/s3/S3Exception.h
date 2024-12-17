@@ -15,46 +15,49 @@
 
 /// @file   S3Exception.h
 /// @author Metin Cakircali
-/// @author Nicolau Manubens
 /// @date   Jan 2024
 
 #pragma once
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 
+#include <iosfwd>
 #include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3SeriousBug: public SeriousBug {
+class S3SeriousBug : public SeriousBug {
 public:
     S3SeriousBug(const std::string& msg, const CodeLocation& loc);
     S3SeriousBug(const std::string& msg, int code, const CodeLocation& loc);
-    S3SeriousBug(const std::ostringstream& msg, const CodeLocation& loc): S3SeriousBug(msg.str(), loc) { }
-    S3SeriousBug(const std::ostringstream& msg, int code, const CodeLocation& loc):
-        S3SeriousBug(msg.str(), code, loc) { }
+
+    S3SeriousBug(const std::ostringstream& msg, const CodeLocation& loc) : S3SeriousBug(msg.str(), loc) { }
+
+    S3SeriousBug(const std::ostringstream& msg, int code, const CodeLocation& loc)
+        : S3SeriousBug(msg.str(), code, loc) { }
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3Exception: public Exception {
+class S3Exception : public Exception {
 public:
     S3Exception(const std::string& msg, const CodeLocation& loc);
 };
 
-class S3BucketNotEmpty: public S3Exception {
+class S3BucketNotEmpty : public S3Exception {
 public:
     S3BucketNotEmpty(const std::string& msg, const CodeLocation& loc);
 };
 
-class S3EntityNotFound: public S3Exception {
+class S3EntityNotFound : public S3Exception {
 public:
     S3EntityNotFound(const std::string& msg, const CodeLocation& loc);
 };
 
-class S3EntityAlreadyExists: public S3Exception {
+class S3EntityAlreadyExists : public S3Exception {
 public:
     S3EntityAlreadyExists(const std::string& msg, const CodeLocation& loc);
 };

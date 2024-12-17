@@ -22,6 +22,7 @@
 
 #include "eckit/net/Endpoint.h"
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 #include <vector>
@@ -33,12 +34,25 @@ class S3Client;
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3Name {
+public:  // types
+    static constexpr auto type = "s3";
+
 public:  // methods
     explicit S3Name(const URI& uri);
 
-    S3Name(const net::Endpoint& endpoint, const std::string& name);
+    S3Name(const net::Endpoint& endpoint, std::string name);
+
+    // rules
+
+    S3Name(const S3Name&)            = default;
+    S3Name& operator=(const S3Name&) = default;
+
+    S3Name(S3Name&&)            = delete;
+    S3Name& operator=(S3Name&&) = delete;
 
     virtual ~S3Name();
+
+    // accessors
 
     auto uri() const -> URI;
 
@@ -48,22 +62,21 @@ public:  // methods
 
     virtual auto asString() const -> std::string;
 
-    friend std::ostream& operator<<(std::ostream& out, const S3Name& name) {
-        name.print(out);
-        return out;
-    }
-
 protected:  // methods
     virtual void print(std::ostream& out) const;
+
+    friend std::ostream& operator<<(std::ostream& out, const S3Name& name);
 
     [[nodiscard]]
     auto parseName() const -> std::vector<std::string>;
 
-    auto client() const -> std::shared_ptr<S3Client>;
+    auto client() const -> S3Client&;
 
 private:  // members
-    const net::Endpoint endpoint_;
-    const std::string   name_;
+    net::Endpoint endpoint_;
+    std::string   name_;
+
+    mutable std::shared_ptr<S3Client> client_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

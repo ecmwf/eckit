@@ -283,33 +283,34 @@ if(HAVE_RADOS)
     )
 endif()
 
-if(HAVE_AWS_S3)
-list( APPEND eckit_io_srcs
-io/s3/aws/S3ClientAWS.cc
-io/s3/aws/S3ClientAWS.h
-io/s3/aws/S3ContextAWS.cc
-io/s3/aws/S3ContextAWS.h
-io/s3/S3BucketName.cc
-io/s3/S3BucketName.h
-io/s3/S3Client.cc
-io/s3/S3Client.h
-io/s3/S3Config.cc
-io/s3/S3Config.h
-io/s3/S3Credential.h
-io/s3/S3Exception.cc
-io/s3/S3Exception.h
-io/s3/S3Handle.cc
-io/s3/S3Handle.h
-io/s3/S3Name.cc
-io/s3/S3Name.h
-io/s3/S3ObjectName.cc
-io/s3/S3ObjectName.h
-io/s3/S3Session.cc
-io/s3/S3Session.h
-io/s3/S3URIManager.cc
-io/s3/S3URIManager.h
-)
-endif(HAVE_AWS_S3)
+if( eckit_HAVE_AWS_S3 )
+    list( APPEND eckit_io_srcs
+        io/s3/aws/S3ClientAWS.cc
+        io/s3/aws/S3ClientAWS.h
+        io/s3/aws/S3ContextAWS.cc
+        io/s3/aws/S3ContextAWS.h
+        io/s3/S3BucketName.cc
+        io/s3/S3BucketName.h
+        io/s3/S3Client.cc
+        io/s3/S3Client.h
+        io/s3/S3Config.cc
+        io/s3/S3Config.h
+        io/s3/S3Credential.cc
+        io/s3/S3Credential.h
+        io/s3/S3Exception.cc
+        io/s3/S3Exception.h
+        io/s3/S3Handle.cc
+        io/s3/S3Handle.h
+        io/s3/S3Name.cc
+        io/s3/S3Name.h
+        io/s3/S3ObjectName.cc
+        io/s3/S3ObjectName.h
+        io/s3/S3Session.cc
+        io/s3/S3Session.h
+        io/s3/S3URIManager.cc
+        io/s3/S3URIManager.h
+    )
+endif( eckit_HAVE_AWS_S3 )
 
 list( APPEND eckit_filesystem_srcs
     filesystem/BasePathName.cc
@@ -960,9 +961,9 @@ ecbuild_add_library(
               "${BZIP2_INCLUDE_DIRS}"
               "${AEC_INCLUDE_DIRS}"
               "${RADOS_INCLUDE_DIRS}"
-              "${AWSSDK_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
+              "${AWSSDK_INCLUDE_DIRS}"
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"

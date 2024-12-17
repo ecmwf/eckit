@@ -19,28 +19,42 @@
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/io/s3/S3BucketName.h"
 #include "eckit/io/s3/S3Client.h"
-#include "eckit/io/s3/S3Handle.h"
+#include "eckit/io/s3/S3Credential.h"
 #include "eckit/io/s3/S3ObjectName.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Timer.h"
+#include "eckit/net/Endpoint.h"
 #include "eckit/testing/Test.h"
 
-#include <cstring>
-#include <string>
+#include <bits/basic_string.h>
 
-using namespace std;
+#include <cstring>
+#include <iostream>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <string_view>
+
+using namespace std::string_literals;
+
 using namespace eckit;
 using namespace eckit::testing;
 
 namespace eckit::test {
 
+//----------------------------------------------------------------------------------------------------------------------
+
+namespace {
+
 constexpr std::string_view TEST_DATA = "abcdefghijklmnopqrstuvwxyz";
 
-static const std::string TEST_BUCKET("eckit-s3handle-test-bucket");
-static const std::string TEST_OBJECT("eckit-s3handle-test-object");
+const net::Endpoint TEST_ENDPOINT {"minio", 9000};
+const std::string   TEST_BUCKET {"eckit-s3handle-test-bucket"};
+const std::string   TEST_OBJECT {"eckit-s3handle-test-object"};
 
-S3Config cfg("eu-central-1", "127.0.0.1", 9000);
+const S3Config     TEST_CONFIG {TEST_ENDPOINT, "eu-central-1"};
+const S3Credential TEST_CREDENTIAL {TEST_ENDPOINT, "minio", "minio1234"};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -61,8 +75,8 @@ void writePerformance(S3BucketName& bucket, const int count) {
               << " objects, rate: " << Bytes(buffer.size() * 1000, timer) << std::endl;
 }
 
-void ensureClean() {
-    auto client = S3Client::makeUnique(cfg);
+void cleanup() {
+    auto client = S3Client::makeUnique(TEST_CONFIG);
     for (const auto& name : {TEST_BUCKET}) {
         if (client->bucketExists(name)) {
             client->emptyBucket(name);
@@ -71,20 +85,30 @@ void ensureClean() {
     }
 }
 
+}  // namespace
+
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("invalid bucket") {
-    EXPECT_THROWS(S3BucketName("http://127.0.0.1:9000/" + TEST_BUCKET));
-    EXPECT_THROWS(S3BucketName("s3://127.0.0.1" + TEST_BUCKET));
-    EXPECT_THROWS(S3BucketName("s3://127.0.0.1/" + TEST_BUCKET));
+CASE("initialize s3 session") {
+
+    EXPECT(S3Session::instance().addCredential(TEST_CREDENTIAL));
+    EXPECT(S3Session::instance().addClient(TEST_CONFIG));
+
+    EXPECT_NO_THROW(cleanup());
+}
+
+CASE("invalid s3 bucket") {
+    EXPECT_THROWS(S3BucketName(URI {"http://127.0.0.1:9000/" + TEST_BUCKET}));
+    EXPECT_THROWS(S3BucketName(URI {"s3://127.0.0.1" + TEST_BUCKET}));
+    EXPECT_THROWS(S3BucketName(URI {"s3://127.0.0.1/" + TEST_BUCKET}));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("S3BucketName: no bucket") {
-    ensureClean();
+    EXPECT_NO_THROW(cleanup());
 
-    S3BucketName bucket("s3://127.0.0.1:9000/" + TEST_BUCKET);
+    S3BucketName bucket(TEST_ENDPOINT, TEST_BUCKET);
 
     EXPECT_NOT(bucket.exists());
 
@@ -99,10 +123,12 @@ CASE("S3BucketName: no bucket") {
     EXPECT_NO_THROW(bucket.ensureDestroyed());
 }
 
-CASE("S3BucketName: create bucket") {
-    ensureClean();
+//----------------------------------------------------------------------------------------------------------------------
 
-    S3BucketName bucket("s3://127.0.0.1:9000/" + TEST_BUCKET);
+CASE("S3BucketName: create bucket") {
+    EXPECT_NO_THROW(cleanup());
+
+    S3BucketName bucket(TEST_ENDPOINT, TEST_BUCKET);
 
     EXPECT_NOT(bucket.exists());
 
@@ -115,26 +141,30 @@ CASE("S3BucketName: create bucket") {
     EXPECT_NO_THROW(bucket.destroy());
 }
 
-CASE("S3BucketName: empty bucket") {
-    ensureClean();
+//----------------------------------------------------------------------------------------------------------------------
 
-    S3BucketName bucket("s3://127.0.0.1:9000/" + TEST_BUCKET);
+CASE("S3BucketName: empty bucket") {
+    EXPECT_NO_THROW(cleanup());
+
+    S3BucketName bucket(TEST_ENDPOINT, TEST_BUCKET);
 
     // CREATE BUCKET
     EXPECT_NO_THROW(bucket.ensureCreated());
     EXPECT(bucket.exists());
 
     // LIST
-    EXPECT(bucket.listObjects().size() == 0);
+    EXPECT_EQUAL(bucket.listObjects().size(), 0);
 
     // DESTROY BUCKET
     EXPECT_NO_THROW(bucket.destroy());
 }
 
-CASE("S3BucketName: bucket with object") {
-    ensureClean();
+//----------------------------------------------------------------------------------------------------------------------
 
-    S3BucketName bucket("s3://127.0.0.1:9000/" + TEST_BUCKET);
+CASE("S3BucketName: bucket with object") {
+    EXPECT_NO_THROW(cleanup());
+
+    S3BucketName bucket(TEST_ENDPOINT, TEST_BUCKET);
 
     // CREATE BUCKET
     EXPECT_NO_THROW(bucket.ensureCreated());
@@ -143,7 +173,7 @@ CASE("S3BucketName: bucket with object") {
     EXPECT_NO_THROW(bucket.makeObject(TEST_OBJECT)->put(TEST_DATA.data(), TEST_DATA.size()));
 
     // LIST
-    EXPECT(bucket.listObjects().size() == 1);
+    EXPECT_EQUAL(bucket.listObjects().size(), 1);
 
     // DESTROY BUCKET
     EXPECT_THROWS(bucket.destroy());
@@ -152,22 +182,22 @@ CASE("S3BucketName: bucket with object") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("S3Handle operations") {
-    ensureClean();
+CASE("S3Handle: basic operations") {
+    EXPECT_NO_THROW(cleanup());
 
-    S3Client::makeUnique(cfg)->createBucket(TEST_BUCKET);
+    S3Client::makeUnique(TEST_CONFIG)->createBucket(TEST_BUCKET);
 
     const void* buffer = TEST_DATA.data();
     const long  length = TEST_DATA.size();
 
-    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     {
         S3ObjectName object(uri);
 
         std::unique_ptr<DataHandle> handle(object.dataHandle());
         EXPECT_NO_THROW(handle->openForWrite(length));
-        EXPECT(handle->write(buffer, length) == length);
+        EXPECT_EQUAL(handle->write(buffer, length), length);
         EXPECT_NO_THROW(handle->close());
     }
 
@@ -180,7 +210,7 @@ CASE("S3Handle operations") {
 
         EXPECT_NO_THROW(handle->read(rbuf.data(), length));
 
-        EXPECT(rbuf == TEST_DATA);
+        EXPECT_EQUAL(rbuf, TEST_DATA);
 
         EXPECT_NO_THROW(handle->close());
     }
@@ -191,17 +221,19 @@ CASE("S3Handle operations") {
         MemoryHandle memHandle(length);
         handle->saveInto(memHandle);
 
-        EXPECT(memHandle.size() == Length(length));
-        EXPECT(::memcmp(memHandle.data(), buffer, length) == 0);
+        EXPECT_EQUAL(memHandle.size(), Length(length));
+        EXPECT_EQUAL(::memcmp(memHandle.data(), buffer, length), 0);
 
         EXPECT_NO_THROW(handle->close());
     }
 }
 
-CASE("S3Handle::openForRead") {
-    ensureClean();
+//----------------------------------------------------------------------------------------------------------------------
 
-    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+CASE("S3Handle: openForRead") {
+    EXPECT_NO_THROW(cleanup());
+
+    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     EXPECT_NO_THROW(S3BucketName(uri).ensureCreated());
 
@@ -221,10 +253,12 @@ CASE("S3Handle::openForRead") {
     EXPECT_NO_THROW(handle->openForRead());
 }
 
-CASE("S3Handle::openForWrite") {
-    ensureClean();
+//----------------------------------------------------------------------------------------------------------------------
 
-    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+CASE("S3Handle: openForWrite") {
+    EXPECT_NO_THROW(cleanup());
+
+    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     {  // NO BUCKET
         std::unique_ptr<DataHandle> handle(uri.newWriteHandle());
@@ -242,10 +276,12 @@ CASE("S3Handle::openForWrite") {
     }
 }
 
-CASE("S3Handle::read") {
-    ensureClean();
+//----------------------------------------------------------------------------------------------------------------------
 
-    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET + "/" + TEST_OBJECT);
+CASE("S3Handle: read") {
+    EXPECT_NO_THROW(cleanup());
+
+    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     EXPECT_NO_THROW(S3BucketName(uri).ensureCreated());
 
@@ -257,37 +293,39 @@ CASE("S3Handle::read") {
     // OPEN
     EXPECT_NO_THROW(handle->openForRead());
 
-    {  /// @todo range based read
-
-        // const auto length = TEST_DATA.size();
-
-        // std::string rbuf;
-        // rbuf.resize(length);
-        // auto len = handle->read(rbuf.data(), 10);
-        // std::cout << "========" << rbuf << std::endl;
-        // len = handle->read(rbuf.data(), length - 10);
-        // std::cout << "========" << rbuf << std::endl;
-        // EXPECT(rbuf == TEST_DATA);
-    }
+    /// @todo range based read
+    // {
+    // const auto length = TEST_DATA.size();
+    //
+    // std::string rbuf;
+    // rbuf.resize(length);
+    // auto len = handle->read(rbuf.data(), 10);
+    // std::cout << "========" << rbuf << std::endl;
+    // len = handle->read(rbuf.data(), length - 10);
+    // std::cout << "========" << rbuf << std::endl;
+    // EXPECT_EQUAL(rbuf, TEST_DATA);
+    // }
 
     // CLOSE
     EXPECT_NO_THROW(handle->close());
 }
 
-CASE("performance: write 10 100 1000 objects") {
-    ensureClean();
+//----------------------------------------------------------------------------------------------------------------------
 
-    const URI uri("s3://127.0.0.1:9000/" + TEST_BUCKET);
+CASE("s3 performance: write 1 10 100 objects") {
+    EXPECT_NO_THROW(cleanup());
+
+    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET);
 
     S3BucketName bucket(uri);
 
     EXPECT_NO_THROW(bucket.ensureCreated());
 
+    writePerformance(bucket, 1);
+
     writePerformance(bucket, 10);
 
     writePerformance(bucket, 100);
-
-    writePerformance(bucket, 1000);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -295,14 +333,13 @@ CASE("performance: write 10 100 1000 objects") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    const S3Credential cred {"127.0.0.1:9000", "minio", "minio1234"};
-    S3Session::instance().addCredentials(cred);
-
     int ret = -1;
-    try {
-        ret = run_tests(argc, argv);
-    }
-    catch (...) {
-    }
+
+    ret = run_tests(argc, argv);
+
+    test::cleanup();
+
     return ret;
 }
+
+//----------------------------------------------------------------------------------------------------------------------

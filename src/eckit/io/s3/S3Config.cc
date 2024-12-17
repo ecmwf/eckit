@@ -15,35 +15,112 @@
 
 #include "eckit/io/s3/S3Config.h"
 
+#include "eckit/config/LibEcKit.h"
+#include "eckit/config/LocalConfiguration.h"
+#include "eckit/config/Resource.h"
+#include "eckit/config/YAMLConfiguration.h"
+#include "eckit/container/DenseSet.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
+#include "eckit/net/Endpoint.h"
+
+#include <cstdint>
+#include <iostream>
+#include <map>
+#include <ostream>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Config::S3Config(std::string region, const URI& uri): region(std::move(region)), endpoint(uri) { }
+namespace {
 
-S3Config::S3Config(std::string region, const std::string& hostname, const int port):
-    region(std::move(region)), endpoint(hostname, port) { }
+const std::string defaultConfigFile = "~/.config/eckit/S3Config.yaml";
 
-S3Config::S3Config(const URI& uri): endpoint(uri) { }
+S3Config fromYAML(const LocalConfiguration& config) {
+    const net::Endpoint endpoint {config.getString("endpoint")};
 
-S3Config::S3Config(const net::Endpoint& e): endpoint(e) { }
+    const auto region = config.getString("region", s3DefaultRegion);
+
+    S3Config s3config(endpoint, region);
+
+    if (config.has("backend")) {
+        S3Backend   backend {S3Backend::AWS};  // Default to AWS
+        std::string backendStr = config.getString("backend");
+        if (backendStr == "AWS") {
+            backend = S3Backend::AWS;
+        } else if (backendStr == "REST") {
+            backend = S3Backend::REST;
+        } else if (backendStr == "MinIO") {
+            backend = S3Backend::MINIO;
+        } else {
+            throw UserError("Invalid backend: " + backendStr, Here());
+        }
+        s3config.backend = backend;
+    }
+
+    if (config.has("secure")) { s3config.secure = config.getBool("secure"); }
+
+    return s3config;
+}
+
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
+auto S3Config::fromFile(std::string path) -> std::vector<S3Config> {
+
+    if (path.empty()) { path = Resource<std::string>("s3ConfigFile;$ECKIT_S3_CONFIG_FILE", defaultConfigFile); }
+
+    PathName configFile(path);
+
+    if (!configFile.exists()) {
+        Log::debug<LibEcKit>() << "S3 configuration file does not exist: " << configFile << std::endl;
+        return {};
+    }
+
+    const auto servers = YAMLConfiguration(configFile).getSubConfigurations("servers");
+
+    std::vector<S3Config> result;
+    result.reserve(servers.size());
+    for (const auto& server : servers) { result.emplace_back(fromYAML(server)); }
+
+    return result;
+}
+
+S3Config::S3Config(const net::Endpoint& endpoint, std::string region)
+    : endpoint {endpoint}, region {std::move(region)} { }
+
+S3Config::S3Config(const std::string& host, const uint16_t port, std::string region)
+    : endpoint {host, port}, region {std::move(region)} { }
+
+S3Config::S3Config(const URI& uri) : S3Config(uri.host(), uri.port()) { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void S3Config::print(std::ostream& out) const {
-    out << "S3Config[type=";
-    if (type == S3Types::AWS) {
+    out << "S3Config[endpoint=" << endpoint << ",region=" << region << ",backend=";
+    if (backend == S3Backend::AWS) {
         out << "AWS";
-    } else if (type == S3Types::MINIO) {
-        out << "MinIO";
-    } else if (type == S3Types::REST) {
+    } else if (backend == S3Backend::REST) {
         out << "REST";
-    } else {
-        out << "NONE";
+    } else if (backend == S3Backend::MINIO) {
+        out << "MinIO";
     }
-    out << ",region=" << region << ",endpoint=" << endpoint << "]";
+    out << ",secure=" << secure << "]";
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+std::ostream& operator<<(std::ostream& out, const S3Config& config) {
+    config.print(out);
+    return out;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

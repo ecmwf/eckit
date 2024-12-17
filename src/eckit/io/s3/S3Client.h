@@ -20,9 +20,11 @@
 #pragma once
 
 #include "eckit/io/s3/S3Config.h"
-#include "eckit/memory/NonCopyable.h"
 
+#include <cstdint>
+#include <iosfwd>
 #include <memory>
+#include <string>
 #include <vector>
 
 namespace eckit {
@@ -31,15 +33,19 @@ class S3Context;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3Client: private NonCopyable {
+class S3Client {
 public:  // methods
-    virtual ~S3Client();
-
-    static auto makeShared(const S3Config& config) -> std::shared_ptr<S3Client>;
+    S3Client(const S3Client&)            = delete;
+    S3Client& operator=(const S3Client&) = delete;
+    S3Client(S3Client&&)                 = default;
+    S3Client& operator=(S3Client&&)      = default;
+    virtual ~S3Client()                  = default;
 
     static auto makeUnique(const S3Config& config) -> std::unique_ptr<S3Client>;
 
-    virtual auto endpoint() const -> const net::Endpoint&;
+    static auto makeShared(const S3Config& config) -> std::shared_ptr<S3Client> { return makeUnique(config); }
+
+    auto config() const -> const S3Config& { return config_; }
 
     virtual void createBucket(const std::string& bucket) const = 0;
 
@@ -51,11 +57,16 @@ public:  // methods
 
     virtual auto listBuckets() const -> std::vector<std::string> = 0;
 
-    virtual auto putObject(const std::string& bucket, const std::string& object, const void* buffer,
-                           uint64_t length) const -> long long = 0;
+    virtual auto putObject(const std::string& bucket,
+                           const std::string& object,
+                           const void*        buffer,
+                           uint64_t           length) const -> long long = 0;
 
-    virtual auto getObject(const std::string& bucket, const std::string& object, void* buffer, uint64_t offset,
-                           uint64_t length) const -> long long = 0;
+    virtual auto getObject(const std::string& bucket,
+                           const std::string& object,
+                           void*              buffer,
+                           uint64_t           offset,
+                           uint64_t           length) const -> long long = 0;
 
     virtual void deleteObject(const std::string& bucket, const std::string& object) const = 0;
 
@@ -67,15 +78,14 @@ public:  // methods
 
     virtual auto objectSize(const std::string& bucket, const std::string& object) const -> long long = 0;
 
-    friend std::ostream& operator<<(std::ostream& out, const S3Client& client) {
-        client.print(out);
-        return out;
-    }
-
 protected:  // methods
-    explicit S3Client(const S3Config& config);
+    S3Client();
+
+    explicit S3Client(S3Config config);
 
     virtual void print(std::ostream& out) const;
+
+    friend std::ostream& operator<<(std::ostream& out, const S3Client& client);
 
 private:  // members
     S3Config config_;

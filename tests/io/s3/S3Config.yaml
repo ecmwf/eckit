@@ -1,0 +1,15 @@
+---
+servers:
+  - endpoint: "127.0.0.1:9000"
+    region: "default" # (default)
+    secure: true   # (default)
+    backend: "AWS" # (default)
+
+  - endpoint: "minio:9000"
+    region: "eu-central-1"
+
+  - endpoint: "localhost:9000"
+    region: "eu-central-1"
+
+  # region is inferred from the endpoint
+  - endpoint: "eu-central-1.ecmwf.int:9000"

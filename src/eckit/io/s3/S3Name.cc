@@ -15,28 +15,35 @@
 
 #include "eckit/io/s3/S3Name.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3Client.h"
-#include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <memory>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Name::S3Name(const URI& uri): endpoint_(uri), name_(uri.name()) {
-    ASSERT(uri.scheme() == "s3");
+S3Name::S3Name(const URI& uri) : endpoint_ {uri}, name_ {uri.name()} {
+    /// @todo is "s3://endpoint/bucket/object" a valid URI ?
+    ASSERT(uri.scheme() == type);
 }
 
-S3Name::S3Name(const net::Endpoint& endpoint, const std::string& name): endpoint_(endpoint), name_(name) { }
+S3Name::S3Name(const net::Endpoint& endpoint, std::string name) : endpoint_ {endpoint}, name_ {std::move(name)} { }
 
 S3Name::~S3Name() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3Name::uri() const -> URI {
-    return "s3://" + asString();
+    return {type, asString()};
 }
 
 auto S3Name::asString() const -> std::string {
@@ -53,9 +60,16 @@ auto S3Name::parseName() const -> std::vector<std::string> {
     return Tokenizer("/").tokenize(name_);
 }
 
-auto S3Name::client() const -> std::shared_ptr<S3Client> {
-    /// @todo
-    return S3Session::instance().getClient({endpoint_});
+auto S3Name::client() const -> S3Client& {
+    if (!client_) { client_ = S3Session::instance().getClient(endpoint_); }
+    return *client_;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+std::ostream& operator<<(std::ostream& out, const S3Name& name) {
+    name.print(out);
+    return out;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

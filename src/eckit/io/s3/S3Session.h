@@ -19,14 +19,14 @@
 
 #pragma once
 
-#include "eckit/io/s3/S3Credential.h"
-
 #include <list>
 #include <memory>
+#include <string>
 
 namespace eckit {
 
 class S3Client;
+struct S3Credential;
 struct S3Config;
 
 namespace net {
@@ -35,7 +35,7 @@ class Endpoint;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3Session {
+class S3Session final {
 public:  // methods
     S3Session(const S3Session&)            = delete;
     S3Session& operator=(const S3Session&) = delete;
@@ -46,30 +46,50 @@ public:  // methods
 
     void clear();
 
+    // clients
+
+    void loadClients(const std::string& path = "");
+
+    /// @brief Get an S3 client for the given configuration
+    /// @param config S3 configuration
+    /// @return S3 client
+    /// @throws S3EntityNotFound if the client does not exist
     [[nodiscard]]
-    auto getCredentials(const net::Endpoint& endpoint) const -> std::shared_ptr<S3Credential>;
+    auto getClient(const net::Endpoint& endpoint) const -> std::shared_ptr<S3Client>;
 
-    void readCredentials(std::string path = "");
-
-    void addCredentials(const S3Credential& credential);
-
-    void removeCredentials(const std::string& endpoint);
-
-    [[nodiscard]]
-    auto getClient(const S3Config& config) -> std::shared_ptr<S3Client>;
+    /// @brief Add an S3 client for the given configuration
+    /// @param config S3 configuration
+    /// @return S3 client
+    auto addClient(const S3Config& config) -> std::shared_ptr<S3Client>;
 
     void removeClient(const net::Endpoint& endpoint);
+
+    // credentials
+
+    void loadCredentials(const std::string& path = "");
+
+    /// @brief Get an S3 credential for the given configuration
+    /// @param endpoint S3 endpoint
+    /// @return S3 credential
+    /// @throws S3EntityNotFound if the credential does not exist
+    [[nodiscard]]
+    auto getCredential(const net::Endpoint& endpoint) const -> std::shared_ptr<S3Credential>;
+
+    auto addCredential(const S3Credential& credential) -> std::shared_ptr<S3Credential>;
+
+    void removeCredential(const net::Endpoint& endpoint);
 
 private:  // methods
     S3Session();
 
     ~S3Session();
 
-    [[nodiscard]]
-    auto findClient(const net::Endpoint& endpoint) -> std::shared_ptr<S3Client>;
+    auto findClient(const net::Endpoint& endpoint) const -> std::shared_ptr<S3Client>;
+
+    auto findCredential(const net::Endpoint& endpoint) const -> std::shared_ptr<S3Credential>;
 
 private:  // members
-    std::list<std::shared_ptr<S3Client>>     client_;
+    std::list<std::shared_ptr<S3Client>>     clients_;
     std::list<std::shared_ptr<S3Credential>> credentials_;
 };
 

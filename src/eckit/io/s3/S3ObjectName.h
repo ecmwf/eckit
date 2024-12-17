@@ -20,6 +20,10 @@
 #pragma once
 
 #include "eckit/io/s3/S3Name.h"
+#include "eckit/net/Endpoint.h"
+
+#include <ostream>
+#include <string>
 
 namespace eckit {
 
@@ -28,11 +32,11 @@ class DataHandle;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3ObjectName: public S3Name {
+class S3ObjectName : public S3Name {
 public:  // methods
     explicit S3ObjectName(const URI& uri);
 
-    S3ObjectName(const net::Endpoint& endpoint, const std::string& bucket, const std::string& object);
+    S3ObjectName(const net::Endpoint& endpoint, std::string bucket, std::string object);
 
     auto size() const -> long long;
 

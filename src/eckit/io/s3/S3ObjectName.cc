@@ -15,23 +15,28 @@
 
 #include "eckit/io/s3/S3ObjectName.h"
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Handle.h"
-#include "eckit/utils/Tokenizer.h"
+#include "eckit/io/s3/S3Name.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/net/Endpoint.h"
+
+#include <ostream>
+#include <string>
+#include <utility>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3ObjectName::S3ObjectName(const URI& uri): S3Name(uri) {
+S3ObjectName::S3ObjectName(const URI& uri) : S3Name(uri) {
     parse();
 }
 
-S3ObjectName::S3ObjectName(const net::Endpoint& endpoint, const std::string& bucket, const std::string& object):
-    S3Name(endpoint, "/"), bucket_(bucket), object_(object) { }
+S3ObjectName::S3ObjectName(const net::Endpoint& endpoint, std::string bucket, std::string object)
+    : S3Name(endpoint, "/"), bucket_ {std::move(bucket)}, object_ {std::move(object)} { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -54,27 +59,27 @@ auto S3ObjectName::asString() const -> std::string {
 }
 
 auto S3ObjectName::size() const -> long long {
-    return client()->objectSize(bucket_, object_);
+    return client().objectSize(bucket_, object_);
 }
 
 auto S3ObjectName::exists() const -> bool {
-    return client()->objectExists(bucket_, object_);
+    return client().objectExists(bucket_, object_);
 }
 
 auto S3ObjectName::bucketExists() const -> bool {
-    return client()->bucketExists(bucket_);
+    return client().bucketExists(bucket_);
 }
 
 void S3ObjectName::remove() {
-    client()->deleteObject(bucket_, object_);
+    client().deleteObject(bucket_, object_);
 }
 
 auto S3ObjectName::put(const void* buffer, const long length) const -> long long {
-    return client()->putObject(bucket_, object_, buffer, length);
+    return client().putObject(bucket_, object_, buffer, length);
 }
 
 auto S3ObjectName::get(void* buffer, const long offset, const long length) const -> long long {
-    return client()->getObject(bucket_, object_, buffer, offset, length);
+    return client().getObject(bucket_, object_, buffer, offset, length);
 }
 
 auto S3ObjectName::dataHandle() -> DataHandle* {

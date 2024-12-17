@@ -21,33 +21,69 @@
 
 #include "eckit/net/Endpoint.h"
 
+#include <cstdint>
+#include <iosfwd>
 #include <string>
+#include <vector>
 
 namespace eckit {
 
-class URI;
+enum class S3Backend : std::uint8_t { AWS, REST, MINIO };
 
-enum class S3Types { NONE, AWS, MINIO, REST };
+constexpr auto     s3DefaultHost   = "127.0.0.1";
+constexpr uint16_t s3DefaultPort   = 443;
+constexpr auto     s3DefaultRegion = "default";
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// @brief S3 configurations for a given endpoint
+///
+/// @example Example YAML S3 configuration file:
+///
+/// ECKIT_S3_CONFIG_FILE = ~/.config/eckit/S3Config.yaml
+///
+/// ---
+/// servers:
+///   - endpoint: "127.0.0.1:9000"
+///     region: "default" # (default)
+///     secure: true   # (default)
+///     backend: "AWS" # (default)
+///
+///   - endpoint: "minio:9000"
+///     region: "eu-central-1"
+///
+///   - endpoint: "https://localhost:9000"
+///     region: "eu-central-1"
+///
+///   # region is inferred from the endpoint
+///   - endpoint: "https://eu-central-1.ecmwf.int:9000"
+///
 struct S3Config {
-    /// @todo region is part of hostname (s3express-control.region_code.amazonaws.com/bucket-name)
-    S3Config(std::string region, const URI& uri);
-    S3Config(std::string region, const std::string& hostname, int port);
-    S3Config(const URI& uri);
-    S3Config(const net::Endpoint&);
 
-    friend std::ostream& operator<<(std::ostream& out, const S3Config& config) {
-        config.print(out);
-        return out;
+    static auto fromFile(std::string path) -> std::vector<S3Config>;
+
+    S3Config() = default;
+
+    explicit S3Config(const net::Endpoint& endpoint, std::string region = s3DefaultRegion);
+
+    explicit S3Config(const std::string& host, uint16_t port, std::string region = s3DefaultRegion);
+
+    explicit S3Config(const URI& uri);
+
+    bool operator==(const S3Config& other) const {
+        return backend == other.backend && endpoint == other.endpoint && region == other.region;
     }
+
+    bool operator!=(const S3Config& other) const { return !(*this == other); }
 
     void print(std::ostream& out) const;
 
-    S3Types       type {S3Types::AWS};
-    std::string   region {"eu-central-1"};
-    net::Endpoint endpoint {"127.0.0.1", -1};
+    friend std::ostream& operator<<(std::ostream& out, const S3Config& config);
+
+    net::Endpoint endpoint {s3DefaultHost, s3DefaultPort};
+    std::string   region {s3DefaultRegion};
+    S3Backend     backend {S3Backend::AWS};
+    bool          secure {true};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

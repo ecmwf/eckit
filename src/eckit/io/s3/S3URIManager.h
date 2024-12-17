@@ -22,24 +22,24 @@
 
 #include "eckit/filesystem/URIManager.h"
 
+#include <string>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3URIManager: public URIManager {
+class S3URIManager : public URIManager {
 public:  // methods
-    S3URIManager(const std::string& name);
-
-    ~S3URIManager() override;
+    explicit S3URIManager(const std::string& name);
 
     bool authority() override { return true; }
 
 private:  // methods
-    bool exists(const URI&) override;
+    bool exists(const URI& uri) override;
 
-    DataHandle* newWriteHandle(const URI&) override;
-    DataHandle* newReadHandle(const URI&) override;
-    DataHandle* newReadHandle(const URI&, const OffsetList&, const LengthList&) override;
+    DataHandle* newWriteHandle(const URI& uri) override;
+    DataHandle* newReadHandle(const URI& uri) override;
+    DataHandle* newReadHandle(const URI& uri, const OffsetList& offsets, const LengthList& lengths) override;
 
     std::string asString(const URI& uri) const override;
 };

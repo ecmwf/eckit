@@ -15,18 +15,30 @@
 
 #include "eckit/io/s3/S3Client.h"
 
-#include "S3Client.h"
-#include "eckit/io/s3/S3Exception.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/s3/S3Config.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/io/s3/aws/S3ClientAWS.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <memory>
+#include <ostream>
+#include <utility>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Client::S3Client(const S3Config& config): config_(config) { }
+S3Client::S3Client(S3Config config) : config_ {std::move(config)} { }
 
-S3Client::~S3Client() = default;
+//----------------------------------------------------------------------------------------------------------------------
+
+auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
+
+    if (config.backend == S3Backend::AWS) { return std::make_unique<S3ClientAWS>(config); }
+
+    throw UserError("Unsupported S3 backend! Supported backend = AWS ", Here());
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -34,22 +46,9 @@ void S3Client::print(std::ostream& out) const {
     out << "S3Client[config=" << config_ << "]";
 }
 
-//----------------------------------------------------------------------------------------------------------------------
-
-auto S3Client::makeShared(const S3Config& config) -> std::shared_ptr<S3Client> {
-    if (config.type == S3Types::AWS) { return std::make_shared<S3ClientAWS>(config); }
-    throw S3SeriousBug("Unkown S3 client type!", Here());
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-auto S3Client::makeUnique(const S3Config& config) -> std::unique_ptr<S3Client> {
-    if (config.type == S3Types::AWS) { return std::make_unique<S3ClientAWS>(config); }
-    throw S3SeriousBug("Unkown S3 client type!", Here());
-}
-
-auto S3Client::endpoint() const -> const net::Endpoint& {
-    return config_.endpoint;
+std::ostream& operator<<(std::ostream& out, const S3Client& client) {
+    client.print(out);
+    return out;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

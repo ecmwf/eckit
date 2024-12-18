@@ -37,10 +37,12 @@ class S3Name {
 public:  // types
     static constexpr auto type = "s3";
 
-public:  // methods
-    explicit S3Name(const URI& uri);
+    static auto parse(const std::string& name) -> std::vector<std::string>;
 
-    S3Name(const net::Endpoint& endpoint, std::string name);
+public:  // methods
+    explicit S3Name(const net::Endpoint& endpoint);
+
+    explicit S3Name(const URI& uri);
 
     // rules
 
@@ -54,9 +56,9 @@ public:  // methods
 
     // accessors
 
-    auto uri() const -> URI;
-
     auto endpoint() const -> const net::Endpoint& { return endpoint_; }
+
+    virtual auto uri() const -> URI;
 
     virtual auto exists() const -> bool = 0;
 
@@ -67,14 +69,10 @@ protected:  // methods
 
     friend std::ostream& operator<<(std::ostream& out, const S3Name& name);
 
-    [[nodiscard]]
-    auto parseName() const -> std::vector<std::string>;
-
     auto client() const -> S3Client&;
 
 private:  // members
     net::Endpoint endpoint_;
-    std::string   name_;
 
     mutable std::shared_ptr<S3Client> client_;
 };

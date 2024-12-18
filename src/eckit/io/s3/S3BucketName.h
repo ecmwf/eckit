@@ -42,6 +42,8 @@ public:  // methods
 
     auto makeObject(const std::string& object) const -> std::unique_ptr<S3ObjectName>;
 
+    auto uri() const -> URI override;
+
     auto exists() const -> bool override;
 
     void create();
@@ -59,8 +61,6 @@ public:  // methods
 
 private:  // methods
     void print(std::ostream& out) const override;
-
-    void parse();
 
 private:  // members
     std::string bucket_;

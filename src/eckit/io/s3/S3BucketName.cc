@@ -35,13 +35,21 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 S3BucketName::S3BucketName(const URI& uri) : S3Name(uri) {
-    parse();
+    const auto pairs = parse(uri.name());
+    if (pairs.empty()) { throw S3SeriousBug("Could not parse bucket name!", Here()); }
+    bucket_ = pairs[0];
 }
 
 S3BucketName::S3BucketName(const net::Endpoint& endpoint, std::string bucket)
-    : S3Name(endpoint, "/"), bucket_ {std::move(bucket)} { }
+    : S3Name(endpoint), bucket_ {std::move(bucket)} { }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+auto S3BucketName::uri() const -> URI {
+    auto uri = S3Name::uri();
+    uri.path("/" + bucket_);
+    return uri;
+}
 
 auto S3BucketName::asString() const -> std::string {
     return S3Name::asString() + "/" + bucket_;
@@ -50,12 +58,6 @@ auto S3BucketName::asString() const -> std::string {
 void S3BucketName::print(std::ostream& out) const {
     out << "S3BucketName[bucket=" << bucket_;
     S3Name::print(out);
-}
-
-void S3BucketName::parse() {
-    const auto pairs = parseName();
-    if (pairs.empty()) { throw S3SeriousBug("Could not parse bucket name!", Here()); }
-    bucket_ = pairs[0];
 }
 
 //----------------------------------------------------------------------------------------------------------------------

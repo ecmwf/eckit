@@ -38,6 +38,8 @@ public:  // methods
 
     S3ObjectName(const net::Endpoint& endpoint, std::string bucket, std::string object);
 
+    auto uri() const -> URI override;
+
     auto size() const -> long long;
 
     auto exists() const -> bool override;
@@ -64,8 +66,6 @@ public:  // methods
 
 private:  // methods
     void print(std::ostream& out) const override;
-
-    void parse();
 
 private:  // members
     std::string bucket_;

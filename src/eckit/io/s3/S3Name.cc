@@ -24,26 +24,31 @@
 #include <memory>
 #include <ostream>
 #include <string>
-#include <utility>
 #include <vector>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Name::S3Name(const URI& uri) : endpoint_ {uri}, name_ {uri.name()} {
+auto S3Name::parse(const std::string& name) -> std::vector<std::string> {
+    return Tokenizer("/").tokenize(name);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+S3Name::S3Name(const net::Endpoint& endpoint) : endpoint_ {endpoint} { }
+
+S3Name::S3Name(const URI& uri) : S3Name( {uri.host(), uri.port()}) {
     /// @todo is "s3://endpoint/bucket/object" a valid URI ?
     ASSERT(uri.scheme() == type);
 }
-
-S3Name::S3Name(const net::Endpoint& endpoint, std::string name) : endpoint_ {endpoint}, name_ {std::move(name)} { }
 
 S3Name::~S3Name() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3Name::uri() const -> URI {
-    return {type, asString()};
+    return {type, endpoint_.host(), endpoint_.port()};
 }
 
 auto S3Name::asString() const -> std::string {
@@ -51,14 +56,10 @@ auto S3Name::asString() const -> std::string {
 }
 
 void S3Name::print(std::ostream& out) const {
-    out << ",endpoint=" << endpoint_ << ",name=" << name_ << "]";
+    out << ",endpoint=" << endpoint_ << ",]";
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-
-auto S3Name::parseName() const -> std::vector<std::string> {
-    return Tokenizer("/").tokenize(name_);
-}
 
 auto S3Name::client() const -> S3Client& {
     if (!client_) { client_ = S3Session::instance().getClient(endpoint_); }

@@ -305,6 +305,8 @@ if( eckit_HAVE_AWS_S3 )
         io/s3/S3Name.h
         io/s3/S3ObjectName.cc
         io/s3/S3ObjectName.h
+        io/s3/S3ObjectPath.cc
+        io/s3/S3ObjectPath.h
         io/s3/S3Session.cc
         io/s3/S3Session.h
         io/s3/S3URIManager.cc

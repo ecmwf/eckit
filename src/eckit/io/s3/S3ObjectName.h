@@ -20,7 +20,7 @@
 #pragma once
 
 #include "eckit/io/s3/S3Name.h"
-#include "eckit/net/Endpoint.h"
+#include "eckit/io/s3/S3ObjectPath.h"
 
 #include <ostream>
 #include <string>
@@ -33,10 +33,13 @@ class DataHandle;
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3ObjectName : public S3Name {
-public:  // methods
-    explicit S3ObjectName(const URI& uri);
+public:  // helpers
+    static auto parse(const std::string& name) -> S3ObjectPath;
 
-    S3ObjectName(const net::Endpoint& endpoint, std::string bucket, std::string object);
+public:  // methods
+    S3ObjectName(const net::Endpoint& endpoint, S3ObjectPath path);
+
+    explicit S3ObjectName(const URI& uri);
 
     auto uri() const -> URI override;
 
@@ -58,9 +61,11 @@ public:  // methods
 
     auto asString() const -> std::string override;
 
-    auto name() const -> const std::string& { return object_; }
+    auto path() const -> const S3ObjectPath& { return path_; }
 
-    auto bucket() const -> const std::string& { return bucket_; }
+    auto name() const -> const std::string& { return path_.object; }
+
+    auto bucket() const -> const std::string& { return path_.bucket; }
 
     auto bucketExists() const -> bool;
 
@@ -68,8 +73,7 @@ private:  // methods
     void print(std::ostream& out) const override;
 
 private:  // members
-    std::string bucket_;
-    std::string object_;
+    S3ObjectPath path_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -36,6 +36,9 @@ class S3ObjectName;
 
 class S3BucketName : public S3Name {
 public:  // methods
+    static auto parse(const std::string& name) -> std::string;
+
+public:  // methods
     explicit S3BucketName(const URI& uri);
 
     S3BucketName(const net::Endpoint& endpoint, std::string bucket);

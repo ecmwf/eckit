@@ -20,6 +20,7 @@
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Handle.h"
 #include "eckit/io/s3/S3Name.h"
+#include "eckit/io/s3/S3ObjectPath.h"
 #include "eckit/log/CodeLocation.h"
 #include "eckit/net/Endpoint.h"
 
@@ -31,20 +32,23 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3ObjectName::S3ObjectName(const URI& uri) : S3Name(uri) {
-    const auto pairs = parse(uri.name());
-    if (pairs.size() != 2) { throw S3SeriousBug("Could not parse bucket and object names!", Here()); }
-    bucket_ = pairs[0];
-    object_ = pairs[1];
+auto S3ObjectName::parse(const std::string& name) -> S3ObjectPath {
+    const auto parsed = S3Name::parse(name);
+    if (parsed.size() != 2) { throw S3SeriousBug("Could not parse bucket/object from name: " + name, Here()); }
+    return {parsed[0], parsed[1]};
 }
 
-S3ObjectName::S3ObjectName(const net::Endpoint& endpoint, std::string bucket, std::string object)
-    : S3Name(endpoint), bucket_ {std::move(bucket)}, object_ {std::move(object)} { }
+//----------------------------------------------------------------------------------------------------------------------
+
+S3ObjectName::S3ObjectName(const net::Endpoint& endpoint, S3ObjectPath path)
+    : S3Name(endpoint), path_ {std::move(path)} { }
+
+S3ObjectName::S3ObjectName(const URI& uri) : S3Name(uri), path_ {parse(uri.name())} { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 void S3ObjectName::print(std::ostream& out) const {
-    out << "S3ObjectName[object=" << object_ << ",bucket=" << bucket_;
+    out << "S3ObjectName[path=" << path_;
     S3Name::print(out);
 }
 
@@ -52,36 +56,36 @@ void S3ObjectName::print(std::ostream& out) const {
 
 auto S3ObjectName::uri() const -> URI {
     auto uri = S3Name::uri();
-    uri.path("/" + bucket_ + "/" + object_);
+    uri.path(path_);
     return uri;
 }
 
 auto S3ObjectName::asString() const -> std::string {
-    return S3Name::asString() + "/" + bucket_ + "/" + object_;
+    return S3Name::asString() + '/' + path_.asString();
 }
 
 auto S3ObjectName::size() const -> long long {
-    return client().objectSize(bucket_, object_);
+    return client().objectSize(path_);
 }
 
 auto S3ObjectName::exists() const -> bool {
-    return client().objectExists(bucket_, object_);
+    return client().objectExists(path_);
 }
 
 auto S3ObjectName::bucketExists() const -> bool {
-    return client().bucketExists(bucket_);
+    return client().bucketExists(path_.bucket);
 }
 
 void S3ObjectName::remove() {
-    client().deleteObject(bucket_, object_);
+    client().deleteObject(path_);
 }
 
 auto S3ObjectName::put(const void* buffer, const long length) const -> long long {
-    return client().putObject(bucket_, object_, buffer, length);
+    return client().putObject(path_, buffer, length);
 }
 
 auto S3ObjectName::get(void* buffer, const long offset, const long length) const -> long long {
-    return client().getObject(bucket_, object_, buffer, offset, length);
+    return client().getObject(path_, buffer, offset, length);
 }
 
 auto S3ObjectName::dataHandle() -> DataHandle* {

@@ -21,6 +21,7 @@
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Name.h"
 #include "eckit/io/s3/S3ObjectName.h"
+#include "eckit/io/s3/S3ObjectPath.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/Endpoint.h"
 
@@ -34,14 +35,18 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3BucketName::S3BucketName(const URI& uri) : S3Name(uri) {
-    const auto pairs = parse(uri.name());
-    if (pairs.empty()) { throw S3SeriousBug("Could not parse bucket name!", Here()); }
-    bucket_ = pairs[0];
+auto S3BucketName::parse(const std::string& name) -> std::string {
+    const auto parsed = S3Name::parse(name);
+    if (parsed.size() != 1) { throw S3SeriousBug("Could not parse bucket from name: " + name, Here()); }
+    return {parsed[0]};
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 S3BucketName::S3BucketName(const net::Endpoint& endpoint, std::string bucket)
     : S3Name(endpoint), bucket_ {std::move(bucket)} { }
+
+S3BucketName::S3BucketName(const URI& uri) : S3Name(uri), bucket_ {parse(uri.name())} { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -63,7 +68,7 @@ void S3BucketName::print(std::ostream& out) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3BucketName::makeObject(const std::string& object) const -> std::unique_ptr<S3ObjectName> {
-    return std::make_unique<S3ObjectName>(endpoint(), bucket_, object);
+    return std::make_unique<S3ObjectName>(endpoint(), S3ObjectPath {bucket_, object});
 }
 
 auto S3BucketName::exists() const -> bool {

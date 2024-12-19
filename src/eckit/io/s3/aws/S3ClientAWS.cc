@@ -19,6 +19,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/s3/S3Credential.h"
 #include "eckit/io/s3/S3Exception.h"
+#include "eckit/io/s3/S3ObjectPath.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/io/s3/aws/S3ContextAWS.h"
 #include "eckit/log/CodeLocation.h"
@@ -199,21 +200,18 @@ auto S3ClientAWS::listBuckets() const -> std::vector<std::string> {
         return buckets;
     }
 
-    auto msg = awsErrorMessage("Failed list buckets!", outcome.GetError());
+    auto msg = awsErrorMessage("Failed to list buckets!", outcome.GetError());
     throw S3SeriousBug(msg, Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // PUT OBJECT
 
-auto S3ClientAWS::putObject(const std::string& bucket,
-                            const std::string& object,
-                            const void*        buffer,
-                            const uint64_t     length) const -> long long {
+auto S3ClientAWS::putObject(const S3ObjectPath& path, const void* buffer, const uint64_t length) const -> long long {
     Aws::S3::Model::PutObjectRequest request;
 
-    request.SetBucket(bucket);
-    request.SetKey(object);
+    request.SetBucket(path.bucket);
+    request.SetKey(path.object);
     // request.SetContentLength(length);
 
     if (buffer && length > 0) {
@@ -227,27 +225,26 @@ auto S3ClientAWS::putObject(const std::string& bucket,
     auto outcome = client().PutObject(request);
 
     if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Put object=" << object << " [len=" << length << "] to bucket=" << bucket << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "Put " << path << " with len=" << length << '\n';
         /// @todo actual size of written bytes
         return length;
     }
 
-    auto msg = awsErrorMessage("Failed to put object=" + object + " to bucket=" + bucket, outcome.GetError());
+    auto msg = awsErrorMessage("Failed to put " + std::string(path), outcome.GetError());
     throw S3SeriousBug(msg, Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // GET OBJECT
 
-auto S3ClientAWS::getObject(const std::string& bucket,
-                            const std::string& object,
-                            void*              buffer,
+auto S3ClientAWS::getObject(const S3ObjectPath& path,
+                            void*               buffer,
                             const uint64_t /*offset*/,
                             const uint64_t length) const -> long long {
     Aws::S3::Model::GetObjectRequest request;
 
-    request.SetBucket(bucket);
-    request.SetKey(object);
+    request.SetBucket(path.bucket);
+    request.SetKey(path.object);
     request.SetResponseStreamFactory([&buffer, length]() { return Aws::New<BufferIOStream>(allocTag, buffer, length); });
     /// @todo range and streambuf
     // request.SetRange(std::to_string(offset) + "-" + std::to_string(offset + length));
@@ -255,33 +252,33 @@ auto S3ClientAWS::getObject(const std::string& bucket,
     auto outcome = client().GetObject(request);
 
     if (outcome.IsSuccess()) {
-        LOG_DEBUG_LIB(LibEcKit) << "Get object=" << object << " from bucket=" << bucket << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "Get " << path << '\n';
         LOG_DEBUG_LIB(LibEcKit) << "Req. len=" << length << ", Obj. len=" << outcome.GetResult().GetContentLength()
-                                << std::endl;
+                                << '\n';
         return outcome.GetResult().GetContentLength();
     }
 
-    auto msg = awsErrorMessage("Failed to retrieve object=" + object + " from bucket=" + bucket, outcome.GetError());
+    auto msg = awsErrorMessage("Failed to retrieve " + std::string(path), outcome.GetError());
     throw S3SeriousBug(msg, Here());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // DELETE OBJECT
 
-void S3ClientAWS::deleteObject(const std::string& bucket, const std::string& object) const {
+void S3ClientAWS::deleteObject(const S3ObjectPath& path) const {
     Aws::S3::Model::DeleteObjectRequest request;
 
-    request.SetBucket(bucket);
-    request.SetKey(object);
+    request.SetBucket(path.bucket);
+    request.SetKey(path.object);
 
     auto outcome = client().DeleteObject(request);
 
     if (!outcome.IsSuccess()) {
-        auto msg = awsErrorMessage("Failed to delete object=" + object + " in bucket=" + bucket, outcome.GetError());
+        auto msg = awsErrorMessage("Failed to delete " + std::string(path), outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
 
-    LOG_DEBUG_LIB(LibEcKit) << "Deleted object=" << object << " in bucket=" << bucket << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "Deleted " << path << '\n';
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -336,28 +333,28 @@ auto S3ClientAWS::listObjects(const std::string& bucket) const -> std::vector<st
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3ClientAWS::objectExists(const std::string& bucket, const std::string& object) const -> bool {
+auto S3ClientAWS::objectExists(const S3ObjectPath& path) const -> bool {
     Aws::S3::Model::HeadObjectRequest request;
 
-    request.SetBucket(bucket);
-    request.SetKey(object);
+    request.SetBucket(path.bucket);
+    request.SetKey(path.object);
 
     return client().HeadObject(request).IsSuccess();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3ClientAWS::objectSize(const std::string& bucket, const std::string& object) const -> long long {
+auto S3ClientAWS::objectSize(const S3ObjectPath& path) const -> long long {
     Aws::S3::Model::HeadObjectRequest request;
 
-    request.SetBucket(bucket);
-    request.SetKey(object);
+    request.SetBucket(path.bucket);
+    request.SetKey(path.object);
 
     auto outcome = client().HeadObject(request);
 
     if (outcome.IsSuccess()) { return outcome.GetResult().GetContentLength(); }
 
-    const auto msg = awsErrorMessage("Object '" + object + "' doesn't exist or no access!", outcome.GetError());
+    const auto msg = awsErrorMessage("Object '" + path.object + "' doesn't exist or no access!", outcome.GetError());
     throw S3SeriousBug(msg, Here());
 }
 

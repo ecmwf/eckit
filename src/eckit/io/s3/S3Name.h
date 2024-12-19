@@ -34,10 +34,12 @@ class S3Client;
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3Name {
-public:  // types
+public:  // statics
     static constexpr auto type = "s3";
 
     static auto parse(const std::string& name) -> std::vector<std::string>;
+
+    static auto make(const net::Endpoint& endpoint, const std::string& name) -> std::unique_ptr<S3Name>;
 
 public:  // methods
     explicit S3Name(const net::Endpoint& endpoint);
@@ -56,6 +58,8 @@ public:  // methods
 
     // accessors
 
+    void endpoint(const net::Endpoint& endpoint) { endpoint_ = endpoint; }
+
     auto endpoint() const -> const net::Endpoint& { return endpoint_; }
 
     virtual auto uri() const -> URI;
@@ -73,8 +77,6 @@ protected:  // methods
 
 private:  // members
     net::Endpoint endpoint_;
-
-    mutable std::shared_ptr<S3Client> client_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

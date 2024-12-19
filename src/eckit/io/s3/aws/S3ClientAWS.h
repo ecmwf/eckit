@@ -20,6 +20,7 @@
 #pragma once
 
 #include "eckit/io/s3/S3Client.h"
+#include "eckit/io/s3/S3ObjectPath.h"
 
 #include <aws/s3/S3Client.h>
 
@@ -39,6 +40,8 @@ class S3ClientAWS final : public S3Client {
 public:  // methods
     explicit S3ClientAWS(const S3Config& config);
 
+    // bucket operations
+
     void createBucket(const std::string& bucket) const override;
 
     void emptyBucket(const std::string& bucket) const override;
@@ -49,26 +52,21 @@ public:  // methods
 
     auto listBuckets() const -> std::vector<std::string> override;
 
-    auto putObject(const std::string& bucket,
-                   const std::string& object,
-                   const void*        buffer,
-                   uint64_t           length) const -> long long override;
+    auto listObjects(const std::string& bucket) const -> std::vector<std::string> override;
 
-    auto getObject(const std::string& bucket,
-                   const std::string& object,
-                   void*              buffer,
-                   uint64_t           offset,
-                   uint64_t           length) const -> long long override;
+    // object operations
 
-    void deleteObject(const std::string& bucket, const std::string& object) const override;
+    auto putObject(const S3ObjectPath& path, const void* buffer, uint64_t length) const -> long long override;
+
+    auto getObject(const S3ObjectPath& path, void* buffer, uint64_t offset, uint64_t length) const -> long long override;
+
+    void deleteObject(const S3ObjectPath& path) const override;
 
     void deleteObjects(const std::string& bucket, const std::vector<std::string>& objects) const override;
 
-    auto listObjects(const std::string& bucket) const -> std::vector<std::string> override;
+    auto objectExists(const S3ObjectPath& path) const -> bool override;
 
-    auto objectExists(const std::string& bucket, const std::string& object) const -> bool override;
-
-    auto objectSize(const std::string& bucket, const std::string& object) const -> long long override;
+    auto objectSize(const S3ObjectPath& path) const -> long long override;
 
 private:  // methods
     void configure() const;

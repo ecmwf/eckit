@@ -37,7 +37,9 @@ namespace eckit {
 
 auto S3BucketName::parse(const std::string& name) -> std::string {
     const auto parsed = S3Name::parse(name);
-    if (parsed.size() != 1) { throw S3SeriousBug("Could not parse bucket from name: " + name, Here()); }
+    if (const auto size = parsed.size(); size < 1 || size > 2) {
+        throw S3SeriousBug("Could not parse bucket from name: " + name, Here());
+    }
     return {parsed[0]};
 }
 

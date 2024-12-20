@@ -19,7 +19,6 @@
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
-#include "eckit/container/DenseSet.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/log/CodeLocation.h"
@@ -28,9 +27,7 @@
 
 #include <cstdint>
 #include <iostream>
-#include <map>
 #include <ostream>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -43,7 +40,11 @@ namespace {
 
 const std::string defaultConfigFile = "~/.config/eckit/S3Config.yaml";
 
-S3Config fromYAML(const LocalConfiguration& config) {
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
+S3Config S3Config::make(const LocalConfiguration& config) {
     const net::Endpoint endpoint {config.getString("endpoint")};
 
     const auto region = config.getString("region", s3DefaultRegion);
@@ -70,11 +71,7 @@ S3Config fromYAML(const LocalConfiguration& config) {
     return s3config;
 }
 
-}  // namespace
-
-//----------------------------------------------------------------------------------------------------------------------
-
-auto S3Config::fromFile(std::string path) -> std::vector<S3Config> {
+auto S3Config::make(std::string path) -> std::vector<S3Config> {
 
     if (path.empty()) { path = Resource<std::string>("s3ConfigFile;$ECKIT_S3_CONFIG_FILE", defaultConfigFile); }
 
@@ -89,7 +86,7 @@ auto S3Config::fromFile(std::string path) -> std::vector<S3Config> {
 
     std::vector<S3Config> result;
     result.reserve(servers.size());
-    for (const auto& server : servers) { result.emplace_back(fromYAML(server)); }
+    for (const auto& server : servers) { result.emplace_back(make(server)); }
 
     return result;
 }

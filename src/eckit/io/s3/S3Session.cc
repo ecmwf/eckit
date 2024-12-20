@@ -76,7 +76,7 @@ void S3Session::clear() {
 // CLIENT
 
 void S3Session::loadClients(const std::string& path) {
-    const auto configs = S3Config::fromFile(path);
+    const auto configs = S3Config::make(path);
     for (const auto& config : configs) { addClient(config); }
 }
 

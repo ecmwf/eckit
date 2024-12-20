@@ -28,6 +28,8 @@
 
 namespace eckit {
 
+class LocalConfiguration;
+
 enum class S3Backend : std::uint8_t { AWS, REST, MINIO };
 
 constexpr auto     s3DefaultHost   = "127.0.0.1";
@@ -60,7 +62,13 @@ constexpr auto     s3DefaultRegion = "default";
 ///
 struct S3Config {
 
-    static auto fromFile(std::string path) -> std::vector<S3Config>;
+    // static methods
+
+    static auto make(const LocalConfiguration& config) -> S3Config;
+
+    static auto make(std::string path) -> std::vector<S3Config>;
+
+    // constructors
 
     S3Config() = default;
 
@@ -69,6 +77,8 @@ struct S3Config {
     explicit S3Config(const std::string& host, uint16_t port, std::string region = s3DefaultRegion);
 
     explicit S3Config(const URI& uri);
+
+    // operators
 
     bool operator==(const S3Config& other) const {
         return backend == other.backend && endpoint == other.endpoint && region == other.region;
@@ -79,6 +89,8 @@ struct S3Config {
     void print(std::ostream& out) const;
 
     friend std::ostream& operator<<(std::ostream& out, const S3Config& config);
+
+    // members
 
     net::Endpoint endpoint {s3DefaultHost, s3DefaultPort};
     std::string   region {s3DefaultRegion};

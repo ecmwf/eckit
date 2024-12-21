@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 #include <cstring>
 
 #include "eckit/exception/Exceptions.h"
@@ -19,31 +20,29 @@ namespace eckit {
 
 namespace {
 
-static char* allocate(size_t size) {
-    return new char[size];
+static char* allocate(const size_t size) {
+    return size == 0 ? nullptr : new char[size];
 }
 
-static void deallocate(char* buffer) {
+static void deallocate(char*& buffer) {
     delete[] buffer;
+    buffer = nullptr;
 }
 
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Buffer::Buffer(size_t size) :
-    buffer_{nullptr}, size_{size} {
+Buffer::Buffer(const size_t size): size_ {size} {
     create();
 }
 
-Buffer::Buffer(const void* p, size_t len) :
-    buffer_{nullptr}, size_{len} {
+Buffer::Buffer(const void* p, size_t len): size_ {len} {
     create();
     copy(p, len);
 }
 
-Buffer::Buffer(const std::string& s) :
-    buffer_{nullptr}, size_{s.length() + 1} {
+Buffer::Buffer(const std::string& s): size_ {s.length() + 1} {
     create();
     copy(s);
 }
@@ -85,26 +84,22 @@ void Buffer::create() {
 }
 
 void Buffer::destroy() {
-    if (buffer_) {
-        deallocate(buffer_);
-        buffer_ = nullptr;
-        size_   = 0;
-    }
+    deallocate(buffer_);
+    size_ = 0;
 }
 
 void Buffer::copy(const std::string& s) {
-    ASSERT(buffer_);
-    ::strncpy(buffer_, s.c_str(), std::min(size_, s.size() + 1));
+    if (buffer_) { ::strncpy(buffer_, s.c_str(), std::min(size_, s.size() + 1)); }
 }
 
-void Buffer::copy(const void* p, size_t size, size_t pos) {
-    ASSERT(buffer_ && size_ >= pos + size);
-    if (size) {
+void Buffer::copy(const void* p, const size_t size, const size_t pos) {
+    ASSERT(size_ >= pos + size);
+    if (buffer_ && size > 0) {
         ::memcpy(buffer_ + pos, p, size);
     }
 }
 
-void Buffer::resize(size_t size, bool preserveData) {
+void Buffer::resize(const size_t size, const bool preserveData) {
     if (size != size_) {
         if (preserveData) {
             char* newbuffer = allocate(size);

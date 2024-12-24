@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "eckit/io/s3/S3BucketPath.h"
 #include "eckit/io/s3/S3Config.h"
 #include "eckit/io/s3/S3ObjectPath.h"
 
@@ -50,13 +51,13 @@ public:  // methods
 
     // bucket operations
 
-    virtual void createBucket(const std::string& bucket) const = 0;
+    virtual void createBucket(const S3BucketPath& path) const = 0;
 
-    virtual void emptyBucket(const std::string& bucket) const = 0;
+    virtual void emptyBucket(const S3BucketPath& path) const = 0;
 
-    virtual void deleteBucket(const std::string& bucket) const = 0;
+    virtual void deleteBucket(const S3BucketPath& path) const = 0;
 
-    virtual auto bucketExists(const std::string& bucket) const -> bool = 0;
+    virtual auto bucketExists(const S3BucketPath& path) const -> bool = 0;
 
     virtual auto listBuckets() const -> std::vector<std::string> = 0;
 
@@ -68,9 +69,9 @@ public:  // methods
 
     virtual void deleteObject(const S3ObjectPath& path) const = 0;
 
-    virtual void deleteObjects(const std::string& bucket, const std::vector<std::string>& objects) const = 0;
+    virtual void deleteObjects(const S3BucketPath& path, const std::vector<std::string>& objects) const = 0;
 
-    virtual auto listObjects(const std::string& bucket) const -> std::vector<std::string> = 0;
+    virtual auto listObjects(const S3BucketPath& path) const -> std::vector<std::string> = 0;
 
     virtual auto objectExists(const S3ObjectPath& path) const -> bool = 0;
 

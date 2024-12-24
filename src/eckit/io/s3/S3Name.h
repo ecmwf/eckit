@@ -58,15 +58,13 @@ public:  // methods
 
     // accessors
 
-    void endpoint(const net::Endpoint& endpoint) { endpoint_ = endpoint; }
-
-    auto endpoint() const -> const net::Endpoint& { return endpoint_; }
-
     virtual auto uri() const -> URI;
 
     virtual auto exists() const -> bool = 0;
 
     virtual auto asString() const -> std::string;
+
+    auto endpoint() const -> const net::Endpoint& { return endpoint_; }
 
 protected:  // methods
     virtual void print(std::ostream& out) const;

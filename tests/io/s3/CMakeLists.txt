@@ -1,9 +1,9 @@
 
-if( eckit_HAVE_AWS_S3 )
+if( eckit_HAVE_S3 )
 
     file(
-    COPY S3Config.yaml S3Credentials.yaml
-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
+        COPY S3Config.yaml S3Credentials.yaml
+        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}
     )
 
     ecbuild_add_test(
@@ -20,4 +20,4 @@ if( eckit_HAVE_AWS_S3 )
         LIBS        eckit ${AWSSDK_LINK_LIBRARIES}
     )
 
-endif( eckit_HAVE_AWS_S3 )
+endif( eckit_HAVE_S3 )

@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include "eckit/io/s3/S3BucketPath.h"
 #include "eckit/io/s3/S3Name.h"
 #include "eckit/net/Endpoint.h"
 
@@ -35,19 +36,32 @@ class S3ObjectName;
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3BucketName : public S3Name {
-public:  // methods
-    static auto parse(const std::string& name) -> std::string;
-
-public:  // methods
-    explicit S3BucketName(const URI& uri);
-
-    S3BucketName(const net::Endpoint& endpoint, std::string bucket);
+public:  // factory
+    static auto parse(const std::string& name) -> S3BucketPath;
 
     auto makeObject(const std::string& object) const -> std::unique_ptr<S3ObjectName>;
+
+public:  // methods
+    S3BucketName(const net::Endpoint& endpoint, S3BucketPath path);
+
+    explicit S3BucketName(const URI& uri);
+
+    // accessors
+
+    auto asString() const -> std::string override;
 
     auto uri() const -> URI override;
 
     auto exists() const -> bool override;
+
+    auto path() const -> const S3BucketPath& { return path_; }
+
+    auto bucket() const -> const std::string& { return path_.bucket; }
+
+    /// @todo return S3 object iterator but first add prefix
+    auto listObjects() const -> std::vector<std::string>;
+
+    // modifiers
 
     void create();
 
@@ -57,16 +71,11 @@ public:  // methods
 
     void ensureDestroyed();
 
-    /// @todo return S3 object iterator but first add prefix
-    auto listObjects() const -> std::vector<std::string>;
-
-    auto asString() const -> std::string override;
-
 private:  // methods
     void print(std::ostream& out) const override;
 
 private:  // members
-    std::string bucket_;
+    S3BucketPath path_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

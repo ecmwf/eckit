@@ -17,6 +17,7 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/s3/S3BucketPath.h"
 #include "eckit/io/s3/S3Credential.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3ObjectPath.h"
@@ -133,15 +134,15 @@ auto S3ClientAWS::client() const -> Aws::S3::S3Client& {
 //----------------------------------------------------------------------------------------------------------------------
 // BUCKET
 
-void S3ClientAWS::createBucket(const std::string& bucket) const {
+void S3ClientAWS::createBucket(const S3BucketPath& path) const {
     Aws::S3::Model::CreateBucketRequest request;
-    request.SetBucket(bucket);
+    request.SetBucket(path);
 
     auto outcome = client().CreateBucket(request);
 
     if (!outcome.IsSuccess()) {
         const auto& err   = outcome.GetError();
-        const auto  msg   = awsErrorMessage("Failed to create bucket=" + bucket, err);
+        const auto  msg   = awsErrorMessage("Failed to create bucket=" + path.asString(), err);
         const auto  eType = err.GetErrorType();
         if (eType == Aws::S3::S3Errors::BUCKET_ALREADY_EXISTS || eType == Aws::S3::S3Errors::BUCKET_ALREADY_OWNED_BY_YOU) {
             throw S3EntityAlreadyExists(msg, Here());
@@ -151,24 +152,24 @@ void S3ClientAWS::createBucket(const std::string& bucket) const {
 
     /// @todo do we wait for the bucket to propagate?
 
-    LOG_DEBUG_LIB(LibEcKit) << "Created bucket=" << bucket << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "Created bucket=" << path << std::endl;
 }
 
-void S3ClientAWS::emptyBucket(const std::string& bucket) const {
-    deleteObjects(bucket, listObjects(bucket));
+void S3ClientAWS::emptyBucket(const S3BucketPath& path) const {
+    deleteObjects(path, listObjects(path));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void S3ClientAWS::deleteBucket(const std::string& bucket) const {
+void S3ClientAWS::deleteBucket(const S3BucketPath& path) const {
     Aws::S3::Model::DeleteBucketRequest request;
-    request.SetBucket(bucket);
+    request.SetBucket(path);
 
     auto outcome = client().DeleteBucket(request);
 
     if (!outcome.IsSuccess()) {
         const auto& err = outcome.GetError();
-        const auto  msg = awsErrorMessage("Failed to delete bucket=" + bucket, err);
+        const auto  msg = awsErrorMessage("Failed to delete bucket=" + path.asString(), err);
         if (err.GetErrorType() == Aws::S3::S3Errors::NO_SUCH_BUCKET) { throw S3EntityNotFound(msg, Here()); }
         if (err.GetErrorType() == Aws::S3::S3Errors::UNKNOWN && err.GetExceptionName() == "BucketNotEmpty") {
             throw S3BucketNotEmpty(msg, Here());
@@ -176,15 +177,15 @@ void S3ClientAWS::deleteBucket(const std::string& bucket) const {
         throw S3SeriousBug(msg, Here());
     }
 
-    LOG_DEBUG_LIB(LibEcKit) << "Deleted bucket=" << bucket << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "Deleted bucket=" << path << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3ClientAWS::bucketExists(const std::string& bucket) const -> bool {
+auto S3ClientAWS::bucketExists(const S3BucketPath& path) const -> bool {
     Aws::S3::Model::HeadBucketRequest request;
 
-    request.SetBucket(bucket);
+    request.SetBucket(path);
 
     return client().HeadBucket(request).IsSuccess();
 }
@@ -283,12 +284,12 @@ void S3ClientAWS::deleteObject(const S3ObjectPath& path) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void S3ClientAWS::deleteObjects(const std::string& bucket, const std::vector<std::string>& objects) const {
+void S3ClientAWS::deleteObjects(const S3BucketPath& path, const std::vector<std::string>& objects) const {
     if (objects.empty()) { return; }
 
     Aws::S3::Model::DeleteObjectsRequest request;
 
-    request.SetBucket(bucket);
+    request.SetBucket(path);
 
     Aws::S3::Model::Delete deleteObject;
     for (const auto& object : objects) { deleteObject.AddObjects(Aws::S3::Model::ObjectIdentifier().WithKey(object)); }
@@ -299,26 +300,26 @@ void S3ClientAWS::deleteObjects(const std::string& bucket, const std::vector<std
     auto outcome = client().DeleteObjects(request);
 
     if (!outcome.IsSuccess()) {
-        auto msg = awsErrorMessage("Failed to delete objects in bucket=" + bucket, outcome.GetError());
+        auto msg = awsErrorMessage("Failed to delete objects in bucket=" + path.asString(), outcome.GetError());
         throw S3SeriousBug(msg, Here());
     }
 
-    LOG_DEBUG_LIB(LibEcKit) << "Deleted " << objects.size() << " objects in bucket=" << bucket << std::endl;
+    LOG_DEBUG_LIB(LibEcKit) << "Deleted " << objects.size() << " objects in bucket=" << path << std::endl;
     for (const auto& object : objects) { LOG_DEBUG_LIB(LibEcKit) << "Deleted object=" << object << std::endl; }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3ClientAWS::listObjects(const std::string& bucket) const -> std::vector<std::string> {
+auto S3ClientAWS::listObjects(const S3BucketPath& path) const -> std::vector<std::string> {
     Aws::S3::Model::ListObjectsV2Request request;
 
-    request.SetBucket(bucket);
+    request.SetBucket(path);
 
     auto outcome = client().ListObjectsV2(request);
 
     if (!outcome.IsSuccess()) {
         const auto& err = outcome.GetError();
-        const auto  msg = awsErrorMessage("Failed to list objects in bucket=" + bucket, err);
+        const auto  msg = awsErrorMessage("Failed to list objects in bucket=" + path.asString(), err);
         if (err.GetErrorType() == Aws::S3::S3Errors::NO_SUCH_BUCKET) { throw S3EntityNotFound(msg, Here()); }
         throw S3SeriousBug(msg, Here());
     }

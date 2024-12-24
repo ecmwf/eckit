@@ -47,13 +47,6 @@ S3ObjectName::S3ObjectName(const URI& uri) : S3Name(uri), path_ {parse(uri.name(
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void S3ObjectName::print(std::ostream& out) const {
-    out << "S3ObjectName[path=" << path_;
-    S3Name::print(out);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 auto S3ObjectName::uri() const -> URI {
     auto uri = S3Name::uri();
     uri.path(path_);
@@ -61,8 +54,16 @@ auto S3ObjectName::uri() const -> URI {
 }
 
 auto S3ObjectName::asString() const -> std::string {
-    return S3Name::asString() + '/' + path_.asString();
+    return S3Name::asString() + path_.asString();
 }
+
+void S3ObjectName::print(std::ostream& out) const {
+    out << "S3ObjectName[";
+    S3Name::print(out);
+    out << ',' << path_ << ']';
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 auto S3ObjectName::size() const -> long long {
     return client().objectSize(path_);
@@ -88,11 +89,11 @@ auto S3ObjectName::get(void* buffer, const long offset, const long length) const
     return client().getObject(path_, buffer, offset, length);
 }
 
-auto S3ObjectName::dataHandle() -> DataHandle* {
+auto S3ObjectName::dataHandle() const -> DataHandle* {
     return new S3Handle(*this);
 }
 
-auto S3ObjectName::dataHandle(const Offset& offset) -> DataHandle* {
+auto S3ObjectName::dataHandle(const Offset& offset) const -> DataHandle* {
     return new S3Handle(*this, offset);
 }
 

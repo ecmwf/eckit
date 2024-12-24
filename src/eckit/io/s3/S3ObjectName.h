@@ -22,7 +22,7 @@
 #include "eckit/io/s3/S3Name.h"
 #include "eckit/io/s3/S3ObjectPath.h"
 
-#include <ostream>
+#include <iosfwd>
 #include <string>
 
 namespace eckit {
@@ -33,7 +33,7 @@ class DataHandle;
 //----------------------------------------------------------------------------------------------------------------------
 
 class S3ObjectName : public S3Name {
-public:  // helpers
+public:  // factory
     static auto parse(const std::string& name) -> S3ObjectPath;
 
 public:  // methods
@@ -41,25 +41,15 @@ public:  // methods
 
     explicit S3ObjectName(const URI& uri);
 
-    auto uri() const -> URI override;
+    // accessors
 
-    auto size() const -> long long;
+    auto uri() const -> URI override;
 
     auto exists() const -> bool override;
 
-    void remove();
-
-    auto put(const void* buffer, long length) const -> long long;
-
-    auto get(void* buffer, long offset, long length) const -> long long;
-
-    [[nodiscard]]
-    auto dataHandle() -> DataHandle*;
-
-    [[nodiscard]]
-    auto dataHandle(const Offset& offset) -> DataHandle*;
-
     auto asString() const -> std::string override;
+
+    auto size() const -> long long;
 
     auto path() const -> const S3ObjectPath& { return path_; }
 
@@ -68,6 +58,22 @@ public:  // methods
     auto bucket() const -> const std::string& { return path_.bucket; }
 
     auto bucketExists() const -> bool;
+
+    // modifiers
+
+    void remove();
+
+    // I/O
+
+    auto put(const void* buffer, long length) const -> long long;
+
+    auto get(void* buffer, long offset, long length) const -> long long;
+
+    [[nodiscard]]
+    auto dataHandle() const -> DataHandle*;
+
+    [[nodiscard]]
+    auto dataHandle(const Offset& offset) const -> DataHandle*;
 
 private:  // methods
     void print(std::ostream& out) const override;

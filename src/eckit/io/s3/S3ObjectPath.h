@@ -9,8 +9,8 @@
  */
 
 /*
- * This software was developed as part of the EC H2020 funded project IO-SEA
- * (Project ID: 955811) iosea-project.eu
+ * This software was developed as part of the Horizon Europe programme funded project DaFab
+ * (Grant agreement: 101128693) https://www.dafab-ai.eu/
  */
 
 /// @file   S3ObjectPath.h
@@ -21,18 +21,29 @@
 
 #include <ostream>
 #include <string>
+#include <utility>
 
 namespace eckit {
 
-struct S3ObjectPath {
-    std::string bucket;
-    std::string object;
+//----------------------------------------------------------------------------------------------------------------------
 
-    auto asString() const -> std::string { return bucket + '/' + object; }
+struct S3ObjectPath {
+
+    S3ObjectPath(std::string bucket, std::string object) : bucket {std::move(bucket)}, object {std::move(object)} { }
+
+    auto asString() const -> std::string { return '/' + bucket + '/' + object; }
 
     operator std::string() const { return asString(); }
 
-    friend std::ostream& operator<<(std::ostream& out, const S3ObjectPath& path);
+    friend std::ostream& operator<<(std::ostream& out, const S3ObjectPath& path) {
+        out << "bucket=" << path.bucket << ",object=" << path.object;
+        return out;
+    }
+
+    // members
+
+    std::string bucket;
+    std::string object;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

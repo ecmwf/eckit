@@ -20,19 +20,23 @@
 #pragma once
 
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
 #include "eckit/io/s3/S3ObjectName.h"
+
+#include <cstdint>
+#include <iosfwd>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class S3Handle: public DataHandle {
+class S3Handle : public DataHandle {
 public:  // methods
-    enum class Mode { CLOSED, READ, WRITE };
-
-    explicit S3Handle(const S3ObjectName& name);
+    enum class Mode : std::uint8_t { CLOSED, READ, WRITE };
 
     S3Handle(const S3ObjectName& name, const Offset& offset);
+
+    explicit S3Handle(const S3ObjectName& name);
 
     Length openForRead() override;
 
@@ -62,7 +66,7 @@ private:  // methods
     void open(Mode mode);
 
 private:  // members
-    const S3ObjectName name_;
+    S3ObjectName name_;
 
     Offset pos_ {0};
 

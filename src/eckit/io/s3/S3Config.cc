@@ -36,34 +36,26 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace {
+auto S3Config::make(const LocalConfiguration& config) -> S3Config {
+    const auto endpoint = config.getString("endpoint");
 
-const std::string defaultConfigFile = "~/.config/eckit/S3Config.yaml";
+    if (endpoint.empty()) { throw eckit::UserError("No S3 endpoint found in configuration!", Here()); }
 
-}  // namespace
-
-//----------------------------------------------------------------------------------------------------------------------
-
-S3Config S3Config::make(const LocalConfiguration& config) {
-    const net::Endpoint endpoint {config.getString("endpoint")};
-
-    const auto region = config.getString("region", s3DefaultRegion);
+    const auto region = config.getString("region", defaultRegion);
 
     S3Config s3config(endpoint, region);
 
     if (config.has("backend")) {
-        S3Backend   backend {S3Backend::AWS};  // Default to AWS
-        std::string backendStr = config.getString("backend");
+        const auto backendStr = config.getString("backend");
         if (backendStr == "AWS") {
-            backend = S3Backend::AWS;
+            s3config.backend = S3Backend::AWS;
         } else if (backendStr == "REST") {
-            backend = S3Backend::REST;
+            s3config.backend = S3Backend::REST;
         } else if (backendStr == "MinIO") {
-            backend = S3Backend::MINIO;
+            s3config.backend = S3Backend::MINIO;
         } else {
             throw UserError("Invalid backend: " + backendStr, Here());
         }
-        s3config.backend = backend;
     }
 
     if (config.has("secure")) { s3config.secure = config.getBool("secure"); }
@@ -73,7 +65,9 @@ S3Config S3Config::make(const LocalConfiguration& config) {
 
 auto S3Config::make(std::string path) -> std::vector<S3Config> {
 
-    if (path.empty()) { path = Resource<std::string>("s3ConfigFile;$ECKIT_S3_CONFIG_FILE", defaultConfigFile); }
+    if (path.empty()) {
+        path = Resource<std::string>("s3ConfigFile;$ECKIT_S3_CONFIG_FILE", "~/.config/eckit/S3Config.yaml");
+    }
 
     PathName configFile(path);
 

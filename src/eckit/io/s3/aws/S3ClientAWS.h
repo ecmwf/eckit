@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "eckit/io/s3/S3BucketPath.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3ObjectPath.h"
 
@@ -42,17 +43,17 @@ public:  // methods
 
     // bucket operations
 
-    void createBucket(const std::string& bucket) const override;
+    void createBucket(const S3BucketPath& path) const override;
 
-    void emptyBucket(const std::string& bucket) const override;
+    void emptyBucket(const S3BucketPath& path) const override;
 
-    void deleteBucket(const std::string& bucket) const override;
+    void deleteBucket(const S3BucketPath& path) const override;
 
-    auto bucketExists(const std::string& bucket) const -> bool override;
+    auto bucketExists(const S3BucketPath& path) const -> bool override;
 
     auto listBuckets() const -> std::vector<std::string> override;
 
-    auto listObjects(const std::string& bucket) const -> std::vector<std::string> override;
+    auto listObjects(const S3BucketPath& path) const -> std::vector<std::string> override;
 
     // object operations
 
@@ -62,7 +63,7 @@ public:  // methods
 
     void deleteObject(const S3ObjectPath& path) const override;
 
-    void deleteObjects(const std::string& bucket, const std::vector<std::string>& objects) const override;
+    void deleteObjects(const S3BucketPath& path, const std::vector<std::string>& objects) const override;
 
     auto objectExists(const S3ObjectPath& path) const -> bool override;
 

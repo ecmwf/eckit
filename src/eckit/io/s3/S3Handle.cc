@@ -16,15 +16,21 @@
 #include "eckit/io/s3/S3Handle.h"
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/io/s3/S3Exception.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/s3/S3ObjectName.h"
+#include "eckit/log/Log.h"
+
+#include <ostream>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3Handle::S3Handle(const S3ObjectName& name): S3Handle(name, 0) { }
+S3Handle::S3Handle(const S3ObjectName& name, const Offset& offset) : name_(name), pos_(offset) { }
 
-S3Handle::S3Handle(const S3ObjectName& name, const Offset& offset): name_(name), pos_(offset) { }
+S3Handle::S3Handle(const S3ObjectName& name) : S3Handle(name, 0) { }
 
 void S3Handle::print(std::ostream& out) const {
     out << "S3Handle[name=" << name_ << ", position=" << pos_;

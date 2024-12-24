@@ -17,11 +17,13 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/s3/S3BucketPath.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Name.h"
 #include "eckit/io/s3/S3ObjectName.h"
 #include "eckit/io/s3/S3ObjectPath.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/Endpoint.h"
 
@@ -35,7 +37,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto S3BucketName::parse(const std::string& name) -> std::string {
+auto S3BucketName::parse(const std::string& name) -> S3BucketPath {
     const auto parsed = S3Name::parse(name);
     if (const auto size = parsed.size(); size < 1 || size > 2) {
         throw S3SeriousBug("Could not parse bucket from name: " + name, Here());
@@ -45,44 +47,45 @@ auto S3BucketName::parse(const std::string& name) -> std::string {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-S3BucketName::S3BucketName(const net::Endpoint& endpoint, std::string bucket)
-    : S3Name(endpoint), bucket_ {std::move(bucket)} { }
+S3BucketName::S3BucketName(const net::Endpoint& endpoint, S3BucketPath path)
+    : S3Name(endpoint), path_ {std::move(path)} { }
 
-S3BucketName::S3BucketName(const URI& uri) : S3Name(uri), bucket_ {parse(uri.name())} { }
+S3BucketName::S3BucketName(const URI& uri) : S3Name(uri), path_ {parse(uri.name())} { }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3BucketName::uri() const -> URI {
     auto uri = S3Name::uri();
-    uri.path("/" + bucket_);
+    uri.path(path_);
     return uri;
 }
 
 auto S3BucketName::asString() const -> std::string {
-    return S3Name::asString() + "/" + bucket_;
+    return S3Name::asString() + '/' + path_.asString();
 }
 
 void S3BucketName::print(std::ostream& out) const {
-    out << "S3BucketName[bucket=" << bucket_;
+    out << "S3BucketName[";
     S3Name::print(out);
+    out << ',' << path_ << ']';
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 auto S3BucketName::makeObject(const std::string& object) const -> std::unique_ptr<S3ObjectName> {
-    return std::make_unique<S3ObjectName>(endpoint(), S3ObjectPath {bucket_, object});
+    return std::make_unique<S3ObjectName>(endpoint(), S3ObjectPath {path_, object});
 }
 
 auto S3BucketName::exists() const -> bool {
-    return client().bucketExists(bucket_);
+    return client().bucketExists(path_);
 }
 
 void S3BucketName::create() {
-    client().createBucket(bucket_);
+    client().createBucket(path_);
 }
 
 void S3BucketName::destroy() {
-    client().deleteBucket(bucket_);
+    client().deleteBucket(path_);
 }
 
 void S3BucketName::ensureCreated() {
@@ -93,13 +96,13 @@ void S3BucketName::ensureCreated() {
 
 void S3BucketName::ensureDestroyed() {
     try {
-        client().emptyBucket(bucket_);
-        client().deleteBucket(bucket_);
+        client().emptyBucket(path_);
+        client().deleteBucket(path_);
     } catch (S3EntityNotFound& e) { LOG_DEBUG_LIB(LibEcKit) << e.what() << std::endl; }
 }
 
 auto S3BucketName::listObjects() const -> std::vector<std::string> {
-    return client().listObjects(bucket_);
+    return client().listObjects(path_);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

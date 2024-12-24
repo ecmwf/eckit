@@ -32,10 +32,6 @@ class LocalConfiguration;
 
 enum class S3Backend : std::uint8_t { AWS, REST, MINIO };
 
-constexpr auto     s3DefaultHost   = "127.0.0.1";
-constexpr uint16_t s3DefaultPort   = 443;
-constexpr auto     s3DefaultRegion = "default";
-
 //----------------------------------------------------------------------------------------------------------------------
 
 /// @brief S3 configurations for a given endpoint
@@ -61,6 +57,8 @@ constexpr auto     s3DefaultRegion = "default";
 ///   - endpoint: "https://eu-central-1.ecmwf.int:9000"
 ///
 struct S3Config {
+    static constexpr auto defaultRegion  = "default";
+    static constexpr auto defaultBackend = S3Backend::AWS;
 
     // static methods
 
@@ -70,11 +68,9 @@ struct S3Config {
 
     // constructors
 
-    S3Config() = default;
+    explicit S3Config(const net::Endpoint& endpoint, std::string region = defaultRegion);
 
-    explicit S3Config(const net::Endpoint& endpoint, std::string region = s3DefaultRegion);
-
-    explicit S3Config(const std::string& host, uint16_t port, std::string region = s3DefaultRegion);
+    explicit S3Config(const std::string& host, uint16_t port, std::string region = defaultRegion);
 
     explicit S3Config(const URI& uri);
 
@@ -92,9 +88,9 @@ struct S3Config {
 
     // members
 
-    net::Endpoint endpoint {s3DefaultHost, s3DefaultPort};
-    std::string   region {s3DefaultRegion};
-    S3Backend     backend {S3Backend::AWS};
+    net::Endpoint endpoint;
+    std::string   region {defaultRegion};
+    S3Backend     backend {defaultBackend};
     bool          secure {true};
 };
 

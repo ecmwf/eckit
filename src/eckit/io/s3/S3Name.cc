@@ -18,10 +18,12 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/s3/S3BucketName.h"
+#include "eckit/io/s3/S3BucketPath.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3ObjectName.h"
 #include "eckit/io/s3/S3ObjectPath.h"
 #include "eckit/io/s3/S3Session.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/utils/Tokenizer.h"
 
 #include <memory>
@@ -40,7 +42,7 @@ auto S3Name::parse(const std::string& name) -> std::vector<std::string> {
 auto S3Name::make(const net::Endpoint& endpoint, const std::string& name) -> std::unique_ptr<S3Name> {
     const auto names = parse(name);
     switch (names.size()) {
-        case 1:  return std::make_unique<S3BucketName>(endpoint, names[0]);
+        case 1:  return std::make_unique<S3BucketName>(endpoint, S3BucketPath {names[0]});
         case 2:  return std::make_unique<S3ObjectName>(endpoint, S3ObjectPath {names[0], names[1]});
         default: throw SeriousBug("Could not parse S3 name: " + name, Here());
     }
@@ -59,6 +61,10 @@ S3Name::~S3Name() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+auto S3Name::client() const -> S3Client& {
+    return *S3Session::instance().getClient(endpoint_);
+}
+
 auto S3Name::uri() const -> URI {
     return {type, endpoint_.host(), endpoint_.port()};
 }
@@ -68,13 +74,7 @@ auto S3Name::asString() const -> std::string {
 }
 
 void S3Name::print(std::ostream& out) const {
-    out << ",endpoint=" << endpoint_ << ",]";
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-auto S3Name::client() const -> S3Client& {
-    return *S3Session::instance().getClient(endpoint_);
+    out << "endpoint=" << endpoint_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

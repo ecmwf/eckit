@@ -13,6 +13,7 @@
 /// @author Simon Smart
 /// @date   Jan 2024
 
+#include "eckit/io/s3/S3BucketPath.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Config.h"
 #include "eckit/io/s3/S3Credential.h"
@@ -46,7 +47,7 @@ bool findString(const std::vector<std::string>& list, const std::string& item) {
 
 void cleanup() {
     auto client = S3Client::makeUnique(TEST_CONFIG);
-    for (const auto* name : {"test-bucket-1", "test-bucket-2"}) {
+    for (const auto& name : {S3BucketPath {"test-bucket-1"}, S3BucketPath {{"test-bucket-2"}}}) {
         if (client->bucketExists(name)) {
             client->emptyBucket(name);
             client->deleteBucket(name);
@@ -157,7 +158,7 @@ CASE("create s3 bucket in non-existing region") {
     auto cfgTmp   = TEST_CONFIG;
     cfgTmp.region = "non-existing-region-random";
 
-    EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket("test-bucket-1"));
+    EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket({"test-bucket-1"}));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -167,11 +168,11 @@ CASE("create s3 bucket") {
 
     auto client = S3Client::makeUnique(TEST_CONFIG);
 
-    EXPECT_NO_THROW(client->createBucket("test-bucket-1"));
+    EXPECT_NO_THROW(client->createBucket({"test-bucket-1"}));
 
-    EXPECT_THROWS(client->createBucket("test-bucket-1"));
+    EXPECT_THROWS(client->createBucket({"test-bucket-1"}));
 
-    EXPECT_NO_THROW(client->createBucket("test-bucket-2"));
+    EXPECT_NO_THROW(client->createBucket({"test-bucket-2"}));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -180,27 +181,27 @@ CASE("list s3 buckets") {
     EXPECT_NO_THROW(cleanup());
 
     auto client = S3Client::makeUnique(TEST_CONFIG);
-    EXPECT_NO_THROW(client->createBucket("test-bucket-1"));
-    EXPECT_NO_THROW(client->createBucket("test-bucket-2"));
+    EXPECT_NO_THROW(client->createBucket({"test-bucket-1"}));
+    EXPECT_NO_THROW(client->createBucket({"test-bucket-2"}));
 
     {
         const auto buckets = client->listBuckets();
 
         EXPECT(findString(buckets, "test-bucket-1"));
-        EXPECT(findString(buckets, "test-bucket-2"));
+        EXPECT(findString(buckets, {"test-bucket-2"}));
 
-        EXPECT_NO_THROW(client->deleteBucket("test-bucket-1"));
-        EXPECT_NO_THROW(client->deleteBucket("test-bucket-2"));
+        EXPECT_NO_THROW(client->deleteBucket({"test-bucket-1"}));
+        EXPECT_NO_THROW(client->deleteBucket({"test-bucket-2"}));
     }
 
     {
         const auto buckets = client->listBuckets();
         EXPECT_NOT(findString(buckets, "test-bucket-1"));
-        EXPECT_NOT(findString(buckets, "test-bucket-2"));
+        EXPECT_NOT(findString(buckets, {"test-bucket-2"}));
     }
 
-    EXPECT_THROWS(client->deleteBucket("test-bucket-1"));
-    EXPECT_THROWS(client->deleteBucket("test-bucket-2"));
+    EXPECT_THROWS(client->deleteBucket({"test-bucket-1"}));
+    EXPECT_THROWS(client->deleteBucket({"test-bucket-2"}));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

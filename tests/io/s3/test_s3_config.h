@@ -57,7 +57,7 @@ inline void cleanup(const std::vector<std::string>& bucketPaths) {
     }
 }
 
-void writePerformance(S3BucketName& bucket, const int count) {
+inline void writePerformance(S3BucketName& bucket, const int count) {
     eckit::Timer timer;
 
     Buffer buffer(1024 * 1024);

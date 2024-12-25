@@ -31,7 +31,7 @@ struct S3BucketPath {
 
     S3BucketPath(std::string bucket) : bucket {std::move(bucket)} { }
 
-    auto asString() const -> std::string { return '/' + bucket; }
+    auto asString() const -> std::string { return bucket; }
 
     operator std::string() const { return asString(); }
 

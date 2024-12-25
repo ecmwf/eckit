@@ -69,16 +69,19 @@ auto S3Config::make(std::string path) -> std::vector<S3Config> {
         path = Resource<std::string>("s3ConfigFile;$ECKIT_S3_CONFIG_FILE", "~/.config/eckit/S3Config.yaml");
     }
 
-    PathName configFile(path);
+    PathName configPath(path);
 
-    if (!configFile.exists()) {
-        Log::debug<LibEcKit>() << "S3 configuration file does not exist: " << configFile << std::endl;
+    if (!configPath.exists()) {
+        Log::debug<LibEcKit>() << "S3 configuration file does not exist: " << configPath << std::endl;
         return {};
     }
 
-    LOG_DEBUG_LIB(LibEcKit) << "Reading S3 configuration from: " << configFile << std::endl;
+    if (configPath.isDir()) {
+        Log::debug<LibEcKit>() << "Path " << configPath << " is a directory. Expecting a file!" << std::endl;
+        return {};
+    }
 
-    const auto servers = YAMLConfiguration(configFile).getSubConfigurations("servers");
+    const auto servers = YAMLConfiguration(configPath).getSubConfigurations("servers");
 
     std::vector<S3Config> result;
     result.reserve(servers.size());

@@ -51,18 +51,21 @@ auto S3Credential::fromFile(std::string path) -> std::vector<S3Credential> {
 
     if (path.empty()) { path = Resource<std::string>("s3CredentialsFile;$ECKIT_S3_CREDENTIALS_FILE", defaultCredFile); }
 
-    PathName credFile(path);
+    PathName credPath(path);
 
-    if (!credFile.exists()) {
-        Log::debug<LibEcKit>() << "S3 credentials file does not exist: " << credFile << std::endl;
+    if (!credPath.exists()) {
+        Log::debug<LibEcKit>() << "S3 credentials file does not exist: " << credPath << std::endl;
         return {};
     }
 
-    LOG_DEBUG_LIB(LibEcKit) << "Reading S3 credentials from: " << credFile << std::endl;
+    if (credPath.isDir()) {
+        Log::debug<LibEcKit>() << "Path " << credPath << " is a directory. Expecting a file!" << std::endl;
+        return {};
+    }
+
+    const auto creds = YAMLConfiguration(credPath).getSubConfigurations("credentials");
 
     std::vector<S3Credential> result;
-
-    const auto creds = YAMLConfiguration(credFile).getSubConfigurations("credentials");
     result.reserve(creds.size());
     for (const auto& cred : creds) { result.emplace_back(fromYAML(cred)); }
 

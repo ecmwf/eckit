@@ -58,6 +58,8 @@ auto S3Credential::fromFile(std::string path) -> std::vector<S3Credential> {
         return {};
     }
 
+    LOG_DEBUG_LIB(LibEcKit) << "Reading S3 credentials from: " << credFile << std::endl;
+
     std::vector<S3Credential> result;
 
     const auto creds = YAMLConfiguration(credFile).getSubConfigurations("credentials");

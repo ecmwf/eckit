@@ -76,6 +76,8 @@ auto S3Config::make(std::string path) -> std::vector<S3Config> {
         return {};
     }
 
+    LOG_DEBUG_LIB(LibEcKit) << "Reading S3 configuration from: " << configFile << std::endl;
+
     const auto servers = YAMLConfiguration(configFile).getSubConfigurations("servers");
 
     std::vector<S3Config> result;

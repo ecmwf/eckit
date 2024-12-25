@@ -26,6 +26,7 @@
 #include "eckit/log/Timer.h"
 #include "eckit/net/Endpoint.h"
 #include "eckit/testing/Test.h"
+#include "test_s3_config.h"
 
 #include <bits/basic_string.h>
 
@@ -49,12 +50,14 @@ namespace {
 
 constexpr std::string_view TEST_DATA = "abcdefghijklmnopqrstuvwxyz";
 
-const net::Endpoint TEST_ENDPOINT {"minio", 9000};
-const std::string   TEST_BUCKET {"eckit-s3handle-test-bucket"};
-const std::string   TEST_OBJECT {"eckit-s3handle-test-object"};
+const std::string TEST_BUCKET {"eckit-s3handle-test-bucket"};
+const std::string TEST_OBJECT {"eckit-s3handle-test-object"};
 
-const S3Config     TEST_CONFIG {TEST_ENDPOINT, "eu-central-1"};
-const S3Credential TEST_CREDENTIAL {TEST_ENDPOINT, "minio", "minio1234"};
+const net::Endpoint TEST_ENDPOINT {S3_TEST_ENDPOINT};
+
+const S3Config TEST_CONFIG {TEST_ENDPOINT, S3_TEST_REGION};
+
+const S3Credential TEST_CRED {TEST_ENDPOINT, "minio", "minio1234"};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -91,7 +94,7 @@ void cleanup() {
 
 CASE("initialize s3 session") {
 
-    EXPECT(S3Session::instance().addCredential(TEST_CREDENTIAL));
+    EXPECT(S3Session::instance().addCredential(TEST_CRED));
     EXPECT(S3Session::instance().addClient(TEST_CONFIG));
 
     EXPECT_NO_THROW(cleanup());

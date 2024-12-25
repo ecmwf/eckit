@@ -21,6 +21,7 @@
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/net/Endpoint.h"
 #include "eckit/testing/Test.h"
+#include "test_s3_config.h"
 
 #include <algorithm>
 #include <string>
@@ -37,9 +38,11 @@ namespace eckit::test {
 
 namespace {
 
-const net::Endpoint TEST_ENDPOINT {"minio", 9000};
+const net::Endpoint TEST_ENDPOINT {S3_TEST_ENDPOINT};
 
-const S3Config TEST_CONFIG {TEST_ENDPOINT, "eu-central-1"};
+const S3Config TEST_CONFIG {TEST_ENDPOINT, S3_TEST_REGION};
+
+const S3Credential TEST_CRED {TEST_ENDPOINT, "minio", "minio1234"};
 
 bool findString(const std::vector<std::string>& list, const std::string& item) {
     return (std::find(list.begin(), list.end(), item) != list.end());
@@ -61,15 +64,12 @@ void cleanup() {
 
 CASE("s3 client: API") {
 
-    const S3Config     config {TEST_ENDPOINT, "eu-central-1"};
-    const S3Credential cred {TEST_ENDPOINT, "minio", "minio1234"};
-
-    EXPECT(S3Session::instance().addClient(config));
-    EXPECT(S3Session::instance().addCredential(cred));
+    EXPECT(S3Session::instance().addClient(TEST_CONFIG));
+    EXPECT(S3Session::instance().addCredential(TEST_CRED));
 
     EXPECT_NO_THROW(cleanup());
 
-    EXPECT_NO_THROW(S3Session::instance().removeClient(config.endpoint));
+    EXPECT_NO_THROW(S3Session::instance().removeClient(TEST_ENDPOINT));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -95,13 +95,11 @@ CASE("s3 client: read from file") {
 
 CASE("s3 credentials: API") {
 
-    const S3Credential cred {TEST_ENDPOINT, "minio", "minio1234"};
-
-    EXPECT(S3Session::instance().addCredential(cred));
+    EXPECT(S3Session::instance().addCredential(TEST_CRED));
 
     EXPECT_NO_THROW(cleanup());
 
-    EXPECT_NO_THROW(S3Session::instance().removeCredential(cred.endpoint));
+    EXPECT_NO_THROW(S3Session::instance().removeCredential(TEST_ENDPOINT));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

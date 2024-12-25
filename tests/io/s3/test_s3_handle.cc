@@ -15,15 +15,11 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/io/s3/S3BucketName.h"
 #include "eckit/io/s3/S3Client.h"
-#include "eckit/io/s3/S3Credential.h"
 #include "eckit/io/s3/S3ObjectName.h"
 #include "eckit/io/s3/S3Session.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Timer.h"
 #include "eckit/net/Endpoint.h"
 #include "eckit/testing/Test.h"
 #include "test_s3_config.h"
@@ -31,11 +27,10 @@
 #include <bits/basic_string.h>
 
 #include <cstring>
-#include <iostream>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <string_view>
+#include <vector>
 
 using namespace std::string_literals;
 
@@ -46,58 +41,21 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace {
-
-constexpr std::string_view TEST_DATA = "abcdefghijklmnopqrstuvwxyz";
+constexpr std::string_view TEST_DATA {"abcdefghijklmnopqrstuvwxyz"};
 
 const std::string TEST_BUCKET {"eckit-s3handle-test-bucket"};
 const std::string TEST_OBJECT {"eckit-s3handle-test-object"};
 
-const net::Endpoint TEST_ENDPOINT {S3_TEST_ENDPOINT};
-
-const S3Config TEST_CONFIG {TEST_ENDPOINT, S3_TEST_REGION};
-
-const S3Credential TEST_CRED {TEST_ENDPOINT, "minio", "minio1234"};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void writePerformance(S3BucketName& bucket, const int count) {
-    eckit::Timer timer;
-
-    Buffer buffer(1024 * 1024);
-    buffer.zero();
-
-    timer.start();
-    for (int i = 0; i < count; i++) {
-        const auto objName = TEST_OBJECT + std::to_string(i);
-        bucket.makeObject(objName)->put(buffer.data(), buffer.size());
-    }
-    timer.stop();
-
-    std::cout << "Write performance: " << Bytes(buffer.size()) << " x " << count
-              << " objects, rate: " << Bytes(buffer.size() * 1000, timer) << std::endl;
-}
-
-void cleanup() {
-    auto client = S3Client::makeUnique(TEST_CONFIG);
-    for (const auto& name : {TEST_BUCKET}) {
-        if (client->bucketExists(name)) {
-            client->emptyBucket(name);
-            client->deleteBucket(name);
-        }
-    }
-}
-
-}  // namespace
+const std::vector<std::string> testBuckets {TEST_BUCKET};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("initialize s3 session") {
 
-    EXPECT(S3Session::instance().addCredential(TEST_CRED));
-    EXPECT(S3Session::instance().addClient(TEST_CONFIG));
+    EXPECT(S3Session::instance().addCredential(s3::TEST_CRED));
+    EXPECT(S3Session::instance().addClient(s3::TEST_CONFIG));
 
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 }
 
 CASE("invalid s3 bucket") {
@@ -109,9 +67,9 @@ CASE("invalid s3 bucket") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("S3BucketName: no bucket") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    S3BucketName bucket(TEST_ENDPOINT, TEST_BUCKET);
+    S3BucketName bucket(s3::TEST_ENDPOINT, TEST_BUCKET);
 
     EXPECT_NOT(bucket.exists());
 
@@ -129,9 +87,9 @@ CASE("S3BucketName: no bucket") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("S3BucketName: create bucket") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    S3BucketName bucket(TEST_ENDPOINT, TEST_BUCKET);
+    S3BucketName bucket(s3::TEST_ENDPOINT, TEST_BUCKET);
 
     EXPECT_NOT(bucket.exists());
 
@@ -147,9 +105,9 @@ CASE("S3BucketName: create bucket") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("S3BucketName: empty bucket") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    S3BucketName bucket(TEST_ENDPOINT, TEST_BUCKET);
+    S3BucketName bucket(s3::TEST_ENDPOINT, TEST_BUCKET);
 
     // CREATE BUCKET
     EXPECT_NO_THROW(bucket.ensureCreated());
@@ -165,9 +123,9 @@ CASE("S3BucketName: empty bucket") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("S3BucketName: bucket with object") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    S3BucketName bucket(TEST_ENDPOINT, TEST_BUCKET);
+    S3BucketName bucket(s3::TEST_ENDPOINT, TEST_BUCKET);
 
     // CREATE BUCKET
     EXPECT_NO_THROW(bucket.ensureCreated());
@@ -186,14 +144,14 @@ CASE("S3BucketName: bucket with object") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("S3Handle: basic operations") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    S3Client::makeUnique(TEST_CONFIG)->createBucket(TEST_BUCKET);
+    S3Client::makeUnique(s3::TEST_CONFIG)->createBucket(TEST_BUCKET);
 
     const void* buffer = TEST_DATA.data();
     const long  length = TEST_DATA.size();
 
-    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
+    const URI uri("s3://" + std::string(s3::TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     {
         S3ObjectName object(uri);
@@ -234,9 +192,9 @@ CASE("S3Handle: basic operations") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("S3Handle: openForRead") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
+    const URI uri("s3://" + std::string(s3::TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     EXPECT_NO_THROW(S3BucketName(uri).ensureCreated());
 
@@ -259,9 +217,9 @@ CASE("S3Handle: openForRead") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("S3Handle: openForWrite") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
+    const URI uri("s3://" + std::string(s3::TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     {  // NO BUCKET
         std::unique_ptr<DataHandle> handle(uri.newWriteHandle());
@@ -282,9 +240,9 @@ CASE("S3Handle: openForWrite") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("S3Handle: read") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
+    const URI uri("s3://" + std::string(s3::TEST_ENDPOINT) + "/" + TEST_BUCKET + "/" + TEST_OBJECT);
 
     EXPECT_NO_THROW(S3BucketName(uri).ensureCreated());
 
@@ -316,19 +274,19 @@ CASE("S3Handle: read") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("s3 performance: write 1 10 100 objects") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    const URI uri("s3://" + std::string(TEST_ENDPOINT) + "/" + TEST_BUCKET);
+    const URI uri("s3://" + std::string(s3::TEST_ENDPOINT) + "/" + TEST_BUCKET);
 
     S3BucketName bucket(uri);
 
     EXPECT_NO_THROW(bucket.ensureCreated());
 
-    writePerformance(bucket, 1);
+    s3::writePerformance(bucket, 1);
 
-    writePerformance(bucket, 10);
+    s3::writePerformance(bucket, 10);
 
-    writePerformance(bucket, 100);
+    s3::writePerformance(bucket, 100);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -340,7 +298,7 @@ int main(int argc, char** argv) {
 
     ret = run_tests(argc, argv);
 
-    test::cleanup();
+    test::s3::cleanup(test::testBuckets);
 
     return ret;
 }

@@ -16,14 +16,12 @@
 #include "eckit/io/s3/S3BucketPath.h"
 #include "eckit/io/s3/S3Client.h"
 #include "eckit/io/s3/S3Config.h"
-#include "eckit/io/s3/S3Credential.h"
 #include "eckit/io/s3/S3Exception.h"
 #include "eckit/io/s3/S3Session.h"
 #include "eckit/net/Endpoint.h"
 #include "eckit/testing/Test.h"
 #include "test_s3_config.h"
 
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -36,40 +34,18 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace {
-
-const net::Endpoint TEST_ENDPOINT {S3_TEST_ENDPOINT};
-
-const S3Config TEST_CONFIG {TEST_ENDPOINT, S3_TEST_REGION};
-
-const S3Credential TEST_CRED {TEST_ENDPOINT, "minio", "minio1234"};
-
-bool findString(const std::vector<std::string>& list, const std::string& item) {
-    return (std::find(list.begin(), list.end(), item) != list.end());
-}
-
-void cleanup() {
-    auto client = S3Client::makeUnique(TEST_CONFIG);
-    for (const auto& name : {S3BucketPath {"test-bucket-1"}, S3BucketPath {{"test-bucket-2"}}}) {
-        if (client->bucketExists(name)) {
-            client->emptyBucket(name);
-            client->deleteBucket(name);
-        }
-    }
-}
-
-}  // namespace
+const std::vector<std::string> testBuckets {"test-bucket-1", "test-bucket-2"};
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("s3 client: API") {
 
-    EXPECT(S3Session::instance().addClient(TEST_CONFIG));
-    EXPECT(S3Session::instance().addCredential(TEST_CRED));
+    EXPECT(S3Session::instance().addClient(s3::TEST_CONFIG));
+    EXPECT(S3Session::instance().addCredential(s3::TEST_CRED));
 
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    EXPECT_NO_THROW(S3Session::instance().removeClient(TEST_ENDPOINT));
+    EXPECT_NO_THROW(S3Session::instance().removeClient(s3::TEST_ENDPOINT));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -95,11 +71,11 @@ CASE("s3 client: read from file") {
 
 CASE("s3 credentials: API") {
 
-    EXPECT(S3Session::instance().addCredential(TEST_CRED));
+    EXPECT(S3Session::instance().addCredential(s3::TEST_CRED));
 
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    EXPECT_NO_THROW(S3Session::instance().removeCredential(TEST_ENDPOINT));
+    EXPECT_NO_THROW(S3Session::instance().removeCredential(s3::TEST_ENDPOINT));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -124,7 +100,7 @@ CASE("s3 credentials: read from file") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("s3 backends") {
-    S3Config cfgTmp(TEST_CONFIG);
+    S3Config cfgTmp(s3::TEST_CONFIG);
 
     cfgTmp.backend = S3Backend::AWS;
     EXPECT_NO_THROW(S3Client::makeUnique(cfgTmp));
@@ -148,12 +124,12 @@ CASE("s3 backends") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("create s3 bucket in non-existing region") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
     // this test requires an S3 endpoint that sets it's region
     // a MinIO instance with empty region will not throw an exception
 
-    auto cfgTmp   = TEST_CONFIG;
+    auto cfgTmp   = s3::TEST_CONFIG;
     cfgTmp.region = "non-existing-region-random";
 
     EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket({"test-bucket-1"}));
@@ -162,9 +138,9 @@ CASE("create s3 bucket in non-existing region") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("create s3 bucket") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    auto client = S3Client::makeUnique(TEST_CONFIG);
+    auto client = S3Client::makeUnique(s3::TEST_CONFIG);
 
     EXPECT_NO_THROW(client->createBucket({"test-bucket-1"}));
 
@@ -176,17 +152,17 @@ CASE("create s3 bucket") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("list s3 buckets") {
-    EXPECT_NO_THROW(cleanup());
+    EXPECT_NO_THROW(s3::cleanup(testBuckets));
 
-    auto client = S3Client::makeUnique(TEST_CONFIG);
+    auto client = S3Client::makeUnique(s3::TEST_CONFIG);
     EXPECT_NO_THROW(client->createBucket({"test-bucket-1"}));
     EXPECT_NO_THROW(client->createBucket({"test-bucket-2"}));
 
     {
         const auto buckets = client->listBuckets();
 
-        EXPECT(findString(buckets, "test-bucket-1"));
-        EXPECT(findString(buckets, {"test-bucket-2"}));
+        EXPECT(s3::findString(buckets, "test-bucket-1"));
+        EXPECT(s3::findString(buckets, {"test-bucket-2"}));
 
         EXPECT_NO_THROW(client->deleteBucket({"test-bucket-1"}));
         EXPECT_NO_THROW(client->deleteBucket({"test-bucket-2"}));
@@ -194,8 +170,8 @@ CASE("list s3 buckets") {
 
     {
         const auto buckets = client->listBuckets();
-        EXPECT_NOT(findString(buckets, "test-bucket-1"));
-        EXPECT_NOT(findString(buckets, {"test-bucket-2"}));
+        EXPECT_NOT(s3::findString(buckets, "test-bucket-1"));
+        EXPECT_NOT(s3::findString(buckets, {"test-bucket-2"}));
     }
 
     EXPECT_THROWS(client->deleteBucket({"test-bucket-1"}));
@@ -211,7 +187,7 @@ int main(int argc, char** argv) {
 
     ret = run_tests(argc, argv);
 
-    test::cleanup();
+    test::s3::cleanup(test::testBuckets);
 
     return ret;
 }

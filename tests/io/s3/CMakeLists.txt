@@ -5,7 +5,8 @@ if( eckit_HAVE_S3 )
     set( S3_TEST_PORT       "9000" )
     set( S3_TEST_ENDPOINT   ${S3_TEST_HOST}:${S3_TEST_PORT} )
     set( S3_TEST_REGION     "eu-central-1" )
-    set( S3_TEST_BUCKET     "eckit-test-bucket" )
+    set( S3_TEST_BUCKET     "eckit-test-s3-bucket" )
+    set( S3_TEST_OBJECT     "eckit-test-s3-object" )
 
     configure_file( test_s3_config.h.in ${CMAKE_CURRENT_SOURCE_DIR}/test_s3_config.h @ONLY )
 

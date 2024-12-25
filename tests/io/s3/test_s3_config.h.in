@@ -10,8 +10,70 @@
 
 #pragma once
 
+#include "eckit/io/Buffer.h"
+#include "eckit/io/s3/S3BucketName.h"
+#include "eckit/io/s3/S3BucketPath.h"
+#include "eckit/io/s3/S3Client.h"
+#include "eckit/io/s3/S3Config.h"
+#include "eckit/io/s3/S3Credential.h"
+#include "eckit/io/s3/S3ObjectName.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Timer.h"
+#include "eckit/net/Endpoint.h"
+
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <vector>
+
 #cmakedefine S3_TEST_HOST "@S3_TEST_HOST@"
 #cmakedefine S3_TEST_PORT "@S3_TEST_PORT@"
 #cmakedefine S3_TEST_ENDPOINT "@S3_TEST_ENDPOINT@"
 #cmakedefine S3_TEST_REGION "@S3_TEST_REGION@"
 #cmakedefine S3_TEST_BUCKET "@S3_TEST_BUCKET@"
+#cmakedefine S3_TEST_OBJECT "@S3_TEST_OBJECT@"
+
+namespace eckit::test::s3 {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+const net::Endpoint TEST_ENDPOINT {S3_TEST_ENDPOINT};
+
+const S3Config TEST_CONFIG {TEST_ENDPOINT, S3_TEST_REGION};
+
+const S3Credential TEST_CRED {TEST_ENDPOINT, "minio", "minio1234"};
+
+inline bool findString(const std::vector<std::string>& list, const std::string& item) {
+    return (std::find(list.begin(), list.end(), item) != list.end());
+}
+
+inline void cleanup(const std::vector<std::string>& bucketPaths) {
+    auto client = S3Client::makeUnique(TEST_CONFIG);
+    for (const auto& path : bucketPaths) {
+        if (client->bucketExists(path)) {
+            client->emptyBucket(path);
+            client->deleteBucket(path);
+        }
+    }
+}
+
+void writePerformance(S3BucketName& bucket, const int count) {
+    eckit::Timer timer;
+
+    Buffer buffer(1024 * 1024);
+    buffer.zero();
+
+    timer.start();
+    for (int i = 0; i < count; i++) {
+        const auto objName = S3_TEST_OBJECT + std::to_string(i);
+        bucket.makeObject(objName)->put(buffer.data(), buffer.size());
+    }
+    timer.stop();
+
+    std::cout << "Write performance: " << Bytes(buffer.size()) << " x " << count
+              << " objects, rate: " << Bytes(buffer.size() * 1000, timer) << std::endl;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit::test::s3

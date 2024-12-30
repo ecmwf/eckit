@@ -53,10 +53,6 @@ public:  // methods
 
     auto path() const -> const S3ObjectPath& { return path_; }
 
-    auto name() const -> const std::string& { return path_.object; }
-
-    auto bucket() const -> const std::string& { return path_.bucket; }
-
     auto bucketExists() const -> bool;
 
     // modifiers

@@ -35,6 +35,10 @@ struct S3ObjectPath {
 
     operator std::string() const { return asString(); }
 
+    bool operator==(const S3ObjectPath& other) const { return bucket == other.bucket && object == other.object; }
+
+    bool operator!=(const S3ObjectPath& other) const { return !(*this == other); }
+
     friend std::ostream& operator<<(std::ostream& out, const S3ObjectPath& path) {
         out << "bucket=" << path.bucket << ",object=" << path.object;
         return out;

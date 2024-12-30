@@ -56,8 +56,6 @@ public:  // methods
 
     auto path() const -> const S3BucketPath& { return path_; }
 
-    auto bucket() const -> const std::string& { return path_.bucket; }
-
     /// @todo return S3 object iterator but first add prefix
     auto listObjects() const -> std::vector<std::string>;
 

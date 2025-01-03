@@ -77,7 +77,7 @@ CASE("spec") {
 
     EXPECT(grid1->spec_str() == grid2->spec_str());
 
-    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "pi"}})));
+    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "pi_N"}})));
     EXPECT(grid4->spec_str() == expected_spec_str);
 
     std::unique_ptr<const Grid> grid5(GridFactory::build(spec::Custom({{"uid", UID_N}})));

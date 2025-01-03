@@ -12,9 +12,7 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
-#include "eckit/geo/container/Points.h"
-#include "eckit/geo/container/PointsLonLatReference.h"
-#include "eckit/geo/container/PointsReference.h"
+#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 
@@ -39,7 +37,8 @@ Unstructured::Unstructured(const std::vector<double>& latitudes, const std::vect
 Unstructured::Unstructured(const std::vector<Point>& points) : container_{new container::PointsReference{points}} {}
 
 
-Unstructured::Unstructured(std::vector<Point>&& points) : container_{new container::Points{std::move(points)}} {}
+Unstructured::Unstructured(std::vector<Point>&& points) :
+    container_{new container::PointsInstance{std::move(points)}} {}
 
 
 size_t Unstructured::size() const {

@@ -5,6 +5,7 @@ list(APPEND eckit_geo_srcs
     Arrangement.h
     Cache.cc
     Cache.h
+    Container.h
     Download.cc
     Download.h
     Figure.cc
@@ -31,8 +32,6 @@ list(APPEND eckit_geo_srcs
     PointLonLat.h
     PointLonLatR.cc
     PointLonLatR.h
-    PointsContainer.cc
-    PointsContainer.h
     Projection.cc
     Projection.h
     Range.cc
@@ -45,12 +44,8 @@ list(APPEND eckit_geo_srcs
     Spec.h
     area/BoundingBox.cc
     area/BoundingBox.h
-    container/Points.cc
-    container/Points.h
-    container/PointsLonLatReference.cc
-    container/PointsLonLatReference.h
-    container/PointsReference.cc
-    container/PointsReference.h
+    container/PointsContainer.cc
+    container/PointsContainer.h
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc

@@ -17,7 +17,7 @@
 #include "eckit/geo/Iterator.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::container {
 class PointsContainer;
 }
 
@@ -29,13 +29,13 @@ class Unstructured final : public Iterator {
 public:
     // -- Constructors
 
-    Unstructured(const Grid&, size_t index, std::shared_ptr<PointsContainer>);
+    Unstructured(const Grid&, size_t index, std::shared_ptr<container::PointsContainer>);
     explicit Unstructured(const Grid&);
 
 private:
     // -- Members
 
-    std::shared_ptr<PointsContainer> container_;
+    std::shared_ptr<container::PointsContainer> container_;
     size_t index_;
     const size_t size_;
     const std::string uid_;

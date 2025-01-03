@@ -21,7 +21,6 @@
 #include "eckit/geo/Download.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
-#include "eckit/geo/container/PointsLonLatReference.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"

@@ -23,7 +23,7 @@
 #include "eckit/geo/Download.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
-#include "eckit/geo/container/PointsLonLatReference.h"
+#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/utils/MD5.h"

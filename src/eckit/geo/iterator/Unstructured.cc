@@ -15,14 +15,14 @@
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/PointsContainer.h"
+#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 
 namespace eckit::geo::iterator {
 
 
-Unstructured::Unstructured(const Grid& grid, size_t index, std::shared_ptr<PointsContainer> container) :
+Unstructured::Unstructured(const Grid& grid, size_t index, std::shared_ptr<container::PointsContainer> container) :
     container_(container), index_(index), size_(container_->size()), uid_(grid.uid()) {
     ASSERT(container_->size() == grid.size());
 }

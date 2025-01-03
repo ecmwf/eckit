@@ -26,8 +26,11 @@ namespace eckit::geo::grid {
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long("N"), spec.get_long_vector("pl"), area::BoundingBox(spec),
-                    projection::Rotation::make_from_spec(spec)) {}
+    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox(spec), projection::Rotation::make_from_spec(spec)) {}
+
+
+ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox, projection::Rotation* rotation) :
+    ReducedGaussian(pl.size() / 2, pl, bbox, rotation) {}
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const area::BoundingBox& bbox,
@@ -39,6 +42,7 @@ ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const area::Boundi
     Nj_(pl.size()),
     x_(Nj_),
     y_(range::GaussianLatitude(N_, false).make_range_cropped(bbox.north, bbox.south)) {
+    ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
     ASSERT(y_);
 }

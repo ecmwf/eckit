@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <errno.h>
+#include <cerrno>
 #include <sys/sem.h>
 #include <unistd.h>
 #include <cstdio>

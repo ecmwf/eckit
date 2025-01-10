@@ -16,7 +16,7 @@
 #include <map>
 
 #include <dlfcn.h>   // for dlopen
-#include <limits.h>  // for PATH_MAX
+#include <climits>  // for PATH_MAX
 
 #include "eckit/system/LibraryManager.h"
 

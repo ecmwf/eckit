@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <signal.h>
+#include <csignal>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"

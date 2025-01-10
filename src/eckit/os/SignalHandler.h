@@ -12,7 +12,7 @@
 #define eckit_SignalHandler_h
 
 #include <setjmp.h>
-#include <signal.h>
+#include <csignal>
 
 #include "eckit/eckit.h"
 

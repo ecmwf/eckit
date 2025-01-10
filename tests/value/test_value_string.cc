@@ -190,8 +190,8 @@ CASE("Ensure a well defined ordering of strings with other Values()") {
     EXPECT(val1.compare(val2) == 0);
     EXPECT(val2.compare(val1) == 0);
 
-    EXPECT(val1.compare(val3) == -1);
-    EXPECT(val3.compare(val1) == 1);
+    EXPECT(val1.compare(val3) < 0);
+    EXPECT(val3.compare(val1) > 0);
 
     // Check comparisons with other types of data (see test_value_typeordering).
 

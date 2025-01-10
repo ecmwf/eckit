@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// #include <stdlib.h>
+// #include <cstdlib>
 
 #include "eckit/runtime/Library.h"
 #include "eckit/exception/Exceptions.h"

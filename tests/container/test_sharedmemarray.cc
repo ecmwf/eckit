@@ -9,7 +9,7 @@
  */
 
 #include <fcntl.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <sys/mman.h>
 #include <sys/shm.h>
 #include <sys/stat.h>

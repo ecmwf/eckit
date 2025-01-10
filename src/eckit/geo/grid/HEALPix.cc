@@ -18,7 +18,7 @@
 #include <cstdint>
 #include <tuple>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"

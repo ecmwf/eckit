@@ -16,7 +16,7 @@
 #include <numeric>
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
@@ -223,7 +223,7 @@ const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
     }
 
     list(Log::error() << "Grid: cannot build grid without 'type', choices are: ");
-    throw SpecNotFound("Grid: cannot build grid without 'type'", Here());
+    throw exception::SpecNotFound("Grid: cannot build grid without 'type'", Here());
 }
 
 

@@ -12,7 +12,7 @@
 
 #include "eckit/geo/iterator/Regular.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/Regular.h"
 
 

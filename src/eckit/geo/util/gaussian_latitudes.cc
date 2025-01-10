@@ -16,8 +16,8 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Cache.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 
 

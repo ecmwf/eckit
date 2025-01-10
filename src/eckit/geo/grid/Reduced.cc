@@ -12,7 +12,7 @@
 
 #include "eckit/geo/grid/Reduced.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 
 
 namespace eckit::geo::grid {

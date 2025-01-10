@@ -20,7 +20,7 @@
 #include <regex>
 #include <string>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
 
 

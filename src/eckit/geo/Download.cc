@@ -15,8 +15,8 @@
 #include <fstream>
 #include <iterator>
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Cache.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Log.h"

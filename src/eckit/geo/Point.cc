@@ -14,7 +14,7 @@
 
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 
 
 namespace eckit::geo {

@@ -13,6 +13,7 @@
 
 #include <sstream>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/log/JSON.h"
 
 
@@ -30,12 +31,7 @@ static inline T _get_d(const Spec& spec, const std::string& name, const T& _defa
 template <typename T>
 static inline T _get_t(const Spec& spec, const std::string& name) {
     T value{};
-    return spec.get(name, value) ? value : throw SpecNotFound(name, Here());
-}
-
-
-SpecNotFound::SpecNotFound(const std::string& name, const CodeLocation& loc) : Exception(loc) {
-    reason("SpecNotFound: [" + name + "], in " + loc.asString());
+    return spec.get(name, value) ? value : throw exception::SpecNotFound(name, Here());
 }
 
 

@@ -14,7 +14,7 @@
 
 #include <memory>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/eckit_geo_config.h"
@@ -26,11 +26,6 @@
 
 
 namespace eckit::geo {
-
-
-ProjectionProblem::ProjectionProblem(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    reason("ProjectionProblem: [" + what + "], in " + loc.asString());
-};
 
 
 Figure* Projection::make_figure() const {

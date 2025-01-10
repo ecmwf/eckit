@@ -15,7 +15,7 @@
 #include <map>
 #include <numeric>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
 
 
@@ -58,6 +58,14 @@ public:
     using value_type = Value;
 
     CacheT() : mutex_(new util::recursive_mutex) { ASSERT(mutex_ != nullptr); }
+
+    ~CacheT() { delete mutex_; }
+
+    CacheT(const CacheT&) = delete;
+    CacheT(CacheT&&)      = delete;
+
+    CacheT& operator=(const CacheT&) = delete;
+    CacheT& operator=(CacheT&&)      = delete;
 
     bool contains(const key_type& key) const {
         util::lock_guard<util::recursive_mutex> lock(*mutex_);

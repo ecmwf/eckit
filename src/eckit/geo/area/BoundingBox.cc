@@ -16,7 +16,7 @@
 #include <memory>
 #include <vector>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/geometry/Sphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"

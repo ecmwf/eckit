@@ -14,7 +14,7 @@
 #include <limits>
 #include <sstream>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/sincos.h"
 #include "eckit/types/FloatCompare.h"

@@ -218,11 +218,11 @@ private:
 
 
 HEALPix::HEALPix(const Spec& spec) :
-    HEALPix(spec.get_unsigned("Nside"), [](const std::string& str) {
+    HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")), [](const std::string& str) {
         return str == "ring"     ? Ordering::healpix_ring
                : str == "nested" ? Ordering::healpix_nested
                                  : throw AssertionFailed("HEALPix: supported orderings: ring, nested", Here());
-    }(spec.get_string("ordering", "ring"))) {}
+    }(spec.get_string("ordering", "!"))) {}
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) : Reduced(area::BoundingBox{}), Nside_(Nside), ordering_(ordering) {

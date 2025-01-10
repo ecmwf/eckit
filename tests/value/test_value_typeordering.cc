@@ -73,11 +73,11 @@ CASE("Every type compares correctly against every other type") {
 
                 EXPECT(values[i] < values[j]);
                 EXPECT(!(values[i] >= values[j]));
-                EXPECT(values[i].compare(values[j]) == -1);
+                EXPECT(values[i].compare(values[j]) < 0);
 
                 EXPECT(values[j] >= values[i]);
                 EXPECT(!(values[j] < values[i]));
-                EXPECT(values[j].compare(values[i]) == 1);
+                EXPECT(values[j].compare(values[i]) > 0);
 
                 sanity_check++;
             }
@@ -123,11 +123,11 @@ CASE("Every type compares correctly against every other type") {
 
                 EXPECT(values[i] > values[j]);
                 EXPECT(!(values[i] <= values[j]));
-                EXPECT(values[i].compare(values[j]) == 1);
+                EXPECT(values[i].compare(values[j]) > 0);
 
                 EXPECT(values[j] <= values[i]);
                 EXPECT(!(values[j] > values[i]));
-                EXPECT(values[j].compare(values[i]) == -1);
+                EXPECT(values[j].compare(values[i]) < 0);
 
                 sanity_check++;
             }

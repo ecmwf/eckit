@@ -14,7 +14,7 @@
 #include <random>
 #include "eckit/eckit.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include <limits>
 #include <random>
 

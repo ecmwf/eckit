@@ -11,9 +11,9 @@
 #include "LocalPathName.h"
 
 #include <dirent.h>
-#include <limits.h>
+#include <climits>
 #include <pwd.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/types.h>

@@ -8,7 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <signal.h>
+#include <csignal>
 #include <unistd.h>
 
 #include "eckit/cmd/KillCmd.h"

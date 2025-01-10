@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <signal.h>
+#include <csignal>
 #include <sys/wait.h>
 #include <unistd.h>
 

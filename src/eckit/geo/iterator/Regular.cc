@@ -28,7 +28,7 @@ Regular::Regular(const grid::Regular& grid, size_t index) :
     index_(index),
     nx_(x_.size()),
     ny_(y_.size()),
-    size_(nx_ * nx_) {}
+    size_(nx_ * ny_) {}
 
 
 bool Regular::operator==(const Iterator& other) const {

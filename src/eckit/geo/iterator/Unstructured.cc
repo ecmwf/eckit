@@ -12,9 +12,7 @@
 
 #include "eckit/geo/iterator/Unstructured.h"
 
-#include <utility>
-
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/grid/Unstructured.h"
 

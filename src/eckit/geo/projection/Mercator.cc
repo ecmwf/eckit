@@ -15,6 +15,7 @@
 #include <cmath>
 #include <limits>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -39,7 +40,7 @@ Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
 
     if (types::is_approximately_equal(first.lat, PointLonLat::RIGHT_ANGLE)
         || types::is_approximately_equal(first.lat, -PointLonLat::RIGHT_ANGLE)) {
-        throw ProjectionProblem("Mercator: projection cannot be calculated at the poles", Here());
+        throw exception::ProjectionError("Mercator: projection cannot be calculated at the poles", Here());
     }
 
     auto lam0 = util::DEGREE_TO_RADIAN * centre_.lon;

@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <iterator>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/Reduced.h"
 
 

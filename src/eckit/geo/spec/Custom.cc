@@ -16,7 +16,7 @@
 #include <sstream>
 #include <utility>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/JSON.h"
 #include "eckit/value/Content.h"  // for ValueList, ValueMap
@@ -347,7 +347,7 @@ const Custom::custom_ptr& Custom::custom(const std::string& name) const {
         }
     }
 
-    throw SpecNotFound("Custom::get(" + name + ") -> custom_type& ", Here());
+    throw exception::SpecNotFound("Custom::get(" + name + ") -> custom_type& ", Here());
 }
 
 

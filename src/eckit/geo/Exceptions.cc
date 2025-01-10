@@ -10,29 +10,20 @@
  */
 
 
-#include "eckit/geo/Range.h"
-
 #include "eckit/geo/Exceptions.h"
-#include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::exception {
 
 
-Range::Range(size_t n, double _a, double _b, double _eps) : n_(n), a_(_a), b_(_b), eps_(_eps) {
-    ASSERT(0 < n);
-    ASSERT(0. <= eps_);
-    if (types::is_approximately_equal(_a, _b)) {
-        n_ = 1;
-        b(_a);
-    }
-}
+ProjectionError::ProjectionError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
+    reason("ProjectionError: [" + what + "], in " + loc.asString());
+};
 
 
-void Range::resize(size_t n) {
-    ASSERT(0 < n);
-    n_ = n;
-}
+SpecNotFound::SpecNotFound(const std::string& what, const CodeLocation& loc) : Exception(loc) {
+    reason("SpecNotFound: [" + what + "], in " + loc.asString());
+};
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::exception

@@ -8,6 +8,8 @@ list(APPEND eckit_geo_srcs
     Container.h
     Download.cc
     Download.h
+    Exceptions.cc
+    Exceptions.h
     Figure.cc
     Figure.h
     GreatCircle.cc

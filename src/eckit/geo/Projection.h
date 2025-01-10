@@ -32,12 +32,6 @@ class Custom;
 namespace eckit::geo {
 
 
-class ProjectionProblem : public Exception {
-public:
-    explicit ProjectionProblem(const std::string&, const CodeLocation&);
-};
-
-
 class Projection {
 public:
     // -- Types

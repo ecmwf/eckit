@@ -15,10 +15,10 @@
 #include <memory>
 
 #include "eckit/codec/codec.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
 #include "eckit/geo/Download.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/iterator/Unstructured.h"

@@ -12,7 +12,7 @@
 
 #include "eckit/geo/figure/OblateSpheroid.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/types/FloatCompare.h"
 

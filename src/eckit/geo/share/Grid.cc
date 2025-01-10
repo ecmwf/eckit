@@ -12,8 +12,8 @@
 
 #include "eckit/geo/share/Grid.h"
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/spec/Custom.h"

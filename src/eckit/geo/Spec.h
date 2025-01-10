@@ -14,7 +14,6 @@
 #include <ostream>
 
 #include "eckit/config/Parametrisation.h"
-#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
@@ -23,12 +22,6 @@ class JSON;
 
 
 namespace eckit::geo {
-
-
-class SpecNotFound : public Exception {
-public:
-    explicit SpecNotFound(const std::string&, const CodeLocation&);
-};
 
 
 class Spec : public Parametrisation {

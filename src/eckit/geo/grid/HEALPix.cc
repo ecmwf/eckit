@@ -222,7 +222,7 @@ HEALPix::HEALPix(const Spec& spec) :
         return str == "ring"     ? Ordering::healpix_ring
                : str == "nested" ? Ordering::healpix_nested
                                  : throw AssertionFailed("HEALPix: supported orderings: ring, nested", Here());
-    }(spec.get_string("ordering", "!"))) {}
+    }(spec.get_string("ordering", "ring"))) {}
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) : Reduced(area::BoundingBox{}), Nside_(Nside), ordering_(ordering) {

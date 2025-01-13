@@ -300,6 +300,8 @@ std::vector<Point> HEALPix::to_points() const {
         return points;
     }
 
+    ASSERT(ordering_ == Ordering::healpix_nested);
+
     std::vector<Point> points_nested;
     points_nested.reserve(size());
 

@@ -116,7 +116,7 @@ void TCPSocket::closeInput() {
     SYSCALL(::shutdown(socket_, SHUT_RD));
 }
 
-long TCPSocket::write(const void* buf, long length) {
+long TCPSocket::write(const void* buf, long length) const {
 
     // Allow zero length packets
     if (length == 0) {
@@ -206,7 +206,7 @@ long TCPSocket::write(const void* buf, long length) {
     return sent;
 }
 
-long TCPSocket::read(void* buf, long length) {
+long TCPSocket::read(void* buf, long length) const {
     if (length <= 0) {
         return length;
     }

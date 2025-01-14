@@ -47,7 +47,7 @@ public:  // methods
 
     TCPSocket& operator=(net::TCPSocket&);
 
-    long write(const void* buf, long length);
+    long write(const void* buf, long length) const;
 
     /// Read from a TCP socket
     ///
@@ -59,7 +59,7 @@ public:  // methods
     ///   on flaky connections
     /// \arg **socketSelectTimeout** (*long*): timeout in seconds for the select
     ///   (only if **useSelectOnTCPSocket** is enabled)
-    long read(void* buf, long length);
+    long read(void* buf, long length) const;
 
     long rawRead(void*, long);  // Non-blocking version
 
@@ -121,9 +121,9 @@ protected:                    // members
     int sendBufferSize_    = 0;
 
     // Debug
-    bool debug_;
-    bool newline_;
-    char mode_;
+    mutable bool debug_;
+    mutable bool newline_;
+    mutable char mode_;
 
 protected:  // methods
     int createSocket(int port, const SocketOptions& options);

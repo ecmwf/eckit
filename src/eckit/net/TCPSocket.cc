@@ -57,10 +57,7 @@ TCPSocket::TCPSocket() :
     localPort_(-1),
     remotePort_(-1),
     remoteAddr_(none),
-    localAddr_(none),
-    debug_(false),
-    newline_(true),
-    mode_(0) {}
+    localAddr_(none) {}
 
 // This contructor performs a change of ownership of the socket
 TCPSocket::TCPSocket(net::TCPSocket& other) :
@@ -70,10 +67,7 @@ TCPSocket::TCPSocket(net::TCPSocket& other) :
     remoteHost_(other.remoteHost_),
     remoteAddr_(other.remoteAddr_),
     localHost_(other.localHost_),
-    localAddr_(other.localAddr_),
-    debug_(false),
-    newline_(true),
-    mode_(0) {
+    localAddr_(other.localAddr_) {
     other.socket_     = -1;  // Detach socket from other
     other.remoteAddr_ = none;
     other.remoteHost_ = std::string();
@@ -95,9 +89,7 @@ TCPSocket& TCPSocket::operator=(net::TCPSocket& other) {
     remoteHost_ = other.remoteHost_;
     remotePort_ = other.remotePort_;
 
-    debug_   = other.debug_;
-    newline_ = other.newline_;
-    mode_    = other.mode_;
+    debug_ = other.debug_;
 
     other.socket_ = -1;  // Detach socket from other
 
@@ -125,20 +117,20 @@ long TCPSocket::write(const void* buf, long length) const {
 
     long requested = length;
 
-    if (debug_) {
+    if (debug_.on) {
 
-        if (mode_ != 'w') {
-            newline_ = true;
+        if (debug_.mode != 'w') {
+            debug_.newline = true;
             std::cout << std::endl
                       << std::endl;
-            mode_ = 'w';
+            debug_.mode = 'w';
         }
 
         const char* p = reinterpret_cast<const char*>(buf);
         for (long i = 0; i < std::min(length, 512L); i++) {
-            if (newline_) {
+            if (debug_.newline) {
                 std::cout << ">>> ";
-                newline_ = false;
+                debug_.newline = false;
             }
 
             if (p[i] == '\r') {
@@ -147,7 +139,7 @@ long TCPSocket::write(const void* buf, long length) const {
             else if (p[i] == '\n') {
                 std::cout << "\\n"
                           << std::endl;
-                newline_ = true;
+                debug_.newline = true;
             }
             else {
                 std::cout << (isprint(p[i]) ? p[i] : '.');
@@ -156,7 +148,7 @@ long TCPSocket::write(const void* buf, long length) const {
 
         if (length > 512) {
             std::cout << "..." << std::endl;
-            newline_ = true;
+            debug_.newline = true;
         }
     }
 
@@ -270,19 +262,19 @@ long TCPSocket::read(void* buf, long length) const {
             return received;
         }
 
-        if (debug_) {
+        if (debug_.on) {
 
-            if (mode_ != 'r') {
-                newline_ = true;
+            if (debug_.mode != 'r') {
+                debug_.newline = true;
                 std::cout << std::endl
                           << std::endl;
-                mode_ = 'r';
+                debug_.mode = 'r';
             }
 
             for (long i = 0; i < std::min(len, 512L); i++) {
-                if (newline_) {
+                if (debug_.newline) {
                     std::cout << "<<< ";
-                    newline_ = false;
+                    debug_.newline = false;
                 }
 
                 if (p[i] == '\r') {
@@ -291,7 +283,7 @@ long TCPSocket::read(void* buf, long length) const {
                 else if (p[i] == '\n') {
                     std::cout << "\\n"
                               << std::endl;
-                    newline_ = true;
+                    debug_.newline = true;
                 }
                 else {
                     std::cout << (isprint(p[i]) ? p[i] : '.');
@@ -300,10 +292,9 @@ long TCPSocket::read(void* buf, long length) const {
 
             if (len > 512) {
                 std::cout << "..." << std::endl;
-                newline_ = true;
+                debug_.newline = true;
             }
         }
-
 
         received += len;
         length -= len;
@@ -810,9 +801,9 @@ bool TCPSocket::stillConnected() const {
 }
 
 void TCPSocket::debug(bool on) {
-    debug_   = on;
-    newline_ = true;
-    mode_    = 0;
+    debug_.on      = on;
+    debug_.newline = true;
+    debug_.mode    = 0;
 }
 
 void TCPSocket::print(std::ostream& s) const {

@@ -121,9 +121,11 @@ protected:                    // members
     int sendBufferSize_    = 0;
 
     // Debug
-    mutable bool debug_;
-    mutable bool newline_;
-    mutable char mode_;
+    struct {
+        bool         on {false};
+        mutable bool newline {true};
+        mutable char mode {0};
+    } debug_;
 
 protected:  // methods
     int createSocket(int port, const SocketOptions& options);

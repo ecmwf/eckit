@@ -263,8 +263,7 @@ std::string ORCA::arrangement_to_string(Arrangement a) {
 
 
 void ORCA::fill_spec(spec::Custom& custom) const {
-    custom.set("type", "ORCA");
-    custom.set("uid", uid());
+    custom.set("grid", name_ + "_" + arrangement_to_string(arrangement_));
 }
 
 

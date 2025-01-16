@@ -1,5 +1,5 @@
 
-list(APPEND TESTS 
+list(APPEND TESTS
     [=[{"grid":"H2","ordering":"nested"}]=]
     [=[{"grid":"H2","ordering":"ring"}]=]
     [=[{"grid":"H4","ordering":"nested"}]=]
@@ -76,45 +76,33 @@ list(APPEND TESTS
     [=[{"grid":[2.5,2.5]}]=]
     [=[{"grid":[5,5]}]=] )
 
-set(I 1)
+if(eckit_HAVE_GEO_GRID_ORCA)
+    list(APPEND TESTS [=[{"grid":"ORCA2_T"}]=])
+endif()
+
 foreach(test ${TESTS})
+    set(name "eckit_test_geo_integration_eckit-regrid_gridspec_${test}")
+    string(MAKE_C_IDENTIFIER "${name}" name)
+    string(REGEX REPLACE "_+" "_" name "${name}")
+    string(REGEX REPLACE "_$" "" name "${name}")
+
     ecbuild_add_test(
-        TARGET eckit_test_geo_integration_eckit-regrid_gridspec_${I}
-        COMMAND eckit_grid_spec
-        ARGS "${test}" )
+        TARGET      ${name}
+        COMMAND     eckit_grid_spec
+        ARGS        "${test}"
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${TEST_ECKIT_GEO_CACHE_PATH}" )
 
     string(REPLACE "[" [=[\[]=] regex "${test}")
     string(REPLACE "]" [=[\]]=] regex "${regex}")
 
-    set_tests_properties(
-        eckit_test_geo_integration_eckit-regrid_gridspec_${I}
-        PROPERTIES
-        PASS_REGULAR_EXPRESSION "${regex}" )
-
-    math(EXPR I "${I} + 1")
+    set_tests_properties(${name} PROPERTIES PASS_REGULAR_EXPRESSION "${regex}")
 endforeach()
 
 # wip
 foreach(test
-        eckit_test_geo_integration_eckit-regrid_gridspec_61
-	    eckit_test_geo_integration_eckit-regrid_gridspec_68
-	    eckit_test_geo_integration_eckit-regrid_gridspec_70 )
+    eckit_test_geo_integration_eckit_regrid_gridspec_grid_0_7_0_7
+    eckit_test_geo_integration_eckit_regrid_gridspec_grid_1_4_1_4
+    eckit_test_geo_integration_eckit_regrid_gridspec_grid_1_6_1_6 )
     set_tests_properties(${test} PROPERTIES WILL_FAIL TRUE)
 endforeach()
-        
-if(eckit_HAVE_GEO_GRID_ORCA)
-    set(name eckit_test_geo_integration_grid_spec_orca)
-    set(test [=[{"grid":"eORCA025_T"}]=])
 
-    ecbuild_add_test(
-        TARGET ${name}
-        COMMAND eckit_grid_spec
-        ARGS "${test}"
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${TEST_ECKIT_GEO_CACHE_PATH}" )
-    
-    set_tests_properties(
-        ${name}
-        PROPERTIES
-        PASS_REGULAR_EXPRESSION "${test}"
-        WILL_FAIL TRUE )
-endif()

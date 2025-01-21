@@ -65,6 +65,7 @@ private:
     bool isPeriodicWestEast() const override { return true; }
 
     void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t i) const override;

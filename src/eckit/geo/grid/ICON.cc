@@ -164,6 +164,12 @@ void ICON::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& ICON::type() const {
+    static const std::string type{"icon"};
+    return type;
+}
+
+
 static const GridRegisterType<ICON> GRIDTYPE("ICON");
 
 

@@ -105,6 +105,7 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 };
 
 

@@ -372,6 +372,12 @@ void HEALPix::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& HEALPix::type() const {
+    static const std::string type{"healpix"};
+    return type;
+}
+
+
 static const GridRegisterType<HEALPix> GRIDTYPE1("HEALPix");
 static const GridRegisterType<HEALPix> GRIDTYPE2("healpix");
 static const GridRegisterName<HEALPix> GRIDNAME("[hH][1-9][0-9]*");

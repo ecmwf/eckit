@@ -212,6 +212,12 @@ void FESOM::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& FESOM::type() const {
+    static const std::string type{"fesom"};
+    return type;
+}
+
+
 static const GridRegisterType<FESOM> GRIDTYPE("FESOM");
 
 

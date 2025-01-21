@@ -29,10 +29,6 @@ public:
 
     size_t N() const { return N_; }
 
-    // -- Overridden methods
-
-    void fill_spec(spec::Custom&) const override;
-
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 
     // -- Class members
@@ -40,7 +36,14 @@ public:
     [[nodiscard]] static Spec* spec(const std::string& name);
 
 private:
+    // -- Members
+
     const size_t N_;
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 };
 
 

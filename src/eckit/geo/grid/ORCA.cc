@@ -267,6 +267,12 @@ void ORCA::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& ORCA::type() const {
+    static const std::string type{"orca"};
+    return type;
+}
+
+
 static const GridRegisterType<ORCA> GRIDTYPE("ORCA");
 
 

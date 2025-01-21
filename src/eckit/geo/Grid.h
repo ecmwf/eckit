@@ -108,6 +108,7 @@ public:
 
     const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
+    virtual const std::string& type() const = 0;
 
     virtual size_t size() const;
 

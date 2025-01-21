@@ -51,6 +51,7 @@ private:
     std::vector<double> longitudes(size_t j) const override;
 
     void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 };
 
 

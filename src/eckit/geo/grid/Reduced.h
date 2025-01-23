@@ -28,6 +28,7 @@ public:
     // -- Methods
 
     size_t size() const override { return niacc().back(); }
+    std::vector<size_t> shape() const override { return {size()}; }
 
     // -- Overridden methods
 

@@ -60,6 +60,12 @@ PointLonLat LambertAzimuthalEqualArea::inv(const Point2& p) const {
 }
 
 
+const std::string& LambertAzimuthalEqualArea::type() const {
+    static const std::string type{"laea"};
+    return type;
+}
+
+
 void LambertAzimuthalEqualArea::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 

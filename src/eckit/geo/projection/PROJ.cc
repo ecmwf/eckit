@@ -155,6 +155,12 @@ PROJ::PROJ(const Spec& spec) :
          spec.get_double("lon_minimum", 0)) {}
 
 
+const std::string& PROJ::type() const {
+    static const std::string type{"proj"};
+    return type;
+}
+
+
 Figure* PROJ::make_figure() const {
     pj_t identity(proj_create_crs_to_crs(CTX, target_.c_str(), target_.c_str(), nullptr));
 

@@ -62,6 +62,8 @@ public:
     [[nodiscard]] virtual Figure* make_figure() const;
     const Figure& figure() const;
 
+    virtual const std::string& type() const = 0;
+
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;
     std::string proj_str() const;

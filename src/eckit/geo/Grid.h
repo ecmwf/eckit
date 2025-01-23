@@ -108,7 +108,9 @@ public:
 
     const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
-    virtual const std::string& type() const = 0;
+
+    virtual const std::string& type() const   = 0;
+    virtual std::vector<size_t> shape() const = 0;
 
     virtual size_t size() const;
 
@@ -127,6 +129,8 @@ public:
 
     virtual const Area& area() const;
     virtual Renumber crop(const Area&) const;
+
+    virtual const Projection& projection() const;
 
     virtual const area::BoundingBox& boundingBox() const;
     [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;

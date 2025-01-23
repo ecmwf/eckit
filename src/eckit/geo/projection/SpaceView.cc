@@ -46,6 +46,12 @@ PointLonLat SpaceView::inv(const Point2&) const {
 }
 
 
+const std::string& SpaceView::type() const {
+    static const std::string type{"space-view"};
+    return type;
+}
+
+
 void SpaceView::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 

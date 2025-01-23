@@ -47,6 +47,7 @@ public:
     iterator cend() const override;
 
     size_t size() const override;
+    std::vector<size_t> shape() const override { return {size()}; }
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }

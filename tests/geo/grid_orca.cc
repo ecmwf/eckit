@@ -70,6 +70,7 @@ CASE("spec") {
     grid::ORCA grid3(UID);
 
     const std::string expected_spec_str = R"({"type":"ORCA","uid":")" + UID + R"("})";
+    Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
 
     EXPECT(grid3.uid() == UID);
     EXPECT(grid3.calculate_uid() == UID);

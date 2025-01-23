@@ -46,6 +46,8 @@ list(APPEND eckit_geo_srcs
     Spec.h
     area/BoundingBox.cc
     area/BoundingBox.h
+    area/None.cc
+    area/None.h
     container/PointsContainer.cc
     container/PointsContainer.h
     figure/Earth.cc

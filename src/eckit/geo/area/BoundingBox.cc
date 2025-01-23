@@ -213,6 +213,12 @@ bool BoundingBox::empty() const {
 }
 
 
+const std::string& BoundingBox::type() const {
+    static const std::string type{"bounding-box"};
+    return type;
+}
+
+
 bool bounding_box_equal(const BoundingBox& a, const BoundingBox& b) {
     const std::unique_ptr<BoundingBox> c(BoundingBox::make_from_area(a.north, a.west, a.south, a.east));
     const std::unique_ptr<BoundingBox> d(BoundingBox::make_from_area(b.north, b.west, b.south, b.east));

@@ -10,15 +10,10 @@
  */
 
 
-#include "eckit/geo/projection/None.h"
-
-// #include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/area/None.h"
 
 
-namespace eckit::geo::projection {
-
-
-static ProjectionBuilder<None> PROJECTION("none");
+namespace eckit::geo {
 
 
 const std::string& None::type() const {
@@ -27,4 +22,4 @@ const std::string& None::type() const {
 }
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo

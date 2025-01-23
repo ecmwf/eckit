@@ -101,6 +101,12 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
 }
 
 
+const std::string& Rotation::type() const {
+    static const std::string type{"rotation"};
+    return type;
+}
+
+
 Rotation* Rotation::make_from_spec(const Spec& spec) {
     double angle = 0.;
     spec.get("rotation_angle", angle);

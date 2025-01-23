@@ -106,6 +106,12 @@ PointLonLat Mercator::inv(const Point2& q) const {
 }
 
 
+const std::string& Mercator::type() const {
+    static const std::string type{"mercator"};
+    return type;
+}
+
+
 void Mercator::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 

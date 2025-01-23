@@ -35,6 +35,7 @@ public:
     // -- Methods
 
     size_t N() const { return N_; }
+    const pl_type& pl() const { return pl_; }
 
     // -- Overridden methods
 

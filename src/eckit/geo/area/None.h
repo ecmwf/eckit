@@ -12,28 +12,29 @@
 
 #pragma once
 
-#include "eckit/geo/Projection.h"
+#include "eckit/geo/Area.h"
 
 
-namespace eckit::geo::projection {
+namespace eckit::geo {
 
 
-class None : public Projection {
+class None final : public Area {
 public:
     // -- Constructors
 
-    explicit None() = default;
-    explicit None(const Spec&) {}
+    None() = default;
 
-    // -- Overridden methods
-
-    inline Point fwd(const Point& p) const override { return p; }
-    inline Point inv(const Point& q) const override { return q; }
+    // -- Overriden methods
 
     const std::string& type() const override;
+
+    bool intersects(area::BoundingBox&) const override { return false; }
+
+private:
+    // -- Overriden methods
 
     void fill_spec(spec::Custom&) const override {}
 };
 
 
-}  // namespace eckit::geo::projection
+}  // namespace eckit::geo

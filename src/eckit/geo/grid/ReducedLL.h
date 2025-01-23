@@ -29,6 +29,10 @@ public:
     explicit ReducedLL(const Spec&);
     explicit ReducedLL(const pl_type&, const area::BoundingBox& = {});
 
+    // -- Methods
+
+    const pl_type& pl() const { return pl_; }
+
     // -- Overridden methods
 
     iterator cbegin() const override;

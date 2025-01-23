@@ -91,6 +91,12 @@ PointLonLat LambertConformalConic::inv(const Point2& p) const {
 }
 
 
+const std::string& LambertConformalConic::type() const {
+    static const std::string type{"lcc"};
+    return type;
+}
+
+
 void LambertConformalConic::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 

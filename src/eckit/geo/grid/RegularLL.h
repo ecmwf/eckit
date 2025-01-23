@@ -30,6 +30,12 @@ public:
 
     [[nodiscard]] static Spec* spec(const std::string& name);
 
+    double dlon() const { return dx(); }
+    double dlat() const { return dy(); }
+
+    size_t nlon() const { return nx(); }
+    size_t nlat() const { return ny(); }
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;

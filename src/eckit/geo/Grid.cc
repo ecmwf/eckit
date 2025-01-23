@@ -17,6 +17,7 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/projection/None.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
@@ -149,6 +150,16 @@ const Area& Grid::area() const {
 
 Renumber Grid::crop(const Area&) const {
     NOTIMP;
+}
+
+
+const Projection& Grid::projection() const {
+    if (!projection_) {
+        projection_ = std::make_unique<projection::None>();
+        ASSERT(projection_);
+    }
+
+    return *projection_;
 }
 
 

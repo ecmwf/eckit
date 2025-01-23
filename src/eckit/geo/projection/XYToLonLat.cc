@@ -22,8 +22,14 @@ static ProjectionBuilder<XYToLonLat> PROJECTION1("xy_to_ll");
 static ProjectionBuilder<XYToLonLat> PROJECTION2("plate-carree");
 
 
+const std::string& XYToLonLat::type() const {
+    static const std::string type{"xy-to-ll"};
+    return type;
+}
+
+
 void XYToLonLat::fill_spec(spec::Custom& custom) const {
-    custom.set("projection", "ll_to_xy");
+    custom.set("projection", "xy_to_ll");
 }
 
 

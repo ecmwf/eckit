@@ -37,6 +37,12 @@ Stretch::Stretch(double c) : c_(c) {
 Stretch::Stretch(const Spec& spec) : Stretch(spec.get_double("stretching_factor")) {}
 
 
+const std::string& Stretch::type() const {
+    static const std::string type{"stretch"};
+    return type;
+}
+
+
 double Stretch::stretch(double a, double c) {
     auto ar = util::DEGREE_TO_RADIAN * a;
     ar      = std::asin(std::cos(2. * std::atan(c * std::tan(std::acos(std::sin(ar)) * 0.5))));

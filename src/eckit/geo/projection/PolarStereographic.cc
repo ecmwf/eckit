@@ -65,6 +65,12 @@ PointLonLat PolarStereographic::inv(const Point2& q) const {
 }
 
 
+const std::string& PolarStereographic::type() const {
+    static const std::string type{"polar-stereographic"};
+    return type;
+}
+
+
 void PolarStereographic::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 

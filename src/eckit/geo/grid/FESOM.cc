@@ -207,7 +207,7 @@ std::string FESOM::arrangement_to_string(Arrangement a) {
 
 
 void FESOM::fill_spec(spec::Custom& custom) const {
-    custom.set("type", "FESOM");
+    custom.set("grid", name_ + "_" + arrangement_to_string(arrangement_));
     custom.set("uid", uid());
 }
 

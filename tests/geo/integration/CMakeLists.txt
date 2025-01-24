@@ -77,7 +77,11 @@ list(APPEND TESTS
     [=[{"grid":[5,5]}]=] )
 
 if(eckit_HAVE_GEO_GRID_ORCA)
-    list(APPEND TESTS [=[{"grid":"ORCA2_T"}]=])
+    list(APPEND TESTS [=[{"grid":"ORCA2_T","uid":"d5bde4f52ff3a9bea5629cd9ac514410"}]=])
+endif()
+
+if(eckit_HAVE_GEO_GRID_FESOM)
+    list(APPEND TESTS [=[{"grid":"pi_N","uid":"bdc49d97a27e389fb86decd08a185c2f"}]=])
 endif()
 
 foreach(test ${TESTS})

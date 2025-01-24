@@ -69,7 +69,7 @@ CASE("spec") {
 
     grid::FESOM grid3(UID_N);
 
-    const std::string expected_spec_str = R"({"type":"FESOM","uid":")" + UID_N + R"("})";
+    const std::string expected_spec_str = R"({"grid":"pi_N","uid":")" + UID_N + R"("})";
 
     EXPECT(grid3.uid() == UID_N);
     EXPECT(grid3.calculate_uid() == UID_N);

@@ -31,4 +31,10 @@ void SpaceView::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& SpaceView::type() const {
+    static const std::string type{"regular-xy-space-view"};
+    return type;
+}
+
+
 }  // namespace eckit::geo::grid::regularxy

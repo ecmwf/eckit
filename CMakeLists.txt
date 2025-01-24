@@ -185,6 +185,16 @@ ecbuild_add_option( FEATURE ECKIT_GEO
                     DEFAULT OFF
                     DESCRIPTION "eckit::geo geometry library" )
 
+ecbuild_add_option( FEATURE GEO_GRID_FESOM
+                    DEFAULT ON
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
+                    DESCRIPTION "eckit::geo geometry library support for FESOM grids" )
+
+ecbuild_add_option( FEATURE GEO_GRID_ICON
+                    DEFAULT ON
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
+                    DESCRIPTION "eckit::geo geometry library support for ICON grids" )
+
 ecbuild_add_option( FEATURE GEO_GRID_ORCA
                     DEFAULT ON
                     CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
@@ -205,7 +215,7 @@ ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
                     CONDITION HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
 
-set( eckit_GEO_CACHE_PATH "/tmp/cache" )
+set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" )
 
 ### LAPACK
 
@@ -340,7 +350,7 @@ set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b
 add_subdirectory( src )
 add_subdirectory( bamboo )
 add_subdirectory( doc )
-add_subdirectory( etc )
+add_subdirectory( share )
 add_subdirectory( tests )
 add_subdirectory( regressions )
 

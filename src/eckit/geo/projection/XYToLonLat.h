@@ -27,6 +27,8 @@ public:
 
     // -- Methods
 
+    const std::string& type() const override;
+
     inline PointLonLat fwd(const Point2& p) const { return {p.X, p.Y}; }
     inline Point2 inv(const PointLonLat& q) const { return {q.lon, q.lat}; }
 

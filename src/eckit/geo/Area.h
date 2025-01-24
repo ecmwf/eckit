@@ -60,6 +60,8 @@ public:
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;
 
+    virtual const std::string& type() const = 0;
+
     virtual bool intersects(area::BoundingBox&) const = 0;
 
     // -- Class methods

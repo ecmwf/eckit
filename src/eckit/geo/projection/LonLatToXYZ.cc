@@ -68,6 +68,12 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) :
 LonLatToXYZ::LonLatToXYZ(const Spec& spec) : LonLatToXYZ(FigureFactory::build(spec)) {}
 
 
+const std::string& LonLatToXYZ::type() const {
+    static const std::string type{"ll_to_xyz"};
+    return type;
+}
+
+
 void LonLatToXYZ::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 

@@ -30,6 +30,8 @@ public:
     inline Point fwd(const Point& p) const override { return p; }
     inline Point inv(const Point& q) const override { return q; }
 
+    const std::string& type() const override;
+
     void fill_spec(spec::Custom&) const override {}
 };
 

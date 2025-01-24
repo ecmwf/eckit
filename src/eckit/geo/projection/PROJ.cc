@@ -18,7 +18,7 @@
 #include <set>
 #include <utility>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/spec/Custom.h"
 
@@ -153,6 +153,12 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 PROJ::PROJ(const Spec& spec) :
     PROJ(spec.get_string("source", spec.get_string("proj", DEFAULT)), spec.get_string("target", DEFAULT),
          spec.get_double("lon_minimum", 0)) {}
+
+
+const std::string& PROJ::type() const {
+    static const std::string type{"proj"};
+    return type;
+}
 
 
 Figure* PROJ::make_figure() const {

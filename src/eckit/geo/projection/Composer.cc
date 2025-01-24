@@ -14,7 +14,7 @@
 
 #include <vector>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 
 
@@ -54,6 +54,12 @@ std::vector<Point> Composer::inv_points(const Point& p) const {
     }
 
     return points;
+}
+
+
+const std::string& Composer::type() const {
+    static const std::string type{"composer"};
+    return type;
 }
 
 

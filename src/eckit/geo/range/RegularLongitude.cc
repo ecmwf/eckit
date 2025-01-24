@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <cmath>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"

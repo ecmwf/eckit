@@ -109,6 +109,9 @@ public:
     const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
+    virtual const std::string& type() const   = 0;
+    virtual std::vector<size_t> shape() const = 0;
+
     virtual size_t size() const;
 
     uid_t uid() const;
@@ -119,13 +122,15 @@ public:
     virtual bool isPeriodicWestEast() const;
 
     [[nodiscard]] virtual std::vector<Point> to_points() const;
-    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
+    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
     virtual Ordering ordering() const;
     virtual Renumber reorder(Ordering) const;
 
     virtual const Area& area() const;
     virtual Renumber crop(const Area&) const;
+
+    virtual const Projection& projection() const;
 
     virtual const area::BoundingBox& boundingBox() const;
     [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
@@ -148,6 +153,8 @@ protected:
     virtual void fill_spec(spec::Custom&) const;
 
     static Renumber no_reorder(size_t size);
+
+    void reset_uid(uid_t = {});
 
     void area(Area* ptr) { area_.reset(ptr); }
     void projection(Projection* ptr) { projection_.reset(ptr); }

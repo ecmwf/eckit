@@ -1,0 +1,20 @@
+---
+
+url_prefix: &url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/icon/
+
+grid_names:
+    - icon_extpar_0026_R03B07_G_20220601_tiles: &icon_extpar_0026_R03B07_G_20220601_tiles
+      description: Global R03B07 grid. 13 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      name: icon_extpar_0026_R03B07_G_20220601_tiles
+      icon_number_of_grid_used: 26
+      icon_type: hrz_global
+      icon_arrangement: C
+      shape: 2949120
+      icon_uid: "a27b8de618c411e4820ab5b098c6a5c0"
+      url_prefix: *url_prefix
+      url: icon_extpar_0026_R03B07_G_20220601_tiles.g2.icon.ek
+
+grid_uids:
+    - "a27b8de618c411e4820ab5b098c6a5c0": *icon_extpar_0026_R03B07_G_20220601_tiles
+

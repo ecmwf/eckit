@@ -29,11 +29,13 @@ public:
 
     explicit ReducedGaussian(const Spec&);
     explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
+    explicit ReducedGaussian(size_t N, const pl_type&, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
     explicit ReducedGaussian(size_t N, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
 
     // -- Methods
 
     size_t N() const { return N_; }
+    const pl_type& pl() const { return pl_; }
 
     // -- Overridden methods
 
@@ -58,6 +60,7 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t i) const override;

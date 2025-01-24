@@ -16,7 +16,7 @@
 #include <sstream>
 #include <utility>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/JSON.h"
 #include "eckit/value/Content.h"  // for ValueList, ValueMap
@@ -197,7 +197,7 @@ Custom* Custom::make_from_value(const Value& value) {
     };
 
     Custom::container_type container;
-    for (const auto& [key, value] : static_cast<ValueMap>(value)) {
+    for (const auto& [key, value] : static_cast<const ValueMap&>(value)) {
         const std::string name = key;
 
         container[name] = value.isMap()    ? custom_ptr(Custom::make_from_value(value))
@@ -347,7 +347,7 @@ const Custom::custom_ptr& Custom::custom(const std::string& name) const {
         }
     }
 
-    throw SpecNotFound("Custom::get(" + name + ") -> custom_type& ", Here());
+    throw exception::SpecNotFound("Custom::get(" + name + ") -> custom_type& ", Here());
 }
 
 

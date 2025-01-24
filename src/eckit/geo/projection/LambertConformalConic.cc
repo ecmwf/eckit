@@ -14,7 +14,7 @@
 
 #include <cmath>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -41,7 +41,7 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat fir
     ASSERT(!types::is_approximately_equal(figure().R(), 0.));
 
     if (types::is_approximately_equal(lat_1, -lat_2)) {
-        throw ProjectionProblem(
+        throw exception::ProjectionError(
             "LambertConformalConic: cannot have equal latitudes for standard parallels on opposite sides of equator",
             Here());
     }
@@ -52,7 +52,7 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat fir
                    / std::log(std::tan(M_PI_4 + lat_2_r_ / 2.) / std::tan(M_PI_4 + lat_1_r_ / 2.));
 
     if (types::is_approximately_equal(n_, 0.)) {
-        throw ProjectionProblem("LambertConformalConic: cannot corretly calculate n_", Here());
+        throw exception::ProjectionError("LambertConformalConic: cannot corretly calculate n_", Here());
     }
 
     f_         = (std::cos(lat_1_r_) * std::pow(std::tan(M_PI_4 + lat_1_r_ / 2.), n_)) / n_;
@@ -88,6 +88,12 @@ PointLonLat LambertConformalConic::inv(const Point2& p) const {
     }
 
     return PointLonLat::make(0., n_ > 0 ? PointLonLat::RIGHT_ANGLE : -PointLonLat::RIGHT_ANGLE);
+}
+
+
+const std::string& LambertConformalConic::type() const {
+    static const std::string type{"lcc"};
+    return type;
 }
 
 

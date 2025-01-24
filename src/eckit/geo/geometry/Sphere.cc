@@ -15,7 +15,7 @@
 #include <cmath>
 #include <limits>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/GreatCircle.h"
 #include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"

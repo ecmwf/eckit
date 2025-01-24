@@ -42,6 +42,8 @@ public:
 
     // -- Overridden methods
 
+    const std::string& type() const override;
+
     void fill_spec(spec::Custom&) const override;
 
     Point fwd(const Point&) const override;

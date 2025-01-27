@@ -22,6 +22,8 @@ list(APPEND eckit_geo_srcs
     Iterator.h
     LibEcKitGeo.cc
     LibEcKitGeo.h
+    NextIterator.cc
+    NextIterator.h
     Ordering.cc
     Ordering.h
     Point.cc

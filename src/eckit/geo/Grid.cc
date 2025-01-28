@@ -282,6 +282,30 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
 }
 
 
+Grid::NextIterator::NextIterator(geo::Iterator* current, const geo::Iterator* end) :
+    current_([](auto* ptr) {
+        ASSERT(ptr != nullptr);
+        return ptr;
+    }(current)),
+    end_([](auto* ptr) {
+        ASSERT(ptr != nullptr);
+        return ptr;
+    }(end)),
+    index_(current_->index()) {}
+
+
+bool Grid::NextIterator::next(Point& point) const {
+    if (auto& current(*current_); current != *end_) {
+        point  = *current;
+        index_ = current.index();
+        ++current;
+        return true;
+    }
+
+    return false;
+}
+
+
 void GridFactory::list_(std::ostream& out) const {
     lock_type lock;
     share::Grid::instance();

@@ -15,7 +15,6 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Iterator.h"
-#include "eckit/geo/NextIterator.h"
 #include "eckit/testing/Test.h"
 
 
@@ -47,7 +46,7 @@ CASE("iterator") {
         // test NextIterator
         decltype(points) next_points;
         Point point = PointLonLat{};
-        for (NextIterator iter(*grid); iter.next(point);) {
+        for (auto iter(grid->next_iterator()); iter.next(point);) {
             next_points.emplace_back(point);
         }
 

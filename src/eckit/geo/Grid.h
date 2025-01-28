@@ -82,6 +82,32 @@ public:
 
     using iterator = Iterator;
 
+    class NextIterator final {
+    public:
+        NextIterator(const NextIterator&) = delete;
+        NextIterator(NextIterator&&)      = delete;
+
+        ~NextIterator() {
+            delete current_;
+            delete end_;
+        }
+
+        void operator=(const NextIterator&) = delete;
+        void operator=(NextIterator&&)      = delete;
+
+        bool next(Point&) const;
+        size_t index() const { return index_; }
+
+    private:
+        NextIterator(geo::Iterator* current, const geo::Iterator* end);
+
+        geo::Iterator* current_;
+        const geo::Iterator* end_;
+        mutable size_t index_;
+
+        friend class Grid;
+    };
+
     // -- Constructors
 
     explicit Grid(const Spec&);
@@ -105,6 +131,8 @@ public:
 
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
+
+    NextIterator next_iterator() const { return {cbegin().release(), cend().release()}; }
 
     const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }

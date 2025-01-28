@@ -216,7 +216,7 @@ CASE("Spec <- Custom") {
         });
 
         // test scalar type conversion
-        for (const std::string& key : {"double", "float", "int", "long", "size_t"}) {
+        for (const auto& [key, value] : a.container()) {
             double value_as_double = 0;
             float value_as_float   = 0;
 

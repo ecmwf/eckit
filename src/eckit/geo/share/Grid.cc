@@ -30,8 +30,8 @@ const Grid& Grid::instance() {
 }
 
 
-Grid::Grid(const std::vector<PathName>& paths) {
-    spec_ = std::make_unique<spec::Custom>();
+Grid::Grid(const std::vector<PathName>& paths) : spec_(new spec::Custom) {
+    ASSERT(spec_);
 
     for (const auto& path : paths) {
         if (path.exists()) {
@@ -42,7 +42,7 @@ Grid::Grid(const std::vector<PathName>& paths) {
 
 
 void Grid::load(const PathName& path) {
-    auto* custom = dynamic_cast<spec::Custom*>((spec_ ? spec_ : (spec_ = std::make_unique<spec::Custom>())).get());
+    auto* custom = dynamic_cast<spec::Custom*>(spec_.get());
     ASSERT(custom != nullptr);
 
     struct SpecByUIDGenerator final : SpecByUID::generator_t {

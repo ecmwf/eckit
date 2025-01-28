@@ -96,6 +96,7 @@ public:
         void operator=(NextIterator&&)      = delete;
 
         bool next(Point&) const;
+        bool has_next() const { return *current_ != *end_; }
         size_t index() const { return index_; }
 
     private:
@@ -133,6 +134,7 @@ public:
     virtual iterator cend() const   = 0;
 
     NextIterator next_iterator() const { return {cbegin().release(), cend().release()}; }
+    NextIterator* make_next_iterator() const { return new NextIterator{cbegin().release(), cend().release()}; }
 
     const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }

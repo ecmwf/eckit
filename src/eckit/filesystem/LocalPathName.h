@@ -29,6 +29,7 @@ namespace eckit {
 class Length;
 class DataHandle;
 class BasePathName;
+class PathName;
 
 struct FileSystemSize;
 
@@ -54,6 +55,7 @@ public:  // methods
             tidy(tildeIsUserHome, skipTildeExpansion);
         }
     }
+    explicit LocalPathName(const PathName& path);
     LocalPathName(const LocalPathName& p) :
         path_(p.path_) {}
 
@@ -279,6 +281,10 @@ private:
     friend LocalPathName operator+(const LocalPathName& p, const char* s) { return LocalPathName(p.path_ + s); }
 
     friend LocalPathName operator+(const LocalPathName& p, char s) { return LocalPathName(p.path_ + s); }
+
+    friend LocalPathName operator/(const LocalPathName& p1, const LocalPathName& p2);
+
+    friend LocalPathName operator/(const LocalPathName& p1, const char* p2);
 };
 
 template <>

@@ -46,8 +46,11 @@ public:
     ///       the referenced datahandle
     Stream(DataHandle&);
 
-    /// Assignment constructor sharing datahandle with other Stream
-    Stream(const Stream&);
+    /// Assignment/Copy constructor sharing datahandle with other Stream
+    Stream(const Stream&) = default;
+    Stream(Stream&&) = default;
+    Stream& operator=(const Stream&) = default;
+    Stream& operator=(Stream&&) = default;
 
     /// Access internal DataHandle
     DataHandle& datahandle();

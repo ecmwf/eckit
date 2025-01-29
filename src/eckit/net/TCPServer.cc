@@ -9,7 +9,7 @@
  */
 
 #include <fcntl.h>
-#include <signal.h>
+#include <csignal>
 #include <sys/socket.h>
 #include <unistd.h>
 

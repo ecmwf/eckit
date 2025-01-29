@@ -15,7 +15,7 @@
 #ifndef eckit_io_StdPipe_h
 #define eckit_io_StdPipe_h
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 
 #include "eckit/io/AutoCloser.h"

@@ -40,7 +40,7 @@ public:
     size_t nj() const override;
 
     std::vector<Point> to_points() const override;
-    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+    std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     Ordering ordering() const override { return ordering_; }
     Renumber reorder(Ordering) const override;
@@ -65,6 +65,7 @@ private:
     bool isPeriodicWestEast() const override { return true; }
 
     void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t i) const override;

@@ -11,7 +11,6 @@
 
 #include "eckit/net/ProxiedTCPClient.h"
 
-#include "eckit/config/Resource.h"
 #include "eckit/net/HttpHeader.h"
 
 
@@ -27,7 +26,7 @@ ProxiedTCPClient::~ProxiedTCPClient() {}
 net::TCPSocket& ProxiedTCPClient::connect(const std::string& host, int port, int retries, int timeout) {
     net::TCPSocket& socket = TCPClient::connect(proxy_.hostname(), proxy_.port(), retries, timeout);
 
-    socket.debug(debug_);
+    socket.debug(debug_.on);
 
     const char* CRLF = "\r\n";
 

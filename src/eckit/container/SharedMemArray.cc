@@ -9,8 +9,8 @@
  */
 
 #include <fcntl.h>
-#include <stdint.h>
-#include <string.h>
+#include <cstdint>
+#include <cstring>
 #include <unistd.h>
 
 #include <sys/mman.h>

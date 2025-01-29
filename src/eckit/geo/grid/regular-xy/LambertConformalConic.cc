@@ -31,4 +31,10 @@ void LambertConformalConic::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& LambertConformalConic::type() const {
+    static const std::string type{"regular-xy-lambert-conformal-conic"};
+    return type;
+}
+
+
 }  // namespace eckit::geo::grid::regularxy

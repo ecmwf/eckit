@@ -14,7 +14,7 @@
 
 #include <memory>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
@@ -128,7 +128,7 @@ Figure* FigureFactory::make_from_spec_(const Spec& spec) const {
     }
 
     Log::error() << "Figure: cannot build figure without 'R' or 'a', 'b'" << std::endl;
-    throw SpecNotFound("Figure: cannot build figure without 'R' or 'a', 'b'", Here());
+    throw exception::SpecNotFound("Figure: cannot build figure without 'R' or 'a', 'b'", Here());
 }
 
 

@@ -12,7 +12,7 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <algorithm>
 #include <string>

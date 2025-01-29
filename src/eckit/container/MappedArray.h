@@ -14,7 +14,7 @@
 #ifndef eckit_MappedArray_h
 #define eckit_MappedArray_h
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"

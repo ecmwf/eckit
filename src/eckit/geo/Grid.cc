@@ -16,8 +16,9 @@
 #include <numeric>
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geo/etc/Grid.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/projection/None.h"
+#include "eckit/geo/share/Grid.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -107,7 +108,7 @@ std::vector<Point> Grid::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double> > Grid::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double> > Grid::to_latlons() const {
     std::pair<std::vector<double>, std::vector<double> > ll;
     ll.first.reserve(size());
     ll.second.reserve(size());
@@ -152,6 +153,16 @@ Renumber Grid::crop(const Area&) const {
 }
 
 
+const Projection& Grid::projection() const {
+    if (!projection_) {
+        projection_ = std::make_unique<projection::None>();
+        ASSERT(projection_);
+    }
+
+    return *projection_;
+}
+
+
 Grid* Grid::make_grid_cropped(const Area&) const {
     NOTIMP;
 }
@@ -176,6 +187,12 @@ Renumber Grid::no_reorder(size_t size) {
     Renumber ren(size);
     std::iota(ren.begin(), ren.end(), 0);
     return ren;
+}
+
+
+void Grid::reset_uid(uid_t _uid) {
+    ASSERT(_uid.empty() || _uid.length() == 32);
+    uid_ = _uid;
 }
 
 
@@ -217,13 +234,13 @@ const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
     }
 
     list(Log::error() << "Grid: cannot build grid without 'type', choices are: ");
-    throw SpecNotFound("Grid: cannot build grid without 'type'", Here());
+    throw exception::SpecNotFound("Grid: cannot build grid without 'type'", Here());
 }
 
 
 Spec* GridFactory::make_spec_(const Spec& spec) const {
     lock_type lock;
-    etc::Grid::instance();
+    share::Grid::instance();
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
@@ -265,9 +282,33 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
 }
 
 
+Grid::NextIterator::NextIterator(geo::Iterator* current, const geo::Iterator* end) :
+    current_([](auto* ptr) {
+        ASSERT(ptr != nullptr);
+        return ptr;
+    }(current)),
+    end_([](auto* ptr) {
+        ASSERT(ptr != nullptr);
+        return ptr;
+    }(end)),
+    index_(current_->index()) {}
+
+
+bool Grid::NextIterator::next(Point& point) const {
+    if (auto& current(*current_); current != *end_) {
+        point  = *current;
+        index_ = current.index();
+        ++current;
+        return true;
+    }
+
+    return false;
+}
+
+
 void GridFactory::list_(std::ostream& out) const {
     lock_type lock;
-    etc::Grid::instance();
+    share::Grid::instance();
 
     out << SpecByUID::instance() << std::endl;
     out << SpecByName::instance() << std::endl;

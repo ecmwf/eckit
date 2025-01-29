@@ -14,7 +14,7 @@
 
 #include <algorithm>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/Fraction.h"

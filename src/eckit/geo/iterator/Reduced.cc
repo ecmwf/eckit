@@ -15,7 +15,7 @@
 #include <algorithm>
 #include <iterator>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/Reduced.h"
 
 
@@ -26,8 +26,9 @@ Reduced::Reduced(const Grid& grid, size_t index) :
     grid_(dynamic_cast<const grid::Reduced&>(grid)),
     latitudes_(grid_.latitudes()),
     niacc_(grid_.niacc()),
-    index_(index),
-    size_(grid.size()) {
+    size_(grid.size()),
+    j_(0),
+    index_(index) {
     if (index_ < size_) {
         longitudes_j_ = grid_.longitudes(j_ = j(index_));
         ASSERT(niacc_[j_] <= index && index_ < niacc_[j_ + 1]);

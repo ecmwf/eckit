@@ -13,7 +13,7 @@
 /// @author Simon Smart
 /// @date   March 2017
 
-#include <stdlib.h>
+#include <cstdlib>
 
 #include <sys/resource.h>
 #include <sys/time.h>

@@ -15,7 +15,7 @@
 #define eckit_Seconds_h
 
 #include <sys/time.h>
-#include <time.h>
+#include <ctime>
 #include <iosfwd>
 
 //-----------------------------------------------------------------------------

@@ -32,10 +32,10 @@ using Second = double;
 class Time {
 
 public: // types
-    static constexpr double secondsInMinute = 60;
-    static constexpr double secondsInHour   = 60 * secondsInMinute;  // 3600
-    static constexpr double secondsInDay    = 24 * secondsInHour;    // 86400
-    static constexpr double secondsInWeek   = 7 * secondsInDay;      // 604800
+    static constexpr Second secondsInMinute = 60;
+    static constexpr Second secondsInHour   = 60 * secondsInMinute;  // 3600
+    static constexpr Second secondsInDay    = 24 * secondsInHour;    // 86400
+    static constexpr Second secondsInWeek   = 7 * secondsInDay;      // 604800
 
 public:  // methods
     Time(long hours, long minutes, long seconds, bool extended = false);

@@ -41,7 +41,9 @@ public:
     // -- Constructors
 
     PointSearch(const param::MIRParametrisation&, const repres::Representation&);
+
     PointSearch(const PointSearch&) = delete;
+    PointSearch(PointSearch&&)      = delete;
 
     // -- Destructor
     // None
@@ -52,6 +54,7 @@ public:
     // -- Operators
 
     void operator=(const PointSearch&) = delete;
+    void operator=(PointSearch&&)      = delete;
 
     // -- Methods
 

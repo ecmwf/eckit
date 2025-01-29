@@ -35,6 +35,9 @@ public:
     Spec& operator=(const Spec&) = delete;
     Spec& operator=(Spec&&)      = delete;
 
+    bool operator==(const Spec& other) const { return str() == other.str(); }
+    bool operator!=(const Spec& other) const { return !operator==(other); }
+
     std::string get_string(const std::string& name) const;
     bool get_bool(const std::string& name) const;
     int get_int(const std::string& name) const;

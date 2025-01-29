@@ -18,7 +18,8 @@
 #include <cstdint>
 #include <tuple>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
@@ -217,7 +218,7 @@ private:
 
 
 HEALPix::HEALPix(const Spec& spec) :
-    HEALPix(spec.get_unsigned("Nside"), [](const std::string& str) {
+    HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")), [](const std::string& str) {
         return str == "ring"     ? Ordering::healpix_ring
                : str == "nested" ? Ordering::healpix_nested
                                  : throw AssertionFailed("HEALPix: supported orderings: ring, nested", Here());
@@ -255,8 +256,10 @@ Renumber HEALPix::reorder(Ordering ordering) const {
 
 
 Grid::iterator HEALPix::cbegin() const {
-    return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this, 0)}
-                                               : iterator{new geo::iterator::Unstructured(*this, 0, to_points())};
+    return ordering_ == Ordering::healpix_ring
+               ? iterator{new geo::iterator::Reduced(*this, 0)}
+               : iterator{new geo::iterator::Unstructured(*this, 0,
+                                                          std::make_shared<container::PointsInstance>(to_points()))};
 }
 
 
@@ -297,6 +300,8 @@ std::vector<Point> HEALPix::to_points() const {
         return points;
     }
 
+    ASSERT(ordering_ == Ordering::healpix_nested);
+
     std::vector<Point> points_nested;
     points_nested.reserve(size());
 
@@ -309,7 +314,7 @@ std::vector<Point> HEALPix::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlons() const {
     std::pair<std::vector<double>, std::vector<double>> latlon;
     latlon.first.reserve(size());
     latlon.second.reserve(size());
@@ -364,6 +369,12 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
 void HEALPix::fill_spec(spec::Custom& custom) const {
     custom.set("grid", "H" + std::to_string(Nside_));
     custom.set("ordering", ordering_ == Ordering::healpix_ring ? "ring" : "nested");
+}
+
+
+const std::string& HEALPix::type() const {
+    static const std::string type{"healpix"};
+    return type;
 }
 
 

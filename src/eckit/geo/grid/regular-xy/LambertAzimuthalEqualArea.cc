@@ -31,4 +31,10 @@ void LambertAzimuthalEqualArea::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& LambertAzimuthalEqualArea::type() const {
+    static const std::string type{"regular-xy-laea"};
+    return type;
+}
+
+
 }  // namespace eckit::geo::grid::regularxy

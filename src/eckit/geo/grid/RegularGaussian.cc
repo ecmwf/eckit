@@ -62,6 +62,12 @@ void RegularGaussian::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& RegularGaussian::type() const {
+    static const std::string type{"regular-gg"};
+    return type;
+}
+
+
 static const GridRegisterName<RegularGaussian> GRIDNAME("[fF][1-9][0-9]*");
 
 static const GridRegisterType<RegularGaussian> GRIDTYPE1("regular_gg");

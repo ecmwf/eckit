@@ -134,7 +134,10 @@ public:
     virtual iterator cend() const   = 0;
 
     NextIterator next_iterator() const { return {cbegin().release(), cend().release()}; }
-    NextIterator* make_next_iterator() const { return new NextIterator{cbegin().release(), cend().release()}; }
+
+    [[nodiscard]] NextIterator* make_next_iterator() const {
+        return new NextIterator{cbegin().release(), cend().release()};
+    }
 
     const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }

@@ -57,7 +57,6 @@ CASE("sizes") {
 
 
 CASE("points") {
-
     std::unique_ptr<const Grid> ring(new grid::HEALPix(2));
 
     EXPECT(ring->ordering() == Ordering::healpix_ring);
@@ -188,6 +187,13 @@ CASE("equals") {
     EXPECT(*grid6 == *grid4);
 
     EXPECT(grid4->ordering() == Ordering::healpix_nested);
+}
+
+
+CASE("wrong spec") {
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h0}"), exception::SpecError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, ordering:nested}"), exception::SpecError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, ordering:?}"), exception::SpecError);
 }
 
 

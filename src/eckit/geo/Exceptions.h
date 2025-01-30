@@ -36,9 +36,9 @@ public:
 };
 
 
-class SpecNotFound : public geo::Exception {
+class SpecError : public geo::Exception {
 public:
-    explicit SpecNotFound(const std::string&, const CodeLocation&);
+    explicit SpecError(const std::string&, const CodeLocation&);
 };
 
 

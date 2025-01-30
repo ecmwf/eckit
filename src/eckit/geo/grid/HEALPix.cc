@@ -217,28 +217,37 @@ private:
 }  // unnamed namespace
 
 
+static const std::string HEALPIX_ERROR_NSIDE_POSITIVE = "HEALPix: Nside must be greater than zero";
+static const std::string HEALPIX_ERROR_NSIDE_POWER2   = "HEALPix: Nside must be a power of 2";
+static const std::string HEALPIX_ERROR_ORDERING
+    = "HEALPix: supported ordering: ring, nested (Only orderingConvention are supported)";
+
+
 HEALPix::HEALPix(const Spec& spec) :
     HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")), [](const std::string& str) {
         return str == "ring"     ? Ordering::healpix_ring
                : str == "nested" ? Ordering::healpix_nested
-                                 : throw AssertionFailed("HEALPix: supported orderings: ring, nested", Here());
+                                 : throw exception::SpecError(HEALPIX_ERROR_ORDERING, Here());
     }(spec.get_string("ordering", "ring"))) {}
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) : Reduced(area::BoundingBox{}), Nside_(Nside), ordering_(ordering) {
-    ASSERT(Nside_ > 0);
-    ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested,
-               "HEALPix: supported orderings: ring, nested");
+    if (Nside_ == 0) {
+        throw exception::SpecError(HEALPIX_ERROR_NSIDE_POSITIVE, Here());
+    }
 
-    if (ordering_ == Ordering::healpix_nested) {
-        ASSERT(is_power_of_2(Nside));
+    if (ordering != Ordering::healpix_ring && ordering != Ordering::healpix_nested) {
+        throw exception::SpecError(HEALPIX_ERROR_ORDERING, Here());
+    }
+
+    if (ordering_ == Ordering::healpix_nested && !is_power_of_2(Nside_)) {
+        throw exception::SpecError(HEALPIX_ERROR_NSIDE_POWER2, Here());
     }
 }
 
 
 Renumber HEALPix::reorder(Ordering ordering) const {
-    ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested,
-               "HEALPix: supported orderings: ring, nested");
+    ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested, HEALPIX_ERROR_ORDERING);
 
     if (ordering == ordering_) {
         return Grid::no_reorder(size());
@@ -380,7 +389,7 @@ const std::string& HEALPix::type() const {
 
 static const GridRegisterType<HEALPix> GRIDTYPE1("HEALPix");
 static const GridRegisterType<HEALPix> GRIDTYPE2("healpix");
-static const GridRegisterName<HEALPix> GRIDNAME("[hH][1-9][0-9]*");
+static const GridRegisterName<HEALPix> GRIDNAME("[hH][0-9]+");
 
 
 }  // namespace eckit::geo::grid

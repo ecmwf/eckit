@@ -31,7 +31,7 @@ static inline T _get_d(const Spec& spec, const std::string& name, const T& _defa
 template <typename T>
 static inline T _get_t(const Spec& spec, const std::string& name) {
     T value{};
-    return spec.get(name, value) ? value : throw exception::SpecNotFound(name, Here());
+    return spec.get(name, value) ? value : throw exception::SpecError(name, Here());
 }
 
 

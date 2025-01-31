@@ -21,8 +21,8 @@ ProjectionError::ProjectionError(const std::string& what, const CodeLocation& lo
 };
 
 
-SpecNotFound::SpecNotFound(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    reason("SpecNotFound: [" + what + "], in " + loc.asString());
+SpecError::SpecError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
+    reason("SpecError: [" + what + "], in " + loc.asString());
 };
 
 

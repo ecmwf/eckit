@@ -92,7 +92,7 @@ CASE("user -> type") {
             std::unique_ptr<const Grid> grid(GridFactory::build(*spec));
             EXPECT(grid);
         }
-        catch (const exception::SpecNotFound& e) {
+        catch (const exception::SpecError& e) {
             EXPECT(refspec.empty() /*BAD*/);
         }
         catch (const BadParameter& e) {

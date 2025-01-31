@@ -128,7 +128,7 @@ Figure* FigureFactory::make_from_spec_(const Spec& spec) const {
     }
 
     Log::error() << "Figure: cannot build figure without 'R' or 'a', 'b'" << std::endl;
-    throw exception::SpecNotFound("Figure: cannot build figure without 'R' or 'a', 'b'", Here());
+    throw exception::SpecError("Figure: cannot build figure without 'R' or 'a', 'b'", Here());
 }
 
 

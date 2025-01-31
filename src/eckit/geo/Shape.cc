@@ -29,7 +29,7 @@ Shape Shape::make_from_spec(const Spec& spec) {
         return {nx, ny};
     }
 
-    throw exception::SpecNotFound("'shape' = ['nlon', 'nlat'] = ['nx', 'ny'] expected", Here());
+    throw exception::SpecError("'shape' = ['nlon', 'nlat'] = ['nx', 'ny'] expected", Here());
 }
 
 

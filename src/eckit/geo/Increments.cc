@@ -31,7 +31,7 @@ Increments Increments::make_from_spec(const Spec& spec) {
         return {dx, dy};
     }
 
-    throw exception::SpecNotFound(
+    throw exception::SpecError(
         "'increments' = 'grid' = ['dx', 'dy'] = ['west_east_increment', 'south_north_increment'] = ['dlon', 'dlat'] = "
         "['dx', 'dy'] expected",
         Here());

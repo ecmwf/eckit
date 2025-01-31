@@ -16,6 +16,8 @@
 #ifndef eckit_Time_h
 #define eckit_Time_h
 
+#include <cstdint>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/persist/Bless.h"
 
@@ -32,10 +34,10 @@ using Second = double;
 class Time {
 
 public: // types
-    static constexpr Second secondsInMinute = 60;
-    static constexpr Second secondsInHour   = 60 * secondsInMinute;  // 3600
-    static constexpr Second secondsInDay    = 24 * secondsInHour;    // 86400
-    static constexpr Second secondsInWeek   = 7 * secondsInDay;      // 604800
+    static constexpr std::uint64_t secondsInMinute = 60;
+    static constexpr std::uint64_t secondsInHour   = 60 * secondsInMinute;  // 3600
+    static constexpr std::uint64_t secondsInDay    = 24 * secondsInHour;    // 86400
+    static constexpr std::uint64_t secondsInWeek   = 7 * secondsInDay;      // 604800
 
 public:  // methods
     Time(long hours, long minutes, long seconds, bool extended = false);

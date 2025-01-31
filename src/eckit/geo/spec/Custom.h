@@ -113,7 +113,7 @@ public:
 
     // -- Class methods
 
-    static Custom* make_from_value(const Value&);
+    [[nodiscard]] static Custom* make_from_value(const Value&);
 
 private:
     // -- Members

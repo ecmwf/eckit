@@ -348,7 +348,7 @@ const Custom::custom_ptr& Custom::custom(const std::string& name) const {
         }
     }
 
-    throw exception::SpecNotFound("Custom::get(" + name + ") -> custom_type& ", Here());
+    throw exception::SpecError("Custom::get(" + name + ") -> custom_type& ", Here());
 }
 
 

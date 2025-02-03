@@ -50,17 +50,15 @@ jobs:
           token: ${{ secrets.GH_REPO_READ_TOKEN }}
       - run: rm -rf proj && git clone --depth=1 --branch="${GITHUB_REF#refs/heads/}" https://github.com/$GITHUB_REPOSITORY proj
       - run: |
-          rm -rf /tmp/prereq*
           cd proj && $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/prepare_deps.sh ./python_wrapper/buildconfig 3.11
       - run: |
-          rm -rf /tmp/build
           cd proj && PATH="$PATH:$GITHUB_WORKSPACE/ecbuild/bin/" $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/compile.sh ./python_wrapper/buildconfig
       - run: |
-          uv python install python3.11 && uv venv --python python3.11 /tmp/buildvenv && source /tmp/buildvenv/bin/activate && uv pip install build
-          rm -rf /tmp/build/wheel
-          cd proj && PYTHONPATH=$GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/wheel-linux.sh ./python_wrapper/buildconfig 3.11
-      - run: cd proj && $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/test-wheel.sh ./python_wrapper/buildconfig 3.11 /tmp/build/wheel/*whl
-      - run: cd proj && $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/upload-pypi.sh /tmp/build/wheel/*whl
+          cd proj
+          rm -rf /tmp/buildvenv && uv python install python3.11 && uv venv --python python3.11 /tmp/buildvenv && source /tmp/buildvenv/bin/activate && uv pip install build twine
+          PYTHONPATH=$GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/wheel-linux.sh ./python_wrapper/buildconfig 3.11
+          $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/test-wheel.sh ./python_wrapper/buildconfig 3.11
+          $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/upload-pypi.sh ./python_wrapper/buildconfig
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}

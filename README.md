@@ -35,8 +35,8 @@ It features facilities to easily handle, in a cross-platform way:
 * MPI object-oriented wrapper
 * linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
 * advanced container classes
-    * space partition trees
-    * file-mapped arrays
+* space partition trees
+* file-mapped arrays
 
 
 Requirements

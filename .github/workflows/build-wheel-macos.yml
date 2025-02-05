@@ -1,8 +1,3 @@
-# 1)
-# install bison, flex, uv, python setuptools/build
-# 2)
-# run compile.sh
-
 # (C) Copyright 2024- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
@@ -52,11 +47,14 @@ jobs:
       - run: |
           cd proj && $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/prepare_deps.sh ./python_wrapper/buildconfig 3.11
       - run: |
-          cd proj && PATH="$PATH:$GITHUB_WORKSPACE/ecbuild/bin/" $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/compile.sh ./python_wrapper/buildconfig
+          cd proj
+          if [[ -f ./python_wrapper/pre-compile.sh ]] ; then ./python_wrapper/pre-compile.sh ; fi
+          PATH="$PATH:$GITHUB_WORKSPACE/ecbuild/bin/" $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/compile.sh ./python_wrapper/buildconfig
       - run: |
           cd proj
-          rm -rf /tmp/buildvenv && uv python install python3.11 && uv venv --python python3.11 /tmp/buildvenv && source /tmp/buildvenv/bin/activate && uv pip install build twine
+          rm -rf /tmp/buildvenv && uv python install python3.11 && uv venv --python python3.11 /tmp/buildvenv && source /tmp/buildvenv/bin/activate && uv pip install build twine delocate
           PYTHONPATH=$GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/wheel-linux.sh ./python_wrapper/buildconfig 3.11
+          if [[ -f ./python_wrapper/post-build.sh ]] ; then ./python_wrapper/post-build.sh ; fi
           $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/test-wheel.sh ./python_wrapper/buildconfig 3.11
           $GITHUB_WORKSPACE/ci-utils/wheelmaker/buildscripts/upload-pypi.sh ./python_wrapper/buildconfig
         env:

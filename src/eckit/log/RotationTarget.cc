@@ -65,7 +65,7 @@ private:
 
     std::ostream& rotout() {
 
-        time_t now = ::time(nullptr) / 86400;
+        time_t now = ::time(nullptr) / Time::secondsInDay;
 
         if (now != lastTime_ || last_ == nullptr) {
 

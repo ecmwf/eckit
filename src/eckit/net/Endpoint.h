@@ -44,6 +44,8 @@ public:                            // methods
 
     bool operator==(const net::Endpoint& other) const;
 
+    bool operator!=(const net::Endpoint& other) const { return !(*this == other); }
+
     void print(std::ostream& os) const;
     void encode(Stream& s) const;
 

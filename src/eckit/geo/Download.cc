@@ -46,6 +46,9 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
     // control concurrent download
     lock_type lock;
 
+    Length length = 0;
+    Timer timer;
+
 #if eckit_HAVE_CURL  // for eckit::URLHandle
     auto tmp = path + ".part";
     auto dir = path.dirName();
@@ -53,8 +56,6 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
     dir.mkdir();
     ASSERT(dir.exists());
 
-    Timer timer;
-    Length length = 0;
     try {
         length = URLHandle{url}.saveInto(tmp);
     }
@@ -88,7 +89,7 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
     PathName::rename(tmp, path);
 #endif
 
-    return {static_cast<double>(length), timer.elapsed()};
+    return {static_cast<long long>(length), timer.elapsed()};
 }
 
 

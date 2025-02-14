@@ -53,6 +53,7 @@ public:
     iterator cend() const override;
 
     size_t size() const final { return nx() * ny(); }
+    std::vector<size_t> shape() const override { return {ny(), nx()}; }
 
 protected:
     // -- Types

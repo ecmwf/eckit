@@ -27,6 +27,7 @@ public:
     // -- Overridden methods
 
     void fill_spec(spec::Custom& custom) const override;
+    const std::string& type() const override;
 };
 
 

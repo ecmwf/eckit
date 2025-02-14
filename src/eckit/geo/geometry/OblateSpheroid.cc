@@ -13,7 +13,7 @@
 
 #include <cmath>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/util.h"

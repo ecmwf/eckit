@@ -10,10 +10,10 @@
  */
 
 
-#include "eckit/geo/etc/Grid.h"
+#include "eckit/geo/share/Grid.h"
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/spec/Custom.h"
@@ -21,17 +21,17 @@
 #include "eckit/value/Value.h"
 
 
-namespace eckit::geo::etc {
+namespace eckit::geo::share {
 
 
 const Grid& Grid::instance() {
-    static const Grid INSTANCE(LibEcKitGeo::etcGrid());
+    static const Grid INSTANCE(LibEcKitGeo::shareGrid());
     return INSTANCE;
 }
 
 
-Grid::Grid(const std::vector<PathName>& paths) {
-    spec_ = std::make_unique<spec::Custom>();
+Grid::Grid(const std::vector<PathName>& paths) : spec_(new spec::Custom) {
+    ASSERT(spec_);
 
     for (const auto& path : paths) {
         if (path.exists()) {
@@ -42,7 +42,7 @@ Grid::Grid(const std::vector<PathName>& paths) {
 
 
 void Grid::load(const PathName& path) {
-    auto* custom = dynamic_cast<spec::Custom*>((spec_ ? spec_ : (spec_ = std::make_unique<spec::Custom>())).get());
+    auto* custom = dynamic_cast<spec::Custom*>(spec_.get());
     ASSERT(custom != nullptr);
 
     struct SpecByUIDGenerator final : SpecByUID::generator_t {
@@ -95,4 +95,4 @@ void Grid::load(const PathName& path) {
 }
 
 
-}  // namespace eckit::geo::etc
+}  // namespace eckit::geo::share

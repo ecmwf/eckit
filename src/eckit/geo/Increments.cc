@@ -12,7 +12,7 @@
 
 #include "eckit/geo/Increments.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -31,7 +31,7 @@ Increments Increments::make_from_spec(const Spec& spec) {
         return {dx, dy};
     }
 
-    throw SpecNotFound(
+    throw exception::SpecError(
         "'increments' = 'grid' = ['dx', 'dy'] = ['west_east_increment', 'south_north_increment'] = ['dlon', 'dlat'] = "
         "['dx', 'dy'] expected",
         Here());

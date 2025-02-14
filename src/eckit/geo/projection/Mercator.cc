@@ -15,6 +15,7 @@
 #include <cmath>
 #include <limits>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -39,7 +40,7 @@ Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
 
     if (types::is_approximately_equal(first.lat, PointLonLat::RIGHT_ANGLE)
         || types::is_approximately_equal(first.lat, -PointLonLat::RIGHT_ANGLE)) {
-        throw ProjectionProblem("Mercator: projection cannot be calculated at the poles", Here());
+        throw exception::ProjectionError("Mercator: projection cannot be calculated at the poles", Here());
     }
 
     auto lam0 = util::DEGREE_TO_RADIAN * centre_.lon;
@@ -102,6 +103,12 @@ Point2 Mercator::fwd(const PointLonLat& p) const {
 PointLonLat Mercator::inv(const Point2& q) const {
     return PointLonLat::make(util::RADIAN_TO_DEGREE * (lam0_ + (q.X - x0_) * w_),
                              util::RADIAN_TO_DEGREE * calculate_phi(std::exp(-(q.Y - y0_) * w_)));
+}
+
+
+const std::string& Mercator::type() const {
+    static const std::string type{"mercator"};
+    return type;
 }
 
 

@@ -21,11 +21,19 @@ namespace eckit::geo::test {
 
 
 CASE("gridspec") {
-    spec::Custom spec({{"grid", "h2"}});
-    std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+    spec::Custom spec1({{"grid", "h3"}});
+    std::unique_ptr<const Grid> grid1(GridFactory::build(spec1));
     auto n1 = grid1->size();
 
-    EXPECT_EQUAL(n1, 48);
+    EXPECT_EQUAL(n1, 108);
+    EXPECT_EQUAL(grid1->spec_str(), R"({"grid":"H3","ordering":"ring"})");
+
+    spec::Custom spec2({{"grid", "h2"}, {"ordering", "nested"}});
+    std::unique_ptr<const Grid> grid2(GridFactory::build(spec2));
+    auto n2 = grid2->size();
+
+    EXPECT_EQUAL(n2, 48);
+    EXPECT_EQUAL(grid2->spec_str(), R"({"grid":"H2","ordering":"nested"})");
 }
 
 
@@ -49,7 +57,6 @@ CASE("sizes") {
 
 
 CASE("points") {
-
     std::unique_ptr<const Grid> ring(new grid::HEALPix(2));
 
     EXPECT(ring->ordering() == Ordering::healpix_ring);
@@ -180,6 +187,13 @@ CASE("equals") {
     EXPECT(*grid6 == *grid4);
 
     EXPECT(grid4->ordering() == Ordering::healpix_nested);
+}
+
+
+CASE("wrong spec") {
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h0}"), exception::SpecError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, ordering:nested}"), exception::SpecError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, ordering:?}"), exception::SpecError);
 }
 
 

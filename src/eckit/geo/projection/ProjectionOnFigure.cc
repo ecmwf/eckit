@@ -12,7 +12,7 @@
 
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/spec/Custom.h"
 

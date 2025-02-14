@@ -9,13 +9,14 @@
  */
 
 
-#include <cmath>
+#include <algorithm>
 #include <memory>
 #include <sstream>
 #include <string>
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
@@ -27,11 +28,15 @@
 
 namespace eckit {
 
+
 class EckitGrid final : public EckitTool {
 public:
     EckitGrid(int argc, char** argv) : EckitTool(argc, argv) {
-        options_.push_back(new option::SimpleOption<std::string>("grid", "grid spec"));
-        options_.push_back(new option::SimpleOption<bool>("bounding-box", "Bounding box"));
+        options_.push_back(new option::SimpleOption<std::string>("grid", "spec"));
+        options_.push_back(new option::SimpleOption<bool>("minmax-ll", "Limits for (lon, lat) coordinates"));
+        options_.push_back(new option::SimpleOption<bool>("calculate-bbox", "Calculate bounding box"));
+        options_.push_back(new option::SimpleOption<bool>("calculate-uid", "Calculate UID"));
+        options_.push_back(new option::SimpleOption<bool>("validate-uid", "Validate UID"));
         options_.push_back(new option::SimpleOption<long>("precision", "Output precision"));
     }
 
@@ -46,55 +51,23 @@ private:
 
     void execute(const option::CmdArgs& args) override {
         std::stringstream stream;
-        eckit::JSON out(stream);
+        JSON out(stream);
         out.precision(args.getInt("precision", 16));
+        out.startObject();
 
-        std::string user;
+        std::string spec;
         for (const auto& arg : args) {
-            user += " " + arg;
+            spec += " " + arg;
         }
 
         std::unique_ptr<const geo::Grid> grid([](const std::string& str) -> const geo::Grid* {
             std::unique_ptr<geo::Spec> spec(geo::spec::Custom::make_from_value(YAMLParser::decodeString(str)));
             return geo::GridFactory::build(*spec);
-        }(user));
+        }(spec));
 
         out << "spec" << grid->spec_str();
         out << "uid" << grid->uid();
         out << "size" << grid->size();
-
-
-        // Earth's equator ~= 40075 km
-        auto deg_km
-            = [](double deg) { return std::to_string(deg) + " deg, " + std::to_string(deg * 40075. / 360.) + " km"; };
-
-        auto nx = 1;  // grid->nx();
-        auto ny = 1;  // grid->ny();
-
-        out << "shape";
-        (out.startList() << nx << ny).endList();
-
-        // out << "resolution N-S" << deg_km((grid->y().front() - grid->y().back()) / (ny - 1));
-        // out << "resolution E-W equator" << deg_km(360. / static_cast<double>(grid->nx(ny / 2)));
-        // out << "resolution E-W midlat" << deg_km(360. * std::cos(grid->y(ny / 4) * M_PI / 180.) /
-        // static_cast<double>(grid->nx(ny / 4))) << "resolution E-W pole" << deg_km(360. *
-        // std::cos(grid->y().front() * M_PI / 180.) / static_cast<double>(grid->nx().front()));
-
-        out << "spectral truncation linear" << (ny - 1);
-        out << "spectral truncation quadratic" << (static_cast<int>(std::floor(2. / 3. * ny + 0.5)) - 1);
-        out << "spectral truncation cubic" << (static_cast<int>(std::floor(0.5 * ny + 0.5)) - 1);
-
-        {
-            auto points = grid->to_points();
-            auto first  = std::get<geo::PointLonLat>(points.front());
-            auto last   = std::get<geo::PointLonLat>(points.back());
-
-            out << "first";
-            (out.startList() << first.lon << first.lat).endList();
-
-            out << "last";
-            (out.startList() << last.lon << last.lat).endList();
-        }
 
         {
             auto bbox = grid->boundingBox();
@@ -102,9 +75,59 @@ private:
             (out.startList() << bbox.north << bbox.west << bbox.south << bbox.east).endList();
         }
 
+        auto minmax_latlon = args.getBool("minmax-ll", false);
+        if (minmax_latlon) {
+            auto [lat, lon] = grid->to_latlons();
+            ASSERT(lat.size() == lon.size());
+            ASSERT(!lat.empty());
+
+            geo::PointLonLat min{lon.front(), lat.front()};
+            geo::PointLonLat max{min};
+
+            for (size_t i = 0; i < lat.size(); ++i) {
+                min = {std::min(min.lon, lon[i]), std::min(min.lat, lat[i])};
+                max = {std::max(max.lon, lon[i]), std::max(max.lat, lat[i])};
+            }
+
+            out << "min";
+            (out.startList() << min.lon << min.lat).endList();
+
+            out << "max";
+            (out.startList() << max.lon << max.lat).endList();
+        }
+
+        auto calculate_bbox = args.getBool("calculate-bbox", false);
+        if (calculate_bbox) {
+            std::unique_ptr<geo::area::BoundingBox> bbox{grid->calculate_bbox()};
+            out << "bounding box (calculated)";
+            (out.startList() << bbox->north << bbox->west << bbox->south << bbox->east).endList();
+        }
+
+        auto calculate_uid = args.getBool("calculate-uid", false);
+        if (calculate_uid) {
+            out << "uid (calculated)" << grid->calculate_uid();
+        }
+
+        out.endObject();
         Log::info() << stream.str() << std::endl;
+
+        auto validate_uid = args.getBool("validate-uid", false);
+        if (validate_uid) {
+            auto uid = grid->uid();
+            Log::info() << "uid: '" << uid << "'" << std::endl;
+
+            auto uid_calculated = grid->calculate_uid();
+            Log::info() << "uid (calculated): '" << uid_calculated << "'" << std::endl;
+
+            if (uid != uid_calculated) {
+                throw BadValue("'" + uid + "' != '" + uid_calculated + "'");
+            }
+        }
+
+        Log::info() << std::endl;
     }
 };
+
 
 }  // namespace eckit
 

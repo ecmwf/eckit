@@ -17,8 +17,6 @@
 
 #include "eckit/types/FloatCompare.h"
 
-#include "mir/util/Exceptions.h"
-
 
 namespace mir::util {
 
@@ -26,8 +24,11 @@ namespace mir::util {
 namespace {
 
 
+constexpr double EPS = 1.e-9;
+
+
 inline bool is_approximately_equal(double a, double b) {
-    return eckit::types::is_approximately_equal(a, b, 1e-6);
+    return eckit::types::is_approximately_equal(a, b, EPS);
 }
 
 
@@ -71,6 +72,7 @@ void Polygon2::emplace_back_point_at_intersection(const Edge& E, const Edge& F) 
 void Polygon2::clip(const Polygon2& clipper) {
     // Sutherland-Hodgman algorithm for clipping polygons
     if (empty() || clipper.empty()) {
+        clear();
         return;
     }
 
@@ -83,7 +85,7 @@ void Polygon2::clip(const Polygon2& clipper) {
         const auto c = clipper.edge(i);
 
         Polygon2 poly;
-        this->swap(poly);
+        swap(poly);
 
         for (int j = 0, n = static_cast<int>(poly.size()); j < n; ++j) {
             const auto p = poly.edge(j);
@@ -106,8 +108,16 @@ void Polygon2::clip(const Polygon2& clipper) {
 
 
 void Polygon2::simplify() {
+    // remove consecutive duplicate points
+    erase(std::unique(begin(), end(), [](const auto& P, const auto& Q) { return is_approximately_equal(P, Q); }),
+          end());
+    if (1 < size() && is_approximately_equal(front(), back())) {
+        pop_back();
+    }
+
+    // remove consecutive colinear points
     Polygon2 poly;
-    this->swap(poly);
+    swap(poly);
     reserve(poly.size());
 
     for (int i = 0, n = static_cast<int>(poly.size()); i < n; ++i) {
@@ -115,6 +125,10 @@ void Polygon2::simplify() {
             !is_approximately_equal(cross(E.second - E.first, F.second - E.second), 0.)) {
             emplace_back_point(E.second);
         }
+    }
+
+    if (size() < 3) {
+        clear();
     }
 }
 

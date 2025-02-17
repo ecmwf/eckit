@@ -28,7 +28,7 @@ public:
     Polygon2(const container_type& points) : container_type(points) {}
     Polygon2(container_type&& points) : container_type(std::move(points)) {}
 
-    using vector::vector;
+    using container_type::container_type;
 
     void clip(const Polygon2&);
     void simplify();

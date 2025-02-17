@@ -103,6 +103,16 @@ CASE("Polygon2") {
     }
 
 
+    SECTION("Vertix/vertices outside the clipping polygon (5)") {
+        Polygon2 poly{{1., -0.5}, {1., 0.5}, {-1., 0.}};
+        Polygon2 clipper{{0.5, 0.}, {0., 0.5}, {0., 0.}};
+        poly.clip(clipper);
+
+        Polygon2 expected{{0., 0.}, {0.5, 0.}, {0.2, 0.3}, {0., 0.25}};
+        EXPECT(poly == expected);
+    }
+
+
     SECTION("Polygon2 is completely outside the clipping polygon") {
         auto poly = Polygon2{{2, 2}, {3, 3}, {3, 2}};
         poly.clip(clipper);
@@ -119,6 +129,29 @@ CASE("Polygon2") {
         Polygon2 expected{{-1, -1}, {1, -1}, {-1, 1}};
         EXPECT(poly == expected);
         EXPECT(is_approximately_equal(poly.area(), 2.));
+    }
+
+
+    SECTION("Polygon intersection") {
+        Polygon2 poly{{0.000304552, -5.32E-06}, {0, 0.026185917}, {0., 0.}};
+        Polygon2 clipper{{0.000304598, 0.008724209}, {-0.000304598, 0.008724209}, {0, -0.008726866}};
+        poly.clip(clipper);
+
+        Polygon2 expected{{0.0001522757595430324, -2.659995799630596e-06},
+                          {0.0002436488701595806, 0.005232302171885906},
+                          {0.0002030449380766552, 0.008724209},
+                          {0, 0.008724209},
+                          {0, 0}};
+        EXPECT(poly == expected);
+    }
+
+
+    SECTION("Polygon simplify") {
+        Polygon2 poly{{0., -1.}, {1., 1.}, {-1., 1.}, {0., -1.}};
+        poly.simplify();
+
+        Polygon2 expected{{-1., 1.}, {0., -1.}, {1., 1.}};
+        EXPECT(poly == expected);
     }
 }
 

@@ -24,6 +24,8 @@ list( APPEND eckit_la_srcs
       allocator/NonOwningAllocator.h
       allocator/StandardAllocator.cc
       allocator/StandardAllocator.h
+      allocator/StandardContainerAllocator.cc
+      allocator/StandardContainerAllocator.h
       dense/LinearAlgebraGeneric.cc
       dense/LinearAlgebraGeneric.h
       sparse/LinearAlgebraGeneric.cc

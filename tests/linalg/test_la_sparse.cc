@@ -12,6 +12,7 @@
 #include "util.h"
 
 #include "eckit/linalg/allocator/NonOwningAllocator.h"
+#include "eckit/linalg/allocator/StandardContainerAllocator.h"
 
 using namespace eckit::linalg;
 
@@ -211,6 +212,16 @@ CASE("eckit la sparse") {
         EXPECT(G.A.outerIndex() == GA.outerIndex());
         EXPECT(G.A.inner() == GA.inner());
         EXPECT(G.A.data() == GA.data());
+    }
+
+    SECTION("containers allocator") {
+        SparseMatrix FA(new allocator::StandardContainerAllocator(3, 3, {{{0, 2.}, {2, -3.}}, {{1, 2.}}, {{2, 2.}}}));
+
+        EXPECT(equal_sparse_matrix(FA, F.A.outer(), F.A.inner(), F.A.data()));
+
+        SparseMatrix GA(new allocator::StandardContainerAllocator(2, 3, {{{0, 1.}, {2, 2.}}, {{0, 3.}, {1, 4.}}}));
+
+        EXPECT(equal_sparse_matrix(GA, GA.outer(), G.A.inner(), G.A.data()));
     }
 }
 

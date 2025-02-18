@@ -21,9 +21,9 @@ namespace eckit::linalg::allocator {
  * @brief In-place allocator for sparse matrices, directly mapping supporting arrays including from another
  * SparseMatrix. It is able to provide a "view".
  */
-class InPlaceAllocator : public SparseMatrix::Allocator {
+class NonOwningAllocator : public SparseMatrix::Allocator {
 public:
-    InPlaceAllocator(Size Nr, Size Nc, Size nnz, Index* ia, Index* ja, Scalar* a);
+    NonOwningAllocator(Size Nr, Size Nc, Size nnz, Index* ia, Index* ja, Scalar* a);
 
     SparseMatrix::Layout allocate(SparseMatrix::Shape&) override;
 

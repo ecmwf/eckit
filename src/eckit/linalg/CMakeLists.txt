@@ -20,8 +20,8 @@ list( APPEND eckit_la_srcs
       Vector.h
       allocator/BufferAllocator.cc
       allocator/BufferAllocator.h
-      allocator/InPlaceAllocator.cc
-      allocator/InPlaceAllocator.h
+      allocator/NonOwningAllocator.cc
+      allocator/NonOwningAllocator.h
       allocator/StandardAllocator.cc
       allocator/StandardAllocator.h
       dense/LinearAlgebraGeneric.cc

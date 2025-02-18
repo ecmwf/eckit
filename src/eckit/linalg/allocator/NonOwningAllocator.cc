@@ -9,7 +9,7 @@
  */
 
 
-#include "eckit/linalg/allocator/InPlaceAllocator.h"
+#include "eckit/linalg/allocator/NonOwningAllocator.h"
 
 #include <ostream>
 
@@ -19,7 +19,7 @@
 namespace eckit::linalg::allocator {
 
 
-InPlaceAllocator::InPlaceAllocator(Size Nr, Size Nc, Size nnz, Index* ia, Index* ja, Scalar* a) :
+NonOwningAllocator::NonOwningAllocator(Size Nr, Size Nc, Size nnz, Index* ia, Index* ja, Scalar* a) :
     Nr_(Nr), Nc_(Nc), nnz_(nnz), ia_(ia), ja_(ja), a_(a) {
     ASSERT(ia_ != nullptr);
     ASSERT(ja_ != nullptr);
@@ -27,7 +27,7 @@ InPlaceAllocator::InPlaceAllocator(Size Nr, Size Nc, Size nnz, Index* ia, Index*
 }
 
 
-SparseMatrix::Layout InPlaceAllocator::InPlaceAllocator::allocate(SparseMatrix::Shape& shape) {
+SparseMatrix::Layout NonOwningAllocator::NonOwningAllocator::allocate(SparseMatrix::Shape& shape) {
     shape.size_ = nnz_;
     shape.rows_ = Nr_;
     shape.cols_ = Nc_;
@@ -41,16 +41,16 @@ SparseMatrix::Layout InPlaceAllocator::InPlaceAllocator::allocate(SparseMatrix::
 }
 
 
-void InPlaceAllocator::deallocate(SparseMatrix::Layout, SparseMatrix::Shape) {}
+void NonOwningAllocator::deallocate(SparseMatrix::Layout, SparseMatrix::Shape) {}
 
 
-bool InPlaceAllocator::inSharedMemory() const {
+bool NonOwningAllocator::inSharedMemory() const {
     return false;
 }
 
 
-void InPlaceAllocator::print(std::ostream& out) const {
-    out << "InPlaceAllocator[Nr=" << Nr_ << ",Nc=" << Nc_ << ",nnz=" << nnz_ << "]";
+void NonOwningAllocator::print(std::ostream& out) const {
+    out << "NonOwningAllocator[Nr=" << Nr_ << ",Nc=" << Nc_ << ",nnz=" << nnz_ << "]";
 }
 
 

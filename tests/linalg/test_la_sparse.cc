@@ -11,7 +11,7 @@
 #include "eckit/config/Resource.h"
 #include "util.h"
 
-#include "eckit/linalg/allocator/InPlaceAllocator.h"
+#include "eckit/linalg/allocator/NonOwningAllocator.h"
 
 using namespace eckit::linalg;
 
@@ -195,18 +195,18 @@ CASE("eckit la sparse") {
         EXPECT(equal_sparse_matrix(B.transpose(), outer, inner, data));
     }
 
-    SECTION("allocator in-place") {
+    SECTION("non-owning allocator") {
         SparseMatrix FA(
-            new allocator::InPlaceAllocator(F.A.rows(), F.A.cols(), F.A.nonZeros(), const_cast<Index*>(F.A.outer()),
-                                            const_cast<Index*>(F.A.inner()), const_cast<Scalar*>(F.A.data())));
+            new allocator::NonOwningAllocator(F.A.rows(), F.A.cols(), F.A.nonZeros(), const_cast<Index*>(F.A.outer()),
+                                              const_cast<Index*>(F.A.inner()), const_cast<Scalar*>(F.A.data())));
 
         EXPECT(F.A.outerIndex() == FA.outerIndex());
         EXPECT(F.A.inner() == FA.inner());
         EXPECT(F.A.data() == FA.data());
 
         SparseMatrix GA(
-            new allocator::InPlaceAllocator(G.A.rows(), G.A.cols(), G.A.nonZeros(), const_cast<Index*>(G.A.outer()),
-                                            const_cast<Index*>(G.A.inner()), const_cast<Scalar*>(G.A.data())));
+            new allocator::NonOwningAllocator(G.A.rows(), G.A.cols(), G.A.nonZeros(), const_cast<Index*>(G.A.outer()),
+                                              const_cast<Index*>(G.A.inner()), const_cast<Scalar*>(G.A.data())));
 
         EXPECT(G.A.outerIndex() == GA.outerIndex());
         EXPECT(G.A.inner() == GA.inner());

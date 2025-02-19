@@ -190,9 +190,7 @@ public:  // methods
                 return isStringList(name);
             }
         }
-        else {
-            return false;
-        }
+        return false;
     }
 
     template <typename T>

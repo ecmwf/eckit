@@ -18,7 +18,8 @@
 #include <cstdint>
 #include <tuple>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
@@ -216,28 +217,37 @@ private:
 }  // unnamed namespace
 
 
+static const std::string HEALPIX_ERROR_NSIDE_POSITIVE = "HEALPix: Nside must be greater than zero";
+static const std::string HEALPIX_ERROR_NSIDE_POWER2   = "HEALPix: Nside must be a power of 2";
+static const std::string HEALPIX_ERROR_ORDERING
+    = "HEALPix: supported ordering: ring, nested (Only orderingConvention are supported)";
+
+
 HEALPix::HEALPix(const Spec& spec) :
-    HEALPix(spec.get_unsigned("Nside"), [](const std::string& str) {
+    HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")), [](const std::string& str) {
         return str == "ring"     ? Ordering::healpix_ring
                : str == "nested" ? Ordering::healpix_nested
-                                 : throw AssertionFailed("HEALPix: supported orderings: ring, nested", Here());
+                                 : throw exception::SpecError(HEALPIX_ERROR_ORDERING, Here());
     }(spec.get_string("ordering", "ring"))) {}
 
 
 HEALPix::HEALPix(size_t Nside, Ordering ordering) : Reduced(area::BoundingBox{}), Nside_(Nside), ordering_(ordering) {
-    ASSERT(Nside_ > 0);
-    ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested,
-               "HEALPix: supported orderings: ring, nested");
+    if (Nside_ == 0) {
+        throw exception::SpecError(HEALPIX_ERROR_NSIDE_POSITIVE, Here());
+    }
 
-    if (ordering_ == Ordering::healpix_nested) {
-        ASSERT(is_power_of_2(Nside));
+    if (ordering != Ordering::healpix_ring && ordering != Ordering::healpix_nested) {
+        throw exception::SpecError(HEALPIX_ERROR_ORDERING, Here());
+    }
+
+    if (ordering_ == Ordering::healpix_nested && !is_power_of_2(Nside_)) {
+        throw exception::SpecError(HEALPIX_ERROR_NSIDE_POWER2, Here());
     }
 }
 
 
 Renumber HEALPix::reorder(Ordering ordering) const {
-    ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested,
-               "HEALPix: supported orderings: ring, nested");
+    ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested, HEALPIX_ERROR_ORDERING);
 
     if (ordering == ordering_) {
         return Grid::no_reorder(size());
@@ -255,8 +265,10 @@ Renumber HEALPix::reorder(Ordering ordering) const {
 
 
 Grid::iterator HEALPix::cbegin() const {
-    return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this, 0)}
-                                               : iterator{new geo::iterator::Unstructured(*this, 0, to_points())};
+    return ordering_ == Ordering::healpix_ring
+               ? iterator{new geo::iterator::Reduced(*this, 0)}
+               : iterator{new geo::iterator::Unstructured(*this, 0,
+                                                          std::make_shared<container::PointsInstance>(to_points()))};
 }
 
 
@@ -297,6 +309,8 @@ std::vector<Point> HEALPix::to_points() const {
         return points;
     }
 
+    ASSERT(ordering_ == Ordering::healpix_nested);
+
     std::vector<Point> points_nested;
     points_nested.reserve(size());
 
@@ -309,7 +323,7 @@ std::vector<Point> HEALPix::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlons() const {
     std::pair<std::vector<double>, std::vector<double>> latlon;
     latlon.first.reserve(size());
     latlon.second.reserve(size());
@@ -367,9 +381,15 @@ void HEALPix::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& HEALPix::type() const {
+    static const std::string type{"healpix"};
+    return type;
+}
+
+
 static const GridRegisterType<HEALPix> GRIDTYPE1("HEALPix");
 static const GridRegisterType<HEALPix> GRIDTYPE2("healpix");
-static const GridRegisterName<HEALPix> GRIDNAME("[hH][1-9][0-9]*");
+static const GridRegisterName<HEALPix> GRIDNAME("[hH][0-9]+");
 
 
 }  // namespace eckit::geo::grid

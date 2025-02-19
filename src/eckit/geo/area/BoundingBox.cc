@@ -16,7 +16,7 @@
 #include <memory>
 #include <vector>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/geometry/Sphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
@@ -210,6 +210,12 @@ bool BoundingBox::intersects(BoundingBox& other) const {
 
 bool BoundingBox::empty() const {
     return is_approximately_equal(north, south) || is_approximately_equal(west, east);
+}
+
+
+const std::string& BoundingBox::type() const {
+    static const std::string type{"bounding-box"};
+    return type;
 }
 
 

@@ -31,4 +31,10 @@ void PolarStereographic::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& PolarStereographic::type() const {
+    static const std::string type{"regular-xy-polar-stereographic"};
+    return type;
+}
+
+
 }  // namespace eckit::geo::grid::regularxy

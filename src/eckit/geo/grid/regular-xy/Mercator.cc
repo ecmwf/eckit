@@ -31,4 +31,10 @@ void Mercator::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& Mercator::type() const {
+    static const std::string type{"regular-xy-mercator"};
+    return type;
+}
+
+
 }  // namespace eckit::geo::grid::regularxy

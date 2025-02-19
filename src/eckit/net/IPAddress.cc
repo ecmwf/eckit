@@ -17,7 +17,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <ostream>
-#include <string.h>
+#include <cstring>
 
 namespace eckit::net {
 

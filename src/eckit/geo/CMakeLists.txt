@@ -2,8 +2,14 @@
 list(APPEND eckit_geo_srcs
     Area.cc
     Area.h
+    Arrangement.h
     Cache.cc
     Cache.h
+    Container.h
+    Download.cc
+    Download.h
+    Exceptions.cc
+    Exceptions.h
     Figure.cc
     Figure.h
     GreatCircle.cc
@@ -40,8 +46,10 @@ list(APPEND eckit_geo_srcs
     Spec.h
     area/BoundingBox.cc
     area/BoundingBox.h
-    etc/Grid.cc
-    etc/Grid.h
+    area/None.cc
+    area/None.h
+    container/PointsContainer.cc
+    container/PointsContainer.h
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc
@@ -129,6 +137,8 @@ list(APPEND eckit_geo_srcs
     range/RegularLatitude.h
     range/RegularLongitude.cc
     range/RegularLongitude.h
+    share/Grid.cc
+    share/Grid.h
     spec/Custom.cc
     spec/Custom.h
     spec/Generator.h
@@ -138,7 +148,9 @@ list(APPEND eckit_geo_srcs
     util.h
     util/arange.cc
     util/bounding_box.cc
+    util/conversions.cc
     util/gaussian_latitudes.cc
+    util/hash_vector.cc
     util/linspace.cc
     util/monotonic_crop.cc
     util/mutex.h
@@ -153,20 +165,35 @@ set(eckit_geo_include_dirs
 )
 
 set(eckit_geo_libs eckit_maths)
-set(eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/grid.yaml")
+set(eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/grid.yaml")
 
 if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
     list(APPEND eckit_geo_libs PROJ::proj)
 endif()
 
-if(eckit_HAVE_GEO_GRID_ORCA)
-    list(APPEND eckit_geo_srcs grid/ORCA.cc grid/ORCA.h)
+if(eckit_HAVE_GEO_GRID_FESOM)
+    list(APPEND eckit_geo_srcs grid/FESOM.cc grid/FESOM.h)
+    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
-    list(APPEND eckit_GEO_ETC_GRID "~eckit/etc/eckit/geo/ORCA.yaml")
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/FESOM.yaml")
 endif()
 
-string(REPLACE ";" ":" eckit_GEO_ETC_GRID "${eckit_GEO_ETC_GRID}")
+if(eckit_HAVE_GEO_GRID_ICON)
+    list(APPEND eckit_geo_srcs grid/ICON.cc grid/ICON.h)
+    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
+    list(APPEND eckit_geo_libs eckit_codec)
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ICON.yaml")
+endif()
+
+if(eckit_HAVE_GEO_GRID_ORCA)
+    list(APPEND eckit_geo_srcs grid/ORCA.cc grid/ORCA.h)
+    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
+    list(APPEND eckit_geo_libs eckit_codec)
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ORCA.yaml")
+endif()
+
+string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")
 configure_file(eckit_geo_config.h.in eckit_geo_config.h @ONLY)
 
 list(APPEND eckit_geo_srcs ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h)

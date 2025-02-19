@@ -14,7 +14,6 @@
 #include <ostream>
 
 #include "eckit/config/Parametrisation.h"
-#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {
@@ -23,12 +22,6 @@ class JSON;
 
 
 namespace eckit::geo {
-
-
-class SpecNotFound : public Exception {
-public:
-    explicit SpecNotFound(const std::string&, const CodeLocation&);
-};
 
 
 class Spec : public Parametrisation {
@@ -41,6 +34,9 @@ public:
 
     Spec& operator=(const Spec&) = delete;
     Spec& operator=(Spec&&)      = delete;
+
+    bool operator==(const Spec& other) const { return str() == other.str(); }
+    bool operator!=(const Spec& other) const { return !operator==(other); }
 
     std::string get_string(const std::string& name) const;
     bool get_bool(const std::string& name) const;

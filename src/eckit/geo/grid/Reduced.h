@@ -28,11 +28,12 @@ public:
     // -- Methods
 
     size_t size() const override { return niacc().back(); }
+    std::vector<size_t> shape() const override { return {size()}; }
 
     // -- Overridden methods
 
     std::vector<Point> to_points() const override;
-    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+    std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
 protected:
     // -- Constructors

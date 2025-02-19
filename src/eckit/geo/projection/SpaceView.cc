@@ -14,7 +14,7 @@
 
 #include <cmath>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 
@@ -43,6 +43,12 @@ Point2 SpaceView::fwd(const PointLonLat&) const {
 
 PointLonLat SpaceView::inv(const Point2&) const {
     NOTIMP;
+}
+
+
+const std::string& SpaceView::type() const {
+    static const std::string type{"space-view"};
+    return type;
 }
 
 

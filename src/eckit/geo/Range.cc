@@ -12,7 +12,7 @@
 
 #include "eckit/geo/Range.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 
 

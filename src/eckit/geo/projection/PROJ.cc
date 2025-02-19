@@ -18,7 +18,7 @@
 #include <set>
 #include <utility>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/spec/Custom.h"
 
@@ -155,6 +155,12 @@ PROJ::PROJ(const Spec& spec) :
          spec.get_double("lon_minimum", 0)) {}
 
 
+const std::string& PROJ::type() const {
+    static const std::string type{"proj"};
+    return type;
+}
+
+
 Figure* PROJ::make_figure() const {
     pj_t identity(proj_create_crs_to_crs(CTX, target_.c_str(), target_.c_str(), nullptr));
 
@@ -183,19 +189,20 @@ Point PROJ::inv(const Point& q) const {
 
 std::string PROJ::proj_str(const spec::Custom& custom) {
     using key_value_type = std::pair<std::string, std::string>;
+    using keys_type      = std::vector<std::string>;
 
     struct key_value_compare {
         bool operator()(const key_value_type& a, const key_value_type& b) const {
             if (a.first != b.first) {
                 // keys that come first in string
-                for (const std::string& key : {"proj"}) {
+                for (const auto& key : keys_type{"proj"}) {
                     if (a.first == key || b.first == key) {
                         return a.first == key;
                     }
                 }
 
                 // keys that come last in string
-                for (const std::string& key : {"R", "a", "b"}) {
+                for (const auto& key : keys_type{"R", "a", "b"}) {
                     if (a.first == key || b.first == key) {
                         return b.first == key;
                     }

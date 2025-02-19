@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"

@@ -14,7 +14,7 @@
 #include <string>
 #include <type_traits>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/testing/Test.h"
@@ -136,11 +136,11 @@ b:
 
     EXPECT(nested.has_custom("a"));
     EXPECT_NOT(nested.has_custom("a?"));
-    EXPECT_THROWS_AS(nested.custom("a?"), SpecNotFound);
+    EXPECT_THROWS_AS(nested.custom("a?"), exception::SpecError);
 
     EXPECT(nested.custom("a")->has_custom("b"));
     EXPECT_NOT(nested.custom("a")->has_custom("b?"));
-    EXPECT_THROWS_AS(nested.custom("a")->custom("b?"), SpecNotFound);
+    EXPECT_THROWS_AS(nested.custom("a")->custom("b?"), exception::SpecError);
 
     const auto& b = nested.custom("a")->custom("b");
     ASSERT(b);
@@ -216,7 +216,7 @@ CASE("Spec <- Custom") {
         });
 
         // test scalar type conversion
-        for (const std::string& key : {"double", "float", "int", "long", "size_t"}) {
+        for (const auto& [key, value] : a.container()) {
             double value_as_double = 0;
             float value_as_float   = 0;
 
@@ -281,7 +281,7 @@ CASE("Spec <- Custom") {
 
         c.set("foo", two);
         EXPECT(c.has("foo"));
-        EXPECT_THROWS_AS(c.get_int("foo"), SpecNotFound);  // cannot access as int
+        EXPECT_THROWS_AS(c.get_int("foo"), exception::SpecError);  // cannot access as int
         EXPECT(::eckit::types::is_approximately_equal(c.get_double("foo"), two));
         EXPECT(c.get_string("foo") == std::to_string(two));
 
@@ -298,8 +298,8 @@ CASE("Spec <- Custom") {
 
         EXPECT(d.has("foo"));
         EXPECT(d.get_string("foo") == three);
-        EXPECT_THROWS_AS(d.get_int("foo"), SpecNotFound);     // cannot access as int
-        EXPECT_THROWS_AS(d.get_double("foo"), SpecNotFound);  // cannot access as real
+        EXPECT_THROWS_AS(d.get_int("foo"), exception::SpecError);     // cannot access as int
+        EXPECT_THROWS_AS(d.get_double("foo"), exception::SpecError);  // cannot access as real
 
         d.set("foo", one);
         EXPECT(d.get_int("foo") == one);

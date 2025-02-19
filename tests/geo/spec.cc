@@ -15,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
@@ -91,7 +92,7 @@ CASE("user -> type") {
             std::unique_ptr<const Grid> grid(GridFactory::build(*spec));
             EXPECT(grid);
         }
-        catch (const SpecNotFound& e) {
+        catch (const exception::SpecError& e) {
             EXPECT(refspec.empty() /*BAD*/);
         }
         catch (const BadParameter& e) {

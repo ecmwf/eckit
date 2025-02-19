@@ -2,7 +2,7 @@
 
 // Some of the math.h/cmath functions are not clean when switching to C++11
 #if __cplusplus <= 199711L
-#include <math.h>
+#include <cmath>
 #else
 #include <cmath>
 #define fpclassify(x) std::fpclassify((x))

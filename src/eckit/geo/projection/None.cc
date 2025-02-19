@@ -12,13 +12,19 @@
 
 #include "eckit/geo/projection/None.h"
 
-#include "eckit/geo/spec/Custom.h"
+// #include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
 
 
 static ProjectionBuilder<None> PROJECTION("none");
+
+
+const std::string& None::type() const {
+    static const std::string type{"none"};
+    return type;
+}
 
 
 }  // namespace eckit::geo::projection

@@ -74,4 +74,10 @@ void ReducedLL::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& ReducedLL::type() const {
+    static const std::string type{"reduced-ll"};
+    return type;
+}
+
+
 }  // namespace eckit::geo::grid

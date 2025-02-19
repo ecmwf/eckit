@@ -9,7 +9,7 @@
  */
 
 #include <pthread.h>
-#include <signal.h>
+#include <csignal>
 
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"

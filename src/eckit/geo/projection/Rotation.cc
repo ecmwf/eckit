@@ -13,7 +13,6 @@
 #include "eckit/geo/projection/Rotation.h"
 
 #include <cmath>
-#include <utility>
 
 #include "eckit/geo/geometry/UnitSphere.h"
 #include "eckit/geo/spec/Custom.h"
@@ -99,6 +98,12 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
                                               cp * st, -sp * st, ct});
 
     angle_ = PointLonLat::normalise_angle_to_minimum(angle_, -PointLonLat::FLAT_ANGLE);
+}
+
+
+const std::string& Rotation::type() const {
+    static const std::string type{"rotation"};
+    return type;
 }
 
 

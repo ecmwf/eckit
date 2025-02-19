@@ -35,6 +35,8 @@ public:
 
     // -- Overridden methods
 
+    const std::string& type() const override;
+
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 

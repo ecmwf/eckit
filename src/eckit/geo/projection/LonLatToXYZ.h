@@ -39,6 +39,8 @@ public:
 
     // -- Overridden methods
 
+    const std::string& type() const override;
+
     inline Point fwd(const Point& p) const override { return (*impl_)(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return (*impl_)(std::get<Point3>(q)); }
 

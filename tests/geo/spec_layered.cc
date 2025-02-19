@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/testing/Test.h"

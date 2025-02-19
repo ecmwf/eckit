@@ -263,6 +263,13 @@ ecbuild_add_option( FEATURE CUDA
                     DESCRIPTION "CUDA GPU linear algebra operations"
                     REQUIRED_PACKAGES CUDAToolkit )
 
+#### HIP
+
+ecbuild_add_option( FEATURE HIP
+                    DEFAULT OFF
+                    DESCRIPTION "HIP GPU linear algebra operations"
+                    REQUIRED_PACKAGES hip hipsparse )
+
 ### ViennaCL
 
 ecbuild_add_option( FEATURE VIENNACL

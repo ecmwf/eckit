@@ -18,6 +18,14 @@ list( APPEND eckit_la_srcs
       Triplet.h
       Vector.cc
       Vector.h
+      allocator/BufferAllocator.cc
+      allocator/BufferAllocator.h
+      allocator/NonOwningAllocator.cc
+      allocator/NonOwningAllocator.h
+      allocator/StandardAllocator.cc
+      allocator/StandardAllocator.h
+      allocator/StandardContainerAllocator.cc
+      allocator/StandardContainerAllocator.h
       dense/LinearAlgebraGeneric.cc
       dense/LinearAlgebraGeneric.h
       sparse/LinearAlgebraGeneric.cc

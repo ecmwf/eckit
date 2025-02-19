@@ -47,8 +47,7 @@ if( eckit_HAVE_CUDA )
           detail/CUDA.h
           sparse/LinearAlgebraCUDA.cc
           sparse/LinearAlgebraCUDA.h )
-    list( APPEND eckit_la_pincludes "${CUDA_INCLUDE_DIRS}" )
-    list( APPEND eckit_la_plibs "${CUDA_LIBRARIES}" "${CUDA_cusparse_LIBRARY}" )
+    list( APPEND eckit_la_plibs CUDA::cudart CUDA::cusparse CUDA::cublas )
 endif()
 
 if( eckit_HAVE_EIGEN )
@@ -105,9 +104,3 @@ if( eckit_HAVE_EIGEN )
     # Add include directories with "SYSTEM" to avoid warnings from within Eigen headers
     target_include_directories( eckit_linalg SYSTEM PRIVATE ${EIGEN3_INCLUDE_DIRS} )
 endif()
-
-if( CUDA_FOUND )
-  set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
-  cuda_add_cublas_to_target( eckit_linalg )
-endif()
-

@@ -19,7 +19,7 @@
 
 
 namespace eckit::geo::util {
-area::BoundingBox bounding_box(Point2, Point2, Projection&);
+area::BoundingBox bounding_box(Point2, Point2, const Projection&);
 }
 
 

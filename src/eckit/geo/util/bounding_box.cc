@@ -186,7 +186,7 @@ private:
 };
 
 
-area::BoundingBox bounding_box(Point2 min, Point2 max, Projection& projection) {
+area::BoundingBox bounding_box(Point2 min, Point2 max, const Projection& projection) {
     using types::is_strictly_greater;
 
 

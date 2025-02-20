@@ -50,6 +50,14 @@ if( eckit_HAVE_CUDA )
     list( APPEND eckit_la_plibs CUDA::cudart CUDA::cusparse CUDA::cublas )
 endif()
 
+if( eckit_HAVE_HIP )
+    list( APPEND eckit_la_srcs
+          sparse/LinearAlgebraHIP.cc
+          sparse/LinearAlgebraHIP.h )
+    list( APPEND eckit_la_plibs hip::host roc::hipsparse )
+endif()
+
+
 if( eckit_HAVE_EIGEN )
     list( APPEND eckit_la_srcs
           dense/LinearAlgebraEigen.cc

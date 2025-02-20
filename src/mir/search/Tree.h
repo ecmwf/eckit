@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "eckit/container/sptree/SPValue.h"
-#include "eckit/geometry/Point3.h"
 
 #include "mir/util/Types.h"
 
@@ -30,17 +29,20 @@ namespace mir::search {
 
 
 class Tree {
-    Tree(const Tree&)            = delete;
-    Tree& operator=(const Tree&) = delete;
-
 public:
     using Point          = Point3;
     using Payload        = size_t;
     using PointValueType = eckit::SPValue<Tree>;
 
-public:
-    Tree(const repres::Representation&);
+    explicit Tree(const repres::Representation&);
+
+    Tree(const Tree&) = delete;
+    Tree(Tree&)       = delete;
+
     virtual ~Tree();
+
+    Tree& operator=(Tree&)       = delete;
+    Tree& operator=(const Tree&) = delete;
 
     virtual void build(std::vector<PointValueType>&);
 
@@ -71,18 +73,23 @@ private:
 };
 
 class TreeFactory {
-    TreeFactory(const TreeFactory&)            = delete;
-    TreeFactory& operator=(const TreeFactory&) = delete;
-
 protected:
-    std::string name_;
     virtual Tree* make(const repres::Representation&) = 0;
-    TreeFactory(const std::string&);
+    explicit TreeFactory(const std::string&);
     virtual ~TreeFactory();
 
 public:
+    TreeFactory(const TreeFactory&) = delete;
+    TreeFactory(TreeFactory&&)      = delete;
+
+    TreeFactory& operator=(TreeFactory&&)      = delete;
+    TreeFactory& operator=(const TreeFactory&) = delete;
+
     static Tree* build(const std::string&, const repres::Representation&);
     static void list(std::ostream&);
+
+private:
+    std::string name_;
 };
 
 template <class T>

@@ -93,6 +93,12 @@ public:
 
     friend bool operator==(const Point3& p, const Point3& q) { return p.X == q.X && p.Y == q.Y && p.Z == q.Z; }
     friend bool operator!=(const Point3& p, const Point3& q) { return !operator==(p, q); }
+
+    friend value_type dot(const Point3& p, const Point3& q) { return p.X * q.X + p.Y * q.Y + p.Z * q.Z; }
+
+    friend Point3 cross(const Point3& p, const Point3& q) {
+        return {p.Y * q.Z - p.Z * q.Y, p.Z * q.X - p.X * q.Z, p.X * q.Y - p.Y * q.X};
+    }
 };
 
 

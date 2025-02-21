@@ -14,8 +14,10 @@
 
 #include <algorithm>
 #include <bitset>
+#include <cctype>
 #include <cmath>
 #include <cstdint>
+#include <regex>
 #include <tuple>
 
 #include "eckit/geo/Exceptions.h"
@@ -98,7 +100,6 @@ inline int pll(int f) {
 
 class Reorder {
 public:
-
     explicit Reorder(int Nside) :
         Nside_(Nside),
         Npix_(size()),
@@ -208,7 +209,6 @@ public:
     }
 
 private:
-
     const int Nside_;  // up to 2^13
     const int Npix_;
     const int Ncap_;
@@ -221,8 +221,8 @@ private:
 
 static const std::string HEALPIX_ERROR_NSIDE_POSITIVE = "HEALPix: Nside must be greater than zero";
 static const std::string HEALPIX_ERROR_NSIDE_POWER2   = "HEALPix: Nside must be a power of 2";
-static const std::string HEALPIX_ERROR_ORDERING =
-    "HEALPix: supported ordering: ring, nested (Only orderingConvention are supported)";
+static const std::string HEALPIX_ERROR_ORDERING       = "HEALPix: supported ordering: ring, nested";
+static const std::string HEALPIX_PATTERN              = "[hH]([1-9][0-9]+)(|n|_nested|r|_ring)";
 
 
 HEALPix::HEALPix(const Spec& spec) :
@@ -292,10 +292,18 @@ size_t HEALPix::nj() const {
 
 
 Spec* HEALPix::spec(const std::string& name) {
-    ASSERT(name.size() > 1 && (name[0] == 'h' || name[0] == 'H'));
+    static const std::regex rex(HEALPIX_PATTERN);
 
-    auto Nside = Translator<std::string, size_t>{}(name.substr(1));
-    return new spec::Custom({{"type", "HEALPix"}, {"Nside", Nside}, {"ordering", "ring"}});
+    std::smatch match;
+    ASSERT(std::regex_match(name, match, rex));
+
+    const auto end       = match[2].str();
+    const auto* ordering = end == "n" || end == "_nested" ? "nested"
+                           : end.empty() || end == "r" || end == "_ring"
+                               ? "ring"
+                               : throw exception::SpecError(HEALPIX_ERROR_ORDERING, Here());
+
+    return new spec::Custom{{"type", "HEALPix"}, {"Nside", std::stoul(match[1])}, {"ordering", ordering}};
 }
 
 
@@ -391,7 +399,7 @@ const std::string& HEALPix::type() const {
 
 static const GridRegisterType<HEALPix> GRIDTYPE1("HEALPix");
 static const GridRegisterType<HEALPix> GRIDTYPE2("healpix");
-static const GridRegisterName<HEALPix> GRIDNAME("[hH][0-9]+");
+static const GridRegisterName<HEALPix> GRIDNAME("[hH][1-9][0-9]*(|n|_nested|r|_ring)");
 
 
 }  // namespace eckit::geo::grid

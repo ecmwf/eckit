@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/FESOM.h"
+#include "eckit/geo/grid/unstructured/FESOM.h"
 
 #include <cstdint>
 #include <memory>
@@ -35,7 +35,7 @@ void hash_vector_size_t(MD5&, const std::vector<size_t>&);
 }  // namespace eckit::geo::util
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::unstructured {
 
 
 namespace {
@@ -143,7 +143,7 @@ Grid::uid_t FESOM::calculate_uid() const {
 
         auto d = hash.digest();
         ASSERT(d.length() == 32);
-        return Grid::uid_t{d};
+        return {d};
     }
 
     if (arrangement_ == Arrangement::FESOM_C) {
@@ -179,7 +179,7 @@ Grid::uid_t FESOM::calculate_uid() const {
 
         auto d = hash.digest();
         ASSERT(d.length() == 32);
-        return Grid::uid_t{d};
+        return {d};
     }
 
     NOTIMP;
@@ -221,4 +221,4 @@ const std::string& FESOM::type() const {
 static const GridRegisterType<FESOM> GRIDTYPE("FESOM");
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::unstructured

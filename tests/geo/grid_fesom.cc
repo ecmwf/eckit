@@ -14,7 +14,7 @@
 
 #include "eckit/geo/Cache.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/grid/FESOM.h"
+#include "eckit/geo/grid/unstructured/FESOM.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -67,7 +67,7 @@ CASE("spec") {
     EXPECT(grid2->size() == SHAPE_N);
     EXPECT(grid2->uid() == UID_N);
 
-    grid::FESOM grid3(UID_N);
+    grid::unstructured::FESOM grid3(UID_N);
 
     const std::string expected_spec_str = R"({"grid":"pi_N","uid":")" + UID_N + R"("})";
 
@@ -91,7 +91,7 @@ CASE("equals") {
         std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + uid + "}"));
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", uid}})));
         std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", grid}})));
-        grid::FESOM grid4(uid);
+        grid::unstructured::FESOM grid4(uid);
 
         EXPECT(*grid1 == *grid2);
         EXPECT(*grid2 == *grid3);

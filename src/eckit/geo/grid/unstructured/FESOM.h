@@ -24,7 +24,7 @@ class PathName;
 }
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::unstructured {
 
 
 class FESOM final : public Unstructured {
@@ -84,4 +84,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::unstructured

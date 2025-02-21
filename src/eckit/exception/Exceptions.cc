@@ -81,6 +81,7 @@ Exception::Exception(const std::string& w, const CodeLocation& location, bool qu
 
     if (!::getenv("ECKIT_EXCEPTION_IS_SILENT") && !quiet) {
         Log::error() << "Exception: " << w << " " << location_ << std::endl;
+        Log::status() << "** " << w << location_ << std::endl;
     }
 
     first() = this;

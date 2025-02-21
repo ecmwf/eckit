@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/ICON.h"
+#include "eckit/geo/grid/unstructured/ICON.h"
 
 #include <cstdint>
 #include <memory>
@@ -29,7 +29,7 @@
 #include "eckit/utils/MD5.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::unstructured {
 
 
 namespace {
@@ -173,4 +173,4 @@ const std::string& ICON::type() const {
 static const GridRegisterType<ICON> GRIDTYPE("ICON");
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::unstructured

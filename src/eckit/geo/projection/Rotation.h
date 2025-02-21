@@ -31,20 +31,10 @@ public:
     Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
     Rotation(double south_pole_lon, double south_pole_lat, double angle = 0);
 
-    Rotation(const Rotation&) = default;
-    Rotation(Rotation&&)      = default;
-
-    // -- Destructor
-
-    ~Rotation() override = default;
-
-    // -- Operators
-
-    Rotation& operator=(const Rotation&) = default;
-    Rotation& operator=(Rotation&&)      = default;
-
     // -- Methods
 
+    PointLonLat southPole() const { return south_pole_; }
+    double angle() const { return angle_; }
     bool rotated() const { return rotated_; }
 
     inline PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }

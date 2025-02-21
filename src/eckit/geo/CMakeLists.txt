@@ -92,6 +92,8 @@ list(APPEND eckit_geo_srcs
     grid/regular-xy/PolarStereographic.h
     grid/regular-xy/SpaceView.cc
     grid/regular-xy/SpaceView.h
+    grid/unstructured/UnstructuredGeneric.cc
+    grid/unstructured/UnstructuredGeneric.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc
@@ -173,14 +175,14 @@ if(eckit_HAVE_PROJ)
 endif()
 
 if(eckit_HAVE_GEO_GRID_FESOM)
-    list(APPEND eckit_geo_srcs grid/FESOM.cc grid/FESOM.h)
+    list(APPEND eckit_geo_srcs grid/unstructured/FESOM.cc grid/unstructured/FESOM.h)
     list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
     list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/FESOM.yaml")
 endif()
 
 if(eckit_HAVE_GEO_GRID_ICON)
-    list(APPEND eckit_geo_srcs grid/ICON.cc grid/ICON.h)
+    list(APPEND eckit_geo_srcs grid/unstructured/ICON.cc grid/unstructured/ICON.h)
     list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
     list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ICON.yaml")

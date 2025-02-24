@@ -16,6 +16,7 @@
 #include <string>
 
 #include "eckit/geo/Point.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
 
@@ -39,6 +40,7 @@ public:
 
     using builder_t = BuilderT1<Projection>;
     using ARG1      = const Spec&;
+    using Spec      = Spec;
 
     // -- Constructors
 
@@ -65,7 +67,7 @@ public:
 
     virtual const std::string& type() const = 0;
 
-    [[nodiscard]] spec::Custom* spec() const;
+    [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const;
     std::string proj_str() const;
 
@@ -80,6 +82,7 @@ private:
     // -- Members
 
     mutable std::shared_ptr<Figure> figure_;
+    mutable std::shared_ptr<spec::Custom> spec_;
 
     // -- Methods
 

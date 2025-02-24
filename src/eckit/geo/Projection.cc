@@ -18,7 +18,6 @@
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/eckit_geo_config.h"
-#include "eckit/geo/spec/Custom.h"
 
 #if eckit_HAVE_PROJ
 #include "eckit/geo/projection/PROJ.h"
@@ -43,18 +42,21 @@ const Figure& Projection::figure() const {
 }
 
 
-spec::Custom* Projection::spec() const {
-    auto* custom = new spec::Custom;
-    ASSERT(custom != nullptr);
+const Spec& Projection::spec() const {
+    if (!spec_) {
+        spec_ = std::make_unique<spec::Custom>();
+        ASSERT(spec_ != nullptr);
 
-    fill_spec(*custom);
-    return custom;
+        auto& custom = *spec_;
+        fill_spec(custom);
+    }
+
+    return *spec_;
 }
 
 
 std::string Projection::spec_str() const {
-    std::unique_ptr<const spec::Custom> custom(spec());
-    return custom->str();
+    return spec().str();
 }
 
 

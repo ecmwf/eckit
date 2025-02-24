@@ -39,6 +39,7 @@ public:
 
     using builder_t = BuilderT1<Area>;
     using ARG1      = const Spec&;
+    using Spec      = Spec;
 
     // -- Constructors
 

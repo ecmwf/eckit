@@ -16,17 +16,20 @@
 #include <ostream>
 
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Point2.h"
 #include "eckit/geo/PointLonLat.h"
 
 
-namespace eckit::geo::area {
-
-
+namespace eckit::geo {
+namespace area {
 class BoundingBox;
-
 bool bounding_box_equal(const BoundingBox&, const BoundingBox&);
+}  // namespace area
+class Projection;
+}  // namespace eckit::geo
 
 
+namespace eckit::geo::area {
 class BoundingBox : public Area, protected std::array<double, 4> {
 public:
 
@@ -88,8 +91,12 @@ public:
 
     [[nodiscard]] static BoundingBox* make_global_prime();
     [[nodiscard]] static BoundingBox* make_global_antiprime();
-    [[nodiscard]] static BoundingBox* make_from_spec(const Spec&);
     [[nodiscard]] static BoundingBox* make_from_area(value_type n, value_type w, value_type s, value_type e);
+
+    [[nodiscard]] static BoundingBox* make_from_spec(const Spec&);
+
+    [[nodiscard]] static BoundingBox* make_from_projection(Point2 min, Point2 max, const Projection&);
+    [[nodiscard]] static BoundingBox* make_from_projection(PointLonLat min, PointLonLat max, const Projection&);
 
     // -- Members
 

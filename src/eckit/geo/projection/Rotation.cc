@@ -46,11 +46,8 @@ Rotation::Rotation(const Spec& spec) :
         }(spec)) {}
 
 
-Rotation::Rotation(const PointLonLat& p, double angle) : Rotation(p.lon, p.lat, angle) {}
-
-
-Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
-    south_pole_(PointLonLat::make(south_pole_lon, south_pole_lat)), angle_(angle), rotated_(true) {
+Rotation::Rotation(const PointLonLat& south_pole, double angle) :
+    south_pole_(south_pole), angle_(angle), rotated_(true) {
     using M = maths::Matrix3<double>;
 
     struct NonRotated final : Implementation {
@@ -73,15 +70,15 @@ Rotation::Rotation(double south_pole_lon, double south_pole_lat, double angle) :
     };
 
     const auto alpha = util::DEGREE_TO_RADIAN * angle;
-    const auto theta = util::DEGREE_TO_RADIAN * -(south_pole_lat + 90.);
-    const auto phi   = util::DEGREE_TO_RADIAN * -south_pole_lon;
+    const auto theta = util::DEGREE_TO_RADIAN * -(south_pole_.lat + 90.);
+    const auto phi   = util::DEGREE_TO_RADIAN * -south_pole_.lon;
 
     const auto ca = std::cos(alpha);
     const auto ct = std::cos(theta);
     const auto cp = std::cos(phi);
 
     if (types::is_approximately_equal(ct, 1., PointLonLat::EPS * util::DEGREE_TO_RADIAN)) {
-        angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_lon, -PointLonLat::FLAT_ANGLE);
+        angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_.lon, -PointLonLat::FLAT_ANGLE);
         rotated_ = !types::is_approximately_equal(angle_, 0., PointLonLat::EPS);
 
         fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
@@ -142,7 +139,7 @@ Rotation* Rotation::make_from_spec(const Spec& spec) {
                    "Rotation: expected 'south_pole_lon' and 'south_pole_lat'");
     }
 
-    auto* r = new Rotation{lon, lat, angle};
+    auto* r = new Rotation{{lon, lat}, angle};
     if (!r->rotated()) {
         delete r;
         r = nullptr;

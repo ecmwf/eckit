@@ -1,0 +1,17 @@
+---
+servers:
+  - endpoint: @S3_TEST_ENDPOINT@
+    region: @S3_TEST_REGION@
+
+  - endpoint: "127.0.0.1:9000"
+    region: "default" # (default)
+    secure: true      # (default)
+    backend: "AWS"    # (default)
+
+  - endpoint: "localhost:9000"
+    region: "eu-central-1"
+    secure: true   # (default)
+    backend: "AWS" # (default)
+
+  # region is inferred from the endpoint
+  - endpoint: "eu-central-1.ecmwf.int:9000"

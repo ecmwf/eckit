@@ -18,11 +18,6 @@
 #include "eckit/testing/Test.h"
 
 
-namespace eckit::geo::util {
-area::BoundingBox bounding_box(Point2, Point2, const Projection&);
-}
-
-
 namespace eckit::geo::test {
 
 
@@ -104,15 +99,16 @@ CASE("projection: proj") {
         };
 
         for (const auto& test : tests_bbox) {
-            auto bbox = util::bounding_box(test.min, test.max, *test.projection);
+            std::unique_ptr<area::BoundingBox> bbox(
+                area::BoundingBox::make_from_projection(test.min, test.max, *test.projection));
 
-            EXPECT_EQUAL(test.periodic, bbox.periodic());
-            EXPECT_EQUAL(test.contains_north_pole, bbox.contains(NORTH_POLE));
-            EXPECT_EQUAL(test.contains_south_pole, bbox.contains(SOUTH_POLE));
+            EXPECT_EQUAL(test.periodic, bbox->periodic());
+            EXPECT_EQUAL(test.contains_north_pole, bbox->contains(NORTH_POLE));
+            EXPECT_EQUAL(test.contains_south_pole, bbox->contains(SOUTH_POLE));
 
             auto global = test.periodic && test.contains_north_pole && test.contains_south_pole;
 
-            EXPECT(global == bbox.global());
+            EXPECT(global == bbox->global());
         }
     }
 }

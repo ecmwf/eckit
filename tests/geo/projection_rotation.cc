@@ -50,7 +50,7 @@ CASE("rotation (2)") {
     for (auto a : delta) {
         for (auto b : delta) {
             for (auto c : delta) {
-                projection::Rotation rot(0. + static_cast<double>(b), -90. + static_cast<double>(a),
+                projection::Rotation rot({0. + static_cast<double>(b), -90. + static_cast<double>(a)},
                                          static_cast<double>(c));
                 EXPECT(rot.rotated() == (a % 360 != 0 || (b - c) % 360 != 0));
 
@@ -64,7 +64,7 @@ CASE("rotation (2)") {
 
 CASE("rotation (3)") {
     const PointLonLat sp(182., -46.7);
-    projection::Rotation rot(sp.lon, sp.lat, 0.);
+    projection::Rotation rot({sp.lon, sp.lat}, 0.);
 
     ASSERT(points_equal(sp.antipode(), PointLonLat{2., 46.7}));
 
@@ -186,9 +186,9 @@ CASE("rotation (3)") {
 
 
 CASE("rotation (4)") {
-    const projection::Rotation non_rotated(0., -90., 0.);
-    const projection::Rotation rotation_angle(0., -90., -180.);
-    const projection::Rotation rotation_matrix(4., -40., 180.);
+    const projection::Rotation non_rotated({0., -90.}, 0.);
+    const projection::Rotation rotation_angle({0., -90.}, -180.);
+    const projection::Rotation rotation_matrix({4., -40.}, 180.);
 
     EXPECT(not non_rotated.rotated());
     EXPECT(rotation_angle.rotated());

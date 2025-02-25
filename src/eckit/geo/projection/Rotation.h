@@ -27,13 +27,11 @@ public:
     // -- Constructors
 
     explicit Rotation(const Spec&);
-
-    Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
-    Rotation(double south_pole_lon, double south_pole_lat, double angle = 0);
+    explicit Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
 
     // -- Methods
 
-    PointLonLat southPole() const { return south_pole_; }
+    PointLonLat south_pole() const { return south_pole_; }
     double angle() const { return angle_; }
     bool rotated() const { return rotated_; }
 

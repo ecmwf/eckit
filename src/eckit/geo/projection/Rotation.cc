@@ -140,7 +140,7 @@ void Rotation::fill_spec(spec::Custom& custom) const {
     if (!types::is_approximately_equal(angle_, 0., PointLonLat::EPS)) {
         custom.set("rotation_angle", angle_);
     }
-    // custom.set("projection", "rotation");  // it's a common projection (?)
+    custom.set("projection", type());
 }
 
 

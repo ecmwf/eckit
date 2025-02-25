@@ -24,7 +24,7 @@ namespace eckit::geo::projection {
  * @details Used to reverse the forward and inverse methods of a projection.
  */
 template <class P>
-class Reverse : protected P {
+class Reverse : public P {
 public:
 
     // -- Constructors

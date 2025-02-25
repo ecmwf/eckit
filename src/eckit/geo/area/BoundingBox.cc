@@ -24,6 +24,8 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/geometry/Sphere.h"
 #include "eckit/geo/projection/Composer.h"
+#include "eckit/geo/projection/Reverse.h"
+#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/projection/XYToLonLat.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
@@ -378,10 +380,10 @@ BoundingBox* BoundingBox::make_from_projection(Point2 min, Point2 max, const Pro
 }
 
 
-BoundingBox* BoundingBox::make_from_projection(PointLonLat min, PointLonLat max, const Projection& projection) {
-    return make_from_projection(
-        Point2{min.lon, min.lat}, Point2{max.lon, max.lat},
-        projection::Composer{Projection::make_from_spec(projection.spec()), new projection::XYToLonLat});
+BoundingBox* BoundingBox::make_from_projection(PointLonLat min, PointLonLat max, const projection::Rotation& rotation) {
+    return make_from_projection(Point2{min.lon, min.lat}, Point2{max.lon, max.lat},
+                                projection::Composer{new projection::Reverse<projection::Rotation>(rotation.spec()),
+                                                     new projection::Reverse<projection::XYToLonLat>});
 }
 
 

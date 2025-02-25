@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/spec/Custom.h"
@@ -280,6 +281,39 @@ CASE("rotation (5)") {
         EXPECT(points_equal(qs1[6], qs2[0]));
         EXPECT(points_equal(qs1[7], qs2[1]));
     }
+}
+
+
+CASE("rotation (6)") {
+    projection::Rotation rotation(spec::Custom({
+        {"projection", "rotation"},
+        {"south_pole_lat", 10.},
+        {"south_pole_lon", 20.},
+    }));
+
+
+    struct test_t {
+        PointLonLat p;
+        PointLonLat q;
+    };
+
+    for (const auto& test : {
+             test_t{{0., 1.}, {-160., 79.}},
+             {{2., 1.}, {-170.369068, 78.821318}},
+             {{0., 0.}, {-160., 80.}},
+             {{2., 0.}, {-171.370559, 79.803957}},
+         }) {
+        EXPECT(points_equal(rotation.fwd(test.p), test.q, EPS));
+    }
+
+    EXPECT_THROWS_AS(auto* dummy = area::BoundingBox::make_from_projection(Point2{0., 0.}, Point2{2., 1.}, rotation),
+                     std::bad_variant_access);
+
+    std::unique_ptr<area::BoundingBox> bbox(
+        area::BoundingBox::make_from_projection(PointLonLat{0., 0.}, PointLonLat{2., 1.}, rotation));
+
+    EXPECT(points_equal(PointLonLat{bbox->west, bbox->north}, {-171.37056, 80.000001}, EPS));
+    EXPECT(points_equal(PointLonLat{bbox->east, bbox->south}, {-160., 78.821318}, EPS));
 }
 
 

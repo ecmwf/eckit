@@ -26,6 +26,9 @@ class BoundingBox;
 bool bounding_box_equal(const BoundingBox&, const BoundingBox&);
 }  // namespace area
 class Projection;
+namespace projection {
+class Rotation;
+}
 }  // namespace eckit::geo
 
 
@@ -96,7 +99,8 @@ public:
     [[nodiscard]] static BoundingBox* make_from_spec(const Spec&);
 
     [[nodiscard]] static BoundingBox* make_from_projection(Point2 min, Point2 max, const Projection&);
-    [[nodiscard]] static BoundingBox* make_from_projection(PointLonLat min, PointLonLat max, const Projection&);
+    [[nodiscard]] static BoundingBox* make_from_projection(PointLonLat min, PointLonLat max,
+                                                           const projection::Rotation&);
 
     // -- Members
 

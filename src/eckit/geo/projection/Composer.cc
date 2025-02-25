@@ -12,9 +12,6 @@
 
 #include "eckit/geo/projection/Composer.h"
 
-#include <vector>
-
-#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 
 

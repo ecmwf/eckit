@@ -26,8 +26,24 @@ public:
 
     // -- Constructors
 
-    explicit Composer() = default;
     using deque::deque;
+    explicit Composer() = default;
+
+    Composer(const Composer&) = delete;
+    Composer(Composer&&)      = delete;
+
+    // -- Destructor
+
+    ~Composer() override {
+        for (auto* p : *this) {
+            delete p;
+        }
+    }
+
+    // -- Operators
+
+    Composer& operator=(const Composer&) = delete;
+    Composer& operator=(Composer&&)      = delete;
 
     // -- Methods
 

@@ -27,6 +27,25 @@ namespace eckit::geo::projection {
 static ProjectionBuilder<Rotation> PROJECTION("rotation");
 
 
+Rotation::Rotation(const Spec& spec) :
+    Rotation(
+        [](const auto& spec) -> PointLonLat {
+            auto lon = SOUTH_POLE.lon;
+            auto lat = SOUTH_POLE.lat;
+            if (std::vector<double> r{lon, lat}; spec.get("rotation", r)) {
+                ASSERT_MSG(r.size() == 2, "Rotation: expected 'rotation' as a list of size 2");
+                lon = r[0];
+                lat = r[1];
+            }
+            return {lon, lat};
+        }(spec),
+        [](const auto& spec) -> double {
+            double angle = 0.;
+            spec.get("rotation_angle", angle);
+            return angle;
+        }(spec)) {}
+
+
 Rotation::Rotation(const PointLonLat& p, double angle) : Rotation(p.lon, p.lat, angle) {}
 
 

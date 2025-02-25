@@ -26,7 +26,7 @@ public:
 
     // -- Constructors
 
-    explicit Rotation(const Spec& spec) : Rotation(*std::unique_ptr<Rotation>(make_from_spec(spec))) {}
+    explicit Rotation(const Spec&);
 
     Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
     Rotation(double south_pole_lon, double south_pole_lat, double angle = 0);

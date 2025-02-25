@@ -66,6 +66,8 @@ public:
 
     // -- Methods
 
+    static size_t dimensions() { return DIMS; }
+
     static value_type distance(const Point3& p, const Point3& q, size_t axis) { return p.distance(q, axis); }
     static value_type distance(const Point3& p, const Point3& q) { return p.distance(q); }
     static value_type distance2(const Point3& p, const Point3& q) { return p.distance2(q); }

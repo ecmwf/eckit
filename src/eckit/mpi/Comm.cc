@@ -125,6 +125,7 @@ public:
             delete itr->second;
         }
         communicators.clear();
+        default_ = nullptr;
     }
 
     Comm& getComm(std::string_view name = {}) {
@@ -203,17 +204,13 @@ public:
     }
 
 
-    Environment() :
-        default_(nullptr) {}
+    Environment() = default;
 
     ~Environment() {
-        AutoLock<Mutex> lock(mutex_);
-
         finaliseAllComms();
-        default_ = nullptr;
     }
 
-    Comm* default_;
+    Comm* default_{nullptr};
 
     std::map<std::string, Comm*, std::less<>> communicators;
 

@@ -10,6 +10,7 @@
 
 #include "eckit/mpi/Parallel.h"
 
+#include <atomic>
 #include <cerrno>
 #include <unistd.h>
 #include <limits>
@@ -32,14 +33,7 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static pthread_once_t once      = PTHREAD_ONCE_INIT;
-static eckit::Mutex* localMutex = 0;
-static size_t initCounter;
-
-static void init() {
-    localMutex  = new eckit::Mutex();
-    initCounter = 0;
-}
+std::atomic<size_t> initCounter{}; // zero-initialized
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -94,6 +88,17 @@ static MPI_Datatype PARALLEL_TWO_LONG_LONG() {
     }();
     return mpi_datatype;
 }
+
+struct LocalMutex {
+    operator eckit::Mutex&() { return mutex_; }
+    static LocalMutex& instance() {
+        static LocalMutex instance;
+        return instance;
+    }
+private:
+    LocalMutex() = default;
+    eckit::Mutex mutex_;
+};
 
 }  // namespace
 
@@ -172,14 +177,11 @@ size_t getSize(MPI_Comm comm) {
 Parallel::Parallel(std::string_view name) :
     Comm(name) /* don't use member initialisation list */ {
 
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(localMutex);
-
     if (initCounter == 0) {
         initialize();
     }
-    initCounter++;
 
+    initCounter++;
     comm_ = MPI_COMM_WORLD;
     rank_ = getRank(comm_);
     size_ = getSize(comm_);
@@ -187,9 +189,6 @@ Parallel::Parallel(std::string_view name) :
 
 Parallel::Parallel(std::string_view name, MPI_Comm comm, bool) :
     Comm(name) /* don't use member initialisation list */ {
-
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(localMutex);
 
     if (initCounter == 0) {
         initialize();
@@ -204,12 +203,6 @@ Parallel::Parallel(std::string_view name, MPI_Comm comm, bool) :
 Parallel::Parallel(std::string_view name, int comm) :
     Comm(name) {
 
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(localMutex);
-
-    if (initCounter == 0) {
-        initialize();
-    }
     initCounter++;
 
     comm_ = MPI_Comm_f2c(comm);
@@ -217,10 +210,8 @@ Parallel::Parallel(std::string_view name, int comm) :
     size_ = getSize(comm_);
 }
 
-Parallel::~Parallel() {
 
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(localMutex);
+Parallel::~Parallel() {
 
     initCounter--;
 
@@ -234,6 +225,7 @@ Comm* Parallel::self() const {
 }
 
 void Parallel::initialize() {
+    eckit::AutoLock<eckit::Mutex> lock(LocalMutex::instance());
 
     if (!initialized()) {
 
@@ -308,14 +300,12 @@ void Parallel::finalize() {
 }
 
 bool Parallel::initialized() {
-
     int result = 1;
     MPI_CALL(MPI_Initialized(&result));
     return bool(result);
 }
 
 bool Parallel::finalized() {
-
     int result = 1;
     MPI_CALL(MPI_Finalized(&result));
     return bool(result);
@@ -502,7 +492,6 @@ void Parallel::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Co
 
     MPI_Datatype mpitype = toType(type);
     MPI_Op mpiop         = toOp(op);
-    ;
 
     MPI_CALL(MPI_Reduce(const_cast<void*>(sendbuf), recvbuf, int(count), mpitype, mpiop, int(root), comm_));
 }
@@ -526,7 +515,6 @@ void Parallel::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data:
 
     MPI_Datatype mpitype = toType(type);
     MPI_Op mpiop         = toOp(op);
-    ;
 
     MPI_CALL(MPI_Allreduce(const_cast<void*>(sendbuf), recvbuf, int(count), mpitype, mpiop, comm_));
 }

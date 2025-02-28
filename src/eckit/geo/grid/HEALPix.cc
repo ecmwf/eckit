@@ -222,7 +222,7 @@ private:
 static const std::string HEALPIX_ERROR_NSIDE_POSITIVE = "HEALPix: Nside must be greater than zero";
 static const std::string HEALPIX_ERROR_NSIDE_POWER2   = "HEALPix: Nside must be a power of 2";
 static const std::string HEALPIX_ERROR_ORDERING       = "HEALPix: supported ordering: ring, nested";
-static const std::string HEALPIX_PATTERN              = "[hH]([1-9][0-9]+)(|n|_nested|r|_ring)";
+static const std::string HEALPIX_PATTERN              = "[hH]([1-9][0-9]*)(n|_nested|r|_ring)?";
 
 
 HEALPix::HEALPix(const Spec& spec) :
@@ -387,7 +387,9 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
 
 void HEALPix::fill_spec(spec::Custom& custom) const {
     custom.set("grid", "H" + std::to_string(Nside_));
-    custom.set("ordering", ordering_ == Ordering::healpix_ring ? "ring" : "nested");
+    if (ordering_ == Ordering::healpix_nested) {
+        custom.set("ordering", "nested");
+    }
 }
 
 
@@ -399,7 +401,7 @@ const std::string& HEALPix::type() const {
 
 static const GridRegisterType<HEALPix> GRIDTYPE1("HEALPix");
 static const GridRegisterType<HEALPix> GRIDTYPE2("healpix");
-static const GridRegisterName<HEALPix> GRIDNAME("[hH][1-9][0-9]*(|n|_nested|r|_ring)");
+static const GridRegisterName<HEALPix> GRIDNAME(HEALPIX_PATTERN);
 
 
 }  // namespace eckit::geo::grid

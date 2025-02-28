@@ -40,7 +40,6 @@ public:
 
     using builder_t = BuilderT1<Projection>;
     using ARG1      = const Spec&;
-    using Spec      = Spec;
 
     // -- Constructors
 

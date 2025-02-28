@@ -52,7 +52,6 @@ public:
     using uid_t     = std::string;
     using builder_t = BuilderT1<Grid>;
     using ARG1      = const Spec&;
-    using Spec      = Spec;
 
     struct Iterator final : std::unique_ptr<geo::Iterator> {
         explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }

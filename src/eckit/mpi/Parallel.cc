@@ -12,9 +12,11 @@
 
 #include <atomic>
 #include <cerrno>
-#include <unistd.h>
+#include <csetjmp>
+#include <csignal>
 #include <limits>
 #include <sstream>
+#include <unistd.h>
 
 #include "eckit/exception/Exceptions.h"
 
@@ -99,6 +101,47 @@ private:
     LocalMutex() = default;
     eckit::Mutex mutex_;
 };
+
+struct WorkaroundSegvAtExit {
+    // This is a workaround for when a SIGSEGV is happening during the
+    // program teardown phase after the main() scope ends. eckit::mpi is designed to
+    // automatically call MPI_Finalize at this point when needed.
+    // Some MPI implementations trigger a SIGSEGV. This is e.g. the case with hpcx-openmpi/2.14.0
+    // with CUDA-aware features enabled.
+    //
+    // To enable the workaround, please export `ECKIT_MPI_WORKAROUND_SEGV_AT_EXIT=1`
+    //
+    // For more details see https://github.com/ecmwf/eckit/pull/171
+
+    static void enabled(bool value) {
+        instance().enabled_ = value;
+    }
+
+    static bool enabled() {
+        return instance().enabled_;
+    }
+
+    static void MPI_Finalize() {
+        // This function calls MPI_Finalize, traps a SIGSEGV when it happens, ignores it,
+        // and restores the SIGSEGV signal handler to the default, to handle further SIGSEGV.
+        static std::jmp_buf sigsegv_occured;
+        std::signal(SIGSEGV, [](int){std::longjmp(sigsegv_occured, true);});
+        if (setjmp(sigsegv_occured)) {
+            std::signal(SIGSEGV, SIG_DFL);
+            // std::cerr << "WARNING: Trapped SIGSEGV fault during MPI_Finalize() after main()" << std::endl;
+            return;
+        }
+        MPI_CALL(::MPI_Finalize());
+    }
+
+private:
+    static WorkaroundSegvAtExit& instance() {
+        static WorkaroundSegvAtExit instance;
+        return instance;
+    }
+    bool enabled_{false};
+};
+
 
 }  // namespace
 
@@ -210,7 +253,6 @@ Parallel::Parallel(std::string_view name, int comm) :
     size_ = getSize(comm_);
 }
 
-
 Parallel::~Parallel() {
 
     initCounter--;
@@ -238,6 +280,8 @@ void Parallel::initialize() {
         }
 
         std::string MPIInitThread = eckit::Resource<std::string>("MPIInitThread;$ECKIT_MPI_INIT_THREAD", "NONE");
+
+        WorkaroundSegvAtExit::enabled(eckit::Resource<bool>("$ECKIT_MPI_WORKAROUND_SEGV_AT_EXIT", false));
 
         if (MPIInitThread == "NONE") {
             MPI_CALL(MPI_Init(&argc, &argv));
@@ -295,7 +339,12 @@ void Parallel::initialize() {
 
 void Parallel::finalize() {
     if (not finalized()) {
-        MPI_CALL(MPI_Finalize());
+        if (WorkaroundSegvAtExit::enabled()) {
+            WorkaroundSegvAtExit::MPI_Finalize();
+        }
+        else {
+            MPI_CALL(MPI_Finalize());
+        }
     }
 }
 

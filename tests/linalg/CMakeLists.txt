@@ -134,6 +134,11 @@ ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_cuda
                   CONDITION eckit_HAVE_CUDA
                   ARGS      --log_level=message -linearAlgebraSparseBackend cuda --catch_system_errors=no )
 
+ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_hip
+                  COMMAND   eckit_test_linalg_sparse_backend
+                  CONDITION eckit_HAVE_HIP
+                  ARGS      --log_level=message -linearAlgebraSparseBackend hip )
+
 ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_eigen
                   COMMAND   eckit_test_linalg_sparse_backend
                   CONDITION eckit_HAVE_EIGEN

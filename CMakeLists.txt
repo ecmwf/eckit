@@ -260,9 +260,15 @@ ecbuild_add_option( FEATURE JEMALLOC
 
 ecbuild_add_option( FEATURE CUDA
                     DEFAULT OFF
-                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "CUDA GPU linear algebra operations"
-                    REQUIRED_PACKAGES CUDA )
+                    REQUIRED_PACKAGES CUDAToolkit )
+
+#### HIP
+
+ecbuild_add_option( FEATURE HIP
+                    DEFAULT OFF
+                    DESCRIPTION "HIP GPU linear algebra operations"
+                    REQUIRED_PACKAGES hip hipsparse )
 
 ### ViennaCL
 

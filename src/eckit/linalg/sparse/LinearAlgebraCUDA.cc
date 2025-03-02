@@ -49,8 +49,6 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
     Scalar* d_A_values;  ///< device memory matrix A values
     Scalar* d_x;         ///< device memory vector x
     Scalar* d_y;         ///< device memory vector y
-    cusparseHandle_t handle;
-    cusparseMatDescr_t descr;
 
     CALL_CUDA(cudaMalloc((void**)&d_A_rowptr, sizeArowptr));
     CALL_CUDA(cudaMalloc((void**)&d_A_colidx, sizeAcolidx));
@@ -58,31 +56,83 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
     CALL_CUDA(cudaMalloc((void**)&d_x, sizex));
     CALL_CUDA(cudaMalloc((void**)&d_y, sizey));
 
-    CALL_CUSPARSE(cusparseCreate(&handle));
-    CALL_CUSPARSE(cusparseCreateMatDescr(&descr));
-    cusparseSetMatType(descr, CUSPARSE_MATRIX_TYPE_GENERAL);
-    cusparseSetMatIndexBase(descr, CUSPARSE_INDEX_BASE_ZERO);
-
     CALL_CUDA(cudaMemcpy(d_A_rowptr, A.outer(), sizeArowptr, cudaMemcpyHostToDevice));
     CALL_CUDA(cudaMemcpy(d_A_colidx, A.inner(), sizeAcolidx, cudaMemcpyHostToDevice));
     CALL_CUDA(cudaMemcpy(d_A_values, A.data(), sizeAvalues, cudaMemcpyHostToDevice));
     CALL_CUDA(cudaMemcpy(d_x, x.data(), sizex, cudaMemcpyHostToDevice));
 
+    cusparseHandle_t handle;
+    CALL_CUSPARSE(cusparseCreate(&handle));
+
+    cusparseSpMatDescr_t matA;
+    CALL_CUSPARSE( cusparseCreateCsr(
+        &matA,
+        A.rows(), A.cols(), A.nonZeros(),
+        d_A_rowptr,
+        d_A_colidx,
+        d_A_values,
+        CUSPARSE_INDEX_32I,
+        CUSPARSE_INDEX_32I,
+        CUSPARSE_INDEX_BASE_ZERO,
+        CUDA_R_64F) );
+
+    cusparseDnVecDescr_t vecX;
+    CALL_CUSPARSE( cusparseCreateDnVec(
+        &vecX,
+        x.size(),
+        d_x,
+        CUDA_R_64F) );
+
+    cusparseDnVecDescr_t vecY;
+    CALL_CUSPARSE( cusparseCreateDnVec(
+        &vecY,
+        y.size(),
+        d_y,
+        CUDA_R_64F) );
+
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
-    // cusparseStatus_t
-    // cusparseDcsrmv(cusparseHandle_t handle, cusparseOperation_t transA,
-    //                int m, int n, int nnz,
-    //                const double *alpha, const cusparseMatDescr_t descrA,
-    //                const double *csrValA, const int *csrRowPtrA, const int *csrColIndA,
-    //                const double *x, const double *beta, double *y)
-    CALL_CUSPARSE(cusparseDcsrmv(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, A.rows(), A.cols(), A.nonZeros(), &alpha,
-                                 descr, d_A_values, d_A_rowptr, d_A_colidx, d_x, &beta, d_y));
 
+    // Determine buffer size
+    size_t bufferSize = 0;
+    CALL_CUSPARSE( cusparseSpMV_bufferSize(
+        handle,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        &alpha,
+        matA,
+        vecX,
+        &beta,
+        vecY,
+        CUDA_R_64F,
+        CUSPARSE_SPMV_ALG_DEFAULT,
+        &bufferSize) );
+
+    // Allocate buffer
+    char* buffer;
+    CALL_CUDA( cudaMalloc(&buffer, bufferSize) );
+
+    // Perform SpMV
+    // y = alpha * A * x + beta * y
+    CALL_CUSPARSE( cusparseSpMV(
+        handle,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        &alpha,
+        matA,
+        vecX,
+        &beta,
+        vecY,
+        CUDA_R_64F,
+        CUSPARSE_SPMV_ALG_DEFAULT,
+        buffer) );
+
+    // Copy result back to host
     CALL_CUDA(cudaMemcpy(y.data(), d_y, sizey, cudaMemcpyDeviceToHost));
 
-    CALL_CUSPARSE(cusparseDestroyMatDescr(descr));
-    CALL_CUSPARSE(cusparseDestroy(handle));
+    CALL_CUSPARSE( cusparseDestroyDnVec(vecY) );
+    CALL_CUSPARSE( cusparseDestroyDnVec(vecX) );
+    CALL_CUSPARSE( cusparseDestroySpMat(matA) );
+    CALL_CUSPARSE( cusparseDestroy(handle) );
+
 
     CALL_CUDA(cudaFree(d_A_rowptr));
     CALL_CUDA(cudaFree(d_A_colidx));
@@ -107,8 +157,6 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
     Scalar* d_A_values;  ///< device memory matrix A values
     Scalar* d_B;         ///< device memory matrix B
     Scalar* d_C;         ///< device memory matrix C
-    cusparseHandle_t handle;
-    cusparseMatDescr_t descr;
 
     CALL_CUDA(cudaMalloc((void**)&d_A_rowptr, sizeArowptr));
     CALL_CUDA(cudaMalloc((void**)&d_A_colidx, sizeAcolidx));
@@ -116,35 +164,90 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
     CALL_CUDA(cudaMalloc((void**)&d_B, sizeB));
     CALL_CUDA(cudaMalloc((void**)&d_C, sizeC));
 
-    CALL_CUSPARSE(cusparseCreate(&handle));
-    CALL_CUSPARSE(cusparseCreateMatDescr(&descr));
-    cusparseSetMatType(descr, CUSPARSE_MATRIX_TYPE_GENERAL);
-    cusparseSetMatIndexBase(descr, CUSPARSE_INDEX_BASE_ZERO);
-
     CALL_CUDA(cudaMemcpy(d_A_rowptr, A.outer(), sizeArowptr, cudaMemcpyHostToDevice));
     CALL_CUDA(cudaMemcpy(d_A_colidx, A.inner(), sizeAcolidx, cudaMemcpyHostToDevice));
     CALL_CUDA(cudaMemcpy(d_A_values, A.data(), sizeAvalues, cudaMemcpyHostToDevice));
     CALL_CUDA(cudaMemcpy(d_B, B.data(), sizeB, cudaMemcpyHostToDevice));
 
-    // FIXME: Should we transpose B and use cusparseDcsrmm2 instread?
-    // http://docs.nvidia.com/cuda/cusparse/index.html#cusparse-lt-t-gt-csrmm2
+    cusparseHandle_t handle;
+    CALL_CUSPARSE(cusparseCreate(&handle));
+
+    cusparseSpMatDescr_t matA;
+    CALL_CUSPARSE( cusparseCreateCsr(
+        &matA,
+        A.rows(), A.cols(), A.nonZeros(),
+        d_A_rowptr,
+        d_A_colidx,
+        d_A_values,
+        CUSPARSE_INDEX_32I,
+        CUSPARSE_INDEX_32I,
+        CUSPARSE_INDEX_BASE_ZERO,
+        CUDA_R_64F) );
+
+    // Create dense matrix descriptors
+    cusparseDnMatDescr_t matB;
+    CALL_CUSPARSE(cusparseCreateDnMat(
+        &matB,
+        B.rows(), // rows
+        B.cols(), // cols
+        B.rows(), // leading dimension
+        d_B,
+        CUDA_R_64F,
+        CUSPARSE_ORDER_COL) );
+
+    cusparseDnMatDescr_t matC;
+    CALL_CUSPARSE(cusparseCreateDnMat(
+        &matC,
+        C.rows(), // rows
+        C.cols(), // cols
+        C.rows(), // leading dimension
+        d_C,
+        CUDA_R_64F,
+        CUSPARSE_ORDER_COL) );
+
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
-    // cusparseStatus_t
-    // cusparseDcsrmm(cusparseHandle_t handle, cusparseOperation_t transA,
-    //                int m, int n, int k, int nnz,
-    //                const double *alpha, const cusparseMatDescr_t descrA,
-    //                const double *csrValA, const int *csrRowPtrA, const int *csrColIndA,
-    //                const double *B, int ldb, const double *beta, double *C, int ldc)
-    CALL_CUSPARSE(cusparseDcsrmm(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, A.rows(), A.cols(), B.cols(), A.nonZeros(),
-                                 &alpha, descr, d_A_values, d_A_rowptr, d_A_colidx, d_B, B.rows(), &beta, d_C,
-                                 C.rows()));
+
+    size_t bufferSize = 0;
+    CALL_CUSPARSE(cusparseSpMM_bufferSize(
+        handle,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        &alpha,
+        matA,
+        matB,
+        &beta,
+        matC,
+        CUDA_R_64F,
+        CUSPARSE_SPMM_ALG_DEFAULT,
+        &bufferSize));
+
+    // Allocate buffer
+    char* buffer;
+    CALL_CUDA(cudaMalloc(&buffer, bufferSize));
+
+    // Perform SpMM
+    CALL_CUSPARSE(cusparseSpMM(
+        handle,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        CUSPARSE_OPERATION_NON_TRANSPOSE,
+        &alpha,
+        matA,
+        matB,
+        &beta,
+        matC,
+        CUDA_R_64F,
+        CUSPARSE_SPMM_ALG_DEFAULT,
+        buffer));
 
     CALL_CUDA(cudaMemcpy(C.data(), d_C, sizeC, cudaMemcpyDeviceToHost));
 
-    CALL_CUSPARSE(cusparseDestroyMatDescr(descr));
     CALL_CUSPARSE(cusparseDestroy(handle));
+    CALL_CUSPARSE(cusparseDestroyDnMat(matC));
+    CALL_CUSPARSE(cusparseDestroyDnMat(matB));
+    CALL_CUSPARSE(cusparseDestroySpMat(matA));
 
+    CALL_CUDA(cudaFree(buffer));
     CALL_CUDA(cudaFree(d_A_rowptr));
     CALL_CUDA(cudaFree(d_A_colidx));
     CALL_CUDA(cudaFree(d_A_values));

@@ -216,8 +216,8 @@ private:
 
 
 using GridFactoryType = Factory<Grid>;
-using SpecByName      = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
-using SpecByUID       = spec::GeneratorT<spec::SpecGeneratorT0>;
+using GridSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+using GridSpecByUID   = spec::GeneratorT<spec::SpecGeneratorT0>;
 
 
 template <typename T>

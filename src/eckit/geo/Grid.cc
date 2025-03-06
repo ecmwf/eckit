@@ -29,12 +29,18 @@
 namespace eckit::geo {
 
 
-static util::recursive_mutex MUTEX;
+namespace {
+
+
+util::recursive_mutex MUTEX;
 
 
 class lock_type {
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
+
+
+}  // namespace
 
 
 Grid::Grid(const Spec& spec) :
@@ -56,7 +62,7 @@ const Spec& Grid::spec() const {
         auto& custom = *spec_;
         fill_spec(custom);
 
-        if (std::string name; SpecByName::instance().match(custom, name)) {
+        if (std::string name; GridSpecByName::instance().match(custom, name)) {
             custom.clear();
             custom.set("grid", name);
         }
@@ -267,16 +273,13 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
         cfg->push_back(back.release());
     }
 
-    if (std::string grid; cfg->get("grid", grid) && SpecByName::instance().matches(grid)) {
-        cfg->push_back(SpecByName::instance().match(grid).spec(grid));
+    if (std::string grid; cfg->get("grid", grid) && GridSpecByName::instance().matches(grid)) {
+        cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
     }
 
     if (std::string uid; cfg->get("uid", uid)) {
-        cfg->push_front(SpecByUID::instance().get(uid).spec());
+        cfg->push_front(GridSpecByUID::instance().get(uid).spec());
     }
-
-
-    // finalise
 
     return cfg;
 }
@@ -310,8 +313,8 @@ void GridFactory::list_(std::ostream& out) const {
     lock_type lock;
     share::Grid::instance();
 
-    out << SpecByUID::instance() << std::endl;
-    out << SpecByName::instance() << std::endl;
+    out << GridSpecByUID::instance() << std::endl;
+    out << GridSpecByName::instance() << std::endl;
     out << GridFactoryType::instance() << std::endl;
 }
 

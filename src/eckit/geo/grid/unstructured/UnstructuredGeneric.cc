@@ -30,7 +30,7 @@ Grid::uid_t UnstructuredGeneric::calculate_uid() const {
 
 
 Spec* UnstructuredGeneric::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+    return GridSpecByUID::instance().get(name).spec();
 }
 
 

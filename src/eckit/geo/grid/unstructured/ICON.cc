@@ -135,7 +135,7 @@ Grid::uid_t ICON::calculate_uid() const {
 
 
 Spec* ICON::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+    return GridSpecByUID::instance().get(name).spec();
 }
 
 

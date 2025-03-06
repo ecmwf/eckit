@@ -57,7 +57,7 @@ std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlons() 
 
 
 Spec* Unstructured::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+    return GridSpecByUID::instance().get(name).spec();
 }
 
 

@@ -1,5 +1,7 @@
 set(_files)
 
+list(APPEND _files "area.yaml")
+
 list(APPEND _files "grid.yaml")
 if(eckit_HAVE_GEO_GRID_FESOM)
     list(APPEND _files "FESOM.yaml")
@@ -18,4 +20,3 @@ install(FILES ${_files} DESTINATION ${_destination} PERMISSIONS OWNER_WRITE OWNE
 foreach(_file ${_files})
     configure_file(${_file} "${CMAKE_BINARY_DIR}/${_destination}/${_file}" COPYONLY)
 endforeach()
-

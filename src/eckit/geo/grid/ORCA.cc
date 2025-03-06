@@ -237,7 +237,7 @@ std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlons() const {
 
 
 Spec* ORCA::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+    return GridSpecByUID::instance().get(name).spec();
 }
 
 

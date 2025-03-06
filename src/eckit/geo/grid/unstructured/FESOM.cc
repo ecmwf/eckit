@@ -153,7 +153,7 @@ Grid::uid_t FESOM::calculate_uid() const {
         static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
         // bootstrap uid
-        std::unique_ptr<Spec> spec(SpecByUID::instance().get(uid()).spec());
+        std::unique_ptr<Spec> spec(GridSpecByUID::instance().get(uid()).spec());
 
         // get coordinates from fesom_arrangement: N
         auto [lat, lon] = FESOM(spec->get_string("name"), Arrangement::FESOM_N).to_latlons();
@@ -187,7 +187,7 @@ Grid::uid_t FESOM::calculate_uid() const {
 
 
 Spec* FESOM::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+    return GridSpecByUID::instance().get(name).spec();
 }
 
 

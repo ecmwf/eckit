@@ -44,8 +44,22 @@ setup(
     version="0.0.0",
     ext_modules=cythonize(
         [
-            _ext("eckit._eckit", ["src/_eckit/_eckit.pyx"], ["eckit"]),
-            _ext("eckit.geo._eckit_geo", ["src/_eckit/_eckit_geo.pyx"], ["eckit_geo"]),
+            _ext(
+                "eckit._eckit",
+                [
+                    "src/_eckit/_eckit.pyx",
+                    "src/_eckit/eckit.cc",
+                ],
+                ["eckit"],
+            ),
+            _ext(
+                "eckit.geo._eckit_geo",
+                [
+                    "src/_eckit/_eckit_geo.pyx",
+                    "src/_eckit/eckit.cc",
+                ],
+                ["eckit_geo"],
+            ),
         ],
         compiler_directives={"language_level": 3, "c_string_encoding": "default"},
     ),

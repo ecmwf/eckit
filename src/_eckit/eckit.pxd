@@ -12,10 +12,8 @@ cimport std
 from libcpp.string cimport string
 
 
-cdef extern from "eckit/runtime/Main.h" namespace "eckit":
-    cdef cppclass Main:
-        @staticmethod
-        void initialise(int argc, char** argv)
+cdef extern from "eckit.h":
+    void eckit_main_initialise()
 
 
 cdef extern from "eckit/filesystem/PathName.h" namespace "eckit":

@@ -139,6 +139,8 @@ list(APPEND eckit_geo_srcs
     range/RegularLatitude.h
     range/RegularLongitude.cc
     range/RegularLongitude.h
+    share/Area.cc
+    share/Area.h
     share/Grid.cc
     share/Grid.h
     spec/Custom.cc

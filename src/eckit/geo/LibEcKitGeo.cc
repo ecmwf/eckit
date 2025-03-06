@@ -34,6 +34,15 @@ LibEcKitGeo& LibEcKitGeo::instance() {
 }
 
 
+std::vector<PathName> LibEcKitGeo::shareArea() {
+    static const auto paths = [](const std::string& s) -> std::vector<PathName> {
+        const auto ss = StringTools::split(":", s);
+        return {ss.begin(), ss.end()};
+    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-area;$ECKIT_GEO_SHARE_AREA", eckit_GEO_SHARE_AREA));
+    return paths;
+}
+
+
 std::vector<PathName> LibEcKitGeo::shareGrid() {
     static const auto paths = [](const std::string& s) -> std::vector<PathName> {
         const auto ss = StringTools::split(":", s);

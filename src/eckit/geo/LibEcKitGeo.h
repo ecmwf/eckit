@@ -32,6 +32,7 @@ public:
 
     static LibEcKitGeo& instance();
 
+    static std::vector<PathName> shareArea();
     static std::vector<PathName> shareGrid();
 
     static bool caching();

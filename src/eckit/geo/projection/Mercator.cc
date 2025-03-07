@@ -24,8 +24,8 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<Mercator> PROJECTION_1("mercator");
-static ProjectionBuilder<Mercator> PROJECTION_2("merc");
+static ProjectionRegisterType<Mercator> PROJECTION_1("mercator");
+static ProjectionRegisterType<Mercator> PROJECTION_2("merc");
 
 
 Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :

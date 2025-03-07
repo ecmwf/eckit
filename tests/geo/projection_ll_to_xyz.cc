@@ -36,7 +36,7 @@ CASE("projection: ll_to_xyz") {
 
 
     // spherical projections
-    P to_xyz_1(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom{{"R", 1.}}));
+    P to_xyz_1(ProjectionFactoryType::instance().get("ll_to_xyz").create(spec::Custom{{"R", 1.}}));
     P to_xyz_2(new projection::LonLatToXYZ(1., 1.));
 
     EXPECT(*to_xyz_1 == *to_xyz_2);
@@ -44,7 +44,7 @@ CASE("projection: ll_to_xyz") {
 
 
     // oblate spheroid projections
-    P to_xyz_3(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
+    P to_xyz_3(ProjectionFactoryType::instance().get("ll_to_xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
     P to_xyz_4(new projection::LonLatToXYZ(1., 0.5));
 
     EXPECT(*to_xyz_3 == *to_xyz_4);

@@ -96,7 +96,11 @@ private:
 };
 
 
-using ProjectionFactory = Factory<Projection>;
+using ProjectionFactoryType = Factory<Projection>;
+
+
+template <typename T>
+using ProjectionRegisterType = ConcreteBuilderT1<Projection, T>;
 
 template <typename T>
 using ProjectionBuilder = ConcreteBuilderT1<Projection, T>;

@@ -36,7 +36,7 @@ CASE("rotation (1)") {
     });
 
     Point p = PointLonLat{1, 1};
-    P projection(ProjectionFactory::instance().get(spec.get_string("projection")).create(spec));
+    P projection(ProjectionFactoryType::instance().get(spec.get_string("projection")).create(spec));
 
     EXPECT(points_equal(p, projection->inv(projection->fwd(p))));
     EXPECT(points_equal(p, projection->fwd(projection->inv(p))));
@@ -234,7 +234,7 @@ CASE("rotation (5)") {
     });
 
     // compose sequentially
-    const auto& builder = ProjectionFactory::instance().get("rotation");
+    const auto& builder = ProjectionFactoryType::instance().get("rotation");
     P composition1(new projection::Composer{
         builder.create(spec),
         builder.create(spec),

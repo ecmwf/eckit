@@ -24,7 +24,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<Rotation> PROJECTION("rotation");
+static ProjectionRegisterType<Rotation> PROJECTION("rotation");
 
 
 Rotation::Rotation(const Spec& spec) :

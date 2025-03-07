@@ -21,8 +21,8 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<LambertAzimuthalEqualArea> PROJECTION_1("lambert_azimuthal_equal_area");
-static ProjectionBuilder<LambertAzimuthalEqualArea> PROJECTION_2("laea");
+static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_1("lambert_azimuthal_equal_area");
+static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_2("laea");
 
 
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :

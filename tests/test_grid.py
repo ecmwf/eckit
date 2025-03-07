@@ -10,18 +10,18 @@
 
 import pytest
 
-GRIDSPECS = [
-    (dict(grid="1/1"), (360, 181)),
-    (dict(grid="H2", ordering="nested"), (12 * 2 * 2)),
-    (dict(grid=[2, 2]), (180, 91)),
-    ("{grid: 3/3}", (120, 61)),
-    (dict(grid="o2"), (sum([20, 24, 24, 20]))),
+SPECS = [
+    (dict(grid="1/1"), (181, 360)),
+    (dict(grid="H2", ordering="nested"), (12 * 2 * 2,)),
+    (dict(grid=[2, 2]), (91, 180)),
+    ("{grid: 3/3}", (61, 120)),
+    (dict(grid="o2"), (sum([20, 24, 24, 20]),)),
 ]
 
 
-@pytest.mark.parametrize( "_spec, _shape", GRIDSPECS)
-def test_gridspec(tmp_path, _spec, _shape):
+@pytest.mark.parametrize( "spec, shape", SPECS)
+def test_grid(spec, shape):
     from eckit.geo import Grid
 
-    grid = Grid(_spec)
-    assert _shape == grid.shape
+    grid = Grid(spec)
+    assert shape == grid.shape

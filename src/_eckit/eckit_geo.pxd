@@ -13,8 +13,18 @@ from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
 
+cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":
+    cdef cppclass Area:
+        string spec_str() const
+        string type() const
+
+    cdef cppclass AreaFactory:
+        @staticmethod
+        const Area* make_from_string(const string) except +
+
+
 cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
-    cdef cppclass BoundingBox:
+    cdef cppclass BoundingBox(Area):
         const double& north
         const double& west
         const double& south

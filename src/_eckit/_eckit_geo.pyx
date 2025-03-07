@@ -17,6 +17,43 @@ cimport eckit
 eckit.eckit_main_initialise()
 
 
+cdef class Area:
+    cdef const eckit_geo.Area* _area
+
+    def __cinit__(self, spec = None, **kwargs):
+        assert bool(spec) != bool(kwargs)
+
+        if kwargs or isinstance(spec, dict):
+            from yaml import dump
+            spec = dump(kwargs if kwargs else spec, default_flow_style=True).strip()
+
+        try:
+            assert isinstance(spec, str)
+            self._area = eckit_geo.AreaFactory.make_from_string(spec.encode())
+
+        except RuntimeError as e:
+            # opportunity to do something interesting
+            raise
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Grid):
+            return NotImplemented
+        return self.spec_str == other.spec_str
+
+    @property
+    def spec_str(self) -> str:
+        return self._area.spec_str().decode()
+
+    @property
+    def spec(self) -> dict:
+        from yaml import safe_load
+        return safe_load(self.spec_str)
+
+    @property
+    def type(self) -> str:
+        return self._area.type().decode()
+
+
 cdef class Grid:
     cdef const eckit_geo.Grid* _grid
 

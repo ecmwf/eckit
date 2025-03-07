@@ -30,14 +30,17 @@ static ProjectionBuilder<Rotation> PROJECTION("rotation");
 Rotation::Rotation(const Spec& spec) :
     Rotation(
         [](const auto& spec) -> PointLonLat {
-            auto lon = SOUTH_POLE.lon;
-            auto lat = SOUTH_POLE.lat;
-            if (std::vector<double> r{lon, lat}; spec.get("rotation", r)) {
+            if (std::vector<double> r; spec.get("rotation", r)) {
                 ASSERT_MSG(r.size() == 2, "Rotation: expected 'rotation' as a list of size 2");
-                lon = r[0];
-                lat = r[1];
+                return {r[0], r[1]};
             }
-            return {lon, lat};
+
+            if (auto lon = SOUTH_POLE.lon, lat = SOUTH_POLE.lat;
+                spec.get("south_pole_lon", lon) && spec.get("south_pole_lat", lat)) {
+                return {lon, lat};
+            }
+
+            return SOUTH_POLE;
         }(spec),
         [](const auto& spec) -> double {
             double angle = 0.;

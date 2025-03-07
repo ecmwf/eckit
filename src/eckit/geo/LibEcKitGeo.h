@@ -34,6 +34,7 @@ public:
 
     static std::vector<PathName> shareArea();
     static std::vector<PathName> shareGrid();
+    static std::vector<PathName> shareProjection();
 
     static bool caching();
     static std::string cacheDir();

@@ -145,6 +145,8 @@ list(APPEND eckit_geo_srcs
     share/Area.h
     share/Grid.cc
     share/Grid.h
+    share/Projection.cc
+    share/Projection.h
     spec/Custom.cc
     spec/Custom.h
     spec/Generator.h
@@ -172,6 +174,7 @@ set(eckit_geo_include_dirs
 set(eckit_geo_libs eckit_maths)
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/grid.yaml")
+set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")
 
 if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)

@@ -52,6 +52,16 @@ std::vector<PathName> LibEcKitGeo::shareGrid() {
 }
 
 
+std::vector<PathName> LibEcKitGeo::shareProjection() {
+    static const auto paths = [](const std::string& s) -> std::vector<PathName> {
+        const auto ss = StringTools::split(":", s);
+        return {ss.begin(), ss.end()};
+    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-projection;$ECKIT_GEO_SHARE_PROJECTION",
+                                                       eckit_GEO_SHARE_PROJECTION));
+    return paths;
+}
+
+
 bool LibEcKitGeo::caching() {
     static const bool yes{
         LibResource<bool, LibEcKitGeo>("eckit-geo-caching;$ECKIT_GEO_CACHING", eckit_HAVE_GEO_CACHING != 0)};

@@ -142,7 +142,7 @@ public:
         return new NextIterator{cbegin().release(), cend().release()};
     }
 
-    const Spec& spec() const;
+    [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
     virtual const std::string& type() const   = 0;

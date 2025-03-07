@@ -168,6 +168,7 @@ set(eckit_geo_include_dirs
 )
 
 set(eckit_geo_libs eckit_maths)
+set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/grid.yaml")
 
 if(eckit_HAVE_PROJ)

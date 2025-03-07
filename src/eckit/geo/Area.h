@@ -12,21 +12,18 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
 
 
-namespace eckit::geo {
-namespace area {
+namespace eckit::geo::area {
 class BoundingBox;
 }
-class Spec;
-namespace spec {
-class Custom;
-}
-}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -34,7 +31,6 @@ namespace eckit::geo {
 
 class Area {
 public:
-
     // -- Types
 
     using builder_t = BuilderT1<Area>;
@@ -42,8 +38,7 @@ public:
 
     // -- Constructors
 
-    Area() noexcept = default;
-
+    Area() noexcept   = default;
     Area(const Area&) = default;
     Area(Area&&)      = default;
 
@@ -58,18 +53,21 @@ public:
 
     // -- Methods
 
-    [[nodiscard]] spec::Custom* spec() const;
-    std::string spec_str() const;
+    [[nodiscard]] const Spec& spec() const;
+    std::string spec_str() const { return spec().str(); }
 
     virtual const std::string& type() const = 0;
 
-    virtual bool intersects(area::BoundingBox&) const = 0;
+    virtual bool intersects(area::BoundingBox&) const;
 
     // -- Class methods
 
     static std::string className() { return "area"; }
 
 private:
+    // -- Members
+
+    mutable std::shared_ptr<spec::Custom> spec_;
 
     // -- Methods
 
@@ -78,13 +76,44 @@ private:
     // -- Friends
 
     friend class Grid;
+
+    // -- Friends
+
+    friend bool operator==(const Area& a, const Area& b) { return a.spec_str() == b.spec_str(); }
+    friend bool operator!=(const Area& a, const Area& b) { return !(a == b); }
 };
 
 
-// using AreaFactory = Factory<Area>;
+using AreaFactoryType = Factory<Area>;
+using AreaSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
 
-// template <typename T>
-// using AreaBuilder = ConcreteBuilderT1<Area, T>;
+
+template <typename T>
+using AreaRegisterType = ConcreteBuilderT1<Area, T>;
+
+template <typename T>
+using AreaRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
+
+
+struct AreaFactory {
+    // This is 'const' as Area should always be immutable
+    [[nodiscard]] static const Area* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+
+    // This is 'const' as Area should always be immutable
+    [[nodiscard]] static const Area* make_from_string(const std::string&);
+
+    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+    static void list(std::ostream& out) { return instance().list_(out); }
+
+private:
+    static AreaFactory& instance();
+
+    // This is 'const' as Area should always be immutable
+    [[nodiscard]] const Area* make_from_spec_(const Spec&) const;
+
+    [[nodiscard]] Spec* make_spec_(const Spec&) const;
+    void list_(std::ostream&) const;
+};
 
 
 }  // namespace eckit::geo

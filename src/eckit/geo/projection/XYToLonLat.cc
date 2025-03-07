@@ -18,8 +18,8 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<XYToLonLat> PROJECTION1("xy_to_ll");
-static ProjectionBuilder<XYToLonLat> PROJECTION2("plate-carree");
+static ProjectionRegisterType<XYToLonLat> PROJECTION1("xy_to_ll");
+static ProjectionRegisterType<XYToLonLat> PROJECTION2("plate-carree");
 
 
 const std::string& XYToLonLat::type() const {

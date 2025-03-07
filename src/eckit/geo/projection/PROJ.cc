@@ -26,7 +26,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<PROJ> PROJECTION("proj");
+static ProjectionRegisterType<PROJ> PROJECTION("proj");
 
 
 namespace {

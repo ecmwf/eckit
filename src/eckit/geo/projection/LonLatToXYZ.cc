@@ -24,7 +24,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<LonLatToXYZ> PROJECTION("ll_to_xyz");
+static ProjectionRegisterType<LonLatToXYZ> PROJECTION("ll_to_xyz");
 
 
 LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {

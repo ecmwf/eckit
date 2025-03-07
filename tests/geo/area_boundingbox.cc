@@ -11,6 +11,8 @@
 
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/testing/Test.h"
@@ -19,10 +21,28 @@
 namespace eckit::geo::test {
 
 
+CASE("AreaFactory::make_from_string") {
+    const std::string expected_spec = "{}";
+    const std::unique_ptr<Area> expected_area(new area::BoundingBox);
+
+    for (const auto& spec : std::vector<std::string>{
+             "{}",
+             "{north: 90, south: -90, west: 0, east: 360}",
+             "{type: bounding_box}",
+             "{north: 90}",
+         }) {
+        std::unique_ptr<const Area> area(geo::AreaFactory::make_from_string(spec));
+
+        EXPECT(expected_spec == area->spec_str());
+        EXPECT(*expected_area == *area);
+    }
+}
+
+
 CASE("global") {
     area::BoundingBox a;
     area::BoundingBox b(90, 0, -90, 360);
-    EXPECT_EQUAL(a, b);
+    EXPECT(a == b);
 }
 
 
@@ -55,12 +75,12 @@ CASE("assignment") {
     area::BoundingBox b(20, 2, -20, 200);
 
     EXPECT_NOT_EQUAL(a.north, b.north);
-    EXPECT_NOT_EQUAL(a, b);
+    EXPECT(a != b);
 
     b = a;
 
     EXPECT_EQUAL(a.north, b.north);
-    EXPECT_EQUAL(a, b);
+    EXPECT(a == b);
 
     b = {30., b.west, b.south, b.east};
 
@@ -70,7 +90,7 @@ CASE("assignment") {
     area::BoundingBox c(a);
 
     EXPECT_EQUAL(a.north, c.north);
-    EXPECT_EQUAL(a, c);
+    EXPECT(a == c);
 
     c = {40., c.west, c.south, c.east};
 

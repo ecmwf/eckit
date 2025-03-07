@@ -33,9 +33,10 @@ class Rotation;
 
 
 namespace eckit::geo::area {
+
+
 class BoundingBox : public Area, protected std::array<double, 4> {
 public:
-
     // -- Types
 
     using container_type = array;
@@ -108,18 +109,10 @@ public:
     const value_type& west  = operator[](1);
     const value_type& south = operator[](2);
     const value_type& east  = operator[](3);
-
-private:
-
-    // -- Friends
-
-    friend std::ostream& operator<<(std::ostream& os, const BoundingBox& bbox) {
-        return os << "[" << bbox.north << "," << bbox.west << "," << bbox.south << "," << bbox.east << "]";
-    }
 };
 
 
-constexpr PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST = -PointLonLat::FLAT_ANGLE;
+extern const PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST;
 extern const BoundingBox BOUNDING_BOX_DEFAULT;
 
 

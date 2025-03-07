@@ -12,6 +12,8 @@
 
 #include "eckit/geo/area/None.h"
 
+#include "eckit/geo/spec/Custom.h"
+
 
 namespace eckit::geo {
 
@@ -19,6 +21,11 @@ namespace eckit::geo {
 const std::string& None::type() const {
     static const std::string type{"none"};
     return type;
+}
+
+
+void None::fill_spec(spec::Custom& custom) const {
+    custom.set("type", type());
 }
 
 

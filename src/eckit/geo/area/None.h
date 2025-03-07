@@ -35,7 +35,7 @@ private:
 
     // -- Overriden methods
 
-    void fill_spec(spec::Custom&) const override {}
+    void fill_spec(spec::Custom&) const override;
 };
 
 

@@ -12,27 +12,103 @@
 
 #include "eckit/geo/Area.h"
 
-#include <memory>
+#include <ostream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/share/Area.h"
+#include "eckit/geo/spec/Layered.h"
+#include "eckit/geo/util/mutex.h"
+#include "eckit/parser/YAMLParser.h"
 
 
 namespace eckit::geo {
 
 
-spec::Custom* Area::spec() const {
-    auto* custom = new spec::Custom;
-    ASSERT(custom != nullptr);
+namespace {
 
-    fill_spec(*custom);
-    return custom;
+
+util::recursive_mutex MUTEX;
+
+
+class lock_type {
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
+
+
+const Spec& Area::spec() const {
+    if (!spec_) {
+        spec_ = std::make_shared<spec::Custom>();
+        ASSERT(spec_);
+
+        auto& custom = *spec_;
+        fill_spec(custom);
+
+        if (std::string name; !custom.empty() && AreaSpecByName::instance().match(custom, name)) {
+            custom.clear();
+            custom.set(className(), name);
+        }
+    }
+
+    return *spec_;
 }
 
 
-std::string Area::spec_str() const {
-    std::unique_ptr<const spec::Custom> custom(spec());
-    return custom->str();
+bool Area::intersects(area::BoundingBox&) const {
+    NOTIMP;
+}
+
+
+const Area* AreaFactory::make_from_string(const std::string& str) {
+    std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+    return instance().make_from_spec_(*spec);
+}
+
+
+AreaFactory& AreaFactory::instance() {
+    static AreaFactory obj;
+    return obj;
+}
+
+
+const Area* AreaFactory::make_from_spec_(const Spec& spec) const {
+    lock_type lock;
+
+    std::unique_ptr<Spec> cfg(make_spec_(spec));
+
+    if (std::string type; cfg->get("type", type)) {
+        return AreaFactoryType::instance().get(type).create(*cfg);
+    }
+
+    list(Log::error() << "Area: cannot build area without 'type', choices are: ");
+    throw exception::SpecError("Area: cannot build area without 'type'", Here());
+}
+
+
+Spec* AreaFactory::make_spec_(const Spec& spec) const {
+    lock_type lock;
+    share::Area::instance();
+
+    auto* cfg = new spec::Layered(spec);
+    ASSERT(cfg != nullptr);
+
+
+    // hardcoded, interpreted options (contributing to areaspec)
+
+    cfg->push_back(new spec::Custom{{"type", "bounding_box"}});
+
+    return cfg;
+}
+
+
+void AreaFactory::list_(std::ostream& out) const {
+    lock_type lock;
+    share::Area::instance();
+
+    out << AreaSpecByName::instance() << std::endl;
+    out << AreaFactoryType::instance() << std::endl;
 }
 
 

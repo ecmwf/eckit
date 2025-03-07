@@ -60,7 +60,7 @@ void Area::load(const PathName& path) {
         for (const auto& kv : map) {
             const auto key = kv.first.as<std::string>();
 
-            if (key == "grid_names") {
+            if (key == "area_names") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
                     ASSERT(m.size() == 1);
                     AreaSpecByName::instance().regist(

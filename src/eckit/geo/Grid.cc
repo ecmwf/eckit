@@ -64,7 +64,7 @@ const Spec& Grid::spec() const {
 
         if (std::string name; GridSpecByName::instance().match(custom, name)) {
             custom.clear();
-            custom.set("grid", name);
+            custom.set(className(), name);
         }
     }
 
@@ -204,12 +204,7 @@ void Grid::reset_uid(uid_t _uid) {
 
 void Grid::fill_spec(spec::Custom& custom) const {
     if (area_) {
-        static const auto AREA_DEFAULT(area::BOUNDING_BOX_DEFAULT.spec_str());
-
-        std::unique_ptr<spec::Custom> area(area_->spec());
-        if (area->str() != AREA_DEFAULT) {
-            custom.set("area", area.release());
-        }
+        area_->fill_spec(custom);
     }
 
     if (projection_) {

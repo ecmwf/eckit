@@ -68,7 +68,6 @@ protected:
 
     void resetContainer(container::PointsContainer* container) { container_.reset(container); }
 
-
 private:
 
     // -- Members

@@ -347,8 +347,11 @@ BoundingBox* BoundingBox::make_global_antiprime() {
 
 void BoundingBox::fill_spec(spec::Custom& custom) const {
     if (!bounding_box_equal(*this, BOUNDING_BOX_DEFAULT)) {
-        custom.set("type", type());
-        custom.set(type(), std::vector<double>{north, west, south, east});
+        // custom.set("type", type());
+        custom.set("north", north);
+        custom.set("west", west);
+        custom.set("south", south);
+        custom.set("east", east);
     }
 }
 

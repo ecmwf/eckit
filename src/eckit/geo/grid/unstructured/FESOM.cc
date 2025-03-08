@@ -19,10 +19,10 @@
 #include "eckit/codec/codec.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
-#include "eckit/geo/Download.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
+#include "eckit/geo/cache/Download.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
@@ -54,7 +54,7 @@ const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
     lock_type lock;
 
     static CacheT<PathName, FESOM::FESOMRecord> cache;
-    static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
+    static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
     auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");
@@ -150,7 +150,7 @@ Grid::uid_t FESOM::calculate_uid() const {
         // control concurrent reads/writes
         lock_type lock;
 
-        static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
+        static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
         // bootstrap uid
         std::unique_ptr<Spec> spec(GridSpecByUID::instance().get(uid()).spec());

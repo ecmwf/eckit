@@ -18,7 +18,7 @@
 #include "eckit/log/Bytes.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::cache {
 
 
 struct Download final {
@@ -50,4 +50,4 @@ private:
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::cache

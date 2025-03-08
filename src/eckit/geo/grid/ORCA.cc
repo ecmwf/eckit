@@ -17,10 +17,10 @@
 #include "eckit/codec/codec.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
-#include "eckit/geo/Download.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
+#include "eckit/geo/cache/Download.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
@@ -52,7 +52,7 @@ const ORCA::ORCARecord& orca_record(const Spec& spec) {
     lock_type lock;
 
     static CacheT<PathName, ORCA::ORCARecord> cache;
-    static Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
+    static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
     auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");

@@ -10,7 +10,9 @@
  */
 
 
-#include "eckit/geo/Download.h"
+#include "eckit/geo/cache/Download.h"
+
+#include "eckit/eckit_config.h"
 
 #include <fstream>
 #include <iterator>
@@ -28,7 +30,7 @@
 #endif
 
 
-namespace eckit::geo {
+namespace eckit::geo::cache {
 
 
 static util::recursive_mutex MUTEX;
@@ -142,4 +144,4 @@ void Download::rmdir(const PathName& p) const {
 }
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::cache

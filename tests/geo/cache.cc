@@ -10,12 +10,25 @@
  */
 
 
+#include "eckit/geo/eckit_geo_config.h"
+
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
+#include "eckit/geo/cache/Download.h"
 #include "eckit/geo/util.h"
+#include "eckit/utils/StringTools.h"
+
+#if eckit_HAVE_GEO_CACHE_UNZIP
+#include "eckit/geo/cache/Unzip.h"
+#endif
+
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
+
+
+const std::string URL = "https://www.ecmwf.int/robots.txt";
 
 
 CASE("eckit::geo::util") {
@@ -99,6 +112,77 @@ CASE("eckit::geo::util") {
     Cache::total_purge();
     EXPECT_EQUAL(0, Cache::total_footprint());
 }
+
+
+CASE("download: error handling") {
+    const PathName path("test.download");
+    if (path.exists()) {
+        path.unlink();
+    }
+
+    EXPECT_THROWS_AS(cache::Download::to_path("https://does.not/exist", path), UserError);
+    EXPECT(not path.exists());
+
+    EXPECT_THROWS_AS(cache::Download::to_path("https://get.ecmwf.int/repository/does/not/exist", path), UserError);
+    EXPECT(not path.exists());
+}
+
+
+CASE("download: non-cached") {
+    const PathName path("test.download");
+    if (path.exists()) {
+        path.unlink();
+    }
+
+    ASSERT(!path.exists());
+
+    auto info = cache::Download::to_path(URL, path);
+
+    EXPECT(info.bytes.value() > 0.);
+    EXPECT(path.exists());
+
+    path.unlink();
+}
+
+
+CASE("download: cached") {
+    const PathName root("test.download.dir", true);
+    if (root.exists()) {
+        if (root.isDir()) {
+            root.rmdir();
+        }
+        else {
+            root.unlink();
+        }
+    }
+    EXPECT(!root.exists());
+
+    const std::string prefix    = "prefix-";
+    const std::string extension = ".extension";
+
+    cache::Download download(root);
+
+    download.rm_cache_root();
+
+    auto path = download.to_cached_path(URL, prefix, extension);
+
+    EXPECT(root.exists());
+    EXPECT(path.exists());
+
+    std::string basename = path.baseName();
+    EXPECT(StringTools::startsWith(basename, prefix));
+    EXPECT(StringTools::endsWith(basename, extension));
+    EXPECT(path.dirName() == root);
+
+    download.rm_cache_root();
+    EXPECT(!root.exists());
+}
+
+
+#if eckit_HAVE_GEO_CACHE_UNZIP
+#error x
+CASE("unzip") {}
+#endif
 
 
 }  // namespace eckit::geo::test

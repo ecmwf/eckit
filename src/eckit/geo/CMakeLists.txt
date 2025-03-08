@@ -6,8 +6,6 @@ list(APPEND eckit_geo_srcs
     Cache.cc
     Cache.h
     Container.h
-    Download.cc
-    Download.h
     Exceptions.cc
     Exceptions.h
     Figure.cc
@@ -50,6 +48,8 @@ list(APPEND eckit_geo_srcs
     area/BoundingBox2.h
     area/None.cc
     area/None.h
+    cache/Download.cc
+    cache/Download.h
     container/PointsContainer.cc
     container/PointsContainer.h
     figure/Earth.cc

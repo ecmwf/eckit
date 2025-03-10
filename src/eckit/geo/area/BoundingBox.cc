@@ -405,8 +405,8 @@ BoundingBox* BoundingBox::make_from_area(value_type n, value_type w, value_type 
     }
 
     // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[
-    const auto min     = BOUNDING_BOX_NORMALISE_WEST;
-    const auto same    = is_approximately_equal(w, e);
+    const auto min  = BOUNDING_BOX_NORMALISE_WEST;
+    const auto same = is_approximately_equal(w, e);
 
     w = is_approximately_equal(w, min) || is_approximately_equal(w, min + PointLonLat::FULL_ANGLE)
             ? min

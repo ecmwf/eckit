@@ -13,8 +13,8 @@
 #include "eckit/geo/share/Area.h"
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/parser/YAMLParser.h"

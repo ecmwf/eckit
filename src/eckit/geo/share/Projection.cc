@@ -14,8 +14,8 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/value/Value.h"
@@ -47,7 +47,9 @@ void Projection::load(const PathName& path) {
 
     struct SpecByNameGenerator final : ProjectionSpecByName::generator_t {
         explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
-        Spec* spec(ProjectionSpecByName::generator_t::arg1_t) const override { return new spec::Custom(spec_->container()); }
+        Spec* spec(ProjectionSpecByName::generator_t::arg1_t) const override {
+            return new spec::Custom(spec_->container());
+        }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
 
     private:

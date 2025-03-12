@@ -104,7 +104,7 @@ struct AreaFactory {
 
     static void add_library(const std::string& lib, Spec* spec) { return instance().add_library_(lib, spec); }
 
-    static void list(std::ostream& out) { return instance().list_(out); }
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
 private:
     static AreaFactory& instance();
@@ -114,7 +114,7 @@ private:
 
     void add_library_(const std::string& lib, Spec* spec);
 
-    void list_(std::ostream&) const;
+    std::ostream& list_(std::ostream&) const;
 
     std::map<std::string, std::unique_ptr<Spec>> libraries_;
 };

@@ -304,13 +304,15 @@ bool Grid::NextIterator::next(Point& point) const {
 }
 
 
-void GridFactory::list_(std::ostream& out) const {
+std::ostream& GridFactory::list_(std::ostream& out) const {
     lock_type lock;
     share::Grid::instance();
 
     out << GridSpecByUID::instance() << std::endl;
     out << GridSpecByName::instance() << std::endl;
     out << GridFactoryType::instance() << std::endl;
+
+    return out;
 }
 
 

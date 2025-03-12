@@ -111,7 +111,7 @@ void AreaFactory::add_library_(const std::string& lib, Spec* spec) {
 }
 
 
-void AreaFactory::list_(std::ostream& out) const {
+std::ostream& AreaFactory::list_(std::ostream& out) const {
     lock_type lock;
     share::Area::instance();
 
@@ -122,6 +122,8 @@ void AreaFactory::list_(std::ostream& out) const {
     for (const auto& [name, spec] : libraries_) {
         out << "  " << name << ": " << *spec << std::endl;
     }
+
+    return out;
 }
 
 

@@ -141,12 +141,14 @@ Spec* ProjectionFactory::make_spec_(const Spec& spec) const {
 }
 
 
-void ProjectionFactory::list_(std::ostream& out) const {
+std::ostream& ProjectionFactory::list_(std::ostream& out) const {
     lock_type lock;
     share::Projection::instance();
 
     out << ProjectionSpecByName::instance() << std::endl;
     out << ProjectionFactoryType::instance() << std::endl;
+
+    return out;
 }
 
 

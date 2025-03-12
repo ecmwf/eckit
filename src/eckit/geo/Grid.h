@@ -238,7 +238,7 @@ struct GridFactory {
     [[nodiscard]] static const Grid* make_from_string(const std::string&);
 
     [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
-    static void list(std::ostream& out) { return instance().list_(out); }
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
 private:
 
@@ -248,7 +248,7 @@ private:
     [[nodiscard]] const Grid* make_from_spec_(const Spec&) const;
 
     [[nodiscard]] Spec* make_spec_(const Spec&) const;
-    void list_(std::ostream&) const;
+    std::ostream& list_(std::ostream&) const;
 };
 
 

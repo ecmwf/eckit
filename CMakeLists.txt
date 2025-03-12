@@ -148,6 +148,10 @@ ecbuild_add_option( FEATURE AEC
                     DESCRIPTION "AEC support for compression"
                     REQUIRED_PACKAGES AEC )
 
+ecbuild_add_option( FEATURE ZIP
+                    DESCRIPTION "ZIP support for compression"
+                    REQUIRED_PACKAGES libzip )
+
 ### Hashing options
 
 ecbuild_add_option( FEATURE XXHASH
@@ -202,17 +206,17 @@ ecbuild_add_option( FEATURE GEO_GRID_ORCA
 
 ecbuild_add_option( FEATURE GEO_CACHING
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default caching behaviour" )
 
 ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
 
 ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
 
 set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" )

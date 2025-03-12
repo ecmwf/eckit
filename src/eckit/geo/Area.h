@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <map>
 #include <memory>
 #include <string>
 
@@ -96,23 +97,26 @@ using AreaRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
 
 
 struct AreaFactory {
-    // This is 'const' as Area should always be immutable
     [[nodiscard]] static const Area* build(const Spec& spec) { return instance().make_from_spec_(spec); }
 
-    // This is 'const' as Area should always be immutable
     [[nodiscard]] static const Area* make_from_string(const std::string&);
-
     [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+
+    static void add_library(const std::string& lib, Spec* spec) { return instance().add_library_(lib, spec); }
+
     static void list(std::ostream& out) { return instance().list_(out); }
 
 private:
     static AreaFactory& instance();
 
-    // This is 'const' as Area should always be immutable
     [[nodiscard]] const Area* make_from_spec_(const Spec&) const;
-
     [[nodiscard]] Spec* make_spec_(const Spec&) const;
+
+    void add_library_(const std::string& lib, Spec* spec);
+
     void list_(std::ostream&) const;
+
+    std::map<std::string, std::unique_ptr<Spec>> libraries_;
 };
 
 

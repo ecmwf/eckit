@@ -103,12 +103,25 @@ Spec* AreaFactory::make_spec_(const Spec& spec) const {
 }
 
 
+void AreaFactory::add_library_(const std::string& lib, Spec* spec) {
+    lock_type lock;
+    share::Area::instance();
+
+    libraries_.emplace(lib, spec);
+}
+
+
 void AreaFactory::list_(std::ostream& out) const {
     lock_type lock;
     share::Area::instance();
 
     out << AreaSpecByName::instance() << std::endl;
     out << AreaFactoryType::instance() << std::endl;
+
+    out << "Libraries:" << std::endl;
+    for (const auto& [name, spec] : libraries_) {
+        out << "  " << name << ": " << *spec << std::endl;
+    }
 }
 
 

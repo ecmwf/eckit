@@ -60,12 +60,19 @@ void Area::load(const PathName& path) {
         for (const auto& kv : map) {
             const auto key = kv.first.as<std::string>();
 
+            if (key == "area_libraries") {
+                for (const auto& [name, spec] : kv.second.as<ValueMap>()) {
+                    AreaFactory::add_library(name.as<std::string>(), spec::Custom::make_from_value(spec));
+                }
+                continue;
+            }
+
             if (key == "area_names") {
-                for (ValueMap m : kv.second.as<ValueList>()) {
-                    ASSERT(m.size() == 1);
+                for (ValueMap named : kv.second.as<ValueList>()) {
+                    ASSERT(named.size() == 1);
                     AreaSpecByName::instance().regist(
-                        m.begin()->first.as<std::string>(),
-                        new SpecByNameGenerator(spec::Custom::make_from_value(m.begin()->second)));
+                        named.begin()->first.as<std::string>(),
+                        new SpecByNameGenerator(spec::Custom::make_from_value(named.begin()->second)));
                 }
                 continue;
             }

@@ -50,6 +50,8 @@ list(APPEND eckit_geo_srcs
     area/None.h
     cache/Download.cc
     cache/Download.h
+    cache/Unzip.cc
+    cache/Unzip.h
     container/PointsContainer.cc
     container/PointsContainer.h
     figure/Earth.cc

@@ -4,7 +4,6 @@ foreach(_test
         area_boundingbox
         area_polygon
         cache
-        download
         figure
         geometry_sphere
         great_circle
@@ -42,8 +41,12 @@ foreach(_test
         LIBS        eckit_geo )
 endforeach()
 
-if(NOT HAVE_CURL)
-    set_tests_properties(eckit_test_geo_download PROPERTIES DISABLED TRUE)
+if(eckit_HAVE_CURL)
+    target_compile_definitions(eckit_test_geo_cache PRIVATE HAVE_GEO_CACHE_DOWNLOAD)
+endif()
+
+if(eckit_HAVE_ZIP)
+    target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
 endif()
 
 if(eckit_HAVE_GEO_GRID_ORCA)

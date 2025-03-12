@@ -10,17 +10,17 @@
  */
 
 
-#include "eckit/geo/eckit_geo_config.h"
+#include "eckit/eckit_config.h"
+
+#include <fstream>
+#include <vector>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/util.h"
 #include "eckit/utils/StringTools.h"
-
-#if eckit_HAVE_GEO_CACHE_UNZIP
-#include "eckit/geo/cache/Unzip.h"
-#endif
 
 #include "eckit/testing/Test.h"
 
@@ -114,6 +114,7 @@ CASE("eckit::geo::util") {
 }
 
 
+#if eckit_HAVE_CURL
 CASE("download: error handling") {
     const PathName path("test.download");
     if (path.exists()) {
@@ -177,11 +178,66 @@ CASE("download: cached") {
     download.rm_cache_root();
     EXPECT(!root.exists());
 }
+#endif
 
 
-#if eckit_HAVE_GEO_CACHE_UNZIP
-#error x
-CASE("unzip") {}
+#if eckit_HAVE_ZIP
+CASE("unzip") {
+    const PathName zip(ZIP_FILE);
+    ASSERT(zip.exists());
+
+    const std::vector<std::string> contents{"a", "b/", "b/c"};
+
+
+    SECTION("unzip all") {
+        const PathName cached_dir("eckit_test_geo_cache/unzip/unzip-all/cache", true);
+        cached_dir.unlink();
+
+        const PathName dir("eckit_test_geo_cache/unzip/unzip-all", true);
+        dir.unlink();
+        ASSERT(!dir.exists());
+
+        cache::Unzip unzip(cached_dir);
+        unzip.to_path(zip, dir);
+
+        for (const auto& content : contents) {
+            EXPECT((dir / content).exists());
+        }
+
+        ASSERT(!cached_dir.exists());
+
+        for (const auto& what : {"a", "b/c"}) {
+            auto cached_path = unzip.to_cached_path(zip, "a");
+            EXPECT(cached_dir.exists() && cached_dir.isDir());
+            EXPECT(cached_path.exists() && !cached_path.isDir());
+        }
+    }
+
+
+    SECTION("unzip one") {
+        const PathName dir("cache.unzip.one", true);
+        dir.unlink();
+        ASSERT(!dir.exists());
+
+        cache::unzip(zip, dir / (contents.back() + "-y"), contents.back());
+
+        for (const auto& content : contents) {
+            if (content == contents.back()) {
+                const PathName file = dir / (contents.back() + "-y");
+                EXPECT(file.exists());
+
+                std::string d;
+                std::ifstream(file.localPath()) >> d;
+
+                EXPECT(d == "d");
+            }
+            else {
+                PathName path = dir / content;
+                EXPECT(!path.exists() || path.isDir());
+            }
+        }
+    }
+}
 #endif
 
 

@@ -22,6 +22,9 @@ namespace eckit::geo::cache {
 
 
 struct Download final {
+public:
+    // -- Types
+
     using url_type = std::string;
 
     struct info_type {
@@ -29,20 +32,25 @@ struct Download final {
         double time_s;
     };
 
+    // -- Constructors
+
     explicit Download(const PathName& root = ".", bool html = false);
 
-    static info_type to_path(const url_type&, const PathName&, bool html = false);
+    // -- Methods
 
     PathName to_cached_path(const url_type&, const std::string& prefix = "",
                             const std::string& extension = ".download") const;
 
-    void rm_cache_path(const url_type&);
     void rm_cache_root() const { rmdir(root_); }
 
+    // -- Class methods
+
+    static info_type to_path(const url_type&, const PathName&, bool html = false);
+
+    static std::string url_file_basename(const url_type&, bool ext = true);
+    static std::string url_file_extension(const url_type&);
+
 private:
-
-    PathName cached_path(const url_type&) const;
-
     void rmdir(const PathName&) const;
 
     const PathName root_;

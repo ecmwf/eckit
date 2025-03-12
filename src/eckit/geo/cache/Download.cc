@@ -44,6 +44,32 @@ class lock_type {
 Download::Download(const PathName& root, bool html) : root_{root}, html_(html) {}
 
 
+std::string Download::url_file_basename(const url_type& url, bool ext) {
+    std::string n = url;
+
+    // strip queries, directory and extension
+    n = n.substr(0, n.find_first_of("?#"));
+
+    if (auto f = n.find_last_of('/'); f != std::string::npos) {
+        n = n.substr(f + 1);
+    }
+
+    if (auto f = n.find_last_of('.'); !ext && f != std::string::npos) {
+        n = n.substr(0, f);
+    }
+
+    return n;
+}
+
+
+std::string Download::url_file_extension(const url_type& url) {
+    // extension includes dot, e.g. ".jpg"
+    auto n = url_file_basename(url);
+    auto f = n.find_last_of('.');
+    return f != 0 && f != std::string::npos ? n.substr(f) : "";
+}
+
+
 Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
     // control concurrent download
     lock_type lock;

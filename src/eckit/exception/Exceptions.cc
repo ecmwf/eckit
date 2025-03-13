@@ -81,21 +81,10 @@ Exception::Exception(const std::string& w, const CodeLocation& location, bool qu
 
     if (!::getenv("ECKIT_EXCEPTION_IS_SILENT") && !quiet) {
         Log::error() << "Exception: " << w << " " << location_ << std::endl;
+        Log::status() << "** " << w << location_ << std::endl;
     }
-
-#if 0
-    if (next_) {
-        Log::error() << "Exception: stack containts " << next_->what() << std::endl;
-    }
-    else
-    {
-        Log::error() << "Exception: stack is empty" << std::endl;
-    }
-#endif
 
     first() = this;
-
-    Log::status() << "** " << w << location_ << std::endl;
 }
 
 void Exception::dumpStackTrace(std::ostream& out) {

@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/io/Buffer.h"
+
 #include <algorithm>
 #include <cstring>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/Buffer.h"
 
 namespace eckit {
 
@@ -20,11 +21,11 @@ namespace eckit {
 
 namespace {
 
-static char* allocate(const size_t size) {
+char* allocate(size_t size) {
     return size == 0 ? nullptr : new char[size];
 }
 
-static void deallocate(char*& buffer) {
+void deallocate(char*& buffer) {
     delete[] buffer;
     buffer = nullptr;
 }
@@ -33,22 +34,21 @@ static void deallocate(char*& buffer) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Buffer::Buffer(const size_t size): size_ {size} {
+Buffer::Buffer(size_t size) : size_{size} {
     create();
 }
 
-Buffer::Buffer(const void* p, size_t len): size_ {len} {
+Buffer::Buffer(const void* p, size_t size) : size_{size} {
     create();
-    copy(p, len);
+    copy(p, size);
 }
 
-Buffer::Buffer(const std::string& s): size_ {s.length() + 1} {
+Buffer::Buffer(const std::string& s) : size_{s.length() + 1} {
     create();
     copy(s);
 }
 
-Buffer::Buffer(Buffer&& rhs) noexcept :
-    buffer_{rhs.buffer_}, size_{rhs.size_} {
+Buffer::Buffer(Buffer&& rhs) noexcept : buffer_{rhs.buffer_}, size_{rhs.size_} {
     rhs.buffer_ = nullptr;
     rhs.size_   = 0;
 }
@@ -74,8 +74,8 @@ Buffer::~Buffer() {
 }
 
 void Buffer::zero() {
-    if (buffer_) {
-        ::memset(buffer_, 0, size_);
+    if (buffer_ != nullptr) {
+        std::memset(buffer_, 0, size_);
     }
 }
 
@@ -89,21 +89,23 @@ void Buffer::destroy() {
 }
 
 void Buffer::copy(const std::string& s) {
-    if (buffer_) { ::strncpy(buffer_, s.c_str(), std::min(size_, s.size() + 1)); }
-}
-
-void Buffer::copy(const void* p, const size_t size, const size_t pos) {
-    ASSERT(size_ >= pos + size);
-    if (buffer_ && size > 0) {
-        ::memcpy(buffer_ + pos, p, size);
+    if (buffer_ != nullptr) {
+        std::strncpy(buffer_, s.c_str(), std::min(size_, s.size() + 1));
     }
 }
 
-void Buffer::resize(const size_t size, const bool preserveData) {
+void Buffer::copy(const void* p, size_t size, size_t pos) {
+    ASSERT(size_ >= pos + size);
+    if (buffer_ != nullptr && size > 0) {
+        std::memcpy(buffer_ + pos, p, size);
+    }
+}
+
+void Buffer::resize(size_t size, bool preserveData) {
     if (size != size_) {
         if (preserveData) {
-            char* newbuffer = allocate(size);
-            ::memcpy(newbuffer, buffer_, std::min(size_, size));
+            auto* newbuffer = allocate(size);
+            std::memcpy(newbuffer, buffer_, std::min(size_, size));
             deallocate(buffer_);
             size_   = size;
             buffer_ = newbuffer;

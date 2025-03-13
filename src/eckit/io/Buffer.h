@@ -38,8 +38,8 @@ public:  // methods
 
     /// Creates buffer with initial content
     /// @param src to copy bytes from
-    /// @param len of data
-    Buffer(const void* src, size_t len);
+    /// @param size of data
+    Buffer(const void* src, size_t size);
 
     /// Move constructor. Note that rhs is not guaranteed to be valid!
     Buffer(Buffer&& rhs) noexcept;
@@ -81,6 +81,7 @@ public:  // methods
 protected:  // methods
     void create();
     void destroy();
+
     /// Copies contents of s into the buffer including a null-terminator at the end.
     /// This copy operation truncates s if the buffer is not big enough.
     /// @param s, string to be copied including null-terminator.

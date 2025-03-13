@@ -74,16 +74,16 @@ CASE("eckit::geo::util") {
 
 
     SECTION("reduced_classical_pl, reduced_octahedral_pl") {
-        for (const geo::pl_type& (*cacheable)(size_t) : {&util::reduced_classical_pl, &util::reduced_octahedral_pl}) {
+        for (const auto& fun : {util::reduced_classical_pl, util::reduced_octahedral_pl}) {
             for (const auto& test : tests) {
                 Cache::total_purge();
-                (*cacheable)(test.N);
+                fun(test.N);
                 EXPECT_EQUAL(Cache::total_footprint(), test.pl_footprint);
             }
 
             Cache::total_purge();
             for (const auto& test : tests) {
-                (*cacheable)(test.N);
+                fun(test.N);
                 EXPECT_EQUAL(Cache::total_footprint(), test.pl_footprint_acc);
             }
         }
@@ -219,7 +219,7 @@ CASE("unzip") {
         dir.unlink();
         ASSERT(!dir.exists());
 
-        cache::unzip(zip, dir / (contents.back() + "-y"), contents.back());
+        cache::Unzip::to_path(zip, dir / (contents.back() + "-y"), contents.back());
 
         for (const auto& content : contents) {
             if (content == contents.back()) {

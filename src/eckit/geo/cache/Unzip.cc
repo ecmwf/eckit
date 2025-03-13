@@ -65,18 +65,14 @@ struct unzip_type : std::unique_ptr<zip_file_t, decltype(&zip_fclose)> {
 };
 
 
-Unzip::Unzip(const PathName& root) : root_(root) {
-    if (!root_.exists()) {
-        throw CantOpenFile("Unzip: file '" + root_ + "' not found", Here());
-    }
-}
+Unzip::Unzip(const PathName& root) : root_(root) {}
 
 
-void Unzip::to_path(const PathName& zip, const PathName& path, const std::string& what) const {
+void Unzip::to_path(const PathName& zip, const PathName& path, const std::string& what) {
     int errorp = 0;
     zip_type z(zip_open(zip.localPath(), ZIP_RDONLY, &errorp), zip_close);
     if (!z) {
-        throw CantOpenFile("Unzip: error opening zip file, errorp=" + std::to_string(errorp), Here());
+        throw CantOpenFile(zip + "', errorp=" + std::to_string(errorp), Here());
     }
 
     // Extract all files, or a specific one
@@ -84,6 +80,7 @@ void Unzip::to_path(const PathName& zip, const PathName& path, const std::string
         const auto num_entries = static_cast<zip_uint64_t>(zip_get_num_entries(z.get(), 0));
         for (zip_uint64_t i = 0; i < num_entries; ++i) {
             std::string what = zip_get_name(z.get(), i, 0);
+
             if (!what.empty() && what.back() != '/') {
                 if (unzip_type unz(zip_fopen_index(z.get(), i, 0)); unz) {
                     unz.to_path(path / what);
@@ -109,7 +106,7 @@ PathName Unzip::to_cached_path(const PathName& zip, const std::string& what, con
     const auto path = root_ / (zip.baseName() + ".dir") / (prefix + (prefix.empty() ? "" : "-") + key + extension);
 
     if (!path.exists()) {
-        Unzip::to_path(path, what);
+        to_path(zip, path, what);
         ASSERT_MSG(path.exists(), "Unzip: file '" + path + "' not found");
     }
 
@@ -123,16 +120,17 @@ std::vector<std::string> Unzip::list(const PathName& zip, bool files_only) {
     int errorp = 0;
     zip_type z(zip_open(zip.localPath(), ZIP_RDONLY, &errorp), zip_close);
     if (!z) {
-        throw CantOpenFile("Unzip: error opening zip file, errorp=" + std::to_string(errorp), Here());
+        throw CantOpenFile(zip + "', errorp=" + std::to_string(errorp), Here());
     }
 
     const auto num_entries = static_cast<zip_uint64_t>(zip_get_num_entries(z.get(), 0));
     list.reserve(num_entries);
 
     for (zip_uint64_t i = 0; i < num_entries; ++i) {
-        std::string what = zip_get_name(z.get(), i, 0);
-        if (!what.empty() && (!files_only || what.back() != '/')) {
-            list.emplace_back(what);
+        if (std::string what = zip_get_name(z.get(), i, 0); !what.empty()) {
+            if (!files_only || what.back() != '/') {
+                list.emplace_back(what);
+            }
         }
     }
 
@@ -140,30 +138,25 @@ std::vector<std::string> Unzip::list(const PathName& zip, bool files_only) {
 }
 
 
-void unzip(const PathName& zip, const PathName& dst, const std::string& what) {
-    Unzip().to_path(zip, dst, what);
-}
-
-
 #else
 
 
-Unzip::Unzip(const PathName& src) : path_(src) {
+Unzip::Unzip(const PathName& root) : root_(root) {
     NOTIMP;
 }
 
 
-void Unzip::to_path(const PathName&, const std::string&) const {
+void Unzip::to_path(const PathName&, const PathName&, const std::string&) {
     NOTIMP;
 }
 
 
-PathName Unzip::to_cached_path(const std::string&, const std::string&, const std::string&) const {
+PathName Unzip::to_cached_path(const PathName&, const std::string&, const std::string&, const std::string&) const {
     NOTIMP;
 }
 
 
-std::vector<std::string> Unzip::list(bool) const {
+std::vector<std::string> Unzip::list(const PathName&, bool) {
     NOTIMP;
 }
 

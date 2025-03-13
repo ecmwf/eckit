@@ -41,12 +41,16 @@ foreach(_test
         LIBS        eckit_geo )
 endforeach()
 
-if(eckit_HAVE_CURL)
-    target_compile_definitions(eckit_test_geo_cache PRIVATE HAVE_GEO_CACHE_DOWNLOAD)
-endif()
-
 if(eckit_HAVE_ZIP)
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
+endif()
+
+if(eckit_HAVE_GEO_AREA_SHAPEFILE)
+    ecbuild_add_test(
+        TARGET  eckit_test_geo_area_shapefile
+        SOURCES area_shapefile.cc
+        LIBS    eckit_geo
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 if(eckit_HAVE_GEO_GRID_ORCA)

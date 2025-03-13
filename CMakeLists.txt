@@ -219,6 +219,18 @@ ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
                     CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
 
+ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
+                    DEFAULT ON
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ZIP
+                    REQUIRED_PACKAGES shapelib
+                    DESCRIPTION "eckit::geo geometry library support for shapefiles" )
+
+if( eckit_HAVE_GEO_AREA_SHAPEFILE )
+    if( NOT TARGET shapelib::shp OR NOT TARGET libzip::zip )
+        message( FATAL_ERROR "eckit::geo geometry library support for shapefiles requires the shapelib::shp and libzip::zip libraries" )
+    endif()
+endif()
+
 set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" )
 
 ### LAPACK

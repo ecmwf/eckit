@@ -210,6 +210,9 @@ if(eckit_HAVE_GEO_AREA_SHAPEFILE)
 endif()
 
 string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")
+string(REPLACE ";" ":" eckit_GEO_SHARE_AREA "${eckit_GEO_SHARE_AREA}")
+string(REPLACE ";" ":" eckit_GEO_SHARE_PROJECTION "${eckit_GEO_SHARE_PROJECTION}")
+
 configure_file(eckit_geo_config.h.in eckit_geo_config.h @ONLY)
 
 list(APPEND eckit_geo_srcs ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h)

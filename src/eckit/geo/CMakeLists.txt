@@ -204,6 +204,11 @@ if(eckit_HAVE_GEO_GRID_ORCA)
     list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ORCA.yaml")
 endif()
 
+if(eckit_HAVE_GEO_AREA_SHAPEFILE)
+    list(APPEND eckit_geo_srcs Shapefile.cc Shapefile.h)
+    list(APPEND eckit_geo_libs shapelib::shp libzip::zip)
+endif()
+
 string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")
 configure_file(eckit_geo_config.h.in eckit_geo_config.h @ONLY)
 

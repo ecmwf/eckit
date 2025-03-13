@@ -29,11 +29,12 @@ public:
 
     // -- Methods
 
-    void to_path(const PathName& zip, const PathName&, const std::string& what = {}) const;
     PathName to_cached_path(const PathName& zip, const std::string& what = {}, const std::string& prefix = "",
                             const std::string& extension = ".unzip") const;
 
     // -- Class methods
+
+    static void to_path(const PathName& zip, const PathName&, const std::string& what = {});
 
     static std::vector<std::string> list(const PathName& zip, bool files_only = true);
 
@@ -42,9 +43,6 @@ private:
 
     const PathName root_;
 };
-
-
-void unzip(const PathName& zip, const PathName&, const std::string& what = {});
 
 
 }  // namespace eckit::geo::cache

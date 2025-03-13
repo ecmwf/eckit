@@ -15,6 +15,8 @@
 #ifndef eckit_log_Bytes_h
 #define eckit_log_Bytes_h
 
+#include "eckit/utils/Literals.h"
+
 #include <iosfwd>
 #include <string>
 
@@ -40,14 +42,48 @@ public:  // methods
 
     friend std::ostream& operator<<(std::ostream&, const Bytes&);
 
-    static unsigned long long KiB(unsigned long long n) { return 1024 * n; }
-    static unsigned long long MiB(unsigned long long n) { return 1024 * KiB(n); }
-    static unsigned long long GiB(unsigned long long n) { return 1024 * MiB(n); }
-    static unsigned long long TiB(unsigned long long n) { return 1024 * GiB(n); }
-    static unsigned long long PiB(unsigned long long n) { return 1024 * TiB(n); }
-    static unsigned long long EiB(unsigned long long n) { return 1024 * PiB(n); }
-    static unsigned long long ZiB(unsigned long long n) { return 1024 * EiB(n); }
-    static unsigned long long YiB(unsigned long long n) { return 1024 * ZiB(n); }
+    /// Compute number of bytes in 'n' Kibibytes.
+    /// @note Result will wraparound if n > 2^52-1
+    /// @param n nuber of Kibibytes
+    static uint64_t KiB(uint64_t n) {
+        using namespace eckit::literals;
+        return 1_KiB * n;
+    }
+    /// Compute number of bytes in 'n' Mebibytes.
+    /// @note Result will wraparound if n > 2^42-1
+    /// @param n nuber of Mebibytes
+    static uint64_t MiB(uint64_t n) {
+        using namespace eckit::literals;
+        return 1_MiB * n;
+    }
+    /// Compute number of bytes in 'n' Gibibytes.
+    /// @note Result will wraparound if n > 2^32-1
+    /// @param n nuber of Gibibytes
+    static uint64_t GiB(uint64_t n) {
+        using namespace eckit::literals;
+        return 1_GiB * n;
+    }
+    /// Compute number of bytes in 'n' Tebibytes.
+    /// @note Result will wraparound if n > 2^22-1
+    /// @param n nuber of Tebibytes
+    static uint64_t TiB(uint64_t n) {
+        using namespace eckit::literals;
+        return 1_TiB * n;
+    }
+    /// Compute number of bytes in 'n' Pebibytes.
+    /// @note Result will wraparound if n > 4095
+    /// @param n nuber of Pebibytes
+    static uint64_t PiB(uint64_t n) {
+        using namespace eckit::literals;
+        return 1_PiB * n;
+    }
+    /// Compute number of bytes in 'n' Exbibytes.
+    /// @note Result will wraparound if n > 3
+    /// @param n nuber of Exbibytes
+    static uint64_t EiB(uint64_t n) {
+        using namespace eckit::literals;
+        return 1_EiB * n;
+    }
 
     /// Handle rate computations avoiding floating point exceptions
     static double rate(double num, double den);

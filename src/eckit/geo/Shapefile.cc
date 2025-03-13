@@ -13,15 +13,12 @@
 #include "eckit/geo/Shapefile.h"
 
 #include <algorithm>
-#include <fstream>
 #include <iostream>
 #include <map>
 #include <memory>
-#include <string>
-#include <unordered_set>
 #include <vector>
 
-#include "eckit/geo/Area.h"
+// #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Download.h"
@@ -73,24 +70,6 @@ void shapefile_polygon(const PathName& path_shp, const std::string& /*unused*/) 
 }
 
 
-void shapefile_string_attributes(DBFInfo* hDBF) {
-    int fieldCount  = DBFGetFieldCount(hDBF);
-    int recordCount = DBFGetRecordCount(hDBF);
-
-    for (int fieldIndex = 0; fieldIndex < fieldCount; ++fieldIndex) {
-        char fieldName[12];
-        int width    = 0;
-        int decimals = 0;
-
-        // Only process string fields
-        if (DBFGetFieldInfo(hDBF, fieldIndex, fieldName, &width, &decimals) == FTString) {
-            std::cout << "Field \"" << fieldName << "\"" << std::endl;
-        }
-    }
-    std::cout << std::endl;
-}
-
-
 }  // namespace
 
 
@@ -99,9 +78,9 @@ Shapefile::Shapefile(const Spec& spec) : Shapefile(spec.get_string("file")) {}
 
 Shapefile::Shapefile(const PathName& file) :
     shp_(file.extension() == ".zip" ? [](const PathName& zip) -> PathName {
-        static cache::Unzip CACHE_UNZIP(LibEcKitGeo::cacheDir() + "/shapefile");
+        static cache::Unzip unzip(LibEcKitGeo::cacheDir() + "/shapefile");
 
-        auto dir = CACHE_UNZIP.to_cached_path(zip);
+        auto dir = unzip.to_cached_path(zip);
 
         std::vector<PathName> files;
         std::vector<PathName> dirs;
@@ -116,20 +95,50 @@ Shapefile::Shapefile(const PathName& file) :
         }
 
         return files.front();
-    }(file)
-                                     : file), dbf_(shp_.asString().substr(0, shp_.asString().length() - 4) + ".dbf") {
+    }(file) : file), dbf_(shp_.asString().substr(0, shp_.asString().length() - 4) + ".dbf") {
     SHPInfo* hSHP = nullptr;
     if (!shp_.exists() || shp_.extension() != ".shp" || (hSHP = SHPOpen(shp_.localPath(), "rb")) == nullptr) {
-        throw CantOpenFile(shp_ + ", expecting .shp", Here());
+        throw CantOpenFile(shp_ + " (as .shp)", Here());
     }
 
     DBFInfo* hDBF = nullptr;
     if (!dbf_.exists() || dbf_.extension() != ".dbf" || (hDBF = DBFOpen(dbf_.localPath(), "rb")) == nullptr) {
-        throw CantOpenFile(dbf_ + ", expecting .dbf", Here());
+        throw CantOpenFile(dbf_ + " (as .dbf)", Here());
     }
 
     // Find the field index for the "NAME" attribute (the field name might change!)
-    shapefile_string_attributes(hDBF);
+    std::map<std::string, int> index_string;
+    for (int i = 0, n = DBFGetFieldCount(hDBF); i < n; ++i) {
+        char name[12];
+
+        // Only process string fields
+        if (auto type = DBFGetFieldInfo(hDBF, i, name, nullptr, nullptr); type == FTString) {
+            index_string[name] = i;
+        }
+        else if (type == FTInteger) {
+            std::cout << FTInteger << std::endl;
+        }
+        else if (type == FTInteger) {
+            std::cout << FTInteger << std::endl;
+        }
+        else if (type == FTDouble) {
+            std::cout << FTDouble << std::endl;
+        }
+        else if (type == FTLogical) {
+            std::cout << FTLogical << std::endl;
+        }
+        else if (type == FTDate) {
+            std::cout << FTDate << std::endl;
+        }
+        else if (type == FTInvalid) {
+            std::cout << FTInvalid << std::endl;
+        }
+    }
+
+    for (const auto& [key, val] : index_string) {
+        std::cout << "Field '" << key << "' has index " << val << std::endl;
+    }
+
     int nameField = DBFGetFieldIndex(hDBF, "NAME");
 
     // Get number of shapes
@@ -168,7 +177,7 @@ Shapefile::Shapefile(const PathName& file) :
 
 
 Shapefile* Shapefile::make_from_url(const std::string& url) {
-    static cache::Download download(LibEcKitGeo::cacheDir() + "/area");
+    static cache::Download download(LibEcKitGeo::cacheDir() + "/shapefile");
 
     std::cout << "Shapefile::make_from_url: " << url << std::endl;
 
@@ -204,8 +213,8 @@ Shapefile* Shapefile::make_from_zip(const PathName& zip) {
 
     auto dir = zip + ".dir";
     if (!dir.exists()) {
-        cache::Unzip CACHE_UNZIP(LibEcKitGeo::cacheDir() + "/shapefile");
-        CACHE_UNZIP.to_cached_path(zip);
+        cache::Unzip unzip(LibEcKitGeo::cacheDir() + "/shapefile");
+        unzip.to_cached_path(zip);
     }
 
     auto path_shp = dir / whats.front();

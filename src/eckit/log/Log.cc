@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
+#include <cstdlib>
 #include <cstring>
+#include <iostream>
+#include <string>
+#include <unistd.h>
 
-#include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/FileTarget.h"
 #include "eckit/log/Log.h"
@@ -24,7 +25,6 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
-#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Translator.h"
 
@@ -81,6 +81,12 @@ static void handle_strerror_r(std::ostream& s, int e, ...) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+namespace {
+thread_local EmptyChannel emptyChannel;
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
 struct CreateStatusChannel {
     Channel* operator()() { return new Channel(new StatusTarget()); }
 };
@@ -99,104 +105,93 @@ std::ostream& Log::message() {
     return x.instance();
 }
 
-
-struct CreateLogChannel {
-
-    virtual Channel* createChannel() = 0;
-
-    Channel* operator()() {
-        try {
-            return createChannel();
-        }
-        catch (std::exception& e) {
-            std::cerr << "Exception caught when creating channel: " << e.what() << std::endl;
-            return new Channel(new OStreamTarget(std::cout));
-        }
-    }
-};
-
-struct CreateMetricsChannel : public CreateLogChannel {
-    virtual Channel* createChannel() { return new Channel(Main::instance().createMetricsLogTarget()); }
-};
-
 Channel& Log::metrics() {
     if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN-METRICS", new OStreamTarget(std::cout)));
-        return empty;
+        thread_local Channel preMainMetrics(new PrefixTarget("PRE-MAIN-METRICS", new OStreamTarget(std::cout)));
+        return preMainMetrics;
     }
-    static ThreadSingleton<Channel, CreateMetricsChannel> x;
-    return x.instance();
+
+    if (Main::finalised()) {
+        thread_local Channel postMainMetrics(new PrefixTarget("POST-MAIN-METRICS", new OStreamTarget(std::cout)));
+        return postMainMetrics;
+    }
+
+    thread_local Channel mainMetrics(Main::instance().createMetricsLogTarget());
+    return mainMetrics;
 }
-
-
-struct CreateInfoChannel : public CreateLogChannel {
-    virtual Channel* createChannel() { return new Channel(Main::instance().createInfoLogTarget()); }
-};
 
 Channel& Log::info() {
     if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN-INFO", new OStreamTarget(std::cout)));
-        return empty;
+        thread_local Channel preMainInfo(new PrefixTarget("PRE-MAIN-INFO", new OStreamTarget(std::cout)));
+        return preMainInfo;
     }
-    static ThreadSingleton<Channel, CreateInfoChannel> x;
-    return x.instance();
-}
 
-struct CreateErrorChannel : public CreateLogChannel {
-    virtual Channel* createChannel() { return new Channel(Main::instance().createErrorLogTarget()); }
-};
+    if (Main::finalised()) {
+        // This may still cause a SEGFAULT due to missing destruction order at the end of library life time 
+        // - only solution is then to use an empty channel which is harmless in a destructed state
+        thread_local Channel postMainInfo(new PrefixTarget("POST-MAIN-INFO", new OStreamTarget(std::cout)));
+        return postMainInfo;
+    }
+
+    thread_local Channel mainInfo(Main::instance().createInfoLogTarget());
+    return mainInfo;
+}
 
 Channel& Log::error() {
     if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN-ERROR", new OStreamTarget(std::cout)));
-        return empty;
+        thread_local Channel preMainError(new PrefixTarget("PRE-MAIN-ERROR", new OStreamTarget(std::cout)));
+        return preMainError;
     }
-    static ThreadSingleton<Channel, CreateErrorChannel> x;
-    return x.instance();
-}
 
-struct CreateWarningChannel : public CreateLogChannel {
-    virtual Channel* createChannel() { return new Channel(Main::instance().createWarningLogTarget()); }
-};
+    if (Main::finalised()) {
+        // This may still cause a SEGFAULT due to missing destruction order at the end of library life time 
+        // - only solution is then to use an empty channel which is harmless in a destructed state
+        thread_local Channel postMainError(new PrefixTarget("POST-MAIN-ERROR", new OStreamTarget(std::cout)));
+        return postMainError;
+    }
+
+    thread_local Channel mainError(Main::instance().createErrorLogTarget());
+    return mainError;
+}
 
 Channel& Log::warning() {
     if (!Main::ready()) {
-        static Channel empty(new PrefixTarget("PRE-MAIN-WARNING", new OStreamTarget(std::cout)));
-        return empty;
+        thread_local Channel preMainWarning(new PrefixTarget("PRE-MAIN-WARNING", new OStreamTarget(std::cout)));
+        return preMainWarning;
     }
-    static ThreadSingleton<Channel, CreateWarningChannel> x;
-    return x.instance();
-}
 
-struct CreateDebugChannel : public CreateLogChannel {
-    virtual Channel* createChannel() { return new Channel(Main::instance().createDebugLogTarget()); }
-};
+    if (Main::finalised()) {
+        // This may still cause a SEGFAULT due to missing destruction order at the end of library life time 
+        // - only solution is then to use an empty channel which is harmless in a destructed state
+        thread_local Channel postMainWarning(new PrefixTarget("POST-MAIN-WARNING", new OStreamTarget(std::cout)));
+        return postMainWarning;
+    }
+
+    thread_local Channel mainWarning(Main::instance().createWarningLogTarget());
+    return mainWarning;
+}
 
 Channel& Log::debug() {
-
-
     if (!Main::ready()) {
-
-        const char* e = getenv("DEBUG");
-
-        if (e && bool(Translator<std::string, bool>()(e))) {
-            static Channel empty(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
-            return empty;
+        if (const char* e = ::getenv("DEBUG"); e && bool(Translator<std::string, bool>()(e))) {
+            thread_local Channel preMainDebug(new PrefixTarget("PRE-MAIN-DEBUG", new OStreamTarget(std::cout)));
+            return preMainDebug;
         }
-        static Channel empty;
-        return empty;
+        return emptyChannel;
     }
 
-    if (!Main::instance().debug_) {
-        static ThreadSingleton<Channel> empty;
-        return empty.instance();
+    if (!Main::instance().debug_) { return emptyChannel; }
+
+    if (Main::finalised()) {
+        // This may still cause a SEGFAULT due to missing destruction order at the end of library life time 
+        // - only solution is then to use an empty channel which is harmless in a destructed state
+        thread_local Channel postMainDebug(new PrefixTarget("POST-MAIN-DEBUG", new OStreamTarget(std::cout)));
+        return postMainDebug;
     }
 
-
-    static ThreadSingleton<Channel, CreateDebugChannel> x;
-    return x.instance();
+    thread_local Channel debugChannel(Main::instance().createDebugLogTarget());
+    return debugChannel;
 }
-
 
 std::ostream& Log::panic() {
     try {

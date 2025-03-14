@@ -10,7 +10,7 @@
 import findlibs
 
 
-findlibs.load("eckit_geo")
+findlibs.load("eckit_geo", "eckitlib")
 
 
-from ._eckit_geo import *
+from eckit.geo._eckit_geo import *

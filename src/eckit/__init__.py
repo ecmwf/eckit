@@ -13,4 +13,4 @@ import findlibs
 findlibs.load("eckit")
 
 
-from _eckit import *
+from eckit._eckit import *

@@ -32,7 +32,7 @@ classifiers=[
 	"Operating System :: MacOS",
 	"Topic :: Scientific/Engineering",
 ]
-dependencies = ["findlibs", "eckitlib"]
+dependencies = ["findlibs", "eckitlib", "pyyaml"]
 
 
 [tool.setuptools]

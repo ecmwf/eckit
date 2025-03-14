@@ -16,6 +16,7 @@
 #include <memory>
 #include <string>
 
+#include "eckit/geo/Point.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
@@ -60,6 +61,7 @@ public:
     virtual const std::string& type() const = 0;
 
     virtual bool intersects(area::BoundingBox&) const;
+    virtual bool contains(const PointLonLat&) const;
 
     // -- Class methods
 

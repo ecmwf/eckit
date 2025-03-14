@@ -26,6 +26,7 @@ class Hash;
 class OrderedMapContent : public Content {
 
 protected:
+
     // -- Constructor
 
     OrderedMapContent();
@@ -99,6 +100,7 @@ protected:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- Methods
 
     const Value& value(const Value& key) const;

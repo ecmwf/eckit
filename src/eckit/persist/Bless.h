@@ -56,6 +56,7 @@ class Exporter;
 
 class Bless {
 public:
+
     bool operator()(bool* a) { return *a; }
     int operator()(int* a) { return *a; }
     short operator()(short* a) { return *a; }
@@ -82,6 +83,7 @@ public:
 class Evolve {
 
 public:
+
     Evolve(eckit::Exporter&);
     Evolve(Evolve*, const char*, const char*);
 
@@ -105,6 +107,7 @@ public:
     const std::string& path() const { return path_; }
 
 private:
+
     Exporter& e_;
     std::string path_;
     Evolve* parent_;

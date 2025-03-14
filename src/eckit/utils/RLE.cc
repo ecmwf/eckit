@@ -25,6 +25,7 @@ namespace eckit {
 template <class T>
 class dummy_iterator {
 public:
+
     using iterator_category = std::output_iterator_tag;
     using value_type        = T;
     using difference_type   = std::ptrdiff_t;

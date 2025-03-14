@@ -28,6 +28,7 @@ class Hash;
 
 class DateTime {
 public:
+
     // Contructors
 
     DateTime(time_t = ::time(0));
@@ -78,10 +79,12 @@ public:
     void hash(Hash&) const;
 
 protected:  // members
+
     Date date_;
     Time time_;
 
 private:  // methods
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const DateTime& p) {

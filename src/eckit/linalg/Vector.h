@@ -31,6 +31,7 @@ namespace eckit::linalg {
 class Vector {
 
 public:  // methods
+
     // -- Constructors
 
     /// Default constructor (empty vector)
@@ -102,7 +103,8 @@ public:  // methods
     /// @returns const iterator to end of the data
     const Scalar* end() const { return array_ + length_; }
 
-protected:           // member variables
+protected:  // member variables
+
     Scalar* array_;  ///< Container
     Size length_;    ///< Vector length/size
     bool own_;       ///< do we own the memory allocated in the container ?

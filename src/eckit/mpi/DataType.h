@@ -25,8 +25,8 @@ class Comm;
 class Data {
 
 public:
-    enum Code
-    {
+
+    enum Code {
         CHAR = 0,
         WCHAR,
         SHORT,

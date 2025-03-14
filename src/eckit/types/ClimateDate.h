@@ -23,6 +23,7 @@ namespace eckit {
 
 class ClimateDate {
 public:
+
     // -- Contructors
 
     ClimateDate();
@@ -71,6 +72,7 @@ public:
     }
 
 private:
+
     // -- Members
 
     Date date_;

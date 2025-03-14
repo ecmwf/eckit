@@ -32,6 +32,7 @@ class NoContent : public MessageContent {
     void* operator new(size_t);
 
 public:
+
     NoContent() { attach(); }
 };
 
@@ -40,18 +41,15 @@ static NoContent noContent;
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Message::Message() :
-    content_(&noContent) {
+Message::Message() : content_(&noContent) {
     content_->attach();
 }
 
-Message::Message(MessageContent* content) :
-    content_(content ? content : &noContent) {
+Message::Message(MessageContent* content) : content_(content ? content : &noContent) {
     content_->attach();
 }
 
-Message::Message(const Message& other) :
-    content_(other.content_) {
+Message::Message(const Message& other) : content_(other.content_) {
     content_->attach();
 }
 

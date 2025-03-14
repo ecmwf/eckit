@@ -28,10 +28,12 @@ namespace eckit::sql {
 
 class SQLOrderOutput : public SQLOutput {
 public:
+
     SQLOrderOutput(SQLOutput& output, const std::pair<expression::Expressions, std::vector<bool>>& by);
     ~SQLOrderOutput() override;
 
 private:  // methods
+
     void print(std::ostream&) const override;
 
     // -- Members

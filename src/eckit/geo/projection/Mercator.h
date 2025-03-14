@@ -21,6 +21,7 @@ namespace eckit::geo::projection {
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
 class Mercator : public ProjectionOnFigure {
 public:
+
     // -- Constructors
 
     explicit Mercator(PointLonLat centre, PointLonLat first = {0, 0}, Figure* = nullptr);
@@ -40,11 +41,13 @@ public:
     inline Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Members
 
     const PointLonLat centre_;  // angle [degree] between Eastward direction and the Equator, range [0, 90], latitude

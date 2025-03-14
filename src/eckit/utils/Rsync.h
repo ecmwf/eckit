@@ -19,6 +19,7 @@ class PathName;
 class Rsync {
 
 public:  // methods
+
     Rsync(bool statistics = false);
 
     ~Rsync();
@@ -33,6 +34,7 @@ public:  // methods
     void updateData(DataHandle& input, DataHandle& delta, DataHandle& output);
 
 private:  // members
+
     size_t block_len_;
     size_t strong_len_;
 

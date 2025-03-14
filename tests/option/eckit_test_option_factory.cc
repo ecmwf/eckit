@@ -29,6 +29,7 @@ namespace {
 /// A general base type, for objects to be built from.
 class ObjectBase {
 public:
+
     ObjectBase() {}
 };
 
@@ -42,11 +43,12 @@ class ObjectFactory {
     }
 
 protected:
-    ObjectFactory(const std::string& nm) :
-        name_(nm) { factory()[nm] = this; }
+
+    ObjectFactory(const std::string& nm) : name_(nm) { factory()[nm] = this; }
     virtual ~ObjectFactory() { factory().erase(name_); }
 
 public:
+
     static void list(std::ostream& out) {
         const char* sep = "";
         for (std::map<std::string, ObjectFactory*>::const_iterator j = factory().begin(); j != factory().end(); ++j) {
@@ -67,8 +69,8 @@ class ObjectBuilder : public ObjectFactory {
     virtual ObjectBase* make() const { return new T; }
 
 public:
-    ObjectBuilder(const std::string& name) :
-        ObjectFactory(name) {}
+
+    ObjectBuilder(const std::string& name) : ObjectFactory(name) {}
 };
 
 

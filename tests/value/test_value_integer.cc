@@ -10,7 +10,7 @@
 
 // Disable warning change of sign which is triggered on purpose
 #if defined(__INTEL_COMPILER)
-#pragma warning ( disable:68 )
+#pragma warning(disable : 68)
 #elif defined(__NVCOMPILER)
 #pragma diag_suppress 68
 #endif

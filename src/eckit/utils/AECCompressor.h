@@ -22,6 +22,7 @@ class Buffer;
 class AECCompressor : public eckit::Compressor {
 
 public:  // methods
+
     AECCompressor();
 
     ~AECCompressor() override;

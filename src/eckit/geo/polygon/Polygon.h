@@ -22,6 +22,7 @@ namespace eckit::geo::polygon {
 
 class Polygon : protected std::deque<Point2> {
 public:
+
     using container_type = std::deque<value_type>;
     using container_type::value_type;
 

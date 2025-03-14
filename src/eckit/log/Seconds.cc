@@ -17,8 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Seconds::Seconds(double seconds, bool compact) :
-    seconds_(seconds), compact_(compact) {}
+Seconds::Seconds(double seconds, bool compact) : seconds_(seconds), compact_(compact) {}
 
 Seconds::Seconds(const ::timeval& time, bool compact) :
     seconds_(time.tv_sec + time.tv_usec / 1000000.0), compact_(compact) {}

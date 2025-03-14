@@ -23,6 +23,7 @@ namespace eckit::linalg::allocator {
  */
 class NonOwningAllocator : public SparseMatrix::Allocator {
 public:
+
     NonOwningAllocator(Size Nr, Size Nc, Size nnz, Index* ia, Index* ja, Scalar* a);
 
     SparseMatrix::Layout allocate(SparseMatrix::Shape&) override;
@@ -32,6 +33,7 @@ public:
     void print(std::ostream&) const override;
 
 private:
+
     const Size Nr_;
     const Size Nc_;
     const Size nnz_;

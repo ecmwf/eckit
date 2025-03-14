@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionNVL : public FunctionExpression {
 public:
+
     FunctionNVL(const std::string&, const expression::Expressions&);
     FunctionNVL(const FunctionNVL&);
     ~FunctionNVL();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 2; }
 
 private:
+
     // No copy allowed
     FunctionNVL& operator=(const FunctionNVL&);
 

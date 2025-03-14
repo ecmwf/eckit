@@ -79,6 +79,7 @@ class ReanimatorBase {
     virtual Streamable* ressucitate(Stream&) const = 0;
 
 public:
+
     ReanimatorBase(const ClassSpec&);
     virtual ~ReanimatorBase();
     const ClassSpec& spec() const { return spec_; }
@@ -94,6 +95,7 @@ class Reanimator : public ReanimatorBase {
     Streamable* ressucitate(Stream& s) const;
 
 public:
+
     Reanimator();
     static T* reanimate(Stream& s);
 };

@@ -89,6 +89,7 @@ class CompareApproximatelyEqual {
     int maxUlps_;
 
 public:
+
     CompareApproximatelyEqual(T eps = std::numeric_limits<T>::epsilon(), int maxUlps = 10) :
         eps_(eps), maxUlps_(maxUlps) {}
 

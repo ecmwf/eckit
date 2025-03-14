@@ -29,6 +29,7 @@ namespace eckit::sql {
 class SchemaAnalyzer {
 
 public:  // methods
+
     SchemaAnalyzer();
     ~SchemaAnalyzer();
 
@@ -55,6 +56,7 @@ public:  // methods
     //    std::string findColumnType(const std::string&);
 
 private:
+
     BitfieldDefs bitfieldTypes_;
     TableDefs tableDefs_;
 

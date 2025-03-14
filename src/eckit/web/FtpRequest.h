@@ -29,6 +29,7 @@ class PathName;
 
 class FtpRequest : private eckit::NonCopyable {
 public:
+
     // -- Contructors
 
     FtpRequest() {}

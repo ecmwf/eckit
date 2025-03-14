@@ -25,11 +25,13 @@ namespace eckit {
 
 class MonitorTarget : public WrapperTarget {
 public:
+
     MonitorTarget(LogTarget* target = 0);
 
     ~MonitorTarget() override;
 
 private:
+
     void write(const char* start, const char* end) override;
 
     void writePrefix() override {}

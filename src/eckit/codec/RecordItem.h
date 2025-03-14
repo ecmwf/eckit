@@ -26,6 +26,7 @@ namespace eckit::codec {
 
 struct RecordItem {
 public:
+
     struct URI {
         explicit URI(const std::string& uri);
         URI(const std::string& _path, std::uint64_t _offset, const std::string& _key);
@@ -37,6 +38,7 @@ public:
     };
 
 public:
+
     RecordItem() = default;
 
     template <typename T>
@@ -67,6 +69,7 @@ public:
 
 
 private:
+
     std::unique_ptr<Metadata> metadata_{new Metadata()};
     Data data_;
 };

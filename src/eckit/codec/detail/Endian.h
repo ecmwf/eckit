@@ -24,8 +24,7 @@
 
 namespace eckit::codec {
 
-enum class Endian
-{
+enum class Endian {
     little = 0,
     big    = 1,
 #if eckit_BIG_ENDIAN

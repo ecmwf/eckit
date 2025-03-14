@@ -27,6 +27,7 @@ namespace eckit::maths {
 
 class Qhull {
 public:
+
     // -- Types
 
     using coord_t    = std::vector<double>;
@@ -59,6 +60,7 @@ public:
     std::vector<size_t> facets(size_t n) const;
 
 private:
+
     // -- Members
 
     orgQhull::Qhull* qh_;

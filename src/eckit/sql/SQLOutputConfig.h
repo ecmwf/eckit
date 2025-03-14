@@ -33,6 +33,7 @@ class SQLOutput;
 class SQLOutputConfig {
 
 public:  // methods
+
     SQLOutputConfig(bool noColumnNames = false, bool noNULL = false, const std::string& delimiter = defaultDelimiter,
                     const std::string& format = defaultOutputFormat, bool bitfieldsBinary = false,
                     bool noColumnAlignment = false, bool fullPrecision = false);
@@ -61,6 +62,7 @@ public:  // methods
     static const char* defaultOutputFormat;
 
 protected:  // members
+
     eckit::PathName outputFile_;
 
     bool doNotWriteColumnNames_;

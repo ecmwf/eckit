@@ -26,6 +26,7 @@ namespace eckit::codec {
 
 class RecordReader {
 public:
+
     explicit RecordReader(const Record::URI& ref);
     explicit RecordReader(const std::string& path, std::uint64_t offset = 0);
     explicit RecordReader(Stream stream, std::uint64_t offset = 0);
@@ -58,6 +59,7 @@ public:
     void checksum(bool);
 
 private:
+
     Record::URI uri() const;
 
     RecordItem::URI uri(const std::string& key) const;
@@ -65,6 +67,7 @@ private:
     void trace(const std::string&, const char* file, int line, const char* func);
 
 private:
+
     Session session_;
 
     Stream stream_;

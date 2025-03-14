@@ -26,6 +26,7 @@ namespace eckit {
 class CompositeParams {
 
 public:  // methods
+
     CompositeParams();
     CompositeParams(const Params::List&);
     CompositeParams(Stream&);
@@ -45,11 +46,13 @@ public:  // methods
     static const char* className() { return "eckit::CompositeParams"; }
 
 private:  // methods
+
     friend Params::value_t getValue(const CompositeParams& p, const Params::key_t& key);
     friend void print(const CompositeParams& p, std::ostream& s);
     friend void encode(const CompositeParams& p, Stream& s);
 
 private:  // members
+
     Params::List plist_;
 };
 

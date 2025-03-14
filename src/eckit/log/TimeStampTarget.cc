@@ -22,8 +22,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-TimeStampTarget::TimeStampTarget(const char* tag, LogTarget* target) :
-    WrapperTarget(target), tag_(tag) {}
+TimeStampTarget::TimeStampTarget(const char* tag, LogTarget* target) : WrapperTarget(target), tag_(tag) {}
 
 TimeStampTarget::~TimeStampTarget() {}
 

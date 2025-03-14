@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <csignal>
 #include <unistd.h>
+#include <csignal>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"

@@ -26,6 +26,7 @@ namespace eckit::geo::projection {
 template <class P>
 class Reverse : protected P {
 public:
+
     // -- Constructors
 
     using P::P;
@@ -44,6 +45,7 @@ public:
     inline Point inv(const Point& p) const override { return P::fwd(p); }
 
 private:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom& custom) const override {

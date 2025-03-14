@@ -23,12 +23,14 @@ namespace eckit {
 
 class TempFile : public PathName {
 public:
+
     TempFile();
     TempFile(const std::string&); /* the std::string is the name of a filespace */
 
     ~TempFile();
 
 private:
+
     static PathName dir(const std::string&);
 };
 

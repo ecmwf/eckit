@@ -20,6 +20,7 @@ namespace eckit::geo::grid {
 
 class RegularXY : public Regular {
 public:
+
     // -- Constructors
 
     using Regular::Regular;
@@ -33,6 +34,7 @@ public:
     size_t nlat() const { return y().size(); }
 
 protected:
+
     // -- Methods
 
     [[nodiscard]] static Ranges make_ranges_from_spec(const Spec&);
@@ -42,6 +44,7 @@ protected:
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Members
 
     PointLonLat first_lonlat;

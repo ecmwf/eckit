@@ -26,6 +26,7 @@ namespace eckit {
 class DoubleContent : public Content {
 
 protected:
+
     // -- Constructor
 
     DoubleContent(double);
@@ -101,6 +102,7 @@ protected:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     DoubleContent(const DoubleContent&);
     DoubleContent& operator=(const DoubleContent&);
 

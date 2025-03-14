@@ -22,6 +22,7 @@ namespace eckit::geo::range {
 
 class RegularLongitude final : public Regular {
 public:
+
     // -- Constructors
 
     explicit RegularLongitude(double inc, double a, double b, double ref, double eps = 0.);
@@ -37,6 +38,7 @@ public:
     bool periodic() const override { return getPeriodic(); }
 
 private:
+
     // -- Constructors
 
     RegularLongitude(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :

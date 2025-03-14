@@ -66,8 +66,8 @@ SparseMatrix::SparseMatrix(Size rows, Size cols, const std::vector<Triplet>& tri
     Size nnz = std::count_if(triplets.begin(), triplets.end(), [](const auto& tri) { return tri.nonZero(); });
 
     if (auto max = static_cast<Size>(std::numeric_limits<UIndex>::max()); max < nnz) {
-        throw OutOfRange("SparseMatrix::SparseMatrix: too many non-zero entries, nnz=" + std::to_string(nnz)
-                             + ", max=" + std::to_string(max),
+        throw OutOfRange("SparseMatrix::SparseMatrix: too many non-zero entries, nnz=" + std::to_string(nnz) +
+                             ", max=" + std::to_string(max),
                          Here());
     }
 
@@ -284,8 +284,8 @@ void SparseMatrix::swap(SparseMatrix& other) {
 
 const Index* SparseMatrix::outer() const {
     if (auto max = static_cast<Size>(std::numeric_limits<Index>::max()); max < nonZeros()) {
-        throw OutOfRange("SparseMatrix::outer: too many non-zero entries, nnz=" + std::to_string(nonZeros())
-                             + ", max=" + std::to_string(max) + " (for Index-typed compatibility)",
+        throw OutOfRange("SparseMatrix::outer: too many non-zero entries, nnz=" + std::to_string(nonZeros()) +
+                             ", max=" + std::to_string(max) + " (for Index-typed compatibility)",
                          Here());
     }
 

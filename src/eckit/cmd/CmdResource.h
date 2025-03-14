@@ -25,6 +25,7 @@ class CmdResource : private eckit::NonCopyable {
     typedef void (*Proc)(CmdResource*, CmdArg&, std::istream&, std::ostream&);
 
 public:
+
     // -- Contructors
 
     CmdResource(const std::string&);
@@ -49,6 +50,7 @@ public:
     static bool completion(const char*, int pos, char*, int);
 
 protected:  // methods
+
     virtual void execute(std::istream&, std::ostream&, CmdArg&) = 0;
 
     virtual Arg usage(const std::string& cmd) const = 0;
@@ -61,11 +63,13 @@ protected:  // methods
     static void help(std::ostream&, const std::string&);
 
 private:  // members
+
     typedef std::map<std::string, CmdResource*, std::less<std::string> > Map;
 
     static Map* resources_;
 
 private:  // friends
+
     friend std::ostream& operator<<(std::ostream& o, const CmdResource& cmd) {
         cmd.print(o);
         return o;

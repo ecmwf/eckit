@@ -26,6 +26,7 @@ class Stream;
 
 class RadosObject {
 public:
+
     RadosObject(Stream&);
 
     RadosObject(const std::string& path);
@@ -38,6 +39,7 @@ public:
     std::string str() const;
 
 private:
+
     std::string pool_;
     std::string oid_;
 

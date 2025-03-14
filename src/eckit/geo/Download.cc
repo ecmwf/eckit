@@ -101,8 +101,8 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
 
     // set cache key, return path early if possible
     const auto key = MD5{url}.digest();
-    const auto path
-        = CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix + (prefix.empty() ? "" : "-") + key + extension;
+    const auto path =
+        CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix + (prefix.empty() ? "" : "-") + key + extension;
 
     if (path.exists()) {
         return CACHE[key] = path;

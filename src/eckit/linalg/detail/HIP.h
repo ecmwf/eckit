@@ -23,16 +23,16 @@
 #undef DEPRECATED
 #endif
 
-#define CALL_HIP(e)                                                                                              \
+#define CALL_HIP(e)                                                                                               \
     {                                                                                                             \
-        hipError_t error;                                                                                        \
-        if ((error = e) != hipSuccess)                                                                           \
+        hipError_t error;                                                                                         \
+        if ((error = e) != hipSuccess)                                                                            \
             printf("%s failed with error code %d @ %s +%d\n", #e, error, __FILE__, __LINE__), exit(EXIT_FAILURE); \
     }
 
-#define CALL_HIPSPARSE(e)                                                                                          \
+#define CALL_HIPSPARSE(e)                                                                                         \
     {                                                                                                             \
-        hipsparseStatus_t error;                                                                                   \
-        if ((error = e) != HIPSPARSE_STATUS_SUCCESS)                                                               \
+        hipsparseStatus_t error;                                                                                  \
+        if ((error = e) != HIPSPARSE_STATUS_SUCCESS)                                                              \
             printf("%s failed with error code %d @ %s +%d\n", #e, error, __FILE__, __LINE__), exit(EXIT_FAILURE); \
     }

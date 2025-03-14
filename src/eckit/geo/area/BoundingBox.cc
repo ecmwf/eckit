@@ -136,8 +136,8 @@ bool BoundingBox::contains(const PointLonLat& p) const {
         return is_approximately_equal(p.lat, south);
     }
 
-    if ((south < p.lat && p.lat < north) || is_approximately_equal(p.lat, north)
-        || is_approximately_equal(p.lat, south)) {
+    if ((south < p.lat && p.lat < north) || is_approximately_equal(p.lat, north) ||
+        is_approximately_equal(p.lat, south)) {
         return PointLonLat::normalise_angle_to_minimum(p.lon, west) <= east;
     }
 
@@ -155,8 +155,8 @@ bool BoundingBox::contains(const BoundingBox& other) const {
         return false;
     }
 
-    return contains({other.north, other.west}) && contains({other.north, other.east})
-           && contains({other.south, other.west}) && contains({other.south, other.east});
+    return contains({other.north, other.west}) && contains({other.north, other.east}) &&
+           contains({other.south, other.west}) && contains({other.south, other.east});
 }
 
 
@@ -223,8 +223,8 @@ bool bounding_box_equal(const BoundingBox& a, const BoundingBox& b) {
     const std::unique_ptr<BoundingBox> c(BoundingBox::make_from_area(a.north, a.west, a.south, a.east));
     const std::unique_ptr<BoundingBox> d(BoundingBox::make_from_area(b.north, b.west, b.south, b.east));
 
-    return is_approximately_equal(c->north, d->north) && is_approximately_equal(c->south, d->south)
-           && is_approximately_equal(c->west, d->west) && is_approximately_equal(c->east, d->east);
+    return is_approximately_equal(c->north, d->north) && is_approximately_equal(c->south, d->south) &&
+           is_approximately_equal(c->west, d->west) && is_approximately_equal(c->east, d->east);
 }
 
 

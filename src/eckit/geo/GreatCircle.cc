@@ -61,11 +61,11 @@ std::vector<double> GreatCircle::latitude(double lon) const {
     const double lat2     = util::DEGREE_TO_RADIAN * B_.lat;
     const double lambda1p = util::DEGREE_TO_RADIAN * (lon - A_.lon);
     const double lambda2p = util::DEGREE_TO_RADIAN * (lon - B_.lon);
-    const double lambda
-        = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, -PointLonLat::FLAT_ANGLE);
+    const double lambda =
+        util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, -PointLonLat::FLAT_ANGLE);
 
-    double lat
-        = std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
+    double lat =
+        std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
     return {util::RADIAN_TO_DEGREE * lat};
 }
 
@@ -80,8 +80,8 @@ std::vector<double> GreatCircle::longitude(double lat) const {
         return {lon, lon + 180.};
     }
 
-    const double lon12
-        = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -PointLonLat::FLAT_ANGLE);
+    const double lon12 =
+        util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -PointLonLat::FLAT_ANGLE);
     const double lon1 = util::DEGREE_TO_RADIAN * A_.lon;
     const double lat1 = util::DEGREE_TO_RADIAN * A_.lat;
     const double lat2 = util::DEGREE_TO_RADIAN * B_.lat;

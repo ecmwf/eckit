@@ -76,6 +76,7 @@ struct SearchLonLat : Search3 {
     }
 
 private:
+
     static Search3::Point to_cartesian(const Point& p) { return geometry::UnitSphere::convertSphericalToCartesian(p); }
 };
 

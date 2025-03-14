@@ -21,6 +21,7 @@ namespace eckit::mpi {
 
 class RequestContent : public Counted {
 public:
+
     ~RequestContent() override;
 
     virtual void print(std::ostream&) const = 0;
@@ -38,6 +39,7 @@ public:
 class Request {
 
 public:  // methods
+
     /// Null request constructor
     Request();
     /// Request constructor from the Request() integer
@@ -64,6 +66,7 @@ public:  // methods
     bool test();
 
 private:  // methods
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Request& o) {
@@ -72,6 +75,7 @@ private:  // methods
     }
 
 private:  // members
+
     RequestContent* content_;
 };
 

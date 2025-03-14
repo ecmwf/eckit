@@ -20,6 +20,7 @@ namespace eckit::geo::range {
 
 class RegularCartesian final : public Regular {
 public:
+
     // -- Constructors
 
     using Regular::Regular;

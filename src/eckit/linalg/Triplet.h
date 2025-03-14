@@ -25,11 +25,10 @@ namespace eckit::linalg {
 /// Triplet of values compatible to Eigen::Triplet
 class Triplet {
 public:
-    Triplet() :
-        row_(0), col_(0), val_(0.) {}
 
-    Triplet(const Size& i, const Size& j, const Scalar& v = {0}) :
-        row_(i), col_(j), val_(v) {}
+    Triplet() : row_(0), col_(0), val_(0.) {}
+
+    Triplet(const Size& i, const Size& j, const Scalar& v = {0}) : row_(i), col_(j), val_(v) {}
 
     const Size& row() const { return row_; }
 
@@ -39,9 +38,7 @@ public:
 
     Scalar& value() { return val_; }
 
-    bool operator<(const Triplet& other) const {
-        return row_ == other.row_ ? col_ < other.col_ : row_ < other.row_;
-    }
+    bool operator<(const Triplet& other) const { return row_ == other.row_ ? col_ < other.col_ : row_ < other.row_; }
 
     bool nonZero() const { return val_ != 0.; }
 
@@ -50,6 +47,7 @@ public:
     friend std::ostream& operator<<(std::ostream&, const Triplet&);
 
 protected:
+
     Size row_;
     Size col_;
     Scalar val_;

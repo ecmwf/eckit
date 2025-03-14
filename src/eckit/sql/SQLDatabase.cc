@@ -25,8 +25,7 @@ namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SQLDatabase::SQLDatabase(const std::string& name) :
-    name_(name) {}
+SQLDatabase::SQLDatabase(const std::string& name) : name_(name) {}
 
 
 SQLDatabase::~SQLDatabase() {}

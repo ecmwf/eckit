@@ -32,6 +32,7 @@ namespace eckit::geo::grid {
 
 class Regular : public Grid {
 public:
+
     // -- Constructors
 
     explicit Regular(const Spec& spec) : Grid(spec) {}
@@ -56,6 +57,7 @@ public:
     std::vector<size_t> shape() const override { return {ny(), nx()}; }
 
 protected:
+
     // -- Types
 
     struct Ranges : std::pair<Range*, Range*> {
@@ -71,6 +73,7 @@ protected:
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Members
 
     std::unique_ptr<Range> x_;

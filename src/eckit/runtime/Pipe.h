@@ -35,6 +35,7 @@ struct OnePayload;
 template <class PAYLOAD>
 class Pipe : private NonCopyable {
 public:
+
     typedef void (*Proc)(Pipe<PAYLOAD>&);
 
     // -- Contructors
@@ -57,6 +58,7 @@ public:
     void send();
 
 private:
+
     bool error();
     void error(const std::string&);
 
@@ -93,8 +95,7 @@ struct OnePayload {
     bool ready_;
     bool done_;
     PAYLOAD payload_;
-    OnePayload() :
-        ready_(false), done_(false), payload_() {}
+    OnePayload() : ready_(false), done_(false), payload_() {}
 };
 
 template <class PAYLOAD>
@@ -110,6 +111,7 @@ class PipeTask : public Thread {
     OnePayload<PAYLOAD>* payloads_;
 
 public:
+
     PipeTask(Proc&, Pipe<PAYLOAD>&, OnePayload<PAYLOAD>*);
     void run() override;
 };

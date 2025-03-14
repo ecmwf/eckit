@@ -20,6 +20,7 @@ namespace eckit::geo::projection {
 
 class None : public Projection {
 public:
+
     // -- Constructors
 
     explicit None() = default;

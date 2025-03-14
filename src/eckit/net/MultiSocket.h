@@ -24,6 +24,7 @@ class TCPSocket;
 
 class MultiSocket {
 public:
+
     MultiSocket(size_t streams, size_t messageSize);  // Client
     MultiSocket(int port);                            // Server
     ~MultiSocket();
@@ -57,6 +58,7 @@ public:
     void debug(bool on);
 
 private:  // methods
+
     MultiSocket(const MultiSocket&);
     MultiSocket& operator=(const MultiSocket&);
 

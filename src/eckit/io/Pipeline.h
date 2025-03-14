@@ -28,6 +28,7 @@ namespace eckit {
 
 class Pipeline : private NonCopyable {
 public:
+
     // -- Contructors
 
     Pipeline(TransferWatcher& = TransferWatcher::dummy());
@@ -46,10 +47,12 @@ public:
 
 
 private:
+
     virtual void execute(DataHandle& in, DataHandle& out) = 0;
 
 
 private:  // members
+
     Mutex mutex_;
 
     long count_;

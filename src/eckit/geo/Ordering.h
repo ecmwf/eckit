@@ -21,8 +21,7 @@ class Spec;
 namespace eckit::geo {
 
 
-enum Ordering
-{
+enum Ordering {
     scan_i_positively_j_negatively_ij_i_single_direction,
     scan_i_negatively_j_negatively_ij_i_single_direction,
     scan_i_positively_j_positively_ij_i_single_direction,

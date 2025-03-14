@@ -29,6 +29,7 @@ namespace eckit {
 
 class ResourceUsage : private NonCopyable {
 public:
+
     explicit ResourceUsage();
 
     /// @param name of the timer, used for output
@@ -42,9 +43,11 @@ public:
     ~ResourceUsage();
 
 protected:  // methods
+
     void init();
 
 private:  // members
+
     std::string name_;
     std::ostream& out_;
 
@@ -59,11 +62,10 @@ private:  // members
 template <class T>
 class TraceResourceUsage : public ResourceUsage {
 public:
-    explicit TraceResourceUsage(const char* name) :
-        ResourceUsage(name, eckit::Log::debug<T>()) {}
 
-    explicit TraceResourceUsage(const std::string& name) :
-        ResourceUsage(name, eckit::Log::debug<T>()) {}
+    explicit TraceResourceUsage(const char* name) : ResourceUsage(name, eckit::Log::debug<T>()) {}
+
+    explicit TraceResourceUsage(const std::string& name) : ResourceUsage(name, eckit::Log::debug<T>()) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------

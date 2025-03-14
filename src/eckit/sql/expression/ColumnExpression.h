@@ -29,6 +29,7 @@ namespace expression {
 
 class ColumnExpression : public SQLExpression {
 public:
+
     ColumnExpression(const std::string&, const SQLTable*, int begin = -1, int end = -1);
     ColumnExpression(const std::string&, const std::string& tableReference, int begin = -1, int end = -1);
     ColumnExpression(const ColumnExpression&) = default;
@@ -45,6 +46,7 @@ public:
     }
 
 protected:
+
     const type::SQLType* type_;  // non-owning
     std::pair<const double*, bool>* value_;
     std::string columnName_;
@@ -74,6 +76,7 @@ protected:
     virtual std::string tableColumnToFullname(const SQLColumn& column) const;
 
 private:
+
     ColumnExpression& operator=(const ColumnExpression&);
 
     // -- Overridden methods

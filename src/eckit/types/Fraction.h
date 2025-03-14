@@ -29,14 +29,15 @@ class Stream;
 
 class Fraction {
 public:
+
     typedef long long value_type;
 
     // typedef __int128 value_type;
 
 public:  // methods
          // -- Contructors
-    Fraction() :
-        top_(0), bottom_(1) {}
+
+    Fraction() : top_(0), bottom_(1) {}
 
     // template<class T>
     // explicit Fraction(T top): top_(top), bottom_(1) {}
@@ -44,23 +45,15 @@ public:  // methods
     Fraction(value_type top, value_type bottom);
 
     explicit Fraction(double n);
-    explicit Fraction(int n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(short n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(long n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(long long n) :
-        top_(n), bottom_(1) {}
+    explicit Fraction(int n) : top_(n), bottom_(1) {}
+    explicit Fraction(short n) : top_(n), bottom_(1) {}
+    explicit Fraction(long n) : top_(n), bottom_(1) {}
+    explicit Fraction(long long n) : top_(n), bottom_(1) {}
 
-    explicit Fraction(unsigned int n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(unsigned short n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long long n) :
-        top_(n), bottom_(1) {}
+    explicit Fraction(unsigned int n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned short n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long long n) : top_(n), bottom_(1) {}
 
     // Fraction(const Fraction& other):
     //     top_(other.top_), bottom_(other.bottom_) {}
@@ -77,6 +70,7 @@ public:  // methods
     static Fraction fromString(const std::string&);
 
 public:  // operators
+
     static Fraction::value_type max_denominator();
 
     operator double() const { return double(top_) / double(bottom_); }
@@ -214,6 +208,7 @@ public:  // operators
     Fraction stableVersion(size_t max = 1000000) const;
 
 private:  // members
+
     value_type top_;
     value_type bottom_;
 

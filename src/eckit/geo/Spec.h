@@ -26,6 +26,7 @@ namespace eckit::geo {
 
 class Spec : public Parametrisation {
 public:
+
     Spec()           = default;
     ~Spec() override = default;
 
@@ -65,6 +66,7 @@ public:
     virtual void json(JSON&) const = 0;
 
 private:
+
     virtual void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& out, const Spec& spec) {

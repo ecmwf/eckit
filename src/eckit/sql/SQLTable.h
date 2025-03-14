@@ -33,6 +33,7 @@ class SQLDatabase;
 
 class SQLTableIterator {
 public:
+
     virtual ~SQLTableIterator() {}
     virtual void rewind()                                = 0;
     virtual bool next()                                  = 0;
@@ -47,6 +48,7 @@ typedef std::vector<std::string> ColumnNames;
 
 class SQLTable : private eckit::NonCopyable {
 public:
+
     SQLTable(SQLDatabase&, const std::string&, const std::string&);
     virtual ~SQLTable();
 
@@ -84,10 +86,10 @@ public:
     virtual void print(std::ostream& s) const;
 
     virtual SQLTableIterator* iterator(const std::vector<std::reference_wrapper<const SQLColumn>>&,
-                                       std::function<void(SQLTableIterator&)> metadataUpdateCallback) const
-        = 0;
+                                       std::function<void(SQLTableIterator&)> metadataUpdateCallback) const = 0;
 
 protected:
+
     std::string path_;
     std::string name_;
 
@@ -112,6 +114,7 @@ protected:
                                        bool hasMissingValue, double missingValue, const BitfieldDef& d = BitfieldDef());
 
 private:
+
     SQLDatabase& owner_;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLTable& p) {

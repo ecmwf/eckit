@@ -27,11 +27,13 @@ namespace eckit::geo::iterator {
 
 class Reduced final : public geo::Iterator {
 public:
+
     // -- Constructors
 
     explicit Reduced(const Grid&, size_t index = 0);
 
 private:
+
     // -- Members
 
     const grid::Reduced& grid_;

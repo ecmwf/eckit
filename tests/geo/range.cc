@@ -223,15 +223,12 @@ CASE("range::Gaussian") {
         EXPECT_APPROX(cropped->values()[0], ref[1]);
         EXPECT_APPROX(cropped->values()[1], ref[2]);
 
-        EXPECT(
-            std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-3).make_range_cropped(59.444, -59.444))->size()
-            == 4);
-        EXPECT(
-            std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).make_range_cropped(59.444, -59.444))->size()
-            == 2);
-        EXPECT(
-            std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).make_range_cropped(59.444, -59.445))->size()
-            == 3);
+        EXPECT(std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-3).make_range_cropped(59.444, -59.444))
+                   ->size() == 4);
+        EXPECT(std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).make_range_cropped(59.444, -59.444))
+                   ->size() == 2);
+        EXPECT(std::unique_ptr<Range>(range::GaussianLatitude(2, false, 1e-6).make_range_cropped(59.444, -59.445))
+                   ->size() == 3);
 
         std::unique_ptr<Range> single(range::GaussianLatitude(2, false, 1e-3).make_range_cropped(-59.444, -59.444));
         EXPECT(single->size() == 1);

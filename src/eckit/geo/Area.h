@@ -34,6 +34,7 @@ namespace eckit::geo {
 
 class Area {
 public:
+
     // -- Types
 
     using builder_t = BuilderT1<Area>;
@@ -69,6 +70,7 @@ public:
     static std::string className() { return "area"; }
 
 private:
+
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const = 0;

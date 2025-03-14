@@ -22,6 +22,7 @@ namespace eckit::linalg {
 
 class LinearAlgebraSparse {
 public:
+
     // - Static methods
 
     /// Get backend, re-setting default
@@ -55,12 +56,14 @@ public:
     virtual void dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const = 0;
 
 protected:
+
     LinearAlgebraSparse() = default;
     LinearAlgebraSparse(const std::string& name);
 
     virtual ~LinearAlgebraSparse() = default;
 
 private:
+
     virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const LinearAlgebraSparse& p) {

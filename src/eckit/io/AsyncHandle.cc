@@ -32,8 +32,8 @@ class AsyncHandleWriter : public Thread {
     virtual void run();
 
 public:
-    AsyncHandleWriter(AsyncHandle& owner) :
-        owner_(owner) {}
+
+    AsyncHandleWriter(AsyncHandle& owner) : owner_(owner) {}
 };
 
 void AsyncHandleWriter::run() {

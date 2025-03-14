@@ -29,6 +29,7 @@ class JSON;
 
 class ClusterNodes {
 public:
+
     // -- Class methods
     // None
 
@@ -56,7 +57,7 @@ public:
 
     static std::vector<NodeInfo> all();
 
-    static bool lookUpHost(const std::string& type, const std::string& host, NodeInfo& );
+    static bool lookUpHost(const std::string& type, const std::string& host, NodeInfo&);
 };
 
 

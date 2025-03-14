@@ -23,6 +23,7 @@ namespace eckit::geo::projection {
 
 class Composer : public Projection, private std::deque<Projection*> {
 public:
+
     // -- Constructors
 
     explicit Composer() = default;

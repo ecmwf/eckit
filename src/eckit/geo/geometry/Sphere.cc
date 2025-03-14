@@ -63,8 +63,8 @@ double Sphere::centralAngle(const PointLonLat& P1, const PointLonLat& P2) {
 
     auto squared = [](double x) { return x * x; };
 
-    const auto angle
-        = std::atan2(std::sqrt(squared(cp2 * sl) + squared(cp1 * sp2 - sp1 * cp2 * cl)), sp1 * sp2 + cp1 * cp2 * cl);
+    const auto angle =
+        std::atan2(std::sqrt(squared(cp2 * sl) + squared(cp1 * sp2 - sp1 * cp2 * cl)), sp1 * sp2 + cp1 * cp2 * cl);
 
     if (is_approximately_equal(angle, 0.)) {
         return 0.;

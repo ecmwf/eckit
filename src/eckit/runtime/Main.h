@@ -25,11 +25,13 @@ class PathName;
 
 class Main : private NonCopyable {
 protected:
+
     Main(int argc, char** argv, const char* homeenv = nullptr);
 
     virtual ~Main();
 
 public:  // methods
+
     static Main& instance();
 
     int argc() const;
@@ -76,6 +78,7 @@ public:  // methods
     virtual LogTarget* createMetricsLogTarget() const;
 
 protected:
+
     std::string name_;
     std::string displayName_;  ///< name to be displayed of running application
     long taskID_;
@@ -85,6 +88,7 @@ protected:
     virtual LogTarget* createDefaultLogTarget() const;
 
 private:  // members
+
     int argc_;
     char** argv_;
 

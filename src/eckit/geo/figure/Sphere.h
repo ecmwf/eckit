@@ -20,6 +20,7 @@ namespace eckit::geo::figure {
 
 class Sphere : public Figure {
 public:
+
     // -- Constructors
 
     explicit Sphere(double R);
@@ -32,6 +33,7 @@ public:
     double b() const override { return R_; }
 
 private:
+
     // -- Members
 
     const double R_;

@@ -26,6 +26,7 @@ namespace eckit {
 
 class UserMsg {
 public:
+
     virtual ~UserMsg() {}
     virtual void infoMsg(const std::string&)      = 0;
     virtual void warningMsg(const std::string&)   = 0;
@@ -39,8 +40,8 @@ class UserBuffer;
 
 class UserChannel : public std::ostream, private NonCopyable {
 public:  // types
-    enum MsgType
-    {
+
+    enum MsgType {
         NONE,
         INFO,
         ERROR,
@@ -48,6 +49,7 @@ public:  // types
     };
 
 public:  // methods
+
     /// Constructor
     UserChannel();
 
@@ -61,6 +63,7 @@ public:  // methods
     UserMsg* userMsg() const;
 
 protected:
+
     UserBuffer* buffer_;
 };
 

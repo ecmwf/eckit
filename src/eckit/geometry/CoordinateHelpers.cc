@@ -23,7 +23,7 @@ inline double modulo(const double a, const double b) {
 
 double normalise_angle(double a, const double minimum) {
     constexpr double treshold = 4. * 360.;
-    const double diff = a - minimum;
+    const double diff         = a - minimum;
     if (std::abs(diff) > treshold) {
         // This formula is not bit-dentical with original below,
         // but is faster for very large values of 'a'.

@@ -37,6 +37,7 @@ class ResourceQualifier {
     std::string name_;   // Name,  e.g. "debug"
 
 public:
+
     ResourceQualifier();
     ResourceQualifier(const std::string&, const std::string&, const std::string&);
 
@@ -52,6 +53,7 @@ public:
 class ResourceMgr : private eckit::NonCopyable {
 
 public:  // class methods
+
     static ResourceMgr& instance();
 
     static bool lookUp(const std::string&, const std::string&, const std::string&, std::string&);
@@ -59,6 +61,7 @@ public:  // class methods
     bool registCmdArgOptions(const std::string&);
 
 private:
+
     ResourceMgr();
 
     bool doLookUp(const std::string&, const std::string&, const std::string&, std::string&);
@@ -72,10 +75,12 @@ private:
     friend class ResourceBase;
 
 private:  // methods
+
     void readConfigFile(const LocalPathName&);
     bool parse(const char*);
 
 private:  // members
+
     typedef std::map<ResourceQualifier, std::string> ResMap;
 
     ResMap resmap_;

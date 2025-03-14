@@ -36,6 +36,7 @@ const char buf2[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ56789";
 
 class Tester {
 public:
+
     Tester() {
 
         std::string base = Resource<std::string>("$TMPDIR", "/tmp");

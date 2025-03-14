@@ -65,73 +65,39 @@ void LinearAlgebraCUDA::spmv(const SparseMatrix& A, const Vector& x, Vector& y) 
     CALL_CUSPARSE(cusparseCreate(&handle));
 
     cusparseSpMatDescr_t matA;
-    CALL_CUSPARSE( cusparseCreateCsr(
-        &matA,
-        A.rows(), A.cols(), A.nonZeros(),
-        d_A_rowptr,
-        d_A_colidx,
-        d_A_values,
-        CUSPARSE_INDEX_32I,
-        CUSPARSE_INDEX_32I,
-        CUSPARSE_INDEX_BASE_ZERO,
-        CUDA_R_64F) );
+    CALL_CUSPARSE(cusparseCreateCsr(&matA, A.rows(), A.cols(), A.nonZeros(), d_A_rowptr, d_A_colidx, d_A_values,
+                                    CUSPARSE_INDEX_32I, CUSPARSE_INDEX_32I, CUSPARSE_INDEX_BASE_ZERO, CUDA_R_64F));
 
     cusparseDnVecDescr_t vecX;
-    CALL_CUSPARSE( cusparseCreateDnVec(
-        &vecX,
-        x.size(),
-        d_x,
-        CUDA_R_64F) );
+    CALL_CUSPARSE(cusparseCreateDnVec(&vecX, x.size(), d_x, CUDA_R_64F));
 
     cusparseDnVecDescr_t vecY;
-    CALL_CUSPARSE( cusparseCreateDnVec(
-        &vecY,
-        y.size(),
-        d_y,
-        CUDA_R_64F) );
+    CALL_CUSPARSE(cusparseCreateDnVec(&vecY, y.size(), d_y, CUDA_R_64F));
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
 
     // Determine buffer size
     size_t bufferSize = 0;
-    CALL_CUSPARSE( cusparseSpMV_bufferSize(
-        handle,
-        CUSPARSE_OPERATION_NON_TRANSPOSE,
-        &alpha,
-        matA,
-        vecX,
-        &beta,
-        vecY,
-        CUDA_R_64F,
-        CUSPARSE_SPMV_ALG_DEFAULT,
-        &bufferSize) );
+    CALL_CUSPARSE(cusparseSpMV_bufferSize(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, matA, vecX, &beta, vecY,
+                                          CUDA_R_64F, CUSPARSE_SPMV_ALG_DEFAULT, &bufferSize));
 
     // Allocate buffer
     char* buffer;
-    CALL_CUDA( cudaMalloc(&buffer, bufferSize) );
+    CALL_CUDA(cudaMalloc(&buffer, bufferSize));
 
     // Perform SpMV
     // y = alpha * A * x + beta * y
-    CALL_CUSPARSE( cusparseSpMV(
-        handle,
-        CUSPARSE_OPERATION_NON_TRANSPOSE,
-        &alpha,
-        matA,
-        vecX,
-        &beta,
-        vecY,
-        CUDA_R_64F,
-        CUSPARSE_SPMV_ALG_DEFAULT,
-        buffer) );
+    CALL_CUSPARSE(cusparseSpMV(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, matA, vecX, &beta, vecY, CUDA_R_64F,
+                               CUSPARSE_SPMV_ALG_DEFAULT, buffer));
 
     // Copy result back to host
     CALL_CUDA(cudaMemcpy(y.data(), d_y, sizey, cudaMemcpyDeviceToHost));
 
-    CALL_CUSPARSE( cusparseDestroyDnVec(vecY) );
-    CALL_CUSPARSE( cusparseDestroyDnVec(vecX) );
-    CALL_CUSPARSE( cusparseDestroySpMat(matA) );
-    CALL_CUSPARSE( cusparseDestroy(handle) );
+    CALL_CUSPARSE(cusparseDestroyDnVec(vecY));
+    CALL_CUSPARSE(cusparseDestroyDnVec(vecX));
+    CALL_CUSPARSE(cusparseDestroySpMat(matA));
+    CALL_CUSPARSE(cusparseDestroy(handle));
 
 
     CALL_CUDA(cudaFree(d_A_rowptr));
@@ -173,72 +139,39 @@ void LinearAlgebraCUDA::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) 
     CALL_CUSPARSE(cusparseCreate(&handle));
 
     cusparseSpMatDescr_t matA;
-    CALL_CUSPARSE( cusparseCreateCsr(
-        &matA,
-        A.rows(), A.cols(), A.nonZeros(),
-        d_A_rowptr,
-        d_A_colidx,
-        d_A_values,
-        CUSPARSE_INDEX_32I,
-        CUSPARSE_INDEX_32I,
-        CUSPARSE_INDEX_BASE_ZERO,
-        CUDA_R_64F) );
+    CALL_CUSPARSE(cusparseCreateCsr(&matA, A.rows(), A.cols(), A.nonZeros(), d_A_rowptr, d_A_colidx, d_A_values,
+                                    CUSPARSE_INDEX_32I, CUSPARSE_INDEX_32I, CUSPARSE_INDEX_BASE_ZERO, CUDA_R_64F));
 
     // Create dense matrix descriptors
     cusparseDnMatDescr_t matB;
-    CALL_CUSPARSE(cusparseCreateDnMat(
-        &matB,
-        B.rows(), // rows
-        B.cols(), // cols
-        B.rows(), // leading dimension
-        d_B,
-        CUDA_R_64F,
-        CUSPARSE_ORDER_COL) );
+    CALL_CUSPARSE(cusparseCreateDnMat(&matB,
+                                      B.rows(),  // rows
+                                      B.cols(),  // cols
+                                      B.rows(),  // leading dimension
+                                      d_B, CUDA_R_64F, CUSPARSE_ORDER_COL));
 
     cusparseDnMatDescr_t matC;
-    CALL_CUSPARSE(cusparseCreateDnMat(
-        &matC,
-        C.rows(), // rows
-        C.cols(), // cols
-        C.rows(), // leading dimension
-        d_C,
-        CUDA_R_64F,
-        CUSPARSE_ORDER_COL) );
+    CALL_CUSPARSE(cusparseCreateDnMat(&matC,
+                                      C.rows(),  // rows
+                                      C.cols(),  // cols
+                                      C.rows(),  // leading dimension
+                                      d_C, CUDA_R_64F, CUSPARSE_ORDER_COL));
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
 
     size_t bufferSize = 0;
-    CALL_CUSPARSE(cusparseSpMM_bufferSize(
-        handle,
-        CUSPARSE_OPERATION_NON_TRANSPOSE,
-        CUSPARSE_OPERATION_NON_TRANSPOSE,
-        &alpha,
-        matA,
-        matB,
-        &beta,
-        matC,
-        CUDA_R_64F,
-        CUSPARSE_SPMM_ALG_DEFAULT,
-        &bufferSize));
+    CALL_CUSPARSE(cusparseSpMM_bufferSize(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE,
+                                          &alpha, matA, matB, &beta, matC, CUDA_R_64F, CUSPARSE_SPMM_ALG_DEFAULT,
+                                          &bufferSize));
 
     // Allocate buffer
     char* buffer;
     CALL_CUDA(cudaMalloc(&buffer, bufferSize));
 
     // Perform SpMM
-    CALL_CUSPARSE(cusparseSpMM(
-        handle,
-        CUSPARSE_OPERATION_NON_TRANSPOSE,
-        CUSPARSE_OPERATION_NON_TRANSPOSE,
-        &alpha,
-        matA,
-        matB,
-        &beta,
-        matC,
-        CUDA_R_64F,
-        CUSPARSE_SPMM_ALG_DEFAULT,
-        buffer));
+    CALL_CUSPARSE(cusparseSpMM(handle, CUSPARSE_OPERATION_NON_TRANSPOSE, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, matA,
+                               matB, &beta, matC, CUDA_R_64F, CUSPARSE_SPMM_ALG_DEFAULT, buffer));
 
     CALL_CUDA(cudaMemcpy(C.data(), d_C, sizeC, cudaMemcpyDeviceToHost));
 

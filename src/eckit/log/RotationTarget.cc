@@ -30,6 +30,7 @@ static StaticMutex local_mutex;
 
 class RotationOutputStream {
 public:
+
     static RotationOutputStream& instance(const std::string& name) {
         AutoLock<StaticMutex> lock(local_mutex);
 
@@ -44,7 +45,8 @@ public:
     }
 
     void write(const char* start, const char* end) {
-        if(start >= end) return;
+        if (start >= end)
+            return;
         AutoLock<StaticMutex> lock(local_mutex);
         rotout().write(start, end - start);
     }
@@ -57,6 +59,7 @@ public:
     }
 
 private:
+
     RotationOutputStream(const std::string& name) :
         name_(name),
         logfileFormat_(Resource<std::string>("logfileFormat", "~/log/%Y-%m-%d/out")),
@@ -105,6 +108,7 @@ private:
 
 
 private:  // members
+
     std::ofstream* last_ = nullptr;
     time_t lastTime_     = 0;
 
@@ -116,8 +120,7 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-RotationTarget::RotationTarget(const std::string& name) :
-    name_(name) {
+RotationTarget::RotationTarget(const std::string& name) : name_(name) {
     if (name_.empty()) {
         name_ = Main::instance().name();
     }
@@ -126,7 +129,8 @@ RotationTarget::RotationTarget(const std::string& name) :
 RotationTarget::~RotationTarget() {}
 
 void RotationTarget::write(const char* start, const char* end) {
-    if(start >= end) return;
+    if (start >= end)
+        return;
     RotationOutputStream::instance(name_).write(start, end);
 }
 void RotationTarget::flush() {

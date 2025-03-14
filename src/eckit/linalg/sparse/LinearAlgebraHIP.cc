@@ -65,73 +65,39 @@ void LinearAlgebraHIP::spmv(const SparseMatrix& A, const Vector& x, Vector& y) c
     CALL_HIPSPARSE(hipsparseCreate(&handle));
 
     hipsparseSpMatDescr_t matA;
-    CALL_HIPSPARSE( hipsparseCreateCsr(
-        &matA,
-        A.rows(), A.cols(), A.nonZeros(),
-        d_A_rowptr,
-        d_A_colidx,
-        d_A_values,
-        HIPSPARSE_INDEX_32I,
-        HIPSPARSE_INDEX_32I,
-        HIPSPARSE_INDEX_BASE_ZERO,
-        HIP_R_64F) );
+    CALL_HIPSPARSE(hipsparseCreateCsr(&matA, A.rows(), A.cols(), A.nonZeros(), d_A_rowptr, d_A_colidx, d_A_values,
+                                      HIPSPARSE_INDEX_32I, HIPSPARSE_INDEX_32I, HIPSPARSE_INDEX_BASE_ZERO, HIP_R_64F));
 
     hipsparseDnVecDescr_t vecX;
-    CALL_HIPSPARSE( hipsparseCreateDnVec(
-        &vecX,
-        x.size(),
-        d_x,
-        HIP_R_64F) );
+    CALL_HIPSPARSE(hipsparseCreateDnVec(&vecX, x.size(), d_x, HIP_R_64F));
 
     hipsparseDnVecDescr_t vecY;
-    CALL_HIPSPARSE( hipsparseCreateDnVec(
-        &vecY,
-        y.size(),
-        d_y,
-        HIP_R_64F) );
+    CALL_HIPSPARSE(hipsparseCreateDnVec(&vecY, y.size(), d_y, HIP_R_64F));
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
 
     // Determine buffer size
     size_t bufferSize = 0;
-    CALL_HIPSPARSE( hipsparseSpMV_bufferSize(
-        handle,
-        HIPSPARSE_OPERATION_NON_TRANSPOSE,
-        &alpha,
-        matA,
-        vecX,
-        &beta,
-        vecY,
-        HIP_R_64F,
-        HIPSPARSE_SPMV_ALG_DEFAULT,
-        &bufferSize) );
+    CALL_HIPSPARSE(hipsparseSpMV_bufferSize(handle, HIPSPARSE_OPERATION_NON_TRANSPOSE, &alpha, matA, vecX, &beta, vecY,
+                                            HIP_R_64F, HIPSPARSE_SPMV_ALG_DEFAULT, &bufferSize));
 
     // Allocate buffer
     char* buffer;
-    CALL_HIP( hipMalloc(&buffer, bufferSize) );
+    CALL_HIP(hipMalloc(&buffer, bufferSize));
 
     // Perform SpMV
     // y = alpha * A * x + beta * y
-    CALL_HIPSPARSE( hipsparseSpMV(
-        handle,
-        HIPSPARSE_OPERATION_NON_TRANSPOSE,
-        &alpha,
-        matA,
-        vecX,
-        &beta,
-        vecY,
-        HIP_R_64F,
-        HIPSPARSE_SPMV_ALG_DEFAULT,
-        buffer) );
+    CALL_HIPSPARSE(hipsparseSpMV(handle, HIPSPARSE_OPERATION_NON_TRANSPOSE, &alpha, matA, vecX, &beta, vecY, HIP_R_64F,
+                                 HIPSPARSE_SPMV_ALG_DEFAULT, buffer));
 
     // Copy result back to host
     CALL_HIP(hipMemcpy(y.data(), d_y, sizey, hipMemcpyDeviceToHost));
 
-    CALL_HIPSPARSE( hipsparseDestroyDnVec(vecY) );
-    CALL_HIPSPARSE( hipsparseDestroyDnVec(vecX) );
-    CALL_HIPSPARSE( hipsparseDestroySpMat(matA) );
-    CALL_HIPSPARSE( hipsparseDestroy(handle) );
+    CALL_HIPSPARSE(hipsparseDestroyDnVec(vecY));
+    CALL_HIPSPARSE(hipsparseDestroyDnVec(vecX));
+    CALL_HIPSPARSE(hipsparseDestroySpMat(matA));
+    CALL_HIPSPARSE(hipsparseDestroy(handle));
 
 
     CALL_HIP(hipFree(d_A_rowptr));
@@ -173,72 +139,39 @@ void LinearAlgebraHIP::spmm(const SparseMatrix& A, const Matrix& B, Matrix& C) c
     CALL_HIPSPARSE(hipsparseCreate(&handle));
 
     hipsparseSpMatDescr_t matA;
-    CALL_HIPSPARSE( hipsparseCreateCsr(
-        &matA,
-        A.rows(), A.cols(), A.nonZeros(),
-        d_A_rowptr,
-        d_A_colidx,
-        d_A_values,
-        HIPSPARSE_INDEX_32I,
-        HIPSPARSE_INDEX_32I,
-        HIPSPARSE_INDEX_BASE_ZERO,
-        HIP_R_64F) );
+    CALL_HIPSPARSE(hipsparseCreateCsr(&matA, A.rows(), A.cols(), A.nonZeros(), d_A_rowptr, d_A_colidx, d_A_values,
+                                      HIPSPARSE_INDEX_32I, HIPSPARSE_INDEX_32I, HIPSPARSE_INDEX_BASE_ZERO, HIP_R_64F));
 
     // Create dense matrix descriptors
     hipsparseDnMatDescr_t matB;
-    CALL_HIPSPARSE(hipsparseCreateDnMat(
-        &matB,
-        B.rows(), // rows
-        B.cols(), // cols
-        B.rows(), // leading dimension
-        d_B,
-        HIP_R_64F,
-        HIPSPARSE_ORDER_COL) );
+    CALL_HIPSPARSE(hipsparseCreateDnMat(&matB,
+                                        B.rows(),  // rows
+                                        B.cols(),  // cols
+                                        B.rows(),  // leading dimension
+                                        d_B, HIP_R_64F, HIPSPARSE_ORDER_COL));
 
     hipsparseDnMatDescr_t matC;
-    CALL_HIPSPARSE(hipsparseCreateDnMat(
-        &matC,
-        C.rows(), // rows
-        C.cols(), // cols
-        C.rows(), // leading dimension
-        d_C,
-        HIP_R_64F,
-        HIPSPARSE_ORDER_COL) );
+    CALL_HIPSPARSE(hipsparseCreateDnMat(&matC,
+                                        C.rows(),  // rows
+                                        C.cols(),  // cols
+                                        C.rows(),  // leading dimension
+                                        d_C, HIP_R_64F, HIPSPARSE_ORDER_COL));
 
     const Scalar alpha = 1.0;
     const Scalar beta  = 0.0;
 
     size_t bufferSize = 0;
-    CALL_HIPSPARSE(hipsparseSpMM_bufferSize(
-        handle,
-        HIPSPARSE_OPERATION_NON_TRANSPOSE,
-        HIPSPARSE_OPERATION_NON_TRANSPOSE,
-        &alpha,
-        matA,
-        matB,
-        &beta,
-        matC,
-        HIP_R_64F,
-        HIPSPARSE_SPMM_ALG_DEFAULT,
-        &bufferSize));
+    CALL_HIPSPARSE(hipsparseSpMM_bufferSize(handle, HIPSPARSE_OPERATION_NON_TRANSPOSE,
+                                            HIPSPARSE_OPERATION_NON_TRANSPOSE, &alpha, matA, matB, &beta, matC,
+                                            HIP_R_64F, HIPSPARSE_SPMM_ALG_DEFAULT, &bufferSize));
 
     // Allocate buffer
     char* buffer;
     CALL_HIP(hipMalloc(&buffer, bufferSize));
 
     // Perform SpMM
-    CALL_HIPSPARSE(hipsparseSpMM(
-        handle,
-        HIPSPARSE_OPERATION_NON_TRANSPOSE,
-        HIPSPARSE_OPERATION_NON_TRANSPOSE,
-        &alpha,
-        matA,
-        matB,
-        &beta,
-        matC,
-        HIP_R_64F,
-        HIPSPARSE_SPMM_ALG_DEFAULT,
-        buffer));
+    CALL_HIPSPARSE(hipsparseSpMM(handle, HIPSPARSE_OPERATION_NON_TRANSPOSE, HIPSPARSE_OPERATION_NON_TRANSPOSE, &alpha,
+                                 matA, matB, &beta, matC, HIP_R_64F, HIPSPARSE_SPMM_ALG_DEFAULT, buffer));
 
     CALL_HIP(hipMemcpy(C.data(), d_C, sizeC, hipMemcpyDeviceToHost));
 

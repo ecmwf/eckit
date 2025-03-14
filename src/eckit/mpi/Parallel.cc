@@ -10,13 +10,13 @@
 
 #include "eckit/mpi/Parallel.h"
 
+#include <unistd.h>
 #include <atomic>
 #include <cerrno>
 #include <csetjmp>
 #include <csignal>
 #include <limits>
 #include <sstream>
-#include <unistd.h>
 
 #include "eckit/exception/Exceptions.h"
 
@@ -35,14 +35,14 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::atomic<size_t> initCounter{}; // zero-initialized
+std::atomic<size_t> initCounter{};  // zero-initialized
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class MPIError : public eckit::Exception {
 public:
-    MPIError(const std::string& msg, const eckit::CodeLocation& loc) :
-        eckit::Exception(msg, loc) {
+
+    MPIError(const std::string& msg, const eckit::CodeLocation& loc) : eckit::Exception(msg, loc) {
         std::ostringstream s;
         s << "MPI Error: " << msg << " in " << loc;
         reason(s.str());
@@ -97,7 +97,9 @@ struct LocalMutex {
         static LocalMutex instance;
         return instance;
     }
+
 private:
+
     LocalMutex() = default;
     eckit::Mutex mutex_;
 };
@@ -113,19 +115,15 @@ struct WorkaroundSegvAtExit {
     //
     // For more details see https://github.com/ecmwf/eckit/pull/171
 
-    static void enabled(bool value) {
-        instance().enabled_ = value;
-    }
+    static void enabled(bool value) { instance().enabled_ = value; }
 
-    static bool enabled() {
-        return instance().enabled_;
-    }
+    static bool enabled() { return instance().enabled_; }
 
     static void MPI_Finalize() {
         // This function calls MPI_Finalize, traps a SIGSEGV when it happens, ignores it,
         // and restores the SIGSEGV signal handler to the default, to handle further SIGSEGV.
         static std::jmp_buf sigsegv_occured;
-        std::signal(SIGSEGV, [](int){std::longjmp(sigsegv_occured, true);});
+        std::signal(SIGSEGV, [](int) { std::longjmp(sigsegv_occured, true); });
         if (setjmp(sigsegv_occured)) {
             std::signal(SIGSEGV, SIG_DFL);
             // std::cerr << "WARNING: Trapped SIGSEGV fault during MPI_Finalize() after main()" << std::endl;
@@ -135,6 +133,7 @@ struct WorkaroundSegvAtExit {
     }
 
 private:
+
     static WorkaroundSegvAtExit& instance() {
         static WorkaroundSegvAtExit instance;
         return instance;
@@ -217,8 +216,7 @@ size_t getSize(MPI_Comm comm) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Parallel::Parallel(std::string_view name) :
-    Comm(name) /* don't use member initialisation list */ {
+Parallel::Parallel(std::string_view name) : Comm(name) /* don't use member initialisation list */ {
 
     if (initCounter == 0) {
         initialize();
@@ -230,8 +228,7 @@ Parallel::Parallel(std::string_view name) :
     size_ = getSize(comm_);
 }
 
-Parallel::Parallel(std::string_view name, MPI_Comm comm, bool) :
-    Comm(name) /* don't use member initialisation list */ {
+Parallel::Parallel(std::string_view name, MPI_Comm comm, bool) : Comm(name) /* don't use member initialisation list */ {
 
     if (initCounter == 0) {
         initialize();
@@ -243,8 +240,7 @@ Parallel::Parallel(std::string_view name, MPI_Comm comm, bool) :
     size_ = getSize(comm_);
 }
 
-Parallel::Parallel(std::string_view name, int comm) :
-    Comm(name) {
+Parallel::Parallel(std::string_view name, int comm) : Comm(name) {
 
     initCounter++;
 
@@ -536,7 +532,8 @@ void Parallel::scatterv(const void* sendbuf, const int sendcounts[], const int d
                           recvbuf, int(recvcount), mpitype, int(root), comm_));
 }
 
-void Parallel::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op, size_t root) const {
+void Parallel::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op,
+                      size_t root) const {
     ASSERT(count < size_t(std::numeric_limits<int>::max()));
 
     MPI_Datatype mpitype = toType(type);
@@ -668,16 +665,16 @@ Request Parallel::iSend(const void* send, size_t count, Data::Code type, int des
     return req;
 }
 
-Status Parallel::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-                                    int dest, int sendtag, int source, int recvtag) const {
+Status Parallel::sendReceiveReplace(void* sendrecv, size_t count, Data::Code type, int dest, int sendtag, int source,
+                                    int recvtag) const {
     ASSERT(count < size_t(std::numeric_limits<int>::max()));
 
     MPI_Datatype mpitype = toType(type);
 
     Status status = createStatus();
 
-    MPI_CALL(MPI_Sendrecv_replace(sendrecv, int(count), mpitype,
-                                  dest, sendtag, source, recvtag, comm_, toStatus(status)));
+    MPI_CALL(
+        MPI_Sendrecv_replace(sendrecv, int(count), mpitype, dest, sendtag, source, recvtag, comm_, toStatus(status)));
 
     return status;
 }
@@ -744,7 +741,8 @@ Comm& Parallel::create(const Group& group, const std::string& name) const {
 
 Comm& Parallel::create(const Group& group, int tag, const std::string& name) const {
     MPI_Comm new_mpi_comm;
-    MPI_CALL(MPI_Comm_create_group(comm_, dynamic_cast<const ParallelGroup&>(*group.content_).group_, tag, &new_mpi_comm));
+    MPI_CALL(
+        MPI_Comm_create_group(comm_, dynamic_cast<const ParallelGroup&>(*group.content_).group_, tag, &new_mpi_comm));
     Comm* newcomm = new Parallel(name, new_mpi_comm, true);
     addComm(name.c_str(), newcomm);
     return *newcomm;

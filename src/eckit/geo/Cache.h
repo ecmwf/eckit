@@ -24,15 +24,18 @@ namespace eckit::geo {
 
 class Cache {
 public:
+
     using bytes_size_t = decltype(sizeof(int));
 
     static bytes_size_t total_footprint();
     static void total_purge();
 
 protected:
+
     Cache();
 
 private:
+
     virtual bytes_size_t footprint() const = 0;
     virtual void purge()                   = 0;
 };
@@ -41,6 +44,7 @@ private:
 template <typename Key, typename Value>
 class CacheT final : private Cache {
 private:
+
     template <typename V>
     using footprint_t = decltype(std::declval<V>().footprint());
 
@@ -54,6 +58,7 @@ private:
     static inline constexpr bool has_footprint_v = has_footprint<V>::value;
 
 public:
+
     using key_type   = Key;
     using value_type = Value;
 
@@ -97,6 +102,7 @@ public:
     void purge() final { container_.clear(); }
 
 private:
+
     mutable std::map<key_type, value_type> container_;
 
     util::recursive_mutex* mutex_;

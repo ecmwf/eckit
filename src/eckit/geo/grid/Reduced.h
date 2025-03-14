@@ -25,6 +25,7 @@ namespace eckit::geo::grid {
 
 class Reduced : public Grid {
 public:
+
     // -- Methods
 
     size_t size() const override { return niacc().back(); }
@@ -36,6 +37,7 @@ public:
     std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
 protected:
+
     // -- Constructors
 
     explicit Reduced(const area::BoundingBox& = {}, Projection* = nullptr);
@@ -48,6 +50,7 @@ protected:
     virtual size_t nj() const         = 0;
 
 private:
+
     // -- Members
 
     mutable std::vector<size_t> niacc_;

@@ -32,6 +32,7 @@ const char tbuf[] = "74e1feb8d0b1d328cbea63832c2dcfb2b4fa1adfeb8d0b1d328cb53d50e
 
 class TestAIO {
 public:
+
     TestAIO() {
         std::string base = Resource<std::string>("$TMPDIR", "/tmp");
         path_            = PathName::unique(base + "/file") + ".dat";

@@ -38,9 +38,7 @@ CASE("Test AssertionFailed") {
 
 CASE("Test FunctionalityNotSupported") {
     struct A {
-        virtual void method() {
-            throw FunctionalityNotSupported("not supported");
-        }
+        virtual void method() { throw FunctionalityNotSupported("not supported"); }
     } a;
 
     struct B final : A {

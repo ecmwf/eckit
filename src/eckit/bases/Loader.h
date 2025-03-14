@@ -27,6 +27,7 @@ namespace eckit {
 class Loader : public ClassExtent<Loader> {
 
 public:  // methods
+
     Loader();
     virtual ~Loader();
 

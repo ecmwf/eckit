@@ -25,10 +25,10 @@ namespace eckit {
 template <class T, int size>
 class Padded : public T {
 private:
+
     // Add the padding
 
-    enum
-    {
+    enum {
         align_ = size,
         osize_ = sizeof(T)
     };

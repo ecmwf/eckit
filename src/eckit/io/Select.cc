@@ -25,19 +25,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Select::Select() :
-    last_(-1) {
+Select::Select() : last_(-1) {
     FD_ZERO(&files_);
 }
 
-Select::Select(net::TCPSocket& p) :
-    last_(-1) {
+Select::Select(net::TCPSocket& p) : last_(-1) {
     FD_ZERO(&files_);
     add(p);
 }
 
-Select::Select(int fd) :
-    last_(-1) {
+Select::Select(int fd) : last_(-1) {
     FD_ZERO(&files_);
     add(fd);
 }

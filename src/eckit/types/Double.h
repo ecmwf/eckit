@@ -27,6 +27,7 @@ class DumpLoad;
 
 class Double {
 public:
+
     Double(double = 0);
     Double(const std::string&);
 
@@ -35,6 +36,7 @@ public:
     ~Double() {}
 
 public:  // operators
+
     operator std::string() const;
 
     bool operator==(const Double& other) const { return round() == other.round(); }
@@ -46,15 +48,18 @@ public:  // operators
     bool operator>(const Double& other) const { return round() > other.round(); }
 
 public:  // methods
+
     void dump(DumpLoad&) const;
     void load(DumpLoad&);
 
     double round() const;
 
 protected:  // methods
+
     void print(std::ostream& s) const;
 
 private:  // members
+
     double value_;
 
     friend std::ostream& operator<<(std::ostream& s, const Double& p) {

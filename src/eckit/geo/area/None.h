@@ -20,6 +20,7 @@ namespace eckit::geo {
 
 class None final : public Area {
 public:
+
     // -- Constructors
 
     None() = default;
@@ -31,6 +32,7 @@ public:
     bool intersects(area::BoundingBox&) const override { return false; }
 
 private:
+
     // -- Overriden methods
 
     void fill_spec(spec::Custom&) const override {}

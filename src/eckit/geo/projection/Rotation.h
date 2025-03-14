@@ -23,6 +23,7 @@ namespace eckit::geo::projection {
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
 class Rotation : public Projection {
 public:
+
     // -- Constructors
 
     explicit Rotation(const Spec& spec) : Rotation(*std::unique_ptr<Rotation>(make_from_spec(spec))) {}
@@ -61,11 +62,13 @@ public:
     [[nodiscard]] static Rotation* make_from_spec(const Spec&);
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Types
 
     struct Implementation {

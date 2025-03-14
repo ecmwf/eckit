@@ -79,9 +79,11 @@ class Comm : private eckit::NonCopyable {
     friend class Environment;
 
 public:  // class methods
+
     static Comm& comm(std::string_view name = {});
 
 public:  // methods
+
     std::string name() const { return name_; }
 
     /// @brief Returns name of processor according to MPI
@@ -368,12 +370,10 @@ public:  // methods
     ///
 
     template <typename T>
-    Status sendReceiveReplace(T* sendrecv, size_t count,
-                              int dest, int sendtag, int source, int recvtag) const;
+    Status sendReceiveReplace(T* sendrecv, size_t count, int dest, int sendtag, int source, int recvtag) const;
 
     template <typename T>
-    Status sendReceiveReplace(T& sendrecv,
-                              int dest, int sendtag, int source, int recvtag) const;
+    Status sendReceiveReplace(T& sendrecv, int dest, int sendtag, int source, int recvtag) const;
 
     ///
     /// All to all of vector< vector<> >
@@ -395,57 +395,45 @@ public:  // methods
     virtual int communicator() const = 0;
 
 protected:  // methods
+
     virtual size_t getCount(Status& status, Data::Code datatype) const = 0;
 
     virtual void broadcast(void* buffer, size_t count, Data::Code datatype, size_t root) const = 0;
 
     virtual void gather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype,
-                        size_t root) const
-        = 0;
+                        size_t root) const = 0;
 
     virtual void scatter(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount, Data::Code datatype,
-                         size_t root) const
-        = 0;
+                         size_t root) const = 0;
 
     virtual void gatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[],
-                         const int displs[], Data::Code datatype, size_t root) const
-        = 0;
+                         const int displs[], Data::Code datatype, size_t root) const = 0;
 
     virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf,
-                          size_t recvcount, Data::Code datatype, size_t root) const
-        = 0;
+                          size_t recvcount, Data::Code datatype, size_t root) const = 0;
 
-    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code datatype,
-                        Operation::Code op, size_t root) const
-        = 0;
+    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code datatype, Operation::Code op,
+                        size_t root) const = 0;
 
-    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype,
-                               Operation::Code op, size_t root) const
-        = 0;
+    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype, Operation::Code op,
+                               size_t root) const = 0;
 
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code datatype,
-                           Operation::Code op) const
-        = 0;
+                           Operation::Code op) const = 0;
 
-    virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype,
-                                  Operation::Code op) const
-        = 0;
+    virtual void allReduceInPlace(void* sendrecvbuf, size_t count, Data::Code datatype, Operation::Code op) const = 0;
 
     virtual void allGather(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount,
-                           Data::Code datatype) const
-        = 0;
+                           Data::Code datatype) const = 0;
 
     virtual void allGatherv(const void* sendbuf, size_t sendcount, void* recvbuf, const int recvcounts[],
-                            const int displs[], Data::Code datatype) const
-        = 0;
+                            const int displs[], Data::Code datatype) const = 0;
 
     virtual void allToAll(const void* sendbuf, size_t sendcount, void* recvbuf, size_t recvcount,
-                          Data::Code datatype) const
-        = 0;
+                          Data::Code datatype) const = 0;
 
     virtual void allToAllv(const void* sendbuf, const int sendcounts[], const int sdispls[], void* recvbuf,
-                           const int recvcounts[], const int rdispls[], Data::Code datatype) const
-        = 0;
+                           const int recvcounts[], const int rdispls[], Data::Code datatype) const = 0;
 
     virtual Status receive(void* recv, size_t count, Data::Code datatype, int source, int tag) const = 0;
 
@@ -457,9 +445,8 @@ protected:  // methods
 
     virtual Request iSend(const void* send, size_t count, Data::Code datatype, int dest, int tag) const = 0;
 
-    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code datatype,
-                                      int dest, int sendtag, int source, int recvtag) const
-        = 0;
+    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code datatype, int dest, int sendtag,
+                                      int source, int recvtag) const = 0;
 
     /// @brief Call free on this communicator
     /// After calling this method, the communicator should not be used again
@@ -470,6 +457,7 @@ protected:  // methods
     virtual eckit::mpi::Comm* self() const = 0;
 
 private:  // methods
+
     virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const Comm& o) {
@@ -478,6 +466,7 @@ private:  // methods
     }
 
 protected:  // methods
+
     Comm(std::string_view name);
 
     virtual ~Comm();
@@ -497,6 +486,7 @@ class CommFactory {
     virtual Comm* make(std::string_view name, int) = 0;
 
 protected:
+
     CommFactory(std::string_view builder);
     virtual ~CommFactory();
 
@@ -510,8 +500,8 @@ class CommBuilder : public CommFactory {
     Comm* make(std::string_view name, int comm) override { return new T(name, comm); }
 
 public:
-    CommBuilder(const std::string& builder) :
-        CommFactory(builder) {}
+
+    CommBuilder(const std::string& builder) : CommFactory(builder) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -571,7 +561,7 @@ void eckit::mpi::Comm::broadcast(Iter first, Iter last, size_t root) const {
     ECKIT_MPI_ASSERT(root < commsize);
 
     typename std::iterator_traits<Iter>::difference_type n = std::distance(first, last);
-    Data::Code type                                        = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+    Data::Code type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
 
     broadcast(&(*first), n, type, root);
 }
@@ -790,7 +780,7 @@ void eckit::mpi::Comm::reduceInPlace(T& sendrecvbuf, Operation::Code op, size_t 
 template <class Iter>
 void eckit::mpi::Comm::reduceInPlace(Iter first, Iter last, Operation::Code op, size_t root) const {
     typename std::iterator_traits<Iter>::difference_type count = std::distance(first, last);
-    Data::Code type                                            = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+    Data::Code type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
     reduceInPlace(&(*first), count, type, op, root);
 }
 
@@ -831,7 +821,7 @@ void eckit::mpi::Comm::allReduceInPlace(T& sendrecvbuf, Operation::Code op) cons
 template <class Iter>
 void eckit::mpi::Comm::allReduceInPlace(Iter first, Iter last, Operation::Code op) const {
     typename std::iterator_traits<Iter>::difference_type count = std::distance(first, last);
-    Data::Code type                                            = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
+    Data::Code type = Data::Type<typename std::iterator_traits<Iter>::value_type>::code();
     allReduceInPlace(&(*first), count, type, op);
 }
 
@@ -959,17 +949,15 @@ void eckit::mpi::Comm::synchronisedSend(const T& sendbuf, int dest, int tag) con
 ///
 
 template <typename T>
-eckit::mpi::Status eckit::mpi::Comm::sendReceiveReplace(T* sendrecv, size_t count,
-                                                        int dest, int sendtag, int source, int recvtag) const {
-    return sendReceiveReplace(sendrecv, count, Data::Type<T>::code(),
-                              dest, sendtag, source, recvtag);
+eckit::mpi::Status eckit::mpi::Comm::sendReceiveReplace(T* sendrecv, size_t count, int dest, int sendtag, int source,
+                                                        int recvtag) const {
+    return sendReceiveReplace(sendrecv, count, Data::Type<T>::code(), dest, sendtag, source, recvtag);
 }
 
 template <typename T>
-eckit::mpi::Status eckit::mpi::Comm::sendReceiveReplace(T& sendrecv,
-                                                        int dest, int sendtag, int source, int recvtag) const {
-    return sendReceiveReplace(&sendrecv, 1, Data::Type<T>::code(),
-                              dest, sendtag, source, recvtag);
+eckit::mpi::Status eckit::mpi::Comm::sendReceiveReplace(T& sendrecv, int dest, int sendtag, int source,
+                                                        int recvtag) const {
+    return sendReceiveReplace(&sendrecv, 1, Data::Type<T>::code(), dest, sendtag, source, recvtag);
 }
 
 ///

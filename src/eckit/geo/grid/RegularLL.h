@@ -20,6 +20,7 @@ namespace eckit::geo::grid {
 
 class RegularLL final : public Regular {
 public:
+
     // -- Constructors
 
     explicit RegularLL(const Spec&);

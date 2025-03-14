@@ -17,8 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MemoryCmd::MemoryCmd() :
-    CmdResource("memory") {}
+MemoryCmd::MemoryCmd() : CmdResource("memory") {}
 
 MemoryCmd::~MemoryCmd() {}
 

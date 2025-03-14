@@ -13,9 +13,12 @@
 #pragma once
 
 #include <iosfwd>
+#include <map>
 #include <string>
 
 #include "eckit/filesystem/PathName.h"
+
+#include "shapefil.h"
 
 
 namespace eckit::geo {
@@ -34,27 +37,39 @@ struct Shapefile {
     // -- Constructors
 
     explicit Shapefile(const Spec&);
-    explicit Shapefile(const PathName&, const std::string& field = {});
+    explicit Shapefile(const PathName& shp, const PathName& dbf = "");
+
+    // -- Destructor
+
+    ~Shapefile();
 
     // -- Methods
 
     std::ostream& list(std::ostream&) const;
 
-    [[nodiscard]] Area* make_area_from_string(const std::string&) const;
-    [[nodiscard]] Area* make_area_from_int(int) const;
+    void set_name_field(const std::string&);
+    [[nodiscard]] Area* make_area_from_name(const std::string&) const;
+
+    size_t n_entities() const { return static_cast<size_t>(nEntities_); }
+    [[nodiscard]] Area* make_area_from_entity(size_t) const;
 
     // -- Class methods
 
     [[nodiscard]] static Shapefile* make_from_url(const std::string&);
-    [[nodiscard]] static Shapefile* make_from_zip(const PathName&);
 
 private:
     // -- Members
 
-    PathName shp_;
-    PathName dbf_;
+    const PathName shpPath_;
+    const PathName dbfPath_;
 
-    const std::string field_;
+    SHPInfo* shp_;
+
+    std::string field_;
+    int fieldIndex_;
+    int nEntities_;
+
+    std::map<std::string, int> to_entity;
 
     // -- Overridden methods
 

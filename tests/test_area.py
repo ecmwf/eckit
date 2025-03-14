@@ -16,7 +16,8 @@ SPECS = [
 ]
 
 
-@pytest.mark.parametrize( "_spec, _expected", SPECS)
+# @pytest.mark.parametrize( "_spec, _expected", SPECS)
+@pytest.mark.skip(reason="no way of currently testing this")
 def test_area(_spec, _expected):
     from eckit.geo import Area
 

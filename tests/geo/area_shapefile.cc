@@ -12,6 +12,9 @@
 
 #include "eckit/geo/Shapefile.h"
 
+#include <memory>
+
+#include "eckit/geo/Area.h"
 #include "eckit/testing/Test.h"
 
 
@@ -19,8 +22,17 @@ namespace eckit::geo::test {
 
 
 CASE("Shapefile") {
-    Shapefile shp("world_countries_coasts.shp.zip");
-    shp.list(Log::info()) << std::endl;
+    Shapefile shp("world_countries_coasts.shp.zip", "country");
+    // shp.list(Log::info()) << std::endl;
+
+    std::unique_ptr<Area> area(shp.make_area_from_int(0));
+
+    for (double lat = 39.7; lat > 37.; lat -= .01) {
+        for (double lon = -31.33; lon <= -25.13; lon += 0.01) {
+            std::cout << (area->contains({lon, lat}) ? '!' : '.');
+        }
+        std::cout << std::endl;
+    }
 }
 
 

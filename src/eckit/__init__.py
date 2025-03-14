@@ -7,17 +7,10 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-
-def _load_library(library):
-    from ctypes import CDLL
-
-    import findlibs
-
-    lib = findlibs.find(library)
-    CDLL(lib)
+import findlibs
 
 
-_load_library("eckit")
+findlibs.load("eckit")
 
 
 from _eckit import *

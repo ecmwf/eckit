@@ -7,10 +7,10 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
+import findlibs
 
-from eckit import _load_library
 
-_load_library("eckit_geo")
+findlibs.load("eckit_geo")
 
 
 from ._eckit_geo import *

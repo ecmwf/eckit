@@ -74,29 +74,42 @@ std::string Library::prefixDirectory() const {
     return prefixDirectory_;
 }
 
-std::string Library::home() const {
+const std::vector<std::string>& Library::homes() const {
     AutoLock<Mutex> lock(mutex_);
 
-    std::string libhome = prefix_ + "_HOME";
-    char* home          = ::getenv(libhome.c_str());
-    if (home) {
-        return home;
+    if (!homes_.empty()) {
+        return homes_;
     }
 
-    return home_;  // may return empty string (meaning not set)
+    std::string libhome = prefix_ + "_HOME";
+    char* home_env = ::getenv(libhome.c_str());
+
+    // Home is a colon separated list of directories
+    if (home_env) {
+        std::stringstream ss(home_env);
+        std::string item;
+        while (std::getline(ss, item, ':')) {
+            homes_.push_back(item);
+        }
+    }
+    else {
+        // Default homes
+        LocalPathName prefix = prefixDirectory();
+        homes_ = {prefix, prefix.dirName(), prefix.dirName().dirName(), "/"};
+    }
+
+    ASSERT(!homes_.empty());
+    return homes_;
 }
 
 std::string Library::libraryHome() const {
-    std::string h = home();
-    if (!h.empty()) {
-        return h;
-    }
-    return prefixDirectory();
+    const std::vector<std::string>&  h = homes();
+    return h[0];
 }
 
 void Library::libraryHome(const std::string& home) {
     AutoLock<Mutex> lock(mutex_);
-    home_ = home;
+    homes_ = {home};
 }
 
 std::string Library::libraryPath() const {
@@ -155,39 +168,20 @@ std::string Library::expandPath(const std::string& p) const {
     ASSERT(p.substr(0, s.size()) == s);
     ASSERT(p.size() == s.size() || p[s.size()] == '/');
 
-    // 1. if HOME is set for this library, either via env variable LIBNAME_HOME exists
-    //    or set in code expand ~lib/ to its content
+    //  If HOME is set for this library, either via env variable LIBNAME_HOME
+    //  or set in code, expand ~lib/ to its content
+    std::string tail = "/" + p.substr(s.size());
+    const std::vector<std::string>& h = homes();
 
-    const std::string h = home();
-    if (!h.empty()) {
-        std::string result = h + "/" + p.substr(s.size());
-        return result;
+    for (const auto& home : h) {
+        LocalPathName result = LocalPathName(home + tail);
+        if (result.exists()) {
+            return result;
+        }
     }
 
-    // 2. try to walk up the path and check for paths that exist
-
-    const std::string extra = "/" + p.substr(s.size());
-
-    eckit::LocalPathName path = prefixDirectory();
-    eckit::LocalPathName root("/");
-
-    while (true) {
-        LocalPathName tmp = path + extra;
-
-        if (tmp.exists()) {
-            return tmp;
-        }
-
-        if (path == root) {
-            break;
-        }
-
-        path = path.dirName();
-    }
-
-    // 3. as a last resort expand with prefix directory although we know the path doesn't exist
-
-    return prefixDirectory() + extra;
+    //  As a last resort expand with the first home entry, although we know the path doesn't exist
+    return h[0] + tail;
 }
 
 void Library::print(std::ostream& out) const {

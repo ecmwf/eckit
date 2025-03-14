@@ -80,7 +80,6 @@ public:
     bool global() const;
     bool periodic() const;
 
-    bool contains(const PointLonLat&) const;
     bool contains(const BoundingBox&) const;
     bool empty() const;
 
@@ -89,7 +88,9 @@ public:
     const std::string& type() const override;
 
     void fill_spec(spec::Custom&) const override;
+
     bool intersects(BoundingBox&) const override;
+    bool contains(const PointLonLat&) const override;
 
     // -- Class methods
 

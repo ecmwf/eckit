@@ -14,26 +14,26 @@
 #include <iosfwd>
 #include <vector>
 
-#include "eckit/geo/Point2.h"
+#include "eckit/geo/PointLonLat.h"
 
 
 namespace eckit::geo::polygon {
 
 
-class LonLatPolygon : protected std::vector<Point2> {
+class LonLatPolygon : protected std::vector<PointLonLat> {
 public:
 
     // -- Types
 
-    using container_type = std::vector<Point2>;
+    using container_type = vector;
     using container_type::value_type;
 
     // -- Constructors
 
     explicit LonLatPolygon(const container_type& points, bool includePoles = true);
 
-    template <typename Point2Iterator>
-    LonLatPolygon(Point2Iterator begin, Point2Iterator end, bool includePoles = true) :
+    template <typename Iterator>
+    LonLatPolygon(Iterator begin, Iterator end, bool includePoles = true) :
         LonLatPolygon(container_type(begin, end), includePoles) {}
 
     LonLatPolygon(const LonLatPolygon&) = default;
@@ -50,8 +50,8 @@ public:
 
     // -- Methods
 
-    const Point2& max() const { return max_; }
-    const Point2& min() const { return min_; }
+    const PointLonLat& max() const { return max_; }
+    const PointLonLat& min() const { return min_; }
 
     using container_type::operator[];
     using container_type::size;
@@ -61,7 +61,7 @@ public:
     /// @param[in] P given point
     /// @param[in] normalise_angle normalise point angles
     /// @return if point (lon,lat) is in polygon
-    bool contains(const Point2& Plonlat, bool normalise_angle = false) const;
+    bool contains(const PointLonLat&, bool normalise_angle = false) const;
 
 private:
 
@@ -72,8 +72,8 @@ private:
 
     // -- Members
 
-    Point2 max_;
-    Point2 min_;
+    PointLonLat max_;
+    PointLonLat min_;
     bool includeNorthPole_;
     bool includeSouthPole_;
     bool quickCheckLongitude_;

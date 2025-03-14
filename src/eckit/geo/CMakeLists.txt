@@ -48,6 +48,8 @@ list(APPEND eckit_geo_srcs
     area/BoundingBox2.h
     area/None.cc
     area/None.h
+    area/Polygon.cc
+    area/Polygon.h
     cache/Download.cc
     cache/Download.h
     cache/Unzip.cc

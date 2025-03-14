@@ -26,11 +26,20 @@ namespace eckit {
 
 class Buffer : private NonCopyable {
 public:  // methods
+    /// Creates a buffer with 'size' many bytes.
+    /// @param size in bytes of the buffer.
     explicit Buffer(size_t size = 0);
+
+    /// Creates a buffer from the string s.
+    /// NOTE: the buffer will contain the string as a zero terminated c-string.
+    /// I.e. the resulting size of buffer is s.size() + 1
+    /// @param s, initial content of buffer, including null-terminator
     explicit Buffer(const std::string& s);
 
-    /// Allocate and copy memory of given length in bytes
-    Buffer(const void*, size_t len);
+    /// Creates buffer with initial content
+    /// @param src to copy bytes from
+    /// @param size of data
+    Buffer(const void* src, size_t size);
 
     /// Move constructor. Note that rhs is not guaranteed to be valid!
     Buffer(Buffer&& rhs) noexcept;
@@ -49,14 +58,21 @@ public:  // methods
     void* data() { return buffer_; }
     const void* data() const { return buffer_; }
 
-    /// @return allocated size
+    /// Returns size of the buffer in bytes
+    /// Note: The actual allocation held by this buffer may be larger
+    /// if the buffer has been resized with 'preserveData' set to a smaller size than before.
+    /// @return buffer size in bytes
     size_t size() const { return size_; }
 
     /// Zero content of buffer
     void zero();
 
-    /// @post Invalidates contents of buffer
-    void resize(size_t, bool preserveData = false);
+    /// Resizes the buffer to newSize.
+    /// When 'preserveData' is set:
+    /// - Buffer will still hold the data contained before resize() was called.
+    /// - If 'newSize' is smaller than the current 'size' the data will be truncated.
+    /// With unset 'preserveData' the contents of the buffer will be discarded.
+    void resize(size_t newSize, bool preserveData = false);
 
     /// Copy data of given size (bytes) into buffer at given position
     /// @pre Buffer must have sufficient size
@@ -66,6 +82,9 @@ protected:  // methods
     void create();
     void destroy();
 
+    /// Copies contents of s into the buffer including a null-terminator at the end.
+    /// This copy operation truncates s if the buffer is not big enough.
+    /// @param s, string to be copied including null-terminator.
     void copy(const std::string& s);
 
 private:  // members

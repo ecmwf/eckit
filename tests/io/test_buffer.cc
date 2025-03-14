@@ -4,6 +4,7 @@
 #include <ctime>
 
 #include <algorithm>
+#include <memory>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/testing/Test.h"
@@ -18,8 +19,8 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-unsigned char* random_bytestream(size_t sz) {
-    ::srand((unsigned int)::time(0));
+unsigned char* random_bytestream(const size_t sz) {
+    ::srand(static_cast<unsigned int>(::time(nullptr)));
     unsigned char* stream = static_cast<unsigned char*>(::malloc(sz));
     auto rnd              = []() -> unsigned char { return ::rand(); };
     std::generate(stream, stream + sz, rnd);
@@ -27,12 +28,13 @@ unsigned char* random_bytestream(size_t sz) {
     return stream;
 }
 
-const char* msg = "Once upon a midnight dreary";
+constexpr auto msg = "Once upon a midnight dreary";
+constexpr auto msgLen = std::char_traits<char>::length(msg);
 
 CASE("Test eckit Buffer default constructor") {
     Buffer buf;
     EXPECT(buf.size() == 0);
-    EXPECT(buf.data() != nullptr);
+    EXPECT(buf.data() == nullptr);
 }
 
 CASE("Test eckit Buffer constructor 1") {
@@ -68,7 +70,8 @@ CASE("Test eckit Buffer move constructor") {
     const char* out = buf2;
     EXPECT(std::strcmp(msg, out) == 0);
 
-    EXPECT(static_cast<const char*>(buf1) == nullptr && buf1.size() == 0);
+    EXPECT(static_cast<const char*>(buf1) == nullptr);
+    EXPECT_EQUAL(buf1.size(), 0);
 }
 
 CASE("Test eckit Buffer move assignment") {
@@ -81,8 +84,8 @@ CASE("Test eckit Buffer move assignment") {
     const char* out = buf2;
     EXPECT(std::strcmp(msg, out) == 0);
 
-    // EXPECT(static_cast<const char*>(buf1) == nullptr)
-    EXPECT(buf1.size() == 0);
+    EXPECT(static_cast<const char*>(buf1) == nullptr);
+    EXPECT_EQUAL(buf1.size(), 0);
 }
 
 // This includes a self-move but is legitimate, if pointless, so it should be tested
@@ -114,14 +117,17 @@ CASE("Test eckit Buffer Zero") {
 
 // NOTE: resize allocates a new buffer whenever the new size is different -- this is inefficient
 CASE("Test eckit Buffer resize") {
-    const size_t sz = std::strlen(msg) + 1;
+    constexpr auto sz = msgLen + 1;
     Buffer buf;
     EXPECT(buf.size() == 0);
 
     EXPECT_THROWS(buf.copy(msg, sz));
 
     EXPECT_NO_THROW(buf.resize(sz));
+    EXPECT_EQUAL(buf.size(), sz);
+
     EXPECT_NO_THROW(buf.copy(msg, sz));
+    EXPECT_EQUAL(std::strncmp(msg, static_cast<const char*>(buf), sz), 0);
 
     size_t newSize = 41;
     buf.resize(newSize, true);
@@ -139,6 +145,34 @@ CASE("Test eckit Buffer resize") {
     newSize = 41;
     buf.resize(newSize, false);
     EXPECT(buf.size() == newSize);
+
+    buf.resize(0, false);
+    EXPECT_EQUAL(buf.size(), 0);
+    EXPECT(buf.data() == nullptr);
+
+    buf.resize(0, true);
+    EXPECT_EQUAL(buf.size(), 0);
+    EXPECT(buf.data() == nullptr);
+}
+
+CASE("Test copy from temp buffer") {
+    struct BufferTester {
+        explicit BufferTester(const Buffer& buffer = Buffer {0}): buf_ {buffer, buffer.size()} { }
+
+        Buffer buf_;
+    };
+
+    std::unique_ptr<BufferTester> tester;
+
+    // empty
+    EXPECT_NO_THROW(tester = std::make_unique<BufferTester>());
+    EXPECT(tester->buf_.data() == nullptr);
+    EXPECT_EQUAL(tester->buf_.size(), 0);
+
+    // non-empty
+    EXPECT_NO_THROW(tester = std::make_unique<BufferTester>(Buffer {msg, msgLen}));
+    EXPECT_EQUAL(std::strncmp(msg, static_cast<const char*>(tester->buf_), msgLen), 0);
+    EXPECT_EQUAL(tester->buf_.size(), msgLen);
 }
 
 CASE("Test copying and construction from of std::string") {

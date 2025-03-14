@@ -18,11 +18,12 @@
 #include <memory>
 #include <vector>
 
-// #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/area/Polygon.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/Unzip.h"
+#include "eckit/geo/polygon/LonLatPolygon.h"
 #include "eckit/geo/spec/Custom.h"
 
 #include "shapefil.h"
@@ -31,52 +32,94 @@
 namespace eckit::geo {
 
 
-namespace {
-
-
-void shapefile_polygon(const PathName& path_shp, const std::string& /*unused*/) {
-    if (path_shp.extension() != ".shp") {
-        throw exception::AreaError("Shapefile: path must have .shp extension.", Here());
-    }
-
-    auto path = path_shp.asString();
-    auto* h   = SHPOpen(path.c_str(), "rb");
-    if (h == nullptr) {
-        throw exception::AreaError("Shapefile: error opening shapefile.", Here());
-    }
-
-    // Get number of shapes
-    int nEntities  = 0;
-    int nShapeType = 0;
-    std::vector<double> adfMinBound(4);
-    std::vector<double> adfMaxBound(4);
-
-    SHPGetInfo(h, &nEntities, &nShapeType, adfMinBound.data(), adfMaxBound.data());
-
-    for (int e = 0; e < nEntities; ++e) {
-        std::unique_ptr<SHPObject, decltype(&SHPDestroyObject)> shp(SHPReadObject(h, e), SHPDestroyObject);
-
-        if (shp) {
-            if (shp->nSHPType == SHPT_POLYGON) {
-                // Process polygon
-                int nVertices = shp->nVertices;
-            }
+struct DBF : std::unique_ptr<DBFInfo, decltype(&DBFClose)> {
+    explicit DBF(const PathName& path) : unique_ptr{DBFOpen(path.localPath(), "rb"), DBFClose} {
+        if (!operator bool()) {
+            throw CantOpenFile(path + " (as .dbf)", Here());
         }
     }
 
-    SHPClose(h);
+    std::map<std::string, int> string_fields() const {
+        std::map<std::string, int> m;
 
-    // ...
-}
+        char name[12];
+        for (int i = 0, n = DBFGetFieldCount(get()); i < n; ++i) {
+            if (DBFGetNativeFieldType(get(), i) == 'C') {
+                DBFGetFieldInfo(get(), i, name, nullptr, nullptr);
+                m[name] = i;
+            }
+        }
+
+        return m;
+    }
+
+    std::string read_string_attribute(int record, int field) const {
+        return DBFReadStringAttribute(get(), record, field);
+    }
+};
 
 
-}  // namespace
+struct SHP : std::unique_ptr<SHPInfo, decltype(&SHPClose)> {
+    struct Object : std::unique_ptr<SHPObject, decltype(&SHPDestroyObject)> {
+        explicit Object(SHPObject* ptr) : unique_ptr{ptr, SHPDestroyObject} { ASSERT(operator bool()); }
+    };
+
+    explicit SHP(const PathName& path) : unique_ptr{SHPOpen(path.localPath(), "rb"), SHPClose} {
+        if (!operator bool()) {
+            throw CantOpenFile(path + " (as .shp)", Here());
+        }
+
+        int type = 0;
+        SHPGetInfo(get(), &nEntities_, &type, nullptr, nullptr);
+
+        if (type != SHPT_ARC && type != SHPT_POLYGON) {
+            throw ReadError("Shapefile: unsupported shape type", Here());
+        }
+    }
+
+    int n_entities() const { return nEntities_; }
+
+    Area* make_area(int entity) const {
+        Object obj(SHPReadObject(get(), entity));
+        ASSERT(obj);
+        ASSERT(obj->nSHPType == SHPT_ARC || obj->nSHPType == SHPT_POLYGON);
+
+        area::Polygon::container_type parts;
+
+        using points_type = polygon::LonLatPolygon::container_type;
+
+        for (int p = 0; p < obj->nParts; ++p) {
+            // only process closed loops
+            if (int start = obj->panPartStart[p],
+                end       = (p == obj->nParts - 1) ? obj->nVertices : obj->panPartStart[p + 1];
+                start < end) {
+                if (points_type::value_type first(obj->padfX[start], obj->padfY[start]),
+                    last(obj->padfX[end - 1], obj->padfY[end - 1]);
+                    points_equal(first, last)) {
+                    points_type pts;
+
+                    pts.reserve(end - start);
+                    for (int j = start; j < end; ++j) {
+                        pts.emplace_back(obj->padfX[j], obj->padfY[j]);
+                    }
+
+                    parts.emplace_back(pts);
+                }
+            }
+        }
+
+        return new area::Polygon(parts);
+    }
+
+private:
+    int nEntities_ = 0;
+};
 
 
 Shapefile::Shapefile(const Spec& spec) : Shapefile(spec.get_string("file")) {}
 
 
-Shapefile::Shapefile(const PathName& file) :
+Shapefile::Shapefile(const PathName& file, const std::string& field) :
     shp_(file.extension() == ".zip" ? [](const PathName& zip) -> PathName {
         static cache::Unzip unzip(LibEcKitGeo::cacheDir() + "/shapefile");
 
@@ -95,84 +138,18 @@ Shapefile::Shapefile(const PathName& file) :
         }
 
         return files.front();
-    }(file) : file), dbf_(shp_.asString().substr(0, shp_.asString().length() - 4) + ".dbf") {
-    SHPInfo* hSHP = nullptr;
-    if (!shp_.exists() || shp_.extension() != ".shp" || (hSHP = SHPOpen(shp_.localPath(), "rb")) == nullptr) {
-        throw CantOpenFile(shp_ + " (as .shp)", Here());
+    }(file) : file), dbf_(shp_.asString().substr(0, shp_.asString().length() - 4) + ".dbf"), field_(field) {
+    SHP shp(shp_);
+    DBF dbf(dbf_);
+
+    const auto nameFieldIndex = field_.empty() ? 0 : dbf.string_fields().at(field_);
+
+    for (int e = 0; e < shp.n_entities(); ++e) {
+        /*auto poly =*/shp.make_area(e);
+
+        // std::cout << "Arc/Polygon '" << dbf.read_string_attribute(e, nameFieldIndex) << "'" << std::endl;
+        // std::cout << poly << std::endl;
     }
-
-    DBFInfo* hDBF = nullptr;
-    if (!dbf_.exists() || dbf_.extension() != ".dbf" || (hDBF = DBFOpen(dbf_.localPath(), "rb")) == nullptr) {
-        throw CantOpenFile(dbf_ + " (as .dbf)", Here());
-    }
-
-    // Find the field index for the "NAME" attribute (the field name might change!)
-    std::map<std::string, int> index_string;
-    for (int i = 0, n = DBFGetFieldCount(hDBF); i < n; ++i) {
-        char name[12];
-
-        // Only process string fields
-        if (auto type = DBFGetFieldInfo(hDBF, i, name, nullptr, nullptr); type == FTString) {
-            index_string[name] = i;
-        }
-        else if (type == FTInteger) {
-            std::cout << FTInteger << std::endl;
-        }
-        else if (type == FTInteger) {
-            std::cout << FTInteger << std::endl;
-        }
-        else if (type == FTDouble) {
-            std::cout << FTDouble << std::endl;
-        }
-        else if (type == FTLogical) {
-            std::cout << FTLogical << std::endl;
-        }
-        else if (type == FTDate) {
-            std::cout << FTDate << std::endl;
-        }
-        else if (type == FTInvalid) {
-            std::cout << FTInvalid << std::endl;
-        }
-    }
-
-    for (const auto& [key, val] : index_string) {
-        std::cout << "Field '" << key << "' has index " << val << std::endl;
-    }
-
-    int nameField = DBFGetFieldIndex(hDBF, "NAME");
-
-    // Get number of shapes
-    int nEntities  = 0;
-    int nShapeType = 0;
-    std::vector<double> adfMinBound(4);
-    std::vector<double> adfMaxBound(4);
-
-    SHPGetInfo(hSHP, &nEntities, &nShapeType, adfMinBound.data(), adfMaxBound.data());
-
-    for (int e = 0; e < nEntities; ++e) {
-        std::unique_ptr<SHPObject, decltype(&SHPDestroyObject)> shp(SHPReadObject(hSHP, e), SHPDestroyObject);
-
-        if (shp) {
-            if (shp->nSHPType == SHPT_ARC || shp->nSHPType == SHPT_POLYGON) {
-                std::string areaName;
-                if (nameField >= 0) {
-                    // Read the string attribute from the DBF file for this record
-                    const auto* nameAttr = DBFReadStringAttribute(hDBF, e, nameField);
-                    if (nameAttr != nullptr) {
-                        areaName = nameAttr;
-                    }
-                }
-                // std::cout << "Polygon " << e << " with " << shp->nVertices << " vertices";
-                // if (!areaName.empty()) {
-                //     std::cout << " and name: " << areaName;
-                // }
-                // std::cout << std::endl;
-            }
-        }
-    }
-
-    SHPClose(hSHP);
-    DBFClose(hDBF);
 }
 
 
@@ -225,6 +202,14 @@ Shapefile* Shapefile::make_from_zip(const PathName& zip) {
 
 std::ostream& Shapefile::list(std::ostream& out) const {
     NOTIMP;
+}
+
+
+Area* Shapefile::make_area_from_string(const std::string&) const {}
+
+
+Area* Shapefile::make_area_from_int(int) const {
+    return SHP(shp_).make_area(0);
 }
 
 

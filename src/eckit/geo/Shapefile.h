@@ -16,7 +16,6 @@
 #include <string>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/PointLonLat.h"
 
 
 namespace eckit::geo {
@@ -32,21 +31,17 @@ namespace eckit::geo {
 
 
 struct Shapefile {
-    // -- Types
-
-    using Poly = std::vector<PointLonLat>;
-
     // -- Constructors
 
     explicit Shapefile(const Spec&);
-    explicit Shapefile(const PathName&);
+    explicit Shapefile(const PathName&, const std::string& field = {});
 
     // -- Methods
 
     std::ostream& list(std::ostream&) const;
 
-    [[nodiscard]] Area* make_area_from_key_string(const std::string&);
-    [[nodiscard]] Area* make_area_from_key_int(int);
+    [[nodiscard]] Area* make_area_from_string(const std::string&) const;
+    [[nodiscard]] Area* make_area_from_int(int) const;
 
     // -- Class methods
 
@@ -58,6 +53,8 @@ private:
 
     PathName shp_;
     PathName dbf_;
+
+    const std::string field_;
 
     // -- Overridden methods
 

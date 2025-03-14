@@ -15,7 +15,7 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Point2.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -59,10 +59,10 @@ inline Point2 componentsMax(const Point2& A, const Point2& B) {
 }  // namespace
 
 
-LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePoles) : container_type(points) {
+LonLatPolygon::LonLatPolygon(const container_type& points, bool includePoles) : container_type(points) {
     ASSERT(points.size() > 1);
-    ASSERT(is_approximately_equal(points.front()[LON], points.back()[LON]) &&
-           is_approximately_equal(points.front()[LAT], points.back()[LAT]));
+    ASSERT(is_approximately_equal(points.front().lon, points.back().lon)
+           && is_approximately_equal(points.front().lat, points.back().lat));
 
     if (points.size() > 2) {
         clear();  // assumes reserved size is kept
@@ -75,7 +75,7 @@ LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePole
             // if new point is aligned with existing edge (cross product ~= 0) make the edge longer
             const auto& B = back();
             const auto& C = operator[](size() - 2);
-            if (is_approximately_equal(0., cross_product_analog(A, B, C))) {
+            if (is_approximately_equal(0., cross_product_analog({A.lon, A.lat}, {B.lon, B.lat}, {C.lon, C.lat}))) {
                 back() = A;
                 continue;
             }
@@ -86,16 +86,16 @@ LonLatPolygon::LonLatPolygon(const std::vector<Point2>& points, bool includePole
 
     max_ = min_ = front();
     for (const auto& p : *this) {
-        min_ = componentsMin(min_, p);
-        max_ = componentsMax(max_, p);
+        min_ = {std::min(min_.lon, p.lon), std::min(min_.lat, p.lat)};
+        max_ = {std::max(max_.lon, p.lon), std::max(max_.lat, p.lat)};
     }
 
-    includeNorthPole_ = includePoles && is_approximately_equal(max_[LAT], 90.);
-    includeSouthPole_ = includePoles && is_approximately_equal(min_[LAT], -90.);
-    ASSERT(is_approximately_greater_or_equal(min_[LAT], -90.));
-    ASSERT(is_approximately_greater_or_equal(90., max_[LAT]));
+    includeNorthPole_ = includePoles && is_approximately_equal(max_.lat, 90.);
+    includeSouthPole_ = includePoles && is_approximately_equal(min_.lat, -90.);
+    ASSERT(is_approximately_greater_or_equal(min_.lat, -90.));
+    ASSERT(is_approximately_greater_or_equal(90., max_.lat));
 
-    quickCheckLongitude_ = is_approximately_greater_or_equal(360, max_[LON] - min_[LON]);
+    quickCheckLongitude_ = is_approximately_greater_or_equal(360, max_.lon - min_.lon);
 }
 
 void LonLatPolygon::print(std::ostream& out) const {
@@ -113,29 +113,30 @@ std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
     return out;
 }
 
-bool LonLatPolygon::contains(const Point2& Plonlat, bool normalise_angle) const {
+bool LonLatPolygon::contains(const PointLonLat& p, bool normalise_angle) const {
     if (!normalise_angle) {
-        PointLonLat::assert_latitude_range({Plonlat[LON], Plonlat[LAT]});
+        PointLonLat::assert_latitude_range({p.lon, p.lat});
     }
 
-    Point2 Q{PointLonLat::normalise_angle_to_minimum(Plonlat[LON], min_[LON]), Plonlat[LAT]};
+    PointLonLat Q{PointLonLat::normalise_angle_to_minimum(p.lon, min_.lon), p.lat};
 
     // check poles
-    if (includeNorthPole_ && is_approximately_equal(Q[LAT], 90.)) {
+    if (includeNorthPole_ && is_approximately_equal(Q.lat, 90.)) {
         return true;
     }
-    if (includeSouthPole_ && is_approximately_equal(Q[LAT], -90.)) {
+
+    if (includeSouthPole_ && is_approximately_equal(Q.lat, -90.)) {
         return true;
     }
 
     // check bounding box
-    if (!is_approximately_greater_or_equal(Q[LAT], min_[LAT]) ||
-        !is_approximately_greater_or_equal(max_[LAT], Q[LAT])) {
+    if (!is_approximately_greater_or_equal(Q.lat, min_.lat) || !is_approximately_greater_or_equal(max_.lat, Q.lat)) {
         return false;
     }
+
     if (quickCheckLongitude_) {
-        if (!is_approximately_greater_or_equal(Q[LON], min_[LON]) ||
-            !is_approximately_greater_or_equal(max_[LON], Q[LON])) {
+        if (!is_approximately_greater_or_equal(Q.lon, min_.lon)
+            || !is_approximately_greater_or_equal(max_.lon, Q.lon)) {
             return false;
         }
     }
@@ -154,10 +155,10 @@ bool LonLatPolygon::contains(const Point2& Plonlat, bool normalise_angle) const 
             // by:
             // - intersecting "up" on forward crossing & P above edge, or
             // - intersecting "down" on backward crossing & P below edge
-            const auto direction = on_direction(A[LAT], Q[LAT], B[LAT]);
+            const auto direction = on_direction(A.lat, Q.lat, B.lat);
             if (direction != 0) {
-                const auto side = on_side(Q, A, B);
-                if (side == 0 && on_direction(A[LON], Q[LON], B[LON]) != 0) {
+                const auto side = on_side({Q.lon, Q.lat}, {A.lon, A.lat}, {B.lon, B.lat});
+                if (side == 0 && on_direction(A.lon, Q.lon, B.lon) != 0) {
                     return true;
                 }
                 if ((prev != 1 && direction > 0 && side > 0) || (prev != -1 && direction < 0 && side < 0)) {
@@ -172,8 +173,8 @@ bool LonLatPolygon::contains(const Point2& Plonlat, bool normalise_angle) const 
             return true;
         }
 
-        Q[LON] += 360.;
-    } while (Q[LON] <= max_[LON]);
+        Q = {Q.lon + 360., Q.lat};
+    } while (Q.lon <= max_.lon);
 
     return false;
 }

@@ -106,6 +106,20 @@ if( NOT TARGET OpenMP::OpenMP_CXX )
     set( eckit_HAVE_OMP 0 )
 endif()
 
+### OpenFAM Support
+
+ecbuild_add_option( FEATURE OPENFAM
+                    DEFAULT OFF
+                    REQUIRED_PACKAGES "LibUUID REQUIRED" "protobuf REQUIRED" "gRPC REQUIRED" "OpenFAM REQUIRED"
+                    DESCRIPTION "Enables OpenFAM support" )
+
+if( eckit_HAVE_OPENFAM )
+    find_package( LibUUID REQUIRED )
+    find_package( protobuf CONFIG REQUIRED )
+    find_package( gRPC CONFIG REQUIRED )
+    find_package( OpenFAM 3.0.1 CONFIG REQUIRED )
+endif()
+
 ### RADOS
 
 ecbuild_add_option( FEATURE RADOS

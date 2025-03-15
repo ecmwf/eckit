@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-#include "eckit/geometry/polygon/LonLatPolygon.h"
+#include "eckit/geo/polygon/LonLatPolygon.h"
 
 
 namespace mir {
@@ -33,7 +33,7 @@ public:
      * - GeoJSON "Polygon" is a list of (this) Polygon (eg. "polygon"+"hole"+"hole"+...)
      * - GeoJSON "MultiPolygon" is a list of GeoJSON "Polygon"
      */
-    using Polygon  = std::unique_ptr<eckit::geometry::polygon::LonLatPolygon>;
+    using Polygon  = std::unique_ptr<eckit::geo::polygon::LonLatPolygon>;
     using Polygons = std::vector<Polygon>;
 
     enum Geometry
@@ -95,6 +95,107 @@ private:
     // -- Members
 
     const Geometry geometry_;
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+    // -- Friends
+    // None
+};
+
+
+}  // namespace geography
+}  // namespace mir
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+
+#pragma once
+
+#include "eckit/parser/JSONParser.h"
+
+
+namespace eckit {
+class PathName;
+}
+
+
+namespace mir {
+namespace geography {
+
+
+class GeoJSON : public GeographyInput {
+public:
+    // -- Types
+    // None
+
+    // -- Exceptions
+    // None
+
+    // -- Constructors
+
+    explicit GeoJSON(const eckit::PathName&, Geometry);
+    explicit GeoJSON(std::string& json, Geometry);
+
+    // -- Destructor
+    // None
+
+    // -- Convertors
+    // None
+
+    // -- Operators
+    // None
+
+    // -- Methods
+
+    std::vector<Polygons> polygons() const override;
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+protected:
+    // -- Members
+    // None
+
+    // -- Methods
+    // None
+
+    // -- Overridden methods
+    // None
+
+    // -- Class members
+    // None
+
+    // -- Class methods
+    // None
+
+private:
+    // -- Members
+
+    eckit::Value json_;
 
     // -- Methods
     // None

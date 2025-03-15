@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/Shapefile.h"
+#include "eckit/geo/area/library/Shapefile.h"
 
 #include <memory>
 
@@ -22,7 +22,7 @@ namespace eckit::geo::test {
 
 
 CASE("Shapefile") {
-    Shapefile shp("world_countries_coasts.shp.zip", "", "country");
+    area::library::Shapefile shp("world_countries_coasts.shp.zip", "", "country");
 
     shp.list(Log::info()) << std::endl;
 

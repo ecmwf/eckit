@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/Shapefile.h"
+#include "eckit/geo/area/library/Shapefile.h"
 
 #include <algorithm>
 #include <memory>
@@ -27,7 +27,7 @@
 #include "eckit/log/JSON.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::area::library {
 
 
 namespace {

@@ -24,7 +24,7 @@
 #include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/polygon/LonLatPolygon.h"
 #include "eckit/geo/spec/Custom.h"
-
+#include "eckit/log/JSON.h"
 
 
 namespace eckit::geo {
@@ -83,11 +83,15 @@ PathName path_dbf(const PathName& file, const PathName& shp) {
 
 Shapefile::Shapefile(const Spec& spec) :
     Shapefile(path_shp(spec.get_string(spec.has("shp") ? "shp" : "file")),
-              spec.has("dbf") ? spec.get_string("dbf") : "") {}
+              spec.has("dbf") ? spec.get_string("dbf") : "",
+              spec.has("name_field") ? spec.get_string("name_field") : "") {}
 
 
-Shapefile::Shapefile(const PathName& shp, const PathName& dbf) :
-    shpPath_(path_shp(shp)), dbfPath_(path_dbf(dbf, shpPath_)), fieldIndex_(0), nEntities_(0) {
+Shapefile::Shapefile(const PathName& file) : Shapefile(file, "") {}
+
+
+Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string& name) :
+    shpPath_(path_shp(shp)), dbfPath_(path_dbf(dbf, shpPath_)), nEntities_(0) {
     if ((shp_ = SHPOpen(shpPath_.localPath(), "rb")) == nullptr) {
         throw CantOpenFile(shpPath_ + " (as .shp)", Here());
     }
@@ -97,6 +101,39 @@ Shapefile::Shapefile(const PathName& shp, const PathName& dbf) :
 
     if (type != SHPT_ARC && type != SHPT_POLYGON) {
         throw ReadError("Shapefile: unsupported shape type", Here());
+    }
+
+    if (!name.empty()) {
+        DBFInfo* dbf = DBFOpen(dbfPath_.localPath(), "rb");
+        if (dbf == nullptr) {
+            throw CantOpenFile(shpPath_ + " (as .dbf)", Here());
+        }
+
+        // find named field index
+        std::map<std::string, int> to_index;
+
+        char fieldName[12];
+        for (int i = 0, n = DBFGetFieldCount(dbf); i < n; ++i) {
+            if (DBFGetNativeFieldType(dbf, i) == 'C') {
+                DBFGetFieldInfo(dbf, i, fieldName, nullptr, nullptr);
+                if (name == fieldName) {
+                    name_ = name;
+
+                    // map entities names (they have to be unique)
+                    for (int e = 0; e < nEntities_; ++e) {
+                        ASSERT(to_entity.emplace(DBFReadStringAttribute(dbf, e, i), e).second);
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        DBFClose(dbf);
+
+        if (name_.empty()) {
+            throw ReadError("Shapefile: field '" + name + "' not found in '" + dbfPath_ + "'", Here());
+        }
     }
 }
 
@@ -109,71 +146,52 @@ Shapefile::~Shapefile() {
 Shapefile* Shapefile::make_from_url(const std::string& url) {
     static cache::Download download(LibEcKitGeo::cacheDir() + "/shapefile");
 
-    auto path = download.to_cached_path(url, cache::Download::url_file_basename(url, false),
-                                        cache::Download::url_file_extension(url));
-
-    return new Shapefile(path);
+    return new Shapefile(download.to_cached_path(url, cache::Download::url_file_basename(url, false),
+                                                 cache::Download::url_file_extension(url)));
 }
 
 
 void Shapefile::fill_spec(spec::Custom& custom) const {
     custom.set("type", "shapefile");
-    custom.set("shp", shpPath_.asString());
-    custom.set("dbf", dbfPath_.asString());
+    custom.set("shp", shpPath_);
+    custom.set("shp", dbfPath_);
+    if (!name_.empty()) {
+        custom.set("field", name_);
+    }
 }
 
 
 std::ostream& Shapefile::list(std::ostream& out) const {
-    out << "Shapefile[n_entities=" << n_entities();
-    for (const auto& [name, entity] : to_entity) {
-        out << ", " << entity << ':' << name;
-    }
-    out << "]";
+    JSON j(out);
+    j.startObject();
 
+    j << "type" << "shapefile";
+    j << "shp" << shpPath_;
+    j << "dbf" << dbfPath_;
+    j << "name" << name_;
+    j << "n_entities" << size();
+    j << "entities";
+
+    j.startList();
+    for (const auto& [key, val_] : to_entity) {
+        j << key;
+    }
+    j.endList();
+
+    j.endObject();
     return out;
 }
 
 
-void Shapefile::set_name_field(const std::string& field) {
-    DBFInfo* dbf = DBFOpen(dbfPath_.localPath(), "rb");
-    if (dbf == nullptr) {
-        throw CantOpenFile(shpPath_ + " (as .dbf)", Here());
-    }
-
-    // find named field index
-    ASSERT(!field.empty());
-    field_ = field;
-
-    std::map<std::string, int> to_index;
-
-    char name[12];
-    for (int i = 0, n = DBFGetFieldCount(dbf); i < n; ++i) {
-        if (DBFGetNativeFieldType(dbf, i) == 'C') {
-            DBFGetFieldInfo(dbf, i, name, nullptr, nullptr);
-            to_index[name] = i;
-        }
-    }
-
-    fieldIndex_ = to_index[field_];
-
-    // find entities names
-    for (int i = 0; i < nEntities_; ++i) {
-        ASSERT(to_entity.emplace(DBFReadStringAttribute(dbf, i, fieldIndex_), i).second);
-    }
-
-    DBFClose(dbf);
-}
-
-
 Area* Shapefile::make_area_from_name(const std::string& name) const {
-    ASSERT(!field_.empty());
+    ASSERT(!name_.empty());
     ASSERT(!name.empty());
 
-    return make_area_from_entity(to_entity.at(name));
+    return make_area(to_entity.at(name));
 }
 
 
-Area* Shapefile::make_area_from_entity(size_t entity) const {
+Area* Shapefile::make_area(size_t entity) const {
     struct Object : std::unique_ptr<SHPObject, decltype(&SHPDestroyObject)> {
         explicit Object(SHPObject* ptr) : unique_ptr{ptr, SHPDestroyObject} { ASSERT(operator bool()); }
     };
@@ -184,19 +202,22 @@ Area* Shapefile::make_area_from_entity(size_t entity) const {
 
     area::Polygon::container_type parts;
 
-    using points_type = polygon::LonLatPolygon::container_type;
-
     for (int p = 0; p < obj->nParts; ++p) {
-        // only process closed loops
-        if (int start = obj->panPartStart[p], end = (p == obj->nParts - 1) ? obj->nVertices : obj->panPartStart[p + 1];
-            start < end) {
-            if (points_type::value_type first(obj->padfX[start], obj->padfY[start]),
-                last(obj->padfX[end - 1], obj->padfY[end - 1]);
-                points_equal(first, last)) {
-                points_type pts;
+        auto start = obj->panPartStart[p];
+        auto end   = (p == obj->nParts - 1) ? obj->nVertices : obj->panPartStart[p + 1];
 
+        if (start < end) {
+            using points_type = polygon::LonLatPolygon::container_type;
+
+            // only process closed loops
+            points_type::value_type first(obj->padfX[start], obj->padfY[start]);
+            points_type::value_type last(obj->padfX[end - 1], obj->padfY[end - 1]);
+
+            if (points_equal(first, last)) {
+                points_type pts;
                 pts.reserve(end - start);
-                for (int j = start; j < end; ++j) {
+
+                for (auto j = start; j < end; ++j) {
                     pts.emplace_back(obj->padfX[j], obj->padfY[j]);
                 }
 

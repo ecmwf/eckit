@@ -37,7 +37,8 @@ struct Shapefile {
     // -- Constructors
 
     explicit Shapefile(const Spec&);
-    explicit Shapefile(const PathName& shp, const PathName& dbf = "");
+    explicit Shapefile(const PathName&);
+    explicit Shapefile(const PathName& shp, const PathName& dbf, const std::string& name_field = "");
 
     // -- Destructor
 
@@ -46,12 +47,10 @@ struct Shapefile {
     // -- Methods
 
     std::ostream& list(std::ostream&) const;
+    size_t size() const { return static_cast<size_t>(nEntities_); }
 
-    void set_name_field(const std::string&);
+    [[nodiscard]] Area* make_area(size_t) const;
     [[nodiscard]] Area* make_area_from_name(const std::string&) const;
-
-    size_t n_entities() const { return static_cast<size_t>(nEntities_); }
-    [[nodiscard]] Area* make_area_from_entity(size_t) const;
 
     // -- Class methods
 
@@ -65,8 +64,7 @@ private:
 
     SHPInfo* shp_;
 
-    std::string field_;
-    int fieldIndex_;
+    std::string name_;
     int nEntities_;
 
     std::map<std::string, int> to_entity;

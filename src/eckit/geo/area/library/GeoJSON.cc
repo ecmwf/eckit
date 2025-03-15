@@ -12,54 +12,13 @@
 
 #include "eckit/geo/area/library/GeoJSON.h"
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
+#include "eckit/parser/JSONParser.h"
 
 
-namespace mir {
-namespace geography {
-
-
-GeographyInput::GeographyInput(Geometry geometry) : geometry_(geometry) {
-    geometryAsString(geometry_);  // just to assert
-}
-
-
-std::string GeographyInput::geometryAsString(Geometry geometry) {
-    return geometry == Geometry::LonLat ? "LonLat" : geometry == Geometry::Spherical ? "Spherical" : NOTIMP;
-}
-
-
-GeographyInput::Geometry GeographyInput::stringAsGeometry(const std::string& geometry) {
-    return geometry == "lonlat" ? Geometry::LonLat : geometry == "spherical" ? Geometry::Spherical : NOTIMP;
-}
-
-
-std::string GeographyInput::geometryAsString() const {
-    return geometryAsString(geometry_);
-}
-
-
-}  // namespace geography
-}  // namespace mir
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
-
-
-
-#include "eckit/filesystem/PathName.h"
-
-
-namespace mir {
-namespace geography {
+namespace eckit::geo::area::library {
 
 
 namespace {
@@ -71,8 +30,7 @@ const auto list = [](const eckit::Value& j) -> eckit::ValueList {
 };
 
 
-const auto polygon = [](const eckit::Value& j,
-                        const GeographyInput::Geometry& geom) -> GeographyInput::Polygon::element_type* {
+const auto polygon = [](const eckit::Value& j) -> GeoJSON::Polygon::element_type* {
     auto c = list(j);
 
     std::vector<eckit::geo::Point2> p;
@@ -87,23 +45,17 @@ const auto polygon = [](const eckit::Value& j,
         p.emplace_back(lonlat[0].as<double>(), lonlat[1].as<double>());
     }
 
-    if (geom == GeographyInput::Geometry::LonLat) {
-        // return new GeographyInput::Polygon::element_type(p);
-    }
-
-    if (geom == GeographyInput::Geometry::Spherical) {
-        // return new atlas::util::SphericalPolygon(p);
-    }
+    // return new GeographyInput::Polygon::element_type(p);
+    // return new atlas::util::SphericalPolygon(p);
 
     NOTIMP;
 };
 
 
-void build_polygons(const eckit::Value& j, const GeographyInput::Geometry& geom,
-                    std::vector<GeographyInput::Polygons>& all) {
+void build_polygons(const eckit::Value& j, std::vector<GeoJSON::Polygons>& all) {
     if (j.isList()) {
         for (const auto& l : list(j)) {
-            build_polygons(l, geom, all);
+            build_polygons(l, all);
         }
         return;
     }
@@ -118,7 +70,7 @@ void build_polygons(const eckit::Value& j, const GeographyInput::Geometry& geom,
                     first = false;
                     all.emplace_back();
                 }
-                all.back().emplace_back(polygon(lc, geom));
+                all.back().emplace_back(polygon(lc));
             }
         }
 
@@ -132,13 +84,13 @@ void build_polygons(const eckit::Value& j, const GeographyInput::Geometry& geom,
                         first = false;
                         all.emplace_back();
                     }
-                    all.back().emplace_back(polygon(lc, geom));
+                    all.back().emplace_back(polygon(lc));
                 }
             }
         }
 
         for (const auto& k : eckit::ValueMap(j)) {
-            build_polygons(k.second, geom, all);
+            build_polygons(k.second, all);
         }
         return;
     }
@@ -148,20 +100,22 @@ void build_polygons(const eckit::Value& j, const GeographyInput::Geometry& geom,
 }  // namespace
 
 
-GeoJSON::GeoJSON(const eckit::PathName& path, Geometry geometry) :
-    GeographyInput(geometry), json_(eckit::JSONParser::decodeFile(path)) {}
+GeoJSON::GeoJSON(const eckit::PathName& path) : json_(eckit::JSONParser::decodeFile(path)) {}
 
 
-GeoJSON::GeoJSON(std::string& json, Geometry geometry) :
-    GeographyInput(geometry), json_(eckit::JSONParser::decodeString(json)) {}
+GeoJSON::GeoJSON(std::string& json) : json_(eckit::JSONParser::decodeString(json)) {}
+
+
+std::ostream& GeoJSON::list(std::ostream&) const {
+    NOTIMP;
+}
 
 
 std::vector<GeoJSON::Polygons> GeoJSON::polygons() const {
     std::vector<Polygons> p;
-    build_polygons(json_, geometry(), p);
+    build_polygons(json_, p);
     return p;
 }
 
 
-}  // namespace geography
-}  // namespace mir
+}  // namespace eckit::geo::area::library

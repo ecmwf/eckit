@@ -2,6 +2,7 @@ set(TEST_ECKIT_GEO_CACHE_PATH "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
 
 foreach(_test
         area_boundingbox
+        area_geojson
         area_polygon
         cache
         figure

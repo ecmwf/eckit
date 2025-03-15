@@ -18,7 +18,7 @@
 
 #if eckit_HAVE_GEO_AREA_SHAPEFILE
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/Shapefile.h"
+#include "eckit/geo/area/library/Shapefile.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/SimpleOption.h"
 #endif
@@ -37,15 +37,17 @@ struct EckitAreaList final : EckitTool {
 
     void execute(const option::CmdArgs& args) override {
 #if eckit_HAVE_GEO_AREA_SHAPEFILE
+        using geo::area::library::Shapefile;
+
         if (PathName file = args.getString("shapefile-file", ""); !file.asString().empty()) {
-            std::make_unique<geo::Shapefile>(file)->list(Log::info());
+            std::make_unique<Shapefile>(file)->list(Log::info());
             Log::info() << std::endl;
 
             return;
         }
 
         if (auto url = args.getString("shapefile-url"); !url.empty()) {
-            std::unique_ptr<geo::Shapefile>(geo::Shapefile::make_from_url(url))->list(Log::info());
+            std::unique_ptr<Shapefile>(Shapefile::make_from_url(url))->list(Log::info());
             Log::info() << std::endl;
 
             return;

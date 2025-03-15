@@ -207,7 +207,7 @@ if(eckit_HAVE_GEO_GRID_ORCA)
 endif()
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)
-    list(APPEND eckit_geo_srcs Shapefile.cc Shapefile.h)
+    list(APPEND eckit_geo_srcs area/library/Shapefile.cc area/library/Shapefile.h)
     list(APPEND eckit_geo_libs shapelib::shp libzip::zip)
 endif()
 

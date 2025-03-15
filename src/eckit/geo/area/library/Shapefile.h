@@ -30,7 +30,7 @@ class Custom;
 }  // namespace eckit::geo
 
 
-namespace eckit::geo {
+namespace eckit::geo::area::library {
 
 
 struct Shapefile {
@@ -75,4 +75,4 @@ private:
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::area::library

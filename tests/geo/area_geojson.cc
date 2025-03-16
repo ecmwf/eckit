@@ -22,7 +22,7 @@ namespace eckit::geo::test {
 
 
 CASE("GeoJSON") {
-    area::library::GeoJSON gj("");
+    area::library::GeoJSON gj("CNTR_RG_60M_2024_4326_mini.geojson");
 
     gj.list(Log::info()) << std::endl;
 

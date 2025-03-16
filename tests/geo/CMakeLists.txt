@@ -2,7 +2,6 @@ set(TEST_ECKIT_GEO_CACHE_PATH "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
 
 foreach(_test
         area_boundingbox
-        area_geojson
         area_polygon
         cache
         figure
@@ -37,20 +36,26 @@ foreach(_test
         spec_layered
         util )
     ecbuild_add_test(
-        TARGET      eckit_test_geo_${_test}
-        SOURCES     ${_test}.cc
-        LIBS        eckit_geo )
+        TARGET  eckit_test_geo_${_test}
+        SOURCES ${_test}.cc
+        LIBS    eckit_geo )
 endforeach()
 
 if(eckit_HAVE_ZIP)
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
 endif()
 
+ecbuild_add_test(
+    TARGET            eckit_test_geo_area_geojson
+    SOURCES           area_geojson.cc
+    LIBS              eckit_geo
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)
     ecbuild_add_test(
-        TARGET  eckit_test_geo_area_shapefile
-        SOURCES area_shapefile.cc
-        LIBS    eckit_geo
+        TARGET            eckit_test_geo_area_shapefile
+        SOURCES           area_shapefile.cc
+        LIBS              eckit_geo
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 

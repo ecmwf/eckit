@@ -24,16 +24,16 @@ namespace eckit::geo::area::library {
 namespace {
 
 
-const auto list = [](const eckit::Value& j) -> eckit::ValueList {
+const auto list = [](const Value& j) -> ValueList {
     ASSERT(j.isList());
-    return j.as<eckit::ValueList>();
+    return j.as<ValueList>();
 };
 
 
-const auto polygon = [](const eckit::Value& j) -> GeoJSON::Polygon::element_type* {
+const auto polygon = [](const Value& j) -> GeoJSON::Polygon::element_type* {
     auto c = list(j);
 
-    std::vector<eckit::geo::Point2> p;
+    std::vector<Point2> p;
     p.reserve(c.size());
 
     for (auto& l : c) {
@@ -52,7 +52,7 @@ const auto polygon = [](const eckit::Value& j) -> GeoJSON::Polygon::element_type
 };
 
 
-void build_polygons(const eckit::Value& j, std::vector<GeoJSON::Polygons>& all) {
+void build_polygons(const Value& j, std::vector<GeoJSON::Polygons>& all) {
     if (j.isList()) {
         for (const auto& l : list(j)) {
             build_polygons(l, all);
@@ -89,7 +89,7 @@ void build_polygons(const eckit::Value& j, std::vector<GeoJSON::Polygons>& all) 
             }
         }
 
-        for (const auto& k : eckit::ValueMap(j)) {
+        for (const auto& k : ValueMap(j)) {
             build_polygons(k.second, all);
         }
         return;
@@ -100,10 +100,10 @@ void build_polygons(const eckit::Value& j, std::vector<GeoJSON::Polygons>& all) 
 }  // namespace
 
 
-GeoJSON::GeoJSON(const eckit::PathName& path) : json_(eckit::JSONParser::decodeFile(path)) {}
+GeoJSON::GeoJSON(const PathName& path) : json_(JSONParser::decodeFile(path)) {}
 
 
-GeoJSON::GeoJSON(std::string& json) : json_(eckit::JSONParser::decodeString(json)) {}
+GeoJSON::GeoJSON(std::string& json) : json_(JSONParser::decodeString(json)) {}
 
 
 std::ostream& GeoJSON::list(std::ostream&) const {

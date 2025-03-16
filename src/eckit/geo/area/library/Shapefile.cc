@@ -168,15 +168,16 @@ std::ostream& Shapefile::list(std::ostream& out) const {
     j << "type" << "shapefile";
     j << "shp" << shpPath_;
     j << "dbf" << dbfPath_;
-    j << "name" << name_;
-    j << "n_entities" << size();
-    j << "entities";
-
-    j.startList();
-    for (const auto& [key, val_] : to_entity) {
-        j << key;
+    j << "size" << size();
+    if (!name_.empty()) {
+        j << "name" << name_;
+        j << "areas";
+        j.startList();
+        for (const auto& [key, val_] : to_entity) {
+            j << key;
+        }
+        j.endList();
     }
-    j.endList();
 
     j.endObject();
     return out;
@@ -184,8 +185,7 @@ std::ostream& Shapefile::list(std::ostream& out) const {
 
 
 Area* Shapefile::make_area_from_name(const std::string& name) const {
-    ASSERT(!name_.empty());
-    ASSERT(!name.empty());
+    ASSERT(!name_.empty() && !name.empty());
 
     return make_area(to_entity.at(name));
 }

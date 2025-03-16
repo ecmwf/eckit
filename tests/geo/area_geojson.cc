@@ -22,19 +22,19 @@ namespace eckit::geo::test {
 
 
 CASE("GeoJSON") {
-    area::library::GeoJSON gj("CNTR_RG_60M_2024_4326_mini.geojson");
+    area::library::GeoJSON gj("CNTR_RG_60M_2024_4326_mini.geojson", "CNTR_NAME");
 
     gj.list(Log::info()) << std::endl;
 
-    // // std::unique_ptr<Area> area(shp.make_area_from_entity(0));
-    // std::unique_ptr<Area> area(shp.make_area_from_name("Azores"));
+    // std::unique_ptr<Area> area(gj.make_area(0));
+    std::unique_ptr<Area> area(gj.make_area_from_name("Portugal"));
 
-    // for (double lat = 39.7; lat > 37.; lat -= .05) {
-    //     for (double lon = -31.33; lon <= -25.13; lon += 0.05) {
-    //         std::cout << (area->contains({lon, lat}) ? '!' : '.');
-    //     }
-    //     std::cout << std::endl;
-    // }
+    for (double lat = 39.7; lat > 37.; lat -= .05) {
+        for (double lon = -31.33; lon <= -25.13; lon += 0.05) {
+            std::cout << (area->contains({lon, lat}) ? '!' : '.');
+        }
+        std::cout << std::endl;
+    }
 }
 
 

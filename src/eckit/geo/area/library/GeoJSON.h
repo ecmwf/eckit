@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <memory>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -22,7 +22,14 @@
 
 namespace eckit {
 class PathName;
+namespace geo {
+class Area;
+class Spec;
+namespace spec {
+class Custom;
 }
+}  // namespace geo
+}  // namespace eckit
 
 
 namespace eckit::geo::area::library {
@@ -38,24 +45,41 @@ public:
      * - GeoJSON "Polygon" is a list of (this) Polygon (eg. "polygon"+"hole"+"hole"+...)
      * - GeoJSON "MultiPolygon" is a list of GeoJSON "Polygon"
      */
-    using Polygon  = std::unique_ptr<polygon::LonLatPolygon>;
-    using Polygons = std::vector<Polygon>;
+    using Polygons = std::vector<polygon::LonLatPolygon>;
 
     // -- Constructors
 
-    explicit GeoJSON(const PathName&);
-    explicit GeoJSON(std::string& json);
+    explicit GeoJSON(const Spec&);
+    explicit GeoJSON(const PathName&, const std::string& name = "");
 
     // -- Methods
 
     std::ostream& list(std::ostream&) const;
+    size_t size() const { return polygons_.size(); }
 
-    std::vector<Polygons> polygons() const;
+    [[nodiscard]] Area* make_area(size_t) const;
+    [[nodiscard]] Area* make_area_from_name(const std::string&) const;
+
+    // -- Class methods
+
+    [[nodiscard]] static GeoJSON* make_from_json_string(const std::string& json, const std::string& name = "");
 
 private:
+    // -- Constructors
+
+    explicit GeoJSON(const Value&, const std::string& file, const std::string& name);
+
     // -- Members
 
-    Value json_;
+    const std::string file_;
+    const std::string name_;
+
+    std::map<std::string, int> to_index;
+    std::vector<Polygons> polygons_;
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const;
 };
 
 

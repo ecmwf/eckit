@@ -15,6 +15,9 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
+#include "eckit/geo/area/Polygon.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/log/JSON.h"
 #include "eckit/parser/JSONParser.h"
 
 
@@ -24,16 +27,16 @@ namespace eckit::geo::area::library {
 namespace {
 
 
-const auto list = [](const Value& j) -> ValueList {
+ValueList list(const Value& j) {
     ASSERT(j.isList());
     return j.as<ValueList>();
-};
+}
 
 
-const auto polygon = [](const Value& j) -> GeoJSON::Polygon::element_type* {
+polygon::LonLatPolygon polygon(const Value& j) {
     auto c = list(j);
 
-    std::vector<Point2> p;
+    std::vector<PointLonLat> p;
     p.reserve(c.size());
 
     for (auto& l : c) {
@@ -45,11 +48,8 @@ const auto polygon = [](const Value& j) -> GeoJSON::Polygon::element_type* {
         p.emplace_back(lonlat[0].as<double>(), lonlat[1].as<double>());
     }
 
-    // return new GeographyInput::Polygon::element_type(p);
-    // return new atlas::util::SphericalPolygon(p);
-
-    NOTIMP;
-};
+    return polygon::LonLatPolygon(p);
+}
 
 
 void build_polygons(const Value& j, std::vector<GeoJSON::Polygons>& all) {
@@ -100,21 +100,76 @@ void build_polygons(const Value& j, std::vector<GeoJSON::Polygons>& all) {
 }  // namespace
 
 
-GeoJSON::GeoJSON(const PathName& path) : json_(JSONParser::decodeFile(path)) {}
+GeoJSON::GeoJSON(const Spec& spec) : GeoJSON(PathName(spec.get_string("file")), spec.get_string("name", "")) {}
 
 
-GeoJSON::GeoJSON(std::string& json) : json_(JSONParser::decodeString(json)) {}
+GeoJSON::GeoJSON(const PathName& file, const std::string& name) : GeoJSON(JSONParser::decodeFile(file), file, name) {}
 
 
-std::ostream& GeoJSON::list(std::ostream&) const {
-    NOTIMP;
+GeoJSON::GeoJSON(const Value& json, const std::string& file, const std::string& name) : file_(file), name_(name) {
+    build_polygons(json, polygons_);
+
+    if (!name_.empty()) {
+        ASSERT(json.isMap() && json["features"].isList());
+
+        int _index = 0;
+        for (const auto& feature : json["features"].as<ValueList>()) {
+            ASSERT(feature.isMap() && feature["properties"].isMap() && feature["properties"][name].isString());
+
+            auto _name = feature["properties"][name].as<std::string>();
+            ASSERT(to_index.emplace(_name, _index++).second);
+        }
+    }
 }
 
 
-std::vector<GeoJSON::Polygons> GeoJSON::polygons() const {
-    std::vector<Polygons> p;
-    build_polygons(json_, p);
-    return p;
+void GeoJSON::fill_spec(spec::Custom& custom) const {
+    custom.set("type", "geojson");
+    custom.set("file", file_);
+    if (!name_.empty()) {
+        custom.set("name", name_);
+    }
+}
+
+
+GeoJSON* GeoJSON::make_from_json_string(const std::string& json, const std::string& name) {
+    return new GeoJSON(JSONParser::decodeString(json), "", name);
+}
+
+
+Area* GeoJSON::make_area(size_t index) const {
+    return new area::Polygon(polygons_[index]);
+}
+
+
+Area* GeoJSON::make_area_from_name(const std::string& name) const {
+    ASSERT(!name_.empty() && !name.empty());
+
+    return make_area(to_index.at(name));
+}
+
+
+std::ostream& GeoJSON::list(std::ostream& out) const {
+    JSON j(out);
+    j.startObject();
+
+    j << "type" << "geojson";
+    if (!file_.empty()) {
+        j << "file" << file_;
+    }
+    j << "size" << size();
+    if (!name_.empty()) {
+        j << "name" << name_;
+        j << "areas";
+        j.startList();
+        for (const auto& [key, val_] : to_index) {
+            j << key;
+        }
+        j.endList();
+    }
+
+    j.endObject();
+    return out;
 }
 
 

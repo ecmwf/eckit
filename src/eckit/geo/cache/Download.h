@@ -39,7 +39,7 @@ public:
     // -- Methods
 
     PathName to_cached_path(const url_type&, const std::string& prefix = "",
-                            const std::string& extension = ".download") const;
+                            const std::string& suffix = ".download") const;
 
     void rm_cache_root() const { rmdir(root_); }
 

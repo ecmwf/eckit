@@ -12,9 +12,8 @@
 
 #include "eckit/geo/area/library/GeoJSON.h"
 
-#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/area/Polygon.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
@@ -125,7 +124,7 @@ GeoJSON::GeoJSON(const Value& json, const std::string& file, const std::string& 
 
 void GeoJSON::fill_spec(spec::Custom& custom) const {
     custom.set("type", "geojson");
-    custom.set("file", file_);
+    custom.set("file", file_.asString());
     if (!name_.empty()) {
         custom.set("name", name_);
     }
@@ -154,7 +153,7 @@ std::ostream& GeoJSON::list(std::ostream& out) const {
     j.startObject();
 
     j << "type" << "geojson";
-    if (!file_.empty()) {
+    if (!file_.asString().empty()) {
         j << "file" << file_;
     }
     j << "size" << size();

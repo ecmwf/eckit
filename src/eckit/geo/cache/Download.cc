@@ -121,7 +121,7 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
 }
 
 
-PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& extension) const {
+PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& suffix) const {
     // control concurrent access
     lock_type lock;
 
@@ -129,8 +129,8 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
 
     // set cache key, return path early if possible
     const auto key = MD5{url}.digest();
-    const auto path =
-        CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix + (prefix.empty() ? "" : "-") + key + extension;
+    const auto path
+        = CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix + (prefix.empty() ? "" : "-") + key + suffix;
 
     if (path.exists()) {
         return CACHE[key] = path;

@@ -46,6 +46,8 @@ list(APPEND eckit_geo_srcs
     area/BoundingBox.h
     area/BoundingBox2.cc
     area/BoundingBox2.h
+    area/Library.cc
+    area/Library.h
     area/None.cc
     area/None.h
     area/Polygon.cc

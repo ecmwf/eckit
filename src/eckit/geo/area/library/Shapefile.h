@@ -17,6 +17,7 @@
 #include <string>
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/area/Library.h"
 
 #include "shapefil.h"
 
@@ -33,24 +34,33 @@ class Custom;
 namespace eckit::geo::area::library {
 
 
-struct Shapefile {
+class Shapefile : public Library {
+public:
     // -- Constructors
 
     explicit Shapefile(const Spec&);
     explicit Shapefile(const PathName&);
     explicit Shapefile(const PathName& shp, const PathName& dbf, const std::string& name_field = "");
 
+    Shapefile(const Shapefile&) = delete;
+    Shapefile(Shapefile&&)      = delete;
+
     // -- Destructor
 
     ~Shapefile();
 
-    // -- Methods
+    // -- Operators
 
-    std::ostream& list(std::ostream&) const;
-    size_t size() const { return static_cast<size_t>(nEntities_); }
+    void operator=(const Shapefile&) = delete;
+    void operator=(Shapefile&&)      = delete;
 
-    [[nodiscard]] Area* make_area(size_t) const;
-    [[nodiscard]] Area* make_area_from_name(const std::string&) const;
+    // -- Overridden methods
+
+    std::ostream& list(std::ostream&) const override;
+    size_t size() const override { return static_cast<size_t>(nEntities_); }
+
+    [[nodiscard]] Area* make_area(size_t) const override;
+    [[nodiscard]] Area* make_area_from_name(const std::string&) const override;
 
     // -- Class methods
 
@@ -71,7 +81,7 @@ private:
 
     // -- Overridden methods
 
-    void fill_spec(spec::Custom&) const;
+    void fill_spec(spec::Custom&) const override;
 };
 
 

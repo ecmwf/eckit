@@ -16,33 +16,32 @@
 #include <string>
 #include <vector>
 
+#include "eckit/filesystem/PathName.h"
+#include "eckit/geo/area/Library.h"
 #include "eckit/geo/polygon/LonLatPolygon.h"
 #include "eckit/value/Value.h"
 
 
-namespace eckit {
-class PathName;
-namespace geo {
+namespace eckit::geo {
 class Area;
 class Spec;
 namespace spec {
 class Custom;
 }
-}  // namespace geo
-}  // namespace eckit
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::area::library {
 
 
-class GeoJSON {
+class GeoJSON : public Library {
 public:
     // -- Types
 
     /*
-     * This Polygon definition maps to a single list of coordinates
      * Note:
-     * - GeoJSON "Polygon" is a list of (this) Polygon (eg. "polygon"+"hole"+"hole"+...)
+     * - geo::polygon::LonLatPolygon is a list of (geo::PointLonLat) points
+     * - GeoJSON "Polygon" is a list of (geo::polygon::LonLatPolygon) polygon (eg. "polygon"+"hole"+"hole"+...)
      * - GeoJSON "MultiPolygon" is a list of GeoJSON "Polygon"
      */
     using Polygons = std::vector<polygon::LonLatPolygon>;
@@ -52,13 +51,13 @@ public:
     explicit GeoJSON(const Spec&);
     explicit GeoJSON(const PathName&, const std::string& name = "");
 
-    // -- Methods
+    // -- Overridden methods
 
-    std::ostream& list(std::ostream&) const;
-    size_t size() const { return polygons_.size(); }
+    std::ostream& list(std::ostream&) const override;
+    size_t size() const override { return polygons_.size(); }
 
-    [[nodiscard]] Area* make_area(size_t) const;
-    [[nodiscard]] Area* make_area_from_name(const std::string&) const;
+    [[nodiscard]] Area* make_area(size_t) const override;
+    [[nodiscard]] Area* make_area_from_name(const std::string&) const override;
 
     // -- Class methods
 
@@ -71,7 +70,7 @@ private:
 
     // -- Members
 
-    const std::string file_;
+    const PathName file_;
     const std::string name_;
 
     std::map<std::string, int> to_index;
@@ -79,7 +78,7 @@ private:
 
     // -- Overridden methods
 
-    void fill_spec(spec::Custom&) const;
+    void fill_spec(spec::Custom&) const override;
 };
 
 

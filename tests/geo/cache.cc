@@ -159,20 +159,20 @@ CASE("download: cached") {
     EXPECT(!root.exists());
 
     const std::string prefix    = "prefix-";
-    const std::string extension = ".extension";
+    const std::string suffix    = ".suffix";
 
     cache::Download download(root);
 
     download.rm_cache_root();
 
-    auto path = download.to_cached_path(URL, prefix, extension);
+    auto path = download.to_cached_path(URL, prefix, suffix);
 
     EXPECT(root.exists());
     EXPECT(path.exists());
 
     std::string basename = path.baseName();
     EXPECT(StringTools::startsWith(basename, prefix));
-    EXPECT(StringTools::endsWith(basename, extension));
+    EXPECT(StringTools::endsWith(basename, suffix));
     EXPECT(path.dirName() == root);
 
     download.rm_cache_root();

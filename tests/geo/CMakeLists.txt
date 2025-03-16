@@ -2,6 +2,7 @@ set(TEST_ECKIT_GEO_CACHE_PATH "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
 
 foreach(_test
         area_boundingbox
+        area_libraries
         area_polygon
         cache
         figure
@@ -45,19 +46,10 @@ if(eckit_HAVE_ZIP)
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
 endif()
 
-ecbuild_add_test(
-    TARGET            eckit_test_geo_area_geojson
-    SOURCES           area_geojson.cc
-    LIBS              eckit_geo
+set_target_properties(
+    eckit_test_geo_area_libraries
+    PROPERTIES
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-if(eckit_HAVE_GEO_AREA_SHAPEFILE)
-    ecbuild_add_test(
-        TARGET            eckit_test_geo_area_shapefile
-        SOURCES           area_shapefile.cc
-        LIBS              eckit_geo
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
 
 if(eckit_HAVE_GEO_GRID_ORCA)
     set(URL "https://get.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_T.atlas")

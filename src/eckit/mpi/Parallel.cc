@@ -10,10 +10,13 @@
 
 #include "eckit/mpi/Parallel.h"
 
+#include <atomic>
 #include <cerrno>
-#include <unistd.h>
+#include <csetjmp>
+#include <csignal>
 #include <limits>
 #include <sstream>
+#include <unistd.h>
 
 #include "eckit/exception/Exceptions.h"
 
@@ -32,14 +35,7 @@ namespace mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static pthread_once_t once      = PTHREAD_ONCE_INIT;
-static eckit::Mutex* localMutex = 0;
-static size_t initCounter;
-
-static void init() {
-    localMutex  = new eckit::Mutex();
-    initCounter = 0;
-}
+std::atomic<size_t> initCounter{}; // zero-initialized
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -94,6 +90,58 @@ static MPI_Datatype PARALLEL_TWO_LONG_LONG() {
     }();
     return mpi_datatype;
 }
+
+struct LocalMutex {
+    operator eckit::Mutex&() { return mutex_; }
+    static LocalMutex& instance() {
+        static LocalMutex instance;
+        return instance;
+    }
+private:
+    LocalMutex() = default;
+    eckit::Mutex mutex_;
+};
+
+struct WorkaroundSegvAtExit {
+    // This is a workaround for when a SIGSEGV is happening during the
+    // program teardown phase after the main() scope ends. eckit::mpi is designed to
+    // automatically call MPI_Finalize at this point when needed.
+    // Some MPI implementations trigger a SIGSEGV. This is e.g. the case with hpcx-openmpi/2.14.0
+    // with CUDA-aware features enabled.
+    //
+    // To enable the workaround, please export `ECKIT_MPI_WORKAROUND_SEGV_AT_EXIT=1`
+    //
+    // For more details see https://github.com/ecmwf/eckit/pull/171
+
+    static void enabled(bool value) {
+        instance().enabled_ = value;
+    }
+
+    static bool enabled() {
+        return instance().enabled_;
+    }
+
+    static void MPI_Finalize() {
+        // This function calls MPI_Finalize, traps a SIGSEGV when it happens, ignores it,
+        // and restores the SIGSEGV signal handler to the default, to handle further SIGSEGV.
+        static std::jmp_buf sigsegv_occured;
+        std::signal(SIGSEGV, [](int){std::longjmp(sigsegv_occured, true);});
+        if (setjmp(sigsegv_occured)) {
+            std::signal(SIGSEGV, SIG_DFL);
+            // std::cerr << "WARNING: Trapped SIGSEGV fault during MPI_Finalize() after main()" << std::endl;
+            return;
+        }
+        MPI_CALL(::MPI_Finalize());
+    }
+
+private:
+    static WorkaroundSegvAtExit& instance() {
+        static WorkaroundSegvAtExit instance;
+        return instance;
+    }
+    bool enabled_{false};
+};
+
 
 }  // namespace
 
@@ -172,14 +220,11 @@ size_t getSize(MPI_Comm comm) {
 Parallel::Parallel(std::string_view name) :
     Comm(name) /* don't use member initialisation list */ {
 
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(localMutex);
-
     if (initCounter == 0) {
         initialize();
     }
-    initCounter++;
 
+    initCounter++;
     comm_ = MPI_COMM_WORLD;
     rank_ = getRank(comm_);
     size_ = getSize(comm_);
@@ -187,9 +232,6 @@ Parallel::Parallel(std::string_view name) :
 
 Parallel::Parallel(std::string_view name, MPI_Comm comm, bool) :
     Comm(name) /* don't use member initialisation list */ {
-
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(localMutex);
 
     if (initCounter == 0) {
         initialize();
@@ -204,12 +246,6 @@ Parallel::Parallel(std::string_view name, MPI_Comm comm, bool) :
 Parallel::Parallel(std::string_view name, int comm) :
     Comm(name) {
 
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(localMutex);
-
-    if (initCounter == 0) {
-        initialize();
-    }
     initCounter++;
 
     comm_ = MPI_Comm_f2c(comm);
@@ -218,9 +254,6 @@ Parallel::Parallel(std::string_view name, int comm) :
 }
 
 Parallel::~Parallel() {
-
-    pthread_once(&once, init);
-    eckit::AutoLock<eckit::Mutex> lock(localMutex);
 
     initCounter--;
 
@@ -234,6 +267,7 @@ Comm* Parallel::self() const {
 }
 
 void Parallel::initialize() {
+    eckit::AutoLock<eckit::Mutex> lock(LocalMutex::instance());
 
     if (!initialized()) {
 
@@ -246,6 +280,8 @@ void Parallel::initialize() {
         }
 
         std::string MPIInitThread = eckit::Resource<std::string>("MPIInitThread;$ECKIT_MPI_INIT_THREAD", "NONE");
+
+        WorkaroundSegvAtExit::enabled(eckit::Resource<bool>("$ECKIT_MPI_WORKAROUND_SEGV_AT_EXIT", false));
 
         if (MPIInitThread == "NONE") {
             MPI_CALL(MPI_Init(&argc, &argv));
@@ -303,19 +339,22 @@ void Parallel::initialize() {
 
 void Parallel::finalize() {
     if (not finalized()) {
-        MPI_CALL(MPI_Finalize());
+        if (WorkaroundSegvAtExit::enabled()) {
+            WorkaroundSegvAtExit::MPI_Finalize();
+        }
+        else {
+            MPI_CALL(MPI_Finalize());
+        }
     }
 }
 
 bool Parallel::initialized() {
-
     int result = 1;
     MPI_CALL(MPI_Initialized(&result));
     return bool(result);
 }
 
 bool Parallel::finalized() {
-
     int result = 1;
     MPI_CALL(MPI_Finalized(&result));
     return bool(result);
@@ -502,7 +541,6 @@ void Parallel::reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Co
 
     MPI_Datatype mpitype = toType(type);
     MPI_Op mpiop         = toOp(op);
-    ;
 
     MPI_CALL(MPI_Reduce(const_cast<void*>(sendbuf), recvbuf, int(count), mpitype, mpiop, int(root), comm_));
 }
@@ -526,7 +564,6 @@ void Parallel::allReduce(const void* sendbuf, void* recvbuf, size_t count, Data:
 
     MPI_Datatype mpitype = toType(type);
     MPI_Op mpiop         = toOp(op);
-    ;
 
     MPI_CALL(MPI_Allreduce(const_cast<void*>(sendbuf), recvbuf, int(count), mpitype, mpiop, comm_));
 }

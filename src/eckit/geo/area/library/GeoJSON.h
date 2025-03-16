@@ -38,12 +38,12 @@ public:
      * - GeoJSON "Polygon" is a list of (this) Polygon (eg. "polygon"+"hole"+"hole"+...)
      * - GeoJSON "MultiPolygon" is a list of GeoJSON "Polygon"
      */
-    using Polygon  = std::unique_ptr<eckit::geo::polygon::LonLatPolygon>;
+    using Polygon  = std::unique_ptr<polygon::LonLatPolygon>;
     using Polygons = std::vector<Polygon>;
 
     // -- Constructors
 
-    explicit GeoJSON(const eckit::PathName&);
+    explicit GeoJSON(const PathName&);
     explicit GeoJSON(std::string& json);
 
     // -- Methods
@@ -55,7 +55,7 @@ public:
 private:
     // -- Members
 
-    eckit::Value json_;
+    Value json_;
 };
 
 

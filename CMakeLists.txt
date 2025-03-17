@@ -305,7 +305,7 @@ ecbuild_add_option( FEATURE AIO
 ecbuild_add_option( FEATURE PROJ
                     DEFAULT OFF
                     DESCRIPTION "support PROJ-based projections"
-                    REQUIRED_PACKAGES "PROJ 9.2" )
+                    REQUIRED_PACKAGES "PROJ 9.1.1" )
 
 ### c math library, needed when including "math.h"
 

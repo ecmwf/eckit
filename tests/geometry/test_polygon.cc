@@ -255,17 +255,17 @@ CASE("LonLatPolygon") {
             constexpr auto eps = 0.001;
 
             for (size_t i = 0; i <= 100; ++i) {
-                const auto lon = lonmin + static_cast<double>(i) * (lonmax - lonmin) / 99.;
+                const auto lon = lonmin + static_cast<double>(i) * (lonmax - lonmin) / 100.;
                 EXPECT(poly.contains({lon, latmin + eps}));
                 EXPECT(poly.contains({lon, latmax - eps}));
                 EXPECT_NOT(poly.contains({lon, latmin - eps}));
                 EXPECT_NOT(poly.contains({lon, latmax + eps}));
 
-                const auto lat = latmin + static_cast<double>(i) * (latmax - latmin) / 99.;
+                const auto lat = latmin + static_cast<double>(i) * (latmax - latmin) / 100.;
                 EXPECT(poly.contains({lonmin + eps, lat}));
                 EXPECT(poly.contains({lonmax - eps, lat}));
-                EXPECT_NOT(poly.contains({lonmin - eps, lat}));
-                EXPECT_NOT(poly.contains({lonmax + eps, lat}));
+                EXPECT(poly.contains({lonmin - eps, lat}));  // periodic
+                EXPECT(poly.contains({lonmax + eps, lat}));  // ...
             }
         }
 

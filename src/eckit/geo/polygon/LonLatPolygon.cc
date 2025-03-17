@@ -24,53 +24,62 @@ namespace eckit::geo::polygon {
 
 namespace {
 
+
 inline bool is_approximately_equal(double a, double b) {
     return types::is_approximately_equal(a, b, 1e-10);
 }
+
 
 inline bool is_approximately_greater_or_equal(double a, double b) {
     return a >= b || is_approximately_equal(a, b);
 }
 
+
 inline double cross_product_analog(const Point2& A, const Point2& B, const Point2& C) {
     return (A.X - C.X) * (B.Y - C.Y) - (A.Y - C.Y) * (B.X - C.X);
 }
 
+
 inline int on_direction(double a, double b, double c) {
     return a <= b && b <= c ? 1 : c <= b && b <= a ? -1 : 0;
 };
+
 
 inline int on_side(const Point2& P, const Point2& A, const Point2& B) {
     const auto p = cross_product_analog(P, A, B);
     return is_approximately_equal(p, 0) ? 0 : p > 0 ? 1 : -1;
 }
 
+
 constexpr int LON = 0;
 constexpr int LAT = 1;
+
 
 inline Point2 componentsMin(const Point2& A, const Point2& B) {
     return {std::min(A.X, B.X), std::min(A.Y, B.Y)};
 }
 
+
 inline Point2 componentsMax(const Point2& A, const Point2& B) {
     return {std::max(A.X, B.X), std::max(A.Y, B.Y)};
 }
+
 
 }  // namespace
 
 
 LonLatPolygon::LonLatPolygon(const container_type& points, bool includePoles) : container_type(points) {
-    ASSERT(points.size() > 1);
-    ASSERT(is_approximately_equal(points.front().lon, points.back().lon)
-           && is_approximately_equal(points.front().lat, points.back().lat));
+    ASSERT(size() > 1);
+    ASSERT(is_approximately_equal(front().lon, back().lon));
+    ASSERT(is_approximately_equal(front().lat, back().lat));
 
-    if (points.size() > 2) {
+    if (size() > 2) {
         clear();  // assumes reserved size is kept
-        push_back(points.front());
-        push_back(points[1]);
+        push_back(front());
+        push_back(operator[](1));
 
-        for (size_t i = 2; i < points.size(); ++i) {
-            auto A = points[i];
+        for (size_t i = 2; i < size(); ++i) {
+            auto A = operator[](i);
 
             // if new point is aligned with existing edge (cross product ~= 0) make the edge longer
             const auto& B = back();
@@ -98,6 +107,12 @@ LonLatPolygon::LonLatPolygon(const container_type& points, bool includePoles) : 
     quickCheckLongitude_ = is_approximately_greater_or_equal(360, max_.lon - min_.lon);
 }
 
+
+bool LonLatPolygon::intersects(area::BoundingBox& bbox) const {
+    NOTIMP;
+}
+
+
 void LonLatPolygon::print(std::ostream& out) const {
     out << "[";
     const auto* sep = "";
@@ -108,10 +123,12 @@ void LonLatPolygon::print(std::ostream& out) const {
     out << "]";
 }
 
+
 std::ostream& operator<<(std::ostream& out, const LonLatPolygon& pc) {
     pc.print(out);
     return out;
 }
+
 
 bool LonLatPolygon::contains(const PointLonLat& p, bool normalise_angle) const {
     if (!normalise_angle) {
@@ -177,6 +194,23 @@ bool LonLatPolygon::contains(const PointLonLat& p, bool normalise_angle) const {
     } while (Q.lon <= max_.lon);
 
     return false;
+}
+
+
+double LonLatPolygon::area() const {
+    ASSERT(is_approximately_equal(front().lon, back().lon) && is_approximately_equal(front().lat, back().lat));
+
+    double a = 0;
+    if (3 <= size()) {
+        for (size_t i = 1; i < size(); i++) {
+            const auto& p = operator[](i - 1);
+            const auto& q = operator[](i);
+
+            a += p.lon * q.lat - p.lat * q.lon;
+        }
+    }
+
+    return a;
 }
 
 

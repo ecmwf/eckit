@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <numeric>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
@@ -28,9 +29,23 @@ static const AreaRegisterType<Polygon> AREATYPE("polygon");
 Polygon::Polygon(const Spec& spec) : Polygon(*std::unique_ptr<Polygon>(make_from_spec(spec))) {}
 
 
+bool Polygon::intersects(BoundingBox&) const {
+    NOTIMP;
+}
+
+
 bool Polygon::contains(const eckit::geo::PointLonLat& p) const {
+    // NOTE This implementation follows that polygon rings alternatingly include/exclude the point (typical in GeoJSON);
+    // In shapefile polygons (not here) the first ring tests inclusion and subsequent rings test exclusion, but point
+    // ordering is assumed to be respected (ccw for inclusion, cw for exclusion) which isn't always the case
     auto c = std::count_if(begin(), end(), [&p](const auto& poly) { return poly.contains(p); });
     return c % 2 != 0;
+}
+
+
+double Polygon::area() const {
+    // NOTE this is "signed area", meaning it respects the point ordering
+    return std::accumulate(begin(), end(), 0., [](auto a, const auto& poly) { return a + poly.area(); });
 }
 
 

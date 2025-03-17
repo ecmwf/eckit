@@ -66,6 +66,11 @@ bool Area::contains(const PointLonLat&) const {
 }
 
 
+double Area::area() const {
+    NOTIMP;
+}
+
+
 const Area* AreaFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);

@@ -64,7 +64,9 @@ public:
     const std::string& type() const override;
     void fill_spec(spec::Custom&) const override;
 
+    bool intersects(BoundingBox&) const override;
     bool contains(const PointLonLat&) const override;
+    double area() const override;
 
     // -- Class methods
 

@@ -62,6 +62,7 @@ public:
 
     virtual bool intersects(area::BoundingBox&) const;
     virtual bool contains(const PointLonLat&) const;
+    virtual double area() const;
 
     // -- Class methods
 

@@ -17,6 +17,11 @@
 #include "eckit/geo/PointLonLat.h"
 
 
+namespace eckit::geo::area {
+class BoundingBox;
+}
+
+
 namespace eckit::geo::polygon {
 
 
@@ -56,12 +61,26 @@ public:
     using container_type::operator[];
     using container_type::size;
 
-    /// @brief Point-in-polygon test based on winding number
-    /// @note reference <a href="http://geomalgorithms.com/a03-_inclusion.html">Inclusion of a Point in a Polygon</a>
-    /// @param[in] P given point
-    /// @param[in] normalise_angle normalise point angles
-    /// @return if point (lon,lat) is in polygon
-    bool contains(const PointLonLat&, bool normalise_angle = false) const;
+    /**
+     * @brief Intersect polygon with bounding box
+     * @param[in,out] bbox bounding box to intersect with, returns intersection
+     * @return if polygon intersects bounding box
+     */
+    bool intersects(area::BoundingBox& bbox) const;
+
+    /**
+     * @brief Point-in-polygon test based on winding number
+     * @param[in] P given point
+     * @param[in] normalise_angle normalise point angles
+     * @return if point (lon,lat) is in polygon
+     */
+    bool contains(const PointLonLat& P, bool normalise_angle = false) const;
+
+    /**
+     * @brief Area of polygon
+     * @return area respecting point ordering (positive on CCW point ordering)
+     */
+    double area() const;
 
 private:
 

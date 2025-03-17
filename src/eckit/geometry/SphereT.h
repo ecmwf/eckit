@@ -27,9 +27,7 @@ struct SphereT {
     inline static double radius() { return DATUM::radius(); }
 
     /// Great-circle central angle between two points (longitude/latitude coordinates) in radians
-    inline static double centralAngle(const Point2& Alonlat,
-                                      const Point2& Blonlat,
-                                      bool normalise_angle = false) {
+    inline static double centralAngle(const Point2& Alonlat, const Point2& Blonlat, bool normalise_angle = false) {
         return Sphere::centralAngle(Alonlat, Blonlat, normalise_angle);
     }
 
@@ -68,9 +66,7 @@ struct SphereT {
     }
 
     // Convert spherical coordinates to Cartesian
-    inline static void convertSphericalToCartesian(const Point2& Alonlat,
-                                                   Point3& B,
-                                                   double height        = 0.,
+    inline static void convertSphericalToCartesian(const Point2& Alonlat, Point3& B, double height = 0.,
                                                    bool normalise_angle = false) {
         Sphere::convertSphericalToCartesian(DATUM::radius(), Alonlat, B, height, normalise_angle);
     }

@@ -25,10 +25,9 @@ namespace eckit {
 template <class T>
 class Inited {
 public:
-    Inited() :
-        value_(0) {}
-    Inited(const T& v) :
-        value_(v) {}
+
+    Inited() : value_(0) {}
+    Inited(const T& v) : value_(v) {}
 
     ~Inited() {}
 
@@ -39,6 +38,7 @@ public:
     Inited<T>& operator-=(const Inited<T>& other);
 
 private:
+
     T value_;
 };
 

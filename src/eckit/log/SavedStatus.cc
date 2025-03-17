@@ -17,8 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SavedStatus::SavedStatus() :
-    status_(Monitor::instance().status()) {}
+SavedStatus::SavedStatus() : status_(Monitor::instance().status()) {}
 
 SavedStatus::~SavedStatus() {
     Monitor::instance().status(status_);

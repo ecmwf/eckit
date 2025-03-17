@@ -33,6 +33,7 @@ namespace expression {
 template <typename T>
 class ShiftedColumnExpression : public T {
 public:
+
     ShiftedColumnExpression(const std::string&, SQLTable*, int shift, int nominalShift, int begin = -1, int end = -1);
     ShiftedColumnExpression(const std::string&, const std::string& tableReference, int shift, int nominalShift,
                             int begin = -1, int end = -1);
@@ -59,6 +60,7 @@ public:
     int nominalShift() const { return nominalShift_; }
 
 protected:
+
     int shift_;         // For the HASH operator
     int nominalShift_;  // For the HASH operator
 
@@ -70,6 +72,7 @@ protected:
     void output(SQLOutput& s) const override;
 
 private:
+
     ShiftedColumnExpression& operator=(const ShiftedColumnExpression&);
 
     void allocateCircularBuffer();

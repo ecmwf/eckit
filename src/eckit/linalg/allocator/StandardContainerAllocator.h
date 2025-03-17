@@ -26,6 +26,7 @@ namespace eckit::linalg::allocator {
  */
 class StandardContainerAllocator : public SparseMatrix::Allocator {
 public:
+
     using container_type = std::vector<std::map<Size, Scalar>>;
 
     StandardContainerAllocator(Size Nr, Size Nc, const container_type&);
@@ -37,6 +38,7 @@ public:
     void print(std::ostream&) const override;
 
 private:
+
     const Size Nr_;
     const Size Nc_;
     const Size nnz_;

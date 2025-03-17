@@ -22,6 +22,7 @@ namespace eckit::net {
 
 class TCPServer : public TCPSocket, private NonCopyable {
 public:
+
     TCPServer(const SocketOptions& = SocketOptions::server());
     explicit TCPServer(int port, const SocketOptions& = SocketOptions::server());
 
@@ -40,22 +41,26 @@ public:
     void close() override;
 
 protected:  // members
+
     int port_;
     int listen_;
 
     SocketOptions options_;  //< options to build the socket
 
 protected:  // methods
+
     void bind() override;
 
     void print(std::ostream& s) const override;
 
 private:  // methods
+
     // To be used by Select
 
     std::string bindingAddress() const override;
 
 private:  // members
+
     bool closeExec_;
     Mutex mutex_;
 };
@@ -65,6 +70,7 @@ private:  // members
 
 class EphemeralTCPServer : public TCPServer {
 public:
+
     EphemeralTCPServer(const SocketOptions& = SocketOptions::data());
     explicit EphemeralTCPServer(int port, const SocketOptions& = SocketOptions::data());
 };

@@ -116,11 +116,9 @@ std::string Html::removeHex(const std::string& s) {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Html::Include::Include(const std::string& name, HtmlObject* sub) :
-    sub_(sub), name_(name) {}
+Html::Include::Include(const std::string& name, HtmlObject* sub) : sub_(sub), name_(name) {}
 
-Html::Include::Include(const std::string& name, HtmlObject& sub) :
-    sub_(&sub), name_(name) {}
+Html::Include::Include(const std::string& name, HtmlObject& sub) : sub_(&sub), name_(name) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -177,8 +175,7 @@ void Html::Include::print(std::ostream& s) const {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Html::Image::Image(const std::string& name) :
-    name_(name) {}
+Html::Image::Image(const std::string& name) : name_(name) {}
 
 void Html::Image::print(std::ostream& s) const {
     s << "<IMG SRC=\"" << resource() + '/' + name_ << "\">";
@@ -192,8 +189,7 @@ std::string Html::Image::resource() {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-Html::Link::Link(Url& url) :
-    url_(addHex(url.str())) {}
+Html::Link::Link(Url& url) : url_(addHex(url.str())) {}
 
 void Html::Link::print(std::ostream& s) const {
     if (url_.length()) {
@@ -293,16 +289,15 @@ void Html::BeginTextArea::print(std::ostream& s) const {
 }
 
 void Html::EndTextArea::print(std::ostream& s) const {
-    s << "</TEXTAREA>" << std::endl
-      << HttpStream::doEncode;
+    s << "</TEXTAREA>" << std::endl << HttpStream::doEncode;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class ImageProvider : public HtmlResource {
 public:
-    ImageProvider() :
-        HtmlResource(Html::Image::resource()) {}
+
+    ImageProvider() : HtmlResource(Html::Image::resource()) {}
     void GET(std::ostream&, Url&);
 };
 
@@ -336,8 +331,8 @@ void ImageProvider::GET(std::ostream& out, Url& url) {
 
 class HtmlProvider : public HtmlResource {
 public:
-    HtmlProvider() :
-        HtmlResource("/html") {}
+
+    HtmlProvider() : HtmlResource("/html") {}
     virtual ~HtmlProvider() {}
     void GET(std::ostream&, Url&);
 };

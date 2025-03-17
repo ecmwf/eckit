@@ -17,11 +17,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CompositeParams::CompositeParams() :
-    plist_() {}
+CompositeParams::CompositeParams() : plist_() {}
 
-CompositeParams::CompositeParams(const Params::List& plist) :
-    plist_(plist) {}
+CompositeParams::CompositeParams(const Params::List& plist) : plist_(plist) {}
 
 CompositeParams::CompositeParams(Stream& s) {
     Params::List::size_type len;

@@ -20,6 +20,7 @@ namespace eckit::geo::projection {
 
 class XYToLonLat : public Projection {
 public:
+
     // -- Constructors
 
     explicit XYToLonLat() = default;
@@ -38,6 +39,7 @@ public:
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;

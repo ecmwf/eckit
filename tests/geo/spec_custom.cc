@@ -350,8 +350,8 @@ CASE("Spec <- Custom") {
                                             {"vector<string>", std::vector<std::string>{"string", "string"}}}));
 
         const std::string b_str = b->str();
-        const std::string b_ref
-            = R"({"bool":true,"double":6,"float":5,"int":1,"long":2,"long long":3,"size_t":4,"string":"string","vector<double>":[6,6],"vector<float>":[5,5],"vector<int>":[1,1],"vector<long long>":[3,3],"vector<long>":[2,2],"vector<size_t>":[4,4],"vector<string>":["string","string"]})";
+        const std::string b_ref =
+            R"({"bool":true,"double":6,"float":5,"int":1,"long":2,"long long":3,"size_t":4,"string":"string","vector<double>":[6,6],"vector<float>":[5,5],"vector<int>":[1,1],"vector<long long>":[3,3],"vector<long>":[2,2],"vector<size_t>":[4,4],"vector<string>":["string","string"]})";
         EXPECT_EQUAL(b_str, b_ref);
     }
 }

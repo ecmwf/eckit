@@ -60,8 +60,7 @@ Reanimator<DataHandle> DataHandle::reanimator_;
 
 DataHandle::DataHandle() {}
 
-DataHandle::DataHandle(Stream& s) :
-    Streamable(s) {}
+DataHandle::DataHandle(Stream& s) : Streamable(s) {}
 
 void DataHandle::encode(Stream& s) const {
     Streamable::encode(s);
@@ -100,8 +99,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
         return buf.copy(*this, other);
     }
 
-    static const long bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE",
-                                               64 * 1024 * 1024);
+    static const long bufsize = Resource<long>("bufferSize;$ECKIT_DATAHANDLE_SAVEINTO_BUFFER_SIZE", 64 * 1024 * 1024);
 
     Buffer buffer(bufsize);
 
@@ -151,8 +149,8 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
             }
         }
         catch (RestartTransfer& retry) {
-            Log::warning() << "Retrying transfer from " << retry.from() << " ("
-                           << Bytes(retry.from()) << ")" << std::endl;
+            Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"
+                           << std::endl;
 
             restartReadFrom(retry.from());
             other.restartWriteFrom(retry.from());
@@ -216,7 +214,8 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
     Length total = 0;
     long length  = -1;
 
-    while ((toRead <= Length(0) || total < toRead) && (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long)(toRead - total)))) > 0) {
+    while ((toRead <= Length(0) || total < toRead) &&
+           (length = read(buffer, toRead <= Length(0) ? bufsize : std::min(bufsize, (long)(toRead - total)))) > 0) {
 
         if (other.write((const char*)buffer, length) != length) {
             throw WriteError(name() + " into " + other.name());
@@ -412,9 +411,7 @@ void DataHandle::toRemote(Stream& s) const {
     s << *this;
 }
 
-void DataHandle::selectMover(MoverTransferSelection&, bool) const {
-    
-}
+void DataHandle::selectMover(MoverTransferSelection&, bool) const {}
 
 DataHandle* DataHandle::clone() const {
     std::ostringstream os;

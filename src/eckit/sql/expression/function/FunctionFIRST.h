@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionFIRST : public FunctionExpression {
 public:
+
     FunctionFIRST(const std::string&, const expression::Expressions&);
     FunctionFIRST(const FunctionFIRST&);
     ~FunctionFIRST();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 1; }
 
 private:
+
     // No copy allowed
     FunctionFIRST& operator=(const FunctionFIRST&);
 

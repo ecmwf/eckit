@@ -35,6 +35,7 @@ const char buf1[] = "abcdefghijklmnopqrstuvwxyz01234";
 
 class Tester {
 public:
+
     Tester() {
 
         format(std::cout, Log::fullFormat);

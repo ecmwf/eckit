@@ -31,6 +31,7 @@ namespace eckit {
 
 class EckitGrid final : public EckitTool {
 public:
+
     EckitGrid(int argc, char** argv) : EckitTool(argc, argv) {
         options_.push_back(new option::SimpleOption<std::string>("grid", "spec"));
         options_.push_back(new option::SimpleOption<bool>("minmax-ll", "Limits for (lon, lat) coordinates"));
@@ -41,6 +42,7 @@ public:
     }
 
 private:
+
     void usage(const std::string& tool) const override {
         Log::info() << "\n"
                        "Usage: "

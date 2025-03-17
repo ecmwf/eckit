@@ -20,6 +20,7 @@ namespace eckit::geo {
 
 class Exception : public eckit::Exception {
 public:
+
     using eckit::Exception::Exception;
 };
 
@@ -32,12 +33,14 @@ namespace eckit::geo::exception {
 
 class ProjectionError : public geo::Exception {
 public:
+
     explicit ProjectionError(const std::string&, const CodeLocation&);
 };
 
 
 class SpecError : public geo::Exception {
 public:
+
     explicit SpecError(const std::string&, const CodeLocation&);
 };
 

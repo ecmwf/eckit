@@ -32,6 +32,7 @@ class Length;
 
 class Metrics {
 public:  // methods
+
     static void set(const std::string& name, const Value& value, bool overrideOk = false);
 
     static void set(const std::string& name, const std::vector<std::string>& value, bool overrideOk = false);
@@ -59,6 +60,7 @@ public:  // methods
 
 
 private:
+
     Metrics();
     ~Metrics();
 };
@@ -72,6 +74,7 @@ class CollectMetrics {
     void print(std::ostream& s) const;
 
 public:
+
     CollectMetrics();
     ~CollectMetrics();
 
@@ -86,6 +89,7 @@ public:
 
 class MetricsPrefix {
 public:
+
     MetricsPrefix(const std::string& prefix);
     ~MetricsPrefix();
 };

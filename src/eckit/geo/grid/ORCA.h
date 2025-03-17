@@ -31,6 +31,7 @@ namespace eckit::geo::grid {
 
 class ORCA final : public Regular {
 public:
+
     // -- Types
 
     struct ORCARecord {
@@ -95,6 +96,7 @@ public:
     [[nodiscard]] static std::string arrangement_to_string(Arrangement);
 
 private:
+
     // -- Members
 
     std::string name_;

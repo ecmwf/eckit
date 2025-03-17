@@ -31,6 +31,7 @@ namespace eckit::sql::type {
 
 class TypeRegistry {
 public:
+
     TypeRegistry();
     ~TypeRegistry() = default;
 
@@ -42,6 +43,7 @@ public:
     const SQLType* lookup(const std::string& name);
 
 private:
+
     void enregisterInternal(SQLType* t);
     std::mutex m_;
     std::map<std::string, std::unique_ptr<SQLType>> map_;
@@ -93,8 +95,7 @@ const SQLType* TypeRegistry::lookup(const std::string& name) {
     return nullptr;
 }
 
-SQLType::SQLType(const std::string& name) :
-    name_(name) {}
+SQLType::SQLType(const std::string& name) : name_(name) {}
 
 SQLType::~SQLType() {}
 

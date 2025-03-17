@@ -31,6 +31,7 @@ class Metadata;
 
 class Record {
 public:
+
     struct URI {
         std::string str() const;
         std::string path;
@@ -43,9 +44,11 @@ public:
     };
 
 private:
+
     std::shared_ptr<ParsedRecord> record_;
 
 public:
+
     Record();
 
     bool empty() const;

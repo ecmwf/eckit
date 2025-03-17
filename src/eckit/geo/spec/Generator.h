@@ -39,6 +39,7 @@ namespace eckit::geo::spec {
 template <class C>
 class GeneratorT {
 public:
+
     // -- Types
 
     using generator_t = C;
@@ -90,6 +91,7 @@ public:
     }
 
 private:
+
     // -- Constructors
 
     GeneratorT() = default;
@@ -222,6 +224,7 @@ void GeneratorT<C>::print(std::ostream& os) const {
 
 class SpecGenerator {
 public:
+
     // -- Types
 
     using key_t = std::string;
@@ -252,6 +255,7 @@ public:
 
 class SpecGeneratorT0 : public SpecGenerator {
 public:
+
     // -- Methods
 
     [[nodiscard]] virtual Spec* spec() const = 0;
@@ -262,6 +266,7 @@ public:
 template <typename ARG1>
 class SpecGeneratorT1 : public SpecGenerator {
 public:
+
     // -- Types
 
     using arg1_t = ARG1;
@@ -276,6 +281,7 @@ public:
 template <typename ARG1, typename ARG2>
 class SpecGeneratorT2 : public SpecGenerator {
 public:
+
     // -- Types
 
     using arg1_t = ARG1;
@@ -291,6 +297,7 @@ public:
 template <class T>
 class ConcreteSpecGeneratorT0 final : public SpecGeneratorT0 {
 public:
+
     // -- Constructors
 
     explicit ConcreteSpecGeneratorT0(const SpecGeneratorT0::key_t& k) : key_(k) {
@@ -314,6 +321,7 @@ public:
     [[nodiscard]] Spec* spec() const override { return T::spec(); }
 
 private:
+
     // -- Members
 
     SpecGeneratorT0::key_t key_;
@@ -324,6 +332,7 @@ private:
 template <class T, typename ARG1>
 class ConcreteSpecGeneratorT1 final : public SpecGeneratorT1<ARG1> {
 public:
+
     // -- Constructors
 
     explicit ConcreteSpecGeneratorT1(const typename SpecGeneratorT1<ARG1>::key_t& k) : key_(k) {
@@ -347,6 +356,7 @@ public:
     [[nodiscard]] Spec* spec(typename SpecGeneratorT1<ARG1>::arg1_t p1) const override { return T::spec(p1); }
 
 private:
+
     // -- Members
 
     typename SpecGeneratorT1<ARG1>::key_t key_;
@@ -357,6 +367,7 @@ private:
 template <class T, typename ARG1, typename ARG2>
 class ConcreteSpecGeneratorT2 final : public SpecGeneratorT2<ARG1, ARG2> {
 public:
+
     // -- Constructors
 
     explicit ConcreteSpecGeneratorT2(const typename SpecGeneratorT2<ARG1, ARG2>::key_t& k) : key_(k) {
@@ -383,6 +394,7 @@ public:
     }
 
 private:
+
     // -- Members
 
     typename SpecGeneratorT2<ARG1, ARG2>::key_t key_;

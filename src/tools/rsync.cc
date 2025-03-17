@@ -24,8 +24,8 @@ using eckit::Rsync;
 
 class RsyncTool : public eckit::Tool {
 public:
-    RsyncTool(int argc, char** argv) :
-        Tool(argc, argv) {
+
+    RsyncTool(int argc, char** argv) : Tool(argc, argv) {
         options_.push_back(new eckit::option::SimpleOption<std::string>("from", "copy from this path"));
         options_.push_back(new eckit::option::SimpleOption<std::string>("to", "copy to this path"));
         options_.push_back(new eckit::option::SimpleOption<bool>("recursive", "perform a recursive copy"));

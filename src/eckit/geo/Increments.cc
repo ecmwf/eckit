@@ -25,9 +25,9 @@ Increments Increments::make_from_spec(const Spec& spec) {
         return {grid[0], grid[1]};
     }
 
-    if (value_type dx = 0, dy = 0; (spec.get("west_east_increment", dx) && spec.get("south_north_increment", dy))
-                                   || (spec.get("dlon", dx) && spec.get("dlat", dy))
-                                   || (spec.get("dx", dx) && spec.get("dy", dy))) {
+    if (value_type dx = 0, dy = 0; (spec.get("west_east_increment", dx) && spec.get("south_north_increment", dy)) ||
+                                   (spec.get("dlon", dx) && spec.get("dlat", dy)) ||
+                                   (spec.get("dx", dx) && spec.get("dy", dy))) {
         return {dx, dy};
     }
 

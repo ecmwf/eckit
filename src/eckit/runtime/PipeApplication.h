@@ -29,6 +29,7 @@ class Stream;
 class PipeApplication : public Application {
 
 public:  // methods
+
     PipeApplication(int argc, char** argv, const char* homeenv);
 
     ~PipeApplication() override;
@@ -41,6 +42,7 @@ public:  // methods
     static void launch(const std::string& name, int in, int out);
 
 private:  // members
+
     Resource<long> in_;
     Resource<long> out_;
 
@@ -48,6 +50,7 @@ private:  // members
     void run() override;
 
 protected:  // members
+
     bool terminate_;
 };
 

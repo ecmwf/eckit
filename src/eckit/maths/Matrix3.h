@@ -25,11 +25,13 @@ namespace eckit::maths {
 template <typename T>
 class Matrix3 final : protected std::array<T, 9> {
 public:
+
     // -- Types
 
     using container_type = std::array<T, 9>;
 
 public:
+
     // -- Constructors
 
     Matrix3(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz) :

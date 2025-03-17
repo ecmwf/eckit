@@ -21,6 +21,7 @@ namespace eckit::linalg::allocator {
 
 class StandardAllocator : public SparseMatrix::Allocator {
 public:
+
     StandardAllocator();
 
     SparseMatrix::Layout allocate(SparseMatrix::Shape&) override;

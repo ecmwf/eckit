@@ -24,9 +24,11 @@ namespace eckit {
 
 class EckitGridSpec final : public EckitTool {
 public:
+
     EckitGridSpec(int argc, char** argv) : EckitTool(argc, argv) {}
 
 private:
+
     void execute(const option::CmdArgs& args) override {
         std::string user;
 

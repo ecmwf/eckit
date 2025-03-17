@@ -113,6 +113,7 @@ struct PROJ::Implementation {
     }
 
 private:
+
     const pj_t proj_;
     const ctx_t ctx_;
     const std::unique_ptr<Convert> source_;

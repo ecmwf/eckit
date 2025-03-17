@@ -24,6 +24,7 @@ namespace eckit::sql::expression {
 
 class SQLExpressionEvaluated : public SQLExpression {
 public:
+
     SQLExpressionEvaluated(SQLExpression&);
     ~SQLExpressionEvaluated() override;
 
@@ -47,6 +48,7 @@ public:
     void output(SQLOutput& o) const override;
 
 protected:
+
     void print(std::ostream&) const override;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLExpressionEvaluated& p) {

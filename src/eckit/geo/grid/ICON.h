@@ -29,6 +29,7 @@ namespace eckit::geo::grid {
 
 class ICON final : public Unstructured {
 public:
+
     // -- Types
 
     struct ICONRecord {
@@ -69,6 +70,7 @@ public:
     [[nodiscard]] static std::string arrangement_to_string(Arrangement);
 
 private:
+
     // -- Members
 
     std::string name_;

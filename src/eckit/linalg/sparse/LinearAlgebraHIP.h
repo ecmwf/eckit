@@ -21,8 +21,7 @@ namespace sparse {
 
 struct LinearAlgebraHIP final : public LinearAlgebraSparse {
     LinearAlgebraHIP() {}
-    LinearAlgebraHIP(const std::string& name) :
-        LinearAlgebraSparse(name) {}
+    LinearAlgebraHIP(const std::string& name) : LinearAlgebraSparse(name) {}
 
     void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
     void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;

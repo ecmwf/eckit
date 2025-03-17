@@ -17,6 +17,7 @@ namespace eckit {
 
 class Clock {
 public:
+
     /// @returns UNIX Time since Epoch
     static time_t now() { return ::time(nullptr); }
 };

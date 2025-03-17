@@ -46,6 +46,7 @@ namespace eckit::geo {
 
 class Grid {
 public:
+
     // -- Types
 
     using uid_t     = std::string;
@@ -84,6 +85,7 @@ public:
 
     class NextIterator final {
     public:
+
         NextIterator(const NextIterator&) = delete;
         NextIterator(NextIterator&&)      = delete;
 
@@ -100,6 +102,7 @@ public:
         size_t index() const { return index_; }
 
     private:
+
         NextIterator(geo::Iterator* current, const geo::Iterator* end);
 
         geo::Iterator* current_;
@@ -176,6 +179,7 @@ public:
     static std::string className() { return "grid"; }
 
 protected:
+
     // -- Constructors
 
     explicit Grid(const area::BoundingBox&, Projection* = nullptr, Ordering = Ordering::DEFAULT);
@@ -193,6 +197,7 @@ protected:
     void projection(Projection* ptr) { projection_.reset(ptr); }
 
 private:
+
     // -- Members
 
     mutable std::unique_ptr<Area> area_;
@@ -236,6 +241,7 @@ struct GridFactory {
     static void list(std::ostream& out) { return instance().list_(out); }
 
 private:
+
     static GridFactory& instance();
 
     // This is 'const' as Grid should always be immutable

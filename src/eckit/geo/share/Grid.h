@@ -29,9 +29,11 @@ namespace eckit::geo::share {
 
 class Grid final {
 public:
+
     static const Grid& instance();
 
 private:
+
     // -- Constructors
 
     explicit Grid(const std::vector<PathName>&);

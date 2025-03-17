@@ -41,6 +41,7 @@ namespace eckit::geo {
  */
 class Figure {
 public:
+
     // -- Types
 
     using builder_t = BuilderT1<Figure>;
@@ -79,6 +80,7 @@ public:
     double flattening() const;
 
 private:
+
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
@@ -97,6 +99,7 @@ struct FigureFactory {
     [[nodiscard]] static Figure* make_from_string(const std::string&);
 
 private:
+
     static FigureFactory& instance();
 
     [[nodiscard]] Figure* make_from_spec_(const Spec&) const;

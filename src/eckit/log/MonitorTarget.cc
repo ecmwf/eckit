@@ -18,13 +18,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MonitorTarget::MonitorTarget(LogTarget* target) :
-    WrapperTarget(target) {}
+MonitorTarget::MonitorTarget(LogTarget* target) : WrapperTarget(target) {}
 
 MonitorTarget::~MonitorTarget() {}
 
 void MonitorTarget::write(const char* start, const char* end) {
-    if (start >= end) return;
+    if (start >= end)
+        return;
     Monitor::instance().out(const_cast<char*>(start), const_cast<char*>(end));
     target_->write(start, end);
 }

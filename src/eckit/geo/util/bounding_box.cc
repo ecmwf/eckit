@@ -91,6 +91,7 @@ struct BoundLonLat {
     bool includesSouthPole() const { return includesSouthPole_; }
 
 private:
+
     PointLonLat min_;
     PointLonLat max_;
     bool crossesDateLine_   = false;
@@ -121,6 +122,7 @@ struct Derivate {
     inline double invnH() const { return invnH_; }
 
 private:
+
     const Projection& projection_;
     const Point2 H_;
     const double invnH_;
@@ -170,6 +172,7 @@ struct DerivateFactory {
     static void list(std::ostream& out) { return instance().list_(out); }
 
 private:
+
     static DerivateFactory& instance() {
         static DerivateFactory obj;
         return obj;

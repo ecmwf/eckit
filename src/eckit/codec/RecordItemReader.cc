@@ -61,8 +61,8 @@ Data read_data(const Record& record, int data_section_index, Stream in) {
     if (not data_begin.valid()) {
         throw InvalidRecord("Data section is not valid");
     }
-    auto data_size
-        = static_cast<size_t>(data_section.length) - sizeof(RecordDataSection::Begin) - sizeof(RecordDataSection::End);
+    auto data_size =
+        static_cast<size_t>(data_section.length) - sizeof(RecordDataSection::Begin) - sizeof(RecordDataSection::End);
     if (data_size > 0) {
         if (data.read(in, data_size) != data_size) {
             throw InvalidRecord("Data section is not valid");

@@ -25,14 +25,17 @@ namespace eckit {
 class WrapperTarget : public LogTarget {
 
 protected:  // methods
+
     WrapperTarget(LogTarget* target = 0);
 
     ~WrapperTarget() override;
 
 protected:  // members
+
     LogTarget* target_;
 
 private:
+
     void write(const char* start, const char* end) override;
     void flush() override;
 
@@ -40,6 +43,7 @@ private:
     virtual void writeSuffix() = 0;
 
 protected:
+
     bool prefix_;
 
     friend class ChannelBuffer;

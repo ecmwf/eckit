@@ -20,6 +20,7 @@ namespace eckit::geo::grid::regularxy {
 
 class SpaceView final : public RegularXY {
 public:
+
     // -- Constructors
 
     explicit SpaceView(const Spec& spec) : RegularXY(RegularXY::make_ranges_from_spec(spec)) {}

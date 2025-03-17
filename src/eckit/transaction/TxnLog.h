@@ -50,6 +50,7 @@ class TxnArray;
 template <class T>
 class TxnLog {
 public:
+
     // -- Contructors
 
     TxnLog(const std::string& = Main::instance().name());
@@ -68,6 +69,7 @@ public:
     bool exists(T&);
 
 private:
+
     // No copy allowed
 
     TxnLog(const TxnLog<T>&);

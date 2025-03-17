@@ -35,6 +35,7 @@ void handle_assert(const std::string&, const CodeLocation&);
 class Exception : public std::exception {
 
 public:  // methods
+
     /// Constructor with message
     Exception(const std::string& what);
 
@@ -63,13 +64,15 @@ public:  // methods
     void dumpStackTrace(std::ostream& = std::cout);
 
 protected:  // methods
+
     void reason(const std::string&);
 
     Exception();
 
     virtual void print(std::ostream&) const;
 
-private:                     // members
+private:  // members
+
     std::string what_;       ///< description
     std::string callStack_;  ///< call stack
     SavedStatus save_;       ///< saved monitor status to recover after destruction
@@ -89,6 +92,7 @@ private:                     // members
 
 class SeriousBug : public Exception {
 public:
+
     SeriousBug(const std::string& w);
     SeriousBug(const std::string&, const CodeLocation&);
     SeriousBug(const char*, const CodeLocation&);
@@ -96,22 +100,26 @@ public:
 
 class TooManyRetries : public Exception {
 public:
+
     TooManyRetries(const int);
     TooManyRetries(const int, const std::string& msg);
 };
 
 class TimeOut : public Exception {
 public:
+
     TimeOut(const std::string&, const unsigned long);
 };
 
 class FailedLibraryCall : public Exception {
 public:
+
     FailedLibraryCall(const std::string& lib, const std::string& func, const std::string& msg, const CodeLocation&);
 };
 
 class FailedSystemCall : public Exception {
 public:
+
     FailedSystemCall(const std::string&);
     FailedSystemCall(const std::string&, const CodeLocation&);
     FailedSystemCall(const char*, const CodeLocation&, int);
@@ -120,6 +128,7 @@ public:
 
 class AssertionFailed : public Exception {
 public:
+
     AssertionFailed(const std::string&);
     AssertionFailed(const std::string&, const CodeLocation&);
     AssertionFailed(const char*, const CodeLocation&);
@@ -127,51 +136,60 @@ public:
 
 class BadParameter : public Exception {
 public:
+
     BadParameter(const std::string& s);
     BadParameter(const std::string&, const CodeLocation&);
 };
 
 class BadCast : public Exception {
 public:
+
     BadCast(const std::string& s);
     BadCast(const std::string&, const CodeLocation&);
 };
 
 class BadValue : public Exception {
 public:
+
     BadValue(const std::string& s);
     BadValue(const std::string&, const CodeLocation&);
 };
 
 class NotImplemented : public Exception {
 public:
+
     explicit NotImplemented(const std::string& s, const CodeLocation& = {});
     explicit NotImplemented(const CodeLocation&);
 };
 
 class Stop : public Exception {
 public:
+
     Stop(const std::string&);
 };
 
 class Abort : public Exception {
 public:
+
     Abort(const std::string&);
     Abort(const std::string&, const CodeLocation&);
 };
 
 class Cancel : public Exception {
 public:
+
     Cancel(const std::string&);
 };
 
 class Retry : public Exception {
 public:
+
     Retry(const std::string&);
 };
 
 class UserError : public Exception {
 public:
+
     UserError(const std::string&, const CodeLocation&);
     UserError(const std::string&);
     UserError(const std::string&, const std::string&);
@@ -180,6 +198,7 @@ public:
 
 class OutOfRange : public Exception {
 public:
+
     OutOfRange(const std::string&, const CodeLocation&);
     OutOfRange(unsigned long long, unsigned long long, const CodeLocation&);
     OutOfRange(unsigned long long, unsigned long long);
@@ -190,6 +209,7 @@ using MethodNotYetImplemented [[deprecated("Use eckit::NotImplemented directly")
 
 class FunctionalityNotSupported : public NotImplemented {
 public:
+
     explicit FunctionalityNotSupported(const std::string& what, const CodeLocation& loc = {});
 };
 
@@ -199,6 +219,7 @@ public:
 
 class FileError : public Exception {
 protected:
+
     FileError(const std::string&);
     FileError(const std::string&, const CodeLocation&);
     FileError();
@@ -209,40 +230,47 @@ class CantOpenFile : public FileError {
     virtual bool retryOnServer() const { return retry_; }
 
 public:
+
     CantOpenFile(const std::string&, bool retry = false);
     CantOpenFile(const std::string&, const CodeLocation&, bool retry = false);
 };
 
 class WriteError : public FileError {
 public:
+
     WriteError(const std::string&);
     WriteError(const std::string&, const CodeLocation&);
 };
 
 class ReadError : public FileError {
 public:
+
     ReadError(const std::string&);
     ReadError(const std::string&, const CodeLocation&);
 };
 
 class CloseError : public FileError {
 public:
+
     CloseError(const std::string&, const CodeLocation&);
 };
 
 class ShortFile : public ReadError {
 public:
+
     ShortFile(const std::string&);
     ShortFile(const std::string&, const CodeLocation&);
 };
 
 class RemoteException : public Exception {
 public:
+
     RemoteException(const std::string& msg, const std::string& from);
 };
 
 class UnexpectedState : public Exception {
 public:
+
     UnexpectedState(const std::string& msg);
     UnexpectedState(const std::string&, const CodeLocation&);
 };
@@ -317,6 +345,7 @@ class OutOfMemory : public Exception {
     virtual const char* what() const noexcept { return "OutOfMemory"; }
 
 public:
+
     OutOfMemory();
 };
 

@@ -34,6 +34,7 @@ namespace eckit::geo {
 
 class Projection {
 public:
+
     // -- Types
 
     using builder_t = BuilderT1<Projection>;
@@ -75,6 +76,7 @@ public:
     [[nodiscard]] static Projection* make_from_spec(const Spec&);
 
 private:
+
     // -- Members
 
     mutable std::shared_ptr<Figure> figure_;

@@ -27,21 +27,23 @@ namespace eckit {
 
 template <typename K, typename V>
 class DenseMap {
-public:                    // types
+public:  // types
+
     typedef K key_type;    ///< key type
     typedef V value_type;  ///< value type
 
     typedef std::pair<K, V> item_type;  ///< (key, value) item type
 
 private:  // types
+
     typedef std::deque<item_type> store_t;
 
 public:  // methods
+
     typedef typename store_t::iterator iterator;
     typedef typename store_t::const_iterator const_iterator;
 
-    DenseMap() :
-        sorted_(true) {}
+    DenseMap() : sorted_(true) {}
 
     ~DenseMap() {}
 
@@ -157,13 +159,16 @@ public:  // methods
     }
 
 private:  // types
+
     class LessThan {
     public:
+
         bool operator()(const item_type& e1, const item_type& e2) const { return (e1.first < e2.first) ? true : false; }
     };
 
     class Equals {
     public:
+
         bool operator()(const item_type& e1, const item_type& e2) const {
             return (e1.first == e2.first) ? true : false;
         }
@@ -171,11 +176,13 @@ private:  // types
 
     class Compare {
     public:
+
         bool operator()(const item_type& e, const K& k) const { return (e.first < k) ? true : false; }
         bool operator()(const K& k, const item_type& e) const { return (e.first > k) ? true : false; }
     };
 
-private:             // members
+private:  // members
+
     store_t items_;  ///< storage of the items
 
     bool sorted_;

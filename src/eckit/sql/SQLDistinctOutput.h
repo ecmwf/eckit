@@ -47,10 +47,12 @@ class SQLDistinctOutput : public SQLOutput {
     };
 
 public:  // methods
+
     SQLDistinctOutput(SQLOutput& output);
     ~SQLDistinctOutput() override;
 
 private:  // methods
+
     void print(std::ostream&) const override;
 
     // -- Members

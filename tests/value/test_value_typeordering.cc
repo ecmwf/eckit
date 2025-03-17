@@ -146,7 +146,8 @@ CASE("Every type compares correctly against every other type") {
         }
     }
 
-    EXPECT(sanity_check == values.size() * values.size());  // Checks that one of '<', '==' or '>' was triggered for each pair
+    EXPECT(sanity_check ==
+           values.size() * values.size());  // Checks that one of '<', '==' or '>' was triggered for each pair
 }
 
 //----------------------------------------------------------------------------------------------------------------------

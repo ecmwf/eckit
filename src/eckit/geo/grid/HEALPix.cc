@@ -98,6 +98,7 @@ inline int pll(int f) {
 
 class Reorder {
 public:
+
     explicit Reorder(int Nside) :
         Nside_(Nside),
         Npix_(size()),
@@ -207,6 +208,7 @@ public:
     }
 
 private:
+
     const int Nside_;  // up to 2^13
     const int Npix_;
     const int Ncap_;
@@ -219,8 +221,8 @@ private:
 
 static const std::string HEALPIX_ERROR_NSIDE_POSITIVE = "HEALPix: Nside must be greater than zero";
 static const std::string HEALPIX_ERROR_NSIDE_POWER2   = "HEALPix: Nside must be a power of 2";
-static const std::string HEALPIX_ERROR_ORDERING
-    = "HEALPix: supported ordering: ring, nested (Only orderingConvention are supported)";
+static const std::string HEALPIX_ERROR_ORDERING =
+    "HEALPix: supported ordering: ring, nested (Only orderingConvention are supported)";
 
 
 HEALPix::HEALPix(const Spec& spec) :

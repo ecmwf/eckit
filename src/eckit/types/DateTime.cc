@@ -18,14 +18,11 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-DateTime::DateTime(const Date& d, const Time& t) :
-    date_(d), time_(t) {}
+DateTime::DateTime(const Date& d, const Time& t) : date_(d), time_(t) {}
 
-DateTime::DateTime(const DateTime& other) :
-    date_(other.date_), time_(other.time_) {}
+DateTime::DateTime(const DateTime& other) : date_(other.date_), time_(other.time_) {}
 
-DateTime::DateTime(double julian) :
-    date_(long(julian), true), time_((julian - long(julian)) * 24 * 60 * 60) {}
+DateTime::DateTime(double julian) : date_(long(julian), true), time_((julian - long(julian)) * 24 * 60 * 60) {}
 
 DateTime::DateTime(const std::string& s) {
     Tokenizer parse(" ");

@@ -13,8 +13,8 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/io/FDataSync.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/FDataSync.h"
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/FileStream.h"
 

@@ -29,6 +29,7 @@ class Hash;
 class SessionID {
 
 public:  // methods
+
     SessionID();
 
     SessionID(Stream& s);
@@ -42,6 +43,7 @@ public:  // methods
     void print(std::ostream& os) const;
 
 private:  // methods
+
     friend Stream& operator<<(Stream& s, const SessionID& si) {
         si.encode(s);
         return s;
@@ -53,6 +55,7 @@ private:  // methods
     }
 
 private:  // members
+
     std::string hostname_;
     pid_t pid_;
     size_t thread_;

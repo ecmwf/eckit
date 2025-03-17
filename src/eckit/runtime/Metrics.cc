@@ -35,6 +35,7 @@ static std::string iso(time_t t) {
 
 class MetricsCollector : private eckit::NonCopyable {
 public:  // methods
+
     MetricsCollector();
     ~MetricsCollector();
 
@@ -57,6 +58,7 @@ public:  // methods
 
 
 private:  // members
+
     std::map<std::string, time_t> timestamps_;
     std::set<std::string> keys_;
     std::vector<std::string> stack_;
@@ -65,6 +67,7 @@ private:  // members
     Value metrics_;
 
 private:  // methods
+
     void print(std::ostream&) const;
 
     void add(Value& top, const std::vector<std::string>& v, size_t n, const Value& value) const;
@@ -76,8 +79,7 @@ private:  // methods
     }
 };
 
-MetricsCollector::MetricsCollector() :
-    created_(::time(nullptr)), metrics_(Value::makeOrderedMap()) {
+MetricsCollector::MetricsCollector() : created_(::time(nullptr)), metrics_(Value::makeOrderedMap()) {
     AutoLock<StaticMutex> lock(local_mutex);
     ASSERT(current_ == nullptr);
     current_ = this;
@@ -108,7 +110,8 @@ void MetricsCollector::set(const std::string& name, const Value& value, bool ove
     if (!overrideOk) {
         if (keys_.find(full) != keys_.end()) {
             // std::stringstream oss;
-            Log::warning() << "MetricsCollector::set(" << full << ") duplicate key, new=" << value << ", old=" << metrics_[full] << std::endl;
+            Log::warning() << "MetricsCollector::set(" << full << ") duplicate key, new=" << value
+                           << ", old=" << metrics_[full] << std::endl;
             // throw SeriousBug(oss.str());
         }
     }
@@ -140,7 +143,8 @@ void MetricsCollector::set(const std::string& name, const std::set<std::string>&
     set(name, toValue(value), overrideOk);
 }
 
-void MetricsCollector::set(const std::string& name, const std::map<std::string, unsigned long long>& value, bool overrideOk) {
+void MetricsCollector::set(const std::string& name, const std::map<std::string, unsigned long long>& value,
+                           bool overrideOk) {
     set(name, toValue(value), overrideOk);
 }
 
@@ -319,8 +323,7 @@ void Metrics::set(const std::string& name, const Offset& value, bool overrideOk)
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CollectMetrics::CollectMetrics() :
-    collector_(new MetricsCollector()) {}
+CollectMetrics::CollectMetrics() : collector_(new MetricsCollector()) {}
 
 CollectMetrics::~CollectMetrics() {
     delete collector_;

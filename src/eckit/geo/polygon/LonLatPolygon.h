@@ -22,6 +22,7 @@ namespace eckit::geo::polygon {
 
 class LonLatPolygon : protected std::vector<Point2> {
 public:
+
     // -- Types
 
     using container_type = std::vector<Point2>;
@@ -63,6 +64,7 @@ public:
     bool contains(const Point2& Plonlat, bool normalise_angle = false) const;
 
 private:
+
     // -- Methods
 
     void print(std::ostream&) const;

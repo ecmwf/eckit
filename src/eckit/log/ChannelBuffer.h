@@ -32,6 +32,7 @@ class LogTarget;
 class ChannelBuffer : public std::streambuf, private NonCopyable {
 
 private:  // methods
+
     /// constructor, taking ownership of stream
     ChannelBuffer(std::size_t size = 1024);
 
@@ -57,6 +58,7 @@ private:  // methods
     void addCallback(channel_callback_t cb, void* data = 0);
 
 protected:  // methods
+
     /// override this to change buffer behavior
     /// @returns true if no error occured
     virtual bool dumpBuffer();
@@ -70,11 +72,13 @@ protected:  // methods
     int_type sync() override;
 
 protected:  // members
+
     LogTarget* target_;
 
     std::vector<char> buffer_;
 
 private:
+
     friend std::ostream& operator<<(std::ostream& os, const ChannelBuffer& c) {
         c.print(os);
         return os;

@@ -37,10 +37,11 @@ class DateTime;
 class JSON : private NonCopyable {
 
 public:
+
     class Formatting {
     public:  // types
-        enum BitFlags
-        {
+
+        enum BitFlags {
             COMPACT     = 0,
             INDENT_DICT = (1 << 1),
             INDENT_LIST = (1 << 2),
@@ -48,6 +49,7 @@ public:
         };
 
     public:  // constructors
+
         /// Create compact formatting
         static Formatting compact();
 
@@ -63,6 +65,7 @@ public:
         Formatting(int flags, int indentation = 2);
 
     public:  // methods
+
         /// @return Number of spaces used for indentation
         int indentation() const;
 
@@ -70,11 +73,13 @@ public:
         int flags() const;
 
     private:  // data
+
         int flags_{COMPACT};
         int indentation_{2};
     };
 
 public:  // methods
+
     JSON(std::ostream&, bool null = true);
     JSON(std::ostream&, Formatting);
 
@@ -125,6 +130,7 @@ public:  // methods
     void raw(const char*, long);
 
 private:  // members
+
     std::ostream& out_;
     std::vector<std::string> sep_;
     std::vector<bool> state_;
@@ -134,6 +140,7 @@ private:  // members
     Formatting formatting_;
 
 private:  // methods
+
     void sep();
     bool inlist() { return !state_.back(); }
     bool indict() { return state_.back(); }

@@ -16,8 +16,8 @@
 #define eckit_LocalConfiguration_H
 
 #include <initializer_list>
-#include <vector>
 #include <type_traits>
+#include <vector>
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
@@ -36,6 +36,7 @@ class LocalConfiguration : public Configuration, public Configured {
     ///       eckit::Value should remain an internal detail of configuration objects
 
 public:  // methods
+
     explicit LocalConfiguration(char separator = '.');
     explicit LocalConfiguration(Stream& s);
     explicit LocalConfiguration(const Configuration& other);
@@ -71,7 +72,7 @@ public:  // methods
     LocalConfiguration& set(const std::string& name, const std::vector<ConfigurationT>& value) {
         std::vector<const Configuration*> abstract_pointers;
         abstract_pointers.reserve(value.size());
-        for (auto& v: value) {
+        for (auto& v : value) {
             abstract_pointers.emplace_back(&v);
         }
         return set(name, abstract_pointers.data(), abstract_pointers.size());
@@ -82,7 +83,7 @@ public:  // methods
     LocalConfiguration& set(const std::string& name, std::initializer_list<ConfigurationT>&& value) {
         std::vector<const Configuration*> abstract_pointers;
         abstract_pointers.reserve(value.size());
-        for (auto& v: value) {
+        for (auto& v : value) {
             abstract_pointers.emplace_back(&v);
         }
         return set(name, abstract_pointers.data(), abstract_pointers.size());
@@ -92,6 +93,7 @@ public:  // methods
     LocalConfiguration& remove(const std::string& name);
 
 protected:
+
     friend class Configuration;
 
     /// to be used only by class Configuration
@@ -102,6 +104,7 @@ protected:
     LocalConfiguration& set(const std::string& name, const Configuration* abstract_pointers[], size_t size);
 
 private:
+
     void setValue(const std::vector<std::string>& path, size_t i, Value& root, const Value& value);
     void setValue(const std::string& s, const Value& value);
 };

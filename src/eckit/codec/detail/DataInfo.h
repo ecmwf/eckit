@@ -22,6 +22,7 @@ namespace eckit::codec {
 
 class DataInfo {
 public:
+
     int section() const { return section_; }
     const std::string& compression() const { return compression_; }
     Endian endian() const { return endian_; }
@@ -49,6 +50,7 @@ public:
     void section(int s) { section_ = s; }
 
 private:
+
     int section_{0};
     std::string compression_{"none"};
     Checksum checksum_;

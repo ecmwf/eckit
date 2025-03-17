@@ -26,6 +26,7 @@ namespace eckit {
 
 class JavaResource : public HtmlResource {
 public:
+
     // -- Exceptions
     // None
 
@@ -57,6 +58,7 @@ public:
 
 
 protected:
+
     // -- Members
     // None
 
@@ -77,6 +79,7 @@ protected:
 
 
 private:
+
     // No copy allowed
 
     JavaResource(const JavaResource&);

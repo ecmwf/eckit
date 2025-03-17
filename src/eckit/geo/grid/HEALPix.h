@@ -20,6 +20,7 @@ namespace eckit::geo::grid {
 
 class HEALPix final : public Reduced {
 public:
+
     // -- Constructors
 
     explicit HEALPix(const Spec&);
@@ -51,6 +52,7 @@ public:
     [[nodiscard]] static Spec* spec(const std::string& name);
 
 private:
+
     // -- Members
 
     const size_t Nside_;

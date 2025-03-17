@@ -22,6 +22,7 @@ namespace eckit {
 template <class Traits, class NodeType>
 class SPTree {
 public:
+
     typedef typename Traits::Point Point;
     typedef typename Traits::Payload Payload;
     typedef typename Traits::Alloc Alloc;
@@ -47,8 +48,8 @@ public:
     typedef std::pair<Point, Payload> value_type;
 
 public:
-    SPTree(Alloc& alloc) :
-        alloc_(alloc), root_(0) {}
+
+    SPTree(Alloc& alloc) : alloc_(alloc), root_(0) {}
 
     ~SPTree() { alloc_.deleteNode(root_, (Node*)0); }
 

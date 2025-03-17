@@ -40,6 +40,7 @@ struct Download final {
     void rm_cache_root() const { rmdir(root_); }
 
 private:
+
     PathName cached_path(const url_type&) const;
 
     void rmdir(const PathName&) const;

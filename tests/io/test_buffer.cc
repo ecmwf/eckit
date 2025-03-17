@@ -28,7 +28,7 @@ unsigned char* random_bytestream(const size_t sz) {
     return stream;
 }
 
-constexpr auto msg = "Once upon a midnight dreary";
+constexpr auto msg    = "Once upon a midnight dreary";
 constexpr auto msgLen = std::char_traits<char>::length(msg);
 
 CASE("Test eckit Buffer default constructor") {
@@ -157,7 +157,7 @@ CASE("Test eckit Buffer resize") {
 
 CASE("Test copy from temp buffer") {
     struct BufferTester {
-        explicit BufferTester(const Buffer& buffer = Buffer {0}): buf_ {buffer, buffer.size()} { }
+        explicit BufferTester(const Buffer& buffer = Buffer{0}) : buf_{buffer, buffer.size()} {}
 
         Buffer buf_;
     };
@@ -170,7 +170,7 @@ CASE("Test copy from temp buffer") {
     EXPECT_EQUAL(tester->buf_.size(), 0);
 
     // non-empty
-    EXPECT_NO_THROW(tester = std::make_unique<BufferTester>(Buffer {msg, msgLen}));
+    EXPECT_NO_THROW(tester = std::make_unique<BufferTester>(Buffer{msg, msgLen}));
     EXPECT_EQUAL(std::strncmp(msg, static_cast<const char*>(tester->buf_), msgLen), 0);
     EXPECT_EQUAL(tester->buf_.size(), msgLen);
 }
@@ -179,6 +179,7 @@ CASE("Test copying and construction from of std::string") {
 
     class TestProtectedBuffer : public Buffer {
     public:
+
         using Buffer::Buffer;
         using Buffer::copy;
     };

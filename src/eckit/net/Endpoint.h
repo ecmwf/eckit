@@ -28,7 +28,8 @@ namespace net {
 
 class Endpoint {
 
-public:                            // methods
+public:  // methods
+
     Endpoint(const std::string&);  // parses the std::string formated as hostname:port
     Endpoint(const std::string& host, int port);
     Endpoint(Stream& s);
@@ -40,7 +41,7 @@ public:                            // methods
     const std::string& host() const { return host_; }
     int port() const { return port_; }
 
-    operator std::string() const { return hostname()+":"+std::to_string(port_); }
+    operator std::string() const { return hostname() + ":" + std::to_string(port_); }
 
     bool operator==(const net::Endpoint& other) const;
 
@@ -50,10 +51,12 @@ public:                            // methods
     void encode(Stream& s) const;
 
 protected:  // members
+
     std::string host_;
     int port_;
 
 private:  // methods
+
     void validate() const;
 
     friend std::ostream& operator<<(std::ostream& os, const net::Endpoint& ep) {
@@ -73,8 +76,7 @@ private:  // methods
 }  // namespace eckit
 
 template <>
-struct std::hash<eckit::net::Endpoint>
-{
+struct std::hash<eckit::net::Endpoint> {
     std::size_t operator()(const eckit::net::Endpoint& endpoint) const noexcept {
         const std::string& e = endpoint;
         return std::hash<std::string>{}(e);

@@ -30,6 +30,7 @@ class Timer;
 class Bytes {
 
 public:  // methods
+
     Bytes(double);
 
     /// Computes a rate
@@ -93,6 +94,7 @@ public:  // methods
     std::string shorten() const;
 
 private:  // members
+
     int sign() const;
     std::pair<double, char> reduceTo1024() const;
     std::pair<double, char> reduceTo100() const;

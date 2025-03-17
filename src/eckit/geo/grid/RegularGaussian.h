@@ -20,6 +20,7 @@ namespace eckit::geo::grid {
 
 class RegularGaussian final : public Regular {
 public:
+
     // -- Constructors
 
     explicit RegularGaussian(const Spec&);
@@ -36,6 +37,7 @@ public:
     [[nodiscard]] static Spec* spec(const std::string& name);
 
 private:
+
     // -- Members
 
     const size_t N_;

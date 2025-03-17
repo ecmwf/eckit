@@ -29,6 +29,7 @@ namespace eckit::geo::grid {
 
 class FESOM final : public Unstructured {
 public:
+
     // -- Types
 
     struct FESOMRecord {
@@ -69,6 +70,7 @@ public:
     [[nodiscard]] static std::string arrangement_to_string(Arrangement);
 
 private:
+
     // -- Members
 
     std::string name_;

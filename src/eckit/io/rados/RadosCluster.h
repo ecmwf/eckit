@@ -37,6 +37,7 @@ class RadosIOCtx;
 
 class RadosCluster {
 public:
+
     rados_ioctx_t& ioCtx(const std::string& pool) const;
     rados_ioctx_t& ioCtx(const RadosObject& object) const;
 
@@ -68,18 +69,21 @@ public:
     static const RadosCluster& instance();
 
 private:
+
     RadosCluster();
 
     ~RadosCluster();
 
 
 private:
+
     rados_t cluster_;
     mutable std::map<std::string, RadosIOCtx*> ctx_;
 
     void reset();
 
 public:
+
     static void error(int code, const char* msg, const char* file, int line, const char* func);
 };
 

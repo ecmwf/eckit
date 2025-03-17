@@ -24,6 +24,7 @@ namespace eckit::geo::projection {
  */
 class SpaceView : public ProjectionOnFigure {
 public:
+
     // -- Types
     // None
 
@@ -62,11 +63,13 @@ public:
     // None
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Members
     // None
 

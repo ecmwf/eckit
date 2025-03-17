@@ -26,6 +26,7 @@ namespace eckit {
 
 class Application : public Task, public Main {
 public:
+
     static Application& instance();
 
     Application(int argc, char** argv, const char* homeenv = nullptr);
@@ -56,6 +57,7 @@ public:
     time_t uptime();
 
 private:  // methods
+
     LogTarget* createInfoLogTarget() const override;
     LogTarget* createWarningLogTarget() const override;
     LogTarget* createErrorLogTarget() const override;
@@ -66,6 +68,7 @@ private:  // methods
     virtual std::string kind() const { return "Application"; }
 
 private:  // members
+
     bool running_;
 };
 

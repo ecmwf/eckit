@@ -27,6 +27,7 @@ namespace eckit {
 
 class SharedHandle : public DataHandle {
 public:
+
     // -- Contructors
 
     SharedHandle(DataHandle& handle);
@@ -90,6 +91,7 @@ public:
 
 
 private:
+
     // -- Members
 
     DataHandle& handle_;

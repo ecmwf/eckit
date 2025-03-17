@@ -46,6 +46,7 @@ class BTreeLock;
 
 class CacheManagerBase {
 public:
+
     CacheManagerBase(const std::string& loaderName, size_t maxCacheSize, const std::string& extension);
 
     CacheManagerBase(const CacheManagerBase&) = delete;
@@ -59,12 +60,14 @@ public:
     std::string loader() const;
 
 protected:
+
     void touch(const PathName& base, const PathName& path) const;
     void rescanCache(const eckit::PathName& base) const;
 
     bool writable(const PathName& path) const;
 
 private:
+
     std::string loaderName_;
     size_t maxCacheSize_;
     std::string extension_;
@@ -88,6 +91,7 @@ private:
 
 class CacheManagerNoLock {
 public:
+
     CacheManagerNoLock() = default;
     void lock() {}
     void unlock() {}
@@ -100,6 +104,7 @@ class CacheManagerFileSemaphoreLock {
     eckit::Semaphore lock_;
 
 public:
+
     explicit CacheManagerFileSemaphoreLock(const std::string& path);
     void lock();
     void unlock();
@@ -111,6 +116,7 @@ class CacheManagerFileFlock {
     eckit::FileLock lock_;
 
 public:
+
     explicit CacheManagerFileFlock(const std::string& path);
     void lock();
     void unlock();
@@ -123,10 +129,12 @@ template <class Traits>
 class CacheManager : public CacheManagerBase {
 
 public:  // methods
+
     using value_type = typename Traits::value_type;
 
     class CacheContentCreator {
     public:
+
         virtual ~CacheContentCreator()                                       = default;
         virtual void create(const PathName&, value_type& value, bool& saved) = 0;
     };
@@ -134,12 +142,14 @@ public:  // methods
     using key_t = std::string;
 
 public:  // methods
+
     explicit CacheManager(const std::string& loaderName, const std::string& roots, bool throwOnCacheMiss,
                           size_t maxCacheSize);
 
     PathName getOrCreate(const key_t& key, CacheContentCreator& creator, value_type& value) const;
 
 private:  // methods
+
     bool get(const key_t& key, PathName& path) const;
 
     PathName stage(const key_t& key, const PathName& root) const;
@@ -150,6 +160,7 @@ private:  // methods
     PathName base(const std::string& root) const;
 
 private:  // members
+
     std::vector<PathName> roots_;
 
     bool throwOnCacheMiss_;

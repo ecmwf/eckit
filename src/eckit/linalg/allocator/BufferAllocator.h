@@ -21,6 +21,7 @@ namespace eckit::linalg::allocator {
 
 class BufferAllocator : public SparseMatrix::Allocator {
 public:
+
     BufferAllocator(const MemoryBuffer&);
 
     SparseMatrix::Layout allocate(SparseMatrix::Shape&) override;

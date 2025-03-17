@@ -26,6 +26,7 @@ class Buffer;
 class Compressor : private eckit::NonCopyable {
 
 public:  // methods
+
     Compressor();
 
     virtual ~Compressor();
@@ -58,6 +59,7 @@ public:  // methods
 class NoCompressor : public Compressor {
 
 public:  // types
+
     NoCompressor();
 
     ~NoCompressor() override = default;
@@ -72,6 +74,7 @@ class CompressorBuilderBase {
     std::string name_;
 
 public:
+
     CompressorBuilderBase(const std::string&);
     virtual ~CompressorBuilderBase();
     virtual Compressor* make() = 0;
@@ -82,13 +85,14 @@ class CompressorBuilder : public CompressorBuilderBase {
     Compressor* make() override { return new T(); }
 
 public:
-    CompressorBuilder(const std::string& name) :
-        CompressorBuilderBase(name) {}
+
+    CompressorBuilder(const std::string& name) : CompressorBuilderBase(name) {}
     ~CompressorBuilder() override = default;
 };
 
 class CompressorFactory {
 public:
+
     static CompressorFactory& instance();
 
     void add(const std::string& name, CompressorBuilderBase* builder);
@@ -107,6 +111,7 @@ public:
     Compressor* build(const std::string&);
 
 private:
+
     CompressorFactory();
 
     std::map<std::string, CompressorBuilderBase*> builders_;

@@ -27,6 +27,7 @@ namespace eckit {
 
 class LibEcKitGeo final : public system::Library {
 public:
+
     // -- Methods
 
     static LibEcKitGeo& instance();
@@ -39,6 +40,7 @@ public:
     static bool proj();
 
 private:
+
     // -- Constructors
 
     LibEcKitGeo();

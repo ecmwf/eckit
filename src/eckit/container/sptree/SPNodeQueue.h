@@ -34,6 +34,7 @@ struct SPNodeInfo;
 template <class Traits, class NodeType>
 class SPNodeQueue {
 public:
+
     typedef typename Traits::Point Point;
     typedef typename Traits::Payload Payload;
     typedef typename Traits::Alloc Alloc;
@@ -45,12 +46,13 @@ public:
     typedef typename NodeInfo::NodeList NodeList;
 
 private:
+
     size_t k_;
     std::priority_queue<NodeInfo> queue_;
 
 public:
-    SPNodeQueue(size_t k) :
-        k_(k) {}
+
+    SPNodeQueue(size_t k) : k_(k) {}
 
     void push(Node* n, ID id, double d) {
         NodeInfo info(n, id, d);

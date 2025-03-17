@@ -39,6 +39,7 @@ class LocalPathName;
 
 class PathName {
 public:
+
     friend void operator<<(Stream&, const PathName&);
     friend void operator>>(Stream&, PathName&);
 
@@ -244,6 +245,7 @@ public:
     static std::string metricsTag(const std::string&);
 
 private:
+
     PathName(BasePathName*);
 
     // Members

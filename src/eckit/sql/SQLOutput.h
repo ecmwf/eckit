@@ -30,6 +30,7 @@ class SQLSelect;
 
 class SQLOutput : private eckit::NonCopyable {
 public:
+
     SQLOutput();
     virtual ~SQLOutput();
 
@@ -58,9 +59,11 @@ public:
     virtual unsigned long long count() = 0;
 
 protected:
+
     virtual void print(std::ostream&) const;
 
 private:
+
     // No copy allowed
     SQLOutput(const SQLOutput&);
     SQLOutput& operator=(const SQLOutput&);

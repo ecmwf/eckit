@@ -25,6 +25,7 @@ namespace eckit::geo::projection {
  */
 class LambertConformalConic : public ProjectionOnFigure {
 public:
+
     // -- Types
     // None
 
@@ -67,11 +68,13 @@ public:
     // None
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Members
 
     const PointLonLat centre_;     // central meridian/parallel [degree]

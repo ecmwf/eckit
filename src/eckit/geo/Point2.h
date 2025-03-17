@@ -24,6 +24,7 @@ namespace eckit::geo {
  */
 class Point2 final : protected std::array<double, 2> {
 public:
+
     // -- Types
 
     using container_type = array;

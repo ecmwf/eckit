@@ -25,6 +25,7 @@ namespace eckit {
 
 class StatusCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     StatusCmd();
@@ -34,6 +35,7 @@ public:
     ~StatusCmd();
 
 private:
+
     // -- Overridden methods
 
     // From CmdResource

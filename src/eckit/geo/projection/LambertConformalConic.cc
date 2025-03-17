@@ -48,8 +48,8 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat fir
 
     n_ = types::is_approximately_equal(lat_1, lat_2)
              ? std::sin(lat_1_r_)
-             : std::log(std::cos(lat_1_r_) / std::cos(lat_2_r_))
-                   / std::log(std::tan(M_PI_4 + lat_2_r_ / 2.) / std::tan(M_PI_4 + lat_1_r_ / 2.));
+             : std::log(std::cos(lat_1_r_) / std::cos(lat_2_r_)) /
+                   std::log(std::tan(M_PI_4 + lat_2_r_ / 2.) / std::tan(M_PI_4 + lat_1_r_ / 2.));
 
     if (types::is_approximately_equal(n_, 0.)) {
         throw exception::ProjectionError("LambertConformalConic: cannot corretly calculate n_", Here());

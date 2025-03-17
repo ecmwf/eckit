@@ -22,6 +22,7 @@ namespace eckit::maths {
 template <size_t N>
 class ConvexHullN : public ConvexHull {
 public:
+
     explicit ConvexHullN(const ConvexHull::coord_t& coord, const std::string& qhull_command = Qhull::COMMAND_DEFAULT) :
         qhull_(N, coord, qhull_command) {}
 
@@ -40,6 +41,7 @@ public:
     std::vector<size_t> facets(size_t n) const override { return qhull_.facets(n); }
 
 private:
+
     static coord_t convert_vector_v(const std::vector<std::vector<double>>& coord_v) {
         coord_t coord;
         coord.reserve(N * coord_v.size());

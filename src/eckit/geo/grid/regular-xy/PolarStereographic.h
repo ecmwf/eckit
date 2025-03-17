@@ -20,6 +20,7 @@ namespace eckit::geo::grid::regularxy {
 
 class PolarStereographic final : public RegularXY {
 public:
+
     // -- Constructors
 
     explicit PolarStereographic(const Spec& spec) : RegularXY(RegularXY::make_ranges_from_spec(spec)) {}

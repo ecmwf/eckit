@@ -24,11 +24,13 @@ class TaskInfo;
 
 class PsCmd : public eckit::CmdResource {
 public:
+
     PsCmd();
 
     ~PsCmd() override;
 
 private:  // methods
+
     void display(std::ostream&, eckit::TaskInfo&, long, const std::string&) const;
     void display(JSON&, eckit::TaskInfo&, long, const std::string&) const;
 

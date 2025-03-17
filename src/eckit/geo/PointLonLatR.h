@@ -33,6 +33,7 @@ namespace eckit::geo {
  */
 class PointLonLatR final : protected std::array<double, 2> {
 public:
+
     // -- Types
 
     using container_type = array;

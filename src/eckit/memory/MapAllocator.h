@@ -25,6 +25,7 @@ namespace eckit {
 
 class MapAllocatorTooSmall : public Exception {
 public:
+
     MapAllocatorTooSmall(size_t, size_t);
 };
 
@@ -32,6 +33,7 @@ public:
 
 class MapAllocator : private eckit::NonCopyable {
 public:
+
     MapAllocator(size_t);
 
     ~MapAllocator();
@@ -40,6 +42,7 @@ public:
     void deallocate(void*);
 
 private:  // members
+
     int fd_;
     void* addr_;
     char* next_;

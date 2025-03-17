@@ -25,6 +25,7 @@ namespace eckit::geo::grid {
 
 class ReducedGaussian : public Reduced {
 public:
+
     // -- Constructors
 
     explicit ReducedGaussian(const Spec&);
@@ -47,6 +48,7 @@ public:
     size_t nj() const override;
 
 private:
+
     // -- Members
 
     const size_t N_;

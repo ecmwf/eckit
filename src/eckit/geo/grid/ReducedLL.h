@@ -24,6 +24,7 @@ namespace eckit::geo::grid {
 
 class ReducedLL : public Reduced {
 public:
+
     // -- Constructors
 
     explicit ReducedLL(const Spec&);
@@ -42,6 +43,7 @@ public:
     size_t nj() const override;
 
 private:
+
     // -- Members
 
     const pl_type pl_;

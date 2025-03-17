@@ -52,8 +52,7 @@ union Double {
     float_t f_;
     int_t i_;
 
-    Double(double x) :
-        f_(x) {}
+    Double(double x) : f_(x) {}
 };
 
 // Used for accessing the integer representation of floating-point numbers
@@ -65,8 +64,7 @@ union Float {
     float_t f_;
     int_t i_;
 
-    Float(float x) :
-        f_(x) {}
+    Float(float x) : f_(x) {}
 };
 
 // The difference between the bit representations of two floating point

@@ -38,8 +38,8 @@ Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
     // - Equation (7-9) to calculate phi iteratively
     // - Equation (15-11) to calculate t
 
-    if (types::is_approximately_equal(first.lat, PointLonLat::RIGHT_ANGLE)
-        || types::is_approximately_equal(first.lat, -PointLonLat::RIGHT_ANGLE)) {
+    if (types::is_approximately_equal(first.lat, PointLonLat::RIGHT_ANGLE) ||
+        types::is_approximately_equal(first.lat, -PointLonLat::RIGHT_ANGLE)) {
         throw exception::ProjectionError("Mercator: projection cannot be calculated at the poles", Here());
     }
 
@@ -56,9 +56,8 @@ Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
 
     w_  = 1. / m_;
     x0_ = m_ * (lam0_ - lam1);
-    y0_ = m_
-          * std::log(std::tan(M_PI_4 - 0.5 * phi1)
-                     / std::pow(((1. - e_ * std::sin(phi1)) / (1. + e_ * std::sin(phi1))), 0.5 * e_));
+    y0_ = m_ * std::log(std::tan(M_PI_4 - 0.5 * phi1) /
+                        std::pow(((1. - e_ * std::sin(phi1)) / (1. + e_ * std::sin(phi1))), 0.5 * e_));
 
     ASSERT(types::is_approximately_equal(phi1, calculate_phi(std::exp(y0_ * w_)), eps_));
 }
@@ -91,12 +90,11 @@ Point2 Mercator::fwd(const PointLonLat& p) const {
     auto lam = util::DEGREE_TO_RADIAN * p.lon;
     auto s   = std::sin(phi);
 
-    return {
-        x0_ + m_ * (lam - lam0_),
-        types::is_approximately_equal(s, 1.) ? std::numeric_limits<double>::infinity()
-        : types::is_approximately_equal(s, -1.)
-            ? -std::numeric_limits<double>::infinity()
-            : y0_ - m_ * std::log(std::tan(M_PI_4 - 0.5 * phi) / std::pow(((1. - e_ * s) / (1. + e_ * s)), 0.5 * e_))};
+    return {x0_ + m_ * (lam - lam0_), types::is_approximately_equal(s, 1.) ? std::numeric_limits<double>::infinity()
+                                      : types::is_approximately_equal(s, -1.)
+                                          ? -std::numeric_limits<double>::infinity()
+                                          : y0_ - m_ * std::log(std::tan(M_PI_4 - 0.5 * phi) /
+                                                                std::pow(((1. - e_ * s) / (1. + e_ * s)), 0.5 * e_))};
 }
 
 

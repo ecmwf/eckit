@@ -25,10 +25,8 @@ using namespace eckit::testing;
 namespace eckit::test {
 
 struct Obj {
-    Obj() :
-        s_(), d_(0) {}
-    Obj(const string& s, const unsigned long long& d) :
-        s_(s), d_(d) {}
+    Obj() : s_(), d_(0) {}
+    Obj(const string& s, const unsigned long long& d) : s_(s), d_(d) {}
     string s_;
     unsigned long long d_;
     friend std::ostream& operator<<(std::ostream& s, const Obj& x) {

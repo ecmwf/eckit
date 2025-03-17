@@ -25,6 +25,7 @@ namespace eckit {
 
 class EnvironmentCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     EnvironmentCmd();
@@ -34,6 +35,7 @@ public:
     ~EnvironmentCmd();
 
 private:
+
     // No copy allowed
 
     EnvironmentCmd(const EnvironmentCmd&);

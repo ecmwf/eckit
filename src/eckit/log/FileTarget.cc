@@ -16,8 +16,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FileTarget::FileTarget(const PathName& path, size_t bufferSize) :
-    buffer_(bufferSize), path_(path) {
+FileTarget::FileTarget(const PathName& path, size_t bufferSize) : buffer_(bufferSize), path_(path) {
     if (bufferSize) {
         buffer_.resize(bufferSize);
         buffer_.zero();
@@ -39,7 +38,8 @@ FileTarget::~FileTarget() {
 }
 
 void FileTarget::write(const char* start, const char* end) {
-    if (start >= end) return;
+    if (start >= end)
+        return;
     out_.write(start, end - start);
 }
 

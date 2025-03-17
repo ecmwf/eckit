@@ -238,7 +238,8 @@ CASE("LonLatPolygon") {
 
         Polygon poly({{lonmin, latmax}, {lonmax, latmax}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
 
-        SECTION("Contains edges") {
+        // SUBSECTION: Contains edges
+        {
             EXPECT(poly.contains({lonmin, latmax}));
             EXPECT(poly.contains({lonmid, latmax}));
             EXPECT(poly.contains({lonmax, latmax}));
@@ -249,7 +250,8 @@ CASE("LonLatPolygon") {
             EXPECT(poly.contains({lonmin, latmid}));
         }
 
-        SECTION("Contains in/outward of edges") {
+        // SUBSECTION: "Contains in/outward of edges"
+        {
             constexpr auto eps = 0.001;
 
             for (size_t i = 0; i <= 100; ++i) {

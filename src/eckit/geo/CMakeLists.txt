@@ -110,10 +110,10 @@ list(APPEND eckit_geo_srcs
     iterator/Regular.h
     iterator/Unstructured.cc
     iterator/Unstructured.h
-    polygon/LonLatPolygon.cc
-    polygon/LonLatPolygon.h
     polygon/Polygon.cc
     polygon/Polygon.h
+    polygon/Polygon2.cc
+    polygon/Polygon2.h
     projection/Composer.cc
     projection/Composer.h
     projection/LambertAzimuthalEqualArea.cc

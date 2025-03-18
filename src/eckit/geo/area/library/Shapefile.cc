@@ -22,7 +22,7 @@
 #include "eckit/geo/area/Polygon.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/Unzip.h"
-#include "eckit/geo/polygon/LonLatPolygon.h"
+#include "eckit/geo/polygon/Polygon.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
 
@@ -207,7 +207,7 @@ Area* Shapefile::make_area(size_t entity) const {
         auto end   = (p == obj->nParts - 1) ? obj->nVertices : obj->panPartStart[p + 1];
 
         if (start < end) {
-            using points_type = polygon::LonLatPolygon::container_type;
+            using points_type = polygon::Polygon::container_type;
 
             // only process closed loops
             points_type::value_type first(obj->padfX[start], obj->padfY[start]);

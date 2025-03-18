@@ -16,13 +16,13 @@
 
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Point2.h"
-#include "eckit/geo/polygon/LonLatPolygon.h"
+#include "eckit/geo/polygon/Polygon.h"
 
 
 namespace eckit::geo::area {
 
 
-class Polygon : public Area, protected std::vector<polygon::LonLatPolygon> {
+class Polygon : public Area, protected std::vector<polygon::Polygon> {
 public:
 
     // -- Types

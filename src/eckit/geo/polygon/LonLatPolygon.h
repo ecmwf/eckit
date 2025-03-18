@@ -12,6 +12,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/PointLonLat.h"
@@ -25,9 +26,8 @@ class BoundingBox;
 namespace eckit::geo::polygon {
 
 
-class LonLatPolygon : protected std::vector<PointLonLat> {
+class LonLatPolygon : public std::vector<PointLonLat> {
 public:
-
     // -- Types
 
     using container_type = vector;
@@ -35,28 +35,27 @@ public:
 
     // -- Constructors
 
-    explicit LonLatPolygon(const container_type& points, bool includePoles = true);
+    using container_type::container_type;
 
-    template <typename Iterator>
-    LonLatPolygon(Iterator begin, Iterator end, bool includePoles = true) :
-        LonLatPolygon(container_type(begin, end), includePoles) {}
+    explicit LonLatPolygon(const container_type& points = {}) : container_type(points) {}
+    explicit LonLatPolygon(container_type&& points) : container_type(std::move(points)) {}
 
     LonLatPolygon(const LonLatPolygon&) = default;
     LonLatPolygon(LonLatPolygon&&)      = default;
 
     // -- Destructor
 
-    virtual ~LonLatPolygon() = default;
+    ~LonLatPolygon() = default;
 
     // -- Operators
 
     LonLatPolygon& operator=(const LonLatPolygon&) = default;
     LonLatPolygon& operator=(LonLatPolygon&&)      = default;
 
-    // -- Methods
+    bool operator==(const LonLatPolygon&) const;
+    bool operator!=(const LonLatPolygon& other) const { return !(*this == other); }
 
-    const PointLonLat& max() const { return max_; }
-    const PointLonLat& min() const { return min_; }
+    // -- Methods
 
     using container_type::operator[];
     using container_type::size;
@@ -71,31 +70,51 @@ public:
     /**
      * @brief Point-in-polygon test based on winding number
      * @param[in] P given point
-     * @param[in] normalise_angle normalise point angles
      * @return if point (lon,lat) is in polygon
      */
-    bool contains(const PointLonLat& P, bool normalise_angle = false) const;
+    bool contains(const PointLonLat& P) const;
+
+    /**
+     * @brief Centroid of polygon
+     * @return centroid
+     */
+    PointLonLat centroid() const;
+
+    /**
+     * @brief Clip polygon with another polygon (commutative)
+     * @param[in] other polygon to clip with
+     */
+    void clip(const LonLatPolygon&);
+
+    /**
+     * @brief Simplify polygon by removing consecutive and colinear points
+     */
+    void simplify();
 
     /**
      * @brief Area of polygon
+     * @param[in] sign if true, returns positive area irrespective of point ordering
      * @return area respecting point ordering (positive on CCW point ordering)
      */
-    double area() const;
+    double area(bool sign = false) const;
 
 private:
+    // -- Types
+
+    using Edge = std::pair<const PointLonLat&, const PointLonLat&>;
 
     // -- Methods
 
+    Edge edge(int i) const;
+
+    void emplace_back_point(PointLonLat);
+    void emplace_back_point_at_intersection(const Edge&, const Edge&);
+
     void print(std::ostream&) const;
+
+    // -- Friends
+
     friend std::ostream& operator<<(std::ostream&, const LonLatPolygon&);
-
-    // -- Members
-
-    PointLonLat max_;
-    PointLonLat min_;
-    bool includeNorthPole_;
-    bool includeSouthPole_;
-    bool quickCheckLongitude_;
 };
 
 

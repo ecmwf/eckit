@@ -35,7 +35,7 @@ ValueList list(const Value& j) {
 polygon::LonLatPolygon polygon(const Value& j) {
     auto c = list(j);
 
-    std::vector<PointLonLat> p;
+    polygon::LonLatPolygon::container_type p;
     p.reserve(c.size());
 
     for (auto& l : c) {

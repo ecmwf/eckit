@@ -28,10 +28,6 @@ jobs:
     with:
       eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
       gribjump: ecmwf/gribjump@debug/ci
-      codecov_upload: true
-      clang_format: true
-      clang_format_ignore: |
-        src/eckit/contrib
     secrets: inherit
 
   # Run CI of private downstream packages on HPC

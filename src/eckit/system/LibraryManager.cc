@@ -172,43 +172,50 @@ public:  // methods
 
         // Get the (system specific) library name for the given library instance
         std::string dynamicLibraryName = SystemInfo::instance().dynamicLibraryName(libname);
+        std::cerr<< "xxx Will try to load library " << dynamicLibraryName << std::endl;
 
         static std::vector<std::string> paths = dynamicLibraryPaths();
+        std::cerr << "xxx Dynamic library search paths " << paths << std::endl;
 
         // Try the various paths in the way
         for (const std::string& dir : paths) {
 
             LocalPathName path = dir + "/" + dynamicLibraryName;
+            std::cerr << "xxx -- Trying to load library " << path << std::endl;
 
             if (path.exists()) {
 
                 ::dlerror();  // clear error
 
-                Log::debug() << "Loading library " << path.realName() << std::endl;
-
+                std::cerr << "xxx    Exists! Loading library " << path.realName() << std::endl;
+                std::cerr << "xxx    Local path is " << path.localPath() << std::endl;
                 void* plib = ::dlopen(path.localPath(), RTLD_NOW | RTLD_GLOBAL);
 
                 if (plib == nullptr) {
+                    std::cerr << "xxx    plib is nullptr" << std::endl;
                     std::ostringstream ss;
                     ss << "dlopen(" << path.realName() << ", ...) " << ::dlerror();
                     throw FailedSystemCall(ss.str().c_str(), Here());
                 }
 
-                Log::debug() << "Loaded library " << path_from_libhandle(dynamicLibraryName, plib) << std::endl;
+                std::cerr << "xxx    Loaded library " << path_from_libhandle(dynamicLibraryName, plib) << std::endl;
                 return plib;
+            }
+            else {
+                std::cerr << "xxx    Library " << path << " does not exist" << std::endl;
             }
         }
 
         // now we try with the system LD_LIBRARY_PATH environment variable
-        Log::debug() << "Loading library " << dynamicLibraryName << " from LD_LIBRARY_PATH or system paths"
+        std::cerr << "xxx Loading library " << dynamicLibraryName << " from LD_LIBRARY_PATH or system paths"
                      << std::endl;
         void* plib = ::dlopen(dynamicLibraryName.c_str(), RTLD_NOW | RTLD_GLOBAL);
         if (plib) {
-            Log::debug() << "Loaded library " << path_from_libhandle(dynamicLibraryName, plib) << std::endl;
+            std::cerr << "xxx Loaded library " << path_from_libhandle(dynamicLibraryName, plib) << std::endl;
             return plib;
         }
 
-        Log::warning() << "Failed to load library " << dynamicLibraryName << " dlerror: " << ::dlerror() << std::endl;
+        std::cerr << "xxx Failed to load library " << dynamicLibraryName << " dlerror: " << ::dlerror() << std::endl;
 
         return nullptr;
     }
@@ -237,8 +244,11 @@ public:  // methods
             if (!libhandle) {
                 std::ostringstream ss;
                 ss << "Failed to load library " << lib;
-                throw FailedSystemCall(ss.str().c_str(), Here());
+                throw FailedSystemCall(ss.str().c_str(), Here()); // <<-- the error
             }
+
+            std::cerr << "xxx Loaded library " << path_from_libhandle(lib, libhandle) << ". Aborting." << std::endl;
+            ASSERT(false); // No point continuing past here.
 
             // the plugin should self-register when the library loads
             Plugin* plugin = lookupPlugin(name);

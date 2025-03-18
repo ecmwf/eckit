@@ -32,10 +32,10 @@ ValueList list(const Value& j) {
 }
 
 
-polygon::LonLatPolygon polygon(const Value& j) {
+polygon::Polygon polygon(const Value& j) {
     auto c = list(j);
 
-    polygon::LonLatPolygon::container_type p;
+    polygon::Polygon::container_type p;
     p.reserve(c.size());
 
     for (auto& l : c) {
@@ -47,7 +47,7 @@ polygon::LonLatPolygon polygon(const Value& j) {
         p.emplace_back(lonlat[0].as<double>(), lonlat[1].as<double>());
     }
 
-    return polygon::LonLatPolygon(p);
+    return polygon::Polygon(p);
 }
 
 

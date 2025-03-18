@@ -14,7 +14,7 @@
 
 #include "eckit/geo/Point2.h"
 #include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/polygon/LonLatPolygon.h"
+#include "eckit/geo/polygon/Polygon2.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/testing/Test.h"
 
@@ -22,81 +22,77 @@
 namespace eckit::geo::test {
 
 
-CASE("Polygon") {
-    using geo::polygon::Polygon;
+CASE("Polygon2") {
+    using Polygon = geo::polygon::Polygon2;
 
 
     SECTION("empty polygon") {
         Polygon poly1;
         Polygon poly2;
 
-        EXPECT(poly1.sameAs(poly2));
+        EXPECT(poly1 == poly2);
     }
 
 
-    SECTION("equality") {
-        Polygon poly1;
-        Polygon poly2;
-
-        EXPECT(poly1.num_vertices() == 0);
-
+    SECTION("equality/congruence") {
         Polygon::value_type p1 = {1.0, 2.0};
-        poly1.push_front(p1);
-        EXPECT(poly1.num_vertices() == 1);
-        EXPECT(poly1.vertex(0) == p1);
-
-        EXPECT(!poly1.sameAs(poly2));
-
-        poly2.push_back(p1);
-        EXPECT(poly1.sameAs(poly2));
-
         Polygon::value_type p2 = {2.0, 1.0};
-        poly1.push_front(p2);
-        EXPECT(!poly1.sameAs(poly2));
-
-        poly2.push_back(p2);
-        EXPECT(!poly1.sameAs(poly2));
-    }
-
-
-    SECTION("congruence") {
-        Polygon poly1;
-        Polygon poly2;
-        EXPECT(poly1.congruent(poly2));
-
-        Polygon::value_type p1 = {1.0, 2.0};
-        poly1.push_front(p1);
-        EXPECT(!poly1.congruent(poly2));
-
-        poly2.push_back(p1);
-        EXPECT(poly1.congruent(poly2));
-
-        Polygon::value_type p2 = {2.0, 1.0};
-        poly1.push_front(p2);
-        EXPECT(!poly1.congruent(poly2));
-
-        poly2.push_back(p2);
-        EXPECT(poly1.congruent(poly2));
-
         Polygon::value_type p3 = {3.0, 4.0};
+
+        Polygon poly1;
+        Polygon poly2;
+
+        EXPECT(poly1.empty());
+
+        poly1.push_front(p1);
+        EXPECT(poly1.size() == 1);
+        EXPECT(poly1.at(0) == p1);
+
+        EXPECT(poly1 != poly2);
+
+        poly2.push_back(p1);
+        EXPECT(poly1 == poly2);
+
+        poly1.push_front(p2);
+        EXPECT(poly1 != poly2);
+
+        poly2.push_back(p2);
+        EXPECT(static_cast<Polygon::container_type>(poly1) != poly2);  // strict equality
+        EXPECT(poly1 == poly2);                                        // congruence
+
+        poly1.clear();
+        poly2.clear();
+        EXPECT(poly1 == poly2);
+
+        poly1.push_front(p1);
+        EXPECT(poly1 != poly2);
+
+        poly2.push_back(p1);
+        EXPECT(poly1 == poly2);
+
+        poly1.push_front(p2);
+        EXPECT(poly1 != poly2);
+
+        poly2.push_back(p2);
+        EXPECT(static_cast<Polygon::container_type>(poly1) != poly2);  // strict equality
+        EXPECT(poly1 == poly2);                                        // congruence
+
         poly2.push_back(p3);
         Polygon poly3 = {p2, p3, p1};
-        EXPECT(!poly2.sameAs(poly3));
-        EXPECT(poly2.congruent(poly3));
+        EXPECT(static_cast<Polygon::container_type>(poly2) != poly3);  // strict equality
+        EXPECT(poly2 == poly3);                                        // congruence
 
-        EXPECT(poly2.num_vertices() == 3);
-        EXPECT(poly2.vertex(2) == poly3.vertex(1));
+        EXPECT(poly2.size() == 3);
+        EXPECT(poly2.at(2) == poly3.at(1));
 
         Polygon poly4 = {p3, p1, p2};
-        EXPECT(!poly2.sameAs(poly4));
-        EXPECT(poly2.congruent(poly4));
+        EXPECT(static_cast<Polygon::container_type>(poly2) != poly4);  // strict equality
+        EXPECT(poly2 == poly4);                                        // congruence
     }
-}
 
 
 #if 0
-CASE("Polygon (partitioning)") {
-    SECTION("Partitioning (includePoles=false)") {
+    SECTION("partitioning") {  // includePoles=false
         auto mid = [](double a, double b) { return (a + b) / 2.; };
 
         constexpr double lon[] = {0, 90, 180, 270, 360};
@@ -148,10 +144,11 @@ CASE("Polygon (partitioning)") {
         }
     }
 #endif
+}
 
 
-CASE("LonLatPolygon (construction)") {
-    using Polygon = geo::polygon::LonLatPolygon;
+CASE("Polygon") {
+    using geo::polygon::Polygon;
 
 
     SECTION("Construction") {
@@ -171,11 +168,6 @@ CASE("LonLatPolygon (construction)") {
             EXPECT_EQUAL(poly2.size(), test.size);
         }
     }
-}
-
-
-CASE("LonLatPolygon (contains)") {
-    using Polygon = geo::polygon::LonLatPolygon;
 
 
     SECTION("Contains North pole") {
@@ -398,32 +390,28 @@ CASE("LonLatPolygon (contains)") {
             EXPECT_NOT(poly3.contains({lon + 270, 89.}));
         }
     }
-}
 
 
-CASE("LonLatPolygon (clipping)") {
     auto is_approximately_equal = [](double a, double b) { return eckit::types::is_approximately_equal(a, b, 1e-6); };
-
-    using Polygon = geo::polygon::LonLatPolygon;
 
     const Polygon clipper{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
 
 
-    SECTION("Polygon2 is empty") {
+    SECTION("clipping: empty") {
         Polygon poly;
         poly.clip(clipper);
         EXPECT(poly.empty());
     }
 
 
-    SECTION("Polygon2 is completely covers the clipping polygon") {
+    SECTION("clipping: completely covers the clipping polygon") {
         Polygon poly{{-2, 0}, {0, -2}, {2, 0}, {0, 2}};
         poly.clip(clipper);
         EXPECT(poly == clipper);
     }
 
 
-    SECTION("Polygon exactly aligns with clipping boundary") {
+    SECTION("clipping: exactly aligns with clipping boundary") {
         auto poly = clipper;
         EXPECT(poly == clipper);
 
@@ -436,7 +424,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Polygon2 is completely inside the clipping polygon") {
+    SECTION("clipping: completely inside the clipping polygon") {
         auto poly     = Polygon{{0, 0}, {0.5, 0.5}, {-0.5, 0.5}};
         auto expected = poly;
         poly.clip(clipper);
@@ -445,7 +433,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Vertix/vertices outside the clipping polygon (1)") {
+    SECTION("clipping: vertix/vertices outside the clipping polygon (1)") {
         auto poly = Polygon{{-1., 0.5}, {-2., 0.}, {-1., -2.}, {0.5, -1.}};
         poly.clip(clipper);
 
@@ -455,7 +443,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Vertix/vertices outside the clipping polygon (2)") {
+    SECTION("clipping: vertix/vertices outside the clipping polygon (2)") {
         Polygon poly{{0., 0.}, {2., 0.}, {1., 2.}};
         poly.clip(clipper);
 
@@ -464,7 +452,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Vertix/vertices outside the clipping polygon (3)") {
+    SECTION("clipping: vertix/vertices outside the clipping polygon (3)") {
         auto poly = Polygon{{1., 1.5}, {2., 0.5}, {-0.5, -2.}, {-2., 0.}};
         poly.clip(clipper);
 
@@ -475,7 +463,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Vertix/vertices outside the clipping polygon (4)") {
+    SECTION("clipping: vertix/vertices outside the clipping polygon (4)") {
         auto poly = Polygon{{-2, 0}, {0, -2}, {2, 0}, {0, 2}};
         poly.clip(clipper);
 
@@ -484,7 +472,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Vertix/vertices outside the clipping polygon (5)") {
+    SECTION("clipping: vertix/vertices outside the clipping polygon (5)") {
         Polygon poly{{1., -0.5}, {1., 0.5}, {-1., 0.}};
         Polygon clipper{{0.5, 0.}, {0., 0.5}, {0., 0.}};
         poly.clip(clipper);
@@ -494,7 +482,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Polygon2 is completely outside the clipping polygon") {
+    SECTION("clipping: completely outside the clipping polygon") {
         auto poly = Polygon{{2, 2}, {3, 3}, {3, 2}};
         poly.clip(clipper);
 
@@ -503,7 +491,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Concave polygon where part is clipped but part remains inside.") {
+    SECTION("clipping: concave polygon where part is clipped but part remains inside.") {
         auto poly = Polygon{{-2., 2.}, {-2., -2.}, {2., -2.}};
         poly.clip(clipper);
 
@@ -513,7 +501,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Polygon intersection") {
+    SECTION("clipping: polygon intersection") {
         Polygon poly{{0.000304552, -5.32E-06}, {0, 0.026185917}, {0., 0.}};
         Polygon clipper{{0.000304598, 0.008724209}, {-0.000304598, 0.008724209}, {0, -0.008726866}};
         poly.clip(clipper);
@@ -527,7 +515,7 @@ CASE("LonLatPolygon (clipping)") {
     }
 
 
-    SECTION("Polygon simplify") {
+    SECTION("simplify") {
         Polygon poly{{0., -1.}, {1., 1.}, {-1., 1.}, {0., -1.}};
         poly.simplify();
 

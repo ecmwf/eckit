@@ -18,7 +18,7 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/area/Library.h"
-#include "eckit/geo/polygon/LonLatPolygon.h"
+#include "eckit/geo/polygon/Polygon.h"
 #include "eckit/value/Value.h"
 
 
@@ -41,11 +41,11 @@ public:
 
     /*
      * Note:
-     * - geo::polygon::LonLatPolygon is a list of (geo::PointLonLat) points
-     * - GeoJSON "Polygon" is a list of (geo::polygon::LonLatPolygon) polygon (eg. "polygon"+"hole"+"hole"+...)
+     * - geo::polygon::Polygon is a list of (geo::PointLonLat) points
+     * - GeoJSON "Polygon" is a list of (geo::polygon::Polygon) polygon (eg. "polygon"+"hole"+"hole"+...)
      * - GeoJSON "MultiPolygon" is a list of GeoJSON "Polygon"
      */
-    using Polygons = std::vector<polygon::LonLatPolygon>;
+    using Polygons = std::vector<polygon::Polygon>;
 
     // -- Constructors
 

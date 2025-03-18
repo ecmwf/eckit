@@ -107,7 +107,7 @@ private:
 
     // -- Methods
 
-    Edge edge(int i) const;
+    Edge edge(int) const;
 
     void emplace_back_point(PointLonLat);
     void emplace_back_point_at_intersection(const Edge&, const Edge&);

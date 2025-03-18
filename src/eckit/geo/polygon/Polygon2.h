@@ -13,6 +13,7 @@
 
 #include <deque>
 #include <iosfwd>
+#include <utility>
 
 #include "eckit/geo/Point2.h"
 
@@ -32,7 +33,20 @@ public:
 
     using container_type::container_type;
 
+    explicit Polygon2(const container_type& points = {}) : container_type(points) {}
+    explicit Polygon2(container_type&& points) : container_type(std::move(points)) {}
+
+    Polygon2(const Polygon2&) = default;
+    Polygon2(Polygon2&&)      = default;
+
+    // -- Destructor
+
+    ~Polygon2() = default;
+
     // -- Operators
+
+    Polygon2& operator=(const Polygon2&) = default;
+    Polygon2& operator=(Polygon2&&)      = default;
 
     bool operator==(const Polygon2&) const;
     bool operator!=(const Polygon2& other) const { return !(*this == other); }
@@ -46,9 +60,22 @@ public:
      */
     bool contains(const Point2& P) const;
 
+    /**
+     * @brief Simplify polygon by removing consecutive and colinear points
+     */
+    void simplify();
+
 private:
 
+    // -- Types
+
+    using Edge = std::pair<const Point2&, const Point2&>;
+
     // -- Methods
+
+    Edge edge(int) const;
+
+    void emplace_back_point(Point2);
 
     void print(std::ostream&) const;
 

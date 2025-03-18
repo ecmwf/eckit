@@ -39,6 +39,13 @@ CASE("Polygon2") {
         Polygon::value_type p2 = {2.0, 1.0};
         Polygon::value_type p3 = {3.0, 4.0};
 
+        // strict equality/congruence
+        Polygon permutations[] = {{p1, p2, p3}, {p2, p3, p1}, {p3, p1, p2}};
+        EXPECT(static_cast<Polygon::container_type>(permutations[0]) != permutations[1]);
+        EXPECT(static_cast<Polygon::container_type>(permutations[1]) != permutations[2]);
+        EXPECT(permutations[0] == permutations[1]);
+        EXPECT(permutations[1] == permutations[2]);
+
         Polygon poly1;
         Polygon poly2;
 
@@ -57,8 +64,8 @@ CASE("Polygon2") {
         EXPECT(poly1 != poly2);
 
         poly2.push_back(p2);
-        EXPECT(static_cast<Polygon::container_type>(poly1) != poly2);  // strict equality
-        EXPECT(poly1 == poly2);                                        // congruence
+        EXPECT(static_cast<Polygon::container_type>(poly1) != poly2);
+        EXPECT(poly1 == poly2);
 
         poly1.clear();
         poly2.clear();
@@ -74,39 +81,46 @@ CASE("Polygon2") {
         EXPECT(poly1 != poly2);
 
         poly2.push_back(p2);
-        EXPECT(static_cast<Polygon::container_type>(poly1) != poly2);  // strict equality
-        EXPECT(poly1 == poly2);                                        // congruence
+        EXPECT(static_cast<Polygon::container_type>(poly1) != poly2);
+        EXPECT(poly1 == poly2);
 
         poly2.push_back(p3);
         Polygon poly3 = {p2, p3, p1};
-        EXPECT(static_cast<Polygon::container_type>(poly2) != poly3);  // strict equality
-        EXPECT(poly2 == poly3);                                        // congruence
+        EXPECT(static_cast<Polygon::container_type>(poly2) != poly3);
+        EXPECT(poly2 == poly3);
 
         EXPECT(poly2.size() == 3);
         EXPECT(poly2.at(2) == poly3.at(1));
 
         Polygon poly4 = {p3, p1, p2};
-        EXPECT(static_cast<Polygon::container_type>(poly2) != poly4);  // strict equality
-        EXPECT(poly2 == poly4);                                        // congruence
+        EXPECT(static_cast<Polygon::container_type>(poly2) != poly4);
+        EXPECT(poly2 == poly4);
     }
 
 
-#if 0
+    SECTION("simplify") {
+        Polygon poly{{0., -1.}, {1., 1.}, {-1., 1.}, {0., -1.}};
+        poly.simplify();
+
+        Polygon expected{{-1., 1.}, {0., -1.}, {1., 1.}};
+        EXPECT(poly == expected);
+    }
+
+
     SECTION("partitioning") {  // includePoles=false
         auto mid = [](double a, double b) { return (a + b) / 2.; };
 
         constexpr double lon[] = {0, 90, 180, 270, 360};
         constexpr double lat[] = {90, 0, -90};
 
-        Polygon polys[]
-            = {Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[0]}, {lon[0], lat[0]}, {lon[0], lat[1]}}),
-               Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[0]}, {lon[1], lat[0]}, {lon[1], lat[1]}}),
-               Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[0]}, {lon[2], lat[0]}, {lon[2], lat[1]}}),
-               Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[0]}, {lon[3], lat[0]}, {lon[3], lat[1]}}),
-               Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[2]}, {lon[0], lat[2]}, {lon[0], lat[1]}}),
-               Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[2]}, {lon[1], lat[2]}, {lon[1], lat[1]}}),
-               Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[2]}, {lon[2], lat[2]}, {lon[2], lat[1]}}),
-               Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[2]}, {lon[3], lat[2]}, {lon[3], lat[1]}})};
+        Polygon polys[] = {Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[0]}, {lon[0], lat[0]}}),
+                           Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[0]}, {lon[1], lat[0]}}),
+                           Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[0]}, {lon[2], lat[0]}}),
+                           Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[0]}, {lon[3], lat[0]}}),
+                           Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[2]}, {lon[0], lat[2]}}),
+                           Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[2]}, {lon[1], lat[2]}}),
+                           Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[2]}, {lon[2], lat[2]}}),
+                           Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[2]}, {lon[3], lat[2]}})};
 
 
         std::vector<Polygon::value_type> points;
@@ -129,26 +143,28 @@ CASE("Polygon2") {
             }
         }
 
-        for (size_t i = 0; i < counts.size(); i += list_lats.size() * 2) {
-            EXPECT(counts[i + 0] == 2);
-            EXPECT(counts[i + 1] == 2);
-            EXPECT(counts[i + 2] == 4);
-            EXPECT(counts[i + 3] == 2);
-            EXPECT(counts[i + 4] == 2);
+        std::vector<size_t> expected{
+            1, 1, 2, 1, 1,  // (for this meridian, note that Polygon2 is not periodic)
+            1, 1, 2, 1, 1,  //
+            2, 2, 4, 2, 2,  //
+            1, 1, 2, 1, 1,  //
+            2, 2, 4, 2, 2,  //
+            1, 1, 2, 1, 1,  //
+            2, 2, 4, 2, 2,  //
+            1, 1, 2, 1, 1,  //
+        };
 
-            EXPECT(counts[i + 5] == 1);
-            EXPECT(counts[i + 6] == 1);
-            EXPECT(counts[i + 7] == 2);
-            EXPECT(counts[i + 8] == 1);
-            EXPECT(counts[i + 9] == 1);
-        }
+        EXPECT(counts == expected);
     }
-#endif
 }
 
 
 CASE("Polygon") {
     using geo::polygon::Polygon;
+
+    auto is_approximately_equal = [](double a, double b) { return eckit::types::is_approximately_equal(a, b, 1e-6); };
+
+    const Polygon clipper{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
 
 
     SECTION("Construction") {
@@ -392,9 +408,13 @@ CASE("Polygon") {
     }
 
 
-    auto is_approximately_equal = [](double a, double b) { return eckit::types::is_approximately_equal(a, b, 1e-6); };
+    SECTION("simplify") {
+        Polygon poly{{0., -1.}, {1., 1.}, {-1., 1.}, {0., -1.}};
+        poly.simplify();
 
-    const Polygon clipper{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
+        Polygon expected{{-1., 1.}, {0., -1.}, {1., 1.}};
+        EXPECT(poly == expected);
+    }
 
 
     SECTION("clipping: empty") {
@@ -511,15 +531,6 @@ CASE("Polygon") {
                          {0.0002030449380766552, 0.008724209},
                          {0, 0.008724209},
                          {0, 0}};
-        EXPECT(poly == expected);
-    }
-
-
-    SECTION("simplify") {
-        Polygon poly{{0., -1.}, {1., 1.}, {-1., 1.}, {0., -1.}};
-        poly.simplify();
-
-        Polygon expected{{-1., 1.}, {0., -1.}, {1., 1.}};
         EXPECT(poly == expected);
     }
 }

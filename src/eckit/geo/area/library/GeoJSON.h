@@ -36,6 +36,7 @@ namespace eckit::geo::area::library {
 
 class GeoJSON : public Library {
 public:
+
     // -- Types
 
     /*
@@ -64,6 +65,7 @@ public:
     [[nodiscard]] static GeoJSON* make_from_json_string(const std::string& json, const std::string& name = "");
 
 private:
+
     // -- Constructors
 
     explicit GeoJSON(const Value&, const std::string& file, const std::string& name);

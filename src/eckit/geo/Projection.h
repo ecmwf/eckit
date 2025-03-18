@@ -115,6 +115,7 @@ struct ProjectionFactory {
     static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
 private:
+
     static ProjectionFactory& instance();
 
     // This is 'const' as Projection should always be immutable

@@ -29,9 +29,11 @@ namespace eckit::geo::share {
 
 class Projection final {
 public:
+
     static const Projection& instance();
 
 private:
+
     // -- Constructors
 
     explicit Projection(const std::vector<PathName>&);

@@ -29,11 +29,13 @@ namespace eckit::geo::container {
 
 class PointsContainer : public Container<Point> {
 protected:
+
     PointsContainer() = default;
 
     static std::pair<std::vector<double>, std::vector<double>> to_latlons(const std::vector<Point>&);
 
 public:
+
     [[nodiscard]] virtual std::vector<Point> to_points() const                                   = 0;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const = 0;
 
@@ -53,6 +55,7 @@ struct PointsInstance : PointsContainer {
     void hash(MD5&) const override;
 
 private:
+
     const std::vector<Point> points_;
 };
 
@@ -69,6 +72,7 @@ struct PointsLonLatReference : PointsContainer {
     void hash(MD5&) const override;
 
 private:
+
     const std::vector<double>& longitudes;
     const std::vector<double>& latitudes;
 };
@@ -86,6 +90,7 @@ struct PointsReference : PointsContainer {
     void hash(MD5&) const override;
 
 private:
+
     const std::vector<Point>& points_;
 };
 

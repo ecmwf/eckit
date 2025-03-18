@@ -29,9 +29,11 @@ namespace eckit::geo::share {
 
 class Area final {
 public:
+
     static const Area& instance();
 
 private:
+
     // -- Constructors
 
     explicit Area(const std::vector<PathName>&);

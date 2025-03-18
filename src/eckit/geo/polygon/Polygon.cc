@@ -25,8 +25,8 @@ namespace eckit::geo::polygon {
 namespace {
 
 
-inline bool is_approximately_equal(double a, double b) {
-    return types::is_approximately_equal(a, b, 1e-10);
+inline bool is_zero(double val) {
+    return types::is_approximately_equal(val, 0., PointLonLat::EPS);
 }
 
 
@@ -47,7 +47,7 @@ inline int on_direction(double a, double b, double c) {
 
 inline int on_side(const PointLonLat& P, const PointLonLat& A, const PointLonLat& B) {
     const auto p = cross_product_analog(P, A, B);
-    return is_approximately_equal(p, 0) ? 0 : p > 0 ? 1 : -1;
+    return is_zero(p) ? 0 : p > 0 ? 1 : -1;
 }
 
 
@@ -97,7 +97,7 @@ void Polygon::emplace_back_point_at_intersection(const Edge& E, const Edge& F) {
     const auto A = E.second - E.first;
     const auto B = F.second - F.first;
 
-    if (const auto D = cross(A, B); !types::is_approximately_equal(D, 0., 1e-9)) {
+    if (const auto D = cross(A, B); !is_zero(D)) {
         const auto C = E.first - F.first;
         emplace_back_point(E.first + A * cross(B, C) * (1. / D));
     }
@@ -186,7 +186,7 @@ PointLonLat Polygon::centroid() const {
         a += ai;
     }
 
-    return is_approximately_equal(a, 0.) ? C : C * (1. / (3. * a));
+    return is_zero(a) ? C : C * (1. / (3. * a));
 }
 
 
@@ -200,7 +200,7 @@ void Polygon::clip(const Polygon& clipper) {
 
     auto is_point_left_of_edge = [](const Edge& E, const PointLonLat& P) {
         const auto r = cross(E.second - E.first, P - E.first);
-        return 0. <= r || is_approximately_equal(0., r);
+        return 0. <= r || is_zero(r);
     };
 
     for (int i = 0, m = static_cast<int>(clipper.size()); i < m; ++i) {
@@ -243,7 +243,7 @@ void Polygon::simplify() {
 
     for (int i = 0, n = static_cast<int>(poly.size()); i < n; ++i) {
         if (const auto E = poly.edge(i), F = poly.edge(i + 1);
-            !is_approximately_equal(cross(E.second - E.first, F.second - E.second), 0.)) {
+            !is_zero(cross(E.second - E.first, F.second - E.second))) {
             emplace_back_point(E.second);
         }
     }

@@ -27,7 +27,7 @@ jobs:
     uses: ecmwf-actions/downstream-ci/.github/workflows/downstream-ci.yml@main
     with:
       eckit: ecmwf/eckit@${{ github.event.pull_request.head.sha || github.sha }}
-      gribjump: ecmwf/gribjump@debug/ci
+      gribjump: ecmwf/gribjump@fix/callback-ci
     secrets: inherit
 
   # Run CI of private downstream packages on HPC

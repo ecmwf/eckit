@@ -217,6 +217,13 @@ ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
 
 set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" )
 
+
+### eckit::stats
+
+ecbuild_add_option( FEATURE ECKIT_STATS
+                    DEFAULT OFF
+                    DESCRIPTION "eckit::stats statistics library" )
+
 ### LAPACK
 
 if( eckit_HAVE_MKL )

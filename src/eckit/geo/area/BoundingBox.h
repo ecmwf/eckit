@@ -37,6 +37,7 @@ namespace eckit::geo::area {
 
 class BoundingBox : public Area, protected std::array<double, 4> {
 public:
+
     // -- Types
 
     using container_type = array;

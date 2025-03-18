@@ -23,6 +23,7 @@ namespace eckit::geo::cache {
 
 class Unzip final {
 public:
+
     // -- Constructors
 
     explicit Unzip(const PathName& root = ".");
@@ -39,6 +40,7 @@ public:
     static std::vector<std::string> list(const PathName& zip, bool files_only = true);
 
 private:
+
     // -- Members
 
     const PathName root_;

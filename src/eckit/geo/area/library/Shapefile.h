@@ -36,6 +36,7 @@ namespace eckit::geo::area::library {
 
 class Shapefile : public Library {
 public:
+
     // -- Constructors
 
     explicit Shapefile(const Spec&);
@@ -67,6 +68,7 @@ public:
     [[nodiscard]] static Shapefile* make_from_url(const std::string&);
 
 private:
+
     // -- Members
 
     const PathName shpPath_;

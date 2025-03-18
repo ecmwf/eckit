@@ -20,6 +20,7 @@ namespace eckit::geo::grid::unstructured {
 
 class UnstructuredGeneric final : public Unstructured {
 public:
+
     // -- Constructors
 
     using Unstructured::Unstructured;
@@ -38,6 +39,7 @@ public:
     [[nodiscard]] static Spec* spec(const std::string& name);
 
 private:
+
     // -- Members
 
     std::string name_;

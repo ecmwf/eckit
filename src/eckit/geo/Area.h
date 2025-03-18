@@ -33,6 +33,7 @@ namespace eckit::geo {
 
 class Area {
 public:
+
     // -- Types
 
     using builder_t = BuilderT1<Area>;
@@ -69,6 +70,7 @@ public:
     static std::string className() { return "area"; }
 
 private:
+
     // -- Members
 
     mutable std::shared_ptr<spec::Custom> spec_;
@@ -110,6 +112,7 @@ struct AreaFactory {
     static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
 private:
+
     static AreaFactory& instance();
 
     [[nodiscard]] const Area* make_from_spec_(const Spec&) const;

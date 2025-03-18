@@ -30,6 +30,7 @@ namespace eckit::geo::area {
 
 class Library {
 public:
+
     // -- Constructors
 
     Library(const Library&) = delete;
@@ -55,6 +56,7 @@ public:
     virtual void fill_spec(spec::Custom&) const = 0;
 
 protected:
+
     // -- Constructors
 
     Library() = default;

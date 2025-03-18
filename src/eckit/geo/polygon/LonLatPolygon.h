@@ -28,6 +28,7 @@ namespace eckit::geo::polygon {
 
 class LonLatPolygon : public std::vector<PointLonLat> {
 public:
+
     // -- Types
 
     using container_type = vector;
@@ -99,6 +100,7 @@ public:
     double area(bool sign = false) const;
 
 private:
+
     // -- Types
 
     using Edge = std::pair<const PointLonLat&, const PointLonLat&>;

@@ -24,6 +24,7 @@ namespace eckit::geo::area {
 
 class Polygon : public Area, protected std::vector<polygon::LonLatPolygon> {
 public:
+
     // -- Types
 
     using container_type = vector;

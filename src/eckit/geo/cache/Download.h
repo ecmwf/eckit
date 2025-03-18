@@ -23,6 +23,7 @@ namespace eckit::geo::cache {
 
 struct Download final {
 public:
+
     // -- Types
 
     using url_type = std::string;
@@ -51,6 +52,7 @@ public:
     static std::string url_file_extension(const url_type&);
 
 private:
+
     void rmdir(const PathName&) const;
 
     const PathName root_;

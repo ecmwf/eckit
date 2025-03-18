@@ -247,8 +247,7 @@ public:  // methods
                 throw FailedSystemCall(ss.str().c_str(), Here()); // <<-- the error
             }
 
-            std::cerr << "xxx Loaded library " << path_from_libhandle(lib, libhandle) << ". Aborting." << std::endl;
-            ASSERT(false); // No point continuing past here.
+            std::cerr << "xxx SUCCESS Loaded library " << path_from_libhandle(lib, libhandle) << std::endl;
 
             // the plugin should self-register when the library loads
             Plugin* plugin = lookupPlugin(name);

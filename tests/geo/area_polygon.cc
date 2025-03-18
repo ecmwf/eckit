@@ -22,7 +22,6 @@
 namespace eckit::geo::test {
 
 
-#if 0
 CASE("Polygon") {
     using geo::polygon::Polygon;
 
@@ -93,7 +92,6 @@ CASE("Polygon") {
         EXPECT(poly2.congruent(poly4));
     }
 }
-#endif
 
 
 #if 0

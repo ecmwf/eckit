@@ -153,7 +153,7 @@ Cancel::Cancel(const std::string& w, const CodeLocation& loc) : Exception("Cance
 
 Retry::Retry(const std::string& w, const CodeLocation& loc) : Exception("Retry: " + w, loc) {}
 
-UserError::UserError(const std::string& w, const CodeLocation& loc) : Exception("User error: " + w, loc) {}
+UserError::UserError(const std::string& w, const CodeLocation& loc) : Exception("UserError: " + w, loc) {}
 
 UserError::UserError(const std::string& user, const std::string& w, const CodeLocation& loc) :
     UserError(user + " : " + w, loc) {}

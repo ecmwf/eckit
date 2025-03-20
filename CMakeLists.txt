@@ -346,6 +346,9 @@ if( NOT ${CMAKE_USE_PTHREADS_INIT} )
     message( FATAL_ERROR "Only pthreads supported - thread library found is [${THREADS_LIBRARIES}]" )
 endif()
 
+### vendored dependencies
+add_subdirectory(third-party)
+
 ############################################################################################
 # sources
 

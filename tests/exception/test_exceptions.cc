@@ -12,6 +12,7 @@
 
 #include "eckit/testing/Test.h"
 
+
 namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -30,6 +31,7 @@ std::string evaluate_message(bool answer_is_correct) {
     std::cout << "THIS SHOULD PRINT" << std::endl;
     return "ASSERT FAILS";
 }
+
 
 CASE("Test AssertionFailed") {
     EXPECT_NO_THROW(ASSERT(true));
@@ -59,6 +61,15 @@ CASE("Test ASSERT_MSG does not evaluate message if assertion not triggered") {
 
     notfail = false;
     EXPECT_THROWS_AS(ASSERT_MSG(notfail, evaluate_message(notfail)), AssertionFailed);
+}
+
+CASE("Test libfmt") {
+    try {
+        throwException();
+    }
+    catch (eckit::Exception& ex) {
+        EXPECT_EQUAL(ex.what(), std::string("Hello World 666 :)"));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -18,10 +18,15 @@
 
 #include "eckit/os/BackTrace.h"
 
+#include <fmt/format.h>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+void throwException() {
+    throw Exception(fmt::format(FMT_STRING("Hello {} {} {}"), "World", 666, ":)"), Here(), false);
+}
 
 static Exception*& first() {
     static ThreadSingleton<Exception*> p;
@@ -73,7 +78,8 @@ Exception::Exception(const std::string& w, const CodeLocation& location, bool qu
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 
-    if (!::getenv("ECKIT_EXCEPTION_IS_SILENT") && !quiet) {
+    //if (!::getenv("ECKIT_EXCEPTION_IS_SILENT") && !quiet) {
+    if (!quiet) {
         Log::error() << "Exception: " << w << " " << location_ << std::endl;
         Log::status() << "** " << w << location_ << std::endl;
     }

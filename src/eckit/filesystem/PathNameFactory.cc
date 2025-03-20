@@ -16,6 +16,8 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 
+#include <fmt/format.h>
+
 namespace eckit {
 
 static PathNameBuilder<LocalPathName> localBuilder("local");
@@ -110,6 +112,7 @@ PathNameBuilderBase::PathNameBuilderBase(const std::string& name) {
 
 PathNameBuilderBase::~PathNameBuilderBase() {
     PathNameFactoryImpl::instance().deregister(this);
+    throw Exception(fmt::format(FMT_STRING("Hello {} {} {}"), "World", 666, ":)"), Here(), false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

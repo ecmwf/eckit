@@ -22,6 +22,7 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+void throwException();
 
 void handle_panic(const char*);
 void handle_panic(const char*, const CodeLocation&);

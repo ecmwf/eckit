@@ -64,14 +64,15 @@ void Exception::exceptionStack(std::ostream& out, bool callStack) {
     out << "End stack" << std::endl;
 }
 
-Exception::Exception(const std::string& w, const CodeLocation& loc) : what_(w), next_(first()), location_(loc) {
+Exception::Exception(const std::string& w, const CodeLocation& loc, bool quiet) :
+    what_(w), next_(first()), location_(loc) {
     callStack_ = BackTrace::dump();
 
     if (ECKIT_EXCEPTION_DUMPS_BACKTRACE) {
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 
-    if (!ECKIT_EXCEPTION_IS_SILENT) {
+    if (!ECKIT_EXCEPTION_IS_SILENT && !quiet) {
         Log::error() << "Exception: " << w << " " << location_ << std::endl;
         Log::status() << "** " << w << location_ << std::endl;
     }

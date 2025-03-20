@@ -1,1 +1,5 @@
 set( ECKIT_LIBRARIES @ECKIT_LIBRARIES@ )
+
+include( CMakeFindDependencyMacro )
+
+find_dependency(fmt REQUIRED HINTS ${CMAKE_CURRENT_LIST_DIR}/../eckit/third-party/fmt-11.1.4 @fmt_DIR@)

@@ -1,34 +1,22 @@
 // #include <cmath>
 
-// Some of the math.h/cmath functions are not clean when switching to C++11
-#if __cplusplus <= 199711L
-#include <cmath>
-#else
-#include <cmath>
-#define fpclassify(x) std::fpclassify((x))
-#define isinf(x) std::isinf((x))
-#define isnan(x) std::isnan((x))
-#define signbit(x) std::signbit((x))
-#endif
-
 #include <sys/types.h>
+#include <cmath>
 #include <limits>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
+
+using std::fpclassify;
+using std::isinf;
+using std::isnan;
+using std::signbit;
 
 namespace eckit::types {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace detail {
-
-// FIXME: The following functions are available in std:: as of C++11:
-// * fpclassify
-// * isinf
-// * isnan
-// * signbit
-// For the moment we have to use the (non namespaced) versions from math.h
 
 template <class T>
 inline T abs(T);

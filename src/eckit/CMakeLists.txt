@@ -945,6 +945,7 @@ ecbuild_add_library(
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+              fmt::fmt
 
           PUBLIC_LIBS
               ${CMATH_LIBRARIES}

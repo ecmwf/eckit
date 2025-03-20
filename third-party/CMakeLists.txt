@@ -1,0 +1,7 @@
+set(FMT_INSTALL ON)
+set(FMT_SYSTEM_HEADERS ON)
+add_subdirectory(fmt-11.1.4)
+set_target_properties(fmt PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+)

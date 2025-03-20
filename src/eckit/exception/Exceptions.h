@@ -28,7 +28,7 @@ void handle_panic_no_log(const char*, const CodeLocation& = {});
 void handle_assert(const std::string&, const CodeLocation& = {});
 
 /**
- * @brief General purpose exception, non-copyable and non-movable.
+ * @brief General purpose exception.
  * Derive other exceptions from this class and implement them in the class that throws them.
  */
 class Exception : public std::exception {
@@ -38,16 +38,16 @@ public:
     explicit Exception(const std::string& what, const CodeLocation& = {}, bool quiet = false);
     Exception();
 
-    Exception(const Exception&) = delete;
-    Exception(Exception&&)      = delete;
+    Exception(const Exception&) = default;
+    Exception(Exception&&)      = default;
 
     /// Destructor
     /// @throws nothing
     ~Exception() noexcept override;
 
     /// Operators
-    Exception& operator=(const Exception&) = delete;
-    Exception& operator=(Exception&&)      = delete;
+    Exception& operator=(const Exception&) = default;
+    Exception& operator=(Exception&&)      = default;
 
     const char* what() const noexcept override { return what_.c_str(); }
 

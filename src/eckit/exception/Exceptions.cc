@@ -127,7 +127,7 @@ void handle_assert(const std::string& msg, const CodeLocation& loc) {
     s << "Assertion failed: " << msg << loc;
 
     if (!ECKIT_ASSERT_FAILED_IS_SILENT) {
-        Log::status() << s.str() << std::endl << std::flush;
+        Log::status() << s.str() << std::endl;
 
         std::cout << s.str() << std::endl << BackTrace::dump() << std::endl << std::flush;
     }

@@ -55,7 +55,6 @@ CASE("ENABLE_FORMAT CodeLocation") {
     std::cout << eckit::format("{}", Here());
 }
 
-
 int main(int argc, char** argv) {
     return eckit::testing::run_tests(argc, argv);
 }

@@ -15,6 +15,9 @@
 #include <fmt/ranges.h>
 #include <fmt/std.h>
 
+#include <type_traits>
+#include <iterator>
+
 #define ENABLE_FORMAT(typ) \
     template <>            \
     struct fmt::formatter<typ> : fmt::ostream_formatter {}
@@ -46,6 +49,30 @@ namespace eckit {
 template <typename StringType, typename... Args>
 std::string format(StringType&& formatString, Args&&... args) {
     return fmt::format(fmt::runtime(std::forward<StringType>(formatString)), std::forward<Args>(args)...);
+}
+
+
+/// Format a string with compile time checks to an output iterator
+/// @param outputIt output iterator to write to
+/// @param formatString to use, see: <https://fmt.dev/11.1/syntax/> for description of syntax.
+///        Must be known at compiletime
+/// @param ... args to be upplied into formatString
+/// @throws fmt::format_error
+template <typename OutputIt, typename StringType, typename... Args, std::enable_if_t<!std::is_base_of_v<std::ostream, std::decay_t<OutputIt>>, bool> = true>
+void format_to(OutputIt&& outputIt, StringType&& formatString, Args&&... args) {
+    fmt::format_to(std::forward<OutputIt>(outputIt), fmt::runtime(std::forward<StringType>(formatString)), std::forward<Args>(args)...);
+}
+
+/// Format a string with compile time checks to an ostream
+/// @param os ostream to write to
+/// @param formatString to use, see: <https://fmt.dev/11.1/syntax/> for description of syntax.
+///        Must be known at compiletime
+/// @param ... args to be upplied into formatString
+/// @throws fmt::format_error
+template <typename StringType, typename... Args>
+void format_to(std::ostream& os, StringType&& formatString, Args&&... args) {
+    // Have to either use `const char&` or `const wchar_t&` here 
+    fmt::format_to(std::ostream_iterator<const char&>(os), fmt::runtime(std::forward<StringType>(formatString)), std::forward<Args>(args)...);
 }
 
 

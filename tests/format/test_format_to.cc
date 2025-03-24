@@ -29,13 +29,38 @@ CASE("Format to output iterator") {
     }
 }
 
-CASE("Format to streams") {
+CASE("Format to streams (FMT_STRING)") {
+    std::ostringstream oss;
+    eckit_format_to(oss, "Hello {} {} {}", "through", "a", "stream");
+    EXPECT_EQUAL(oss.str(), std::string("Hello through a stream"));
+}
+CASE("Format to streams (FMT_COMPLIE)") {
+    std::ostringstream oss;
+    eckit_format_to_cc(oss, "Hello {} {} {}", "through", "a", "stream");
+    EXPECT_EQUAL(oss.str(), std::string("Hello through a stream"));
+}
+CASE("Format to streams (runtime)") {
     std::ostringstream oss;
     eckit::format_to(oss, "Hello {} {} {}", "through", "a", "stream");
     EXPECT_EQUAL(oss.str(), std::string("Hello through a stream"));
 }
 
-CASE("Format to eckit channel") {
+
+CASE("Format to eckit channel (FMT_STRING)") {
+    std::ostringstream oss;
+    eckit::Channel ch{new eckit::OStreamTarget{oss}};
+    eckit_format_to(ch, "Hello {} {} {}", "through", "a", "stream");
+    ch.flush();
+    EXPECT_EQUAL(oss.str(), std::string("Hello through a stream"));
+}
+CASE("Format to eckit channel (FMT_COMPILE)") {
+    std::ostringstream oss;
+    eckit::Channel ch{new eckit::OStreamTarget{oss}};
+    eckit_format_to_cc(ch, "Hello {} {} {}", "through", "a", "stream");
+    ch.flush();
+    EXPECT_EQUAL(oss.str(), std::string("Hello through a stream"));
+}
+CASE("Format to eckit channel (runtime)") {
     std::ostringstream oss;
     eckit::Channel ch{new eckit::OStreamTarget{oss}};
     eckit::format_to(ch, "Hello {} {} {}", "through", "a", "stream");

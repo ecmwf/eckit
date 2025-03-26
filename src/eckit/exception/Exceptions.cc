@@ -216,6 +216,9 @@ RemoteException::RemoteException(const std::string& w, const std::string& from) 
 UnexpectedState::UnexpectedState(const std::string& w, const CodeLocation& loc) :
     Exception("Unexpected state: " + w, loc) {}
 
+ProtocolError::ProtocolError(const std::string& what, const CodeLocation& loc) :
+    Exception("Protocol error: " + what, loc, true) {}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void handle_panic(const char* msg, const CodeLocation& loc) {

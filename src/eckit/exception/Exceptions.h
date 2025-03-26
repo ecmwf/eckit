@@ -253,6 +253,17 @@ public:
     explicit UnexpectedState(const std::string&, const CodeLocation& = {});
 };
 
+/**
+ * Signals a protocol error in client/server communiation.
+ * Use if the expected communication protocol is broken, i.e. wrong message flow or broken message.
+ * @note This exception is 'silent', i.e. no backtrace is logged.
+ */
+class ProtocolError : public Exception {
+public:
+
+    explicit ProtocolError(const std::string& what, const CodeLocation& = {});
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>

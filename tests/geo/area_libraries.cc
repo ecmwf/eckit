@@ -42,7 +42,7 @@ CASE("area_libraries") {
 
         for (double lat = 39.7; lat > 37.; lat -= .05) {
             for (double lon = -31.5; lon <= -23.5; lon += 0.05) {
-                std::cout << (area->contains({lon, lat}) ? '!' : '.');
+                std::cout << (area->contains(PointLonLat{lon, lat}) ? '!' : '.');
             }
             std::cout << std::endl;
         }

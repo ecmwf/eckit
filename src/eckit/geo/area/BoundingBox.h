@@ -91,7 +91,7 @@ public:
     void fill_spec(spec::Custom&) const override;
 
     bool intersects(BoundingBox&) const override;
-    bool contains(const PointLonLat&) const override;
+    bool contains(const Point&) const override;
 
     // -- Class methods
 

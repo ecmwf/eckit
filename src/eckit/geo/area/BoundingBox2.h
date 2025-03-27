@@ -59,7 +59,7 @@ public:
 
     container_type deconstruct() const { return {min_x, min_y, max_x, max_y}; }
 
-    bool contains(const Point2&) const;
+    bool contains(const Point&) const override;
     bool contains(const BoundingBox2&) const;
     bool empty() const;
 

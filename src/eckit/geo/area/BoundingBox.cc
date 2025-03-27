@@ -445,19 +445,21 @@ bool BoundingBox::periodic() const {
 }
 
 
-bool BoundingBox::contains(const PointLonLat& p) const {
+bool BoundingBox::contains(const Point& p) const {
+    const auto& q = std::get<PointLonLat>(p);
+
     // NOTE: latitudes < -90 or > 90 are not considered
-    if (is_approximately_equal(p.lat, NORTH_POLE.lat)) {
-        return is_approximately_equal(p.lat, north);
+    if (is_approximately_equal(q.lat, NORTH_POLE.lat)) {
+        return is_approximately_equal(q.lat, north);
     }
 
-    if (is_approximately_equal(p.lat, SOUTH_POLE.lat)) {
-        return is_approximately_equal(p.lat, south);
+    if (is_approximately_equal(q.lat, SOUTH_POLE.lat)) {
+        return is_approximately_equal(q.lat, south);
     }
 
-    if ((south < p.lat && p.lat < north) || is_approximately_equal(p.lat, north) ||
-        is_approximately_equal(p.lat, south)) {
-        return PointLonLat::normalise_angle_to_minimum(p.lon, west) <= east;
+    if ((south < q.lat && q.lat < north) || is_approximately_equal(q.lat, north) ||
+        is_approximately_equal(q.lat, south)) {
+        return PointLonLat::normalise_angle_to_minimum(q.lon, west) <= east;
     }
 
     return false;
@@ -466,7 +468,7 @@ bool BoundingBox::contains(const PointLonLat& p) const {
 
 bool BoundingBox::contains(const BoundingBox& other) const {
     if (other.empty()) {
-        return contains({other.south, other.west});
+        return contains(PointLonLat{other.south, other.west});
     }
 
     // check for West/East range (if non-periodic), then other's corners
@@ -474,8 +476,8 @@ bool BoundingBox::contains(const BoundingBox& other) const {
         return false;
     }
 
-    return contains({other.north, other.west}) && contains({other.north, other.east}) &&
-           contains({other.south, other.west}) && contains({other.south, other.east});
+    return contains(PointLonLat{other.north, other.west}) && contains(PointLonLat{other.north, other.east}) &&
+           contains(PointLonLat{other.south, other.west}) && contains(PointLonLat{other.south, other.east});
 }
 
 

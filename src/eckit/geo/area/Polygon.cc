@@ -34,11 +34,13 @@ bool Polygon::intersects(BoundingBox&) const {
 }
 
 
-bool Polygon::contains(const eckit::geo::PointLonLat& p) const {
+bool Polygon::contains(const Point& p) const {
     // NOTE This implementation follows that polygon rings alternatingly include/exclude the point (typical in GeoJSON);
     // In shapefile polygons (not here) the first ring tests inclusion and subsequent rings test exclusion, but point
     // ordering is assumed to be respected (ccw for inclusion, cw for exclusion) which isn't always the case
-    auto c = std::count_if(begin(), end(), [&p](const auto& poly) { return poly.contains(p); });
+    const auto& q = std::get<PointLonLat>(p);
+
+    auto c = std::count_if(begin(), end(), [&q](const auto& poly) { return poly.contains(q); });
     return c % 2 != 0;
 }
 

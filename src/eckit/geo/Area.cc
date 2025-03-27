@@ -61,7 +61,7 @@ bool Area::intersects(area::BoundingBox&) const {
 }
 
 
-bool Area::contains(const PointLonLat&) const {
+bool Area::contains(const Point&) const {
     NOTIMP;
 }
 

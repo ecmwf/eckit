@@ -62,7 +62,7 @@ public:
     virtual const std::string& type() const = 0;
 
     virtual bool intersects(area::BoundingBox&) const;
-    virtual bool contains(const PointLonLat&) const;
+    virtual bool contains(const Point&) const;
     virtual double area() const;
 
     // -- Class methods

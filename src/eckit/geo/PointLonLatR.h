@@ -93,9 +93,6 @@ public:
     static constexpr value_type FLAT_ANGLE  = M_PI;
     static constexpr value_type RIGHT_ANGLE = M_PI_2;
 
-    // -- Class methods
-    // None
-
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const PointLonLatR& p) {

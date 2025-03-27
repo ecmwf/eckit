@@ -21,25 +21,10 @@ namespace eckit::geo::projection {
 class PolarStereographic : public ProjectionOnFigure {
 public:
 
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit PolarStereographic(const Spec&);
     PolarStereographic(PointLonLat centre, PointLonLat first = {0, 0}, Figure* = nullptr);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -52,12 +37,6 @@ public:
 
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 protected:
 
@@ -79,18 +58,6 @@ private:
     const double F_;
     double x0_;
     double y0_;
-
-    // -- Methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

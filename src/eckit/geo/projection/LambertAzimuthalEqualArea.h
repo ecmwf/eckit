@@ -22,25 +22,10 @@ namespace eckit::geo::projection {
 class LambertAzimuthalEqualArea : public ProjectionOnFigure {
 public:
 
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit LambertAzimuthalEqualArea(const Spec&);
     LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -53,12 +38,6 @@ public:
 
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 protected:
 
@@ -79,18 +58,6 @@ private:
     const util::sincos_t phi0_;
     const util::sincos_t phi_;
     const util::sincos_t dlam_;
-
-    // -- Methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

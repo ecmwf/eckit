@@ -26,12 +26,6 @@ namespace eckit::geo::projection {
 class LambertConformalConic : public ProjectionOnFigure {
 public:
 
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit LambertConformalConic(const Spec&);
@@ -39,15 +33,6 @@ public:
     LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1, double lat_2);
     LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1) :
         LambertConformalConic(centre, first, lat_1, lat_1) {}
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -60,12 +45,6 @@ public:
 
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
 
 protected:
 
@@ -91,18 +70,6 @@ private:
     double n_;
     double f_;
     double rho0_bare_;
-
-    // -- Methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

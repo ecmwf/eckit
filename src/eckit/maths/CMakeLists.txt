@@ -32,4 +32,3 @@ if(eckit_HAVE_EIGEN)
     # Add include directories with "SYSTEM" to avoid warnings from within Eigen headers
     target_include_directories(eckit_maths SYSTEM PUBLIC ${EIGEN3_INCLUDE_DIRS})
 endif()
-

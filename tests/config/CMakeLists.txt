@@ -10,4 +10,3 @@ ecbuild_add_test(
     SOURCES test_configuration.cc
     LIBS    eckit
 )
-

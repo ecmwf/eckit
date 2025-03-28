@@ -140,11 +140,6 @@ std::vector<std::string> Unzip::list(const PathName& zip, bool files_only) {
 #else
 
 
-Unzip::Unzip(const PathName& root) : root_(root) {
-    NOTIMP;
-}
-
-
 void Unzip::to_path(const PathName&, const PathName&, const std::string&) {
     NOTIMP;
 }

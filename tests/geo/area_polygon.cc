@@ -51,7 +51,7 @@ CASE("Polygon2") {
 
         EXPECT(poly1.empty());
 
-        poly1.push_front(p1);
+        poly1.push_back(p1);
         EXPECT(poly1.size() == 1);
         EXPECT(poly1.at(0) == p1);
 
@@ -60,7 +60,7 @@ CASE("Polygon2") {
         poly2.push_back(p1);
         EXPECT(poly1 == poly2);
 
-        poly1.push_front(p2);
+        poly1 = {p2, p1};
         EXPECT(poly1 != poly2);
 
         poly2.push_back(p2);
@@ -71,13 +71,13 @@ CASE("Polygon2") {
         poly2.clear();
         EXPECT(poly1 == poly2);
 
-        poly1.push_front(p1);
+        poly1.push_back(p1);
         EXPECT(poly1 != poly2);
 
         poly2.push_back(p1);
         EXPECT(poly1 == poly2);
 
-        poly1.push_front(p2);
+        poly1 = {p2, p1};
         EXPECT(poly1 != poly2);
 
         poly2.push_back(p2);

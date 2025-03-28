@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <deque>
 #include <iosfwd>
 #include <utility>
+#include <vector>
 
 #include "eckit/geo/Point2.h"
 
@@ -21,19 +21,19 @@
 namespace eckit::geo::polygon {
 
 
-class Polygon2 : public std::deque<Point2> {
+class Polygon2 : public std::vector<Point2> {
 public:
 
     // -- Types
 
-    using container_type = deque;
+    using container_type = vector;
     using container_type::value_type;
 
     // -- Constructors
 
     using container_type::container_type;
 
-    explicit Polygon2(const container_type& points = {}) : container_type(points) {}
+    explicit Polygon2(const container_type& points) : container_type(points) {}
     explicit Polygon2(container_type&& points) : container_type(std::move(points)) {}
 
     Polygon2(const Polygon2&) = default;

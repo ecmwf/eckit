@@ -86,19 +86,21 @@ public:
 
     bytes_size_t footprint() const final {
         util::lock_guard<util::recursive_mutex> lock(*mutex_);
-        return std::accumulate(container_.begin(), container_.end(), 0, [](bytes_size_t sum, const auto& kv) {
-            if constexpr (has_footprint<value_type>::value) {
-                return sum + kv.second.footprint();
-            }
-            else {
-                return sum + kv.second.size() * sizeof(typename value_type::value_type);
-            }
-        });
+        return std::accumulate(container_.begin(), container_.end(), static_cast<bytes_size_t>(0),
+                               [](bytes_size_t sum, const auto& kv) {
+                                   return sum + footprint_impl(kv.second, has_footprint<value_type>{});
+                               });
     }
 
     void purge() final { container_.clear(); }
 
 private:
+
+    static bytes_size_t footprint_impl(const value_type& v, std::true_type) { return v.footprint(); }
+
+    static bytes_size_t footprint_impl(const value_type& v, std::false_type) {
+        return v.size() * sizeof(typename value_type::value_type);
+    }
 
     mutable std::map<key_type, value_type> container_;
 

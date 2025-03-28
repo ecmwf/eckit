@@ -35,12 +35,12 @@ CASE("Point comparison") {
     Point3 p3{1., 2., 3.};
     PointLonLat pll{4., 5.};
 
-    for (const auto& [a, b] : {std::pair<Point, Point>{p2, p2}, {p3, p3}, {pll, pll}}) {
-        EXPECT(points_equal(a, b));
+    for (const auto& ab : {std::pair<Point, Point>{p2, p2}, {p3, p3}, {pll, pll}}) {
+        EXPECT(points_equal(ab.first, ab.second));
     }
 
-    for (const auto& [a, b] : {std::pair<Point, Point>{p2, p3}, {p2, pll}, {p3, p2}, {p3, pll}, {pll, p2}, {pll, p3}}) {
-        EXPECT_THROWS_AS(points_equal(a, b), AssertionFailed);
+    for (const auto& ab : {std::pair<Point, Point>{p2, p3}, {p2, pll}, {p3, p2}, {p3, pll}, {pll, p2}, {pll, p3}}) {
+        EXPECT_THROWS_AS(points_equal(ab.first, ab.second), AssertionFailed);
     }
 }
 

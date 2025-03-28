@@ -54,9 +54,6 @@ private:
     template <typename V>
     struct has_footprint<V, std::void_t<footprint_t<V>>> : std::true_type {};
 
-    template <typename V>
-    static inline constexpr bool has_footprint_v = has_footprint<V>::value;
-
 public:
 
     using key_type   = Key;
@@ -90,7 +87,7 @@ public:
     bytes_size_t footprint() const final {
         util::lock_guard<util::recursive_mutex> lock(*mutex_);
         return std::accumulate(container_.begin(), container_.end(), 0, [](bytes_size_t sum, const auto& kv) {
-            if constexpr (has_footprint_v<value_type>) {
+            if constexpr (has_footprint<value_type>::value) {
                 return sum + kv.second.footprint();
             }
             else {

@@ -100,6 +100,7 @@ inline int pll(int f) {
 
 class Reorder {
 public:
+
     explicit Reorder(int Nside) :
         Nside_(Nside),
         Npix_(size()),
@@ -209,6 +210,7 @@ public:
     }
 
 private:
+
     const int Nside_;  // up to 2^13
     const int Npix_;
     const int Ncap_;

@@ -148,8 +148,8 @@ CASE("download: non-cached") {
 
 
 CASE("download: cached") {
-    const std::string prefix    = "prefix-";
-    const std::string suffix    = ".suffix";
+    const std::string prefix = "prefix-";
+    const std::string suffix = ".suffix";
 
     const PathName root("test.download.dir", true);
 

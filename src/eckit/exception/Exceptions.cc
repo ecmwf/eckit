@@ -63,8 +63,7 @@ void Exception::exceptionStack(std::ostream& out, bool callStack) {
     out << "End stack" << std::endl;
 }
 
-Exception::Exception(const std::string& w, const CodeLocation& loc) :
-    what_(w), next_(first()), location_(loc) {
+Exception::Exception(const std::string& w, const CodeLocation& loc) : what_(w), next_(first()), location_(loc) {
     callStack_ = BackTrace::dump();
 
     if (getenv_on("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {

@@ -71,8 +71,8 @@ BoundingBox2* BoundingBox2::make_from_spec(const Spec& spec) {
         return new BoundingBox2{area[0], area[1], area[2], area[3]};
     }
 
-    if (std::vector<BoundingBox2::value_type> area(4); spec.get("min_x", area[0]) && spec.get("min_y", area[1])
-                                                       && spec.get("max_x", area[2]) && spec.get("max_y", area[3])) {
+    if (std::vector<BoundingBox2::value_type> area(4); spec.get("min_x", area[0]) && spec.get("min_y", area[1]) &&
+                                                       spec.get("max_x", area[2]) && spec.get("max_y", area[3])) {
         return new BoundingBox2{area[0], area[1], area[2], area[3]};
     }
 

@@ -124,7 +124,7 @@ GroupContent* ParallelGroup::incl(const std::vector<int>& ranks) const {
 
 GroupContent* ParallelGroup::range_excl(const std::vector<std::array<int, 3>>& ranks) const {
     MPI_Group newGroup;
-    int(*a)[3] = new int[ranks.size()][3];
+    int (*a)[3] = new int[ranks.size()][3];
     for (int i = 0; i < ranks.size(); ++i) {
         a[i][0] = ranks[i][0];
         a[i][1] = ranks[i][1];
@@ -137,7 +137,7 @@ GroupContent* ParallelGroup::range_excl(const std::vector<std::array<int, 3>>& r
 
 GroupContent* ParallelGroup::range_incl(const std::vector<std::array<int, 3>>& ranks) const {
     MPI_Group newGroup;
-    int(*a)[3] = new int[ranks.size()][3];
+    int (*a)[3] = new int[ranks.size()][3];
     for (int i = 0; i < ranks.size(); ++i) {
         a[i][0] = ranks[i][0];
         a[i][1] = ranks[i][1];

@@ -20,6 +20,7 @@ namespace eckit::geo::cache {
 
 class CacheRoot {
 public:
+
     // -- Methods
 
     void rm_cache_root() const { rmdir(root_); }

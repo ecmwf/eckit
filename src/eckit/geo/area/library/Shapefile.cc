@@ -36,10 +36,9 @@ namespace {
 PathName path_shp(const PathName& file) {
     if (file.extension() == ".zip") {
         // check for exactly one .shp file in the zip
-        if (auto list = cache::Unzip::list(file, true);
-            std::count_if(list.begin(), list.end(),
-                          [](const auto& what) { return PathName(what).extension() == ".shp"; })
-            != 1) {
+        if (auto list = cache::Unzip::list(file, true); std::count_if(list.begin(), list.end(), [](const auto& what) {
+                                                            return PathName(what).extension() == ".shp";
+                                                        }) != 1) {
             throw ReadError("Shapefile: found none/more than one .shp file(s) in '" + file + "', expecting one",
                             Here());
         }
@@ -242,4 +241,4 @@ public:
 #endif
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::area::library

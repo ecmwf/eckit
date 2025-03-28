@@ -53,6 +53,7 @@ void Projection::load(const PathName& path) {
         bool match(const spec::Custom& other) const override { return other == *spec_; }
 
     private:
+
         std::unique_ptr<spec::Custom> spec_;
     };
 

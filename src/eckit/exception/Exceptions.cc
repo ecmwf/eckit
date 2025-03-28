@@ -63,7 +63,7 @@ void Exception::exceptionStack(std::ostream& out, bool callStack) {
     out << "End stack" << std::endl;
 }
 
-Exception::Exception(const std::string& w, const CodeLocation& loc, bool quiet) :
+Exception::Exception(const std::string& w, const CodeLocation& loc) :
     what_(w), next_(first()), location_(loc) {
     callStack_ = BackTrace::dump();
 
@@ -71,7 +71,7 @@ Exception::Exception(const std::string& w, const CodeLocation& loc, bool quiet) 
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 
-    if (!getenv_on("ECKIT_EXCEPTION_IS_SILENT") && !quiet) {
+    if (!getenv_on("ECKIT_EXCEPTION_IS_SILENT")) {
         Log::error() << "Exception: " << w << " " << location_ << std::endl;
         Log::status() << "** " << w << location_ << std::endl;
     }

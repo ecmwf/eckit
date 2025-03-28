@@ -35,7 +35,7 @@ class Exception : public std::exception {
 public:
 
     /// Constructors
-    explicit Exception(const std::string& what, const CodeLocation& = {}, bool quiet = false);
+    explicit Exception(const std::string& what, const CodeLocation& = {});
     Exception();
 
     Exception(const Exception&) = default;

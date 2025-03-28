@@ -15,18 +15,18 @@
 #include <string>
 #include <vector>
 
-#include "eckit/filesystem/PathName.h"
+#include "eckit/geo/cache/CacheRoot.h"
 
 
 namespace eckit::geo::cache {
 
 
-class Unzip final {
+class Unzip final : public CacheRoot {
 public:
 
     // -- Constructors
 
-    explicit Unzip(const PathName& root = ".");
+    explicit Unzip(const PathName& root = ".") : CacheRoot(root) {}
 
     // -- Methods
 
@@ -38,12 +38,6 @@ public:
     static void to_path(const PathName& zip, const PathName&, const std::string& what = {});
 
     static std::vector<std::string> list(const PathName& zip, bool files_only = true);
-
-private:
-
-    // -- Members
-
-    const PathName root_;
 };
 
 

@@ -16,6 +16,7 @@
 #include "eckit/exception/Exceptions.h"
 
 #if eckit_HAVE_ZIP
+#include <array>
 #include <fstream>
 
 #include "eckit/os/AutoUmask.h"
@@ -65,9 +66,6 @@ struct unzip_type : std::unique_ptr<zip_file_t, decltype(&zip_fclose)> {
 };
 
 
-Unzip::Unzip(const PathName& root) : root_(root) {}
-
-
 void Unzip::to_path(const PathName& zip, const PathName& path, const std::string& what) {
     int errorp = 0;
     zip_type z(zip_open(zip.localPath(), ZIP_RDONLY, &errorp), zip_close);
@@ -103,7 +101,8 @@ void Unzip::to_path(const PathName& zip, const PathName& path, const std::string
 PathName Unzip::to_cached_path(const PathName& zip, const std::string& what, const std::string& prefix,
                                const std::string& extension) const {
     const auto key  = MD5{zip / what}.digest();
-    const auto path = root_ / (zip.baseName() + ".dir") / (prefix + (prefix.empty() ? "" : "-") + key + extension);
+    const auto path =
+        cache_root() / (zip.baseName() + ".dir") / (prefix + (prefix.empty() ? "" : "-") + key + extension);
 
     if (!path.exists()) {
         to_path(zip, path, what);

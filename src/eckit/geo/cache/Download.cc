@@ -41,9 +41,6 @@ class lock_type {
 };
 
 
-Download::Download(const PathName& root, bool html) : root_{root}, html_(html) {}
-
-
 std::string Download::url_file_basename(const url_type& url, bool ext) {
     std::string n = url;
 
@@ -129,8 +126,8 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
 
     // set cache key, return path early if possible
     const auto key = MD5{url}.digest();
-    const auto path
-        = CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix + (prefix.empty() ? "" : "-") + key + suffix;
+    const auto path =
+        CACHE.contains(key) ? PathName{CACHE[key]} : cache_root() / prefix + (prefix.empty() ? "" : "-") + key + suffix;
 
     if (path.exists()) {
         return CACHE[key] = path;
@@ -143,30 +140,6 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
 
     ASSERT_MSG(path.exists(), "Download: file '" + path + "' not found");
     return CACHE[key] = path;
-}
-
-
-void Download::rmdir(const PathName& p) const {
-    // control concurrent access
-    lock_type lock;
-
-    if (!p.exists()) {
-        return;
-    }
-
-    std::vector<PathName> files;
-    std::vector<PathName> dirs;
-    p.children(files, dirs);
-
-    for (auto& f : files) {
-        f.unlink();
-    }
-
-    for (auto& d : dirs) {
-        rmdir(d);
-    }
-
-    p.rmdir();
 }
 
 

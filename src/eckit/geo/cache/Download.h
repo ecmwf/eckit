@@ -14,14 +14,14 @@
 
 #include <string>
 
-#include "eckit/filesystem/PathName.h"
+#include "eckit/geo/cache/CacheRoot.h"
 #include "eckit/log/Bytes.h"
 
 
 namespace eckit::geo::cache {
 
 
-struct Download final {
+class Download final : public CacheRoot {
 public:
 
     // -- Types
@@ -35,14 +35,12 @@ public:
 
     // -- Constructors
 
-    explicit Download(const PathName& root = ".", bool html = false);
+    explicit Download(const PathName& root = ".", bool html = false) : CacheRoot(root), html_(html) {}
 
     // -- Methods
 
     PathName to_cached_path(const url_type&, const std::string& prefix = "",
                             const std::string& suffix = ".download") const;
-
-    void rm_cache_root() const { rmdir(root_); }
 
     // -- Class methods
 
@@ -55,7 +53,6 @@ private:
 
     void rmdir(const PathName&) const;
 
-    const PathName root_;
     bool html_;
 };
 

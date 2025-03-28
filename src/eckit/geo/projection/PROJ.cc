@@ -75,21 +75,21 @@ struct LonLat final : Convert {
 
 struct XY final : Convert {
     PJ_COORD to_coord(const Point& p) const final {
-        const auto& q = std::get<Point2>(p);
+        const auto& q = std::get<PointXY>(p);
         return proj_coord(q.X, q.Y, 0, 0);
     }
 
-    Point to_point(const PJ_COORD& c) const final { return Point2{c.xy.x, c.xy.y}; }
+    Point to_point(const PJ_COORD& c) const final { return PointXY{c.xy.x, c.xy.y}; }
 };
 
 
 struct XYZ final : Convert {
     PJ_COORD to_coord(const Point& p) const final {
-        const auto& q = std::get<Point3>(p);
+        const auto& q = std::get<PointXYZ>(p);
         return proj_coord(q.X, q.Y, q.Z, 0);
     }
 
-    Point to_point(const PJ_COORD& c) const final { return Point3{c.xy.x, c.xy.y, c.xyz.z}; }
+    Point to_point(const PJ_COORD& c) const final { return PointXYZ{c.xy.x, c.xy.y, c.xyz.z}; }
 };
 
 

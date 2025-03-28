@@ -85,7 +85,7 @@ double Mercator::calculate_phi(double t) const {
 }
 
 
-Point2 Mercator::fwd(const PointLonLat& p) const {
+PointXY Mercator::fwd(const PointLonLat& p) const {
     auto phi = util::DEGREE_TO_RADIAN * p.lat;
     auto lam = util::DEGREE_TO_RADIAN * p.lon;
     auto s   = std::sin(phi);
@@ -98,7 +98,7 @@ Point2 Mercator::fwd(const PointLonLat& p) const {
 }
 
 
-PointLonLat Mercator::inv(const Point2& q) const {
+PointLonLat Mercator::inv(const PointXY& q) const {
     return PointLonLat::make(util::RADIAN_TO_DEGREE * (lam0_ + (q.X - x0_) * w_),
                              util::RADIAN_TO_DEGREE * calculate_phi(std::exp(-(q.Y - y0_) * w_)));
 }

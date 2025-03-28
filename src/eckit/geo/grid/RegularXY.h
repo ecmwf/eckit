@@ -48,7 +48,7 @@ private:
     // -- Members
 
     PointLonLat first_lonlat;
-    Point2 first_xy;
+    PointXY first_xy;
 };
 
 

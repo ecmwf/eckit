@@ -12,8 +12,8 @@
 
 #include <vector>
 
-#include "eckit/geo/Point2.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/geo/polygon/Polygon2.h"
 #include "eckit/testing/Test.h"

@@ -37,12 +37,12 @@ CASE("projection: reverse") {
     projection::Reverse<projection::LonLatToXYZ> ba(new figure::UnitSphere);
 
     PointLonLat p = NORTH_POLE;
-    Point3 q{0., 0., 1.};
+    PointXYZ q{0., 0., 1.};
 
     ASSERT(points_equal(q, ab.fwd(p)));
     ASSERT(points_equal(p, ab.inv(q)));
 
-    // ensure fwd(Point3) -> PointLonLat, inv(PointLonLat) -> Point3
+    // ensure fwd(PointXYZ) -> PointLonLat, inv(PointLonLat) -> PointXYZ
     EXPECT(points_equal(p, ba.fwd(q)));
     EXPECT(points_equal(q, ba.inv(p)));
 

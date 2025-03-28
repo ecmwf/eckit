@@ -40,7 +40,7 @@ LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLo
     dlam_(first_r_.lonr - centre_r_.lonr) {}
 
 
-Point2 LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
+PointXY LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
     const auto kp = figure().R() * std::sqrt(2. / (1. + phi0_.sin * phi_.sin + phi0_.cos * phi_.cos * dlam_.cos));
 
     auto x = kp * phi_.cos * dlam_.sin;
@@ -50,7 +50,7 @@ Point2 LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
 }
 
 
-PointLonLat LambertAzimuthalEqualArea::inv(const Point2& p) const {
+PointLonLat LambertAzimuthalEqualArea::inv(const PointXY& p) const {
     auto rho = std::sqrt(p.X * p.X + p.Y * p.Y);
     const util::sincos_t c(2. * std::asin(rho / (2. * figure().R())));
 

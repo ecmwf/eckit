@@ -35,13 +35,13 @@ CASE("projection: proj") {
             const Point b;
             const std::string target;
         } tests_proj[] = {
-            {Point2{691875.632137542, 6098907.825129169}, "+proj=utm +zone=32 +datum=WGS84"},
-            {Point2{691875.632137542, 6098907.825129169}, "EPSG:32632"},
+            {PointXY{691875.632137542, 6098907.825129169}, "+proj=utm +zone=32 +datum=WGS84"},
+            {PointXY{691875.632137542, 6098907.825129169}, "EPSG:32632"},
             {a, "EPSG:4326"},
             {a, "EPSG:4979"},
-            {Point3{3586469.6567764, 762327.65877826, 5201383.5232023}, "EPSG:4978"},
-            {Point3{3574529.7050235, 759789.74368715, 5219005.2599833}, "+proj=cart +R=6371229."},
-            {Point3{3574399.5431832, 759762.07693392, 5218815.216709}, "+proj=cart +ellps=sphere"},
+            {PointXYZ{3586469.6567764, 762327.65877826, 5201383.5232023}, "EPSG:4978"},
+            {PointXYZ{3574529.7050235, 759789.74368715, 5219005.2599833}, "+proj=cart +R=6371229."},
+            {PointXYZ{3574399.5431832, 759762.07693392, 5218815.216709}, "+proj=cart +ellps=sphere"},
             {a, "+proj=latlon +ellps=sphere"},
         };
 
@@ -78,8 +78,8 @@ CASE("projection: proj") {
 
         struct {
             const P& projection;
-            const Point2 min;
-            const Point2 max;
+            const PointXY min;
+            const PointXY max;
             const bool periodic;
             const bool contains_north_pole;
             const bool contains_south_pole;

@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "eckit/container/KDTree.h"
-#include "eckit/geo/Point2.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/testing/Test.h"
 
 
@@ -23,7 +23,7 @@ namespace eckit::geo::test {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct TestTreeTrait {
-    using Point   = geo::Point2;
+    using Point   = geo::PointXY;
     using Payload = double;
 };
 

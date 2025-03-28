@@ -16,8 +16,8 @@
 #include <ostream>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/Point2.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
 
 
 namespace eckit::geo {
@@ -101,7 +101,7 @@ public:
 
     [[nodiscard]] static BoundingBox* make_from_spec(const Spec&);
 
-    [[nodiscard]] static BoundingBox* make_from_projection(Point2 min, Point2 max, const Projection&);
+    [[nodiscard]] static BoundingBox* make_from_projection(PointXY min, PointXY max, const Projection&);
     [[nodiscard]] static BoundingBox* make_from_projection(PointLonLat min, PointLonLat max,
                                                            const projection::Rotation&);
 

@@ -37,14 +37,14 @@ BoundingBox2::BoundingBox2(value_type min_x, value_type min_y, value_type max_x,
 
 
 bool BoundingBox2::contains(const Point& p) const {
-    const auto& q = std::get<Point2>(p);
+    const auto& q = std::get<PointXY>(p);
     return types::is_approximately_equal(min_x, q.X) && types::is_approximately_equal(q.X, max_x) &&
            types::is_approximately_equal(min_y, q.Y) && types::is_approximately_equal(q.Y, max_y);
 }
 
 
 bool BoundingBox2::contains(const BoundingBox2& other) const {
-    return contains(Point2{other.min_x, other.min_y}) && contains(Point2{other.max_x, other.max_y});
+    return contains(PointXY{other.min_x, other.min_y}) && contains(PointXY{other.max_x, other.max_y});
 }
 
 

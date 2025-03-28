@@ -307,7 +307,7 @@ CASE("rotation (6)") {
         EXPECT(points_equal(rotation.fwd(test.p), test.q, EPS));
     }
 
-    EXPECT_THROWS_AS(auto* dummy = area::BoundingBox::make_from_projection(Point2{0., 0.}, Point2{2., 1.}, rotation),
+    EXPECT_THROWS_AS(auto* dummy = area::BoundingBox::make_from_projection(PointXY{0., 0.}, PointXY{2., 1.}, rotation),
                      std::bad_variant_access);
 
     std::unique_ptr<area::BoundingBox> bbox(

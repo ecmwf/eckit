@@ -12,8 +12,8 @@
 
 #include <cmath>
 
-#include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/geometry/SphereT.h"
 #include "eckit/geo/geometry/UnitSphere.h"

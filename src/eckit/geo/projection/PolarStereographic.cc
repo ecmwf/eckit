@@ -43,7 +43,7 @@ PolarStereographic::PolarStereographic(PointLonLat centre, PointLonLat first, Fi
 }
 
 
-Point2 PolarStereographic::fwd(const PointLonLat& q) const {
+PointXY PolarStereographic::fwd(const PointLonLat& q) const {
     auto p = PointLonLatR::make_from_lonlat(q.lon, q.lat);
 
     auto a      = sign_ * (p.lonr - centre_r_.lonr);
@@ -54,8 +54,8 @@ Point2 PolarStereographic::fwd(const PointLonLat& q) const {
 }
 
 
-PointLonLat PolarStereographic::inv(const Point2& q) const {
-    Point2 p{q.X - x0_, q.Y - y0_};
+PointLonLat PolarStereographic::inv(const PointXY& q) const {
+    PointXY p{q.X - x0_, q.Y - y0_};
 
     auto rh  = std::sqrt(p.X * p.X + p.Y * p.Y);
     auto tsi = rh / figure().R() * F_;

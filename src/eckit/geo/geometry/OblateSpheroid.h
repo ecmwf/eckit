@@ -13,7 +13,7 @@
 
 
 namespace eckit::geo {
-class Point3;
+class PointXYZ;
 class PointLonLat;
 }  // namespace eckit::geo
 
@@ -32,7 +32,7 @@ struct OblateSpheroid {
     static double area(double a, double b);
 
     /// Convert geocentric coordinates to Cartesian
-    static Point3 convertSphericalToCartesian(double a, double b, const PointLonLat&, double height = 0.);
+    static PointXYZ convertSphericalToCartesian(double a, double b, const PointLonLat&, double height = 0.);
 };
 
 

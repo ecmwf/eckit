@@ -29,7 +29,7 @@ CASE("projection: ll_to_xyz") {
 
     struct test_t {
         PointLonLat a;
-        Point3 b;
+        PointXYZ b;
     };
 
     constexpr double R = 1.;

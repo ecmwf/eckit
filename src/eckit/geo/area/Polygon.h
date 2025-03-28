@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/Point2.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/geo/polygon/Polygon.h"
 
 

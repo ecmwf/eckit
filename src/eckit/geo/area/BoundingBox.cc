@@ -115,8 +115,11 @@ private:
 
 
 struct Derivate {
-    Derivate(const Projection& p, Point2 A, Point2 B, double h, double refLongitude = 0.) :
-        projection_(p), H_{Point2::normalize(B - A) * h}, invnH_(1. / Point2::norm(H_)), refLongitude_(refLongitude) {}
+    Derivate(const Projection& p, PointXY A, PointXY B, double h, double refLongitude = 0.) :
+        projection_(p),
+        H_{PointXY::normalize(B - A) * h},
+        invnH_(1. / PointXY::norm(H_)),
+        refLongitude_(refLongitude) {}
 
     virtual ~Derivate() = default;
 
@@ -125,19 +128,19 @@ struct Derivate {
     void operator=(const Derivate&) = delete;
     void operator=(Derivate&&)      = delete;
 
-    virtual PointLonLat d(Point2) const = 0;
+    virtual PointLonLat d(PointXY) const = 0;
 
-    PointLonLat f(const Point2& p) const {
+    PointLonLat f(const PointXY& p) const {
         return longitude_in_range(refLongitude_, std::get<PointLonLat>(projection_.inv(p)));
     }
 
-    inline const Point2& H() const { return H_; }
+    inline const PointXY& H() const { return H_; }
     inline double invnH() const { return invnH_; }
 
 private:
 
     const Projection& projection_;
-    const Point2 H_;
+    const PointXY H_;
     const double invnH_;
     const double refLongitude_;
 };
@@ -145,33 +148,33 @@ private:
 
 struct DerivateForwards final : Derivate {
     using Derivate::Derivate;
-    PointLonLat d(Point2 P) const override { return (f(P + H()) - f(P)) * invnH(); }
+    PointLonLat d(PointXY P) const override { return (f(P + H()) - f(P)) * invnH(); }
 };
 
 
 struct DerivateBackwards final : Derivate {
     using Derivate::Derivate;
-    PointLonLat d(Point2 P) const override { return (f(P) - f(P - H())) * invnH(); }
+    PointLonLat d(PointXY P) const override { return (f(P) - f(P - H())) * invnH(); }
 };
 
 
 struct DerivateCentral final : Derivate {
-    DerivateCentral(const Projection& p, Point2 A, Point2 B, double h, double refLongitude) :
+    DerivateCentral(const Projection& p, PointXY A, PointXY B, double h, double refLongitude) :
         Derivate(p, A, B, h, refLongitude), H2_{H() * 0.5} {}
-    const Point2 H2_;
-    PointLonLat d(Point2 P) const override { return (f(P + H2_) - f(P - H2_)) * invnH(); }
+    const PointXY H2_;
+    PointLonLat d(PointXY P) const override { return (f(P + H2_) - f(P - H2_)) * invnH(); }
 };
 
 
 struct DerivateFactory {
-    static const Derivate* build(const std::string& type, const Projection& p, Point2 A, Point2 B, double h,
+    static const Derivate* build(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
                                  double refLongitude = 0.) {
         ASSERT(0. < h);
 
         if (A.distance2(B) < h * h) {
             struct DerivateDegenerate final : Derivate {
                 using Derivate::Derivate;
-                PointLonLat d(Point2) const override { return {99, 99}; }  // FIXME
+                PointLonLat d(PointXY) const override { return {99, 99}; }  // FIXME
             };
             return new DerivateDegenerate(p, A, B, h, refLongitude);
         }
@@ -192,23 +195,23 @@ private:
     }
 
     // This is 'const' as Grid should always be immutable
-    const Derivate* build_(const std::string& type, const Projection& p, Point2 A, Point2 B, double h,
+    const Derivate* build_(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
                            double refLongitude) const;
 
     void list_(std::ostream& out) const { out << "forwards, backwards, central" << std::endl; }
 };
 
 
-[[nodiscard]] BoundingBox* make_bounding_box(Point2 min, Point2 max, const Projection& projection, double precision_ll,
-                                             double precision_xy) {
+[[nodiscard]] BoundingBox* make_bounding_box(PointXY min, PointXY max, const Projection& projection,
+                                             double precision_ll, double precision_xy) {
     using types::is_strictly_greater;
 
 
     // 0. setup
 
     // use central longitude as absolute reference (keep points within +-180 longitude range)
-    const Point2 centre_xy{(min.X + max.X) / 2., (min.Y + max.Y) / 2.};
-    const auto centre_ll  = std::get<PointLonLat>(projection.inv(centre_xy));  // asserts fwd(PointLonLat) -> Point2
+    const PointXY centre_xy{(min.X + max.X) / 2., (min.Y + max.Y) / 2.};
+    const auto centre_ll  = std::get<PointLonLat>(projection.inv(centre_xy));  // asserts fwd(PointLonLat) -> PointXY
     const auto centre_lon = centre_ll.lon;
 
     const std::string derivative_type = "central";
@@ -219,17 +222,17 @@ private:
 
     // 1. determine box from projected corners
 
-    struct : public std::pair<Point2, Point2> {
+    struct : public std::pair<PointXY, PointXY> {
         using pair::pair;
-        bool contains(const Point2& P) const {
+        bool contains(const PointXY& P) const {
             return (first.X < P.X && P.X < second.X) && (first.Y < P.Y && P.Y < second.Y);
         }
     } rect(min, max);
 
-    const std::pair<Point2, Point2> segments[] = {{{min.X, max.Y}, {max.X, max.Y}},
-                                                  {{max.X, max.Y}, {max.X, min.Y}},
-                                                  {{max.X, min.Y}, {min.X, min.Y}},
-                                                  {{min.X, min.Y}, {min.X, max.Y}}};
+    const std::pair<PointXY, PointXY> segments[] = {{{min.X, max.Y}, {max.X, max.Y}},
+                                                    {{max.X, max.Y}, {max.X, min.Y}},
+                                                    {{max.X, min.Y}, {min.X, min.Y}},
+                                                    {{min.X, min.Y}, {min.X, max.Y}}};
 
     BoundLonLat bounds(centre_ll, centre_ll);
     for (const auto& [A, dummy] : segments) {
@@ -242,11 +245,11 @@ private:
     // not at the corners by refining iteratively
 
     if (!bounds.includesNorthPole()) {
-        bounds.includesNorthPole(rect.contains(std::get<Point2>(projection.fwd(PointLonLat{0., 90. - h_ll}))));
+        bounds.includesNorthPole(rect.contains(std::get<PointXY>(projection.fwd(PointLonLat{0., 90. - h_ll}))));
     }
 
     if (!bounds.includesSouthPole()) {
-        bounds.includesSouthPole(rect.contains(std::get<Point2>(projection.fwd(PointLonLat{0., -90. + h_ll}))));
+        bounds.includesSouthPole(rect.contains(std::get<PointXY>(projection.fwd(PointLonLat{0., -90. + h_ll}))));
     }
 
     for (auto [A, B] : segments) {
@@ -261,7 +264,7 @@ private:
                 PointLonLat H{0, h_ll};
 
                 for (size_t cnt = 0; cnt < Niter; ++cnt) {
-                    Point2 M    = Point2::middle(A, B);
+                    PointXY M   = PointXY::middle(A, B);
                     double dMdy = derivate->d(M).lat;
                     if (is_strictly_greater(dAdy * dMdy, 0.)) {
                         A    = M;
@@ -277,7 +280,7 @@ private:
                 }
 
                 // update extrema, extended by 'a small amount' (arbitrary)
-                bounds.extend(std::get<PointLonLat>(projection.inv(Point2::middle(A, B))), H);
+                bounds.extend(std::get<PointLonLat>(projection.inv(PointXY::middle(A, B))), H);
             }
         }
     }
@@ -297,7 +300,7 @@ private:
                 PointLonLat H{h_ll, 0};
 
                 for (size_t cnt = 0; cnt < Niter; ++cnt) {
-                    Point2 M    = Point2::middle(A, B);
+                    PointXY M   = PointXY::middle(A, B);
                     double dMdx = derivate->d(M).lon;
 
                     if (is_strictly_greater(dAdx * dMdx, 0.)) {
@@ -314,7 +317,7 @@ private:
                 }
 
                 // update extrema, extended by 'a small amount' (arbitrary)
-                bounds.extend(std::get<PointLonLat>(projection.inv(Point2::middle(A, B))), H);
+                bounds.extend(std::get<PointLonLat>(projection.inv(PointXY::middle(A, B))), H);
             }
         }
     }
@@ -382,7 +385,7 @@ BoundingBox* BoundingBox::make_from_spec(const Spec& spec) {
 }
 
 
-BoundingBox* BoundingBox::make_from_projection(Point2 min, Point2 max, const Projection& projection) {
+BoundingBox* BoundingBox::make_from_projection(PointXY min, PointXY max, const Projection& projection) {
     constexpr double precision_ll = 0.5e-6;  // to microdegrees
     constexpr double precision_xy = 0.5e-1;  // to decimeters
 
@@ -391,7 +394,7 @@ BoundingBox* BoundingBox::make_from_projection(Point2 min, Point2 max, const Pro
 
 
 BoundingBox* BoundingBox::make_from_projection(PointLonLat min, PointLonLat max, const projection::Rotation& rotation) {
-    return make_from_projection(Point2{min.lon, min.lat}, Point2{max.lon, max.lat},
+    return make_from_projection(PointXY{min.lon, min.lat}, PointXY{max.lon, max.lat},
                                 projection::Composer{new projection::Reverse<projection::Rotation>(rotation.spec()),
                                                      new projection::Reverse<projection::XYToLonLat>});
 }

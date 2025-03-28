@@ -14,9 +14,9 @@
 #include <vector>
 
 #include "eckit/geo/Point.h"
-#include "eckit/geo/Point2.h"
-#include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/testing/Test.h"
 
 
@@ -32,8 +32,8 @@ CASE("Point comparison") {
         EXPECT(points_equal(a1, a2));
     }
 
-    Point2 p2{1., 2.};
-    Point3 p3{1., 2., 3.};
+    PointXY p2{1., 2.};
+    PointXYZ p3{1., 2., 3.};
     PointLonLat pll{4., 5.};
 
     for (const auto& ab : std::vector<std::pair<Point, Point>>{{p2, p2}, {p3, p3}, {pll, pll}}) {

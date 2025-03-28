@@ -24,16 +24,16 @@ namespace {
 
 
 inline bool is_zero(double val) {
-    return types::is_approximately_equal(val, 0., Point2::EPS);
+    return types::is_approximately_equal(val, 0., PointXY::EPS);
 }
 
 
-inline double cross_product_analog(const Point2& A, const Point2& B, const Point2& C) {
+inline double cross_product_analog(const PointXY& A, const PointXY& B, const PointXY& C) {
     return (A.X - C.X) * (B.Y - C.Y) - (A.Y - C.Y) * (B.X - C.X);
 }
 
 
-inline double cross(const Point2& P, const Point2& Q) {
+inline double cross(const PointXY& P, const PointXY& Q) {
     return P.X * Q.Y - P.Y * Q.X;
 }
 
@@ -43,7 +43,7 @@ inline int on_direction(double a, double b, double c) {
 };
 
 
-inline int on_side(const Point2& P, const Point2& A, const Point2& B) {
+inline int on_side(const PointXY& P, const PointXY& A, const PointXY& B) {
     const auto p = cross_product_analog(P, A, B);
     return is_zero(p) ? 0 : p > 0 ? 1 : -1;
 }
@@ -84,7 +84,7 @@ bool Polygon2::operator==(const Polygon2& poly) const {
 }
 
 
-bool Polygon2::contains(const Point2& P) const {
+bool Polygon2::contains(const PointXY& P) const {
     // Winding number algorithm for point-in-polygon test
 
     // loop on polygon edges, check point-edge side and direction, testing if P is on|above|below of a A,B polygon edge,
@@ -136,7 +136,7 @@ void Polygon2::simplify() {
 }
 
 
-void Polygon2::emplace_back_point(Point2 P) {
+void Polygon2::emplace_back_point(PointXY P) {
     if (empty() || (!points_equal(P, back()) && !points_equal(P, front()))) {
         emplace_back(P);
     }

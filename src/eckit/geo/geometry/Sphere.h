@@ -13,7 +13,7 @@
 
 
 namespace eckit::geo {
-class Point3;
+class PointXYZ;
 class PointLonLat;
 namespace area {
 class BoundingBox;
@@ -30,13 +30,13 @@ struct Sphere {
     static double centralAngle(const PointLonLat&, const PointLonLat&);
 
     /// Great-circle central angle between two points (Cartesian coordinates) [m]
-    static double centralAngle(double radius, const Point3&, const Point3&);
+    static double centralAngle(double radius, const PointXYZ&, const PointXYZ&);
 
     /// Great-circle distance between two points [m]
     static double distance(double radius, const PointLonLat&, const PointLonLat&);
 
     /// Great-circle distance between two points (Cartesian coordinates) [m]
-    static double distance(double radius, const Point3&, const Point3&);
+    static double distance(double radius, const PointXYZ&, const PointXYZ&);
 
     /// Surface area [m ** 2]
     static double area(double radius);
@@ -52,10 +52,10 @@ struct Sphere {
                                                   double& lon2);
 
     /// Convert spherical to Cartesian coordinates
-    static Point3 convertSphericalToCartesian(double radius, const PointLonLat&, double height = 0.);
+    static PointXYZ convertSphericalToCartesian(double radius, const PointLonLat&, double height = 0.);
 
     /// Convert Cartesian to spherical coordinates
-    static PointLonLat convertCartesianToSpherical(double radius, const Point3&);
+    static PointLonLat convertCartesianToSpherical(double radius, const PointXYZ&);
 };
 
 

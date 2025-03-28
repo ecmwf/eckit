@@ -15,13 +15,13 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/geo/Point2.h"
+#include "eckit/geo/PointXY.h"
 
 
 namespace eckit::geo::polygon {
 
 
-class Polygon2 : public std::vector<Point2> {
+class Polygon2 : public std::vector<PointXY> {
 public:
 
     // -- Types
@@ -58,7 +58,7 @@ public:
      * @param[in] P given point
      * @return if point is in polygon
      */
-    bool contains(const Point2& P) const;
+    bool contains(const PointXY& P) const;
 
     /**
      * @brief Simplify polygon by removing consecutive and colinear points
@@ -69,13 +69,13 @@ private:
 
     // -- Types
 
-    using Edge = std::pair<const Point2&, const Point2&>;
+    using Edge = std::pair<const PointXY&, const PointXY&>;
 
     // -- Methods
 
     Edge edge(int) const;
 
-    void emplace_back_point(Point2);
+    void emplace_back_point(PointXY);
 
     void print(std::ostream&) const;
 

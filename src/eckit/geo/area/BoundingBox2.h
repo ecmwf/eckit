@@ -15,7 +15,7 @@
 #include <array>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/Point2.h"
+#include "eckit/geo/PointXY.h"
 
 
 namespace eckit::geo::area {

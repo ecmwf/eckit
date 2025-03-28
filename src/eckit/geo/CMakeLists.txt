@@ -24,10 +24,10 @@ list(APPEND eckit_geo_srcs
     Ordering.h
     Point.cc
     Point.h
-    Point2.cc
-    Point2.h
-    Point3.cc
-    Point3.h
+    PointXY.cc
+    PointXY.h
+    PointXYZ.cc
+    PointXYZ.h
     PointLonLat.cc
     PointLonLat.h
     PointLonLatR.cc

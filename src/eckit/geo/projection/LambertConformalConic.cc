@@ -60,7 +60,7 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat fir
 }
 
 
-Point2 LambertConformalConic::fwd(const PointLonLat& p) const {
+PointXY LambertConformalConic::fwd(const PointLonLat& p) const {
     auto q = PointLonLatR::make_from_lonlat(p.lon, p.lat);
 
     auto rho  = figure().R() * f_ * std::pow(std::tan(M_PI_4 + q.latr / 2.), -n_);
@@ -71,7 +71,7 @@ Point2 LambertConformalConic::fwd(const PointLonLat& p) const {
 }
 
 
-PointLonLat LambertConformalConic::inv(const Point2& p) const {
+PointLonLat LambertConformalConic::inv(const PointXY& p) const {
     auto x = p.X / figure().R();
     auto y = rho0_bare_ - p.Y / figure().R();
 

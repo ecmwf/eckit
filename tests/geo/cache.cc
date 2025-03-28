@@ -119,13 +119,14 @@ CASE("download: error handling") {
     const PathName path("test.download");
     if (path.exists()) {
         path.unlink();
+        ASSERT(!path.exists());
     }
 
     EXPECT_THROWS_AS(cache::Download::to_path("https://does.not/exist", path), UserError);
-    EXPECT(not path.exists());
+    EXPECT(!path.exists());
 
     EXPECT_THROWS_AS(cache::Download::to_path("https://get.ecmwf.int/repository/does/not/exist", path), UserError);
-    EXPECT(not path.exists());
+    EXPECT(!path.exists());
 }
 
 
@@ -133,9 +134,8 @@ CASE("download: non-cached") {
     const PathName path("test.download");
     if (path.exists()) {
         path.unlink();
+        ASSERT(!path.exists());
     }
-
-    ASSERT(!path.exists());
 
     auto info = cache::Download::to_path(URL, path);
 
@@ -143,31 +143,25 @@ CASE("download: non-cached") {
     EXPECT(path.exists());
 
     path.unlink();
+    ASSERT(!path.exists());
 }
 
 
 CASE("download: cached") {
-    const PathName root("test.download.dir", true);
-    if (root.exists()) {
-        if (root.isDir()) {
-            root.rmdir();
-        }
-        else {
-            root.unlink();
-        }
-    }
-    EXPECT(!root.exists());
-
     const std::string prefix    = "prefix-";
     const std::string suffix    = ".suffix";
 
+    const PathName root("test.download.dir", true);
+
     cache::Download download(root);
+    EXPECT(root == download.cache_root());
 
     download.rm_cache_root();
+    EXPECT(!root.exists());
 
     auto path = download.to_cached_path(URL, prefix, suffix);
 
-    EXPECT(root.exists());
+    EXPECT(root.exists() && root.isDir());
     EXPECT(path.exists());
 
     std::string basename = path.baseName();
@@ -190,25 +184,24 @@ CASE("unzip") {
 
 
     SECTION("unzip all") {
-        const PathName cached_dir("eckit_test_geo_cache/unzip/unzip-all/cache", true);
-        cached_dir.unlink();
+        const PathName dir("eckit_geo_cache/unzip/unzip-all", true);
 
-        const PathName dir("eckit_test_geo_cache/unzip/unzip-all", true);
-        dir.unlink();
-        ASSERT(!dir.exists());
+        cache::Unzip unzip(dir);
+        unzip.rm_cache_root();
 
-        cache::Unzip unzip(cached_dir);
-        unzip.to_path(zip, dir);
+        cache::Unzip::to_path(zip, dir);
 
         for (const auto& content : contents) {
             EXPECT((dir / content).exists());
         }
 
-        ASSERT(!cached_dir.exists());
+        EXPECT(dir.exists());
+        unzip.rm_cache_root();
+        EXPECT(!dir.exists());
 
         for (const auto& what : {"a", "b/c"}) {
             auto cached_path = unzip.to_cached_path(zip, "a");
-            EXPECT(cached_dir.exists() && cached_dir.isDir());
+            EXPECT(dir.exists() && dir.isDir());
             EXPECT(cached_path.exists() && !cached_path.isDir());
         }
     }
@@ -216,8 +209,9 @@ CASE("unzip") {
 
     SECTION("unzip one") {
         const PathName dir("cache.unzip.one", true);
-        dir.unlink();
-        ASSERT(!dir.exists());
+
+        cache::Unzip unzip(dir);
+        unzip.rm_cache_root();
 
         cache::Unzip::to_path(zip, dir / (contents.back() + "-y"), contents.back());
 
@@ -236,6 +230,9 @@ CASE("unzip") {
                 EXPECT(!path.exists() || path.isDir());
             }
         }
+
+        unzip.rm_cache_root();
+        ASSERT(!dir.exists());
     }
 }
 #endif

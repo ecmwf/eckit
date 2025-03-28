@@ -2,7 +2,6 @@ set(TEST_ECKIT_GEO_CACHE_PATH "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
 
 foreach(_test
         area_boundingbox
-        area_libraries
         area_polygon
         cache
         figure
@@ -46,9 +45,10 @@ if(eckit_HAVE_ZIP)
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
 endif()
 
-set_target_properties(
-    eckit_test_geo_area_libraries
-    PROPERTIES
+ecbuild_add_test(
+    TARGET            eckit_test_geo_area_library
+    SOURCES           area_library.cc
+    LIBS              eckit_geo
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(eckit_HAVE_GEO_GRID_ORCA)

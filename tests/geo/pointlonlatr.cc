@@ -12,8 +12,8 @@
 
 #include <vector>
 
-#include "eckit/geo/PointLonLatR.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointLonLatR.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"

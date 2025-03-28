@@ -11,6 +11,8 @@
 
 
 #include <memory>
+#include <vector>
+#include <utility>
 
 #include "eckit/geo/Cache.h"
 #include "eckit/geo/LibEcKitGeo.h"
@@ -87,7 +89,10 @@ CASE("spec") {
 
 
 CASE("equals") {
-    for (const auto& [uid, grid] : {std::pair<std::string, std::string>{UID_N, "pi_N"}, {UID_C, "pi_C"}}) {
+    for (const auto& p : std::vector<std::pair<std::string, std::string>>{{UID_N, "pi_N"}, {UID_C, "pi_C"}}) {
+        const auto& uid = p.first;
+        const auto& grid = p.second;
+
         std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + uid + "}"));
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", uid}})));
         std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", grid}})));

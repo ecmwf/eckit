@@ -11,6 +11,7 @@
 
 
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Composer.h"
@@ -297,8 +298,8 @@ CASE("rotation (6)") {
         PointLonLat q;
     };
 
-    for (const auto& test : {
-             test_t{{0., 1.}, {-160., 79.}},
+    for (const auto& test : std::vector<test_t>{
+             {{0., 1.}, {-160., 79.}},
              {{2., 1.}, {-170.369068, 78.821318}},
              {{0., 0.}, {-160., 80.}},
              {{2., 0.}, {-171.370559, 79.803957}},

@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/spec/Custom.h"
@@ -88,8 +89,8 @@ CASE("projection: ll_to_xyz") {
 
 
     SECTION("sphere (ll -> xyz, xyz -> ll)") {
-        for (const auto& test : {
-                 test_t{{0, 90}, {0, 0, R}},  //
+        for (const auto& test : std::vector<test_t>{
+                 {{0, 90}, {0, 0, R}},  //
                  {{0, -90}, {0, 0, -R}},      //
                  {{0, 0}, {R, 0, 0}},         //
                  {{-360, 0}, {R, 0, 0}},      //
@@ -118,8 +119,8 @@ CASE("projection: ll_to_xyz") {
 
 
     SECTION("spheroid (ll -> xyz)") {
-        for (const auto& test : {
-                 test_t{{0, -90}, {0, 0, -0.5}},  //
+        for (const auto& test : std::vector<test_t>{
+                 {{0, -90}, {0, 0, -0.5}},  //
                  {{42, -90}, {0, 0, -0.5}},       //
                  {{0, 90}, {0, 0, 0.5}},          //
                  {{42, 90}, {0, 0, 0.5}},         //

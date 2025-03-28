@@ -123,7 +123,7 @@ CASE("Polygon2") {
                            Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[2]}, {lon[3], lat[2]}})};
 
 
-        std::vector<Polygon::value_type> points;
+        Polygon::container_type points;
         const std::vector<double> list_lons{lon[0], mid(lon[0], lon[1]), lon[1], mid(lon[1], lon[2]),
                                             lon[2], mid(lon[2], lon[3]), lon[3], mid(lon[3], lon[4])};
         const std::vector<double> list_lats{lat[0], mid(lat[0], lat[1]), lat[1], mid(lat[1], lat[2]), lat[2]};
@@ -169,7 +169,7 @@ CASE("Polygon") {
 
     SECTION("Construction") {
         struct test_t {
-            std::vector<Polygon::value_type> points;
+            Polygon::container_type points;
             size_t size;
         };
 
@@ -352,10 +352,9 @@ CASE("Polygon") {
 
 
     SECTION("Parallelogram") {
-        const std::vector<Polygon::value_type> points{{0, 0}, {1, 1}, {2, 1}, {1, 0}, {0, 0}};
-        Polygon poly(points);
+        Polygon poly({{0, 0}, {1, 1}, {2, 1}, {1, 0}, {0, 0}});
 
-        for (const auto& p : points) {
+        for (const auto& p : poly) {
             EXPECT(poly.contains(p));
         }
         EXPECT_NOT(poly.contains({0, 1}));
@@ -364,15 +363,13 @@ CASE("Polygon") {
 
 
     SECTION("Degenerate polygon") {
-        const std::vector<Polygon::value_type> points{{0, 0}, {2, 0}, {2, 0} /*duplicate*/, {0, 2}, {0, 0}};
+        Polygon poly({{0, 0}, {2, 0}, {2, 0} /*duplicate*/, {0, 2}, {0, 0}});
 
-        Polygon poly(points);
-
-        for (const auto& p : points) {
+        for (const auto& p : poly) {
             EXPECT(poly.contains(p));
         }
 
-        for (const auto& p : std::vector<Polygon::value_type>{{2, 2}}) {
+        for (const auto& p : Polygon::container_type{{2, 2}}) {
             EXPECT_NOT(poly.contains(p));
         }
     }
@@ -445,7 +442,7 @@ CASE("Polygon") {
 
 
     SECTION("clipping: completely inside the clipping polygon") {
-        auto poly     = Polygon{{0, 0}, {0.5, 0.5}, {-0.5, 0.5}};
+        Polygon poly{{0, 0}, {0.5, 0.5}, {-0.5, 0.5}};
         auto expected = poly;
         poly.clip(clipper);
 
@@ -454,7 +451,7 @@ CASE("Polygon") {
 
 
     SECTION("clipping: vertix/vertices outside the clipping polygon (1)") {
-        auto poly = Polygon{{-1., 0.5}, {-2., 0.}, {-1., -2.}, {0.5, -1.}};
+        Polygon poly{{-1., 0.5}, {-2., 0.}, {-1., -2.}, {0.5, -1.}};
         poly.clip(clipper);
 
         Polygon expected{{-1., -1.}, {0.5, -1.}, {-1., 0.5}};
@@ -473,7 +470,7 @@ CASE("Polygon") {
 
 
     SECTION("clipping: vertix/vertices outside the clipping polygon (3)") {
-        auto poly = Polygon{{1., 1.5}, {2., 0.5}, {-0.5, -2.}, {-2., 0.}};
+        Polygon poly{{1., 1.5}, {2., 0.5}, {-0.5, -2.}, {-2., 0.}};
         poly.clip(clipper);
 
         Polygon expected{{-1., 0.5}, {0., 1.}, {1., 1.}, {1., -0.5}, {0.5, -1.}, {-1., -1.}};
@@ -484,7 +481,7 @@ CASE("Polygon") {
 
 
     SECTION("clipping: vertix/vertices outside the clipping polygon (4)") {
-        auto poly = Polygon{{-2, 0}, {0, -2}, {2, 0}, {0, 2}};
+        Polygon poly{{-2, 0}, {0, -2}, {2, 0}, {0, 2}};
         poly.clip(clipper);
 
         EXPECT(poly == clipper);
@@ -503,7 +500,7 @@ CASE("Polygon") {
 
 
     SECTION("clipping: completely outside the clipping polygon") {
-        auto poly = Polygon{{2, 2}, {3, 3}, {3, 2}};
+        Polygon poly{{2, 2}, {3, 3}, {3, 2}};
         poly.clip(clipper);
 
         EXPECT(poly.empty());
@@ -512,7 +509,7 @@ CASE("Polygon") {
 
 
     SECTION("clipping: concave polygon where part is clipped but part remains inside.") {
-        auto poly = Polygon{{-2., 2.}, {-2., -2.}, {2., -2.}};
+        Polygon poly{{-2., 2.}, {-2., -2.}, {2., -2.}};
         poly.clip(clipper);
 
         Polygon expected{{-1, -1}, {1, -1}, {-1, 1}};

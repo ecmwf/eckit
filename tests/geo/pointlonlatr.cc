@@ -10,6 +10,8 @@
  */
 
 
+#include <vector>
+
 #include "eckit/geo/PointLonLatR.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/util.h"
@@ -29,8 +31,8 @@ CASE("PointLonLatR normalise_angle_to_*") {
 
 
     SECTION("normalise_angle_to_minimum") {
-        for (const auto& test : {
-                 test_t{1., 0., 1.},
+        for (const auto& test : std::vector<test_t>{
+                 {1., 0., 1.},
                  {1. + 42. * PointLonLatR::FULL_ANGLE, 0., 1.},
                  {1. - 42. * PointLonLatR::FULL_ANGLE, 0., 1.},
                  {1., 3. * PointLonLatR::FULL_ANGLE, 3. * PointLonLatR::FULL_ANGLE + 1.},
@@ -43,8 +45,8 @@ CASE("PointLonLatR normalise_angle_to_*") {
 
 
     SECTION("normalise_angle_to_maximum") {
-        for (const auto& test : {
-                 test_t{1., 0., 1. - PointLonLatR::FULL_ANGLE},
+        for (const auto& test : std::vector<test_t>{
+                 {1., 0., 1. - PointLonLatR::FULL_ANGLE},
                  {1., 3. * PointLonLatR::FULL_ANGLE, 2. * PointLonLatR::FULL_ANGLE + 1.},
                  {-1., 3. * PointLonLatR::FULL_ANGLE, 3. * PointLonLatR::FULL_ANGLE - 1.},
              }) {

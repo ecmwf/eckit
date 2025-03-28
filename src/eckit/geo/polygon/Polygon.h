@@ -38,7 +38,7 @@ public:
 
     using container_type::container_type;
 
-    explicit Polygon(const container_type& points = {}) : container_type(points) {}
+    explicit Polygon(const container_type& points) : container_type(points) {}
     explicit Polygon(container_type&& points) : container_type(std::move(points)) {}
 
     Polygon(const Polygon&) = default;

@@ -20,7 +20,7 @@ namespace eckit::geo::iterator {
 
 
 Regular::Regular(const grid::Regular& grid, size_t index) :
-    grid_(grid),
+    // grid_(grid),
     x_(grid.x().values()),
     y_(grid.y().values()),
     i_(0),

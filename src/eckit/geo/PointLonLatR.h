@@ -72,8 +72,9 @@ public:
 
     // -- Methods
 
-    static value_type normalise_angle_to_minimum(value_type, value_type minimum);
+    static size_t dimensions() { return DIMS; }
 
+    static value_type normalise_angle_to_minimum(value_type, value_type minimum);
     static value_type normalise_angle_to_maximum(value_type, value_type maximum);
 
     [[nodiscard]] static PointLonLatR make(value_type lonr, value_type latr, value_type lonr_minimum = 0.,
@@ -85,13 +86,12 @@ public:
 
     // -- Class members
 
+    static constexpr size_t DIMS    = 2;
+    static constexpr value_type EPS = 1e-10;
+
     static constexpr value_type FULL_ANGLE  = 2. * M_PI;
     static constexpr value_type FLAT_ANGLE  = M_PI;
     static constexpr value_type RIGHT_ANGLE = M_PI_2;
-    static constexpr value_type EPS         = 1e-10;
-
-    // -- Class methods
-    // None
 
     // -- Friends
 

@@ -15,6 +15,11 @@
 #include "eckit/geo/Exceptions.h"
 
 
+namespace eckit::geo::util {
+void hash_vector_double(MD5&, const std::vector<double>&);
+}  // namespace eckit::geo::util
+
+
 namespace eckit::geo::container {
 
 
@@ -38,11 +43,17 @@ std::pair<std::vector<double>, std::vector<double>> PointsInstance::to_latlons()
 }
 
 
+void PointsInstance::hash(MD5&) const {
+    NOTIMP;
+}
+
+
 PointsLonLatReference::PointsLonLatReference(const std::vector<double>& longitudes,
                                              const std::vector<double>& latitudes) :
     longitudes(longitudes), latitudes(latitudes) {
     ASSERT(longitudes.size() == latitudes.size());
 }
+
 
 std::vector<Point> PointsLonLatReference::to_points() const {
     std::vector<Point> points;
@@ -61,8 +72,19 @@ std::pair<std::vector<double>, std::vector<double>> PointsLonLatReference::to_la
 }
 
 
+void PointsLonLatReference::hash(MD5& hash) const {
+    util::hash_vector_double(hash, latitudes);
+    util::hash_vector_double(hash, longitudes);
+}
+
+
 std::pair<std::vector<double>, std::vector<double>> PointsReference::to_latlons() const {
     return PointsContainer::to_latlons(points_);
+}
+
+
+void PointsReference::hash(MD5&) const {
+    NOTIMP;
 }
 
 

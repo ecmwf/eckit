@@ -18,11 +18,6 @@
 #include "eckit/testing/Test.h"
 
 
-namespace eckit::geo::util {
-area::BoundingBox bounding_box(Point2, Point2, Projection&);
-}
-
-
 namespace eckit::geo::test {
 
 
@@ -33,7 +28,7 @@ CASE("projection: proj") {
     constexpr double eps = 1e-6;
 
 
-    if (ProjectionFactory::instance().exists("proj")) {
+    if (ProjectionFactoryType::instance().exists("proj")) {
         PointLonLat a{12., 55.};
 
         struct {
@@ -51,7 +46,7 @@ CASE("projection: proj") {
         };
 
         for (const auto& test : tests_proj) {
-            P projection(ProjectionFactory::instance().get("proj").create(
+            P projection(ProjectionFactoryType::instance().get("proj").create(
                 spec::Custom{{{"source", "EPSG:4326"}, {"target", test.target}}}));
 
 #if 0
@@ -65,7 +60,7 @@ CASE("projection: proj") {
             EXPECT(points_equal(b, test.b, eps));
             EXPECT(points_equal(c, a, eps));
 
-            P reverse(ProjectionFactory::instance().get("proj").create(
+            P reverse(ProjectionFactoryType::instance().get("proj").create(
                 spec::Custom({{"source", test.target}, {"target", "EPSG:4326"}})));
 
             auto d = reverse->fwd(test.b);
@@ -75,10 +70,10 @@ CASE("projection: proj") {
             EXPECT(points_equal(e, test.b, eps));
         }
 
-        P polar_stereographic_north(ProjectionFactory::instance().get("proj").create(
+        P polar_stereographic_north(ProjectionFactoryType::instance().get("proj").create(
             spec::Custom{{{"source", "EPSG:4326"}, {"target", "+proj=stere +lat_0=90. +lon_0=-30. +R=6371229."}}}));
 
-        P polar_stereographic_south(ProjectionFactory::instance().get("proj").create(
+        P polar_stereographic_south(ProjectionFactoryType::instance().get("proj").create(
             spec::Custom{{{"source", "EPSG:4326"}, {"target", "+proj=stere +lat_0=-90. +lon_0=-30. +R=6371229."}}}));
 
         struct {
@@ -104,15 +99,16 @@ CASE("projection: proj") {
         };
 
         for (const auto& test : tests_bbox) {
-            auto bbox = util::bounding_box(test.min, test.max, *test.projection);
+            std::unique_ptr<area::BoundingBox> bbox(
+                area::BoundingBox::make_from_projection(test.min, test.max, *test.projection));
 
-            EXPECT_EQUAL(test.periodic, bbox.periodic());
-            EXPECT_EQUAL(test.contains_north_pole, bbox.contains(NORTH_POLE));
-            EXPECT_EQUAL(test.contains_south_pole, bbox.contains(SOUTH_POLE));
+            EXPECT_EQUAL(test.periodic, bbox->periodic());
+            EXPECT_EQUAL(test.contains_north_pole, bbox->contains(NORTH_POLE));
+            EXPECT_EQUAL(test.contains_south_pole, bbox->contains(SOUTH_POLE));
 
             auto global = test.periodic && test.contains_north_pole && test.contains_south_pole;
 
-            EXPECT(global == bbox.global());
+            EXPECT(global == bbox->global());
         }
     }
 }

@@ -25,24 +25,9 @@ namespace eckit::geo::projection {
 class SpaceView : public ProjectionOnFigure {
 public:
 
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
-
     // -- Constructors
 
     explicit SpaceView(const Spec&);
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
 
     // -- Methods
 
@@ -56,34 +41,11 @@ public:
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
 
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
 protected:
 
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-
-private:
-
-    // -- Members
-    // None
-
-    // -- Methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

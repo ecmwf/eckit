@@ -25,7 +25,7 @@ namespace eckit::geo::test {
 
 CASE("projection: none") {
     Point p = PointLonLat{1, 1};
-    std::unique_ptr<Projection> projection(ProjectionFactory::instance().get("none").create(spec::Custom{}));
+    std::unique_ptr<Projection> projection(ProjectionFactoryType::instance().get("none").create(spec::Custom{}));
 
     EXPECT(points_equal(p, projection->inv(p)));
     EXPECT(points_equal(p, projection->fwd(p)));
@@ -46,8 +46,8 @@ CASE("projection: reverse") {
     EXPECT(points_equal(p, ba.fwd(q)));
     EXPECT(points_equal(q, ba.inv(p)));
 
-    ASSERT(std::unique_ptr<Spec>(ab.spec())->get_string("projection") == "ll_to_xyz");
-    EXPECT(std::unique_ptr<Spec>(ba.spec())->get_string("projection") == "reverse_ll_to_xyz");
+    ASSERT(ab.spec().get_string("projection") == "ll_to_xyz");
+    EXPECT(ba.spec().get_string("projection") == "reverse_ll_to_xyz");
 }
 
 

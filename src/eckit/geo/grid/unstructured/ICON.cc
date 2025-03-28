@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/ICON.h"
+#include "eckit/geo/grid/unstructured/ICON.h"
 
 #include <cstdint>
 #include <memory>
@@ -19,17 +19,17 @@
 #include "eckit/codec/codec.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
-#include "eckit/geo/Download.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
+#include "eckit/geo/cache/Download.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/utils/MD5.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::unstructured {
 
 
 namespace {
@@ -48,7 +48,7 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
     lock_type lock;
 
     static CacheT<PathName, ICON::ICONRecord> cache;
-    static Download download(LibEcKitGeo::cacheDir() + "/grid/icon");
+    static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/icon");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
     auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");
@@ -135,7 +135,7 @@ Grid::uid_t ICON::calculate_uid() const {
 
 
 Spec* ICON::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+    return GridSpecByUID::instance().get(name).spec();
 }
 
 
@@ -173,4 +173,4 @@ const std::string& ICON::type() const {
 static const GridRegisterType<ICON> GRIDTYPE("ICON");
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::unstructured

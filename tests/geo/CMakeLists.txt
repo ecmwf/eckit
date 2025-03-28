@@ -4,7 +4,6 @@ foreach(_test
         area_boundingbox
         area_polygon
         cache
-        download
         figure
         geometry_sphere
         great_circle
@@ -37,14 +36,20 @@ foreach(_test
         spec_layered
         util )
     ecbuild_add_test(
-        TARGET      eckit_test_geo_${_test}
-        SOURCES     ${_test}.cc
-        LIBS        eckit_geo )
+        TARGET  eckit_test_geo_${_test}
+        SOURCES ${_test}.cc
+        LIBS    eckit_geo )
 endforeach()
 
-if(NOT HAVE_CURL)
-    set_tests_properties(eckit_test_geo_download PROPERTIES DISABLED TRUE)
+if(eckit_HAVE_ZIP)
+    target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
 endif()
+
+ecbuild_add_test(
+    TARGET            eckit_test_geo_area_library
+    SOURCES           area_library.cc
+    LIBS              eckit_geo
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(eckit_HAVE_GEO_GRID_ORCA)
     set(URL "https://get.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_T.atlas")

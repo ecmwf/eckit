@@ -142,7 +142,7 @@ public:
         return new NextIterator{cbegin().release(), cend().release()};
     }
 
-    const Spec& spec() const;
+    [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
     virtual const std::string& type() const   = 0;
@@ -216,8 +216,8 @@ private:
 
 
 using GridFactoryType = Factory<Grid>;
-using SpecByName      = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
-using SpecByUID       = spec::GeneratorT<spec::SpecGeneratorT0>;
+using GridSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+using GridSpecByUID   = spec::GeneratorT<spec::SpecGeneratorT0>;
 
 
 template <typename T>
@@ -238,7 +238,7 @@ struct GridFactory {
     [[nodiscard]] static const Grid* make_from_string(const std::string&);
 
     [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
-    static void list(std::ostream& out) { return instance().list_(out); }
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
 private:
 
@@ -248,7 +248,7 @@ private:
     [[nodiscard]] const Grid* make_from_spec_(const Spec&) const;
 
     [[nodiscard]] Spec* make_spec_(const Spec&) const;
-    void list_(std::ostream&) const;
+    std::ostream& list_(std::ostream&) const;
 };
 
 

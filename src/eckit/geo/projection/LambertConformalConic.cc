@@ -106,7 +106,7 @@ void LambertConformalConic::fill_spec(spec::Custom& custom) const {
     custom.set("first_lon", first_.lon);
     custom.set("first_lat", first_.lat);
     custom.set("lat_1", lat_1_);
-    custom.set("lat_2", lat_1_);
+    custom.set("lat_2", lat_2_);
 }
 
 

@@ -14,14 +14,18 @@
 
 #include <string>
 
-#include "eckit/filesystem/PathName.h"
+#include "eckit/geo/cache/CacheRoot.h"
 #include "eckit/log/Bytes.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::cache {
 
 
-struct Download final {
+class Download final : public CacheRoot {
+public:
+
+    // -- Types
+
     using url_type = std::string;
 
     struct info_type {
@@ -29,25 +33,28 @@ struct Download final {
         double time_s;
     };
 
-    explicit Download(const PathName& root = ".", bool html = false);
+    // -- Constructors
+
+    explicit Download(const PathName& root = ".", bool html = false) : CacheRoot(root), html_(html) {}
+
+    // -- Methods
+
+    PathName to_cached_path(const url_type&, const std::string& prefix = "",
+                            const std::string& suffix = ".download") const;
+
+    // -- Class methods
 
     static info_type to_path(const url_type&, const PathName&, bool html = false);
 
-    PathName to_cached_path(const url_type&, const std::string& prefix = "",
-                            const std::string& extension = ".download") const;
-
-    void rm_cache_path(const url_type&);
-    void rm_cache_root() const { rmdir(root_); }
+    static std::string url_file_basename(const url_type&, bool ext = true);
+    static std::string url_file_extension(const url_type&);
 
 private:
 
-    PathName cached_path(const url_type&) const;
-
     void rmdir(const PathName&) const;
 
-    const PathName root_;
     bool html_;
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::cache

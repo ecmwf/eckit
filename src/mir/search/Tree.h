@@ -30,7 +30,7 @@ namespace mir::search {
 
 class Tree {
 public:
-    using Point          = Point3;
+    using Point          = PointXYZ;
     using Payload        = size_t;
     using PointValueType = eckit::SPValue<Tree>;
 

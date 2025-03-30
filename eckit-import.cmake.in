@@ -1,2 +1,5 @@
 set( ECKIT_LIBRARIES @ECKIT_LIBRARIES@ )
 
+include( CMakeFindDependencyMacro )
+
+find_dependency(fmt REQUIRED)

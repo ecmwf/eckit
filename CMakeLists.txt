@@ -148,6 +148,10 @@ ecbuild_add_option( FEATURE AEC
                     DESCRIPTION "AEC support for compression"
                     REQUIRED_PACKAGES AEC )
 
+ecbuild_add_option( FEATURE ZIP
+                    DESCRIPTION "ZIP support for compression"
+                    REQUIRED_PACKAGES libzip )
+
 ### Hashing options
 
 ecbuild_add_option( FEATURE XXHASH
@@ -202,18 +206,30 @@ ecbuild_add_option( FEATURE GEO_GRID_ORCA
 
 ecbuild_add_option( FEATURE GEO_CACHING
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default caching behaviour" )
 
 ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
 
 ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
+
+ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
+                    DEFAULT ON
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ZIP
+                    REQUIRED_PACKAGES shapelib
+                    DESCRIPTION "eckit::geo geometry library support for shapefiles" )
+
+if( eckit_HAVE_GEO_AREA_SHAPEFILE )
+    if( NOT TARGET shapelib::shp OR NOT TARGET libzip::zip )
+        message( FATAL_ERROR "eckit::geo geometry library support for shapefiles requires the shapelib::shp and libzip::zip libraries" )
+    endif()
+endif()
 
 set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" )
 

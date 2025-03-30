@@ -21,19 +21,31 @@ namespace eckit::geo::test {
 
 
 CASE("gridspec") {
-    spec::Custom spec1({{"grid", "h3"}});
-    std::unique_ptr<const Grid> grid1(GridFactory::build(spec1));
-    auto n1 = grid1->size();
+    for (size_t n : {1, 2}) {
+        for (const std::string& suffix : {"", "n", "_nested", "r", "_ring"}) {
+            const auto spec = "{grid: H" + std::to_string(n) + suffix + "}";
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+            EXPECT(grid->size() == 12 * n * n);
+        }
+    }
 
-    EXPECT_EQUAL(n1, 108);
-    EXPECT_EQUAL(grid1->spec_str(), R"({"grid":"H3","ordering":"ring"})");
+    spec::Custom spec1({{"grid", "H3"}});
+    std::unique_ptr<const Grid> grid1(GridFactory::build(spec1));
+
+    EXPECT_EQUAL(grid1->size(), 108);
+    EXPECT_EQUAL(grid1->spec_str(), R"({"grid":"H3"})");
 
     spec::Custom spec2({{"grid", "h2"}, {"ordering", "nested"}});
     std::unique_ptr<const Grid> grid2(GridFactory::build(spec2));
-    auto n2 = grid2->size();
 
-    EXPECT_EQUAL(n2, 48);
+    EXPECT_EQUAL(grid2->size(), 48);
     EXPECT_EQUAL(grid2->spec_str(), R"({"grid":"H2","ordering":"nested"})");
+
+    spec::Custom spec3({{"grid", "h2"}, {"ordering", "ring"}});
+    std::unique_ptr<const Grid> grid3(GridFactory::build(spec3));
+
+    EXPECT_EQUAL(grid3->size(), 48);
+    EXPECT_EQUAL(grid3->spec_str(), R"({"grid":"H2"})");
 }
 
 

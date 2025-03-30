@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/FESOM.h"
+#include "eckit/geo/grid/unstructured/FESOM.h"
 
 #include <cstdint>
 #include <memory>
@@ -19,10 +19,10 @@
 #include "eckit/codec/codec.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
-#include "eckit/geo/Download.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
+#include "eckit/geo/cache/Download.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
@@ -35,7 +35,7 @@ void hash_vector_size_t(MD5&, const std::vector<size_t>&);
 }  // namespace eckit::geo::util
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::unstructured {
 
 
 namespace {
@@ -54,7 +54,7 @@ const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
     lock_type lock;
 
     static CacheT<PathName, FESOM::FESOMRecord> cache;
-    static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
+    static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
     auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");
@@ -143,17 +143,17 @@ Grid::uid_t FESOM::calculate_uid() const {
 
         auto d = hash.digest();
         ASSERT(d.length() == 32);
-        return Grid::uid_t{d};
+        return {d};
     }
 
     if (arrangement_ == Arrangement::FESOM_C) {
         // control concurrent reads/writes
         lock_type lock;
 
-        static Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
+        static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
         // bootstrap uid
-        std::unique_ptr<Spec> spec(SpecByUID::instance().get(uid()).spec());
+        std::unique_ptr<Spec> spec(GridSpecByUID::instance().get(uid()).spec());
 
         // get coordinates from fesom_arrangement: N
         auto [lat, lon] = FESOM(spec->get_string("name"), Arrangement::FESOM_N).to_latlons();
@@ -179,7 +179,7 @@ Grid::uid_t FESOM::calculate_uid() const {
 
         auto d = hash.digest();
         ASSERT(d.length() == 32);
-        return Grid::uid_t{d};
+        return {d};
     }
 
     NOTIMP;
@@ -187,7 +187,7 @@ Grid::uid_t FESOM::calculate_uid() const {
 
 
 Spec* FESOM::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+    return GridSpecByUID::instance().get(name).spec();
 }
 
 
@@ -221,4 +221,4 @@ const std::string& FESOM::type() const {
 static const GridRegisterType<FESOM> GRIDTYPE("FESOM");
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::unstructured

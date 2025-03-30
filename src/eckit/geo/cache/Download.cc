@@ -10,7 +10,9 @@
  */
 
 
-#include "eckit/geo/Download.h"
+#include "eckit/geo/cache/Download.h"
+
+#include "eckit/eckit_config.h"
 
 #include <fstream>
 #include <iterator>
@@ -28,7 +30,7 @@
 #endif
 
 
-namespace eckit::geo {
+namespace eckit::geo::cache {
 
 
 static util::recursive_mutex MUTEX;
@@ -39,7 +41,30 @@ class lock_type {
 };
 
 
-Download::Download(const PathName& root, bool html) : root_{root}, html_(html) {}
+std::string Download::url_file_basename(const url_type& url, bool ext) {
+    std::string n = url;
+
+    // strip queries, directory and extension
+    n = n.substr(0, n.find_first_of("?#"));
+
+    if (auto f = n.find_last_of('/'); f != std::string::npos) {
+        n = n.substr(f + 1);
+    }
+
+    if (auto f = n.find_last_of('.'); !ext && f != std::string::npos) {
+        n = n.substr(0, f);
+    }
+
+    return n;
+}
+
+
+std::string Download::url_file_extension(const url_type& url) {
+    // extension includes dot, e.g. ".jpg"
+    auto n = url_file_basename(url);
+    auto f = n.find_last_of('.');
+    return f != 0 && f != std::string::npos ? n.substr(f) : "";
+}
 
 
 Download::info_type Download::to_path(const url_type& url, const PathName& path, bool html) {
@@ -93,7 +118,7 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
 }
 
 
-PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& extension) const {
+PathName Download::to_cached_path(const url_type& url, const std::string& prefix, const std::string& suffix) const {
     // control concurrent access
     lock_type lock;
 
@@ -102,7 +127,7 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
     // set cache key, return path early if possible
     const auto key = MD5{url}.digest();
     const auto path =
-        CACHE.contains(key) ? PathName{CACHE[key]} : root_ / prefix + (prefix.empty() ? "" : "-") + key + extension;
+        CACHE.contains(key) ? PathName{CACHE[key]} : cache_root() / prefix + (prefix.empty() ? "" : "-") + key + suffix;
 
     if (path.exists()) {
         return CACHE[key] = path;
@@ -118,28 +143,4 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
 }
 
 
-void Download::rmdir(const PathName& p) const {
-    // control concurrent access
-    lock_type lock;
-
-    if (!p.exists()) {
-        return;
-    }
-
-    std::vector<PathName> files;
-    std::vector<PathName> dirs;
-    p.children(files, dirs);
-
-    for (auto& f : files) {
-        f.unlink();
-    }
-
-    for (auto& d : dirs) {
-        rmdir(d);
-    }
-
-    p.rmdir();
-}
-
-
-}  // namespace eckit::geo
+}  // namespace eckit::geo::cache

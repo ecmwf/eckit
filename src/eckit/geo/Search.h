@@ -32,10 +32,10 @@ struct Traits {
 }  // namespace search
 
 
-using Search3 = KDTreeMemory<search::Traits<geo::Point3, size_t>>;
+using Search3 = KDTreeMemory<search::Traits<geo::PointXYZ, size_t>>;
 
 
-using Search2 = KDTreeMemory<search::Traits<geo::Point2, size_t>>;
+using Search2 = KDTreeMemory<search::Traits<geo::PointXY, size_t>>;
 
 
 struct SearchLonLat : Search3 {

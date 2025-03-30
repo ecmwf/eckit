@@ -1,12 +1,19 @@
 set(_files)
 
-list(APPEND _files "grid.yaml")
+list(APPEND _files "area.yaml" "grid.yaml")
+
+if(eckit_HAVE_GEO_AREA_SHAPEFILE)
+    list(APPEND _files "shapefile.yaml")
+endif()
+
 if(eckit_HAVE_GEO_GRID_FESOM)
     list(APPEND _files "FESOM.yaml")
 endif()
+
 if(eckit_HAVE_GEO_GRID_ICON)
     list(APPEND _files "ICON.yaml")
 endif()
+
 if(eckit_HAVE_GEO_GRID_ORCA)
     list(APPEND _files "ORCA.yaml")
 endif()
@@ -18,4 +25,3 @@ install(FILES ${_files} DESTINATION ${_destination} PERMISSIONS OWNER_WRITE OWNE
 foreach(_file ${_files})
     configure_file(${_file} "${CMAKE_BINARY_DIR}/${_destination}/${_file}" COPYONLY)
 endforeach()
-

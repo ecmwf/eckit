@@ -16,7 +16,7 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Point3.h"
+#include "eckit/geo/PointXYZ.h"
 
 
 namespace eckit::maths {
@@ -56,7 +56,7 @@ public:
         return *this;
     }
 
-    geo::Point3 operator*(const geo::Point3& p) const {
+    geo::PointXYZ operator*(const geo::PointXYZ& p) const {
         return {XX * p.X + XY * p.Y + XZ * p.Z, YX * p.X + YY * p.Y + YZ * p.Z, ZX * p.X + ZY * p.Y + ZZ * p.Z};
     }
 

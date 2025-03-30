@@ -39,7 +39,7 @@ private:
 
     // -- Members
 
-    const grid::Regular& grid_;
+    // const grid::Regular& grid_;
     const std::vector<double>& x_;
     const std::vector<double>& y_;
     size_t i_;

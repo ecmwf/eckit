@@ -14,8 +14,8 @@
 #include <cmath>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/util.h"
 
 
@@ -34,7 +34,7 @@ double OblateSpheroid::flattening(double a, double b) {
 }
 
 
-Point3 OblateSpheroid::convertSphericalToCartesian(double a, double b, const PointLonLat& P, double height) {
+PointXYZ OblateSpheroid::convertSphericalToCartesian(double a, double b, const PointLonLat& P, double height) {
     ASSERT(0. < b && 0. < a);
 
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates

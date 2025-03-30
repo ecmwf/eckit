@@ -18,7 +18,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<None> PROJECTION("none");
+static ProjectionRegisterType<None> PROJECTION("none");
 
 
 const std::string& None::type() const {

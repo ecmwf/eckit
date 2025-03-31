@@ -70,6 +70,11 @@
 #define eckit_format_to_cc(out, str, ...) fmt::format_to(eckit::makeOrForwardOutputiterator(out), FMT_COMPILE(str), ##__VA_ARGS__)
 
 
+/// Format message to debug channel of a library
+#define FMT_DEBUG_LIB(lib, str, ...) \
+    if (lib::instance().debug()) { fmt::format_to(eckit::makeOrForwardOutputiterator(eckit::Log::debug<lib>()), FMT_STRING(str), ##__VA_ARGS__); }
+
+
 namespace eckit {
 
 template <typename OutputIt, std::enable_if_t<!std::is_base_of_v<std::ostream, std::decay_t<OutputIt>>, bool> = true>

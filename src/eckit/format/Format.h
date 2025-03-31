@@ -15,18 +15,18 @@
 #include <fmt/ranges.h>
 #include <fmt/std.h>
 
-#include <type_traits>
 #include <iterator>
+#include <type_traits>
 
 /* Format wrappers around libfmt
  *
  * For most cases it is encouraged to use the macro `eckit_format`. It will perform compile time checks.
  *
- * For a very specific timecritical cases `eckit_format_cc` can be used to produce very optimized formatting code. 
+ * For a very specific timecritical cases `eckit_format_cc` can be used to produce very optimized formatting code.
  * Disadvantag: more binary code
  *
- * For other cases where the format string may dynamicall be configured somethere else, the functions `eckit::format` and `eckit::format_to`
- * can be used - here checks are performed at runtime and may throw.
+ * For other cases where the format string may dynamicall be configured somethere else, the functions `eckit::format`
+ * and `eckit::format_to` can be used - here checks are performed at runtime and may throw.
  */
 
 
@@ -56,7 +56,8 @@
 /// @param formatString to use, see: <https://fmt.dev/11.1/syntax/> for description of syntax.
 ///        Must be known at compiletime
 /// @param ... args to be upplied into formatString
-#define eckit_format_to(out, str, ...) fmt::format_to(eckit::makeOrForwardOutputiterator(out), FMT_STRING(str), ##__VA_ARGS__)
+#define eckit_format_to(out, str, ...) \
+    fmt::format_to(eckit::makeOrForwardOutputiterator(out), FMT_STRING(str), ##__VA_ARGS__)
 
 /// Format s string with compile time optimizations and output to an outputiterator or ostream.
 /// Converts formatString into a format string that will be parsed at compile time and converted into efficient
@@ -67,12 +68,15 @@
 /// @param formatString to use, see: <https://fmt.dev/11.1/syntax/> for description of syntax.
 /// @param ... args to be upplied into formatString
 /// @throws fm::format_error if args cannot be applied to formatString or formatString syntax is invalid.
-#define eckit_format_to_cc(out, str, ...) fmt::format_to(eckit::makeOrForwardOutputiterator(out), FMT_COMPILE(str), ##__VA_ARGS__)
+#define eckit_format_to_cc(out, str, ...) \
+    fmt::format_to(eckit::makeOrForwardOutputiterator(out), FMT_COMPILE(str), ##__VA_ARGS__)
 
 
 /// Format message to debug channel of a library
-#define FMT_DEBUG_LIB(lib, str, ...) \
-    if (lib::instance().debug()) { fmt::format_to(eckit::makeOrForwardOutputiterator(eckit::Log::debug<lib>()), FMT_STRING(str), ##__VA_ARGS__); }
+#define FMT_DEBUG_LIB(lib, str, ...)                                                                                  \
+    if (lib::instance().debug()) {                                                                                    \
+        fmt::format_to(eckit::makeOrForwardOutputiterator(eckit::Log::debug<lib>()), FMT_STRING(str), ##__VA_ARGS__); \
+    }
 
 
 namespace eckit {
@@ -106,7 +110,8 @@ std::string format(StringType&& formatString, Args&&... args) {
 /// @throws fmt::format_error
 template <typename OutputIt, typename StringType, typename... Args>
 void format_to(OutputIt&& outputIt, StringType&& formatString, Args&&... args) {
-    fmt::format_to(makeOrForwardOutputiterator(std::forward<OutputIt>(outputIt)), fmt::runtime(std::forward<StringType>(formatString)), std::forward<Args>(args)...);
+    fmt::format_to(makeOrForwardOutputiterator(std::forward<OutputIt>(outputIt)),
+                   fmt::runtime(std::forward<StringType>(formatString)), std::forward<Args>(args)...);
 }
 
 

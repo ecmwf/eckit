@@ -10,9 +10,9 @@
 #include <eckit/testing/Test.h>
 
 #include "eckit/format/Format.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/OStreamTarget.h"
-#include "eckit/log/Channel.h"
 
 #include <sstream>
 

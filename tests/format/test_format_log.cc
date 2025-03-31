@@ -10,37 +10,37 @@
 #include <eckit/testing/Test.h>
 
 #include "eckit/format/Format.h"
-#include "eckit/system/Library.h"
-#include "eckit/log/OStreamTarget.h"
 #include "eckit/log/Channel.h"
+#include "eckit/log/OStreamTarget.h"
+#include "eckit/system/Library.h"
 #include "stdlib.h"
 
 
 class MyTestLib : public eckit::system::Library {
 public:
-    MyTestLib(): 
-        eckit::system::Library(([](){ 
-            setenv("MY_TEST_LIB_DEBUG","1",1); 
-            return std::string("my-test-lib"); 
-        })()), 
-        channel{new eckit::OStreamTarget{oss}} {
-    };
+
+    MyTestLib() :
+        eckit::system::Library(([]() {
+            setenv("MY_TEST_LIB_DEBUG", "1", 1);
+            return std::string("my-test-lib");
+        })()),
+        channel{new eckit::OStreamTarget{oss}} {};
 
     static const MyTestLib& instance() {
         static MyTestLib mytestlib;
         return mytestlib;
     };
-    
+
     // Public oss to log to
     std::ostringstream oss;
     mutable eckit::Channel channel;
 
-    eckit::Channel& debugChannel() const override {
-        return channel;
-    };;
+    eckit::Channel& debugChannel() const override { return channel; };
+    ;
 
 
 protected:
+
     const void* addr() const { return this; }
 
     virtual std::string version() const { return "123"; }

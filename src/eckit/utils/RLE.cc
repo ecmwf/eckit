@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <iterator>
 #include <vector>
+#include <chrono>
 
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/Stream.h"
@@ -46,7 +47,7 @@ dummy_iterator<T> make_dummy(T*) {
 
 
 template <class T, class U>
-long long RLEencode2(T first, T last, U output, long long maxLoop) {
+long long RLEencode2timeout(T first, T last, U output, long long maxLoop, std::optional<std::chrono::steady_clock::time_point> deadline) {
     long long x    = 0;
     long long m    = 0;
     long long j    = 0;
@@ -78,7 +79,7 @@ long long RLEencode2(T first, T last, U output, long long maxLoop) {
                 m = a;
                 x = n;
                 j = i;
-                if (m > enough)
+                if (m > enough || (deadline && std::chrono::steady_clock::now() > deadline))
                     goto stop;
             }
         }
@@ -98,12 +99,12 @@ stop:
             other += x;
         }
 
-        long long n = RLEencode2(first, from, output, maxLoop);
+        long long n = RLEencode2timeout(first, from, output, maxLoop, deadline);
 
         if (k > 1) {
             *output++ = -k;
             n++;
-            int m = RLEencode2(from, from + x, make_dummy((typename std::iterator_traits<T>::value_type*)(0)), maxLoop);
+            int m = RLEencode2timeout(from, from + x, make_dummy((typename std::iterator_traits<T>::value_type*)(0)), maxLoop, deadline);
 
             if (m > 1) {
                 *output++ = -m;
@@ -111,11 +112,20 @@ stop:
             }
         }
 
-        n += RLEencode2(from, from + x, output, maxLoop);
-        n += RLEencode2(from + k * x, last, output, maxLoop);
+        n += RLEencode2timeout(from, from + x, output, maxLoop, deadline);
+        n += RLEencode2timeout(from + k * x, last, output, maxLoop, deadline);
 
         return n;
     }
+}
+
+template <class T, class U>
+long long RLEencode2(T first, T last, U output, long long maxLoop, std::chrono::steady_clock::duration timelimit) {
+    std::optional<std::chrono::steady_clock::time_point> deadline;
+    if (timelimit>std::chrono::steady_clock::duration::zero()) {
+        deadline = std::chrono::steady_clock::now() + timelimit;
+    }
+    return RLEencode2timeout(first, last, output, maxLoop, deadline);
 }
 
 template <class T, class U>

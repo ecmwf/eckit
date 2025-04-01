@@ -16,6 +16,7 @@
 
 
 #include <iosfwd>
+#include <chrono>
 
 //-----------------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ namespace eckit {
 class Stream;
 
 template <class InputIterator, class OutputIterator>
-long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop);
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop, std::chrono::steady_clock::duration timelimit = std::chrono::steady_clock::duration::zero());
 
 template <class InputIterator, class OutputIterator>
 void RLEdecode2(InputIterator first, InputIterator last, OutputIterator result);

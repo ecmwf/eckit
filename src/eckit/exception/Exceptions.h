@@ -8,6 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
+/**
+ * About adding new exceptions:
+ * Please declare only the most general types of exceptions in this file.
+ * This means exceptions that have a generic meaning and can be used widely.
+ * Ideally there should already be multiple (intended) users of this new
+ * Exception type.
+ *
+ * In general try to keep your domain specific exceptions close to your
+ * implementation if there is no generic use case. See for example
+ * eckit::geo::exception::AreaError.
+ */
+
 #ifndef eckit_Exceptions_h
 #define eckit_Exceptions_h
 
@@ -28,8 +40,19 @@ void handle_panic_no_log(const char*, const CodeLocation& = {});
 void handle_assert(const std::string&, const CodeLocation& = {});
 
 /**
- * @brief General purpose exception.
- * Derive other exceptions from this class and implement them in the class that throws them.
+ * @brief Base class for all ECMWF exceptions.
+ * All exception types shall inherit from this class, either directly or
+ * indirectly.
+ *
+ * When inheriting from this class prefer your Exception type to be
+ * constructible from a message and a code location, e.g.:
+ * ```
+ * class MyException : public Exception {
+ * public:
+ *     MyException(const std::string& msg, const CodeLocation& loc = {}) :
+ *         Exception(msg, loc){}
+ * }
+ * ```
  */
 class Exception : public std::exception {
 public:

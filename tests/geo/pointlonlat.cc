@@ -301,6 +301,16 @@ CASE("PointLonLat canonicalise on sphere") {
 }
 
 
+CASE("PointLonLat pole") {
+    for (const auto& p : {PointLonLat(0., 90.), PointLonLat(0., -90.)}) {
+        EXPECT(p.pole());
+
+        PointLonLat q{p.lon, p.lat + 1.};
+        EXPECT(!q.pole());
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

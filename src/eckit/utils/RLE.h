@@ -14,20 +14,22 @@
 #ifndef eckit_RLE_h
 #define eckit_RLE_h
 
-
-#include <iosfwd>
 #include <chrono>
+#include <iosfwd>
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
+
+using EncodingClock = std::chrono::steady_clock;
 
 //-----------------------------------------------------------------------------
 
 class Stream;
 
 template <class InputIterator, class OutputIterator>
-long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop, std::chrono::steady_clock::duration timelimit = std::chrono::steady_clock::duration::zero());
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop,
+                     EncodingClock::duration timelimit = EncodingClock::duration::zero());
 
 template <class InputIterator, class OutputIterator>
 void RLEdecode2(InputIterator first, InputIterator last, OutputIterator result);

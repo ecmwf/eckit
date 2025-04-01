@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/utils/RLE.h"
+
 #include <cstddef>
 #include <iterator>
 #include <vector>
-#include <chrono>
 
 #include "eckit/log/Log.h"
 #include "eckit/serialisation/Stream.h"
@@ -47,7 +48,8 @@ dummy_iterator<T> make_dummy(T*) {
 
 
 template <class T, class U>
-long long RLEencode2timeout(T first, T last, U output, long long maxLoop, std::optional<std::chrono::steady_clock::time_point> deadline) {
+long long RLEencode2timeout(T first, T last, U output, long long maxLoop,
+                            std::optional<EncodingClock::time_point> deadline) {
     long long x    = 0;
     long long m    = 0;
     long long j    = 0;
@@ -79,7 +81,7 @@ long long RLEencode2timeout(T first, T last, U output, long long maxLoop, std::o
                 m = a;
                 x = n;
                 j = i;
-                if (m > enough || (deadline && std::chrono::steady_clock::now() > deadline))
+                if (m > enough || (deadline && EncodingClock::now() > deadline))
                     goto stop;
             }
         }
@@ -104,7 +106,8 @@ stop:
         if (k > 1) {
             *output++ = -k;
             n++;
-            int m = RLEencode2timeout(from, from + x, make_dummy((typename std::iterator_traits<T>::value_type*)(0)), maxLoop, deadline);
+            int m = RLEencode2timeout(from, from + x, make_dummy((typename std::iterator_traits<T>::value_type*)(0)),
+                                      maxLoop, deadline);
 
             if (m > 1) {
                 *output++ = -m;
@@ -120,10 +123,10 @@ stop:
 }
 
 template <class T, class U>
-long long RLEencode2(T first, T last, U output, long long maxLoop, std::chrono::steady_clock::duration timelimit) {
-    std::optional<std::chrono::steady_clock::time_point> deadline;
-    if (timelimit>std::chrono::steady_clock::duration::zero()) {
-        deadline = std::chrono::steady_clock::now() + timelimit;
+long long RLEencode2(T first, T last, U output, long long maxLoop, EncodingClock::duration timelimit) {
+    std::optional<EncodingClock::time_point> deadline;
+    if (timelimit > EncodingClock::duration::zero()) {
+        deadline = EncodingClock::now() + timelimit;
     }
     return RLEencode2timeout(first, last, output, maxLoop, deadline);
 }

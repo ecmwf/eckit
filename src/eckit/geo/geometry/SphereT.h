@@ -29,31 +29,31 @@ template <class DATUM>
 struct SphereT {
 
     /// Sphere radius in metres
-    inline static double radius() { return DATUM::radius(); }
+    inline static double radius() { return DATUM::radius; }
 
     /// Great-circle central angle between two points [radian]
     inline static double centralAngle(const PointLonLat& A, const PointLonLat& B) { return Sphere::centralAngle(A, B); }
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
     inline static double centralAngle(const PointXYZ& A, const PointXYZ& B) {
-        return Sphere::centralAngle(DATUM::radius(), A, B);
+        return Sphere::centralAngle(DATUM::radius, A, B);
     }
 
     /// Great-circle distance between two points [m]
     inline static double distance(const PointLonLat& A, const PointLonLat& B) {
-        return Sphere::distance(DATUM::radius(), A, B);
+        return Sphere::distance(DATUM::radius, A, B);
     }
 
     /// Great-circle distance between two points (Cartesian coordinates) [m]
     inline static double distance(const PointXYZ& A, const PointXYZ& B) {
-        return Sphere::distance(DATUM::radius(), A, B);
+        return Sphere::distance(DATUM::radius, A, B);
     }
 
     /// Surface area [m ** 2]
-    inline static double area() { return Sphere::area(DATUM::radius()); }
+    inline static double area() { return Sphere::area(DATUM::radius); }
 
     /// Surface area between parallels and meridians [m ** 2]
-    inline static double area(const area::BoundingBox& bbox) { return Sphere::area(DATUM::radius(), bbox); }
+    inline static double area(const area::BoundingBox& bbox) { return Sphere::area(DATUM::radius, bbox); }
 
     /// Great-circle intermediate latitude provided two circle points and intermediate longitude [degree]
     inline static double greatCircleLatitudeGivenLongitude(const PointLonLat& A, const PointLonLat& B, double lon) {
@@ -68,12 +68,12 @@ struct SphereT {
 
     /// Convert spherical to Cartesian coordinates
     inline static PointXYZ convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {
-        return Sphere::convertSphericalToCartesian(DATUM::radius(), P, height);
+        return Sphere::convertSphericalToCartesian(DATUM::radius, P, height);
     }
 
     /// Convert Cartesian to spherical coordinates
     inline static PointLonLat convertCartesianToSpherical(const PointXYZ& P) {
-        return Sphere::convertCartesianToSpherical(DATUM::radius(), P);
+        return Sphere::convertCartesianToSpherical(DATUM::radius, P);
     }
 };
 

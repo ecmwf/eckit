@@ -23,6 +23,11 @@
 namespace eckit::geo::test {
 
 
+struct DatumTwoUnits {
+    static constexpr double radius = 2.;
+};
+
+
 CASE("unit sphere") {
     using geometry::UnitSphere;
 
@@ -227,10 +232,6 @@ CASE("unit sphere") {
 
 
 CASE("two-unit sphere") {
-    struct DatumTwoUnits {
-        static double radius() { return 2.; }
-    };
-
     using geometry::UnitSphere;
     using TwoUnitsSphere = geometry::SphereT<DatumTwoUnits>;
 

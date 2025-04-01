@@ -19,7 +19,7 @@ namespace eckit::geo::geometry {
 
 /// Definition of a unit datum
 struct DatumUnit {
-    static constexpr double radius() { return 1.; }
+    static constexpr double radius = 1.;
 };
 
 

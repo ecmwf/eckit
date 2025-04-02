@@ -8,16 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <vector>
 #include <iostream>
 #include <limits>
 #include <memory>
 #include <random>
 #include <set>
+#include <vector>
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/utils/RLE.h"
 #include "eckit/log/Timer.h"
+#include "eckit/utils/RLE.h"
 
 #include "eckit/testing/Test.h"
 
@@ -29,7 +29,8 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void test(const std::vector<long>& in, EncodingClock::duration timeout = std::chrono::milliseconds(2), long expectedSize = -1) {
+void test(const std::vector<long>& in, EncodingClock::duration timeout = std::chrono::milliseconds(2),
+          long expectedSize = -1) {
 
     std::vector<long> out;
     std::vector<long> outTimeout;
@@ -40,19 +41,22 @@ void test(const std::vector<long>& in, EncodingClock::duration timeout = std::ch
     {
         eckit::Timer timer;
         n = RLEencode2(in.begin(), in.end(), std::back_inserter(out), maxLoop);
-        LOG_DEBUG_LIB(LibEcKit) << "no_timeout - time elapsed: " << timer.elapsed() << " - output size: " << out.size() << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "no_timeout - time elapsed: " << timer.elapsed() << " - output size: " << out.size()
+                                << std::endl;
     }
     {
         eckit::Timer timer;
         t = RLEencode2(in.begin(), in.end(), std::back_inserter(outTimeout), maxLoop, timeout);
-        LOG_DEBUG_LIB(LibEcKit) << "timeout " << std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count() << "ms - time elapsed: " << timer.elapsed() << " - output size: " << outTimeout.size() << std::endl;
+        LOG_DEBUG_LIB(LibEcKit) << "timeout " << std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count()
+                                << "ms - time elapsed: " << timer.elapsed() << " - output size: " << outTimeout.size()
+                                << std::endl;
     }
 
     if (expectedSize > 0) {
         EXPECT_EQUAL(expectedSize, n);
         EXPECT_EQUAL(expectedSize, t);
         EXPECT_EQUAL(out.size(), outTimeout.size());
-        for (size_t i = 0; i<out.size(); i++) {
+        for (size_t i = 0; i < out.size(); i++) {
             EXPECT_EQUAL(out[i], outTimeout[i]);
         }
     }
@@ -60,51 +64,51 @@ void test(const std::vector<long>& in, EncodingClock::duration timeout = std::ch
     std::vector<long> decoded;
     RLEdecode2(out.begin(), out.end(), std::back_inserter(decoded));
     EXPECT_EQUAL(in.size(), decoded.size());
-    for (size_t i = 0; i<in.size(); i++) {
+    for (size_t i = 0; i < in.size(); i++) {
         EXPECT_EQUAL(in[i], decoded[i]);
     }
 
     std::vector<long> decodedTimeout;
     RLEdecode2(outTimeout.begin(), outTimeout.end(), std::back_inserter(decodedTimeout));
     EXPECT_EQUAL(in.size(), decodedTimeout.size());
-    for (size_t i = 0; i<in.size(); i++) {
+    for (size_t i = 0; i < in.size(); i++) {
         EXPECT_EQUAL(in[i], decodedTimeout[i]);
     }
 }
 
 CASE("single") {
-    std::vector<long> in={4};
+    std::vector<long> in = {4};
 
     test(in, std::chrono::seconds(1), 1);
 }
 
 CASE("identical") {
-    size_t size=1000;
+    size_t size = 1000;
     std::vector<long> in;
     in.reserve(size);
-    for (size_t i=0; i<size; i++) {
+    for (size_t i = 0; i < size; i++) {
         in.push_back(4);
     }
 
-    test(in, std::chrono::seconds(1), 2); /// we expect [-1000,4]
+    test(in, std::chrono::seconds(1), 2);  /// we expect [-1000,4]
 }
 
 CASE("interleaved") {
-    size_t size=1000;
+    size_t size = 1000;
     std::vector<long> in;
     in.reserve(size);
-    for (size_t i=0; i<size; i++) {
-        in.push_back(i%2);
+    for (size_t i = 0; i < size; i++) {
+        in.push_back(i % 2);
     }
 
-    test(in, std::chrono::seconds(1), 4); /// we expect [-500,-2,0,1]
+    test(in, std::chrono::seconds(1), 4);  /// we expect [-500,-2,0,1]
 }
 
 CASE("pattern") {
-    size_t size=100000;
+    size_t size = 100000;
     std::vector<long> in;
     in.reserve(size);
-    for (size_t i=0; i<size; i++) {
+    for (size_t i = 0; i < size; i++) {
         in.push_back(std::ceil(std::sqrt(i)));
     }
 
@@ -113,14 +117,14 @@ CASE("pattern") {
 
 
 void randTest(int limit) {
-    std::random_device rd;  // a seed source for the random number engine
-    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
+    std::random_device rd;   // a seed source for the random number engine
+    std::mt19937 gen(rd());  // mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<> distrib(1, std::numeric_limits<int>::max());
 
-    size_t size=10000000;
+    size_t size = 10000000;
     std::vector<long> in;
     in.reserve(size);
-    for (size_t i=0; i<size; i++) {
+    for (size_t i = 0; i < size; i++) {
         in.push_back(distrib(gen));
     }
     test(in);

@@ -10,7 +10,7 @@
 
 #include <cstddef>
 #include <iterator>
-#include <optional> 
+#include <optional>
 #include <vector>
 
 #include "eckit/log/Log.h"
@@ -92,7 +92,7 @@ long long RLEencode2timeout(T first, T last, U output, long long maxLoop,
 stop:
 
     if (m == 0) {
-        copy(first, last, output);
+        std::copy(first, last, output);
         return last - first;
     }
     else {

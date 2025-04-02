@@ -748,12 +748,18 @@ if(eckit_HAVE_XXHASH)
     list( APPEND eckit_utils_srcs
         utils/xxHashing.cc
         utils/xxHashing.h
-        contrib/xxhash/xxhash.h
+        ${PROJECT_SOURCE_DIR}/third_party/xxHash/xxhash.h
     )
+    set_source_files_properties( utils/xxHashing.cc PROPERTIES
+        INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/third_party
+    )
+
     if( CMAKE_CXX_COMPILER_ID MATCHES PGI|NVHPC AND
         CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 21.9 )
         # ECKIT-574: work around missing reference to "__builtin_rotateleft64"
-        set_source_files_properties(utils/xxHashing.cc PROPERTIES COMPILE_FLAGS -DNO_CLANG_BUILTIN)
+        set_source_files_properties( utils/xxHashing.cc PROPERTIES
+            COMPILE_FLAGS -DNO_CLANG_BUILTIN
+        )
     endif()
 endif()
 

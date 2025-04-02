@@ -126,13 +126,22 @@ stop:
 }
 
 template <class T, class U>
-long long RLEencode2(T first, T last, U output, long long maxLoop, const EncodingClock::duration timelimit) {
-    std::optional<EncodingClock::time_point> deadline{};
-    if (timelimit != EncodingClock::duration::zero()) {
-        deadline = EncodingClock::now() + timelimit;
-    }
-    return RLEencode2timeout(first, last, output, maxLoop, deadline);
+long long RLEencode2(T first, T last, U output, long long maxLoop) {
+    return RLEencode2timeout(first, last, output, maxLoop, std::optional<EncodingClock::time_point>{});
 }
+
+template <class T, class U>
+long long RLEencode2(T first, T last, U output, long long maxLoop, const EncodingClock::duration timelimit) {
+    return RLEencode2timeout(first, last, output, maxLoop,
+                             std::optional<EncodingClock::time_point>{EncodingClock::now() + timelimit});
+}
+
+template <class InputIterator, class OutputIterator>
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop);
+
+template <class InputIterator, class OutputIterator>
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop,
+                     const EncodingClock::duration timelimit);
 
 template <class T, class U>
 void RLEdecode2(T first, T last, U output) {

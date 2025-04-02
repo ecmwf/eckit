@@ -56,6 +56,22 @@ Required dependencies:
 - Perl5 --- For some code generation
 
 
+Cloning the Repository
+----------------------
+
+To clone the repository with all necessary submodules, use the --recurse-submodules flag:
+
+```bash
+git clone --recurse-submodules https://github.com/ecmwf/eckit.git
+```
+
+If you've already cloned the repository without this flag, initialize and update the submodules manually:
+
+```bash
+git submodule update --init --recursive
+```
+
+
 Installation
 ------------
 

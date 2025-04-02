@@ -10,5 +10,5 @@ fi
 # NOTE on macos we delocate with impunity, because the findlibs recursive depload
 # is disabled anyway
 if [ "$(uname)" = "Darwin" ] ; then
-    delocate-wheel /tmp/eccodes/build/wheel/*whl
+    delocate-wheel /tmp/eckit/build/wheel/*whl
 fi

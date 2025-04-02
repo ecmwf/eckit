@@ -18,14 +18,13 @@ mkdir -p python_wrapper/src/copying
 mkdir -p /tmp/eckit/target/eckit/lib64/
 
 if [ "$(uname)" != "Darwin" ] ; then
-    echo "installing deps for platform $(uname)"
-
+    echo "no deps installation for platform $(uname)"
+    # echo "installing deps for platform $(uname)"
     ## lz4
-    git clone https://github.com/lz4/lz4 /src/lz4 && cd /src/lz4
-    make -j10 && make install DESTDIR=/tmp/lz4
-    cd -
+    # git clone https://github.com/lz4/lz4 /src/lz4 && cd /src/lz4
+    # make -j10 && make install DESTDIR=/tmp/lz4
+    # cd -
 else
-    # TODO check macos agent has lz4
     echo "no deps installation for platform $(uname)"
 fi
 

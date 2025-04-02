@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <iterator>
+#include <optional>
 #include <vector>
 
 #include "eckit/log/Log.h"
@@ -44,9 +45,10 @@ dummy_iterator<T> make_dummy(T*) {
     return dummy_iterator<T>();
 }
 
-
 template <class T, class U>
-long long RLEencode2(T first, T last, U output, long long maxLoop) {
+long long RLEencode2timeout(T first, T last, U output, long long maxLoop,
+                            std::optional<EncodingClock::time_point> deadline) {
+
     long long x    = 0;
     long long m    = 0;
     long long j    = 0;
@@ -78,15 +80,19 @@ long long RLEencode2(T first, T last, U output, long long maxLoop) {
                 m = a;
                 x = n;
                 j = i;
-                if (m > enough)
+                if (m > enough || (deadline && EncodingClock::now() > deadline.value()))
                     goto stop;
             }
+        }
+
+        if (deadline && EncodingClock::now() > deadline.value()) {
+            goto stop;
         }
     }
 stop:
 
     if (m == 0) {
-        copy(first, last, output);
+        std::copy(first, last, output);
         return last - first;
     }
     else {
@@ -98,12 +104,13 @@ stop:
             other += x;
         }
 
-        long long n = RLEencode2(first, from, output, maxLoop);
+        long long n = RLEencode2timeout(first, from, output, maxLoop, deadline);
 
         if (k > 1) {
             *output++ = -k;
             n++;
-            int m = RLEencode2(from, from + x, make_dummy((typename std::iterator_traits<T>::value_type*)(0)), maxLoop);
+            int m = RLEencode2timeout(from, from + x, make_dummy((typename std::iterator_traits<T>::value_type*)(0)),
+                                      maxLoop, deadline);
 
             if (m > 1) {
                 *output++ = -m;
@@ -111,12 +118,30 @@ stop:
             }
         }
 
-        n += RLEencode2(from, from + x, output, maxLoop);
-        n += RLEencode2(from + k * x, last, output, maxLoop);
+        n += RLEencode2timeout(from, from + x, output, maxLoop, deadline);
+        n += RLEencode2timeout(from + k * x, last, output, maxLoop, deadline);
 
         return n;
     }
 }
+
+template <class T, class U>
+long long RLEencode2(T first, T last, U output, long long maxLoop) {
+    return RLEencode2timeout(first, last, output, maxLoop, std::optional<EncodingClock::time_point>{});
+}
+
+template <class T, class U>
+long long RLEencode2(T first, T last, U output, long long maxLoop, const EncodingClock::duration timelimit) {
+    return RLEencode2timeout(first, last, output, maxLoop,
+                             std::optional<EncodingClock::time_point>{EncodingClock::now() + timelimit});
+}
+
+template <class InputIterator, class OutputIterator>
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop);
+
+template <class InputIterator, class OutputIterator>
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop,
+                     const EncodingClock::duration timelimit);
 
 template <class T, class U>
 void RLEdecode2(T first, T last, U output) {

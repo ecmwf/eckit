@@ -29,7 +29,7 @@ class Stream;
 
 template <class InputIterator, class OutputIterator>
 long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop,
-                     EncodingClock::duration timelimit = EncodingClock::duration::zero());
+    const EncodingClock::duration timelimit = EncodingClock::duration::zero());
 
 template <class InputIterator, class OutputIterator>
 void RLEdecode2(InputIterator first, InputIterator last, OutputIterator result);

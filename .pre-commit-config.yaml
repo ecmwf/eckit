@@ -28,6 +28,7 @@ repos:
       - id: yamllint
         args: [--strict, -d, '{extends: default, rules: {line-length: disable}}']
         types: [yaml]
+        exclude: (^|/).clang-format$
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:

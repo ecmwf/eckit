@@ -15,6 +15,8 @@
 #include <iosfwd>
 #include <string>
 
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
 
@@ -45,7 +47,6 @@ public:
     // -- Types
 
     using builder_t = BuilderT0<Figure>;
-    using ARG1      = const Spec&;
 
     // -- Constructors
 
@@ -71,6 +72,12 @@ public:
     virtual double R() const;
     virtual double a() const;
     virtual double b() const;
+
+    /// Surface area [L^2]
+    virtual double area() const;
+
+    /// Surface area between parallels and meridians [L^2]
+    virtual double area(const area::BoundingBox&);
 
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;

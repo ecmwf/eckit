@@ -15,15 +15,6 @@
 #include "eckit/geo/Figure.h"
 
 
-namespace eckit::geo {
-class PointXYZ;
-class PointLonLat;
-namespace area {
-class BoundingBox;
-}
-}  // namespace eckit::geo
-
-
 namespace eckit::geo::figure {
 
 
@@ -41,30 +32,30 @@ public:
     double a() const override { return R_; }
     double b() const override { return R_; }
 
+    /// Surface area [L^2]
+    double area() const override { return area(R_); }
+
+    /// Surface area between parallels and meridians [L^2]
+    double area(const area::BoundingBox& bbox) override { return area(R_, bbox); }
+
     // -- Class methods
 
     /// Great-circle central angle between two points [radian]
     static double centralAngle(const PointLonLat&, const PointLonLat&);
 
-    /// Great-circle central angle between two points (Cartesian coordinates) [m]
+    /// Great-circle central angle between two points (Cartesian coordinates)
     static double centralAngle(double radius, const PointXYZ&, const PointXYZ&);
 
-    /// Great-circle distance between two points [m]
+    /// Great-circle distance between two points
     static double distance(double radius, const PointLonLat&, const PointLonLat&);
 
-    /// Great-circle distance between two points (Cartesian coordinates) [m]
+    /// Great-circle distance between two points (Cartesian coordinates)
     static double distance(double radius, const PointXYZ&, const PointXYZ&);
 
-    /// Elliptic eccentricity
-    static double eccentricity() { return 0.; }
-
-    /// Flattening
-    static double flattening() { return 0.; }
-
-    /// Surface area [m ** 2]
+    /// Surface area [L^2]
     static double area(double radius);
 
-    /// Surface area between parallels and meridians [m ** 2]
+    /// Surface area between parallels and meridians [L^2]
     static double area(double radius, const area::BoundingBox&);
 
     /// Great-circle intermediate latitude provided two circle points and intermediate longitude [degree]

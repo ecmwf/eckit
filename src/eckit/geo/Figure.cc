@@ -50,6 +50,16 @@ double Figure::b() const {
 }
 
 
+double Figure::area() const {
+    NOTIMP;
+}
+
+
+double Figure::area(const area::BoundingBox&) {
+    NOTIMP;
+}
+
+
 spec::Custom* Figure::spec() const {
     auto* custom = new spec::Custom;
     ASSERT(custom != nullptr);

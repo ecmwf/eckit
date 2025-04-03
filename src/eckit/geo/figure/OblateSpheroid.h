@@ -15,12 +15,6 @@
 #include "eckit/geo/Figure.h"
 
 
-namespace eckit::geo {
-class PointXYZ;
-class PointLonLat;
-}  // namespace eckit::geo
-
-
 namespace eckit::geo::figure {
 
 
@@ -38,7 +32,16 @@ public:
     double a() const override { return a_; }
     double b() const override { return b_; }
 
+    /// Surface area [L^2]
+    double area() const override { return _area(a_, b_); }
+
+    /// Surface area between parallels and meridians [L^2]
+    double area(const area::BoundingBox& bbox) override { return _area(a_, b_, bbox); }
+
     // -- Class methods
+
+    /// Radius
+    static double R(double a, double b);
 
     /// Elliptic eccentricity
     static double eccentricity(double a, double b);
@@ -46,8 +49,11 @@ public:
     /// Flattening
     static double flattening(double a, double b);
 
-    /// Surface area [m ** 2]
-    static double area(double a, double b);
+    /// Surface area [L^2]
+    static double _area(double a, double b);
+
+    /// Surface area between parallels and meridians [L^2]
+    static double _area(double a, double b, const area::BoundingBox&);
 
     /// Convert geocentric coordinates to Cartesian
     static PointXYZ convertSphericalToCartesian(double a, double b, const PointLonLat&, double height = 0.);

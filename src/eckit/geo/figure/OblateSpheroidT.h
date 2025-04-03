@@ -11,15 +11,7 @@
 
 #pragma once
 
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
-
-
-namespace eckit::geo::area {
-class BoundingBox;
-}
 
 
 namespace eckit::geo::figure {
@@ -32,27 +24,24 @@ public:
 
     // -- Constructors
 
-    explicit OblateSpheroidT() {}
+    OblateSpheroidT() = default;
 
     // -- Overridden methods
 
-    double R() const override { throw BadValue("geo::figure::OblateSpheroidT::R"); }
+    double R() const override { return OblateSpheroid::R(DATUM::a, DATUM::b); }
     double a() const override { return DATUM::a; }
     double b() const override { return DATUM::b; }
 
+    /// Surface area [L^2]
+    double area() const override { return OblateSpheroid::_area(DATUM::a, DATUM::b); }
+
+    /// Surface area between parallels and meridians [L^2]
+    double area(const area::BoundingBox& bbox) override { return OblateSpheroid::_area(DATUM::a, DATUM::b, bbox); }
+
     // -- Class methods
 
-    /// Elliptic eccentricity
-    static double eccentricity() { return OblateSpheroid::eccentricity(DATUM::a, DATUM::b); }
-
-    /// Flattening
-    static double flattening() { return OblateSpheroid::flattening(DATUM::a, DATUM::b); }
-
-    /// Surface area [m ** 2]
-    inline static double area() { return OblateSpheroid::area(DATUM::a, DATUM::b); }
-
     /// Convert spherical to Cartesian coordinates
-    inline static PointXYZ convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {
+    inline static PointXYZ _convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {
         return OblateSpheroid::convertSphericalToCartesian(DATUM::a, DATUM::b, P, height);
     }
 };

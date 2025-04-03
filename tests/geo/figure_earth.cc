@@ -11,6 +11,7 @@
 
 
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/spec/Custom.h"
@@ -21,8 +22,8 @@
 namespace eckit::geo::test {
 
 
-struct F : std::unique_ptr<Figure> {
-    explicit F(Figure* ptr) : unique_ptr(ptr) { ASSERT(unique_ptr::operator bool()); }
+struct F : std::shared_ptr<Figure> {
+    explicit F(Figure* ptr) : shared_ptr(ptr) { ASSERT(operator bool()); }
 };
 
 
@@ -39,6 +40,25 @@ CASE("Earth") {
     EXPECT(f4->spec_str() == R"({"figure":"wgs84"})");
     EXPECT(types::is_approximately_equal(1. / f4->flattening(), 298.257223563, 1e-8));
     EXPECT_THROWS_AS(f4->R(), BadValue);
+}
+
+
+CASE("Area") {
+    struct test_t {
+        test_t(const std::string& _figure, double _area) :
+            figure(FigureFactory::build(spec::Custom{{"figure", _figure}})), area(_area) {}
+
+        const F figure;
+        const double area;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"earth", 510101140.},  //[km^2]
+             {"wgs84", 510065621.},
+             {"grs80", 510065621.},
+         }) {
+        EXPECT(types::is_approximately_equal(test.figure->area() * 1e-6 /*[km^2]*/, test.area, 1.));
+    }
 }
 
 

@@ -66,8 +66,8 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
     struct RotationMatrix final : Implementation {
         explicit RotationMatrix(M&& R) : R_(R) {}
         PointLonLat operator()(const PointLonLat& p) const override {
-            return figure::UnitSphere::convertCartesianToSpherical(R_ *
-                                                                   figure::UnitSphere::convertSphericalToCartesian(p));
+            return figure::UnitSphere::_convertCartesianToSpherical(
+                R_ * figure::UnitSphere::_convertSphericalToCartesian(p));
         }
         const M R_;
     };

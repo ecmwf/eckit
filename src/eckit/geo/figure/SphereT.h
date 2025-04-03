@@ -13,7 +13,7 @@
 
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointXYZ.h"
-#include "eckit/geo/geometry/Sphere.h"
+#include "eckit/geo/figure/Sphere.h"
 
 
 namespace eckit::geo::area {
@@ -21,14 +21,27 @@ class BoundingBox;
 }
 
 
-namespace eckit::geo::geometry {
+namespace eckit::geo::figure {
 
 
 /// Sphere parametrised with a geodetic datum
 template <class DATUM>
-struct SphereT {
+class SphereT : public Figure {
+public:
 
-    /// Sphere radius in metres
+    // -- Constructors
+
+    SphereT() {}
+
+    // -- Overridden methods
+
+    double R() const override { return DATUM::radius; }
+    double a() const override { return DATUM::radius; }
+    double b() const override { return DATUM::radius; }
+
+    // -- Class methods
+
+    /// Sphere radius
     inline static double radius() { return DATUM::radius; }
 
     /// Great-circle central angle between two points [radian]
@@ -39,20 +52,26 @@ struct SphereT {
         return Sphere::centralAngle(DATUM::radius, A, B);
     }
 
-    /// Great-circle distance between two points [m]
+    /// Great-circle distance between two points
     inline static double distance(const PointLonLat& A, const PointLonLat& B) {
         return Sphere::distance(DATUM::radius, A, B);
     }
 
-    /// Great-circle distance between two points (Cartesian coordinates) [m]
+    /// Great-circle distance between two points (Cartesian coordinates)
     inline static double distance(const PointXYZ& A, const PointXYZ& B) {
         return Sphere::distance(DATUM::radius, A, B);
     }
 
-    /// Surface area [m ** 2]
+    /// Elliptic eccentricity
+    static double eccentricity() { return 0.; }
+
+    /// Flattening
+    static double flattening() { return 0.; }
+
+    /// Surface area
     inline static double area() { return Sphere::area(DATUM::radius); }
 
-    /// Surface area between parallels and meridians [m ** 2]
+    /// Surface area between parallels and meridians
     inline static double area(const area::BoundingBox& bbox) { return Sphere::area(DATUM::radius, bbox); }
 
     /// Great-circle intermediate latitude provided two circle points and intermediate longitude [degree]
@@ -78,4 +97,4 @@ struct SphereT {
 };
 
 
-}  // namespace eckit::geo::geometry
+}  // namespace eckit::geo::figure

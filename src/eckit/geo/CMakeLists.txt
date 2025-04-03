@@ -66,16 +66,12 @@ list(APPEND eckit_geo_srcs
     figure/Earth.h
     figure/OblateSpheroid.cc
     figure/OblateSpheroid.h
+    figure/OblateSpheroidT.h
     figure/Sphere.cc
     figure/Sphere.h
+    figure/SphereT.h
     figure/UnitSphere.cc
     figure/UnitSphere.h
-    geometry/OblateSpheroid.cc
-    geometry/OblateSpheroid.h
-    geometry/Sphere.cc
-    geometry/Sphere.h
-    geometry/SphereT.h
-    geometry/UnitSphere.h
     grid/HEALPix.cc
     grid/HEALPix.h
     grid/Reduced.cc

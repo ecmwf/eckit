@@ -44,7 +44,7 @@ public:
 
     // -- Types
 
-    using builder_t = BuilderT1<Figure>;
+    using builder_t = BuilderT0<Figure>;
     using ARG1      = const Spec&;
 
     // -- Constructors

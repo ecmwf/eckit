@@ -15,6 +15,12 @@
 #include "eckit/geo/Figure.h"
 
 
+namespace eckit::geo {
+class PointXYZ;
+class PointLonLat;
+}  // namespace eckit::geo
+
+
 namespace eckit::geo::figure {
 
 
@@ -31,6 +37,20 @@ public:
     double R() const override;
     double a() const override { return a_; }
     double b() const override { return b_; }
+
+    // -- Class methods
+
+    /// Elliptic eccentricity
+    static double eccentricity(double a, double b);
+
+    /// Flattening
+    static double flattening(double a, double b);
+
+    /// Surface area [m ** 2]
+    static double area(double a, double b);
+
+    /// Convert geocentric coordinates to Cartesian
+    static PointXYZ convertSphericalToCartesian(double a, double b, const PointLonLat&, double height = 0.);
 
 private:
 

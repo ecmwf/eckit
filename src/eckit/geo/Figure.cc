@@ -18,7 +18,6 @@
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
-#include "eckit/geo/geometry/OblateSpheroid.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
@@ -67,19 +66,19 @@ std::string Figure::spec_str() const {
 
 
 double Figure::eccentricity() const {
-    return geometry::OblateSpheroid::eccentricity(a(), b());
+    return figure::OblateSpheroid::eccentricity(a(), b());
 }
 
 
 double Figure::flattening() const {
-    return geometry::OblateSpheroid::flattening(a(), b());
+    return figure::OblateSpheroid::flattening(a(), b());
 }
 
 
 void Figure::fill_spec(spec::Custom& custom) const {
     static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
-        {std::shared_ptr<Figure>{new figure::GRS80}, "grs80"},
-        {std::shared_ptr<Figure>{new figure::WGS84}, "wgs84"},
+        {std::shared_ptr<Figure>{new figure::Grs80}, "grs80"},
+        {std::shared_ptr<Figure>{new figure::Wgs84}, "wgs84"},
     };
 
     for (const auto& [figure, name] : KNOWN) {
@@ -115,7 +114,7 @@ Figure* FigureFactory::make_from_spec_(const Spec& spec) const {
     lock_type lock;
 
     if (std::string figure; spec.get("figure", figure)) {
-        return Factory<Figure>::instance().get(figure).create(spec);
+        return Factory<Figure>::instance().get(figure).create();
     }
 
     if (double a = 0., b = 0.; spec.get("a", a) && spec.get("b", b)) {

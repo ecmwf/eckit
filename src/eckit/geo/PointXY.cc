@@ -9,7 +9,7 @@
  */
 
 
-#include "eckit/geo/Point2.h"
+#include "eckit/geo/PointXY.h"
 
 #include <cmath>
 
@@ -19,41 +19,41 @@
 namespace eckit::geo {
 
 
-static const Point2 ZERO;
+static const PointXY ZERO;
 
 
-Point2::value_type Point2::norm() const {
+PointXY::value_type PointXY::norm() const {
     return distance(ZERO);
 }
 
 
-Point2 Point2::normalize() const {
+PointXY PointXY::normalize() const {
     const auto l = norm();
-    return types::is_approximately_equal(l, 0., EPS) ? ZERO : Point2{X / l, Y / l};
+    return types::is_approximately_equal(l, 0., EPS) ? ZERO : PointXY{X / l, Y / l};
 }
 
 
-Point2 Point2::middle(const Point2& p) const {
+PointXY PointXY::middle(const PointXY& p) const {
     return (*this + p) * 0.5;
 }
 
 
-Point2::value_type Point2::distance(const Point2& p, size_t axis) const {
+PointXY::value_type PointXY::distance(const PointXY& p, size_t axis) const {
     return std::abs(x(axis) - p.x(axis));
 }
 
 
-Point2::value_type Point2::distance(const Point2& p) const {
+PointXY::value_type PointXY::distance(const PointXY& p) const {
     return std::sqrt(distance2(p));
 }
 
 
-Point2::value_type Point2::distance2(const Point2& p) const {
+PointXY::value_type PointXY::distance2(const PointXY& p) const {
     return (X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y);
 }
 
 
-bool points_equal(const Point2& a, const Point2& b, Point2::value_type eps) {
+bool points_equal(const PointXY& a, const PointXY& b, PointXY::value_type eps) {
     return types::is_approximately_equal(a.X, b.X, eps) && types::is_approximately_equal(a.Y, b.Y, eps);
 }
 

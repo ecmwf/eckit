@@ -19,4 +19,3 @@ ecbuild_add_test(
     CONDITION HAVE_CONVEX_HULL
     LIBS      eckit_maths eckit
 )
-

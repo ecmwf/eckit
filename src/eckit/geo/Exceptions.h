@@ -31,6 +31,13 @@ public:
 namespace eckit::geo::exception {
 
 
+class AreaError : public geo::Exception {
+public:
+
+    explicit AreaError(const std::string&, const CodeLocation&);
+};
+
+
 class ProjectionError : public geo::Exception {
 public:
 

@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/geometry/Sphere.h"
 
 
@@ -35,7 +35,7 @@ struct SphereT {
     inline static double centralAngle(const PointLonLat& A, const PointLonLat& B) { return Sphere::centralAngle(A, B); }
 
     /// Great-circle central angle between two points (Cartesian coordinates) in radians
-    inline static double centralAngle(const Point3& A, const Point3& B) {
+    inline static double centralAngle(const PointXYZ& A, const PointXYZ& B) {
         return Sphere::centralAngle(DATUM::radius(), A, B);
     }
 
@@ -45,7 +45,9 @@ struct SphereT {
     }
 
     /// Great-circle distance between two points (Cartesian coordinates) [m]
-    inline static double distance(const Point3& A, const Point3& B) { return Sphere::distance(DATUM::radius(), A, B); }
+    inline static double distance(const PointXYZ& A, const PointXYZ& B) {
+        return Sphere::distance(DATUM::radius(), A, B);
+    }
 
     /// Surface area [m ** 2]
     inline static double area() { return Sphere::area(DATUM::radius()); }
@@ -65,12 +67,12 @@ struct SphereT {
     }
 
     /// Convert spherical to Cartesian coordinates
-    inline static Point3 convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {
+    inline static PointXYZ convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {
         return Sphere::convertSphericalToCartesian(DATUM::radius(), P, height);
     }
 
     /// Convert Cartesian to spherical coordinates
-    inline static PointLonLat convertCartesianToSpherical(const Point3& P) {
+    inline static PointLonLat convertCartesianToSpherical(const PointXYZ& P) {
         return Sphere::convertCartesianToSpherical(DATUM::radius(), P);
     }
 };

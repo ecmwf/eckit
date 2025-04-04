@@ -17,8 +17,8 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/GreatCircle.h"
-#include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -75,12 +75,12 @@ double Sphere::centralAngle(const PointLonLat& P1, const PointLonLat& P2) {
 }
 
 
-double Sphere::centralAngle(double radius, const Point3& P1, const Point3& P2) {
+double Sphere::centralAngle(double radius, const PointXYZ& P1, const PointXYZ& P2) {
     ASSERT(radius > 0.);
 
     // Δσ = 2 * asin( chord / 2 )
 
-    const auto d2 = Point3::distance2(P1, P2);
+    const auto d2 = PointXYZ::distance2(P1, P2);
     if (is_approximately_equal(d2, 0.)) {
         return 0.;
     }
@@ -97,7 +97,7 @@ double Sphere::distance(double radius, const PointLonLat& P1, const PointLonLat&
 }
 
 
-double Sphere::distance(double radius, const Point3& P1, const Point3& P2) {
+double Sphere::distance(double radius, const PointXYZ& P1, const PointXYZ& P2) {
     return radius * centralAngle(radius, P1, P2);
 }
 
@@ -141,7 +141,7 @@ void Sphere::greatCircleLongitudeGivenLatitude(const PointLonLat& P1, const Poin
 }
 
 
-Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& P, double height) {
+PointXYZ Sphere::convertSphericalToCartesian(double radius, const PointLonLat& P, double height) {
     ASSERT(radius > 0.);
 
     /*
@@ -169,7 +169,7 @@ Point3 Sphere::convertSphericalToCartesian(double radius, const PointLonLat& P, 
 }
 
 
-PointLonLat Sphere::convertCartesianToSpherical(double radius, const Point3& A) {
+PointLonLat Sphere::convertCartesianToSpherical(double radius, const PointXYZ& A) {
     ASSERT(radius > 0.);
 
     // numerical conditioning for both z (poles) and y

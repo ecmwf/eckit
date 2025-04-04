@@ -30,12 +30,12 @@ public:
 
     const std::string& type() const override;
 
-    inline PointLonLat fwd(const Point2& p) const { return {p.X, p.Y}; }
-    inline Point2 inv(const PointLonLat& q) const { return {q.lon, q.lat}; }
+    inline PointLonLat fwd(const PointXY& p) const { return {p.X, p.Y}; }
+    inline PointXY inv(const PointLonLat& q) const { return {q.lon, q.lat}; }
 
     // -- Overridden methods
 
-    inline Point fwd(const Point& p) const override { return fwd(std::get<Point2>(p)); }
+    inline Point fwd(const Point& p) const override { return fwd(std::get<PointXY>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
 
 protected:

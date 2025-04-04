@@ -1,25 +1,25 @@
 
 list(APPEND TESTS
     [=[{"grid":"H2","ordering":"nested"}]=]
-    [=[{"grid":"H2","ordering":"ring"}]=]
+    [=[{"grid":"H2"}]=]
     [=[{"grid":"H4","ordering":"nested"}]=]
-    [=[{"grid":"H4","ordering":"ring"}]=]
+    [=[{"grid":"H4"}]=]
     [=[{"grid":"H8","ordering":"nested"}]=]
-    [=[{"grid":"H8","ordering":"ring"}]=]
+    [=[{"grid":"H8"}]=]
     [=[{"grid":"H16","ordering":"nested"}]=]
-    [=[{"grid":"H16","ordering":"ring"}]=]
+    [=[{"grid":"H16"}]=]
     [=[{"grid":"H32","ordering":"nested"}]=]
-    [=[{"grid":"H32","ordering":"ring"}]=]
+    [=[{"grid":"H32"}]=]
     [=[{"grid":"H64","ordering":"nested"}]=]
-    [=[{"grid":"H64","ordering":"ring"}]=]
+    [=[{"grid":"H64"}]=]
     [=[{"grid":"H128","ordering":"nested"}]=]
-    [=[{"grid":"H128","ordering":"ring"}]=]
+    [=[{"grid":"H128"}]=]
     [=[{"grid":"H256","ordering":"nested"}]=]
-    [=[{"grid":"H256","ordering":"ring"}]=]
+    [=[{"grid":"H256"}]=]
     [=[{"grid":"H512","ordering":"nested"}]=]
-    [=[{"grid":"H512","ordering":"ring"}]=]
+    [=[{"grid":"H512"}]=]
     [=[{"grid":"H1024","ordering":"nested"}]=]
-    [=[{"grid":"H1024","ordering":"ring"}]=]
+    [=[{"grid":"H1024"}]=]
     [=[{"grid":"N32"}]=]
     [=[{"grid":"N48"}]=]
     [=[{"grid":"N64"}]=]
@@ -109,4 +109,3 @@ foreach(test
     eckit_test_geo_integration_eckit_regrid_gridspec_grid_1_6_1_6 )
     set_tests_properties(${test} PROPERTIES WILL_FAIL TRUE)
 endforeach()
-

@@ -10,12 +10,25 @@
  */
 
 
+#include "eckit/eckit_config.h"
+
+#include <fstream>
+#include <vector>
+
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
+#include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/util.h"
+#include "eckit/utils/StringTools.h"
+
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
+
+
+const std::string URL = "https://www.ecmwf.int/robots.txt";
 
 
 CASE("eckit::geo::util") {
@@ -61,16 +74,16 @@ CASE("eckit::geo::util") {
 
 
     SECTION("reduced_classical_pl, reduced_octahedral_pl") {
-        for (const geo::pl_type& (*cacheable)(size_t) : {&util::reduced_classical_pl, &util::reduced_octahedral_pl}) {
+        for (const auto& fun : {util::reduced_classical_pl, util::reduced_octahedral_pl}) {
             for (const auto& test : tests) {
                 Cache::total_purge();
-                (*cacheable)(test.N);
+                fun(test.N);
                 EXPECT_EQUAL(Cache::total_footprint(), test.pl_footprint);
             }
 
             Cache::total_purge();
             for (const auto& test : tests) {
-                (*cacheable)(test.N);
+                fun(test.N);
                 EXPECT_EQUAL(Cache::total_footprint(), test.pl_footprint_acc);
             }
         }
@@ -99,6 +112,130 @@ CASE("eckit::geo::util") {
     Cache::total_purge();
     EXPECT_EQUAL(0, Cache::total_footprint());
 }
+
+
+#if eckit_HAVE_CURL
+CASE("download: error handling") {
+    const PathName path("test.download");
+    if (path.exists()) {
+        path.unlink();
+        ASSERT(!path.exists());
+    }
+
+    EXPECT_THROWS_AS(cache::Download::to_path("https://does.not/exist", path), UserError);
+    EXPECT(!path.exists());
+
+    EXPECT_THROWS_AS(cache::Download::to_path("https://get.ecmwf.int/repository/does/not/exist", path), UserError);
+    EXPECT(!path.exists());
+}
+
+
+CASE("download: non-cached") {
+    const PathName path("test.download");
+    if (path.exists()) {
+        path.unlink();
+        ASSERT(!path.exists());
+    }
+
+    auto info = cache::Download::to_path(URL, path);
+
+    EXPECT(info.bytes.value() > 0.);
+    EXPECT(path.exists());
+
+    path.unlink();
+    ASSERT(!path.exists());
+}
+
+
+CASE("download: cached") {
+    const std::string prefix = "prefix-";
+    const std::string suffix = ".suffix";
+
+    const PathName root("test.download.dir", true);
+
+    cache::Download download(root);
+    EXPECT(root == download.cache_root());
+
+    download.rm_cache_root();
+    EXPECT(!root.exists());
+
+    auto path = download.to_cached_path(URL, prefix, suffix);
+
+    EXPECT(root.exists() && root.isDir());
+    EXPECT(path.exists());
+
+    std::string basename = path.baseName();
+    EXPECT(StringTools::startsWith(basename, prefix));
+    EXPECT(StringTools::endsWith(basename, suffix));
+    EXPECT(path.dirName() == root);
+
+    download.rm_cache_root();
+    EXPECT(!root.exists());
+}
+#endif
+
+
+#if eckit_HAVE_ZIP
+CASE("unzip") {
+    const PathName zip(ZIP_FILE);
+    ASSERT(zip.exists());
+
+    const std::vector<std::string> contents{"a", "b/", "b/c"};
+
+
+    SECTION("unzip all") {
+        const PathName dir("eckit_geo_cache/unzip/unzip-all", true);
+
+        cache::Unzip unzip(dir);
+        unzip.rm_cache_root();
+
+        cache::Unzip::to_path(zip, dir);
+
+        for (const auto& content : contents) {
+            EXPECT((dir / content).exists());
+        }
+
+        EXPECT(dir.exists());
+        unzip.rm_cache_root();
+        EXPECT(!dir.exists());
+
+        for (const auto& what : {"a", "b/c"}) {
+            auto cached_path = unzip.to_cached_path(zip, "a");
+            EXPECT(dir.exists() && dir.isDir());
+            EXPECT(cached_path.exists() && !cached_path.isDir());
+        }
+    }
+
+
+    SECTION("unzip one") {
+        const PathName dir("cache.unzip.one", true);
+
+        cache::Unzip unzip(dir);
+        unzip.rm_cache_root();
+
+        cache::Unzip::to_path(zip, dir / (contents.back() + "-y"), contents.back());
+
+        for (const auto& content : contents) {
+            if (content == contents.back()) {
+                const PathName file = dir / (contents.back() + "-y");
+                EXPECT(file.exists());
+
+                std::string d;
+                std::ifstream(file.localPath()) >> d;
+
+                EXPECT(d == "d");
+            }
+            else {
+                PathName path = dir / content;
+                EXPECT(!path.exists() || path.isDir());
+            }
+        }
+
+        unzip.rm_cache_root();
+        ASSERT(!dir.exists());
+    }
+}
+#endif
 
 
 }  // namespace eckit::geo::test

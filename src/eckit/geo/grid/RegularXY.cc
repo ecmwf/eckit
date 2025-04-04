@@ -40,8 +40,8 @@ Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
     // TODO;
 
 
-    Point2 a = std::get<Point2>(projection->inv(first_lonlat));
-    Point2 b{a.X + inc.dx * static_cast<double>(shape.nx - 1), a.Y - inc.dy * static_cast<double>(shape.ny - 1)};
+    PointXY a = std::get<PointXY>(projection->inv(first_lonlat));
+    PointXY b{a.X + inc.dx * static_cast<double>(shape.nx - 1), a.Y - inc.dy * static_cast<double>(shape.ny - 1)};
 
     return {new range::RegularCartesian(shape.nx, a.X, b.X), new range::RegularCartesian(shape.ny, a.Y, b.Y)};
 #else

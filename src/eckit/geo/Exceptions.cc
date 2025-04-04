@@ -16,6 +16,11 @@
 namespace eckit::geo::exception {
 
 
+AreaError::AreaError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
+    reason("AreaError: [" + what + "], in " + loc.asString());
+};
+
+
 ProjectionError::ProjectionError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
     reason("ProjectionError: [" + what + "], in " + loc.asString());
 };

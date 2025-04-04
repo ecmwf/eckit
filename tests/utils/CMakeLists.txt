@@ -37,6 +37,10 @@ ecbuild_add_test( TARGET      eckit_test_utils_rendezvoushash
                   SOURCES     test_rendezvoushash.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_utils_rle
+                  SOURCES     test_rle.cc
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_utils_compressor
                   SOURCES     test_compressor.cc
                   LIBS        eckit )

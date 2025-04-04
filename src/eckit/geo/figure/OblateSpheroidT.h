@@ -37,13 +37,6 @@ public:
 
     /// Surface area between parallels and meridians [L^2]
     double area(const area::BoundingBox& bbox) override { return OblateSpheroid::_area(DATUM::a, DATUM::b, bbox); }
-
-    // -- Class methods
-
-    /// Convert spherical to Cartesian coordinates
-    inline static PointXYZ _convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {
-        return OblateSpheroid::convertSphericalToCartesian(DATUM::a, DATUM::b, P, height);
-    }
 };
 
 

@@ -74,17 +74,6 @@ public:
     /// Surface area between parallels and meridians [L^2]
     inline static double _area(const area::BoundingBox& bbox) { return Sphere::area(DATUM::radius, bbox); }
 
-    /// Great-circle intermediate latitude provided two circle points and intermediate longitude [degree]
-    inline static double _greatCircleLatitudeGivenLongitude(const PointLonLat& A, const PointLonLat& B, double lon) {
-        return Sphere::greatCircleLatitudeGivenLongitude(A, B, lon);
-    }
-
-    /// Great-circle intermediate longitude(s) provided two circle points and intermediate latitude [degree]
-    inline static void _greatCircleLongitudeGivenLatitude(const PointLonLat& A, const PointLonLat& B, double lat,
-                                                          double& lon1, double& lon2) {
-        return Sphere::greatCircleLongitudeGivenLatitude(A, B, lat, lon1, lon2);
-    }
-
     /// Convert spherical to Cartesian coordinates
     inline static PointXYZ _convertSphericalToCartesian(const PointLonLat& P, double height = 0.) {
         return Sphere::convertSphericalToCartesian(DATUM::radius, P, height);

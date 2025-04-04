@@ -92,7 +92,7 @@ const std::string& RegularLL::type() const {
 }
 
 
-Renumber RegularLL::reorder(Ordering::ordering_type to) const {
+Reorder RegularLL::reorder(Ordering::ordering_type to) const {
     return Regular::reorder(ordering_, to, x().size(), y().size());
 }
 

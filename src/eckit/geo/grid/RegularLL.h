@@ -42,7 +42,7 @@ public:
     void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;
 
-    Renumber reorder(Ordering::ordering_type) const override;
+    Reorder reorder(Ordering::ordering_type) const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] area::BoundingBox* calculate_bbox() const override;

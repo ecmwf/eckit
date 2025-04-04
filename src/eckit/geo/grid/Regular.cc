@@ -82,7 +82,7 @@ void Regular::fill_spec(spec::Custom& custom) const {
 }
 
 
-Renumber Regular::reorder(Ordering::ordering_type from, Ordering::ordering_type to, size_t nx, size_t ny) {
+Reorder Regular::reorder(Ordering::ordering_type from, Ordering::ordering_type to, size_t nx, size_t ny) {
     ASSERT(0 < nx && 0 < ny);
     auto Ni = nx;
     auto Nj = ny;
@@ -93,7 +93,7 @@ Renumber Regular::reorder(Ordering::ordering_type from, Ordering::ordering_type 
     ASSERT(Ordering::scan_ordering <= to && to <= Ordering::scan_ordering_end &&
            not Ordering::is_scan_alternating_direction(to));
 
-    Renumber ren(nx * ny);
+    Reorder ren(nx * ny);
 
     if (from == Ordering::scan_i_positively_j_positively_ij_i_single_direction) {
         size_t count = 0;

@@ -36,7 +36,6 @@ list(APPEND eckit_geo_srcs
     Projection.h
     Range.cc
     Range.h
-    Renumber.h
     Search.h
     Shape.cc
     Shape.h
@@ -108,6 +107,10 @@ list(APPEND eckit_geo_srcs
     iterator/Regular.h
     iterator/Unstructured.cc
     iterator/Unstructured.h
+    ordering/HEALPix.cc
+    ordering/HEALPix.h
+    ordering/None.cc
+    ordering/None.h
     polygon/Polygon.cc
     polygon/Polygon.h
     polygon/Polygon2.cc

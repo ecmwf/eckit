@@ -12,11 +12,9 @@
 
 #pragma once
 
-#include <map>
 #include <memory>
 #include <string>
 
-#include "eckit/geo/Point.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
@@ -24,6 +22,9 @@
 
 
 namespace eckit::geo {
+
+
+using Reorder = std::vector<size_t>;
 
 
 class Ordering {
@@ -80,12 +81,16 @@ public:
 
     // -- Methods
 
+    virtual const std::string& type() const = 0;
+
+    virtual Ordering::ordering_type to_type() const   = 0;
+    virtual Ordering::ordering_type from_type() const = 0;
+    virtual Reorder reorder() const                   = 0;
+
     static bool is_scan_i_positive(Ordering::ordering_type);
     static bool is_scan_j_positive(Ordering::ordering_type);
     static bool is_scan_ij(Ordering::ordering_type);
     static bool is_scan_alternating_direction(Ordering::ordering_type);
-
-    virtual Ordering::ordering_type type() const = 0;
 
     [[nodiscard]] static Ordering::ordering_type make_ordering_from_spec(const Spec&);
 
@@ -122,8 +127,6 @@ struct OrderingFactory {
     [[nodiscard]] static const Ordering* make_from_string(const std::string&);
     [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
 
-    static void add_library(const std::string& lib, Spec* spec) { return instance().add_library_(lib, spec); }
-
     static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
 private:
@@ -133,11 +136,7 @@ private:
     [[nodiscard]] const Ordering* make_from_spec_(const Spec&) const;
     [[nodiscard]] Spec* make_spec_(const Spec&) const;
 
-    void add_library_(const std::string& lib, Spec* spec);
-
     std::ostream& list_(std::ostream&) const;
-
-    std::map<std::string, std::unique_ptr<Spec>> libraries_;
 };
 
 

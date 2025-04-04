@@ -67,7 +67,7 @@ protected:
 
     // -- Methods
 
-    static Renumber reorder(Ordering::ordering_type from, Ordering::ordering_type to, size_t nx, size_t ny);
+    static Reorder reorder(Ordering::ordering_type from, Ordering::ordering_type to, size_t nx, size_t ny);
 
     // -- Overridden methods
 

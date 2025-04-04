@@ -97,10 +97,10 @@ inline int pll(int f) {
 }
 
 
-class Reorder {
+class ReorderHP {
 public:
 
-    explicit Reorder(int Nside) :
+    explicit ReorderHP(int Nside) :
         Nside_(Nside),
         Npix_(size()),
         Ncap_((Nside * (Nside - 1)) << 1),
@@ -250,7 +250,7 @@ HEALPix::HEALPix(size_t Nside, Ordering::ordering_type ordering) :
 }
 
 
-Renumber HEALPix::reorder(Ordering::ordering_type ordering) const {
+Reorder HEALPix::reorder(Ordering::ordering_type ordering) const {
     ASSERT_MSG(ordering == Ordering::ordering_type::healpix_ring || ordering == Ordering::ordering_type::healpix_nested,
                HEALPIX_ERROR_ORDERING);
 
@@ -258,10 +258,10 @@ Renumber HEALPix::reorder(Ordering::ordering_type ordering) const {
         return Grid::no_reorder(size());
     }
 
-    const Reorder reorder(static_cast<int>(Nside_));
+    const ReorderHP reorder(static_cast<int>(Nside_));
     const auto N = static_cast<int>(size());
 
-    Renumber ren(N);
+    Reorder ren(N);
     for (int i = 0; i < N; ++i) {
         ren[i] = ordering == Ordering::ordering_type::healpix_ring ? reorder.nest_to_ring(i) : reorder.ring_to_nest(i);
     }
@@ -327,7 +327,7 @@ std::vector<Point> HEALPix::to_points() const {
     std::vector<Point> points_nested;
     points_nested.reserve(size());
 
-    const Reorder reorder(static_cast<int>(Nside_));
+    const ReorderHP reorder(static_cast<int>(Nside_));
     for (size_t i = 0; i < size(); ++i) {
         points_nested.emplace_back(std::get<PointLonLat>(points[reorder.nest_to_ring(static_cast<int>(i))]));
     }

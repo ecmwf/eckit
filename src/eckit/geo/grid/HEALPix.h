@@ -44,7 +44,7 @@ public:
     std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     Ordering::ordering_type ordering() const override { return ordering_; }
-    Renumber reorder(Ordering::ordering_type) const override;
+    Reorder reorder(Ordering::ordering_type) const override;
     [[nodiscard]] Grid* make_grid_reordered(Ordering::ordering_type ordering) const override {
         return new HEALPix(Nside_, ordering);
     }

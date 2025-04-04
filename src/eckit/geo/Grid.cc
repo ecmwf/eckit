@@ -130,7 +130,7 @@ Ordering::ordering_type Grid::ordering() const {
 }
 
 
-Renumber Grid::reorder(Ordering::ordering_type) const {
+Reorder Grid::reorder(Ordering::ordering_type) const {
     NOTIMP;
 }
 
@@ -150,7 +150,7 @@ const Area& Grid::area() const {
 }
 
 
-Renumber Grid::crop(const Area&) const {
+Reorder Grid::crop(const Area&) const {
     NOTIMP;
 }
 
@@ -185,8 +185,8 @@ area::BoundingBox* Grid::calculate_bbox() const {
 }
 
 
-Renumber Grid::no_reorder(size_t size) {
-    Renumber ren(size);
+Reorder Grid::no_reorder(size_t size) {
+    Reorder ren(size);
     std::iota(ren.begin(), ren.end(), 0);
     return ren;
 }

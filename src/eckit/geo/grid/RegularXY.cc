@@ -59,7 +59,7 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
 }
 
 
-Renumber RegularXY::reorder(Ordering::ordering_type to) const {
+Reorder RegularXY::reorder(Ordering::ordering_type to) const {
     return Regular::reorder(ordering_, to, x().size(), y().size());
 }
 

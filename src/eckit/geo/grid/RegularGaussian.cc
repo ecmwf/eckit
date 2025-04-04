@@ -68,7 +68,7 @@ const std::string& RegularGaussian::type() const {
 }
 
 
-Renumber RegularGaussian::reorder(Ordering::ordering_type to) const {
+Reorder RegularGaussian::reorder(Ordering::ordering_type to) const {
     return Regular::reorder(ordering_, to, x().size(), y().size());
 }
 

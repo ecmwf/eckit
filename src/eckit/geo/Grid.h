@@ -24,7 +24,6 @@
 #include "eckit/geo/Ordering.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/Renumber.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/spec/Custom.h"
@@ -159,10 +158,10 @@ public:
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
     virtual Ordering::ordering_type ordering() const;
-    virtual Renumber reorder(Ordering::ordering_type) const;
+    virtual Reorder reorder(Ordering::ordering_type) const;
 
     virtual const Area& area() const;
-    virtual Renumber crop(const Area&) const;
+    virtual Reorder crop(const Area&) const;
 
     virtual const Projection& projection() const;
 
@@ -187,7 +186,7 @@ protected:
 
     virtual void fill_spec(spec::Custom&) const;
 
-    static Renumber no_reorder(size_t size);
+    static Reorder no_reorder(size_t size);
 
     void reset_uid(uid_t = {});
 

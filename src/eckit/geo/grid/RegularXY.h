@@ -43,7 +43,7 @@ protected:
 
     void fill_spec(spec::Custom&) const override;
 
-    Renumber reorder(Ordering::ordering_type) const override;
+    Reorder reorder(Ordering::ordering_type) const override;
 
 private:
 

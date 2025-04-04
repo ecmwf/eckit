@@ -26,12 +26,12 @@ namespace eckit::geo::grid {
 namespace {
 
 
-area::BoundingBox make_bounding_box(const Range& lon, const Range& lat) {
+area::BoundingBox* make_bounding_box(const Range& lon, const Range& lat) {
     auto n = std::max(lat.a(), lat.b());
     auto w = std::min(lon.a(), lon.b());
     auto s = std::min(lat.a(), lat.b());
     auto e = std::max(lon.a(), lon.b());
-    return {n, w, s, e};
+    return new area::BoundingBox{n, w, s, e};
 }
 
 

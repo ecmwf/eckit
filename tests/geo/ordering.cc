@@ -30,7 +30,7 @@ CASE("ordering ('scan')") {
                                        {"scan_ij", scan_ij},
                                        {"scan_alternating", scan_alternating}});
 
-                    EXPECT(static_cast<int>(make_ordering_from_spec(spec)) == ordering);
+                    EXPECT(static_cast<int>(Ordering::make_ordering_from_spec(spec)) == ordering);
 
                     ++ordering;
                 }

@@ -71,12 +71,12 @@ CASE("sizes") {
 CASE("points") {
     std::unique_ptr<const Grid> ring(new grid::HEALPix(2));
 
-    EXPECT(ring->ordering() == Ordering::healpix_ring);
+    EXPECT(ring->ordering() == Ordering::ordering_type::healpix_ring);
 
 
-    std::unique_ptr<const Grid> nested(new grid::HEALPix(2, Ordering::healpix_nested));
+    std::unique_ptr<const Grid> nested(new grid::HEALPix(2, Ordering::ordering_type::healpix_nested));
 
-    EXPECT(nested->ordering() == Ordering::healpix_nested);
+    EXPECT(nested->ordering() == Ordering::ordering_type::healpix_nested);
 
     // reference coordinates in ring ordering
     const std::vector<PointLonLat> ref{
@@ -153,7 +153,7 @@ CASE("points") {
     EXPECT(i == ring->size());
 
 
-    auto ren      = nested->reorder(Ordering::healpix_ring);
+    auto ren      = nested->reorder(Ordering::ordering_type::healpix_ring);
     auto points_n = nested->to_points();
 
     EXPECT(points_n.size() == nested->size());
@@ -186,11 +186,11 @@ CASE("equals") {
     EXPECT(*grid2 == *grid3);
     EXPECT(*grid3 == *grid1);
 
-    EXPECT(grid1->ordering() == Ordering::healpix_ring);
+    EXPECT(grid1->ordering() == Ordering::ordering_type::healpix_ring);
 
     std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "h2"}, {"ordering", "nested"}})));
     std::unique_ptr<const Grid> grid5(GridFactory::make_from_string("{type: HEALPix, Nside: 2, ordering: nested}"));
-    std::unique_ptr<const Grid> grid6(new grid::HEALPix(2, Ordering::healpix_nested));
+    std::unique_ptr<const Grid> grid6(new grid::HEALPix(2, Ordering::ordering_type::healpix_nested));
 
     EXPECT(*grid4 != *grid1);
 
@@ -198,7 +198,7 @@ CASE("equals") {
     EXPECT(*grid5 == *grid6);
     EXPECT(*grid6 == *grid4);
 
-    EXPECT(grid4->ordering() == Ordering::healpix_nested);
+    EXPECT(grid4->ordering() == Ordering::ordering_type::healpix_nested);
 }
 
 

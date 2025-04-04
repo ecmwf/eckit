@@ -160,8 +160,8 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    virtual Ordering ordering() const;
-    virtual Renumber reorder(Ordering) const;
+    virtual Ordering::ordering_type ordering() const;
+    virtual Renumber reorder(Ordering::ordering_type) const;
 
     virtual const Area& area() const;
     virtual Renumber crop(const Area&) const;
@@ -171,7 +171,7 @@ public:
     virtual const area::BoundingBox& boundingBox() const;
     [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
 
-    [[nodiscard]] virtual Grid* make_grid_reordered(Ordering) const;
+    [[nodiscard]] virtual Grid* make_grid_reordered(Ordering::ordering_type) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
 
     // -- Class methods
@@ -182,8 +182,7 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(const area::BoundingBox&, Projection* = nullptr, Ordering = Ordering::DEFAULT);
-    explicit Grid(Ordering = Ordering::DEFAULT);
+    explicit Grid(area::BoundingBox*, Projection*);
 
     // -- Methods
 
@@ -205,8 +204,6 @@ private:
     mutable std::unique_ptr<Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;
-
-    Ordering ordering_;
 
     // -- Friends
 

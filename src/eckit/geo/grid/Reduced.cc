@@ -63,7 +63,8 @@ std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlons() const 
 }
 
 
-Reduced::Reduced(const area::BoundingBox& bbox, Projection* projection) : Grid(bbox, projection) {}
+Reduced::Reduced(Ordering::ordering_type ordering, area::BoundingBox* bbox, Projection* projection) :
+    Grid(bbox, projection), ordering_(ordering) {}
 
 
 const std::vector<size_t>& Reduced::niacc() const {

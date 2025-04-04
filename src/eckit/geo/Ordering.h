@@ -12,52 +12,133 @@
 
 #pragma once
 
+#include <map>
+#include <memory>
+#include <string>
+
+#include "eckit/geo/Point.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/spec/Generator.h"
+#include "eckit/memory/Builder.h"
+#include "eckit/memory/Factory.h"
+
 
 namespace eckit::geo {
-class Spec;
-}
 
 
-namespace eckit::geo {
+class Ordering {
+public:
 
+    // -- Types
 
-enum Ordering {
-    scan_i_positively_j_negatively_ij_i_single_direction,
-    scan_i_negatively_j_negatively_ij_i_single_direction,
-    scan_i_positively_j_positively_ij_i_single_direction,
-    scan_i_negatively_j_positively_ij_i_single_direction,
-    scan_i_positively_j_negatively_ji_i_single_direction,
-    scan_i_negatively_j_negatively_ji_i_single_direction,
-    scan_i_positively_j_positively_ji_i_single_direction,
-    scan_i_negatively_j_positively_ji_i_single_direction,
-    scan_i_positively_j_negatively_ij_i_alternating_direction,
-    scan_i_negatively_j_negatively_ij_i_alternating_direction,
-    scan_i_positively_j_positively_ij_i_alternating_direction,
-    scan_i_negatively_j_positively_ij_i_alternating_direction,
-    scan_i_positively_j_negatively_ji_i_alternating_direction,
-    scan_i_negatively_j_negatively_ji_i_alternating_direction,
-    scan_i_positively_j_positively_ji_i_alternating_direction,
-    scan_i_negatively_j_positively_ji_i_alternating_direction,
-    // TODO regular_ ... shift
+    using builder_t = BuilderT1<Ordering>;
+    using ARG1      = const Spec&;
 
-    healpix_ring,
-    healpix_nested,
+    enum ordering_type {
+        scan_i_positively_j_negatively_ij_i_single_direction,
+        scan_i_negatively_j_negatively_ij_i_single_direction,
+        scan_i_positively_j_positively_ij_i_single_direction,
+        scan_i_negatively_j_positively_ij_i_single_direction,
+        scan_i_positively_j_negatively_ji_i_single_direction,
+        scan_i_negatively_j_negatively_ji_i_single_direction,
+        scan_i_positively_j_positively_ji_i_single_direction,
+        scan_i_negatively_j_positively_ji_i_single_direction,
+        scan_i_positively_j_negatively_ij_i_alternating_direction,
+        scan_i_negatively_j_negatively_ij_i_alternating_direction,
+        scan_i_positively_j_positively_ij_i_alternating_direction,
+        scan_i_negatively_j_positively_ij_i_alternating_direction,
+        scan_i_positively_j_negatively_ji_i_alternating_direction,
+        scan_i_negatively_j_negatively_ji_i_alternating_direction,
+        scan_i_positively_j_positively_ji_i_alternating_direction,
+        scan_i_negatively_j_positively_ji_i_alternating_direction,
+        // TODO regular_ ... shift
 
-    scan_ordering        = scan_i_positively_j_negatively_ij_i_single_direction,
-    scan_ordering_end    = scan_i_negatively_j_positively_ji_i_alternating_direction,
-    healpix_ordering     = healpix_ring,
-    healpix_ordering_end = healpix_nested,
+        healpix_ring,
+        healpix_nested,
 
-    DEFAULT = scan_i_positively_j_negatively_ij_i_single_direction
+        scan_ordering     = scan_i_positively_j_negatively_ij_i_single_direction,
+        scan_ordering_end = scan_i_negatively_j_positively_ji_i_alternating_direction,
+
+        healpix_ordering     = healpix_ring,
+        healpix_ordering_end = healpix_nested,
+    };
+
+    // -- Constructors
+
+    Ordering() noexcept       = default;
+    Ordering(const Ordering&) = default;
+    Ordering(Ordering&&)      = default;
+
+    // -- Destructor
+
+    virtual ~Ordering() = default;
+
+    // -- Operators
+
+    Ordering& operator=(const Ordering&) = default;
+    Ordering& operator=(Ordering&&)      = default;
+
+    // -- Methods
+
+    static bool is_scan_i_positive(Ordering::ordering_type);
+    static bool is_scan_j_positive(Ordering::ordering_type);
+    static bool is_scan_ij(Ordering::ordering_type);
+    static bool is_scan_alternating_direction(Ordering::ordering_type);
+
+    virtual Ordering::ordering_type type() const = 0;
+
+    [[nodiscard]] static Ordering::ordering_type make_ordering_from_spec(const Spec&);
+
+    // -- Class methods
+
+    static std::string className() { return "ordering"; }
+
+private:
+
+    // -- Members
+
+    mutable std::shared_ptr<spec::Custom> spec_;
+
+    // -- Methods
+
+    virtual void fill_spec(spec::Custom&) const = 0;
 };
 
 
-Ordering make_ordering_from_spec(const Spec&);
+using OrderingFactoryType = Factory<Ordering>;
+using OrderingSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
 
-bool ordering_is_i_positive(Ordering);
-bool ordering_is_j_positive(Ordering);
-bool ordering_is_ij(Ordering);
-bool ordering_is_alternating(Ordering);
+
+template <typename T>
+using OrderingRegisterType = ConcreteBuilderT1<Ordering, T>;
+
+template <typename T>
+using OrderingRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
+
+
+struct OrderingFactory {
+    [[nodiscard]] static const Ordering* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+
+    [[nodiscard]] static const Ordering* make_from_string(const std::string&);
+    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+
+    static void add_library(const std::string& lib, Spec* spec) { return instance().add_library_(lib, spec); }
+
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
+
+private:
+
+    static OrderingFactory& instance();
+
+    [[nodiscard]] const Ordering* make_from_spec_(const Spec&) const;
+    [[nodiscard]] Spec* make_spec_(const Spec&) const;
+
+    void add_library_(const std::string& lib, Spec* spec);
+
+    std::ostream& list_(std::ostream&) const;
+
+    std::map<std::string, std::unique_ptr<Spec>> libraries_;
+};
 
 
 }  // namespace eckit::geo

@@ -24,7 +24,7 @@ public:
     // -- Constructors
 
     explicit HEALPix(const Spec&);
-    explicit HEALPix(size_t Nside, Ordering = Ordering::healpix_ring);
+    explicit HEALPix(size_t Nside, Ordering::ordering_type = Ordering::ordering_type::healpix_ring);
 
     // -- Methods
 
@@ -43,9 +43,11 @@ public:
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
-    Ordering ordering() const override { return ordering_; }
-    Renumber reorder(Ordering) const override;
-    [[nodiscard]] Grid* make_grid_reordered(Ordering ordering) const override { return new HEALPix(Nside_, ordering); }
+    Ordering::ordering_type ordering() const override { return ordering_; }
+    Renumber reorder(Ordering::ordering_type) const override;
+    [[nodiscard]] Grid* make_grid_reordered(Ordering::ordering_type ordering) const override {
+        return new HEALPix(Nside_, ordering);
+    }
 
     // -- Class members
 
@@ -56,7 +58,7 @@ private:
     // -- Members
 
     const size_t Nside_;
-    const Ordering ordering_;
+    const Ordering::ordering_type ordering_;
 
     mutable std::vector<double> latitudes_;
 

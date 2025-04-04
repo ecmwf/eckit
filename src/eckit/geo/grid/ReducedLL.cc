@@ -21,11 +21,26 @@
 namespace eckit::geo::grid {
 
 
-ReducedLL::ReducedLL(const Spec& spec) : ReducedLL(spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
+namespace {
 
 
-ReducedLL::ReducedLL(const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox), pl_(pl), y_(new range::RegularLatitude(pl_.size(), bbox.north, bbox.south)) {
+Range* make_y_range(const pl_type& pl, area::BoundingBox* bbox) {
+    return new range::RegularLatitude(pl.size(), bbox == nullptr ? NORTH_POLE.lat : bbox->north,
+                                      bbox == nullptr ? SOUTH_POLE.lat : bbox->south);
+}
+
+
+}  // namespace
+
+
+ReducedLL::ReducedLL(const Spec& spec) :
+    ReducedLL(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec)) {}
+
+
+ReducedLL::ReducedLL(const pl_type& pl, area::BoundingBox* bbox) :
+    Reduced(Ordering::ordering_type::scan_i_positively_j_negatively_ij_i_single_direction, bbox),
+    pl_(pl),
+    y_(make_y_range(pl, bbox)) {
     ASSERT(y_);
 }
 

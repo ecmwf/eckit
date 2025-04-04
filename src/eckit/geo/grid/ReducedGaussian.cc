@@ -25,30 +25,42 @@
 namespace eckit::geo::grid {
 
 
+namespace {
+
+
+Range* make_y_range(size_t N, area::BoundingBox* bbox) {
+    return range::GaussianLatitude(N, false).make_range_cropped(bbox == nullptr ? NORTH_POLE.lat : bbox->north,
+                                                                bbox == nullptr ? SOUTH_POLE.lat : bbox->south);
+}
+
+
+}  // namespace
+
+
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox(spec), projection::Rotation::make_from_spec(spec)) {}
+    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec),
+                    projection::Rotation::make_from_spec(spec)) {}
 
 
-ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox, projection::Rotation* rotation) :
+ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, projection::Rotation* rotation) :
     ReducedGaussian(pl.size() / 2, pl, bbox, rotation) {}
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const area::BoundingBox& bbox,
-                                 projection::Rotation* rotation) :
-    Reduced(bbox, rotation),
+ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, projection::Rotation* rotation) :
+    Reduced(Ordering::ordering_type::scan_i_positively_j_negatively_ij_i_single_direction, bbox, rotation),
     N_(N),
     pl_(pl),
     j_(0),
     Nj_(pl.size()),
     x_(Nj_),
-    y_(range::GaussianLatitude(N_, false).make_range_cropped(bbox.north, bbox.south)) {
+    y_(make_y_range(N, bbox)) {
     ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
     ASSERT(y_);
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const area::BoundingBox& bbox, projection::Rotation* rotation) :
+ReducedGaussian::ReducedGaussian(size_t N, area::BoundingBox* bbox, projection::Rotation* rotation) :
     ReducedGaussian(N, util::reduced_octahedral_pl(N), bbox, rotation) {}
 
 
@@ -130,7 +142,8 @@ const std::string& ReducedGaussian::type() const {
 
 Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new ReducedGaussian(N_, pl_, cropped);
+        return new ReducedGaussian(N_, pl_,
+                                   new area::BoundingBox{cropped.north, cropped.west, cropped.south, cropped.east});
     }
 
     throw UserError("ReducedGaussian: cannot crop grid (empty intersection)", Here());

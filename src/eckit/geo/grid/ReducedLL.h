@@ -28,7 +28,7 @@ public:
     // -- Constructors
 
     explicit ReducedLL(const Spec&);
-    explicit ReducedLL(const pl_type&, const area::BoundingBox& = {});
+    explicit ReducedLL(const pl_type&, area::BoundingBox* = nullptr);
 
     // -- Methods
 

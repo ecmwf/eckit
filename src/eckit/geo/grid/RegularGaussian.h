@@ -42,6 +42,8 @@ private:
 
     const size_t N_;
 
+    Ordering::ordering_type ordering_ = Ordering::ordering_type::scan_i_positively_j_negatively_ij_i_single_direction;
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;

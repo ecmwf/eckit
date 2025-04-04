@@ -26,7 +26,6 @@
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid {
@@ -229,29 +228,31 @@ static const std::string HEALPIX_PATTERN              = "[hH]([1-9][0-9]*)(n|_ne
 
 HEALPix::HEALPix(const Spec& spec) :
     HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")), [](const std::string& str) {
-        return str == "ring"     ? Ordering::healpix_ring
-               : str == "nested" ? Ordering::healpix_nested
+        return str == "ring"     ? Ordering::ordering_type::healpix_ring
+               : str == "nested" ? Ordering::ordering_type::healpix_nested
                                  : throw exception::SpecError(HEALPIX_ERROR_ORDERING, Here());
     }(spec.get_string("ordering", "ring"))) {}
 
 
-HEALPix::HEALPix(size_t Nside, Ordering ordering) : Reduced(area::BoundingBox{}), Nside_(Nside), ordering_(ordering) {
+HEALPix::HEALPix(size_t Nside, Ordering::ordering_type ordering) :
+    Reduced(ordering), Nside_(Nside), ordering_(ordering) {
     if (Nside_ == 0) {
         throw exception::SpecError(HEALPIX_ERROR_NSIDE_POSITIVE, Here());
     }
 
-    if (ordering != Ordering::healpix_ring && ordering != Ordering::healpix_nested) {
+    if (ordering != Ordering::ordering_type::healpix_ring && ordering != Ordering::ordering_type::healpix_nested) {
         throw exception::SpecError(HEALPIX_ERROR_ORDERING, Here());
     }
 
-    if (ordering_ == Ordering::healpix_nested && !is_power_of_2(Nside_)) {
+    if (ordering_ == Ordering::ordering_type::healpix_nested && !is_power_of_2(Nside_)) {
         throw exception::SpecError(HEALPIX_ERROR_NSIDE_POWER2, Here());
     }
 }
 
 
-Renumber HEALPix::reorder(Ordering ordering) const {
-    ASSERT_MSG(ordering == Ordering::healpix_ring || ordering == Ordering::healpix_nested, HEALPIX_ERROR_ORDERING);
+Renumber HEALPix::reorder(Ordering::ordering_type ordering) const {
+    ASSERT_MSG(ordering == Ordering::ordering_type::healpix_ring || ordering == Ordering::ordering_type::healpix_nested,
+               HEALPIX_ERROR_ORDERING);
 
     if (ordering == ordering_) {
         return Grid::no_reorder(size());
@@ -262,14 +263,14 @@ Renumber HEALPix::reorder(Ordering ordering) const {
 
     Renumber ren(N);
     for (int i = 0; i < N; ++i) {
-        ren[i] = ordering == Ordering::healpix_ring ? reorder.nest_to_ring(i) : reorder.ring_to_nest(i);
+        ren[i] = ordering == Ordering::ordering_type::healpix_ring ? reorder.nest_to_ring(i) : reorder.ring_to_nest(i);
     }
     return ren;
 }
 
 
 Grid::iterator HEALPix::cbegin() const {
-    return ordering_ == Ordering::healpix_ring
+    return ordering_ == Ordering::ordering_type::healpix_ring
                ? iterator{new geo::iterator::Reduced(*this, 0)}
                : iterator{new geo::iterator::Unstructured(*this, 0,
                                                           std::make_shared<container::PointsInstance>(to_points()))};
@@ -277,8 +278,8 @@ Grid::iterator HEALPix::cbegin() const {
 
 
 Grid::iterator HEALPix::cend() const {
-    return ordering_ == Ordering::healpix_ring ? iterator{new geo::iterator::Reduced(*this, size())}
-                                               : iterator{new geo::iterator::Unstructured(*this)};
+    return ordering_ == Ordering::ordering_type::healpix_ring ? iterator{new geo::iterator::Reduced(*this, size())}
+                                                              : iterator{new geo::iterator::Unstructured(*this)};
 }
 
 
@@ -317,11 +318,11 @@ size_t HEALPix::size() const {
 std::vector<Point> HEALPix::to_points() const {
     const auto points = Reduced::to_points();
 
-    if (ordering_ == Ordering::healpix_ring) {
+    if (ordering_ == Ordering::ordering_type::healpix_ring) {
         return points;
     }
 
-    ASSERT(ordering_ == Ordering::healpix_nested);
+    ASSERT(ordering_ == Ordering::ordering_type::healpix_nested);
 
     std::vector<Point> points_nested;
     points_nested.reserve(size());
@@ -389,7 +390,7 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
 
 void HEALPix::fill_spec(spec::Custom& custom) const {
     custom.set("grid", "H" + std::to_string(Nside_));
-    if (ordering_ == Ordering::healpix_nested) {
+    if (ordering_ == Ordering::ordering_type::healpix_nested) {
         custom.set("ordering", "nested");
     }
 }

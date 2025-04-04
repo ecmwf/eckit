@@ -43,15 +43,11 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(const Spec& spec) :
-    bbox_(area::BoundingBox::make_from_spec(spec)), ordering_(make_ordering_from_spec(spec)) {}
+Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
-Grid::Grid(Ordering ordering) : ordering_(ordering) {}
-
-
-Grid::Grid(const area::BoundingBox& bbox, Projection* projection, Ordering ordering) :
-    bbox_(new area::BoundingBox(bbox)), projection_(projection), ordering_(ordering) {}
+Grid::Grid(area::BoundingBox* bbox, Projection* projection) :
+    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime() : bbox), projection_(projection) {}
 
 
 const Spec& Grid::spec() const {
@@ -129,17 +125,17 @@ std::pair<std::vector<double>, std::vector<double> > Grid::to_latlons() const {
 }
 
 
-Ordering Grid::ordering() const {
+Ordering::ordering_type Grid::ordering() const {
     NOTIMP;
 }
 
 
-Renumber Grid::reorder(Ordering) const {
+Renumber Grid::reorder(Ordering::ordering_type) const {
     NOTIMP;
 }
 
 
-Grid* Grid::make_grid_reordered(Ordering) const {
+Grid* Grid::make_grid_reordered(Ordering::ordering_type) const {
     NOTIMP;
 }
 

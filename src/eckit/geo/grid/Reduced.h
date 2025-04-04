@@ -40,7 +40,7 @@ protected:
 
     // -- Constructors
 
-    explicit Reduced(const area::BoundingBox& = {}, Projection* = nullptr);
+    explicit Reduced(Ordering::ordering_type, area::BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 
@@ -54,6 +54,7 @@ private:
     // -- Members
 
     mutable std::vector<size_t> niacc_;
+    Ordering::ordering_type ordering_;
 
     // Methods
 

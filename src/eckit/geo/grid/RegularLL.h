@@ -44,6 +44,12 @@ public:
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] area::BoundingBox* calculate_bbox() const override;
+
+private:
+
+    // -- Members
+
+    Ordering::ordering_type ordering_ = Ordering::ordering_type::scan_i_positively_j_negatively_ij_i_single_direction;
 };
 
 

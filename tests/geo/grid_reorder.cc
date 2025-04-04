@@ -50,24 +50,24 @@ CASE("HEALPix") {
         };
 
         auto order_ring = ring->ordering();
-        EXPECT_EQUAL(order_ring, Ordering::healpix_ring);
+        EXPECT_EQUAL(order_ring, Ordering::ordering_type::healpix_ring);
 
-        auto ren_to_ring = ring->reorder(Ordering::healpix_ring);
+        auto ren_to_ring = ring->reorder(Ordering::ordering_type::healpix_ring);
         EXPECT_EQUAL_VECTOR(ren_to_ring, expected_ren_none);
 
-        auto ren_to_nested = ring->reorder(Ordering::healpix_nested);
+        auto ren_to_nested = ring->reorder(Ordering::ordering_type::healpix_nested);
         EXPECT_EQUAL_VECTOR(ren_to_nested, expected_ren_ring_to_nested);
 
 
-        std::unique_ptr<const Grid> nested(ring->make_grid_reordered(Ordering::healpix_nested));
+        std::unique_ptr<const Grid> nested(ring->make_grid_reordered(Ordering::ordering_type::healpix_nested));
 
         auto order_nested = nested->ordering();
-        EXPECT_EQUAL(order_nested, Ordering::healpix_nested);
+        EXPECT_EQUAL(order_nested, Ordering::ordering_type::healpix_nested);
 
-        ren_to_nested = nested->reorder(Ordering::healpix_nested);
+        ren_to_nested = nested->reorder(Ordering::ordering_type::healpix_nested);
         EXPECT_EQUAL_VECTOR(ren_to_nested, expected_ren_none);
 
-        ren_to_ring = nested->reorder(Ordering::healpix_ring);
+        ren_to_ring = nested->reorder(Ordering::ordering_type::healpix_ring);
         EXPECT_EQUAL_VECTOR(ren_to_ring, expected_ren_nested_to_ring);
     }
 }

@@ -78,3 +78,8 @@ ecbuild_add_test( TARGET      eckit_test_regex
 ecbuild_add_test( TARGET      eckit_test_literals
                   SOURCES     test_literals.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_safe_casts
+                  SOURCES     test_safe_casts.cc
+                  LIBS        eckit )
+

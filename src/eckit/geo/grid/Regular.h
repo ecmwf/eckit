@@ -33,10 +33,6 @@ namespace eckit::geo::grid {
 class Regular : public Grid {
 public:
 
-    // -- Constructors
-
-    explicit Regular(const Spec& spec) : Grid(spec) {}
-
     // -- Methods
 
     virtual double dx() const;
@@ -66,7 +62,12 @@ protected:
 
     // -- Constructors
 
+    explicit Regular(const Spec& spec) : Grid(spec) {}
     explicit Regular(Ranges, Projection* = nullptr);
+
+    // -- Methods
+
+    static Renumber reorder(Ordering::ordering_type from, Ordering::ordering_type to, size_t nx, size_t ny);
 
     // -- Overridden methods
 

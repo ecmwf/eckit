@@ -21,6 +21,11 @@ AreaError::AreaError(const std::string& what, const CodeLocation& loc) : Excepti
 };
 
 
+OrderingError::OrderingError(const std::string& what, const CodeLocation& loc) {
+    reason("OrderingError: [" + what + "], in " + loc.asString());
+}
+
+
 ProjectionError::ProjectionError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
     reason("ProjectionError: [" + what + "], in " + loc.asString());
 };

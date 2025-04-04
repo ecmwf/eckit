@@ -43,6 +43,8 @@ protected:
 
     void fill_spec(spec::Custom&) const override;
 
+    Renumber reorder(Ordering::ordering_type) const override;
+
 private:
 
     // -- Members

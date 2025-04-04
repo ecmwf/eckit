@@ -38,6 +38,13 @@ public:
 };
 
 
+class OrderingError : public geo::Exception {
+public:
+
+    explicit OrderingError(const std::string&, const CodeLocation&);
+};
+
+
 class ProjectionError : public geo::Exception {
 public:
 

@@ -68,6 +68,11 @@ const std::string& RegularGaussian::type() const {
 }
 
 
+Renumber RegularGaussian::reorder(Ordering::ordering_type to) const {
+    return Regular::reorder(ordering_, to, x().size(), y().size());
+}
+
+
 static const GridRegisterName<RegularGaussian> GRIDNAME("[fF][1-9][0-9]*");
 
 static const GridRegisterType<RegularGaussian> GRIDTYPE1("regular_gg");

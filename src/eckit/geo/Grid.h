@@ -114,8 +114,6 @@ public:
 
     // -- Constructors
 
-    explicit Grid(const Spec&);
-
     Grid(const Grid&) = delete;
     Grid(Grid&&)      = delete;
 
@@ -182,6 +180,7 @@ protected:
 
     // -- Constructors
 
+    explicit Grid(const Spec&);
     explicit Grid(area::BoundingBox*, Projection*);
 
     // -- Methods

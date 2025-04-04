@@ -92,6 +92,11 @@ const std::string& RegularLL::type() const {
 }
 
 
+Renumber RegularLL::reorder(Ordering::ordering_type to) const {
+    return Regular::reorder(ordering_, to, x().size(), y().size());
+}
+
+
 Grid* RegularLL::make_grid_cropped(const Area& crop) const {
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
         return new RegularLL({dx(), dy()}, cropped);

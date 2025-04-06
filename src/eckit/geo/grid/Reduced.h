@@ -36,11 +36,13 @@ public:
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
+    order_type order() const override { return order_; }
+
 protected:
 
     // -- Constructors
 
-    explicit Reduced(Ordering::ordering_type, area::BoundingBox* = nullptr, Projection* = nullptr);
+    explicit Reduced(order_type, area::BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 
@@ -54,7 +56,7 @@ private:
     // -- Members
 
     mutable std::vector<size_t> niacc_;
-    Ordering::ordering_type ordering_;
+    order_type order_;
 
     // Methods
 

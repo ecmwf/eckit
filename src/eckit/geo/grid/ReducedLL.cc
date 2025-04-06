@@ -13,6 +13,7 @@
 #include "eckit/geo/grid/ReducedLL.h"
 
 #include "eckit/geo/iterator/Reduced.h"
+#include "eckit/geo/order/ReducedScan.h"
 #include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -38,9 +39,7 @@ ReducedLL::ReducedLL(const Spec& spec) :
 
 
 ReducedLL::ReducedLL(const pl_type& pl, area::BoundingBox* bbox) :
-    Reduced(Ordering::ordering_type::scan_i_positively_j_negatively_ij_i_single_direction, bbox),
-    pl_(pl),
-    y_(make_y_range(pl, bbox)) {
+    Reduced(order::Scan::scan_i_positively_j_negatively_ij, bbox), pl_(pl), y_(make_y_range(pl, bbox)) {
     ASSERT(y_);
 }
 

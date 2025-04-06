@@ -38,10 +38,10 @@ public:
 };
 
 
-class OrderingError : public geo::Exception {
+class ReorderError : public geo::Exception {
 public:
 
-    explicit OrderingError(const std::string&, const CodeLocation&);
+    explicit ReorderError(const std::string&, const CodeLocation&);
 };
 
 

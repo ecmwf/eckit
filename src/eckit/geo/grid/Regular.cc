@@ -82,58 +82,14 @@ void Regular::fill_spec(spec::Custom& custom) const {
 }
 
 
-Reorder Regular::reorder(Ordering::ordering_type from, Ordering::ordering_type to, size_t nx, size_t ny) {
-    ASSERT(0 < nx && 0 < ny);
-    auto Ni = nx;
-    auto Nj = ny;
-
-    ASSERT(Ordering::scan_ordering <= from && from <= Ordering::scan_ordering_end &&
-           not Ordering::is_scan_alternating_direction(from));
-
-    ASSERT(Ordering::scan_ordering <= to && to <= Ordering::scan_ordering_end &&
-           not Ordering::is_scan_alternating_direction(to));
-
-    Reorder ren(nx * ny);
-
-    if (from == Ordering::scan_i_positively_j_positively_ij_i_single_direction) {
-        size_t count = 0;
-        for (size_t j = Nj; j > 0; --j) {
-            for (size_t i = 0; i < Ni; ++i) {
-                ren[count++] = (j - 1) * Ni + i;
-            }
-        }
-
-        return ren;
-    }
-
-    if (from == Ordering::scan_i_negatively_j_negatively_ij_i_single_direction) {
-        size_t count = 0;
-        for (size_t j = 0; j < Nj; ++j) {
-            for (size_t i = Ni; i > 0; --i) {
-                ren[count++] = j * Ni + (i - 1);
-            }
-        }
-
-        return ren;
-    }
-
-    if (from == Ordering::scan_i_negatively_j_positively_ij_i_single_direction) {
-        size_t count = 0;
-        for (size_t j = Nj; j > 0; --j) {
-            for (size_t i = Ni; i > 0; --i) {
-                ren[count++] = (j - 1) * Ni + (i - 1);
-            }
-        }
-
-        return ren;
-    }
-
-    throw exception::OrderingError("reorder(" + std::to_string(from) + ", " + std::to_string(to) + ")", Here());
+Regular::Ranges::Ranges(Range* x, Range* y) : pair{x, y} {
+    ASSERT(first != nullptr && second != nullptr);
 }
 
 
-Regular::Ranges::Ranges(Range* x, Range* y) : pair{x, y} {
-    ASSERT(first != nullptr && second != nullptr);
+Regular::Ranges::~Ranges() {
+    delete first;
+    delete second;
 }
 
 

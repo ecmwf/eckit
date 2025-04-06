@@ -12,34 +12,35 @@
 
 #pragma once
 
-#include "eckit/geo/Ordering.h"
+#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/util.h"
 
 
-namespace eckit::geo::ordering {
+namespace eckit::geo::order {
 
 
-class None : public Ordering {
+class ReducedScan : public Scan {
 public:
 
     // -- Constructors
 
-    explicit None() = default;
-    explicit None(const Spec&) {}
+    explicit ReducedScan(const pl_type& pl) : pl_(pl) {}
+    explicit ReducedScan(const Spec&) {}
 
     // -- Overridden methods
 
     const std::string& type() const override;
 
-    Ordering::ordering_type to_type() const override;
-    Ordering::ordering_type from_type() const override;
-    Reorder reorder() const override;
+    Reordering reorder(value_type from, value_type to) const override;
 
     void fill_spec(spec::Custom&) const override {}
 
-    // -- Class methods
+private:
 
-    static Reorder no_reorder(size_t);
+    // -- Members
+
+    const pl_type pl_;
 };
 
 
-}  // namespace eckit::geo::ordering
+}  // namespace eckit::geo::order

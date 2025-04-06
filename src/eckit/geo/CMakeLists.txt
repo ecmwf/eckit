@@ -20,18 +20,18 @@ list(APPEND eckit_geo_srcs
     Iterator.h
     LibEcKitGeo.cc
     LibEcKitGeo.h
-    Ordering.cc
-    Ordering.h
+    Order.cc
+    Order.h
     Point.cc
     Point.h
-    PointXY.cc
-    PointXY.h
-    PointXYZ.cc
-    PointXYZ.h
     PointLonLat.cc
     PointLonLat.h
     PointLonLatR.cc
     PointLonLatR.h
+    PointXY.cc
+    PointXY.h
+    PointXYZ.cc
+    PointXYZ.h
     Projection.cc
     Projection.h
     Range.cc
@@ -107,10 +107,14 @@ list(APPEND eckit_geo_srcs
     iterator/Regular.h
     iterator/Unstructured.cc
     iterator/Unstructured.h
-    ordering/HEALPix.cc
-    ordering/HEALPix.h
-    ordering/None.cc
-    ordering/None.h
+    order/HEALPix.cc
+    order/HEALPix.h
+    order/ReducedScan.cc
+    order/ReducedScan.h
+    order/RegularScan.cc
+    order/RegularScan.h
+    order/Scan.cc
+    order/Scan.h
     polygon/Polygon.cc
     polygon/Polygon.h
     polygon/Polygon2.cc

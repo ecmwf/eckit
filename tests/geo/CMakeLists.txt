@@ -17,7 +17,7 @@ foreach(_test
         increments
         iterator
         kdtree
-        ordering
+        order
         point
         point2
         point3

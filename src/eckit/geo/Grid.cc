@@ -13,7 +13,6 @@
 #include "eckit/geo/Grid.h"
 
 #include <algorithm>
-#include <numeric>
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
@@ -125,17 +124,17 @@ std::pair<std::vector<double>, std::vector<double> > Grid::to_latlons() const {
 }
 
 
-Ordering::ordering_type Grid::ordering() const {
+Grid::order_type Grid::order() const {
     NOTIMP;
 }
 
 
-Reorder Grid::reorder(Ordering::ordering_type) const {
+Reordering Grid::reorder(order_type) const {
     NOTIMP;
 }
 
 
-Grid* Grid::make_grid_reordered(Ordering::ordering_type) const {
+Grid* Grid::make_grid_reordered(order_type) const {
     NOTIMP;
 }
 
@@ -150,7 +149,7 @@ const Area& Grid::area() const {
 }
 
 
-Reorder Grid::crop(const Area&) const {
+Reordering Grid::crop(const Area&) const {
     NOTIMP;
 }
 
@@ -182,13 +181,6 @@ const area::BoundingBox& Grid::boundingBox() const {
 
 area::BoundingBox* Grid::calculate_bbox() const {
     NOTIMP;
-}
-
-
-Reorder Grid::no_reorder(size_t size) {
-    Reorder ren(size);
-    std::iota(ren.begin(), ren.end(), 0);
-    return ren;
 }
 
 

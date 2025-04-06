@@ -21,7 +21,7 @@
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/Iterator.h"
-#include "eckit/geo/Ordering.h"
+#include "eckit/geo/Order.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
@@ -51,6 +51,8 @@ public:
     using uid_t     = std::string;
     using builder_t = BuilderT1<Grid>;
     using ARG1      = const Spec&;
+
+    using order_type = Order::value_type;
 
     struct Iterator final : std::unique_ptr<geo::Iterator> {
         explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
@@ -157,18 +159,18 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    virtual Ordering::ordering_type ordering() const;
-    virtual Reorder reorder(Ordering::ordering_type) const;
+    virtual order_type order() const;
+    virtual Reordering reorder(order_type) const;
 
     virtual const Area& area() const;
-    virtual Reorder crop(const Area&) const;
+    virtual Reordering crop(const Area&) const;
 
     virtual const Projection& projection() const;
 
     virtual const area::BoundingBox& boundingBox() const;
     [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
 
-    [[nodiscard]] virtual Grid* make_grid_reordered(Ordering::ordering_type) const;
+    [[nodiscard]] virtual Grid* make_grid_reordered(order_type) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
 
     // -- Class methods
@@ -185,8 +187,6 @@ protected:
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
-
-    static Reorder no_reorder(size_t size);
 
     void reset_uid(uid_t = {});
 

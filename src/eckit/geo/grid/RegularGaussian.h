@@ -32,6 +32,11 @@ public:
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 
+    // -- Overridden methods
+
+    order_type order() const override { return order_; }
+    Reordering reorder(order_type) const override;
+
     // -- Class members
 
     [[nodiscard]] static Spec* spec(const std::string& name);
@@ -42,14 +47,12 @@ private:
 
     const size_t N_;
 
-    Ordering::ordering_type ordering_ = Ordering::ordering_type::scan_i_positively_j_negatively_ij_i_single_direction;
+    order_type order_;
 
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;
-
-    Reorder reorder(Ordering::ordering_type) const override;
 };
 
 

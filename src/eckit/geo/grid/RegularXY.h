@@ -33,6 +33,11 @@ public:
     size_t nlon() const { return x().size(); }
     size_t nlat() const { return y().size(); }
 
+    // -- Overridden methods
+
+    order_type order() const override { return order_; }
+    Reordering reorder(order_type) const override;
+
 protected:
 
     // -- Methods
@@ -43,8 +48,6 @@ protected:
 
     void fill_spec(spec::Custom&) const override;
 
-    Reorder reorder(Ordering::ordering_type) const override;
-
 private:
 
     // -- Members
@@ -52,7 +55,7 @@ private:
     PointLonLat first_lonlat;
     PointXY first_xy;
 
-    Ordering::ordering_type ordering_ = Ordering::ordering_type::scan_i_positively_j_negatively_ij_i_single_direction;
+    order_type order_;
 };
 
 

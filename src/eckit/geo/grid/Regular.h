@@ -58,16 +58,13 @@ protected:
 
     struct Ranges : std::pair<Range*, Range*> {
         Ranges(Range*, Range*);
+        ~Ranges();
     };
 
     // -- Constructors
 
     explicit Regular(const Spec& spec) : Grid(spec) {}
     explicit Regular(Ranges, Projection* = nullptr);
-
-    // -- Methods
-
-    static Reorder reorder(Ordering::ordering_type from, Ordering::ordering_type to, size_t nx, size_t ny);
 
     // -- Overridden methods
 

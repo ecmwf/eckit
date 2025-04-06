@@ -12,16 +12,23 @@
 
 #pragma once
 
-#include "eckit/geo/Ordering.h"
+#include "eckit/geo/Order.h"
 
 
-namespace eckit::geo::ordering {
+namespace eckit::geo::order {
 
 
-class HEALPix final : public Ordering {
+class HEALPix final : public Order {
 public:
 
+    // -- Constructors
+
+    explicit HEALPix(int Nside);
+
     // -- Methods
+
+    static const value_type ring;
+    static const value_type nested;
 
     int size() const { return 12 * Nside_ * Nside_; }
     int nside() const { return Nside_; }
@@ -34,23 +41,11 @@ public:
     const std::string& type() const override;
     void fill_spec(spec::Custom&) const override;
 
-    Ordering::ordering_type to_type() const override { return from_type_; }
-    Ordering::ordering_type from_type() const override { return to_type_; }
-
-    Reorder reorder() const override;
-
-protected:
-
-    // -- Constructors
-
-    explicit HEALPix(int Nside, Ordering::ordering_type from, Ordering::ordering_type to);
+    Reordering reorder(value_type from, value_type to) const override;
 
 private:
 
     // -- Members
-
-    const Ordering::ordering_type from_type_;
-    const Ordering::ordering_type to_type_;
 
     const int Nside_;  // up to 2^13
     const int Npix_;
@@ -59,4 +54,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::ordering
+}  // namespace eckit::geo::order

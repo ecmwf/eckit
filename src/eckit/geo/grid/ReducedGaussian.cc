@@ -16,6 +16,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Reduced.h"
+#include "eckit/geo/order/ReducedScan.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -47,7 +48,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, pro
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, projection::Rotation* rotation) :
-    Reduced(Ordering::ordering_type::scan_i_positively_j_negatively_ij_i_single_direction, bbox, rotation),
+    Reduced(order::Scan::scan_i_negatively_j_negatively_ij, bbox, rotation),
     N_(N),
     pl_(pl),
     j_(0),

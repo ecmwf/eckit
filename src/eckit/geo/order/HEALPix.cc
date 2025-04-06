@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/ordering/HEALPix.h"
+#include "eckit/geo/order/HEALPix.h"
 
 #include <bitset>
 #include <cmath>
@@ -19,7 +19,11 @@
 #include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::ordering {
+namespace eckit::geo::order {
+
+
+const Order::value_type HEALPix::ring   = "ring";
+const Order::value_type HEALPix::nested = "nested";
 
 
 namespace {
@@ -91,14 +95,12 @@ inline int pll(int f) {
 }  // namespace
 
 
-HEALPix::HEALPix(int Nside, Ordering::ordering_type from, Ordering::ordering_type to) :
-    from_type_(from),
-    to_type_(to),
+HEALPix::HEALPix(int Nside) :
+    Order("ring", "nested"),
     Nside_(Nside),
     Npix_(size()),
     Ncap_((Nside * (Nside - 1)) << 1),
     k_(is_power_of_2(Nside_) ? static_cast<int>(std::log2(Nside)) : -1) {
-    ASSERT(0 <= k_);  // (specific to nested ordering)
     ASSERT(0 < Nside_);
 }
 
@@ -210,14 +212,32 @@ const std::string& HEALPix::type() const {
 void HEALPix::fill_spec(spec::Custom& custom) const {
     custom.set("type", type());
     custom.set("nside", Nside_);
-    custom.set("from", from_type_);
-    custom.set("to", to_type_);
 }
 
 
-Reorder HEALPix::reorder() const {
-    NOTIMP;
+Reordering HEALPix::reorder(value_type from, value_type to) const {
+    ASSERT(from == nested || from == ring);
+    ASSERT(to == nested || to == ring);
+
+    if (from == to) {
+        return no_reorder(size());
+    }
+
+    if (k_ <= 0) {
+        // no reordering to/from nested is possible
+        throw exception::ReorderError(
+            "HEALPix::reorder(from=" + from + ", to=" + to + ", Nside=, " + std::to_string(Nside_) + ")", Here());
+    }
+
+    auto from_nested = from == "nested";
+
+    Reordering ren(size());
+    for (int i = 0; i < size(); ++i) {
+        ren[i] = from_nested ? nest_to_ring(i) : ring_to_nest(i);
+    }
+
+    return ren;
 }
 
 
-}  // namespace eckit::geo::ordering
+}  // namespace eckit::geo::order

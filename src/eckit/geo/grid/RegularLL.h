@@ -42,7 +42,8 @@ public:
     void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;
 
-    Reorder reorder(Ordering::ordering_type) const override;
+    order_type order() const override { return order_; }
+    Reordering reorder(order_type) const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] area::BoundingBox* calculate_bbox() const override;
@@ -51,7 +52,7 @@ private:
 
     // -- Members
 
-    Ordering::ordering_type ordering_ = Ordering::ordering_type::scan_i_positively_j_negatively_ij_i_single_direction;
+    order_type order_;
 };
 
 

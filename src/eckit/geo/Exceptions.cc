@@ -21,8 +21,8 @@ AreaError::AreaError(const std::string& what, const CodeLocation& loc) : Excepti
 };
 
 
-OrderingError::OrderingError(const std::string& what, const CodeLocation& loc) {
-    reason("OrderingError: [" + what + "], in " + loc.asString());
+ReorderError::ReorderError(const std::string& what, const CodeLocation& loc) {
+    reason("ReorderError: [" + what + "], in " + loc.asString());
 }
 
 

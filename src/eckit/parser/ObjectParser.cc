@@ -13,15 +13,19 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
+#include "eckit/parser/ObjectParser.h"
+
 #include "eckit/eckit_config.h"
 
 #if eckit_HAVE_UNICODE
-#include <codecvt>
+#include <iterator>
+#include <string>
+
+#include "utf8.h"
 #endif /* eckit_HAVE_UNICODE */
 
 #include <locale>
 
-#include "eckit/parser/ObjectParser.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/Value.h"
 
@@ -125,9 +129,10 @@ Value ObjectParser::parseNumber() {
 }
 
 #if eckit_HAVE_UNICODE
-static std::string utf8(uint32_t code) {
-    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
-    return conv.to_bytes(char32_t(code));
+static std::string utf8_to_string(uint32_t code) {
+    std::string result;
+    utf8::append(code, std::back_inserter(result));
+    return result;
 }
 
 
@@ -151,9 +156,9 @@ std::string ObjectParser::unicode() {
     uint32_t code;
     iss >> std::hex >> code;
 
-    // std::cout << " [" << code << ", " << utf8(code) << "]" << std::endl;
+    // std::cout << " [" << code << ", " << utf8_to_string(code) << "]" << std::endl;
 
-    return utf8(code);
+    return utf8_to_string(code);
 }
 #endif /* eckit_HAVE_UNICODE */
 

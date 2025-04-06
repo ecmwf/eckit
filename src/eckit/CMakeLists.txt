@@ -763,6 +763,11 @@ if(eckit_HAVE_XXHASH)
     endif()
 endif()
 
+if(eckit_HAVE_UNICODE)
+    set_source_files_properties( parser/ObjectParser.cc PROPERTIES
+        INCLUDE_DIRECTORIES ${PROJECT_SOURCE_DIR}/third_party/utfcpp/source
+    )
+endif()
 
 list( APPEND eckit_memory_srcs
     memory/Builder.h

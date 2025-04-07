@@ -215,7 +215,7 @@ void HEALPix::fill_spec(spec::Custom& custom) const {
 }
 
 
-Reordering HEALPix::reorder(value_type from, value_type to) const {
+Reordering HEALPix::reorder(const value_type& from, const value_type& to) const {
     ASSERT(from == nested || from == ring);
     ASSERT(to == nested || to == ring);
 

@@ -39,7 +39,7 @@ ReducedLL::ReducedLL(const Spec& spec) :
 
 
 ReducedLL::ReducedLL(const pl_type& pl, area::BoundingBox* bbox) :
-    Reduced(order::Scan::scan_i_positively_j_negatively_ij, bbox), pl_(pl), y_(make_y_range(pl, bbox)) {
+    Reduced(order::Scan::scan_i_positively_j_negatively, bbox), pl_(pl), y_(make_y_range(pl, bbox)) {
     ASSERT(y_);
 }
 

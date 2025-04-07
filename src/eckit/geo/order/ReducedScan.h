@@ -31,9 +31,9 @@ public:
 
     const std::string& type() const override;
 
-    Reordering reorder(value_type from, value_type to) const override;
+    Reordering reorder(const value_type& from, const value_type& to) const override;
 
-    void fill_spec(spec::Custom&) const override {}
+    void fill_spec(spec::Custom&) const override;
 
 private:
 

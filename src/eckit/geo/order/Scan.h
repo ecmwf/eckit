@@ -30,22 +30,22 @@ public:
 
     // -- Class members
 
-    static const value_type scan_i_positively_j_negatively_ij;
-    static const value_type scan_i_negatively_j_negatively_ij;
-    static const value_type scan_i_positively_j_positively_ij;
-    static const value_type scan_i_negatively_j_positively_ij;
-    static const value_type scan_i_positively_j_negatively_ji;
-    static const value_type scan_i_negatively_j_negatively_ji;
-    static const value_type scan_i_positively_j_positively_ji;
-    static const value_type scan_i_negatively_j_positively_ji;
-    static const value_type scan_i_positively_j_negatively_ij_alternating;
-    static const value_type scan_i_negatively_j_negatively_ij_alternating;
-    static const value_type scan_i_positively_j_positively_ij_alternating;
-    static const value_type scan_i_negatively_j_positively_ij_alternating;
-    static const value_type scan_i_positively_j_negatively_ji_alternating;
-    static const value_type scan_i_negatively_j_negatively_ji_alternating;
-    static const value_type scan_i_positively_j_positively_ji_alternating;
-    static const value_type scan_i_negatively_j_positively_ji_alternating;
+    static const value_type scan_i_negatively_j_negatively;
+    static const value_type scan_i_negatively_j_negatively_alternating;
+    static const value_type scan_i_negatively_j_positively;
+    static const value_type scan_i_negatively_j_positively_alternating;
+    static const value_type scan_i_positively_j_negatively;
+    static const value_type scan_i_positively_j_negatively_alternating;
+    static const value_type scan_i_positively_j_positively;
+    static const value_type scan_i_positively_j_positively_alternating;
+    static const value_type scan_j_negatively_i_negatively;
+    static const value_type scan_j_negatively_i_negatively_alternating;
+    static const value_type scan_j_negatively_i_positively;
+    static const value_type scan_j_negatively_i_positively_alternating;
+    static const value_type scan_j_positively_i_negatively;
+    static const value_type scan_j_positively_i_negatively_alternating;
+    static const value_type scan_j_positively_i_positively;
+    static const value_type scan_j_positively_i_positively_alternating;
 
 protected:
 

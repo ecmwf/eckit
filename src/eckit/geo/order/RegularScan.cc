@@ -13,6 +13,7 @@
 #include "eckit/geo/order/RegularScan.h"
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::order {
@@ -27,21 +28,19 @@ const std::string& RegularScan::type() const {
 }
 
 
-Reordering RegularScan::reorder(value_type from, value_type to) const {
-    if (from.empty()) {
-        from = "scan_i_positively_j_negatively_ij_i_single_direction";
-    }
+Reordering RegularScan::reorder(const value_type& from, const value_type& to) const {
+    const auto _from = from.empty() ? "scan_i_positively_j_negatively_ij_i_single_direction" : from;
 
-    if (from == to) {
+    if (_from == to) {
         return no_reorder(nx_ * ny_);
     }
 
-    ASSERT(not is_scan_alternating_direction(from));
+    ASSERT(not is_scan_alternating_direction(_from));
     ASSERT(not is_scan_alternating_direction(to));
 
     Reordering ren(nx_ * ny_);
 
-    if (from == "scan_i_positively_j_positively_ij_i_single_direction") {
+    if (_from == "scan_i_positively_j_positively_ij_i_single_direction") {
         size_t count = 0;
         for (size_t j = ny_; j > 0; --j) {
             for (size_t i = 0; i < nx_; ++i) {
@@ -52,7 +51,7 @@ Reordering RegularScan::reorder(value_type from, value_type to) const {
         return ren;
     }
 
-    if (from == "scan_i_negatively_j_negatively_ij_i_single_direction") {
+    if (_from == "scan_i_negatively_j_negatively_ij_i_single_direction") {
         size_t count = 0;
         for (size_t j = 0; j < ny_; ++j) {
             for (size_t i = nx_; i > 0; --i) {
@@ -63,7 +62,7 @@ Reordering RegularScan::reorder(value_type from, value_type to) const {
         return ren;
     }
 
-    if (from == "scan_i_negatively_j_positively_ij_i_single_direction") {
+    if (_from == "scan_i_negatively_j_positively_ij_i_single_direction") {
         size_t count = 0;
         for (size_t j = ny_; j > 0; --j) {
             for (size_t i = nx_; i > 0; --i) {
@@ -74,8 +73,11 @@ Reordering RegularScan::reorder(value_type from, value_type to) const {
         return ren;
     }
 
-    throw exception::ReorderError("RegularScan::reorder(" + from + ", " + to + ")", Here());
+    throw exception::ReorderError("RegularScan::reorder(" + _from + ", " + to + ")", Here());
 }
+
+
+void RegularScan::fill_spec(spec::Custom& custom) const {}
 
 
 }  // namespace eckit::geo::order

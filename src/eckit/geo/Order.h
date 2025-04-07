@@ -61,8 +61,8 @@ public:
 
     // -- Methods
 
-    virtual const std::string& type() const                          = 0;
-    virtual Reordering reorder(value_type from, value_type to) const = 0;
+    virtual const std::string& type() const                                        = 0;
+    virtual Reordering reorder(const value_type& from, const value_type& to) const = 0;
 
     // -- Class methods
 

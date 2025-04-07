@@ -32,6 +32,10 @@ public:
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 
+    // -- Overridden methods
+
+    Reordering reorder(order_type) const override;
+
     // -- Class members
 
     [[nodiscard]] static Spec* spec(const std::string& name);

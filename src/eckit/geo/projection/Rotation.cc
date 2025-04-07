@@ -14,7 +14,7 @@
 
 #include <cmath>
 
-#include "eckit/geo/geometry/UnitSphere.h"
+#include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
@@ -66,8 +66,8 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
     struct RotationMatrix final : Implementation {
         explicit RotationMatrix(M&& R) : R_(R) {}
         PointLonLat operator()(const PointLonLat& p) const override {
-            return geometry::UnitSphere::convertCartesianToSpherical(
-                R_ * geometry::UnitSphere::convertSphericalToCartesian(p));
+            return figure::UnitSphere::_convertCartesianToSpherical(
+                R_ * figure::UnitSphere::_convertSphericalToCartesian(p));
         }
         const M R_;
     };

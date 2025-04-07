@@ -5,7 +5,7 @@ foreach(_test
         area_polygon
         cache
         figure
-        geometry_sphere
+        figure_earth
         great_circle
         grid
         grid_healpix
@@ -17,7 +17,7 @@ foreach(_test
         increments
         iterator
         kdtree
-        ordering
+        order
         point
         point2
         point3

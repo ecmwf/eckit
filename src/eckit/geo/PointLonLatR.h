@@ -74,6 +74,8 @@ public:
 
     using container_type::data;
 
+    bool pole(value_type eps = EPS) const;
+
     static size_t dimensions() { return DIMS; }
 
     static value_type normalise_angle_to_minimum(value_type, value_type minimum);

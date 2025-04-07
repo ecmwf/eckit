@@ -13,7 +13,6 @@
 #include "eckit/geo/Grid.h"
 
 #include <algorithm>
-#include <numeric>
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
@@ -43,15 +42,11 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(const Spec& spec) :
-    bbox_(area::BoundingBox::make_from_spec(spec)), ordering_(make_ordering_from_spec(spec)) {}
+Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
-Grid::Grid(Ordering ordering) : ordering_(ordering) {}
-
-
-Grid::Grid(const area::BoundingBox& bbox, Projection* projection, Ordering ordering) :
-    bbox_(new area::BoundingBox(bbox)), projection_(projection), ordering_(ordering) {}
+Grid::Grid(area::BoundingBox* bbox, Projection* projection) :
+    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime() : bbox), projection_(projection) {}
 
 
 const Spec& Grid::spec() const {
@@ -129,17 +124,17 @@ std::pair<std::vector<double>, std::vector<double> > Grid::to_latlons() const {
 }
 
 
-Ordering Grid::ordering() const {
+Grid::order_type Grid::order() const {
     NOTIMP;
 }
 
 
-Renumber Grid::reorder(Ordering) const {
+Reordering Grid::reorder(order_type) const {
     NOTIMP;
 }
 
 
-Grid* Grid::make_grid_reordered(Ordering) const {
+Grid* Grid::make_grid_reordered(order_type) const {
     NOTIMP;
 }
 
@@ -154,7 +149,7 @@ const Area& Grid::area() const {
 }
 
 
-Renumber Grid::crop(const Area&) const {
+Reordering Grid::crop(const Area&) const {
     NOTIMP;
 }
 
@@ -186,13 +181,6 @@ const area::BoundingBox& Grid::boundingBox() const {
 
 area::BoundingBox* Grid::calculate_bbox() const {
     NOTIMP;
-}
-
-
-Renumber Grid::no_reorder(size_t size) {
-    Renumber ren(size);
-    std::iota(ren.begin(), ren.end(), 0);
-    return ren;
 }
 
 

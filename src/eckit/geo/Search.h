@@ -17,7 +17,7 @@
 #include "eckit/container/KDTree.h"
 #include "eckit/container/sptree/SPValue.h"
 #include "eckit/geo/Point.h"
-#include "eckit/geo/geometry/UnitSphere.h"
+#include "eckit/geo/figure/UnitSphere.h"
 
 
 namespace eckit::geo {
@@ -77,7 +77,7 @@ struct SearchLonLat : Search3 {
 
 private:
 
-    static Search3::Point to_cartesian(const Point& p) { return geometry::UnitSphere::convertSphericalToCartesian(p); }
+    static Search3::Point to_cartesian(const Point& p) { return figure::UnitSphere::_convertSphericalToCartesian(p); }
 };
 
 

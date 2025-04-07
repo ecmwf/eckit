@@ -64,6 +64,10 @@ public:
 
 protected:
 
+    // -- Constructors
+
+    Unstructured(container::PointsContainer*);
+
     // -- Methods
 
     void resetContainer(container::PointsContainer* container) { container_.reset(container); }

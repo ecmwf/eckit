@@ -59,4 +59,9 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
 }
 
 
+Reordering RegularXY::reorder(order_type to) const {
+    return internal_order().reorder(to);
+}
+
+
 }  // namespace eckit::geo::grid

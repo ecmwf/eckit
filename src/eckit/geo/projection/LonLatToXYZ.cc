@@ -15,8 +15,6 @@
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
-#include "eckit/geo/geometry/OblateSpheroid.h"
-#include "eckit/geo/geometry/Sphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -33,10 +31,10 @@ LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {
 
         explicit LonLatToSphereXYZ(double _R) : R(_R) {}
         PointXYZ operator()(const PointLonLat& p) const override {
-            return geometry::Sphere::convertSphericalToCartesian(R, p, 0.);
+            return figure::Sphere::convertSphericalToCartesian(R, p, 0.);
         }
         PointLonLat operator()(const PointXYZ& q) const override {
-            return geometry::Sphere::convertCartesianToSpherical(R, q);
+            return figure::Sphere::convertCartesianToSpherical(R, q);
         }
     };
 
@@ -46,7 +44,7 @@ LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {
 
         explicit LonLatToSpheroidXYZ(double _a, double _b) : a(_a), b(_b) {}
         PointXYZ operator()(const PointLonLat& p) const override {
-            return geometry::OblateSpheroid::convertSphericalToCartesian(a, b, p, 0.);
+            return figure::OblateSpheroid::convertSphericalToCartesian(a, b, p, 0.);
         }
         PointLonLat operator()(const PointXYZ& q) const override { NOTIMP; }
     };

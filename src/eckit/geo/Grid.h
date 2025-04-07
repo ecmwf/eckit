@@ -21,10 +21,9 @@
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/Iterator.h"
-#include "eckit/geo/Ordering.h"
+#include "eckit/geo/Order.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/Renumber.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/spec/Custom.h"
@@ -52,6 +51,8 @@ public:
     using uid_t     = std::string;
     using builder_t = BuilderT1<Grid>;
     using ARG1      = const Spec&;
+
+    using order_type = Order::value_type;
 
     struct Iterator final : std::unique_ptr<geo::Iterator> {
         explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
@@ -114,8 +115,6 @@ public:
 
     // -- Constructors
 
-    explicit Grid(const Spec&);
-
     Grid(const Grid&) = delete;
     Grid(Grid&&)      = delete;
 
@@ -160,18 +159,18 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    virtual Ordering ordering() const;
-    virtual Renumber reorder(Ordering) const;
+    virtual order_type order() const;
+    virtual Reordering reorder(order_type) const;
 
     virtual const Area& area() const;
-    virtual Renumber crop(const Area&) const;
+    virtual Reordering crop(const Area&) const;
 
     virtual const Projection& projection() const;
 
     virtual const area::BoundingBox& boundingBox() const;
     [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
 
-    [[nodiscard]] virtual Grid* make_grid_reordered(Ordering) const;
+    [[nodiscard]] virtual Grid* make_grid_reordered(order_type) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
 
     // -- Class methods
@@ -182,14 +181,12 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(const area::BoundingBox&, Projection* = nullptr, Ordering = Ordering::DEFAULT);
-    explicit Grid(Ordering = Ordering::DEFAULT);
+    explicit Grid(const Spec&);
+    explicit Grid(area::BoundingBox*, Projection*);
 
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
-
-    static Renumber no_reorder(size_t size);
 
     void reset_uid(uid_t = {});
 
@@ -205,8 +202,6 @@ private:
     mutable std::unique_ptr<Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;
-
-    Ordering ordering_;
 
     // -- Friends
 

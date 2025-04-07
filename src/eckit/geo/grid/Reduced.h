@@ -40,7 +40,7 @@ protected:
 
     // -- Constructors
 
-    explicit Reduced(const area::BoundingBox& = {}, Projection* = nullptr);
+    explicit Reduced(area::BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 

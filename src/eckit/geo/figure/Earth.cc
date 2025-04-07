@@ -16,9 +16,14 @@
 namespace eckit::geo::figure {
 
 
-static const ConcreteBuilderT1<Figure, Earth> REGISTER1("earth");
-static const ConcreteBuilderT1<Figure, GRS80> REGISTER2("grs80");
-static const ConcreteBuilderT1<Figure, WGS84> REGISTER3("wgs84");
+static const FigureBuilder<Earth> REGISTER1("earth");
+static const FigureBuilder<Grs80> REGISTER2("grs80");
+static const FigureBuilder<Wgs84> REGISTER3("wgs84");
+
+
+const Earth EARTH;
+const Grs80 GRS80;
+const Wgs84 WGS84;
 
 
 }  // namespace eckit::geo::figure

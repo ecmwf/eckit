@@ -33,6 +33,10 @@ public:
     size_t nlon() const { return x().size(); }
     size_t nlat() const { return y().size(); }
 
+    // -- Overridden methods
+
+    Reordering reorder(order_type) const override;
+
 protected:
 
     // -- Methods

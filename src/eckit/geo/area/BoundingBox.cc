@@ -22,7 +22,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/geometry/Sphere.h"
+#include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"

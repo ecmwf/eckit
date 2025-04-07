@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "eckit/geo/Increments.h"
-#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -94,7 +93,7 @@ const std::string& RegularLL::type() const {
 
 
 Reordering RegularLL::reorder(order_type to) const {
-    return order::RegularScan(x().size(), y().size()).reorder(order_, to);
+    return internal_order().reorder(to);
 }
 
 

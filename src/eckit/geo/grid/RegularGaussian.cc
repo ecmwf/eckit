@@ -14,7 +14,6 @@
 
 #include <memory>
 
-#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -70,7 +69,7 @@ const std::string& RegularGaussian::type() const {
 
 
 Reordering RegularGaussian::reorder(order_type to) const {
-    return order::RegularScan(x().size(), y().size()).reorder(order_, to);
+    return internal_order().reorder(to);
 }
 
 

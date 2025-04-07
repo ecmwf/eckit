@@ -66,6 +66,14 @@ Reordering Order::no_reorder(size_t size) {
 }
 
 
+void Order::fill_spec(spec::Custom& custom) const {
+    if (order() != order_default()) {
+        custom.set("type", type());
+        custom.set("order", order());
+    }
+}
+
+
 void Order::register_ordering(const std::string& name) {
     lock_type lock;
 

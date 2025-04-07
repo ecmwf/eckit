@@ -63,8 +63,12 @@ protected:
 
     // -- Constructors
 
-    explicit Regular(const Spec& spec) : Grid(spec) {}
+    explicit Regular(const Spec& spec);
     explicit Regular(Ranges, Projection* = nullptr);
+
+    // -- Methods
+
+    const Order& internal_order() const;
 
     // -- Overridden methods
 
@@ -76,6 +80,7 @@ private:
 
     std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
+    std::unique_ptr<Order> order_;
 
     // -- Friends
 

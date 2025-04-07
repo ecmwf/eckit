@@ -31,13 +31,15 @@ public:
 
     const std::string& type() const override;
 
-    Reordering reorder(const value_type& from, const value_type& to) const override;
-
-    void fill_spec(spec::Custom&) const override;
+    const value_type& order_default() const override;
+    const value_type& order() const override { return order_; }
+    Reordering reorder(const value_type& to) const override;
 
 private:
 
     // -- Members
+
+    value_type order_;
 
     const pl_type pl_;
 };

@@ -16,6 +16,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/Fraction.h"
 
@@ -70,10 +71,21 @@ const Range& Regular::y() const {
 }
 
 
+Regular::Regular(const Spec& spec) : Grid(spec), order_(new order::RegularScan(spec)) {}
+
+
 Regular::Regular(Ranges xy, Projection* projection) :
-    Grid(make_bounding_box(*xy.first, *xy.second), projection), x_(xy.first), y_(xy.second) {
+    Grid(make_bounding_box(*xy.first, *xy.second), projection),
+    x_(xy.first),
+    y_(xy.second),
+    order_(new order::RegularScan(xy.first->size(), xy.second->size())) {
     ASSERT(x_ && x_->size() > 0);
     ASSERT(y_ && y_->size() > 0);
+}
+
+
+const Order& Regular::internal_order() const {
+    return *order_;
 }
 
 

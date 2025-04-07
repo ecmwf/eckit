@@ -61,8 +61,11 @@ public:
 
     // -- Methods
 
-    virtual const std::string& type() const                                        = 0;
-    virtual Reordering reorder(const value_type& from, const value_type& to) const = 0;
+    virtual const std::string& type() const = 0;
+
+    virtual const value_type& order_default() const        = 0;
+    virtual const value_type& order() const                = 0;
+    virtual Reordering reorder(const value_type& to) const = 0;
 
     // -- Class methods
 
@@ -79,7 +82,7 @@ private:
 
     // -- Methods
 
-    virtual void fill_spec(spec::Custom&) const = 0;
+    void fill_spec(spec::Custom&) const;
 
     void register_ordering(const std::string&);
 };

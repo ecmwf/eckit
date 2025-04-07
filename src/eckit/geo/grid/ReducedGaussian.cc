@@ -48,13 +48,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, pro
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, projection::Rotation* rotation) :
-    Reduced(order::Scan::scan_i_negatively_j_negatively, bbox, rotation),
-    N_(N),
-    pl_(pl),
-    j_(0),
-    Nj_(pl.size()),
-    x_(Nj_),
-    y_(make_y_range(N, bbox)) {
+    Reduced(bbox, rotation), N_(N), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)), order_(pl) {
     ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
     ASSERT(y_);
@@ -97,6 +91,11 @@ size_t ReducedGaussian::ni(size_t j) const {
 
 size_t ReducedGaussian::nj() const {
     return y_->size();
+}
+
+
+Reordering ReducedGaussian::reorder(order_type to) const {
+    return order_.reorder(to);
 }
 
 

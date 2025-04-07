@@ -16,7 +16,6 @@
 #include <cmath>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::order {
@@ -209,27 +208,26 @@ const std::string& HEALPix::type() const {
 }
 
 
-void HEALPix::fill_spec(spec::Custom& custom) const {
-    custom.set("type", type());
-    custom.set("nside", Nside_);
+const Order::value_type& HEALPix::order_default() const {
+    return ring;
 }
 
 
-Reordering HEALPix::reorder(const value_type& from, const value_type& to) const {
-    ASSERT(from == nested || from == ring);
+Reordering HEALPix::reorder(const value_type& to) const {
+    ASSERT(order_ == nested || order_ == ring);
     ASSERT(to == nested || to == ring);
 
-    if (from == to) {
+    if (order_ == to) {
         return no_reorder(size());
     }
 
     if (k_ <= 0) {
         // no reordering to/from nested is possible
         throw exception::ReorderError(
-            "HEALPix::reorder(from=" + from + ", to=" + to + ", Nside=, " + std::to_string(Nside_) + ")", Here());
+            "HEALPix::reorder(from=" + order_ + ", to=" + to + ", Nside=, " + std::to_string(Nside_) + ")", Here());
     }
 
-    auto from_nested = from == "nested";
+    auto from_nested = order_ == "nested";
 
     Reordering ren(size());
     for (int i = 0; i < size(); ++i) {

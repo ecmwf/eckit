@@ -39,7 +39,7 @@ ReducedLL::ReducedLL(const Spec& spec) :
 
 
 ReducedLL::ReducedLL(const pl_type& pl, area::BoundingBox* bbox) :
-    Reduced(order::Scan::scan_i_positively_j_negatively, bbox), pl_(pl), y_(make_y_range(pl, bbox)) {
+    Reduced(bbox), pl_(pl), y_(make_y_range(pl, bbox)), order_(pl) {
     ASSERT(y_);
 }
 
@@ -61,6 +61,11 @@ size_t ReducedLL::ni(size_t j) const {
 
 size_t ReducedLL::nj() const {
     return pl_.size();
+}
+
+
+Reordering ReducedLL::reorder(order_type to) const {
+    return order_.reorder(to);
 }
 
 

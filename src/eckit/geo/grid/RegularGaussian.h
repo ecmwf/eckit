@@ -34,7 +34,6 @@ public:
 
     // -- Overridden methods
 
-    order_type order() const override { return order_; }
     Reordering reorder(order_type) const override;
 
     // -- Class members
@@ -46,8 +45,6 @@ private:
     // -- Members
 
     const size_t N_;
-
-    order_type order_;
 
     // -- Overridden methods
 

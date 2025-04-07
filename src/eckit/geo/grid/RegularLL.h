@@ -42,17 +42,10 @@ public:
     void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;
 
-    order_type order() const override { return order_; }
     Reordering reorder(order_type) const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] area::BoundingBox* calculate_bbox() const override;
-
-private:
-
-    // -- Members
-
-    order_type order_;
 };
 
 

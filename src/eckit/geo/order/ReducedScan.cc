@@ -29,20 +29,20 @@ const std::string& ReducedScan::type() const {
 }
 
 
-Reordering ReducedScan::reorder(const value_type& from, const value_type& to) const {
-    const auto _from = from.empty() ? "scan_i_positively_j_negatively_ij_i_single_direction" : from;
+const Order::value_type& ReducedScan::order_default() const {
+    return scan_i_positively_j_negatively;
+}
 
-    if (_from == to) {
+
+Reordering ReducedScan::reorder(const value_type& to) const {
+    if (order_ == to) {
         const auto size = std::accumulate(pl_.begin(), pl_.end(), static_cast<size_t>(0));
         return no_reorder(size);
     }
 
     // FIXME implement this
 
-    throw exception::ReorderError("ReducedScan::reorder(" + from + ", " + to + ")", Here());
+    throw exception::ReorderError("ReducedScan::reorder(" + order_ + ", " + to + ")", Here());
 }
-
-void ReducedScan::fill_spec(spec::Custom&) const {}
-
 
 }  // namespace eckit::geo::order

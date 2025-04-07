@@ -35,7 +35,6 @@ public:
 
     // -- Overridden methods
 
-    order_type order() const override { return order_; }
     Reordering reorder(order_type) const override;
 
 protected:
@@ -54,8 +53,6 @@ private:
 
     PointLonLat first_lonlat;
     PointXY first_xy;
-
-    order_type order_;
 };
 
 

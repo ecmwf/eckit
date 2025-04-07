@@ -17,7 +17,6 @@
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Shape.h"
-#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/range/RegularCartesian.h"
 #include "eckit/geo/spec/Custom.h"
 
@@ -61,7 +60,7 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
 
 
 Reordering RegularXY::reorder(order_type to) const {
-    return order::RegularScan(x().size(), y().size()).reorder(order_, to);
+    return internal_order().reorder(to);
 }
 
 

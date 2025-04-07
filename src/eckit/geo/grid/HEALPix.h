@@ -56,6 +56,7 @@ private:
     // -- Members
 
     const size_t Nside_;
+    order::HEALPix order_;
 
     mutable std::vector<double> latitudes_;
 

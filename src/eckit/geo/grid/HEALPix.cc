@@ -234,7 +234,7 @@ HEALPix::HEALPix(const Spec& spec) :
     }(spec.get_string("ordering", "ring"))) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order) : Reduced(order), Nside_(Nside) {
+HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), order_(Nside) {
     if (order == order::HEALPix::ring || order == order::HEALPix::nested) {
         if (Nside_ == 0) {
             throw exception::SpecError(HEALPIX_ERROR_NSIDE_POSITIVE, Here());
@@ -251,10 +251,10 @@ HEALPix::HEALPix(size_t Nside, order_type order) : Reduced(order), Nside_(Nside)
 }
 
 
-Reordering HEALPix::reorder(order_type _order) const {
-    ASSERT_MSG(_order == order::HEALPix::ring || _order == order::HEALPix::nested, HEALPIX_ERROR_ORDER);
+Reordering HEALPix::reorder(order_type to) const {
+    ASSERT_MSG(to == order::HEALPix::ring || to == order::HEALPix::nested, HEALPIX_ERROR_ORDER);
 
-    if (_order == order()) {
+    if (to == order()) {
         return Order::no_reorder(size());
     }
 
@@ -263,7 +263,7 @@ Reordering HEALPix::reorder(order_type _order) const {
 
     Reordering ren(N);
     for (int i = 0; i < N; ++i) {
-        ren[i] = _order == order::HEALPix::ring ? reorder.nest_to_ring(i) : reorder.ring_to_nest(i);
+        ren[i] = to == order::HEALPix::ring ? reorder.nest_to_ring(i) : reorder.ring_to_nest(i);
     }
     return ren;
 }

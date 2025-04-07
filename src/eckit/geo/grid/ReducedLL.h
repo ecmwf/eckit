@@ -16,6 +16,7 @@
 
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
+#include "eckit/geo/order/ReducedScan.h"
 #include "eckit/geo/util.h"
 
 
@@ -42,6 +43,8 @@ public:
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
+    Reordering reorder(order_type) const override;
+
 private:
 
     // -- Members
@@ -50,6 +53,7 @@ private:
 
     std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
+    order::ReducedScan order_;
 
     // -- Overridden methods
 

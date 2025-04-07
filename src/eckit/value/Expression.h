@@ -72,8 +72,8 @@ inline const char* opname(const std::logical_or<eckit::Value>&) {
 
 class EvalError : public eckit::Exception {
 public:
-    EvalError(const std::string& s) :
-        Exception(std::string("EvalError: ") + s) {}
+
+    EvalError(const std::string& s) : Exception(std::string("EvalError: ") + s) {}
 };
 
 template <class T>
@@ -81,6 +81,7 @@ class Expression : private eckit::NonCopyable {
     virtual void print(std::ostream&) const = 0;
 
 public:
+
     virtual eckit::Value eval(T&) const = 0;
     virtual ~Expression() {}
     friend std::ostream& operator<<(std::ostream& s, const Expression<T>& c) {
@@ -97,8 +98,8 @@ class CondUnary : public Expression<U> {
     void print(std::ostream& s) const override { s << opname(T()) << '(' << *cond_ << ')'; }
 
 public:
-    CondUnary(Expression<U>* cond) :
-        cond_(cond) {}
+
+    CondUnary(Expression<U>* cond) : cond_(cond) {}
     ~CondUnary() override {}
     virtual eckit::Value eval(U& task) const { return T()(cond_->eval(task)); }
 };
@@ -112,8 +113,8 @@ class CondBinary : public Expression<U> {
     void print(std::ostream& s) const override { s << '(' << *left_ << ' ' << opname(T()) << ' ' << *right_ << ')'; }
 
 public:
-    CondBinary(Expression<U>* left, Expression<U>* right) :
-        left_(left), right_(right) {}
+
+    CondBinary(Expression<U>* left, Expression<U>* right) : left_(left), right_(right) {}
 
     ~CondBinary() override {}
     eckit::Value eval(U& task) const;
@@ -130,8 +131,8 @@ class StringExpression : public Expression<T> {
     void print(std::ostream& s) const override { s << str_; }
 
 public:
-    StringExpression(const std::string& s) :
-        str_(s) {}
+
+    StringExpression(const std::string& s) : str_(s) {}
     ~StringExpression() override {}
     virtual eckit::Value eval(T&) const { return eckit::Value(str_); }
 };
@@ -142,11 +143,12 @@ class NumberExpression : public Expression<T> {
     void print(std::ostream& s) const override { s << value_; }
 
 protected:
+
     long long value() const { return value_; }
 
 public:
-    NumberExpression(long long n) :
-        value_(n) {}
+
+    NumberExpression(long long n) : value_(n) {}
     ~NumberExpression() override {}
     virtual eckit::Value eval(T&) const { return eckit::Value(value_); }
 };
@@ -157,9 +159,9 @@ class ListExpression : public Expression<T> {
     void print(std::ostream& s) const override;
 
 public:
+
     ListExpression();
-    ListExpression(const std::vector<Expression<T>*>& v) :
-        v_(v) {}
+    ListExpression(const std::vector<Expression<T>*>& v) : v_(v) {}
     ~ListExpression() override;
     virtual eckit::Value eval(T&) const;
 };

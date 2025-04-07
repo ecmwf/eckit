@@ -86,6 +86,17 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 }
 
 
+const std::string& RegularLL::type() const {
+    static const std::string type{"regular-ll"};
+    return type;
+}
+
+
+Reordering RegularLL::reorder(order_type to) const {
+    return internal_order().reorder(to);
+}
+
+
 Grid* RegularLL::make_grid_cropped(const Area& crop) const {
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
         return new RegularLL({dx(), dy()}, cropped);

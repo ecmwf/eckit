@@ -26,11 +26,9 @@ static size_t whole_page(size_t size) {
     return ((size + page - 1) / page) * page;
 }
 
-MapAllocatorTooSmall::MapAllocatorTooSmall(size_t, size_t) :
-    Exception("MapAllocator too small") {}
+MapAllocatorTooSmall::MapAllocatorTooSmall(size_t, size_t) : Exception("MapAllocator too small") {}
 
-MapAllocator::MapAllocator(size_t length) :
-    fd_(-1), length_(whole_page(length)), count_(0), more_(0) {
+MapAllocator::MapAllocator(size_t length) : fd_(-1), length_(whole_page(length)), count_(0), more_(0) {
     addr_ = MMap::mmap(0, length_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd_, 0);
 
     if (addr_ == MAP_FAILED) {

@@ -20,9 +20,9 @@
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/JSON.h"
 #include "eckit/memory/Zero.h"
+#include "eckit/net/IPAddress.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Clock.h"
-#include "eckit/net/IPAddress.h"
 
 namespace eckit {
 
@@ -41,7 +41,8 @@ class ClusterNodeEntry {
     char attributes_[MAX_NODE_ATTRIBUTES][256];
     int port_;
 
-    ClusterNodeEntry(const std::string& node, const std::string& type, const std::string& host, int port, const std::set<std::string>& attributes) :
+    ClusterNodeEntry(const std::string& node, const std::string& type, const std::string& host, int port,
+                     const std::set<std::string>& attributes) :
         active_(true), lastSeen_(Clock::now()), offLine_(false), port_(port) {
         zero(node_);
         strncpy(node_, node.c_str(), sizeof(node_) - 1);
@@ -58,8 +59,9 @@ class ClusterNodeEntry {
     }
 
 public:
+
     ClusterNodeEntry(const NodeInfo& info) :
-    ClusterNodeEntry(info.node(), info.name(), info.host(), info.port(), info.attributes()) {}
+        ClusterNodeEntry(info.node(), info.name(), info.host(), info.port(), info.attributes()) {}
 
     NodeInfo asNodeInfo() const {
         NodeInfo info;

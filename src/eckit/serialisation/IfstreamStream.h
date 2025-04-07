@@ -31,16 +31,17 @@ namespace eckit {
 
 class IfstreamStream : public Stream {
 public:
+
     // -- Contructors
 
-    IfstreamStream(std::ifstream& f) :
-        f_(f) {}
+    IfstreamStream(std::ifstream& f) : f_(f) {}
 
     // -- Destructor
 
     ~IfstreamStream() {}
 
 private:
+
     // -- Members
 
     std::ifstream& f_;

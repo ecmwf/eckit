@@ -17,6 +17,7 @@
 
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
+#include "eckit/geo/order/ReducedScan.h"
 #include "eckit/geo/util.h"
 
 
@@ -25,15 +26,18 @@ namespace eckit::geo::grid {
 
 class ReducedGaussian : public Reduced {
 public:
+
     // -- Constructors
 
     explicit ReducedGaussian(const Spec&);
-    explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
-    explicit ReducedGaussian(size_t N, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
+    explicit ReducedGaussian(const pl_type&, area::BoundingBox* = nullptr, projection::Rotation* = nullptr);
+    explicit ReducedGaussian(size_t N, const pl_type&, area::BoundingBox* = nullptr, projection::Rotation* = nullptr);
+    explicit ReducedGaussian(size_t N, area::BoundingBox* = nullptr, projection::Rotation* = nullptr);
 
     // -- Methods
 
     size_t N() const { return N_; }
+    const pl_type& pl() const { return pl_; }
 
     // -- Overridden methods
 
@@ -44,7 +48,10 @@ public:
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
+    Reordering reorder(order_type) const override;
+
 private:
+
     // -- Members
 
     const size_t N_;
@@ -54,10 +61,12 @@ private:
 
     std::vector<std::unique_ptr<Range>> x_;
     std::unique_ptr<Range> y_;
+    order::ReducedScan order_;
 
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t i) const override;

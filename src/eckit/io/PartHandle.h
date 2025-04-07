@@ -29,6 +29,7 @@ namespace eckit {
 
 class PartHandle : public DataHandle, public HandleHolder {
 public:
+
     // -- Contructors
 
     PartHandle(DataHandle& handle, const OffsetList&, const LengthList&);
@@ -73,6 +74,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- Members
 
     long long pos_;

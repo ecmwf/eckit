@@ -30,6 +30,7 @@ class PathName;
 
 class StdFile : private NonCopyable {
 public:
+
     StdFile(const PathName& name, const std::string& mode = "r");
 
     /// @pre must have been closed
@@ -44,6 +45,7 @@ public:
     void close() noexcept(false);
 
 private:  // members
+
     FILE* file_;
 };
 
@@ -55,8 +57,8 @@ class AutoStdFile : public StdFile {
     void close() { StdFile::close(); }
 
 public:
-    AutoStdFile(const PathName& name, const std::string& mode = "r") :
-        StdFile(name, mode) {}
+
+    AutoStdFile(const PathName& name, const std::string& mode = "r") : StdFile(name, mode) {}
     ~AutoStdFile() noexcept(false) { close(); }
 };
 

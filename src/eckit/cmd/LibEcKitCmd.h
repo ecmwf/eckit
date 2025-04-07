@@ -28,6 +28,7 @@ public:  // methods
     static LibEcKitCmd& instance();
 
 protected:  // methods
+
     const void* addr() const override;
 
     std::string version() const override;

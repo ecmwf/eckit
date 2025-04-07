@@ -25,16 +25,19 @@ namespace eckit {
 
 class FileTarget : public LogTarget {
 public:
+
     explicit FileTarget(const PathName& path, size_t bufferSize = 4 * 1024);
     virtual ~FileTarget();
 
 private:
+
     void write(const char* start, const char* end) override;
     void flush() override;
 
     void print(std::ostream& s) const override;
 
 private:
+
     std::ofstream out_;
     Buffer buffer_;  //< configurable buffer for ofstream
     PathName path_;

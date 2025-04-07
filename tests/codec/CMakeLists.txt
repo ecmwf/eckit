@@ -36,4 +36,3 @@ foreach( algorithm none bzip2 aec lz4 snappy )
         )
     endif()
 endforeach()
-

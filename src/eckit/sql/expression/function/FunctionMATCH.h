@@ -28,6 +28,7 @@ namespace function {
 
 class FunctionMATCH : public FunctionExpression {
 public:
+
     FunctionMATCH(const std::string&, const eckit::sql::expression::Expressions&, const eckit::sql::SelectAST&);
     FunctionMATCH(const FunctionMATCH&);
     ~FunctionMATCH();
@@ -39,6 +40,7 @@ public:
     void collect(const std::vector<double>&);
 
 private:
+
     size_t size_;
     const SelectAST subquery_;
     std::vector<std::vector<double> > subqueryResult_;

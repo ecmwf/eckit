@@ -26,6 +26,7 @@ class PoolFileEntry;
 
 class PooledFile : private NonCopyable {
 public:
+
     PooledFile(const PathName& name);
 
     /// @pre must have been closed
@@ -52,6 +53,7 @@ public:
     size_t nbSeeks() const;
 
 private:
+
     PathName name_;
     PoolFileEntry* entry_;
 };
@@ -59,6 +61,7 @@ private:
 
 class PooledFileError : public FileError {
 public:
+
     PooledFileError(const std::string& file, const std::string& msg, const CodeLocation& loc);
 };
 

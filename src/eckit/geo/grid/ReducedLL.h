@@ -16,6 +16,7 @@
 
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
+#include "eckit/geo/order/ReducedScan.h"
 #include "eckit/geo/util.h"
 
 
@@ -24,10 +25,15 @@ namespace eckit::geo::grid {
 
 class ReducedLL : public Reduced {
 public:
+
     // -- Constructors
 
     explicit ReducedLL(const Spec&);
-    explicit ReducedLL(const pl_type&, const area::BoundingBox& = {});
+    explicit ReducedLL(const pl_type&, area::BoundingBox* = nullptr);
+
+    // -- Methods
+
+    const pl_type& pl() const { return pl_; }
 
     // -- Overridden methods
 
@@ -37,13 +43,17 @@ public:
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
+    Reordering reorder(order_type) const override;
+
 private:
+
     // -- Members
 
     const pl_type pl_;
 
     std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
+    order::ReducedScan order_;
 
     // -- Overridden methods
 
@@ -51,6 +61,7 @@ private:
     std::vector<double> longitudes(size_t j) const override;
 
     void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 };
 
 

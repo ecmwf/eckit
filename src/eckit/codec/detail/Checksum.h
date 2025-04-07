@@ -19,6 +19,7 @@ namespace eckit::codec {
 
 class Checksum {
 public:
+
     Checksum() = default;
     explicit Checksum(const std::string& checksum);
     bool available() const;
@@ -27,6 +28,7 @@ public:
     std::string algorithm() const { return algorithm_; }
 
 private:
+
     std::string algorithm_;
     std::string checksum_;
 };

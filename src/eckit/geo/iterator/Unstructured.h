@@ -13,9 +13,13 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include "eckit/geo/Iterator.h"
+
+
+namespace eckit::geo::container {
+class PointsContainer;
+}
 
 
 namespace eckit::geo::iterator {
@@ -23,35 +27,17 @@ namespace eckit::geo::iterator {
 
 class Unstructured final : public Iterator {
 public:
-    // -- Types
-
-    struct Container {
-        Container()          = default;
-        virtual ~Container() = default;
-
-        Container(const Container&) = delete;
-        Container(Container&&)      = delete;
-
-        Container& operator=(const Container&) = delete;
-        Container& operator=(Container&&)      = delete;
-
-        virtual Point get(size_t index) const = 0;
-        virtual size_t size() const           = 0;
-    };
 
     // -- Constructors
 
-    explicit Unstructured(const Grid&, size_t index, const std::vector<double>& longitudes,
-                          const std::vector<double>& latitudes);
-    explicit Unstructured(const Grid&, size_t index, const std::vector<Point>&);
-    explicit Unstructured(const Grid&, size_t index, std::vector<Point>&&);
-
+    Unstructured(const Grid&, size_t index, std::shared_ptr<container::PointsContainer>);
     explicit Unstructured(const Grid&);
 
 private:
+
     // -- Members
 
-    std::unique_ptr<Container> container_;
+    std::shared_ptr<container::PointsContainer> container_;
     size_t index_;
     const size_t size_;
     const std::string uid_;

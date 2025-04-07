@@ -15,8 +15,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename K, typename V>
-CacheLRU<K, V>::CacheLRU(size_t capacity, purge_handler_type purge) :
-    capacity_(capacity), purge_(purge) {}
+CacheLRU<K, V>::CacheLRU(size_t capacity, purge_handler_type purge) : capacity_(capacity), purge_(purge) {}
 
 template <typename K, typename V>
 CacheLRU<K, V>::~CacheLRU() {

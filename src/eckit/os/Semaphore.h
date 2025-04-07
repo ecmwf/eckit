@@ -26,6 +26,7 @@ namespace eckit {
 class Semaphore : private NonCopyable {
 
 public:  // methods
+
     Semaphore(const PathName& name, int count = 1);
 
     ~Semaphore();
@@ -46,6 +47,7 @@ public:  // methods
     pid_t getpid() const;
 
 protected:  // members
+
     int semaphore_;
     int count_;
     int level_;

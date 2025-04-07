@@ -9,13 +9,13 @@
  */
 
 #include <arpa/inet.h>
-#include <cerrno>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <cstdlib>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cerrno>
+#include <cstdlib>
 
 #include <cstring>
 #include <iostream>
@@ -35,8 +35,7 @@ static void* get_sockaddr(struct sockaddr* sa) {
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-UDPServer::UDPServer(int port) :
-    port_(port), socketfd_(0) {
+UDPServer::UDPServer(int port) : port_(port), socketfd_(0) {
     struct addrinfo hints;
     struct addrinfo* servinfo;
     struct addrinfo* addr;
@@ -114,7 +113,8 @@ void UDPServer::print(std::ostream& s) const {
 
 std::string UDPServer::remoteHost(struct sockaddr_storage& remote_addr) const {
     char inet6[INET6_ADDRSTRLEN];
-    std::string r = ::inet_ntop(remote_addr.ss_family, get_sockaddr((struct sockaddr*)&remote_addr), inet6, sizeof(inet6));
+    std::string r =
+        ::inet_ntop(remote_addr.ss_family, get_sockaddr((struct sockaddr*)&remote_addr), inet6, sizeof(inet6));
     return r;
 }
 

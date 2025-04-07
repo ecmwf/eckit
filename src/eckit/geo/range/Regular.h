@@ -20,6 +20,7 @@ namespace eckit::geo::range {
 
 class Regular : public Range {
 public:
+
     // -- Methods
 
     Fraction increment() const override;
@@ -29,6 +30,7 @@ public:
     const std::vector<double>& values() const override;
 
 protected:
+
     // -- Constructors
 
     /**
@@ -55,6 +57,7 @@ protected:
     bool getPeriodic() const { return periodic_; }
 
 private:
+
     // -- Members
 
     std::vector<double> values_;

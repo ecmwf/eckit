@@ -17,8 +17,7 @@ namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SerialRequest::SerialRequest() :
-    request_(-1) {}
+SerialRequest::SerialRequest() : request_(-1) {}
 
 SerialRequest::~SerialRequest() {}
 

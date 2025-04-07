@@ -27,6 +27,7 @@ namespace eckit {
 template <class T>
 class FileBase {
 public:
+
     // -- Exceptions
     // None
 
@@ -59,6 +60,7 @@ public:
     // None
 
 protected:
+
     // -- Members
     // None
 
@@ -76,6 +78,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     FileBase(const FileBase<T>&);

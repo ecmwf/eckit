@@ -30,8 +30,7 @@ Reanimator<NilContent> NilContent::reanimator_;
 NilContent::NilContent() {}
 
 
-NilContent::NilContent(Stream& s) :
-    Content(s) {}
+NilContent::NilContent(Stream& s) : Content(s) {}
 
 Content* NilContent::clone() const {
     return new NilContent();

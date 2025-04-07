@@ -23,6 +23,7 @@ namespace eckit {
 
 class ProxiedTCPClient : public net::TCPClient {
 public:
+
     ProxiedTCPClient(const std::string& proxyHost, int proxyPort, int port = 0);
 
     ~ProxiedTCPClient() override;
@@ -31,6 +32,7 @@ public:
     net::TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0) override;
 
 private:
+
     net::Endpoint proxy_;
 
     void print(std::ostream& s) const override;

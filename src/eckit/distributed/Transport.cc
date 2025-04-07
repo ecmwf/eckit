@@ -13,44 +13,36 @@
 #include <map>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/option/CmdArgs.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/option/CmdArgs.h"
 
 
 namespace eckit::distributed {
 
 
-
 namespace {
 
 
-static eckit::Mutex *local_mutex = 0;
-static std::map<std::string, TransportFactory *> *m = 0;
+static eckit::Mutex* local_mutex                   = 0;
+static std::map<std::string, TransportFactory*>* m = 0;
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 
 static void init() {
     local_mutex = new eckit::Mutex();
-    m = new std::map<std::string, TransportFactory *>();
+    m           = new std::map<std::string, TransportFactory*>();
 }
 
 
-}  // (anonymous namespace)
-
+}  // namespace
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Transport::Transport(const eckit::option::CmdArgs &args):
-    title_("eckit-run"),
-    id_("no-id") {
+Transport::Transport(const eckit::option::CmdArgs& args) : title_("eckit-run"), id_("no-id") {}
 
-}
-
-Transport::~Transport() {
-
-}
+Transport::~Transport() {}
 
 const std::string& Transport::title() const {
     return title_;
@@ -67,9 +59,7 @@ const TransportStatistics& Transport::statistics() const {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-
-TransportFactory::TransportFactory(const std::string &name):
-    name_(name) {
+TransportFactory::TransportFactory(const std::string& name) : name_(name) {
 
     pthread_once(&once, init);
 
@@ -83,10 +73,9 @@ TransportFactory::TransportFactory(const std::string &name):
 TransportFactory::~TransportFactory() {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
     m->erase(name_);
-
 }
 
-Transport *TransportFactory::build( const eckit::option::CmdArgs &args) {
+Transport* TransportFactory::build(const eckit::option::CmdArgs& args) {
 
     pthread_once(&once, init);
 
@@ -99,12 +88,12 @@ Transport *TransportFactory::build( const eckit::option::CmdArgs &args) {
     // }
 
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
-    std::map<std::string, TransportFactory *>::const_iterator j = m->find(name);
+    std::map<std::string, TransportFactory*>::const_iterator j = m->find(name);
 
     if (j == m->end()) {
         eckit::Log::error() << "No TransportFactory for [" << name << "]" << std::endl;
         eckit::Log::error() << "TransportFactories are:" << std::endl;
-        for (j = m->begin() ; j != m->end() ; ++j)
+        for (j = m->begin(); j != m->end(); ++j)
             eckit::Log::error() << "   " << (*j).first << std::endl;
         throw eckit::SeriousBug(std::string("No TransportFactory called ") + name);
     }
@@ -119,14 +108,11 @@ void TransportFactory::list(std::ostream& out) {
     eckit::AutoLock<eckit::Mutex> lock(local_mutex);
 
     const char* sep = "";
-    for (std::map<std::string, TransportFactory *>::const_iterator j = m->begin() ; j != m->end() ; ++j) {
+    for (std::map<std::string, TransportFactory*>::const_iterator j = m->begin(); j != m->end(); ++j) {
         out << sep << (*j).first;
         sep = ", ";
     }
 }
 
 
-
-
-} // namespace eckit
-
+}  // namespace eckit::distributed

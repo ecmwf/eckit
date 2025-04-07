@@ -180,4 +180,3 @@ ecbuild_add_library( TARGET              eckit_sql TYPE SHARED
 
 # Disable all warnings for PGI/NVHPC compiler as it is overzealous and cherry-picking is not possible
 target_compile_options( eckit_sql PRIVATE $<$<CXX_COMPILER_ID:PGI>:-w> $<$<CXX_COMPILER_ID:NVHPC>:-w> )
-

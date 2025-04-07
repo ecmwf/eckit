@@ -45,27 +45,21 @@
 
 #cmakedefine01 eckit_HAVE_ARMADILLO
 #cmakedefine01 eckit_HAVE_CUDA
-#cmakedefine01 eckit_HAVE_EIGEN
-#cmakedefine01 eckit_HAVE_LAPACK
-#cmakedefine01 eckit_HAVE_VIENNACL
-#cmakedefine01 eckit_HAVE_OMP
-#cmakedefine01 eckit_HAVE_SSL
 #cmakedefine01 eckit_HAVE_CURL
+#cmakedefine01 eckit_HAVE_EIGEN
 #cmakedefine01 eckit_HAVE_JEMALLOC
+#cmakedefine01 eckit_HAVE_LAPACK
 #cmakedefine01 eckit_HAVE_MKL
 #cmakedefine01 eckit_HAVE_MPI
+#cmakedefine01 eckit_HAVE_OMP
+#cmakedefine01 eckit_HAVE_SSL
+#cmakedefine01 eckit_HAVE_VIENNACL
+#cmakedefine01 eckit_HAVE_ZIP
 
 // Have we built certain libraries
 
 #cmakedefine01 eckit_HAVE_ECKIT_CMD
 #cmakedefine01 eckit_HAVE_ECKIT_SQL
 #cmakedefine01 eckit_HAVE_ECKIT_MPI
-
-// Backward compatibility with atlas < 0.30.0
-// Its use will be removed with ATLAS-367.
-#define ECKIT_HAVE_MKL         @eckit_HAVE_MKL@
-#define ECKIT_HAVE_MPI         @eckit_HAVE_MPI@
-#define ECKIT_BIG_ENDIAN       @eckit_BIG_ENDIAN@
-#define ECKIT_LITTLE_ENDIAN    @eckit_LITTLE_ENDIAN@
 
 #endif // eckit_config_h

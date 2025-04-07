@@ -25,16 +25,19 @@ namespace eckit {
 // Declarations, otherwise private Content.cc
 class BadConversion : public Exception {
 public:
+
     BadConversion(const std::string& w, const CodeLocation& loc);
 };
 
 class BadComparison : public Exception {
 public:
+
     BadComparison(const std::string& w, const CodeLocation& loc);
 };
 
 class BadOperator : public Exception {
 public:
+
     BadOperator(const std::string& w, const CodeLocation& loc);
 };
 

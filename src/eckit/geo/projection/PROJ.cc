@@ -18,7 +18,7 @@
 #include <set>
 #include <utility>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/spec/Custom.h"
 
@@ -26,7 +26,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<PROJ> PROJECTION("proj");
+static ProjectionRegisterType<PROJ> PROJECTION("proj");
 
 
 namespace {
@@ -75,21 +75,21 @@ struct LonLat final : Convert {
 
 struct XY final : Convert {
     PJ_COORD to_coord(const Point& p) const final {
-        const auto& q = std::get<Point2>(p);
+        const auto& q = std::get<PointXY>(p);
         return proj_coord(q.X, q.Y, 0, 0);
     }
 
-    Point to_point(const PJ_COORD& c) const final { return Point2{c.xy.x, c.xy.y}; }
+    Point to_point(const PJ_COORD& c) const final { return PointXY{c.xy.x, c.xy.y}; }
 };
 
 
 struct XYZ final : Convert {
     PJ_COORD to_coord(const Point& p) const final {
-        const auto& q = std::get<Point3>(p);
+        const auto& q = std::get<PointXYZ>(p);
         return proj_coord(q.X, q.Y, q.Z, 0);
     }
 
-    Point to_point(const PJ_COORD& c) const final { return Point3{c.xy.x, c.xy.y, c.xyz.z}; }
+    Point to_point(const PJ_COORD& c) const final { return PointXYZ{c.xy.x, c.xy.y, c.xyz.z}; }
 };
 
 
@@ -113,6 +113,7 @@ struct PROJ::Implementation {
     }
 
 private:
+
     const pj_t proj_;
     const ctx_t ctx_;
     const std::unique_ptr<Convert> source_;
@@ -155,6 +156,12 @@ PROJ::PROJ(const Spec& spec) :
          spec.get_double("lon_minimum", 0)) {}
 
 
+const std::string& PROJ::type() const {
+    static const std::string type{"proj"};
+    return type;
+}
+
+
 Figure* PROJ::make_figure() const {
     pj_t identity(proj_create_crs_to_crs(CTX, target_.c_str(), target_.c_str(), nullptr));
 
@@ -183,19 +190,20 @@ Point PROJ::inv(const Point& q) const {
 
 std::string PROJ::proj_str(const spec::Custom& custom) {
     using key_value_type = std::pair<std::string, std::string>;
+    using keys_type      = std::vector<std::string>;
 
     struct key_value_compare {
         bool operator()(const key_value_type& a, const key_value_type& b) const {
             if (a.first != b.first) {
                 // keys that come first in string
-                for (const std::string& key : {"proj"}) {
+                for (const auto& key : keys_type{"proj"}) {
                     if (a.first == key || b.first == key) {
                         return a.first == key;
                     }
                 }
 
                 // keys that come last in string
-                for (const std::string& key : {"R", "a", "b"}) {
+                for (const auto& key : keys_type{"R", "a", "b"}) {
                     if (a.first == key || b.first == key) {
                         return b.first == key;
                     }

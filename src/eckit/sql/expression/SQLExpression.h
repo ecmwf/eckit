@@ -35,6 +35,7 @@ class Dictionary;
 
 class SQLExpression : public std::enable_shared_from_this<SQLExpression> {
 public:
+
     SQLExpression();
     virtual ~SQLExpression();
 
@@ -89,6 +90,7 @@ public:
     virtual void print(std::ostream&) const = 0;
 
 protected:
+
     SQLExpression(const SQLExpression&)            = default;
     SQLExpression& operator=(const SQLExpression&) = default;
 
@@ -100,6 +102,7 @@ protected:
     // Vector* vector_;
 
 private:
+
     std::string title_;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLExpression& p) {

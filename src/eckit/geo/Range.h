@@ -26,6 +26,7 @@ namespace eckit::geo {
 
 class Range {
 public:
+
     // -- Constructors
 
     Range(const Range&) = delete;
@@ -56,6 +57,7 @@ public:
     virtual const std::vector<double>& values() const = 0;
 
 protected:
+
     // -- Constructors
 
     explicit Range(size_t n, double a, double b, double eps = 0.);
@@ -67,6 +69,7 @@ protected:
     void b(double value) { b_ = value; }
 
 private:
+
     // -- Members
 
     size_t n_;

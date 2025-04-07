@@ -16,8 +16,7 @@
 namespace eckit {
 
 
-JavaService::JavaService(int port) :
-    net::NetService(port) {}
+JavaService::JavaService(int port) : net::NetService(port) {}
 
 JavaService::~JavaService() {}
 

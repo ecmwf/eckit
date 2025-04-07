@@ -28,6 +28,7 @@ namespace eckit {
 class Tokenizer : private NonCopyable {
 
 public:  // methods
+
     Tokenizer(char, bool keepEmpty = false);
     Tokenizer(const std::string&, bool keepEmpty = false);
 
@@ -52,10 +53,12 @@ public:  // methods
     static std::vector<std::string> split_at(const std::string& s, char separator);
 
 private:
+
     std::set<char, std::less<char> > separator_;  // To make searching faster
     bool keepEmpty_;
 
 private:
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Tokenizer& p) {

@@ -13,11 +13,11 @@
 #include "eckit/geo/Grid.h"
 
 #include <algorithm>
-#include <numeric>
 #include <ostream>
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geo/etc/Grid.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/projection/None.h"
+#include "eckit/geo/share/Grid.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -28,7 +28,10 @@
 namespace eckit::geo {
 
 
-static util::recursive_mutex MUTEX;
+namespace {
+
+
+util::recursive_mutex MUTEX;
 
 
 class lock_type {
@@ -36,15 +39,14 @@ class lock_type {
 };
 
 
-Grid::Grid(const Spec& spec) :
-    bbox_(area::BoundingBox::make_from_spec(spec)), ordering_(make_ordering_from_spec(spec)) {}
+}  // namespace
 
 
-Grid::Grid(Ordering ordering) : ordering_(ordering) {}
+Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
-Grid::Grid(const area::BoundingBox& bbox, Projection* projection, Ordering ordering) :
-    bbox_(new area::BoundingBox(bbox)), projection_(projection), ordering_(ordering) {}
+Grid::Grid(area::BoundingBox* bbox, Projection* projection) :
+    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime() : bbox), projection_(projection) {}
 
 
 const Spec& Grid::spec() const {
@@ -55,9 +57,9 @@ const Spec& Grid::spec() const {
         auto& custom = *spec_;
         fill_spec(custom);
 
-        if (std::string name; SpecByName::instance().match(custom, name)) {
+        if (std::string name; GridSpecByName::instance().match(custom, name)) {
             custom.clear();
-            custom.set("grid", name);
+            custom.set(className(), name);
         }
     }
 
@@ -107,7 +109,7 @@ std::vector<Point> Grid::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double> > Grid::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double> > Grid::to_latlons() const {
     std::pair<std::vector<double>, std::vector<double> > ll;
     ll.first.reserve(size());
     ll.second.reserve(size());
@@ -122,17 +124,17 @@ std::pair<std::vector<double>, std::vector<double> > Grid::to_latlon() const {
 }
 
 
-Ordering Grid::ordering() const {
+Grid::order_type Grid::order() const {
     NOTIMP;
 }
 
 
-Renumber Grid::reorder(Ordering) const {
+Reordering Grid::reorder(order_type) const {
     NOTIMP;
 }
 
 
-Grid* Grid::make_grid_reordered(Ordering) const {
+Grid* Grid::make_grid_reordered(order_type) const {
     NOTIMP;
 }
 
@@ -147,8 +149,18 @@ const Area& Grid::area() const {
 }
 
 
-Renumber Grid::crop(const Area&) const {
+Reordering Grid::crop(const Area&) const {
     NOTIMP;
+}
+
+
+const Projection& Grid::projection() const {
+    if (!projection_) {
+        projection_ = std::make_unique<projection::None>();
+        ASSERT(projection_);
+    }
+
+    return *projection_;
 }
 
 
@@ -172,21 +184,15 @@ area::BoundingBox* Grid::calculate_bbox() const {
 }
 
 
-Renumber Grid::no_reorder(size_t size) {
-    Renumber ren(size);
-    std::iota(ren.begin(), ren.end(), 0);
-    return ren;
+void Grid::reset_uid(uid_t _uid) {
+    ASSERT(_uid.empty() || _uid.length() == 32);
+    uid_ = _uid;
 }
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
     if (area_) {
-        static const auto AREA_DEFAULT(area::BOUNDING_BOX_DEFAULT.spec_str());
-
-        std::unique_ptr<spec::Custom> area(area_->spec());
-        if (area->str() != AREA_DEFAULT) {
-            custom.set("area", area.release());
-        }
+        area_->fill_spec(custom);
     }
 
     if (projection_) {
@@ -217,13 +223,13 @@ const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
     }
 
     list(Log::error() << "Grid: cannot build grid without 'type', choices are: ");
-    throw SpecNotFound("Grid: cannot build grid without 'type'", Here());
+    throw exception::SpecError("Grid: cannot build grid without 'type'", Here());
 }
 
 
 Spec* GridFactory::make_spec_(const Spec& spec) const {
     lock_type lock;
-    etc::Grid::instance();
+    share::Grid::instance();
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
@@ -250,28 +256,51 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
         cfg->push_back(back.release());
     }
 
-    if (std::string grid; cfg->get("grid", grid) && SpecByName::instance().matches(grid)) {
-        cfg->push_back(SpecByName::instance().match(grid).spec(grid));
+    if (std::string grid; cfg->get("grid", grid) && GridSpecByName::instance().matches(grid)) {
+        cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
     }
 
     if (std::string uid; cfg->get("uid", uid)) {
-        cfg->push_front(SpecByUID::instance().get(uid).spec());
+        cfg->push_front(GridSpecByUID::instance().get(uid).spec());
     }
-
-
-    // finalise
 
     return cfg;
 }
 
 
-void GridFactory::list_(std::ostream& out) const {
-    lock_type lock;
-    etc::Grid::instance();
+Grid::NextIterator::NextIterator(geo::Iterator* current, const geo::Iterator* end) :
+    current_([](auto* ptr) {
+        ASSERT(ptr != nullptr);
+        return ptr;
+    }(current)),
+    end_([](auto* ptr) {
+        ASSERT(ptr != nullptr);
+        return ptr;
+    }(end)),
+    index_(current_->index()) {}
 
-    out << SpecByUID::instance() << std::endl;
-    out << SpecByName::instance() << std::endl;
+
+bool Grid::NextIterator::next(Point& point) const {
+    if (auto& current(*current_); current != *end_) {
+        point  = *current;
+        index_ = current.index();
+        ++current;
+        return true;
+    }
+
+    return false;
+}
+
+
+std::ostream& GridFactory::list_(std::ostream& out) const {
+    lock_type lock;
+    share::Grid::instance();
+
+    out << GridSpecByUID::instance() << std::endl;
+    out << GridSpecByName::instance() << std::endl;
     out << GridFactoryType::instance() << std::endl;
+
+    return out;
 }
 
 

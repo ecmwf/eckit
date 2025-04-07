@@ -38,8 +38,7 @@ void CmdArg::encode(Stream& s) const {
     }
 }
 
-CmdArg::CmdArg(Stream& s) :
-    Streamable(s) {
+CmdArg::CmdArg(Stream& s) : Streamable(s) {
     long size;
     s >> size;
 
@@ -56,8 +55,7 @@ CmdArg::CmdArg() {}
 
 CmdArg::~CmdArg() {}
 
-CmdArg::CmdArg(const CmdArg& other) :
-    args_(other.args_) {}
+CmdArg::CmdArg(const CmdArg& other) : args_(other.args_) {}
 
 CmdArg& CmdArg::operator=(const CmdArg& other) {
     args_ = other.args_;
@@ -140,8 +138,7 @@ void CmdArg::erase(const std::string& s) {
 
 void CmdArg::operator+=(const CmdArg& other) {
     Log::debug() << "Appending " << other << std::endl;
-    Log::debug() << "To " << std::endl
-                 << *this << std::endl;
+    Log::debug() << "To " << std::endl << *this << std::endl;
     CmdArg tmp = other;
 
     // Find where we start adding

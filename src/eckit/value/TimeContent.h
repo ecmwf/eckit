@@ -29,6 +29,7 @@ class Hash;
 class TimeContent : public Content {
 
 protected:
+
     // -- Constructor
 
     TimeContent(const Time&);
@@ -91,6 +92,7 @@ protected:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     TimeContent(const TimeContent&);
     TimeContent& operator=(const TimeContent&);
 

@@ -21,6 +21,7 @@ namespace eckit {
 
 class ProxiedTCPServer : public net::TCPServer {
 public:
+
     ProxiedTCPServer(int port = 0, const net::SocketOptions& = net::SocketOptions::server());
 
     ~ProxiedTCPServer();
@@ -31,6 +32,7 @@ public:
                                    bool* connected = nullptr) override;
 
 private:
+
     void print(std::ostream& s) const override;
 };
 

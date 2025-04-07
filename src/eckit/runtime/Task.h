@@ -22,6 +22,7 @@ namespace eckit {
 
 class Task : private NonCopyable {
 public:
+
     Task();
 
     virtual ~Task();

@@ -17,8 +17,7 @@ namespace eckit::linalg::dense {
 
 struct LinearAlgebraLAPACK final : public LinearAlgebraDense {
     LinearAlgebraLAPACK() {}
-    LinearAlgebraLAPACK(const std::string& name) :
-        LinearAlgebraDense(name) {}
+    LinearAlgebraLAPACK(const std::string& name) : LinearAlgebraDense(name) {}
 
     Scalar dot(const Vector&, const Vector&) const override;
     void gemv(const Matrix&, const Vector&, Vector&) const override;

@@ -30,14 +30,12 @@ inline static size_t MAX_CODE(size_t nbits) {
     return (1 << nbits) - 1;
 }
 
-enum
-{
+enum {
     RESET_TABLE = 256,
     END_MARKER  = 257,
     FIRST_CODE  = 258,
 
     MIN_BITS = 9,
-
 };
 
 /* UNUSED
@@ -73,6 +71,7 @@ class Entry {
     size_t code_;
 
 public:
+
     Entry(size_t = END_MARKER);
 
     Entry operator+(unsigned char) const;
@@ -109,8 +108,7 @@ public:
     void output(eckit::BitIO& out, size_t nbits) const;
 };
 
-Entry::Entry(size_t code) :
-    code_(code) {
+Entry::Entry(size_t code) : code_(code) {
     if (code < 256) {
         chars_.push_back(code);
     }
@@ -171,8 +169,7 @@ static void init_table(std::set<Entry>& table) {
 }
 }  // namespace
 
-Compress::Compress(size_t maxBits) :
-    maxBits_(maxBits) {}
+Compress::Compress(size_t maxBits) : maxBits_(maxBits) {}
 
 
 size_t Compress::encode(DataHandle& in, DataHandle& out) {

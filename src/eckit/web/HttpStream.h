@@ -24,6 +24,7 @@ class HttpBuf;
 
 class HttpStream : public std::ostream {
 public:
+
     HttpStream();
     ~HttpStream();
 
@@ -36,6 +37,7 @@ public:
     static std::ostream& doEncode(std::ostream&);
 
 private:
+
     HttpBuf* buf_;
 };
 

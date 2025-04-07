@@ -33,8 +33,8 @@ PolarStereographic::PolarStereographic(PointLonLat centre, PointLonLat first, Fi
     first_(first),
     first_r_(PointLonLatR::make_from_lonlat(first.lon, first.lat)),
     sign_(centre_.lat < 0. ? -1. : 1.),
-    F_(types::is_approximately_equal(centre_.lat, PointLonLat::RIGHT_ANGLE, PointLonLat::EPS)
-               || types::is_approximately_equal(centre_.lat, -PointLonLat::RIGHT_ANGLE, PointLonLat::EPS)
+    F_(types::is_approximately_equal(centre_.lat, PointLonLat::RIGHT_ANGLE, PointLonLat::EPS) ||
+               types::is_approximately_equal(centre_.lat, -PointLonLat::RIGHT_ANGLE, PointLonLat::EPS)
            ? 0.5
            : std::tan(0.5 * (M_PI_2 - sign_ * centre_r_.latr)) / std::cos(sign_ * centre_r_.latr)) {
     auto z = fwd(first_);
@@ -43,7 +43,7 @@ PolarStereographic::PolarStereographic(PointLonLat centre, PointLonLat first, Fi
 }
 
 
-Point2 PolarStereographic::fwd(const PointLonLat& q) const {
+PointXY PolarStereographic::fwd(const PointLonLat& q) const {
     auto p = PointLonLatR::make_from_lonlat(q.lon, q.lat);
 
     auto a      = sign_ * (p.lonr - centre_r_.lonr);
@@ -54,14 +54,20 @@ Point2 PolarStereographic::fwd(const PointLonLat& q) const {
 }
 
 
-PointLonLat PolarStereographic::inv(const Point2& q) const {
-    Point2 p{q.X - x0_, q.Y - y0_};
+PointLonLat PolarStereographic::inv(const PointXY& q) const {
+    PointXY p{q.X - x0_, q.Y - y0_};
 
     auto rh  = std::sqrt(p.X * p.X + p.Y * p.Y);
     auto tsi = rh / figure().R() * F_;
 
     return PointLonLat::make_from_lonlatr(sign_ * std::atan2(sign_ * p.X, -sign_ * p.Y) + centre_r_.lonr,
                                           sign_ * (M_PI_2 - 2 * std::atan(tsi)));
+}
+
+
+const std::string& PolarStereographic::type() const {
+    static const std::string type{"polar-stereographic"};
+    return type;
 }
 
 

@@ -16,30 +16,23 @@
 #include <string>
 
 #include "eckit/geo/Point.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
 
 
 namespace eckit::geo {
 class Figure;
-class Spec;
-namespace spec {
-class Custom;
-}
 }  // namespace eckit::geo
 
 
 namespace eckit::geo {
 
 
-class ProjectionProblem : public Exception {
-public:
-    explicit ProjectionProblem(const std::string&, const CodeLocation&);
-};
-
-
 class Projection {
 public:
+
     // -- Types
 
     using builder_t = BuilderT1<Projection>;
@@ -68,8 +61,10 @@ public:
     [[nodiscard]] virtual Figure* make_figure() const;
     const Figure& figure() const;
 
-    [[nodiscard]] spec::Custom* spec() const;
-    std::string spec_str() const;
+    virtual const std::string& type() const = 0;
+
+    [[nodiscard]] const Spec& spec() const;
+    std::string spec_str() const { return spec().str(); }
     std::string proj_str() const;
 
     // -- Class methods
@@ -79,13 +74,15 @@ public:
     [[nodiscard]] static Projection* make_from_spec(const Spec&);
 
 private:
+
     // -- Members
 
     mutable std::shared_ptr<Figure> figure_;
+    mutable std::shared_ptr<spec::Custom> spec_;
 
     // -- Methods
 
-    virtual void fill_spec(spec::Custom&) const;
+    virtual void fill_spec(spec::Custom&) const = 0;
 
     // -- Friends
 
@@ -96,10 +93,37 @@ private:
 };
 
 
-using ProjectionFactory = Factory<Projection>;
+using ProjectionFactoryType = Factory<Projection>;
+using ProjectionSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+
 
 template <typename T>
-using ProjectionBuilder = ConcreteBuilderT1<Projection, T>;
+using ProjectionRegisterType = ConcreteBuilderT1<Projection, T>;
+
+template <typename T>
+using ProjectionRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
+
+
+struct ProjectionFactory {
+    // This is 'const' as Projection should always be immutable
+    [[nodiscard]] static const Projection* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+
+    // This is 'const' as Projection should always be immutable
+    [[nodiscard]] static const Projection* make_from_string(const std::string&);
+
+    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
+
+private:
+
+    static ProjectionFactory& instance();
+
+    // This is 'const' as Projection should always be immutable
+    [[nodiscard]] const Projection* make_from_spec_(const Spec&) const;
+
+    [[nodiscard]] Spec* make_spec_(const Spec&) const;
+    std::ostream& list_(std::ostream&) const;
+};
 
 
 }  // namespace eckit::geo

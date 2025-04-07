@@ -28,6 +28,7 @@ namespace eckit {
 
 class HtmlResource : public HttpResource {
 public:  // methods
+
     HtmlResource(const std::string&);
 
     ~HtmlResource() override;

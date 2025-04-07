@@ -30,14 +30,16 @@ namespace eckit::geo::iterator {
 
 class Regular final : public Iterator {
 public:
+
     // -- Constructors
 
     explicit Regular(const grid::Regular&, size_t index = 0);
 
 private:
+
     // -- Members
 
-    const grid::Regular& grid_;
+    // const grid::Regular& grid_;
     const std::vector<double>& x_;
     const std::vector<double>& y_;
     size_t i_;

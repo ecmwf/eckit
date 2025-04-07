@@ -28,16 +28,17 @@ namespace eckit {
 
 class HandleStream : public Stream {
 public:
+
     // -- Contructors
 
-    HandleStream(DataHandle& h) :
-        handle_(h) {}
+    HandleStream(DataHandle& h) : handle_(h) {}
 
     // -- Destructor
 
     ~HandleStream() {}
 
 private:
+
     // -- Members
 
     DataHandle& handle_;

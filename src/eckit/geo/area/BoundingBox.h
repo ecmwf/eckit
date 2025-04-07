@@ -17,18 +17,27 @@
 
 #include "eckit/geo/Area.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
+
+
+namespace eckit::geo {
+namespace area {
+class BoundingBox;
+bool bounding_box_equal(const BoundingBox&, const BoundingBox&);
+}  // namespace area
+class Projection;
+namespace projection {
+class Rotation;
+}
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::area {
 
 
-class BoundingBox;
-
-bool bounding_box_equal(const BoundingBox&, const BoundingBox&);
-
-
 class BoundingBox : public Area, protected std::array<double, 4> {
 public:
+
     // -- Types
 
     using container_type = array;
@@ -72,21 +81,29 @@ public:
     bool global() const;
     bool periodic() const;
 
-    bool contains(const PointLonLat&) const;
     bool contains(const BoundingBox&) const;
     bool empty() const;
 
     // -- Overridden methods
 
+    const std::string& type() const override;
+
     void fill_spec(spec::Custom&) const override;
+
     bool intersects(BoundingBox&) const override;
+    bool contains(const Point&) const override;
 
     // -- Class methods
 
     [[nodiscard]] static BoundingBox* make_global_prime();
     [[nodiscard]] static BoundingBox* make_global_antiprime();
-    [[nodiscard]] static BoundingBox* make_from_spec(const Spec&);
     [[nodiscard]] static BoundingBox* make_from_area(value_type n, value_type w, value_type s, value_type e);
+
+    [[nodiscard]] static BoundingBox* make_from_spec(const Spec&);
+
+    [[nodiscard]] static BoundingBox* make_from_projection(PointXY min, PointXY max, const Projection&);
+    [[nodiscard]] static BoundingBox* make_from_projection(PointLonLat min, PointLonLat max,
+                                                           const projection::Rotation&);
 
     // -- Members
 
@@ -94,17 +111,10 @@ public:
     const value_type& west  = operator[](1);
     const value_type& south = operator[](2);
     const value_type& east  = operator[](3);
-
-private:
-    // -- Friends
-
-    friend std::ostream& operator<<(std::ostream& os, const BoundingBox& bbox) {
-        return os << "[" << bbox.north << "," << bbox.west << "," << bbox.south << "," << bbox.east << "]";
-    }
 };
 
 
-constexpr PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST = -PointLonLat::FLAT_ANGLE;
+extern const PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST;
 extern const BoundingBox BOUNDING_BOX_DEFAULT;
 
 

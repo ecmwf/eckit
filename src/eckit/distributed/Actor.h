@@ -30,7 +30,7 @@ class Message;
 class Actor : private eckit::NonCopyable {
 public:
 
-     enum MessageTags {
+    enum MessageTags {
         READY,
         WORK,
         SHUTDOWN,
@@ -41,35 +41,34 @@ public:
         BYE
     };
 
-public: // methods
+public:  // methods
 
-    Actor(Transport &transport);
+    Actor(Transport& transport);
     virtual ~Actor();
 
-    virtual void run() = 0;
+    virtual void run()      = 0;
     virtual void finalise() = 0;
 
-    virtual void messageFromWorker(Message &message, int worker) const;
-    virtual void messageFromWriter(Message &message, int worker) const;
-    virtual void sendStatisticsToProducer(const Message &message) const;
+    virtual void messageFromWorker(Message& message, int worker) const;
+    virtual void messageFromWriter(Message& message, int worker) const;
+    virtual void sendStatisticsToProducer(const Message& message) const;
 
-    virtual void sendMessageToNextWorker(const Message &message) const;
-    virtual void getNextWorkMessage(Message &message) const;
-    virtual void getNextWriteMessage(Message &message) const;
-    virtual void sendToWriter(int writer, const Message &message) const;
+    virtual void sendMessageToNextWorker(const Message& message) const;
+    virtual void getNextWorkMessage(Message& message) const;
+    virtual void getNextWriteMessage(Message& message) const;
+    virtual void sendToWriter(int writer, const Message& message) const;
 
     virtual void sendShutDownMessage() const;
 
     static const char* tagName(int);
 
-protected: // members
+protected:  // members
 
     Transport& transport_;
     std::string title_;
-
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed

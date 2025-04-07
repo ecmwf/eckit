@@ -21,8 +21,8 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<LambertAzimuthalEqualArea> PROJECTION_1("lambert_azimuthal_equal_area");
-static ProjectionBuilder<LambertAzimuthalEqualArea> PROJECTION_2("laea");
+static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_1("lambert_azimuthal_equal_area");
+static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_2("laea");
 
 
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
@@ -40,7 +40,7 @@ LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLo
     dlam_(first_r_.lonr - centre_r_.lonr) {}
 
 
-Point2 LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
+PointXY LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
     const auto kp = figure().R() * std::sqrt(2. / (1. + phi0_.sin * phi_.sin + phi0_.cos * phi_.cos * dlam_.cos));
 
     auto x = kp * phi_.cos * dlam_.sin;
@@ -50,13 +50,19 @@ Point2 LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
 }
 
 
-PointLonLat LambertAzimuthalEqualArea::inv(const Point2& p) const {
+PointLonLat LambertAzimuthalEqualArea::inv(const PointXY& p) const {
     auto rho = std::sqrt(p.X * p.X + p.Y * p.Y);
     const util::sincos_t c(2. * std::asin(rho / (2. * figure().R())));
 
     return PointLonLat::make_from_lonlatr(
         centre_r_.lonr + std::atan2(p.X * c.sin, rho * phi0_.cos * c.cos - p.Y * phi0_.sin * c.sin),
         std::asin(c.cos * phi0_.sin + p.Y * c.sin * phi0_.cos / rho));
+}
+
+
+const std::string& LambertAzimuthalEqualArea::type() const {
+    static const std::string type{"laea"};
+    return type;
 }
 
 

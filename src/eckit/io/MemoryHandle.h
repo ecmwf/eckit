@@ -20,6 +20,7 @@ class Buffer;
 
 class MemoryHandle : public DataHandle {
 public:
+
     MemoryHandle(const Buffer&);
     MemoryHandle(Buffer&);
 
@@ -64,6 +65,7 @@ public:
     DataHandle* clone() const override;
 
 private:  // members
+
     char* address_;
     size_t size_;
     size_t capacity_;

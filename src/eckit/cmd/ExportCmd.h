@@ -25,6 +25,7 @@ namespace eckit {
 
 class ExportCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     ExportCmd();
@@ -34,6 +35,7 @@ public:
     ~ExportCmd();
 
 private:
+
     // No copy allowed
 
     ExportCmd(const ExportCmd&);

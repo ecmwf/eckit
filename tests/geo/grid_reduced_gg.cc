@@ -165,7 +165,7 @@ CASE("equals") {
     std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "o3"}})));
     std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("N: 3"));
     std::unique_ptr<const Grid> grid3(new ReducedGaussian(3));
-    std::unique_ptr<const Grid> grid4(new ReducedGaussian(pl_type{20, 24, 28, 28, 24, 20}));
+    std::unique_ptr<const Grid> grid4(new ReducedGaussian(3, pl_type{20, 24, 28, 28, 24, 20}));
 
     EXPECT(*grid1 == *grid2);
     EXPECT(*grid2 == *grid3);

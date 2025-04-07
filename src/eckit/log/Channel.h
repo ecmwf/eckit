@@ -32,6 +32,7 @@ typedef void (*channel_callback_t)(void* data, const char* msg);
 class Channel : public std::ostream, private NonCopyable {
 
 public:  // methods
+
     Channel(LogTarget* = 0);
 
     ~Channel() override;
@@ -57,6 +58,7 @@ public:  // methods
     void reset();
 
 private:  // members
+
     friend std::ostream& operator<<(std::ostream& os, const Channel& c) {
         c.print(os);
         return os;
@@ -78,8 +80,8 @@ class AutoIndent {
     Channel& channel_;
 
 public:
-    AutoIndent(Channel& channel, const char* prefix = "") :
-        channel_(channel) { channel_.indent(prefix); }
+
+    AutoIndent(Channel& channel, const char* prefix = "") : channel_(channel) { channel_.indent(prefix); }
     ~AutoIndent() { channel_.unindent(); }
 };
 

@@ -30,10 +30,12 @@ class MD5;
 class Properties {
 
 public:  // types
+
     typedef Value property_t;
     typedef std::string key_t;
 
 public:  // methods
+
     Properties();
     Properties(const property_t&);
 
@@ -72,15 +74,19 @@ public:  // methods
     void hash(eckit::MD5&) const;
 
 protected:
+
     void print(std::ostream& s) const;
 
 private:  // types
+
     typedef std::map<key_t, property_t> PropertyMap;
 
-private:                 // members
+private:  // members
+
     PropertyMap props_;  //< storage of values
 
 protected:  // methods
+
     void json(JSON& s) const;
     void encode(Stream& s) const;
 

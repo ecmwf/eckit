@@ -21,6 +21,7 @@ namespace eckit::mpi {
 
 class StatusContent : public Counted {
 public:
+
     ~StatusContent() override;
 
     virtual int source() const = 0;
@@ -34,6 +35,7 @@ public:
 
 class NullStatus : public StatusContent {
 public:
+
     ~NullStatus() override {}
 
     int source() const override { return -1; };
@@ -52,6 +54,7 @@ public:
 class Status {
 
 public:  // methods
+
     /// Null Status constructor
     Status();
 
@@ -76,6 +79,7 @@ public:  // methods
     operator bool() const { return not dynamic_cast<const NullStatus*>(content_); }
 
 private:  // methods
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Status& o) {
@@ -84,6 +88,7 @@ private:  // methods
     }
 
 private:  // members
+
     StatusContent* content_;
 };
 

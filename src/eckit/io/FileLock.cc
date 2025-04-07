@@ -32,8 +32,7 @@ static int openLock(const PathName& lockFile) {
 }
 
 
-FileLock::FileLock(const PathName& lockFile) :
-    fd_(openLock(lockFile)), locker_(fd_) {}
+FileLock::FileLock(const PathName& lockFile) : fd_(openLock(lockFile)), locker_(fd_) {}
 
 FileLock::~FileLock() {
     ::close(fd_);

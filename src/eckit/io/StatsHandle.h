@@ -28,6 +28,7 @@ namespace eckit {
 
 class StatsHandle : public DataHandle, public HandleHolder {
 public:
+
     // -- Contructors
 
     StatsHandle(DataHandle& handle);
@@ -92,6 +93,7 @@ public:
 
 
 private:
+
     // -- Members
 
     size_t reads_;

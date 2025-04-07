@@ -32,9 +32,9 @@ typedef void (*channel_callback_t)(void* data, const char* msg);
 class Log {
 
 public:  // types
+
     /// Output formats
-    enum
-    {
+    enum {
         compactFormat     = 0,
         normalFormat      = 1,
         fullFormat        = 2,
@@ -43,6 +43,7 @@ public:  // types
     };
 
 public:  // methods
+
     /// Channel for debug output
     static Channel& debug();
 
@@ -104,7 +105,8 @@ public:  // methods
 
     static void print(std::ostream& os);
 
-private:     // methods
+private:  // methods
+
     Log();   ///< Private, non-instanciatable class
     ~Log();  ///< Private, non-instanciatable class
 };
@@ -120,8 +122,8 @@ class LogFormatSetter {
     int format_;
 
 public:
-    explicit LogFormatSetter(int f) :
-        format_(f) {}
+
+    explicit LogFormatSetter(int f) : format_(f) {}
 
     friend std::ostream& operator<<(std::ostream& s, const LogFormatSetter& f) {
         format(s, f.format_);
@@ -149,6 +151,7 @@ inline std::ostream& newl(std::ostream& out) {
 
 class Voidify {
 public:
+
     Voidify() {}
     void operator&(std::ostream&) {}
 };

@@ -29,6 +29,7 @@ struct MemoryInfo;
 
 class SystemInfo : private eckit::NonCopyable {
 public:  // methods
+
     static bool isBigEndian();
     static bool isLittleEndian();
 
@@ -48,6 +49,7 @@ public:  // methods
     virtual void dumpSysMemInfo(std::ostream&, const char* prepend = nullptr) const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const SystemInfo& p) {
@@ -64,6 +66,7 @@ private:  // members
 template <class T>
 class TraceProcMemInfo {
 public:
+
     explicit TraceProcMemInfo(const char* name) {
         SystemInfo::instance().dumpProcMemInfo(eckit::Log::debug<T>(), name);
     }

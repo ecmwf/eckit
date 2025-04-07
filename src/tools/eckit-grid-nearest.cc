@@ -29,6 +29,7 @@ namespace eckit {
 
 class EckitGridNearest final : public EckitTool {
 public:
+
     EckitGridNearest(int argc, char** argv) : EckitTool(argc, argv) {
         options_.push_back(new option::SimpleOption<bool>("uid", "by grid unique identifier, instead of name"));
         options_.push_back(new option::VectorOption<double>("nearest-point", "nearest point location (lon/lat)", 2));
@@ -36,6 +37,7 @@ public:
     }
 
 private:
+
     void execute(const option::CmdArgs& args) override {
         auto uid = args.getBool("uid", false);
 

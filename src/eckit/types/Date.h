@@ -28,8 +28,8 @@ class Hash;
 
 class Date {
 public:
-    enum
-    {
+
+    enum {
         MONDAY    = 0,
         TUESDAY   = 1,
         WEDNESDAY = 2,
@@ -41,8 +41,7 @@ public:
 
     // -- Contructors
 
-    Date() :
-        julian_(0) {}
+    Date() : julian_(0) {}
     Date(long);
     Date(long, long, long);
     Date(const std::string&);
@@ -52,8 +51,7 @@ public:
 
     // -- Copy
 
-    Date(const Date& other) :
-        julian_(other.julian_) {}
+    Date(const Date& other) : julian_(other.julian_) {}
 
     Date& operator=(const Date& other) {
         julian_ = other.julian_;
@@ -130,10 +128,11 @@ public:
     }
 
 protected:
-    Date(long julian, bool) :
-        julian_(julian) {}
+
+    Date(long julian, bool) : julian_(julian) {}
 
 private:
+
     // -- Members
 
     long julian_;

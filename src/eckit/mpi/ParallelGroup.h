@@ -27,13 +27,16 @@ class Parallel;
 
 class ParallelGroup : public GroupContent {
 public:
+
     ~ParallelGroup() override;
 
 private:  // constructor
+
     ParallelGroup();
     ParallelGroup(MPI_Group);
 
 private:  // methods
+
     void print(std::ostream&) const override;
 
     int group() const override;
@@ -70,9 +73,11 @@ private:  // methods
 
     std::vector<int> translate_ranks_native(const std::vector<int>& ranks, const GroupContent& other) const;
 
-    std::unordered_map<int, int> translate_ranks(const std::vector<int>& ranks, const GroupContent& other) const override;
+    std::unordered_map<int, int> translate_ranks(const std::vector<int>& ranks,
+                                                 const GroupContent& other) const override;
 
 private:  // members
+
     friend class Parallel;
 
     bool valid_;

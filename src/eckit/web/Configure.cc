@@ -68,8 +68,8 @@ class ConfigResource : public HtmlResource {
     virtual void GET(std::ostream&, Url&);
 
 public:
-    ConfigResource() :
-        HtmlResource("/config") {}
+
+    ConfigResource() : HtmlResource("/config") {}
 };
 
 void ConfigResource::GET(std::ostream& s, Url& url) {

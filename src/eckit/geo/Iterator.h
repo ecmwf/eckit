@@ -30,6 +30,7 @@ namespace eckit::geo {
 
 class Iterator {
 public:
+
     // -- Types
 
     using difference_type = std::ptrdiff_t;
@@ -67,6 +68,7 @@ public:
     [[nodiscard]] spec::Custom* spec() const;
 
 protected:
+
     // -- Constructors
 
     Iterator() = default;

@@ -28,8 +28,7 @@ namespace eckit {
 
 static StaticMutex local_mutex;
 
-NodeInfo::NodeInfo() :
-    port_(0), active_(false), id_(0), task_(-1) {}
+NodeInfo::NodeInfo() : port_(0), active_(false), id_(0), task_(-1) {}
 
 NodeInfo& NodeInfo::init() {
     AutoLock<StaticMutex> lock(local_mutex);

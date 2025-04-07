@@ -24,10 +24,12 @@ namespace type {
 
 class SQLInt : public SQLType {
 public:
+
     SQLInt(const std::string&);
     ~SQLInt();
 
 private:
+
     // No copy allowed
     SQLInt(const SQLInt&);
     SQLInt& operator=(const SQLInt&);

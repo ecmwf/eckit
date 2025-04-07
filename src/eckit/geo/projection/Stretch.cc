@@ -14,7 +14,7 @@
 
 #include <cmath>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -23,18 +23,24 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<Stretch> PROJECTION("stretch");
+static ProjectionRegisterType<Stretch> PROJECTION("stretch");
 
 
 Stretch::Stretch(double c) : c_(c) {
     if (types::is_approximately_equal(c_, 0.)) {
-        throw ProjectionProblem("Stretch: stretching_factor != 0", Here());
+        throw exception::ProjectionError("Stretch: stretching_factor != 0", Here());
     }
     ASSERT(c_ != 0.);
 }
 
 
 Stretch::Stretch(const Spec& spec) : Stretch(spec.get_double("stretching_factor")) {}
+
+
+const std::string& Stretch::type() const {
+    static const std::string type{"stretch"};
+    return type;
+}
 
 
 double Stretch::stretch(double a, double c) {

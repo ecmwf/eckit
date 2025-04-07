@@ -1,0 +1,396 @@
+---
+
+url_prefix: &url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/icon/
+
+grid_names:
+    - ICON_02_R02B06: &ICON_02_R02B06
+      description: Global R02B06 grid. 40 km resolution.
+      type: ICON
+      file: "icon_extpar_0002_R02B06_G.g2"
+      icon_number_of_grid_used: 2
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 327680
+      icon_uid: "fc9f45081dd111b2aedbc760324270de"
+      url_prefix: *url_prefix
+      url: fc9f45081dd111b2aedbc760324270de.icon.ek
+
+    - ICON_04_R02B07: &ICON_04_R02B07
+      description: Global R02B07 grid. 20 km resolution.
+      type: ICON
+      file: "icon_extpar_0004_R02B07_G.g2"
+      icon_number_of_grid_used: 4
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 1310720
+      icon_uid: "8bb13be81dd211b2bdd32f117dd15b92"
+      url_prefix: *url_prefix
+      url: 8bb13be81dd211b2bdd32f117dd15b92.icon.ek
+
+    - ICON_06_R03B07: &ICON_06_R03B07
+      description: Global R03B07 grid.
+      type: ICON
+      file: "icon_extpar_0006_R03B07_G.g2"
+      icon_number_of_grid_used: 6
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 2949120
+      icon_uid: "5a2cfeee1dd311b291c0b7d12a12800c"
+      url_prefix: *url_prefix
+      url: 5a2cfeee1dd311b291c0b7d12a12800c.icon.ek
+
+    - ICON_08_R02B05: &ICON_08_R02B05
+      description: Global R02B05 grid. 80 km resolution.
+      type: ICON
+      file: "icon_extpar_0008_R02B05_G.g2"
+      icon_number_of_grid_used: 8
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 81920
+      icon_uid: "0df795de1dce11b28c3f4f045d5627af"
+      url_prefix: *url_prefix
+      url: 0df795de1dce11b28c3f4f045d5627af.icon.ek
+
+    - ICON_10_R02B04: &ICON_10_R02B04
+      description: Global R02B04 grid. 160 km resolution.
+      type: ICON
+      file: "icon_extpar_0010_R02B04_G.g2"
+      icon_number_of_grid_used: 10
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 20480
+      icon_uid: "66a341d21dcf11b2880c0f1645f3d1dc"
+      url_prefix: *url_prefix
+      url: 66a341d21dcf11b2880c0f1645f3d1dc.icon.ek
+
+    - ICON_12_R02B04: &ICON_12_R02B04
+      description: Global R02B04 grid. 160 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0012_R02B04_G_20131001.g2"
+      icon_number_of_grid_used: 12
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 20480
+      icon_uid: "968657501dce11b29969d72c2fa229cf"
+      url_prefix: *url_prefix
+      url: 968657501dce11b29969d72c2fa229cf.icon.ek
+
+    - ICON_14_R02B05: &ICON_14_R02B05
+      description: Global R02B05 grid. 80 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0014_R02B05_G_20131001.g2"
+      icon_number_of_grid_used: 14
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 81920
+      icon_uid: "b203754a1dd211b284a9193e147d086f"
+      url_prefix: *url_prefix
+      url: b203754a1dd211b284a9193e147d086f.icon.ek
+
+    - ICON_16_R02B06: &ICON_16_R02B06
+      description: Global R02B06 grid. 40 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0016_R02B06_G_20131001.g2"
+      icon_number_of_grid_used: 16
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 327680
+      icon_uid: "6bd687a01dd311b29399f117ec0ad4d5"
+      url_prefix: *url_prefix
+      url: 6bd687a01dd311b29399f117ec0ad4d5.icon.ek
+
+    - ICON_18_R02B07: &ICON_18_R02B07
+      description: Global R02B07 grid. 20 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0018_R02B07_G_20131001.g2"
+      icon_number_of_grid_used: 18
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 1310720
+      icon_uid: "8f2497641dd411b2a9d1b5e674a856dd"
+      url_prefix: *url_prefix
+      url: 8f2497641dd411b2a9d1b5e674a856dd.icon.ek
+
+    - ICON_20_R03B06: &ICON_20_R03B06
+      description: Global R03B06 grid. 26 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0020_R03B06_G_20131001.g2"
+      icon_number_of_grid_used: 20
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 737280
+      icon_uid: "365801d21dd611b2b98a6b5c1380b5e3"
+      url_prefix: *url_prefix
+      url: 365801d21dd611b2b98a6b5c1380b5e3.icon.ek
+
+    - ICON_22_R03B07: &ICON_22_R03B07
+      description: Global R03B07 grid. 13 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0022_R03B07_G_20131001.g2"
+      icon_number_of_grid_used: 22
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 2949120
+      icon_uid: "eb8c0fa91dd611b2837c051661b31a74"
+      url_prefix: *url_prefix
+      url: eb8c0fa91dd611b2837c051661b31a74.icon.ek
+
+    - ICON_24_R02B06: &ICON_24_R02B06
+      description: Global R02B06 grid. 40 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0024_R02B06_G_20140731.g2"
+      icon_number_of_grid_used: 24
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 327680
+      icon_uid: "9b0b03ca18c411e49318776f158edd08"
+      url_prefix: *url_prefix
+      url: 9b0b03ca18c411e49318776f158edd08.icon.ek
+
+    - ICON_26_R03B07: &ICON_26_R03B07
+      description: Global R03B07 grid. 13 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0026_R03B07_G_20140731.g2"
+      icon_number_of_grid_used: 26
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 2949120
+      icon_uid: "a27b8de618c411e4820ab5b098c6a5c0"
+      url_prefix: *url_prefix
+      url: a27b8de618c411e4820ab5b098c6a5c0.icon.ek
+
+    - ICON_27_R03B08_N02: &ICON_27_R03B08_N02
+      description: Regional R03B08 grid (Europe). 6.5 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0027_R03B08_N02_20150224.g2"
+      icon_number_of_grid_used: 27
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 659156
+      icon_uid: "ec13b8bcb82d11e4b13f4d55411d42e6"
+      url_prefix: *url_prefix
+      url: ec13b8bcb82d11e4b13f4d55411d42e6.icon.ek
+
+    - ICON_28_R02B07_N02: &ICON_28_R02B07_N02
+      description: Regional R02B07 grid (Europe). 20 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0028_R02B07_N02_20150521.g2"
+      icon_number_of_grid_used: 28
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 75948
+      icon_uid: "982dcc6efe2e11e491280b03674e713a"
+      url_prefix: *url_prefix
+      url: 982dcc6efe2e11e491280b03674e713a.icon.ek
+
+    - ICON_30_R02B05: &ICON_30_R02B05
+      description: Global R02B05 grid. 80 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0030_R02B05_G_20150521.g2"
+      icon_number_of_grid_used: 30
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 81920
+      icon_uid: "a668eac0fe2e11e49a47e3e5371a87a7"
+      url_prefix: *url_prefix
+      url: a668eac0fe2e11e49a47e3e5371a87a7.icon.ek
+
+    - ICON_31_R02B06_N02: &ICON_31_R02B06_N02
+      description: Regional R02B06 grid (Europe). 40 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0031_R02B06_N02_20150521.g2"
+      icon_number_of_grid_used: 31
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 19744
+      icon_uid: "a668eacafe2e11e49a47e3e5371a87a7"
+      url_prefix: *url_prefix
+      url: a668eacafe2e11e49a47e3e5371a87a7.icon.ek
+
+    - ICON_33_R03B05: &ICON_33_R03B05
+      description: Global R03B05 grid. 53 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0033_R03B05_G_20150521.g2"
+      icon_number_of_grid_used: 33
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 184320
+      icon_uid: "ad7af808fe2e11e49f0c8fef8cf63522"
+      url_prefix: *url_prefix
+      url: ad7af808fe2e11e49f0c8fef8cf63522.icon.ek
+
+    - ICON_34_R03B06_N02: &ICON_34_R03B06_N02
+      description: Regional R03B06 grid (Europe). 26.5 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0034_R03B06_N02_20150521.g2"
+      icon_number_of_grid_used: 34
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 42800
+      icon_uid: "ad7af812fe2e11e49f0c8fef8cf63522"
+      url_prefix: *url_prefix
+      url: ad7af812fe2e11e49f0c8fef8cf63522.icon.ek
+
+    - ICON_36_R03B06: &ICON_36_R03B06
+      description: Global R03B06 grid. 26.5 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0036_R03B06_G_20150521.g2"
+      icon_number_of_grid_used: 36
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 737280
+      icon_uid: "ae487d14fe2e11e4af85e50a2a56a360"
+      url_prefix: *url_prefix
+      url: ae487d14fe2e11e4af85e50a2a56a360.icon.ek
+
+    - ICON_37_R03B07_N02: &ICON_37_R03B07_N02
+      description: Regional R03B07 grid (Europe). 13 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0037_R03B07_N02_20150521.g2"
+      icon_number_of_grid_used: 37
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 164984
+      icon_uid: "ae487d28fe2e11e4af85e50a2a56a360"
+      url_prefix: *url_prefix
+      url: ae487d28fe2e11e4af85e50a2a56a360.icon.ek
+
+    - ICON_39_R02B07: &ICON_39_R02B07
+      description: Global R02B07 grid. 20.0 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0039_R02B07_G_20150521.g2"
+      icon_number_of_grid_used: 39
+      icon_type: hrz_global
+      icon_arrangement: T
+      shape: 1310720
+      icon_uid: "49c340e2248d11e58105c12d5e3b00a4"
+      url_prefix: *url_prefix
+      url: 49c340e2248d11e58105c12d5e3b00a4.icon.ek
+
+    - ICON_40_R02B08_N02: &ICON_40_R02B08_N02
+      description: Regional R02B08 grid (Europe). 10 km resolution. Grid rotated by 36 degrees around z-axis.
+      type: ICON
+      file: "icon_extpar_0040_R02B08_N02_20150521.g2"
+      icon_number_of_grid_used: 40
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 293084
+      icon_uid: "49c340f6248d11e58105c12d5e3b00a4"
+      url_prefix: *url_prefix
+      url: 49c340f6248d11e58105c12d5e3b00a4.icon.ek
+
+    - ICON_42_R02B10_L: &ICON_42_R02B10_L
+      description: Limited area grid (Germany): COSMO-DE area with 2.5 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees).
+      type: ICON
+      file: "icon_extpar_0042_R02B10_L_20180209_tiles.g2"
+      icon_number_of_grid_used: 42
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 253520
+      icon_uid: "d378d127082af71232e62a2093c92ba0"
+      url_prefix: *url_prefix
+      url: d378d127082af71232e62a2093c92ba0.icon.ek
+
+    - ICON_44_R19B07_L: &ICON_44_R19B07_L
+      description: Limited area grid (Germany): COSMO-D2 area with 2 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees).
+      type: ICON
+      file: "icon_extpar_0044_R19B07_L_20180209_tiles.g2"
+      icon_number_of_grid_used: 44
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 538164
+      icon_uid: "66f27a809bfa6f1056df19bf03052ce0"
+      url_prefix: *url_prefix
+      url: 66f27a809bfa6f1056df19bf03052ce0.icon.ek
+
+    - ICON_45_R19B08_LN02: &ICON_45_R19B08_LN02
+      description: Limited area grid (COSMO-D2 nest, Germany) with 1 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees).
+      type: ICON
+      file: "icon_extpar_0045_R19B08_LN02_20180209_tiles.g2"
+      icon_number_of_grid_used: 45
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 716980
+      icon_uid: "b258b3391435078ecc92d51b8a3f2ac0"
+      url_prefix: *url_prefix
+      url: b258b3391435078ecc92d51b8a3f2ac0.icon.ek
+
+    - ICON_47_R19B07_L: &ICON_47_R19B07_L
+      description: Limited area grid (Germany): Enhanced COSMO-D2 area with 2 km resolution, generated by Ch. Koziar, 2020-05-27. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees).
+      type: ICON
+      file: "icon_extpar_0047_R19B07_L_20200527_tiles.g2"
+      icon_number_of_grid_used: 47
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 542040
+      icon_uid: "c6b12daa91ad64045b26c1b6452a2a20"
+      url_prefix: *url_prefix
+      url: c6b12daa91ad64045b26c1b6452a2a20.icon.ek
+
+    - ICON_49_R03B08_L: &ICON_49_R03B08_L
+      description: Limited area grid (Europe): Pollen forecast area with 6.5 km resolution, generated by J. Foerstner, 2020-11-12. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees).
+      type: ICON
+      file: "icon_extpar_0049_R03B08_L_20201112_tiles.g2"
+      icon_number_of_grid_used: 49
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 252228
+      icon_uid: "027b27853ea2c4b96436708a777b2bc0"
+      url_prefix: *url_prefix
+      url: 027b27853ea2c4b96436708a777b2bc0.icon.ek
+
+    - ICON_50_R02B07_N02: &ICON_50_R02B07_N02
+      description: Regional R02B07 grid (Europe, North Atlantic and North Africa), generated by J. Foerstner, 2021-10-26. Bigger nest for prognostic aerosol forecasts with ICON-ART. 20 km resolution. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees).
+      type: ICON
+      file: "icon_extpar_0050_R02B07_N02_20211026_tiles.g2"
+      icon_number_of_grid_used: 50
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 254588
+      icon_uid: "5eb8f1385d72f207a6d7211bb8a92ee0"
+      url_prefix: *url_prefix
+      url: 5eb8f1385d72f207a6d7211bb8a92ee0.icon.ek
+
+    - ICON_51_R03B07_N02: &ICON_51_R03B07_N02
+      description: Regional R03B07 grid (Europe, North Atlantic and North Africa), generated by J. Foerstner, 2022-02-28. Bigger nest for prognostic aerosol forecasts with ICON-ART. 13 km resolution. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees).
+      type: ICON
+      file: "icon_extpar_0051_R03B07_N02_20220301_tiles.g2"
+      icon_number_of_grid_used: 51
+      icon_type: hrz_regional
+      icon_arrangement: T
+      shape: 571088
+      icon_uid: "117ff92c2607ab02bc28333ae4a92c20"
+      url_prefix: *url_prefix
+      url: 117ff92c2607ab02bc28333ae4a92c20.icon.ek
+
+grid_uids:
+   - "fc9f45081dd111b2aedbc760324270de": *ICON_02_R02B06
+   - "8bb13be81dd211b2bdd32f117dd15b92": *ICON_04_R02B07
+   - "5a2cfeee1dd311b291c0b7d12a12800c": *ICON_06_R03B07
+   - "0df795de1dce11b28c3f4f045d5627af": *ICON_08_R02B05
+   - "66a341d21dcf11b2880c0f1645f3d1dc": *ICON_10_R02B04
+   - "968657501dce11b29969d72c2fa229cf": *ICON_12_R02B04
+   - "b203754a1dd211b284a9193e147d086f": *ICON_14_R02B05
+   - "6bd687a01dd311b29399f117ec0ad4d5": *ICON_16_R02B06
+   - "8f2497641dd411b2a9d1b5e674a856dd": *ICON_18_R02B07
+   - "365801d21dd611b2b98a6b5c1380b5e3": *ICON_20_R03B06
+   - "eb8c0fa91dd611b2837c051661b31a74": *ICON_22_R03B07
+   - "9b0b03ca18c411e49318776f158edd08": *ICON_24_R02B06
+   - "a27b8de618c411e4820ab5b098c6a5c0": *ICON_26_R03B07
+   - "ec13b8bcb82d11e4b13f4d55411d42e6": *ICON_27_R03B08_N02
+   - "982dcc6efe2e11e491280b03674e713a": *ICON_28_R02B07_N02
+   - "a668eac0fe2e11e49a47e3e5371a87a7": *ICON_30_R02B05
+   - "a668eacafe2e11e49a47e3e5371a87a7": *ICON_31_R02B06_N02
+   - "ad7af808fe2e11e49f0c8fef8cf63522": *ICON_33_R03B05
+   - "ad7af812fe2e11e49f0c8fef8cf63522": *ICON_34_R03B06_N02
+   - "ae487d14fe2e11e4af85e50a2a56a360": *ICON_36_R03B06
+   - "ae487d28fe2e11e4af85e50a2a56a360": *ICON_37_R03B07_N02
+   - "49c340e2248d11e58105c12d5e3b00a4": *ICON_39_R02B07
+   - "49c340f6248d11e58105c12d5e3b00a4": *ICON_40_R02B08_N02
+   - "d378d127082af71232e62a2093c92ba0": *ICON_42_R02B10_L
+   - "66f27a809bfa6f1056df19bf03052ce0": *ICON_44_R19B07_L
+   - "b258b3391435078ecc92d51b8a3f2ac0": *ICON_45_R19B08_LN02
+   - "c6b12daa91ad64045b26c1b6452a2a20": *ICON_47_R19B07_L
+   - "027b27853ea2c4b96436708a777b2bc0": *ICON_49_R03B08_L
+   - "5eb8f1385d72f207a6d7211bb8a92ee0": *ICON_50_R02B07_N02
+   - "117ff92c2607ab02bc28333ae4a92c20": *ICON_51_R03B07_N02

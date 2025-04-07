@@ -14,8 +14,9 @@
 
 #include <algorithm>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
+#include "eckit/geo/order/RegularScan.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/Fraction.h"
 
@@ -26,12 +27,12 @@ namespace eckit::geo::grid {
 namespace {
 
 
-area::BoundingBox make_bounding_box(const Range& lon, const Range& lat) {
+area::BoundingBox* make_bounding_box(const Range& lon, const Range& lat) {
     auto n = std::max(lat.a(), lat.b());
     auto w = std::min(lon.a(), lon.b());
     auto s = std::min(lat.a(), lat.b());
     auto e = std::max(lon.a(), lon.b());
-    return {n, w, s, e};
+    return new area::BoundingBox{n, w, s, e};
 }
 
 
@@ -70,10 +71,21 @@ const Range& Regular::y() const {
 }
 
 
+Regular::Regular(const Spec& spec) : Grid(spec), order_(new order::RegularScan(spec)) {}
+
+
 Regular::Regular(Ranges xy, Projection* projection) :
-    Grid(make_bounding_box(*xy.first, *xy.second), projection), x_(xy.first), y_(xy.second) {
+    Grid(make_bounding_box(*xy.first, *xy.second), projection),
+    x_(xy.first),
+    y_(xy.second),
+    order_(new order::RegularScan(xy.first->size(), xy.second->size())) {
     ASSERT(x_ && x_->size() > 0);
     ASSERT(y_ && y_->size() > 0);
+}
+
+
+const Order& Regular::internal_order() const {
+    return *order_;
 }
 
 
@@ -84,6 +96,12 @@ void Regular::fill_spec(spec::Custom& custom) const {
 
 Regular::Ranges::Ranges(Range* x, Range* y) : pair{x, y} {
     ASSERT(first != nullptr && second != nullptr);
+}
+
+
+Regular::Ranges::~Ranges() {
+    delete first;
+    delete second;
 }
 
 

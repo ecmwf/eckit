@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <ostream>
 #include <sys/socket.h>
+#include <ostream>
 
 #include "eckit/config/Resource.h"
 #include "eckit/net/SocketOptions.h"
@@ -19,7 +19,7 @@ namespace eckit::net {
 static void init(SocketOptions& opts) {
 
     static std::string bindAddr = Resource<std::string>("localBindingAddress", ""); /* "127.0.0.1" */
-    static int ListenBacklog = eckit::Resource<int>("socketOptionsListenBacklog", SOMAXCONN);
+    static int ListenBacklog    = eckit::Resource<int>("socketOptionsListenBacklog", SOMAXCONN);
 
     static bool reusePort  = eckit::Resource<bool>("socketOptionsReusePort", false);
     static bool reuseAddr  = eckit::Resource<bool>("socketOptionsReuseAddr", false);
@@ -58,8 +58,7 @@ void SocketOptions::print(std::ostream& s) const {
       << "ipLowDelay=" << ipLowDelay_ << ", "
       << "tcpNoDelay=" << tcpNoDelay_ << ", "
       << "receiveBufferSize=" << receiveBufferSize_ << ", "
-      << "sendBufferSize=" << sendBufferSize_
-      << "]" << std::endl;
+      << "sendBufferSize=" << sendBufferSize_ << "]" << std::endl;
 }
 
 SocketOptions SocketOptions::none() {

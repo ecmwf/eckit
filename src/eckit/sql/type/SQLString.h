@@ -24,10 +24,12 @@ namespace type {
 
 class SQLString : public SQLType {
 public:
+
     SQLString(const std::string& name, size_t maxLen);
     ~SQLString();
 
 private:
+
     // No copy allowed
     SQLString(const SQLString&);
     SQLString& operator=(const SQLString&);

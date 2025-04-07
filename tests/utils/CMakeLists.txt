@@ -74,3 +74,7 @@ ecbuild_add_test( TARGET      eckit_test_rsync
 ecbuild_add_test( TARGET      eckit_test_regex
                   SOURCES     test_regex.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_literals
+                  SOURCES     test_literals.cc
+                  LIBS        eckit )

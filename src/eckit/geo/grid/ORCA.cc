@@ -15,52 +15,28 @@
 #include <memory>
 
 #include "eckit/codec/codec.h"
-#include "eckit/eckit_config.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Cache.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
-#include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/cache/Download.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/io/Length.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Timer.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/utils/ByteSwap.h"
 #include "eckit/utils/MD5.h"
 
-#if eckit_HAVE_CURL
-#include "eckit/io/URLHandle.h"
-#endif
+
+namespace eckit::geo::util {
+void hash_vector_double(MD5&, const std::vector<double>&);
+}
 
 
 namespace eckit::geo::grid {
 
 
 namespace {
-
-
-ORCA::Arrangement arrangement_from_string(const std::string& str) {
-    return str == "F"   ? ORCA::Arrangement::F
-           : str == "T" ? ORCA::Arrangement::T
-           : str == "U" ? ORCA::Arrangement::U
-           : str == "V" ? ORCA::Arrangement::V
-           : str == "W" ? ORCA::Arrangement::W
-                        : throw AssertionFailed("ORCA::Arrangement", Here());
-}
-
-
-std::string arrangement_to_string(ORCA::Arrangement a) {
-    return a == ORCA::Arrangement::F   ? "F"
-           : a == ORCA::Arrangement::T ? "T"
-           : a == ORCA::Arrangement::U ? "U"
-           : a == ORCA::Arrangement::V ? "V"
-           : a == ORCA::Arrangement::W ? "W"
-                                       : throw AssertionFailed("ORCA::Arrangement", Here());
-}
 
 
 util::recursive_mutex MUTEX;
@@ -71,62 +47,24 @@ class lock_type {
 };
 
 
-CacheT<PathName, ORCA::ORCARecord> CACHE;
-
-
-PathName orca_path(const PathName& path, const std::string& url) {
-    // control concurrent download/access
-    lock_type lock;
-
-#if eckit_HAVE_CURL  // for eckit::URLHandle
-    if (!path.exists() && LibEcKitGeo::caching()) {
-        auto dir = path.dirName();
-        dir.mkdir();
-        ASSERT(dir.exists());
-
-        auto tmp = path + ".download";
-
-        Timer timer;
-        Log::info() << "ORCA: downloading '" << url << "' to '" << path << "'..." << std::endl;
-
-        Length length = 0;
-        try {
-            length = URLHandle(url).saveInto(tmp);
-        }
-        catch (...) {
-            length = 0;
-        }
-
-        if (length <= 0) {
-            if (tmp.exists()) {
-                tmp.unlink(true);
-            }
-
-            throw UserError("ORCA: download error", Here());
-        }
-
-        PathName::rename(tmp, path);
-        Log::info() << "ORCA: download of " << Bytes(static_cast<double>(length)) << " took " << timer.elapsed()
-                    << " s." << std::endl;
-    }
-#endif
-
-    ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
-    return path;
-}
-
-
-const ORCA::ORCARecord& orca_record(const PathName& p, const Spec& spec) {
+const ORCA::ORCARecord& orca_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
-    if (CACHE.contains(p)) {
-        return CACHE[p];
+    static CacheT<PathName, ORCA::ORCARecord> cache;
+    static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
+
+    auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
+    auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");
+    ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
+
+    if (cache.contains(path)) {
+        return cache[path];
     }
 
     // read and check against metadata (if present)
-    auto& record = CACHE[p];
-    record.read(p);
+    auto& record = cache[path];
+    record.read(path);
     record.check(spec);
 
     return record;
@@ -138,16 +76,24 @@ const ORCA::ORCARecord& orca_record(const PathName& p, const Spec& spec) {
 
 ORCA::ORCA(const Spec& spec) :
     Regular(spec),
-    name_(spec.get_string("orca_name")),
-    uid_(spec.get_string("orca_uid")),
+    name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
-    record_(orca_record(
-        orca_path(spec.get_string("path", LibEcKitGeo::cacheDir() + "/eckit/geo/grid/orca/" + uid_ + ".atlas"),
-                  spec.get_string("url_prefix", "") + spec.get_string("url")),
-        spec)) {}
+    record_(orca_record(spec)),
+    container_(new container::PointsLonLatReference{record_.longitudes_, record_.latitudes_}) {
+    ASSERT(container_);
+
+    if (spec.has("orca_uid")) {
+        reset_uid(spec.get_string("orca_uid"));
+    }
+}
 
 
 ORCA::ORCA(uid_t uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+
+
+ORCA::ORCA(const std::string& name, Arrangement a) :
+    ORCA(*std::unique_ptr<Spec>(
+        GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement_to_string(a)}})))) {}
 
 
 std::string ORCA::arrangement() const {
@@ -159,20 +105,8 @@ Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     MD5 hash;
     hash.add(arrangement_to_string(arrangement));
 
-    auto sized = static_cast<long>(longitudes_.size() * sizeof(double));
-
-    if constexpr (eckit_LITTLE_ENDIAN) {
-        hash.add(latitudes_.data(), sized);
-        hash.add(longitudes_.data(), sized);
-    }
-    else {
-        auto lonsw = longitudes_;
-        auto latsw = latitudes_;
-        eckit::byteswap(latsw.data(), latsw.size());
-        eckit::byteswap(lonsw.data(), lonsw.size());
-        hash.add(latsw.data(), sized);
-        hash.add(lonsw.data(), sized);
-    }
+    util::hash_vector_double(hash, latitudes_);
+    util::hash_vector_double(hash, longitudes_);
 
     auto d = hash.digest();
     ASSERT(d.length() == 32);
@@ -182,9 +116,9 @@ Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
 
 
 ORCA::ORCARecord::bytes_t ORCA::ORCARecord::footprint() const {
-    return sizeof(dimensions_.front()) * dimensions_.size() + sizeof(halo_.front()) * halo_.size()
-           + sizeof(pivot_.front()) * pivot_.size() + sizeof(longitudes_.front()) * longitudes_.size()
-           + sizeof(latitudes_.front()) * latitudes_.size() + sizeof(flags_.front()) * flags_.size();
+    return sizeof(dimensions_.front()) * dimensions_.size() + sizeof(halo_.front()) * halo_.size() +
+           sizeof(pivot_.front()) * pivot_.size() + sizeof(longitudes_.front()) * longitudes_.size() +
+           sizeof(latitudes_.front()) * latitudes_.size() + sizeof(flags_.front()) * flags_.size();
 }
 
 
@@ -271,7 +205,8 @@ size_t ORCA::ORCARecord::write(const PathName& p, const std::string& compression
 
 
 Grid::iterator ORCA::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, record_.longitudes_, record_.latitudes_)};
+    return iterator{new geo::iterator::Unstructured(
+        *this, 0, std::make_shared<container::PointsLonLatReference>(record_.longitudes_, record_.latitudes_))};
 }
 
 
@@ -281,22 +216,7 @@ Grid::iterator ORCA::cend() const {
 
 
 Grid::uid_t ORCA::calculate_uid() const {
-    MD5 hash(arrangement_to_string(arrangement_));
-
-    if (const auto len = static_cast<long>(size() * sizeof(double)); eckit_LITTLE_ENDIAN) {
-        hash.add(record_.latitudes_.data(), len);
-        hash.add(record_.longitudes_.data(), len);
-    }
-    else {
-        auto ll = to_latlon();
-        byteswap(ll.first.data(), size());
-        byteswap(ll.second.data(), size());
-
-        hash.add(ll.first.data(), len);
-        hash.add(ll.second.data(), len);
-    }
-
-    return hash;
+    return record_.calculate_uid(arrangement_);
 }
 
 
@@ -311,24 +231,50 @@ std::vector<Point> ORCA::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlon() const {
+std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlons() const {
     return {record_.latitudes_, record_.longitudes_};
 }
 
 
 Spec* ORCA::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+    return GridSpecByUID::instance().get(name).spec();
+}
+
+
+Arrangement ORCA::arrangement_from_string(const std::string& str) {
+    return str == "F"   ? Arrangement::ORCA_F
+           : str == "T" ? Arrangement::ORCA_T
+           : str == "U" ? Arrangement::ORCA_U
+           : str == "V" ? Arrangement::ORCA_V
+           : str == "W" ? Arrangement::ORCA_W
+                        : throw SeriousBug("ORCA: unsupported arrangement '" + str + "'");
+}
+
+
+std::string ORCA::arrangement_to_string(Arrangement a) {
+    return a == Arrangement::ORCA_F   ? "F"
+           : a == Arrangement::ORCA_T ? "T"
+           : a == Arrangement::ORCA_U ? "U"
+           : a == Arrangement::ORCA_V ? "V"
+           : a == Arrangement::ORCA_W
+               ? "W"
+               : throw SeriousBug("ORCA: unsupported arrangement '" + std::to_string(a) + "'", Here());
 }
 
 
 void ORCA::fill_spec(spec::Custom& custom) const {
-    custom.set("type", "ORCA");
-    custom.set("uid", uid_);
+    custom.set("grid", name_ + "_" + arrangement_to_string(arrangement_));
+    custom.set("uid", uid());
+}
+
+
+const std::string& ORCA::type() const {
+    static const std::string type{"orca"};
+    return type;
 }
 
 
 static const GridRegisterType<ORCA> GRIDTYPE("ORCA");
-static const GridRegisterName<ORCA> GRIDNAME(GridRegisterName<ORCA>::uid_pattern);
 
 
 }  // namespace eckit::geo::grid

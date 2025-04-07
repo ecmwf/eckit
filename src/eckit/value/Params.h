@@ -63,6 +63,7 @@ class Params {
     struct Concept;
 
 public:  // types
+
     typedef std::list<Params> List;
     typedef std::string key_t;
     typedef Value value_t;
@@ -82,12 +83,11 @@ public:  // types
     };
 
 public:  // methods
-    template <typename T>
-    explicit Params(const T& x) :
-        self_(new Model<T>(x)) {}
 
-    Params(const Params& x) :
-        self_(x.self_->copy_()) {}
+    template <typename T>
+    explicit Params(const T& x) : self_(new Model<T>(x)) {}
+
+    Params(const Params& x) : self_(x.self_->copy_()) {}
 
     static void registerFactory(const std::string& name, factory_t f) { factories()[name] = f; }
 
@@ -121,11 +121,11 @@ public:  // methods
     friend value_t getValue(const Params& p, const key_t& key);
 
 private:  // internal classes
+
     typedef std::map<std::string, factory_t> factory_map;
     static factory_map& factories();
 
-    Params(Concept* _concept) :
-        self_(_concept) {}
+    Params(Concept* _concept) : self_(_concept) {}
 
     struct Concept {
         virtual ~Concept() {}
@@ -137,10 +137,8 @@ private:  // internal classes
 
     template <typename T>
     struct Model : Concept {
-        Model(T x) :
-            data_(x) {}
-        Model(Stream& s) :
-            data_(s) {}
+        Model(T x) : data_(x) {}
+        Model(Stream& s) : data_(s) {}
 
         virtual Concept* copy_() const { return new Model(data_); }
 
@@ -157,11 +155,13 @@ private:  // internal classes
     };
 
 private:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const Params& p);
 
     friend Stream& operator<<(Stream& s, const Params& p);
 
 private:  // members
+
     const Concept* self_;
 };
 

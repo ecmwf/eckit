@@ -26,6 +26,7 @@ namespace eckit {
 
 class Regex {
 public:
+
     // -- Contructors
 
     Regex(const std::string& = ".*", bool shell = false, bool extended = true);
@@ -42,18 +43,21 @@ public:
     operator const std::string&() const { return str_; }
 
     bool operator==(const Regex& other) const { return str_ == other.str_; }
-    
+
     static std::string escape(std::string_view);
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
 private:  // members
+
     std::string str_;
     regex_t re_;
     bool extended_;
 
 private:  // methods
+
     void compile(const char*);
 
     friend std::ostream& operator<<(std::ostream& s, const Regex& p) {

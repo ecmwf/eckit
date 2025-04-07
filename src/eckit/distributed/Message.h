@@ -18,8 +18,8 @@
 
 #include <string>
 
-#include "eckit/serialisation/Stream.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/serialisation/Stream.h"
 
 #include "eckit/distributed/Actor.h"
 
@@ -29,7 +29,7 @@ namespace eckit::distributed {
 
 class Message : public eckit::Stream {
 
-public: // methods
+public:  // methods
 
     Message(int tag = Actor::WORK, size_t size = 1024 * 1024);
     ~Message();
@@ -37,11 +37,11 @@ public: // methods
     void rewind();
     bool shutdownRequested() const;
 
-    void       *messageData();
-    const void *messageData() const;
-    size_t      bufferSize() const;
-    size_t      messageSize() const;
-    void        messageReceived(int, int);
+    void* messageData();
+    const void* messageData() const;
+    size_t bufferSize() const;
+    size_t messageSize() const;
+    void messageReceived(int, int);
 
     const void* getBlob(size_t& size);
 
@@ -50,10 +50,10 @@ public: // methods
     int tag() const;
     int source() const;
 
-    static const Message &readyMessage();
-    static const Message &shutdownMessage();
+    static const Message& readyMessage();
+    static const Message& shutdownMessage();
 
-    friend std::ostream& operator<<(std::ostream &s, const Message &x) {
+    friend std::ostream& operator<<(std::ostream& s, const Message& x) {
         x.print(s);
         return s;
     }
@@ -73,15 +73,14 @@ private:  // methods
 
     // From Stream
     virtual std::string name() const;
-    virtual long write(const void *, long);
-    virtual long read(void *, long);
+    virtual long write(const void*, long);
+    virtual long read(void*, long);
 
-    void print( std::ostream &out ) const;
-
+    void print(std::ostream& out) const;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

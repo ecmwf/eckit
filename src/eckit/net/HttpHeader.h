@@ -33,8 +33,8 @@ class HttpError : public Exception {
     int status_;
 
 public:
-    enum
-    {
+
+    enum {
         OK                    = 200,
         CREATED               = 201,
         ACCEPTED              = 202,
@@ -48,8 +48,8 @@ public:
     };
 
 public:
-    HttpError(int status, const std::string& msg = "HttpError") :
-        Exception(msg), status_(status) {}
+
+    HttpError(int status, const std::string& msg = "HttpError") : Exception(msg), status_(status) {}
 
     int status() const { return status_; }
 };
@@ -58,6 +58,7 @@ public:
 class HttpHeader : private eckit::NonCopyable {
 
 public:  // methods
+
     HttpHeader();
     HttpHeader(net::TCPSocket&);
 
@@ -86,9 +87,11 @@ public:  // methods
     void checkForStatus() const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
 private:  // members
+
     std::string version_;
     long statusCode_;
     long contentLength_;
@@ -105,6 +108,7 @@ private:  // members
     eckit::MemoryHandle content_;
 
 private:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const HttpHeader& p) {
         p.print(s);
         return s;

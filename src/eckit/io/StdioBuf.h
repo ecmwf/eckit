@@ -27,6 +27,7 @@ namespace eckit {
 
 class StdioBuf : public std::streambuf {
 public:
+
     // -- Contructors
 
     StdioBuf(FILE*);
@@ -36,6 +37,7 @@ public:
     ~StdioBuf();
 
 private:
+
     // No copy allowed
 
     StdioBuf(const StdioBuf&);

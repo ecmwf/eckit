@@ -32,8 +32,7 @@ void RawFileHandle::encode(Stream& s) const {
     NOTIMP;
 }
 
-RawFileHandle::RawFileHandle(const std::string& path, bool overwrite) :
-    path_(path), overwrite_(overwrite), fd_(-1) {}
+RawFileHandle::RawFileHandle(const std::string& path, bool overwrite) : path_(path), overwrite_(overwrite), fd_(-1) {}
 
 
 RawFileHandle::~RawFileHandle() {

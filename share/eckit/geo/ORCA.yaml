@@ -1,0 +1,356 @@
+---
+
+url_prefix: &url_prefix https://get.ecmwf.int/repository/atlas/grids/orca/v0/
+
+grid_names:
+    - ORCA2_F: &ORCA2_F
+        type: ORCA
+        name: ORCA2
+        orca_arrangement: F
+        dimensions: [182, 149]
+        orca_uid: "174487fbace54b00d959d971e88b71e7"
+        url_prefix: *url_prefix
+        url: ORCA2_F.atlas
+
+    - ORCA2_T: &ORCA2_T
+        type: ORCA
+        name: ORCA2
+        orca_arrangement: T
+        dimensions: [182, 149]
+        orca_uid: "d5bde4f52ff3a9bea5629cd9ac514410"
+        url_prefix: *url_prefix
+        url: ORCA2_T.atlas
+
+    - ORCA2_U: &ORCA2_U
+        type: ORCA
+        name: ORCA2
+        orca_arrangement: U
+        dimensions: [182, 149]
+        orca_uid: "857f7affa3a381e3882d38d321384e49"
+        url_prefix: *url_prefix
+        url: ORCA2_U.atlas
+
+    - ORCA2_V: &ORCA2_V
+        type: ORCA
+        name: ORCA2
+        orca_arrangement: V
+        dimensions: [182, 149]
+        orca_uid: "ca637bc5dc9a54e2ea4b9750e1b79e6e"
+        url_prefix: *url_prefix
+        url: ORCA2_V.atlas
+
+    - ORCA2_W: &ORCA2_W
+        type: ORCA
+        name: ORCA2
+        orca_arrangement: W
+        dimensions: [182, 149]
+        orca_uid: "edea6f71eb558dc056b5f576d5b904f7"
+        url_prefix: *url_prefix
+        url: ORCA2_T.atlas
+
+    - ORCA1_F: &ORCA1_F
+        type: ORCA
+        name: ORCA1
+        orca_arrangement: F
+        dimensions: [362, 292]
+        orca_uid: "a832a12030c73928133553ec3a8d2a7e"
+        url_prefix: *url_prefix
+        url: ORCA1_F.atlas
+
+    - ORCA1_T: &ORCA1_T
+        type: ORCA
+        name: ORCA1
+        orca_arrangement: T
+        dimensions: [362, 292]
+        orca_uid: "f4c91b6233fe55dec992160ec12b38df"
+        url_prefix: *url_prefix
+        url: ORCA1_T.atlas
+
+    - ORCA1_U: &ORCA1_U
+        type: ORCA
+        name: ORCA1
+        orca_arrangement: U
+        dimensions: [362, 292]
+        orca_uid: "1b0f8d234753f910197c975c906b4da5"
+        url_prefix: *url_prefix
+        url: ORCA1_U.atlas
+
+    - ORCA1_V: &ORCA1_V
+        type: ORCA
+        name: ORCA1
+        orca_arrangement: V
+        dimensions: [362, 292]
+        orca_uid: "c637340454795b395f982851b840943d"
+        url_prefix: *url_prefix
+        url: ORCA1_V.atlas
+
+    - ORCA1_W: &ORCA1_W
+        type: ORCA
+        name: ORCA1
+        orca_arrangement: W
+        dimensions: [362, 292]
+        orca_uid: "d50061c43e83c46c3810002591ea21e1"
+        url_prefix: *url_prefix
+        url: ORCA1_T.atlas
+
+    - eORCA1_F: &eORCA1_F
+        type: ORCA
+        name: eORCA1
+        orca_arrangement: F
+        dimensions: [362, 332]
+        orca_uid: "3c6d95561710c6f39b394809ff6c588c"
+        url_prefix: *url_prefix
+        url: eORCA1_F.atlas
+
+    - eORCA1_T: &eORCA1_T
+        type: ORCA
+        name: eORCA1
+        orca_arrangement: T
+        dimensions: [362, 332]
+        orca_uid: "ba65665a9e68d1a8fa0352ecfcf8e496"
+        url_prefix: *url_prefix
+        url: eORCA1_T.atlas
+
+    - eORCA1_U: &eORCA1_U
+        type: ORCA
+        name: eORCA1
+        orca_arrangement: U
+        dimensions: [362, 332]
+        orca_uid: "4eb1054957dcae914e219faf9a4068e3"
+        url_prefix: *url_prefix
+        url: eORCA1_U.atlas
+
+    - eORCA1_V: &eORCA1_V
+        type: ORCA
+        name: eORCA1
+        orca_arrangement: V
+        dimensions: [362, 332]
+        orca_uid: "09131429766e7737c087d3a8d7073dc9"
+        url_prefix: *url_prefix
+        url: eORCA1_V.atlas
+
+    - eORCA1_W: &eORCA1_W
+        type: ORCA
+        name: eORCA1
+        orca_arrangement: W
+        dimensions: [362, 332]
+        orca_uid: "5c678d8f9aa2edfbf57246d11d9c1278"
+        url_prefix: *url_prefix
+        url: eORCA1_T.atlas
+
+    - ORCA025_F: &ORCA025_F
+        type: ORCA
+        name: ORCA025
+        orca_arrangement: F
+        dimensions: [1442, 1021]
+        orca_uid: "efbc280d8d4b6048797880da2605bacb"
+        url_prefix: *url_prefix
+        url: ORCA025_F.atlas
+
+    - ORCA025_T: &ORCA025_T
+        type: ORCA
+        name: ORCA025
+        orca_arrangement: T
+        dimensions: [1442, 1021]
+        orca_uid: "15c961c269ac182ca226d7195f3921ba"
+        url_prefix: *url_prefix
+        url: ORCA025_T.atlas
+
+    - ORCA025_U: &ORCA025_U
+        type: ORCA
+        name: ORCA025
+        orca_arrangement: U
+        dimensions: [1442, 1021]
+        orca_uid: "3f4a68bc5b54c9f867fbcc12aacc723d"
+        url_prefix: *url_prefix
+        url: ORCA025_U.atlas
+
+    - ORCA025_V: &ORCA025_V
+        type: ORCA
+        name: ORCA025
+        orca_arrangement: V
+        dimensions: [1442, 1021]
+        orca_uid: "9c87699ee2026c0feee07d2a972eaccd"
+        url_prefix: *url_prefix
+        url: ORCA025_V.atlas
+
+    - ORCA025_W: &ORCA025_W
+        type: ORCA
+        name: ORCA025
+        orca_arrangement: W
+        dimensions: [1442, 1021]
+        orca_uid: "74ca68f1c8524811f3d3aad99536adc2"
+        url_prefix: *url_prefix
+        url: ORCA025_T.atlas
+
+    - eORCA025_F: &eORCA025_F
+        type: ORCA
+        name: eORCA025
+        orca_arrangement: F
+        dimensions: [1442, 1207]
+        orca_uid: "770e5bbb667a253d55db8a98a3b2d3a9"
+        url_prefix: *url_prefix
+        url: eORCA025_F.atlas
+
+    - eORCA025_T: &eORCA025_T
+        type: ORCA
+        name: eORCA025
+        orca_arrangement: T
+        dimensions: [1442, 1207]
+        orca_uid: "983412216c9768bc794c18dc92082895"
+        url_prefix: *url_prefix
+        url: eORCA025_T.atlas
+
+    - eORCA025_U: &eORCA025_U
+        type: ORCA
+        name: eORCA025
+        orca_arrangement: U
+        dimensions: [1442, 1207]
+        orca_uid: "b1b2922e9b57ee9c6eeddad218b6e4f3"
+        url_prefix: *url_prefix
+        url: eORCA025_U.atlas
+
+    - eORCA025_V: &eORCA025_V
+        type: ORCA
+        name: eORCA025
+        orca_arrangement: V
+        dimensions: [1442, 1207]
+        orca_uid: "9b06bf73a8f14e927bd9b0f1f0c04f74"
+        url_prefix: *url_prefix
+        url: eORCA025_V.atlas
+
+    - eORCA025_W: &eORCA025_W
+        type: ORCA
+        name: eORCA025
+        orca_arrangement: W
+        dimensions: [1442, 1207]
+        orca_uid: "4a1ba3b11b8888aefc96992b6b1cab62"
+        url_prefix: *url_prefix
+        url: eORCA025_T.atlas
+
+    - ORCA12_F: &ORCA12_F
+        type: ORCA
+        name: ORCA12
+        orca_arrangement: F
+        dimensions: [4322, 3059]
+        orca_uid: "29693ad8a7af3ae3ee0f02d090f0ec7b"
+        url_prefix: *url_prefix
+        url: ORCA12_F.atlas
+
+    - ORCA12_T: &ORCA12_T
+        type: ORCA
+        name: ORCA12
+        orca_arrangement: T
+        dimensions: [4322, 3059]
+        orca_uid: "b117d01170ac77bca68560ab10e559de"
+        url_prefix: *url_prefix
+        url: ORCA12_T.atlas
+
+    - ORCA12_U: &ORCA12_U
+        type: ORCA
+        name: ORCA12
+        orca_arrangement: U
+        dimensions: [4322, 3059]
+        orca_uid: "fff193b92d94d03e847ff2fa62b493f4"
+        url_prefix: *url_prefix
+        url: ORCA12_U.atlas
+
+    - ORCA12_V: &ORCA12_V
+        type: ORCA
+        name: ORCA12
+        orca_arrangement: V
+        dimensions: [4322, 3059]
+        orca_uid: "986e3450774b716f6e75c1987e370b10"
+        url_prefix: *url_prefix
+        url: ORCA12_V.atlas
+
+    - ORCA12_W: &ORCA12_W
+        type: ORCA
+        name: ORCA12
+        orca_arrangement: W
+        dimensions: [4322, 3059]
+        orca_uid: "ccfe953619a8dd49a7f765923882a274"
+        url_prefix: *url_prefix
+        url: ORCA12_T.atlas
+
+    - eORCA12_F: &eORCA12_F
+        type: ORCA
+        name: eORCA12
+        orca_arrangement: F
+        dimensions: [4322, 3606]
+        orca_uid: "25da53ed581b3931fa310840fa9aefd9"
+        url_prefix: *url_prefix
+        url: eORCA12_F.atlas
+
+    - eORCA12_T: &eORCA12_T
+        type: ORCA
+        name: eORCA12
+        orca_arrangement: T
+        dimensions: [4322, 3606]
+        orca_uid: "1553b66f5885cf5f83ad4b4fdf25f460"
+        url_prefix: *url_prefix
+        url: eORCA12_T.atlas
+
+    - eORCA12_U: &eORCA12_U
+        type: ORCA
+        name: eORCA12
+        orca_arrangement: U
+        dimensions: [4322, 3606]
+        orca_uid: "3e87c826643da440b4e9d9f67588a576"
+        url_prefix: *url_prefix
+        url: eORCA12_U.atlas
+
+    - eORCA12_V: &eORCA12_V
+        type: ORCA
+        name: eORCA12
+        orca_arrangement: V
+        dimensions: [4322, 3606]
+        orca_uid: "cc1e3fc06a2cd18c0653e557510b8a71"
+        url_prefix: *url_prefix
+        url: eORCA12_V.atlas
+
+    - eORCA12_W: &eORCA12_W
+        type: ORCA
+        name: eORCA12
+        orca_arrangement: W
+        dimensions: [4322, 3606]
+        orca_uid: "462469edbd0e0586a0cf17424cc58c89"
+        url_prefix: *url_prefix
+        url: eORCA12_T.atlas
+
+grid_uids:
+    - "174487fbace54b00d959d971e88b71e7": *ORCA2_F
+    - "d5bde4f52ff3a9bea5629cd9ac514410": *ORCA2_T
+    - "857f7affa3a381e3882d38d321384e49": *ORCA2_U
+    - "ca637bc5dc9a54e2ea4b9750e1b79e6e": *ORCA2_V
+    - "edea6f71eb558dc056b5f576d5b904f7": *ORCA2_W
+    - "a832a12030c73928133553ec3a8d2a7e": *ORCA1_F
+    - "f4c91b6233fe55dec992160ec12b38df": *ORCA1_T
+    - "1b0f8d234753f910197c975c906b4da5": *ORCA1_U
+    - "c637340454795b395f982851b840943d": *ORCA1_V
+    - "d50061c43e83c46c3810002591ea21e1": *ORCA1_W
+    - "3c6d95561710c6f39b394809ff6c588c": *eORCA1_F
+    - "ba65665a9e68d1a8fa0352ecfcf8e496": *eORCA1_T
+    - "4eb1054957dcae914e219faf9a4068e3": *eORCA1_U
+    - "09131429766e7737c087d3a8d7073dc9": *eORCA1_V
+    - "5c678d8f9aa2edfbf57246d11d9c1278": *eORCA1_W
+    - "efbc280d8d4b6048797880da2605bacb": *ORCA025_F
+    - "15c961c269ac182ca226d7195f3921ba": *ORCA025_T
+    - "3f4a68bc5b54c9f867fbcc12aacc723d": *ORCA025_U
+    - "9c87699ee2026c0feee07d2a972eaccd": *ORCA025_V
+    - "74ca68f1c8524811f3d3aad99536adc2": *ORCA025_W
+    - "770e5bbb667a253d55db8a98a3b2d3a9": *eORCA025_F
+    - "983412216c9768bc794c18dc92082895": *eORCA025_T
+    - "b1b2922e9b57ee9c6eeddad218b6e4f3": *eORCA025_U
+    - "9b06bf73a8f14e927bd9b0f1f0c04f74": *eORCA025_V
+    - "4a1ba3b11b8888aefc96992b6b1cab62": *eORCA025_W
+    - "29693ad8a7af3ae3ee0f02d090f0ec7b": *ORCA12_F
+    - "b117d01170ac77bca68560ab10e559de": *ORCA12_T
+    - "fff193b92d94d03e847ff2fa62b493f4": *ORCA12_U
+    - "986e3450774b716f6e75c1987e370b10": *ORCA12_V
+    - "ccfe953619a8dd49a7f765923882a274": *ORCA12_W
+    - "25da53ed581b3931fa310840fa9aefd9": *eORCA12_F
+    - "1553b66f5885cf5f83ad4b4fdf25f460": *eORCA12_T
+    - "3e87c826643da440b4e9d9f67588a576": *eORCA12_U
+    - "cc1e3fc06a2cd18c0653e557510b8a71": *eORCA12_V
+    - "462469edbd0e0586a0cf17424cc58c89": *eORCA12_W

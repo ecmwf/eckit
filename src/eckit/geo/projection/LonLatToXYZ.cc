@@ -15,8 +15,6 @@
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
-#include "eckit/geo/geometry/OblateSpheroid.h"
-#include "eckit/geo/geometry/Sphere.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -24,7 +22,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<LonLatToXYZ> PROJECTION("ll_to_xyz");
+static ProjectionRegisterType<LonLatToXYZ> PROJECTION("ll_to_xyz");
 
 
 LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {
@@ -32,11 +30,11 @@ LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {
         const double R;
 
         explicit LonLatToSphereXYZ(double _R) : R(_R) {}
-        Point3 operator()(const PointLonLat& p) const override {
-            return geometry::Sphere::convertSphericalToCartesian(R, p, 0.);
+        PointXYZ operator()(const PointLonLat& p) const override {
+            return figure::Sphere::convertSphericalToCartesian(R, p, 0.);
         }
-        PointLonLat operator()(const Point3& q) const override {
-            return geometry::Sphere::convertCartesianToSpherical(R, q);
+        PointLonLat operator()(const PointXYZ& q) const override {
+            return figure::Sphere::convertCartesianToSpherical(R, q);
         }
     };
 
@@ -45,10 +43,10 @@ LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {
         const double b;
 
         explicit LonLatToSpheroidXYZ(double _a, double _b) : a(_a), b(_b) {}
-        Point3 operator()(const PointLonLat& p) const override {
-            return geometry::OblateSpheroid::convertSphericalToCartesian(a, b, p, 0.);
+        PointXYZ operator()(const PointLonLat& p) const override {
+            return figure::OblateSpheroid::convertSphericalToCartesian(a, b, p, 0.);
         }
-        PointLonLat operator()(const Point3& q) const override { NOTIMP; }
+        PointLonLat operator()(const PointXYZ& q) const override { NOTIMP; }
     };
 
     impl_.reset(types::is_approximately_equal(figure().eccentricity(), 0.)
@@ -66,6 +64,12 @@ LonLatToXYZ::LonLatToXYZ(double a, double b) :
 
 
 LonLatToXYZ::LonLatToXYZ(const Spec& spec) : LonLatToXYZ(FigureFactory::build(spec)) {}
+
+
+const std::string& LonLatToXYZ::type() const {
+    static const std::string type{"ll_to_xyz"};
+    return type;
+}
 
 
 void LonLatToXYZ::fill_spec(spec::Custom& custom) const {

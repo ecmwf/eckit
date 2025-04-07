@@ -14,7 +14,7 @@
 
 #include <cmath>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -41,18 +41,18 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat fir
     ASSERT(!types::is_approximately_equal(figure().R(), 0.));
 
     if (types::is_approximately_equal(lat_1, -lat_2)) {
-        throw ProjectionProblem(
+        throw exception::ProjectionError(
             "LambertConformalConic: cannot have equal latitudes for standard parallels on opposite sides of equator",
             Here());
     }
 
     n_ = types::is_approximately_equal(lat_1, lat_2)
              ? std::sin(lat_1_r_)
-             : std::log(std::cos(lat_1_r_) / std::cos(lat_2_r_))
-                   / std::log(std::tan(M_PI_4 + lat_2_r_ / 2.) / std::tan(M_PI_4 + lat_1_r_ / 2.));
+             : std::log(std::cos(lat_1_r_) / std::cos(lat_2_r_)) /
+                   std::log(std::tan(M_PI_4 + lat_2_r_ / 2.) / std::tan(M_PI_4 + lat_1_r_ / 2.));
 
     if (types::is_approximately_equal(n_, 0.)) {
-        throw ProjectionProblem("LambertConformalConic: cannot corretly calculate n_", Here());
+        throw exception::ProjectionError("LambertConformalConic: cannot corretly calculate n_", Here());
     }
 
     f_         = (std::cos(lat_1_r_) * std::pow(std::tan(M_PI_4 + lat_1_r_ / 2.), n_)) / n_;
@@ -60,7 +60,7 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat fir
 }
 
 
-Point2 LambertConformalConic::fwd(const PointLonLat& p) const {
+PointXY LambertConformalConic::fwd(const PointLonLat& p) const {
     auto q = PointLonLatR::make_from_lonlat(p.lon, p.lat);
 
     auto rho  = figure().R() * f_ * std::pow(std::tan(M_PI_4 + q.latr / 2.), -n_);
@@ -71,7 +71,7 @@ Point2 LambertConformalConic::fwd(const PointLonLat& p) const {
 }
 
 
-PointLonLat LambertConformalConic::inv(const Point2& p) const {
+PointLonLat LambertConformalConic::inv(const PointXY& p) const {
     auto x = p.X / figure().R();
     auto y = rho0_bare_ - p.Y / figure().R();
 
@@ -91,6 +91,12 @@ PointLonLat LambertConformalConic::inv(const Point2& p) const {
 }
 
 
+const std::string& LambertConformalConic::type() const {
+    static const std::string type{"lcc"};
+    return type;
+}
+
+
 void LambertConformalConic::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 
@@ -100,7 +106,7 @@ void LambertConformalConic::fill_spec(spec::Custom& custom) const {
     custom.set("first_lon", first_.lon);
     custom.set("first_lat", first_.lat);
     custom.set("lat_1", lat_1_);
-    custom.set("lat_2", lat_1_);
+    custom.set("lat_2", lat_2_);
 }
 
 

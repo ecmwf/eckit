@@ -19,6 +19,7 @@ namespace eckit::mpi {
 
 class Serial : public eckit::mpi::Comm {
 public:
+
     struct Constants {
         static constexpr int anyTag() { return -1; }
         static constexpr int anySource() { return -1; }
@@ -27,6 +28,7 @@ public:
     };
 
 protected:  // methods
+
     template <class T>
     friend class CommBuilder;
 
@@ -81,11 +83,11 @@ protected:  // methods
     virtual void scatterv(const void* sendbuf, const int sendcounts[], const int displs[], void* recvbuf,
                           size_t recvcount, Data::Code type, size_t root) const override;
 
-    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
-                        Operation::Code op, size_t root) const override;
+    virtual void reduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type, Operation::Code op,
+                        size_t root) const override;
 
-    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type,
-                               Operation::Code op, size_t root) const override;
+    virtual void reduceInPlace(void* sendrecvbuf, size_t count, Data::Code type, Operation::Code op,
+                               size_t root) const override;
 
     virtual void allReduce(const void* sendbuf, void* recvbuf, size_t count, Data::Code type,
                            Operation::Code op) const override;
@@ -114,8 +116,8 @@ protected:  // methods
 
     Request iSend(const void* send, size_t count, Data::Code type, int dest, int tag) const override;
 
-    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type,
-                                      int dest, int sendtag, int source, int recvtag) const override;
+    virtual Status sendReceiveReplace(void* sendrecv, size_t count, Data::Code type, int dest, int sendtag, int source,
+                                      int recvtag) const override;
 
     Comm& split(int color, const std::string& name) const override;
 

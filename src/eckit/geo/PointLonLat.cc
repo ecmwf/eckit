@@ -17,7 +17,7 @@
 #include <limits>
 #include <sstream>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -38,6 +38,13 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, va
 
     auto diff = a - maximum;
     return -FULL_ANGLE < diff && diff <= 0. ? a : (modulus(diff) + maximum);
+}
+
+
+bool PointLonLat::pole(value_type eps) const {
+    const auto p = make(lon, lat);
+    return types::is_approximately_equal(p.lat, RIGHT_ANGLE, eps) ||
+           types::is_approximately_equal(p.lat, -RIGHT_ANGLE, eps);
 }
 
 

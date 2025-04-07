@@ -24,6 +24,7 @@ namespace eckit::codec {
 
 class Session {
 public:
+
     Session();
 
     ~Session();

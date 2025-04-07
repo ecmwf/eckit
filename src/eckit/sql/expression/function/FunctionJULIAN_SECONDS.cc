@@ -12,7 +12,7 @@
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/types/Date.h"
 
-#define trunc(x) ((x)-fmod((x), 1))
+#define trunc(x) ((x) - fmod((x), 1))
 
 namespace eckit::sql::expression::function {
 

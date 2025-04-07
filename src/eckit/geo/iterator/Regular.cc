@@ -12,7 +12,7 @@
 
 #include "eckit/geo/iterator/Regular.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/Regular.h"
 
 
@@ -20,7 +20,7 @@ namespace eckit::geo::iterator {
 
 
 Regular::Regular(const grid::Regular& grid, size_t index) :
-    grid_(grid),
+    // grid_(grid),
     x_(grid.x().values()),
     y_(grid.y().values()),
     i_(0),
@@ -28,7 +28,7 @@ Regular::Regular(const grid::Regular& grid, size_t index) :
     index_(index),
     nx_(x_.size()),
     ny_(y_.size()),
-    size_(nx_ * nx_) {}
+    size_(nx_ * ny_) {}
 
 
 bool Regular::operator==(const Iterator& other) const {

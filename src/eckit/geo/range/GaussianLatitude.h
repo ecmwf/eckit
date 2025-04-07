@@ -20,6 +20,7 @@ namespace eckit::geo::range {
 
 class GaussianLatitude final : public Range {
 public:
+
     // -- Constructors
 
     explicit GaussianLatitude(size_t N, bool increasing, double eps = 0.);
@@ -37,6 +38,7 @@ public:
     const std::vector<double>& values() const override;
 
 private:
+
     // -- Constructors
 
     GaussianLatitude(size_t N, std::vector<double>&& values, double _eps) :

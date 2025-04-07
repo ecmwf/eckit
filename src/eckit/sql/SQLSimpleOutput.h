@@ -24,10 +24,12 @@ namespace eckit::sql {
 class SQLSimpleOutput : public SQLOutput {
 
 public:  // methods
+
     SQLSimpleOutput(const SQLOutputConfig& config, std::ostream& out);
     ~SQLSimpleOutput() override;
 
 private:  // methods
+
     template <typename T>
     void outputValue(double x, bool missing);
 
@@ -36,6 +38,7 @@ private:  // methods
     void printHeader(SQLSelect&);
 
 private:  // methods (overrides)
+
     void print(std::ostream&) const override;
 
     void reset() override;
@@ -54,6 +57,7 @@ private:  // methods (overrides)
     void outputBitfield(double, bool) override;
 
 private:  // members
+
     std::ostream& out_;
     unsigned long long count_;
     std::vector<size_t> columnWidths_;

@@ -32,6 +32,7 @@ namespace eckit::geo {
  */
 class PointLonLat final : protected std::array<double, 2> {
 public:
+
     // -- Types
 
     using container_type = array;
@@ -70,8 +71,13 @@ public:
 
     // -- Methods
 
-    static value_type normalise_angle_to_minimum(value_type, value_type minimum);
+    using container_type::data;
 
+    bool pole(value_type eps = EPS) const;
+
+    static size_t dimensions() { return DIMS; }
+
+    static value_type normalise_angle_to_minimum(value_type, value_type minimum);
     static value_type normalise_angle_to_maximum(value_type, value_type maximum);
 
     static void assert_latitude_range(const PointLonLat&);
@@ -85,10 +91,12 @@ public:
 
     // -- Class members
 
+    static constexpr size_t DIMS    = 2;
+    static constexpr value_type EPS = 1e-9;
+
     static constexpr value_type FULL_ANGLE  = 360.;
     static constexpr value_type FLAT_ANGLE  = 180.;
     static constexpr value_type RIGHT_ANGLE = 90.;
-    static constexpr value_type EPS         = 1e-9;
 
     // -- Class methods
 

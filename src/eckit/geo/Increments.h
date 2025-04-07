@@ -26,6 +26,7 @@ namespace eckit::geo {
 
 class Increments : public std::array<double, 2> {
 public:
+
     // -- Types
 
     using container_type = array;
@@ -73,6 +74,7 @@ public:
     static Increments make_from_spec(const Spec&);
 
 private:
+
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& os, const Increments& inc) {

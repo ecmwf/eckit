@@ -30,6 +30,7 @@ namespace eckit {
 class SHA1 : public Hash {
 
 public:  // types
+
     SHA1();
 
     explicit SHA1(const char*);
@@ -54,6 +55,7 @@ public:  // types
     }
 
 private:  // members
+
     mutable SHA_CTX ctx_;
 };
 

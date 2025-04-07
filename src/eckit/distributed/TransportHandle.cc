@@ -10,30 +10,22 @@
 
 #include "TransportHandle.h"
 
-#include "eckit/maths/Functions.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/maths/Functions.h"
 
-#include "eckit/distributed/Transport.h"
 #include "eckit/distributed/Message.h"
+#include "eckit/distributed/Transport.h"
 
 namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TransportHandle::TransportHandle(Transport& transport,
-                                 const std::string& path,
-                                 size_t writers,
-                                 bool exclusive):
-    transport_(transport),
-    path_(path),
-    writer_(0),
-    opened_(false),
-    append_(false),
-    position_(0) {
+TransportHandle::TransportHandle(Transport& transport, const std::string& path, size_t writers, bool exclusive) :
+    transport_(transport), path_(path), writer_(0), opened_(false), append_(false), position_(0) {
 
     // Compute hash to select writer
     for (auto j = path.begin(); j != path.end(); ++j) {
-        writer_ +=  (*j - 'A') + (writer_ << 5);
+        writer_ += (*j - 'A') + (writer_ << 5);
     }
 
     writer_ %= writers;
@@ -55,7 +47,7 @@ eckit::Length TransportHandle::openForRead() {
 void TransportHandle::openForWrite(const eckit::Length& length) {
     append_ = false;
 
-    Message message(Actor::OPEN, eckit::round(path_.length()  + 64, 1024));
+    Message message(Actor::OPEN, eckit::round(path_.length() + 64, 1024));
     message << path_;
     message << append_;
 
@@ -66,7 +58,7 @@ void TransportHandle::openForWrite(const eckit::Length& length) {
 void TransportHandle::openForAppend(const eckit::Length& length) {
     append_ = true;
 
-    Message message(Actor::OPEN, eckit::round(path_.length()  + 64, 1024));
+    Message message(Actor::OPEN, eckit::round(path_.length() + 64, 1024));
     message << path_;
     message << append_;
 
@@ -87,19 +79,18 @@ long TransportHandle::write(const void* buffer, long length) {
     return length;
 }
 
-void TransportHandle::send(const void *buffer, size_t length) {
+void TransportHandle::send(const void* buffer, size_t length) {
 
     if (!length) {
         return;
     }
 
-    Message message(Actor::WRITE, eckit::round(length + path_.length()  + 64, 1024 * 1024));
+    Message message(Actor::WRITE, eckit::round(length + path_.length() + 64, 1024 * 1024));
     message << path_;
     message << append_;
     message.writeBlob(buffer, length);
 
     transport_.sendToWriter(writer_, message);
-
 }
 
 void TransportHandle::close() {
@@ -107,7 +98,7 @@ void TransportHandle::close() {
         flush();
 
 
-        Message message(Actor::CLOSE, eckit::round(path_.length()  + 64, 1024));
+        Message message(Actor::CLOSE, eckit::round(path_.length() + 64, 1024));
         message << path_;
         message << append_;
 
@@ -116,9 +107,7 @@ void TransportHandle::close() {
     opened_ = false;
 }
 
-void TransportHandle::flush() {
-
-}
+void TransportHandle::flush() {}
 
 void TransportHandle::rewind() {
     NOTIMP;
@@ -145,4 +134,4 @@ std::string TransportHandle::title() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed

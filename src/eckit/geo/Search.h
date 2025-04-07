@@ -17,7 +17,7 @@
 #include "eckit/container/KDTree.h"
 #include "eckit/container/sptree/SPValue.h"
 #include "eckit/geo/Point.h"
-#include "eckit/geo/geometry/UnitSphere.h"
+#include "eckit/geo/figure/UnitSphere.h"
 
 
 namespace eckit::geo {
@@ -32,10 +32,10 @@ struct Traits {
 }  // namespace search
 
 
-using Search3 = KDTreeMemory<search::Traits<geo::Point3, size_t>>;
+using Search3 = KDTreeMemory<search::Traits<geo::PointXYZ, size_t>>;
 
 
-using Search2 = KDTreeMemory<search::Traits<geo::Point2, size_t>>;
+using Search2 = KDTreeMemory<search::Traits<geo::PointXY, size_t>>;
 
 
 struct SearchLonLat : Search3 {
@@ -76,7 +76,8 @@ struct SearchLonLat : Search3 {
     }
 
 private:
-    static Search3::Point to_cartesian(const Point& p) { return geometry::UnitSphere::convertSphericalToCartesian(p); }
+
+    static Search3::Point to_cartesian(const Point& p) { return figure::UnitSphere::_convertSphericalToCartesian(p); }
 };
 
 

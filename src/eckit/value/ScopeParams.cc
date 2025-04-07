@@ -18,11 +18,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ScopeParams::ScopeParams(const Params::key_t& scope_key, const Params& p) :
-    scope_(scope_key + "."), p_(p) {}
+ScopeParams::ScopeParams(const Params::key_t& scope_key, const Params& p) : scope_(scope_key + "."), p_(p) {}
 
-ScopeParams::ScopeParams(Stream& s) :
-    p_(Params::decode(s)) {
+ScopeParams::ScopeParams(Stream& s) : p_(Params::decode(s)) {
     s >> scope_;
 }
 

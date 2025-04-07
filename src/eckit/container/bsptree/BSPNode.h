@@ -20,6 +20,7 @@ namespace eckit {
 template <class Traits, class Partition>
 class BSPNode : public SPNode<Traits, BSPNode<Traits, Partition> > {
 public:
+
     typedef SPNode<Traits, BSPNode<Traits, Partition> > SPNodeType;
     typedef typename SPNodeType::Value Value;
     typedef typename SPNodeType::Alloc Alloc;
@@ -33,11 +34,13 @@ public:
     typedef BSPNode<Traits, Partition> Node;
 
 private:
+
     HyperPlane plane_;
 
     double dist_;  // Distance to parent's hyperplane
 
 public:
+
     BSPNode(const Value& v, const HyperPlane& plane, double dist);
     ~BSPNode() override {}
 
@@ -46,6 +49,7 @@ public:
 
 
 private:
+
     virtual void nearestNeighbourX(Alloc& a, const Point& p, Node*& best, double& max, int depth);
     virtual void findInSphereX(Alloc& a, const Point& p, double radius, NodeList& result, int depth);
     virtual void kNearestNeighboursX(Alloc& a, const Point& p, size_t k, NodeQueue& result, int depth);

@@ -16,6 +16,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "eckit/geo/Arrangement.h"
+#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/grid/Regular.h"
 
 
@@ -29,16 +31,8 @@ namespace eckit::geo::grid {
 
 class ORCA final : public Regular {
 public:
-    // -- Types
 
-    enum Arrangement
-    {
-        F,
-        T,
-        U,
-        V,
-        W,
-    };
+    // -- Types
 
     struct ORCARecord {
         explicit ORCARecord() = default;
@@ -68,6 +62,8 @@ public:
     explicit ORCA(const Spec&);
     explicit ORCA(uid_t);
 
+    ORCA(const std::string& name, Arrangement);
+
     // -- Methods
 
     size_t nx() const override { return record_.nj(); }
@@ -75,6 +71,8 @@ public:
 
     std::string name() const { return name_; }
     std::string arrangement() const;
+
+    std::shared_ptr<container::PointsContainer> container() const { return container_; }
 
     // -- Overridden methods
 
@@ -88,23 +86,28 @@ public:
     bool isPeriodicWestEast() const override { return true; }
 
     std::vector<Point> to_points() const override;
-    std::pair<std::vector<double>, std::vector<double>> to_latlon() const override;
+    std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     // -- Class methods
 
     [[nodiscard]] static Spec* spec(const std::string& name);
 
+    [[nodiscard]] static Arrangement arrangement_from_string(const std::string&);
+    [[nodiscard]] static std::string arrangement_to_string(Arrangement);
+
 private:
+
     // -- Members
 
     std::string name_;
-    uid_t uid_;
     Arrangement arrangement_;
     const ORCARecord& record_;
+    std::shared_ptr<container::PointsContainer> container_;
 
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 };
 
 

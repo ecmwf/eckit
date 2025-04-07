@@ -20,6 +20,7 @@ namespace eckit::geo::grid::regularxy {
 
 class LambertAzimuthalEqualArea final : public RegularXY {
 public:
+
     // -- Constructors
 
     explicit LambertAzimuthalEqualArea(const Spec& spec) : RegularXY(RegularXY::make_ranges_from_spec(spec)) {}
@@ -27,6 +28,7 @@ public:
     // -- Overridden methods
 
     void fill_spec(spec::Custom& custom) const override;
+    const std::string& type() const override;
 };
 
 

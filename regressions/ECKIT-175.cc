@@ -48,15 +48,14 @@ void myrun() {
 
 class MyTool : public Tool {
 public:
-    MyTool(int argc, char** argv) :
-        Tool(argc, argv) {}
+
+    MyTool(int argc, char** argv) : Tool(argc, argv) {}
     virtual ~MyTool() {}
     virtual void run() { myrun(); }
 };
 
 
-enum
-{
+enum {
     NO_INIT = 1,
     INIT    = 2,
     TOOL    = 3

@@ -31,14 +31,18 @@ Grid::iterator Unstructured::cend() const {
 
 
 Unstructured::Unstructured(const std::vector<double>& latitudes, const std::vector<double>& longitudes) :
-    container_{new container::PointsLonLatReference{longitudes, latitudes}} {}
+    Unstructured(new container::PointsLonLatReference{longitudes, latitudes}) {}
 
 
-Unstructured::Unstructured(const std::vector<Point>& points) : container_{new container::PointsReference{points}} {}
+Unstructured::Unstructured(const std::vector<Point>& points) : Unstructured(new container::PointsReference{points}) {}
 
 
 Unstructured::Unstructured(std::vector<Point>&& points) :
-    container_{new container::PointsInstance{std::move(points)}} {}
+    Unstructured(new container::PointsInstance{std::move(points)}) {}
+
+
+Unstructured::Unstructured(container::PointsContainer* container) :
+    Grid(area::BoundingBox::make_global_prime(), nullptr), container_{container} {}
 
 
 size_t Unstructured::size() const {
@@ -59,7 +63,6 @@ std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlons() 
 Spec* Unstructured::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }
-
 
 void Unstructured::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);

@@ -125,6 +125,16 @@ CASE("PointLonLatR conversion to/from PointLonLat") {
 }
 
 
+CASE("PointLonLatR pole") {
+    for (const auto& p : {PointLonLatR(0., PointLonLatR::RIGHT_ANGLE), PointLonLatR(0., -PointLonLatR::RIGHT_ANGLE)}) {
+        EXPECT(p.pole());
+
+        PointLonLatR q{p.lonr, p.latr + 1.};
+        EXPECT(!q.pole());
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

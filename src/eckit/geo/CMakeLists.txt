@@ -20,23 +20,22 @@ list(APPEND eckit_geo_srcs
     Iterator.h
     LibEcKitGeo.cc
     LibEcKitGeo.h
-    Ordering.cc
-    Ordering.h
+    Order.cc
+    Order.h
     Point.cc
     Point.h
-    PointXY.cc
-    PointXY.h
-    PointXYZ.cc
-    PointXYZ.h
     PointLonLat.cc
     PointLonLat.h
     PointLonLatR.cc
     PointLonLatR.h
+    PointXY.cc
+    PointXY.h
+    PointXYZ.cc
+    PointXYZ.h
     Projection.cc
     Projection.h
     Range.cc
     Range.h
-    Renumber.h
     Search.h
     Shape.cc
     Shape.h
@@ -66,16 +65,12 @@ list(APPEND eckit_geo_srcs
     figure/Earth.h
     figure/OblateSpheroid.cc
     figure/OblateSpheroid.h
+    figure/OblateSpheroidT.h
     figure/Sphere.cc
     figure/Sphere.h
+    figure/SphereT.h
     figure/UnitSphere.cc
     figure/UnitSphere.h
-    geometry/OblateSpheroid.cc
-    geometry/OblateSpheroid.h
-    geometry/Sphere.cc
-    geometry/Sphere.h
-    geometry/SphereT.h
-    geometry/UnitSphere.h
     grid/HEALPix.cc
     grid/HEALPix.h
     grid/Reduced.cc
@@ -112,6 +107,14 @@ list(APPEND eckit_geo_srcs
     iterator/Regular.h
     iterator/Unstructured.cc
     iterator/Unstructured.h
+    order/HEALPix.cc
+    order/HEALPix.h
+    order/ReducedScan.cc
+    order/ReducedScan.h
+    order/RegularScan.cc
+    order/RegularScan.h
+    order/Scan.cc
+    order/Scan.h
     polygon/Polygon.cc
     polygon/Polygon.h
     polygon/Polygon2.cc

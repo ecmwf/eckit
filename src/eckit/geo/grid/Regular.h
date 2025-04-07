@@ -33,10 +33,6 @@ namespace eckit::geo::grid {
 class Regular : public Grid {
 public:
 
-    // -- Constructors
-
-    explicit Regular(const Spec& spec) : Grid(spec) {}
-
     // -- Methods
 
     virtual double dx() const;
@@ -62,11 +58,17 @@ protected:
 
     struct Ranges : std::pair<Range*, Range*> {
         Ranges(Range*, Range*);
+        ~Ranges();
     };
 
     // -- Constructors
 
+    explicit Regular(const Spec& spec);
     explicit Regular(Ranges, Projection* = nullptr);
+
+    // -- Methods
+
+    const Order& internal_order() const;
 
     // -- Overridden methods
 
@@ -78,6 +80,7 @@ private:
 
     std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
+    std::unique_ptr<Order> order_;
 
     // -- Friends
 

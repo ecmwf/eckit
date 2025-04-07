@@ -41,6 +41,13 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, va
 }
 
 
+bool PointLonLat::pole(value_type eps) const {
+    const auto p = make(lon, lat);
+    return types::is_approximately_equal(p.lat, RIGHT_ANGLE, eps) ||
+           types::is_approximately_equal(p.lat, -RIGHT_ANGLE, eps);
+}
+
+
 void PointLonLat::assert_latitude_range(const PointLonLat& P) {
     if (!(-RIGHT_ANGLE <= P.lat && P.lat <= RIGHT_ANGLE)) {
         std::ostringstream oss;

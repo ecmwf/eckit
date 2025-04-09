@@ -14,11 +14,17 @@
 
 #include <bitset>
 #include <cmath>
+#include <cstdint>
+#include <tuple>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::order {
+
+
+static OrderRegisterType<HEALPix> ORDERING("healpix");
 
 
 const Order::value_type HEALPix::ring   = "ring";
@@ -94,14 +100,40 @@ inline int pll(int f) {
 }  // namespace
 
 
-HEALPix::HEALPix(int Nside) :
-    Order("ring", "nested"),
+HEALPix::HEALPix(const value_type& order, int Nside) :
+    order_(order),
     Nside_(Nside),
     Npix_(size()),
     Ncap_((Nside * (Nside - 1)) << 1),
     k_(is_power_of_2(Nside_) ? static_cast<int>(std::log2(Nside)) : -1) {
-    ASSERT(0 < Nside_);
+    static struct Register {
+        Register() {
+            register_ordering(ring);
+            register_ordering(nested);
+        }
+    } const REGISTER;
+
+    if (Nside <= 0) {
+        throw exception::OrderError("HEALPix: Nside must be greater than zero", Here());
+    }
+
+    if (order_ == ring) {
+        return;
+    }
+
+    if (order_ == nested) {
+        if (!is_power_of_2(Nside_)) {
+            throw exception::OrderError("HEALPix: Nside must be a power of 2", Here());
+        }
+
+        return;
+    }
+
+    throw exception::OrderError("HEALPix: supported ordering: ring, nested", Here());
 }
+
+
+HEALPix::HEALPix(const Spec& spec) : HEALPix([&spec]() { return spec.get_string("order", order_default()); }()) {}
 
 
 int HEALPix::ring_to_nest(int r) const {
@@ -208,11 +240,6 @@ const std::string& HEALPix::type() const {
 }
 
 
-const Order::value_type& HEALPix::order_default() const {
-    return ring;
-}
-
-
 Reordering HEALPix::reorder(const value_type& to) const {
     ASSERT(order_ == nested || order_ == ring);
     ASSERT(to == nested || to == ring);
@@ -223,11 +250,11 @@ Reordering HEALPix::reorder(const value_type& to) const {
 
     if (k_ <= 0) {
         // no reordering to/from nested is possible
-        throw exception::ReorderError(
+        throw exception::OrderError(
             "HEALPix::reorder(from=" + order_ + ", to=" + to + ", Nside=, " + std::to_string(Nside_) + ")", Here());
     }
 
-    auto from_nested = order_ == "nested";
+    auto from_nested = order_ == nested;
 
     Reordering ren(size());
     for (int i = 0; i < size(); ++i) {
@@ -235,6 +262,14 @@ Reordering HEALPix::reorder(const value_type& to) const {
     }
 
     return ren;
+}
+
+
+void HEALPix::fill_spec(spec::Custom& custom) const {
+    if (order_ != order_default()) {
+        custom.set("type", type());
+        custom.set("order", order_);
+    }
 }
 
 

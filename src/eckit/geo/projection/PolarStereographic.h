@@ -28,8 +28,8 @@ public:
 
     // -- Methods
 
-    PointXY fwd(const PointLonLat& p) const;
-    PointLonLat inv(const PointXY& q) const;
+    PointXY fwd(const PointLonLat&) const;
+    PointLonLat inv(const PointXY&) const;
 
     // -- Overridden methods
 

@@ -40,7 +40,7 @@ protected:
 
     // -- Constructors
 
-    explicit Reduced(area::BoundingBox* = nullptr, Projection* = nullptr);
+    explicit Reduced(area::BoundingBox* bbox = nullptr, Projection* projection = nullptr) : Grid(bbox, projection) {}
 
     // -- Methods
 

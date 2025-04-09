@@ -12,46 +12,73 @@
 
 #pragma once
 
+#include <memory>
+
 #include "eckit/geo/Order.h"
+#include "eckit/geo/util.h"
 
 
 namespace eckit::geo::order {
 
 
-class Scan : public Order {
+class Scan final : public Order {
 public:
-
-    // -- Methods
-
-    bool is_scan_i_positive(const value_type&) const;
-    bool is_scan_j_positive(const value_type&) const;
-    bool is_scan_ij(const value_type&) const;
-    bool is_scan_alternating_direction(const value_type&) const;
-
-    // -- Class members
-
-    static const value_type scan_i_negatively_j_negatively;
-    static const value_type scan_i_negatively_j_negatively_alternating;
-    static const value_type scan_i_negatively_j_positively;
-    static const value_type scan_i_negatively_j_positively_alternating;
-    static const value_type scan_i_positively_j_negatively;
-    static const value_type scan_i_positively_j_negatively_alternating;
-    static const value_type scan_i_positively_j_positively;
-    static const value_type scan_i_positively_j_positively_alternating;
-    static const value_type scan_j_negatively_i_negatively;
-    static const value_type scan_j_negatively_i_negatively_alternating;
-    static const value_type scan_j_negatively_i_positively;
-    static const value_type scan_j_negatively_i_positively_alternating;
-    static const value_type scan_j_positively_i_negatively;
-    static const value_type scan_j_positively_i_negatively_alternating;
-    static const value_type scan_j_positively_i_positively;
-    static const value_type scan_j_positively_i_positively_alternating;
-
-protected:
 
     // -- Constructors
 
-    Scan();
+    Scan(const value_type&, size_t nx, size_t ny);
+    Scan(const value_type&, const pl_type&);
+
+    explicit Scan(const value_type&);
+    explicit Scan(const Spec&);
+
+    // -- Methods
+
+    const std::string& type() const override;
+
+    const value_type& order() const override { return order_; }
+    Reordering reorder(const value_type& to) const override;
+
+    // -- Class methods
+
+    static const Order::value_type& order_default();
+    static Order::value_type make_order_from_spec(const Spec& spec);
+
+    static bool is_scan_i_positively(const value_type&);
+    static bool is_scan_j_positively(const value_type&);
+    static bool is_scan_i_j(const value_type&);
+    static bool is_scan_alternating(const value_type&);
+
+private:
+
+    // -- Types
+
+    struct Implementation {
+        Implementation()          = default;
+        virtual ~Implementation() = default;
+
+        Implementation(const Implementation&) = delete;
+        Implementation(Implementation&&)      = delete;
+        void operator=(const Implementation&) = delete;
+        void operator=(Implementation&&)      = delete;
+
+        virtual Reordering reorder(const value_type& from, const value_type& to) const = 0;
+    };
+
+    // -- Constructors
+
+    Scan(const value_type&, Implementation*);
+
+    // -- Members
+
+    std::unique_ptr<Implementation> impl_;
+    value_type order_;
+
+    static const value_type DEFAULT;
+
+    // -- Overriden methods
+
+    void fill_spec(spec::Custom&) const override;
 };
 
 

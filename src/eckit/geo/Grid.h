@@ -159,8 +159,8 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    virtual order_type order() const;
-    virtual Reordering reorder(order_type) const;
+    virtual const order_type& order() const;
+    virtual Reordering reorder(const order_type&) const;
 
     virtual const Area& area() const;
     virtual Reordering crop(const Area&) const;
@@ -170,7 +170,7 @@ public:
     virtual const area::BoundingBox& boundingBox() const;
     [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
 
-    [[nodiscard]] virtual Grid* make_grid_reordered(order_type) const;
+    [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
 
     // -- Class methods

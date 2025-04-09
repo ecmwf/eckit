@@ -236,6 +236,16 @@ std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlons() const {
 }
 
 
+const Grid::order_type& ORCA::order() const {
+    NOTIMP;
+}
+
+
+Reordering ORCA::reorder(const order_type& to) const {
+    NOTIMP;
+}
+
+
 Spec* ORCA::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }

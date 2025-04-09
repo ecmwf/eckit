@@ -148,9 +148,9 @@ CASE("grid: HEALPix") {
 
     EXPECT(h2->spec_str() == R"({"grid":"H2"})");
 
-    std::unique_ptr<const Grid> h2n(GridFactory::build(spec::Custom({{"grid", "H2"}, {"ordering", "nested"}})));
+    std::unique_ptr<const Grid> h2n(GridFactory::build(spec::Custom({{"grid", "H2"}, {"order", "nested"}})));
 
-    EXPECT(h2n->spec_str() == R"({"grid":"H2","ordering":"nested"})");
+    EXPECT(h2n->spec_str() == R"({"grid":"H2","order":"nested"})");
 }
 
 

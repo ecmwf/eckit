@@ -143,8 +143,10 @@ template <class C>
 bool GeneratorT<C>::matches(const std::string& k) const {
     lock_type lock(mutex_);
 
-    return std::any_of(store_.begin(), store_.end(),
-                       [&](const auto& p) -> bool { return std::regex_match(k, std::regex(p.first)); });
+    return std::any_of(store_.begin(), store_.end(), [&](const auto& p) -> bool {
+        const std::regex rex(p.first, std::regex_constants::icase);
+        return std::regex_match(k, rex);
+    });
 }
 
 template <class C>
@@ -188,7 +190,7 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::match(const std::strin
     auto end = store_.cend();
     auto i   = end;
     for (auto j = store_.cbegin(); j != end; ++j) {
-        if (std::regex_match(k, std::regex(j->first))) {
+        if (const std::regex rex(j->first, std::regex_constants::icase); std::regex_match(k, rex)) {
             if (i != end) {
                 throw SeriousBug("Generator name '" + k + "' matches '" + i->first + "' and '" + j->first + "'",
                                  Here());

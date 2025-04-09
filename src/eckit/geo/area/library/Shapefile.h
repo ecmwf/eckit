@@ -48,7 +48,7 @@ public:
 
     // -- Destructor
 
-    ~Shapefile();
+    ~Shapefile() override;
 
     // -- Operators
 

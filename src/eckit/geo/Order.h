@@ -14,12 +14,17 @@
 
 #include <memory>
 #include <string>
-#include <type_traits>
 
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
+
+
+namespace eckit::geo::grid {
+class Regular;
+class Reduced;
+}  // namespace eckit::geo::grid
 
 
 namespace eckit::geo {
@@ -39,13 +44,6 @@ public:
 
     // -- Constructors
 
-    template <typename... Args>
-    explicit Order(Args&&... args) {
-        static_assert((std::is_convertible_v<Args, value_type> && ...),
-                      "Reorder: arguments must be convertible to value_type");
-        (register_ordering(std::forward<Args>(args)), ...);
-    }
-
     Order() noexcept    = default;
     Order(const Order&) = default;
     Order(Order&&)      = default;
@@ -61,9 +59,11 @@ public:
 
     // -- Methods
 
+    [[nodiscard]] const Spec& spec() const;
+    std::string spec_str() const { return spec().str(); }
+
     virtual const std::string& type() const = 0;
 
-    virtual const value_type& order_default() const        = 0;
     virtual const value_type& order() const                = 0;
     virtual Reordering reorder(const value_type& to) const = 0;
 
@@ -71,8 +71,14 @@ public:
 
     static std::string className();
 
-    [[nodiscard]] static value_type make_ordering_from_spec(const Spec&);
+    [[nodiscard]] static value_type make_order_from_spec(const Spec&);
     [[nodiscard]] static Reordering no_reorder(size_t);
+
+protected:
+
+    // -- Class methods
+
+    static void register_ordering(const std::string&);
 
 private:
 
@@ -82,19 +88,23 @@ private:
 
     // -- Methods
 
-    void fill_spec(spec::Custom&) const;
+    virtual void fill_spec(spec::Custom&) const = 0;
 
-    void register_ordering(const std::string&);
+    // -- Friends
+
+    friend class grid::Reduced;
+    friend class grid::Regular;
 };
 
 
-using ReorderFactoryType = Factory<Order>;
+using OrderFactoryType = Factory<Order>;
+
 
 template <typename T>
-using ReorderRegisterType = ConcreteBuilderT1<Order, T>;
+using OrderRegisterType = ConcreteBuilderT1<Order, T>;
 
 
-struct ReorderFactory {
+struct OrderFactory {
     [[nodiscard]] static const Order* build(const Spec& spec) { return instance().make_from_spec_(spec); }
 
     [[nodiscard]] static const Order* make_from_string(const std::string&);
@@ -104,7 +114,7 @@ struct ReorderFactory {
 
 private:
 
-    static ReorderFactory& instance();
+    static OrderFactory& instance();
 
     [[nodiscard]] const Order* make_from_spec_(const Spec&) const;
     [[nodiscard]] Spec* make_spec_(const Spec&) const;

@@ -23,26 +23,32 @@ public:
 
     // -- Constructors
 
-    explicit HEALPix(int Nside);
+    explicit HEALPix(const value_type& order, int Nside = 1);
+    explicit HEALPix(const Spec&);
 
     // -- Methods
-
-    static const value_type ring;
-    static const value_type nested;
 
     int size() const { return 12 * Nside_ * Nside_; }
     int nside() const { return Nside_; }
 
     int ring_to_nest(int r) const;
-    int nest_to_ring(int r) const;
+    int nest_to_ring(int n) const;
 
     // -- Overriden methods
 
     const std::string& type() const override;
 
-    const value_type& order_default() const override;
     const value_type& order() const override { return order_; }
     Reordering reorder(const value_type& to) const override;
+
+    // -- Class members
+
+    static const value_type ring;
+    static const value_type nested;
+
+    // -- Class methods
+
+    static const Order::value_type& order_default() { return ring; }
 
 private:
 
@@ -54,6 +60,10 @@ private:
     const int Npix_;
     const int Ncap_;
     const int k_;
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
 };
 
 

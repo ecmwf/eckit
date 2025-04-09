@@ -13,10 +13,9 @@
 #include "eckit/geo/grid/ReducedLL.h"
 
 #include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/order/ReducedScan.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
-#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::grid {
@@ -39,7 +38,7 @@ ReducedLL::ReducedLL(const Spec& spec) :
 
 
 ReducedLL::ReducedLL(const pl_type& pl, area::BoundingBox* bbox) :
-    Reduced(bbox), pl_(pl), y_(make_y_range(pl, bbox)), order_(pl) {
+    Reduced(bbox), pl_(pl), y_(make_y_range(pl, bbox)), order_(order::Scan::order_default(), pl) {
     ASSERT(y_);
 }
 
@@ -64,11 +63,6 @@ size_t ReducedLL::nj() const {
 }
 
 
-Reordering ReducedLL::reorder(order_type to) const {
-    return order_.reorder(to);
-}
-
-
 const std::vector<double>& ReducedLL::latitudes() const {
     return y_->values();
 }
@@ -88,8 +82,12 @@ std::vector<double> ReducedLL::longitudes(size_t j) const {
 void ReducedLL::fill_spec(spec::Custom& custom) const {
     Reduced::fill_spec(custom);
 
-    custom.set("type", "reduced_ll");
+    custom.set("type", type());
     custom.set("pl", pl_);
+
+    if (order() != order::Scan::order_default()) {
+        custom.set("ordering", order());
+    }
 }
 
 

@@ -124,17 +124,17 @@ std::pair<std::vector<double>, std::vector<double> > Grid::to_latlons() const {
 }
 
 
-Grid::order_type Grid::order() const {
+const Grid::order_type& Grid::order() const {
     NOTIMP;
 }
 
 
-Reordering Grid::reorder(order_type) const {
+Reordering Grid::reorder(const order_type&) const {
     NOTIMP;
 }
 
 
-Grid* Grid::make_grid_reordered(order_type) const {
+Grid* Grid::make_grid_reordered(const order_type&) const {
     NOTIMP;
 }
 

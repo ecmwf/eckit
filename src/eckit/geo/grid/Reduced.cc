@@ -13,7 +13,6 @@
 #include "eckit/geo/grid/Reduced.h"
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/order/ReducedScan.h"
 
 
 namespace eckit::geo::grid {
@@ -62,9 +61,6 @@ std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlons() const 
     ASSERT(lat.size() == N && lon.size() == N);
     return latlon;
 }
-
-
-Reduced::Reduced(area::BoundingBox* bbox, Projection* projection) : Grid(bbox, projection) {}
 
 
 const std::vector<size_t>& Reduced::niacc() const {

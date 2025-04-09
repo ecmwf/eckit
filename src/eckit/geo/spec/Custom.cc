@@ -307,7 +307,7 @@ void Custom::set(const std::string& name, const std::vector<std::string>& value)
 }
 
 
-void Custom::set(const std::string& key, const Value& value) {
+void Custom::set(const std::string& name, const Value& value) {
     using number_type = pl_type::value_type;
 
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
@@ -321,7 +321,7 @@ void Custom::set(const std::string& key, const Value& value) {
                : value.isNumber() ? from_value_t<number_type>(value)
                                   : from_value_t<std::string>(value);
 
-    std::visit([&](const auto& val) { set(key, val); }, val);
+    std::visit([&](const auto& val) { set(name, val); }, val);
 }
 
 

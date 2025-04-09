@@ -88,6 +88,9 @@ public:
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
+    const order_type& order() const override;
+    Reordering reorder(const order_type& to) const override;
+
     // -- Class methods
 
     [[nodiscard]] static Spec* spec(const std::string& name);

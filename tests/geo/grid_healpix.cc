@@ -189,7 +189,7 @@ CASE("equals") {
     EXPECT(grid1->order() == order::HEALPix::ring);
 
     std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "h2"}, {"order", "nested"}})));
-    std::unique_ptr<const Grid> grid5(GridFactory::make_from_string("{type: HEALPix, Nside: 2, order(): nested}"));
+    std::unique_ptr<const Grid> grid5(GridFactory::make_from_string("{type: HEALPix, Nside: 2, order: nested}"));
     std::unique_ptr<const Grid> grid6(new grid::HEALPix(2, order::HEALPix::nested));
 
     EXPECT(*grid4 != *grid1);
@@ -204,8 +204,8 @@ CASE("equals") {
 
 CASE("wrong spec") {
     EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h0}"), exception::SpecError);
-    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order():nested}"), exception::SpecError);
-    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order():?}"), exception::SpecError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:nested}"), exception::OrderError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:?}"), exception::OrderError);
 }
 
 

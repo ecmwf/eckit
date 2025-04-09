@@ -42,7 +42,8 @@ Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const 
     if (types::is_approximately_equal(crop_a, crop_b, eps())) {
         NOTIMP;  // FIXME
     }
-    else if (a() < b()) {
+
+    if (a() < b()) {
         ASSERT(a() <= crop_a && crop_b <= b());  // FIXME do better
 
         auto inc(increment());
@@ -57,9 +58,6 @@ Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const 
         ASSERT(0 < n && n <= size());
 
         return new RegularCartesian(n, _a, _b, eps());
-    }
-    else {
-        NOTIMP;  // FIXME
     }
 
     NOTIMP;

@@ -20,6 +20,7 @@
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/parser/YAMLParser.h"
 
 
 namespace eckit::geo {
@@ -36,26 +37,34 @@ class lock_type {
 };
 
 
-std::map<std::string, size_t> ORDERING_INDEX;
-std::map<size_t, std::string> ORDERING_NAME;
+std::map<std::string, size_t> ORDER_INDEX;
+std::map<size_t, std::string> ORDER_NAME;
 
 
 }  // namespace
 
 
-std::string Order::className() {
-    static const std::string ordering = "ordering";
-    return ordering;
+const Spec& Order::spec() const {
+    if (!spec_) {
+        spec_ = std::make_shared<spec::Custom>();
+        ASSERT(spec_);
+
+        auto& custom = *spec_;
+        fill_spec(custom);
+    }
+
+    return *spec_;
 }
 
 
-Order::value_type Order::make_ordering_from_spec(const Spec&) {
-    NOTIMP;
+std::string Order::className() {
+    static const std::string order = "order";
+    return order;
+}
 
-    // int key = (spec.get_bool("scan_i_plus", true) ? 0 : 1) + (spec.get_bool("scan_j_plus", false) ? 1 << 1 : 0) +
-    //           (spec.get_bool("scan_ij", true) ? 0 : 1 << 2) + (spec.get_bool("scan_alternating", false) ? 1 << 3 :
-    //           0);
-    // return static_cast<value_type>(key);
+
+Order::value_type Order::make_order_from_spec(const Spec& spec) {
+    return std::unique_ptr<const Order>(OrderFactory::build(spec))->order();
 }
 
 
@@ -66,69 +75,59 @@ Reordering Order::no_reorder(size_t size) {
 }
 
 
-void Order::fill_spec(spec::Custom& custom) const {
-    if (order() != order_default()) {
-        custom.set("type", type());
-        custom.set("order", order());
-    }
-}
-
-
 void Order::register_ordering(const std::string& name) {
     lock_type lock;
 
-    auto index = ORDERING_INDEX.size();
-
-    ASSERT(ORDERING_INDEX.emplace(name, index).second);
-    ASSERT(ORDERING_NAME.emplace(index, name).second);
+    auto index = ORDER_INDEX.size();
+    ASSERT(ORDER_INDEX.try_emplace(name, index).second == ORDER_NAME.try_emplace(index, name).second);
 }
 
 
-const Order* ReorderFactory::make_from_string(const std::string&) {
-    // FIXME
-    NOTIMP;
+const Order* OrderFactory::make_from_string(const std::string& str) {
+    std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+    return instance().make_from_spec_(*spec);
 }
 
 
-ReorderFactory& ReorderFactory::instance() {
-    static ReorderFactory obj;
+OrderFactory& OrderFactory::instance() {
+    static OrderFactory obj;
     return obj;
 }
 
 
-const Order* ReorderFactory::make_from_spec_(const Spec& spec) const {
+const Order* OrderFactory::make_from_spec_(const Spec& spec) const {
     lock_type lock;
 
     std::unique_ptr<Spec> cfg(make_spec_(spec));
 
     if (std::string type; cfg->get("type", type)) {
-        return ReorderFactoryType::instance().get(type).create(*cfg);
+        return OrderFactoryType::instance().get(type).create(*cfg);
     }
 
-    list(Log::error() << "Reorder: cannot build ordering without 'type', choices are: ");
-    throw exception::SpecError("Reorder: cannot build ordering without 'type'", Here());
+    list(Log::error() << "Order: cannot build order without 'type', choices are: ");
+    throw exception::SpecError("Order: cannot build order without 'type'", Here());
 }
 
 
-Spec* ReorderFactory::make_spec_(const Spec& spec) const {
+Spec* OrderFactory::make_spec_(const Spec& spec) const {
     lock_type lock;
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
 
 
-    // hardcoded, interpreted options (contributing to orderingspec)
+    // hardcoded, interpreted options (contributing to orderspec)
 
-    // cfg->push_back(new spec::Custom{{"type", ""}});
+    cfg->push_back(new spec::Custom{{"type", "scan"}});
 
     return cfg;
 }
 
 
-std::ostream& ReorderFactory::list_(std::ostream& out) const {
+std::ostream& OrderFactory::list_(std::ostream& out) const {
     lock_type lock;
 
-    out << ReorderFactoryType::instance() << std::endl;
+    out << OrderFactoryType::instance() << std::endl;
 
     return out;
 }

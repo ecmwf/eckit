@@ -46,6 +46,16 @@ CASE("gridspec") {
 
     EXPECT_EQUAL(grid3->size(), 48);
     EXPECT_EQUAL(grid3->spec_str(), R"({"grid":"H2"})");
+
+    for (const std::string& name : {"h2N", "Hn2", "h2_nEsted"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{"grid", name}}));
+        EXPECT(*grid2 == *grid);
+    }
+
+    for (const std::string& name : {"H2", "h2r", "hR2", "h2_rinG"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{"grid", name}}));
+        EXPECT(*grid3 == *grid);
+    }
 }
 
 

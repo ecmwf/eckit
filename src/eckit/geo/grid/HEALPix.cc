@@ -28,8 +28,7 @@
 namespace eckit::geo::grid {
 
 
-static const std::string HEALPIX_PATTERN_1 = "[hH]([1-9][0-9]*)(n|_nested|r|_ring)?";
-// static const std::string HEALPIX_PATTERN_2 = "[hH][rRnN]([1-9][0-9]*)";
+static const std::string HEALPIX_PATTERN = "h([rn][1-9][0-9]*|[1-9][0-9]*(|r|_ring|n|_nested))";
 
 
 HEALPix::HEALPix(const Spec& spec) :
@@ -64,18 +63,17 @@ size_t HEALPix::nj() const {
 
 
 Spec* HEALPix::spec(const std::string& name) {
-    static const std::regex rex(HEALPIX_PATTERN_1);
+    static const std::regex rex("[1-9][0-9]*");
 
     std::smatch match;
-    ASSERT(std::regex_match(name, match, rex));
+    ASSERT(std::regex_search(name, match, rex));
 
-    const auto end   = match[2].str();
-    const auto order = end == "n" || end == ("_" + order::HEALPix::nested) ? order::HEALPix::nested
-                       : end.empty() || end == "r" || end == ("_" + order::HEALPix::ring)
-                           ? order::HEALPix::ring
-                           : throw exception::OrderError("HEALPix: supported ordering: ring, nested", Here());
+    auto Nside  = std::stoul(match.str());
+    auto nested = (name.find("n") != std::string::npos || name.find("N") != std::string::npos) &&
+                  (name.find("r") == std::string::npos && name.find("R") == std::string::npos);
 
-    return new spec::Custom{{"type", "HEALPix"}, {"Nside", std::stoul(match[1])}, {"order", order}};
+    return new spec::Custom{
+        {"type", "HEALPix"}, {"Nside", Nside}, {"order", nested ? order::HEALPix::nested : order::HEALPix::ring}};
 }
 
 
@@ -173,7 +171,7 @@ const std::string& HEALPix::type() const {
 
 static const GridRegisterType<HEALPix> GRIDTYPE1("HEALPix");
 static const GridRegisterType<HEALPix> GRIDTYPE2("healpix");
-static const GridRegisterName<HEALPix> GRIDNAME(HEALPIX_PATTERN_1);
+static const GridRegisterName<HEALPix> GRIDNAME(HEALPIX_PATTERN);
 
 
 }  // namespace eckit::geo::grid

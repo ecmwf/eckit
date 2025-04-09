@@ -25,7 +25,7 @@
 namespace eckit::geo::grid {
 
 
-#define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)([eE][-+][0-9]+)?"
+#define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)(e[-+][0-9]+)?"
 static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 #undef POSITIVE_REAL
 

@@ -16,7 +16,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
-#include "eckit/geo/order/RegularScan.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/Fraction.h"
 
@@ -71,37 +71,31 @@ const Range& Regular::y() const {
 }
 
 
-Regular::Regular(const Spec& spec) : Grid(spec), order_(new order::RegularScan(spec)) {}
+Regular::Regular(const Spec& spec) : Grid(spec), order_(spec) {}
 
 
 Regular::Regular(Ranges xy, Projection* projection) :
     Grid(make_bounding_box(*xy.first, *xy.second), projection),
     x_(xy.first),
     y_(xy.second),
-    order_(new order::RegularScan(xy.first->size(), xy.second->size())) {
+    order_(order::Scan::order_default(), xy.first->size(), xy.second->size()) {
     ASSERT(x_ && x_->size() > 0);
     ASSERT(y_ && y_->size() > 0);
 }
 
 
-const Order& Regular::internal_order() const {
-    return *order_;
-}
-
-
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
+
+    if (order_.order() != order::Scan::order_default()) {
+        custom.set("order", order_.order());
+    }
 }
 
 
-Regular::Ranges::Ranges(Range* x, Range* y) : pair{x, y} {
-    ASSERT(first != nullptr && second != nullptr);
-}
-
-
-Regular::Ranges::~Ranges() {
-    delete first;
-    delete second;
+Regular::Ranges::Ranges(Range* x, Range* y) : std::pair<Range*, Range*>(x, y) {
+    ASSERT(first != nullptr);
+    ASSERT(second != nullptr);
 }
 
 

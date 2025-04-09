@@ -17,6 +17,7 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Range.h"
+#include "eckit/geo/order/Scan.h"
 
 
 namespace eckit::geo {
@@ -52,23 +53,21 @@ public:
     size_t size() const final { return nx() * ny(); }
     std::vector<size_t> shape() const override { return {ny(), nx()}; }
 
+    const order_type& order() const override { return order_.order(); }
+    Reordering reorder(const order_type& to) const override { return order_.reorder(to); }
+
 protected:
 
     // -- Types
 
     struct Ranges : std::pair<Range*, Range*> {
         Ranges(Range*, Range*);
-        ~Ranges();
     };
 
     // -- Constructors
 
     explicit Regular(const Spec& spec);
     explicit Regular(Ranges, Projection* = nullptr);
-
-    // -- Methods
-
-    const Order& internal_order() const;
 
     // -- Overridden methods
 
@@ -80,7 +79,7 @@ private:
 
     std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
-    std::unique_ptr<Order> order_;
+    order::Scan order_;
 
     // -- Friends
 

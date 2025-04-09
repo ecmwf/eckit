@@ -44,8 +44,12 @@ public:
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
-    Reordering reorder(order_type) const override;
-    [[nodiscard]] Grid* make_grid_reordered(order_type order) const override { return new HEALPix(Nside_, order); }
+    const order_type& order() const override { return order_.order(); }
+    Reordering reorder(const order_type& to) const override { return order_.reorder(to); }
+
+    [[nodiscard]] Grid* make_grid_reordered(const order_type& order) const override {
+        return new HEALPix(Nside_, order);
+    }
 
     // -- Class members
 
@@ -70,7 +74,7 @@ private:
     const std::string& type() const override;
 
     const std::vector<double>& latitudes() const override;
-    std::vector<double> longitudes(size_t i) const override;
+    std::vector<double> longitudes(size_t j) const override;
 };
 
 

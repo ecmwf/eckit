@@ -11,6 +11,8 @@
 
 
 #include "eckit/geo/Order.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -18,26 +20,45 @@
 namespace eckit::geo::test {
 
 
+Order::value_type order_from_spec(bool i_pos, bool j_pos, bool ij, bool alt) {
+    Order::value_type o("scan");
+    if (ij) {
+        o += i_pos ? "_i_positively" : "_i_negatively";
+        o += j_pos ? "_j_positively" : "_j_negatively";
+    }
+    else {
+        o += j_pos ? "_j_positively" : "_j_negatively";
+        o += i_pos ? "_i_positively" : "_i_negatively";
+    }
+    o += alt ? "_alternating" : "";
+
+    return o;
+}
+
+
 CASE("ordering ('scan')") {
-    for (bool alt : {false, true}) {
-        for (bool ij : {true, false}) {
-            for (bool j_pos : {false, true}) {
-                for (bool i_pos : {true, false}) {
-                    spec::Custom spec({{"scan_i_positively", i_pos},
-                                       {"scan_j_positively", j_pos},
-                                       {"scan_ij", ij},
-                                       {"scan_alternating", alt}});
+    SECTION("order / scan_*") {
+        for (bool alt : {false, true}) {
+            for (bool ij : {false, true}) {
+                for (bool j_pos : {false, true}) {
+                    for (bool i_pos : {false, false}) {
+                        const auto order = order_from_spec(i_pos, j_pos, ij, alt);
 
-                    Order::value_type ordering("scan");
-                    ordering += i_pos ? "_i_positively" : "_i_negatively";
-                    ordering += j_pos ? "_j_positively" : "_j_negatively";
-                    ordering += ij ? "_ij" : "_ji";
-                    ordering += alt ? "_i_alternating_direction" : "_i_single_direction";
-
-                    EXPECT(Order::make_ordering_from_spec(spec) == ordering);
+                        EXPECT(order == order::Scan::make_order_from_spec(spec::Custom({{"order", order}})));
+                        EXPECT(order == order::Scan::make_order_from_spec(spec::Custom({{"scan_i_positively", i_pos},
+                                                                                        {"scan_j_positively", j_pos},
+                                                                                        {"scan_i_j", ij},
+                                                                                        {"scan_alternating", alt}})));
+                    }
                 }
             }
         }
+    }
+
+    SECTION("exceptions") {
+        EXPECT_THROWS_AS(
+            order::Scan::make_order_from_spec(spec::Custom({{"scan_i_positively", true}, {"scan_i_negatively", true}})),
+            exception::OrderError);
     }
 }
 

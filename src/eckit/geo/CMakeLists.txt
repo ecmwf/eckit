@@ -109,10 +109,6 @@ list(APPEND eckit_geo_srcs
     iterator/Unstructured.h
     order/HEALPix.cc
     order/HEALPix.h
-    order/ReducedScan.cc
-    order/ReducedScan.h
-    order/RegularScan.cc
-    order/RegularScan.h
     order/Scan.cc
     order/Scan.h
     polygon/Polygon.cc

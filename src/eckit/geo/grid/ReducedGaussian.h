@@ -17,7 +17,7 @@
 
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
-#include "eckit/geo/order/ReducedScan.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/util.h"
 
 
@@ -48,7 +48,8 @@ public:
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
-    Reordering reorder(order_type) const override;
+    const order_type& order() const override { return order_.order(); }
+    Reordering reorder(const order_type& to) const override { return order_.reorder(to); }
 
 private:
 
@@ -61,7 +62,7 @@ private:
 
     std::vector<std::unique_ptr<Range>> x_;
     std::unique_ptr<Range> y_;
-    order::ReducedScan order_;
+    order::Scan order_;
 
     // -- Overridden methods
 
@@ -69,7 +70,7 @@ private:
     const std::string& type() const override;
 
     const std::vector<double>& latitudes() const override;
-    std::vector<double> longitudes(size_t i) const override;
+    std::vector<double> longitudes(size_t j) const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 };

@@ -30,7 +30,7 @@ Grid::iterator Unstructured::cend() const {
 }
 
 
-Unstructured::Unstructured(const std::vector<double>& latitudes, const std::vector<double>& longitudes) :
+Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
     Unstructured(new container::PointsLonLatReference{longitudes, latitudes}) {}
 
 

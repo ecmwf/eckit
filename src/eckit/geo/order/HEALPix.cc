@@ -103,7 +103,7 @@ inline int pll(int f) {
 HEALPix::HEALPix(const value_type& order, int Nside) :
     order_(order),
     Nside_(Nside),
-    Npix_(size()),
+    Npix_(static_cast<int>(size())),
     Ncap_((Nside * (Nside - 1)) << 1),
     k_(is_power_of_2(Nside_) ? static_cast<int>(std::log2(Nside)) : -1) {
     static struct Register {
@@ -257,7 +257,7 @@ Reordering HEALPix::reorder(const value_type& to) const {
     auto from_nested = order_ == nested;
 
     Reordering ren(size());
-    for (int i = 0; i < size(); ++i) {
+    for (int i = 0; i < Npix_; ++i) {
         ren[i] = from_nested ? nest_to_ring(i) : ring_to_nest(i);
     }
 

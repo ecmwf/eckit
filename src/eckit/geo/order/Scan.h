@@ -29,12 +29,13 @@ public:
     Scan(const value_type&, size_t nx, size_t ny);
     Scan(const value_type&, const pl_type&);
 
-    explicit Scan(const value_type&);
+    explicit Scan(const value_type& = order_default());
     explicit Scan(const Spec&);
 
     // -- Methods
 
     const std::string& type() const override;
+    size_t size() const override;
 
     const value_type& order() const override { return order_; }
     Reordering reorder(const value_type& to) const override;
@@ -63,6 +64,7 @@ private:
         void operator=(Implementation&&)      = delete;
 
         virtual Reordering reorder(const value_type& from, const value_type& to) const = 0;
+        virtual size_t size() const                                                    = 0;
     };
 
     // -- Constructors

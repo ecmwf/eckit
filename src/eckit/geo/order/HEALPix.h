@@ -23,12 +23,11 @@ public:
 
     // -- Constructors
 
-    explicit HEALPix(const value_type& order, int Nside = 1);
+    explicit HEALPix(const value_type& = order_default(), int Nside = 1);
     explicit HEALPix(const Spec&);
 
     // -- Methods
 
-    int size() const { return 12 * Nside_ * Nside_; }
     int nside() const { return Nside_; }
 
     int ring_to_nest(int r) const;
@@ -37,6 +36,7 @@ public:
     // -- Overriden methods
 
     const std::string& type() const override;
+    size_t size() const override { return static_cast<size_t>(12 * Nside_ * Nside_); }
 
     const value_type& order() const override { return order_; }
     Reordering reorder(const value_type& to) const override;

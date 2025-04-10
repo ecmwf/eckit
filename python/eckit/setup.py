@@ -8,6 +8,7 @@
 # does it submit to any jurisdiction.
 
 
+import importlib.metadata
 from os import getenv
 from pathlib import Path
 
@@ -38,10 +39,15 @@ def _ext(name: str, sources: list, libraries: list) -> Extension:
         extra_link_args=extra_compile_args,
     )
 
+try:
+    import eckitlib
+    version = importlib.metadata.version("eckitlib")
+except ImportError:
+    version = "0.0.0"
 
 setup(
-    name="eckit-python",
-    version="0.0.0",
+    name="eckit",
+    version=version,
     ext_modules=cythonize(
         [
             _ext(

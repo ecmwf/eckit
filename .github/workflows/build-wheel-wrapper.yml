@@ -35,3 +35,5 @@ jobs:
     with:
       use_test_pypi: ${{ inputs.use_test_pypi }}
     secrets: inherit
+    with:
+      wheel_directory: python/eckitlib

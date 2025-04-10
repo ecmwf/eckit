@@ -83,6 +83,11 @@ void Order::register_ordering(const std::string& name) {
 }
 
 
+const eckit::geo::Order* eckit::geo::OrderFactory::build(const std::string& type) {
+    return build(spec::Custom{{"type", type}});
+}
+
+
 const Order* OrderFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);

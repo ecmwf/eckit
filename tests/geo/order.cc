@@ -10,6 +10,9 @@
  */
 
 
+#include <numeric>
+#include <vector>
+
 #include "eckit/geo/Order.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/order/Scan.h"
@@ -21,18 +24,10 @@ namespace eckit::geo::test {
 
 
 Order::value_type order_from_spec(bool i_pos, bool j_pos, bool ij, bool alt) {
-    Order::value_type o("scan");
-    if (ij) {
-        o += i_pos ? "_i_positively" : "_i_negatively";
-        o += j_pos ? "_j_positively" : "_j_negatively";
-    }
-    else {
-        o += j_pos ? "_j_positively" : "_j_negatively";
-        o += i_pos ? "_i_positively" : "_i_negatively";
-    }
-    o += alt ? "_alternating" : "";
-
-    return o;
+    return "scan" +
+           (ij ? std::string(i_pos ? "_i_positively" : "_i_negatively") + (j_pos ? "_j_positively" : "_j_negatively")
+               : std::string(j_pos ? "_j_positively" : "_j_negatively") + (i_pos ? "_i_positively" : "_i_negatively")) +
+           (alt ? "_alternating" : "");
 }
 
 
@@ -44,11 +39,27 @@ CASE("ordering ('scan')") {
                     for (bool i_pos : {false, false}) {
                         const auto order = order_from_spec(i_pos, j_pos, ij, alt);
 
-                        EXPECT(order == order::Scan::make_order_from_spec(spec::Custom({{"order", order}})));
-                        EXPECT(order == order::Scan::make_order_from_spec(spec::Custom({{"scan_i_positively", i_pos},
-                                                                                        {"scan_j_positively", j_pos},
-                                                                                        {"scan_i_j", ij},
-                                                                                        {"scan_alternating", alt}})));
+                        EXPECT(order == order::Scan::make_order_from_spec(spec::Custom{{"order", order}}));
+                        EXPECT(order == order::Scan::make_order_from_spec(spec::Custom{{"scan_i_positively", i_pos},
+                                                                                       {"scan_j_positively", j_pos},
+                                                                                       {"scan_i_j", ij},
+                                                                                       {"scan_alternating", alt}}));
+
+                        constexpr const char* UNUSED = "UNUSED";
+                        EXPECT(order == order::Scan::make_order_from_spec(spec::Custom{
+                                            {i_pos ? UNUSED : "scan_i_negatively", true},
+                                            {j_pos ? "scan_j_positively" : UNUSED, true},
+                                            {ij ? UNUSED : "scan_i_j", false},
+                                            {alt ? "scan_alternating" : UNUSED, true},
+                                        }));
+
+                        order::Scan scan(order, 2, 3);
+                        auto no_reorder = scan.reorder(order);
+
+                        std::vector<size_t> expected(scan.size());
+                        std::iota(expected.begin(), expected.end(), 0);
+                        EXPECT(expected == no_reorder);
+                        EXPECT(expected == scan.no_reorder());
                     }
                 }
             }

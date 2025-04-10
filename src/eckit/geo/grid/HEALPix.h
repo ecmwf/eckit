@@ -55,6 +55,10 @@ public:
 
     [[nodiscard]] static Spec* spec(const std::string& name);
 
+    // -- Class methods
+
+    static size_t size_from_nside(size_t);
+
 private:
 
     // -- Members

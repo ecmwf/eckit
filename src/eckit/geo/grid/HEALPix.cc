@@ -35,7 +35,7 @@ HEALPix::HEALPix(const Spec& spec) :
     HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")), spec.get_string("order", "ring")) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), order_(order, static_cast<int>(Nside)) {}
+HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), order_(order, HEALPix::size_from_nside(Nside)) {}
 
 
 Grid::iterator HEALPix::cbegin() const {
@@ -77,8 +77,13 @@ Spec* HEALPix::spec(const std::string& name) {
 }
 
 
+size_t HEALPix::size_from_nside(size_t Nside) {
+    return 12 * Nside * Nside;
+}
+
+
 size_t HEALPix::size() const {
-    return 12 * Nside_ * Nside_;
+    return size_from_nside(Nside_);
 }
 
 

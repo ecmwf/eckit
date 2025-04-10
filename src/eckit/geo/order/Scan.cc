@@ -42,6 +42,7 @@ Scan::Scan(const value_type& o, size_t nx, size_t ny) :
         struct RegularScan final : Implementation {
             RegularScan(size_t _ni, size_t _nj) : ni(_ni), nj(_nj) {}
 
+            size_t size() const override { return ni * nj; }
             Reordering reorder(const value_type& from, const value_type& to) const override {
                 if (from == to) {
                     return no_reorder(ni * nj);
@@ -95,12 +96,13 @@ Scan::Scan(const value_type& o, size_t nx, size_t ny) :
 Scan::Scan(const value_type& o, const pl_type& pl) :
     Scan(o, [](const pl_type& pl) {
         struct ReducedScan final : Implementation {
-            explicit ReducedScan(const pl_type& _pl) : pl(_pl) {}
+            explicit ReducedScan(const pl_type& _pl) :
+                pl(_pl), n(std::accumulate(pl.begin(), pl.end(), static_cast<size_t>(0))) {}
 
+            size_t size() const override { return n; }
             Reordering reorder(const value_type& from, const value_type& to) const override {
                 if (from == to) {
-                    const auto size = std::accumulate(pl.begin(), pl.end(), static_cast<size_t>(0));
-                    return no_reorder(size);
+                    return no_reorder(n);
                 }
 
                 // FIXME implement this
@@ -109,6 +111,7 @@ Scan::Scan(const value_type& o, const pl_type& pl) :
             }
 
             const pl_type pl;
+            const size_t n;
         };
 
         return new ReducedScan(pl);
@@ -118,7 +121,12 @@ Scan::Scan(const value_type& o, const pl_type& pl) :
 Scan::Scan(const value_type& o) :
     Scan(o, [](const value_type&) {
         struct NoScan final : Implementation {
-            Reordering reorder(const value_type&, const value_type&) const override {
+            size_t size() const override { return 1; }
+            Reordering reorder(const value_type& from, const value_type& to) const override {
+                if (from == to) {
+                    return no_reorder(size());
+                }
+
                 throw exception::OrderError("NoScan::reorder", Here());
             }
         };
@@ -176,6 +184,11 @@ const std::string& Scan::type() const {
 }
 
 
+size_t Scan::size() const {
+    return impl_->size();
+}
+
+
 Reordering Scan::reorder(const value_type& to) const {
     return impl_->reorder(order(), to);
 }
@@ -190,18 +203,15 @@ Order::value_type Scan::make_order_from_spec(const Spec& spec) {
         return spec.get_string("order");
     }
 
-    if ((spec.has(SCAN I POS) && spec.has(SCAN I NEG)) or (spec.has(SCAN J POS) && spec.has(SCAN J NEG))) {
-        throw exception::OrderError("Scan: cannot have both '" SCAN I POS "' and '" SCAN I NEG "'", Here());
-    }
+    auto positively = [&spec](const std::string& pos, const std::string& neg, bool dfault) {
+        return spec.has(pos) && spec.has(neg)
+                   ? throw exception::OrderError("Scan: cannot have both '" + pos + "' and '" + neg + "'", Here())
+                   : spec.get_bool(pos, !spec.get_bool(neg, !dfault));
+    };
 
-    auto i_pos = spec.has(SCAN I POS)   ? spec.get_bool(SCAN I POS)
-                 : spec.has(SCAN I NEG) ? !spec.get_bool(SCAN I NEG)
-                                        : true;
-    auto j_pos = spec.has(SCAN J POS)   ? spec.get_bool(SCAN J POS)
-                 : spec.has(SCAN J NEG) ? !spec.get_bool(SCAN J NEG)
-                                        : false;
-
-    auto ij  = spec.get_bool(SCAN I J, true);
+    auto i_pos = positively(SCAN I POS, SCAN I NEG, true);
+    auto j_pos = positively(SCAN J POS, SCAN J NEG, false);
+    auto ij    = spec.get_bool(SCAN I J, true);
     auto alt = spec.get_bool(SCAN ALT, false);
 
     static const std::string i = I;

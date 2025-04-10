@@ -63,9 +63,12 @@ public:
     std::string spec_str() const { return spec().str(); }
 
     virtual const std::string& type() const = 0;
+    virtual size_t size() const             = 0;
 
     virtual const value_type& order() const                = 0;
     virtual Reordering reorder(const value_type& to) const = 0;
+
+    [[nodiscard]] Reordering no_reorder() const { return no_reorder(size()); }
 
     // -- Class methods
 
@@ -106,6 +109,7 @@ using OrderRegisterType = ConcreteBuilderT1<Order, T>;
 
 struct OrderFactory {
     [[nodiscard]] static const Order* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+    [[nodiscard]] static const Order* build(const std::string& type);
 
     [[nodiscard]] static const Order* make_from_string(const std::string&);
     [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }

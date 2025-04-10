@@ -32,9 +32,9 @@ public:
     explicit Scan(const value_type& = order_default());
     explicit Scan(const Spec&);
 
-    // -- Methods
+    // -- Overriden methods
 
-    const std::string& type() const override;
+    const std::string& type() const override { return static_type(); }
     size_t size() const override;
 
     const value_type& order() const override { return order_; }
@@ -76,11 +76,17 @@ private:
     std::unique_ptr<Implementation> impl_;
     value_type order_;
 
-    static const value_type DEFAULT;
-
     // -- Overriden methods
 
     void fill_spec(spec::Custom&) const override;
+
+    // -- Class members
+
+    static const value_type DEFAULT;
+
+    // -- Class methods
+
+    static const std::string& static_type();
 };
 
 

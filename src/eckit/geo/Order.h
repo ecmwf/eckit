@@ -81,7 +81,7 @@ protected:
 
     // -- Class methods
 
-    static void register_order(const std::string&);
+    static void register_order(const std::string& type, const value_type&);
 
 private:
 

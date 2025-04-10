@@ -35,7 +35,7 @@ public:
 
     // -- Overriden methods
 
-    const std::string& type() const override;
+    const std::string& type() const override { return static_type(); }
     size_t size() const override { return static_cast<size_t>(12 * Nside_ * Nside_); }
 
     const value_type& order() const override { return order_; }
@@ -64,6 +64,10 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+
+    // -- Class methods
+
+    static const std::string& static_type();
 };
 
 

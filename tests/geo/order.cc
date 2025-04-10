@@ -26,17 +26,17 @@ namespace eckit::geo::test {
 
 Order::value_type order_from_spec(bool i_pos, bool j_pos, bool ij, bool alt) {
     return "scan" +
-           (ij ? std::string(i_pos ? "_i_positively" : "_i_negatively") + (j_pos ? "_j_positively" : "_j_negatively")
-               : std::string(j_pos ? "_j_positively" : "_j_negatively") + (i_pos ? "_i_positively" : "_i_negatively")) +
-           (alt ? "_alternating" : "");
+           (ij ? std::string(i_pos ? "-i-positively" : "-i-negatively") + (j_pos ? "-j-positively" : "-j-negatively")
+               : std::string(j_pos ? "-j-positively" : "-j-negatively") + (i_pos ? "-i-positively" : "-i-negatively")) +
+           (alt ? "-alternating" : "");
 }
 
 
-CASE("ordering ('scan')") {
+CASE("ordering scan") {
     using order::Scan;
 
 
-    SECTION("order / scan_*") {
+    SECTION("order=scan-*") {
         for (bool alt : {false, true}) {
             for (bool ij : {false, true}) {
                 for (bool j_pos : {false, true}) {
@@ -44,18 +44,18 @@ CASE("ordering ('scan')") {
                         const auto order = order_from_spec(i_pos, j_pos, ij, alt);
 
                         EXPECT(order == Scan(spec::Custom{{"order", order}}).order());
-                        EXPECT(order == Scan(spec::Custom{{"scan_i_positively", i_pos},
-                                                          {"scan_j_positively", j_pos},
-                                                          {"scan_i_j", ij},
-                                                          {"scan_alternating", alt}})
+                        EXPECT(order == Scan(spec::Custom{{"scan-i-positively", i_pos},
+                                                          {"scan-j-positively", j_pos},
+                                                          {"scan-i-j", ij},
+                                                          {"scan-alternating", alt}})
                                             .order());
 
                         constexpr const char* UNUSED = "UNUSED";
                         EXPECT(order == Scan(spec::Custom{
-                                                 {i_pos ? UNUSED : "scan_i_negatively", true},
-                                                 {j_pos ? "scan_j_positively" : UNUSED, true},
-                                                 {ij ? UNUSED : "scan_i_j", false},
-                                                 {alt ? "scan_alternating" : UNUSED, true},
+                                                 {i_pos ? UNUSED : "scan-i-negatively", true},
+                                                 {j_pos ? "scan-j-positively" : UNUSED, true},
+                                                 {ij ? UNUSED : "scan-i-j", false},
+                                                 {alt ? "scan-alternating" : UNUSED, true},
                                              })
                                             .order());
 
@@ -75,19 +75,19 @@ CASE("ordering ('scan')") {
 
     SECTION("exceptions") {
         EXPECT_THROWS_AS(
-            Scan::make_order_from_spec(spec::Custom({{"scan_i_positively", true}, {"scan_i_negatively", true}})),
+            Scan::make_order_from_spec(spec::Custom({{"scan-i-positively", true}, {"scan-i-negatively", true}})),
             exception::OrderError);
     }
 }
 
 
-CASE("ordering ('healpix')") {
+CASE("ordering healpix") {
     using order::HEALPix;
 
     auto is_power_of_two = [](size_t n) { return (n & (n - 1)) == 0; };
 
 
-    SECTION("order / healpix_*") {
+    SECTION("order=ring/nested") {
         EXPECT(HEALPix::order_default() == HEALPix(spec::Custom{}).order());
         EXPECT(HEALPix::ring == HEALPix(spec::Custom{{"order", HEALPix::ring}}).order());
         EXPECT(HEALPix::nested == HEALPix(spec::Custom{{"order", HEALPix::nested}}).order());
@@ -109,14 +109,15 @@ CASE("ordering ('healpix')") {
 
         EXPECT_THROWS_AS(HEALPix(HEALPix::order_default(), 0), exception::OrderError);
 
-        for (size_t size : {12, 12 * 2 * 2, 12 * 3 * 3}) {
+        for (size_t Nside : {1, 2, 3}) {
+            const auto size = 12 * Nside * Nside;
+
             EXPECT_NO_THROW(HEALPix(HEALPix::order_default(), size));
 
             EXPECT_THROWS_AS(HEALPix(HEALPix::order_default(), size - 1), exception::OrderError);
             EXPECT_THROWS_AS(HEALPix(HEALPix::order_default(), size + 1), exception::OrderError);
 
-            // check if size is 12 Nside Nside
-            if (is_power_of_two(size / 12)) {
+            if (is_power_of_two(Nside)) {
                 EXPECT_NO_THROW(HEALPix(HEALPix::nested, size));
             }
             else {

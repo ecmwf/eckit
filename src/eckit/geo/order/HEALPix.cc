@@ -115,8 +115,8 @@ HEALPix::HEALPix(const value_type& order, size_t size) :
     k_(is_power_of_2(Nside_) ? static_cast<int>(std::log2(Nside_)) : -1) {
     static struct Register {
         Register() {
-            register_order(HEALPix::ring);
-            register_order(HEALPix::nested);
+            register_order(static_type(), HEALPix::ring);
+            register_order(static_type(), HEALPix::nested);
         }
     } const REGISTER;
 
@@ -237,7 +237,7 @@ int HEALPix::nest_to_ring(int n) const {
 }
 
 
-const std::string& HEALPix::type() const {
+const std::string& HEALPix::static_type() {
     static const std::string type = "healpix";
     return type;
 }

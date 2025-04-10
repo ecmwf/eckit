@@ -26,11 +26,11 @@ namespace eckit::geo::order {
 static OrderRegisterType<Scan> ORDERING("scan");
 
 
-#define I "_i"
-#define J "_j"
-#define POS "_positively"
-#define NEG "_negatively"
-#define ALT "_alternating"
+#define I "-i"
+#define J "-j"
+#define POS "-positively"
+#define NEG "-negatively"
+#define ALT "-alternating"
 #define SCAN "scan"
 
 
@@ -145,7 +145,7 @@ Scan::Scan(const value_type& o, Implementation* impl) : impl_(impl), order_(o) {
 
     static struct Register {
         Register() {
-            std::for_each(MODES.begin(), MODES.end(), [](const auto& mode) { register_order(mode); });
+            std::for_each(MODES.begin(), MODES.end(), [](const auto& mode) { register_order(static_type(), mode); });
         }
     } const REGISTER;
 
@@ -178,7 +178,7 @@ bool Scan::is_scan_alternating(const value_type& o) {
 }
 
 
-const std::string& Scan::type() const {
+const std::string& Scan::static_type() {
     static const std::string type{"scan"};
     return type;
 }

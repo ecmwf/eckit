@@ -8,11 +8,10 @@
 # does it submit to any jurisdiction.
 
 
+cimport eckit
 cimport eckit_geo
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
-
-cimport eckit
 
 eckit.eckit_main_initialise()
 

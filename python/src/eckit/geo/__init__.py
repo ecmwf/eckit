@@ -9,7 +9,6 @@
 
 import findlibs
 
-
 findlibs.load("eckit_geo", "eckitlib")
 
 

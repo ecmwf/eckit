@@ -23,3 +23,5 @@ jobs:
     name: Python Wrapper Wheel
     uses: ecmwf/reusable-workflows/.github/workflows/python-wrapper-wheel.yml@main
     secrets: inherit
+    with:
+      wheel_directory: python/eckitlib

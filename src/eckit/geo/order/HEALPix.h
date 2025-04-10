@@ -23,7 +23,7 @@ public:
 
     // -- Constructors
 
-    explicit HEALPix(const value_type& = order_default(), int Nside = 1);
+    explicit HEALPix(const value_type& = order_default(), size_t = 12);
     explicit HEALPix(const Spec&);
 
     // -- Methods

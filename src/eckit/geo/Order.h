@@ -81,7 +81,7 @@ protected:
 
     // -- Class methods
 
-    static void register_ordering(const std::string&);
+    static void register_order(const std::string&);
 
 private:
 

@@ -10,13 +10,13 @@
  */
 
 
- #include "eckit/runtime/Main.h"
+#include "eckit/runtime/Main.h"
 
 
 void eckit_main_initialise() {
     if (!eckit::Main::ready()) {
         static const int argc = 1;
-        static char* argv[] = {const_cast<char*>("eckit_main_initialise"), nullptr};
+        static char* argv[]   = {const_cast<char*>("eckit_main_initialise"), nullptr};
 
         eckit::Main::initialise(argc, argv);
     }

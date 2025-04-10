@@ -20,6 +20,7 @@
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 
 
@@ -75,7 +76,7 @@ Reordering Order::no_reorder(size_t size) {
 }
 
 
-void Order::register_ordering(const std::string& name) {
+void Order::register_order(const std::string& name) {
     lock_type lock;
 
     auto index = ORDER_INDEX.size();

@@ -145,7 +145,7 @@ Scan::Scan(const value_type& o, Implementation* impl) : impl_(impl), order_(o) {
 
     static struct Register {
         Register() {
-            std::for_each(MODES.begin(), MODES.end(), [](const auto& mode) { register_ordering(mode); });
+            std::for_each(MODES.begin(), MODES.end(), [](const auto& mode) { register_order(mode); });
         }
     } const REGISTER;
 
@@ -212,7 +212,7 @@ Order::value_type Scan::make_order_from_spec(const Spec& spec) {
     auto i_pos = positively(SCAN I POS, SCAN I NEG, true);
     auto j_pos = positively(SCAN J POS, SCAN J NEG, false);
     auto ij    = spec.get_bool(SCAN I J, true);
-    auto alt = spec.get_bool(SCAN ALT, false);
+    auto alt   = spec.get_bool(SCAN ALT, false);
 
     static const std::string i = I;
     static const std::string j = J;

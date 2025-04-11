@@ -317,11 +317,8 @@ ecbuild_add_option( FEATURE EXTRA_TESTS
 
 ### UNICODE support
 
-check_include_file_cxx("codecvt" HAVE_CXX_CODECVT)
-
 ecbuild_add_option( FEATURE UNICODE
                     DEFAULT ON
-                    CONDITION HAVE_CXX_CODECVT
                     DESCRIPTION "Add support for Unicode characters in Yaml/JSON parsers" )
 
 ### async io support

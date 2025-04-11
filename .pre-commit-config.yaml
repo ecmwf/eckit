@@ -1,3 +1,5 @@
+---
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
@@ -26,6 +28,7 @@ repos:
       - id: yamllint
         args: [--strict]
         types: [yaml]
+        exclude: 'share/eckit/geo/.*\.yaml'
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -36,10 +39,10 @@ repos:
   - repo: https://github.com/MarcoGorelli/cython-lint
     rev: v0.16.6
     hooks:
-    - id: cython-lint
-      types: [cython]
-    - id: double-quote-cython-strings
-      types: [cython]
+      - id: cython-lint
+        types: [cython]
+      - id: double-quote-cython-strings
+        types: [cython]
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v19.1.7
     hooks:

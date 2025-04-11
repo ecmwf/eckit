@@ -246,8 +246,8 @@ Reordering ORCA::reorder(const order_type& to) const {
 }
 
 
-Spec* ORCA::spec(const std::string& name) {
-    return GridSpecByUID::instance().get(name).spec();
+Spec* ORCA::spec_from_uid(const uid_t& uid) {
+    return GridSpecByUID::instance().get(uid).spec();
 }
 
 

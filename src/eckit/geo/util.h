@@ -58,6 +58,9 @@ std::vector<double> arange(double start, double stop, double step);
 const std::vector<double>& gaussian_latitudes(size_t N, bool increasing);
 
 
+const std::vector<double>& gaussian_quadrature_weights(size_t N);
+
+
 std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);
 
 

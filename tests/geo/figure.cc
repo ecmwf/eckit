@@ -91,20 +91,12 @@ CASE("Unit Sphere") {
 
 
     SECTION("north pole") {
-        auto p = UnitSphere::_convertSphericalToCartesian({0., 90.});
-
-        EXPECT(p.X == 0);
-        EXPECT(p.Y == 0);
-        EXPECT(p.Z == R);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({0., 90.}), PointXYZ{0, 0, R}));
     }
 
 
     SECTION("south pole") {
-        auto p = UnitSphere::_convertSphericalToCartesian({0., -90.});
-
-        EXPECT(p.X == 0);
-        EXPECT(p.Y == 0);
-        EXPECT(p.Z == -R);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({0., -90.}), PointXYZ{0, 0, -R}));
     }
 
 
@@ -140,98 +132,50 @@ CASE("Unit Sphere") {
 
 
     SECTION("lon 0 (quadrant)") {
-        auto p = UnitSphere::_convertSphericalToCartesian({0., 0.});
-        auto q = UnitSphere::_convertSphericalToCartesian({-360., 0.});
-
-        EXPECT(p.X == R);
-        EXPECT(p.Y == 0);
-        EXPECT(p.Z == 0);
-
-        EXPECT(p == q);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({0., 0.}), PointXYZ{R, 0, 0}));
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-360., 0.}), PointXYZ{R, 0, 0}));
     }
 
 
     SECTION("lon 90 (quadrant)") {
-        auto p = UnitSphere::_convertSphericalToCartesian({90., 0.});
-        auto q = UnitSphere::_convertSphericalToCartesian({-270., 0.});
-
-        EXPECT(p.X == 0);
-        EXPECT(p.Y == R);
-        EXPECT(p.Z == 0);
-
-        EXPECT(p == q);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({90., 0.}), PointXYZ{0, R, 0}));
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-270., 0.}), PointXYZ{0, R, 0}));
     }
 
 
     SECTION("lon 180 (quadrant)") {
-        auto p = UnitSphere::_convertSphericalToCartesian({180., 0.});
-        auto q = UnitSphere::_convertSphericalToCartesian({-180., 0.});
-
-        EXPECT(p.X == -R);
-        EXPECT(p.Y == 0);
-        EXPECT(p.Z == 0);
-
-        EXPECT(p == q);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({180., 0.}), PointXYZ{-R, 0, 0}));
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-180., 0.}), PointXYZ{-R, 0, 0}));
     }
 
 
     SECTION("lon 270 (quadrant)") {
-        auto p = UnitSphere::_convertSphericalToCartesian({270., 0.});
-        auto q = UnitSphere::_convertSphericalToCartesian({-90., 0.});
-
-        EXPECT(p.X == 0);
-        EXPECT(p.Y == -R);
-        EXPECT(p.Z == 0);
-
-        EXPECT(p == q);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({270., 0.}), PointXYZ{0, -R, 0}));
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-90., 0.}), PointXYZ{0, -R, 0}));
     }
 
 
     SECTION("lon 45 (octant)") {
-        auto p = UnitSphere::_convertSphericalToCartesian({45., 0.});
-        auto q = UnitSphere::_convertSphericalToCartesian({-315., 0.});
-
-        EXPECT(types::is_approximately_equal(p.X, L));
-        EXPECT(types::is_approximately_equal(p.Y, L));
-        EXPECT(p.Z == 0);
-
-        EXPECT(p == q);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({45., 0.}), PointXYZ{L, L, 0}));
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-315., 0.}), PointXYZ{L, L, 0}));
     }
 
 
     SECTION("lon 135 (octant)") {
-        auto p = UnitSphere::_convertSphericalToCartesian({135., 0.});
-        auto q = UnitSphere::_convertSphericalToCartesian({-225., 0.});
-
-        EXPECT(types::is_approximately_equal(p.X, -L));
-        EXPECT(types::is_approximately_equal(p.Y, L));
-        EXPECT(p.Z == 0);
-
-        EXPECT(p == q);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({135., 0.}), PointXYZ{-L, L, 0}));
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-225., 0.}), PointXYZ{-L, L, 0}));
     }
 
 
     SECTION("lon 225 (octant)") {
-        auto p = UnitSphere::_convertSphericalToCartesian({225., 0.});
-        auto q = UnitSphere::_convertSphericalToCartesian({-135., 0.});
-
-        EXPECT(types::is_approximately_equal(p.X, -L));
-        EXPECT(types::is_approximately_equal(p.Y, -L));
-        EXPECT(p.Z == 0);
-
-        EXPECT(p == q);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({225., 0.}), PointXYZ{-L, -L, 0}));
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-135., 0.}), PointXYZ{-L, -L, 0}));
     }
 
 
     SECTION("lon 315 (octant)") {
-        auto p = UnitSphere::_convertSphericalToCartesian({315., 0.});
-        auto q = UnitSphere::_convertSphericalToCartesian({-45., 0.});
-
-        EXPECT(types::is_approximately_equal(p.X, L));
-        EXPECT(types::is_approximately_equal(p.Y, -L));
-        EXPECT(p.Z == 0);
-
-        EXPECT(p == q);
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({315., 0.}), PointXYZ{L, -L, 0}));
+        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-45., 0.}), PointXYZ{L, -L, 0}));
     }
 
 

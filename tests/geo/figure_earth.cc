@@ -10,10 +10,12 @@
  */
 
 
+#include <cmath>
 #include <memory>
 #include <vector>
 
 #include "eckit/geo/figure/Earth.h"
+#include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -58,6 +60,79 @@ CASE("Area") {
              {"grs80", 510065621.},
          }) {
         EXPECT(types::is_approximately_equal(test.figure->area() * 1e-6 /*[km^2]*/, test.area, 1.));
+    }
+}
+
+
+CASE("projection::LonLatToXYZ") {
+    const auto R = figure::EARTH.R();
+    const auto L = R * std::sqrt(2) / 2.;
+
+    projection::LonLatToXYZ to_xyz(new figure::Earth);
+    projection::LonLatToXYZ to_xyz_default;
+
+
+    SECTION("lon 0 (quadrant)") {
+        PointXYZ p{R, 0, 0};
+        EXPECT(points_equal(to_xyz.fwd({0., 0.}), p));
+        EXPECT(points_equal(to_xyz.fwd({-360., 0.}), p));
+        EXPECT(points_equal(to_xyz_default.fwd({0., 0.}), p));
+    }
+
+
+    SECTION("lon 90 (quadrant)") {
+        PointXYZ p{0, R, 0};
+        EXPECT(points_equal(to_xyz.fwd({90., 0.}), p));
+        EXPECT(points_equal(to_xyz.fwd({-270., 0.}), p));
+        EXPECT(points_equal(to_xyz_default.fwd({90., 0.}), p));
+    }
+
+
+    SECTION("lon 180 (quadrant)") {
+        PointXYZ p{-R, 0, 0};
+        EXPECT(points_equal(to_xyz.fwd({180., 0.}), p));
+        EXPECT(points_equal(to_xyz.fwd({-180., 0.}), p));
+        EXPECT(points_equal(to_xyz_default.fwd({180., 0.}), p));
+    }
+
+
+    SECTION("lon 270 (quadrant)") {
+        PointXYZ p{0, -R, 0};
+        EXPECT(points_equal(to_xyz.fwd({270., 0.}), p));
+        EXPECT(points_equal(to_xyz.fwd({-90., 0.}), p));
+        EXPECT(points_equal(to_xyz_default.fwd({270., 0.}), p));
+    }
+
+
+    SECTION("lon 45 (octant)") {
+        PointXYZ p{L, L, 0};
+        EXPECT(points_equal(to_xyz.fwd({45., 0.}), p));
+        EXPECT(points_equal(to_xyz.fwd({-315., 0.}), p));
+        EXPECT(points_equal(to_xyz_default.fwd({45., 0.}), p));
+    }
+
+
+    SECTION("lon 135 (octant)") {
+        PointXYZ p{-L, L, 0};
+        EXPECT(points_equal(to_xyz.fwd({135., 0.}), p));
+        EXPECT(points_equal(to_xyz.fwd({-225., 0.}), p));
+        EXPECT(points_equal(to_xyz_default.fwd({135., 0.}), p));
+    }
+
+
+    SECTION("lon 225 (octant)") {
+        PointXYZ p{-L, -L, 0};
+        EXPECT(points_equal(to_xyz.fwd({225., 0.}), p));
+        EXPECT(points_equal(to_xyz.fwd({-135., 0.}), p));
+        EXPECT(points_equal(to_xyz_default.fwd({225., 0.}), p));
+    }
+
+
+    SECTION("lon 315 (octant)") {
+        PointXYZ p{L, -L, 0};
+        EXPECT(points_equal(to_xyz.fwd({315., 0.}), p));
+        EXPECT(points_equal(to_xyz.fwd({-45., 0.}), p));
+        EXPECT(points_equal(to_xyz_default.fwd({315., 0.}), p));
     }
 }
 

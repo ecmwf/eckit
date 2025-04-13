@@ -14,6 +14,7 @@
 
 #include <memory>
 
+#include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
@@ -26,7 +27,7 @@ public:
 
     // -- Constructors
 
-    explicit LonLatToXYZ(Figure* = nullptr);
+    explicit LonLatToXYZ(Figure* = new figure::Earth);
 
     explicit LonLatToXYZ(double R);
     explicit LonLatToXYZ(double a, double b);

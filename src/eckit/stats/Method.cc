@@ -1,0 +1,90 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ *
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+
+#include "eckit/stats/Method.h"
+
+#include <map>
+#include <ostream>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
+#include "eckit/stats/util/Mutex.h"
+
+
+namespace eckit::stats {
+
+
+static util::recursive_mutex* local_mutex       = nullptr;
+static std::map<std::string, MethodFactory*>* m = nullptr;
+static util::once_flag once;
+static void init() {
+    local_mutex = new util::recursive_mutex();
+    m           = new std::map<std::string, MethodFactory*>();
+}
+
+
+Method::Method(const Parametrisation& parametrisation) : parametrisation_(parametrisation) {}
+
+
+Method::~Method() = default;
+
+
+MethodFactory::MethodFactory(const std::string& name) : name_(name) {
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
+
+    if (m->find(name) != m->end()) {
+        throw SeriousBug("MethodFactory: duplicate '" + name + "'");
+    }
+
+    ASSERT(m->find(name) == m->end());
+    (*m)[name] = this;
+}
+
+
+MethodFactory::~MethodFactory() {
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
+
+    m->erase(name_);
+}
+
+
+void MethodFactory::list(std::ostream& out) {
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
+
+    const char* sep = "";
+    for (const auto& j : *m) {
+        out << sep << j.first;
+        sep = ", ";
+    }
+    out << std::endl;
+}
+
+
+Method* MethodFactory::build(const std::string& name, const Parametrisation& params) {
+    util::call_once(once, init);
+    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
+
+    Log::debug() << "MethodFactory: looking for '" << name << "'" << std::endl;
+
+    auto j = m->find(name);
+    if (j == m->end()) {
+        list(Log::error() << "MethodFactory: unknown '" << name << "', choices are:\n");
+        throw SeriousBug("MethodFactory: unknown '" + name + "'");
+    }
+
+    return j->second->make(params);
+}
+
+
+}  // namespace eckit::stats

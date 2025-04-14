@@ -840,6 +840,11 @@ list( APPEND eckit_testing_srcs
     testing/Test.h
 )
 
+list( APPEND eckit_format_srcs
+    format/Format.h
+    format/Format.cc
+)
+
 list( APPEND eckit_dirs
     bases
     compat
@@ -847,8 +852,10 @@ list( APPEND eckit_dirs
     container
     exception
     filesystem
+    format
     io
     log
+    maths
     memory
     message
     net
@@ -857,14 +864,13 @@ list( APPEND eckit_dirs
     persist
     runtime
     serialisation
-    thread
-    transaction
-    value
-    maths
     system
     testing
+    thread
+    transaction
     types
     utils
+    value
 )
 
 foreach( dir ${eckit_dirs} )
@@ -952,6 +958,7 @@ ecbuild_add_library(
               ${THREADS_LIBRARIES}
               ${CMAKE_DL_LIBS}
               ${ECKIT_SYSTEM_EXTRA_LIBS}
+              fmt::fmt
 
           LINKER_LANGUAGE CXX )
 

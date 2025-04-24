@@ -40,3 +40,4 @@ repos:
     hooks:
       - id: clang-format
         types: [c, c++]
+        exclude: 'src/_eckit/_.*\.(h|cpp)'

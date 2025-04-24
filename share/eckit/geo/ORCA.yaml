@@ -354,3 +354,30 @@ grid_uids:
     - "3e87c826643da440b4e9d9f67588a576": *eORCA12_U
     - "cc1e3fc06a2cd18c0653e557510b8a71": *eORCA12_V
     - "462469edbd0e0586a0cf17424cc58c89": *eORCA12_W
+
+    - "16076978a048410747dd7c9876677b28":
+        type: ORCA
+        name: eORCA1
+        orca_arrangement: T
+        dimensions: [362, 332]
+        orca_uid: "16076978a048410747dd7c9876677b28"  # (uid older version)
+        url_prefix: *url_prefix
+        url: eORCA1_T.atlas
+
+    - "7378487847e050559b82d0792374a705":
+        type: ORCA
+        name: eORCA1
+        orca_arrangement: U
+        dimensions: [362, 332]
+        orca_uid: "7378487847e050559b82d0792374a705"  # (uid older version)
+        url_prefix: *url_prefix
+        url: eORCA1_U.atlas
+
+    - "d9622b55f3120eafb3dbaf5c742bc56c":
+        type: ORCA
+        name: eORCA1
+        orca_arrangement: V
+        dimensions: [362, 332]
+        orca_uid: "d9622b55f3120eafb3dbaf5c742bc56c"  # (uid older version)
+        url_prefix: *url_prefix
+        url: eORCA1_V.atlas

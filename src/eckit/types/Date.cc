@@ -20,12 +20,6 @@
 
 namespace eckit {
 
-class BadDate : public BadValue {
-public:
-
-    BadDate(const std::string& t);
-};
-
 //----------------------------------------------------------------------------------------------------------------------
 
 static const char* months[] = {"jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"};
@@ -37,11 +31,10 @@ static void check(const Date& date, long value) {
 
     if (value != date.yyyymmdd()) {
         std::ostringstream os;
-        os << "Invalid date " << value << " becomes " << date;
+        os << "Invalid date " << value;
         throw BadDate(os.str());
     }
 }
-
 
 Date::Date(long date) : julian_(dateToJulian(date)) {
     if (date > 0) {

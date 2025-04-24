@@ -17,6 +17,7 @@
 #define eckit_Date_h
 
 #include "eckit/persist/Bless.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -26,6 +27,10 @@ class DumpLoad;
 class Bless;
 class Hash;
 
+class BadDate : public BadValue {
+public:
+    BadDate(const std::string& t);
+};
 class Date {
 public:
 

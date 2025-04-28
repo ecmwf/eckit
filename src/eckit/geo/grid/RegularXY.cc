@@ -24,6 +24,9 @@
 namespace eckit::geo::grid {
 
 
+RegularXY::RegularXY(const Spec& spec) : Regular(make_ranges_from_spec(spec), ProjectionFactory::build(spec)) {}
+
+
 Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
 #if 0
     Increments inc(spec);
@@ -47,6 +50,11 @@ Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
 #else
     return {new range::RegularCartesian(11, 0, 10), new range::RegularCartesian(11, 0, 10)};
 #endif
+}
+
+
+const std::string& RegularXY::type() const {
+    return projection().type();
 }
 
 

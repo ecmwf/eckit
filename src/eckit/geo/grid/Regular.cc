@@ -74,7 +74,7 @@ const Range& Regular::y() const {
 Regular::Regular(const Spec& spec) : Grid(spec), order_(spec) {}
 
 
-Regular::Regular(Ranges xy, Projection* projection) :
+Regular::Regular(Ranges xy, const Projection* projection) :
     Grid(make_bounding_box(*xy.first, *xy.second), projection),
     x_(xy.first),
     y_(xy.second),

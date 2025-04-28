@@ -89,16 +89,6 @@ list(APPEND eckit_geo_srcs
     grid/RegularXY.h
     grid/Unstructured.cc
     grid/Unstructured.h
-    grid/regular-xy/LambertAzimuthalEqualArea.cc
-    grid/regular-xy/LambertAzimuthalEqualArea.h
-    grid/regular-xy/LambertConformalConic.cc
-    grid/regular-xy/LambertConformalConic.h
-    grid/regular-xy/Mercator.cc
-    grid/regular-xy/Mercator.h
-    grid/regular-xy/PolarStereographic.cc
-    grid/regular-xy/PolarStereographic.h
-    grid/regular-xy/SpaceView.cc
-    grid/regular-xy/SpaceView.h
     grid/unstructured/UnstructuredGeneric.cc
     grid/unstructured/UnstructuredGeneric.h
     iterator/Reduced.cc

@@ -13,7 +13,6 @@
 #pragma once
 
 #include <algorithm>
-#include <cmath>
 #include <cstddef>
 #include <type_traits>
 #include <utility>

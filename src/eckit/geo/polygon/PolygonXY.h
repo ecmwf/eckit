@@ -21,7 +21,7 @@
 namespace eckit::geo::polygon {
 
 
-class Polygon2 : public std::vector<PointXY> {
+class PolygonXY : public std::vector<PointXY> {
 public:
 
     // -- Types
@@ -33,23 +33,23 @@ public:
 
     using container_type::container_type;
 
-    explicit Polygon2(const container_type& points) : container_type(points) {}
-    explicit Polygon2(container_type&& points) : container_type(std::move(points)) {}
+    explicit PolygonXY(const container_type& points) : container_type(points) {}
+    explicit PolygonXY(container_type&& points) : container_type(std::move(points)) {}
 
-    Polygon2(const Polygon2&) = default;
-    Polygon2(Polygon2&&)      = default;
+    PolygonXY(const PolygonXY&) = default;
+    PolygonXY(PolygonXY&&)      = default;
 
     // -- Destructor
 
-    ~Polygon2() = default;
+    ~PolygonXY() = default;
 
     // -- Operators
 
-    Polygon2& operator=(const Polygon2&) = default;
-    Polygon2& operator=(Polygon2&&)      = default;
+    PolygonXY& operator=(const PolygonXY&) = default;
+    PolygonXY& operator=(PolygonXY&&)      = default;
 
-    bool operator==(const Polygon2&) const;
-    bool operator!=(const Polygon2& other) const { return !(*this == other); }
+    bool operator==(const PolygonXY&) const;
+    bool operator!=(const PolygonXY& other) const { return !(*this == other); }
 
     // -- Methods
 
@@ -81,7 +81,7 @@ private:
 
     // -- Friends
 
-    friend std::ostream& operator<<(std::ostream& s, const Polygon2& p) {
+    friend std::ostream& operator<<(std::ostream& s, const PolygonXY& p) {
         p.print(s);
         return s;
     }

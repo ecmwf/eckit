@@ -21,7 +21,7 @@
 namespace eckit::geo::area {
 
 
-class BoundingBox2 : public Area, protected std::array<double, 4> {
+class BoundingBoxXY : public Area, protected std::array<double, 4> {
 public:
 
     // -- Types
@@ -31,26 +31,26 @@ public:
 
     // -- Constructors
 
-    explicit BoundingBox2(const Spec&);
+    explicit BoundingBoxXY(const Spec&);
 
-    BoundingBox2(value_type min_x, value_type min_y, value_type max_x, value_type max_y);
+    BoundingBoxXY(value_type min_x, value_type min_y, value_type max_x, value_type max_y);
 
-    BoundingBox2(const BoundingBox2& other) : Area(other), container_type(other) {}
+    BoundingBoxXY(const BoundingBoxXY& other) : Area(other), container_type(other) {}
 
-    BoundingBox2(BoundingBox2&& other) : Area(other), container_type(other) {}
+    BoundingBoxXY(BoundingBoxXY&& other) : Area(other), container_type(other) {}
 
     // -- Destructor
 
-    ~BoundingBox2() override = default;
+    ~BoundingBoxXY() override = default;
 
     // -- Operators
 
-    BoundingBox2& operator=(const BoundingBox2& other) {
+    BoundingBoxXY& operator=(const BoundingBoxXY& other) {
         container_type::operator=(other);
         return *this;
     }
 
-    BoundingBox2& operator=(BoundingBox2&& other) {
+    BoundingBoxXY& operator=(BoundingBoxXY&& other) {
         container_type::operator=(other);
         return *this;
     }
@@ -60,7 +60,7 @@ public:
     container_type deconstruct() const { return {min_x, min_y, max_x, max_y}; }
 
     bool contains(const Point&) const override;
-    bool contains(const BoundingBox2&) const;
+    bool contains(const BoundingBoxXY&) const;
     bool empty() const;
 
     // -- Overridden methods
@@ -71,7 +71,7 @@ public:
 
     // -- Class methods
 
-    [[nodiscard]] static BoundingBox2* make_from_spec(const Spec&);
+    [[nodiscard]] static BoundingBoxXY* make_from_spec(const Spec&);
 
     // -- Members
 

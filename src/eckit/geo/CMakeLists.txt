@@ -43,8 +43,8 @@ list(APPEND eckit_geo_srcs
     Spec.h
     area/BoundingBox.cc
     area/BoundingBox.h
-    area/BoundingBox2.cc
-    area/BoundingBox2.h
+    area/BoundingBoxXY.cc
+    area/BoundingBoxXY.h
     area/Library.cc
     area/Library.h
     area/None.cc
@@ -103,8 +103,8 @@ list(APPEND eckit_geo_srcs
     order/Scan.h
     polygon/Polygon.cc
     polygon/Polygon.h
-    polygon/Polygon2.cc
-    polygon/Polygon2.h
+    polygon/PolygonXY.cc
+    polygon/PolygonXY.h
     projection/Composer.cc
     projection/Composer.h
     projection/LambertAzimuthalEqualArea.cc

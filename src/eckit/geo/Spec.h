@@ -18,7 +18,12 @@
 
 namespace eckit {
 class JSON;
-}
+namespace geo {
+class PointLonLat;
+class PointXY;
+class PointXYZ;
+}  // namespace geo
+}  // namespace eckit
 
 
 namespace eckit::geo {
@@ -74,6 +79,11 @@ private:
         return out;
     }
 };
+
+
+PointLonLat spec_get_point_lonlat(const Spec&, const std::string& name);
+PointXY spec_get_point_xy(const Spec&, const std::string& name);
+PointXYZ spec_get_point_xyz(const Spec&, const std::string& name);
 
 
 }  // namespace eckit::geo

@@ -23,10 +23,14 @@
 namespace eckit::geo::projection {
 
 
+static const ProjectionRegisterType<LambertConformalConic> PROJECTION_1("lcc");
+static const ProjectionRegisterType<LambertConformalConic> PROJECTION_2("lambert");
+static const ProjectionRegisterType<LambertConformalConic> PROJECTION_3("lambert_lam");
+
+
 LambertConformalConic::LambertConformalConic(const Spec& spec) :
-    LambertConformalConic({spec.get_double("lon_0"), spec.get_double("lat_0")},
-                          {spec.get_double("first_lon"), spec.get_double("first_lat")}, spec.get_double("lat_1"),
-                          spec.get_double("lat_2")) {}
+    LambertConformalConic(spec_get_point_lonlat(spec, "centre"), spec_get_point_lonlat(spec, "first"),
+                          spec.get_double("lat_1"), spec.get_double("lat_2")) {}
 
 
 LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1, double lat_2) :
@@ -52,7 +56,7 @@ LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat fir
                    std::log(std::tan(M_PI_4 + lat_2_r_ / 2.) / std::tan(M_PI_4 + lat_1_r_ / 2.));
 
     if (types::is_approximately_equal(n_, 0.)) {
-        throw exception::ProjectionError("LambertConformalConic: cannot corretly calculate n_", Here());
+        throw exception::ProjectionError("LambertConformalConic: cannot calculate n", Here());
     }
 
     f_         = (std::cos(lat_1_r_) * std::pow(std::tan(M_PI_4 + lat_1_r_ / 2.), n_)) / n_;
@@ -100,11 +104,9 @@ const std::string& LambertConformalConic::type() const {
 void LambertConformalConic::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 
-    custom.set("projection", "lcc");
-    custom.set("lon_0", centre_.lon);
-    custom.set("lat_0", centre_.lat);
-    custom.set("first_lon", first_.lon);
-    custom.set("first_lat", first_.lat);
+    custom.set("type", type());
+    custom.set("centre_lonlat", std::vector<double>{centre_.lon, centre_.lat});
+    custom.set("first_lonlat", std::vector<double>{first_.lon, first_.lat});
     custom.set("lat_1", lat_1_);
     custom.set("lat_2", lat_2_);
 }

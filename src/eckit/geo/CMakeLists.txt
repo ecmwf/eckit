@@ -105,6 +105,8 @@ list(APPEND eckit_geo_srcs
     polygon/Polygon.h
     polygon/PolygonXY.cc
     polygon/PolygonXY.h
+    projection/AlbersEqualArea.cc
+    projection/AlbersEqualArea.h
     projection/Composer.cc
     projection/Composer.h
     projection/LambertAzimuthalEqualArea.cc

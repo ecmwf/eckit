@@ -21,13 +21,12 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_1("lambert_azimuthal_equal_area");
-static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_2("laea");
+static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_1("laea");
+static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_2("lambert_azimuthal_equal_area");
 
 
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
-    LambertAzimuthalEqualArea({spec.get_double("lon_0"), spec.get_double("lat_0")},
-                              {spec.get_double("first_lon"), spec.get_double("first_lat")}) {}
+    LambertAzimuthalEqualArea(spec_get_point_lonlat(spec, "centre"), spec_get_point_lonlat(spec, "first")) {}
 
 
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first) :
@@ -69,11 +68,9 @@ const std::string& LambertAzimuthalEqualArea::type() const {
 void LambertAzimuthalEqualArea::fill_spec(spec::Custom& custom) const {
     ProjectionOnFigure::fill_spec(custom);
 
-    custom.set("projection", "laea");
-    custom.set("lon_0", centre_.lon);
-    custom.set("lat_0", centre_.lat);
-    custom.set("lon_first", first_.lon);
-    custom.set("lat_first", first_.lat);
+    custom.set("type", type());
+    custom.set("centre_lonlat", std::vector<double>{centre_.lon, centre_.lat});
+    custom.set("first_lonlat", std::vector<double>{first_.lon, first_.lat});
 }
 
 

@@ -152,7 +152,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 
 
 PROJ::PROJ(const Spec& spec) :
-    PROJ(spec.get_string("source", spec.get_string("proj", DEFAULT)), spec.get_string("target", DEFAULT),
+    PROJ(spec.get_string("source", DEFAULT), spec.get_string("target", spec.get_string("proj", DEFAULT)),
          spec.get_double("lon_minimum", 0)) {}
 
 
@@ -215,7 +215,7 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
     };
 
     static const std::map<std::string, std::string> KEYS{
-        {"projection", "proj"},
+        {"type", "proj"},
         {"figure", "ellps"},
         {"r", "R"},
     };

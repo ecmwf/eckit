@@ -14,8 +14,8 @@
 
 #include <cmath>
 
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/spec/Custom.h"
-#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
@@ -66,7 +66,7 @@ const std::string& LambertAzimuthalEqualArea::type() const {
 
 
 void LambertAzimuthalEqualArea::fill_spec(spec::Custom& custom) const {
-    ProjectionOnFigure::fill_spec(custom);
+    Projection::fill_spec(custom);
 
     custom.set("type", type());
     custom.set("centre_lonlat", std::vector<double>{centre_.lon, centre_.lat});

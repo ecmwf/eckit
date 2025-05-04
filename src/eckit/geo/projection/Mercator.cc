@@ -16,6 +16,7 @@
 #include <limits>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -29,7 +30,7 @@ static ProjectionRegisterType<Mercator> PROJECTION_2("merc");
 
 
 Mercator::Mercator(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
-    ProjectionOnFigure(figure_ptr),
+    Projection(figure_ptr),
     centre_(PointLonLat::make(centre.lon, centre.lat, -PointLonLat::FLAT_ANGLE)),
     first_(first),
     eps_(1e-10),
@@ -111,7 +112,7 @@ const std::string& Mercator::type() const {
 
 
 void Mercator::fill_spec(spec::Custom& custom) const {
-    ProjectionOnFigure::fill_spec(custom);
+    Projection::fill_spec(custom);
 
     custom.set("projection", "mercator");
     if (!types::is_approximately_equal(centre_.lat, 0.)) {

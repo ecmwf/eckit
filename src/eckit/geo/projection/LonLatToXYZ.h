@@ -14,15 +14,15 @@
 
 #include <memory>
 
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/Earth.h"
-#include "eckit/geo/projection/ProjectionOnFigure.h"
 
 
 namespace eckit::geo::projection {
 
 
 /// Calculate coordinates of a point on a sphere or spheroid, in [x, y, z]
-class LonLatToXYZ : public ProjectionOnFigure {
+class LonLatToXYZ : public Projection {
 public:
 
     // -- Constructors

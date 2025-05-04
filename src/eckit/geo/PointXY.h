@@ -96,6 +96,7 @@ public:
         return out << '{' << p.X << ", " << p.Y << '}';
     }
 
+    friend PointXY operator-(const PointXY& p) { return {-p.X, -p.Y}; }
     friend PointXY operator-(const PointXY& p, const PointXY& q) { return {p.X - q.X, p.Y - q.Y}; }
     friend PointXY operator+(const PointXY& p, const PointXY& q) { return {p.X + q.X, p.Y + q.Y}; }
     friend PointXY operator*(const PointXY& p, value_type d) { return {p.X * d, p.Y * d}; }

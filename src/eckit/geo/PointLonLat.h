@@ -85,7 +85,7 @@ public:
     [[nodiscard]] static PointLonLat make(value_type lon, value_type lat, value_type lon_minimum = 0.,
                                           value_type eps = EPS);
 
-    [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr, value_type lonr_minimum = 0.);
+    [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr, value_type lon_minimum = 0.);
 
     PointLonLat antipode() const { return make(lon, lat + FLAT_ANGLE); }
 

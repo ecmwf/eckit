@@ -28,7 +28,7 @@ PolarStereographic::PolarStereographic(const Spec& spec) :
 
 PolarStereographic::PolarStereographic(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
     ProjectionOnFigure(figure_ptr),
-    centre_(PointLonLat::make(centre.lon, centre.lat)),
+    centre_(centre.lon, centre.lat),
     centre_r_(PointLonLatR::make_from_lonlat(centre.lon, centre.lat)),
     first_(first),
     first_r_(PointLonLatR::make_from_lonlat(first.lon, first.lat)),

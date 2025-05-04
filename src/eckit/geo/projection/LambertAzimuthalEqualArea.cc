@@ -55,7 +55,7 @@ PointLonLat LambertAzimuthalEqualArea::inv(const PointXY& p) const {
 
     return PointLonLat::make_from_lonlatr(
         centre_r_.lonr + std::atan2(p.X * c.sin, rho * phi0_.cos * c.cos - p.Y * phi0_.sin * c.sin),
-        std::asin(c.cos * phi0_.sin + p.Y * c.sin * phi0_.cos / rho));
+        std::asin(c.cos * phi0_.sin + p.Y * c.sin * phi0_.cos / rho), centre_.lon - PointLonLat::FLAT_ANGLE);
 }
 
 

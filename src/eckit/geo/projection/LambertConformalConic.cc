@@ -88,7 +88,7 @@ PointLonLat LambertConformalConic::inv(const PointXY& p) const {
         auto lonr = std::atan2(x, y) / n_ + centre_r_.lonr;
         auto latr = 2. * std::atan(std::pow(f_ / rho, 1. / n_)) - M_PI_2;
 
-        return PointLonLat::make_from_lonlatr(lonr, latr);
+        return PointLonLat::make_from_lonlatr(lonr, latr, centre_.lon - PointLonLat::FLAT_ANGLE);
     }
 
     return PointLonLat::make(0., n_ > 0 ? PointLonLat::RIGHT_ANGLE : -PointLonLat::RIGHT_ANGLE);

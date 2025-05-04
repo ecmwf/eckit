@@ -24,6 +24,7 @@ foreach(_test
         pointlonlat
         pointlonlatr
         projection
+        projection_albers
         projection_ll_to_xyz
         projection_mercator
         projection_plate-caree

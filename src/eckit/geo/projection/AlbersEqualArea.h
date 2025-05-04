@@ -28,7 +28,7 @@ public:
 
     explicit AlbersEqualArea(const Spec&);
 
-    AlbersEqualArea(PointLonLat centre, double lat_1, double lat_2);
+    AlbersEqualArea(double lon_0, double lat_0, double lat_1, double lat_2, Figure* = nullptr);
 
     // -- Methods
 

@@ -27,7 +27,6 @@ foreach(_test
         projection_ll_to_xyz
         projection_mercator
         projection_plate-caree
-        projection_proj
         projection_rotation
         range
         search
@@ -43,6 +42,13 @@ endforeach()
 
 if(eckit_HAVE_ZIP)
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
+endif()
+
+if(eckit_HAVE_PROJ)
+    ecbuild_add_test(
+        TARGET  eckit_test_geo_projection_proj
+        SOURCES projection_proj.cc
+        LIBS    eckit_geo )
 endif()
 
 ecbuild_add_test(

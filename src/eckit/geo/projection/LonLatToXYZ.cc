@@ -25,7 +25,7 @@ namespace eckit::geo::projection {
 static ProjectionRegisterType<LonLatToXYZ> PROJECTION("ll_to_xyz");
 
 
-LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : ProjectionOnFigure(figure_ptr) {
+LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : Projection(figure_ptr) {
     struct LonLatToSphereXYZ final : Implementation {
         const double R;
 
@@ -73,7 +73,7 @@ const std::string& LonLatToXYZ::type() const {
 
 
 void LonLatToXYZ::fill_spec(spec::Custom& custom) const {
-    ProjectionOnFigure::fill_spec(custom);
+    Projection::fill_spec(custom);
 
     custom.set("projection", "ll_to_xyz");
 }

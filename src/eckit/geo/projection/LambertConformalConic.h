@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
@@ -23,7 +23,7 @@ namespace eckit::geo::projection {
  * @ref Map Projections: A Working Manual, John P. Snyder (1987)
  * @ref Wolfram MathWorld (http://mathworld.wolfram.com/LambertConformalConicProjection.html)
  */
-class LambertConformalConic : public ProjectionOnFigure {
+class LambertConformalConic : public Projection {
 public:
 
     // -- Constructors

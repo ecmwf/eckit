@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/util/sincos.h"
 
 
 namespace eckit::geo::projection {
 
 
-class LambertAzimuthalEqualArea : public ProjectionOnFigure {
+class LambertAzimuthalEqualArea : public Projection {
 public:
 
     // -- Constructors

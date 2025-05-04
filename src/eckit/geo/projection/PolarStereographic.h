@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
 
 
-class PolarStereographic : public ProjectionOnFigure {
+class PolarStereographic : public Projection {
 public:
 
     // -- Constructors

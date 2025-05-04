@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
@@ -21,7 +21,7 @@ namespace eckit::geo::projection {
 /**
  * @brief AlbersEqualArea projection for the sphere
  */
-class AlbersEqualArea : public ProjectionOnFigure {
+class AlbersEqualArea : public Projection {
 public:
 
     // -- Constructors

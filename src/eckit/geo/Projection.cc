@@ -23,7 +23,7 @@
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
 
-#if eckit_HAVE_PROJ
+#if 1  // eckit_HAVE_PROJ
 #include "eckit/geo/projection/PROJ.h"
 #endif
 
@@ -79,9 +79,8 @@ const Spec& Projection::spec() const {
 
 
 std::string Projection::proj_str() const {
-#if eckit_HAVE_PROJ
-    std::unique_ptr<spec::Custom> custom(spec());
-    return projection::PROJ::proj_str(*custom);
+#if 1  // eckit_HAVE_PROJ
+    return projection::PROJ::proj_str(dynamic_cast<const spec::Custom&>(spec()));
 #else
     NOTIMP;
 #endif
@@ -131,7 +130,10 @@ Spec* ProjectionFactory::make_spec_(const Spec& spec) const {
 
     // hardcoded, interpreted options (contributing to projectionspec)
 
-    if (spec.has("rotation")) {
+    if (spec.has("proj")) {
+        cfg->push_back(new spec::Custom{{"type", "proj"}});
+    }
+    else if (spec.has("rotation")) {
         std::vector<double> rotation;
         spec.get("rotation", rotation);
         cfg->push_back(new spec::Custom{{"type", "rotation"}, {"rotation", rotation}});

@@ -115,6 +115,7 @@ struct ProjectionFactory {
 
     [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
     static std::ostream& list(std::ostream& out) { return instance().list_(out); }
+    static bool has_type(const std::string& type) { return ProjectionFactoryType::instance().exists(type); }
 
 private:
 

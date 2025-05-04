@@ -41,8 +41,6 @@ public:
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
-    [[nodiscard]] Figure* make_figure() const override;
-
     // -- Class methods
 
     static std::string proj_str(const spec::Custom&);

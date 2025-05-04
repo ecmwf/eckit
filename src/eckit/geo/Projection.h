@@ -42,7 +42,7 @@ public:
 
     // -- Constructors
 
-    Projection() noexcept         = default;
+    explicit Projection(Figure* = nullptr);
     Projection(const Projection&) = default;
     Projection(Projection&&)      = default;
 
@@ -60,7 +60,9 @@ public:
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
 
-    [[nodiscard]] virtual Figure* make_figure() const;
+    void falseXY(const PointXY& falseXY) { false_ = falseXY; }
+    const PointXY& falseXY() const { return false_; }
+
     const Figure& figure() const;
 
     virtual const std::string& type() const = 0;
@@ -75,16 +77,19 @@ public:
 
     [[nodiscard]] static Projection* make_from_spec(const Spec&);
 
+protected:
+
+    // -- Methods
+
+    virtual void fill_spec(spec::Custom&) const;
+
 private:
 
     // -- Members
 
     mutable std::shared_ptr<Figure> figure_;
     mutable std::shared_ptr<spec::Custom> spec_;
-
-    // -- Methods
-
-    virtual void fill_spec(spec::Custom&) const = 0;
+    PointXY false_;
 
     // -- Friends
 

@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
 
 
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
-class Mercator : public ProjectionOnFigure {
+class Mercator : public Projection {
 public:
 
     // -- Constructors

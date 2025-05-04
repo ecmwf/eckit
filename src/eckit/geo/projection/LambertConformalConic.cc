@@ -15,6 +15,7 @@
 #include <cmath>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -102,7 +103,7 @@ const std::string& LambertConformalConic::type() const {
 
 
 void LambertConformalConic::fill_spec(spec::Custom& custom) const {
-    ProjectionOnFigure::fill_spec(custom);
+    Projection::fill_spec(custom);
 
     custom.set("type", type());
     custom.set("centre_lonlat", std::vector<double>{centre_.lon, centre_.lat});

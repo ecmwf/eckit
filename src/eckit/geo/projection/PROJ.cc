@@ -93,6 +93,22 @@ struct XYZ final : Convert {
 };
 
 
+Figure* make_figure(const std::string& proj_str) {
+    pj_t identity(proj_create_crs_to_crs(CTX, proj_str.c_str(), proj_str.c_str(), nullptr));
+
+    pj_t crs(proj_get_target_crs(CTX, identity.get()));
+    pj_t ellipsoid(proj_get_ellipsoid(CTX, crs.get()));
+    ASSERT(ellipsoid);
+
+    double a = 0;
+    double b = 0;
+    ASSERT(proj_ellipsoid_get_parameters(CTX, ellipsoid.get(), &a, &b, nullptr, nullptr));
+    ASSERT(0 < b && b <= a);
+
+    return FigureFactory::build(spec::Custom{{{"a", a}, {"b", b}}});
+}
+
+
 }  // namespace
 
 
@@ -122,8 +138,9 @@ private:
 
 
 PROJ::PROJ(const std::string& source, const std::string& target, double lon_minimum) :
-    source_(source), target_(target) {
-    ASSERT(!source.empty());
+    Projection(make_figure(target)), source_(source), target_(target) {
+    ASSERT(!source_.empty());
+    ASSERT(!target_.empty());
 
     auto make_convert = [lon_minimum](const std::string& string) -> Convert* {
         pj_t identity(proj_create_crs_to_crs(CTX, string.c_str(), string.c_str(), nullptr));
@@ -159,22 +176,6 @@ PROJ::PROJ(const Spec& spec) :
 const std::string& PROJ::type() const {
     static const std::string type{"proj"};
     return type;
-}
-
-
-Figure* PROJ::make_figure() const {
-    pj_t identity(proj_create_crs_to_crs(CTX, target_.c_str(), target_.c_str(), nullptr));
-
-    pj_t crs(proj_get_target_crs(CTX, identity.get()));
-    pj_t ellipsoid(proj_get_ellipsoid(CTX, crs.get()));
-    ASSERT(ellipsoid);
-
-    double a = 0;
-    double b = 0;
-    ASSERT(proj_ellipsoid_get_parameters(CTX, ellipsoid.get(), &a, &b, nullptr, nullptr));
-    ASSERT(0 < b && b <= a);
-
-    return FigureFactory::build(spec::Custom{{{"a", a}, {"b", b}}});
 }
 
 

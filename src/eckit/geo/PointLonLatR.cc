@@ -56,8 +56,8 @@ PointLonLatR PointLonLatR::make(value_type lonr, value_type latr, value_type lon
 }
 
 
-PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, value_type lon_minimum) {
-    return make(util::DEGREE_TO_RADIAN * lon, util::DEGREE_TO_RADIAN * lat, util::DEGREE_TO_RADIAN * lon_minimum);
+PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, value_type lonr_minimum) {
+    return make(util::DEGREE_TO_RADIAN * lon, util::DEGREE_TO_RADIAN * lat, lonr_minimum);
 }
 
 

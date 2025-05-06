@@ -192,7 +192,7 @@ if(eckit_HAVE_GEO_GRID_ICON)
     list(APPEND eckit_geo_srcs grid/unstructured/ICON.cc grid/unstructured/ICON.h)
     list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
-    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ICON.yaml")
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ICON.yaml" "~eckit/share/eckit/geo/ICON-CH.yaml")
 endif()
 
 if(eckit_HAVE_GEO_GRID_ORCA)

@@ -11,7 +11,7 @@ if(eckit_HAVE_GEO_GRID_FESOM)
 endif()
 
 if(eckit_HAVE_GEO_GRID_ICON)
-    list(APPEND _files "ICON.yaml")
+    list(APPEND _files "ICON.yaml" "ICON-CH.yaml")
 endif()
 
 if(eckit_HAVE_GEO_GRID_ORCA)

@@ -26,7 +26,6 @@
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/utils/MD5.h"
 
 
 namespace eckit::geo::grid::unstructured {
@@ -61,6 +60,7 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
     // read and check uid
     auto& record = cache[path];
     record.read(path);
+    record.check(spec);
 
     return record;
 }
@@ -126,6 +126,17 @@ void ICON::ICONRecord::read(const PathName& p) {
     }
 
     throw SeriousBug("ICON: unsupported version", Here());
+}
+
+
+void ICON::ICONRecord::check(const Spec& spec) const {
+    if (std::vector<size_t> shape; spec.get("shape", shape)) {
+        ASSERT(shape.size() == 1);
+        ASSERT(shape[0] == n());
+    }
+
+    ASSERT(n() == longitudes_.size());
+    ASSERT(n() == latitudes_.size());
 }
 
 

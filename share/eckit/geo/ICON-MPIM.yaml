@@ -51,6 +51,18 @@ grid_names:
     url_prefix: *url_prefix
     url: ICON_O_36.icon.ek
 
+  - ICON_O_38: &ICON_O_38
+    description: "Ocean global R02B11 grid. 1.2 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. GEBCO 2023 bathymetry. Grid includes ocean cells only."
+    type: ICON
+    file: "icon_grid_0038_R02B11_O.nc"
+    shape: [237316813]
+    icon_number_of_grid_used: 38
+    icon_type: hrz_global_ocean_only
+    icon_arrangement: T
+    icon_uid: "9b323b62670411eb85afdd9149101e1a"
+    url_prefix: *url_prefix
+    url: ICON_O_38.icon.ek
+
   - ICON_O_40: &ICON_O_40
     description: "Ocean global R02B10 grid. 2.5 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. GEBCO 2023 bathymetry. Grid includes ocean cells only."
     type: ICON

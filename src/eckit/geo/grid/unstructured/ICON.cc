@@ -109,19 +109,15 @@ size_t ICON::ICONRecord::n() const {
 void ICON::ICONRecord::read(const PathName& p) {
     codec::RecordReader reader(p);
 
-    uint64_t version = 0;
+    int32_t version = 0;
     reader.read("version", version).wait();
 
     if (version == 0) {
-        uint64_t n = 0;
-        reader.read("n", n);
-
         reader.read("latitude", latitudes_);
         reader.read("longitude", longitudes_);
         reader.wait();
 
-        ASSERT(n == latitudes_.size());
-        ASSERT(n == longitudes_.size());
+        ASSERT(latitudes_.size() == longitudes_.size());
         return;
     }
 
@@ -130,13 +126,15 @@ void ICON::ICONRecord::read(const PathName& p) {
 
 
 void ICON::ICONRecord::check(const Spec& spec) const {
+    auto _n = static_cast<size_t>(n());
+    ASSERT(_n > 0);
+
     if (std::vector<size_t> shape; spec.get("shape", shape)) {
-        ASSERT(shape.size() == 1);
-        ASSERT(shape[0] == n());
+        ASSERT(shape.size() == 1 && shape.front() == _n);
     }
 
-    ASSERT(n() == longitudes_.size());
-    ASSERT(n() == latitudes_.size());
+    ASSERT(_n == longitudes_.size());
+    ASSERT(_n == latitudes_.size());
 }
 
 

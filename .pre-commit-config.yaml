@@ -26,9 +26,8 @@ repos:
     rev: v1.29.0
     hooks:
       - id: yamllint
-        args: [--strict]
+        args: [--strict, -d, '{extends: default, rules: {line-length: disable}}']
         types: [yaml]
-        exclude: 'share/eckit/geo/.*\.yaml'
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:

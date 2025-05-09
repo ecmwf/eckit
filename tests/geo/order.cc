@@ -28,7 +28,7 @@ Order::value_type order_from_spec(bool i_pos, bool j_pos, bool ij, bool alt) {
     return "scan" +
            (ij ? std::string(i_pos ? "-i-positively" : "-i-negatively") + (j_pos ? "-j-positively" : "-j-negatively")
                : std::string(j_pos ? "-j-positively" : "-j-negatively") + (i_pos ? "-i-positively" : "-i-negatively")) +
-           (alt ? "-alternating" : "");
+           (alt ? "-alternative" : "");
 }
 
 
@@ -47,7 +47,7 @@ CASE("ordering scan") {
                         EXPECT(order == Scan(spec::Custom{{"scan-i-positively", i_pos},
                                                           {"scan-j-positively", j_pos},
                                                           {"scan-i-j", ij},
-                                                          {"scan-alternating", alt}})
+                                                          {"scan-alternative", alt}})
                                             .order());
 
                         constexpr const char* UNUSED = "UNUSED";
@@ -55,7 +55,7 @@ CASE("ordering scan") {
                                                  {i_pos ? UNUSED : "scan-i-negatively", true},
                                                  {j_pos ? "scan-j-positively" : UNUSED, true},
                                                  {ij ? UNUSED : "scan-i-j", false},
-                                                 {alt ? "scan-alternating" : UNUSED, true},
+                                                 {alt ? "scan-alternative" : UNUSED, true},
                                              })
                                             .order());
 

@@ -48,7 +48,7 @@ public:
     static bool is_scan_i_positively(const value_type&);
     static bool is_scan_j_positively(const value_type&);
     static bool is_scan_i_j(const value_type&);
-    static bool is_scan_alternating(const value_type&);
+    static bool is_scan_alternative(const value_type&);
 
 private:
 

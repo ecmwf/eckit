@@ -35,8 +35,6 @@ public:
 
     // -- Types
 
-    using Spec = Spec;
-
     using builder_t = BuilderT1<Projection>;
     using ARG1      = const Spec&;
 

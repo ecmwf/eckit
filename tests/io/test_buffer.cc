@@ -29,7 +29,8 @@ unsigned char* random_bytestream(const size_t sz) {
 }
 
 constexpr auto msg    = "Once upon a midnight dreary";
-constexpr auto msgLen = std::char_traits<char>::length(msg);
+// std::char_traits<T>::length _should_ be constexpr. But this doesn't work with the old GCC used in the DHS
+constexpr auto msgLen = 27; //std::char_traits<char>::length(msg);
 
 CASE("Test eckit Buffer default constructor") {
     Buffer buf;

@@ -30,7 +30,7 @@ static OrderRegisterType<Scan> ORDERING("scan");
 #define J "-j"
 #define POS "-positively"
 #define NEG "-negatively"
-#define ALT "-alternating"
+#define ALT "-alternative"
 #define SCAN "scan"
 
 
@@ -48,8 +48,8 @@ Scan::Scan(const value_type& o, size_t nx, size_t ny) :
                     return no_reorder(ni * nj);
                 }
 
-                ASSERT(not is_scan_alternating(from));
-                ASSERT(not is_scan_alternating(to));
+                ASSERT(not is_scan_alternative(from));
+                ASSERT(not is_scan_alternative(to));
 
                 Reordering ren(ni * nj);
 
@@ -173,7 +173,7 @@ bool Scan::is_scan_i_j(const value_type& o) {
 }
 
 
-bool Scan::is_scan_alternating(const value_type& o) {
+bool Scan::is_scan_alternative(const value_type& o) {
     return o.find(ALT) != value_type::npos;
 }
 

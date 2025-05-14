@@ -167,7 +167,7 @@ OutOfRange::OutOfRange(const std::string& w, const CodeLocation& loc) : Exceptio
 //----------------------------------------------------------------------------------------------------------------------
 
 NotImplemented::NotImplemented(const std::string& w, const eckit::CodeLocation& loc) :
-    Exception("Not implemented" + (w.empty() ? "" : (": " + w))) {
+    Exception("Not implemented" + (w.empty() ? "" : (": " + w)), loc) {
     Log::status() << what() << std::endl;
 
     std::cout << what() << std::endl << BackTrace::dump() << std::endl;

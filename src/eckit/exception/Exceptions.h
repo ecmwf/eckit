@@ -359,7 +359,7 @@ public:
 #define SYSCALL(a) ::eckit::SysCall(a, #a, __FILE__, __LINE__, __func__)
 #define SYSCALL2(a, b) ::eckit::SysCall(a, #a, b, __FILE__, __LINE__, __func__)
 #define PANIC(a) ::eckit::Panic((a), #a, Here())
-#define NOTIMP throw ::eckit::NotImplemented(Here())
+#define NOTIMP throw ::eckit::NotImplemented("NotImplemented", Here())
 
 #define ASSERT(a) static_cast<void>(0), (a) ? (void)0 : ::eckit::Assert(!(a), #a, __FILE__, __LINE__, __func__)
 #define ASSERT_MSG(a, m) static_cast<void>(0), (a) ? (void)0 : ::eckit::Assert(!(a), m, __FILE__, __LINE__, __func__)

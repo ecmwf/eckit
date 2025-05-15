@@ -65,6 +65,10 @@ private:
 
     void fill_spec(spec::Custom&) const override;
 
+    // -- Class members
+
+    static const value_type DEFAULT;
+
     // -- Class methods
 
     static const std::string& static_type();

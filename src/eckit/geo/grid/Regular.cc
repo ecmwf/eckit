@@ -71,14 +71,11 @@ const Range& Regular::y() const {
 }
 
 
-Regular::Regular(const Spec& spec) : Grid(spec), order_(spec) {}
+Regular::Regular(const Spec& spec) : Grid(spec), order_(spec.get_string("order", order::Scan::order_default())) {}
 
 
 Regular::Regular(Ranges xy, const Projection* projection) :
-    Grid(make_bounding_box(*xy.first, *xy.second), projection),
-    x_(xy.first),
-    y_(xy.second),
-    order_(order::Scan::order_default(), xy.first->size(), xy.second->size()) {
+    Grid(make_bounding_box(*xy.first, *xy.second), projection), x_(xy.first), y_(xy.second) {
     ASSERT(x_ && x_->size() > 0);
     ASSERT(y_ && y_->size() > 0);
 }

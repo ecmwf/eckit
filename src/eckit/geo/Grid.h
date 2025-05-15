@@ -36,7 +36,7 @@ namespace eckit {
 class JSON;
 namespace geo {
 class Area;
-}  // namespace geo
+}
 }  // namespace eckit
 
 

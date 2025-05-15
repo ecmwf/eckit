@@ -128,58 +128,6 @@ std::vector<double> Spec::get_double_vector(const std::string& name, const std::
 }
 
 
-PointLonLat spec_get_point_lonlat(const Spec& spec, const std::string& name) {
-    if (const std::string key(name + "_lonlat"); spec.has(key)) {
-        const auto value = spec.get_double_vector(key);
-        ASSERT(value.size() == 2);
-        return {value[0], value[1]};
-    }
-
-    if (const std::string key(name + "_latlon"); spec.has(key)) {
-        const auto value = spec.get_double_vector(key);
-        ASSERT(value.size() == 2);
-        return {value[1], value[0]};
-    }
-
-    if (const std::string key1(name + "_lon"), key2(name + "_lat"); spec.has(key1) && spec.has(key2)) {
-        return {spec.get_double(key1), spec.get_double(key2)};
-    }
-
-    throw exception::SpecError("cannot find '" + name + "_lonlat' or '" + name + "_lon'/'" + name + "_lat'", Here());
-}
-
-
-PointXY spec_get_point_xy(const Spec& spec, const std::string& name) {
-    if (const std::string key(name + "_xy"); spec.has(key)) {
-        const auto value = spec.get_double_vector(key);
-        ASSERT(value.size() == 2);
-        return {value[0], value[1]};
-    }
-
-    if (const std::string x(name + "_x"), y(name + "_y"), z(name + "_z"); spec.has(x) && spec.has(y) && !spec.has(z)) {
-        return {spec.get_double(x), spec.get_double(y)};
-    }
-
-    throw exception::SpecError("cannot find '" + name + "_xy' or '" + name + "_x'/'" + name + "_y'", Here());
-}
-
-
-PointXYZ spec_get_point_xyz(const Spec& spec, const std::string& name) {
-    if (const std::string key(name + "_xyz"); spec.has(key)) {
-        const auto value = spec.get_double_vector(key);
-        ASSERT(value.size() == 3);
-        return {value[0], value[1], value[2]};
-    }
-
-    if (const std::string x(name + "_x"), y(name + "_y"), z(name + "_z"); spec.has(x) && spec.has(y) && spec.has(z)) {
-        return {spec.get_double(x), spec.get_double(y), spec.get_double(z)};
-    }
-
-    throw exception::SpecError("cannot find '" + name + "_xyz' or '" + name + "_x'/'" + name + "_y''/'" + name + "_z'",
-                               Here());
-}
-
-
 std::string Spec::str() const {
     std::ostringstream str;
     JSON j(str);

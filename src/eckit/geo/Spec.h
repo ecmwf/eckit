@@ -81,9 +81,4 @@ private:
 };
 
 
-PointLonLat spec_get_point_lonlat(const Spec&, const std::string& name);
-PointXY spec_get_point_xy(const Spec&, const std::string& name);
-PointXYZ spec_get_point_xyz(const Spec&, const std::string& name);
-
-
 }  // namespace eckit::geo

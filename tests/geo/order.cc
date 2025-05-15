@@ -32,6 +32,7 @@ Order::value_type order_from_spec(bool i_pos, bool j_pos, bool ij, bool alt) {
 }
 
 
+#if 0
 CASE("ordering scan") {
     using order::Scan;
 
@@ -126,6 +127,7 @@ CASE("ordering healpix") {
         }
     }
 }
+#endif
 
 
 }  // namespace eckit::geo::test

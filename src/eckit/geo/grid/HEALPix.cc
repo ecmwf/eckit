@@ -32,7 +32,8 @@ static const std::string HEALPIX_PATTERN = "h([rn][1-9][0-9]*|[1-9][0-9]*(|r|_ri
 
 
 HEALPix::HEALPix(const Spec& spec) :
-    HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")), spec.get_string("order", "ring")) {}
+    HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")),
+            spec.get_string("order", order::HEALPix::order_default())) {}
 
 
 HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), order_(order, HEALPix::size_from_nside(Nside)) {}

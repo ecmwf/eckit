@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <memory>
-
 #include "eckit/geo/Order.h"
 #include "eckit/geo/util.h"
 
@@ -26,54 +24,31 @@ public:
 
     // -- Constructors
 
-    Scan(const value_type&, size_t nx, size_t ny);
-    Scan(const value_type&, const pl_type&);
-
     explicit Scan(const value_type& = order_default());
     explicit Scan(const Spec&);
 
     // -- Overriden methods
 
     const std::string& type() const override { return static_type(); }
+    const value_type& order() const override { return order_; }
+
+    Reordering reorder(const value_type& to) const override;
     size_t size() const override;
 
-    const value_type& order() const override { return order_; }
-    Reordering reorder(const value_type& to) const override;
+    // -- Methods
+
+    bool is_scan_i_positively(const value_type&);
+    bool is_scan_j_positively(const value_type&);
+    bool is_scan_alternating(const value_type&);
 
     // -- Class methods
 
     static const Order::value_type& order_default();
-    static Order::value_type make_order_from_spec(const Spec& spec);
-
-    static bool is_scan_i_positively(const value_type&);
-    static bool is_scan_j_positively(const value_type&);
-    static bool is_scan_i_j(const value_type&);
-    static bool is_scan_alternative(const value_type&);
 
 private:
 
-    // -- Types
-
-    struct Implementation {
-        Implementation()          = default;
-        virtual ~Implementation() = default;
-
-        Implementation(const Implementation&) = delete;
-        Implementation(Implementation&&)      = delete;
-        void operator=(const Implementation&) = delete;
-        void operator=(Implementation&&)      = delete;
-
-        virtual Reordering reorder(const value_type& from, const value_type& to) const = 0;
-        virtual size_t size() const                                                    = 0;
-    };
-
-    // -- Constructors
-
-    Scan(const value_type&, Implementation*);
-
     // -- Members
 
-    std::unique_ptr<Implementation> impl_;
     value_type order_;
 
     // -- Overriden methods

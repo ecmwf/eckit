@@ -16,24 +16,20 @@
 namespace eckit::geo::exception {
 
 
-AreaError::AreaError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    reason("AreaError: [" + what + "], in " + loc.asString());
-};
+AreaError::AreaError(const std::string& what, const CodeLocation& location) :
+    Exception("AreaError: [" + what + "]", location) {}
 
 
-OrderError::OrderError(const std::string& what, const CodeLocation& loc) {
-    reason("OrderError: [" + what + "], in " + loc.asString());
-}
+OrderError::OrderError(const std::string& what, const CodeLocation& location) :
+    Exception("OrderError: [" + what + "]", location) {}
 
 
-ProjectionError::ProjectionError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    reason("ProjectionError: [" + what + "], in " + loc.asString());
-};
+ProjectionError::ProjectionError(const std::string& what, const CodeLocation& location) :
+    Exception("ProjectionError: [" + what + "]", location) {}
 
 
-SpecError::SpecError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    reason("SpecError: [" + what + "], in " + loc.asString());
-};
+SpecError::SpecError(const std::string& what, const CodeLocation& location) :
+    Exception("SpecError: [" + what + "]", location) {}
 
 
 }  // namespace eckit::geo::exception

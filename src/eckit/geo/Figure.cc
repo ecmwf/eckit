@@ -127,17 +127,19 @@ Figure* FigureFactory::make_from_spec_(const Spec& spec) const {
         return Factory<Figure>::instance().get(figure).create();
     }
 
-    if (double a = 0., b = 0.; spec.get("a", a) && spec.get("b", b)) {
+    if (double a = 0., b = 0.;
+        (spec.get("a", a) && spec.get("b", b)) || (spec.get("semi_major_axis", a) && spec.get("semi_minor_axis", b))) {
         return types::is_approximately_equal(a, b) ? static_cast<Figure*>(new figure::Sphere(a))
                                                    : new figure::OblateSpheroid(a, b);
     }
 
-    if (double R = 0.; spec.get("R", R)) {
+    if (double R = 0.; spec.get("R", R) || spec.get("radius", R)) {
         return new figure::Sphere(R);
     }
 
-    Log::error() << "Figure: cannot build figure without 'R' or 'a', 'b'" << std::endl;
-    throw exception::SpecError("Figure: cannot build figure without 'R' or 'a', 'b'", Here());
+    const auto* msg = "Figure: cannot build figure without 'R'/'a'/'b' or 'radius'/'semi_major_axis'/'semi_minor_axis'";
+    Log::error() << msg << std::endl;
+    throw exception::SpecError(msg, Here());
 }
 
 

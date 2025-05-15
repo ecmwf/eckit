@@ -206,7 +206,8 @@ public:
 class NotImplemented : public Exception {
 public:
 
-    explicit NotImplemented(const std::string&, const CodeLocation& = {});
+    explicit NotImplemented(const std::string&, const CodeLocation&);
+    explicit NotImplemented(const CodeLocation& loc) : NotImplemented({}, loc) {}
 };
 
 /// For compatibility
@@ -215,7 +216,7 @@ using MethodNotYetImplemented [[deprecated("Use eckit::NotImplemented directly")
 class FunctionalityNotSupported : public NotImplemented {
 public:
 
-    explicit FunctionalityNotSupported(const std::string& what, const CodeLocation& loc = {});
+    explicit FunctionalityNotSupported(const std::string& what, const CodeLocation& = {});
 };
 
 //----------------------------------------------------------------------------------------------------------------------

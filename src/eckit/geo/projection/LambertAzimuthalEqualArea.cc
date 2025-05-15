@@ -25,8 +25,9 @@ static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_1("laea");
 static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_2("lambert_azimuthal_equal_area");
 
 
-LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
-    LambertAzimuthalEqualArea(spec_get_point_lonlat(spec, "centre"), spec_get_point_lonlat(spec, "first")) {}
+LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) : LambertAzimuthalEqualArea({}, {}) {
+    // NOTIMP;
+}
 
 
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first) :

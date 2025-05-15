@@ -30,8 +30,9 @@ static const ProjectionRegisterType<LambertConformalConic> PROJECTION_3("lambert
 
 
 LambertConformalConic::LambertConformalConic(const Spec& spec) :
-    LambertConformalConic(spec_get_point_lonlat(spec, "centre"), spec_get_point_lonlat(spec, "first"),
-                          spec.get_double("lat_1"), spec.get_double("lat_2")) {}
+    LambertConformalConic({}, {}, spec.get_double("lat_1"), spec.get_double("lat_2")) {
+    // NOTIMP;
+}
 
 
 LambertConformalConic::LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1, double lat_2) :

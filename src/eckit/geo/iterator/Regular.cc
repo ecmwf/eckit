@@ -26,9 +26,9 @@ Regular::Regular(const grid::Regular& grid, size_t index) :
     i_(0),
     j_(0),
     index_(index),
-    nx_(x_.size()),
-    ny_(y_.size()),
-    size_(nx_ * ny_) {}
+    ni_(x_.size()),
+    nj_(y_.size()),
+    size_(ni_ * nj_) {}
 
 
 bool Regular::operator==(const Iterator& other) const {
@@ -39,7 +39,7 @@ bool Regular::operator==(const Iterator& other) const {
 
 bool Regular::operator++() {
     if (index_++, i_++; index_ < size_) {
-        if (i_ >= nx_) {
+        if (i_ >= ni_) {
             i_ = 0;
             j_++;
         }

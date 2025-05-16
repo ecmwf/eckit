@@ -27,8 +27,8 @@ namespace eckit::geo::order {
 static OrderRegisterType<HEALPix> ORDERING("healpix");
 
 
-const Order::value_type HEALPix::ring   = "ring";
-const Order::value_type HEALPix::nested = "nested";
+const Order::value_type HEALPix::ring    = "ring";
+const Order::value_type HEALPix::nested  = "nested";
 const Order::value_type HEALPix::DEFAULT = ring;
 
 

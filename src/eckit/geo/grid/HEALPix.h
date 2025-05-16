@@ -44,8 +44,8 @@ public:
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
-    const order_type& order() const override { return order_.order(); }
-    Reordering reorder(const order_type& to) const override { return order_.reorder(to); }
+    const order_type& order() const override { return healpix_.order(); }
+    Reordering reorder(const order_type& to) const override { return healpix_.reorder(to); }
 
     [[nodiscard]] Grid* make_grid_reordered(const order_type& order) const override {
         return new HEALPix(Nside_, order);
@@ -64,7 +64,7 @@ private:
     // -- Members
 
     const size_t Nside_;
-    order::HEALPix order_;
+    order::HEALPix healpix_;
 
     mutable std::vector<double> latitudes_;
 

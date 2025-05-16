@@ -48,8 +48,8 @@ public:
     size_t ni(size_t j) const override;
     size_t nj() const override;
 
-    const order_type& order() const override { return order_.order(); }
-    Reordering reorder(const order_type& to) const override { return order_.reorder(to); }
+    const order_type& order() const override { return scan_.order(); }
+    Reordering reorder(const order_type& to) const override { return scan_.reorder(to); }
 
 private:
 
@@ -62,7 +62,7 @@ private:
 
     std::vector<std::unique_ptr<Range>> x_;
     std::unique_ptr<Range> y_;
-    order::Scan order_;
+    order::Scan scan_;
 
     // -- Overridden methods
 

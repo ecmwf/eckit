@@ -36,7 +36,7 @@ HEALPix::HEALPix(const Spec& spec) :
             spec.get_string("order", order::HEALPix::order_default())) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), order_(order, HEALPix::size_from_nside(Nside)) {}
+HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), healpix_(order, HEALPix::size_from_nside(Nside)) {}
 
 
 Grid::iterator HEALPix::cbegin() const {
@@ -101,7 +101,7 @@ std::vector<Point> HEALPix::to_points() const {
     points_nested.reserve(size());
 
     for (size_t i = 0; i < size(); ++i) {
-        points_nested.emplace_back(std::get<PointLonLat>(points[order_.nest_to_ring(static_cast<int>(i))]));
+        points_nested.emplace_back(std::get<PointLonLat>(points[healpix_.nest_to_ring(static_cast<int>(i))]));
     }
 
     return points_nested;

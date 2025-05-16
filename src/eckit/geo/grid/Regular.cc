@@ -71,7 +71,7 @@ const Range& Regular::y() const {
 }
 
 
-Regular::Regular(const Spec& spec) : Grid(spec), order_(spec.get_string("order", order::Scan::order_default())) {}
+Regular::Regular(const Spec& spec) : Grid(spec), scan_(spec.get_string("order", order::Scan::order_default())) {}
 
 
 Regular::Regular(Ranges xy, const Projection* projection) :
@@ -84,8 +84,8 @@ Regular::Regular(Ranges xy, const Projection* projection) :
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
 
-    if (order_.order() != order::Scan::order_default()) {
-        custom.set("order", order_.order());
+    if (scan_.order() != order::Scan::order_default()) {
+        custom.set("order", scan_.order());
     }
 }
 

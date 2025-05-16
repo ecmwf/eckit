@@ -53,8 +53,8 @@ public:
     size_t size() const final { return nx() * ny(); }
     std::vector<size_t> shape() const override { return {ny(), nx()}; }
 
-    const order_type& order() const override { return order_.order(); }
-    Reordering reorder(const order_type& to) const override { return order_.reorder(to); }
+    const order_type& order() const override { return scan_.order(); }
+    Reordering reorder(const order_type& to) const override { return scan_.reorder(to); }
 
 protected:
 
@@ -79,7 +79,7 @@ private:
 
     std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
-    order::Scan order_;
+    order::Scan scan_;
 
     // -- Friends
 

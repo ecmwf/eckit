@@ -31,6 +31,7 @@ jobs:
       clang_format: true
       clang_format_ignore: |
         src/eckit/contrib
+        third-party
     secrets: inherit
 
   # Run CI of private downstream packages on self-hosted runners

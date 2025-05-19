@@ -17,6 +17,7 @@
 #define eckit_log_Log_h
 
 #include "eckit/deprecated.h"
+#include "eckit/format/Format.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/UserChannel.h"
 
@@ -161,6 +162,27 @@ public:
 
 #define LOG_DEBUG_LIB(lib) \
     static_cast<void>(0), !(lib::instance().debug()) ? (void)0 : eckit::Voidify() & eckit::Log::debug<lib>()
+
+/// Format message to debug channel of a library
+#define DEBUG_MSG(lib, str, ...)                                                                                      \
+    if (lib::instance().debug()) {                                                                                    \
+        fmt::format_to(eckit::makeOrForwardOutputiterator(eckit::Log::debug<lib>()), FMT_STRING(str), ##__VA_ARGS__); \
+    }
+
+/**
+ * Not to be used directly. Use (WARNING|INFO|ERROR|PANIC)MSG instead.
+ */
+#define __XXX_MSG(type, str, ...) \
+    fmt::format_to(eckit::makeOrForwardOutputiterator(Log::##type()), FMT_STRING(str), ##__VA_ARGS__);
+
+#define WARNING_MSG(str, ...) __XXX_MSG(warning, str, __VA_ARGS__)
+
+#define INFO_MSG(str, ...) __XXX_MSG(info, str, __VA_ARGS__)
+
+#define ERROR_MSG(str, ...) __XXX_MSG(error, str, __VA_ARGS__)
+
+#define PANIC_MSG(str, ...) __XXX_MSG(panic, str, __VA_ARGS__)
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -49,9 +49,11 @@ public:  // methods
     SharedBuffer(const SharedBuffer& s) : buffer_(s.buffer_) { buffer_->attach(); }
 
     SharedBuffer& operator=(const SharedBuffer& s) {
-        buffer_->detach();
-        buffer_ = s.buffer_;
-        buffer_->attach();
+        if (&s != this) {
+            buffer_->detach();
+            buffer_ = s.buffer_;
+            buffer_->attach();
+        }
         return *this;
     }
 

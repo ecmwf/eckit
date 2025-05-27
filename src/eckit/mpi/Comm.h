@@ -510,7 +510,12 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+#ifdef __clang_analyzer__
+#include <cassert>
+#define ECKIT_MPI_ASSERT(a) assert(a)
+#else
 #define ECKIT_MPI_ASSERT(a) eckit::mpi::detail::Assert(!(a), #a, __FILE__, __LINE__, __func__)
+#endif
 
 template <typename T>
 size_t eckit::mpi::Comm::getCount(Status& status) const {
@@ -575,6 +580,7 @@ void eckit::mpi::Comm::gather(CIter first, CIter last, Iter rfirst, Iter rlast, 
     typedef typename std::iterator_traits<CIter>::difference_type diff_t;
 
     const size_t commsize = size();
+    ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(root < commsize);
 
     const diff_t sendcount = std::distance(first, last);
@@ -597,6 +603,7 @@ void eckit::mpi::Comm::gather(CIter first, CIter last, Iter rfirst, Iter rlast, 
 template <typename T>
 void eckit::mpi::Comm::gather(const T send, std::vector<T>& recv, size_t root) const {
     size_t commsize = size();
+    ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(root < commsize);
     ECKIT_MPI_ASSERT(recv.size() % commsize == 0); /* receiving size is multiple of comm().size() */
     size_t recvcount = recv.size() / commsize;
@@ -609,6 +616,7 @@ void eckit::mpi::Comm::gather(const T send, std::vector<T>& recv, size_t root) c
 template <typename T>
 void eckit::mpi::Comm::gather(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
     size_t commsize = size();
+    ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(root < commsize);
     ECKIT_MPI_ASSERT(recv.size() % commsize == 0); /* receiving size is multiple of comm().size() */
     size_t recvcount = recv.size() / commsize;
@@ -678,6 +686,7 @@ void eckit::mpi::Comm::gatherv(const std::vector<T>& send, std::vector<T>& recv,
 template <typename T>
 void eckit::mpi::Comm::scatter(const std::vector<T>& send, T& recv, size_t root) const {
     size_t commsize = size();
+    ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(root < commsize);
     ECKIT_MPI_ASSERT(send.size() % commsize == 0);
     size_t sendcount = send.size() / commsize;
@@ -690,6 +699,7 @@ void eckit::mpi::Comm::scatter(const std::vector<T>& send, T& recv, size_t root)
 template <typename T>
 void eckit::mpi::Comm::scatter(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
     size_t commsize = size();
+    ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(root < commsize);
     ECKIT_MPI_ASSERT(send.size() % commsize == 0);
     size_t sendcount = send.size() / commsize;
@@ -873,6 +883,7 @@ void eckit::mpi::Comm::allGatherv(CIter first, CIter last, Iter rfirst, const in
 template <typename T>
 void eckit::mpi::Comm::allToAll(const std::vector<T>& send, std::vector<T>& recv) const {
     size_t commsize = size();
+    ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(send.size() % commsize == 0);
     ECKIT_MPI_ASSERT(recv.size() % commsize == 0);
 

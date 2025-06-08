@@ -14,7 +14,7 @@
 #include "eckit/io/rados/RadosAsyncHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
-#include "eckit/io/PartHandle.h"
+#include "eckit/io/rados/RadosPartHandle.h"
 
 // #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
@@ -104,7 +104,7 @@ eckit::DataHandle* RadosObject::asyncDataHandle(size_t maxAioBuffSize) const {
 
 eckit::DataHandle* RadosObject::rangeReadHandle(const eckit::Offset& off, const eckit::Length& len) const {
 
-    return new eckit::PartHandle(new eckit::RadosHandle(*this), off, len);
+    return new eckit::RadosPartHandle(*this, off, len);
 
 }
 

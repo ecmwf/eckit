@@ -60,7 +60,7 @@ public: // methods
 
 private: // members
 
-    const eckit::RadosObject& object_;
+    eckit::RadosObject object_;
     bool open_;
     eckit::Offset offset_;
     eckit::Length len_;

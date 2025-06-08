@@ -15,7 +15,7 @@
 
 #include "eckit/io/DataHandle.h"
 
-#include "eckit/rados/io/RadosObject.h"
+#include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
@@ -63,7 +63,6 @@ private: // members
     const eckit::RadosObject& object_;
     bool open_;
     eckit::Offset offset_;
-    eckit::Offset pos_;
     eckit::Length len_;
 
     // static ClassSpec classSpec_;

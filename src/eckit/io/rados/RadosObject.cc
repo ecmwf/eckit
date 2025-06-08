@@ -15,6 +15,7 @@
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosPartHandle.h"
+#include "eckit/io/PartHandle.h"
 
 // #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"

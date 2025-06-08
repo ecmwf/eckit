@@ -19,7 +19,7 @@ namespace eckit {
 
 RadosPartHandle::RadosPartHandle(const eckit::RadosObject& object, 
     const eckit::Offset& off,
-    const eckit::Length& len) : object_(object), open_(false), pos_(off), len_(len), offset_(0) {}
+    const eckit::Length& len) : object_(object), open_(false), offset_(off), len_(len) {}
 
 RadosPartHandle::~RadosPartHandle() {
 
@@ -52,8 +52,8 @@ long RadosPartHandle::read(void* buf, long len) {
         rados_read(
             RadosCluster::instance().ioCtx(object_), 
             object_.name().c_str(),
-            reinterpret_cast<char*>(buffer),
-            len, pos_ + offset_
+            reinterpret_cast<char*>(buf),
+            len, offset_
         )
     );
 
@@ -97,7 +97,6 @@ Offset RadosPartHandle::position() {
 
 Offset RadosPartHandle::seek(const Offset& offset) {
 
-    ASSERT(offset < len_);
     offset_ = offset;
     return offset_;
 

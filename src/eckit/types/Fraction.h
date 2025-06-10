@@ -14,6 +14,7 @@
 #ifndef eckit_Fraction_h
 #define eckit_Fraction_h
 
+#include <iosfwd>
 #include <string>
 
 
@@ -30,9 +31,9 @@ class Stream;
 class Fraction {
 public:
 
-    typedef long long value_type;
+    using value_type = long long;
 
-    // typedef __int128 value_type;
+    // using value_type = __int128 ;
 
 public:  // methods
          // -- Contructors
@@ -52,8 +53,8 @@ public:  // methods
 
     explicit Fraction(unsigned int n) : top_(n), bottom_(1) {}
     explicit Fraction(unsigned short n) : top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long n) : top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long long n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long n) : top_(static_cast<value_type>(n)), bottom_(1) {}
+    explicit Fraction(unsigned long long n) : top_(static_cast<value_type>(n)), bottom_(1) {}
 
     // Fraction(const Fraction& other):
     //     top_(other.top_), bottom_(other.bottom_) {}
@@ -73,11 +74,11 @@ public:  // operators
 
     static Fraction::value_type max_denominator();
 
-    operator double() const { return double(top_) / double(bottom_); }
+    operator double() const { return static_cast<double>(top_) / static_cast<double>(bottom_); }
 
     operator value_type() const;
 
-    Fraction operator-() const { return Fraction(-top_, bottom_); }
+    Fraction operator-() const { return {-top_, bottom_}; }
 
     value_type integralPart() const { return top_ / bottom_; }
 
@@ -216,6 +217,7 @@ private:  // members
     void encode(Stream& out) const;
     void decode(Stream& out);
 
+    std::string to_string() const;
 
     friend std::ostream& operator<<(std::ostream& s, const Fraction& x) {
         x.print(s);

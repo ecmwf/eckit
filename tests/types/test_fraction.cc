@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
 #include <limits>
 #include <utility>
 
@@ -18,11 +17,9 @@
 
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-
 namespace eckit::test {
+
+auto& LOG = Log::info();
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -123,13 +120,15 @@ CASE("Constructing fractions") {
     EXPECT(Fraction(M_PI) > Fraction(M_E));
     EXPECT(Fraction(M_E) > Fraction(M_SQRT2));
 
-    std::cout << "pi = " << (M_PI - double(Fraction(M_PI))) << std::endl;
-    std::cout << "e = " << (M_E - double(Fraction(M_E))) << std::endl;
-    std::cout << "sqrt2 = " << (M_SQRT2 - double(Fraction(M_SQRT2))) << std::endl;
+    LOG << "pi = " << (M_PI - double(Fraction(M_PI))) << std::endl;
+    LOG << "e = " << (M_E - double(Fraction(M_E))) << std::endl;
+    LOG << "sqrt2 = " << (M_SQRT2 - double(Fraction(M_SQRT2))) << std::endl;
 
     // EXPECT(Fraction(M_PI), Fraction(1200000, 1));
     {
-        Fraction west(-12), east(1.2), increment(1.2);
+        Fraction west(-12);
+        Fraction east(1.2);
+        Fraction increment(1.2);
 
         Fraction f(west);
         while (f < east) {
@@ -139,7 +138,9 @@ CASE("Constructing fractions") {
     }
 
     {
-        Fraction west("-77"), east("7"), increment("0.7");
+        Fraction west("-77");
+        Fraction east("7");
+        Fraction increment("0.7");
 
         Fraction f(west);
         while (f < east) {
@@ -160,7 +161,6 @@ CASE("Constructing fractions") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Overflow during comparisons") {
-
     {
         Fraction A(5934563467713522511, 13567822205000000);  // 437.39985519021053
         Fraction B(8624662771, 19718023);                    // 437.3999751902105
@@ -173,17 +173,16 @@ CASE("Overflow during comparisons") {
     }
 
     {
-        using limits = std::numeric_limits<Fraction::value_type>;
-        std::streamsize p(Log::info().precision(16));
+        constexpr auto MAX = std::numeric_limits<Fraction::value_type>::max();
 
-        Fraction A(limits::max() - 6, limits::max() - 1);
-        Fraction B(limits::max() - 2, limits::max() - 1);
+        Fraction A(MAX - 6, MAX - 1);
+        Fraction B(MAX - 2, MAX - 1);
 
-        Log::info() << limits::max() - 6 << " ?= " << double(limits::max() - 6) << std::endl;
-        Log::info() << limits::max() - 2 << " ?= " << double(limits::max() - 2) << std::endl;
+        LOG << MAX - 6 << " ?= " << static_cast<double>(MAX - 6) << std::endl;
+        LOG << MAX - 2 << " ?= " << static_cast<double>(MAX - 2) << std::endl;
 
         /// @note this demonstrates that numerators/denominators have a lossy representation in double
-        EXPECT(double(limits::max() - 6) == double(limits::max() - 2));
+        EXPECT(double(MAX - 6) == double(MAX - 2));
 
         EXPECT(A != B);
 
@@ -193,7 +192,7 @@ CASE("Overflow during comparisons") {
         //    EXPECT(B >  A);
         //    EXPECT(B >= A);
 
-        Log::info() << "Max denominator" << Fraction::max_denominator() << std::endl;
+        LOG << "Max denominator" << Fraction::max_denominator() << std::endl;
 
         Fraction U(1, 1);
 
@@ -210,8 +209,6 @@ CASE("Overflow during comparisons") {
         EXPECT(B <= U);
         EXPECT(U > B);
         EXPECT(U >= B);
-
-        Log::info().precision(p);
     }
 }
 
@@ -260,47 +257,42 @@ CASE("Regression (Fraction <=> double)") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Values known to have problematic conversion to fraction") {
-
     auto values = std::vector<double>{19.011363983154297, 0.47718059708975263};
-    std::streamsize p(Log::debug().precision(16));
     for (auto value : values) {
 
-        Log::debug() << "Test " << value << "..." << std::endl;
+        LOG << "Test " << value << "..." << std::endl;
 
         auto frac = Fraction(value);
-        Log::debug() << "Test " << value << " = " << frac << std::endl;
+        LOG << "Test " << value << " = " << frac << std::endl;
 
         EXPECT_NOT_EQUAL(frac.denominator(), 0);
     }
-    Log::debug().precision(p);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("Fraction inverse") {
 
-    for (auto& test : {
+    for (const auto& test : {
              std::make_pair(Fraction{1, 2}, Fraction{2, 1}),
              std::make_pair(Fraction{1, 3}, Fraction{3, 1}),
          }) {
 
-        Log::debug() << "Test (" << test.first << ")**-1 = " << test.second << std::endl;
+        LOG << "Test (" << test.first << ")**-1 = " << test.second << std::endl;
         EXPECT(test.first.inverse() == test.second);
 
-        Log::debug() << "Test " << test.first << " = (" << test.second << ")**-1" << std::endl;
+        LOG << "Test " << test.first << " = (" << test.second << ")**-1" << std::endl;
         EXPECT(test.first == test.second.inverse());
     }
 
     Fraction zero(0);
-    Log::debug() << "Test (" << zero << ")**-1 (throw BadValue)" << std::endl;
+    LOG << "Test (" << zero << ")**-1 (throw BadValue)" << std::endl;
     EXPECT_THROWS_AS(zero.inverse(), BadValue);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("String to double to fraction to double to string") {
-    auto old = Log::debug().precision(16);
-
     Translator<std::string, double> s2d;
 
     std::string s("-17.9229");
@@ -318,5 +310,7 @@ CASE("String to double to fraction to double to string") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    eckit::test::LOG.precision(16);
+
+    return eckit::testing::run_tests(argc, argv);
 }

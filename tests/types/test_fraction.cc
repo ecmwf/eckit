@@ -261,12 +261,16 @@ CASE("Regression (Fraction <=> double)") {
 
 CASE("Values known to have problematic conversion to fraction") {
 
-    auto values = std::vector<double>{0.47718059708975263};
+    auto values = std::vector<double>{19.011363983154297, 0.47718059708975263};
     std::streamsize p(Log::debug().precision(16));
     for (auto value : values) {
 
         Log::debug() << "Test " << value << "..." << std::endl;
-        Log::debug() << "Test " << value << " = " << Fraction(value) << std::endl;
+
+        auto frac = Fraction(value);
+        Log::debug() << "Test " << value << " = " << frac << std::endl;
+
+        EXPECT_NOT_EQUAL(frac.denominator(), 0);
     }
     Log::debug().precision(p);
 }

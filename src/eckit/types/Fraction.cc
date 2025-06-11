@@ -57,7 +57,7 @@ Fraction::Fraction(double value) : top_(1), bottom_(0) {
     value_type m00 = 1;
     value_type m10 = 0;
 
-    for (double eps : {0., 1e-9, 1e-8, 1e-7, 1e-6}) {
+    for (auto eps : {std::numeric_limits<double>::epsilon(), 1e-9, 1e-8, 1e-7, 1e-6}) {
         m00 = 1;
         m10 = 0;
 

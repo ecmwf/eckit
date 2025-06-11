@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cmath>
 #include <limits>
 #include <utility>
 

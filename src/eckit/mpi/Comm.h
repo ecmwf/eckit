@@ -513,8 +513,9 @@ public:
 #if defined(__clang_analyzer__)
 // By adding C assert, the analyzer can make assumptions on conditions, preventing false positive warnings
 #include <cassert>
-#define ECKIT_MPI_ASSERT(a) eckit::mpi::detail::Assert(!(a), #a, __FILE__, __LINE__, __func__); \
-                            assert(a)
+#define ECKIT_MPI_ASSERT(a)                                             \
+    eckit::mpi::detail::Assert(!(a), #a, __FILE__, __LINE__, __func__); \
+    assert(a)
 #else
 #define ECKIT_MPI_ASSERT(a) eckit::mpi::detail::Assert(!(a), #a, __FILE__, __LINE__, __func__)
 #endif

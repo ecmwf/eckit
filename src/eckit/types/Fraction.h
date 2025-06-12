@@ -33,15 +33,7 @@ public:
 
     using value_type = long long;
 
-    // using value_type = __int128 ;
-
-public:  // methods
-         // -- Contructors
-
     Fraction() : top_(0), bottom_(1) {}
-
-    // template<class T>
-    // explicit Fraction(T top): top_(top), bottom_(1) {}
 
     Fraction(value_type top, value_type bottom);
 
@@ -56,21 +48,15 @@ public:  // methods
     explicit Fraction(unsigned long n) : top_(static_cast<value_type>(n)), bottom_(1) {}
     explicit Fraction(unsigned long long n) : top_(static_cast<value_type>(n)), bottom_(1) {}
 
-    // Fraction(const Fraction& other):
-    //     top_(other.top_), bottom_(other.bottom_) {}
-
     explicit Fraction(const std::string&);
     explicit Fraction(const char*);
 
     bool integer() const { return bottom_ == 1; }
 
-    static Fraction abs(const Fraction& f);
+    static Fraction abs(const Fraction&);
 
-    // Convert string to fraction by shifting
-    // the decimal point: e.g. 14.5 in 145/10
+    // Convert string to fraction by shifting the decimal point: e.g. 14.5 in 145/10
     static Fraction fromString(const std::string&);
-
-public:  // operators
 
     static Fraction::value_type max_denominator();
 
@@ -112,23 +98,23 @@ public:  // operators
 
     bool operator>=(const Fraction&) const;
 
-    Fraction& operator+=(const Fraction& other) {
-        *this = (*this) + other;
+    Fraction& operator+=(const Fraction& f) {
+        *this = (*this) + f;
         return *this;
     }
 
-    Fraction& operator-=(const Fraction& other) {
-        *this = (*this) - other;
+    Fraction& operator-=(const Fraction& f) {
+        *this = (*this) - f;
         return *this;
     }
 
-    Fraction& operator/=(const Fraction& other) {
-        *this = (*this) / other;
+    Fraction& operator/=(const Fraction& f) {
+        *this = (*this) / f;
         return *this;
     }
 
-    Fraction& operator*=(const Fraction& other) {
-        *this = (*this) * other;
+    Fraction& operator*=(const Fraction& f) {
+        *this = (*this) * f;
         return *this;
     }
 
@@ -205,32 +191,33 @@ public:  // operators
     }
 
     //====================================
+
     // Return a version that can be converted to double and back
     Fraction stableVersion(size_t max = 1000000) const;
 
-private:  // members
+private:
 
     value_type top_;
     value_type bottom_;
 
-    void print(std::ostream& out) const;
-    void encode(Stream& out) const;
-    void decode(Stream& out);
+    void print(std::ostream&) const;
+    void encode(Stream&) const;
+    void decode(Stream&);
 
     std::string to_string() const;
 
-    friend std::ostream& operator<<(std::ostream& s, const Fraction& x) {
-        x.print(s);
+    friend std::ostream& operator<<(std::ostream& s, const Fraction& f) {
+        f.print(s);
         return s;
     }
 
-    friend Stream& operator<<(Stream& s, const Fraction& x) {
-        x.encode(s);
+    friend Stream& operator<<(Stream& s, const Fraction& f) {
+        f.encode(s);
         return s;
     }
 
-    friend Stream& operator>>(Stream& s, Fraction& x) {
-        x.decode(s);
+    friend Stream& operator>>(Stream& s, Fraction& f) {
+        f.decode(s);
         return s;
     }
 };

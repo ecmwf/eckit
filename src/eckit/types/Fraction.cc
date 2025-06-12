@@ -28,13 +28,14 @@ namespace eckit {
 Fraction::Fraction(value_type top, value_type bottom) {
     ASSERT(bottom != 0);
 
-    value_type sgn = top < 0 == bottom < 0 ? 1 : -1;
-    top            = std::abs(top);
-    bottom         = std::abs(bottom);
+    const auto abs_top    = std::abs(top);
+    const auto abs_bottom = std::abs(bottom);
 
-    value_type g = std::gcd(top, bottom);
-    top_         = top / g * sgn;
-    bottom_      = bottom / g;
+    const value_type sgn = top < 0 == bottom < 0 ? 1 : -1;
+    const value_type g   = std::gcd(abs_top, abs_bottom);
+
+    top_    = abs_top / g * sgn;
+    bottom_ = abs_bottom / g;
 }
 
 constexpr auto VALUE_TYPE_MAX = std::numeric_limits<Fraction::value_type>::max();
@@ -71,7 +72,7 @@ Fraction::Fraction(double value) : top_(1), bottom_(0) {
         size_t cnt = 0;
 
         while (t2 <= MAX_DENOM) {
-            auto t1 = m00 * a + m01;
+            const auto t1 = m00 * a + m01;
 
             m01 = m00;
             m00 = t1;
@@ -79,13 +80,8 @@ Fraction::Fraction(double value) : top_(1), bottom_(0) {
             m11 = m10;
             m10 = t2;
 
-            auto dx = x - static_cast<double>(a);
-            if (std::abs(dx) < eps) {
-                break;
-            }
-
-            x = 1. / dx;
-            if (x > static_cast<double>(VALUE_TYPE_MAX)) {
+            if (const auto dx = x - static_cast<double>(a);
+                std::abs(dx) < eps || (x = 1. / dx) > static_cast<double>(VALUE_TYPE_MAX)) {
                 break;
             }
 
@@ -103,8 +99,8 @@ Fraction::Fraction(double value) : top_(1), bottom_(0) {
         }
 
         if (m10 != 0) {
-            value_type sgn = value < 0 ? -1 : 1;
-            value_type g   = std::gcd(m00, m10);
+            const value_type sgn = value < 0 ? -1 : 1;
+            const value_type g   = std::gcd(m00, m10);
 
             top_    = m00 / g * sgn;
             bottom_ = m10 / g;

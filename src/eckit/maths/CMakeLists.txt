@@ -1,6 +1,8 @@
 list(APPEND eckit_maths_private_libs "${LAPACK_LIBRARIES}" "${BLAS_LIBRARIES}")
 list(APPEND eckit_maths_sources
     Eigen.h
+    FloatingPointExceptions.cc
+    FloatingPointExceptions.h
     Lapack.cc
     Lapack.h
     Matrix.h

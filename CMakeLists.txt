@@ -371,7 +371,7 @@ set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b
 
 add_subdirectory( src )
 add_subdirectory( bamboo )
-add_subdirectory( doc )
+#add_subdirectory( docs )
 add_subdirectory( share )
 add_subdirectory( tests )
 add_subdirectory( regressions )

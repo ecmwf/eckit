@@ -1,10 +1,13 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # NOTE in case of problems like we had with eccodes, replace with noop here
 if [ "$(uname)" != "Darwin" ] ; then
+    rm -rf /tmp/eckit/auditwheel
     auditwheel repair -w /tmp/eckit/auditwheel /tmp/eckit/build/wheel/*whl
     cd /tmp/eckit/auditwheel
-    F=$(ls $whl)
+    F=$(ls *whl)
     unzip $F
     patchelf --add-rpath '$ORIGIN' eckitlib.libs/*
     rm $F

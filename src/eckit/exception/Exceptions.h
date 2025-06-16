@@ -43,7 +43,7 @@ void handle_assert(const std::string&, const CodeLocation& = {});
 /// @brief Base class for all ECMWF exceptions.
 /// All exception types shall inherit from this class, either directly or
 /// indirectly.
-/// 
+///
 /// When inheriting from this class prefer your Exception type to be
 /// constructible from a message and a code location, e.g.:
 /// ```

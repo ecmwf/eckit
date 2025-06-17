@@ -39,15 +39,25 @@ def _ext(name: str, sources: list, libraries: list) -> Extension:
         extra_link_args=extra_compile_args,
     )
 
+version: str
+try:
+    with open("../../VERSION", 'r') as f:
+        version = f.readlines()[0].strip()
+except Exception:
+    warnings.warn("failed to read VERSION, falling back to 0.0.0")
+    version = "0.0.0"
+
+install_requires = ["findlibs", "pyyaml"]
 try:
     import eckitlib
-    version = importlib.metadata.version("eckitlib")
+    install_requires.append(f"eckitlib=={eckitlib.__version__}")
 except ImportError:
-    version = "0.0.0"
+    warnings.warn("failed to import eckitlib, not listing as a dependency")
 
 setup(
     name="eckit",
     version=version,
+    install_requires=install_requires,
     ext_modules=cythonize(
         [
             _ext(

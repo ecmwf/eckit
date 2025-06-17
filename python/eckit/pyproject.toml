@@ -32,8 +32,8 @@ classifiers=[
 	"Operating System :: MacOS",
 	"Topic :: Scientific/Engineering",
 ]
-dependencies = ["findlibs", "eckitlib", "pyyaml"]
-dynamic = ["version"]
+# dependencies = [] # NOTE don't put anything here, use setup.py instead
+dynamic = ["version", "dependencies"]
 
 
 [tool.setuptools]

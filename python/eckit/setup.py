@@ -11,10 +11,14 @@
 import importlib.metadata
 from os import getenv
 from pathlib import Path
+from typing import Any
+import sys
 
 from Cython.Build import cythonize
 from setuptools import Extension
 from setuptools import setup
+import warnings
+
 
 source_dir = getenv("ECKIT_SOURCE_DIR", str(Path(getenv("HOME"), "git", "eckit")))
 binary_dir = getenv("ECKIT_BUILD_DIR", str(Path(getenv("HOME"), "build", "eckit")))
@@ -38,6 +42,14 @@ def _ext(name: str, sources: list, libraries: list) -> Extension:
         runtime_library_dirs=library_dirs,
         extra_link_args=extra_compile_args,
     )
+
+kwargs_set: dict[str, Any] = {}
+try:
+    from setup_utils import ext_kwargs as wheel_ext_kwargs
+
+    kwargs_set.update(wheel_ext_kwargs[sys.platform])
+except ImportError:
+    warnings.warn("failed to import setup_utils, won't mark the wheel as manylinux")
 
 version: str
 try:
@@ -79,4 +91,5 @@ setup(
         ],
         compiler_directives={"language_level": 3, "c_string_encoding": "default"},
     ),
+    **kwargs_set,
 )

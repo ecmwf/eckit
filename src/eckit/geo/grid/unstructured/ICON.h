@@ -13,7 +13,6 @@
 #pragma once
 
 #include <cstddef>
-#include <memory>
 
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/grid/Unstructured.h"
@@ -36,6 +35,7 @@ public:
         explicit ICONRecord() = default;
 
         void read(const PathName&);
+        void check(const Spec&) const;
 
         using bytes_t = decltype(sizeof(int));
         bytes_t footprint() const;

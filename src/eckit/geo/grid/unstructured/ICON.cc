@@ -26,7 +26,6 @@
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/utils/MD5.h"
 
 
 namespace eckit::geo::grid::unstructured {
@@ -51,7 +50,7 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/icon");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
-    auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");
+    auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
     ASSERT_MSG(path.exists(), "ICON: file '" + path + "' not found");
 
     if (cache.contains(path)) {
@@ -61,6 +60,7 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
     // read and check uid
     auto& record = cache[path];
     record.read(path);
+    record.check(spec);
 
     return record;
 }
@@ -109,23 +109,32 @@ size_t ICON::ICONRecord::n() const {
 void ICON::ICONRecord::read(const PathName& p) {
     codec::RecordReader reader(p);
 
-    uint64_t version = 0;
+    int32_t version = 0;
     reader.read("version", version).wait();
 
     if (version == 0) {
-        uint64_t n = 0;
-        reader.read("n", n);
-
         reader.read("latitude", latitudes_);
         reader.read("longitude", longitudes_);
         reader.wait();
 
-        ASSERT(n == latitudes_.size());
-        ASSERT(n == longitudes_.size());
+        ASSERT(latitudes_.size() == longitudes_.size());
         return;
     }
 
     throw SeriousBug("ICON: unsupported version", Here());
+}
+
+
+void ICON::ICONRecord::check(const Spec& spec) const {
+    auto _n = static_cast<size_t>(n());
+    ASSERT(_n > 0);
+
+    if (std::vector<size_t> shape; spec.get("shape", shape)) {
+        ASSERT(shape.size() == 1 && shape.front() == _n);
+    }
+
+    ASSERT(_n == longitudes_.size());
+    ASSERT(_n == latitudes_.size());
 }
 
 

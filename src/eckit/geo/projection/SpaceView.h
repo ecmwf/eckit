@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
@@ -22,7 +22,7 @@ namespace eckit::geo::projection {
  * @brief SpaceView projection
  * @ref LRIT/HRIT Global Specification (CGMS 03, Issue 2.6, 12.08.1999)
  */
-class SpaceView : public ProjectionOnFigure {
+class SpaceView : public Projection {
 public:
 
     // -- Constructors

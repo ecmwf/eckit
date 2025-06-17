@@ -45,8 +45,8 @@ class lock_type {
 Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
-Grid::Grid(area::BoundingBox* bbox, Projection* projection) :
-    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime() : bbox), projection_(projection) {}
+Grid::Grid(area::BoundingBox* bbox, const Projection* projection) :
+    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime().release() : bbox), projection_(projection) {}
 
 
 const Spec& Grid::spec() const {
@@ -192,11 +192,23 @@ void Grid::reset_uid(uid_t _uid) {
 
 void Grid::fill_spec(spec::Custom& custom) const {
     if (area_) {
-        area_->fill_spec(custom);
+        auto area = std::make_unique<spec::Custom>();
+        ASSERT(area);
+
+        area_->fill_spec(*area);
+        if (!area->empty()) {
+            custom.set("area", area.release());
+        }
     }
 
     if (projection_) {
-        projection_->fill_spec(custom);
+        auto projection = std::make_unique<spec::Custom>();
+        ASSERT(projection);
+
+        projection_->fill_spec(*projection);
+        if (!projection->empty()) {
+            custom.set("projection", projection.release());
+        }
     }
 }
 

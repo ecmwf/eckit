@@ -32,10 +32,11 @@ static const std::string HEALPIX_PATTERN = "h([rn][1-9][0-9]*|[1-9][0-9]*(|r|_ri
 
 
 HEALPix::HEALPix(const Spec& spec) :
-    HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")), spec.get_string("order", "ring")) {}
+    HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")),
+            spec.get_string("order", order::HEALPix::order_default())) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), order_(order, static_cast<int>(Nside)) {}
+HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), healpix_(order, HEALPix::size_from_nside(Nside)) {}
 
 
 Grid::iterator HEALPix::cbegin() const {
@@ -77,8 +78,13 @@ Spec* HEALPix::spec(const std::string& name) {
 }
 
 
+size_t HEALPix::size_from_nside(size_t Nside) {
+    return 12 * Nside * Nside;
+}
+
+
 size_t HEALPix::size() const {
-    return 12 * Nside_ * Nside_;
+    return size_from_nside(Nside_);
 }
 
 
@@ -95,7 +101,7 @@ std::vector<Point> HEALPix::to_points() const {
     points_nested.reserve(size());
 
     for (size_t i = 0; i < size(); ++i) {
-        points_nested.emplace_back(std::get<PointLonLat>(points[order_.nest_to_ring(static_cast<int>(i))]));
+        points_nested.emplace_back(std::get<PointLonLat>(points[healpix_.nest_to_ring(static_cast<int>(i))]));
     }
 
     return points_nested;

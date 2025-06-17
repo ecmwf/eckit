@@ -9,11 +9,12 @@
  */
 
 
+#include "eckit/geo/polygon/PolygonXY.h"
+
 #include <algorithm>
 #include <iostream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/polygon/Polygon2.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -52,7 +53,7 @@ inline int on_side(const PointXY& P, const PointXY& A, const PointXY& B) {
 }  // namespace
 
 
-bool Polygon2::operator==(const Polygon2& poly) const {
+bool PolygonXY::operator==(const PolygonXY& poly) const {
     // congruence test
     if (size() == poly.size()) {
         if (empty()) {
@@ -84,7 +85,7 @@ bool Polygon2::operator==(const Polygon2& poly) const {
 }
 
 
-bool Polygon2::contains(const PointXY& P) const {
+bool PolygonXY::contains(const PointXY& P) const {
     // Winding number algorithm for point-in-polygon test
 
     // loop on polygon edges, check point-edge side and direction, testing if P is on|above|below of a A,B polygon edge,
@@ -112,7 +113,7 @@ bool Polygon2::contains(const PointXY& P) const {
 }
 
 
-void Polygon2::simplify() {
+void PolygonXY::simplify() {
     // remove consecutive duplicate points
     erase(std::unique(begin(), end(), [](const auto& P, const auto& Q) { return points_equal(P, Q); }), end());
     if (1 < size() && points_equal(front(), back())) {
@@ -120,7 +121,7 @@ void Polygon2::simplify() {
     }
 
     // remove consecutive colinear points
-    Polygon2 poly;
+    PolygonXY poly;
     swap(poly);
 
     for (int i = 0, n = static_cast<int>(poly.size()); i < n; ++i) {
@@ -136,20 +137,20 @@ void Polygon2::simplify() {
 }
 
 
-void Polygon2::emplace_back_point(PointXY P) {
+void PolygonXY::emplace_back_point(PointXY P) {
     if (empty() || (!points_equal(P, back()) && !points_equal(P, front()))) {
         emplace_back(P);
     }
 }
 
 
-Polygon2::Edge Polygon2::edge(int i) const {
+PolygonXY::Edge PolygonXY::edge(int i) const {
     const auto n = static_cast<int>(size());
     return {at(((i % n) + n) % n), at(((i % n) + n + 1) % n)};
 }
 
 
-void Polygon2::print(std::ostream& s) const {
+void PolygonXY::print(std::ostream& s) const {
     if (empty()) {
         s << "[]";
         return;

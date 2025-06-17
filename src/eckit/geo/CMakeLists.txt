@@ -43,8 +43,8 @@ list(APPEND eckit_geo_srcs
     Spec.h
     area/BoundingBox.cc
     area/BoundingBox.h
-    area/BoundingBox2.cc
-    area/BoundingBox2.h
+    area/BoundingBoxXY.cc
+    area/BoundingBoxXY.h
     area/Library.cc
     area/Library.h
     area/None.cc
@@ -89,16 +89,6 @@ list(APPEND eckit_geo_srcs
     grid/RegularXY.h
     grid/Unstructured.cc
     grid/Unstructured.h
-    grid/regular-xy/LambertAzimuthalEqualArea.cc
-    grid/regular-xy/LambertAzimuthalEqualArea.h
-    grid/regular-xy/LambertConformalConic.cc
-    grid/regular-xy/LambertConformalConic.h
-    grid/regular-xy/Mercator.cc
-    grid/regular-xy/Mercator.h
-    grid/regular-xy/PolarStereographic.cc
-    grid/regular-xy/PolarStereographic.h
-    grid/regular-xy/SpaceView.cc
-    grid/regular-xy/SpaceView.h
     grid/unstructured/UnstructuredGeneric.cc
     grid/unstructured/UnstructuredGeneric.h
     iterator/Reduced.cc
@@ -113,8 +103,10 @@ list(APPEND eckit_geo_srcs
     order/Scan.h
     polygon/Polygon.cc
     polygon/Polygon.h
-    polygon/Polygon2.cc
-    polygon/Polygon2.h
+    polygon/PolygonXY.cc
+    polygon/PolygonXY.h
+    projection/AlbersEqualArea.cc
+    projection/AlbersEqualArea.h
     projection/Composer.cc
     projection/Composer.h
     projection/LambertAzimuthalEqualArea.cc
@@ -129,8 +121,6 @@ list(APPEND eckit_geo_srcs
     projection/None.h
     projection/PolarStereographic.cc
     projection/PolarStereographic.h
-    projection/ProjectionOnFigure.cc
-    projection/ProjectionOnFigure.h
     projection/Reverse.h
     projection/Rotation.cc
     projection/Rotation.h
@@ -166,6 +156,7 @@ list(APPEND eckit_geo_srcs
     util/arange.cc
     util/conversions.cc
     util/gaussian_latitudes.cc
+    util/gaussian_quadrature_weights.cc
     util/hash_vector.cc
     util/linspace.cc
     util/monotonic_crop.cc
@@ -201,7 +192,7 @@ if(eckit_HAVE_GEO_GRID_ICON)
     list(APPEND eckit_geo_srcs grid/unstructured/ICON.cc grid/unstructured/ICON.h)
     list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
-    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ICON.yaml")
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ICON-CH.yaml" "~eckit/share/eckit/geo/ICON-DWD.yaml" "~eckit/share/eckit/geo/ICON-MPIM.yaml")
 endif()
 
 if(eckit_HAVE_GEO_GRID_ORCA)

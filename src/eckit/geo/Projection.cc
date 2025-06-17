@@ -18,10 +18,13 @@
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/eckit_geo_config.h"
+#include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/share/Projection.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/types/FloatCompare.h"
 
 #if eckit_HAVE_PROJ
 #include "eckit/geo/projection/PROJ.h"
@@ -45,17 +48,13 @@ class lock_type {
 }  // namespace
 
 
-Figure* Projection::make_figure() const {
-    NOTIMP;
+Projection::Projection(Figure* figure_ptr) : figure_(figure_ptr != nullptr ? figure_ptr : new figure::Earth) {
+    ASSERT(figure_);
 }
 
 
 const Figure& Projection::figure() const {
-    if (!figure_) {
-        figure_.reset(make_figure());
-        ASSERT(figure_);
-    }
-
+    ASSERT(figure_);
     return *figure_;
 }
 
@@ -80,8 +79,7 @@ const Spec& Projection::spec() const {
 
 std::string Projection::proj_str() const {
 #if eckit_HAVE_PROJ
-    std::unique_ptr<spec::Custom> custom(spec());
-    return projection::PROJ::proj_str(*custom);
+    return projection::PROJ::proj_str(dynamic_cast<const spec::Custom&>(spec()));
 #else
     NOTIMP;
 #endif
@@ -92,6 +90,19 @@ Projection* Projection::make_from_spec(const Spec& spec) {
     return ProjectionFactoryType::instance()
         .get(spec.get_string(LibEcKitGeo::proj() ? "proj" : "projection"))
         .create(spec);
+}
+
+
+void Projection::fill_spec(spec::Custom& custom) const {
+    figure_->fill_spec(custom);
+
+    if (!types::is_approximately_equal(false_.X, 0.)) {
+        custom.set("x_0", false_.X);
+    }
+
+    if (!types::is_approximately_equal(false_.Y, 0.)) {
+        custom.set("y_0", false_.Y);
+    }
 }
 
 
@@ -131,7 +142,10 @@ Spec* ProjectionFactory::make_spec_(const Spec& spec) const {
 
     // hardcoded, interpreted options (contributing to projectionspec)
 
-    if (spec.has("rotation")) {
+    if (spec.has("proj")) {
+        cfg->push_back(new spec::Custom{{"type", "proj"}});
+    }
+    else if (spec.has("rotation")) {
         std::vector<double> rotation;
         spec.get("rotation", rotation);
         cfg->push_back(new spec::Custom{{"type", "rotation"}, {"rotation", rotation}});

@@ -13,7 +13,7 @@ repos:
     rev: 6.0.1
     hooks:
       - id: isort
-        types_or: [python]
+        types_or: [python, cython]
         args: [--line-length=110, --force-single-line-imports, --profile=black]
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.8
@@ -26,7 +26,7 @@ repos:
     rev: v1.29.0
     hooks:
       - id: yamllint
-        args: [--strict]
+        args: [--strict, -d, '{extends: default, rules: {line-length: disable}}']
         types: [yaml]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -35,8 +35,16 @@ repos:
         args: [--autofix]
         types: [json]
         exclude: '\.geojson$'
+  - repo: https://github.com/MarcoGorelli/cython-lint
+    rev: v0.16.6
+    hooks:
+      - id: cython-lint
+        types: [cython]
+      - id: double-quote-cython-strings
+        types: [cython]
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v19.1.7
     hooks:
       - id: clang-format
         types: [c, c++]
+        exclude: 'src/_eckit/_.*\.(h|cpp)'

@@ -1,0 +1,45 @@
+# (C) Copyright 2025- ECMWF.
+#
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+#
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
+
+
+[build-system]
+requires = ["setuptools>=65", "Cython>=3.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eckit"
+description = "Don't use this"
+requires-python=">=3.9"
+license = "Apache-2.0"
+license-files = ["../../LICENSE"]
+authors = [
+	{ name = "European Centre for Medium-Range Weather Forecasts (ECMWF)", email = "software.support@ecmwf.int" }
+]
+classifiers=[
+	"Development Status :: 3 - Alpha",
+	"Intended Audience :: Developers",
+	"Programming Language :: Python :: 3.10",
+	"Programming Language :: Python :: 3.11",
+	"Programming Language :: Cython",
+	"Programming Language :: Python :: Implementation :: CPython",
+	"Operating System :: POSIX :: Linux",
+	"Operating System :: MacOS",
+	"Topic :: Scientific/Engineering",
+]
+dependencies = ["findlibs", "eckitlib", "pyyaml"]
+dynamic = ["version"]
+
+
+[tool.setuptools]
+# NOTE perhaps add a fine-grained exclude so that we eg keep headers only
+# https://setuptools.pypa.io/en/latest/userguide/datafiles.html#exclude-package-data
+# however, beware of the interaction with data_files -- with `true` it crashes on
+# absolute paths etc. Fine-graining such as `tool.setuptools.package-data` may be also
+# needed
+include-package-data = false

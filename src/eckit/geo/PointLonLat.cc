@@ -73,8 +73,8 @@ PointLonLat PointLonLat::make(value_type lon, value_type lat, value_type lon_min
 }
 
 
-PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, value_type lonr_minimum) {
-    return make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr, util::RADIAN_TO_DEGREE * lonr_minimum);
+PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, value_type lon_minimum) {
+    return make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr, lon_minimum);
 }
 
 

@@ -15,15 +15,15 @@
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointXY.h"
 #include "eckit/geo/polygon/Polygon.h"
-#include "eckit/geo/polygon/Polygon2.h"
+#include "eckit/geo/polygon/PolygonXY.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-CASE("Polygon2") {
-    using Polygon = geo::polygon::Polygon2;
+CASE("PolygonXY") {
+    using Polygon = geo::polygon::PolygonXY;
 
 
     SECTION("empty polygon") {
@@ -144,7 +144,7 @@ CASE("Polygon2") {
         }
 
         std::vector<size_t> expected{
-            1, 1, 2, 1, 1,  // (for this meridian, note that Polygon2 is not periodic)
+            1, 1, 2, 1, 1,  // (for this meridian, note that PolygonXY is not periodic)
             1, 1, 2, 1, 1,  //
             2, 2, 4, 2, 2,  //
             1, 1, 2, 1, 1,  //

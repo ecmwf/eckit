@@ -71,14 +71,11 @@ const Range& Regular::y() const {
 }
 
 
-Regular::Regular(const Spec& spec) : Grid(spec), order_(spec) {}
+Regular::Regular(const Spec& spec) : Grid(spec), scan_(spec.get_string("order", order::Scan::order_default())) {}
 
 
-Regular::Regular(Ranges xy, Projection* projection) :
-    Grid(make_bounding_box(*xy.first, *xy.second), projection),
-    x_(xy.first),
-    y_(xy.second),
-    order_(order::Scan::order_default(), xy.first->size(), xy.second->size()) {
+Regular::Regular(Ranges xy, const Projection* projection) :
+    Grid(make_bounding_box(*xy.first, *xy.second), projection), x_(xy.first), y_(xy.second) {
     ASSERT(x_ && x_->size() > 0);
     ASSERT(y_ && y_->size() > 0);
 }
@@ -87,8 +84,8 @@ Regular::Regular(Ranges xy, Projection* projection) :
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
 
-    if (order_.order() != order::Scan::order_default()) {
-        custom.set("order", order_.order());
+    if (scan_.order() != order::Scan::order_default()) {
+        custom.set("order", scan_.order());
     }
 }
 

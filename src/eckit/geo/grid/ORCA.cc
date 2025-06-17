@@ -55,7 +55,7 @@ const ORCA::ORCARecord& orca_record(const Spec& spec) {
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
-    auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");
+    auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
     ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
 
     if (cache.contains(path)) {
@@ -246,8 +246,8 @@ Reordering ORCA::reorder(const order_type& to) const {
 }
 
 
-Spec* ORCA::spec(const std::string& name) {
-    return GridSpecByUID::instance().get(name).spec();
+Spec* ORCA::spec_from_uid(const uid_t& uid) {
+    return GridSpecByUID::instance().get(uid).spec();
 }
 
 

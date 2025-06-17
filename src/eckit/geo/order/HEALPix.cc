@@ -27,8 +27,9 @@ namespace eckit::geo::order {
 static OrderRegisterType<HEALPix> ORDERING("healpix");
 
 
-const Order::value_type HEALPix::ring   = "ring";
-const Order::value_type HEALPix::nested = "nested";
+const Order::value_type HEALPix::ring    = "ring";
+const Order::value_type HEALPix::nested  = "nested";
+const Order::value_type HEALPix::DEFAULT = ring;
 
 
 namespace {
@@ -100,22 +101,25 @@ inline int pll(int f) {
 }  // namespace
 
 
-HEALPix::HEALPix(const value_type& order, int Nside) :
+HEALPix::HEALPix(const value_type& order, size_t size) :
     order_(order),
-    Nside_(Nside),
-    Npix_(size()),
-    Ncap_((Nside * (Nside - 1)) << 1),
-    k_(is_power_of_2(Nside_) ? static_cast<int>(std::log2(Nside)) : -1) {
+    Nside_([](size_t size) {
+        auto Nside = static_cast<int>(std::round(std::sqrt(static_cast<double>(size) / 12.)));
+        return 0 < size && size == 12 * Nside * Nside
+                   ? Nside
+                   : throw exception::OrderError(
+                         "HEALPix: cannot satisfy 0 < size = 12 Nside Nside, with size=" + std::to_string(size),
+                         Here());
+    }(size)),
+    Npix_(static_cast<int>(size)),
+    Ncap_((Nside_ * (Nside_ - 1)) << 1),
+    k_(is_power_of_2(Nside_) ? static_cast<int>(std::log2(Nside_)) : -1) {
     static struct Register {
         Register() {
-            register_ordering(ring);
-            register_ordering(nested);
+            register_order(static_type(), HEALPix::ring);
+            register_order(static_type(), HEALPix::nested);
         }
     } const REGISTER;
-
-    if (Nside <= 0) {
-        throw exception::OrderError("HEALPix: Nside must be greater than zero", Here());
-    }
 
     if (order_ == ring) {
         return;
@@ -234,7 +238,7 @@ int HEALPix::nest_to_ring(int n) const {
 }
 
 
-const std::string& HEALPix::type() const {
+const std::string& HEALPix::static_type() {
     static const std::string type = "healpix";
     return type;
 }
@@ -257,7 +261,7 @@ Reordering HEALPix::reorder(const value_type& to) const {
     auto from_nested = order_ == nested;
 
     Reordering ren(size());
-    for (int i = 0; i < size(); ++i) {
+    for (int i = 0; i < Npix_; ++i) {
         ren[i] = from_nested ? nest_to_ring(i) : ring_to_nest(i);
     }
 

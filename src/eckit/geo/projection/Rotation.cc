@@ -153,13 +153,22 @@ Rotation* Rotation::make_from_spec(const Spec& spec) {
 
 
 void Rotation::fill_spec(spec::Custom& custom) const {
+    bool projection = false;
+
     if (!points_equal(SOUTH_POLE, south_pole_)) {
-        custom.set("rotation", std::vector<double>{south_pole_.lon, south_pole_.lat});
+        custom.set("south_pole_lon", south_pole_.lon);
+        custom.set("south_pole_lat", south_pole_.lat);
+        projection = true;
     }
+
     if (!types::is_approximately_equal(angle_, 0., PointLonLat::EPS)) {
         custom.set("rotation_angle", angle_);
+        projection = true;
     }
-    custom.set("projection", type());
+
+    if (projection) {
+        custom.set("type", type());
+    }
 }
 
 

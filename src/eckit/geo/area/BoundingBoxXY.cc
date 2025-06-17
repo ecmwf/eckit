@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/area/BoundingBox2.h"
+#include "eckit/geo/area/BoundingBoxXY.h"
 
 #include <memory>
 #include <vector>
@@ -23,60 +23,60 @@
 namespace eckit::geo::area {
 
 
-static const AreaRegisterType<BoundingBox2> AREATYPE("bounding_box_xy");
+static const AreaRegisterType<BoundingBoxXY> AREATYPE("bounding_box_xy");
 
 
-BoundingBox2::BoundingBox2(const Spec& spec) : BoundingBox2(*std::unique_ptr<BoundingBox2>(make_from_spec(spec))) {}
+BoundingBoxXY::BoundingBoxXY(const Spec& spec) : BoundingBoxXY(*std::unique_ptr<BoundingBoxXY>(make_from_spec(spec))) {}
 
 
-BoundingBox2::BoundingBox2(value_type min_x, value_type min_y, value_type max_x, value_type max_y) :
+BoundingBoxXY::BoundingBoxXY(value_type min_x, value_type min_y, value_type max_x, value_type max_y) :
     array{min_x, min_y, max_x, max_y} {
     ASSERT(min_x <= max_x);
     ASSERT(min_y <= max_y);
 }
 
 
-bool BoundingBox2::contains(const Point& p) const {
+bool BoundingBoxXY::contains(const Point& p) const {
     const auto& q = std::get<PointXY>(p);
     return types::is_approximately_equal(min_x, q.X) && types::is_approximately_equal(q.X, max_x) &&
            types::is_approximately_equal(min_y, q.Y) && types::is_approximately_equal(q.Y, max_y);
 }
 
 
-bool BoundingBox2::contains(const BoundingBox2& other) const {
+bool BoundingBoxXY::contains(const BoundingBoxXY& other) const {
     return contains(PointXY{other.min_x, other.min_y}) && contains(PointXY{other.max_x, other.max_y});
 }
 
 
-bool BoundingBox2::empty() const {
+bool BoundingBoxXY::empty() const {
     return types::is_approximately_equal(min_x, max_x) || types::is_approximately_equal(min_y, max_y);
 }
 
 
-const std::string& BoundingBox2::type() const {
+const std::string& BoundingBoxXY::type() const {
     static const std::string type{"bounding_box_xy"};
     return type;
 }
 
 
-void BoundingBox2::fill_spec(spec::Custom& custom) const {
+void BoundingBoxXY::fill_spec(spec::Custom& custom) const {
     custom.set("type", type());
     custom.set(type(), std::vector<double>{min_x, min_y, max_x, max_y});
 }
 
 
-BoundingBox2* BoundingBox2::make_from_spec(const Spec& spec) {
-    if (std::vector<BoundingBox2::value_type> area; spec.get("bounding_box_xy", area)) {
+BoundingBoxXY* BoundingBoxXY::make_from_spec(const Spec& spec) {
+    if (std::vector<BoundingBoxXY::value_type> area; spec.get("bounding_box_xy", area)) {
         ASSERT_MSG(area.size() == 4, "BoundingBox: 'bounding_box_xy' expected list of size 4");
-        return new BoundingBox2{area[0], area[1], area[2], area[3]};
+        return new BoundingBoxXY{area[0], area[1], area[2], area[3]};
     }
 
-    if (std::vector<BoundingBox2::value_type> area(4); spec.get("min_x", area[0]) && spec.get("min_y", area[1]) &&
-                                                       spec.get("max_x", area[2]) && spec.get("max_y", area[3])) {
-        return new BoundingBox2{area[0], area[1], area[2], area[3]};
+    if (std::vector<BoundingBoxXY::value_type> area(4); spec.get("min_x", area[0]) && spec.get("min_y", area[1]) &&
+                                                        spec.get("max_x", area[2]) && spec.get("max_y", area[3])) {
+        return new BoundingBoxXY{area[0], area[1], area[2], area[3]};
     }
 
-    throw exception::SpecError("BoundingBox2: cannot build, expecting bounding_box_xy: [min_x, min_y, max_x, max_y]",
+    throw exception::SpecError("BoundingBoxXY: cannot build, expecting bounding_box_xy: [min_x, min_y, max_x, max_y]",
                                Here());
 }
 

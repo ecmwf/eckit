@@ -186,7 +186,7 @@ endif()
 ### eckit::geo
 
 ecbuild_add_option( FEATURE ECKIT_GEO
-                    DEFAULT OFF
+                    DEFAULT ON
                     DESCRIPTION "eckit::geo geometry library" )
 
 ecbuild_add_option( FEATURE GEO_GRID_FESOM

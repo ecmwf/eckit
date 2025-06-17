@@ -44,6 +44,7 @@ public:
     // -- Class methods
 
     static const Order::value_type& order_default();
+    static Order::value_type order_from_arguments(bool i_pos, bool j_pos, bool ij, bool alt);
 
 private:
 

@@ -28,9 +28,19 @@ static OrderRegisterType<Scan> ORDERING("scan");
 const Order::value_type Scan::DEFAULT = "i+j-";
 
 
+Order::value_type Scan::order_from_arguments(bool i_pos, bool j_pos, bool ij, bool alt) {
+    return alt ? (ij ? std::string(i_pos ? "i+-" : "i-+") + (j_pos ? "j+" : "j-")
+                     : std::string(j_pos ? "j+-" : "j-+") + (i_pos ? "i+" : "i-"))
+               : (ij ? std::string(i_pos ? "i+" : "i-") + (j_pos ? "j+" : "j-")
+                     : std::string(j_pos ? "j+" : "j-") + (i_pos ? "i+" : "i-"));
+}
+
+
 Scan::Scan(const value_type& order) : order_(order) {
-    static const std::vector<Order::value_type> MODES{"i+j+",  "i+j-",  "i-j+",  "i-j-",
-                                                      "i+j+-", "i+j-+", "i-j+-", "i-j-+"};
+    static const std::vector<Order::value_type> MODES{"i+j+",  "i+j-",  "i-j+",  "i-j-",   //
+                                                      "i+-j+", "i+-j-", "i-+j+", "i-+j-",  //
+                                                      "j+i+",  "j+i-",  "j-i+",  "j-i-",   //
+                                                      "j+-i+", "j+-i-", "j-+i+", "j-+i-"};
 
     if (std::count(MODES.begin(), MODES.end(), order_) != 1) {
         throw exception::OrderError("Scan invalid order: '" + order_ + "'", Here());
@@ -38,7 +48,12 @@ Scan::Scan(const value_type& order) : order_(order) {
 }
 
 
-Scan::Scan(const Spec& spec) : Scan(spec.get_string("order", DEFAULT)) {}
+Scan::Scan(const Spec& spec) :
+    Scan(spec.get_string(
+        "order", order_from_arguments(spec.get_bool("scan-i-positively", !spec.get_bool("scan-i-negatively", false)),
+                                      spec.get_bool("scan-j-positively", !spec.get_bool("scan-j-negatively", true)),
+                                      spec.get_bool("scan-i-j", !spec.get_bool("scan-j-i", false)),
+                                      spec.get_bool("scan-alternative", false)))) {}
 
 
 bool Scan::is_scan_i_positively(const value_type& o) {
@@ -63,6 +78,10 @@ const std::string& Scan::static_type() {
 
 
 Reordering Scan::reorder(const value_type& to) const {
+    if (to == order_) {
+        return no_reorder();
+    }
+
     NOTIMP;
 }
 

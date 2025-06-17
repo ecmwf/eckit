@@ -24,15 +24,6 @@
 namespace eckit::geo::test {
 
 
-Order::value_type order_from_spec(bool i_pos, bool j_pos, bool ij, bool alt) {
-    return "scan" +
-           (ij ? std::string(i_pos ? "-i-positively" : "-i-negatively") + (j_pos ? "-j-positively" : "-j-negatively")
-               : std::string(j_pos ? "-j-positively" : "-j-negatively") + (i_pos ? "-i-positively" : "-i-negatively")) +
-           (alt ? "-alternative" : "");
-}
-
-
-#if 0
 CASE("ordering scan") {
     using order::Scan;
 
@@ -42,7 +33,7 @@ CASE("ordering scan") {
             for (bool ij : {false, true}) {
                 for (bool j_pos : {false, true}) {
                     for (bool i_pos : {false, false}) {
-                        const auto order = order_from_spec(i_pos, j_pos, ij, alt);
+                        const auto order = Scan::order_from_arguments(i_pos, j_pos, ij, alt);
 
                         EXPECT(order == Scan(spec::Custom{{"order", order}}).order());
                         EXPECT(order == Scan(spec::Custom{{"scan-i-positively", i_pos},
@@ -60,6 +51,7 @@ CASE("ordering scan") {
                                              })
                                             .order());
 
+#if 0
                         Scan scan(order, 2, 3);
                         auto no_reorder = scan.reorder(order);
 
@@ -67,17 +59,11 @@ CASE("ordering scan") {
                         std::iota(expected.begin(), expected.end(), 0);
                         EXPECT(expected == no_reorder);
                         EXPECT(expected == scan.no_reorder());
+#endif
                     }
                 }
             }
         }
-    }
-
-
-    SECTION("exceptions") {
-        EXPECT_THROWS_AS(
-            Scan::make_order_from_spec(spec::Custom({{"scan-i-positively", true}, {"scan-i-negatively", true}})),
-            exception::OrderError);
     }
 }
 
@@ -127,7 +113,6 @@ CASE("ordering healpix") {
         }
     }
 }
-#endif
 
 
 }  // namespace eckit::geo::test

@@ -31,13 +31,13 @@ constexpr double EPS = 1e-6;
 
 CASE("rotation (1)") {
     spec::Custom spec({
-        {"projection", "rotation"},
+        {"type", "rotation"},
         {"south_pole_lat", -91.},
         {"south_pole_lon", -361.},
     });
 
     Point p = PointLonLat{1, 1};
-    P projection(ProjectionFactoryType::instance().get(spec.get_string("projection")).create(spec));
+    P projection(ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec));
 
     EXPECT(points_equal(p, projection->inv(projection->fwd(p))));
     EXPECT(points_equal(p, projection->fwd(projection->inv(p))));
@@ -228,14 +228,14 @@ CASE("rotation (4)") {
 
 CASE("rotation (5)") {
     spec::Custom spec({
-        {"projection", "rotation"},
+        {"type", "rotation"},
         {"south_pole_lat", -90.},
         {"south_pole_lon", 0.},
         {"rotation_angle", 45.},
     });
 
     // compose sequentially
-    const auto& builder = ProjectionFactoryType::instance().get("rotation");
+    const auto& builder = ProjectionFactoryType::instance().get(spec.get_string("type"));
     P composition1(new projection::Composer{
         builder.create(spec),
         builder.create(spec),
@@ -287,7 +287,7 @@ CASE("rotation (5)") {
 
 CASE("rotation (6)") {
     projection::Rotation rotation(spec::Custom({
-        {"projection", "rotation"},
+        {"type", "rotation"},
         {"south_pole_lat", 10.},
         {"south_pole_lon", 20.},
     }));

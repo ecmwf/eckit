@@ -253,7 +253,7 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 
 
 void PROJ::fill_spec(spec::Custom& custom) const {
-    custom.set("projection", "proj");
+    custom.set("type", "proj");
     if (source_ != DEFAULT) {
         custom.set("source", source_);
     }

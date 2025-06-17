@@ -75,7 +75,7 @@ const std::string& LonLatToXYZ::type() const {
 void LonLatToXYZ::fill_spec(spec::Custom& custom) const {
     Projection::fill_spec(custom);
 
-    custom.set("projection", "ll_to_xyz");
+    custom.set("type", "ll_to_xyz");
 }
 
 

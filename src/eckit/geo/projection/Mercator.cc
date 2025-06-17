@@ -114,7 +114,7 @@ const std::string& Mercator::type() const {
 void Mercator::fill_spec(spec::Custom& custom) const {
     Projection::fill_spec(custom);
 
-    custom.set("projection", "mercator");
+    custom.set("type", "mercator");
     if (!types::is_approximately_equal(centre_.lat, 0.)) {
         custom.set("lat_ts", centre_.lat);
     }

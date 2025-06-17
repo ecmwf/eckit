@@ -75,7 +75,7 @@ const std::string& PolarStereographic::type() const {
 void PolarStereographic::fill_spec(spec::Custom& custom) const {
     Projection::fill_spec(custom);
 
-    custom.set("projection", "stere");
+    custom.set("type", "stere");
     custom.set("lon_0", centre_.lon);
     custom.set("lat_0", centre_.lat);
     custom.set("lon_first", first_.lon);

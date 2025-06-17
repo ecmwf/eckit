@@ -29,7 +29,7 @@ const std::string& XYToLonLat::type() const {
 
 
 void XYToLonLat::fill_spec(spec::Custom& custom) const {
-    custom.set("projection", "xy_to_ll");
+    custom.set("type", "xy_to_ll");
 }
 
 

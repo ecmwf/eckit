@@ -49,7 +49,7 @@ private:
 
     void fill_spec(spec::Custom& custom) const override {
         P::fill_spec(custom);
-        custom.set("projection", "reverse_" + custom.get_string("projection"));
+        custom.set("type", "reverse_" + custom.get_string("type"));
     }
 };
 

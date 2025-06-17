@@ -399,7 +399,12 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, 
     projection::Composer projection{new projection::Reverse<projection::Rotation>(rotation.spec()),
                                     new projection::Reverse<projection::XYToLonLat>};
 
-    return make_from_projection(PointXY{min.lon, min.lat}, PointXY{max.lon, max.lat}, projection);
+    auto after = make_from_projection(PointXY{min.lon, min.lat}, PointXY{max.lon, max.lat}, projection);
+    if (after->periodic()) {
+        return std::make_unique<BoundingBox>(after->north, 0, after->south, PointLonLat::FULL_ANGLE);
+    }
+
+    return after;
 }
 
 

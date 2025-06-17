@@ -285,7 +285,7 @@ CASE("rotation (5)") {
 }
 
 
-CASE("rotation (6)") {
+CASE("make_from_projection (1)") {
     projection::Rotation rotation(spec::Custom({
         {"type", "rotation"},
         {"south_pole_lat", 10.},
@@ -307,7 +307,7 @@ CASE("rotation (6)") {
         EXPECT(points_equal(rotation.fwd(test.p), test.q, EPS));
     }
 
-    EXPECT_THROWS_AS(auto* dummy = area::BoundingBox::make_from_projection(PointXY{0., 0.}, PointXY{2., 1.}, rotation),
+    EXPECT_THROWS_AS(auto dummy = area::BoundingBox::make_from_projection(PointXY{0., 0.}, PointXY{2., 1.}, rotation),
                      std::bad_variant_access);
 
     std::unique_ptr<area::BoundingBox> bbox(
@@ -315,6 +315,18 @@ CASE("rotation (6)") {
 
     EXPECT(points_equal(PointLonLat{bbox->west, bbox->north}, {-171.37056, 80.000001}, EPS));
     EXPECT(points_equal(PointLonLat{bbox->east, bbox->south}, {-160., 78.821318}, EPS));
+}
+
+
+CASE("make_from_projection (2)") {
+    projection::Rotation rotation({22, -40});
+    PointLonLat min(-27, 33);
+    PointLonLat max(45, 73);
+
+    auto after = area::BoundingBox::make_from_projection(min, max, rotation);
+
+    EXPECT(points_equal(PointLonLat{0, after->north}, NORTH_POLE));
+    EXPECT(after->periodic());
 }
 
 

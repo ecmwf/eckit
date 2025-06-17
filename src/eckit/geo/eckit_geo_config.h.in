@@ -23,8 +23,12 @@ constexpr bool _to_bool(int x) {
 constexpr bool eckit_HAVE_ECKIT_CODEC     = _to_bool(@eckit_HAVE_ECKIT_CODEC@);
 #cmakedefine01 eckit_HAVE_PROJ
 
-constexpr bool eckit_HAVE_GEO_BITREPRODUCIBLE         = _to_bool(@eckit_HAVE_GEO_BITREPRODUCIBLE@);
+#cmakedefine01 eckit_HAVE_GEO_GRID_FESOM
+#cmakedefine01 eckit_HAVE_GEO_GRID_ICON
+#cmakedefine01 eckit_HAVE_GEO_GRID_ORCA
+
 constexpr bool eckit_HAVE_GEO_CACHING                 = _to_bool(@eckit_HAVE_GEO_CACHING@);
+constexpr bool eckit_HAVE_GEO_BITREPRODUCIBLE         = _to_bool(@eckit_HAVE_GEO_BITREPRODUCIBLE@);
 constexpr bool eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT = _to_bool(@eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT@);
 
 constexpr const char* eckit_GEO_CACHE_PATH       = "@eckit_GEO_CACHE_PATH@";

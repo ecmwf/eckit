@@ -38,7 +38,7 @@ Range* make_y_range(size_t N, area::BoundingBox* bbox) {
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec),
+    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec).release(),
                     projection::Rotation::make_from_spec(spec)) {}
 
 

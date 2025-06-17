@@ -34,7 +34,7 @@ Range* make_y_range(const pl_type& pl, area::BoundingBox* bbox) {
 
 
 ReducedLL::ReducedLL(const Spec& spec) :
-    ReducedLL(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec)) {}
+    ReducedLL(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec).release()) {}
 
 
 ReducedLL::ReducedLL(const pl_type& pl, area::BoundingBox* bbox) : Reduced(bbox), pl_(pl), y_(make_y_range(pl, bbox)) {

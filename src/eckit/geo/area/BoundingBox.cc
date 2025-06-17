@@ -202,8 +202,8 @@ private:
 };
 
 
-[[nodiscard]] BoundingBox* make_bounding_box(PointXY min, PointXY max, const Projection& projection,
-                                             double precision_ll, double precision_xy) {
+[[nodiscard]] std::unique_ptr<BoundingBox> make_bounding_box(PointXY min, PointXY max, const Projection& projection,
+                                                             double precision_ll, double precision_xy) {
     using types::is_strictly_greater;
 
 
@@ -324,7 +324,7 @@ private:
 
 
     // 4. return bounding box
-    return new BoundingBox{bounds};
+    return std::make_unique<BoundingBox>(bounds);
 }
 
 
@@ -340,14 +340,15 @@ static inline bool is_approximately_equal(BoundingBox::value_type a, BoundingBox
 }
 
 
-BoundingBox* BoundingBox::make_global_prime() {
-    return new BoundingBox{PointLonLat::RIGHT_ANGLE, 0., -PointLonLat::RIGHT_ANGLE, PointLonLat::FULL_ANGLE};
+std::unique_ptr<BoundingBox> BoundingBox::make_global_prime() {
+    return std::make_unique<BoundingBox>(PointLonLat::RIGHT_ANGLE, 0., -PointLonLat::RIGHT_ANGLE,
+                                         PointLonLat::FULL_ANGLE);
 }
 
 
-BoundingBox* BoundingBox::make_global_antiprime() {
-    return new BoundingBox{PointLonLat::RIGHT_ANGLE, -PointLonLat::FLAT_ANGLE, -PointLonLat::RIGHT_ANGLE,
-                           PointLonLat::FLAT_ANGLE};
+std::unique_ptr<BoundingBox> BoundingBox::make_global_antiprime() {
+    return std::make_unique<BoundingBox>(PointLonLat::RIGHT_ANGLE, -PointLonLat::FLAT_ANGLE, -PointLonLat::RIGHT_ANGLE,
+                                         PointLonLat::FLAT_ANGLE);
 }
 
 
@@ -362,7 +363,7 @@ void BoundingBox::fill_spec(spec::Custom& custom) const {
 }
 
 
-BoundingBox* BoundingBox::make_from_spec(const Spec& spec) {
+std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
     auto [n, w, s, e] = BOUNDING_BOX_DEFAULT.deconstruct();
 
     if (std::vector<double> area{n, w, s, e}; spec.get("area", area) || spec.get("bounding_box", area)) {
@@ -385,7 +386,7 @@ BoundingBox* BoundingBox::make_from_spec(const Spec& spec) {
 }
 
 
-BoundingBox* BoundingBox::make_from_projection(PointXY min, PointXY max, const Projection& projection) {
+std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointXY min, PointXY max, const Projection& projection) {
     constexpr double precision_ll = 0.5e-6;  // to microdegrees
     constexpr double precision_xy = 0.5e-1;  // to decimeters
 
@@ -393,14 +394,16 @@ BoundingBox* BoundingBox::make_from_projection(PointXY min, PointXY max, const P
 }
 
 
-BoundingBox* BoundingBox::make_from_projection(PointLonLat min, PointLonLat max, const projection::Rotation& rotation) {
-    return make_from_projection(PointXY{min.lon, min.lat}, PointXY{max.lon, max.lat},
-                                projection::Composer{new projection::Reverse<projection::Rotation>(rotation.spec()),
-                                                     new projection::Reverse<projection::XYToLonLat>});
+std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, PointLonLat max,
+                                                               const projection::Rotation& rotation) {
+    projection::Composer projection{new projection::Reverse<projection::Rotation>(rotation.spec()),
+                                    new projection::Reverse<projection::XYToLonLat>};
+
+    return make_from_projection(PointXY{min.lon, min.lat}, PointXY{max.lon, max.lat}, projection);
 }
 
 
-BoundingBox* BoundingBox::make_from_area(value_type n, value_type w, value_type s, value_type e) {
+std::unique_ptr<BoundingBox> BoundingBox::make_from_area(value_type n, value_type w, value_type s, value_type e) {
     // set latitudes inside usual range (not a normalisation like PointLonLat::make)
     if (n > NORTH_POLE.lat || is_approximately_equal(n, NORTH_POLE.lat)) {
         n = NORTH_POLE.lat;
@@ -421,7 +424,7 @@ BoundingBox* BoundingBox::make_from_area(value_type n, value_type w, value_type 
     auto a = PointLonLat::normalise_angle_to_minimum(e, w);
     e      = same ? w : is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
 
-    return new BoundingBox{n, w, s, e};
+    return std::make_unique<BoundingBox>(n, w, s, e);
 }
 
 

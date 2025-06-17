@@ -46,7 +46,7 @@ Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
 Grid::Grid(area::BoundingBox* bbox, const Projection* projection) :
-    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime() : bbox), projection_(projection) {}
+    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime().release() : bbox), projection_(projection) {}
 
 
 const Spec& Grid::spec() const {

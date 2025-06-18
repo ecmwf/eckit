@@ -216,7 +216,7 @@ configure_file(eckit_geo_config.h.in eckit_geo_config.h @ONLY)
 list(APPEND eckit_geo_srcs ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h)
 install(
     FILES ${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_config.h
-    DESTINATION ${INSTALL_INCLUDE_DIR}/eckit
+    DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo
 )
 
 ecbuild_add_library(

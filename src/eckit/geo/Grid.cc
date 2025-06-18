@@ -13,6 +13,7 @@
 #include "eckit/geo/Grid.h"
 
 #include <algorithm>
+#include <cctype>
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
@@ -29,6 +30,11 @@ namespace eckit::geo {
 
 
 namespace {
+
+
+// 128-bit hash = 32 hex characters * 4 bits per character
+constexpr size_t DIGEST_LENGTH = 32;
+static_assert(DIGEST_LENGTH == MD5_DIGEST_LENGTH * 2, "MD5 digest length mismatch");
 
 
 util::recursive_mutex MUTEX;
@@ -69,6 +75,12 @@ const Spec& Grid::spec() const {
 
 size_t Grid::size() const {
     NOTIMP;
+}
+
+
+bool Grid::is_uid(const std::string& str) {
+    return str.length() == DIGEST_LENGTH &&
+           std::all_of(str.begin(), str.end(), [](char c) { return std::isxdigit(static_cast<unsigned char>(c)); });
 }
 
 
@@ -272,7 +284,7 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
         cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
     }
 
-    if (std::string uid; cfg->get("uid", uid)) {
+    if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
         cfg->push_front(GridSpecByUID::instance().get(uid).spec());
     }
 

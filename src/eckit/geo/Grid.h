@@ -152,6 +152,8 @@ public:
     uid_t uid() const;
     [[nodiscard]] virtual uid_t calculate_uid() const;
 
+    static bool is_uid(const std::string& uid);
+
     virtual bool includesNorthPole() const;
     virtual bool includesSouthPole() const;
     virtual bool isPeriodicWestEast() const;

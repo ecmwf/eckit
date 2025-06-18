@@ -85,14 +85,33 @@ bool Grid::is_uid(const std::string& str) {
 
 
 Grid::uid_t Grid::uid() const {
-    return uid_.empty() ? (uid_ = calculate_uid()) : uid_;
+    if (uid_.empty()) {
+        const_cast<Grid*>(this)->reset_uid(calculate_uid());
+    }
+
+    return uid_;
 }
 
 
 Grid::uid_t Grid::calculate_uid() const {
     auto id = MD5{spec_str()}.digest();
-    ASSERT(id.length() == MD5_DIGEST_LENGTH * 2);
+    std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
+
+    ASSERT(is_uid(id));
     return id;
+}
+
+
+void Grid::reset_uid(uid_t id) {
+    if (id.empty()) {
+        uid_.clear();
+        return;
+    }
+
+    ASSERT(is_uid(id));
+    std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
+
+    uid_ = id;
 }
 
 
@@ -193,12 +212,6 @@ const area::BoundingBox& Grid::boundingBox() const {
 
 area::BoundingBox* Grid::calculate_bbox() const {
     NOTIMP;
-}
-
-
-void Grid::reset_uid(uid_t _uid) {
-    ASSERT(_uid.empty() || _uid.length() == 32);
-    uid_ = _uid;
 }
 
 

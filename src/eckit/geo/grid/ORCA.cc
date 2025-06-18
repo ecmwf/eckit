@@ -109,7 +109,7 @@ Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     util::hash_vector_double(hash, longitudes_);
 
     auto d = hash.digest();
-    ASSERT(d.length() == 32);
+    ASSERT(Grid::is_uid(d));
 
     return {d};
 }
@@ -158,7 +158,7 @@ void ORCA::ORCARecord::read(const PathName& p) {
 void ORCA::ORCARecord::check(const Spec& spec) const {
     if (spec.get_bool("orca_uid_check", false)) {
         auto uid = spec.get_string("orca_uid");
-        ASSERT(uid.length() == 32);
+        ASSERT(Grid::is_uid(uid));
         ASSERT(uid == calculate_uid(arrangement_from_string(spec.get_string("orca_arrangement"))));
     }
 

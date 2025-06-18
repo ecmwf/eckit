@@ -13,8 +13,8 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -23,13 +23,19 @@ class Buffer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Compressor : private eckit::NonCopyable {
+class Compressor {
 
 public:  // methods
 
-    Compressor();
+    Compressor() = default;
 
-    virtual ~Compressor();
+    Compressor(const Compressor&) = delete;
+    Compressor(Compressor&&)      = delete;
+
+    void operator=(const Compressor&) = delete;
+    void operator=(Compressor&&)      = delete;
+
+    virtual ~Compressor() = default;
 
     /// Compresses the bytestream within the in buffer
     /// @param in input buffer that holds the uncompressed bytesteam.
@@ -62,8 +68,6 @@ public:  // types
 
     NoCompressor();
 
-    ~NoCompressor() override = default;
-
     size_t compress(const void* in, size_t len, eckit::Buffer& out) const override;
     void uncompress(const void* in, size_t len, eckit::Buffer& out, size_t outlen) const override;
 };
@@ -75,8 +79,16 @@ class CompressorBuilderBase {
 
 public:
 
-    CompressorBuilderBase(const std::string&);
+    explicit CompressorBuilderBase(const std::string&);
+
+    CompressorBuilderBase(const CompressorBuilderBase&) = delete;
+    CompressorBuilderBase(CompressorBuilderBase&&)      = delete;
+
+    void operator=(const CompressorBuilderBase&) = delete;
+    void operator=(CompressorBuilderBase&&)      = delete;
+
     virtual ~CompressorBuilderBase();
+
     virtual Compressor* make() = 0;
 };
 
@@ -86,8 +98,7 @@ class CompressorBuilder : public CompressorBuilderBase {
 
 public:
 
-    CompressorBuilder(const std::string& name) : CompressorBuilderBase(name) {}
-    ~CompressorBuilder() override = default;
+    explicit CompressorBuilder(const std::string& name) : CompressorBuilderBase(name) {}
 };
 
 class CompressorFactory {
@@ -99,6 +110,8 @@ public:
     void remove(const std::string& name);
 
     bool has(const std::string& name);
+    std::vector<std::string> keys() const;
+
     void list(std::ostream&);
 
     /// @returns default compressor
@@ -115,7 +128,7 @@ private:
     CompressorFactory();
 
     std::map<std::string, CompressorBuilderBase*> builders_;
-    eckit::Mutex mutex_;
+    mutable eckit::Mutex mutex_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

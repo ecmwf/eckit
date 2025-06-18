@@ -56,21 +56,14 @@ ecbuild_add_test(
     TARGET            eckit_test_geo_area_library
     SOURCES           area_library.cc
     LIBS              eckit_geo
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
 if(eckit_HAVE_GEO_GRID_ORCA)
-    set(URL "https://get.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_T.atlas")
-    set(FILE "${TEST_ECKIT_GEO_CACHE_PATH}/eckit/geo/grid/orca/d5bde4f52ff3a9bea5629cd9ac514410.atlas")
-    set(MD5 "f279b48c171409f46bfd27dff98d454a")
+    set(FILE "${TEST_ECKIT_GEO_CACHE_PATH}/grid/orca/d5bde4f52ff3a9bea5629cd9ac514410-313218f18f94c235fd8ef2d6cc6ad6fe.ek")
 
-    file(DOWNLOAD ${URL} ${FILE} EXPECTED_MD5 ${MD5} TIMEOUT 30 STATUS DOWNLOAD_STATUS)
-
-    list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
-    if(${STATUS_CODE} EQUAL 0)
-        message(STATUS "File downloaded: '${FILE}'")
-    else()
-        list(GET DOWNLOAD_STATUS 1 STATUS_MESSAGE)
-        message(FATAL_ERROR "File download failed: ${STATUS_MESSAGE}, file: '${FILE}'")
+    configure_file("ORCA2_T.atlas" "${FILE}" COPYONLY)
+    if(NOT EXISTS "${FILE}")
+        message(FATAL_ERROR "Required file not found: '"${FILE}"'")
     endif()
 
     ecbuild_add_test(

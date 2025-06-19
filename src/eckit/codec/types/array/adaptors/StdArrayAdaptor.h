@@ -21,7 +21,7 @@
 #include "eckit/codec/types/array/ArrayMetadata.h"
 #include "eckit/codec/types/array/ArrayReference.h"
 
-namespace std {
+namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -54,4 +54,4 @@ void decode(const eckit::codec::Metadata& m, const eckit::codec::Data& encoded, 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-}  // end namespace std
+}  // namespace eckit::codec

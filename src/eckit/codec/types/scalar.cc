@@ -24,6 +24,7 @@
 
 #include <cstdint>
 #include <string>
+#include <type_traits>
 
 #include "eckit/codec/Data.h"
 #include "eckit/codec/Metadata.h"
@@ -37,11 +38,20 @@ namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-template <typename T>
+template <typename T, std::enable_if_t<!std::is_same_v<T, std::byte>, int> = 0>
 void decode_scalar(const Metadata& metadata, T& value) {
     ASSERT(metadata.getString("type") == "scalar");
     ASSERT(metadata.getString("datatype") == DataType::str<T>());
     metadata.get("value", value);
+}
+
+void decode_scalar(const Metadata& metadata, std::byte& value) {
+    ASSERT(metadata.getString("type") == "scalar");
+    ASSERT(metadata.getString("datatype") == DataType::str<std::byte>());
+
+    size_t tmp;
+    metadata.get("value", tmp);
+    value = static_cast<std::byte>(tmp);
 }
 
 template <typename T>
@@ -65,6 +75,12 @@ void encode_scalar_metadata(const T& value, Metadata& out) {
     out.set("type", "scalar");
     out.set("datatype", DataType::str<T>());
     out.set("value", value);
+}
+
+inline void encode_scalar_metadata(const std::byte& value, Metadata& out) {
+    out.set("type", "scalar");
+    out.set("datatype", DataType::str<std::byte>());
+    out.set("value", static_cast<size_t>(value));
 }
 
 inline void encode_scalar_metadata(const unsigned long& value, Metadata& out) {
@@ -91,6 +107,10 @@ size_t encode_scalar_metadata_b64(const T& value, Metadata& out) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+
+size_t encode_metadata(const std::byte& value, Metadata& out) {
+    return encode_scalar_metadata_b64(value, out);
+}
 
 size_t encode_metadata(const int& value, Metadata& out) {
     return encode_scalar_metadata_b64(value, out);
@@ -122,6 +142,7 @@ size_t encode_metadata(const double& value, Metadata& out) {
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void encode_data(const std::byte&, Data&) {}
 void encode_data(const int&, Data&) {}
 void encode_data(const long&, Data&) {}
 void encode_data(const long long&, Data&) {}
@@ -132,6 +153,9 @@ void encode_data(const double&, Data&) {}
 
 //---------------------------------------------------------------------------------------------------------------------
 
+void decode(const Metadata& metadata, const Data&, std::byte& value) {
+    decode_scalar(metadata, value);
+}
 void decode(const Metadata& metadata, const Data&, int& value) {
     decode_scalar(metadata, value);
 }

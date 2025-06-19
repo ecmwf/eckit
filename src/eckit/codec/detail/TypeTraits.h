@@ -14,7 +14,9 @@
 
 #include <type_traits>
 
-#include "eckit/codec/detail/DataType.h"
+#include "eckit/codec/detail/DataType.h"  // enforce visibility
+#include "eckit/codec/types/scalar.h"     // ...
+#include "eckit/codec/types/string.h"     // ...
 
 namespace eckit::codec {
 

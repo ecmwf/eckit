@@ -70,6 +70,12 @@ struct ByteSwap<2> {
     static void bitswap(uint16_t& i) { i = eckit::bitswap16(i); }
 };
 
+template <>
+struct ByteSwap<1> {
+    using inter_t = uint8_t;
+    static void bitswap(uint8_t&) {}  // no-op
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Scalar bitswap template function uses ByteSwap to select based on type T size

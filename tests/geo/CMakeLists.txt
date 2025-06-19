@@ -61,7 +61,7 @@ ecbuild_add_test(
 if(eckit_HAVE_GEO_GRID_ORCA)
     set(FILE "${TEST_ECKIT_GEO_CACHE_PATH}/grid/orca/d5bde4f52ff3a9bea5629cd9ac514410-313218f18f94c235fd8ef2d6cc6ad6fe.ek")
 
-    configure_file("ORCA2_T.atlas" "${FILE}" COPYONLY)
+    configure_file("ORCA2_T.ek" "${FILE}" COPYONLY)
     if(NOT EXISTS "${FILE}")
         message(FATAL_ERROR "Required file not found: '"${FILE}"'")
     endif()

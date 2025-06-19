@@ -12,11 +12,26 @@ ecbuild_add_executable( TARGET      eckit_info
                         SOURCES     eckit-info.cc
                         LIBS        eckit_option eckit )
 
+# eckit::codec
+
+add_library( eckit_codec_tool OBJECT EckitCodecTool.cc EckitCodecTool.h )
+target_include_directories( eckit_codec_tool PRIVATE
+    $<TARGET_PROPERTY:eckit_codec,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:eckit_option,INTERFACE_INCLUDE_DIRECTORIES> )
+
+ecbuild_add_executable( TARGET      eckit_codec_compress
+                        OUTPUT_NAME eckit-codec-compress
+                        CONDITION   eckit_HAVE_ECKIT_CODEC
+                        SOURCES     $<TARGET_OBJECTS:eckit_codec_tool> eckit-codec-compress.cc
+                        LIBS        eckit_codec eckit_option )
+
 ecbuild_add_executable( TARGET      eckit_codec_list
                         OUTPUT_NAME eckit-codec-list
                         CONDITION   eckit_HAVE_ECKIT_CODEC
-                        SOURCES     eckit-codec-list.cc
+                        SOURCES     $<TARGET_OBJECTS:eckit_codec_tool> eckit-codec-list.cc
                         LIBS        eckit_codec eckit_option )
+
+# eckit::geo
 
 foreach( _name
         eckit-area-list

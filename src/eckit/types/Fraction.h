@@ -45,8 +45,8 @@ public:
 
     explicit Fraction(unsigned int n) : top_(n), bottom_(1) {}
     explicit Fraction(unsigned short n) : top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long n) : top_(static_cast<value_type>(n)), bottom_(1) {}
-    explicit Fraction(unsigned long long n) : top_(static_cast<value_type>(n)), bottom_(1) {}
+    explicit Fraction(unsigned long n);
+    explicit Fraction(unsigned long long n);
 
     explicit Fraction(const std::string&);
     explicit Fraction(const char*);

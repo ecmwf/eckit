@@ -32,22 +32,32 @@ namespace eckit::maths {
 namespace {
 
 
-const std::map<std::string, int> CODE_TO_EXCEPT{{"FE_INVALID", FE_INVALID},     {"FE_INEXACT", FE_INEXACT},
-                                                {"FE_DIVBYZERO", FE_DIVBYZERO}, {"FE_OVERFLOW", FE_OVERFLOW},
-                                                {"FE_UNDERFLOW", FE_UNDERFLOW}, {"FE_ALL_EXCEPT", FE_ALL_EXCEPT}};
+int make_excepts(const std::string& codes) {
+    static const std::map<std::string, int> CODE_TO_EXCEPT{
+        {"FE_INVALID", FE_INVALID},   {"FE_INEXACT", FE_INEXACT},     {"FE_DIVBYZERO", FE_DIVBYZERO},
+        {"FE_OVERFLOW", FE_OVERFLOW}, {"FE_UNDERFLOW", FE_UNDERFLOW}, {"FE_ALL_EXCEPT", FE_ALL_EXCEPT}};
 
+    int excepts = 0;
+    for (const auto& code : translate<std::vector<std::string>>(codes)) {
+        if (auto se = CODE_TO_EXCEPT.find(code); se != CODE_TO_EXCEPT.end()) {
+            excepts |= se->second & FE_ALL_EXCEPT;
+            continue;
+        }
 
-std::string invalid_code(const std::string& code) {
-    std::vector<std::string> codes;
-    for (const auto& [c, e] : CODE_TO_EXCEPT) {
-        codes.push_back(c);
+        std::vector<std::string> valid_codes;
+        for (const auto& [c, e] : CODE_TO_EXCEPT) {
+            valid_codes.push_back(c);
+        }
+
+        throw UserError("'" + code + "' is not valid (" + translate<std::string>(valid_codes) + ")", Here());
     }
 
-    return "'" + code + "' is not valid (" + translate<std::string>(codes) + ")";
+    return excepts;
 }
 
 
 [[noreturn]] void custom_signal_handler(int signum, ::siginfo_t* si, [[maybe_unused]] void* ucontext);
+
 
 using signal_handler_t = void (*)(int);
 using custom_signal_handler_t = decltype(custom_signal_handler);
@@ -268,34 +278,14 @@ void disable_floating_point_exception(int excepts) {
 
 
 void FloatingPointExceptions::enable_floating_point_exceptions(const std::string& codes) {
-    int excepts = 0;
-    for (auto& code : translate<std::vector<std::string>>(codes)) {
-        if (auto se = CODE_TO_EXCEPT.find(code); se != CODE_TO_EXCEPT.end()) {
-            excepts |= se->second & FE_ALL_EXCEPT;
-            continue;
-        }
-
-        throw UserError(invalid_code(code), Here());
-    }
-
-    if (excepts != 0) {
+    if (auto excepts = make_excepts(codes); excepts != 0) {
         enable_floating_point_exception(excepts);
     }
 }
 
 
 void FloatingPointExceptions::disable_floating_point_exceptions(const std::string& codes) {
-    int excepts = 0;
-    for (auto& code : translate<std::vector<std::string>>(codes)) {
-        if (auto se = CODE_TO_EXCEPT.find(code); se != CODE_TO_EXCEPT.end()) {
-            excepts |= se->second & FE_ALL_EXCEPT;
-            continue;
-        }
-
-        throw UserError(invalid_code(code), Here());
-    }
-
-    if (excepts != 0) {
+    if (auto excepts = make_excepts(codes); excepts != 0) {
         disable_floating_point_exception(excepts);
     }
 }

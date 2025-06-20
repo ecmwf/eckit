@@ -10,25 +10,23 @@
 
 #include <string>
 
+
 namespace eckit::maths {
 
-// ------------------------------------------------------------------------------------
 
 class FloatingPointExceptions {
 public:
 
-    /// Enable floating point exceptions
     static void enable_floating_point_exceptions(const std::string& = "FE_DIVBYZERO, FE_INVALID, FE_OVERFLOW");
+    static void disable_floating_point_exceptions(const std::string& = "FE_ALL_EXCEPT");
 
-    /// Disable floating point exceptions
-    static void disable_floating_point_exceptions(const std::string& = "");
-
-    /// Enable atlas signal handler for SIGFPE, SIGILL
-    static void enable_signal_handler();
-
-    [[noreturn]] static void custom_signal_handler(int signum, ::siginfo_t* si, void* unused);
+    static void test_invalid();
+    static void test_inexact();
+    static void test_divbyzero();
+    static void test_overflow();
+    static void test_underflow();
+    static void test_denormal();
 };
 
-// ------------------------------------------------------------------------------------
 
 }  // namespace eckit::maths

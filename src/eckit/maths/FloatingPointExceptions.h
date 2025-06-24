@@ -8,6 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+
+#pragma once
+
 #include <string>
 
 

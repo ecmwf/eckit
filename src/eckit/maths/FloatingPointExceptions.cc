@@ -15,6 +15,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <map>
+#include <vector>
 
 #include <unistd.h>
 
@@ -22,6 +23,8 @@
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Translator.h"
+
+#pragma STDC FENV_ACCESS ON
 
 
 namespace eckit::maths {
@@ -35,12 +38,18 @@ namespace {
 
 static const std::map<std::string, int> CODE_TO_EXCEPT{
     {"FE_INVALID", FE_INVALID},   {"FE_INEXACT", FE_INEXACT},     {"FE_DIVBYZERO", FE_DIVBYZERO},
-    {"FE_OVERFLOW", FE_OVERFLOW}, {"FE_UNDERFLOW", FE_UNDERFLOW}, {"FE_ALL_EXCEPT", FE_ALL_EXCEPT}};
+    {"FE_OVERFLOW", FE_OVERFLOW}, {"FE_UNDERFLOW", FE_UNDERFLOW},
+};
 
 
 int make_excepts(const std::string& codes) {
     int excepts = 0;
     for (const auto& code : translate<std::vector<std::string>>(codes)) {
+        if (code == "FE_ALL_EXCEPT") {
+            excepts |= FE_ALL_EXCEPT;
+            break;
+        }
+
         if (auto se = CODE_TO_EXCEPT.find(code); se != CODE_TO_EXCEPT.end()) {
             excepts |= se->second & FE_ALL_EXCEPT;
             continue;
@@ -51,9 +60,9 @@ int make_excepts(const std::string& codes) {
             valid_codes.push_back(c);
         }
 
-        throw UserError(
-            "FloatingPointExceptions: '" + code + "' is not valid (" + translate<std::string>(valid_codes) + ")",
-            Here());
+        throw UserError("FloatingPointExceptions: '" + code + "' is not valid (" + translate<std::string>(valid_codes) +
+                            ",FE_ALL_EXCEPT)",
+                        Here());
     }
 
     return excepts;
@@ -87,7 +96,7 @@ struct : private std::map<int, struct sigaction> {
     }
 
     void restore_all() {
-        for (auto& [signum, sa] : *this) {
+        for (const auto& [signum, sa] : *this) {
             std::signal(signum, SIG_DFL);
         }
     }
@@ -99,9 +108,9 @@ int CUSTOM_EXCEPTS = 0;
 
 void enable_floating_point_exception(int excepts) {
 #if eckit_HAVE_FEENABLEEXCEPT
-    ::feenableexcept(excepts);
+    std::feenableexcept(excepts);
 #elif defined(__APPLE__)
-    static fenv_t fenv;
+    fenv_t fenv;
 
     if (std::fegetenv(&fenv) != 0) {
         return;
@@ -121,9 +130,9 @@ void enable_floating_point_exception(int excepts) {
 
 void disable_floating_point_exception(int excepts) {
 #if eckit_HAVE_FEDISABLEEXCEPT
-    ::fedisableexcept(excepts);
+    std::fedisableexcept(excepts);
 #elif defined(__APPLE__)
-    static fenv_t fenv;
+    fenv_t fenv;
 
     if (std::fegetenv(&fenv) != 0) {
         return;
@@ -143,7 +152,7 @@ void disable_floating_point_exception(int excepts) {
 }
 
 
-[[noreturn]] void custom_signal_handler(int signum, siginfo_t* si, [[maybe_unused]] void* ucontext) {
+[[noreturn]] void custom_signal_handler(int signum, ::siginfo_t* si, [[maybe_unused]] void* ucontext) {
 #define STR(x) #x
 #define LOG(x) ::write(2 /*stderr*/, x "\n", sizeof(x))
 
@@ -198,7 +207,8 @@ void disable_floating_point_exception(int excepts) {
         //    https://developer.arm.com/documentation/ddi0595/2020-12/AArch64-Registers/ESR-EL1--Exception-Syndrome-Register--EL1-
         //    https://developer.arm.com/documentation/ddi0595/2020-12/AArch64-Registers/ESR-EL2--Exception-Syndrome-Register--EL2-
 
-        const auto esr = reinterpret_cast<ucontext_t*>(ucontext)->uc_mcontext->__es.__esr;
+        const auto* ctx = reinterpret_cast<ucontext_t*>(ucontext);
+        const auto esr  = ctx == nullptr ? 0 : ctx->uc_mcontext->__es.__esr;
         constexpr decltype(esr) fpe_mask(0b10110000000000000000000000000000);
 
         if ((fpe_mask & esr) == fpe_mask) {
@@ -294,7 +304,7 @@ std::string FloatingPointExceptions::excepts_as_string() {
     for (const auto& [code, except] : CODE_TO_EXCEPT) {
         if (0 != (e & except)) {
             s += sep + code;
-            sep = ", ";
+            sep = ",";
         }
     }
 

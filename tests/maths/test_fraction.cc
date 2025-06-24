@@ -23,6 +23,7 @@ auto& LOG = Log::info();
 CASE("Values known to have problematic conversion to fraction") {
     using FPE = maths::FloatingPointExceptions;
     FPE::enable_floating_point_exceptions();  // default exceptions only
+    FPE::enable_custom_signal_handlers();
 
     auto values = std::vector<double>{19.011363983154297, 0.47718059708975263};
     for (auto value : values) {

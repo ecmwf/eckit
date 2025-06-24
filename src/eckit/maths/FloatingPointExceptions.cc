@@ -10,9 +10,9 @@
 
 #include "eckit/maths/FloatingPointExceptions.h"
 
-#include <bitset>
 #include <cfenv>
 #include <csignal>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <map>
@@ -159,43 +159,38 @@ void disable_floating_point_exception(int excepts) {
     if (signum == SIGFPE) {
         LOG_MSG("signal: " STR(SIGFPE));
 
-        bool known = false;
+        auto raised = si->si_code & FE_ALL_EXCEPT;
 
-        if (si->si_code == FPE_INTDIV) {
+        if (0 != (raised & FPE_INTDIV)) {
             LOG_MSG("code: " STR(FPE_INTDIV));
-            known = true;
-        }
-        if (si->si_code == FPE_INTOVF) {
-            LOG_MSG("code: " STR(FPE_INTOVF));
-            known = true;
-        }
-        if (si->si_code == FPE_FLTDIV) {
-            LOG_MSG("code: " STR(FPE_FLTDIV));
-            known = true;
-        }
-        if (si->si_code == FPE_FLTINV) {
-            LOG_MSG("code: " STR(FPE_FLTINV));
-            known = true;
-        }
-        if (si->si_code == FPE_FLTOVF) {
-            LOG_MSG("code: " STR(FPE_FLTOVF));
-            known = true;
-        }
-        if (si->si_code == FPE_FLTUND) {
-            LOG_MSG("code: " STR(FPE_FLTUND));
-            known = true;
-        }
-        if (si->si_code == FPE_FLTRES) {
-            LOG_MSG("code: " STR(FPE_FLTRES));
-            known = true;
-        }
-        if (si->si_code == FPE_FLTSUB) {
-            LOG_MSG("code: " STR(FPE_FLTSUB));
-            known = true;
         }
 
-        if (!known) {
-            LOG_MSG("code: " STR(si->si_code) " (?)");
+        if (0 != (raised & FPE_INTOVF)) {
+            LOG_MSG("code: " STR(FPE_INTOVF));
+        }
+
+        if (0 != (raised & FPE_FLTDIV)) {
+            LOG_MSG("code: " STR(FPE_FLTDIV));
+        }
+
+        if (0 != (raised & FPE_FLTINV)) {
+            LOG_MSG("code: " STR(FPE_FLTINV));
+        }
+
+        if (0 != (raised & FPE_FLTOVF)) {
+            LOG_MSG("code: " STR(FPE_FLTOVF));
+        }
+
+        if (0 != (raised & FPE_FLTUND)) {
+            LOG_MSG("code: " STR(FPE_FLTUND));
+        }
+
+        if (0 != (raised & FPE_FLTRES)) {
+            LOG_MSG("code: " STR(FPE_FLTRES));
+        }
+
+        if (0 != (raised & FPE_FLTSUB)) {
+            LOG_MSG("code: " STR(FPE_FLTSUB));
         }
     }
 
@@ -209,45 +204,38 @@ void disable_floating_point_exception(int excepts) {
         //    https://developer.arm.com/documentation/ddi0595/2020-12/AArch64-Registers/ESR-EL1--Exception-Syndrome-Register--EL1-
         //    https://developer.arm.com/documentation/ddi0595/2020-12/AArch64-Registers/ESR-EL2--Exception-Syndrome-Register--EL2-
 
-        const std::bitset<32> esr = reinterpret_cast<ucontext_t*>(ucontext)->uc_mcontext->__es.__esr;
-        constexpr std::bitset<32> fpe_mask(0b10110000000000000000000000000000);
+        const uint32_t esr = reinterpret_cast<ucontext_t*>(ucontext)->uc_mcontext->__es.__esr;
+        constexpr uint32_t fpe_mask(0b10110000000000000000000000000000);
 
         if ((fpe_mask & esr) == fpe_mask) {
-            bool known = false;
-
-            if (esr.test(0)) {
+            if (0 != (esr & 0b1)) {
                 LOG_MSG("esr: IOF");
-                known = true;
-            }
-            if (esr.test(1)) {
-                LOG_MSG("esr: DZF");
-                known = true;
-            }
-            if (esr.test(2)) {
-                LOG_MSG("esr: OFF");
-                known = true;
-            }
-            if (esr.test(3)) {
-                LOG_MSG("esr: UFF");
-                known = true;
-            }
-            if (esr.test(4)) {
-                LOG_MSG("esr: IXF");
-                known = true;
-            }
-            if (esr.test(7)) {
-                LOG_MSG("esr: IDF");
-                known = true;
             }
 
-            if (!known) {
-                LOG_MSG("esr: " STR(esr) " (?)");
+            if (0 != (esr & 0b10)) {
+                LOG_MSG("esr: DZF");
+            }
+
+            if (0 != (esr & 0b0100)) {
+                LOG_MSG("esr: OFF");
+            }
+
+            if (0 != (esr & 0b1000)) {
+                LOG_MSG("esr: UFF");
+            }
+
+            if (0 != (esr & 0b10000)) {
+                LOG_MSG("esr: IXF");
+            }
+
+            if (0 != (esr & 0b10000000)) {
+                LOG_MSG("esr: IDF");
             }
         }
     }
 #endif
     else {
-        LOG_MSG("signal: " STR(signum) " (?)");
+        LOG_MSG("signal: ?");
     }
 
     LOG("---\n");

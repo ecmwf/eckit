@@ -8,18 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/maths//FloatingPointExceptions.h"
+#include "eckit/maths/FloatingPointExceptions.h"
 
 #include <bitset>
 #include <cfenv>
 #include <csignal>
+#include <cstdlib>
 #include <cstring>
 #include <map>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -59,83 +59,44 @@ int make_excepts(const std::string& codes) {
 [[noreturn]] void custom_signal_handler(int signum, ::siginfo_t* si, [[maybe_unused]] void* ucontext);
 
 
-using signal_handler_t = void (*)(int);
-using custom_signal_handler_t = decltype(custom_signal_handler);
-
-
+// TODO use/improve eckit::SignalHandler
 class Signal {
-    // Not sure if this should be made public (in header file) just yet
-
 public:
 
-    Signal() : signum_(0) { signal_action_.sa_handler = SIG_DFL; }
+    static void set_handler(int signum) {
+        if (SIGNAL_HANDLERS.find(signum) != SIGNAL_HANDLERS.end()) {
+            restore_handler(signum);
+        }
 
-    explicit Signal(int signum) : Signal(signum, custom_signal_handler) {}
+        auto& sa = SIGNAL_HANDLERS[signum];
 
-    Signal(int signum, custom_signal_handler_t signal_action) : signum_(signum) {
-        std::memset(&signal_action_, 0, sizeof(signal_action_));
-        sigemptyset(&signal_action_.sa_mask);
-        signal_action_.sa_sigaction = signal_action;
-        signal_action_.sa_flags     = SA_SIGINFO;
+        std::memset(&sa, 0, sizeof(sa));
+        sigemptyset(&sa.sa_mask);
+        sa.sa_sigaction = custom_signal_handler;
+        sa.sa_flags     = SA_SIGINFO;
+
+        ::sigaction(signum, &sa, nullptr);
     }
 
-    Signal(int signum, signal_handler_t signal_handler) : signum_(signum) {
-        std::memset(&signal_action_, 0, sizeof(signal_action_));
-        sigemptyset(&signal_action_.sa_mask);
-        signal_action_.sa_handler = signal_handler;
-        signal_action_.sa_flags   = 0;
+    static void restore_handler(int signum) {
+        if (auto it = SIGNAL_HANDLERS.find(signum); it != SIGNAL_HANDLERS.end()) {
+            std::signal(signum, SIG_DFL);
+        }
     }
 
-    int signum() const { return signum_; }
-
-    const signal_handler_t& handler() const { return signal_action_.sa_handler; }
-    const struct sigaction* action() const { return &signal_action_; }
+    static void restore_all_handlers() {
+        for (auto& [signum, sa] : SIGNAL_HANDLERS) {
+            std::signal(signum, SIG_DFL);
+        }
+    }
 
 private:
 
-    int signum_;
-    struct sigaction signal_action_{};
+    static std::map<int, struct sigaction> SIGNAL_HANDLERS;
 };
 
 
-class Signals : std::map<int, Signal> {
-    // Not sure if this should be made public (in header file) just yet
-
-    static Signals& instance() {
-        static Signals signals;
-        return signals;
-    }
-
-    void setSignalHandler(int signum) {
-        if (find(signum) != end()) {
-            restoreSignalHandler(signum);
-        }
-
-        const auto& signal = (operator[](signum) = Signal{signum});
-        sigaction(signum, signal.action(), nullptr);
-    }
-
-    void restoreSignalHandler(int signum) {
-        if (auto it = find(signum); it != end()) {
-            std::signal(signum, SIG_DFL);
-            erase(signum);
-        }
-    }
-
-    void restoreAllSignalHandlers() {
-        while (!empty()) {
-            restoreSignalHandler(rbegin()->first);
-        }
-    }
-
-public:
-
-    static void set_signal_handler(int signum) { instance().setSignalHandler(signum); }
-    static void restore_signal_handler(int signum) { instance().restoreSignalHandler(signum); }
-    static void restore_all_signal_handlers() { instance().restoreAllSignalHandlers(); }
-
-    static const Signal& signal(int signum) { return instance().at(signum); }
-};
+std::map<int, struct sigaction> Signal::SIGNAL_HANDLERS;
 
 
 void enable_floating_point_exception(int excepts) {
@@ -160,9 +121,9 @@ void enable_floating_point_exception(int excepts) {
 #endif
 
     if (excepts != 0) {
-        Signals::set_signal_handler(SIGFPE);
+        Signal::set_handler(SIGFPE);
 #if defined(__APPLE__) && defined(__arm64__)
-        Signals::set_signal_handler(SIGILL);
+        Signal::set_handler(SIGILL);
 #endif
     }
 }
@@ -190,84 +151,144 @@ void disable_floating_point_exception(int excepts) {
 #endif
 
     if (std::fetestexcept(FE_ALL_EXCEPT) == 0) {
-        Signals::restore_all_signal_handlers();
+        Signal::restore_handler(SIGFPE);
+#if defined(__APPLE__) && defined(__arm64__)
+        Signal::restore_handler(SIGILL);
+#endif
     }
 }
 
 
 [[noreturn]] void custom_signal_handler(int signum, siginfo_t* si, [[maybe_unused]] void* ucontext) {
-    std::string signal;
-    std::string code;
+#define FPE_LOG_SIGNAL_UNKNOWN "?     "
+#define FPE_LOG_SIGNAL(x)                        \
+    std::cerr.write(                             \
+        "eckit::maths::FloatingPointExceptions " \
+        "signal: " #x "\n",                      \
+        38 + 8 + 6 + 1)
+
+#define FPE_LOG_CODE_UNKNOWN "?         "
+#define FPE_LOG_CODE(x)                          \
+    std::cerr.write(                             \
+        "eckit::maths::FloatingPointExceptions " \
+        "code: " #x "\n",                        \
+        38 + 6 + 10 + 1)
+
+#define FPE_LOG_ESR(x)                           \
+    std::cerr.write(                             \
+        "eckit::maths::FloatingPointExceptions " \
+        "esr: " x "\n",                          \
+        38 + 5 + 3 + 1)
+
+    std::cerr.write("---\n'", 4);
 
     if (signum == SIGFPE) {
-        signal = "SIGFPE";
-        switch (si->si_code) {
-            case FPE_FLTDIV:
-                code = "FE_DIVBYZERO";
-                break;
-            case FPE_FLTINV:
-                code = "FE_INVALID";
-                break;
-            case FPE_FLTOVF:
-                code = "FE_OVERFLOW";
-                break;
-            case FPE_FLTUND:
-                code = "FE_UNDERFLOW";
-                break;
-            case FPE_FLTRES:
-                code = "FE_INEXACT";
-                break;
+        FPE_LOG_SIGNAL(SIGFPE);
+
+        bool known = false;
+
+        if (si->si_code == FPE_INTDIV) {
+            FPE_LOG_CODE(FPE_INTDIV);
+            known = true;
+        }
+        if (si->si_code == FPE_INTOVF) {
+            FPE_LOG_CODE(FPE_INTOVF);
+            known = true;
+        }
+        if (si->si_code == FPE_FLTDIV) {
+            FPE_LOG_CODE(FPE_FLTDIV);
+            known = true;
+        }
+        if (si->si_code == FPE_FLTINV) {
+            FPE_LOG_CODE(FPE_FLTINV);
+            known = true;
+        }
+        if (si->si_code == FPE_FLTOVF) {
+            FPE_LOG_CODE(FPE_FLTOVF);
+            known = true;
+        }
+        if (si->si_code == FPE_FLTUND) {
+            FPE_LOG_CODE(FPE_FLTUND);
+            known = true;
+        }
+        if (si->si_code == FPE_FLTRES) {
+            FPE_LOG_CODE(FPE_FLTRES);
+            known = true;
+        }
+        if (si->si_code == FPE_FLTSUB) {
+            FPE_LOG_CODE(FPE_FLTSUB);
+            known = true;
+        }
+
+        if (!known) {
+            FPE_LOG_CODE(FPE_LOG_CODE_UNKNOWN);
         }
     }
 
 #if defined(__APPLE__) && defined(__arm64__)
     else if (signum == SIGILL) {
-        signal = "SIGILL";
+        FPE_LOG_SIGNAL(SIGILL);
 
         // On Apple Silicon a SIGFPE may be posing as a SIGILL
         // See:
         //    https://developer.apple.com/forums/thread/689159?answerId=733736022
         //    https://developer.arm.com/documentation/ddi0595/2020-12/AArch64-Registers/ESR-EL1--Exception-Syndrome-Register--EL1-
+        //    https://developer.arm.com/documentation/ddi0595/2020-12/AArch64-Registers/ESR-EL2--Exception-Syndrome-Register--EL2-
 
         const std::bitset<32> esr = reinterpret_cast<ucontext_t*>(ucontext)->uc_mcontext->__es.__esr;
         constexpr std::bitset<32> fpe_mask(0b10110000000000000000000000000000);
 
         if ((fpe_mask & esr) == fpe_mask) {
-            constexpr size_t IOF = 0;
-            constexpr size_t DZF = 1;
-            constexpr size_t OFF = 2;
-            constexpr size_t UFF = 3;
-            constexpr size_t IXF = 4;
-            constexpr size_t IDF = 7;
-            if (esr.test(IOF)) {
-                code = "FE_INVALID";
+            bool known = false;
+
+            if (esr.test(0)) {
+                FPE_LOG_ESR("IOF");
+                known = true;
             }
-            else if (esr.test(DZF)) {
-                code = "FE_DIVBYZERO";
+            if (esr.test(1)) {
+                FPE_LOG_ESR("DZF");
+                known = true;
             }
-            else if (esr.test(OFF)) {
-                code = "FE_OVERFLOW";
+            if (esr.test(2)) {
+                FPE_LOG_ESR("OFF");
+                known = true;
             }
-            else if (esr.test(UFF)) {
-                code = "FE_UNDERFLOW";
+            if (esr.test(3)) {
+                FPE_LOG_ESR("UFF");
+                known = true;
             }
-            else if (esr.test(IXF)) {
-                code = "FE_INEXACT";
+            if (esr.test(4)) {
+                FPE_LOG_ESR("IXF");
+                known = true;
             }
-            else if (esr.test(IDF)) {
-                code = "FE_DENORMAL";
+            if (esr.test(7)) {
+                FPE_LOG_ESR("IDF");
+                known = true;
+            }
+
+            if (!known) {
+                FPE_LOG_ESR("?");
             }
         }
     }
 #endif
+    else {
+        FPE_LOG_SIGNAL(FPE_LOG_SIGNAL_UNKNOWN);
+    }
 
-    Log::error() << "[Signal: " << signal << ", Floating Point Exception: " << code << "]" << std::endl;
+    std::cerr.write("---\n'", 4);
 
-    Signals::restore_all_signal_handlers();
+#undef FPE_LOG_ESR
+#undef FPE_LOG_CODE
+#undef FPE_LOG_CODE_UNKNOWN
+#undef FPE_LOG_SIGNAL
+#undef FPE_LOG_SIGNAL_UNKNOWN
+
+    Signal::restore_all_handlers();
     LibEcKit::instance().abort();
 
     // Just in case we end up here, which normally we shouldn't.
-    std::_Exit(EXIT_FAILURE);
+    std::abort();
 }
 
 

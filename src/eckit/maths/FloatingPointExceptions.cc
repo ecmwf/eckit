@@ -17,6 +17,8 @@
 #include <cstring>
 #include <map>
 
+#include <unistd.h>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
@@ -60,15 +62,13 @@ int make_excepts(const std::string& codes) {
 
 
 // TODO use/improve eckit::SignalHandler
-class Signal {
-public:
-
-    static void set_handler(int signum) {
-        if (SIGNAL_HANDLERS.find(signum) != SIGNAL_HANDLERS.end()) {
-            restore_handler(signum);
+struct : private std::map<int, struct sigaction> {
+    void set(int signum) {
+        if (find(signum) != end()) {
+            restore(signum);
         }
 
-        auto& sa = SIGNAL_HANDLERS[signum];
+        auto& sa = operator[](signum);
 
         std::memset(&sa, 0, sizeof(sa));
         sigemptyset(&sa.sa_mask);
@@ -78,25 +78,18 @@ public:
         ::sigaction(signum, &sa, nullptr);
     }
 
-    static void restore_handler(int signum) {
-        if (auto it = SIGNAL_HANDLERS.find(signum); it != SIGNAL_HANDLERS.end()) {
+    void restore(int signum) {
+        if (auto it = find(signum); it != end()) {
             std::signal(signum, SIG_DFL);
         }
     }
 
-    static void restore_all_handlers() {
-        for (auto& [signum, sa] : SIGNAL_HANDLERS) {
+    void restore_all() {
+        for (auto& [signum, sa] : *this) {
             std::signal(signum, SIG_DFL);
         }
     }
-
-private:
-
-    static std::map<int, struct sigaction> SIGNAL_HANDLERS;
-};
-
-
-std::map<int, struct sigaction> Signal::SIGNAL_HANDLERS;
+} CUSTOM_SIGNAL_HANDLERS;
 
 
 void enable_floating_point_exception(int excepts) {
@@ -121,9 +114,9 @@ void enable_floating_point_exception(int excepts) {
 #endif
 
     if (excepts != 0) {
-        Signal::set_handler(SIGFPE);
+        CUSTOM_SIGNAL_HANDLERS.set(SIGFPE);
 #if defined(__APPLE__) && defined(__arm64__)
-        Signal::set_handler(SIGILL);
+        CUSTOM_SIGNAL_HANDLERS.set(SIGILL);
 #endif
     }
 }
@@ -151,83 +144,64 @@ void disable_floating_point_exception(int excepts) {
 #endif
 
     if (std::fetestexcept(FE_ALL_EXCEPT) == 0) {
-        Signal::restore_handler(SIGFPE);
-#if defined(__APPLE__) && defined(__arm64__)
-        Signal::restore_handler(SIGILL);
-#endif
+        CUSTOM_SIGNAL_HANDLERS.restore_all();
     }
 }
 
 
 [[noreturn]] void custom_signal_handler(int signum, siginfo_t* si, [[maybe_unused]] void* ucontext) {
-#define FPE_LOG_SIGNAL_UNKNOWN "?     "
-#define FPE_LOG_SIGNAL(x)                        \
-    std::cerr.write(                             \
-        "eckit::maths::FloatingPointExceptions " \
-        "signal: " #x "\n",                      \
-        38 + 8 + 6 + 1)
+#define STR(x) #x
+#define LOG(x) ::write(2 /*stderr*/, x, sizeof(x) - 1)
+#define LOG_MSG(x) LOG("FloatingPointExceptions " x "\n")
 
-#define FPE_LOG_CODE_UNKNOWN "?         "
-#define FPE_LOG_CODE(x)                          \
-    std::cerr.write(                             \
-        "eckit::maths::FloatingPointExceptions " \
-        "code: " #x "\n",                        \
-        38 + 6 + 10 + 1)
-
-#define FPE_LOG_ESR(x)                           \
-    std::cerr.write(                             \
-        "eckit::maths::FloatingPointExceptions " \
-        "esr: " x "\n",                          \
-        38 + 5 + 3 + 1)
-
-    std::cerr.write("---\n'", 4);
+    LOG("---\n");
 
     if (signum == SIGFPE) {
-        FPE_LOG_SIGNAL(SIGFPE);
+        LOG_MSG("signal: " STR(SIGFPE));
 
         bool known = false;
 
         if (si->si_code == FPE_INTDIV) {
-            FPE_LOG_CODE(FPE_INTDIV);
+            LOG_MSG("code: " STR(FPE_INTDIV));
             known = true;
         }
         if (si->si_code == FPE_INTOVF) {
-            FPE_LOG_CODE(FPE_INTOVF);
+            LOG_MSG("code: " STR(FPE_INTOVF));
             known = true;
         }
         if (si->si_code == FPE_FLTDIV) {
-            FPE_LOG_CODE(FPE_FLTDIV);
+            LOG_MSG("code: " STR(FPE_FLTDIV));
             known = true;
         }
         if (si->si_code == FPE_FLTINV) {
-            FPE_LOG_CODE(FPE_FLTINV);
+            LOG_MSG("code: " STR(FPE_FLTINV));
             known = true;
         }
         if (si->si_code == FPE_FLTOVF) {
-            FPE_LOG_CODE(FPE_FLTOVF);
+            LOG_MSG("code: " STR(FPE_FLTOVF));
             known = true;
         }
         if (si->si_code == FPE_FLTUND) {
-            FPE_LOG_CODE(FPE_FLTUND);
+            LOG_MSG("code: " STR(FPE_FLTUND));
             known = true;
         }
         if (si->si_code == FPE_FLTRES) {
-            FPE_LOG_CODE(FPE_FLTRES);
+            LOG_MSG("code: " STR(FPE_FLTRES));
             known = true;
         }
         if (si->si_code == FPE_FLTSUB) {
-            FPE_LOG_CODE(FPE_FLTSUB);
+            LOG_MSG("code: " STR(FPE_FLTSUB));
             known = true;
         }
 
         if (!known) {
-            FPE_LOG_CODE(FPE_LOG_CODE_UNKNOWN);
+            LOG_MSG("code: " STR(si->si_code) " (?)");
         }
     }
 
 #if defined(__APPLE__) && defined(__arm64__)
     else if (signum == SIGILL) {
-        FPE_LOG_SIGNAL(SIGILL);
+        LOG_MSG("signal: " STR(SIGILL));
 
         // On Apple Silicon a SIGFPE may be posing as a SIGILL
         // See:
@@ -242,49 +216,47 @@ void disable_floating_point_exception(int excepts) {
             bool known = false;
 
             if (esr.test(0)) {
-                FPE_LOG_ESR("IOF");
+                LOG_MSG("esr: IOF");
                 known = true;
             }
             if (esr.test(1)) {
-                FPE_LOG_ESR("DZF");
+                LOG_MSG("esr: DZF");
                 known = true;
             }
             if (esr.test(2)) {
-                FPE_LOG_ESR("OFF");
+                LOG_MSG("esr: OFF");
                 known = true;
             }
             if (esr.test(3)) {
-                FPE_LOG_ESR("UFF");
+                LOG_MSG("esr: UFF");
                 known = true;
             }
             if (esr.test(4)) {
-                FPE_LOG_ESR("IXF");
+                LOG_MSG("esr: IXF");
                 known = true;
             }
             if (esr.test(7)) {
-                FPE_LOG_ESR("IDF");
+                LOG_MSG("esr: IDF");
                 known = true;
             }
 
             if (!known) {
-                FPE_LOG_ESR("?");
+                LOG_MSG("esr: " STR(esr) " (?)");
             }
         }
     }
 #endif
     else {
-        FPE_LOG_SIGNAL(FPE_LOG_SIGNAL_UNKNOWN);
+        LOG_MSG("signal: " STR(signum) " (?)");
     }
 
-    std::cerr.write("---\n'", 4);
+    LOG("---\n");
 
-#undef FPE_LOG_ESR
-#undef FPE_LOG_CODE
-#undef FPE_LOG_CODE_UNKNOWN
-#undef FPE_LOG_SIGNAL
-#undef FPE_LOG_SIGNAL_UNKNOWN
+#undef LOG_MSG
+#undef LOG
+#undef STR
 
-    Signal::restore_all_handlers();
+    CUSTOM_SIGNAL_HANDLERS.restore_all();
     LibEcKit::instance().abort();
 
     // Just in case we end up here, which normally we shouldn't.

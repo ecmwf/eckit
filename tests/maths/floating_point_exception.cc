@@ -17,18 +17,19 @@
 
 int main(int argc, char** argv) {
     eckit::Main::initialise(argc, argv);
-    const std::string code(argc > 1 ? argv[1] : "");
 
     using FPE = eckit::maths::FloatingPointExceptions;
-    FPE::enable_floating_point_exceptions(code);
 
-    code == "FE_INVALID"     ? FPE::test_invalid()
-    : code == "FE_INEXACT"   ? FPE::test_inexact()
-    : code == "FE_DIVBYZERO" ? FPE::test_divbyzero()
-    : code == "FE_OVERFLOW"  ? FPE::test_overflow()
-    : code == "FE_UNDERFLOW" ? FPE::test_underflow()
-    : code == "FE_DENORMAL"  ? FPE::test_denormal()
-                             : throw 1;
+    if (argc > 1) {
+        FPE::enable_floating_point_exceptions(argv[1]);
+    }
+    else {
+        FPE::enable_floating_point_exceptions();
+    }
+
+    FPE::enable_custom_signal_handlers();
+
+    FPE::test(FPE::excepts());  // should raise a signal
 
     return 1;
 }

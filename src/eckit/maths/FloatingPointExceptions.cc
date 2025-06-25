@@ -12,9 +12,8 @@
 
 #include <cfenv>
 #include <csignal>
-#include <cstdlib>
-#include <cstring>
 #include <map>
+#include <utility>
 #include <vector>
 
 #include <unistd.h>
@@ -36,13 +35,12 @@ namespace eckit::maths {
 namespace {
 
 
-static const std::map<std::string, int> CODE_TO_EXCEPT{
-    {"FE_INVALID", FE_INVALID},   {"FE_INEXACT", FE_INEXACT},     {"FE_DIVBYZERO", FE_DIVBYZERO},
-    {"FE_OVERFLOW", FE_OVERFLOW}, {"FE_UNDERFLOW", FE_UNDERFLOW},
-};
-
-
 int make_excepts(const std::string& codes) {
+    static const std::map<std::string, int> CODE_TO_EXCEPT{
+        {"FE_INVALID", FE_INVALID},   {"FE_INEXACT", FE_INEXACT},     {"FE_DIVBYZERO", FE_DIVBYZERO},
+        {"FE_OVERFLOW", FE_OVERFLOW}, {"FE_UNDERFLOW", FE_UNDERFLOW},
+    };
+
     int excepts = 0;
     for (const auto& code : translate<std::vector<std::string>>(codes)) {
         if (code == "FE_ALL_EXCEPT") {
@@ -73,32 +71,31 @@ int make_excepts(const std::string& codes) {
 
 
 // TODO use/improve eckit::SignalHandler
-struct : private std::map<int, struct sigaction> {
-    void set(int signum) {
-        if (find(signum) != end()) {
-            restore(signum);
-        }
-
-        auto& sa = operator[](signum);
-
-        std::memset(&sa, 0, sizeof(sa));
-        sigemptyset(&sa.sa_mask);
-        sa.sa_sigaction = custom_signal_handler;
-        sa.sa_flags     = SA_SIGINFO;
-
-        ::sigaction(signum, &sa, nullptr);
-    }
-
-    void restore(int signum) {
+struct : private std::map<int, std::pair<struct ::sigaction, struct ::sigaction>> {
+    void set(
+        int signum, const struct ::sigaction& act = []() {
+            struct ::sigaction sa{};
+            sigemptyset(&sa.sa_mask);
+            sa.sa_sigaction = &custom_signal_handler;
+            sa.sa_flags     = SA_SIGINFO;
+            return sa;
+        }()) {
         if (auto it = find(signum); it != end()) {
-            std::signal(signum, SIG_DFL);
+            unset(signum);
         }
+
+        auto& [a, b] = operator[](signum);
+        ::sigaction(signum, &(a = act), &b);
     }
 
-    void restore_all() {
-        for (const auto& [signum, sa] : *this) {
-            std::signal(signum, SIG_DFL);
+    void unset(int signum) {
+        if (auto it = find(signum); it != end()) {
+            ::sigaction(signum, &it->second.second, nullptr);
+            erase(it);
+            return;
         }
+
+        throw UserError("FloatingPointExceptions: signal " + std::to_string(signum) + " is not set", Here());
     }
 } CUSTOM_SIGNAL_HANDLERS;
 
@@ -109,46 +106,83 @@ int CUSTOM_EXCEPTS = 0;
 void enable_floating_point_exception(int excepts) {
 #if eckit_HAVE_FEENABLEEXCEPT
     std::feenableexcept(excepts);
-#elif defined(__APPLE__)
-    fenv_t fenv;
+#elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
+    std::fenv_t fenv;
+    if (std::fegetenv(&fenv) != 0) {
+        return;
+    }
 
+    fenv.__control_word &= ~excepts;  // Unmask exceptions in x87 FPU control word (clear bits)
+    fenv.__mxcsr &= ~(excepts << 7);  // Unmask exceptions in SSE MXCSR (clear bits 7-12)
+
+    std::fesetenv(&fenv);
+#elif defined(__APPLE__)
+    std::fenv_t fenv;
     if (std::fegetenv(&fenv) != 0) {
         return;
     }
 
 #if defined(__arm64__)
-    fenv.__fpsr |= excepts;
-    fenv.__fpcr |= (excepts << 8);
+    fenv.__fpsr |= excepts;         // Unmask exceptions in FPSR (set bits)
+    fenv.__fpcr |= (excepts << 8);  // Unmask exceptions in FPCR (set bits 8-15)
 #else
-    fenv.__control &= ~excepts;
-    fenv.__mxcsr &= ~(excepts << 7);
+    fenv.__control &= ~excepts;       // Unmask exceptions in x87 FPU control word (clear bits)
+    fenv.__mxcsr &= ~(excepts << 7);  // Unmask exceptions in SSE MXCSR (clear bits 7-12)
 #endif
+
     std::fesetenv(&fenv);
-#else
 #endif
+
+    // If exceptions are enabled (by this mechanism), set signal handler(s)
+    if (CUSTOM_EXCEPTS |= excepts; CUSTOM_EXCEPTS != 0) {
+        CUSTOM_SIGNAL_HANDLERS.set(SIGFPE);
+#if defined(__APPLE__) && defined(__arm64__)
+        CUSTOM_SIGNAL_HANDLERS.set(SIGILL);
+#endif
+    }
 }
+
 
 void disable_floating_point_exception(int excepts) {
 #if eckit_HAVE_FEDISABLEEXCEPT
     std::fedisableexcept(excepts);
-#elif defined(__APPLE__)
-    fenv_t fenv;
+#elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
+    std::fenv_t fenv;
+    if (std::fegetenv(&fenv) != 0) {
+        return;
+    }
 
+    fenv.__control_word |= excepts;  // Mask exceptions in x87 FPU control word (set bits)
+    fenv.__mxcsr |= (excepts << 7);  // Mask exceptions in SSE MXCSR (set bits 7-12)
+
+    std::fesetenv(&fenv);
+#elif defined(__APPLE__)
+    std::fenv_t fenv;
     if (std::fegetenv(&fenv) != 0) {
         return;
     }
 
 #if defined(__arm64__)
-    fenv.__fpsr &= ~excepts;
-    fenv.__fpcr &= ~(excepts << 8);
+    fenv.__fpsr &= ~excepts;         // Mask exceptions in FPSR (clear bits)
+    fenv.__fpcr &= ~(excepts << 8);  // Mask exceptions in FPCR (clear bits 8-15)
 #else
-    fenv.__control |= excepts;
-    fenv.__mxcsr |= (excepts << 7);
+    fenv.__control |= excepts;       // Mask exceptions in x87 FPU control word (set bits)
+    fenv.__mxcsr |= (excepts << 7);  // Mask exceptions in SSE MXCSR (set bits 7-12)
 #endif
 
     std::fesetenv(&fenv);
 #else
+    // the platform does not support enabling/disabling FPEs
+    (void)excepts;
 #endif
+
+    // If no exceptions are enabled (by this mechanism), unset signal handler(s)
+    if (CUSTOM_EXCEPTS &= ~excepts; CUSTOM_EXCEPTS == 0) {
+        CUSTOM_SIGNAL_HANDLERS.unset(SIGFPE);
+#if defined(__APPLE__) && defined(__arm64__)
+        CUSTOM_SIGNAL_HANDLERS.unset(SIGILL);
+#endif
+    }
 }
 
 
@@ -247,7 +281,7 @@ void disable_floating_point_exception(int excepts) {
 #undef LOG
 #undef STR
 
-    CUSTOM_SIGNAL_HANDLERS.restore_all();
+    FloatingPointExceptions::disable_floating_point_exceptions();
     LibEcKit::instance().abort();
 
     // Just in case we end up here, which normally we shouldn't.
@@ -264,7 +298,6 @@ void disable_floating_point_exception(int excepts) {
 void FloatingPointExceptions::enable_floating_point_exceptions(const std::string& codes) {
     if (auto excepts = make_excepts(codes); excepts != 0) {
         enable_floating_point_exception(excepts);
-        CUSTOM_EXCEPTS |= excepts;
     }
 }
 
@@ -272,47 +305,13 @@ void FloatingPointExceptions::enable_floating_point_exceptions(const std::string
 void FloatingPointExceptions::disable_floating_point_exceptions(const std::string& codes) {
     if (auto excepts = make_excepts(codes); excepts != 0) {
         disable_floating_point_exception(excepts);
-        CUSTOM_EXCEPTS &= ~excepts;
     }
 }
 
 
-void FloatingPointExceptions::enable_custom_signal_handlers() {
-    CUSTOM_SIGNAL_HANDLERS.set(SIGFPE);
-#if defined(__APPLE__) && defined(__arm64__)
-    CUSTOM_SIGNAL_HANDLERS.set(SIGILL);
-#endif
-}
+void FloatingPointExceptions::test(const std::string& codes) {
+    auto excepts = make_excepts(codes);
 
-
-void FloatingPointExceptions::disable_custom_signal_handlers() {
-    CUSTOM_SIGNAL_HANDLERS.restore_all();
-}
-
-
-int FloatingPointExceptions::excepts() {
-    return CUSTOM_EXCEPTS;
-}
-
-
-std::string FloatingPointExceptions::excepts_as_string() {
-    std::string s;
-
-    const auto e = excepts();
-
-    const auto* sep = "";
-    for (const auto& [code, except] : CODE_TO_EXCEPT) {
-        if (0 != (e & except)) {
-            s += sep + code;
-            sep = ",";
-        }
-    }
-
-    return s;
-}
-
-
-void FloatingPointExceptions::test(int excepts) {
     if (0 != (excepts & FE_INVALID)) {
         // invalid operation
         volatile double x = 0.;
@@ -351,8 +350,8 @@ void FloatingPointExceptions::test(int excepts) {
     }
 
 #if defined(FE_DENORMAL)
-    // use of a denormalized floating-point number
     if (0 != (excepts & FE_DENORMAL)) {
+        // use of a denormalized floating-point number
         volatile double x = 1.e-320;
         (void)x;
     }

@@ -5,13 +5,23 @@ ecbuild_add_test(
     LIBS      eckit_maths
 )
 
-foreach( _test floating_point_exceptions fraction matrix matrix3 )
+foreach( _test fraction matrix matrix3 )
     ecbuild_add_test(
         TARGET  eckit_test_maths_${_test}
         SOURCES test_${_test}.cc
         LIBS    eckit_maths
     )
 endforeach()
+
+set(_linux_x86 CMAKE_SYSTEM_NAME STREQUAL "Linux" AND (CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "i386"))
+set(_fpe_not_supported NOT eckit_HAVE_FEENABLEEXCEPT AND NOT APPLE AND NOT _linux_x86)
+
+ecbuild_add_test(
+    TARGET          eckit_test_maths_floating_point_exceptions
+    SOURCES         test_floating_point_exceptions.cc
+    LIBS            eckit_maths
+    TEST_PROPERTIES WILL_FAIL _fpe_not_supported
+)
 
 ecbuild_add_executable(
     TARGET  floating_point_exception

@@ -19,60 +19,52 @@ namespace eckit::maths {
 
 /**
  * @class FloatingPointExceptions
- * @brief Manage floating-point exception handling via signal handlers.
+ * @brief Manage floating-point exceptions via signal handlers at runtime.
  *
- * Enabling floating-point exceptions (FPEs) causes the program to raise signals (e.g., SIGFPE) on events such as
- * division by zero or overflow, allowing detection and debugging of numerical issues.
+ * This class allows you to enable or disable specific floating-point exceptions such as:
+ * - FE_DIVBYZERO
+ * - FE_INVALID
+ * - FE_OVERFLOW
+ * - FE_UNDERFLOW
+ * - FE_INEXACT
  *
- * @note This alters global signal handling and triggering any of the specified exceptions will terminate the program.
- * This is intended for the purpose of development, not for production use unless carefully managed. Enabling must
- * happen before spawning threads, and/or must be synchronized with any other code manipulating signal handlers
+ * When enabled, triggering one of these exceptions will raise a SIGFPE (or SIGILL on Apple ARM64) on events such as
+ * division by zero or overflow, and a custom signal handler will print diagnostic information and terminate the process
+ * allowing detection and debugging of numerical issues.
+ *
+ * @note This is not intended for production use unless carefully managed. Enabling must happen before spawning threads,
+ * and/or must be synchronized with any other code manipulating signal handlers.
  */
 class FloatingPointExceptions {
 public:
 
     /**
-     * @brief Installs signal handlers and configures the floating-point environment to raise signals on FPEs, for the
-     * specified set of exception codes.
-     * @note Does not install custom signal handlers to handle the exceptions, only sets the floating-point environment.
-     * @param codes Comma-separated list of exception codes to enable
+     * @brief Enable specific floating-point exceptions.
+     *
+     * This will install a custom signal handler for SIGFPE (and SIGILL on macOS ARM64) if FPEs are enabled (using this
+     * mechanism). Use "FE_ALL_EXCEPT" to enable all exceptions.
+     *
+     * @param names Comma-separated string of exception names.
      */
-    static void enable_floating_point_exceptions(const std::string& = "FE_DIVBYZERO, FE_INVALID, FE_OVERFLOW");
+    static void enable_floating_point_exceptions(const std::string& names = "FE_DIVBYZERO, FE_INVALID, FE_OVERFLOW");
 
     /**
-     * @brief Restores default signal handling behavior and disables traps for the specified FPEs, for the specified set
-     * of exception codes.
-     * @param codes Comma-separated list of exception codes to disable
+     * @brief Disable specific floating-point exceptions.
+     *
+     * This will mask the specified exceptions and remove the signal handlers if no FPEs remain enabled (using this
+     * mechanism). Use "FE_ALL_EXCEPT" to disable all exceptions.
+     *
+     * @param names Cmma-separated string of exception names.
      */
-    static void disable_floating_point_exceptions(const std::string& = "FE_ALL_EXCEPT");
-
-    /**
-     * @brief Enables/installs custom signal handlers for handling raised FPEs (platform-specific).
-     */
-    static void enable_custom_signal_handlers();
-
-    /**
-     * @brief Disables/restores the default signal handling behaviour (platform-specific).
-     */
-    static void disable_custom_signal_handlers();
-
-    /**
-     * @brief Get currently-enabled FPEs
-     * @return An integer representing the currently enabled floating-point exceptions.
-     */
-    static int excepts();
-
-    /**
-     * @brief Get currently-enabled FPEs
-     * @return A string representing the currently enabled floating-point exceptions.
-     */
-    static std::string excepts_as_string();
+    static void disable_floating_point_exceptions(const std::string& names = "FE_ALL_EXCEPT");
 
     /**
      * @brief Test FPEs raising
-     * This function will raise a floating-point exception for the specified codes.
+     * This function will raise a floating-point exception for the specified names.
+     *
+     * @param names Cmma-separated string of exception names.
      */
-    static void test(int excepts);
+    static void test(const std::string& names = "FE_ALL_EXCEPT");
 };
 
 

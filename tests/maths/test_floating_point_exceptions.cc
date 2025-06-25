@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// #include <cfenv>
+
 #include <vector>
 
 #include "eckit/exception/Exceptions.h"
@@ -29,51 +29,14 @@ CASE("invalid exception") {
 }
 
 
-CASE("enabling exceptions") {
-    std::string default_fpe     = "FE_DIVBYZERO";
-    std::string non_default_fpe = "FE_OVERFLOW";
-
-    FPE::disable_floating_point_exceptions();
-
-    EXPECT(FPE::excepts() == 0);
-    EXPECT(FPE::excepts_as_string().empty());
-
-    FPE::enable_floating_point_exceptions();
-
-    EXPECT(FPE::excepts() != 0);
-    ASSERT(FPE::excepts_as_string().find(default_fpe) != std::string::npos);
-    ASSERT(FPE::excepts_as_string().find(non_default_fpe) != std::string::npos);
-
-    FPE::enable_floating_point_exceptions(non_default_fpe);
-
-    EXPECT(FPE::excepts() != 0);
-    EXPECT(FPE::excepts_as_string().find(default_fpe) != std::string::npos);
-    EXPECT(FPE::excepts_as_string().find(non_default_fpe) != std::string::npos);
-
-    FPE::disable_floating_point_exceptions(default_fpe);
-
-    EXPECT(FPE::excepts() != 0);
-    EXPECT(FPE::excepts_as_string().find(default_fpe) == std::string::npos);
-    EXPECT(FPE::excepts_as_string().find(non_default_fpe) != std::string::npos);
-
-    FPE::disable_floating_point_exceptions();
-
-    EXPECT(FPE::excepts() == 0);
-    EXPECT(FPE::excepts_as_string().empty());
-}
-
-
 CASE("disabled exceptions") {
     for (const auto& code : CODES) {
         FPE::enable_floating_point_exceptions(code);
-        FPE::enable_custom_signal_handlers();
 
-        // FPE::test(FPE::excepts());  // should raise a signel
+        // FPE::test("FE_DIVBYZERO");  // should trigger a signel
 
         FPE::disable_floating_point_exceptions(code);
-        FPE::test(FPE::excepts());  // should not raise a signel
-
-        FPE::disable_custom_signal_handlers();
+        FPE::test(code);  // should not trigger a signel
     }
 }
 

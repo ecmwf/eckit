@@ -22,14 +22,12 @@ int main(int argc, char** argv) {
 
     if (argc > 1) {
         FPE::enable_floating_point_exceptions(argv[1]);
+        FPE::test(argv[1]);  // should raise a signal
     }
     else {
         FPE::enable_floating_point_exceptions();
+        FPE::test("FE_DIVBYZERO");
     }
-
-    FPE::enable_custom_signal_handlers();
-
-    FPE::test(FPE::excepts());  // should raise a signal
 
     return 1;
 }

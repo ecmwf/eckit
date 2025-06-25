@@ -17,12 +17,9 @@
 #include "eckit/geo/Iterator.h"
 
 
-namespace eckit::geo {
-class Range;
-namespace grid {
+namespace eckit::geo::grid {
 class Regular;
 }
-}  // namespace eckit::geo
 
 
 namespace eckit::geo::iterator {
@@ -45,8 +42,9 @@ private:
     size_t i_;
     size_t j_;
     size_t index_;
-    const size_t nx_;
-    const size_t ny_;
+
+    const size_t ni_;
+    const size_t nj_;
     const size_t size_;
 
     // -- Overridden methods

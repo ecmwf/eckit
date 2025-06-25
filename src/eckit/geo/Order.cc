@@ -15,11 +15,13 @@
 #include <map>
 #include <numeric>
 #include <ostream>
+#include <set>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 
 
@@ -37,8 +39,7 @@ class lock_type {
 };
 
 
-std::map<std::string, size_t> ORDER_INDEX;
-std::map<size_t, std::string> ORDER_NAME;
+std::map<std::string, std::set<Order::value_type>> ORDER;
 
 
 }  // namespace
@@ -75,11 +76,15 @@ Reordering Order::no_reorder(size_t size) {
 }
 
 
-void Order::register_ordering(const std::string& name) {
+void Order::register_order(const std::string& type, const value_type& name) {
     lock_type lock;
 
-    auto index = ORDER_INDEX.size();
-    ASSERT(ORDER_INDEX.try_emplace(name, index).second == ORDER_NAME.try_emplace(index, name).second);
+    ASSERT(ORDER[type].insert(name).second);
+}
+
+
+const eckit::geo::Order* eckit::geo::OrderFactory::build(const std::string& type) {
+    return build(spec::Custom{{"type", type}});
 }
 
 

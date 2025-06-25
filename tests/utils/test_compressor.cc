@@ -106,7 +106,7 @@ CASE("Compression") {
         EXPECT_compress_uncompress_2(*c, in, len);
     }
 
-    for (const auto& compression : compressions) {
+    for (const auto& compression : CompressorFactory::instance().keys()) {
         SECTION("CASE " + compression) {
             if (CompressorFactory::instance().has(compression)) {
                 EXPECT_NO_THROW(c.reset(CompressorFactory::instance().build(compression)));

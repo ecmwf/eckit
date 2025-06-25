@@ -358,8 +358,9 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
     bool run_all = true;
     std::set<long> runTests;
-    if (::getenv("ECKIT_TEST_TESTS")) {
-        auto tsts = eckit::Translator<std::string, std::vector<long>>()(::getenv("ECKIT_TEST_TESTS"));
+    const char* ECKIT_TEST_TESTS = ::getenv("ECKIT_TEST_TESTS");
+    if (ECKIT_TEST_TESTS != nullptr) {
+        auto tsts = eckit::Translator<std::string, std::vector<long>>()(ECKIT_TEST_TESTS);
         runTests.insert(tsts.begin(), tsts.end());
         run_all = false;
     }

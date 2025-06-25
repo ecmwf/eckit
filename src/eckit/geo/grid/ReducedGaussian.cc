@@ -16,7 +16,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -39,7 +38,7 @@ Range* make_y_range(size_t N, area::BoundingBox* bbox) {
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec),
+    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec).release(),
                     projection::Rotation::make_from_spec(spec)) {}
 
 
@@ -48,14 +47,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, pro
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, projection::Rotation* rotation) :
-    Reduced(bbox, rotation),
-    N_(N),
-    pl_(pl),
-    j_(0),
-    Nj_(pl.size()),
-    x_(Nj_),
-    y_(make_y_range(N, bbox)),
-    order_(order::Scan::order_default(), pl) {
+    Reduced(bbox, rotation), N_(N), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
     ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
     ASSERT(y_);

@@ -186,22 +186,22 @@ endif()
 ### eckit::geo
 
 ecbuild_add_option( FEATURE ECKIT_GEO
-                    DEFAULT OFF
+                    DEFAULT ON
                     DESCRIPTION "eckit::geo geometry library" )
 
 ecbuild_add_option( FEATURE GEO_GRID_FESOM
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC
                     DESCRIPTION "eckit::geo geometry library support for FESOM grids" )
 
 ecbuild_add_option( FEATURE GEO_GRID_ICON
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC
                     DESCRIPTION "eckit::geo geometry library support for ICON grids" )
 
 ecbuild_add_option( FEATURE GEO_GRID_ORCA
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC
                     DESCRIPTION "eckit::geo geometry library support for ORCA grids" )
 
 ecbuild_add_option( FEATURE GEO_CACHING
@@ -350,7 +350,7 @@ if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
         set( RT_LIBRARIES ${RT_LIB} )
     endif()
 else()
-  set( RT_LIBRARIES "" )
+    set( RT_LIBRARIES "" )
 endif()
 
 ### sanity checks
@@ -373,8 +373,11 @@ add_subdirectory( src )
 add_subdirectory( bamboo )
 add_subdirectory( doc )
 add_subdirectory( share )
-add_subdirectory( tests )
-add_subdirectory( regressions )
+
+if( eckit_HAVE_TESTS )
+    add_subdirectory( tests )
+    add_subdirectory( regressions )
+endif()
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
                        SOURCES AUTHORS README.md NOTICE LICENSE

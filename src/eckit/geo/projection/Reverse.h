@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "eckit/geo/Projection.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/spec/Custom.h"
 
 
@@ -34,7 +34,6 @@ public:
     // -- Methods
 
     using P::figure;
-    using P::make_figure;
 
     using P::spec;
     using P::spec_str;
@@ -50,7 +49,7 @@ private:
 
     void fill_spec(spec::Custom& custom) const override {
         P::fill_spec(custom);
-        custom.set("projection", "reverse_" + custom.get_string("projection"));
+        custom.set("type", "reverse_" + custom.get_string("type"));
     }
 };
 

@@ -13,6 +13,7 @@
 #include "eckit/geo/Grid.h"
 
 #include <algorithm>
+#include <cctype>
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
@@ -31,6 +32,11 @@ namespace eckit::geo {
 namespace {
 
 
+// 128-bit hash = 32 hex characters * 4 bits per character
+constexpr size_t DIGEST_LENGTH = 32;
+static_assert(DIGEST_LENGTH == MD5_DIGEST_LENGTH * 2, "MD5 digest length mismatch");
+
+
 util::recursive_mutex MUTEX;
 
 
@@ -45,8 +51,8 @@ class lock_type {
 Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
-Grid::Grid(area::BoundingBox* bbox, Projection* projection) :
-    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime() : bbox), projection_(projection) {}
+Grid::Grid(area::BoundingBox* bbox, const Projection* projection) :
+    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime().release() : bbox), projection_(projection) {}
 
 
 const Spec& Grid::spec() const {
@@ -72,15 +78,40 @@ size_t Grid::size() const {
 }
 
 
+bool Grid::is_uid(const std::string& str) {
+    return str.length() == DIGEST_LENGTH &&
+           std::all_of(str.begin(), str.end(), [](char c) { return std::isxdigit(static_cast<unsigned char>(c)); });
+}
+
+
 Grid::uid_t Grid::uid() const {
-    return uid_.empty() ? (uid_ = calculate_uid()) : uid_;
+    if (uid_.empty()) {
+        const_cast<Grid*>(this)->reset_uid(calculate_uid());
+    }
+
+    return uid_;
 }
 
 
 Grid::uid_t Grid::calculate_uid() const {
     auto id = MD5{spec_str()}.digest();
-    ASSERT(id.length() == MD5_DIGEST_LENGTH * 2);
+    std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
+
+    ASSERT(is_uid(id));
     return id;
+}
+
+
+void Grid::reset_uid(uid_t id) {
+    if (id.empty()) {
+        uid_.clear();
+        return;
+    }
+
+    ASSERT(is_uid(id));
+    std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
+
+    uid_ = id;
 }
 
 
@@ -184,19 +215,25 @@ area::BoundingBox* Grid::calculate_bbox() const {
 }
 
 
-void Grid::reset_uid(uid_t _uid) {
-    ASSERT(_uid.empty() || _uid.length() == 32);
-    uid_ = _uid;
-}
-
-
 void Grid::fill_spec(spec::Custom& custom) const {
     if (area_) {
-        area_->fill_spec(custom);
+        auto area = std::make_unique<spec::Custom>();
+        ASSERT(area);
+
+        area_->fill_spec(*area);
+        if (!area->empty()) {
+            custom.set("area", area.release());
+        }
     }
 
     if (projection_) {
-        projection_->fill_spec(custom);
+        auto projection = std::make_unique<spec::Custom>();
+        ASSERT(projection);
+
+        projection_->fill_spec(*projection);
+        if (!projection->empty()) {
+            custom.set("projection", projection.release());
+        }
     }
 }
 
@@ -260,7 +297,7 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
         cfg->push_back(GridSpecByName::instance().match(grid).spec(grid));
     }
 
-    if (std::string uid; cfg->get("uid", uid)) {
+    if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
         cfg->push_front(GridSpecByUID::instance().get(uid).spec());
     }
 

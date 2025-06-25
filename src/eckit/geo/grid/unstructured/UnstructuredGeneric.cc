@@ -24,7 +24,7 @@ Grid::uid_t UnstructuredGeneric::calculate_uid() const {
     container()->hash(hash);
 
     auto d = hash.digest();
-    ASSERT(d.length() == 32);
+    ASSERT(Grid::is_uid(d));
     return {d};
 }
 

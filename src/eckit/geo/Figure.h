@@ -25,9 +25,7 @@ namespace eckit::geo {
 namespace area {
 class BoundingBox;
 }
-namespace projection {
-class ProjectionOnFigure;
-}
+class Projection;
 namespace spec {
 class Custom;
 }
@@ -97,7 +95,7 @@ private:
     friend bool operator==(const Figure& a, const Figure& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Figure& a, const Figure& b) { return !(a == b); }
 
-    friend class projection::ProjectionOnFigure;
+    friend class Projection;
 };
 
 

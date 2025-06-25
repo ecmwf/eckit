@@ -60,10 +60,10 @@ CASE("projection: ll_to_xyz") {
         Log::info() << to_xyz_2->spec_str() << std::endl;
         Log::info() << to_xyz_3->spec_str() << std::endl;
         Log::info() << to_xyz_4->spec_str() << std::endl;
-        EXPECT(to_xyz_1->spec_str() == R"({"projection":"ll_to_xyz","r":1})");
-        EXPECT(to_xyz_2->spec_str() == R"({"projection":"ll_to_xyz","r":1})");
-        EXPECT(to_xyz_3->spec_str() == R"({"a":1,"b":0.5,"projection":"ll_to_xyz"})");
-        EXPECT(to_xyz_4->spec_str() == R"({"a":1,"b":0.5,"projection":"ll_to_xyz"})");
+        EXPECT(to_xyz_1->spec_str() == R"({"r":1,"type":"ll_to_xyz"})");
+        EXPECT(to_xyz_2->spec_str() == R"({"r":1,"type":"ll_to_xyz"})");
+        EXPECT(to_xyz_3->spec_str() == R"({"a":1,"b":0.5,"type":"ll_to_xyz"})");
+        EXPECT(to_xyz_4->spec_str() == R"({"a":1,"b":0.5,"type":"ll_to_xyz"})");
     }
 
 

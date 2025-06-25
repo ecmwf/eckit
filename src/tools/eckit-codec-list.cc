@@ -72,9 +72,9 @@ protected:
         }
         out << '\n';
         out << "OPTIONS\n";
-        for (Options::const_iterator it = options_.begin(); it != options_.end(); ++it) {
+        for (const auto* option : options_) {
             std::stringstream s;
-            s << **it;
+            s << *option;
             out << indented(s.str()) << "\n\n";
         }
         out << std::flush;
@@ -112,7 +112,7 @@ public:
 
             Options opts                                  = options_;
             std::function<void(const std::string&)> dummy = [](const std::string&) {};
-            Args args(dummy, opts, numberOfPositionalArguments(), minimumPositionalArguments() > 0);
+            Args args(dummy, opts, numberOfPositionalArguments(), minimumPositionalArguments());
 
             int err_code = execute(args);
             return err_code;

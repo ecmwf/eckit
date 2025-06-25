@@ -14,20 +14,20 @@
 
 #include <cmath>
 
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/spec/Custom.h"
-#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
 
 
-static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_1("lambert_azimuthal_equal_area");
-static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_2("laea");
+static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_1("laea");
+static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_2("lambert_azimuthal_equal_area");
 
 
-LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
-    LambertAzimuthalEqualArea({spec.get_double("lon_0"), spec.get_double("lat_0")},
-                              {spec.get_double("first_lon"), spec.get_double("first_lat")}) {}
+LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) : LambertAzimuthalEqualArea({}, {}) {
+    // NOTIMP;
+}
 
 
 LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first) :
@@ -56,7 +56,7 @@ PointLonLat LambertAzimuthalEqualArea::inv(const PointXY& p) const {
 
     return PointLonLat::make_from_lonlatr(
         centre_r_.lonr + std::atan2(p.X * c.sin, rho * phi0_.cos * c.cos - p.Y * phi0_.sin * c.sin),
-        std::asin(c.cos * phi0_.sin + p.Y * c.sin * phi0_.cos / rho));
+        std::asin(c.cos * phi0_.sin + p.Y * c.sin * phi0_.cos / rho), centre_.lon - PointLonLat::FLAT_ANGLE);
 }
 
 
@@ -67,13 +67,11 @@ const std::string& LambertAzimuthalEqualArea::type() const {
 
 
 void LambertAzimuthalEqualArea::fill_spec(spec::Custom& custom) const {
-    ProjectionOnFigure::fill_spec(custom);
+    Projection::fill_spec(custom);
 
-    custom.set("projection", "laea");
-    custom.set("lon_0", centre_.lon);
-    custom.set("lat_0", centre_.lat);
-    custom.set("lon_first", first_.lon);
-    custom.set("lat_first", first_.lat);
+    custom.set("type", type());
+    custom.set("centre_lonlat", std::vector<double>{centre_.lon, centre_.lat});
+    custom.set("first_lonlat", std::vector<double>{first_.lon, first_.lat});
 }
 
 

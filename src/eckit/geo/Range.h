@@ -48,6 +48,9 @@ public:
     double b() const { return b_; }
     double eps() const { return eps_; }
 
+    double min() const { return a_ < b_ ? a_ : b_; }
+    double max() const { return a_ < b_ ? b_ : a_; }
+
     virtual bool periodic() const { return false; }
 
     [[nodiscard]] virtual Range* make_range_flipped() const                             = 0;

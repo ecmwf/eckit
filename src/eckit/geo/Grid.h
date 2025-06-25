@@ -36,7 +36,7 @@ namespace eckit {
 class JSON;
 namespace geo {
 class Area;
-}  // namespace geo
+}
 }  // namespace eckit
 
 
@@ -152,6 +152,8 @@ public:
     uid_t uid() const;
     [[nodiscard]] virtual uid_t calculate_uid() const;
 
+    static bool is_uid(const std::string& uid);
+
     virtual bool includesNorthPole() const;
     virtual bool includesSouthPole() const;
     virtual bool isPeriodicWestEast() const;
@@ -182,7 +184,7 @@ protected:
     // -- Constructors
 
     explicit Grid(const Spec&);
-    explicit Grid(area::BoundingBox*, Projection*);
+    explicit Grid(area::BoundingBox*, const Projection*);
 
     // -- Methods
 
@@ -199,7 +201,7 @@ private:
 
     mutable std::unique_ptr<Area> area_;
     mutable std::unique_ptr<area::BoundingBox> bbox_;
-    mutable std::unique_ptr<Projection> projection_;
+    mutable std::unique_ptr<const Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;
 

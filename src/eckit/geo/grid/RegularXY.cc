@@ -24,6 +24,9 @@
 namespace eckit::geo::grid {
 
 
+RegularXY::RegularXY(const Spec& spec) : Regular(make_ranges_from_spec(spec), ProjectionFactory::build(spec)) {}
+
+
 Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
 #if 0
     Increments inc(spec);
@@ -50,6 +53,11 @@ Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
 }
 
 
+const std::string& RegularXY::type() const {
+    return projection().type();
+}
+
+
 void RegularXY::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
@@ -57,6 +65,10 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
     custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
     custom.set("first_lonlat", std::vector<double>{first_lonlat.lon, first_lonlat.lat});
 }
+
+
+static const GridRegisterType<RegularXY> GRID1("lambert");
+static const GridRegisterType<RegularXY> GRID2("lambert_lam");
 
 
 }  // namespace eckit::geo::grid

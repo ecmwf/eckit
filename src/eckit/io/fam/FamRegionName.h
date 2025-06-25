@@ -29,8 +29,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FamRegionName: public FamName {
+class FamRegionName : public FamName {
 public:  // methods
+
     using FamName::FamName;
 
     ~FamRegionName() = default;

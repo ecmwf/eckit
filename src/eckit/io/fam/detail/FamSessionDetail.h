@@ -34,8 +34,9 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 // SESSION
 
-class FamSessionDetail: public std::enable_shared_from_this<FamSessionDetail> {
+class FamSessionDetail : public std::enable_shared_from_this<FamSessionDetail> {
 public:  // methods
+
     FamSessionDetail(const FamConfig& config);
 
     FamSessionDetail(const FamSessionDetail&)            = delete;
@@ -58,9 +59,8 @@ public:  // methods
     auto lookupRegion(const std::string& regionName) -> FamRegion;
 
     [[nodiscard]]
-    auto createRegion(const fam::size_t  regionSize,
-                      const fam::perm_t  regionPerm,
-                      const std::string& regionName) -> FamRegion;
+    auto createRegion(const fam::size_t regionSize, const fam::perm_t regionPerm, const std::string& regionName)
+        -> FamRegion;
 
     [[nodiscard]]
     auto createRegion(const FamProperty& property) -> FamRegion {
@@ -74,9 +74,8 @@ public:  // methods
     void destroyRegion(const std::string& regionName);
 
     [[nodiscard]]
-    auto ensureCreateRegion(const fam::size_t  regionSize,
-                            const fam::perm_t  regionPerm,
-                            const std::string& regionName) -> FamRegion;
+    auto ensureCreateRegion(const fam::size_t regionSize, const fam::perm_t regionPerm, const std::string& regionName)
+        -> FamRegion;
 
     auto stat(FamRegionDescriptor& region) -> FamProperty;
 
@@ -90,10 +89,8 @@ public:  // methods
     auto lookupObject(const std::string& regionName, const std::string& objectName) -> FamObject;
 
     [[nodiscard]]
-    auto allocateObject(FamRegionDescriptor& region,
-                        fam::size_t          objectSize,
-                        fam::perm_t          objectPerm,
-                        const std::string&   objectName = "") -> FamObject;
+    auto allocateObject(FamRegionDescriptor& region, fam::size_t objectSize, fam::perm_t objectPerm,
+                        const std::string& objectName = "") -> FamObject;
 
     [[nodiscard]]
     auto allocateObject(FamRegionDescriptor& region, const FamProperty& property) -> FamObject {
@@ -106,10 +103,8 @@ public:  // methods
 
     /// IMPORTANT: This method will deallocate any existing object with the same name
     [[nodiscard]]
-    auto ensureAllocateObject(FamRegionDescriptor& region,
-                              fam::size_t          objectSize,
-                              fam::perm_t          objectPerm,
-                              const std::string&   objectName) -> FamObject;
+    auto ensureAllocateObject(FamRegionDescriptor& region, fam::size_t objectSize, fam::perm_t objectPerm,
+                              const std::string& objectName) -> FamObject;
 
     auto stat(FamObjectDescriptor& object) -> FamProperty;
 
@@ -120,32 +115,34 @@ public:  // methods
     //------------------------------------------------------------------------------------------------------------------
     // OBJECT - ATOMIC
 
-    template<typename T>
+    template <typename T>
     auto fetch(FamObjectDescriptor& object, fam::size_t offset) -> T;
 
-    template<typename T>
+    template <typename T>
     void set(FamObjectDescriptor& object, fam::size_t offset, T value);
 
-    template<typename T>
+    template <typename T>
     void add(FamObjectDescriptor& object, fam::size_t offset, T value);
 
-    template<typename T>
+    template <typename T>
     void subtract(FamObjectDescriptor& object, fam::size_t offset, T value);
 
-    template<typename T>
+    template <typename T>
     auto swap(FamObjectDescriptor& object, fam::size_t offset, T value) -> T;
 
-    template<typename T>
+    template <typename T>
     auto compareSwap(FamObjectDescriptor& object, fam::size_t offset, T oldValue, T newValue) -> T;
 
     //------------------------------------------------------------------------------------------------------------------
 
 private:  // methods
+
     friend std::ostream& operator<<(std::ostream& out, const FamSessionDetail& session);
 
     void print(std::ostream& out) const;
 
 private:  // members
+
     const std::string name_;
 
     openfam::fam fam_;

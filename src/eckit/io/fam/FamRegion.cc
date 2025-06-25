@@ -26,8 +26,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamRegion::FamRegion(FamSessionDetail& session, std::unique_ptr<FamRegionDescriptor> region):
-    session_ {session.getShared()}, region_(std::move(region)) {
+FamRegion::FamRegion(FamSessionDetail& session, std::unique_ptr<FamRegionDescriptor> region) :
+    session_{session.getShared()}, region_(std::move(region)) {
     ASSERT(region_);
 }
 
@@ -89,11 +89,11 @@ auto FamRegion::lookupObject(const std::string& objectName) const -> FamObject {
     return session_->lookupObject(name(), objectName);
 }
 
-auto FamRegion::allocateObject(const fam::size_t  objectSize,
-                               const fam::perm_t  objectPerm,
-                               const std::string& objectName,
-                               const bool         overwrite) const -> FamObject {
-    if (overwrite) { return session_->ensureAllocateObject(*region_, objectSize, objectPerm, objectName); }
+auto FamRegion::allocateObject(const fam::size_t objectSize, const fam::perm_t objectPerm,
+                               const std::string& objectName, const bool overwrite) const -> FamObject {
+    if (overwrite) {
+        return session_->ensureAllocateObject(*region_, objectSize, objectPerm, objectName);
+    }
     return session_->allocateObject(*region_, objectSize, objectPerm, objectName);
 }
 
@@ -106,11 +106,21 @@ void FamRegion::deallocateObject(const std::string& objectName) const {
 void FamRegion::print(std::ostream& out) const {
     out << "FamRegion[" << property() << ",status=";
     switch (region_->get_desc_status()) {
-        case Fam_Descriptor_Status::DESC_INVALID:                     out << "invalid"; break;
-        case Fam_Descriptor_Status::DESC_INIT_DONE:                   out << "initialized"; break;
-        case Fam_Descriptor_Status::DESC_INIT_DONE_BUT_KEY_NOT_VALID: out << "initialized_invalidkey"; break;
-        case Fam_Descriptor_Status::DESC_UNINITIALIZED:               out << "uninitialized"; break;
-        default:                                                      out << "unknown"; break;
+        case Fam_Descriptor_Status::DESC_INVALID:
+            out << "invalid";
+            break;
+        case Fam_Descriptor_Status::DESC_INIT_DONE:
+            out << "initialized";
+            break;
+        case Fam_Descriptor_Status::DESC_INIT_DONE_BUT_KEY_NOT_VALID:
+            out << "initialized_invalidkey";
+            break;
+        case Fam_Descriptor_Status::DESC_UNINITIALIZED:
+            out << "uninitialized";
+            break;
+        default:
+            out << "unknown";
+            break;
     }
     out << "]";
 }

@@ -33,10 +33,12 @@ class FamSessionDetail;
 
 class FamObject {
 public:  // types
+
     using UPtr = std::unique_ptr<FamObject>;
     using SPtr = std::shared_ptr<FamObject>;
 
 public:  // methods
+
     FamObject(FamSessionDetail& session, std::unique_ptr<FamObjectDescriptor> object);
 
     ~FamObject();
@@ -77,45 +79,47 @@ public:  // methods
 
     void get(void* buffer, fam::size_t offset, fam::size_t length) const;
 
-    template<typename T>
+    template <typename T>
     auto get(const fam::size_t offset) const -> T {
-        auto buffer = T {0};
+        auto buffer = T{0};
         get(&buffer, offset, sizeof(T));
         return buffer;
     }
 
-    template<typename T>
+    template <typename T>
     void put(const T& buffer, const fam::size_t offset) const {
         put(&buffer, offset, sizeof(T));
     }
 
     // atomic operations
 
-    template<typename T>
+    template <typename T>
     void set(fam::size_t offset, T value) const;
 
-    template<typename T>
+    template <typename T>
     auto fetch(fam::size_t offset) const -> T;
 
-    template<typename T>
+    template <typename T>
     void add(fam::size_t offset, T value) const;
 
-    template<typename T>
+    template <typename T>
     void subtract(fam::size_t offset, T value) const;
 
-    template<typename T>
+    template <typename T>
     auto swap(fam::size_t offset, T value) const -> T;
 
-    template<typename T>
+    template <typename T>
     auto compareSwap(fam::size_t offset, T oldValue, T newValue) const -> T;
 
 private:  // methods
+
     void print(std::ostream& out) const;
 
     friend std::ostream& operator<<(std::ostream& out, const FamObject& object);
 
 private:  // members
-    std::shared_ptr<FamSessionDetail>    session_;
+
+    std::shared_ptr<FamSessionDetail> session_;
     std::shared_ptr<FamObjectDescriptor> object_;
 };
 

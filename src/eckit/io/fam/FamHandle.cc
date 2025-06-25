@@ -23,10 +23,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamHandle::FamHandle(const FamObjectName& name, const Offset& position, const Length& length, const bool overwrite):
-    name_ {name}, pos_ {position}, len_ {length}, overwrite_ {overwrite} { }
+FamHandle::FamHandle(const FamObjectName& name, const Offset& position, const Length& length, const bool overwrite) :
+    name_{name}, pos_{position}, len_{length}, overwrite_{overwrite} {}
 
-FamHandle::FamHandle(const FamObjectName& name, const bool overwrite): FamHandle(name, 0, 0, overwrite) { }
+FamHandle::FamHandle(const FamObjectName& name, const bool overwrite) : FamHandle(name, 0, 0, overwrite) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -37,7 +37,9 @@ void FamHandle::open(const Mode mode) {
 }
 
 void FamHandle::close() {
-    if (mode_ == Mode::WRITE) { flush(); }
+    if (mode_ == Mode::WRITE) {
+        flush();
+    }
     mode_ = Mode::CLOSED;
     pos_  = 0;
     handle_.reset();
@@ -72,8 +74,11 @@ void FamHandle::openForWrite(const Length& length) {
 
     try {
         handle_ = name_.lookup().clone();
-        if (overwrite_ && length > 0) { ASSERT(size() >= length); }
-    } catch (const NotFound& e) {
+        if (overwrite_ && length > 0) {
+            ASSERT(size() >= length);
+        }
+    }
+    catch (const NotFound& e) {
         Log::debug<LibEcKit>() << "FamHandle::openForWrite() " << e.what() << '\n';
         ASSERT(length > 0);
         handle_ = name_.allocate(length).clone();
@@ -88,7 +93,9 @@ long FamHandle::read(void* buffer, const long length) {
     ASSERT(mode_ == Mode::READ);
     ASSERT(0 <= pos_);
 
-    if (size() <= pos_) { return 0; }
+    if (size() <= pos_) {
+        return 0;
+    }
 
     handle_->get(buffer, pos_, length);
 
@@ -112,9 +119,15 @@ long FamHandle::write(const void* buffer, const long length) {
 void FamHandle::print(std::ostream& out) const {
     out << "FamHandle[name=" << name_ << ", position=" << pos_ << ", mode=";
     switch (mode_) {
-        case Mode::CLOSED: out << "closed"; break;
-        case Mode::READ:   out << "read"; break;
-        case Mode::WRITE:  out << "write"; break;
+        case Mode::CLOSED:
+            out << "closed";
+            break;
+        case Mode::READ:
+            out << "read";
+            break;
+        case Mode::WRITE:
+            out << "write";
+            break;
     }
     out << "]";
 }

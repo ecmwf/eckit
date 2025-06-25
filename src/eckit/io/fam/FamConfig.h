@@ -29,8 +29,8 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FamConfig {
-    net::Endpoint endpoint {"127.0.0.1", -1};
-    std::string   sessionName {"EckitFamSession"};
+    net::Endpoint endpoint{"127.0.0.1", -1};
+    std::string sessionName{"EckitFamSession"};
 
     bool operator==(const FamConfig& other) const {
         return (endpoint == other.endpoint && sessionName == other.sessionName);

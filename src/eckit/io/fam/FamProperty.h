@@ -42,8 +42,8 @@ using FamRegionDescriptor = openfam::Fam_Region_Descriptor;
 
 /// @note mirrors Fam_Global_Descriptor
 struct FamDescriptor {
-    std::uint64_t region {0};
-    std::uint64_t offset {0};
+    std::uint64_t region{0};
+    std::uint64_t offset{0};
 };
 
 namespace fam {
@@ -56,12 +56,12 @@ using perm_t = mode_t;
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FamProperty {
-    fam::size_t size {0};
-    fam::perm_t perm {0640};
-    std::string name {""};
+    fam::size_t size{0};
+    fam::perm_t perm{0640};
+    std::string name{""};
 
-    std::uint32_t uid {0};
-    std::uint32_t gid {0};
+    std::uint32_t uid{0};
+    std::uint32_t gid{0};
 
     auto operator==(const FamProperty& other) const -> bool {
         return (size == other.size && perm == other.perm && name == other.name);

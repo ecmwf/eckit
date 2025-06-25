@@ -24,7 +24,7 @@ const static FamURIManager manager(FamPath::SCHEME);
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamURIManager::FamURIManager(const std::string& name): URIManager(name) { }
+FamURIManager::FamURIManager(const std::string& name) : URIManager(name) {}
 
 FamURIManager::~FamURIManager() = default;
 
@@ -46,10 +46,14 @@ DataHandle* FamURIManager::newReadHandle(const URI& uri, const OffsetList& /*off
 
 std::string FamURIManager::asString(const URI& uri) const {
     std::string query = uri.query();
-    if (!query.empty()) { query = "?" + query; }
+    if (!query.empty()) {
+        query = "?" + query;
+    }
 
     std::string fragment = uri.fragment();
-    if (!fragment.empty()) { fragment = "#" + fragment; }
+    if (!fragment.empty()) {
+        fragment = "#" + fragment;
+    }
 
     /// @todo consider return FamObjectName(uri).asString() + query + fragment;
     return uri.scheme() + ":" + uri.name() + query + fragment;

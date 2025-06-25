@@ -34,9 +34,11 @@ class FamSessionDetail;
 /// @brief Manages a list of FamSessionDetail.
 class FamSession {
 public:  // types
+
     using SPtr = std::shared_ptr<FamSessionDetail>;
 
 public:  // methods
+
     FamSession(const FamSession&)            = delete;
     FamSession& operator=(const FamSession&) = delete;
     FamSession(FamSession&&)                 = delete;
@@ -55,11 +57,13 @@ public:  // methods
     void clear();
 
 private:  // methods
+
     FamSession();
 
     ~FamSession();
 
 private:  // members
+
     std::list<SPtr> registry_;
 };
 

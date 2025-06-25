@@ -25,8 +25,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FamURIManager: public URIManager {
+class FamURIManager : public URIManager {
 public:  // methods
+
     FamURIManager(const std::string& name);
 
     ~FamURIManager() override;
@@ -34,6 +35,7 @@ public:  // methods
     bool authority() override { return true; }
 
 private:  // methods
+
     bool exists(const URI&) override;
 
     DataHandle* newWriteHandle(const URI& uri) override;

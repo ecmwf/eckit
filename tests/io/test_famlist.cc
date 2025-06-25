@@ -42,11 +42,11 @@ fam::TestFam tester;
 
 constexpr const auto numThreads = 8;
 constexpr const auto listSize   = 200;
-const auto           listName   = test::fam::TestFam::makeRandomText("LIST");
-const auto           listData   = test::fam::TestFam::makeRandomText("DATA");
+const auto listName             = test::fam::TestFam::makeRandomText("LIST");
+const auto listData             = test::fam::TestFam::makeRandomText("DATA");
 
 std::vector<std::string> testData;
-std::mutex               testMutex;
+std::mutex testMutex;
 
 auto makeTestData(const int number) -> std::string_view {
     std::ostringstream oss;
@@ -95,9 +95,13 @@ CASE("FamList: populate with " + std::to_string(listSize) + " items by " + std::
 
     threads.reserve(numThreads);
 
-    for (auto i = 0; i < numThreads; i++) { threads.emplace_back(populateList); }
+    for (auto i = 0; i < numThreads; i++) {
+        threads.emplace_back(populateList);
+    }
 
-    for (auto&& thread : threads) { thread.join(); }
+    for (auto&& thread : threads) {
+        thread.join();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -31,6 +31,7 @@ namespace eckit {
 
 class FamName {
 public:  // methods
+
     FamName(const net::Endpoint& endpoint, FamPath path);
 
     FamName(const URI& uri);
@@ -50,6 +51,7 @@ public:  // methods
     auto path() const -> const FamPath& { return path_; }
 
 protected:  // methods
+
     auto session() const -> FamSession::SPtr;
 
     virtual void print(std::ostream& out) const;
@@ -57,6 +59,7 @@ protected:  // methods
     friend std::ostream& operator<<(std::ostream& out, const FamName& name);
 
 protected:  // members
+
     net::Endpoint endpoint_;
 
     FamPath path_;

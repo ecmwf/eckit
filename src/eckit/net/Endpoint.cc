@@ -22,7 +22,7 @@ namespace eckit::net {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Endpoint::Endpoint(const URI& uri): host_(uri.host()), port_(uri.port()) {
+Endpoint::Endpoint(const URI& uri) : host_(uri.host()), port_(uri.port()) {
     validate();
 }
 

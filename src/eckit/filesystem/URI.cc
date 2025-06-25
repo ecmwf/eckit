@@ -67,8 +67,8 @@ URI::URI(const std::string& scheme, const URI& uri, const std::string& hostname,
     fragment_(uri.fragment_),
     queryValues_(uri.queryValues_) {}
 
-URI::URI(std::string scheme, const net::Endpoint& endpoint, std::string name) noexcept:
-    name_(std::move(name)), scheme_(std::move(scheme)), host_(endpoint.host()), port_(endpoint.port()) { }
+URI::URI(std::string scheme, const net::Endpoint& endpoint, std::string name) noexcept :
+    name_(std::move(name)), scheme_(std::move(scheme)), host_(endpoint.host()), port_(endpoint.port()) {}
 
 URI::URI(Stream& s) {
     s >> scheme_;

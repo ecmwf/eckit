@@ -50,10 +50,13 @@ const auto testEndpoint = "127.0.0.1:8880"s;
 
 class TestFam {
 public:
+
     ~TestFam() { destroyRegions(); }
 
     void destroyRegions() {
-        for (auto&& region : regions_) { region->destroy(); }
+        for (auto&& region : regions_) {
+            region->destroy();
+        }
     }
 
     static auto makeRandomText(const std::string& text = "") -> std::string {
@@ -68,7 +71,8 @@ public:
     auto getLastRegion() const -> FamRegion::SPtr { return regions_.back(); }
 
 private:
-    FamRegionName name_ {testEndpoint, {}};
+
+    FamRegionName name_{testEndpoint, {}};
 
     std::vector<FamRegion::SPtr> regions_;
 };

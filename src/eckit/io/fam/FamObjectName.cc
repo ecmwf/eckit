@@ -52,9 +52,13 @@ auto FamObjectName::allocate(const fam::size_t objectSize, const bool overwrite)
 auto FamObjectName::exists() const -> bool {
     try {
         return lookup().exists();
-    } catch (const NotFound& notFound) {
+    }
+    catch (const NotFound& notFound) {
         Log::debug<LibEcKit>() << notFound << '\n';
-    } catch (const PermissionDenied& permissionDenied) { Log::debug<LibEcKit>() << permissionDenied << '\n'; }
+    }
+    catch (const PermissionDenied& permissionDenied) {
+        Log::debug<LibEcKit>() << permissionDenied << '\n';
+    }
 
     return false;
 }

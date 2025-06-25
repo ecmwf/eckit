@@ -31,10 +31,12 @@ namespace eckit {
 
 class FamRegion {
 public:  // types
+
     using UPtr = std::unique_ptr<FamRegion>;
     using SPtr = std::shared_ptr<FamRegion>;
 
 public:  // methods
+
     FamRegion(FamSessionDetail& session, std::unique_ptr<FamRegionDescriptor> region);
 
     ~FamRegion();
@@ -66,28 +68,27 @@ public:  // methods
     auto lookupObject(const std::string& objectName) const -> FamObject;
 
     [[nodiscard]]
-    auto allocateObject(fam::size_t        objectSize,
-                        fam::perm_t        objectPerm,
-                        const std::string& objectName = "",
-                        bool               overwrite  = false) const -> FamObject;
+    auto allocateObject(fam::size_t objectSize, fam::perm_t objectPerm, const std::string& objectName = "",
+                        bool overwrite = false) const -> FamObject;
 
     /// IMPOTANT: this uses the region's permissions for the object
     [[nodiscard]]
-    auto allocateObject(fam::size_t        objectSize,
-                        const std::string& objectName = "",
-                        bool               overwrite  = false) const -> FamObject {
+    auto allocateObject(fam::size_t objectSize, const std::string& objectName = "", bool overwrite = false) const
+        -> FamObject {
         return allocateObject(objectSize, permissions(), objectName, overwrite);
     }
 
     void deallocateObject(const std::string& objectName) const;
 
 private:  // methods
+
     void print(std::ostream& out) const;
 
     friend std::ostream& operator<<(std::ostream& out, const FamRegion& region);
 
 private:  // members
-    std::shared_ptr<FamSessionDetail>    session_;
+
+    std::shared_ptr<FamSessionDetail> session_;
     std::shared_ptr<FamRegionDescriptor> region_;
 };
 

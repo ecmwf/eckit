@@ -32,10 +32,12 @@ namespace eckit {
 
 class FamList {
 public:  // types
+
     using iterator       = FamListIterator;
     using const_iterator = FamListConstIterator;
 
 public:  // methods
+
     FamList(const FamRegion& region, const std::string& name);
 
     FamList(const FamRegionName& name);
@@ -75,6 +77,7 @@ public:  // methods
     void pop_back();
 
 private:  // methods
+
     auto initSentinel(const std::string& name, fam::size_t size) const -> FamObject;
 
     // auto region() const -> FamRegion& { return region_; }
@@ -84,6 +87,7 @@ private:  // methods
     friend std::ostream& operator<<(std::ostream& out, const FamList& list);
 
 private:  // members
+
     FamRegion region_;
     FamObject head_;
     FamObject tail_;

@@ -35,7 +35,7 @@ CASE("FamPath: ctor and uuid generation") {
         // uuid of "/region/object"
         constexpr auto* const uuid = "650fa148-fc69-5d6f-a793-5b1190c77e1a";
 
-        const FamPath path {"region", "object"};
+        const FamPath path{"region", "object"};
         EXPECT_EQUAL(path.generateUUID(), uuid);
 
         EXPECT_EQUAL(FamPath("/region/object").generateUUID(), uuid);
@@ -43,12 +43,12 @@ CASE("FamPath: ctor and uuid generation") {
 
     {  // assert uri.scheme
         const auto uri = URI("/regionName/objectName");
-        EXPECT_THROWS_AS(FamPath {uri}, eckit::Exception);
+        EXPECT_THROWS_AS(FamPath{uri}, eckit::Exception);
     }
 
     {
         const auto uri = URI("fam://" + fam::testEndpoint + "/regionName/objectName");
-        EXPECT_NO_THROW(FamPath {uri});
+        EXPECT_NO_THROW(FamPath{uri});
     }
 
     {
@@ -97,7 +97,7 @@ CASE("FamRegionName: ctor, lookup, and allocate") {
 }
 
 CASE("FamObjectName: ctor, lookup, and allocate") {
-    FamPath path {fam::TestFam::makeRandomText("REGION"), fam::TestFam::makeRandomText("OBJECT")};
+    FamPath path{fam::TestFam::makeRandomText("REGION"), fam::TestFam::makeRandomText("OBJECT")};
 
     // create region
     EXPECT_NO_THROW(FamRegionName(fam::testEndpoint, "").withRegion(path.regionName).create(1024, 0640));
@@ -132,7 +132,7 @@ CASE("FamRegion: lookup, create, validate properties, and destroy") {
     const auto regionPerm = static_cast<eckit::fam::perm_t>(0640);
 
     {
-        const FamRegionName name {fam::testEndpoint, regionName};
+        const FamRegionName name{fam::testEndpoint, regionName};
         EXPECT_THROWS_AS(name.lookup(), NotFound);
         EXPECT_NO_THROW(name.create(regionSize, regionPerm));
         EXPECT_NO_THROW(region = name.lookup().clone());
@@ -142,7 +142,7 @@ CASE("FamRegion: lookup, create, validate properties, and destroy") {
     EXPECT_EQUAL(region->permissions(), regionPerm);
     EXPECT_EQUAL(region->name(), regionName);
 
-    const FamProperty prop {regionSize, regionPerm, regionName};
+    const FamProperty prop{regionSize, regionPerm, regionName};
     EXPECT_EQUAL(region->property(), prop);
 
     EXPECT_NO_THROW(region->destroy());
@@ -170,7 +170,7 @@ CASE("FamObject: lookup, create, and destroy") {
     // object inherits permissions from region
     EXPECT_NO_THROW(object = FamObjectName(fam::testEndpoint, path).allocate(objectSize).clone());
 
-    const FamProperty prop {objectSize, regionPerm, objectName};
+    const FamProperty prop{objectSize, regionPerm, objectName};
     EXPECT_EQUAL(prop, object->property());
 
     EXPECT_NO_THROW(object->deallocate());
@@ -193,7 +193,7 @@ CASE("FamObject: lookup, create, and destroy") {
 
         auto object = region.lookupObject(objectName);
 
-        const FamProperty prop {objectSize, objectPerm, objectName};
+        const FamProperty prop{objectSize, objectPerm, objectName};
         EXPECT(object.property() == prop);
 
         EXPECT_NO_THROW(object.deallocate());
@@ -215,7 +215,7 @@ CASE("FamObject: large data small object") {
     const auto objectSize = 32;
     const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
 
-    const FamPath path {regionName, objectName};
+    const FamPath path{regionName, objectName};
 
     {
         auto region = FamRegionName(fam::testEndpoint, path).create(regionSize, regionPerm, true);

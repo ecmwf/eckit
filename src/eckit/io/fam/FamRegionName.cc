@@ -39,19 +39,24 @@ auto FamRegionName::lookup() const -> FamRegion {
     return session()->lookupRegion(path_.regionName);
 }
 
-auto FamRegionName::create(const fam::size_t regionSize,
-                           const fam::perm_t regionPerm,
-                           const bool        overwrite) const -> FamRegion {
-    if (overwrite) { return session()->ensureCreateRegion(regionSize, regionPerm, path_.regionName); }
+auto FamRegionName::create(const fam::size_t regionSize, const fam::perm_t regionPerm, const bool overwrite) const
+    -> FamRegion {
+    if (overwrite) {
+        return session()->ensureCreateRegion(regionSize, regionPerm, path_.regionName);
+    }
     return session()->createRegion(regionSize, regionPerm, path_.regionName);
 }
 
 auto FamRegionName::exists() const -> bool {
     try {
         return lookup().exists();
-    } catch (const NotFound& notFound) {
+    }
+    catch (const NotFound& notFound) {
         Log::debug<LibEcKit>() << notFound << '\n';
-    } catch (const PermissionDenied& permissionDenied) { Log::debug<LibEcKit>() << permissionDenied << '\n'; }
+    }
+    catch (const PermissionDenied& permissionDenied) {
+        Log::debug<LibEcKit>() << permissionDenied << '\n';
+    }
     return false;
 }
 

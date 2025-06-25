@@ -33,8 +33,9 @@ class DataHandle;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FamObjectName: public FamName {
+class FamObjectName : public FamName {
 public:  // methods
+
     using FamName::FamName;
 
     ~FamObjectName() = default;

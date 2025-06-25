@@ -35,9 +35,15 @@ namespace {
 auto parsePath(const std::string& path) -> std::tuple<std::string, std::string> {
     const auto names = Tokenizer("/").tokenize(path);
     switch (names.size()) {
-        case 1:  return {names[0], ""}; break;
-        case 2:  return {names[0], names[1]}; break;
-        default: return {}; break;
+        case 1:
+            return {names[0], ""};
+            break;
+        case 2:
+            return {names[0], names[1]};
+            break;
+        default:
+            return {};
+            break;
     }
 }
 
@@ -60,16 +66,16 @@ auto FamPath::generateUUID(const std::string& name) -> std::string {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamPath::FamPath(std::string region, std::string object):
-    regionName {std::move(region)}, objectName {std::move(object)} { }
+FamPath::FamPath(std::string region, std::string object) :
+    regionName{std::move(region)}, objectName{std::move(object)} {}
 
 FamPath::FamPath(const std::string& path) {
     std::tie(regionName, objectName) = parsePath(path);
 }
 
-FamPath::FamPath(const char* path): FamPath(std::string(path)) { }
+FamPath::FamPath(const char* path) : FamPath(std::string(path)) {}
 
-FamPath::FamPath(const URI& uri): FamPath(uri.name()) {
+FamPath::FamPath(const URI& uri) : FamPath(uri.name()) {
     ASSERT(uri.scheme() == SCHEME);
 }
 

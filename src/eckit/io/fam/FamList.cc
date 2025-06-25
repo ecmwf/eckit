@@ -28,24 +28,32 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamList::FamList(const FamRegion& region, const std::string& listName):
-    region_ {region}, head_ {initSentinel(listName + "-head", sizeof(FamNode))},
-    tail_ {initSentinel(listName + "-tail", sizeof(FamNode))},
-    size_ {initSentinel(listName + "-size", sizeof(fam::size_t))} {
+FamList::FamList(const FamRegion& region, const std::string& listName) :
+    region_{region},
+    head_{initSentinel(listName + "-head", sizeof(FamNode))},
+    tail_{initSentinel(listName + "-tail", sizeof(FamNode))},
+    size_{initSentinel(listName + "-size", sizeof(fam::size_t))} {
     // set head's next to tail's prev
-    if (FamNode::getNextOffset(head_) == 0) { head_.put(tail_.descriptor(), offsetof(FamNode, next)); }
+    if (FamNode::getNextOffset(head_) == 0) {
+        head_.put(tail_.descriptor(), offsetof(FamNode, next));
+    }
     // set tail's prev to head's next
-    if (FamNode::getPrevOffset(tail_) == 0) { tail_.put(head_.descriptor(), offsetof(FamNode, prev)); }
+    if (FamNode::getPrevOffset(tail_) == 0) {
+        tail_.put(head_.descriptor(), offsetof(FamNode, prev));
+    }
 }
 
-FamList::FamList(const FamRegionName& name): FamList(name.lookup(), name.path().objectName) { }
+FamList::FamList(const FamRegionName& name) : FamList(name.lookup(), name.path().objectName) {}
 
 FamList::~FamList() = default;
 
 auto FamList::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject {
     try {
         return region_.allocateObject(size, name);
-    } catch (const AlreadyExists&) { return region_.lookupObject(name); }
+    }
+    catch (const AlreadyExists&) {
+        return region_.lookupObject(name);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

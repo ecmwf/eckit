@@ -30,9 +30,14 @@ class FamObject;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FamHandle: public DataHandle {
+class FamHandle : public DataHandle {
 public:  // methods
-    enum class Mode { CLOSED, READ, WRITE };
+
+    enum class Mode {
+        CLOSED,
+        READ,
+        WRITE
+    };
 
     FamHandle(const FamObjectName& name, const Offset& position, const Length& length, bool overwrite);
 
@@ -61,19 +66,21 @@ public:  // methods
     Length size() override;
 
 private:  // methods
+
     void open(Mode mode);
 
     void print(std::ostream& out) const override;
 
 private:  // members
+
     const FamObjectName name_;
 
-    Offset pos_ {0};
-    Length len_ {0};
+    Offset pos_{0};
+    Length len_{0};
 
-    bool overwrite_ {false};
+    bool overwrite_{false};
 
-    Mode mode_ {Mode::CLOSED};
+    Mode mode_{Mode::CLOSED};
 
     std::unique_ptr<FamObject> handle_;
 };

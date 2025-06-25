@@ -187,23 +187,27 @@ public:
     explicit Retry(const std::string&, const CodeLocation& = {});
 };
 
-class PermissionDenied: public Exception {
+class PermissionDenied : public Exception {
 public:
+
     PermissionDenied(const std::string&);
 };
 
-class NotFound: public Exception {
+class NotFound : public Exception {
 public:
+
     NotFound(const std::string&);
 };
 
-class AlreadyExists: public Exception {
+class AlreadyExists : public Exception {
 public:
+
     AlreadyExists(const std::string&);
 };
 
-class OutOfStorage: public Exception {
+class OutOfStorage : public Exception {
 public:
+
     OutOfStorage(const std::string&);
 };
 

@@ -25,8 +25,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamObject::FamObject(FamSessionDetail& session, std::unique_ptr<FamObjectDescriptor> object):
-    session_ {session.getShared()}, object_ {std::move(object)} {
+FamObject::FamObject(FamSessionDetail& session, std::unique_ptr<FamObjectDescriptor> object) :
+    session_{session.getShared()}, object_{std::move(object)} {
     ASSERT(session_);
     ASSERT(object_);
 }
@@ -57,7 +57,7 @@ bool FamObject::operator==(const FamObject& other) const {
 // OPERATIONS
 
 void FamObject::replaceWith(const FamDescriptor& object) {
-    object_ = std::make_unique<FamObjectDescriptor>(Fam_Global_Descriptor {object.region, object.offset});
+    object_ = std::make_unique<FamObjectDescriptor>(Fam_Global_Descriptor{object.region, object.offset});
 }
 
 void FamObject::deallocate() const {
@@ -109,32 +109,32 @@ void FamObject::get(void* buffer, const fam::size_t offset, const fam::size_t le
 //----------------------------------------------------------------------------------------------------------------------
 // ATOMIC
 
-template<typename T>
+template <typename T>
 auto FamObject::fetch(const fam::size_t offset) const -> T {
     return session_->fetch<T>(*object_, offset);
 }
 
-template<typename T>
+template <typename T>
 void FamObject::set(const fam::size_t offset, const T value) const {
     session_->set<T>(*object_, offset, value);
 }
 
-template<typename T>
+template <typename T>
 void FamObject::add(const fam::size_t offset, const T value) const {
     session_->add<T>(*object_, offset, value);
 }
 
-template<typename T>
+template <typename T>
 void FamObject::subtract(const fam::size_t offset, const T value) const {
     session_->subtract<T>(*object_, offset, value);
 }
 
-template<typename T>
+template <typename T>
 auto FamObject::swap(const fam::size_t offset, const T value) const -> T {  // NOLINT
     return session_->swap<T>(*object_, offset, value);
 }
 
-template<typename T>
+template <typename T>
 auto FamObject::compareSwap(const fam::size_t offset, const T oldValue, const T newValue) const -> T {
     return session_->compareSwap<T>(*object_, offset, oldValue, newValue);
 }

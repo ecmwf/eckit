@@ -39,7 +39,9 @@ auto FamSession::get(const FamConfig& config) -> SPtr {
     ASSERT(!config.sessionName.empty());
 
     for (auto&& session : registry_) {
-        if (session->config() == config) { return session; }
+        if (session->config() == config) {
+            return session;
+        }
     }
 
     // not found
@@ -49,7 +51,8 @@ auto FamSession::get(const FamConfig& config) -> SPtr {
 auto FamSession::getOrAdd(const FamConfig& config) -> SPtr {
     try {
         return get(config);
-    } catch (const Exception&) {
+    }
+    catch (const Exception&) {
         // add new session
         auto session = std::make_shared<FamSessionDetail>(config);
         registry_.emplace_back(session);

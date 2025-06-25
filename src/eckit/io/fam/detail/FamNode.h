@@ -27,10 +27,10 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FamNode {
-    std::uint8_t  version {1};  // 1 byte
+    std::uint8_t version{1};  // 1 byte
     FamDescriptor next;
     FamDescriptor prev;
-    fam::size_t   length {0};
+    fam::size_t length{0};
 
     //------------------------------------------------------------------------------------------------------------------
     // HELPERS (DO NOT add any virtual function here)

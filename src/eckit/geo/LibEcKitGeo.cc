@@ -34,11 +34,30 @@ LibEcKitGeo& LibEcKitGeo::instance() {
 }
 
 
-std::vector<PathName> LibEcKitGeo::etcGrid() {
+std::vector<PathName> LibEcKitGeo::shareArea() {
     static const auto paths = [](const std::string& s) -> std::vector<PathName> {
         const auto ss = StringTools::split(":", s);
         return {ss.begin(), ss.end()};
-    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-etc-grid;$ECKIT_GEO_ETC_GRID", eckit_GEO_ETC_GRID));
+    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-area;$ECKIT_GEO_SHARE_AREA", eckit_GEO_SHARE_AREA));
+    return paths;
+}
+
+
+std::vector<PathName> LibEcKitGeo::shareGrid() {
+    static const auto paths = [](const std::string& s) -> std::vector<PathName> {
+        const auto ss = StringTools::split(":", s);
+        return {ss.begin(), ss.end()};
+    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-grid;$ECKIT_GEO_SHARE_GRID", eckit_GEO_SHARE_GRID));
+    return paths;
+}
+
+
+std::vector<PathName> LibEcKitGeo::shareProjection() {
+    static const auto paths = [](const std::string& s) -> std::vector<PathName> {
+        const auto ss = StringTools::split(":", s);
+        return {ss.begin(), ss.end()};
+    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-projection;$ECKIT_GEO_SHARE_PROJECTION",
+                                                       eckit_GEO_SHARE_PROJECTION));
     return paths;
 }
 
@@ -52,7 +71,8 @@ bool LibEcKitGeo::caching() {
 
 std::string LibEcKitGeo::cacheDir() {
     static std::string path = PathName{
-        LibResource<PathName, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH)};
+        LibResource<std::string, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH),
+        true};
     return path;
 }
 

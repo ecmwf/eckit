@@ -25,6 +25,7 @@ namespace eckit {
 
 class DirCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     DirCmd();
@@ -34,6 +35,7 @@ public:
     ~DirCmd();
 
 private:
+
     // No copy allowed
 
     DirCmd(const DirCmd&);

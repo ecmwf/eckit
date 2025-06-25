@@ -21,10 +21,9 @@
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/Iterator.h"
-#include "eckit/geo/Ordering.h"
+#include "eckit/geo/Order.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/Renumber.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/spec/Custom.h"
@@ -37,7 +36,7 @@ namespace eckit {
 class JSON;
 namespace geo {
 class Area;
-}  // namespace geo
+}
 }  // namespace eckit
 
 
@@ -46,11 +45,14 @@ namespace eckit::geo {
 
 class Grid {
 public:
+
     // -- Types
 
     using uid_t     = std::string;
     using builder_t = BuilderT1<Grid>;
     using ARG1      = const Spec&;
+
+    using order_type = Order::value_type;
 
     struct Iterator final : std::unique_ptr<geo::Iterator> {
         explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
@@ -82,9 +84,36 @@ public:
 
     using iterator = Iterator;
 
-    // -- Constructors
+    class NextIterator final {
+    public:
 
-    explicit Grid(const Spec&);
+        NextIterator(const NextIterator&) = delete;
+        NextIterator(NextIterator&&)      = delete;
+
+        ~NextIterator() {
+            delete current_;
+            delete end_;
+        }
+
+        void operator=(const NextIterator&) = delete;
+        void operator=(NextIterator&&)      = delete;
+
+        bool next(Point&) const;
+        bool has_next() const { return *current_ != *end_; }
+        size_t index() const { return index_; }
+
+    private:
+
+        NextIterator(geo::Iterator* current, const geo::Iterator* end);
+
+        geo::Iterator* current_;
+        const geo::Iterator* end_;
+        mutable size_t index_;
+
+        friend class Grid;
+    };
+
+    // -- Constructors
 
     Grid(const Grid&) = delete;
     Grid(Grid&&)      = delete;
@@ -106,31 +135,44 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    const Spec& spec() const;
+    NextIterator next_iterator() const { return {cbegin().release(), cend().release()}; }
+
+    [[nodiscard]] NextIterator* make_next_iterator() const {
+        return new NextIterator{cbegin().release(), cend().release()};
+    }
+
+    [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
+
+    virtual const std::string& type() const   = 0;
+    virtual std::vector<size_t> shape() const = 0;
 
     virtual size_t size() const;
 
     uid_t uid() const;
     [[nodiscard]] virtual uid_t calculate_uid() const;
 
+    static bool is_uid(const std::string& uid);
+
     virtual bool includesNorthPole() const;
     virtual bool includesSouthPole() const;
     virtual bool isPeriodicWestEast() const;
 
     [[nodiscard]] virtual std::vector<Point> to_points() const;
-    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlon() const;
+    [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    virtual Ordering ordering() const;
-    virtual Renumber reorder(Ordering) const;
+    virtual const order_type& order() const;
+    virtual Reordering reorder(const order_type&) const;
 
     virtual const Area& area() const;
-    virtual Renumber crop(const Area&) const;
+    virtual Reordering crop(const Area&) const;
+
+    virtual const Projection& projection() const;
 
     virtual const area::BoundingBox& boundingBox() const;
     [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
 
-    [[nodiscard]] virtual Grid* make_grid_reordered(Ordering) const;
+    [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
 
     // -- Class methods
@@ -138,30 +180,30 @@ public:
     static std::string className() { return "grid"; }
 
 protected:
+
     // -- Constructors
 
-    explicit Grid(const area::BoundingBox&, Projection* = nullptr, Ordering = Ordering::DEFAULT);
-    explicit Grid(Ordering = Ordering::DEFAULT);
+    explicit Grid(const Spec&);
+    explicit Grid(area::BoundingBox*, const Projection*);
 
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
 
-    static Renumber no_reorder(size_t size);
+    void reset_uid(uid_t = {});
 
     void area(Area* ptr) { area_.reset(ptr); }
     void projection(Projection* ptr) { projection_.reset(ptr); }
 
 private:
+
     // -- Members
 
     mutable std::unique_ptr<Area> area_;
     mutable std::unique_ptr<area::BoundingBox> bbox_;
-    mutable std::unique_ptr<Projection> projection_;
+    mutable std::unique_ptr<const Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;
-
-    Ordering ordering_;
 
     // -- Friends
 
@@ -171,8 +213,8 @@ private:
 
 
 using GridFactoryType = Factory<Grid>;
-using SpecByName      = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
-using SpecByUID       = spec::GeneratorT<spec::SpecGeneratorT0>;
+using GridSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+using GridSpecByUID   = spec::GeneratorT<spec::SpecGeneratorT0>;
 
 
 template <typename T>
@@ -193,16 +235,17 @@ struct GridFactory {
     [[nodiscard]] static const Grid* make_from_string(const std::string&);
 
     [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
-    static void list(std::ostream& out) { return instance().list_(out); }
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
 private:
+
     static GridFactory& instance();
 
     // This is 'const' as Grid should always be immutable
     [[nodiscard]] const Grid* make_from_spec_(const Spec&) const;
 
     [[nodiscard]] Spec* make_spec_(const Spec&) const;
-    void list_(std::ostream&) const;
+    std::ostream& list_(std::ostream&) const;
 };
 
 

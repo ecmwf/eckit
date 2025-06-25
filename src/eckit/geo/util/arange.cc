@@ -20,8 +20,8 @@ namespace eckit::geo::util {
 
 
 std::vector<double> arange(double start, double stop, double step) {
-    if (types::is_approximately_equal(step, 0.) || types::is_approximately_equal(start, stop)
-        || (stop - start) * step < 0.) {
+    if (types::is_approximately_equal(step, 0.) || types::is_approximately_equal(start, stop) ||
+        (stop - start) * step < 0.) {
         std::vector<double> l(1, start);
         return l;
     }

@@ -34,13 +34,11 @@ void URLHandle::encode(Stream& s) const {
     s << uri_;
 }
 
-URLHandle::URLHandle(Stream& s) :
-    DataHandle(s) {
+URLHandle::URLHandle(Stream& s) : DataHandle(s) {
     s >> uri_;
 }
 
-URLHandle::URLHandle(const std::string& uri, bool useSSL) :
-    uri_(uri), useSSL_(useSSL) {}
+URLHandle::URLHandle(const std::string& uri, bool useSSL) : uri_(uri), useSSL_(useSSL) {}
 
 URLHandle::~URLHandle() {}
 

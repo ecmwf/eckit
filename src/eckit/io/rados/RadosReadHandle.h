@@ -27,6 +27,7 @@ class MultiHandle;
 class RadosReadHandle : public eckit::DataHandle {
 
 public:  // methods
+
     RadosReadHandle(const RadosObject&);
     RadosReadHandle(const std::string&);
     RadosReadHandle(Stream&);
@@ -40,6 +41,7 @@ public:  // methods
     std::string title() const;
 
 public:  // methods
+
     Length openForRead() override;
     void openForWrite(const Length&) override;
     void openForAppend(const Length&) override;
@@ -61,6 +63,7 @@ public:  // methods
     const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
+
     RadosObject object_;
 
     Length length_;

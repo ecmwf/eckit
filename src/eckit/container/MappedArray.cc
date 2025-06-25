@@ -11,11 +11,11 @@
 #include "eckit/eckit.h"
 
 #include <fcntl.h>
-#include <stdint.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cstdint>
 #include <cstring>
 
 #include "eckit/container/MappedArray.h"
@@ -29,8 +29,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-MappedArray<T>::MappedArray(const PathName& path, unsigned long size) :
-    sem_(path), size_(size) {
+MappedArray<T>::MappedArray(const PathName& path, unsigned long size) : sem_(path), size_(size) {
 
     AutoLock<Semaphore> lock(sem_);
 

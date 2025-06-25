@@ -1,22 +1,24 @@
 eckit
 =====
 
-[![eckit release version](https://img.shields.io/github/release/ecmwf/eckit.svg)](https://github.com/ecmwf/eckit/releases/latest)
-[![travis master](https://img.shields.io/travis/ecmwf/eckit/master.svg?label=master&logo=travis)](http://travis-ci.org/ecmwf/eckit "master")
-[![travis develop](https://img.shields.io/travis/ecmwf/eckit/develop.svg?label=develop&logo=travis)](http://travis-ci.org/ecmwf/eckit "develop")
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/094b5cd7496e46558d4495e6ec7d3c65)](https://www.codacy.com/app/tlmquintino/eckit?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ecmwf/eckit&amp;utm_campaign=Badge_Grade)
+[![Latest Tag](https://img.shields.io/github/v/tag/ecmwf/eckit?label=latest&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/tags)
+[![CI](https://img.shields.io/github/actions/workflow/status/ecmwf/eckit/ci.yml?branch=master&label=ci%20(master)&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/ecmwf/eckit/ci.yml?branch=develop&label=ci%20(develop)&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ecmwf/eckit/branch/develop/graph/badge.svg)](https://codecov.io/gh/ecmwf/eckit)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecmwf/eckit/blob/develop/LICENSE)
 
 Project home: https://software.ecmwf.int/wiki/display/ECKIT
 
 
-ecKit is a cross-platform C++ toolkit that supports development of tools and applications at ECMWF.
-It is based on code developed over the last 20 years within the MARS software and was re-factored out to be reused by other applications.
-It provides a an abstraction layer on top of the operating system, so it is easier to port code to new architectures.
-It is developed taking into account the robustness requirements of running production systems at ECMWF.
-The main focus is UNIX/POSIX systems, and it has been thoroughly tested on AIX, Linux and Mac OSX.
-Historically, the code base pre-dates and in some way can be seen as a leaner substitute for some 'Boost' libraries.
+ecKit is a cross-platform C++ toolkit that supports development of tools and
+applications at ECMWF. It is based on code developed over the last 20 years
+within the MARS software and was re-factored out to be reused by other
+applications. It provides a an abstraction layer on top of the operating
+system, so it is easier to port code to new architectures. It is developed
+taking into account the robustness requirements of running production systems
+at ECMWF. The main focus is UNIX/POSIX systems, and it has been thoroughly
+tested on AIX, Linux and Mac OSX. Historically, the code base pre-dates and in
+some way can be seen as a leaner substitute for some 'Boost' libraries.
 
 It features facilities to easily handle, in a cross-platform way:
 * multi-threading
@@ -35,8 +37,8 @@ It features facilities to easily handle, in a cross-platform way:
 * MPI object-oriented wrapper
 * linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
 * advanced container classes
-    * space partition trees
-    * file-mapped arrays
+* space partition trees
+* file-mapped arrays
 
 
 Requirements

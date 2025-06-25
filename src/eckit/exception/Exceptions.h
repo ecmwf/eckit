@@ -8,10 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
+/**
+ * About adding new exceptions:
+ * Please declare only the most general types of exceptions in this file.
+ * This means exceptions that have a generic meaning and can be used widely.
+ * Ideally there should already be multiple (intended) users of this new
+ * Exception type.
+ *
+ * In general try to keep your domain specific exceptions close to your
+ * implementation if there is no generic use case. See for example
+ * eckit::geo::exception::AreaError.
+ */
+
 #ifndef eckit_Exceptions_h
 #define eckit_Exceptions_h
 
-#include <errno.h>
+#include <cerrno>
 #include <iostream>
 #include <sstream>
 
@@ -23,32 +35,45 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void handle_panic(const char*);
-void handle_panic(const char*, const CodeLocation&);
-void handle_panic_no_log(const char*, const CodeLocation&);
+void handle_panic(const char*, const CodeLocation& = {});
+void handle_panic_no_log(const char*, const CodeLocation& = {});
+void handle_assert(const std::string&, const CodeLocation& = {});
 
-void handle_assert(const std::string&, const CodeLocation&);
-
-/// @brief General purpose exception
-/// Derive other exceptions from this class and implement then in the class that throws them.
-
+/**
+ * @brief Base class for all ECMWF exceptions.
+ * All exception types shall inherit from this class, either directly or
+ * indirectly.
+ *
+ * When inheriting from this class prefer your Exception type to be
+ * constructible from a message and a code location, e.g.:
+ * ```
+ * class MyException : public Exception {
+ * public:
+ *     MyException(const std::string& msg, const CodeLocation& loc = {}) :
+ *         Exception(msg, loc){}
+ * }
+ * ```
+ */
 class Exception : public std::exception {
+public:
 
-public:  // methods
-    /// Constructor with message
-    Exception(const std::string& what);
+    /// Constructors
+    explicit Exception(const std::string& what, const CodeLocation& = {});
+    Exception();
 
-    /// Constructor with message and location
-    Exception(const std::string& what, const CodeLocation& location);
-
-    /// Constructor with message location and "quiet" flag
-    Exception(const std::string& what, const CodeLocation& location, bool quiet);
+    Exception(const Exception&) = default;
+    Exception(Exception&&)      = default;
 
     /// Destructor
     /// @throws nothing
     ~Exception() noexcept override;
 
+    /// Operators
+    Exception& operator=(const Exception&) = default;
+    Exception& operator=(Exception&&)      = default;
+
     const char* what() const noexcept override { return what_.c_str(); }
+
     virtual bool retryOnServer() const { return false; }
     virtual bool retryOnClient() const { return false; }
     virtual bool terminateApplication() const { return false; }
@@ -60,22 +85,21 @@ public:  // methods
 
     const CodeLocation& location() const { return location_; }
 
-    void dumpStackTrace(std::ostream& = std::cout);
+    std::ostream& dumpStackTrace(std::ostream& = std::cout);
 
-protected:  // methods
+protected:
+
     void reason(const std::string&);
-
-    Exception();
 
     virtual void print(std::ostream&) const;
 
-private:                     // members
+private:
+
     std::string what_;       ///< description
     std::string callStack_;  ///< call stack
     SavedStatus save_;       ///< saved monitor status to recover after destruction
     Exception* next_;
     CodeLocation location_;  ///< where exception was first thrown
-
 
     friend std::ostream& operator<<(std::ostream& s, const Exception& p) {
         p.print(s);
@@ -83,91 +107,84 @@ private:                     // members
     }
 };
 
-
 //----------------------------------------------------------------------------------------------------------------------
-
 
 class SeriousBug : public Exception {
 public:
-    SeriousBug(const std::string& w);
-    SeriousBug(const std::string&, const CodeLocation&);
-    SeriousBug(const char*, const CodeLocation&);
+
+    explicit SeriousBug(const std::string&, const CodeLocation& = {});
 };
 
 class TooManyRetries : public Exception {
 public:
-    TooManyRetries(const int);
-    TooManyRetries(const int, const std::string& msg);
+
+    explicit TooManyRetries(int, const std::string& msg = "");
 };
 
 class TimeOut : public Exception {
 public:
-    TimeOut(const std::string&, const unsigned long);
+
+    TimeOut(const std::string&, unsigned long);
 };
 
 class FailedLibraryCall : public Exception {
 public:
+
     FailedLibraryCall(const std::string& lib, const std::string& func, const std::string& msg, const CodeLocation&);
 };
 
 class FailedSystemCall : public Exception {
 public:
-    FailedSystemCall(const std::string&);
-    FailedSystemCall(const std::string&, const CodeLocation&);
-    FailedSystemCall(const char*, const CodeLocation&, int);
-    FailedSystemCall(const std::string&, const char*, const CodeLocation&, int);
+
+    FailedSystemCall(const std::string&, const CodeLocation& = {}, int = 0);
 };
 
 class AssertionFailed : public Exception {
 public:
-    AssertionFailed(const std::string&);
-    AssertionFailed(const std::string&, const CodeLocation&);
-    AssertionFailed(const char*, const CodeLocation&);
+
+    explicit AssertionFailed(const std::string&, const CodeLocation& = {});
 };
 
 class BadParameter : public Exception {
 public:
-    BadParameter(const std::string& s);
-    BadParameter(const std::string&, const CodeLocation&);
+
+    explicit BadParameter(const std::string&, const CodeLocation& = {});
 };
 
 class BadCast : public Exception {
 public:
-    BadCast(const std::string& s);
-    BadCast(const std::string&, const CodeLocation&);
+
+    explicit BadCast(const std::string&, const CodeLocation& = {});
 };
 
 class BadValue : public Exception {
 public:
-    BadValue(const std::string& s);
-    BadValue(const std::string&, const CodeLocation&);
-};
 
-class NotImplemented : public Exception {
-public:
-    explicit NotImplemented(const std::string& s, const CodeLocation& = {});
-    explicit NotImplemented(const CodeLocation&);
+    explicit BadValue(const std::string&, const CodeLocation& = {});
 };
 
 class Stop : public Exception {
 public:
-    Stop(const std::string&);
+
+    explicit Stop(const std::string&, const CodeLocation& = {});
 };
 
 class Abort : public Exception {
 public:
-    Abort(const std::string&);
-    Abort(const std::string&, const CodeLocation&);
+
+    explicit Abort(const std::string&, const CodeLocation& = {});
 };
 
 class Cancel : public Exception {
 public:
-    Cancel(const std::string&);
+
+    explicit Cancel(const std::string&, const CodeLocation& = {});
 };
 
 class Retry : public Exception {
 public:
-    Retry(const std::string&);
+
+    explicit Retry(const std::string&, const CodeLocation& = {});
 };
 
 class PermissionDenied: public Exception {
@@ -192,17 +209,25 @@ public:
 
 class UserError : public Exception {
 public:
-    UserError(const std::string&, const CodeLocation&);
-    UserError(const std::string&);
-    UserError(const std::string&, const std::string&);
-    UserError(const std::string&, int);
+
+    explicit UserError(const std::string&, const CodeLocation& = {});
+    UserError(const std::string&, const std::string&, const CodeLocation& = {});
 };
 
 class OutOfRange : public Exception {
 public:
-    OutOfRange(const std::string&, const CodeLocation&);
-    OutOfRange(unsigned long long, unsigned long long, const CodeLocation&);
-    OutOfRange(unsigned long long, unsigned long long);
+
+    explicit OutOfRange(const std::string&, const CodeLocation& = {});
+    OutOfRange(unsigned long long, unsigned long long, const CodeLocation& = {});
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class NotImplemented : public Exception {
+public:
+
+    explicit NotImplemented(const std::string&, const CodeLocation&);
+    explicit NotImplemented(const CodeLocation& loc) : NotImplemented({}, loc) {}
 };
 
 /// For compatibility
@@ -210,7 +235,8 @@ using MethodNotYetImplemented [[deprecated("Use eckit::NotImplemented directly")
 
 class FunctionalityNotSupported : public NotImplemented {
 public:
-    explicit FunctionalityNotSupported(const std::string& what, const CodeLocation& loc = {});
+
+    explicit FunctionalityNotSupported(const std::string& what, const CodeLocation& = {});
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -219,52 +245,56 @@ public:
 
 class FileError : public Exception {
 protected:
-    FileError(const std::string&);
-    FileError(const std::string&, const CodeLocation&);
-    FileError();
+
+    FileError(const std::string& file, const CodeLocation&);
+    FileError() = default;
 };
 
 class CantOpenFile : public FileError {
     bool retry_;
-    virtual bool retryOnServer() const { return retry_; }
+    bool retryOnServer() const override { return retry_; }
 
 public:
-    CantOpenFile(const std::string&, bool retry = false);
-    CantOpenFile(const std::string&, const CodeLocation&, bool retry = false);
+
+    explicit CantOpenFile(const std::string& file, bool retry = false, const CodeLocation& = {});
 };
 
 class WriteError : public FileError {
 public:
-    WriteError(const std::string&);
-    WriteError(const std::string&, const CodeLocation&);
+
+    explicit WriteError(const std::string& file, const CodeLocation& = {});
 };
 
 class ReadError : public FileError {
 public:
-    ReadError(const std::string&);
-    ReadError(const std::string&, const CodeLocation&);
+
+    explicit ReadError(const std::string& file, const CodeLocation& = {});
 };
 
 class CloseError : public FileError {
 public:
-    CloseError(const std::string&, const CodeLocation&);
+
+    explicit CloseError(const std::string& file, const CodeLocation& = {});
 };
 
 class ShortFile : public ReadError {
 public:
-    ShortFile(const std::string&);
-    ShortFile(const std::string&, const CodeLocation&);
+
+    explicit ShortFile(const std::string& file, const CodeLocation& = {});
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class RemoteException : public Exception {
 public:
-    RemoteException(const std::string& msg, const std::string& from);
+
+    RemoteException(const std::string&, const std::string& from);
 };
 
 class UnexpectedState : public Exception {
 public:
-    UnexpectedState(const std::string& msg);
-    UnexpectedState(const std::string&, const CodeLocation&);
+
+    explicit UnexpectedState(const std::string&, const CodeLocation& = {});
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -277,40 +307,43 @@ inline T SysCall(T code, const char* msg, const char* file, int line, const char
     return code;
 }
 
-
 template <class T>
 inline long long SysCall(long long code, const char* msg, const T& ctx, const char* file, int line, const char* func) {
     if (code < 0) {
         std::ostringstream os;
-        os << ctx;
-        throw FailedSystemCall(os.str(), msg, CodeLocation(file, line, func), errno);
+        os << msg << " [" << ctx << "]";
+        throw FailedSystemCall(os.str(), CodeLocation(file, line, func), errno);
     }
     return code;
 }
 
-
 inline void ThrCall(int code, const char* msg, const char* file, int line, const char* func) {
-    if (code != 0) {  // Threads return errno in return code
+    if (code != 0) {
+        // Threads return errno in return code
         handle_panic(msg, CodeLocation(file, line, func));
     }
 }
 
-/// This functions hides that assertions may be handled by a throw of AssertionFailed
-/// which is incompatible with using ASSERT inside destructors that are marked as no-throw,
-/// which is the default behavior in C++11.
-/// If env var ECKIT_ASSERT_ABORTS is set the assertion will abort instead of throwing.
-/// In the future this will become the default behavior.
+/**
+ * This functions hides that assertions may be handled by a throw of AssertionFailed
+ * which is incompatible with using ASSERT inside destructors that are marked as no-throw,
+ * which is the default behavior in C++11.
+ * If env var ECKIT_ASSERT_ABORTS is set the assertion will abort instead of throwing.
+ * In the future this will become the default behavior.
+ */
 inline void Assert(int code, const char* msg, const char* file, int line, const char* func) {
     if (code != 0) {
         handle_assert(msg, eckit::CodeLocation(file, line, func));
     }
 }
 
-/// This functions hides that assertions may be handled by a throw of AssertionFailed
-/// which is incompatible with using ASSERT inside destructors that are marked as no-throw,
-/// which is the default behavior in C++11.
-/// If env var ECKIT_ASSERT_ABORTS is set the assertion will abort instead of throwing.
-/// In the future this will become the default behavior.
+/**
+ * This functions hides that assertions may be handled by a throw of AssertionFailed
+ * which is incompatible with using ASSERT inside destructors that are marked as no-throw,
+ * which is the default behavior in C++11.
+ * If env var ECKIT_ASSERT_ABORTS is set the assertion will abort instead of throwing.
+ * In the future this will become the default behavior.
+ */
 inline void Assert(int code, const std::string& msg, const char* file, int line, const char* func) {
     if (code != 0) {
         handle_assert(msg, eckit::CodeLocation(file, line, func));
@@ -331,12 +364,13 @@ inline void PanicNoLog(int code, const char* msg, const CodeLocation& loc) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// For compatibility
+// For compatibility
 class OutOfMemory : public Exception {
-    virtual bool terminateApplication() const { return true; }
-    virtual const char* what() const noexcept { return "OutOfMemory"; }
+    bool terminateApplication() const override { return true; }
+    const char* what() const noexcept override { return "OutOfMemory"; }
 
 public:
+
     OutOfMemory();
 };
 

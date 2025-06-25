@@ -22,14 +22,16 @@ namespace eckit {
 template <class Traits, class Partition>
 class BSPTreeX : public SPTree<Traits, BSPNode<Traits, Partition> > {
 public:
+
     typedef typename Traits::Alloc Alloc;
 
 private:
+
     Partition partition_;
 
 public:
-    BSPTreeX(Alloc& alloc) :
-        SPTree<Traits, BSPNode<Traits, Partition> >(alloc) {}
+
+    BSPTreeX(Alloc& alloc) : SPTree<Traits, BSPNode<Traits, Partition> >(alloc) {}
 
 
     /// Container must be a random access
@@ -46,8 +48,8 @@ class BSPTreeMemory : public BSPTreeX<TT<Traits, KDMemory>, Partition> {
     KDMemory alloc_;
 
 public:
-    BSPTreeMemory() :
-        BSPTreeX<TT<Traits, KDMemory>, Partition>(alloc_) {}
+
+    BSPTreeMemory() : BSPTreeX<TT<Traits, KDMemory>, Partition>(alloc_) {}
 };
 
 template <class Traits, class Partition>
@@ -55,6 +57,7 @@ class BSPTreeMapped : public BSPTreeX<TT<Traits, KDMapped>, Partition> {
     KDMapped alloc_;
 
 public:
+
     BSPTreeMapped(const eckit::PathName& path, size_t itemCount, size_t metadataSize) :
         BSPTreeX<TT<Traits, KDMapped>, Partition>(alloc_),
         alloc_(path, itemCount, sizeof(BSPNode<TT<Traits, KDMapped>, Partition>), metadataSize) {}

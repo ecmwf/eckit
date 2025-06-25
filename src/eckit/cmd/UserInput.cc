@@ -1,10 +1,10 @@
-#include <limits.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <climits>
+#include <csignal>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "eckit/cmd/UserInput.h"
 
@@ -15,8 +15,7 @@ struct termios save;
 static bool inited = false;
 
 
-enum
-{
+enum {
     ESC       = 0x1B,
     BACKSPACE = 0x7F,
     TAB       = 0x9,
@@ -125,8 +124,8 @@ static bool processCode(int c, context* s);
 
 static void output(const context* s) {
     const size_t numBytes = strlen(s->prompt) + strlen(s->curr->edit) + 20;
-    char* buffer = (char*)malloc(numBytes);
-    snprintf(buffer, numBytes,"\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->edit, strlen(s->prompt) + s->pos);
+    char* buffer          = (char*)malloc(numBytes);
+    snprintf(buffer, numBytes, "\r%s%s\033[0K\r\033[%luC", s->prompt, s->curr->edit, strlen(s->prompt) + s->pos);
     write(1, buffer, strlen(buffer));
     free(buffer);
 }

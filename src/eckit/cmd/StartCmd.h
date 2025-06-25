@@ -25,6 +25,7 @@ namespace eckit {
 
 class StartCmd : public eckit::CmdResource {
 public:
+
     // -- Contructors
 
     StartCmd();
@@ -34,6 +35,7 @@ public:
     ~StartCmd();
 
 private:
+
     // No copy allowed
 
     StartCmd(const StartCmd&);

@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <stdio.h>
+#include <cstdio>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
@@ -16,8 +16,7 @@
 
 namespace eckit {
 
-StdFile::StdFile(const PathName& name, const std::string& mode) :
-    file_(0) {
+StdFile::StdFile(const PathName& name, const std::string& mode) : file_(0) {
     file_ = ::fopen(name.localPath(), mode.c_str());
 
     if (file_ == 0) {

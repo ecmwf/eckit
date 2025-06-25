@@ -29,6 +29,7 @@ class YAMLParser : public ObjectParser {
 
 
 public:  // methods
+
     YAMLParser(std::istream& in);
     ~YAMLParser() override;
 
@@ -36,6 +37,7 @@ public:  // methods
     static Value decodeString(const std::string& str);
 
 private:
+
     std::deque<YAMLItem*> items_;
     YAMLItem* last_;
 
@@ -46,6 +48,7 @@ private:
     std::map<Value, Value> anchors_;
 
 private:
+
     void loadItem();
     const YAMLItem& nextItem();
     const YAMLItem& peekItem();

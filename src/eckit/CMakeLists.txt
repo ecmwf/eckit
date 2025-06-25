@@ -709,9 +709,11 @@ list( APPEND eckit_utils_srcs
     utils/Hash.h
     utils/HyperCube.cc
     utils/HyperCube.h
+    utils/Literals.h
     utils/MD5.cc
     utils/MD5.h
     utils/Optional.h
+    utils/Overloaded.h
     utils/RLE.cc
     utils/RLE.h
     utils/Regex.cc
@@ -1009,4 +1011,3 @@ endif()
 if( eckit_HAVE_ECKIT_GEO )
     add_subdirectory( geo )
 endif()
-

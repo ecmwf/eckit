@@ -20,6 +20,7 @@ namespace eckit::geo::grid {
 
 class RegularLL final : public Regular {
 public:
+
     // -- Constructors
 
     explicit RegularLL(const Spec&);
@@ -30,9 +31,16 @@ public:
 
     [[nodiscard]] static Spec* spec(const std::string& name);
 
+    double dlon() const { return dx(); }
+    double dlat() const { return dy(); }
+
+    size_t nlon() const { return nx(); }
+    size_t nlat() const { return ny(); }
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] area::BoundingBox* calculate_bbox() const override;

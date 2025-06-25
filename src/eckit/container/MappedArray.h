@@ -14,7 +14,7 @@
 #ifndef eckit_MappedArray_h
 #define eckit_MappedArray_h
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
@@ -31,6 +31,7 @@ namespace eckit {
 template <class T>
 class MappedArray : private NonCopyable {
 public:
+
     // stl compatibility
 
     typedef T* iterator;
@@ -61,6 +62,7 @@ public:
     T& operator[](unsigned long n) { return array_[n]; }
 
 private:  // members
+
     Semaphore sem_;
     void* map_;
     int fd_;
@@ -74,8 +76,7 @@ private:  // members
         uint32_t version_;
         uint32_t headerSize_;
         uint32_t elemSize_;
-        Header() :
-            version_(mapped_array_version()), headerSize_(sizeof(Header)), elemSize_(sizeof(T)) {}
+        Header() : version_(mapped_array_version()), headerSize_(sizeof(Header)), elemSize_(sizeof(T)) {}
         void validate() {
             ASSERT(version_ == mapped_array_version());
             ASSERT(headerSize_ == sizeof(Header));

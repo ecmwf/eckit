@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <errno.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cerrno>
 
 #include <cassert>
 #include <cstdio>
@@ -106,8 +106,7 @@ CASE("Test memory map") {
     // map the file
     std::cout << "mapping " << Bytes(MAP_SIZE) << " from " << Bytes(SIZE_LW) << " to " << Bytes(SIZE_UP) << std::endl;
 
-    if ((map = (int*)MMap::mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, SIZE_LW))
-        == MAP_FAILED) {
+    if ((map = (int*)MMap::mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, SIZE_LW)) == MAP_FAILED) {
         close(fd), perror("Error mmapping the file"), exit(EXIT_FAILURE);
     }
 

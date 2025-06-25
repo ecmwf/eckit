@@ -36,6 +36,7 @@ class Splitter;
 
 class Reader : public eckit::NonCopyable {
 public:
+
     Reader(eckit::DataHandle*, bool opened = false);
     Reader(eckit::DataHandle&, bool opened = false);
 
@@ -47,6 +48,7 @@ public:
     eckit::Offset position();
 
 private:
+
     std::unique_ptr<Splitter> splitter_;
     eckit::PeekHandle handle_;
 

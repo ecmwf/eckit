@@ -28,15 +28,11 @@ constexpr double tolerance = 1.e-8;
 
 
 CASE("test determinant") {
-    Matrix M{1,
-             2,
+    Matrix M{1, 2,
              3,  //
-             4,
-             5,
+             4, 5,
              6,  //
-             7,
-             8,
-             1};
+             7, 8, 1};
 
     EXPECT(types::is_approximately_equal(M.determinant(), 24., tolerance));
 }
@@ -45,46 +41,31 @@ CASE("test determinant") {
 CASE("test inverse") {
     auto is_approximately_equal = [](const Matrix& A, const Matrix& B) {
         ASSERT(A.size() == B.size());
-        return std::equal(A.begin(), A.end(), B.begin(), [](double a, double b) {
-            return types::is_approximately_equal(a, b, tolerance);
-        });
+        return std::equal(A.begin(), A.end(), B.begin(),
+                          [](double a, double b) { return types::is_approximately_equal(a, b, tolerance); });
     };
 
-    Matrix M{1,
-             2,
+    Matrix M{1, 2,
              3,  //
-             4,
-             5,
+             4, 5,
              6,  //
-             7,
-             8,
-             1};
+             7, 8, 1};
 
     // Calculate inverse
     auto W = M.inverse();
-    EXPECT(is_approximately_equal(W,
-                                  {-43. / 24.,
-                                   22. / 24.,
-                                   -3. / 24.,  //
-                                   38. / 24.,
-                                   -20. / 24.,
-                                   6. / 24.,  //
-                                   -3. / 24.,
-                                   6. / 24.,
-                                   -3. / 24.}));
+    EXPECT(is_approximately_equal(W, {-43. / 24., 22. / 24.,
+                                      -3. / 24.,  //
+                                      38. / 24., -20. / 24.,
+                                      6. / 24.,  //
+                                      -3. / 24., 6. / 24., -3. / 24.}));
 
     // Calculate identity
     auto I = Matrix::identity();
-    EXPECT(is_approximately_equal(I,
-                                  {1,
-                                   0,
-                                   0,  //
-                                   0,
-                                   1,
-                                   0,  //
-                                   0,
-                                   0,
-                                   1}));
+    EXPECT(is_approximately_equal(I, {1, 0,
+                                      0,  //
+                                      0, 1,
+                                      0,  //
+                                      0, 0, 1}));
 
     EXPECT(is_approximately_equal(I, W * M));
     EXPECT(is_approximately_equal(I, M * W));

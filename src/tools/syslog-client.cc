@@ -1,13 +1,13 @@
 #include <arpa/inet.h>
-#include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
@@ -23,8 +23,8 @@ namespace eckit {
 
 class SysLogClient : public eckit::Tool {
 public:
-    SysLogClient(int argc, char** argv) :
-        Tool(argc, argv) {}
+
+    SysLogClient(int argc, char** argv) : Tool(argc, argv) {}
 
     ~SysLogClient() {}
 

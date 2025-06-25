@@ -28,6 +28,7 @@ class SQLTable;
 
 class SQLColumn : public SQLIterator {
 public:
+
     SQLColumn(const type::SQLType&, SQLTable&, const std::string&, size_t index, bool hasMissingValue,
               double missingValue, const BitfieldDef& d = BitfieldDef());
     ~SQLColumn() override;
@@ -69,11 +70,14 @@ public:
     void advance(unsigned long) override;
 
 protected:
+
     unsigned long long noRows_;
 
     void print(std::ostream&) const override;
     // private:
+
 protected:
+
     SQLColumn(const SQLColumn&);
     SQLColumn& operator=(const SQLColumn&);
 

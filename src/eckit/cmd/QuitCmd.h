@@ -25,6 +25,7 @@ namespace eckit {
 
 class QuitCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     QuitCmd();
@@ -34,6 +35,7 @@ public:
     ~QuitCmd();
 
 private:
+
     // No copy allowed
 
     QuitCmd(const QuitCmd&);

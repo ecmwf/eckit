@@ -35,13 +35,13 @@ class PipelineReader : public Thread {
     DataHandle& out_;
 
 public:
+
     PipelineReader(Pipeline& owner_, DataHandle& in, DataHandle& out);
     virtual void run();
 };
 
 
-PipelineReader::PipelineReader(Pipeline& owner, DataHandle& in, DataHandle& out) :
-    owner_(owner), in_(in), out_(out) {}
+PipelineReader::PipelineReader(Pipeline& owner, DataHandle& in, DataHandle& out) : owner_(owner), in_(in), out_(out) {}
 
 void PipelineReader::run() {
     try {
@@ -59,6 +59,7 @@ class PipelineExecutor : public Thread {
     DataHandle& out_;
 
 public:
+
     PipelineExecutor(Pipeline& owner_, DataHandle& in, DataHandle& out);
     virtual void run();
 };

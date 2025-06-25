@@ -30,14 +30,11 @@ ClassSpec StringContent::classSpec_ = {
 Reanimator<StringContent> StringContent::reanimator_;
 
 
-StringContent::StringContent(const std::string& s) :
-    value_(s) {}
+StringContent::StringContent(const std::string& s) : value_(s) {}
 
-StringContent::StringContent(const char* s) :
-    value_(s) {}
+StringContent::StringContent(const char* s) : value_(s) {}
 
-StringContent::StringContent(Stream& s) :
-    Content(s) {
+StringContent::StringContent(Stream& s) : Content(s) {
     s >> value_;
 }
 
@@ -66,7 +63,7 @@ int StringContent::compare(const Content& other) const {
 }
 
 int StringContent::compareString(const StringContent& other) const {
-    return ::strcmp(value_.c_str(), other.value_.c_str());
+    return value_.compare(other.value_);
 }
 
 void StringContent::value(std::string& s) const {

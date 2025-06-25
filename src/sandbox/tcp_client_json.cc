@@ -23,8 +23,8 @@ class Client : public Application {
     virtual void run();
 
 public:
-    Client(int argc, char** argv) :
-        Application(argc, argv, "HOME") {}
+
+    Client(int argc, char** argv) : Application(argc, argv, "HOME") {}
 };
 
 
@@ -36,8 +36,8 @@ class XX {
     long step_;
 
 public:  // methods
-    XX(const std::string& app) :
-        app_(app), step_(0) {}
+
+    XX(const std::string& app) : app_(app), step_(0) {}
 
     void step(long step) { step_ = step; }
     void event(const std::string& e) { event_ = e; }

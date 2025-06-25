@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionTHIN : public FunctionIntegerExpression {
 public:
+
     FunctionTHIN(const std::string&, const expression::Expressions&);
     FunctionTHIN(const FunctionTHIN&);
     ~FunctionTHIN();
@@ -32,6 +33,7 @@ public:
     static int arity() { return 2; }
 
 protected:
+
     // -- Overridden methods
     void print(std::ostream& s) const override;
     void prepare(SQLSelect&) override;
@@ -43,6 +45,7 @@ protected:
     bool isAggregate() const override { return false; }
 
 private:
+
     // No copy allowed
     FunctionTHIN& operator=(const FunctionTHIN&);
 

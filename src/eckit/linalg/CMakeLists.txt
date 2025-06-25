@@ -18,6 +18,14 @@ list( APPEND eckit_la_srcs
       Triplet.h
       Vector.cc
       Vector.h
+      allocator/BufferAllocator.cc
+      allocator/BufferAllocator.h
+      allocator/NonOwningAllocator.cc
+      allocator/NonOwningAllocator.h
+      allocator/StandardAllocator.cc
+      allocator/StandardAllocator.h
+      allocator/StandardContainerAllocator.cc
+      allocator/StandardContainerAllocator.h
       dense/LinearAlgebraGeneric.cc
       dense/LinearAlgebraGeneric.h
       sparse/LinearAlgebraGeneric.cc
@@ -39,9 +47,16 @@ if( eckit_HAVE_CUDA )
           detail/CUDA.h
           sparse/LinearAlgebraCUDA.cc
           sparse/LinearAlgebraCUDA.h )
-    list( APPEND eckit_la_pincludes "${CUDA_INCLUDE_DIRS}" )
-    list( APPEND eckit_la_plibs "${CUDA_LIBRARIES}" "${CUDA_cusparse_LIBRARY}" )
+    list( APPEND eckit_la_plibs CUDA::cudart CUDA::cusparse CUDA::cublas )
 endif()
+
+if( eckit_HAVE_HIP )
+    list( APPEND eckit_la_srcs
+          sparse/LinearAlgebraHIP.cc
+          sparse/LinearAlgebraHIP.h )
+    list( APPEND eckit_la_plibs hip::host roc::hipsparse )
+endif()
+
 
 if( eckit_HAVE_EIGEN )
     list( APPEND eckit_la_srcs
@@ -90,12 +105,10 @@ ecbuild_add_library( TARGET             eckit_linalg TYPE SHARED
                      PRIVATE_LIBS       ${eckit_la_plibs} )
 
 if( eckit_HAVE_EIGEN )
+    if(NOT EIGEN3_INCLUDE_DIRS AND TARGET Eigen3::Eigen)
+        get_target_property(EIGEN3_INCLUDE_DIRS Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+    endif()
+
     # Add include directories with "SYSTEM" to avoid warnings from within Eigen headers
     target_include_directories( eckit_linalg SYSTEM PRIVATE ${EIGEN3_INCLUDE_DIRS} )
 endif()
-
-if( CUDA_FOUND )
-  set( CUDA_LINK_LIBRARIES_KEYWORD PRIVATE )
-  cuda_add_cublas_to_target( eckit_linalg )
-endif()
-

@@ -26,8 +26,8 @@ class SysLog {
 
 
 public:
-    enum Facility
-    {
+
+    enum Facility {
         Kernel = 0,
         User,
         Mail,
@@ -54,8 +54,7 @@ public:
         Local7,  //< we use this for MARS
     };
 
-    enum Severity
-    {
+    enum Severity {
         Emergency = 0,
         Alert,
         Critical,
@@ -67,6 +66,7 @@ public:
     };
 
 public:  // methods
+
     static char nilvalue() { return '-'; }
 
 
@@ -105,9 +105,11 @@ public:  // methods
     void enterpriseId(const std::string& id) { enterpriseId_ = id; }
 
 private:  // methods
+
     void print(std::ostream& out) const;
 
 private:  // members
+
     Facility facility_;
     Severity severity_;
 

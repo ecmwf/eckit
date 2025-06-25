@@ -90,7 +90,8 @@ CASE("LonLatPolygon") {
 
     SECTION("Construction") {
         const std::vector<Polygon::value_type> points1{{0, 0}, {1, 1}, {2, 2}, {0, 0}};
-        const std::vector<Polygon::value_type> points2{{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}, {0, 0}};
+        const std::vector<Polygon::value_type> points2{{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2},
+                                                       {1, 2}, {0, 2}, {0, 1}, {0, 0}};
 
         EXPECT_EQUAL(Polygon(points1).size(), 2);
         EXPECT_EQUAL(Polygon(points1.begin(), points1.end()).size(), 2);
@@ -210,7 +211,8 @@ CASE("LonLatPolygon") {
         }
 
         // HEALPix-like equator wedge in longitude
-        Polygon poly({{0, 1}, {0, 90}, {360, 90}, {360, 1}, {361, 0}, {360, -1}, {360, -90}, {0, -90}, {0, -1}, {1, 0}, {0, 1}});
+        Polygon poly(
+            {{0, 1}, {0, 90}, {360, 90}, {360, 1}, {361, 0}, {360, -1}, {360, -90}, {0, -90}, {0, -1}, {1, 0}, {0, 1}});
         EXPECT(poly.contains({0, 0}));
         EXPECT(poly.contains({1, 0}));
         EXPECT(poly.contains({360, 0}));
@@ -236,7 +238,8 @@ CASE("LonLatPolygon") {
 
         Polygon poly({{lonmin, latmax}, {lonmax, latmax}, {lonmax, latmin}, {lonmin, latmin}, {lonmin, latmax}});
 
-        SECTION("Contains edges") {
+        // SUBSECTION: Contains edges
+        {
             EXPECT(poly.contains({lonmin, latmax}));
             EXPECT(poly.contains({lonmid, latmax}));
             EXPECT(poly.contains({lonmax, latmax}));
@@ -247,21 +250,22 @@ CASE("LonLatPolygon") {
             EXPECT(poly.contains({lonmin, latmid}));
         }
 
-        SECTION("Contains in/outward of edges") {
+        // SUBSECTION: "Contains in/outward of edges"
+        {
             constexpr auto eps = 0.001;
 
             for (size_t i = 0; i <= 100; ++i) {
-                const auto lon = lonmin + static_cast<double>(i) * (lonmax - lonmin) / 99.;
+                const auto lon = lonmin + static_cast<double>(i) * (lonmax - lonmin) / 100.;
                 EXPECT(poly.contains({lon, latmin + eps}));
                 EXPECT(poly.contains({lon, latmax - eps}));
                 EXPECT_NOT(poly.contains({lon, latmin - eps}));
                 EXPECT_NOT(poly.contains({lon, latmax + eps}));
 
-                const auto lat = latmin + static_cast<double>(i) * (latmax - latmin) / 99.;
+                const auto lat = latmin + static_cast<double>(i) * (latmax - latmin) / 100.;
                 EXPECT(poly.contains({lonmin + eps, lat}));
                 EXPECT(poly.contains({lonmax - eps, lat}));
-                EXPECT_NOT(poly.contains({lonmin - eps, lat}));
-                EXPECT_NOT(poly.contains({lonmax + eps, lat}));
+                EXPECT(poly.contains({lonmin - eps, lat}));  // periodic
+                EXPECT(poly.contains({lonmax + eps, lat}));  // ...
             }
         }
 
@@ -328,9 +332,7 @@ CASE("LonLatPolygon") {
     }
 
     SECTION("Partitioning (includePoles=false)") {
-        auto mid = [](double a, double b) {
-            return (a + b) / 2.;
-        };
+        auto mid = [](double a, double b) { return (a + b) / 2.; };
 
         constexpr double lon[] = {0, 90, 180, 270, 360};
         constexpr double lat[] = {90, 0, -90};
@@ -347,7 +349,8 @@ CASE("LonLatPolygon") {
 
 
         std::vector<Polygon::value_type> points;
-        const std::vector<double> list_lons{lon[0], mid(lon[0], lon[1]), lon[1], mid(lon[1], lon[2]), lon[2], mid(lon[2], lon[3]), lon[3], mid(lon[3], lon[4])};
+        const std::vector<double> list_lons{lon[0], mid(lon[0], lon[1]), lon[1], mid(lon[1], lon[2]),
+                                            lon[2], mid(lon[2], lon[3]), lon[3], mid(lon[3], lon[4])};
         const std::vector<double> list_lats{lat[0], mid(lat[0], lat[1]), lat[1], mid(lat[1], lat[2]), lat[2]};
 
         for (double lon : list_lons) {

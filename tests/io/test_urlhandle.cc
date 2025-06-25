@@ -84,9 +84,7 @@ CASE("No use of SSL") {
     bool useSSL = false;
     PathName out("/tmp/foobar");
     URLHandle h("https://get.ecmwf.int/atlas/grids/orca/v0/ORCA2_T.atlas", useSSL);
-    {
-        h.saveInto(out);
-    }
+    { h.saveInto(out); }
     Log::info() << out << " size " << out.size() << std::endl;
     EXPECT(out.size() == Length(102309));
     out.unlink();

@@ -25,6 +25,7 @@ namespace eckit {
 
 class UpTimeCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     UpTimeCmd();
@@ -34,6 +35,7 @@ public:
     ~UpTimeCmd();
 
 private:
+
     // -- Overridden methods
 
     // From CmdResource

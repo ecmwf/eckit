@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-// #include <stdlib.h>
+// #include <cstdlib>
 
 #include "eckit/runtime/Library.h"
 #include "eckit/exception/Exceptions.h"
@@ -19,8 +19,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Library::Library(int argc, char** argv, const char* homeenv) :
-    Main(argc, argv, homeenv) {}
+Library::Library(int argc, char** argv, const char* homeenv) : Main(argc, argv, homeenv) {}
 
 Library::~Library() {}
 

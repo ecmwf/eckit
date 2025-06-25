@@ -32,6 +32,7 @@ class FunctionBuilderBase;
 class FunctionFactory {
 
 public:  // types
+
     struct FuncInfo {
         std::string name;
         int arity;
@@ -39,6 +40,7 @@ public:  // types
     };
 
 public:  // methods
+
     static FunctionFactory& instance();
 
     void enregister(const std::string& name, int arity_, const FunctionBuilderBase* builder);
@@ -54,10 +56,12 @@ public:  // methods
                                               std::shared_ptr<SQLExpression>, std::shared_ptr<SQLExpression>);
 
 private:  // methods
+
     FunctionFactory();
     ~FunctionFactory();
 
 private:  // members
+
     mutable std::mutex m_;
 
     std::map<std::pair<std::string, int>, const FunctionBuilderBase*> builders_;
@@ -72,12 +76,12 @@ class FunctionBuilderBase {
     std::string help_;
 
 public:  // methods
+
     FunctionBuilderBase(const std::string& name, int arity, const char* help);
     virtual ~FunctionBuilderBase();
 
     virtual std::shared_ptr<FunctionExpression> make(const std::string& name,
-                                                     const expression::Expressions& args) const
-        = 0;
+                                                     const expression::Expressions& args) const = 0;
     int arity() const;
     std::string help() const;
 };
@@ -92,6 +96,7 @@ class FunctionBuilder : public FunctionBuilderBase {
     }
 
 public:  // methods
+
     FunctionBuilder(const std::string& name, const char* help = 0) :
         FunctionBuilderBase(name, FunctionType::arity(), help ? help : FunctionType::help()) {}
 

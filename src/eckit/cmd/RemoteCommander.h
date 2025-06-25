@@ -25,6 +25,7 @@ namespace eckit {
 
 class RemoteCommander : public net::NetService {
 public:
+
     // -- Contructors
 
     RemoteCommander(int);
@@ -34,6 +35,7 @@ public:
     ~RemoteCommander();
 
 private:
+
     // -- Overridden methods
 
     // From net::NetService

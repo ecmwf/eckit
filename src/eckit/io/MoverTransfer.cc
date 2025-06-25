@@ -9,20 +9,19 @@
  */
 
 #include "eckit/io/MoverTransfer.h"
+#include "eckit/io/MoverTransferSelection.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Progress.h"
 #include "eckit/net/Connector.h"
 #include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/io/MoverTransferSelection.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MoverTransfer::MoverTransfer(TransferWatcher& watcher) :
-    watcher_(watcher) {}
+MoverTransfer::MoverTransfer(TransferWatcher& watcher) : watcher_(watcher) {}
 
 MoverTransfer::~MoverTransfer() {}
 

@@ -15,7 +15,7 @@
 #ifndef eckit_SharedMemArray_h
 #define eckit_SharedMemArray_h
 
-#include <stdint.h>
+#include <cstdint>
 
 #include "eckit/memory/NonCopyable.h"
 #include "eckit/os/Semaphore.h"
@@ -37,10 +37,12 @@ namespace eckit {
 template <class T>
 class SharedMemArray : private NonCopyable {
 public:  // types
+
     typedef T* iterator;
     typedef const T* const_iterator;
 
 public:  // methods
+
     SharedMemArray(const PathName&, const std::string& shmName, size_t);
 
     ~SharedMemArray();
@@ -59,6 +61,7 @@ public:  // methods
     T& operator[](unsigned long n) { return array_[n]; }
 
 private:  // members
+
     Semaphore sem_;
     void* map_;
     int fd_;
@@ -74,8 +77,7 @@ private:  // members
         uint32_t version_;
         uint32_t headerSize_;
         uint32_t elemSize_;
-        Header() :
-            version_(shared_mem_array_version()), headerSize_(sizeof(Header)), elemSize_(sizeof(T)) {}
+        Header() : version_(shared_mem_array_version()), headerSize_(sizeof(Header)), elemSize_(sizeof(T)) {}
         void validate() {
             ASSERT(version_ == shared_mem_array_version());
             ASSERT(headerSize_ == sizeof(Header));

@@ -25,7 +25,8 @@ Separator::Separator(const std::string& description) : Option("", description) {
 
 Separator::~Separator() {}
 
-size_t Separator::set(Configured& parameter, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const {
+size_t Separator::set(Configured& parameter, size_t values, args_t::const_iterator begin,
+                      args_t::const_iterator end) const {
     return 0;  // Never consumes any argv tokens
 }
 

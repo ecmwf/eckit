@@ -26,6 +26,7 @@ class PoolHandleEntry;
 
 class PooledHandle : public DataHandle {
 public:
+
     PooledHandle(const PathName& name);
 
     /// @pre must have been closed
@@ -50,6 +51,7 @@ public:
     size_t nbSeeks() const;
 
 private:
+
     PathName path_;
     PoolHandleEntry* entry_;
 

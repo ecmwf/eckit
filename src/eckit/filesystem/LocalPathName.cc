@@ -11,14 +11,14 @@
 #include "LocalPathName.h"
 
 #include <dirent.h>
-#include <limits.h>
 #include <pwd.h>
-#include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <utime.h>
+#include <climits>
+#include <cstdlib>
 
 #include <cstring>  // for strlen
 #include <deque>
@@ -29,6 +29,7 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/BasePathNameT.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathNameFactory.h"
 #include "eckit/filesystem/StdDir.h"
 #include "eckit/io/FileHandle.h"
@@ -148,6 +149,8 @@ static void init() {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+LocalPathName::LocalPathName(const PathName& path) : LocalPathName(path.path(), false, true) {}
 
 LocalPathName LocalPathName::baseName(bool ext) const {
     const char* q = path_.c_str();
@@ -413,6 +416,18 @@ void operator<<(Stream& s, const LocalPathName& path) {
 
 void operator>>(Stream& s, LocalPathName& path) {
     s >> path.path_;
+}
+
+LocalPathName operator/(const LocalPathName& p1, const LocalPathName& p2) {
+    bool tildeIsUserHome    = false;
+    bool skipTildeExpansion = true;
+    return eckit::LocalPathName(p1.path() + "/" + p2.path(), tildeIsUserHome, skipTildeExpansion);
+}
+
+LocalPathName operator/(const LocalPathName& p1, const char* p2) {
+    bool tildeIsUserHome    = false;
+    bool skipTildeExpansion = true;
+    return eckit::LocalPathName(p1.path() + "/" + p2, tildeIsUserHome, skipTildeExpansion);
 }
 
 LocalPathName LocalPathName::fullName() const {

@@ -25,7 +25,7 @@
 namespace eckit::geo::grid {
 
 
-#define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)([eE][-+][0-9]+)?"
+#define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)(e[-+][0-9]+)?"
 static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 #undef POSITIVE_REAL
 
@@ -83,6 +83,12 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
     }
 
     boundingBox().fill_spec(custom);
+}
+
+
+const std::string& RegularLL::type() const {
+    static const std::string type{"regular-ll"};
+    return type;
 }
 
 

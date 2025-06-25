@@ -28,6 +28,7 @@ namespace eckit::test {
 
 class TestAsyncHandle {
 public:
+
     void setup();
     void teardown();
     void test_write();

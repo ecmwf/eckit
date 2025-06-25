@@ -27,6 +27,7 @@ namespace net {
 class UDPServer : private NonCopyable {
 
 public:  // methods
+
     explicit UDPServer(int port);
 
     ~UDPServer();
@@ -35,6 +36,7 @@ public:  // methods
     size_t receive(eckit::Buffer&);
 
 protected:  // methods
+
     void print(std::ostream& s) const;
 
     friend std::ostream& operator<<(std::ostream& s, const UDPServer& socket) {
@@ -45,6 +47,7 @@ protected:  // methods
     std::string remoteHost(struct sockaddr_storage&) const;
 
 private:  // members
+
     int port_;
 
     int socketfd_;

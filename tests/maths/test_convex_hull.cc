@@ -216,9 +216,9 @@ CASE("ConvexHullN, N=3 (tetrahedron)") {
              }) {
             EXPECT(1 == std::count_if(facets.begin(), facets.end(), [&fr](const auto& facet) {
                        ASSERT(facet.size() == 3);
-                       return std::count(fr.begin(), fr.end(), facet[0]) == 1
-                              && std::count(fr.begin(), fr.end(), facet[1]) == 1
-                              && std::count(fr.begin(), fr.end(), facet[2]) == 1;
+                       return std::count(fr.begin(), fr.end(), facet[0]) == 1 &&
+                              std::count(fr.begin(), fr.end(), facet[1]) == 1 &&
+                              std::count(fr.begin(), fr.end(), facet[2]) == 1;
                    }));
 
             auto count = 0;
@@ -263,9 +263,8 @@ CASE("ConvexHullN, N=3 (square pyramid)") {
         auto counts = ch.facets_n();
         EXPECT(4 == counts[3]);
         EXPECT(1 == counts[4]);
-        EXPECT(5 == std::accumulate(counts.begin(), counts.end(), 0, [](size_t sum, const auto& count) {
-                   return sum + count.second;
-               }));
+        EXPECT(5 == std::accumulate(counts.begin(), counts.end(), 0,
+                                    [](size_t sum, const auto& count) { return sum + count.second; }));
 
         counts[5] = 0;  // test non-existant 5-vertex facets
 
@@ -277,9 +276,8 @@ CASE("ConvexHullN, N=3 (square pyramid)") {
 
             for (auto f = facets.begin(); f != facets.end(); f += df) {
                 const std::set<size_t> result(f, f + df);
-                EXPECT(1 == std::count_if(correct.begin(), correct.end(), [&result](const auto& correct) {
-                           return result == correct;
-                       }));
+                EXPECT(1 == std::count_if(correct.begin(), correct.end(),
+                                          [&result](const auto& correct) { return result == correct; }));
             }
         }
 
@@ -290,9 +288,8 @@ CASE("ConvexHullN, N=3 (square pyramid)") {
 
         for (const auto& facet : facets) {
             const std::set<size_t> result(facet.begin(), facet.end());
-            EXPECT(1 == std::count_if(correct.begin(), correct.end(), [&result](const auto& correct) {
-                       return result == correct;
-                   }));
+            EXPECT(1 == std::count_if(correct.begin(), correct.end(),
+                                      [&result](const auto& correct) { return result == correct; }));
         }
     }
 }

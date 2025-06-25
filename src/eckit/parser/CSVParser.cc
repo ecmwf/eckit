@@ -17,8 +17,7 @@
 namespace eckit {
 
 
-CSVParser::CSVParser(std::istream& in, bool header) :
-    StreamParser(in, false), hasHeader_(header) {}
+CSVParser::CSVParser(std::istream& in, bool header) : StreamParser(in, false), hasHeader_(header) {}
 
 Value CSVParser::decodeFile(const PathName& path, bool header) {
     std::ifstream in(std::string(path).c_str());

@@ -12,7 +12,7 @@
 
 #include "eckit/geo/range/RegularLatitude.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
@@ -31,13 +31,14 @@ RegularLatitude::RegularLatitude(size_t n, double _a, double _b, double _eps) : 
 
 
 Range* RegularLatitude::make_range_cropped(double crop_a, double crop_b) const {
-    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b)
-           || (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
+    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
+           (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
 
     if (types::is_approximately_equal(crop_a, crop_b, eps())) {
         NOTIMP;  // FIXME
     }
-    else if (a() < b()) {
+
+    if (a() < b()) {
         ASSERT(a() <= crop_a && crop_b <= b());  // FIXME do better
 
         const auto inc(increment());
@@ -52,9 +53,6 @@ Range* RegularLatitude::make_range_cropped(double crop_a, double crop_b) const {
         ASSERT(0 < n && n <= size());
 
         return new RegularLatitude(n, _a, _b, eps());
-    }
-    else {
-        NOTIMP;  // FIXME
     }
 
     NOTIMP;

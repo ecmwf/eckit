@@ -1016,8 +1016,8 @@ CASE("test_eckit_option_cmdargs_value_with_equals") {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #elif defined(__INTEL_COMPILER)
-#pragma warning ( push )
-#pragma warning ( disable:1786 )
+#pragma warning(push)
+#pragma warning(disable : 1786)
 #elif defined(__NVCOMPILER)
 #pragma diag_suppress 1445
 #endif
@@ -1070,7 +1070,7 @@ CASE("test_eckit_option__allows_to_set_default_value_for_options") {
 #ifdef __clang__
 #pragma clang diagnostic pop
 #elif defined(__INTEL_COMPILER)
-#pragma warning ( pop )
+#pragma warning(pop)
 #endif
 #endif
 

@@ -29,6 +29,7 @@ class Plugin;
 
 class LibraryManager : private eckit::NonCopyable {
 public:  // class methods
+
     /// @brief Register a library
     static void enregister(const std::string& name, Library* obj);
 

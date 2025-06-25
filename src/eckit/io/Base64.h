@@ -22,12 +22,14 @@ class DataHandle;
 class Base64 {
 
 public:  // methods
+
     Base64(bool url = false);
 
     size_t decode(DataHandle& in, DataHandle& out);
     size_t encode(DataHandle& in, DataHandle& out);
 
 private:
+
     unsigned char encode_[256];
     unsigned char decode_[256];
 };

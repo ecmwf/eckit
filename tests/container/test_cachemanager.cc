@@ -46,10 +46,10 @@ struct CacheTraits {
 
 
 struct Manager : eckit::CacheManager<CacheTraits> {
-    Manager() :
-        eckit::CacheManager<CacheTraits>("loader", ".", /*throwOnCacheMiss*/ false, /*maxCacheSize*/ 0) {}
+    Manager() : eckit::CacheManager<CacheTraits>("loader", ".", /*throwOnCacheMiss*/ false, /*maxCacheSize*/ 0) {}
 
 private:
+
     friend CacheTraits;
 };
 
@@ -60,6 +60,7 @@ struct CacheCreator : Manager::CacheContentCreator {
     CacheCreator& operator=(const CacheCreator&) = delete;
 
 private:
+
     void create(const eckit::PathName& path, CacheTraits::value_type& value, bool& saved) final {
         Log::info() << "CacheCreator::create(path='" << path << "')" << std::endl;
         path.touch();
@@ -74,6 +75,7 @@ struct ManagerCantMiss : eckit::CacheManager<CacheTraits> {
         eckit::CacheManager<CacheTraits>("loader", ".", /*throwOnCacheMiss*/ true, /*maxCacheSize*/ 0) {}
 
 private:
+
     friend CacheTraits;
 };
 
@@ -84,6 +86,7 @@ struct CacheCreatorCantMiss : ManagerCantMiss::CacheContentCreator {
     CacheCreatorCantMiss& operator=(const CacheCreatorCantMiss&) = delete;
 
 private:
+
     void create(const eckit::PathName&, CacheTraits::value_type&, bool&) final { NOTIMP; }
 };
 

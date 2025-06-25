@@ -24,6 +24,7 @@ class Buffer;
 
 class ResizableMemoryStream : public Stream {
 public:
+
     ResizableMemoryStream(Buffer&);
 
     ~ResizableMemoryStream();
@@ -37,6 +38,7 @@ public:
     size_t position() const;
 
 private:  // members
+
     Buffer& buffer_;
 
     size_t position_;

@@ -139,8 +139,8 @@ const Configuration& Library::configuration() const {
 
     Log::debug() << "Parsing Lib " << name_ << " config file " << cfgpath << std::endl;
 
-    eckit::Configuration* cfg
-        = cfgpath.exists() ? new eckit::YAMLConfiguration(cfgpath) : new eckit::YAMLConfiguration(std::string(""));
+    eckit::Configuration* cfg =
+        cfgpath.exists() ? new eckit::YAMLConfiguration(cfgpath) : new eckit::YAMLConfiguration(std::string(""));
 
     Log::debug() << "Lib " << name_ << " configuration: " << *cfg << std::endl;
 

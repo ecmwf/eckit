@@ -14,7 +14,7 @@
 
 #include <utility>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
@@ -41,8 +41,8 @@ Range* GaussianLatitude::make_range_flipped() const {
 
 
 Range* GaussianLatitude::make_range_cropped(double crop_a, double crop_b) const {
-    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b)
-           || (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
+    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
+           (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
 
     auto v = values();
 

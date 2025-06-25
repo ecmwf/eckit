@@ -9,8 +9,8 @@
  */
 
 #include <fcntl.h>
-#include <signal.h>
 #include <unistd.h>
+#include <csignal>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/PipeStream.h"
@@ -22,16 +22,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PipeStream::PipeStream() :
-    in_(-1), out_(-1) {
+PipeStream::PipeStream() : in_(-1), out_(-1) {
     toChild_[0] = toChild_[1] = toParent_[0] = toParent_[1] = -1;
 
     SYSCALL(::pipe(toChild_));
     SYSCALL(::pipe(toParent_));
 }
 
-PipeStream::PipeStream(int in, int out) :
-    in_(in), out_(out) {
+PipeStream::PipeStream(int in, int out) : in_(in), out_(out) {
     toChild_[0] = toChild_[1] = toParent_[0] = toParent_[1] = -1;
 }
 

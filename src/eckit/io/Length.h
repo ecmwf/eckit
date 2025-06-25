@@ -36,9 +36,11 @@ class Stream;
 
 class Length {
 public:  // types
+
     typedef long long value_t;
 
 public:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const Length& x);
 
     friend Stream& operator<<(Stream& s, const Length& x);
@@ -47,14 +49,13 @@ public:  // methods
 
     // -- Contructors
 
-    Length(long long l = 0) :
-        value_(l) {}
-    Length(const Length& other) :
-        value_(other.value_) {}
+    Length(long long l = 0) : value_(l) {}
+    Length(const Length& other) : value_(other.value_) {}
 
 #include "eckit/io/Length.b"
 
 public:  // operators
+
     Length& operator=(const Length& other) {
         value_ = other.value_;
         return *this;
@@ -79,6 +80,7 @@ public:  // operators
     void load(DumpLoad&);
 
 private:  // members
+
     value_t value_;
 
     friend class Offset;

@@ -1,14 +1,14 @@
 
 #include <arpa/inet.h>
-#include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #include "eckit/eckit.h"
 
@@ -28,21 +28,23 @@ namespace eckit {
 
 class StatsServer : public Application {
 public:
+
     StatsServer(int argc, char** argv);
     ~StatsServer();
 
 private:
+
     StatsServer(const StatsServer&);
     StatsServer& operator=(const StatsServer&);
 
     virtual void run();
 
 private:  // members
+
     eckit::net::Port port_;
 };
 
-StatsServer::StatsServer(int argc, char** argv) :
-    Application(argc, argv), port_("statssvr", 7788) {}
+StatsServer::StatsServer(int argc, char** argv) : Application(argc, argv), port_("statssvr", 7788) {}
 
 StatsServer::~StatsServer() {}
 

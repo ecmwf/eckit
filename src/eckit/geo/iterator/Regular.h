@@ -17,12 +17,9 @@
 #include "eckit/geo/Iterator.h"
 
 
-namespace eckit::geo {
-class Range;
-namespace grid {
+namespace eckit::geo::grid {
 class Regular;
 }
-}  // namespace eckit::geo
 
 
 namespace eckit::geo::iterator {
@@ -30,21 +27,24 @@ namespace eckit::geo::iterator {
 
 class Regular final : public Iterator {
 public:
+
     // -- Constructors
 
     explicit Regular(const grid::Regular&, size_t index = 0);
 
 private:
+
     // -- Members
 
-    const grid::Regular& grid_;
+    // const grid::Regular& grid_;
     const std::vector<double>& x_;
     const std::vector<double>& y_;
     size_t i_;
     size_t j_;
     size_t index_;
-    const size_t nx_;
-    const size_t ny_;
+
+    const size_t ni_;
+    const size_t nj_;
     const size_t size_;
 
     // -- Overridden methods

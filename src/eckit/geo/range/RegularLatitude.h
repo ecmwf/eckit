@@ -20,6 +20,7 @@ namespace eckit::geo::range {
 
 class RegularLatitude final : public Regular {
 public:
+
     // -- Constructors
 
     explicit RegularLatitude(double inc, double a, double b, double ref, double eps = 0.);

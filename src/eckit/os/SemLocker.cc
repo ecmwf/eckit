@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <errno.h>
 #include <sys/sem.h>
 #include <unistd.h>
+#include <cerrno>
 #include <cstdio>
 
 #include "eckit/exception/Exceptions.h"

@@ -26,6 +26,7 @@ namespace eckit::geo {
 
 class Shape final : public std::array<size_t, 2> {
 public:
+
     // -- Types
 
     using container_type = array;
@@ -76,6 +77,7 @@ public:
     static Shape make_from_spec(const Spec&);
 
 private:
+
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& os, const Shape& inc) {

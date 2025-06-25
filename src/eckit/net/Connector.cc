@@ -12,10 +12,10 @@
 #include "eckit/net/Connector.h"
 #include "eckit/config/Resource.h"
 #include "eckit/io/cluster/ClusterNodes.h"
+#include "eckit/log/Seconds.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/thread/ThreadSingleton.h"
-#include "eckit/log/Seconds.h"
 
 namespace eckit::net {
 
@@ -30,7 +30,15 @@ static void offLine(const std::string& host, int port) {
 }
 
 Connector::Connector(const std::string& host, int port, const std::string& node) :
-    host_(host), node_(node), port_(port), locked_(false), last_(::time(0)), memoize_(false), sent_(false), life_(0), autoclose_(false) {
+    host_(host),
+    node_(node),
+    port_(port),
+    locked_(false),
+    last_(::time(0)),
+    memoize_(false),
+    sent_(false),
+    life_(0),
+    autoclose_(false) {
     Log::info() << "Connector::Connector(" << node << "," << host << ":" << port << ")" << std::endl;
 }
 
@@ -52,10 +60,11 @@ Connector::~Connector() {
 TCPSocket& Connector::socket() {
 
     static int connectorTimeout = Resource<int>("connectorTimeout", 0);
-    if(connectorTimeout != 0) {
+    if (connectorTimeout != 0) {
         time_t now = ::time(0);
-        if(now - last_ > connectorTimeout) {
-            Log::info() << "Connector::socket() opened for " << Seconds(now - last_) << " seconds, reopening connection" << std::endl;
+        if (now - last_ > connectorTimeout) {
+            Log::info() << "Connector::socket() opened for " << Seconds(now - last_) << " seconds, reopening connection"
+                        << std::endl;
             socket_.close();
         }
     }
@@ -120,6 +129,7 @@ class ConnectorCache {
     Cache cache_;
 
 public:
+
     /// @note Lazy construction of singleton.
     ///       This is required to ensure correct and portable order of initialisation and destruction
     ///       across multiple architectures.
@@ -166,6 +176,7 @@ class NodeInfoCache {
     Cache cache_;
 
 public:
+
     /// @note Lazy construction of singleton.
     ///       This is required to ensure correct and portable order of initialisation and destruction
     ///       across multiple architectures.
@@ -265,7 +276,7 @@ std::string Connector::name() const {
 template <class T, class F>
 long Connector::socketIo(F proc, T buf, long len, const char* msg, time_t& last) {
     TCPSocket& s = socket();
-    last = ::time(0);
+    last         = ::time(0);
     long l       = (s.*proc)(buf, len);
     if (l != len) {
         reset();
@@ -319,7 +330,8 @@ long Connector::read(void* buf, long len) {
             if (!useCache) {
                 cached_.buffer_ = 0;
                 try {
-                    ASSERT((size_t)socketIo(&TCPSocket::write, out_.buffer(), out_.count(), "written", last_) == out_.count());
+                    ASSERT((size_t)socketIo(&TCPSocket::write, out_.buffer(), out_.count(), "written", last_) ==
+                           out_.count());
                 }
                 catch (...) {
                     reset();

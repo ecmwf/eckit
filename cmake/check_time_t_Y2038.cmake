@@ -11,4 +11,3 @@ else()
 endif()
 
 cmake_pop_check_state()
-

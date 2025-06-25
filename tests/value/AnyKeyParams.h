@@ -30,6 +30,7 @@ struct AnyKeyParams {
     static const char* className() { return "AnyKeyParams"; }
 
 private:
+
     friend void encode(const AnyKeyParams&, eckit::Stream&);
     std::string payload_;
 };

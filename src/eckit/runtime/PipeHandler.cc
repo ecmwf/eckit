@@ -8,7 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <signal.h>
+#include <csignal>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
@@ -23,8 +23,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class Request>
-PipeHandler<Request>::PipeHandler() :
-    ClassExtent<PipeHandler<Request> >(this), pipe_(0), busy_(false), last_(0) {
+PipeHandler<Request>::PipeHandler() : ClassExtent<PipeHandler<Request> >(this), pipe_(0), busy_(false), last_(0) {
     Monitor::instance().show(false);
 }
 

@@ -24,6 +24,7 @@ static PathNameBuilder<LocalPathName> localBuilder("local");
 
 class PathNameFactoryImpl : private eckit::NonCopyable {
 public:  // methods
+
     static PathNameFactoryImpl& instance();
 
     void enregister(const std::string& name, const PathNameBuilderBase* builder);
@@ -31,7 +32,8 @@ public:  // methods
 
     BasePathName* build(const std::string& type, const std::string& path, bool tildeIsUserHome = false);
 
-private:                        // methods
+private:  // methods
+
     StaticMutex static_mutex_;  //< must be StaticMutex, so it is registered to be clean on fork
     std::vector<std::string> names_;
     std::map<std::string, const PathNameBuilderBase*> builders_;

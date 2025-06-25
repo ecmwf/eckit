@@ -9,10 +9,10 @@
  */
 
 #include <fcntl.h>
-#include <stdlib.h>
 #include <sys/mman.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+#include <cstdlib>
 
 #include "eckit/container/SharedMemArray.h"
 #include "eckit/filesystem/PathName.h"

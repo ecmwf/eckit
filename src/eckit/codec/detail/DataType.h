@@ -21,6 +21,7 @@ namespace eckit::codec {
 
 class DataType {
 public:
+
     using kind_t = long;
 
     static const kind_t KIND_BYTE   = 1;
@@ -55,6 +56,7 @@ public:
     static bool kind_valid(kind_t);
 
 private:
+
     static std::string byte_str() { return "byte"; }
     static std::string int32_str() { return "int32"; }
     static std::string int64_str() { return "int64"; }
@@ -66,6 +68,7 @@ private:
     [[noreturn]] static void throw_not_recognised(std::string datatype);
 
 public:
+
     explicit DataType(const std::string&);
     DataType(long);
     DataType(const DataType&)            = default;
@@ -83,6 +86,7 @@ public:
     friend bool operator!=(kind_t kind, DataType dt2);
 
 private:
+
     kind_t kind_;
 };
 

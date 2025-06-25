@@ -39,6 +39,7 @@ class MetadataGatherer;
 
 class Transformer {
 public:
+
     // virtual MessageContent* tranform(CodesContent*) const = 0;
 };
 
@@ -47,6 +48,7 @@ public:
 class MessageContent : public eckit::Counted {
 
 public:
+
     virtual operator bool() const;
 
     virtual void write(eckit::DataHandle&) const;
@@ -76,6 +78,7 @@ public:
     virtual MessageContent* transform(const eckit::StringDict&) const;
 
 private:
+
     virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const MessageContent& p) {

@@ -15,7 +15,7 @@
 #ifndef eckit_io_StdPipe_h
 #define eckit_io_StdPipe_h
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 
 #include "eckit/io/AutoCloser.h"
@@ -27,6 +27,7 @@ namespace eckit {
 
 class StdPipe : private NonCopyable {
 public:
+
     StdPipe(const std::string& name, const std::string& mode = "r");
 
     /// @pre must have been closed
@@ -41,6 +42,7 @@ public:
     void close() noexcept(false);
 
 private:  // members
+
     FILE* file_;
 };
 
@@ -50,8 +52,8 @@ private:  // members
 
 class AutoStdPipe : public StdPipe {
 public:
-    AutoStdPipe(const std::string& name, const std::string& mode = "r") :
-        StdPipe(name, mode) {}
+
+    AutoStdPipe(const std::string& name, const std::string& mode = "r") : StdPipe(name, mode) {}
     ~AutoStdPipe() noexcept(false) { close(); }
 };
 

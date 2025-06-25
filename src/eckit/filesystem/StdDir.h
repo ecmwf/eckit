@@ -27,10 +27,12 @@ class LocalPathName;
 class StdDir : private NonCopyable {
 
 private:  // members
+
     DIR* d_;
     struct dirent buf;
 
 public:  // methods
+
     StdDir(const char* d);
     StdDir(const eckit::LocalPathName& p);
 

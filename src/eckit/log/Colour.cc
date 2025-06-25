@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <errno.h>
 #include <unistd.h>
+#include <cerrno>
 
 #include <iostream>
 
@@ -23,8 +23,7 @@ namespace eckit {
 
 static int xindex = std::ios::xalloc();
 
-enum
-{
+enum {
     RESET     = 0,
     BOLD      = 1,
     UNDERLINE = 4,
@@ -32,8 +31,7 @@ enum
     REVERSE   = 7,
     HIDDEN    = 8
 };
-enum
-{
+enum {
     BLACK   = 0,
     RED     = 1,
     GREEN   = 2,

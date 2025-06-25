@@ -8,8 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <signal.h>
 #include <unistd.h>
+#include <csignal>
 
 #include "eckit/cmd/KillCmd.h"
 #include "eckit/runtime/Monitor.h"
@@ -19,8 +19,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-KillCmd::KillCmd() :
-    CmdResource("kill") {}
+KillCmd::KillCmd() : CmdResource("kill") {}
 
 
 KillCmd::~KillCmd() {}

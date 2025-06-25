@@ -13,8 +13,8 @@
 
 #include "eckit/eckit.h"
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <map>
 #include <string>
@@ -29,9 +29,11 @@ namespace eckit {
 class Hash : private eckit::NonCopyable {
 
 public:  // types
+
     typedef std::string digest_t;
 
 public:  // methods
+
     Hash();
 
     virtual ~Hash();
@@ -77,10 +79,12 @@ public:  // methods
     operator std::string() { return digest(); }
 
 protected:  // methods
+
     // for incremental hashing
     virtual void update(const void*, long) = 0;
 
 private:  // types
+
     // Make sure this is not called with a pointer
     template <class T>
     void add(const T* x);
@@ -89,7 +93,8 @@ private:  // types
     /// Double hashing
     void add(const Hash& hash) { add(hash.digest()); }
 
-protected:                     // members
+protected:  // members
+
     mutable digest_t digest_;  ///< cached digest
 };
 
@@ -99,6 +104,7 @@ class HashBuilderBase {
     std::string name_;
 
 public:
+
     HashBuilderBase(const std::string&);
     virtual ~HashBuilderBase();
     virtual Hash* make()                         = 0;
@@ -111,13 +117,14 @@ class HashBuilder : public HashBuilderBase {
     Hash* make(const std::string& param) override { return new T(param); }
 
 public:
-    HashBuilder(const std::string& name) :
-        HashBuilderBase(name) {}
+
+    HashBuilder(const std::string& name) : HashBuilderBase(name) {}
     ~HashBuilder() override = default;
 };
 
 class HashFactory {
 public:
+
     static HashFactory& instance();
 
     void add(const std::string& name, HashBuilderBase* builder);
@@ -143,6 +150,7 @@ public:
     Hash* build(const std::string& name, const std::string& param);
 
 private:
+
     HashFactory();
 
     std::map<std::string, HashBuilderBase*> builders_;

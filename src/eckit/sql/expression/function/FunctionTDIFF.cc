@@ -21,8 +21,7 @@ static FunctionBuilder<FunctionTDIFF> tdiffFunctionBuilder("tdiff");
 FunctionTDIFF::FunctionTDIFF(const std::string& name, const expression::Expressions& args) :
     FunctionIntegerExpression(name, args) {}
 
-FunctionTDIFF::FunctionTDIFF(const FunctionTDIFF& other) :
-    FunctionIntegerExpression(other.name_, other.args_) {}
+FunctionTDIFF::FunctionTDIFF(const FunctionTDIFF& other) : FunctionIntegerExpression(other.name_, other.args_) {}
 
 std::shared_ptr<SQLExpression> FunctionTDIFF::clone() const {
     return std::make_shared<FunctionTDIFF>(*this);

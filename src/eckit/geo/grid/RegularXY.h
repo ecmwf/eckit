@@ -20,32 +20,38 @@ namespace eckit::geo::grid {
 
 class RegularXY : public Regular {
 public:
+
     // -- Constructors
 
-    using Regular::Regular;
+    RegularXY(Range* x, Range* y, const Projection* proj) : Regular({x, y}, proj) {}
+    explicit RegularXY(const Spec&);
 
     // -- Methods
 
     double dlon() const { return dx(); }
     double dlat() const { return dy(); }
 
-    size_t nlon() const { return x().size(); }
-    size_t nlat() const { return y().size(); }
+    size_t nlon() const { return nx(); }
+    size_t nlat() const { return ny(); }
+
+    // -- Overridden methods
+
+    const std::string& type() const override;
 
 protected:
+
     // -- Methods
 
     [[nodiscard]] static Ranges make_ranges_from_spec(const Spec&);
 
-    // -- Overridden methods
-
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Members
 
     PointLonLat first_lonlat;
-    Point2 first_xy;
+    PointXY first_xy;
 };
 
 

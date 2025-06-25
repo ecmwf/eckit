@@ -25,6 +25,7 @@ namespace eckit {
 
 class EchoCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     EchoCmd();
@@ -34,6 +35,7 @@ public:
     ~EchoCmd();
 
 private:
+
     // No copy allowed
 
     EchoCmd(const EchoCmd&);

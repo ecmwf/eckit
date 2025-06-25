@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <errno.h>
 #include <sys/sem.h>
+#include <cerrno>
 #include <cstdio>
 
 #include "eckit/eckit.h"
@@ -34,8 +34,7 @@ struct sembuf _unlock[] = {
     {0, -1, SEM_UNDO}, /* ulck */
 };
 
-Semaphore::Semaphore(const PathName& name, int count) :
-    semaphore_(-1), count_(count), level_(0) {
+Semaphore::Semaphore(const PathName& name, int count) : semaphore_(-1), count_(count), level_(0) {
     key_t key = ftok(name.localPath(), 1);
 
     if (key == key_t(-1) && errno == ENOENT) {

@@ -11,7 +11,7 @@
 
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-#include <float.h>
+#include <cfloat>
 #include <climits>
 #include <cmath>
 
@@ -24,6 +24,7 @@ class ArityFunction : public FunctionExpression {
     std::shared_ptr<SQLExpression> clone() const { return std::make_shared<T>(name_, args_); }
 
 public:
+
     using FunctionExpression::FunctionExpression;
     static int arity() { return ARITY; }
 };
@@ -44,6 +45,7 @@ class UnaryFunction : public ArityFunction<UnaryFunction<FN>, 1> {
     }
 
 public:
+
     using ArityFunction<UnaryFunction<FN>, 1>::ArityFunction;
 };
 
@@ -66,6 +68,7 @@ class BinaryFunction : public ArityFunction<BinaryFunction<FN>, 2> {
     }
 
 public:
+
     using ArityFunction<BinaryFunction<FN>, 2>::ArityFunction;
 };
 
@@ -92,6 +95,7 @@ class TertiaryFunction : public ArityFunction<TertiaryFunction<FN>, 3> {
     }
 
 public:
+
     using ArityFunction<TertiaryFunction<FN>, 3>::ArityFunction;
 };
 
@@ -122,6 +126,7 @@ class QuaternaryFunction : public ArityFunction<QuaternaryFunction<FN>, 4> {
     }
 
 public:
+
     using ArityFunction<QuaternaryFunction<FN>, 4>::ArityFunction;
 };
 
@@ -156,6 +161,7 @@ class QuinaryFunction : public ArityFunction<QuinaryFunction<FN>, 5> {
     }
 
 public:
+
     using ArityFunction<QuinaryFunction<FN>, 5>::ArityFunction;
 };
 
@@ -280,7 +286,9 @@ inline double km(double lat1, double lon1, double lat2, double lon2) {
 
 /// in kilometers
 inline double dist(double reflat, double reflon, double refdist_km, double obslat, double obslon) {
-    return (double)(R_Earth_km * acos(Func_cos(reflat) * Func_cos(obslat) * Func_cos(obslon - reflon) + Func_sin(reflat) * Func_sin(obslat)) <= (refdist_km));
+    return (double)(R_Earth_km * acos(Func_cos(reflat) * Func_cos(obslat) * Func_cos(obslon - reflon) +
+                                      Func_sin(reflat) * Func_sin(obslat)) <=
+                    (refdist_km));
 }
 
 inline double circle(double x, double x0, double y, double y0, double r) {
@@ -294,7 +302,8 @@ inline double rad(double reflat, double reflon, double refdeg, double obslat, do
 
     //    int digs ( 3 + DBL_MANT_DIG - DBL_MIN_EXP );
 
-    return (acos(Func_cos(reflat) * Func_cos(obslat) * Func_cos(obslon - reflon) + Func_sin(reflat) * Func_sin(obslat)) <= D2R * refdeg)
+    return (acos(Func_cos(reflat) * Func_cos(obslat) * Func_cos(obslon - reflon) +
+                 Func_sin(reflat) * Func_sin(obslat)) <= D2R * refdeg)
                ? 1.0
                : 0.0;
 }
@@ -390,6 +399,7 @@ class MultiplyFunction : public ArityFunction<MultiplyFunction, 2> {
     }
 
 public:
+
     using ArityFunction<MultiplyFunction, 2>::ArityFunction;
 };
 

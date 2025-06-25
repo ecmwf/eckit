@@ -11,8 +11,8 @@
 #include "eckit/serialisation/Stream.h"
 
 #include <netinet/in.h>
-#include <stdint.h>
 #include <sys/types.h>
+#include <cstdint>
 
 #include <cassert>
 #include <cstring>
@@ -63,8 +63,7 @@ static const char* tag_names[] = {"0",
 const int tag_count = sizeof(tag_names) / sizeof(tag_names[0]);
 
 
-Stream::Stream() :
-    lastTag_(tag_zero), writeCount_(0) {}
+Stream::Stream() : lastTag_(tag_zero), writeCount_(0) {}
 
 void Stream::print(std::ostream& s) const {
     s << name();
@@ -802,8 +801,8 @@ class StreamDecoder : public Stream {
     virtual std::string name() const { return "StreamDecoder"; }
 
 public:
-    StreamDecoder(const char* buffer) :
-        buffer_(buffer), pos_(0), len_(0) {}
+
+    StreamDecoder(const char* buffer) : buffer_(buffer), pos_(0), len_(0) {}
     size_t len() const { return len_; }
 };
 

@@ -14,7 +14,7 @@
 
 #include <memory>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
@@ -25,31 +25,37 @@
 namespace eckit::geo::grid {
 
 
-static size_t calculate_n(const pl_type& pl) {
-    ASSERT(!pl.empty() && pl.size() % 2 == 0);
-    return pl.size() / 2;
+namespace {
+
+
+Range* make_y_range(size_t N, area::BoundingBox* bbox) {
+    return range::GaussianLatitude(N, false).make_range_cropped(bbox == nullptr ? NORTH_POLE.lat : bbox->north,
+                                                                bbox == nullptr ? SOUTH_POLE.lat : bbox->south);
 }
 
 
+}  // namespace
+
+
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox(spec), projection::Rotation::make_from_spec(spec)) {}
+    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec).release(),
+                    projection::Rotation::make_from_spec(spec)) {}
 
 
-ReducedGaussian::ReducedGaussian(const pl_type& pl, const area::BoundingBox& bbox, projection::Rotation* rotation) :
-    Reduced(bbox, rotation),
-    N_(calculate_n(pl)),
-    pl_(pl),
-    j_(0),
-    Nj_(N_ * 2),
-    x_(Nj_),
-    y_(range::GaussianLatitude(N_, false).make_range_cropped(bbox.north, bbox.south)) {
-    ASSERT(Nj_ == pl_.size());
+ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, projection::Rotation* rotation) :
+    ReducedGaussian(pl.size() / 2, pl, bbox, rotation) {}
+
+
+ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, projection::Rotation* rotation) :
+    Reduced(bbox, rotation), N_(N), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
+    ASSERT(N_ * 2 == pl_.size());
+    ASSERT(0 < N_ && Nj_ <= 2 * N_);
     ASSERT(y_);
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const area::BoundingBox& bbox, projection::Rotation* rotation) :
-    ReducedGaussian(util::reduced_octahedral_pl(N), bbox, rotation) {}
+ReducedGaussian::ReducedGaussian(size_t N, area::BoundingBox* bbox, projection::Rotation* rotation) :
+    ReducedGaussian(N, util::reduced_octahedral_pl(N), bbox, rotation) {}
 
 
 Grid::iterator ReducedGaussian::cbegin() const {
@@ -119,12 +125,23 @@ void ReducedGaussian::fill_spec(spec::Custom& custom) const {
             custom.set("pl", pl_);
         }
     }
+
+    if (order() != order::Scan::order_default()) {
+        custom.set("ordering", order());
+    }
+}
+
+
+const std::string& ReducedGaussian::type() const {
+    static const std::string type{"reduced-gg"};
+    return type;
 }
 
 
 Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new ReducedGaussian(pl_, cropped);
+        return new ReducedGaussian(N_, pl_,
+                                   new area::BoundingBox{cropped.north, cropped.west, cropped.south, cropped.east});
     }
 
     throw UserError("ReducedGaussian: cannot crop grid (empty intersection)", Here());
@@ -151,8 +168,8 @@ struct ReducedGaussianOctahedral {
 };
 
 
-static const GridRegisterName<ReducedGaussianClassical> GRIDNAME1("[nN][1-9][0-9]*");
-static const GridRegisterName<ReducedGaussianOctahedral> GRIDNAME2("[oO][1-9][0-9]*");
+static const GridRegisterName<ReducedGaussianClassical> GRIDNAME1("n[1-9][0-9]*");
+static const GridRegisterName<ReducedGaussianOctahedral> GRIDNAME2("o[1-9][0-9]*");
 
 static const GridRegisterType<ReducedGaussian> GRIDTYPE1("reduced_gg");
 static const GridRegisterType<ReducedGaussian> GRIDTYPE2("reduced_rotated_gg");

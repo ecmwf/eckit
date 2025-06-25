@@ -24,18 +24,22 @@ namespace eckit {
 
 class TimeStampTarget : public WrapperTarget {
 public:
+
     TimeStampTarget(const char* tag = "", LogTarget* target = 0);
 
     ~TimeStampTarget() override;
 
 protected:
+
     void print(std::ostream& s) const override;
 
 private:
+
     void writePrefix() override;
     void writeSuffix() override;
 
 private:
+
     const char* tag_;
 };
 

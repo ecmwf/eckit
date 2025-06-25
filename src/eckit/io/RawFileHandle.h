@@ -24,6 +24,7 @@ namespace eckit {
 
 class RawFileHandle : public DataHandle {
 public:
+
     RawFileHandle(const std::string& path, bool overwrite = false);
 
     ~RawFileHandle();
@@ -47,6 +48,7 @@ public:
     void encode(Stream&) const override;
 
 private:
+
     std::string path_;
     bool overwrite_;
     int fd_;

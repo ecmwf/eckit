@@ -15,7 +15,7 @@
 #define eckit_Seconds_h
 
 #include <sys/time.h>
-#include <time.h>
+#include <ctime>
 #include <iosfwd>
 
 //-----------------------------------------------------------------------------
@@ -28,6 +28,7 @@ namespace eckit {
 
 class Seconds {
 public:
+
     // -- Contructors
 
     Seconds(double, bool compact = false);
@@ -43,6 +44,7 @@ public:
     friend std::ostream& operator<<(std::ostream&, const Seconds&);
 
 private:
+
     // There is no private copy constructor as this will confuse g++ 4.x.x
 
     // -- Members

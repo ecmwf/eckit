@@ -9,9 +9,9 @@
  */
 
 #include <fcntl.h>
-#include <signal.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <csignal>
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/Select.h"
@@ -138,10 +138,8 @@ void TCPServer::print(std::ostream& s) const {
 }
 
 
-EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) :
-    TCPServer(0, opts) {}
+EphemeralTCPServer::EphemeralTCPServer(const SocketOptions& opts) : TCPServer(0, opts) {}
 
-EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) :
-    TCPServer(port, opts) {}
+EphemeralTCPServer::EphemeralTCPServer(int port, const SocketOptions& opts) : TCPServer(port, opts) {}
 
 }  // namespace eckit::net

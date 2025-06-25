@@ -21,8 +21,8 @@ using namespace eckit;
 
 class MyTool : public Tool {
 public:
-    MyTool(int argc, char** argv) :
-        Tool(argc, argv) {}
+
+    MyTool(int argc, char** argv) : Tool(argc, argv) {}
 
     virtual ~MyTool() { mpi::finaliseAllComms(); }
 

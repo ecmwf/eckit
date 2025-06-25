@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionIN : public FunctionExpression {
 public:
+
     FunctionIN(const std::string&, const expression::Expressions&);
     FunctionIN(const FunctionIN&);
     ~FunctionIN();
@@ -29,6 +30,7 @@ public:
     static int arity() { return -1; }
 
 private:
+
     // No copy allowed
     FunctionIN& operator=(const FunctionIN&);
 

@@ -23,6 +23,7 @@ class SQLDatabase;
 
 class SQLStatement {
 public:
+
     SQLStatement();
     virtual ~SQLStatement();
 
@@ -30,9 +31,11 @@ public:
     virtual expression::Expressions output() const = 0;
 
 protected:
+
     virtual void print(std::ostream&) const;
 
 private:
+
     // No copy allowed
     SQLStatement(const SQLStatement&);
     SQLStatement& operator=(const SQLStatement&);

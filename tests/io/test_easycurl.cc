@@ -35,6 +35,7 @@ const std::string BASE_URL = "http://127.0.0.1:49111";
 
 class MockREST {
 public:
+
     MockREST() {
         // Launch REST API in a (detached) thread
         std::thread api(MockREST::launch_rest_api);
@@ -52,9 +53,8 @@ public:
     }
 
 private:
-    static void launch_rest_api() {
-        std::system("MockREST.launcher.sh");
-    }
+
+    static void launch_rest_api() { std::system("MockREST.launcher.sh"); }
 
     static void wait_for_running_api() {
         auto curl = EasyCURL();

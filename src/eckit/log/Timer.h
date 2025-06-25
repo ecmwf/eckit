@@ -15,7 +15,7 @@
 #define eckit_Timer_h
 
 #include <sys/time.h>
-#include <time.h>
+#include <ctime>
 
 #include "eckit/log/Log.h"
 #include "eckit/memory/NonCopyable.h"
@@ -26,6 +26,7 @@ namespace eckit {
 
 class Timer : private NonCopyable {
 public:
+
     explicit Timer();
 
     /// @param name of the timer, used for output
@@ -52,11 +53,13 @@ public:
     void reset(const std::string& message = "");
 
 protected:  // methods
+
     void takeTime();
 
     std::ostream& output() { return out_ << name_ << ": "; }
 
 private:  // members
+
     std::string name_;
 
     bool stopped_;

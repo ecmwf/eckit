@@ -23,6 +23,7 @@ namespace eckit {
 
 class Month {
 public:
+
     // -- Contructors
 
     Month(const Date& = Date(0));
@@ -73,6 +74,7 @@ public:
     }
 
 protected:
+
     // -- Members
     // None
 
@@ -89,6 +91,7 @@ protected:
     // None
 
 private:
+
     // -- Members
 
     Date date_;

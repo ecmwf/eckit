@@ -14,6 +14,7 @@
 #ifndef eckit_Fraction_h
 #define eckit_Fraction_h
 
+#include <iosfwd>
 #include <string>
 
 
@@ -29,61 +30,41 @@ class Stream;
 
 class Fraction {
 public:
-    typedef long long value_type;
 
-    // typedef __int128 value_type;
+    using value_type = long long;
 
-public:  // methods
-         // -- Contructors
-    Fraction() :
-        top_(0), bottom_(1) {}
-
-    // template<class T>
-    // explicit Fraction(T top): top_(top), bottom_(1) {}
+    Fraction() : top_(0), bottom_(1) {}
 
     Fraction(value_type top, value_type bottom);
 
     explicit Fraction(double n);
-    explicit Fraction(int n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(short n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(long n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(long long n) :
-        top_(n), bottom_(1) {}
+    explicit Fraction(int n) : top_(n), bottom_(1) {}
+    explicit Fraction(short n) : top_(n), bottom_(1) {}
+    explicit Fraction(long n) : top_(n), bottom_(1) {}
+    explicit Fraction(long long n) : top_(n), bottom_(1) {}
 
-    explicit Fraction(unsigned int n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(unsigned short n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long n) :
-        top_(n), bottom_(1) {}
-    explicit Fraction(unsigned long long n) :
-        top_(n), bottom_(1) {}
-
-    // Fraction(const Fraction& other):
-    //     top_(other.top_), bottom_(other.bottom_) {}
+    explicit Fraction(unsigned int n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned short n) : top_(n), bottom_(1) {}
+    explicit Fraction(unsigned long n) : top_(static_cast<value_type>(n)), bottom_(1) {}
+    explicit Fraction(unsigned long long n) : top_(static_cast<value_type>(n)), bottom_(1) {}
 
     explicit Fraction(const std::string&);
     explicit Fraction(const char*);
 
     bool integer() const { return bottom_ == 1; }
 
-    static Fraction abs(const Fraction& f);
+    static Fraction abs(const Fraction&);
 
-    // Convert string to fraction by shifting
-    // the decimal point: e.g. 14.5 in 145/10
+    // Convert string to fraction by shifting the decimal point: e.g. 14.5 in 145/10
     static Fraction fromString(const std::string&);
 
-public:  // operators
     static Fraction::value_type max_denominator();
 
-    operator double() const { return double(top_) / double(bottom_); }
+    operator double() const { return static_cast<double>(top_) / static_cast<double>(bottom_); }
 
     operator value_type() const;
 
-    Fraction operator-() const { return Fraction(-top_, bottom_); }
+    Fraction operator-() const { return {-top_, bottom_}; }
 
     value_type integralPart() const { return top_ / bottom_; }
 
@@ -117,23 +98,23 @@ public:  // operators
 
     bool operator>=(const Fraction&) const;
 
-    Fraction& operator+=(const Fraction& other) {
-        *this = (*this) + other;
+    Fraction& operator+=(const Fraction& f) {
+        *this = (*this) + f;
         return *this;
     }
 
-    Fraction& operator-=(const Fraction& other) {
-        *this = (*this) - other;
+    Fraction& operator-=(const Fraction& f) {
+        *this = (*this) - f;
         return *this;
     }
 
-    Fraction& operator/=(const Fraction& other) {
-        *this = (*this) / other;
+    Fraction& operator/=(const Fraction& f) {
+        *this = (*this) / f;
         return *this;
     }
 
-    Fraction& operator*=(const Fraction& other) {
-        *this = (*this) * other;
+    Fraction& operator*=(const Fraction& f) {
+        *this = (*this) * f;
         return *this;
     }
 
@@ -210,30 +191,33 @@ public:  // operators
     }
 
     //====================================
+
     // Return a version that can be converted to double and back
     Fraction stableVersion(size_t max = 1000000) const;
 
-private:  // members
+private:
+
     value_type top_;
     value_type bottom_;
 
-    void print(std::ostream& out) const;
-    void encode(Stream& out) const;
-    void decode(Stream& out);
+    void print(std::ostream&) const;
+    void encode(Stream&) const;
+    void decode(Stream&);
 
+    std::string to_string() const;
 
-    friend std::ostream& operator<<(std::ostream& s, const Fraction& x) {
-        x.print(s);
+    friend std::ostream& operator<<(std::ostream& s, const Fraction& f) {
+        f.print(s);
         return s;
     }
 
-    friend Stream& operator<<(Stream& s, const Fraction& x) {
-        x.encode(s);
+    friend Stream& operator<<(Stream& s, const Fraction& f) {
+        f.encode(s);
         return s;
     }
 
-    friend Stream& operator>>(Stream& s, Fraction& x) {
-        x.decode(s);
+    friend Stream& operator>>(Stream& s, Fraction& f) {
+        f.decode(s);
         return s;
     }
 };

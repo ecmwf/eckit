@@ -31,6 +31,7 @@ namespace eckit::codec {
 /// on construction an destruction.
 class Stream {
 public:
+
     /// Default constructor
     /// @post Stream is not usable but can be assigned to become valid
     Stream() = default;
@@ -46,8 +47,11 @@ public:
     ///       the referenced datahandle
     Stream(DataHandle&);
 
-    /// Assignment constructor sharing datahandle with other Stream
-    Stream(const Stream&);
+    /// Assignment/Copy constructor sharing datahandle with other Stream
+    Stream(const Stream&)            = default;
+    Stream(Stream&&)                 = default;
+    Stream& operator=(const Stream&) = default;
+    Stream& operator=(Stream&&)      = default;
 
     /// Access internal DataHandle
     DataHandle& datahandle();
@@ -72,6 +76,7 @@ public:
     explicit operator bool() const { return ptr_ != nullptr; }
 
 private:
+
     std::shared_ptr<DataHandle> shared_;
     DataHandle* ptr_{nullptr};
 };

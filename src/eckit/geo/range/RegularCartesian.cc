@@ -14,7 +14,7 @@
 
 #include <algorithm>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 
@@ -36,13 +36,14 @@ static Fraction regular_adjust(const Fraction& target, const Fraction& inc, bool
 
 
 Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const {
-    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b)
-           || (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
+    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
+           (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
 
     if (types::is_approximately_equal(crop_a, crop_b, eps())) {
         NOTIMP;  // FIXME
     }
-    else if (a() < b()) {
+
+    if (a() < b()) {
         ASSERT(a() <= crop_a && crop_b <= b());  // FIXME do better
 
         auto inc(increment());
@@ -57,9 +58,6 @@ Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const 
         ASSERT(0 < n && n <= size());
 
         return new RegularCartesian(n, _a, _b, eps());
-    }
-    else {
-        NOTIMP;  // FIXME
     }
 
     NOTIMP;

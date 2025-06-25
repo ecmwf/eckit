@@ -33,6 +33,7 @@ namespace system {
 
 class Library : private eckit::NonCopyable {
 public:  // methods
+
     Library(const std::string& name);
 
     virtual ~Library();
@@ -51,9 +52,7 @@ public:  // methods
 
     virtual std::string version() const = 0;
 
-    virtual std::string versionExtended() const {
-        return version();
-    }
+    virtual std::string versionExtended() const { return version(); }
 
     virtual std::string gitsha1(unsigned int count = 40) const = 0;
 
@@ -64,6 +63,7 @@ public:  // methods
     virtual const Configuration& configuration() const;
 
 public:  // methods
+
     /// @deprecated Use LibraryManager instead
     static std::vector<std::string> list();
     /// @deprecated Use LibraryManager instead
@@ -77,6 +77,7 @@ public:  // methods
     void unlock() { mutex_.unlock(); }
 
 protected:  // methods
+
     virtual std::string home() const;
 
     virtual const void* addr() const;
@@ -89,9 +90,11 @@ protected:  // methods
     }
 
 private:  // methods
+
     std::string location() const;
 
 private:  // members
+
     std::string name_;
     std::string prefix_;
     std::string home_;  // if not set explicitly, will be empty

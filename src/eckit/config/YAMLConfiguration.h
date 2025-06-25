@@ -28,6 +28,7 @@ class Stream;
 class YAMLConfiguration : public Configuration, private eckit::NonCopyable {
 
 public:
+
     YAMLConfiguration(const PathName& path, char separator = '.');
     YAMLConfiguration(std::istream&, char separator = '.');
     YAMLConfiguration(Stream&, char separator = '.');
@@ -37,6 +38,7 @@ public:
     ~YAMLConfiguration() override;
 
 private:  // members
+
     std::string path_;
 
     void print(std::ostream&) const override;

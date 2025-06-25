@@ -29,6 +29,7 @@ namespace eckit {
 /// especially when dealing with construction before main() execution (eg self-registration classes)
 class Mutex : private NonCopyable {
 public:  // methods
+
     Mutex(char tag = ' ');
 
     ~Mutex();
@@ -39,6 +40,7 @@ public:  // methods
     char tag() const { return tag_; }
 
 protected:  // members
+
     pthread_mutex_t mutex_;
     bool exists_;
     char tag_;

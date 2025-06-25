@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <csignal>
 
 #include "eckit/eckit.h"
 

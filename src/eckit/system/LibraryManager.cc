@@ -15,8 +15,8 @@
 #include <cctype>
 #include <map>
 
-#include <dlfcn.h>   // for dlopen
-#include <limits.h>  // for PATH_MAX
+#include <dlfcn.h>  // for dlopen
+#include <climits>  // for PATH_MAX
 
 #include "eckit/system/LibraryManager.h"
 
@@ -67,6 +67,7 @@ class LibraryRegistry {
     typedef std::map<std::string, Library*> LibraryMap;
 
 public:  // methods
+
     /// Builds the registry on demand, needed for correct static initialization
     /// because factories can be initialized first
     static LibraryRegistry& instance() {
@@ -154,17 +155,15 @@ public:  // methods
         return *(j->second);
     }
 
-    const std::vector<std::string>& pluginSearchPaths() {
-        return plugin_search_paths_;
-    }
+    const std::vector<std::string>& pluginSearchPaths() { return plugin_search_paths_; }
 
     std::vector<std::string> dynamicLibraryPaths() {
         std::vector<std::string> libPaths(Resource<std::vector<std::string>>(
             "dynamicLibraryPath;$DYNAMIC_LIBRARY_PATH", {"~/lib64", "~/lib", "~eckit/lib64", "~eckit/lib"}));
 
-        for( auto& p: pluginSearchPaths() ) {
-            libPaths.push_back(p+"/lib");
-            libPaths.push_back(p+"/lib64");
+        for (auto& p : pluginSearchPaths()) {
+            libPaths.push_back(p + "/lib");
+            libPaths.push_back(p + "/lib64");
         }
         return libPaths;
     }
@@ -209,7 +208,8 @@ public:  // methods
             return plib;
         }
 
-        Log::warning() << "Failed to load library " << dynamicLibraryName << std::endl;
+        Log::warning() << "Failed to load library " << dynamicLibraryName << " dlerror: " << ::dlerror() << std::endl;
+
         return nullptr;
     }
 
@@ -234,6 +234,12 @@ public:  // methods
             // lets load since the associated library isn't registered
             void* libhandle = loadDynamicLibrary(lib);
 
+            if (!libhandle) {
+                std::ostringstream ss;
+                ss << "Failed to load library " << lib;
+                throw FailedSystemCall(ss.str().c_str(), Here());
+            }
+
             // the plugin should self-register when the library loads
             Plugin* plugin = lookupPlugin(name);
             if (plugin) {
@@ -245,8 +251,7 @@ public:  // methods
             // If the plugin library still doesn't exist after a successful call of dlopen, then
             // we have managed to load something other than a (self-registering) eckit Plugin library
             std::ostringstream ss;
-            ss << "Plugin library " << lib << " loaded but Plugin object " << name
-               << " not registered";
+            ss << "Plugin library " << lib << " loaded but Plugin object " << name << " not registered";
             throw UnexpectedState(ss.str(), Here());
         }
 
@@ -297,8 +302,8 @@ public:  // methods
         static std::string pluginManifestPath = Resource<std::string>("$PLUGINS_MANIFEST_PATH;pluginManifestPath", "");
         tokenize(pluginManifestPath, scanPaths);
 
-        for( const auto& p: pluginSearchPaths()) {
-            scanPaths.push_back(p+"/share/plugins");
+        for (const auto& p : pluginSearchPaths()) {
+            scanPaths.push_back(p + "/share/plugins");
         }
 
         // always scan ~eckit/share/plugins and ~/share/plugins as a last resort
@@ -419,6 +424,7 @@ public:  // methods
     }
 
 private:  // members
+
     std::vector<std::string> plugin_search_paths_;
     LibraryMap libs_;
     std::map<std::string, std::string> plugins_;  //< map plugin name to library

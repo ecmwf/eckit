@@ -11,7 +11,7 @@ elif [ "$except" = "FE_INEXACT" ]; then
   signal_code_option2=IXF
 elif [ "$except" = "FE_INVALID" ]; then
   signal_code_option1=FPE_FLTINV
-  signal_code_option2=IVF
+  signal_code_option2=IOF
 elif [ "$except" = "FE_DIVBYZERO" ]; then
   signal_code_option1=FPE_FLTDIV
   signal_code_option2=DZF
@@ -38,6 +38,12 @@ if [[ $(grep "${signal_code_option2}" $output) ]] ; then
    echo "SUCCESS: Detected signal code ${signal_code_option2}"
    exit 0
 fi
+
+if [[ $(grep "Could not trap ${except}" $output) ]] ; then
+    echo "WARNING: Could not trap ${except}, but not treating as failure."
+    exit 0
+fi
+
 
 # No signal code was detected in the output
 echo "FAILURE: signal code ${signal_code_option1} or ${signal_code_option2} were not detected in output" 

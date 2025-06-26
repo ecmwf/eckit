@@ -33,9 +33,9 @@ ecbuild_add_executable(
 foreach( _fe FE_INVALID FE_INEXACT FE_DIVBYZERO FE_OVERFLOW FE_UNDERFLOW)
     ecbuild_add_test(
         TARGET            eckit_test_maths_floating_point_exception_${_fe}
-        COMMAND           floating_point_exception.sh
+        COMMAND           ${CMAKE_CURRENT_SOURCE_DIR}/floating_point_exception.sh
         ARGS              ${_fe}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
         TEST_PROPERTIES   WILL_FAIL TRUE
     )
 endforeach()

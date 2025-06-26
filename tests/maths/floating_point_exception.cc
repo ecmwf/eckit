@@ -21,14 +21,21 @@ int main(int argc, char** argv) {
 
     using FPE = eckit::maths::FloatingPointExceptions;
 
-    std::string except{"FE_DIVBYZERO"};
     if (argc > 1) {
-        except = argv[1];
+        FPE::enable_floating_point_exceptions(argv[1]);
+        FPE::enable_custom_signal_handlers();
+        FPE::test(argv[1]);  // should raise a signal
     }
-    FPE::enable_floating_point_exceptions(except);
-    FPE::enable_custom_signal_handlers();
-    FPE::test(except);  // should raise a signal
-
-    std::cout << "Could not trap " << except << std::endl;
+    else {
+        FPE::enable_floating_point_exceptions();
+        FPE::enable_custom_signal_handlers();
+        FPE::test("FE_DIVBYZERO");
+    }
+    if (argc > 1) {
+        std::cout << "Could not trap " << argv[1] << std::endl;
+    }
+    else {
+        std::cout << "Could not trap FE_DIVBYZERO" << std::endl;
+    }
     return 1;
 }

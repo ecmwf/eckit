@@ -36,7 +36,6 @@ foreach( _fe FE_INVALID FE_INEXACT FE_DIVBYZERO FE_OVERFLOW FE_UNDERFLOW)
         COMMAND           ${CMAKE_CURRENT_SOURCE_DIR}/floating_point_exception.sh
         ARGS              ${_fe}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        TEST_PROPERTIES   WILL_FAIL TRUE
     )
 endforeach()
 

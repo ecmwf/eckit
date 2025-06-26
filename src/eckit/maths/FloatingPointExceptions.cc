@@ -97,6 +97,12 @@ struct : private std::map<int, std::pair<struct ::sigaction, struct ::sigaction>
 
         throw UserError("FloatingPointExceptions: signal " + std::to_string(signum) + " is not set", Here());
     }
+
+    void unset() {
+        while (!empty()) {
+            unset(rbegin()->first);
+        }
+    }
 } CUSTOM_SIGNAL_HANDLERS;
 
 
@@ -106,6 +112,7 @@ int CUSTOM_EXCEPTS = 0;
 void enable_floating_point_exception(int excepts) {
 #if eckit_HAVE_FEENABLEEXCEPT
     std::feenableexcept(excepts);
+    CUSTOM_EXCEPTS |= excepts;
 #elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
     std::fenv_t fenv;
     if (std::fegetenv(&fenv) != 0) {
@@ -116,6 +123,7 @@ void enable_floating_point_exception(int excepts) {
     fenv.__mxcsr &= ~(excepts << 7);  // Unmask exceptions in SSE MXCSR (clear bits 7-12)
 
     std::fesetenv(&fenv);
+    CUSTOM_EXCEPTS |= excepts;
 #elif defined(__APPLE__)
     std::fenv_t fenv;
     if (std::fegetenv(&fenv) != 0) {
@@ -131,21 +139,15 @@ void enable_floating_point_exception(int excepts) {
 #endif
 
     std::fesetenv(&fenv);
+    CUSTOM_EXCEPTS |= excepts;
 #endif
-
-    // If exceptions are enabled (by this mechanism), set signal handler(s)
-    if (CUSTOM_EXCEPTS |= excepts; CUSTOM_EXCEPTS != 0) {
-        CUSTOM_SIGNAL_HANDLERS.set(SIGFPE);
-#if defined(__APPLE__) && defined(__arm64__)
-        CUSTOM_SIGNAL_HANDLERS.set(SIGILL);
-#endif
-    }
 }
 
 
 void disable_floating_point_exception(int excepts) {
 #if eckit_HAVE_FEDISABLEEXCEPT
     std::fedisableexcept(excepts);
+    CUSTOM_EXCEPTS &= ~excepts;
 #elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
     std::fenv_t fenv;
     if (std::fegetenv(&fenv) != 0) {
@@ -156,6 +158,7 @@ void disable_floating_point_exception(int excepts) {
     fenv.__mxcsr |= (excepts << 7);  // Mask exceptions in SSE MXCSR (set bits 7-12)
 
     std::fesetenv(&fenv);
+    CUSTOM_EXCEPTS &= ~excepts;
 #elif defined(__APPLE__)
     std::fenv_t fenv;
     if (std::fegetenv(&fenv) != 0) {
@@ -171,18 +174,11 @@ void disable_floating_point_exception(int excepts) {
 #endif
 
     std::fesetenv(&fenv);
+    CUSTOM_EXCEPTS &= ~excepts;
 #else
     // the platform does not support enabling/disabling FPEs
     (void)excepts;
 #endif
-
-    // If no exceptions are enabled (by this mechanism), unset signal handler(s)
-    if (CUSTOM_EXCEPTS &= ~excepts; CUSTOM_EXCEPTS == 0) {
-        CUSTOM_SIGNAL_HANDLERS.unset(SIGFPE);
-#if defined(__APPLE__) && defined(__arm64__)
-        CUSTOM_SIGNAL_HANDLERS.unset(SIGILL);
-#endif
-    }
 }
 
 
@@ -281,11 +277,25 @@ void disable_floating_point_exception(int excepts) {
 #undef LOG
 #undef STR
 
-    FloatingPointExceptions::disable_floating_point_exceptions();
     LibEcKit::instance().abort();
 
     // Just in case we end up here, which normally we shouldn't.
     std::abort();
+}
+
+
+void enable_signal_handlers(bool force) {
+    if (force || CUSTOM_EXCEPTS != 0) {
+        CUSTOM_SIGNAL_HANDLERS.set(SIGFPE);
+#if defined(__APPLE__) && defined(__arm64__)
+        CUSTOM_SIGNAL_HANDLERS.set(SIGILL);
+#endif
+    }
+}
+
+
+void disable_signal_handlers() {
+    CUSTOM_SIGNAL_HANDLERS.unset();
 }
 
 
@@ -306,6 +316,16 @@ void FloatingPointExceptions::disable_floating_point_exceptions(const std::strin
     if (auto excepts = make_excepts(codes); excepts != 0) {
         disable_floating_point_exception(excepts);
     }
+}
+
+
+void FloatingPointExceptions::enable_custom_signal_handlers(bool force) {
+    enable_signal_handlers(force);
+}
+
+
+void FloatingPointExceptions::disable_custom_signal_handlers() {
+    disable_signal_handlers();
 }
 
 

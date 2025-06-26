@@ -39,29 +39,35 @@ class FloatingPointExceptions {
 public:
 
     /**
-     * @brief Enable specific floating-point exceptions.
-     *
-     * This will install a custom signal handler for SIGFPE (and SIGILL on macOS ARM64) if FPEs are enabled (using this
-     * mechanism). Use "FE_ALL_EXCEPT" to enable all exceptions.
-     *
+     * @brief Enable/unmask specific floating-point exceptions. Use "FE_ALL_EXCEPT" to enable all exceptions.
      * @param names Comma-separated string of exception names.
      */
     static void enable_floating_point_exceptions(const std::string& names = "FE_DIVBYZERO, FE_INVALID, FE_OVERFLOW");
 
     /**
-     * @brief Disable specific floating-point exceptions.
-     *
-     * This will mask the specified exceptions and remove the signal handlers if no FPEs remain enabled (using this
-     * mechanism). Use "FE_ALL_EXCEPT" to disable all exceptions.
-     *
+     * @brief Disable/mask specific floating-point exceptions. Use "FE_ALL_EXCEPT" to disable all exceptions.
      * @param names Cmma-separated string of exception names.
      */
     static void disable_floating_point_exceptions(const std::string& names = "FE_ALL_EXCEPT");
 
     /**
-     * @brief Test FPEs raising
-     * This function will raise a floating-point exception for the specified names.
+     * @brief Enable/install custom signal handlers to trigger on a raised floating-point exception.
      *
+     * Installs custom signal handlers, platform-dependent SIGFPE (and SIGILL on Apple ARM64), saving the current
+     * (original) ones.
+     *
+     * @param force Installs signal handlers if force=true, or if force=false and floating-point exceptions have been
+     * enabled by this mechanism.
+     */
+    static void enable_custom_signal_handlers(bool force = false);
+
+    /**
+     * @brief Disable/restore original custom signal handlers saved by enable_custom_signal_handlers.
+     */
+    static void disable_custom_signal_handlers();
+
+    /**
+     * @brief Test floating-point exceptions raising for the specified names.
      * @param names Cmma-separated string of exception names.
      */
     static void test(const std::string& names = "FE_ALL_EXCEPT");

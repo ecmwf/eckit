@@ -33,6 +33,10 @@ if( eckit_HAVE_ECKIT_GEO )
     add_subdirectory( geo )
 endif()
 
+if( eckit_HAVE_ECKIT_STATS )
+    add_subdirectory( stats )
+endif()
+
 if( eckit_HAVE_EXPERIMENTAL )
     add_subdirectory( experimental )
 endif()

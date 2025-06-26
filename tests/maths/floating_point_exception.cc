@@ -9,6 +9,7 @@
  */
 
 
+#include <iostream>
 #include <string>
 
 #include "eckit/maths/FloatingPointExceptions.h"
@@ -20,15 +21,14 @@ int main(int argc, char** argv) {
 
     using FPE = eckit::maths::FloatingPointExceptions;
 
+    std::string except{"FE_DIVBYZERO"};
     if (argc > 1) {
-        FPE::enable_floating_point_exceptions(argv[1]);
-        FPE::enable_custom_signal_handlers();
-        FPE::test(argv[1]);  // should raise a signal
+        except = argv[1];
     }
-    else {
-        FPE::enable_floating_point_exceptions();
-        FPE::enable_custom_signal_handlers();
-        FPE::test("FE_DIVBYZERO");
-    }
+    FPE::enable_floating_point_exceptions(except);
+    FPE::enable_custom_signal_handlers();
+    FPE::test(except);  // should raise a signal
+
+    std::cout << "Could not trap " << except << std::endl;
     return 1;
 }

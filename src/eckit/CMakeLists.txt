@@ -297,6 +297,8 @@ list( APPEND eckit_filesystem_srcs
     filesystem/FileSystem.cc
     filesystem/FileSystem.h
     filesystem/FileSystemSize.h
+    filesystem/LocalFileManager.cc
+    filesystem/LocalFileManager.h
     filesystem/LocalPathName.cc
     filesystem/LocalPathName.h
     filesystem/PathExpander.cc
@@ -305,20 +307,20 @@ list( APPEND eckit_filesystem_srcs
     filesystem/PathName.h
     filesystem/PathNameFactory.cc
     filesystem/PathNameFactory.h
+    filesystem/StdDir.cc
+    filesystem/StdDir.h
     filesystem/TempFile.cc
     filesystem/TempFile.h
     filesystem/TmpDir.cc
     filesystem/TmpDir.h
-    filesystem/StdDir.cc
-    filesystem/StdDir.h
     filesystem/TmpFile.cc
     filesystem/TmpFile.h
     filesystem/URI.cc
     filesystem/URI.h
     filesystem/URIManager.cc
     filesystem/URIManager.h
-    filesystem/LocalFileManager.cc
-    filesystem/LocalFileManager.h
+    filesystem/User.cc
+    filesystem/User.h
 )
 
 list( APPEND eckit_thread_srcs

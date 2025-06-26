@@ -111,7 +111,7 @@ int CUSTOM_EXCEPTS = 0;
 
 void enable_floating_point_exception(int excepts) {
 #if eckit_HAVE_FEENABLEEXCEPT
-    std::feenableexcept(excepts);
+    feenableexcept(excepts);
     CUSTOM_EXCEPTS |= excepts;
 #elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
     std::fenv_t fenv;
@@ -146,7 +146,7 @@ void enable_floating_point_exception(int excepts) {
 
 void disable_floating_point_exception(int excepts) {
 #if eckit_HAVE_FEDISABLEEXCEPT
-    std::fedisableexcept(excepts);
+    fedisableexcept(excepts);
     CUSTOM_EXCEPTS &= ~excepts;
 #elif defined(__linux__) && (defined(__i386__) || defined(__x86_64__))
     std::fenv_t fenv;

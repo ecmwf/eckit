@@ -18,6 +18,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/SafeCasts.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
@@ -110,6 +111,10 @@ Fraction::Fraction(double value) : top_(1), bottom_(0) {
 
     throw BadValue("Cannot compute fraction from " + std::to_string(value));
 }
+
+Fraction::Fraction(unsigned long n) : top_(into_signed(n)), bottom_(1) {}
+
+Fraction::Fraction(unsigned long long n) : top_(into_signed(n)), bottom_(1) {}
 
 Fraction::Fraction(const std::string& s) {
     static Tokenizer parse("/");

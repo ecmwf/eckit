@@ -24,19 +24,70 @@ using FPE = maths::FloatingPointExceptions;
 std::vector<std::string> CODES{"FE_INVALID", "FE_INEXACT", "FE_DIVBYZERO", "FE_OVERFLOW", "FE_UNDERFLOW"};
 
 
-CASE("invalid exception") {
+CASE("invalid exception code") {
     EXPECT_THROWS_AS(FPE::enable_floating_point_exceptions("?"), UserError);
 }
 
 
 CASE("disabled exceptions") {
+    FPE::disable_floating_point_exceptions();
+    FPE::disable_custom_signal_handlers();
+
     for (const auto& code : CODES) {
-        FPE::enable_floating_point_exceptions(code);
+        // exceptions are not enabled
+        FPE::enable_custom_signal_handlers(true);
+        FPE::test(code);
 
-        // FPE::test("FE_DIVBYZERO");  // should trigger a signel
+        FPE::disable_custom_signal_handlers();
+        FPE::test(code);
 
+        // can call twice
         FPE::disable_floating_point_exceptions(code);
-        FPE::test(code);  // should not trigger a signel
+        FPE::disable_floating_point_exceptions(code);
+    }
+}
+
+
+CASE("can call twice") {
+    SECTION("enable_floating_point_exceptions") {
+        FPE::enable_floating_point_exceptions();
+        FPE::enable_floating_point_exceptions();
+    }
+
+    SECTION("disable_floating_point_exceptions") {
+        FPE::disable_floating_point_exceptions();
+        FPE::disable_floating_point_exceptions();
+    }
+
+    SECTION("enable_custom_signal_handlers") {
+        FPE::enable_custom_signal_handlers(true);
+        FPE::enable_custom_signal_handlers(true);
+    }
+
+    SECTION("disable_custom_signal_handlers") {
+        FPE::disable_custom_signal_handlers();
+        FPE::disable_custom_signal_handlers();
+    }
+}
+
+
+CASE("default exceptions") {
+    FPE::disable_floating_point_exceptions();
+    FPE::disable_custom_signal_handlers();
+
+    SECTION("custom signal handlers are not installed") {
+        for (const auto& code : CODES) {
+            FPE::test(code);
+        }
+    }
+
+    SECTION("custom signal handlers are not installed") {
+        FPE::disable_custom_signal_handlers();
+        FPE::enable_custom_signal_handlers();
+
+        for (const auto& code : CODES) {
+            FPE::test(code);
+        }
     }
 }
 

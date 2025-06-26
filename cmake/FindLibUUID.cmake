@@ -93,11 +93,11 @@ find_package_handle_standard_args(LibUUID REQUIRED_VARS
                                     LIB_UUID_LIBRARY
                                     LIB_UUID_INCLUDE_DIR)
 
-if (LIB_UUID_FOUND)
+if (LibUUID_FOUND)
     set(LIB_UUID_LIBRARIES ${LIB_UUID_LIBRARY})
     set(LIB_UUID_INCLUDE_DIRS ${LIB_UUID_INCLUDE_DIR})
     if(NOT TARGET LibUUID)
-        add_library(LibUUID UNKOWN IMPORTED)
+        add_library(LibUUID UNKNOWN IMPORTED)
         set_target_properties(LibUUID PROPERTIES
             IMPORTED_LOCATION "${LIB_UUID_LIBRARY}"
             INTERFACE_INCLUDE_DIRECTORIES "${LIB_UUID_INCLUDE_DIR}"

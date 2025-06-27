@@ -190,25 +190,25 @@ public:
 class PermissionDenied : public Exception {
 public:
 
-    PermissionDenied(const std::string&);
+    explicit PermissionDenied(const std::string& /* w */, const CodeLocation& = {});
 };
 
 class NotFound : public Exception {
 public:
 
-    NotFound(const std::string&);
+    explicit NotFound(const std::string& /* w */, const CodeLocation& = {});
 };
 
 class AlreadyExists : public Exception {
 public:
 
-    AlreadyExists(const std::string&);
+    explicit AlreadyExists(const std::string& /* w */, const CodeLocation& = {});
 };
 
 class OutOfStorage : public Exception {
 public:
 
-    OutOfStorage(const std::string&);
+    explicit OutOfStorage(const std::string& /* w */, const CodeLocation& = {});
 };
 
 class UserError : public Exception {

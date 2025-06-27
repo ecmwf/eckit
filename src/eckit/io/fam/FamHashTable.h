@@ -23,11 +23,11 @@
 #include "eckit/io/fam/FamRegion.h"
 // #include "eckit/io/fam/FamRegionName.h"
 // #include "eckit/io/fam/FamVector.h"
-#include "eckit/io/fam/FamMapIterator.h"
-#include "eckit/types/FixedString.h"
-
 #include <array>
 #include <string>
+
+#include "eckit/io/fam/FamMapIterator.h"
+#include "eckit/types/FixedString.h"
 
 namespace eckit {
 
@@ -39,10 +39,10 @@ class FamRegionName;
 // FAM HASHER
 
 /// @brief Hash functor. Override this to make a specialized hasher
-template<typename key_type>
+template <typename key_type>
 struct FamHash {
     auto operator()(const key_type& key) const noexcept -> std::size_t {
-        return std::hash<std::string> {}(key.asString());
+        return std::hash<std::string>{}(key.asString());
         /// @note example for a 3-level key
         // const auto l1 = std::hash<std::string> {}(key.firstLevel);
         // const auto l2 = std::hash<std::string> {}(key.secondLevel);
@@ -64,6 +64,7 @@ class FamHashTable {
     static constexpr auto capacity = 1024;
 
 public:  // types
+
     using key_type  = FixedString<keySize>;
     using hash_type = FamHash<key_type>;
     /// @todo char array ?
@@ -89,12 +90,15 @@ public:  // types
     using node_type = FamList;
 
 public:  // methods
+
     FamHashTable(const FamRegionName& regionName, const std::string& tableName);
 
 private:  // methods
+
     auto initSentinel(const std::string& name, fam::size_t size) const -> FamObject;
 
 private:  // members
+
     FamRegion region_;
 
     FamObject begin_;

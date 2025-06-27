@@ -16,6 +16,7 @@
 #include "eckit/io/fam/FamHashTable.h"
 
 #include "detail/FamHashNode.h"
+
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamObjectName.h"
 #include "eckit/io/fam/FamRegionName.h"
@@ -27,15 +28,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamHashTable::FamHashTable(const FamRegionName& regionName, const std::string& tableName):
-    region_ {regionName.lookup()},
-    begin_ {initSentinel(tableName + "-hash-begin", sizeof(FamDescriptor))},
-    count_ {initSentinel(tableName + "-hash-count", sizeof(size_type))} { }
+FamHashTable::FamHashTable(const FamRegionName& regionName, const std::string& tableName) :
+    region_{regionName.lookup()},
+    begin_{initSentinel(tableName + "-hash-begin", sizeof(FamDescriptor))},
+    count_{initSentinel(tableName + "-hash-count", sizeof(size_type))} {}
 
 auto FamHashTable::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject {
     try {
         return region_.allocateObject(size, name);
-    } catch (const AlreadyExists&) {
+    }
+    catch (const AlreadyExists&) {
         auto object = region_.lookupObject(name);
         ASSERT(object.size() == size);
         return object;

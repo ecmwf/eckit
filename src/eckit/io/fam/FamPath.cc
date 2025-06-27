@@ -15,16 +15,13 @@
 
 #include "eckit/io/fam/FamPath.h"
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/URI.h"
-#include "eckit/serialisation/Stream.h"
-#include "eckit/utils/Tokenizer.h"
-
 #include <uuid/uuid.h>
 
 #include <iostream>
 #include <tuple>
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Tokenizer.h"
 

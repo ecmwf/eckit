@@ -15,16 +15,16 @@
 
 #include "eckit/io/fam/FamName.h"
 
+#include <ostream>
+#include <sstream>
+#include <string>
+#include <utility>
+
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/fam/FamPath.h"
 #include "eckit/io/fam/FamSession.h"
 #include "eckit/net/Endpoint.h"
 #include "eckit/serialisation/Stream.h"
-
-#include <ostream>
-#include <sstream>
-#include <string>
-#include <utility>
 
 namespace eckit {
 

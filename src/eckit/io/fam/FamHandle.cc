@@ -24,8 +24,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamHandle::FamHandle(const FamObjectName& name, const Offset& position, const Length& length, const bool overwrite):
-    name_ {name}, overwrite_ {overwrite}, pos_ {position}, len_ {length} { }
+FamHandle::FamHandle(const FamObjectName& name, const Offset& position, const Length& length, const bool overwrite) :
+    name_{name}, overwrite_{overwrite}, pos_{position}, len_{length} {}
 
 FamHandle::FamHandle(const FamObjectName& name, const bool overwrite) : FamHandle(name, 0, 0, overwrite) {}
 
@@ -38,7 +38,9 @@ void FamHandle::open(const Mode mode) {
 }
 
 void FamHandle::close() {
-    if (mode_ == Mode::WRITE) { flush(); }
+    if (mode_ == Mode::WRITE) {
+        flush();
+    }
     pos_  = 0;
     mode_ = Mode::CLOSED;
     handle_.reset();

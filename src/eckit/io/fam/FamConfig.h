@@ -19,10 +19,10 @@
 
 #pragma once
 
-#include "eckit/net/Endpoint.h"
-
 #include <ostream>
 #include <string>
+
+#include "eckit/net/Endpoint.h"
 
 namespace eckit {
 

@@ -19,10 +19,10 @@
 
 #pragma once
 
+#include <memory>
+
 #include "eckit/io/fam/FamList.h"
 #include "eckit/io/fam/FamRegion.h"
-
-#include <memory>
 
 namespace eckit {
 
@@ -31,6 +31,7 @@ namespace eckit {
 
 class FamMapIterator {
 public:  // types
+
     using iterator_category = std::forward_iterator_tag;
 
     using value_type = FamList;
@@ -38,6 +39,7 @@ public:  // types
     using reference  = value_type&;
 
 public:  // methods
+
     FamMapIterator(const FamRegion& region, fam::index_t offset);
 
     auto operator++() -> FamMapIterator&;
@@ -51,6 +53,7 @@ public:  // methods
     auto operator*() -> reference;
 
 private:  // members
+
     FamRegion region_;
     FamObject node_;
 
@@ -60,7 +63,7 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 // CONST ITERATOR
 
-class FamMapConstIterator: public FamMapIterator {
+class FamMapConstIterator : public FamMapIterator {
     using FamMapIterator::FamMapIterator;
 
     using value_type = FamMapIterator::value_type;
@@ -68,6 +71,7 @@ class FamMapConstIterator: public FamMapIterator {
     using reference  = const value_type&;
 
 public:  // methods
+
     auto operator->() -> pointer { return FamMapIterator::operator->(); }
 
     auto operator*() -> reference { return FamMapIterator::operator*(); }

@@ -24,8 +24,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamMapIterator::FamMapIterator(const FamRegion& region, const fam::index_t offset):
-    region_ {region}, node_ {region_.proxyObject(offset)} { }
+FamMapIterator::FamMapIterator(const FamRegion& region, const fam::index_t offset) :
+    region_{region}, node_{region_.proxyObject(offset)} {}
 
 auto FamMapIterator::operator++() -> FamMapIterator& {
     if (const auto next = FamMapNode::getNext(node_); next.region > 0) {
@@ -36,12 +36,16 @@ auto FamMapIterator::operator++() -> FamMapIterator& {
 }
 
 auto FamMapIterator::operator->() -> pointer {
-    if (list_) { list_ = FamMapNode::getList(region_, node_); }
+    if (list_) {
+        list_ = FamMapNode::getList(region_, node_);
+    }
     return list_.get();
 }
 
 auto FamMapIterator::operator*() -> reference {
-    if (list_) { list_ = FamMapNode::getList(region_, node_); }
+    if (list_) {
+        list_ = FamMapNode::getList(region_, node_);
+    }
     return *list_;
 }
 

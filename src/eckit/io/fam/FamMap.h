@@ -39,6 +39,7 @@ class FamMap {
     static constexpr auto capacity = 1024;
 
 public:  // types
+
     using key_type   = FixedString<keySize>;
     using hash_type  = FamHash<key_type>;
     using value_type = char;
@@ -65,6 +66,7 @@ public:  // types
     // using insert_return_type = std::pair<iterator, bool>;
 
 public:  // methods
+
     FamMap(const FamRegionName& regionName, const std::string& tableName);
 
     ~FamMap() = default;
@@ -116,6 +118,7 @@ public:  // methods
     // void clear() noexcept;
 
 private:  // methods
+
     auto initSentinel(const std::string& name, size_type size) const -> FamObject;
 
     void print(std::ostream& out) const;
@@ -123,6 +126,7 @@ private:  // methods
     friend std::ostream& operator<<(std::ostream& out, const FamMap& list);
 
 private:  // members
+
     FamRegion region_;
     FamObject root_;
     FamObject table_;

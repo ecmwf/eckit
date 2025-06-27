@@ -15,10 +15,9 @@
 
 #include "eckit/io/fam/FamProperty.h"
 
+#include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include <string.h>
 
 namespace eckit {
 
@@ -40,15 +39,15 @@ std::string permToString(fam::perm_t perm) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamProperty::FamProperty(fam::size_t size, fam::perm_t perm, std::string name, std::uint32_t uid, std::uint32_t gid)
-    : size {size}, perm {perm}, name {std::move(name)}, uid {uid}, gid {gid} { }
+FamProperty::FamProperty(fam::size_t size, fam::perm_t perm, std::string name, std::uint32_t uid, std::uint32_t gid) :
+    size{size}, perm{perm}, name{std::move(name)}, uid{uid}, gid{gid} {}
 
-FamProperty::FamProperty(fam::size_t size, fam::perm_t perm, const std::string& name)
-    : FamProperty(size, perm, name, getuid(), getgid()) { }
+FamProperty::FamProperty(fam::size_t size, fam::perm_t perm, const std::string& name) :
+    FamProperty(size, perm, name, getuid(), getgid()) {}
 
-FamProperty::FamProperty(fam::size_t size, fam::perm_t perm) : FamProperty(size, perm, "") { }
+FamProperty::FamProperty(fam::size_t size, fam::perm_t perm) : FamProperty(size, perm, "") {}
 
-FamProperty::FamProperty(fam::size_t size, const std::string& perm) : FamProperty(size, stringToPerm(perm)) { }
+FamProperty::FamProperty(fam::size_t size, const std::string& perm) : FamProperty(size, stringToPerm(perm)) {}
 
 void FamProperty::print(std::ostream& out) const {
     out << "Property[size=" << size << ", perm=" << perm << "(" << permToString(perm) << ")" << ",name=" << name

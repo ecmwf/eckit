@@ -19,10 +19,6 @@
 
 #pragma once
 
-#include "eckit/io/fam/FamPath.h"
-#include "eckit/io/fam/FamSession.h"
-#include "eckit/net/Endpoint.h"
-
 #include <iosfwd>
 #include <string>
 

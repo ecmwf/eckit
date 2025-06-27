@@ -19,10 +19,10 @@
 
 #pragma once
 
+#include <memory>
+
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/fam/FamObjectName.h"
-
-#include <memory>
 
 namespace eckit {
 
@@ -73,12 +73,12 @@ private:  // members
 
     const FamObjectName name_;
 
-    const bool overwrite_ {false};
+    const bool overwrite_{false};
 
-    Offset pos_ {0};
-    Length len_ {0};
+    Offset pos_{0};
+    Length len_{0};
 
-    Mode mode_ {Mode::CLOSED};
+    Mode mode_{Mode::CLOSED};
 
     std::unique_ptr<FamObject> handle_;
 };

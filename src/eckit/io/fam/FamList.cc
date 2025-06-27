@@ -16,6 +16,7 @@
 #include "eckit/io/fam/FamList.h"
 
 #include "detail/FamListNode.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamObject.h"

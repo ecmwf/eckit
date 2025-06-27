@@ -19,11 +19,11 @@
 
 #pragma once
 
-#include "eckit/io/fam/FamProperty.h"
-
 #include <iosfwd>
 #include <memory>
 #include <string>
+
+#include "eckit/io/fam/FamProperty.h"
 
 namespace eckit {
 

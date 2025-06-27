@@ -26,9 +26,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct FamListNode: public FamNode {
+struct FamListNode : public FamNode {
     FamDescriptor prev;
-    fam::size_t   length {0};
+    fam::size_t length{0};
 
     //------------------------------------------------------------------------------------------------------------------
     // HELPERS (DO NOT add any virtual function here)

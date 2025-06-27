@@ -16,28 +16,30 @@
 #include "eckit/io/fam/FamMap.h"
 
 #include "detail/FamMapNode.h"
+
+#include <iostream>
+#include <string>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
 
-#include <iostream>
-#include <string>
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamMap::FamMap(const FamRegionName& regionName, const std::string& tableName):
-    region_ {regionName.lookup()},
-    root_ {initSentinel(tableName + "-map-root", sizeof(FamMapNode))},
-    table_ {initSentinel(tableName + "-map-table", capacity * sizeof(FamMapNode))},
-    count_ {initSentinel(tableName + "-map-count", sizeof(size_type))} { }
+FamMap::FamMap(const FamRegionName& regionName, const std::string& tableName) :
+    region_{regionName.lookup()},
+    root_{initSentinel(tableName + "-map-root", sizeof(FamMapNode))},
+    table_{initSentinel(tableName + "-map-table", capacity * sizeof(FamMapNode))},
+    count_{initSentinel(tableName + "-map-count", sizeof(size_type))} {}
 
 auto FamMap::initSentinel(const std::string& objectName, const size_type objectSize) const -> FamObject {
     try {
         return region_.allocateObject(objectSize, objectName);
-    } catch (const AlreadyExists&) {
+    }
+    catch (const AlreadyExists&) {
         auto object = region_.lookupObject(objectName);
         ASSERT(object.size() == objectSize);
         return object;

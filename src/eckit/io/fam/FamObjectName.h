@@ -19,13 +19,13 @@
 
 #pragma once
 
+#include <iosfwd>
+#include <string>
+
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamName.h"
 #include "eckit/io/fam/FamProperty.h"
-
-#include <iosfwd>
-#include <string>
 
 namespace eckit {
 

@@ -15,13 +15,13 @@
 
 #include "eckit/io/fam/FamObjectName.h"
 
+#include <ostream>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamHandle.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/log/Log.h"
-
-#include <ostream>
 
 namespace eckit {
 
@@ -55,7 +55,10 @@ auto FamObjectName::exists() const -> bool {
     }
     catch (const NotFound& notFound) {
         Log::debug<LibEcKit>() << notFound << '\n';
-    } catch (const PermissionDenied& permissionDenied) { Log::debug<LibEcKit>() << permissionDenied << '\n'; }
+    }
+    catch (const PermissionDenied& permissionDenied) {
+        Log::debug<LibEcKit>() << permissionDenied << '\n';
+    }
     return false;
 }
 

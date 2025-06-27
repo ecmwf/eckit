@@ -15,9 +15,7 @@
 
 #include "eckit/io/fam/FamListIterator.h"
 
-#include "detail/FamNode.h"
-#include "detail/FamSessionDetail.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/detail/FamNode.h"
 
 namespace eckit {
 

@@ -15,11 +15,17 @@
 
 #include "eckit/io/fam/FamObject.h"
 
-#include "detail/FamSessionDetail.h"
-#include "eckit/exception/Exceptions.h"
-
+#include <cstdint>
 #include <memory>
+#include <ostream>
 #include <string>
+#include <utility>
+
+#include <fam/fam.h>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/detail/FamSessionDetail.h"
 
 namespace eckit {
 
@@ -65,7 +71,7 @@ void FamObject::deallocate() const {
 }
 
 auto FamObject::exists() const -> bool {
-    return (object_->get_desc_status() != Fam_Descriptor_Status::DESC_INVALID);
+    return (object_->get_desc_status() != openfam::Fam_Descriptor_Status::DESC_INVALID);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

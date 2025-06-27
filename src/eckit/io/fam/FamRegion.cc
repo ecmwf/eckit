@@ -15,12 +15,18 @@
 
 #include "eckit/io/fam/FamRegion.h"
 
-#include "detail/FamSessionDetail.h"
+#include <cstdint>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <utility>
+
+#include <fam/fam.h>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
-
-#include <memory>
-#include <string>
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/detail/FamSessionDetail.h"
 
 namespace eckit {
 
@@ -52,7 +58,7 @@ void FamRegion::destroy() const {
 }
 
 auto FamRegion::exists() const -> bool {
-    return (region_->get_desc_status() != Fam_Descriptor_Status::DESC_INVALID);
+    return (region_->get_desc_status() != openfam::Fam_Descriptor_Status::DESC_INVALID);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -106,16 +112,16 @@ void FamRegion::deallocateObject(const std::string& objectName) const {
 void FamRegion::print(std::ostream& out) const {
     out << "FamRegion[" << property() << ",status=";
     switch (region_->get_desc_status()) {
-        case Fam_Descriptor_Status::DESC_INVALID:
+        case openfam::Fam_Descriptor_Status::DESC_INVALID:
             out << "invalid";
             break;
-        case Fam_Descriptor_Status::DESC_INIT_DONE:
+        case openfam::Fam_Descriptor_Status::DESC_INIT_DONE:
             out << "initialized";
             break;
-        case Fam_Descriptor_Status::DESC_INIT_DONE_BUT_KEY_NOT_VALID:
+        case openfam::Fam_Descriptor_Status::DESC_INIT_DONE_BUT_KEY_NOT_VALID:
             out << "initialized_invalidkey";
             break;
-        case Fam_Descriptor_Status::DESC_UNINITIALIZED:
+        case openfam::Fam_Descriptor_Status::DESC_UNINITIALIZED:
             out << "uninitialized";
             break;
         default:

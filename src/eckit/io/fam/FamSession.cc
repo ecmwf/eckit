@@ -15,9 +15,9 @@
 
 #include "eckit/io/fam/FamSession.h"
 
-#include "detail/FamSessionDetail.h"
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {

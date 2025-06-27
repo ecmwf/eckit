@@ -19,15 +19,17 @@
 
 #pragma once
 
+#include <cstdint>
+#include <memory>
+#include <ostream>
+#include <string>
+
+#include <fam/fam.h>
+
 #include "eckit/io/fam/FamConfig.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
-
-#include <fam/fam.h>
-
-#include <memory>
-#include <string>
 
 namespace eckit {
 
@@ -37,7 +39,7 @@ namespace eckit {
 class FamSessionDetail : public std::enable_shared_from_this<FamSessionDetail> {
 public:  // methods
 
-    FamSessionDetail(const FamConfig& config);
+    explicit FamSessionDetail(const FamConfig& config);
 
     FamSessionDetail(const FamSessionDetail&)            = delete;
     FamSessionDetail& operator=(const FamSessionDetail&) = delete;
@@ -59,8 +61,7 @@ public:  // methods
     auto lookupRegion(const std::string& regionName) -> FamRegion;
 
     [[nodiscard]]
-    auto createRegion(const fam::size_t regionSize, const fam::perm_t regionPerm, const std::string& regionName)
-        -> FamRegion;
+    auto createRegion(fam::size_t regionSize, fam::perm_t regionPerm, const std::string& regionName) -> FamRegion;
 
     [[nodiscard]]
     auto createRegion(const FamProperty& property) -> FamRegion {
@@ -74,8 +75,7 @@ public:  // methods
     void destroyRegion(const std::string& regionName);
 
     [[nodiscard]]
-    auto ensureCreateRegion(const fam::size_t regionSize, const fam::perm_t regionPerm, const std::string& regionName)
-        -> FamRegion;
+    auto ensureCreateRegion(fam::size_t regionSize, fam::perm_t regionPerm, const std::string& regionName) -> FamRegion;
 
     auto stat(FamRegionDescriptor& region) -> FamProperty;
 

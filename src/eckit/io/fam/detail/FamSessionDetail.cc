@@ -15,19 +15,30 @@
 
 #include "FamSessionDetail.h"
 
+#include <sys/types.h>
+
+#include <algorithm>
+#include <cctype>  // isspace isprint
+#include <cstdint>
+#include <cstring>  // memset strndup
+#include <memory>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include <fam/fam.h>
+#include <fam/fam_exception.h>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamConfig.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegion.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
-
-#include <fam/fam_exception.h>
-
-#include <algorithm>
-#include <cctype>   // isspace isprint
-#include <cstring>  // memset strndup
-#include <memory>
-#include <string>
-#include <utility>
+#include "eckit/net/Endpoint.h"
 
 namespace eckit {
 

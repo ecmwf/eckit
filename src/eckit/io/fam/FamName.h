@@ -19,11 +19,12 @@
 
 #pragma once
 
-#include "eckit/io/fam/FamPath.h"
-#include "eckit/io/fam/FamSession.h"
-
 #include <iosfwd>
 #include <string>
+
+#include "eckit/io/fam/FamPath.h"
+#include "eckit/io/fam/FamSession.h"
+#include "eckit/net/Endpoint.h"
 
 namespace eckit {
 

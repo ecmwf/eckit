@@ -15,12 +15,11 @@
 
 #include "eckit/io/fam/FamName.h"
 
-#include "eckit/filesystem/URI.h"
-#include "eckit/io/fam/detail/FamSessionDetail.h"
-#include "eckit/serialisation/Stream.h"
-
 #include <ostream>
 #include <sstream>
+
+#include "eckit/filesystem/URI.h"
+#include "eckit/serialisation/Stream.h"
 
 namespace eckit {
 
@@ -30,7 +29,7 @@ FamName::FamName(const net::Endpoint& endpoint, FamPath path) : endpoint_{endpoi
 
 FamName::FamName(const URI& uri) : FamName(uri.endpoint(), uri) {}
 
-FamName::FamName(Stream& stream): endpoint_ {stream}, path_ {stream} { }
+FamName::FamName(Stream& stream) : endpoint_{stream}, path_{stream} {}
 
 FamName::~FamName() = default;
 

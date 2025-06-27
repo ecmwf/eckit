@@ -19,13 +19,13 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 // #include "eckit/log/Log.h"
-#include "eckit/serialisation/Stream.h"
-#include "eckit/utils/Tokenizer.h"
-
 #include <uuid/uuid.h>
 
 #include <iostream>
 #include <tuple>
+
+#include "eckit/serialisation/Stream.h"
+#include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 
@@ -76,7 +76,7 @@ FamPath::FamPath(const std::string& path) {
 
 FamPath::FamPath(const char* path) : FamPath(std::string(path)) {}
 
-FamPath::FamPath(const URI& uri): FamPath(uri.name()) {
+FamPath::FamPath(const URI& uri) : FamPath(uri.name()) {
     ASSERT(uri.scheme() == scheme);
 }
 

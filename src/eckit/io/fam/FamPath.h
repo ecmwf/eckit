@@ -42,6 +42,7 @@ struct FamPath {
 
     FamPath(const char* path);
 
+    /// @todo explicit?
     FamPath(const URI& uri);
 
     FamPath(Stream& stream);

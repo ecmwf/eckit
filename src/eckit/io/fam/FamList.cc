@@ -15,14 +15,18 @@
 
 #include "eckit/io/fam/FamList.h"
 
-#include "detail/FamNode.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamRegion.h"
-#include "eckit/io/fam/FamRegionName.h"
-
+#include <cstddef>
 #include <iostream>
 #include <string>
+#include <utility>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamRegionName.h"
+#include "eckit/io/fam/detail/FamNode.h"
 
 namespace eckit {
 
@@ -44,8 +48,6 @@ FamList::FamList(const FamRegion& region, const std::string& listName) :
 }
 
 FamList::FamList(const FamRegionName& name) : FamList(name.lookup(), name.path().objectName) {}
-
-FamList::~FamList() = default;
 
 auto FamList::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject {
     try {

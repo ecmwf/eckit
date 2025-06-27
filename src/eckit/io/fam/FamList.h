@@ -19,14 +19,18 @@
 
 #pragma once
 
-#include "eckit/io/fam/FamListIterator.h"
-#include "eckit/io/fam/FamRegionName.h"
-
-#include <memory>
 #include <ostream>
 #include <string>
 
+#include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamListIterator.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegionName.h"
+
 namespace eckit {
+
+class FamRegion;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -42,7 +46,7 @@ public:  // methods
 
     FamList(const FamRegionName& name);
 
-    ~FamList();
+    ~FamList() = default;
 
     // capacity
 

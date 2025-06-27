@@ -191,17 +191,17 @@ ecbuild_add_option( FEATURE ECKIT_GEO
 
 ecbuild_add_option( FEATURE GEO_GRID_FESOM
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
                     DESCRIPTION "eckit::geo geometry library support for FESOM grids" )
 
 ecbuild_add_option( FEATURE GEO_GRID_ICON
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
                     DESCRIPTION "eckit::geo geometry library support for ICON grids" )
 
 ecbuild_add_option( FEATURE GEO_GRID_ORCA
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
                     DESCRIPTION "eckit::geo geometry library support for ORCA grids" )
 
 ecbuild_add_option( FEATURE GEO_CACHING

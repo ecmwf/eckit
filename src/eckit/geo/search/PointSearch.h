@@ -14,7 +14,7 @@
 
 #include <memory>
 
-#include "mir/search/Tree.h"
+#include "eckit/geo/search/Tree.h"
 
 
 namespace mir::param {
@@ -22,7 +22,7 @@ class MIRParametrisation;
 }  // namespace mir::param
 
 
-namespace mir::search {
+namespace eckit::geo::search {
 
 
 /// Class for fast searches in point clouds following k-d tree algorithms
@@ -121,4 +121,4 @@ private:
 };
 
 
-}  // namespace mir::search
+}  // namespace eckit::geo::search

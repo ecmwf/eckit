@@ -10,7 +10,7 @@
  */
 
 
-#include "mir/search/PointSearch.h"
+#include "eckit/geo/search/PointSearch.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/thread/AutoLock.h"
@@ -25,7 +25,7 @@
 #include "mir/util/Types.h"
 
 
-namespace mir::search {
+namespace eckit::geo::search {
 
 
 static std::string extract_loader(const param::MIRParametrisation& param) {
@@ -113,4 +113,4 @@ void PointSearch::print(std::ostream& out) const {
 }
 
 
-}  // namespace mir::search
+}  // namespace eckit::geo::search

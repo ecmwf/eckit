@@ -10,7 +10,7 @@
  */
 
 
-#include "mir/search/Tree.h"
+#include "eckit/geo/search/Tree.h"
 
 #include <map>
 #include <ostream>
@@ -22,7 +22,7 @@
 #include "mir/util/Mutex.h"
 
 
-namespace mir::search {
+namespace eckit::geo::search {
 
 
 Tree::~Tree() = default;
@@ -169,4 +169,4 @@ void TreeFactory::list(std::ostream& out) {
 }
 
 
-}  // namespace mir::search
+}  // namespace eckit::geo::search

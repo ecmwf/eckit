@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include "mir/search/tree/TreeMapped.h"
+#include "eckit/geo/search/tree/TreeMapped.h"
 
 
-namespace mir::search::tree {
+namespace eckit::geo::search::tree {
 
 
 class TreeMappedAnonymousMemory : public TreeMapped {
@@ -31,4 +31,4 @@ public:
 };
 
 
-}  // namespace mir::search::tree
+}  // namespace eckit::geo::search::tree

@@ -10,10 +10,10 @@
  */
 
 
-#include "mir/search/tree/TreeMemory.h"
+#include "eckit/geo/search/tree/TreeMemory.h"
 
 
-namespace mir::search::tree {
+namespace eckit::geo::search::tree {
 
 
 void TreeMemory::build(std::vector<Tree::PointValueType>& v) {
@@ -76,4 +76,4 @@ void TreeMemory::print(std::ostream& out) const {
 static const TreeBuilder<TreeMemory> builder("memory");
 
 
-}  // namespace mir::search::tree
+}  // namespace eckit::geo::search::tree

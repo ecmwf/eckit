@@ -10,7 +10,7 @@
  */
 
 
-#include "mir/search/tree/TreeMappedFile.h"
+#include "eckit/geo/search/tree/TreeMappedFile.h"
 
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/utils/Tokenizer.h"
@@ -21,7 +21,7 @@
 #include "mir/util/Log.h"
 
 
-namespace mir::search::tree {
+namespace eckit::geo::search::tree {
 
 
 template <class T>
@@ -126,4 +126,4 @@ public:
 static const TreeBuilder<TreeMappedTempFile> builder2("mapped-temporary-file");
 
 
-}  // namespace mir::search::tree
+}  // namespace eckit::geo::search::tree

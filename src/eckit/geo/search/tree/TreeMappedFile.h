@@ -19,11 +19,11 @@
 #include "eckit/os/Semaphore.h"
 #include "eckit/runtime/Main.h"
 
-#include "mir/search/tree/TreeMapped.h"
+#include "eckit/geo/search/tree/TreeMapped.h"
 #include "mir/util/Log.h"
 
 
-namespace mir::search::tree {
+namespace eckit::geo::search::tree {
 
 
 template <class T>
@@ -86,4 +86,4 @@ public:
 };
 
 
-}  // namespace mir::search::tree
+}  // namespace eckit::geo::search::tree

@@ -13,20 +13,17 @@
 #pragma once
 
 #include "eckit/container/KDTree.h"
-#include "eckit/os/AutoUmask.h"
 
-#include "mir/search/Tree.h"
-
-
-namespace mir::search::tree {
+#include "eckit/geo/search/Tree.h"
 
 
-class TreeMapped : public Tree {
+namespace eckit::geo::search::tree {
+
+
+class TreeMemory : public Tree {
 
 protected:
-    eckit::AutoUmask umask_;  // Must be first
-    eckit::PathName path_;
-    eckit::KDTreeMapped<Tree> tree_;
+    eckit::KDTreeMemory<Tree> tree_;
 
     void build(std::vector<PointValueType>&) override;
 
@@ -42,15 +39,15 @@ protected:
 
     std::vector<PointValueType> findInSphere(const Point&, double radius) override;
 
-    bool ready() const override = 0;
+    bool ready() const override;
 
-    void commit() override = 0;
+    void commit() override;
 
-    void print(std::ostream&) const override = 0;
+    void print(std::ostream&) const override;
 
 public:
-    TreeMapped(const repres::Representation&, const eckit::PathName&);
+    using Tree::Tree;
 };
 
 
-}  // namespace mir::search::tree
+}  // namespace eckit::geo::search::tree

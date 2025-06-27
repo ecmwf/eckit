@@ -25,7 +25,7 @@ class Representation;
 }  // namespace mir::repres
 
 
-namespace mir::search {
+namespace eckit::geo::search {
 
 
 class Tree {
@@ -101,4 +101,4 @@ public:
 };
 
 
-}  // namespace mir::search
+}  // namespace eckit::geo::search

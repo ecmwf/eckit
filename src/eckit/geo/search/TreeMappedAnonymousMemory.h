@@ -12,23 +12,21 @@
 
 #pragma once
 
-#include "eckit/geo/search/tree/TreeMapped.h"
+#include "eckit/geo/search/TreeMapped.h"
 
 
-namespace eckit::geo::search::tree {
+namespace eckit::geo::search {
 
 
 class TreeMappedAnonymousMemory : public TreeMapped {
-
     bool ready() const override { return false; }
-
     void commit() override {}
-
     void print(std::ostream& out) const override { out << "TreeMappedAnonymousMemory[]"; }
 
 public:
-    TreeMappedAnonymousMemory(const repres::Representation&);
+
+    explicit TreeMappedAnonymousMemory(const Grid&);
 };
 
 
-}  // namespace eckit::geo::search::tree
+}  // namespace eckit::geo::search

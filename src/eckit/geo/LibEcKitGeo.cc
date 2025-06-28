@@ -64,7 +64,7 @@ std::vector<PathName> LibEcKitGeo::shareProjection() {
 
 bool LibEcKitGeo::caching() {
     static const bool yes{
-        LibResource<bool, LibEcKitGeo>("eckit-geo-caching;$ECKIT_GEO_CACHING", eckit_HAVE_GEO_CACHING != 0)};
+        LibResource<bool, LibEcKitGeo>("eckit-geo-caching;$ECKIT_GEO_CACHING", eckit_HAVE_GEO_CACHING)};
     return yes;
 }
 

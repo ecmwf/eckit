@@ -32,4 +32,8 @@ SpecError::SpecError(const std::string& what, const CodeLocation& location) :
     Exception("SpecError: [" + what + "]", location) {}
 
 
+SearchError::SearchError(const std::string& what, const CodeLocation& location) :
+    Exception("SearchError: [" + what + "]", location) {}
+
+
 }  // namespace eckit::geo::exception

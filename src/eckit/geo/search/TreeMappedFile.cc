@@ -10,36 +10,34 @@
  */
 
 
-#include "eckit/geo/search/tree/TreeMappedFile.h"
+#include "eckit/geo/search/TreeMappedFile.h"
 
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/utils/Tokenizer.h"
 
-#include "mir/config/LibMir.h"
-#include "mir/repres/Representation.h"
-#include "mir/util/Exceptions.h"
-#include "mir/util/Log.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/log/Log.h"
 
 
-namespace eckit::geo::search::tree {
+namespace eckit::geo::search {
 
 
 template <class T>
-eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, bool makeUnique) {
+PathName TreeMappedFile<T>::treePath(const Grid& r, bool makeUnique) {
 
     // LocalPathName::unique and LocalPathName::mkdir call mkdir, make sure to use umask = 0
-    eckit::AutoUmask umask(0);
+    AutoUmask umask(0);
 
     static const long VERSION = 2;
 
-    const std::string relative = "mir/search/" + std::to_string(VERSION) + "/" + r.uniqueName() + ".kdtree";
+    const std::string relative = "eckit/geo/search/" + std::to_string(VERSION) + "/" + r.uid() + ".kdtree";
 
-    auto writable = [](const eckit::PathName& path) -> bool { return (::access(path.asString().c_str(), W_OK) == 0); };
+    auto writable = [](const PathName& path) -> bool { return (::access(path.asString().c_str(), W_OK) == 0); };
 
-    for (eckit::PathName path : T::roots()) {
-
+    for (PathName path : T::roots()) {
         if (not path.exists()) {
-
             if (not writable(path.dirName())) {
                 continue;
             }
@@ -47,7 +45,7 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
             try {
                 path.mkdir(0777);
             }
-            catch (eckit::FailedSystemCall&) {
+            catch (FailedSystemCall&) {
                 // ignore
             }
         }
@@ -59,7 +57,7 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
 
         path /= relative;
         if (makeUnique && !path.exists()) {
-            path = eckit::PathName::unique(path);
+            path = PathName::unique(path);
         }
 
         Log::debug() << "TreeMappedFile: path '" << path << "'" << (makeUnique ? " (unique)" : "") << std::endl;
@@ -71,10 +69,10 @@ eckit::PathName TreeMappedFile<T>::treePath(const repres::Representation& r, boo
 
 
 template <class T>
-eckit::PathName TreeMappedFile<T>::lockFile(const std::string& path) {
-    eckit::AutoUmask umask(0);
+PathName TreeMappedFile<T>::lockFile(const std::string& path) {
+    AutoUmask umask(0);
 
-    eckit::PathName lock(path + ".lock");
+    PathName lock(path + ".lock");
     lock.touch();
     return lock;
 }
@@ -82,27 +80,21 @@ eckit::PathName TreeMappedFile<T>::lockFile(const std::string& path) {
 
 class TreeMappedCacheFile : public TreeMappedFile<TreeMappedCacheFile> {
     using P = TreeMappedFile<TreeMappedCacheFile>;
-    static std::vector<std::string> getRoots() {
-        static std::string cacheDir = LibMir::cacheDir();
-
-        std::vector<std::string> tmp;
-        eckit::Tokenizer parse(":");
-        parse(cacheDir, tmp);
-
-        std::vector<std::string> r;
-        r.reserve(tmp.size());
-
-        for (const auto& root : tmp) {
-            r.emplace_back(eckit::PathExpander::expand(root));
-        }
-
-        return r;
-    }
 
 public:
+
     using P::P;
     static std::vector<std::string> roots() {
-        static std::vector<std::string> roots = getRoots();
+        static auto roots = []() {
+            std::vector<std::string> r;
+            Tokenizer{":"}(LibEcKitGeo::cacheDir(), r);
+
+            for (auto& root : r) {
+                root = PathExpander::expand(root);
+            }
+
+            return r;
+        }();
         return roots;
     }
 };
@@ -115,6 +107,7 @@ class TreeMappedTempFile : public TreeMappedFile<TreeMappedTempFile> {
     using P = TreeMappedFile<TreeMappedTempFile>;
 
 public:
+
     using P::P;
     static std::vector<std::string> roots() {
         static std::vector<std::string> _root{"/tmp"};
@@ -126,4 +119,4 @@ public:
 static const TreeBuilder<TreeMappedTempFile> builder2("mapped-temporary-file");
 
 
-}  // namespace eckit::geo::search::tree
+}  // namespace eckit::geo::search

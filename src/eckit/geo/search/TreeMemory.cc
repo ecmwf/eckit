@@ -10,39 +10,39 @@
  */
 
 
-#include "eckit/geo/search/tree/TreeMapped.h"
+#include "eckit/geo/search/TreeMemory.h"
 
 
-namespace eckit::geo::search::tree {
+namespace eckit::geo::search {
 
 
-void TreeMapped::build(std::vector<Tree::PointValueType>& v) {
+void TreeMemory::build(std::vector<Tree::PointValueType>& v) {
     tree_.build(v);
 }
 
 
-void TreeMapped::insert(const Tree::PointValueType& pt) {
+void TreeMemory::insert(const Tree::PointValueType& pt) {
     tree_.insert(pt);
 }
 
 
-void TreeMapped::statsPrint(std::ostream& out, bool pretty) {
+void TreeMemory::statsPrint(std::ostream& out, bool pretty) {
     tree_.statsPrint(out, pretty);
 }
 
 
-void TreeMapped::statsReset() {
+void TreeMemory::statsReset() {
     tree_.statsReset();
 }
 
 
-Tree::PointValueType TreeMapped::nearestNeighbour(const Tree::Point& pt) {
+Tree::PointValueType TreeMemory::nearestNeighbour(const Tree::Point& pt) {
     const auto& nn = tree_.nearestNeighbour(pt).value();
     return {nn.point(), nn.payload()};
 }
 
 
-std::vector<Tree::PointValueType> TreeMapped::kNearestNeighbours(const Tree::Point& pt, size_t k) {
+std::vector<Tree::PointValueType> TreeMemory::kNearestNeighbours(const Tree::Point& pt, size_t k) {
     std::vector<PointValueType> result;
     for (const auto& n : tree_.kNearestNeighbours(pt, k)) {
         result.emplace_back(PointValueType(n.point(), n.payload()));
@@ -51,7 +51,7 @@ std::vector<Tree::PointValueType> TreeMapped::kNearestNeighbours(const Tree::Poi
 }
 
 
-std::vector<Tree::PointValueType> TreeMapped::findInSphere(const Tree::Point& pt, double radius) {
+std::vector<Tree::PointValueType> TreeMemory::findInSphere(const Tree::Point& pt, double radius) {
     std::vector<PointValueType> result;
     for (const auto& n : tree_.findInSphere(pt, radius)) {
         result.emplace_back(PointValueType(n.point(), n.payload()));
@@ -60,8 +60,20 @@ std::vector<Tree::PointValueType> TreeMapped::findInSphere(const Tree::Point& pt
 }
 
 
-TreeMapped::TreeMapped(const repres::Representation& r, const eckit::PathName& path) :
-    Tree(r), umask_(0), path_(path), tree_(path, path.exists() ? 0 : itemCount(), 0) {}
+bool TreeMemory::ready() const {
+    return false;
+}
 
 
-}  // namespace eckit::geo::search::tree
+void TreeMemory::commit() {}
+
+
+void TreeMemory::print(std::ostream& out) const {
+    out << "TreeMemory[]";
+}
+
+
+static const TreeBuilder<TreeMemory> builder("memory");
+
+
+}  // namespace eckit::geo::search

@@ -12,6 +12,7 @@
 #include <limits>
 #include <utility>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
@@ -268,6 +269,16 @@ CASE("Values known to have problematic conversion to fraction") {
 
         EXPECT_NOT_EQUAL(frac.denominator(), 0);
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("Fraction safe conversion") {
+    constexpr auto safe = static_cast<unsigned long long>(std::numeric_limits<Fraction::value_type>::max());
+    EXPECT_NO_THROW(Fraction{safe});
+
+    constexpr auto unsafe = safe + 1;
+    EXPECT_THROWS_AS(Fraction{unsafe}, BadCast);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

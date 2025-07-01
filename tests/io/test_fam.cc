@@ -17,11 +17,18 @@
 /// @author Metin Cakircali
 /// @date   May 2024
 
-#include "eckit/config/LibEcKit.h"
-#include "eckit/io/Buffer.h"
-#include "eckit/io/fam/FamRegion.h"
-#include "eckit/testing/Test.h"
 #include "fam_common.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamObjectName.h"
+#include "eckit/io/fam/FamPath.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamRegionName.h"
+#include "eckit/testing/Test.h"
 
 using namespace eckit;
 using namespace eckit::testing;
@@ -33,7 +40,7 @@ namespace eckit::test {
 CASE("FamPath: ctor and uuid generation") {
     {
         // uuid of "/region/object"
-        constexpr auto* const uuid = "650fa148-fc69-5d6f-a793-5b1190c77e1a";
+        constexpr const auto* const uuid = "650fa148-fc69-5d6f-a793-5b1190c77e1a";
 
         const FamPath path{"region", "object"};
         EXPECT_EQUAL(path.generateUUID(), uuid);

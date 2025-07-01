@@ -15,6 +15,8 @@
 
 #include "FamSessionDetail.h"
 
+#include <fam/fam.h>
+#include <fam/fam_exception.h>
 #include <sys/types.h>
 
 #include <algorithm>
@@ -26,9 +28,6 @@
 #include <string>
 #include <string_view>
 #include <utility>
-
-#include <fam/fam.h>
-#include <fam/fam_exception.h>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
@@ -112,6 +111,9 @@ FamSessionDetail::FamSessionDetail(const FamConfig& config) : name_{config.sessi
         options.runtime   = runtime.data();
         options.cisServer = host.data();
         options.grpcPort  = port.data();
+
+        Log::debug<LibEcKit>() << "FAM options: runtime=" << options.runtime << ", cisServer=" << options.cisServer
+                               << ", grpcPort=" << options.grpcPort << '\n';
 
         fam_.fam_initialize(name_.c_str(), &options);
     }

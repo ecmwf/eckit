@@ -20,6 +20,9 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/fam/FamObjectName.h"
+#include "eckit/io/fam/FamPath.h"
+#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/log/Log.h"
@@ -53,11 +56,11 @@ auto FamRegionName::exists() const -> bool {
     try {
         return lookup().exists();
     }
-    catch (const NotFound& notFound) {
-        Log::debug<LibEcKit>() << notFound << '\n';
+    catch (const NotFound& not_found) {
+        Log::debug<LibEcKit>() << not_found << '\n';
     }
-    catch (const PermissionDenied& permissionDenied) {
-        Log::debug<LibEcKit>() << permissionDenied << '\n';
+    catch (const PermissionDenied& permission_denied) {
+        Log::debug<LibEcKit>() << permission_denied << '\n';
     }
     return false;
 }

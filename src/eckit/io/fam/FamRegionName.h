@@ -27,6 +27,7 @@
 
 namespace eckit {
 
+class URI;
 class FamRegion;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -35,8 +36,6 @@ class FamRegionName : public FamName {
 public:  // methods
 
     using FamName::FamName;
-
-    ~FamRegionName() = default;
 
     auto withRegion(const std::string& regionName) -> FamRegionName&;
 

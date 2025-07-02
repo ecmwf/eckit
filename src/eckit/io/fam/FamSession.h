@@ -35,7 +35,7 @@ class FamSessionDetail;
 class FamSession {
 public:  // types
 
-    using SPtr = std::shared_ptr<FamSessionDetail>;
+    using SharedPtr = std::shared_ptr<FamSessionDetail>;
 
 public:  // methods
 
@@ -46,9 +46,9 @@ public:  // methods
 
     static auto instance() -> FamSession&;
 
-    auto get(const FamConfig& config) -> FamSession::SPtr;
+    auto get(const FamConfig& config) -> SharedPtr;
 
-    auto getOrAdd(const FamConfig& config) -> FamSession::SPtr;
+    auto getOrAdd(const FamConfig& config) -> SharedPtr;
 
     void remove(const FamConfig& config);
 
@@ -64,7 +64,7 @@ private:  // methods
 
 private:  // members
 
-    std::list<SPtr> registry_;
+    std::list<SharedPtr> registry_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

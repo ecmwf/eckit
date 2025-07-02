@@ -38,7 +38,7 @@ FamSession::~FamSession() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamSession::get(const FamConfig& config) -> SPtr {
+auto FamSession::get(const FamConfig& config) -> SharedPtr {
 
     if (config.sessionName.empty()) {
         throw SeriousBug("FamSession::get() empty session name", Here());
@@ -53,7 +53,7 @@ auto FamSession::get(const FamConfig& config) -> SPtr {
     return {};
 }
 
-auto FamSession::getOrAdd(const FamConfig& config) -> SPtr {
+auto FamSession::getOrAdd(const FamConfig& config) -> SharedPtr {
 
     if (auto session = get(config)) {
         return session;

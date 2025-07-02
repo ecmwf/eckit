@@ -40,7 +40,7 @@ FamName::~FamName() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamName::session() const -> FamSession::SPtr {
+auto FamName::session() const -> FamSession::SharedPtr {
     return FamSession::instance().getOrAdd({endpoint_});
 }
 

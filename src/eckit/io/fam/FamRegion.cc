@@ -40,19 +40,6 @@ FamRegion::~FamRegion() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamRegion::clone() const -> UPtr {
-    auto clone = std::make_unique<FamRegionDescriptor>(region_->get_global_descriptor());
-    clone->set_size(region_->get_size());
-    clone->set_perm(region_->get_perm());
-    clone->set_name(region_->get_name());
-    clone->set_desc_status(region_->get_desc_status());
-    clone->set_redundancyLevel(region_->get_redundancyLevel());
-    clone->set_memoryType(region_->get_memoryType());
-    clone->set_interleaveEnable(region_->get_interleaveEnable());
-    clone->set_permissionLevel(region_->get_permissionLevel());
-    return std::make_unique<FamRegion>(*session_, std::move(clone));
-}
-
 void FamRegion::destroy() const {
     session_->destroyRegion(*region_);
 }

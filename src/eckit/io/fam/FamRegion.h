@@ -31,18 +31,12 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamRegion {
-public:  // types
-
-    using UPtr = std::unique_ptr<FamRegion>;
-    using SPtr = std::shared_ptr<FamRegion>;
 
 public:  // methods
 
     FamRegion(FamSessionDetail& session, std::unique_ptr<FamRegionDescriptor> region);
 
     ~FamRegion();
-
-    auto clone() const -> UPtr;
 
     void destroy() const;
 

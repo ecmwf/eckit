@@ -23,7 +23,7 @@
 #include <string>
 
 #include "eckit/io/fam/FamPath.h"
-#include "eckit/io/fam/FamSession.h"
+#include "eckit/io/fam/FamSessionManager.h"
 #include "eckit/net/Endpoint.h"
 
 namespace eckit {
@@ -56,7 +56,7 @@ public:  // methods
 
 protected:  // methods
 
-    auto session() const -> FamSession::SharedPtr;
+    auto session() const -> FamSessionManager::SharedPtr;
 
     auto path() -> FamPath& { return path_; }
 

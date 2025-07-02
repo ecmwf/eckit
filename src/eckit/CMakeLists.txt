@@ -294,8 +294,8 @@ io/fam/FamRegion.cc
 io/fam/FamRegion.h
 io/fam/FamRegionName.cc
 io/fam/FamRegionName.h
-io/fam/FamSession.cc
-io/fam/FamSession.h
+io/fam/FamSessionManager.cc
+io/fam/FamSessionManager.h
 io/fam/FamURIManager.cc
 io/fam/FamURIManager.h
 )

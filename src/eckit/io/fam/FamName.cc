@@ -22,7 +22,7 @@
 
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/fam/FamPath.h"
-#include "eckit/io/fam/FamSession.h"
+#include "eckit/io/fam/FamSessionManager.h"
 #include "eckit/net/Endpoint.h"
 #include "eckit/serialisation/Stream.h"
 
@@ -40,8 +40,8 @@ FamName::~FamName() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamName::session() const -> FamSession::SharedPtr {
-    return FamSession::instance().getOrAdd({endpoint_});
+auto FamName::session() const -> FamSessionManager::SharedPtr {
+    return FamSessionManager::instance().getOrAdd({endpoint_});
 }
 
 auto FamName::asString() const -> std::string {

@@ -13,13 +13,12 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-#include "eckit/io/fam/FamSession.h"
-
 #include <memory>
 #include <string>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamConfig.h"
+#include "eckit/io/fam/FamSessionManager.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/log/CodeLocation.h"
 
@@ -27,21 +26,21 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamSession::instance() -> FamSession& {
-    static FamSession instance;
+auto FamSessionManager::instance() -> FamSessionManager& {
+    static FamSessionManager instance;
     return instance;
 }
 
-FamSession::FamSession() = default;
+FamSessionManager::FamSessionManager() = default;
 
-FamSession::~FamSession() = default;
+FamSessionManager::~FamSessionManager() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamSession::get(const FamConfig& config) -> SharedPtr {
+auto FamSessionManager::get(const FamConfig& config) -> SharedPtr {
 
     if (config.sessionName.empty()) {
-        throw SeriousBug("FamSession::get() empty session name", Here());
+        throw SeriousBug("FamSessionManager::get() empty session name", Here());
     }
 
     for (auto& session : registry_) {
@@ -53,7 +52,7 @@ auto FamSession::get(const FamConfig& config) -> SharedPtr {
     return {};
 }
 
-auto FamSession::getOrAdd(const FamConfig& config) -> SharedPtr {
+auto FamSessionManager::getOrAdd(const FamConfig& config) -> SharedPtr {
 
     if (auto session = get(config)) {
         return session;
@@ -65,15 +64,15 @@ auto FamSession::getOrAdd(const FamConfig& config) -> SharedPtr {
     return session;
 }
 
-void FamSession::remove(const FamConfig& config) {
+void FamSessionManager::remove(const FamConfig& config) {
     registry_.remove_if([&config](const auto& session) { return session->config() == config; });
 }
 
-void FamSession::remove(const std::string& sessionName) {
+void FamSessionManager::remove(const std::string& sessionName) {
     registry_.remove_if([&sessionName](const auto& session) { return session->name() == sessionName; });
 }
 
-void FamSession::clear() {
+void FamSessionManager::clear() {
     registry_.clear();
 }
 

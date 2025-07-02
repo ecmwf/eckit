@@ -13,7 +13,7 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   FamSession.h
+/// @file   FamSessionManager.h
 /// @author Metin Cakircali
 /// @date   Mar 2024
 
@@ -32,19 +32,19 @@ class FamSessionDetail;
 //----------------------------------------------------------------------------------------------------------------------
 
 /// @brief Manages a list of FamSessionDetail.
-class FamSession {
+class FamSessionManager {
 public:  // types
 
     using SharedPtr = std::shared_ptr<FamSessionDetail>;
 
 public:  // methods
 
-    FamSession(const FamSession&)            = delete;
-    FamSession& operator=(const FamSession&) = delete;
-    FamSession(FamSession&&)                 = delete;
-    FamSession& operator=(FamSession&&)      = delete;
+    FamSessionManager(const FamSessionManager&)            = delete;
+    FamSessionManager& operator=(const FamSessionManager&) = delete;
+    FamSessionManager(FamSessionManager&&)                 = delete;
+    FamSessionManager& operator=(FamSessionManager&&)      = delete;
 
-    static auto instance() -> FamSession&;
+    static auto instance() -> FamSessionManager&;
 
     auto get(const FamConfig& config) -> SharedPtr;
 
@@ -58,9 +58,9 @@ public:  // methods
 
 private:  // methods
 
-    FamSession();
+    FamSessionManager();
 
-    ~FamSession();
+    ~FamSessionManager();
 
 private:  // members
 

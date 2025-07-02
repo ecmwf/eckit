@@ -15,13 +15,10 @@
 
 #include "FamSessionDetail.h"
 
-#include <sys/types.h>
-
 #include <algorithm>
 #include <cctype>  // isspace isprint
 #include <cstdint>
-#include <cstring>  // memset strndup
-#include <memory>
+#include <cstring>
 #include <ostream>
 #include <string>
 #include <string_view>
@@ -122,7 +119,6 @@ FamSessionDetail::FamSessionDetail(const FamConfig& config) : name_{config.sessi
 }
 
 FamSessionDetail::~FamSessionDetail() {
-    // Log::debug<LibEcKit>() << "Finalizing FAM session: " << name_ << '\n';
     try {
         fam_.fam_finalize(name_.c_str());
     }
@@ -147,12 +143,13 @@ std::ostream& operator<<(std::ostream& out, const FamSessionDetail& session) {
 // REGION
 
 auto FamSessionDetail::config() -> FamConfig {
-    const std::string host = static_cast<const char*>(fam_.fam_get_option("CIS_SERVER"));
-    const std::string port = static_cast<const char*>(fam_.fam_get_option("GRPC_PORT"));
+    std::string cis_server = "CIS_SERVER";
+    std::string grpc_port  = "GRPC_PORT";
 
-    const net::Endpoint endpoint{host, std::stoi(port)};
+    const auto* host = static_cast<const char*>(fam_.fam_get_option(cis_server.data()));
+    const auto* port = static_cast<const char*>(fam_.fam_get_option(grpc_port.data()));
 
-    return {endpoint, name_};
+    return {{host, std::stoi(port)}, name_};
 }
 
 auto FamSessionDetail::lookupRegion(const std::string& regionName) -> FamRegion {
@@ -359,14 +356,6 @@ auto FamSessionDetail::compareSwap(FamObjectDescriptor& object, const fam::size_
 
 //----------------------------------------------------------------------------------------------------------------------
 // forward instantiations
-
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> int32_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> int64_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> openfam::int128_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> uint32_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> uint64_t;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> float;
-template auto FamSessionDetail::fetch(FamObjectDescriptor&, const uint64_t) -> double;
 
 template void FamSessionDetail::set(FamObjectDescriptor&, const fam::size_t, const int32_t);
 template void FamSessionDetail::set(FamObjectDescriptor&, const fam::size_t, const int64_t);

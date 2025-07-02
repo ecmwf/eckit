@@ -53,8 +53,8 @@ public:
     ~TestFam() { destroyRegions(); }
 
     void destroyRegions() {
-        for (auto&& region : regions_) {
-            region->destroy();
+        for (auto& region : regions_) {
+            region.destroy();
         }
     }
 
@@ -62,18 +62,18 @@ public:
         return "ECKIT_TEST_FAM_" + text + '_' + randomNumber();
     }
 
-    auto makeRandomRegion(const eckit::fam::size_t size) -> FamRegion::SPtr {
+    auto makeRandomRegion(const eckit::fam::size_t size) -> FamRegion {
         auto region = name_.withRegion(makeRandomText("REGION")).create(size, 0640, true);
-        return regions_.emplace_back(region.clone());
+        return regions_.emplace_back(region);
     }
 
-    auto getLastRegion() const -> FamRegion::SPtr { return regions_.back(); }
+    auto lastRegion() -> FamRegion& { return regions_.back(); }
 
 private:
 
     FamRegionName name_{testEndpoint, {}};
 
-    std::vector<FamRegion::SPtr> regions_;
+    std::vector<FamRegion> regions_;
 };
 
 }  // namespace fam

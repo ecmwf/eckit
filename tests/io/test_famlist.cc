@@ -60,7 +60,7 @@ auto makeTestData(const int number) -> std::string_view {
 }
 
 void populateList() {
-    FamList lst(*tester.getLastRegion(), listName);
+    FamList lst(tester.lastRegion(), listName);
     for (auto i = 0; i < listSize; i++) {
         auto buffer = makeTestData(i);
         EXPECT_NO_THROW(lst.push_back(buffer.data(), buffer.size()));
@@ -74,7 +74,7 @@ void populateList() {
 CASE("FamList: create an empty list and validate size, empty, front, back") {
     auto listRegion = tester.makeRandomRegion(1024);
 
-    const auto lst = FamList(*listRegion, listName);
+    const auto lst = FamList(listRegion, listName);
 
     EXPECT(lst.empty());
 
@@ -110,7 +110,7 @@ CASE("FamList: populate with " + std::to_string(listSize) + " items by " + std::
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamList: validate size and values after creation") {
-    const auto lst = FamList(*tester.getLastRegion(), listName);
+    const auto lst = FamList(tester.lastRegion(), listName);
 
     EXPECT_NOT(lst.empty());
 

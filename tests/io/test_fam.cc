@@ -132,27 +132,28 @@ CASE("FamObjectName: ctor, lookup, and allocate") {
 }
 
 CASE("FamRegion: lookup, create, validate properties, and destroy") {
-    FamRegion::UPtr region;
 
     const auto regionName = fam::TestFam::makeRandomText("REGION");
     const auto regionSize = 1024;
     const auto regionPerm = static_cast<eckit::fam::perm_t>(0640);
 
+    const FamRegionName name{fam::testEndpoint, regionName};
     {
-        const FamRegionName name{fam::testEndpoint, regionName};
         EXPECT_THROWS_AS(name.lookup(), NotFound);
         EXPECT_NO_THROW(name.create(regionSize, regionPerm));
-        EXPECT_NO_THROW(region = name.lookup().clone());
+        EXPECT_NO_THROW(name.lookup());
     }
 
-    EXPECT_EQUAL(region->size(), regionSize);
-    EXPECT_EQUAL(region->permissions(), regionPerm);
-    EXPECT_EQUAL(region->name(), regionName);
+    auto region = name.lookup();
+
+    EXPECT_EQUAL(region.size(), regionSize);
+    EXPECT_EQUAL(region.permissions(), regionPerm);
+    EXPECT_EQUAL(region.name(), regionName);
 
     const FamProperty prop{regionSize, regionPerm, regionName};
-    EXPECT_EQUAL(region->property(), prop);
+    EXPECT_EQUAL(region.property(), prop);
 
-    EXPECT_NO_THROW(region->destroy());
+    EXPECT_NO_THROW(region.destroy());
 
     EXPECT_THROWS_AS(FamRegionName(fam::testEndpoint, regionName).lookup(), NotFound);
 }

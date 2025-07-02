@@ -172,15 +172,17 @@ CASE("FamObject: lookup, create, and destroy") {
 
     EXPECT_NO_THROW(FamRegionName(fam::testEndpoint, path).create(regionSize, regionPerm));
 
-    FamObject::UPtr object;
+    {
+        FamObject::UPtr object;
 
-    // object inherits permissions from region
-    EXPECT_NO_THROW(object = FamObjectName(fam::testEndpoint, path).allocate(objectSize).clone());
+        // object inherits permissions from region
+        EXPECT_NO_THROW(object = FamObjectName(fam::testEndpoint, path).allocate(objectSize).clone());
 
-    const FamProperty prop{objectSize, regionPerm, objectName};
-    EXPECT_EQUAL(prop, object->property());
+        const FamProperty prop{objectSize, regionPerm, objectName};
+        EXPECT_EQUAL(prop, object->property());
 
-    EXPECT_NO_THROW(object->deallocate());
+        EXPECT_NO_THROW(object->deallocate());
+    }
 
     {
         auto name = FamRegionName(fam::testEndpoint, "");
@@ -192,7 +194,10 @@ CASE("FamObject: lookup, create, and destroy") {
         {
             const auto size = 12;
             EXPECT_NO_THROW(region.allocateObject(size, objectPerm, objectName));
-            EXPECT(region.lookupObject(objectName).size() == size);
+            EXPECT_NO_THROW(region.lookupObject(objectName));
+            EXPECT_EQUAL(region.lookupObject(objectName).size(), size);
+            EXPECT_EQUAL(region.lookupObject(objectName).permissions(), regionPerm);
+            EXPECT_EQUAL(region.lookupObject(objectName).name(), objectName);
         }
 
         // overwrite: allocate with different size
@@ -200,8 +205,8 @@ CASE("FamObject: lookup, create, and destroy") {
 
         auto object = region.lookupObject(objectName);
 
-        const FamProperty prop{objectSize, objectPerm, objectName};
-        EXPECT(object.property() == prop);
+        const FamProperty prop{objectSize, regionPerm, objectName};
+        EXPECT_EQUAL(object.property(), prop);
 
         EXPECT_NO_THROW(object.deallocate());
 

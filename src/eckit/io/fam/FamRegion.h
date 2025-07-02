@@ -34,7 +34,7 @@ class FamRegion {
 
 public:  // methods
 
-    FamRegion(FamSessionDetail& session, std::unique_ptr<FamRegionDescriptor> region);
+    FamRegion(FamSessionDetail& session, FamRegionDescriptor* region);
 
     ~FamRegion();
 

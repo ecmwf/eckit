@@ -160,7 +160,7 @@ auto FamSessionDetail::lookupRegion(const std::string& regionName) -> FamRegion 
 
     auto* region = invokeFam(fam_, &openfam::fam::fam_lookup_region, regionName.c_str());
 
-    return {*this, std::unique_ptr<FamRegionDescriptor>(region)};
+    return {*this, region};
 }
 
 auto FamSessionDetail::createRegion(const fam::size_t regionSize, const fam::perm_t regionPerm,
@@ -171,7 +171,7 @@ auto FamSessionDetail::createRegion(const fam::size_t regionSize, const fam::per
     auto* region =
         invokeFam(fam_, &openfam::fam::fam_create_region, regionName.c_str(), regionSize, regionPerm, nullptr);
 
-    return {*this, std::unique_ptr<FamRegionDescriptor>(region)};
+    return {*this, region};
 }
 
 void FamSessionDetail::resizeRegion(FamRegionDescriptor& region, const fam::size_t size) {

@@ -31,8 +31,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamRegion::FamRegion(FamSessionDetail& session, std::unique_ptr<FamRegionDescriptor> region) :
-    session_{session.shared_from_this()}, region_(std::move(region)) {
+FamRegion::FamRegion(FamSessionDetail& session, FamRegionDescriptor* region) :
+    session_{session.shared_from_this()}, region_{region} {
     ASSERT(region_);
 }
 

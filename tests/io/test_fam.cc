@@ -170,55 +170,59 @@ CASE("FamObject: lookup, create, and destroy") {
 
     const auto path = '/' + regionName + '/' + objectName;
 
-    EXPECT_NO_THROW(FamRegionName(fam::testEndpoint, path).create(regionSize, regionPerm));
-
     {
-        FamObject::UPtr object;
+        auto region_name = FamRegionName(fam::testEndpoint, path);
+
+        EXPECT_NO_THROW(region_name.create(regionSize, regionPerm));
 
         // object inherits permissions from region
-        EXPECT_NO_THROW(object = FamObjectName(fam::testEndpoint, path).allocate(objectSize).clone());
+        EXPECT_NO_THROW(FamObjectName(fam::testEndpoint, path).allocate(objectSize));
+
+        auto object = region_name.object(objectName).lookup();
 
         const FamProperty prop{objectSize, regionPerm, objectName};
-        EXPECT_EQUAL(object->property(), prop);
-
-        EXPECT_NO_THROW(object->deallocate());
+        EXPECT_EQUAL(object.property(), prop);
+        EXPECT_NO_THROW(region_name.lookup().deallocateObject(objectName));
     }
 
+
+    // empty region name
+    auto region_name = FamRegionName(fam::testEndpoint, "");
+    // set region name and lookup
+    auto region = region_name.withRegion(regionName).lookup();
+
+    EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
+
+    /// @note object permissions are broken in OpenFAM API
+    region.setObjectLevelPermissions();
+    const auto size = 12;
+    // const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
+    EXPECT_NO_THROW(region.allocateObject(size, objectName));
+    EXPECT_NO_THROW(region.lookupObject(objectName));
+
     {
-        auto name = FamRegionName(fam::testEndpoint, "");
-
-        auto region = name.withRegion(regionName).lookup();
-
-        EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
-
-        {
-            /// @note object permissions are broken in OpenFAM API
-            region.setObjectLevelPermissions();
-            const auto size = 12;
-            // const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
-            EXPECT_NO_THROW(region.allocateObject(size, objectName));
-            EXPECT_NO_THROW(region.lookupObject(objectName));
-            EXPECT_EQUAL(region.lookupObject(objectName).size(), size);
-            EXPECT_EQUAL(region.lookupObject(objectName).permissions(), regionPerm);
-            EXPECT_EQUAL(region.lookupObject(objectName).name(), objectName);
-        }
-
-        // overwrite: allocate with different size
-        EXPECT_NO_THROW(region.allocateObject(objectSize, objectName, true));
-
         auto object = region.lookupObject(objectName);
+        EXPECT_EQUAL(object.size(), size);
+        EXPECT_EQUAL(object.permissions(), regionPerm);
+        EXPECT_EQUAL(object.name(), objectName);
+    }
 
+    // overwrite: allocate with different size
+    EXPECT_NO_THROW(region.allocateObject(objectSize, objectName, true));
+
+    {
+        auto object = region.lookupObject(objectName);
         const FamProperty prop{objectSize, regionPerm, objectName};
         EXPECT_EQUAL(object.property(), prop);
 
         EXPECT_NO_THROW(object.deallocate());
-
-        EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
-
-        EXPECT_NO_THROW(region.destroy());
-
-        EXPECT_THROWS_AS(name.lookup(), NotFound);
     }
+
+    EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
+
+    EXPECT_NO_THROW(region.destroy());
+
+    EXPECT_THROWS_AS(region_name.lookup(), NotFound);
 }
 
 CASE("FamObject: large data small object") {

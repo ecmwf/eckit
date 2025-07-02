@@ -166,7 +166,6 @@ CASE("FamObject: lookup, create, and destroy") {
 
     const auto objectName = fam::TestFam::makeRandomText("OBJECT");
     const auto objectSize = 24;
-    const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
 
     const auto path = '/' + regionName + '/' + objectName;
 
@@ -179,7 +178,7 @@ CASE("FamObject: lookup, create, and destroy") {
         EXPECT_NO_THROW(object = FamObjectName(fam::testEndpoint, path).allocate(objectSize).clone());
 
         const FamProperty prop{objectSize, regionPerm, objectName};
-        EXPECT_EQUAL(prop, object->property());
+        EXPECT_EQUAL(object->property(), prop);
 
         EXPECT_NO_THROW(object->deallocate());
     }
@@ -192,8 +191,11 @@ CASE("FamObject: lookup, create, and destroy") {
         EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
 
         {
+            /// @note object permissions are broken in OpenFAM API
+            region.setObjectLevelPermissions();
             const auto size = 12;
-            EXPECT_NO_THROW(region.allocateObject(size, objectPerm, objectName));
+            // const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
+            EXPECT_NO_THROW(region.allocateObject(size, objectName));
             EXPECT_NO_THROW(region.lookupObject(objectName));
             EXPECT_EQUAL(region.lookupObject(objectName).size(), size);
             EXPECT_EQUAL(region.lookupObject(objectName).permissions(), regionPerm);
@@ -201,7 +203,7 @@ CASE("FamObject: lookup, create, and destroy") {
         }
 
         // overwrite: allocate with different size
-        EXPECT_NO_THROW(region.allocateObject(objectSize, objectPerm, objectName, true));
+        EXPECT_NO_THROW(region.allocateObject(objectSize, objectName, true));
 
         auto object = region.lookupObject(objectName);
 
@@ -225,7 +227,6 @@ CASE("FamObject: large data small object") {
 
     const auto objectName = fam::TestFam::makeRandomText("OBJECT");
     const auto objectSize = 32;
-    const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
 
     const FamPath path{regionName, objectName};
 
@@ -233,13 +234,13 @@ CASE("FamObject: large data small object") {
         auto region = FamRegionName(fam::testEndpoint, path).create(regionSize, regionPerm, true);
 
         // object bigger than region
-        EXPECT_THROWS_AS(region.allocateObject(regionSize + 1, objectPerm, objectName), OutOfStorage);
+        EXPECT_THROWS_AS(region.allocateObject(regionSize + 1, objectName), OutOfStorage);
         EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
 
         EXPECT(regionSize >= objectSize);
 
         // object fits
-        EXPECT_NO_THROW(region.allocateObject(objectSize, objectPerm, objectName));
+        EXPECT_NO_THROW(region.allocateObject(objectSize, objectName));
         EXPECT_NO_THROW(region.lookupObject(objectName));
         EXPECT_NO_THROW(region.deallocateObject(objectName));
         EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);

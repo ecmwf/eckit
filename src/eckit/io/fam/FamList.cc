@@ -15,7 +15,10 @@
 
 #include "eckit/io/fam/FamList.h"
 
-#include "detail/FamListNode.h"
+#include <cstddef>
+#include <ostream>
+#include <string>
+#include <utility>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
@@ -23,7 +26,7 @@
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
-#include "eckit/io/fam/detail/FamNode.h"
+#include "eckit/io/fam/detail/FamListNode.h"
 
 namespace eckit {
 

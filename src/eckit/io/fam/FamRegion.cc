@@ -22,19 +22,17 @@
 
 #include "fam/fam.h"
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
-#include "eckit/log/Log.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 FamRegion::FamRegion(FamSessionDetail& session, std::unique_ptr<FamRegionDescriptor> region) :
-    session_{session.getShared()}, region_(std::move(region)) {
+    session_{session.shared_from_this()}, region_(std::move(region)) {
     ASSERT(region_);
 }
 

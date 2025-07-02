@@ -17,16 +17,19 @@
 /// @author Metin Cakircali
 /// @date   May 2024
 
-#include "eckit/config/LibEcKit.h"
-#include "eckit/io/Buffer.h"
-#include "eckit/io/fam/FamConfig.h"
-#include "eckit/io/fam/FamList.h"
-#include "eckit/testing/Test.h"
 #include "fam_common.h"
 
+#include <algorithm>
 #include <mutex>
+#include <sstream>
+#include <string>
+#include <string_view>
 #include <thread>
 #include <vector>
+
+#include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamList.h"
+#include "eckit/testing/Test.h"
 
 using namespace eckit;
 using namespace eckit::testing;
@@ -42,8 +45,8 @@ fam::TestFam tester;
 
 constexpr const auto numThreads = 8;
 constexpr const auto listSize   = 200;
-const auto listName             = test::fam::TestFam::makeRandomText("LIST");
-const auto listData             = test::fam::TestFam::makeRandomText("DATA");
+const auto listName             = fam::TestFam::makeRandomText("LIST");
+const auto listData             = fam::TestFam::makeRandomText("DATA");
 
 std::vector<std::string> testData;
 std::mutex testMutex;

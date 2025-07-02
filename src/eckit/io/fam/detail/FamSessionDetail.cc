@@ -113,9 +113,6 @@ FamSessionDetail::FamSessionDetail(const FamConfig& config) : name_{config.sessi
         options.cisServer = host.data();
         options.grpcPort  = port.data();
 
-        Log::debug<LibEcKit>() << "FAM options: runtime=" << options.runtime << ", cisServer=" << options.cisServer
-                               << ", grpcPort=" << options.grpcPort << '\n';
-
         fam_.fam_initialize(name_.c_str(), &options);
     }
     catch (openfam::Fam_Exception& e) {

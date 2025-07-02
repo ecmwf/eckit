@@ -50,8 +50,6 @@ public:  // methods
 
     ~FamSessionDetail();
 
-    auto getShared() -> std::shared_ptr<FamSessionDetail> { return shared_from_this(); }
-
     auto name() const -> std::string { return name_; }
 
     auto config() -> FamConfig;

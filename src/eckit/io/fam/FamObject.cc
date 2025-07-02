@@ -32,7 +32,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 FamObject::FamObject(FamSessionDetail& session, std::unique_ptr<FamObjectDescriptor> object) :
-    session_{session.getShared()}, object_{std::move(object)} {
+    session_{session.shared_from_this()}, object_{std::move(object)} {
     ASSERT(session_);
     ASSERT(object_);
 }

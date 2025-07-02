@@ -212,7 +212,7 @@ auto FamSessionDetail::stat(FamRegionDescriptor& region) -> FamProperty {
 //  OBJECT
 
 auto FamSessionDetail::proxyObject(const std::uint64_t region, const std::uint64_t offset) -> FamObject {
-    return {*this, std::make_unique<FamObjectDescriptor>(Fam_Global_Descriptor{region, offset})};
+    return {*this, region, offset};
 }
 
 auto FamSessionDetail::lookupObject(const std::string& regionName, const std::string& objectName) -> FamObject {
@@ -221,7 +221,7 @@ auto FamSessionDetail::lookupObject(const std::string& regionName, const std::st
 
     auto* object = invokeFam(fam_, &openfam::fam::fam_lookup, objectName.c_str(), regionName.c_str());
 
-    return {*this, std::unique_ptr<FamObjectDescriptor>(object)};
+    return {*this, object};
 }
 
 auto FamSessionDetail::allocateObject(FamRegionDescriptor& region, const fam::size_t objectSize,
@@ -234,7 +234,7 @@ auto FamSessionDetail::allocateObject(FamRegionDescriptor& region, const fam::si
 
     auto* object = invokeFam(fam_, allocate, objectName.c_str(), objectSize, objectPerm, &region);
 
-    return {*this, std::unique_ptr<FamObjectDescriptor>(object)};
+    return {*this, object};
 }
 
 void FamSessionDetail::deallocateObject(FamObjectDescriptor& object) {

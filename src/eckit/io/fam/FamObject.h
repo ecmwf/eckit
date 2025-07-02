@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <iosfwd>
 #include <memory>
 #include <string>
@@ -33,24 +34,18 @@ class FamSessionDetail;
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamObject {
-public:  // types
-
-    using UPtr = std::unique_ptr<FamObject>;
-    using SPtr = std::shared_ptr<FamObject>;
 
 public:  // methods
 
-    FamObject(FamSessionDetail& session, std::unique_ptr<FamObjectDescriptor> object);
+    FamObject(FamSessionDetail& session, FamObjectDescriptor* object);
 
-    ~FamObject();
+    FamObject(FamSessionDetail& session, std::uint64_t region, std::uint64_t offset);
 
     // operators
 
     bool operator==(const FamObject& other) const;
 
     bool operator!=(const FamObject& other) const { return !operator==(other); }
-
-    auto clone() const -> UPtr;
 
     void replaceWith(const FamDescriptor& object);
 

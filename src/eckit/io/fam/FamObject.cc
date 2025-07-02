@@ -15,10 +15,10 @@
 
 #include "eckit/io/fam/FamObject.h"
 
+#include <cstdint>
 #include <memory>
 #include <ostream>
 #include <string>
-#include <utility>
 
 #include "fam/fam.h"
 
@@ -31,32 +31,23 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamObject::FamObject(FamSessionDetail& session, std::unique_ptr<FamObjectDescriptor> object) :
-    session_{session.shared_from_this()}, object_{std::move(object)} {
+FamObject::FamObject(FamSessionDetail& session, FamObjectDescriptor* object) :
+    session_{session.shared_from_this()}, object_{object} {
     ASSERT(session_);
     ASSERT(object_);
 }
 
-FamObject::~FamObject() = default;
-
-auto FamObject::clone() const -> UPtr {
-    auto clone = std::make_unique<FamObjectDescriptor>(object_->get_global_descriptor());
-    clone->set_used_memsrv_cnt(object_->get_used_memsrv_cnt());
-    clone->set_memserver_ids(object_->get_memserver_ids());
-    clone->set_size(object_->get_size());
-    clone->set_perm(object_->get_perm());
-    clone->set_name(object_->get_name());
-    clone->set_desc_status(object_->get_desc_status());
-    clone->set_interleave_size(object_->get_interleave_size());
-    clone->set_uid(object_->get_uid());
-    clone->set_gid(object_->get_gid());
-    return std::make_unique<FamObject>(*session_, std::move(clone));
+FamObject::FamObject(FamSessionDetail& session, const std::uint64_t region, const std::uint64_t offset) :
+    session_{session.shared_from_this()},
+    object_{std::make_shared<FamObjectDescriptor>(Fam_Global_Descriptor{region, offset})} {
+    ASSERT(session_);
+    ASSERT(object_);
 }
 
 bool FamObject::operator==(const FamObject& other) const {
-    const auto desc  = object_->get_global_descriptor();
-    const auto oDesc = other.object_->get_global_descriptor();
-    return (desc.regionId == oDesc.regionId && desc.offset == oDesc.offset);
+    const auto desc   = object_->get_global_descriptor();
+    const auto o_desc = other.object_->get_global_descriptor();
+    return (desc.regionId == o_desc.regionId && desc.offset == o_desc.offset);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

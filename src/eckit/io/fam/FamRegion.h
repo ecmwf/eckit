@@ -36,8 +36,6 @@ public:  // methods
 
     FamRegion(FamSessionDetail& session, FamRegionDescriptor* region);
 
-    ~FamRegion();
-
     void destroy() const;
 
     auto exists() const -> bool;

@@ -36,8 +36,6 @@ FamRegion::FamRegion(FamSessionDetail& session, FamRegionDescriptor* region) :
     ASSERT(region_);
 }
 
-FamRegion::~FamRegion() = default;
-
 //----------------------------------------------------------------------------------------------------------------------
 
 void FamRegion::destroy() const {

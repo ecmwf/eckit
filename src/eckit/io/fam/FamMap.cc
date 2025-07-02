@@ -29,8 +29,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamMap::FamMap(const FamRegionName& regionName, const std::string& tableName) :
-    region_{regionName.lookup()},
+FamMap::FamMap(const FamRegion& region, const std::string& tableName) :
+    region_{region},
     root_{initSentinel(tableName + "-map-root", sizeof(FamMapNode))},
     table_{initSentinel(tableName + "-map-table", capacity * sizeof(FamMapNode))},
     count_{initSentinel(tableName + "-map-count", sizeof(size_type))} {}

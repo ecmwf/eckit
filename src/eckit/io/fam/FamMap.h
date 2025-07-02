@@ -19,11 +19,15 @@
 
 #pragma once
 
-#include "eckit/io/fam/FamHashTable.h"
-// #include "eckit/io/fam/FamMapIterator.h"
-
 #include <iosfwd>
 #include <string>
+
+#include "eckit/io/fam/FamHashTable.h"
+#include "eckit/io/fam/FamMapIterator.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegion.h"
+#include "eckit/types/FixedString.h"
 
 namespace eckit {
 
@@ -34,13 +38,13 @@ class FamRegionName;
 /// @brief FamMap is an associative key-value container on FAM. Each element is organized depending on the
 /// hash value of its key.
 class FamMap {
-    static constexpr auto keySize = 32;  // template?
+    static constexpr auto key_size = 32;  // template?
 
     static constexpr auto capacity = 1024;
 
 public:  // types
 
-    using key_type   = FixedString<keySize>;
+    using key_type   = FixedString<key_size>;
     using hash_type  = FamHash<key_type>;
     using value_type = char;
     // using key_equal  = key_equal;
@@ -67,7 +71,13 @@ public:  // types
 
 public:  // methods
 
-    FamMap(const FamRegionName& regionName, const std::string& tableName);
+    FamMap(const FamRegion& region, const std::string& name);
+
+    // rules
+    FamMap(const FamMap&)            = default;
+    FamMap& operator=(const FamMap&) = default;
+    FamMap(FamMap&&)                 = delete;
+    FamMap& operator=(FamMap&&)      = delete;
 
     ~FamMap() = default;
 

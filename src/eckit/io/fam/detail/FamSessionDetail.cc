@@ -15,8 +15,6 @@
 
 #include "FamSessionDetail.h"
 
-#include <fam/fam.h>
-#include <fam/fam_exception.h>
 #include <sys/types.h>
 
 #include <algorithm>
@@ -28,6 +26,9 @@
 #include <string>
 #include <string_view>
 #include <utility>
+
+#include "fam/fam.h"
+#include "fam/fam_exception.h"
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"

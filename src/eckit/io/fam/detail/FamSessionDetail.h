@@ -20,17 +20,16 @@
 #pragma once
 
 #include <cstdint>
+#include <iosfwd>
 #include <memory>
 #include <string>
 
-#include <fam/fam.h>
+#include "fam/fam.h"
 
 #include "eckit/io/fam/FamConfig.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
-
-#include <iosfwd>
 
 namespace eckit {
 

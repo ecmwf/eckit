@@ -15,12 +15,12 @@
 
 #include "eckit/io/fam/FamRegion.h"
 
-#include <fam/fam.h>
-
 #include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
+
+#include "fam/fam.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"

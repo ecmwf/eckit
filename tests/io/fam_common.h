@@ -17,16 +17,15 @@
 /// @author Metin Cakircali
 /// @date   Jun 2024
 
-#include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/URI.h"
-#include "eckit/io/fam/FamObjectName.h"
-#include "eckit/io/fam/FamRegion.h"
-#include "eckit/io/fam/FamRegionName.h"
-
 #include <sys/time.h>
 
+#include <cstdlib>
 #include <string>
+#include <vector>
+
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamRegionName.h"
 
 namespace eckit::test {
 

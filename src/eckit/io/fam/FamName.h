@@ -56,7 +56,7 @@ public:  // methods
 
 protected:  // methods
 
-    auto session() const -> FamSessionManager::SharedPtr;
+    auto session() const -> FamSessionManager::FamSession;
 
     auto path() -> FamPath& { return path_; }
 

@@ -18,7 +18,9 @@
 #include <uuid/uuid.h>
 
 #include <iostream>
+#include <string>
 #include <tuple>
+#include <utility>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"

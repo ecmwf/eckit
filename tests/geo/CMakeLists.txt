@@ -63,7 +63,7 @@ if(eckit_HAVE_GEO_GRID_ORCA)
 
     configure_file("ORCA2_T.ek" "${FILE}" COPYONLY)
     if(NOT EXISTS "${FILE}")
-        message(FATAL_ERROR "Required file not found: '"${FILE}"'")
+        message(FATAL_ERROR "Required file not found: '${FILE}'")
     endif()
 
     ecbuild_add_test(

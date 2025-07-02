@@ -17,7 +17,7 @@
 /// @author Metin Cakircali
 /// @date   May 2024
 
-#include "fam_common.h"
+#include "test_fam_common.h"
 
 #include <algorithm>
 #include <mutex>

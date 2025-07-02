@@ -57,13 +57,10 @@ public:  // methods
     //------------------------------------------------------------------------------------------------------------------
     // REGION
 
-    [[nodiscard]]
     auto lookupRegion(const std::string& regionName) -> FamRegion;
 
-    [[nodiscard]]
     auto createRegion(fam::size_t regionSize, fam::perm_t regionPerm, const std::string& regionName) -> FamRegion;
 
-    [[nodiscard]]
     auto createRegion(const FamProperty& property) -> FamRegion {
         return createRegion(property.size, property.perm, property.name);
     }
@@ -74,7 +71,6 @@ public:  // methods
 
     void destroyRegion(const std::string& regionName);
 
-    [[nodiscard]]
     auto ensureCreateRegion(fam::size_t regionSize, fam::perm_t regionPerm, const std::string& regionName) -> FamRegion;
 
     auto stat(FamRegionDescriptor& region) -> FamProperty;
@@ -82,17 +78,13 @@ public:  // methods
     //------------------------------------------------------------------------------------------------------------------
     // OBJECT
 
-    [[nodiscard]]
     auto proxyObject(std::uint64_t region, std::uint64_t offset) -> FamObject;
 
-    [[nodiscard]]
     auto lookupObject(const std::string& regionName, const std::string& objectName) -> FamObject;
 
-    [[nodiscard]]
     auto allocateObject(FamRegionDescriptor& region, fam::size_t objectSize, fam::perm_t objectPerm,
                         const std::string& objectName = "") -> FamObject;
 
-    [[nodiscard]]
     auto allocateObject(FamRegionDescriptor& region, const FamProperty& property) -> FamObject {
         return allocateObject(region, property.size, property.perm, property.name);
     }
@@ -102,7 +94,6 @@ public:  // methods
     void deallocateObject(const std::string& regionName, const std::string& objectName);
 
     /// IMPORTANT: This method will deallocate any existing object with the same name
-    [[nodiscard]]
     auto ensureAllocateObject(FamRegionDescriptor& region, fam::size_t objectSize, fam::perm_t objectPerm,
                               const std::string& objectName) -> FamObject;
 

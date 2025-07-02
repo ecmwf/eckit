@@ -22,10 +22,12 @@
 
 #include "fam/fam.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 
@@ -49,6 +51,7 @@ auto FamRegion::clone() const -> UPtr {
     clone->set_redundancyLevel(region_->get_redundancyLevel());
     clone->set_memoryType(region_->get_memoryType());
     clone->set_interleaveEnable(region_->get_interleaveEnable());
+    clone->set_permissionLevel(region_->get_permissionLevel());
     return std::make_unique<FamRegion>(*session_, std::move(clone));
 }
 
@@ -81,6 +84,14 @@ auto FamRegion::name() const -> std::string {
 
 auto FamRegion::property() const -> FamProperty {
     return {size(), permissions(), name()};
+}
+
+void FamRegion::setRegionLevelPermissions() const {
+    region_->set_permissionLevel(Fam_Permission_Level::REGION);
+}
+
+void FamRegion::setObjectLevelPermissions() const {
+    region_->set_permissionLevel(Fam_Permission_Level::DATAITEM);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -122,6 +133,21 @@ void FamRegion::print(std::ostream& out) const {
             break;
         case FamDescriptorStatus::DESC_UNINITIALIZED:
             out << "uninitialized";
+            break;
+        default:
+            out << "unknown";
+            break;
+    }
+    out << ",perm. Level=";
+    switch (region_->get_permissionLevel()) {
+        case Fam_Permission_Level::REGION:
+            out << "region";
+            break;
+        case Fam_Permission_Level::DATAITEM:
+            out << "dataitem";
+            break;
+        case Fam_Permission_Level::PERMISSION_LEVEL_DEFAULT:
+            out << "default";
             break;
         default:
             out << "unknown";

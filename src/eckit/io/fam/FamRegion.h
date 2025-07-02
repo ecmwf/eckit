@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <iosfwd>
 #include <memory>
 #include <string>
 
@@ -59,6 +60,10 @@ public:  // methods
 
     auto property() const -> FamProperty;
 
+    void setObjectLevelPermissions() const;
+
+    void setRegionLevelPermissions() const;
+
     // object methods
 
     [[nodiscard]]
@@ -71,7 +76,6 @@ public:  // methods
     auto allocateObject(fam::size_t objectSize, fam::perm_t objectPerm, const std::string& objectName = "",
                         bool overwrite = false) const -> FamObject;
 
-    /// IMPOTANT: this uses the region's permissions for the object
     [[nodiscard]]
     auto allocateObject(fam::size_t objectSize, const std::string& objectName = "", bool overwrite = false) const
         -> FamObject {

@@ -15,9 +15,14 @@
 
 #include "eckit/io/fam/FamHandle.h"
 
+#include <ostream>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamObjectName.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {
@@ -66,7 +71,7 @@ Length FamHandle::size() {
 
 Length FamHandle::openForRead() {
     open(Mode::READ);
-    handle_ = name_.lookup().clone();
+    handle_ = name_.lookup();
     return estimate();
 }
 
@@ -74,7 +79,7 @@ void FamHandle::openForWrite(const Length& length) {
     open(Mode::WRITE);
 
     try {
-        handle_ = name_.lookup().clone();
+        handle_ = name_.lookup();
         if (overwrite_ && length > 0) {
             ASSERT(size() >= length);
         }
@@ -82,7 +87,7 @@ void FamHandle::openForWrite(const Length& length) {
     catch (const NotFound& e) {
         Log::debug<LibEcKit>() << "FamHandle::openForWrite() " << e.what() << '\n';
         ASSERT(length > 0);
-        handle_ = name_.allocate(length).clone();
+        handle_ = name_.allocate(length);
     }
 
     len_ = size();

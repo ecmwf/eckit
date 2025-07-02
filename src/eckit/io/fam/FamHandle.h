@@ -19,19 +19,25 @@
 
 #pragma once
 
-#include <memory>
+#include <cstdint>
+#include <iosfwd>
+#include <optional>
 
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamObjectName.h"
 
 namespace eckit {
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamHandle : public DataHandle {
 public:  // methods
 
-    enum class Mode {
+    enum class Mode : std::uint8_t {
         CLOSED,
         READ,
         WRITE
@@ -80,7 +86,7 @@ private:  // members
 
     Mode mode_{Mode::CLOSED};
 
-    std::unique_ptr<FamObject> handle_;
+    std::optional<FamObject> handle_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

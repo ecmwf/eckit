@@ -23,8 +23,19 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Translator.h"
 
-#pragma STDC FENV_ACCESS ON
+#define ECKIT_SUPPORT_STDC_FENV_ACCESS_ON 1
 
+#ifdef __clang__
+#if __clang_major__ < 17
+#warning We are not using '#pragma STDC FENV_ACCESS ON' when the compiler identifies as 'clang version < 17'. This is because AMD aocc version < 5 crashes with this pragma but cannot be discerned from clang with compile time checks. (see https://github.com/ecmwf/eckit/pull/206)"
+#undef ECKIT_SUPPORT_STDC_FENV_ACCESS_ON
+#define ECKIT_SUPPORT_STDC_FENV_ACCESS_ON 0
+#endif
+#endif
+
+#if ECKIT_SUPPORT_STDC_FENV_ACCESS_ON
+#pragma STDC FENV_ACCESS ON
+#endif
 
 namespace eckit::maths {
 

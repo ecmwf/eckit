@@ -11,6 +11,18 @@ list(APPEND eckit_maths_sources
     MatrixLapack.h
 )
 
+if(CMAKE_CXX_COMPILER_ID MATCHES Intel)
+    set_property(
+      SOURCE    FloatingPointExceptions.cc
+      APPEND
+      PROPERTY  COMPILE_OPTIONS -fp-model precise)
+    # See https://github.com/ecmwf/eckit/pull/206 
+    # Without this, we get following error in a Intel Release build (-O3):
+    #    eckit/maths/FloatingPointExceptions.cc:26:14: error: '#pragma STDC FENV_ACCESS ON' is illegal when precise is disabled
+    #     | #pragma STDC FENV_ACCESS ON
+    #     |              ^
+endif()
+
 if(eckit_HAVE_CONVEX_HULL)
     list(APPEND eckit_maths_sources ConvexHull.h ConvexHullN.h Qhull.cc Qhull.h)
     list(APPEND eckit_maths_private_libs Qhull::Qhull)

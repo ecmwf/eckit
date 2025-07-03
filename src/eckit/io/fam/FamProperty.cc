@@ -15,9 +15,14 @@
 
 #include "eckit/io/fam/FamProperty.h"
 
-#include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <cstdint>
+#include <cstdio>
+#include <ostream>
+#include <string>
+#include <utility>
 
 namespace eckit {
 

@@ -48,7 +48,6 @@ using index_t = std::uint64_t;
 
 }  // namespace fam
 
-/// @note mirrors Fam_Global_Descriptor
 struct FamDescriptor {
     fam::index_t region{0};
     fam::index_t offset{0};
@@ -57,6 +56,9 @@ struct FamDescriptor {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FamProperty {
+
+    static constexpr fam::perm_t default_perm = 0640;
+
     FamProperty() = default;
 
     FamProperty(fam::size_t size, fam::perm_t perm, std::string name, std::uint32_t uid, std::uint32_t gid);
@@ -76,8 +78,8 @@ struct FamProperty {
     friend std::ostream& operator<<(std::ostream& out, const FamProperty& prop);
 
     fam::size_t size{0};
-    fam::perm_t perm{0640};
-    std::string name{""};
+    fam::perm_t perm{default_perm};
+    std::string name;
     std::uint32_t uid{0};
     std::uint32_t gid{0};
 };

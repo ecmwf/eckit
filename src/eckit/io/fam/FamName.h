@@ -39,6 +39,12 @@ public:  // methods
 
     FamName(Stream& stream);
 
+    // rules
+    FamName(const FamName&)            = default;
+    FamName& operator=(const FamName&) = default;
+    FamName(FamName&&)                 = default;
+    FamName& operator=(FamName&&)      = default;
+
     virtual ~FamName();
 
     virtual auto exists() const -> bool = 0;

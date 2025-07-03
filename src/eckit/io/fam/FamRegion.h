@@ -58,17 +58,13 @@ public:  // methods
 
     // object methods
 
-    [[nodiscard]]
     auto proxyObject(fam::index_t offset) const -> FamObject;
 
-    [[nodiscard]]
     auto lookupObject(const std::string& objectName) const -> FamObject;
 
-    [[nodiscard]]
     auto allocateObject(fam::size_t objectSize, fam::perm_t objectPerm, const std::string& objectName = "",
                         bool overwrite = false) const -> FamObject;
 
-    [[nodiscard]]
     auto allocateObject(fam::size_t objectSize, const std::string& objectName = "", bool overwrite = false) const
         -> FamObject {
         return allocateObject(objectSize, permissions(), objectName, overwrite);

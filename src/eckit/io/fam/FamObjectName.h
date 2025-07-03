@@ -38,14 +38,14 @@ public:  // methods
 
     using FamName::FamName;
 
-    auto withObject(const std::string& objectName) -> FamObjectName&;
+    auto withObject(const std::string& object_name) -> FamObjectName&;
 
     /// @brief Replaces [objectName] with UUID (e.g., 34bd2214-2a97-5a8a-802f-76ebefd84816)
     auto withUUID() -> FamObjectName&;
 
     auto lookup() const -> FamObject;
 
-    auto allocate(fam::size_t objectSize, bool overwrite = false) const -> FamObject;
+    auto allocate(fam::size_t object_size, bool overwrite = false) const -> FamObject;
 
     auto exists() const -> bool override;
 

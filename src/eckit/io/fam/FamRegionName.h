@@ -37,13 +37,13 @@ public:  // methods
 
     using FamName::FamName;
 
-    auto withRegion(const std::string& regionName) -> FamRegionName&;
+    auto withRegion(const std::string& region_name) -> FamRegionName&;
 
-    auto object(const std::string& objectName) const -> FamObjectName;
+    auto object(const std::string& object_name) const -> FamObjectName;
 
     auto lookup() const -> FamRegion;
 
-    auto create(fam::size_t regionSize, fam::perm_t regionPerm, bool overwrite = false) const -> FamRegion;
+    auto create(fam::size_t region_size, fam::perm_t region_perm, bool overwrite = false) const -> FamRegion;
 
     auto exists() const -> bool override;
 

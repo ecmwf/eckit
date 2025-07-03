@@ -31,25 +31,25 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamRegionName::withRegion(const std::string& regionName) -> FamRegionName& {
-    path().regionName = regionName;
+auto FamRegionName::withRegion(const std::string& region_name) -> FamRegionName& {
+    path().regionName = region_name;
     return *this;
 }
 
-auto FamRegionName::object(const std::string& objectName) const -> FamObjectName {
-    return {endpoint(), {path().regionName, objectName}};
+auto FamRegionName::object(const std::string& object_name) const -> FamObjectName {
+    return {endpoint(), {path().regionName, object_name}};
 }
 
 auto FamRegionName::lookup() const -> FamRegion {
     return session()->lookupRegion(path().regionName);
 }
 
-auto FamRegionName::create(const fam::size_t regionSize, const fam::perm_t regionPerm, const bool overwrite) const
+auto FamRegionName::create(const fam::size_t region_size, const fam::perm_t region_perm, const bool overwrite) const
     -> FamRegion {
     if (overwrite) {
-        return session()->ensureCreateRegion(regionSize, regionPerm, path().regionName);
+        return session()->ensureCreateRegion(region_size, region_perm, path().regionName);
     }
-    return session()->createRegion(regionSize, regionPerm, path().regionName);
+    return session()->createRegion(region_size, region_perm, path().regionName);
 }
 
 auto FamRegionName::exists() const -> bool {

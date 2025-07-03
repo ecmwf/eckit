@@ -31,8 +31,8 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamObjectName::withObject(const std::string& objectName) -> FamObjectName& {
-    path().objectName = objectName;
+auto FamObjectName::withObject(const std::string& object_name) -> FamObjectName& {
+    path().objectName = object_name;
     return *this;
 }
 
@@ -44,19 +44,19 @@ auto FamObjectName::lookup() const -> FamObject {
     return session()->lookupObject(path().regionName, path().objectName);
 }
 
-auto FamObjectName::allocate(const fam::size_t objectSize, const bool overwrite) const -> FamObject {
-    return session()->lookupRegion(path().regionName).allocateObject(objectSize, path().objectName, overwrite);
+auto FamObjectName::allocate(const fam::size_t object_size, const bool overwrite) const -> FamObject {
+    return session()->lookupRegion(path().regionName).allocateObject(object_size, path().objectName, overwrite);
 }
 
 auto FamObjectName::exists() const -> bool {
     try {
         return lookup().exists();
     }
-    catch (const NotFound& notFound) {
-        Log::debug<LibEcKit>() << notFound << '\n';
+    catch (const NotFound& not_found) {
+        Log::debug<LibEcKit>() << not_found << '\n';
     }
-    catch (const PermissionDenied& permissionDenied) {
-        Log::debug<LibEcKit>() << permissionDenied << '\n';
+    catch (const PermissionDenied& permission_denied) {
+        Log::debug<LibEcKit>() << permission_denied << '\n';
     }
     return false;
 }

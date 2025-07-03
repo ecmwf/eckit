@@ -10,6 +10,9 @@
  */
 
 
+#include <algorithm>
+#include <memory>
+
 #include "eckit/geo/cache/Unzip.h"
 
 #include "eckit/eckit_config.h"

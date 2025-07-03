@@ -16,21 +16,20 @@
 #include "eckit/io/fam/FamObjectName.h"
 
 #include <ostream>
+#include <string>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamHandle.h"
+#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-auto FamObjectName::withRegion(const std::string& regionName) -> FamObjectName& {
-    path().regionName = regionName;
-    return *this;
-}
 
 auto FamObjectName::withObject(const std::string& objectName) -> FamObjectName& {
     path().objectName = objectName;

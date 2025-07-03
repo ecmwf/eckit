@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <iosfwd>
 #include <string>
 
 #include "eckit/io/Length.h"
@@ -38,10 +37,6 @@ class FamObjectName : public FamName {
 public:  // methods
 
     using FamName::FamName;
-
-    ~FamObjectName() = default;
-
-    auto withRegion(const std::string& regionName) -> FamObjectName&;
 
     auto withObject(const std::string& objectName) -> FamObjectName&;
 

@@ -36,11 +36,14 @@ list(APPEND eckit_geo_srcs
     Projection.h
     Range.cc
     Range.h
+    Search.cc
     Search.h
     Shape.cc
     Shape.h
     Spec.cc
     Spec.h
+    Trace.cc
+    Trace.h
     area/BoundingBox.cc
     area/BoundingBox.h
     area/BoundingBoxXY.cc
@@ -140,6 +143,16 @@ list(APPEND eckit_geo_srcs
     range/RegularLatitude.h
     range/RegularLongitude.cc
     range/RegularLongitude.h
+    search/Tree.cc
+    search/Tree.h
+    search/TreeMapped.cc
+    search/TreeMapped.h
+    search/TreeMappedAnonymousMemory.cc
+    search/TreeMappedAnonymousMemory.h
+    search/TreeMappedFile.cc
+    search/TreeMappedFile.h
+    search/TreeMemory.cc
+    search/TreeMemory.h
     share/Area.cc
     share/Area.h
     share/Grid.cc

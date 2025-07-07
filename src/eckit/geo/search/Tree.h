@@ -12,17 +12,17 @@
 
 #pragma once
 
+#include <array>
 #include <ostream>
 #include <vector>
 
 #include "eckit/container/sptree/SPValue.h"
+#include "eckit/geo/PointXYZ.h"
 
-#include "mir/util/Types.h"
 
-
-namespace mir::repres {
-class Representation;
-}  // namespace mir::repres
+namespace eckit::geo {
+class Grid;
+}
 
 
 namespace eckit::geo::search {
@@ -30,19 +30,45 @@ namespace eckit::geo::search {
 
 class Tree {
 public:
-    using Point          = PointXYZ;
-    using Payload        = size_t;
-    using PointValueType = eckit::SPValue<Tree>;
 
-    explicit Tree(const repres::Representation&);
+#if 0
+    using Point = PointXYZ;
+#else
+    struct Point : private std::array<double, 3> {
+        static constexpr size_t DIMS = 3;
+
+        Point(value_type x, value_type y, value_type z) : array{x, y, z} {}
+        using array::array;
+
+        explicit Point(const PointXYZ& p) : Point{p.X, p.Y, p.Z} {}
+
+        value_type x(size_t axis) const { return operator[](axis); }
+
+        PointXYZ to_xyz() const { return {operator[](0), operator[](1), operator[](2)}; }  // (additional)
+
+        static value_type distance(const Point& p, const Point& q);
+        static value_type distance(const Point& p, const Point& q, size_t axis);
+
+        static constexpr value_type EPS = PointXYZ::EPS;
+
+        friend std::ostream& operator<<(std::ostream& out, const Point& p) {
+            return out << '{' << p[0] << ", " << p[1] << ", " << p[2] << '}';
+        }
+    };
+#endif
+
+    using Payload        = size_t;
+    using PointValueType = SPValue<Tree>;
+
+    explicit Tree(const Grid&);
 
     Tree(const Tree&) = delete;
-    Tree(Tree&)       = delete;
+    Tree(Tree&&)      = delete;
 
     virtual ~Tree();
 
-    Tree& operator=(Tree&)       = delete;
     Tree& operator=(const Tree&) = delete;
+    Tree& operator=(Tree&&)      = delete;
 
     virtual void build(std::vector<PointValueType>&);
 
@@ -61,6 +87,8 @@ public:
     virtual void lock();
     virtual void unlock();
 
+    std::string str() const;
+
     size_t itemCount() const { return itemCount_; }
 
     friend std::ostream& operator<<(std::ostream& s, const Tree& p) {
@@ -69,35 +97,42 @@ public:
     }
 
 private:
+
     const size_t itemCount_;
 };
 
+
 class TreeFactory {
 protected:
-    virtual Tree* make(const repres::Representation&) = 0;
+
+    virtual Tree* make(const Grid&) = 0;
     explicit TreeFactory(const std::string&);
     virtual ~TreeFactory();
 
 public:
+
     TreeFactory(const TreeFactory&) = delete;
     TreeFactory(TreeFactory&&)      = delete;
 
     TreeFactory& operator=(TreeFactory&&)      = delete;
     TreeFactory& operator=(const TreeFactory&) = delete;
 
-    static Tree* build(const std::string&, const repres::Representation&);
+    static Tree* build(const std::string&, const Grid&);
     static void list(std::ostream&);
 
 private:
+
     std::string name_;
 };
 
+
 template <class T>
 class TreeBuilder : public TreeFactory {
-    Tree* make(const repres::Representation& r) override { return new T(r); }
+    Tree* make(const Grid& r) override { return new T(r); }
 
 public:
-    TreeBuilder(const std::string& name) : TreeFactory(name) {}
+
+    explicit TreeBuilder(const std::string& name) : TreeFactory(name) {}
 };
 
 

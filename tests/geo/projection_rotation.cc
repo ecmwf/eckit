@@ -310,11 +310,10 @@ CASE("make_from_projection (1)") {
     EXPECT_THROWS_AS(auto dummy = area::BoundingBox::make_from_projection(PointXY{0., 0.}, PointXY{2., 1.}, rotation),
                      std::bad_variant_access);
 
-    std::unique_ptr<area::BoundingBox> bbox(
-        area::BoundingBox::make_from_projection(PointLonLat{0., 0.}, PointLonLat{2., 1.}, rotation));
+    auto bbox = area::BoundingBox::make_from_projection(PointLonLat{0., 0.}, PointLonLat{2., 1.}, rotation);
 
-    EXPECT(points_equal(PointLonLat{bbox->west, bbox->north}, {-171.37056, 80.000001}, EPS));
-    EXPECT(points_equal(PointLonLat{bbox->east, bbox->south}, {-160., 78.821318}, EPS));
+    EXPECT(points_equal(PointLonLat{bbox.west, bbox.north}, {-171.37056, 80.000001}, EPS));
+    EXPECT(points_equal(PointLonLat{bbox.east, bbox.south}, {-160., 78.821318}, EPS));
 }
 
 
@@ -325,8 +324,8 @@ CASE("make_from_projection (2)") {
 
     auto after = area::BoundingBox::make_from_projection(min, max, rotation);
 
-    EXPECT(points_equal(PointLonLat{0, after->north}, NORTH_POLE));
-    EXPECT(after->periodic());
+    EXPECT(points_equal(PointLonLat{0, after.north}, NORTH_POLE));
+    EXPECT(after.periodic());
 }
 
 

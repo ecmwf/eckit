@@ -61,11 +61,10 @@ CASE("longitude (normalisation)") {
         EXPECT(a.empty());
 
         area::BoundingBox b{90, west, -90, west - 1};
-        std::unique_ptr<area::BoundingBox> c(
-            area::BoundingBox::make_from_area(90, west + 42 * 360., -90, west - 42 * 360. - 1));
+        auto c = area::BoundingBox::make_from_area(90, west + 42 * 360., -90, west - 42 * 360. - 1);
 
-        EXPECT(c->east == c->west + 360 - 1);
-        EXPECT(b == *c);
+        EXPECT(c.east == c.west + 360 - 1);
+        EXPECT(b == c);
     }
 }
 
@@ -124,11 +123,11 @@ CASE("comparison") {
 CASE("properties") {
     area::BoundingBox a{10, 1, -10, 100};
     area::BoundingBox b{20, 2, -20, 200};
-    std::unique_ptr<area::BoundingBox> c(area::BoundingBox::make_global_prime());
-    std::unique_ptr<area::BoundingBox> d(area::BoundingBox::make_global_antiprime());
+    auto c = area::BoundingBox::make_global_prime();
+    auto d = area::BoundingBox::make_global_antiprime();
     area::BoundingBox e;
 
-    for (const auto& bb : {a, b, *c, *d, e}) {
+    for (const auto& bb : {a, b, c, d, e}) {
         EXPECT(!bb.empty());
         EXPECT(bb.contains(PointLonLat{10, 0}));
         EXPECT(bb.global() == bb.contains(PointLonLat{0, 0}));

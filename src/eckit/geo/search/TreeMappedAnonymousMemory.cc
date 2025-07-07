@@ -10,16 +10,16 @@
  */
 
 
-#include "eckit/geo/search/tree/TreeMappedAnonymousMemory.h"
+#include "eckit/geo/search/TreeMappedAnonymousMemory.h"
 
 
-namespace eckit::geo::search::tree {
+namespace eckit::geo::search {
 
 
-TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const repres::Representation& r) : TreeMapped(r, "/dev/zero") {}
+TreeMappedAnonymousMemory::TreeMappedAnonymousMemory(const Grid& r) : TreeMapped(r, "/dev/zero") {}
 
 
 static const TreeBuilder<TreeMappedAnonymousMemory> builder("mapped-anonymous-memory");
 
 
-}  // namespace eckit::geo::search::tree
+}  // namespace eckit::geo::search

@@ -41,6 +41,11 @@ foreach(_test
         LIBS    eckit_geo )
 endforeach()
 
+set_tests_properties(
+    eckit_test_geo_search
+    PROPERTIES
+    ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${TEST_ECKIT_GEO_CACHE_PATH}" )
+
 if(eckit_HAVE_ZIP)
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
 endif()

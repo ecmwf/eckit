@@ -16,65 +16,57 @@
 
 #include <fstream>
 
+#include "eckit/geo/search/TreeMapped.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/runtime/Main.h"
 
-#include "eckit/geo/search/tree/TreeMapped.h"
-#include "mir/util/Log.h"
 
-
-namespace eckit::geo::search::tree {
+namespace eckit::geo::search {
 
 
 template <class T>
 class TreeMappedFile : public TreeMapped {
-
 protected:
-    eckit::PathName real_;
-    eckit::Semaphore lock_;  // Must be after real
 
-    bool ready() const override { return path_ == real_; }
+    PathName real_;
+    Semaphore lock_;  // Must be after real
 
-    void commit() override { eckit::PathName::rename(path_, real_); }
+    bool ready() const override { return path() == real_; }
+
+    void commit() override { PathName::rename(path(), real_); }
 
     void print(std::ostream& out) const override {
         out << "TreeMappedFile["
                "path="
-            << path_ << ",ready?" << ready() << "]";
+            << path() << ",ready?" << ready() << "]";
     }
 
     void lock() override {
-        eckit::AutoUmask umask(0);
+        AutoUmask umask(0);
 
-        eckit::PathName path = lockFile(real_);
+        auto path = lockFile(real_);
 
-        Log::debug() << "Wait for lock " << path << std::endl;
         lock_.lock();
-        Log::debug() << "Got lock " << path << std::endl;
-
-
-        std::string hostname = eckit::Main::hostname();
 
         std::ofstream os(path.asString().c_str());
-        os << hostname << " " << ::getpid() << std::endl;
+        os << Main::hostname() << " " << ::getpid() << std::endl;
     }
 
     void unlock() override {
-        eckit::PathName path = lockFile(real_);
+        PathName path = lockFile(real_);
 
-        Log::debug() << "Unlock " << path << std::endl;
         std::ofstream os(path.asString().c_str());
         os << std::endl;
         lock_.unlock();
     }
 
-    static eckit::PathName treePath(const repres::Representation& r, bool makeUnique);
+    static PathName treePath(const Grid& r, bool makeUnique);
 
-    static eckit::PathName lockFile(const std::string& path);
-
+    static PathName lockFile(const std::string& path);
 
 public:
-    TreeMappedFile(const repres::Representation& r) :
+
+    explicit TreeMappedFile(const Grid& r) :
         TreeMapped(r, treePath(r, true)), real_(treePath(r, false)), lock_(lockFile(real_)) {
 
         lockFile(real_).touch();
@@ -86,4 +78,4 @@ public:
 };
 
 
-}  // namespace eckit::geo::search::tree
+}  // namespace eckit::geo::search

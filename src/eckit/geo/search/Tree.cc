@@ -12,87 +12,81 @@
 
 #include "eckit/geo/search/Tree.h"
 
+#include <cmath>
 #include <map>
-#include <ostream>
-#include <sstream>
 
-#include "mir/repres/Representation.h"
-#include "mir/util/Exceptions.h"
-#include "mir/util/Log.h"
-#include "mir/util/Mutex.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/util/mutex.h"
+#include "eckit/log/Log.h"
 
 
 namespace eckit::geo::search {
 
 
+Tree::Point::value_type Tree::Point::distance(const Point& p, const Point& q) {
+    value_type d2 = 0;
+    for (size_t i = 0; i < DIMS; ++i) {
+        d2 += (p[i] - q[i]) * (p[i] - q[i]);
+    }
+    return std::sqrt(d2);
+}
+
+Tree::Point::value_type Tree::Point::distance(const Point& p, const Point& q, size_t axis) {
+    return std::abs(p[axis] - q[axis]);
+}
+
+
 Tree::~Tree() = default;
 
 
-Tree::Tree(const repres::Representation& r) : itemCount_(r.numberOfPoints()) {
+Tree::Tree(const Grid& r) : itemCount_(r.size()) {
     ASSERT(itemCount_ > 0);
 }
 
 
 void Tree::build(std::vector<PointValueType>& /*unused*/) {
-    std::ostringstream os;
-    os << "Tree::build() not implemented for " << *this;
-    throw exception::SeriousBug(os.str());
+    throw exception::SeriousBug("Tree::build() not implemented for " + str());
 }
 
 
 void Tree::insert(const PointValueType& /*unused*/) {
-    std::ostringstream os;
-    os << "Tree::insert() not implemented for " << *this;
-    throw exception::SeriousBug(os.str());
+    throw exception::SeriousBug("Tree::insert() not implemented for " + str());
 }
 
 
 void Tree::statsPrint(std::ostream& /*unused*/, bool /*unused*/) {
-    std::ostringstream os;
-    os << "Tree::statsPrint() not implemented for " << *this;
-    throw exception::SeriousBug(os.str());
+    throw exception::SeriousBug("Tree::statsPrint() not implemented for " + str());
 }
 
 
 void Tree::statsReset() {
-    std::ostringstream os;
-    os << "Tree::statsReset() not implemented for " << *this;
-    throw exception::SeriousBug(os.str());
+    throw exception::SeriousBug("Tree::statsReset() not implemented for " + str());
 }
 
 
 Tree::PointValueType Tree::nearestNeighbour(const Point& /*unused*/) {
-    std::ostringstream os;
-    os << "Tree::nearestNeighbour() not implemented for " << *this;
-    throw exception::SeriousBug(os.str());
+    throw exception::SeriousBug("Tree::nearestNeighbour() not implemented for " + str());
 }
 
 
 std::vector<Tree::PointValueType> Tree::kNearestNeighbours(const Point& /*unused*/, size_t /*unused*/) {
-    std::ostringstream os;
-    os << "Tree::kNearestNeighbours() not implemented for " << *this;
-    throw exception::SeriousBug(os.str());
+    throw exception::SeriousBug("Tree::kNearestNeighbours() not implemented for " + str());
 }
 
 
 std::vector<Tree::PointValueType> Tree::findInSphere(const Point& /*unused*/, double /*unused*/) {
-    std::ostringstream os;
-    os << "Tree::findInSphere() not implemented for " << *this;
-    throw exception::SeriousBug(os.str());
+    throw exception::SeriousBug("Tree::findInSphere() not implemented for " + str());
 }
 
 
 bool Tree::ready() const {
-    std::ostringstream os;
-    os << "Tree::ready() not implemented for " << *this;
-    throw exception::SeriousBug(os.str());
+    throw exception::SeriousBug("Tree::ready() not implemented for " + str());
 }
 
 
 void Tree::commit() {
-    std::ostringstream os;
-    os << "Tree::commit() not implemented for " << *this;
-    throw exception::SeriousBug(os.str());
+    throw exception::SeriousBug("Tree::commit() not implemented for " + str());
 }
 
 
@@ -111,22 +105,22 @@ void Tree::unlock() {
 }
 
 
-static util::once_flag once;
-static util::recursive_mutex* local_mutex     = nullptr;
-static std::map<std::string, TreeFactory*>* m = nullptr;
-static void init() {
-    local_mutex = new util::recursive_mutex();
-    m           = new std::map<std::string, TreeFactory*>();
+std::string Tree::str() const {
+    std::ostringstream os;
+    print(os);
+    return os.str();
 }
 
 
-TreeFactory::TreeFactory(const std::string& name) : name_(name) {
-    util::call_once(once, init);
-    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
+static util::recursive_mutex MUTEX;
+static std::map<std::string, TreeFactory*> TREES;
 
-    auto j = m->find(name);
-    if (j == m->end()) {
-        (*m)[name] = this;
+
+TreeFactory::TreeFactory(const std::string& name) : name_(name) {
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+
+    if (auto j = TREES.find(name); j == TREES.end()) {
+        TREES[name] = this;
         return;
     }
 
@@ -135,38 +129,32 @@ TreeFactory::TreeFactory(const std::string& name) : name_(name) {
 
 
 TreeFactory::~TreeFactory() {
-    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
-    m->erase(name_);
+    TREES.erase(name_);
 }
 
 
-Tree* TreeFactory::build(const std::string& name, const repres::Representation& r) {
-    util::call_once(once, init);
-    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
+Tree* TreeFactory::build(const std::string& name, const Grid& r) {
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
-    Log::debug() << "TreeFactory: looking for '" << name << "'" << std::endl;
-
-    auto j = m->find(name);
-    if (j == m->end()) {
-        list(Log::error() << "TreeFactory: unknown '" << name << "', choices are: ");
-        throw exception::SeriousBug("TreeFactory: unknown '" + name + "'");
+    if (auto j = TREES.find(name); j != TREES.end()) {
+        return j->second->make(r);
     }
 
-    return j->second->make(r);
+    list(Log::error() << "TreeFactory: unknown '" << name << "', choices are: ");
+    throw exception::SeriousBug("TreeFactory: unknown '" + name + "'");
 }
 
 
 void TreeFactory::list(std::ostream& out) {
-    util::call_once(once, init);
-    util::lock_guard<util::recursive_mutex> lock(*local_mutex);
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
-    const char* sep = "";
-    for (const auto& j : *m) {
+    const auto* sep = "";
+    for (const auto& j : TREES) {
         out << sep << j.first;
         sep = ", ";
     }
 }
-
 
 }  // namespace eckit::geo::search

@@ -15,8 +15,8 @@
 #include <string>
 #include <vector>
 
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util.h"
 
 
@@ -26,7 +26,7 @@ namespace eckit::geo::util {
 const std::vector<double>& gaussian_quadrature_weights(size_t N) {
     ASSERT(N > 0);
 
-    using cache_t = CacheT<size_t, std::vector<double>>;
+    using cache_t = cache::MemoryCacheT<size_t, std::vector<double>>;
     const cache_t::key_type key{N};
 
     static cache_t cache;

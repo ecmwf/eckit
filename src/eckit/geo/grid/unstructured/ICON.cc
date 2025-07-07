@@ -18,11 +18,11 @@
 
 #include "eckit/codec/codec.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
@@ -46,7 +46,7 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
-    static CacheT<PathName, ICON::ICONRecord> cache;
+    static cache::MemoryCacheT<PathName, ICON::ICONRecord> cache;
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/icon");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");

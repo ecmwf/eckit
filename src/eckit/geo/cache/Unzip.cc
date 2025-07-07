@@ -102,10 +102,9 @@ void Unzip::to_path(const PathName& zip, const PathName& path, const std::string
 
 
 PathName Unzip::to_cached_path(const PathName& zip, const std::string& what, const std::string& prefix,
-                               const std::string& extension) const {
-    const auto key = MD5{zip / what}.digest();
-    const auto path =
-        cache_root() / (zip.baseName() + ".dir") / (prefix + (prefix.empty() ? "" : "-") + key + extension);
+                               const std::string& suffix) const {
+    const auto key  = MD5{zip / what}.digest();
+    const auto path = cache_root() / (zip.baseName() + ".dir") / (prefix + (prefix.empty() ? "" : "-") + key + suffix);
 
     if (!path.exists()) {
         to_path(zip, path, what);

@@ -16,8 +16,8 @@
 #include <vector>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/util.h"
 #include "eckit/utils/StringTools.h"
@@ -32,6 +32,8 @@ const std::string URL = "https://www.ecmwf.int/robots.txt";
 
 
 CASE("eckit::geo::util") {
+    using Cache = cache::MemoryCache;
+
     struct test_t {
         size_t N;
         bool increasing;

@@ -14,8 +14,8 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/unstructured/FESOM.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -31,6 +31,8 @@ static const size_t SHAPE_N    = 3140;
 
 CASE("caching") {
     if (LibEcKitGeo::caching()) {
+        using Cache = cache::MemoryCache;
+
         SECTION("Grid::build_from_uid") {
             spec::Custom spec({{"uid", UID_N}});
 

@@ -14,14 +14,14 @@
 
 #include <string>
 
-#include "eckit/geo/cache/CacheRoot.h"
+#include "eckit/geo/cache/DiskCache.h"
 #include "eckit/log/Bytes.h"
 
 
 namespace eckit::geo::cache {
 
 
-class Download final : public CacheRoot {
+class Download final : public DiskCache {
 public:
 
     // -- Types
@@ -35,7 +35,7 @@ public:
 
     // -- Constructors
 
-    explicit Download(const PathName& root = ".", bool html = false) : CacheRoot(root), html_(html) {}
+    explicit Download(const PathName& root = ".", bool html = false) : DiskCache(root), html_(html) {}
 
     // -- Methods
 

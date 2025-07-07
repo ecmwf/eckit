@@ -3,8 +3,6 @@ list(APPEND eckit_geo_srcs
     Area.cc
     Area.h
     Arrangement.h
-    Cache.cc
-    Cache.h
     Container.h
     Exceptions.cc
     Exceptions.h
@@ -56,10 +54,12 @@ list(APPEND eckit_geo_srcs
     area/Polygon.h
     area/library/GeoJSON.cc
     area/library/GeoJSON.h
-    cache/CacheRoot.cc
-    cache/CacheRoot.h
+    cache/DiskCache.cc
+    cache/DiskCache.h
     cache/Download.cc
     cache/Download.h
+    cache/MemoryCache.cc
+    cache/MemoryCache.h
     cache/Unzip.cc
     cache/Unzip.h
     container/PointsContainer.cc

@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/cache/CacheRoot.h"
+#include "eckit/geo/cache/DiskCache.h"
 
 #include "eckit/geo/util/mutex.h"
 
@@ -18,7 +18,7 @@
 namespace eckit::geo::cache {
 
 
-void CacheRoot::rmdir(const PathName& p) const {
+void DiskCache::rmdir(const PathName& p) const {
     // control concurrent access
     static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};

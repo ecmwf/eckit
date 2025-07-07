@@ -12,8 +12,8 @@
 
 #include <memory>
 
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/ORCA.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -28,6 +28,8 @@ static const std::vector<long> SHAPE{182, 149};
 
 CASE("caching") {
     if (LibEcKitGeo::caching()) {
+        using Cache = cache::MemoryCache;
+
         SECTION("Grid::build_from_uid") {
             spec::Custom spec({{"uid", UID}});
 

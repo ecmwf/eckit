@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/Cache.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util.h"
 
 
@@ -18,7 +18,7 @@ namespace eckit::geo::util {
 
 
 const pl_type& reduced_octahedral_pl(size_t N) {
-    static CacheT<size_t, pl_type> cache;
+    static cache::MemoryCacheT<size_t, pl_type> cache;
     if (cache.contains(N)) {
         return cache[N];
     }

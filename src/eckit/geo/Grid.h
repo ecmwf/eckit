@@ -80,6 +80,8 @@ public:
         Point operator*() const { return get()->operator*(); }
 
         size_t index() const { return get()->index(); }
+
+        [[nodiscard]] spec::Custom* spec() const { return get()->spec(); }
     };
 
     using iterator = Iterator;

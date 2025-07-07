@@ -49,6 +49,18 @@ protected:
     Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
         Range(n, a, b, eps), values_(values), periodic_(periodic) {}
 
+    Regular(const Regular&) = default;
+    Regular(Regular&&)      = default;
+
+    // -- Destructor
+
+    ~Regular() override = default;
+
+    // -- Operators
+
+    Regular& operator=(Regular&&)      = default;
+    Regular& operator=(const Regular&) = default;
+
     // -- Methods
 
     static Fraction adjust(const Fraction& target, const Fraction& inc, bool up);

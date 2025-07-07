@@ -138,8 +138,8 @@ auto FamObject::swap(const fam::size_t offset, const T value) const -> T {  // N
 }
 
 template <typename T>
-auto FamObject::compareSwap(const fam::size_t offset, const T oldValue, const T newValue) const -> T {
-    return session_->compareSwap<T>(*object_, offset, oldValue, newValue);
+auto FamObject::compareSwap(const fam::size_t offset, const T old_value, const T new_value) const -> T {
+    return session_->compareSwap<T>(*object_, offset, old_value, new_value);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

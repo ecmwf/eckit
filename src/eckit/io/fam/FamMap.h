@@ -87,7 +87,7 @@ public:  // methods
 
     auto empty() const -> bool;
 
-    auto max_size() const noexcept -> size_type { return capacity; }
+    auto maxSize() const noexcept -> size_type { return capacity; }
 
     // iterators
 

@@ -52,7 +52,7 @@ public:  // methods
 
     void remove(const FamConfig& config);
 
-    void remove(const std::string& sessionName);
+    void remove(const std::string& session_name);
 
     void clear();
 

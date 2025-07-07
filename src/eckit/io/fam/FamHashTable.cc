@@ -28,10 +28,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamHashTable::FamHashTable(const FamRegionName& regionName, const std::string& tableName) :
-    region_{regionName.lookup()},
-    begin_{initSentinel(tableName + "-hash-begin", sizeof(FamDescriptor))},
-    count_{initSentinel(tableName + "-hash-count", sizeof(size_type))} {}
+FamHashTable::FamHashTable(const FamRegionName& region_name, const std::string& table_name) :
+    region_{region_name.lookup()},
+    begin_{initSentinel(table_name + "-hash-begin", sizeof(FamDescriptor))},
+    count_{initSentinel(table_name + "-hash-count", sizeof(size_type))} {}
 
 auto FamHashTable::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject {
     try {

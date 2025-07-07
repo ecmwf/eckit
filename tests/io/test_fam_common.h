@@ -17,6 +17,7 @@
 /// @author Metin Cakircali
 /// @date   Jun 2024
 
+#include <bits/types/struct_timeval.h>
 #include <sys/time.h>
 
 #include <cstdlib>
@@ -37,7 +38,7 @@ using namespace std::string_literals;
 namespace fam {
 
 // This returns a random number as string.
-inline auto randomNumber() -> std::string {
+inline auto random_number() -> std::string {
     struct timeval tv;
     ::gettimeofday(&tv, nullptr);
     // ::getpid() ?
@@ -45,7 +46,7 @@ inline auto randomNumber() -> std::string {
     return std::to_string(::random());
 }
 
-const auto testEndpoint = "172.25.0.2:8880"s;
+const auto test_endpoint = "127.0.0.1:8880"s;
 
 class TestFam {
 public:
@@ -59,7 +60,7 @@ public:
     }
 
     static auto makeRandomText(const std::string& text = "") -> std::string {
-        return "ECKIT_TEST_FAM_" + text + '_' + randomNumber();
+        return "ECKIT_TEST_FAM_" + text + '_' + random_number();
     }
 
     auto makeRandomRegion(const eckit::fam::size_t size) -> FamRegion {
@@ -71,7 +72,7 @@ public:
 
 private:
 
-    FamRegionName name_{testEndpoint, {}};
+    FamRegionName name_{test_endpoint, {}};
 
     std::vector<FamRegion> regions_;
 };

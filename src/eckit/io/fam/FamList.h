@@ -43,17 +43,17 @@ public:  // types
     using const_iterator = FamListConstIterator;
 
     struct Descriptor {
-        fam::index_t region;  // region ID
-        fam::index_t head;    // offset of head sentinel
-        fam::index_t tail;    // offset of tail sentinel
-        fam::index_t size;    // offset of size sentinel
+        fam::index_t region{0};  // region ID
+        fam::index_t head{0};    // offset of head sentinel
+        fam::index_t tail{0};    // offset of tail sentinel
+        fam::index_t size{0};    // offset of size sentinel
     };
 
 public:  // methods
 
     FamList(const FamRegion& region, const Descriptor& desc);
 
-    FamList(const FamRegion& region, const std::string& listName);
+    FamList(const FamRegion& region, const std::string& list_name);
 
     FamList(const FamRegionName& name);
 
@@ -87,13 +87,13 @@ public:  // methods
 
     // void clear() noexcept;
 
-    void push_back(const void* data, size_type length);
+    void pushBack(const void* data, size_type length);
 
-    void push_front(const void* data, size_type length);
+    void pushFront(const void* data, size_type length);
 
-    void pop_front();
+    void popFront();
 
-    void pop_back();
+    void popBack();
 
 private:  // methods
 

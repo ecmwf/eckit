@@ -43,27 +43,27 @@ namespace {
 
 fam::TestFam tester;
 
-constexpr const auto numThreads = 8;
-constexpr const auto listSize   = 200;
-const auto listName             = fam::TestFam::makeRandomText("LIST");
-const auto listData             = fam::TestFam::makeRandomText("DATA");
+constexpr const auto num_threads = 8;
+constexpr const auto list_size   = 200;
+const auto list_name             = fam::TestFam::makeRandomText("LIST");
+const auto list_data             = fam::TestFam::makeRandomText("DATA");
 
-std::vector<std::string> testData;
-std::mutex testMutex;
+std::vector<std::string> test_data;
+std::mutex test_mutex;
 
 auto makeTestData(const int number) -> std::string_view {
     std::ostringstream oss;
-    oss << "tid:" << std::this_thread::get_id() << " #" << number << '-' << listData;
+    oss << "tid:" << std::this_thread::get_id() << " #" << number << '-' << list_data;
     // add to the control list
-    const std::lock_guard<std::mutex> lock(testMutex);
-    return testData.emplace_back(oss.str());
+    const std::lock_guard<std::mutex> lock(test_mutex);
+    return test_data.emplace_back(oss.str());
 }
 
 void populateList() {
-    FamList lst(tester.lastRegion(), listName);
-    for (auto i = 0; i < listSize; i++) {
+    FamList lst(tester.lastRegion(), list_name);
+    for (auto i = 0; i < list_size; i++) {
         auto buffer = makeTestData(i);
-        EXPECT_NO_THROW(lst.push_back(buffer.data(), buffer.size()));
+        EXPECT_NO_THROW(lst.pushBack(buffer.data(), buffer.size()));
     }
 }
 
@@ -72,9 +72,9 @@ void populateList() {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamList: create an empty list and validate size, empty, front, back") {
-    auto listRegion = tester.makeRandomRegion(1024);
+    auto list_region = tester.makeRandomRegion(1024);
 
-    const auto lst = FamList(listRegion, listName);
+    const auto lst = FamList(list_region, list_name);
 
     EXPECT(lst.empty());
 
@@ -93,12 +93,12 @@ CASE("FamList: create an empty list and validate size, empty, front, back") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("FamList: populate with " + std::to_string(listSize) + " items by " + std::to_string(numThreads) + " threads") {
+CASE("FamList: populate with " + std::to_string(list_size) + " items by " + std::to_string(num_threads) + " threads") {
     std::vector<std::thread> threads;
 
-    threads.reserve(numThreads);
+    threads.reserve(num_threads);
 
-    for (auto i = 0; i < numThreads; i++) {
+    for (auto i = 0; i < num_threads; i++) {
         threads.emplace_back(populateList);
     }
 
@@ -110,14 +110,14 @@ CASE("FamList: populate with " + std::to_string(listSize) + " items by " + std::
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamList: validate size and values after creation") {
-    const auto lst = FamList(tester.lastRegion(), listName);
+    const auto lst = FamList(tester.lastRegion(), list_name);
 
     EXPECT_NOT(lst.empty());
 
-    EXPECT(lst.size() == numThreads * listSize);
+    EXPECT(lst.size() == num_threads * list_size);
 
     for (const auto& buffer : lst) {
-        EXPECT(std::find(testData.cbegin(), testData.cend(), buffer.view()) != testData.cend());
+        EXPECT(std::find(test_data.cbegin(), test_data.cend(), buffer.view()) != test_data.cend());
     }
 }
 

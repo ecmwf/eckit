@@ -19,20 +19,20 @@
 
 #pragma once
 
-#include "eckit/io/fam/FamObject.h"
-
+#include <cstddef>
 #include <cstdint>  // uint8_t
+
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// @important: DO NOT add any virtual functions in this class.
 struct FamNode {
     std::uint8_t version{1};  // 1 byte
     FamDescriptor next;
-
-    //------------------------------------------------------------------------------------------------------------------
-    // HELPERS (DO NOT add any virtual function here)
 
     static auto getNext(const FamObject& object) -> FamDescriptor {
         return object.get<FamDescriptor>(offsetof(FamNode, next));

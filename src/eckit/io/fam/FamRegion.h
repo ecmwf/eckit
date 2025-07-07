@@ -60,17 +60,17 @@ public:  // methods
 
     auto proxyObject(fam::index_t offset) const -> FamObject;
 
-    auto lookupObject(const std::string& objectName) const -> FamObject;
+    auto lookupObject(const std::string& object_name) const -> FamObject;
 
-    auto allocateObject(fam::size_t objectSize, fam::perm_t objectPerm, const std::string& objectName = "",
+    auto allocateObject(fam::size_t object_size, fam::perm_t object_perm, const std::string& object_name = "",
                         bool overwrite = false) const -> FamObject;
 
-    auto allocateObject(fam::size_t objectSize, const std::string& objectName = "", bool overwrite = false) const
+    auto allocateObject(fam::size_t object_size, const std::string& object_name = "", bool overwrite = false) const
         -> FamObject {
-        return allocateObject(objectSize, permissions(), objectName, overwrite);
+        return allocateObject(object_size, permissions(), object_name, overwrite);
     }
 
-    void deallocateObject(const std::string& objectName) const;
+    void deallocateObject(const std::string& object_name) const;
 
 private:  // methods
 

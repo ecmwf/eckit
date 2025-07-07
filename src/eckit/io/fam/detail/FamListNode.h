@@ -19,19 +19,22 @@
 
 #pragma once
 
-#include "FamNode.h"
+#include <cstddef>
+#include <cstdint>
+
 #include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/detail/FamNode.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// @important: DO NOT add any virtual functions in this class.
 struct FamListNode : public FamNode {
     FamDescriptor prev;
     fam::size_t length{0};
-
-    //------------------------------------------------------------------------------------------------------------------
-    // HELPERS (DO NOT add any virtual function here)
 
     static auto getPrev(const FamObject& object) -> FamDescriptor {
         return object.get<FamDescriptor>(offsetof(FamListNode, prev));

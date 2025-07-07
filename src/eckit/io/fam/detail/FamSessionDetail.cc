@@ -15,6 +15,8 @@
 
 #include "FamSessionDetail.h"
 
+#include <sys/types.h>  // mode_t
+
 #include <algorithm>
 #include <cctype>  // isspace isprint
 #include <cstdint>
@@ -45,9 +47,9 @@ namespace eckit {
 namespace {
 
 template <typename Func, typename... Args>
-auto invokeFam(openfam::fam& fam, Func&& fnPtr, Args&&... args) {
+auto invokeFam(openfam::fam& fam, Func&& fn_ptr, Args&&... args) {
     try {
-        return (fam.*std::forward<Func>(fnPtr))(std::forward<Args>(args)...);
+        return (fam.*std::forward<Func>(fn_ptr))(std::forward<Args>(args)...);
     }
     catch (openfam::Fam_Exception& e) {
         const auto code = e.fam_error();
@@ -73,9 +75,9 @@ auto invokeFam(openfam::fam& fam, Func&& fnPtr, Args&&... args) {
             throw NotFound(e.fam_error_msg());
         }
         if (code == openfam::Fam_Error::FAM_ERR_RPC) {
-            std::string optionName       = "CIS_SERVER";
-            const std::string serverName = static_cast<const char*>(fam.fam_get_option(optionName.data()));
-            throw RemoteException(e.fam_error_msg(), serverName);
+            std::string option_name       = "CIS_SERVER";
+            const std::string server_name = static_cast<const char*>(fam.fam_get_option(option_name.data()));
+            throw RemoteException(e.fam_error_msg(), server_name);
         }
         throw SeriousBug("Code=" + std::to_string(code) + ' ' + e.fam_error_msg());
     }
@@ -152,21 +154,21 @@ auto FamSessionDetail::config() -> FamConfig {
     return {{host, std::stoi(port)}, name_};
 }
 
-auto FamSessionDetail::lookupRegion(const std::string& regionName) -> FamRegion {
-    ASSERT(isValidName(regionName));
+auto FamSessionDetail::lookupRegion(const std::string& region_name) -> FamRegion {
+    ASSERT(isValidName(region_name));
 
-    auto* region = invokeFam(fam_, &openfam::fam::fam_lookup_region, regionName.c_str());
+    auto* region = invokeFam(fam_, &openfam::fam::fam_lookup_region, region_name.c_str());
 
     return {*this, region};
 }
 
-auto FamSessionDetail::createRegion(const fam::size_t regionSize, const fam::perm_t regionPerm,
-                                    const std::string& regionName) -> FamRegion {
-    ASSERT(regionSize > 0);
-    ASSERT(isValidName(regionName));
+auto FamSessionDetail::createRegion(const fam::size_t region_size, const fam::perm_t region_perm,
+                                    const std::string& region_name) -> FamRegion {
+    ASSERT(region_size > 0);
+    ASSERT(isValidName(region_name));
 
     auto* region =
-        invokeFam(fam_, &openfam::fam::fam_create_region, regionName.c_str(), regionSize, regionPerm, nullptr);
+        invokeFam(fam_, &openfam::fam::fam_create_region, region_name.c_str(), region_size, region_perm, nullptr);
 
     return {*this, region};
 }
@@ -181,26 +183,26 @@ void FamSessionDetail::destroyRegion(FamRegionDescriptor& region) {
     invokeFam(fam_, &openfam::fam::fam_destroy_region, &region);
 }
 
-void FamSessionDetail::destroyRegion(const std::string& regionName) {
-    lookupRegion(regionName).destroy();
+void FamSessionDetail::destroyRegion(const std::string& region_name) {
+    lookupRegion(region_name).destroy();
 }
 
-auto FamSessionDetail::ensureCreateRegion(const fam::size_t regionSize, const fam::perm_t regionPerm,
-                                          const std::string& regionName) -> FamRegion {
+auto FamSessionDetail::ensureCreateRegion(const fam::size_t region_size, const fam::perm_t region_perm,
+                                          const std::string& region_name) -> FamRegion {
     try {
-        return createRegion(regionSize, regionPerm, regionName);
+        return createRegion(region_size, region_perm, region_name);
     }
     catch (const AlreadyExists& e) {
-        destroyRegion(regionName);
-        return createRegion(regionSize, regionPerm, regionName);
+        destroyRegion(region_name);
+        return createRegion(region_size, region_perm, region_name);
     }
 }
 
 auto FamSessionDetail::stat(FamRegionDescriptor& region) -> FamProperty {
     Fam_Stat info;
 
-    auto fnPtr = static_cast<void (openfam::fam::*)(FamRegionDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
-    invokeFam(fam_, fnPtr, &region, &info);
+    auto fn_ptr = static_cast<void (openfam::fam::*)(FamRegionDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
+    invokeFam(fam_, fn_ptr, &region, &info);
 
     return {info.size, info.perm, info.name, info.uid, info.gid};
 }
@@ -212,24 +214,24 @@ auto FamSessionDetail::proxyObject(const std::uint64_t region, const std::uint64
     return {*this, region, offset};
 }
 
-auto FamSessionDetail::lookupObject(const std::string& regionName, const std::string& objectName) -> FamObject {
-    ASSERT(isValidName(regionName));
-    ASSERT(isValidName(objectName));
+auto FamSessionDetail::lookupObject(const std::string& region_name, const std::string& object_name) -> FamObject {
+    ASSERT(isValidName(region_name));
+    ASSERT(isValidName(object_name));
 
-    auto* object = invokeFam(fam_, &openfam::fam::fam_lookup, objectName.c_str(), regionName.c_str());
+    auto* object = invokeFam(fam_, &openfam::fam::fam_lookup, object_name.c_str(), region_name.c_str());
 
     return {*this, object};
 }
 
-auto FamSessionDetail::allocateObject(FamRegionDescriptor& region, const fam::size_t objectSize,
-                                      const fam::perm_t objectPerm, const std::string& objectName) -> FamObject {
-    ASSERT(objectSize > 0);
+auto FamSessionDetail::allocateObject(FamRegionDescriptor& region, const fam::size_t object_size,
+                                      const fam::perm_t object_perm, const std::string& object_name) -> FamObject {
+    ASSERT(object_size > 0);
 
     auto allocate =
         static_cast<FamObjectDescriptor* (openfam::fam::*)(const char*, uint64_t, mode_t, FamRegionDescriptor*)>(
             &openfam::fam::fam_allocate);
 
-    auto* object = invokeFam(fam_, allocate, objectName.c_str(), objectSize, objectPerm, &region);
+    auto* object = invokeFam(fam_, allocate, object_name.c_str(), object_size, object_perm, &region);
 
     return {*this, object};
 }
@@ -238,26 +240,27 @@ void FamSessionDetail::deallocateObject(FamObjectDescriptor& object) {
     invokeFam(fam_, &openfam::fam::fam_deallocate, &object);
 }
 
-void FamSessionDetail::deallocateObject(const std::string& regionName, const std::string& objectName) {
-    lookupObject(regionName, objectName).deallocate();
+void FamSessionDetail::deallocateObject(const std::string& region_name, const std::string& object_name) {
+    lookupObject(region_name, object_name).deallocate();
 }
 
-auto FamSessionDetail::ensureAllocateObject(FamRegionDescriptor& region, const fam::size_t objectSize,
-                                            const fam::perm_t objectPerm, const std::string& objectName) -> FamObject {
+auto FamSessionDetail::ensureAllocateObject(FamRegionDescriptor& region, const fam::size_t object_size,
+                                            const fam::perm_t object_perm, const std::string& object_name)
+    -> FamObject {
     try {
-        return allocateObject(region, objectSize, objectPerm, objectName);
+        return allocateObject(region, object_size, object_perm, object_name);
     }
     catch (const AlreadyExists& e) {
-        deallocateObject(region.get_name(), objectName);
-        return allocateObject(region, objectSize, objectPerm, objectName);
+        deallocateObject(region.get_name(), object_name);
+        return allocateObject(region, object_size, object_perm, object_name);
     }
 }
 
 auto FamSessionDetail::stat(FamObjectDescriptor& object) -> FamProperty {
     Fam_Stat info;
 
-    auto fnPtr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
-    invokeFam(fam_, fnPtr, &object, &info);
+    auto fn_ptr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
+    invokeFam(fam_, fn_ptr, &object, &info);
 
     return {info.size, info.perm, info.name, info.uid, info.gid};
 }
@@ -347,11 +350,11 @@ auto FamSessionDetail::swap(FamObjectDescriptor& object, const fam::size_t offse
 }
 
 template <typename T>
-auto FamSessionDetail::compareSwap(FamObjectDescriptor& object, const fam::size_t offset, const T oldValue,
-                                   const T newValue) -> T {
+auto FamSessionDetail::compareSwap(FamObjectDescriptor& object, const fam::size_t offset, const T old_value,
+                                   const T new_value) -> T {
     auto fptr =
         static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T, T)>(&openfam::fam::fam_compare_swap);
-    return invokeFam(fam_, fptr, &object, offset, oldValue, newValue);
+    return invokeFam(fam_, fptr, &object, offset, old_value, new_value);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

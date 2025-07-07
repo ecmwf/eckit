@@ -57,9 +57,9 @@ public:  // methods
     //------------------------------------------------------------------------------------------------------------------
     // REGION
 
-    auto lookupRegion(const std::string& regionName) -> FamRegion;
+    auto lookupRegion(const std::string& region_name) -> FamRegion;
 
-    auto createRegion(fam::size_t regionSize, fam::perm_t regionPerm, const std::string& regionName) -> FamRegion;
+    auto createRegion(fam::size_t region_size, fam::perm_t region_perm, const std::string& region_name) -> FamRegion;
 
     auto createRegion(const FamProperty& property) -> FamRegion {
         return createRegion(property.size, property.perm, property.name);
@@ -69,9 +69,10 @@ public:  // methods
 
     void destroyRegion(FamRegionDescriptor& region);
 
-    void destroyRegion(const std::string& regionName);
+    void destroyRegion(const std::string& region_name);
 
-    auto ensureCreateRegion(fam::size_t regionSize, fam::perm_t regionPerm, const std::string& regionName) -> FamRegion;
+    auto ensureCreateRegion(fam::size_t region_size, fam::perm_t region_perm, const std::string& region_name)
+        -> FamRegion;
 
     auto stat(FamRegionDescriptor& region) -> FamProperty;
 
@@ -80,10 +81,10 @@ public:  // methods
 
     auto proxyObject(std::uint64_t region, std::uint64_t offset) -> FamObject;
 
-    auto lookupObject(const std::string& regionName, const std::string& objectName) -> FamObject;
+    auto lookupObject(const std::string& region_name, const std::string& object_name) -> FamObject;
 
-    auto allocateObject(FamRegionDescriptor& region, fam::size_t objectSize, fam::perm_t objectPerm,
-                        const std::string& objectName = "") -> FamObject;
+    auto allocateObject(FamRegionDescriptor& region, fam::size_t object_size, fam::perm_t object_perm,
+                        const std::string& object_name = "") -> FamObject;
 
     auto allocateObject(FamRegionDescriptor& region, const FamProperty& property) -> FamObject {
         return allocateObject(region, property.size, property.perm, property.name);
@@ -91,11 +92,11 @@ public:  // methods
 
     void deallocateObject(FamObjectDescriptor& object);
 
-    void deallocateObject(const std::string& regionName, const std::string& objectName);
+    void deallocateObject(const std::string& region_name, const std::string& object_name);
 
     /// IMPORTANT: This method will deallocate any existing object with the same name
-    auto ensureAllocateObject(FamRegionDescriptor& region, fam::size_t objectSize, fam::perm_t objectPerm,
-                              const std::string& objectName) -> FamObject;
+    auto ensureAllocateObject(FamRegionDescriptor& region, fam::size_t object_size, fam::perm_t object_perm,
+                              const std::string& object_name) -> FamObject;
 
     auto stat(FamObjectDescriptor& object) -> FamProperty;
 
@@ -122,7 +123,7 @@ public:  // methods
     auto swap(FamObjectDescriptor& object, fam::size_t offset, T value) -> T;
 
     template <typename T>
-    auto compareSwap(FamObjectDescriptor& object, fam::size_t offset, T oldValue, T newValue) -> T;
+    auto compareSwap(FamObjectDescriptor& object, fam::size_t offset, T old_value, T new_value) -> T;
 
     //------------------------------------------------------------------------------------------------------------------
 

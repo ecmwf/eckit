@@ -29,19 +29,19 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamMap::FamMap(const FamRegion& region, const std::string& tableName) :
+FamMap::FamMap(const FamRegion& region, const std::string& table_name) :
     region_{region},
-    root_{initSentinel(tableName + "-map-root", sizeof(FamMapNode))},
-    table_{initSentinel(tableName + "-map-table", capacity * sizeof(FamMapNode))},
-    count_{initSentinel(tableName + "-map-count", sizeof(size_type))} {}
+    root_{initSentinel(table_name + "-map-root", sizeof(FamMapNode))},
+    table_{initSentinel(table_name + "-map-table", capacity * sizeof(FamMapNode))},
+    count_{initSentinel(table_name + "-map-count", sizeof(size_type))} {}
 
-auto FamMap::initSentinel(const std::string& objectName, const size_type objectSize) const -> FamObject {
+auto FamMap::initSentinel(const std::string& object_name, const size_type object_size) const -> FamObject {
     try {
-        return region_.allocateObject(objectSize, objectName);
+        return region_.allocateObject(object_size, object_name);
     }
     catch (const AlreadyExists&) {
-        auto object = region_.lookupObject(objectName);
-        ASSERT(object.size() == objectSize);
+        auto object = region_.lookupObject(object_name);
+        ASSERT(object.size() == object_size);
         return object;
     }
 }
@@ -68,23 +68,23 @@ auto FamMap::cend() const -> const_iterator {
 //----------------------------------------------------------------------------------------------------------------------
 // lookup
 
-auto FamMap::at(const key_type& key) -> reference {
+auto FamMap::at(const key_type& /* key */) -> reference {
     NOTIMP;
 }
 
-auto FamMap::at(const key_type& key) const -> const_reference {
+auto FamMap::at(const key_type& /* key */) const -> const_reference {
     NOTIMP;
 }
 
-auto FamMap::find(const key_type& key) -> iterator {
+auto FamMap::find(const key_type& /* key */) -> iterator {
     NOTIMP;
 }
 
-auto FamMap::find(const key_type& key) const -> const_iterator {
+auto FamMap::find(const key_type& /* key */) const -> const_iterator {
     NOTIMP;
 }
 
-auto FamMap::contains(const key_type& key) const -> bool {
+auto FamMap::contains(const key_type& /* key */) const -> bool {
     NOTIMP;
 }
 
@@ -99,11 +99,11 @@ auto FamMap::contains(const key_type& key) const -> bool {
 //----------------------------------------------------------------------------------------------------------------------
 // modifiers
 
-auto FamMap::insert(const value_type& value) -> iterator {
+auto FamMap::insert(const value_type& /* value */) -> iterator {
     NOTIMP;
 }
 
-auto FamMap::insert(value_type&& value) -> iterator {
+auto FamMap::insert(value_type&& /* value */) -> iterator {
     NOTIMP;
 }
 

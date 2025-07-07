@@ -107,7 +107,7 @@ public:  // methods
     auto swap(fam::size_t offset, T value) const -> T;
 
     template <typename T>
-    auto compareSwap(fam::size_t offset, T oldValue, T newValue) const -> T;
+    auto compareSwap(fam::size_t offset, T old_value, T new_value) const -> T;
 
 private:  // methods
 

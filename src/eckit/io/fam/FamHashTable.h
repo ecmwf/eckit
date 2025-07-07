@@ -41,9 +41,9 @@ class FamRegionName;
 // FAM HASHER
 
 /// @brief Hash functor. Override this to make a specialized hasher
-template <typename key_type>
+template <typename KeyType>
 struct FamHash {
-    auto operator()(const key_type& key) const noexcept -> std::size_t {
+    auto operator()(const KeyType& key) const noexcept -> std::size_t {
         return std::hash<std::string>{}(key.asString());
         /// @note example for a 3-level key
         // const auto l1 = std::hash<std::string> {}(key.firstLevel);
@@ -61,13 +61,13 @@ struct FamHash {
 //     unsigned int index = key % table->size;
 
 class FamHashTable {
-    static constexpr auto keySize = 32;  // template?
+    static constexpr auto key_size = 32;  // template?
 
     static constexpr auto capacity = 1024;
 
 public:  // types
 
-    using key_type  = FixedString<keySize>;
+    using key_type  = FixedString<key_size>;
     using hash_type = FamHash<key_type>;
     /// @todo char array ?
     using value_type = char;
@@ -93,7 +93,7 @@ public:  // types
 
 public:  // methods
 
-    FamHashTable(const FamRegionName& regionName, const std::string& tableName);
+    FamHashTable(const FamRegionName& region_name, const std::string& table_name);
 
 private:  // methods
 

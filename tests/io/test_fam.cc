@@ -54,38 +54,38 @@ CASE("FamPath: ctor and uuid generation") {
     }
 
     {
-        const auto uri = URI("fam://" + fam::testEndpoint + "/regionName/objectName");
+        const auto uri = URI("fam://" + fam::test_endpoint + "/regionName/objectName");
         EXPECT_NO_THROW(FamPath{uri});
     }
 
     {
-        const auto uri = URI("fam", fam::testEndpoint, "/regionName/objectName");
+        const auto uri = URI("fam", fam::test_endpoint, "/regionName/objectName");
         EXPECT_EQUAL(uri.scheme(), FamPath::scheme);
-        EXPECT_EQUAL(uri.hostport(), fam::testEndpoint);
+        EXPECT_EQUAL(uri.hostport(), fam::test_endpoint);
         EXPECT_EQUAL(uri.name(), "/regionName/objectName");
         EXPECT_NO_THROW(const auto path = FamPath(uri));
     }
 
     {
-        const auto uri = URI("fam://" + fam::testEndpoint + "/regionName/objectName");
+        const auto uri = URI("fam://" + fam::test_endpoint + "/regionName/objectName");
 
         EXPECT_EQUAL(uri.scheme(), FamPath::scheme);
-        EXPECT_EQUAL(uri.hostport(), fam::testEndpoint);
+        EXPECT_EQUAL(uri.hostport(), fam::test_endpoint);
         EXPECT_EQUAL(uri.name(), "/regionName/objectName");
     }
 }
 
 CASE("FamRegionName: ctor, lookup, and allocate") {
-    const auto regionName = fam::TestFam::makeRandomText("REGION");
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
 
-    const FamRegionName region(fam::testEndpoint, regionName);
+    const FamRegionName region(fam::test_endpoint, region_name);
 
     EXPECT_EQUAL(region.uri().scheme(), FamPath::scheme);
-    EXPECT_EQUAL(region.uri().hostport(), fam::testEndpoint);
-    EXPECT_EQUAL(region.uri().name(), '/' + regionName);
-    EXPECT_EQUAL(region.uri(), URI("fam://" + fam::testEndpoint + '/' + regionName));
-    EXPECT_EQUAL(region.asString(), "fam://" + fam::testEndpoint + '/' + regionName);
-    EXPECT_EQUAL(region.path().regionName, regionName);
+    EXPECT_EQUAL(region.uri().hostport(), fam::test_endpoint);
+    EXPECT_EQUAL(region.uri().name(), '/' + region_name);
+    EXPECT_EQUAL(region.uri(), URI("fam://" + fam::test_endpoint + '/' + region_name));
+    EXPECT_EQUAL(region.asString(), "fam://" + fam::test_endpoint + '/' + region_name);
+    EXPECT_EQUAL(region.path().regionName, region_name);
 
     EXPECT_THROWS_AS(region.lookup(), NotFound);
 
@@ -98,8 +98,8 @@ CASE("FamRegionName: ctor, lookup, and allocate") {
     EXPECT_NO_THROW(region.lookup());
 
     {
-        auto name = FamRegionName(fam::testEndpoint, "");
-        EXPECT_NO_THROW(name.withRegion(regionName).lookup().destroy());
+        auto name = FamRegionName(fam::test_endpoint, "");
+        EXPECT_NO_THROW(name.withRegion(region_name).lookup().destroy());
     }
 }
 
@@ -107,15 +107,15 @@ CASE("FamObjectName: ctor, lookup, and allocate") {
     FamPath path{fam::TestFam::makeRandomText("REGION"), fam::TestFam::makeRandomText("OBJECT")};
 
     // create region
-    EXPECT_NO_THROW(FamRegionName(fam::testEndpoint, "").withRegion(path.regionName).create(1024, 0640));
+    EXPECT_NO_THROW(FamRegionName(fam::test_endpoint, "").withRegion(path.regionName).create(1024, 0640));
 
-    const FamObjectName object(fam::testEndpoint, path);
+    const FamObjectName object(fam::test_endpoint, path);
 
     EXPECT_EQUAL(object.uri().scheme(), FamPath::scheme);
-    EXPECT_EQUAL(object.uri().hostport(), fam::testEndpoint);
+    EXPECT_EQUAL(object.uri().hostport(), fam::test_endpoint);
     EXPECT_EQUAL(object.uri().name(), path.asString());
-    EXPECT_EQUAL(object.uri(), URI("fam", fam::testEndpoint, path.asString()));
-    EXPECT_EQUAL(object.asString(), "fam://" + fam::testEndpoint + path.asString());
+    EXPECT_EQUAL(object.uri(), URI("fam", fam::test_endpoint, path.asString()));
+    EXPECT_EQUAL(object.asString(), "fam://" + fam::test_endpoint + path.asString());
     EXPECT_EQUAL(object.path(), path);
 
     EXPECT_THROWS_AS(object.lookup(), NotFound);
@@ -133,146 +133,146 @@ CASE("FamObjectName: ctor, lookup, and allocate") {
 
 CASE("FamRegion: lookup, create, validate properties, and destroy") {
 
-    const auto regionName = fam::TestFam::makeRandomText("REGION");
-    const auto regionSize = 1024;
-    const auto regionPerm = static_cast<eckit::fam::perm_t>(0640);
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    const auto region_size = 1024;
+    const auto region_perm = static_cast<eckit::fam::perm_t>(0640);
 
-    const FamRegionName name{fam::testEndpoint, regionName};
+    const FamRegionName name{fam::test_endpoint, region_name};
     {
         EXPECT_THROWS_AS(name.lookup(), NotFound);
-        EXPECT_NO_THROW(name.create(regionSize, regionPerm));
+        EXPECT_NO_THROW(name.create(region_size, region_perm));
         EXPECT_NO_THROW(name.lookup());
     }
 
     auto region = name.lookup();
 
-    EXPECT_EQUAL(region.size(), regionSize);
-    EXPECT_EQUAL(region.permissions(), regionPerm);
-    EXPECT_EQUAL(region.name(), regionName);
+    EXPECT_EQUAL(region.size(), region_size);
+    EXPECT_EQUAL(region.permissions(), region_perm);
+    EXPECT_EQUAL(region.name(), region_name);
 
-    const FamProperty prop{regionSize, regionPerm, regionName};
+    const FamProperty prop{region_size, region_perm, region_name};
     EXPECT_EQUAL(region.property(), prop);
 
     EXPECT_NO_THROW(region.destroy());
 
-    EXPECT_THROWS_AS(FamRegionName(fam::testEndpoint, regionName).lookup(), NotFound);
+    EXPECT_THROWS_AS(FamRegionName(fam::test_endpoint, region_name).lookup(), NotFound);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamObject: lookup, create, and destroy") {
-    const auto regionName = fam::TestFam::makeRandomText("REGION");
-    const auto regionSize = 64;
-    const auto regionPerm = static_cast<eckit::fam::perm_t>(0640);
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    const auto region_size = 64;
+    const auto region_perm = static_cast<eckit::fam::perm_t>(0640);
 
-    const auto objectName = fam::TestFam::makeRandomText("OBJECT");
-    const auto objectSize = 24;
+    const auto object_name = fam::TestFam::makeRandomText("OBJECT");
+    const auto object_size = 24;
 
-    const auto path = '/' + regionName + '/' + objectName;
+    const auto path = '/' + region_name + '/' + object_name;
 
     {
-        auto region_name = FamRegionName(fam::testEndpoint, path);
+        auto name = FamRegionName(fam::test_endpoint, path);
 
-        EXPECT_NO_THROW(region_name.create(regionSize, regionPerm));
+        EXPECT_NO_THROW(name.create(region_size, region_perm));
 
         // object inherits permissions from region
-        EXPECT_NO_THROW(FamObjectName(fam::testEndpoint, path).allocate(objectSize));
+        EXPECT_NO_THROW(FamObjectName(fam::test_endpoint, path).allocate(object_size));
 
-        auto object = region_name.object(objectName).lookup();
+        auto object = name.object(object_name).lookup();
 
-        const FamProperty prop{objectSize, regionPerm, objectName};
+        const FamProperty prop{object_size, region_perm, object_name};
         EXPECT_EQUAL(object.property(), prop);
-        EXPECT_NO_THROW(region_name.lookup().deallocateObject(objectName));
+        EXPECT_NO_THROW(name.lookup().deallocateObject(object_name));
     }
 
 
     // empty region name
-    auto region_name = FamRegionName(fam::testEndpoint, "");
+    auto name = FamRegionName(fam::test_endpoint, "");
     // set region name and lookup
-    auto region = region_name.withRegion(regionName).lookup();
+    auto region = name.withRegion(region_name).lookup();
 
-    EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
+    EXPECT_THROWS_AS(region.lookupObject(object_name), NotFound);
 
     /// @note object permissions are broken in OpenFAM API
     region.setObjectLevelPermissions();
     const auto size = 12;
     // const auto objectPerm = static_cast<eckit::fam::perm_t>(0400);
-    EXPECT_NO_THROW(region.allocateObject(size, objectName));
-    EXPECT_NO_THROW(region.lookupObject(objectName));
+    EXPECT_NO_THROW(region.allocateObject(size, object_name));
+    EXPECT_NO_THROW(region.lookupObject(object_name));
 
     {
-        auto object = region.lookupObject(objectName);
+        auto object = region.lookupObject(object_name);
         EXPECT_EQUAL(object.size(), size);
-        EXPECT_EQUAL(object.permissions(), regionPerm);
-        EXPECT_EQUAL(object.name(), objectName);
+        EXPECT_EQUAL(object.permissions(), region_perm);
+        EXPECT_EQUAL(object.name(), object_name);
     }
 
     // overwrite: allocate with different size
-    EXPECT_NO_THROW(region.allocateObject(objectSize, objectName, true));
+    EXPECT_NO_THROW(region.allocateObject(object_size, object_name, true));
 
     {
-        auto object = region.lookupObject(objectName);
-        const FamProperty prop{objectSize, regionPerm, objectName};
+        auto object = region.lookupObject(object_name);
+        const FamProperty prop{object_size, region_perm, object_name};
         EXPECT_EQUAL(object.property(), prop);
 
         EXPECT_NO_THROW(object.deallocate());
     }
 
-    EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
+    EXPECT_THROWS_AS(region.lookupObject(object_name), NotFound);
 
     EXPECT_NO_THROW(region.destroy());
 
-    EXPECT_THROWS_AS(region_name.lookup(), NotFound);
+    EXPECT_THROWS_AS(name.lookup(), NotFound);
 }
 
 CASE("FamObject: large data small object") {
-    const auto regionName = fam::TestFam::makeRandomText("REGION");
-    const auto regionSize = 64;
-    const auto regionPerm = static_cast<eckit::fam::perm_t>(0640);
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    const auto region_size = 64;
+    const auto region_perm = static_cast<eckit::fam::perm_t>(0640);
 
-    const auto objectName = fam::TestFam::makeRandomText("OBJECT");
-    const auto objectSize = 32;
+    const auto object_name = fam::TestFam::makeRandomText("OBJECT");
+    const auto object_size = 32;
 
-    const FamPath path{regionName, objectName};
+    const FamPath path{region_name, object_name};
 
     {
-        auto region = FamRegionName(fam::testEndpoint, path).create(regionSize, regionPerm, true);
+        auto region = FamRegionName(fam::test_endpoint, path).create(region_size, region_perm, true);
 
         // object bigger than region
-        EXPECT_THROWS_AS(region.allocateObject(regionSize + 1, objectName), OutOfStorage);
-        EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
+        EXPECT_THROWS_AS(region.allocateObject(region_size + 1, object_name), OutOfStorage);
+        EXPECT_THROWS_AS(region.lookupObject(object_name), NotFound);
 
-        EXPECT(regionSize >= objectSize);
+        EXPECT(region_size >= object_size);
 
         // object fits
-        EXPECT_NO_THROW(region.allocateObject(objectSize, objectName));
-        EXPECT_NO_THROW(region.lookupObject(objectName));
-        EXPECT_NO_THROW(region.deallocateObject(objectName));
-        EXPECT_THROWS_AS(region.lookupObject(objectName), NotFound);
+        EXPECT_NO_THROW(region.allocateObject(object_size, object_name));
+        EXPECT_NO_THROW(region.lookupObject(object_name));
+        EXPECT_NO_THROW(region.deallocateObject(object_name));
+        EXPECT_THROWS_AS(region.lookupObject(object_name), NotFound);
     }
 
     // data ops
 
-    const auto testData = "ECKIT_TEST_FAM_DATA_2048413561EC"s;  // size=32
+    const auto test_data = "ECKIT_TEST_FAM_DATA_2048413561EC"s;  // size=32
 
     {  // write
-        auto object = FamObjectName(fam::testEndpoint, path).allocate(objectSize, true);
-        EXPECT_NO_THROW(object.put(testData.data(), 0, testData.size()));
+        auto object = FamObjectName(fam::test_endpoint, path).allocate(object_size, true);
+        EXPECT_NO_THROW(object.put(test_data.data(), 0, test_data.size()));
     }
 
     {  // read
-        auto object = FamObjectName(fam::testEndpoint, path).lookup();
+        auto object = FamObjectName(fam::test_endpoint, path).lookup();
 
-        Buffer testBuffer(object.size());
-        testBuffer.zero();
+        Buffer test_buffer(object.size());
+        test_buffer.zero();
 
-        EXPECT_NO_THROW(object.get(testBuffer.data(), 0, testBuffer.size()));
+        EXPECT_NO_THROW(object.get(test_buffer.data(), 0, test_buffer.size()));
 
-        EXPECT(testData == testBuffer.view());
+        EXPECT(test_data == test_buffer.view());
     }
 
     {  // cleanup
-        auto region = FamRegionName(fam::testEndpoint, path);
+        auto region = FamRegionName(fam::test_endpoint, path);
 
         EXPECT_NO_THROW(region.lookup().destroy());
 

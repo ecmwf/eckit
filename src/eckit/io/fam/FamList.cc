@@ -34,13 +34,13 @@ namespace eckit {
 
 namespace {
 
-auto initSentinel(const FamRegion& region, const std::string& objectName, const fam::size_t objectSize) -> FamObject {
+auto initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) -> FamObject {
     try {
-        return region.allocateObject(objectSize, objectName);
+        return region.allocateObject(object_size, object_name);
     }
     catch (const AlreadyExists&) {
-        auto object = region.lookupObject(objectName);
-        ASSERT(object.size() == objectSize);
+        auto object = region.lookupObject(object_name);
+        ASSERT(object.size() == object_size);
         return object;
     }
 }
@@ -57,11 +57,11 @@ FamList::FamList(const FamRegion& region, const Descriptor& desc) :
     ASSERT(region.index() == desc.region);
 }
 
-FamList::FamList(const FamRegion& region, const std::string& listName) :
+FamList::FamList(const FamRegion& region, const std::string& list_name) :
     region_{region},
-    head_{initSentinel(region_, listName + "-list-head", sizeof(FamListNode))},
-    tail_{initSentinel(region_, listName + "-list-tail", sizeof(FamListNode))},
-    size_{initSentinel(region_, listName + "-list-size", sizeof(size_type))} {
+    head_{initSentinel(region_, list_name + "-list-head", sizeof(FamListNode))},
+    tail_{initSentinel(region_, list_name + "-list-tail", sizeof(FamListNode))},
+    size_{initSentinel(region_, list_name + "-list-size", sizeof(size_type))} {
     // set head's next to tail's prev
     if (FamListNode::getNextOffset(head_) == 0) {
         head_.put(tail_.descriptor(), offsetof(FamListNode, next));
@@ -111,59 +111,59 @@ auto FamList::back() const -> Buffer {
 //----------------------------------------------------------------------------------------------------------------------
 // modifiers
 
-void FamList::push_front(const void* data, const size_type length) {
+void FamList::pushFront(const void* data, const size_type length) {
     // allocate an object
-    auto newObject = region_.allocateObject(sizeof(FamListNode) + length);
+    auto new_object = region_.allocateObject(sizeof(FamListNode) + length);
 
     // set new object's previous to head
-    newObject.put(head_.descriptor(), offsetof(FamListNode, prev));
+    new_object.put(head_.descriptor(), offsetof(FamListNode, prev));
 
     // set head's next to new object
-    const auto prevOffset = head_.swap(offsetof(FamListNode, next.offset), newObject.offset());
-    const auto oldObject  = region_.proxyObject(prevOffset);
+    const auto prev_offset = head_.swap(offsetof(FamListNode, next.offset), new_object.offset());
+    const auto old_object  = region_.proxyObject(prev_offset);
 
     // set old object's prev to new object
-    oldObject.put(newObject.descriptor(), offsetof(FamListNode, prev));
+    old_object.put(new_object.descriptor(), offsetof(FamListNode, prev));
     // set new object's next to old object
-    newObject.put(oldObject.descriptor(), offsetof(FamListNode, next));
+    new_object.put(old_object.descriptor(), offsetof(FamListNode, next));
 
     // finally put the data
-    newObject.put(length, offsetof(FamListNode, length));
-    newObject.put(data, sizeof(FamListNode), length);
+    new_object.put(length, offsetof(FamListNode, length));
+    new_object.put(data, sizeof(FamListNode), length);
 
     // increment size
     size_.add(0, 1UL);
 }
 
-void FamList::push_back(const void* data, const size_type length) {
+void FamList::pushBack(const void* data, const size_type length) {
     // allocate an object
-    auto newObject = region_.allocateObject(sizeof(FamListNode) + length);
+    auto new_object = region_.allocateObject(sizeof(FamListNode) + length);
 
     // set new object's next to tail
-    newObject.put(tail_.descriptor(), offsetof(FamListNode, next));
+    new_object.put(tail_.descriptor(), offsetof(FamListNode, next));
 
     // set tail's prev to new object
-    const auto prevOffset = tail_.swap(offsetof(FamListNode, prev.offset), newObject.offset());
-    const auto oldObject  = region_.proxyObject(prevOffset);
+    const auto prev_offset = tail_.swap(offsetof(FamListNode, prev.offset), new_object.offset());
+    const auto old_object  = region_.proxyObject(prev_offset);
 
     // set old object's next to new object
-    oldObject.put(newObject.descriptor(), offsetof(FamListNode, next));
+    old_object.put(new_object.descriptor(), offsetof(FamListNode, next));
     // set new object's prev to old object
-    newObject.put(oldObject.descriptor(), offsetof(FamListNode, prev));
+    new_object.put(old_object.descriptor(), offsetof(FamListNode, prev));
 
     // finally put the data
-    newObject.put(length, offsetof(FamListNode, length));
-    newObject.put(data, sizeof(FamListNode), length);
+    new_object.put(length, offsetof(FamListNode, length));
+    new_object.put(data, sizeof(FamListNode), length);
 
     // increment size
     size_.add(0, 1UL);
 }
 
-void FamList::pop_front() {
+void FamList::popFront() {
     NOTIMP;
 }
 
-void FamList::pop_back() {
+void FamList::popBack() {
     NOTIMP;
 }
 

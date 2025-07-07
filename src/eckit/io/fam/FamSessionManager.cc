@@ -65,8 +65,8 @@ void FamSessionManager::remove(const FamConfig& config) {
     sessions_.remove_if([&config](const auto& session) { return session->config() == config; });
 }
 
-void FamSessionManager::remove(const std::string& sessionName) {
-    sessions_.remove_if([&sessionName](const auto& session) { return session->name() == sessionName; });
+void FamSessionManager::remove(const std::string& session_name) {
+    sessions_.remove_if([&session_name](const auto& session) { return session->name() == session_name; });
 }
 
 void FamSessionManager::clear() {

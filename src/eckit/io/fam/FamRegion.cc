@@ -84,20 +84,20 @@ auto FamRegion::proxyObject(const fam::index_t offset) const -> FamObject {
     return session_->proxyObject(index(), offset);
 }
 
-auto FamRegion::lookupObject(const std::string& objectName) const -> FamObject {
-    return session_->lookupObject(name(), objectName);
+auto FamRegion::lookupObject(const std::string& object_name) const -> FamObject {
+    return session_->lookupObject(name(), object_name);
 }
 
-auto FamRegion::allocateObject(const fam::size_t objectSize, const fam::perm_t objectPerm,
-                               const std::string& objectName, const bool overwrite) const -> FamObject {
+auto FamRegion::allocateObject(const fam::size_t object_size, const fam::perm_t object_perm,
+                               const std::string& object_name, const bool overwrite) const -> FamObject {
     if (overwrite) {
-        return session_->ensureAllocateObject(*region_, objectSize, objectPerm, objectName);
+        return session_->ensureAllocateObject(*region_, object_size, object_perm, object_name);
     }
-    return session_->allocateObject(*region_, objectSize, objectPerm, objectName);
+    return session_->allocateObject(*region_, object_size, object_perm, object_name);
 }
 
-void FamRegion::deallocateObject(const std::string& objectName) const {
-    session_->deallocateObject(region_->get_name(), objectName);
+void FamRegion::deallocateObject(const std::string& object_name) const {
+    session_->deallocateObject(region_->get_name(), object_name);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

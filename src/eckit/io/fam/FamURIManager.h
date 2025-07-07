@@ -19,7 +19,11 @@
 
 #pragma once
 
+#include <string>
+
 #include "eckit/filesystem/URIManager.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 
 namespace eckit {
 
@@ -36,7 +40,7 @@ public:  // methods
 
 private:  // methods
 
-    bool exists(const URI&) override;
+    bool exists(const URI& /*uri*/) override;
 
     DataHandle* newWriteHandle(const URI& uri) override;
     DataHandle* newReadHandle(const URI& uri) override;

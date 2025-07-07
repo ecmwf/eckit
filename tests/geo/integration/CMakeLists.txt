@@ -94,7 +94,7 @@ foreach(test ${TESTS})
         TARGET      ${name}
         COMMAND     eckit_grid_spec
         ARGS        "${test}"
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${TEST_ECKIT_GEO_CACHE_PATH}" )
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
 
     string(REPLACE "[" [=[\[]=] regex "${test}")
     string(REPLACE "]" [=[\]]=] regex "${regex}")

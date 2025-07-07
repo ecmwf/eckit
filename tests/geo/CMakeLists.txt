@@ -1,5 +1,3 @@
-set(TEST_ECKIT_GEO_CACHE_PATH "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
-
 foreach(_test
         area_boundingbox
         area_polygon
@@ -44,7 +42,7 @@ endforeach()
 set_tests_properties(
     eckit_test_geo_search
     PROPERTIES
-    ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${TEST_ECKIT_GEO_CACHE_PATH}" )
+    ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" )
 
 if(eckit_HAVE_ZIP)
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
@@ -63,27 +61,22 @@ ecbuild_add_test(
     LIBS              eckit_geo
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
-if(eckit_HAVE_GEO_GRID_ORCA)
-    set(FILE "${TEST_ECKIT_GEO_CACHE_PATH}/grid/orca/d5bde4f52ff3a9bea5629cd9ac514410-313218f18f94c235fd8ef2d6cc6ad6fe.ek")
-
-    configure_file("ORCA2_T.ek" "${FILE}" COPYONLY)
-    if(NOT EXISTS "${FILE}")
-        message(FATAL_ERROR "Required file not found: '${FILE}'")
-    endif()
-
+function(ecbuild_add_test_geo_grid _grid)
     ecbuild_add_test(
-        TARGET      eckit_test_geo_grid_orca
-        SOURCES     grid_orca.cc
+        TARGET      eckit_test_geo_grid_${_grid}
+        SOURCES     grid_${_grid}.cc
         LIBS        eckit_geo
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${TEST_ECKIT_GEO_CACHE_PATH}" )
-endif()
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
+endfunction()
 
 if(eckit_HAVE_GEO_GRID_FESOM)
-    ecbuild_add_test(
-        TARGET      eckit_test_geo_grid_fesom
-        SOURCES     grid_fesom.cc
-        LIBS        eckit_geo
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${TEST_ECKIT_GEO_CACHE_PATH}" )
+    ecbuild_add_test_geo_grid(fesom)
+endif()
+if(eckit_HAVE_GEO_GRID_ICON)
+    ecbuild_add_test_geo_grid(icon)
+endif()
+if(eckit_HAVE_GEO_GRID_ORCA)
+    ecbuild_add_test_geo_grid(orca)
 endif()
 
 ecbuild_add_test(

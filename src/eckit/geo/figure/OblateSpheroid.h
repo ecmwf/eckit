@@ -36,7 +36,7 @@ public:
     double area() const override { return _area(a_, b_); }
 
     /// Surface area between parallels and meridians [L^2]
-    double area(const area::BoundingBox& bbox) override { return _area(a_, b_, bbox); }
+    double area(const area::BoundingBox& bbox) const override { return _area(a_, b_, bbox); }
 
     // -- Class methods
 

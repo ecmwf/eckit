@@ -55,7 +55,7 @@ double Figure::area() const {
 }
 
 
-double Figure::area(const area::BoundingBox&) {
+double Figure::area(const area::BoundingBox&) const {
     NOTIMP;
 }
 

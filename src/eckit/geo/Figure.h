@@ -75,7 +75,7 @@ public:
     virtual double area() const;
 
     /// Surface area between parallels and meridians [L^2]
-    virtual double area(const area::BoundingBox&);
+    virtual double area(const area::BoundingBox&) const;
 
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;

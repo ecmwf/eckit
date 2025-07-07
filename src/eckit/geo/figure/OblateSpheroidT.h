@@ -36,7 +36,9 @@ public:
     double area() const override { return OblateSpheroid::_area(DATUM::a, DATUM::b); }
 
     /// Surface area between parallels and meridians [L^2]
-    double area(const area::BoundingBox& bbox) override { return OblateSpheroid::_area(DATUM::a, DATUM::b, bbox); }
+    double area(const area::BoundingBox& bbox) const override {
+        return OblateSpheroid::_area(DATUM::a, DATUM::b, bbox);
+    }
 };
 
 

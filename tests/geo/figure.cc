@@ -76,9 +76,9 @@ CASE("Oblate spheroid") {
 
 
 CASE("Unit Sphere") {
-    using figure::UnitSphere;
+    figure::UnitSphere s1;
 
-    const auto R = UnitSphere::_radius();
+    const auto R = s1.radius();
     const auto L = R * std::sqrt(2) / 2.;
 
     const PointLonLat P1(-71.6, -33.);  // Valparaíso
@@ -86,17 +86,17 @@ CASE("Unit Sphere") {
 
 
     SECTION("radius") {
-        EXPECT(UnitSphere::_radius() == 1.);
+        EXPECT(s1.radius() == 1.);
     }
 
 
     SECTION("north pole") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({0., 90.}), PointXYZ{0, 0, R}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({0., 90.}), PointXYZ{0, 0, R}));
     }
 
 
     SECTION("south pole") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({0., -90.}), PointXYZ{0, 0, -R}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({0., -90.}), PointXYZ{0, 0, -R}));
     }
 
 
@@ -106,10 +106,10 @@ CASE("Unit Sphere") {
         auto P2b = PointLonLat::make(301.8, 148.6);   // Shanghai + latitude/longitude shift
         auto P2c = PointLonLat::make(-58.2, -211.4);  // Shanghai + latitude/longitude shift
 
-        auto d0 = UnitSphere::_distance(P1, P2);
-        auto d1 = UnitSphere::_distance(P1b, P2);
-        auto d2 = UnitSphere::_distance(P1, P2b);
-        auto d3 = UnitSphere::_distance(P1, P2c);
+        auto d0 = s1.distance(P1, P2);
+        auto d1 = s1.distance(P1b, P2);
+        auto d2 = s1.distance(P1, P2b);
+        auto d3 = s1.distance(P1, P2c);
 
         EXPECT(types::is_approximately_equal(d0, d1));
         EXPECT(types::is_approximately_equal(d0, d2));
@@ -118,64 +118,64 @@ CASE("Unit Sphere") {
 
 
     SECTION("area globe") {
-        EXPECT(UnitSphere::_area() == 4. * M_PI * R * R);
+        EXPECT(s1.area() == 4. * M_PI * R * R);
     }
 
 
     SECTION("area hemispheres") {
-        auto area_hemisphere_north = UnitSphere::_area({90., -180., 0., 180.});
-        auto area_hemisphere_south = UnitSphere::_area({0., -180., -90., 180.});
+        auto area_hemisphere_north = s1._area({90., -180., 0., 180.});
+        auto area_hemisphere_south = s1._area({0., -180., -90., 180.});
 
-        EXPECT(area_hemisphere_north == 0.5 * UnitSphere::_area());
+        EXPECT(area_hemisphere_north == 0.5 * s1.area());
         EXPECT(area_hemisphere_north == area_hemisphere_south);
     }
 
 
     SECTION("lon 0 (quadrant)") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({0., 0.}), PointXYZ{R, 0, 0}));
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-360., 0.}), PointXYZ{R, 0, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({0., 0.}), PointXYZ{R, 0, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({-360., 0.}), PointXYZ{R, 0, 0}));
     }
 
 
     SECTION("lon 90 (quadrant)") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({90., 0.}), PointXYZ{0, R, 0}));
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-270., 0.}), PointXYZ{0, R, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({90., 0.}), PointXYZ{0, R, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({-270., 0.}), PointXYZ{0, R, 0}));
     }
 
 
     SECTION("lon 180 (quadrant)") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({180., 0.}), PointXYZ{-R, 0, 0}));
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-180., 0.}), PointXYZ{-R, 0, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({180., 0.}), PointXYZ{-R, 0, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({-180., 0.}), PointXYZ{-R, 0, 0}));
     }
 
 
     SECTION("lon 270 (quadrant)") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({270., 0.}), PointXYZ{0, -R, 0}));
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-90., 0.}), PointXYZ{0, -R, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({270., 0.}), PointXYZ{0, -R, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({-90., 0.}), PointXYZ{0, -R, 0}));
     }
 
 
     SECTION("lon 45 (octant)") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({45., 0.}), PointXYZ{L, L, 0}));
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-315., 0.}), PointXYZ{L, L, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({45., 0.}), PointXYZ{L, L, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({-315., 0.}), PointXYZ{L, L, 0}));
     }
 
 
     SECTION("lon 135 (octant)") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({135., 0.}), PointXYZ{-L, L, 0}));
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-225., 0.}), PointXYZ{-L, L, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({135., 0.}), PointXYZ{-L, L, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({-225., 0.}), PointXYZ{-L, L, 0}));
     }
 
 
     SECTION("lon 225 (octant)") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({225., 0.}), PointXYZ{-L, -L, 0}));
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-135., 0.}), PointXYZ{-L, -L, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({225., 0.}), PointXYZ{-L, -L, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({-135., 0.}), PointXYZ{-L, -L, 0}));
     }
 
 
     SECTION("lon 315 (octant)") {
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({315., 0.}), PointXYZ{L, -L, 0}));
-        EXPECT(points_equal(UnitSphere::_convertSphericalToCartesian({-45., 0.}), PointXYZ{L, -L, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({315., 0.}), PointXYZ{L, -L, 0}));
+        EXPECT(points_equal(s1._convertSphericalToCartesian({-45., 0.}), PointXYZ{L, -L, 0}));
     }
 
 
@@ -183,8 +183,8 @@ CASE("Unit Sphere") {
         // Default behavior throws
         EXPECT_THROWS_AS(PointLonLat::assert_latitude_range(PointLonLat(0., 100.)), BadValue);
 
-        auto p = UnitSphere::_convertSphericalToCartesian(PointLonLat::make(0., 100.), 0.);
-        auto q = UnitSphere::_convertSphericalToCartesian(PointLonLat::make(180., 80.), 0.);
+        auto p = s1._convertSphericalToCartesian(PointLonLat::make(0., 100.), 0.);
+        auto q = s1._convertSphericalToCartesian(PointLonLat::make(180., 80.), 0.);
 
         // sin(x) and sin(pi-x) are not bitwise identical
         EXPECT(types::is_approximately_equal(p.X, q.X));
@@ -197,8 +197,8 @@ CASE("Unit Sphere") {
         // Default behavior throws
         EXPECT_THROWS_AS(PointLonLat::assert_latitude_range(PointLonLat(15., 290.)), BadValue);
 
-        auto p = UnitSphere::_convertSphericalToCartesian(PointLonLat::make(15., 290.), 0.);
-        auto q = UnitSphere::_convertSphericalToCartesian(PointLonLat::make(15., -70.), 0.);
+        auto p = s1._convertSphericalToCartesian(PointLonLat::make(15., 290.), 0.);
+        auto q = s1._convertSphericalToCartesian(PointLonLat::make(15., -70.), 0.);
 
         // sin(x) and sin(pi-x) are not bitwise identical
         EXPECT(types::is_approximately_equal(p.X, q.X));
@@ -211,8 +211,8 @@ CASE("Unit Sphere") {
         // Default behavior throws
         EXPECT_THROWS_AS(PointLonLat::assert_latitude_range(PointLonLat(45., -120.)), BadValue);
 
-        auto p = UnitSphere::_convertSphericalToCartesian(PointLonLat::make(45., -120.), 0.);
-        auto q = UnitSphere::_convertSphericalToCartesian(PointLonLat::make(225., -60.), 0.);
+        auto p = s1._convertSphericalToCartesian(PointLonLat::make(45., -120.), 0.);
+        auto q = s1._convertSphericalToCartesian(PointLonLat::make(225., -60.), 0.);
 
         // sin(x) and sin(pi-x) are not bitwise identical
         EXPECT(types::is_approximately_equal(p.X, q.X));
@@ -223,34 +223,34 @@ CASE("Unit Sphere") {
 
 
 CASE("Two-unit Sphere") {
-    using figure::UnitSphere;
-    using TwoUnitsSphere = figure::SphereT<DatumTwoUnits>;
+    figure::UnitSphere s1;
+    figure::SphereT<DatumTwoUnits> s2;
 
     const PointLonLat P1(-71.6, -33.);  // Valparaíso
     const PointLonLat P2(121.8, 31.4);  // Shanghai
 
 
     SECTION("radius") {
-        EXPECT(TwoUnitsSphere::_radius() == 2.);
+        EXPECT(s2.radius() == 2.);
     }
 
 
     SECTION("distances") {
-        auto distance_1 = UnitSphere::_distance(P1, P2);
-        auto distance_2 = TwoUnitsSphere::_distance(P1, P2);
+        auto distance_1 = s1.distance(P1, P2);
+        auto distance_2 = s2.distance(P1, P2);
         EXPECT(2. * distance_1 == distance_2);
     }
 
 
     SECTION("area") {
-        auto global_1 = UnitSphere::_area();
-        auto global_2 = TwoUnitsSphere::_area();
+        auto global_1 = s1.area();
+        auto global_2 = s2.area();
         EXPECT(4. * global_1 == global_2);
 
         area::BoundingBox bbox({P2.lat, P1.lon, P1.lat, P2.lon});
 
-        auto local_1 = UnitSphere::_area(bbox);
-        auto local_2 = TwoUnitsSphere::_area(bbox);
+        auto local_1 = s1._area(bbox);
+        auto local_2 = s2._area(bbox);
         EXPECT(4. * local_1 == local_2);
     }
 }

@@ -15,14 +15,14 @@
 
 #include "eckit/io/fam/FamHashTable.h"
 
-#include "detail/FamHashNode.h"
+#include <string>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamObjectName.h"
+#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegionName.h"
-
-// #include "detail/FamSessionDetail.h"
-// #include "eckit/exception/Exceptions.h"
+// #include "eckit/io/fam/detail/FamHashNode.h"
 
 namespace eckit {
 

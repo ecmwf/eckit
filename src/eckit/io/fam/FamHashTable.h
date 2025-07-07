@@ -19,14 +19,16 @@
 
 #pragma once
 
-#include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamRegion.h"
-// #include "eckit/io/fam/FamRegionName.h"
-// #include "eckit/io/fam/FamVector.h"
 #include <array>
+#include <cstddef>
+#include <functional>
+#include <optional>
 #include <string>
 
 #include "eckit/io/fam/FamMapIterator.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegion.h"
 #include "eckit/types/FixedString.h"
 
 namespace eckit {
@@ -87,7 +89,7 @@ public:  // types
     // using local_iterator       = local_iterator;
     // using const_local_iterator = const_local_iterator;
 
-    using node_type = FamList;
+    using node_type = std::optional<FamList>;
 
 public:  // methods
 

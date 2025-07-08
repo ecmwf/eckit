@@ -16,8 +16,11 @@
 #include "eckit/exception/Exceptions.h"
 
 #if eckit_HAVE_ZIP
+#include <algorithm>
 #include <array>
 #include <fstream>
+#include <ios>
+#include <memory>
 
 #include "eckit/os/AutoUmask.h"
 #include "eckit/utils/MD5.h"

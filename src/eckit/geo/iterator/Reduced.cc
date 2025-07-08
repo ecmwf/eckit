@@ -14,12 +14,27 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/Reduced.h"
 
 
 namespace eckit::geo::iterator {
+
+
+struct Instance {
+    explicit Instance(const Spec& spec) : grid(dynamic_cast<const grid::Reduced*>(GridFactory::build(spec))) {
+        ASSERT(grid);
+    }
+
+    std::unique_ptr<const grid::Reduced> grid;
+};
+
+
+struct ReducedInstance : Instance, Reduced {
+    explicit ReducedInstance(const Spec& spec) : Instance(spec), Reduced(*grid) {}
+};
 
 
 Reduced::Reduced(const Grid& grid, size_t index) :
@@ -96,6 +111,9 @@ size_t Reduced::j(size_t idx) const {
 void Reduced::fill_spec(spec::Custom&) const {
     // FIXME implement
 }
+
+
+static const IteratorRegisterType<ReducedInstance> ITERATOR_TYPE("reduced");
 
 
 }  // namespace eckit::geo::iterator

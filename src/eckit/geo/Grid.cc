@@ -246,8 +246,8 @@ const Grid* GridFactory::make_from_string(const std::string& str) {
 
 
 GridFactory& GridFactory::instance() {
-    static GridFactory obj;
-    return obj;
+    static GridFactory INSTANCE;
+    return INSTANCE;
 }
 
 
@@ -273,7 +273,7 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
     ASSERT(cfg != nullptr);
 
 
-    // hardcoded, interpreted options (contributing to gridspec)
+    // hardcoded, interpreted options (contributing to spec)
 
     auto back = std::make_unique<spec::Custom>();
     ASSERT(back);

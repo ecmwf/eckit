@@ -25,7 +25,7 @@ class Reduced;
 namespace eckit::geo::iterator {
 
 
-class Reduced final : public geo::Iterator {
+class Reduced : public geo::Iterator {
 public:
 
     // -- Constructors

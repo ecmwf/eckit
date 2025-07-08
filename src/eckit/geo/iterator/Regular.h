@@ -25,7 +25,7 @@ class Regular;
 namespace eckit::geo::iterator {
 
 
-class Regular final : public Iterator {
+class Regular : public Iterator {
 public:
 
     // -- Constructors

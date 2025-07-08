@@ -12,11 +12,27 @@
 
 #include "eckit/geo/iterator/Regular.h"
 
+#include <memory>
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/Regular.h"
 
 
 namespace eckit::geo::iterator {
+
+
+struct Instance {
+    explicit Instance(const Spec& spec) : grid(dynamic_cast<const grid::Regular*>(GridFactory::build(spec))) {
+        ASSERT(grid);
+    }
+
+    std::unique_ptr<const grid::Regular> grid;
+};
+
+
+struct RegularInstance : Instance, Regular {
+    explicit RegularInstance(const Spec& spec) : Instance(spec), Regular(*grid) {}
+};
 
 
 Regular::Regular(const grid::Regular& grid, size_t index) :
@@ -70,6 +86,9 @@ Point Regular::operator*() const {
 void Regular::fill_spec(spec::Custom&) const {
     // FIXME implement
 }
+
+
+static const IteratorRegisterType<RegularInstance> ITERATOR_TYPE("regular");
 
 
 }  // namespace eckit::geo::iterator

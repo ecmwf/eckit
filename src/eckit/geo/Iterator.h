@@ -17,6 +17,8 @@
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/memory/Builder.h"
+#include "eckit/memory/Factory.h"
 
 
 namespace eckit::geo {
@@ -31,6 +33,9 @@ class Iterator {
 public:
 
     // -- Types
+
+    using builder_t = BuilderT1<Iterator>;
+    using ARG1      = const Spec&;
 
     using difference_type = std::ptrdiff_t;
 
@@ -67,6 +72,10 @@ public:
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
+    // -- Class methods
+
+    static std::string className() { return "iterator"; }
+
 protected:
 
     // -- Constructors
@@ -86,6 +95,29 @@ private:
     // -- Friends
 
     friend class Grid;
+};
+
+
+using IteratorFactoryType = Factory<Iterator>;
+
+
+template <typename T>
+using IteratorRegisterType = ConcreteBuilderT1<Iterator, T>;
+
+
+struct IteratorFactory {
+    [[nodiscard]] static Iterator* build(const Spec& spec) { return instance().build_(spec); }
+    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
+
+private:
+
+    static IteratorFactory& instance();
+
+    [[nodiscard]] Iterator* build_(const Spec&) const;
+    [[nodiscard]] Spec* make_spec_(const Spec&) const;
+    std::ostream& list_(std::ostream&) const;
 };
 
 

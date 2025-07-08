@@ -25,7 +25,7 @@ class PointsContainer;
 namespace eckit::geo::iterator {
 
 
-class Unstructured final : public Iterator {
+class Unstructured : public Iterator {
 public:
 
     // -- Constructors

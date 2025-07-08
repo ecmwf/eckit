@@ -12,12 +12,28 @@
 
 #include "eckit/geo/iterator/Unstructured.h"
 
+#include <memory>
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 
 namespace eckit::geo::iterator {
+
+
+struct Instance {
+    explicit Instance(const Spec& spec) : grid(dynamic_cast<const grid::Unstructured*>(GridFactory::build(spec))) {
+        ASSERT(grid);
+    }
+
+    std::unique_ptr<const grid::Unstructured> grid;
+};
+
+
+struct UnstructuredInstance : Instance, Unstructured {
+    explicit UnstructuredInstance(const Spec& spec) : Instance(spec), Unstructured(*grid) {}
+};
 
 
 Unstructured::Unstructured(const Grid& grid, size_t index, std::shared_ptr<container::PointsContainer> container) :
@@ -70,6 +86,9 @@ Point Unstructured::operator*() const {
 void Unstructured::fill_spec(spec::Custom&) const {
     // FIXME implement
 }
+
+
+static const IteratorRegisterType<UnstructuredInstance> ITERATOR_TYPE("unstructured");
 
 
 }  // namespace eckit::geo::iterator

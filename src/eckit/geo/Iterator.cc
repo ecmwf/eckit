@@ -13,18 +13,21 @@
 #include "eckit/geo/Iterator.h"
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo {
 
 
-spec::Custom* Iterator::spec() const {
-    auto* custom = new spec::Custom;
-    ASSERT(custom != nullptr);
+const Spec& Iterator::spec() const {
+    if (!spec_) {
+        spec_ = std::make_unique<spec::Custom>();
+        ASSERT(spec_);
 
-    fill_spec(*custom);
-    return custom;
+        auto& custom = *spec_;
+        fill_spec(custom);
+    }
+
+    return *spec_;
 }
 
 

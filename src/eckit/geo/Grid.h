@@ -81,7 +81,8 @@ public:
 
         size_t index() const { return get()->index(); }
 
-        [[nodiscard]] spec::Custom* spec() const { return get()->spec(); }
+        [[nodiscard]] const Spec& spec() const { return get()->spec(); }
+        std::string spec_str() const { return spec().str(); }
     };
 
     using iterator = Iterator;

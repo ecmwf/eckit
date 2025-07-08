@@ -13,15 +13,14 @@
 #pragma once
 
 #include <cstddef>
+#include <memory>
 
 #include "eckit/geo/Point.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo {
 class Grid;
-namespace spec {
-class Custom;
-}
 }  // namespace eckit::geo
 
 
@@ -65,7 +64,8 @@ public:
 
     virtual size_t index() const = 0;
 
-    [[nodiscard]] spec::Custom* spec() const;
+    [[nodiscard]] const Spec& spec() const;
+    std::string spec_str() const { return spec().str(); }
 
 protected:
 
@@ -76,6 +76,12 @@ protected:
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const = 0;
+
+private:
+
+    // -- Members
+
+    mutable std::unique_ptr<spec::Custom> spec_;
 
     // -- Friends
 

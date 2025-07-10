@@ -38,8 +38,8 @@ public:
 
     size_t size() const override;
 
-    size_t ni(size_t j) const override;
-    size_t nj() const override;
+    size_t nx(size_t j) const override;
+    size_t ny() const override;
 
     std::vector<Point> to_points() const override;
     std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;

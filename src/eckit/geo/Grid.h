@@ -80,9 +80,6 @@ public:
         Point operator*() const { return get()->operator*(); }
 
         size_t index() const { return get()->index(); }
-
-        [[nodiscard]] const Spec& spec() const { return get()->spec(); }
-        std::string spec_str() const { return spec().str(); }
     };
 
     using iterator = Iterator;
@@ -150,6 +147,7 @@ public:
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;
 
+    virtual bool empty() const;
     virtual size_t size() const;
 
     uid_t uid() const;
@@ -161,6 +159,7 @@ public:
     virtual bool includesSouthPole() const;
     virtual bool isPeriodicWestEast() const;
 
+    [[nodiscard]] virtual Point first_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 

@@ -33,16 +33,7 @@ RegularGaussian::RegularGaussian(size_t N, area::BoundingBox* bbox, projection::
              range::GaussianLatitude(N, false).make_range_cropped(bbox->north, bbox->south)},
             rotation),
     N_(N) {
-    ASSERT(size() > 0);
-}
-
-
-Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
-    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularGaussian(N_, new area::BoundingBox(cropped));
-    }
-
-    throw UserError("RegularGaussian: cannot crop grid (empty intersection)", Here());
+    ASSERT(!empty());
 }
 
 
@@ -64,6 +55,30 @@ void RegularGaussian::fill_spec(spec::Custom& custom) const {
 const std::string& RegularGaussian::type() const {
     static const std::string type{"regular-gg"};
     return type;
+}
+
+
+Point RegularGaussian::first_point() const {
+    // TODO
+}
+
+
+std::vector<Point> RegularGaussian::to_points() const {
+    // TODO
+}
+
+
+std::pair<std::vector<double>, std::vector<double>> RegularGaussian::to_latlons() const {
+    // TODO
+}
+
+
+Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
+    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
+        return new RegularGaussian(N_, new area::BoundingBox(cropped));
+    }
+
+    throw UserError("RegularGaussian: cannot crop grid (empty intersection)", Here());
 }
 
 

@@ -40,8 +40,8 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t ni(size_t j) const override;
-    size_t nj() const override;
+    size_t nx(size_t j) const override;
+    size_t ny() const override;
 
     const order_type& order() const override { return scan_.order(); }
     Reordering reorder(const order_type& to) const override { return scan_.reorder(to); }

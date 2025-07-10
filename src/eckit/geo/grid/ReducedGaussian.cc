@@ -69,11 +69,11 @@ Grid::iterator ReducedGaussian::cend() const {
 
 
 size_t ReducedGaussian::size() const {
-    return niacc().back();
+    return nxacc().back();
 }
 
 
-size_t ReducedGaussian::ni(size_t j) const {
+size_t ReducedGaussian::nx(size_t j) const {
     if (!x_.at(j_ + j)) {
         auto bbox = boundingBox();
         auto Ni   = pl_.at(j_ + j);
@@ -88,7 +88,7 @@ size_t ReducedGaussian::ni(size_t j) const {
 }
 
 
-size_t ReducedGaussian::nj() const {
+size_t ReducedGaussian::ny() const {
     return y_->size();
 }
 

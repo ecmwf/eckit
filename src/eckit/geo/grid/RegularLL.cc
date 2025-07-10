@@ -45,7 +45,7 @@ RegularLL::RegularLL(const Spec& spec) :
                   area::BoundingBox area{spec};
                   return {area.west, area.south};
               }()) {
-    ASSERT(size() > 0);
+    ASSERT(!empty());
 }
 
 
@@ -58,7 +58,7 @@ RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, proje
     Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon, 0.),
              new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat, 0.)},
             rotation) {
-    ASSERT(size() > 0);
+    ASSERT(!empty());
 }
 
 
@@ -89,6 +89,21 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 const std::string& RegularLL::type() const {
     static const std::string type{"regular-ll"};
     return type;
+}
+
+
+Point RegularLL::first_point() const {
+    // TODO
+}
+
+
+std::vector<Point> RegularLL::to_points() const {
+    // TODO
+}
+
+
+std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlons() const {
+    // TODO
 }
 
 

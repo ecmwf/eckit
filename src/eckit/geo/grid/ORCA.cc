@@ -220,6 +220,12 @@ Grid::uid_t ORCA::calculate_uid() const {
 }
 
 
+Point ORCA::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_[0], record_.latitudes_[0]};
+}
+
+
 std::vector<Point> ORCA::to_points() const {
     std::vector<Point> p;
     p.reserve(size());

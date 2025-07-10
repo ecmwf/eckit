@@ -52,13 +52,13 @@ Grid::iterator HEALPix::cend() const {
 }
 
 
-size_t HEALPix::ni(size_t j) const {
-    ASSERT(j < nj());
-    return j < Nside_ ? 4 * (j + 1) : j < 3 * Nside_ ? 4 * Nside_ : ni(nj() - 1 - j);
+size_t HEALPix::nx(size_t j) const {
+    ASSERT(j < ny());
+    return j < Nside_ ? 4 * (j + 1) : j < 3 * Nside_ ? 4 * Nside_ : nx(ny() - 1 - j);
 }
 
 
-size_t HEALPix::nj() const {
+size_t HEALPix::ny() const {
     return 4 * Nside_ - 1;
 }
 
@@ -124,7 +124,7 @@ std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlons() const 
 
 
 const std::vector<double>& HEALPix::latitudes() const {
-    const auto Nj = nj();
+    const auto Nj = ny();
 
     if (latitudes_.empty()) {
         latitudes_.resize(Nj);
@@ -148,7 +148,7 @@ const std::vector<double>& HEALPix::latitudes() const {
 
 
 std::vector<double> HEALPix::longitudes(size_t j) const {
-    const auto Ni    = ni(j);
+    const auto Ni    = nx(j);
     const auto step  = 360. / static_cast<double>(Ni);
     const auto start = j < Nside_ || 3 * Nside_ - 1 < j || static_cast<bool>((j + Nside_) % 2) ? step / 2. : 0.;
 

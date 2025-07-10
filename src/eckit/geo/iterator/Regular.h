@@ -17,9 +17,12 @@
 #include "eckit/geo/Iterator.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo {
+class Projection;
+namespace grid {
 class Regular;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::iterator {
@@ -36,15 +39,17 @@ private:
 
     // -- Members
 
-    // const grid::Regular& grid_;
+    const grid::Regular& grid_;
+    const Projection& projection_;
+
     const std::vector<double>& x_;
     const std::vector<double>& y_;
-    size_t i_;
-    size_t j_;
+    size_t ix_;
+    size_t iy_;
     size_t index_;
 
-    const size_t ni_;
-    const size_t nj_;
+    const size_t nx_;
+    const size_t ny_;
     const size_t size_;
 
     // -- Overridden methods
@@ -56,8 +61,6 @@ private:
     Point operator*() const override;
 
     size_t index() const override { return index_; }
-
-    void fill_spec(spec::Custom&) const override;
 };
 
 

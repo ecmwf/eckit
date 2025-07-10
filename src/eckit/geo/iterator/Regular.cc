@@ -36,15 +36,16 @@ struct RegularInstance : Instance, Regular {
 
 
 Regular::Regular(const grid::Regular& grid, size_t index) :
-    // grid_(grid),
+    grid_(grid),
+    projection_(grid_.projection()),
     x_(grid.x().values()),
     y_(grid.y().values()),
-    i_(0),
-    j_(0),
+    ix_(0),
+    iy_(0),
     index_(index),
-    ni_(x_.size()),
-    nj_(y_.size()),
-    size_(ni_ * nj_) {}
+    nx_(x_.size()),
+    ny_(y_.size()),
+    size_(nx_ * ny_) {}
 
 
 bool Regular::operator==(const Iterator& other) const {
@@ -54,10 +55,10 @@ bool Regular::operator==(const Iterator& other) const {
 
 
 bool Regular::operator++() {
-    if (index_++, i_++; index_ < size_) {
-        if (i_ >= ni_) {
-            i_ = 0;
-            j_++;
+    if (index_++, ix_++; index_ < size_) {
+        if (ix_ >= nx_) {
+            ix_ = 0;
+            iy_++;
         }
 
         return true;
@@ -79,12 +80,7 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return PointLonLat{x_.at(i_), y_.at(j_)};
-}
-
-
-void Regular::fill_spec(spec::Custom&) const {
-    // FIXME implement
+    return projection_.fwd(PointXY{x_.at(ix_), y_.at(iy_)});
 }
 
 

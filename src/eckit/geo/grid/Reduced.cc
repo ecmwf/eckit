@@ -23,11 +23,11 @@ std::vector<Point> Reduced::to_points() const {
     points.reserve(size());
 
     const auto& lats = latitudes();
-    ASSERT(lats.size() == nj());
+    ASSERT(lats.size() == ny());
 
-    for (size_t j = 0; j < nj(); ++j) {
+    for (size_t j = 0; j < ny(); ++j) {
         const auto lons = longitudes(j);
-        ASSERT(lons.size() == ni(j));
+        ASSERT(lons.size() == nx(j));
 
         const auto lat = lats.at(j);
         for (auto lon : lons) {
@@ -49,9 +49,9 @@ std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlons() const 
     lon.reserve(N);
 
     const auto& lats = latitudes();
-    ASSERT(lats.size() == nj());
+    ASSERT(lats.size() == ny());
 
-    for (size_t j = 0; j < nj(); ++j) {
+    for (size_t j = 0; j < ny(); ++j) {
         const auto lons = longitudes(j);
 
         lat.insert(lat.end(), lons.size(), lats.at(j));
@@ -63,20 +63,20 @@ std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlons() const 
 }
 
 
-const std::vector<size_t>& Reduced::niacc() const {
-    if (niacc_.empty()) {
-        niacc_.resize(1 + nj());
-        niacc_.front() = 0;
+const std::vector<size_t>& Reduced::nxacc() const {
+    if (nxacc_.empty()) {
+        nxacc_.resize(1 + ny());
+        nxacc_.front() = 0;
 
         size_t j = 0;
-        for (auto a = niacc_.begin(), b = a + 1; b != niacc_.end(); ++j, ++a, ++b) {
-            *b = *a + ni(j);
+        for (auto a = nxacc_.begin(), b = a + 1; b != nxacc_.end(); ++j, ++a, ++b) {
+            *b = *a + nx(j);
         }
 
-        ASSERT(niacc_.back() == size());
+        ASSERT(nxacc_.back() == size());
     }
 
-    return niacc_;
+    return nxacc_;
 }
 
 

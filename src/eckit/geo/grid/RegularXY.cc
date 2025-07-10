@@ -58,6 +58,16 @@ const std::string& RegularXY::type() const {
 }
 
 
+Point RegularXY::first_point() const {
+    // TODO
+}
+
+
+std::vector<Point> RegularXY::to_points() const {
+    // TODO
+}
+
+
 void RegularXY::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 

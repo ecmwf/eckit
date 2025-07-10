@@ -74,6 +74,11 @@ const Spec& Grid::spec() const {
 }
 
 
+bool Grid::empty() const {
+    return size() == 0;
+}
+
+
 size_t Grid::size() const {
     NOTIMP;
 }
@@ -128,6 +133,12 @@ bool Grid::includesSouthPole() const {
 
 bool Grid::isPeriodicWestEast() const {
     NOTIMP;
+}
+
+
+Point Grid::first_point() const {
+    ASSERT(!empty());
+    return to_points().front();
 }
 
 

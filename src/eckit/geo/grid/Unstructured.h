@@ -66,7 +66,7 @@ protected:
 
     // -- Constructors
 
-    Unstructured(container::PointsContainer*);
+    explicit Unstructured(container::PointsContainer*);
 
     // -- Methods
 

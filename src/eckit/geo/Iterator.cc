@@ -34,19 +34,6 @@ class lock_type {
 }  // namespace
 
 
-const Spec& Iterator::spec() const {
-    if (!spec_) {
-        spec_ = std::make_unique<spec::Custom>();
-        ASSERT(spec_);
-
-        auto& custom = *spec_;
-        fill_spec(custom);
-    }
-
-    return *spec_;
-}
-
-
 IteratorFactory& IteratorFactory::instance() {
     static IteratorFactory INSTANCE;
     return INSTANCE;

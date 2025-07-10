@@ -39,15 +39,16 @@ struct ReducedInstance : Instance, Reduced {
 
 Reduced::Reduced(const Grid& grid, size_t index) :
     grid_(dynamic_cast<const grid::Reduced&>(grid)),
+    projection_(grid_.projection()),
     latitudes_(grid_.latitudes()),
-    niacc_(grid_.niacc()),
+    niacc_(grid_.nxacc()),
     size_(grid.size()),
     j_(0),
     index_(index) {
     if (index_ < size_) {
         longitudes_j_ = grid_.longitudes(j_ = j(index_));
         ASSERT(niacc_[j_] <= index && index_ < niacc_[j_ + 1]);
-        ASSERT(latitudes_.size() == grid_.nj());
+        ASSERT(latitudes_.size() == grid_.ny());
     }
 }
 
@@ -94,7 +95,7 @@ Reduced::operator bool() const {
 
 
 Point Reduced::operator*() const {
-    return PointLonLat{longitudes_j_.at(index_ - niacc_[j_]), latitudes_.at(j_)};
+    return projection_.fwd(PointLonLat{longitudes_j_.at(index_ - niacc_[j_]), latitudes_.at(j_)});
 }
 
 
@@ -105,11 +106,6 @@ size_t Reduced::j(size_t idx) const {
     ASSERT(1 <= dist && dist <= niacc_.size() - 1);
 
     return static_cast<size_t>(dist - 1);
-}
-
-
-void Reduced::fill_spec(spec::Custom&) const {
-    // FIXME implement
 }
 
 

@@ -13,7 +13,6 @@
 #pragma once
 
 #include <cstddef>
-#include <memory>
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/spec/Custom.h"
@@ -69,9 +68,6 @@ public:
 
     virtual size_t index() const = 0;
 
-    [[nodiscard]] const Spec& spec() const;
-    std::string spec_str() const { return spec().str(); }
-
     // -- Class methods
 
     static std::string className() { return "iterator"; }
@@ -82,15 +78,7 @@ protected:
 
     Iterator() = default;
 
-    // -- Methods
-
-    virtual void fill_spec(spec::Custom&) const = 0;
-
 private:
-
-    // -- Members
-
-    mutable std::unique_ptr<spec::Custom> spec_;
 
     // -- Friends
 

@@ -28,7 +28,7 @@ public:
 
     // -- Methods
 
-    size_t size() const override { return niacc().back(); }
+    size_t size() const override { return nxacc().back(); }
     std::vector<size_t> shape() const override { return {size()}; }
 
     // -- Overridden methods
@@ -44,21 +44,21 @@ protected:
 
     // -- Methods
 
-    const std::vector<size_t>& niacc() const;
+    const std::vector<size_t>& nxacc() const;
 
-    virtual size_t ni(size_t j) const = 0;
-    virtual size_t nj() const         = 0;
+    virtual size_t nx(size_t) const = 0;
+    virtual size_t ny() const       = 0;
 
 private:
 
     // -- Members
 
-    mutable std::vector<size_t> niacc_;
+    mutable std::vector<size_t> nxacc_;
 
     // Methods
 
-    virtual const std::vector<double>& latitudes() const   = 0;
-    virtual std::vector<double> longitudes(size_t i) const = 0;
+    virtual const std::vector<double>& latitudes() const = 0;
+    virtual std::vector<double> longitudes(size_t) const = 0;
 
     // -- Friends
 

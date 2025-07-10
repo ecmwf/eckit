@@ -37,12 +37,13 @@ struct UnstructuredInstance : Instance, Unstructured {
 
 
 Unstructured::Unstructured(const Grid& grid, size_t index, std::shared_ptr<container::PointsContainer> container) :
-    container_(container), index_(index), size_(container_->size()), uid_(grid.uid()) {
+    projection_(grid.projection()), container_(container), index_(index), size_(container_->size()), uid_(grid.uid()) {
     ASSERT(container_->size() == grid.size());
 }
 
 
-Unstructured::Unstructured(const Grid& grid) : index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
+Unstructured::Unstructured(const Grid& grid) :
+    projection_(grid.projection()), index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
 
 
 bool Unstructured::operator==(const geo::Iterator& other) const {
@@ -79,12 +80,7 @@ Unstructured::operator bool() const {
 
 Point Unstructured::operator*() const {
     ASSERT(container_);
-    return container_->get(index_);
-}
-
-
-void Unstructured::fill_spec(spec::Custom&) const {
-    // FIXME implement
+    return projection_.fwd(container_->get(index_));
 }
 
 

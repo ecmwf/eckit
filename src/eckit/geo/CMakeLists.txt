@@ -90,6 +90,8 @@ list(APPEND eckit_geo_srcs
     grid/RegularLL.h
     grid/RegularXY.cc
     grid/RegularXY.h
+    grid/SphericalHarmonics.cc
+    grid/SphericalHarmonics.h
     grid/Unstructured.cc
     grid/Unstructured.h
     grid/unstructured/UnstructuredGeneric.cc

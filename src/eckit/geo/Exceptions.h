@@ -41,6 +41,20 @@ public:
 };
 
 
+class FigureError : public geo::Exception {
+public:
+
+    explicit FigureError(const std::string&, const CodeLocation&);
+};
+
+
+class GridError : public geo::Exception {
+public:
+
+    explicit GridError(const std::string&, const CodeLocation&);
+};
+
+
 class OrderError : public geo::Exception {
 public:
 

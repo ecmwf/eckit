@@ -33,6 +33,10 @@ public:
 
     const std::string& type() const override;
 
+private:
+
+    // -- Overridden methods
+
     void fill_spec(spec::Custom&) const override {}
 };
 

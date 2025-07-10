@@ -75,6 +75,11 @@ std::string Figure::spec_str() const {
 }
 
 
+bool Figure::spherical() const {
+    return types::is_approximately_equal(a(), b());
+}
+
+
 double Figure::eccentricity() const {
     return figure::OblateSpheroid::eccentricity(a(), b());
 }

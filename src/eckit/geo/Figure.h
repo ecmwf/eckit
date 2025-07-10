@@ -81,6 +81,7 @@ public:
     std::string spec_str() const;
     std::string proj_str() const;
 
+    bool spherical() const;
     double eccentricity() const;
     double flattening() const;
 

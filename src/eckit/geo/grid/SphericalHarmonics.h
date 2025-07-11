@@ -28,6 +28,8 @@ public:
 
     // -- Methods
 
+    [[nodiscard]] static Spec* spec(const std::string& name);
+
     size_t truncation() const { return truncation_; }
 
     // -- Overridden methods

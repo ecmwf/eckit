@@ -12,6 +12,8 @@
 
 #include "eckit/geo/grid/SphericalHarmonics.h"
 
+#include <regex>
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"

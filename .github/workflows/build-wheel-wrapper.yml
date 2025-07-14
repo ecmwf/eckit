@@ -31,9 +31,8 @@ on:
 jobs:
   python-wrapper-wheel:
     name: Python Wrapper Wheel
-    uses: ecmwf/reusable-workflows/.github/workflows/python-wrapper-wheel.yml@main
+    uses: ecmwf/reusable-workflows/.github/workflows/python-wrapper-wheel.yml@act/pyWrapWheel/fixMacosVersion
     with:
       use_test_pypi: ${{ inputs.use_test_pypi }}
-    secrets: inherit
-    with:
       wheel_directory: python/eckitlib
+    secrets: inherit

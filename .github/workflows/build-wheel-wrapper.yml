@@ -33,7 +33,6 @@ jobs:
     name: Python Wrapper Wheel
     uses: ecmwf/reusable-workflows/.github/workflows/python-wrapper-wheel.yml@main
     with:
+      wheel_directory: python/eckitlib
       use_test_pypi: ${{ inputs.use_test_pypi }}
     secrets: inherit
-    with:
-      wheel_directory: python/eckitlib

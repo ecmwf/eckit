@@ -78,10 +78,12 @@ public:
     long getLong(const std::string& key) const;
     double getDouble(const std::string& key) const;
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
+    void getFloatArray(const std::string& key, std::vector<float>&) const;
     size_t getSize(const std::string& key) const;
 
     // Write double array at key to pre allocated array
     void getDoubleArray(const std::string& key, double* data, size_t len) const;
+    void getFloatArray(const std::string& key, float* data, size_t len) const;
 
     void getMetadata(MetadataGatherer&, GetMetadataOptions options = GetMetadataOptions{}) const;
 

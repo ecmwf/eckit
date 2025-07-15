@@ -63,10 +63,13 @@ public:
 
     virtual void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
+    virtual void getFloatArray(const std::string& key, std::vector<float>&) const;
+
     virtual size_t getSize(const std::string& key) const;
 
     // Write double array at key to pre allocated array.
     virtual void getDoubleArray(const std::string& key, double* data, size_t len) const;
+    virtual void getFloatArray(const std::string& key, float* data, size_t len) const;
 
     virtual eckit::DataHandle* readHandle() const;
 

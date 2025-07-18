@@ -1,0 +1,203 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/*
+ * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
+ * (Grant agreement: 101092984) horizon-opencube.eu
+ */
+
+#include "eckit/io/fam/FamObject.h"
+
+#include <cstdint>
+#include <memory>
+#include <ostream>
+#include <string>
+
+#include "fam/fam.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/detail/FamSessionDetail.h"
+
+namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+FamObject::FamObject(FamSessionDetail& session, FamObjectDescriptor* object) :
+    session_{session.shared_from_this()}, object_{object} {
+    ASSERT(session_);
+    ASSERT(object_);
+}
+
+FamObject::FamObject(FamSessionDetail& session, const std::uint64_t region, const std::uint64_t offset) :
+    session_{session.shared_from_this()},
+    object_{std::make_shared<FamObjectDescriptor>(Fam_Global_Descriptor{region, offset})} {
+    ASSERT(session_);
+    ASSERT(object_);
+}
+
+bool FamObject::operator==(const FamObject& other) const {
+    const auto desc   = object_->get_global_descriptor();
+    const auto o_desc = other.object_->get_global_descriptor();
+    return (desc.regionId == o_desc.regionId && desc.offset == o_desc.offset);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// OPERATIONS
+
+void FamObject::replaceWith(const FamDescriptor& object) {
+    object_ = std::make_unique<FamObjectDescriptor>(Fam_Global_Descriptor{object.region, object.offset});
+}
+
+void FamObject::deallocate() const {
+    session_->deallocateObject(*object_);
+}
+
+auto FamObject::exists() const -> bool {
+    return (object_->get_desc_status() != FamDescriptorStatus::DESC_INVALID);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// PROPERTIES
+
+auto FamObject::regionId() const -> fam::index_t {
+    return object_->get_global_descriptor().regionId;
+}
+
+auto FamObject::offset() const -> fam::index_t {
+    return object_->get_global_descriptor().offset;
+}
+
+auto FamObject::size() const -> fam::size_t {
+    return object_->get_size();
+}
+
+auto FamObject::permissions() const -> fam::perm_t {
+    return object_->get_perm();
+}
+
+auto FamObject::name() const -> std::string {
+    return object_->get_name() ? object_->get_name() : "";
+}
+
+auto FamObject::property() const -> FamProperty {
+    return {size(), permissions(), name(), object_->get_uid(), object_->get_gid()};
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// DATA
+
+void FamObject::put(const void* buffer, const fam::size_t offset, const fam::size_t length) const {
+    session_->put(*object_, buffer, offset, length);
+}
+
+void FamObject::get(void* buffer, const fam::size_t offset, const fam::size_t length) const {
+    session_->get(*object_, buffer, offset, length);
+}
+
+auto FamObject::buffer(const fam::size_t offset) const -> Buffer {
+    Buffer buffer(size() - offset);
+    get(buffer.data(), offset, buffer.size());
+    return buffer;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// ATOMIC
+
+template <typename T>
+auto FamObject::fetch(const fam::size_t offset) const -> T {
+    return session_->fetch<T>(*object_, offset);
+}
+
+template <typename T>
+void FamObject::set(const fam::size_t offset, const T value) const {
+    session_->set<T>(*object_, offset, value);
+}
+
+template <typename T>
+void FamObject::add(const fam::size_t offset, const T value) const {
+    session_->add<T>(*object_, offset, value);
+}
+
+template <typename T>
+void FamObject::subtract(const fam::size_t offset, const T value) const {
+    session_->subtract<T>(*object_, offset, value);
+}
+
+template <typename T>
+auto FamObject::swap(const fam::size_t offset, const T value) const -> T {  // NOLINT
+    return session_->swap<T>(*object_, offset, value);
+}
+
+template <typename T>
+auto FamObject::compareSwap(const fam::size_t offset, const T old_value, const T new_value) const -> T {
+    return session_->compareSwap<T>(*object_, offset, old_value, new_value);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void FamObject::print(std::ostream& out) const {
+    out << "FamObject[" << property() << ", region=" << regionId() << ", offset=" << offset() << "]";
+}
+
+std::ostream& operator<<(std::ostream& out, const FamObject& object) {
+    object.print(out);
+    return out;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// forward instantiations
+
+template auto FamObject::fetch(const fam::size_t) const -> int32_t;
+template auto FamObject::fetch(const fam::size_t) const -> int64_t;
+template auto FamObject::fetch(const fam::size_t) const -> openfam::int128_t;
+template auto FamObject::fetch(const fam::size_t) const -> uint32_t;
+template auto FamObject::fetch(const fam::size_t) const -> uint64_t;
+template auto FamObject::fetch(const fam::size_t) const -> float;
+template auto FamObject::fetch(const fam::size_t) const -> double;
+
+template void FamObject::set(const fam::size_t, const int32_t) const;
+template void FamObject::set(const fam::size_t, const int64_t) const;
+template void FamObject::set(const fam::size_t, const openfam::int128_t) const;
+template void FamObject::set(const fam::size_t, const uint32_t) const;
+template void FamObject::set(const fam::size_t, const uint64_t) const;
+template void FamObject::set(const fam::size_t, const float) const;
+template void FamObject::set(const fam::size_t, const double) const;
+
+template void FamObject::add(const fam::size_t, const int32_t) const;
+template void FamObject::add(const fam::size_t, const int64_t) const;
+template void FamObject::add(const fam::size_t, const uint32_t) const;
+template void FamObject::add(const fam::size_t, const uint64_t) const;
+template void FamObject::add(const fam::size_t, const float) const;
+template void FamObject::add(const fam::size_t, const double) const;
+
+template void FamObject::subtract(const fam::size_t, const int32_t) const;
+template void FamObject::subtract(const fam::size_t, const int64_t) const;
+template void FamObject::subtract(const fam::size_t, const uint32_t) const;
+template void FamObject::subtract(const fam::size_t, const uint64_t) const;
+template void FamObject::subtract(const fam::size_t, const float) const;
+template void FamObject::subtract(const fam::size_t, const double) const;
+
+template auto FamObject::swap(const fam::size_t, const int32_t) const -> int32_t;
+template auto FamObject::swap(const fam::size_t, const int64_t) const -> int64_t;
+template auto FamObject::swap(const fam::size_t, const uint32_t) const -> uint32_t;
+template auto FamObject::swap(const fam::size_t, const uint64_t) const -> uint64_t;
+template auto FamObject::swap(const fam::size_t, const float) const -> float;
+template auto FamObject::swap(const fam::size_t, const double) const -> double;
+
+template auto FamObject::compareSwap(const fam::size_t, const int32_t, const int32_t) const -> int32_t;
+template auto FamObject::compareSwap(const fam::size_t, const int64_t, const int64_t) const -> int64_t;
+template auto FamObject::compareSwap(const fam::size_t, const uint32_t, const uint32_t) const -> uint32_t;
+template auto FamObject::compareSwap(const fam::size_t, const uint64_t, const uint64_t) const -> uint64_t;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit

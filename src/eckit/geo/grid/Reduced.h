@@ -33,8 +33,15 @@ public:
 
     // -- Overridden methods
 
-    std::vector<Point> to_points() const override;
-    std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
+    [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
+    [[nodiscard]] std::vector<Point> to_points() const override;
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
+
+    // Methods
+
+    virtual const std::vector<double>& latitudes() const = 0;
+    virtual std::vector<double> longitudes(size_t) const = 0;
 
 protected:
 
@@ -54,11 +61,6 @@ private:
     // -- Members
 
     mutable std::vector<size_t> nxacc_;
-
-    // Methods
-
-    virtual const std::vector<double>& latitudes() const = 0;
-    virtual std::vector<double> longitudes(size_t) const = 0;
 
     // -- Friends
 

@@ -218,6 +218,18 @@ const std::string& FESOM::type() const {
 }
 
 
+Point FESOM::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.front(), record_.latitudes_.front()};
+}
+
+
+Point FESOM::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.back(), record_.latitudes_.back()};
+}
+
+
 static const GridRegisterType<FESOM> GRIDTYPE("FESOM");
 
 

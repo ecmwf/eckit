@@ -59,7 +59,14 @@ const std::string& RegularXY::type() const {
 
 
 Point RegularXY::first_point() const {
-    // TODO
+    ASSERT(!empty());
+    return PointXY{x().a(), y().a()};  // First longitude and first latitude
+}
+
+
+Point RegularXY::last_point() const {
+    ASSERT(!empty());
+    return PointXY{x().b(), y().b()};  // Last longitude and first latitude
 }
 
 

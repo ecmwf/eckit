@@ -14,6 +14,7 @@
 
 #include <memory>
 
+#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -59,17 +60,46 @@ const std::string& RegularGaussian::type() const {
 
 
 Point RegularGaussian::first_point() const {
-    // TODO
+    ASSERT(!empty());
+    return PointLonLat{x().a(), y().a()};
+}
+
+
+Point RegularGaussian::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{x().b(), y().b()};
 }
 
 
 std::vector<Point> RegularGaussian::to_points() const {
-    // TODO
+    std::vector<Point> points;
+    points.reserve(size());
+
+    for (auto point : *this) {
+        const auto& p = std::get<PointLonLat>(point);
+        points.emplace_back(PointLonLat{p.lon, p.lat});
+    }
+
+    return points;
 }
 
 
 std::pair<std::vector<double>, std::vector<double>> RegularGaussian::to_latlons() const {
-    // TODO
+    const auto N = size();
+
+    std::pair<std::vector<double>, std::vector<double>> latlon;
+    auto& lat = latlon.first;
+    auto& lon = latlon.second;
+    lat.reserve(N);
+    lon.reserve(N);
+
+    for (auto point : *this) {
+        const auto& p = std::get<PointLonLat>(point);
+        lat.emplace_back(p.lat);
+        lon.emplace_back(p.lon);
+    }
+
+    return latlon;
 }
 
 

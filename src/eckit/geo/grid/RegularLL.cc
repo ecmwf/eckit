@@ -16,6 +16,8 @@
 #include <vector>
 
 #include "eckit/geo/Increments.h"
+#include "eckit/geo/projection/Composer.h"
+#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -31,33 +33,30 @@ static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REA
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(Increments{spec}, area::BoundingBox{spec}, projection::Rotation::make_from_spec(spec),
-              [&spec]() -> PointLonLat {
-                  std::vector<PointLonLat::value_type> v(2);
-                  if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
-                      return {v[0], v[1]};
-                  }
+    RegularLL(
+        Increments{spec}, area::BoundingBox{spec},
+        [&spec]() -> PointLonLat {
+            std::vector<PointLonLat::value_type> v(2);
+            if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
+                return {v[0], v[1]};
+            }
 
-                  if (spec.get("reference_lonlat", v) && v.size() == 2) {
-                      return {v[0], v[1]};
-                  }
+            if (spec.get("reference_lonlat", v) && v.size() == 2) {
+                return {v[0], v[1]};
+            }
 
-                  area::BoundingBox area{spec};
-                  return {area.west, area.south};
-              }()) {
+            area::BoundingBox area{spec};
+            return {area.west, area.south};
+        }(),
+        projection::Rotation::make_from_spec(spec)) {
     ASSERT(!empty());
 }
 
 
-RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, projection::Rotation* rotation) :
-    RegularLL(inc, bbox, rotation, {bbox.south, bbox.west}) {}
-
-
-RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, projection::Rotation* rotation,
-                     const PointLonLat& ref) :
+RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref, Projection* proj) :
     Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon, 0.),
              new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat, 0.)},
-            rotation) {
+            proj) {
     ASSERT(!empty());
 }
 
@@ -93,17 +92,46 @@ const std::string& RegularLL::type() const {
 
 
 Point RegularLL::first_point() const {
-    // TODO
+    ASSERT(!empty());
+    return PointLonLat{x().a(), y().a()};  // First longitude and first latitude
+}
+
+
+Point RegularLL::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{x().b(), y().b()};
 }
 
 
 std::vector<Point> RegularLL::to_points() const {
-    // TODO
+    std::vector<Point> points;
+    points.reserve(size());
+
+    for (auto point : *this) {
+        const auto& p = std::get<PointLonLat>(point);
+        points.emplace_back(PointLonLat{p.lon, p.lat});
+    }
+
+    return points;
 }
 
 
 std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlons() const {
-    // TODO
+    const auto N = size();
+
+    std::pair<std::vector<double>, std::vector<double>> latlon;
+    auto& lat = latlon.first;
+    auto& lon = latlon.second;
+    lat.reserve(N);
+    lon.reserve(N);
+
+    for (auto point : *this) {
+        const auto& p = std::get<PointLonLat>(point);
+        lat.emplace_back(p.lat);
+        lon.emplace_back(p.lon);
+    }
+
+    return latlon;
 }
 
 

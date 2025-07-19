@@ -51,6 +51,9 @@ public:
     const order_type& order() const override { return scan_.order(); }
     Reordering reorder(const order_type& to) const override { return scan_.reorder(to); }
 
+    const std::vector<double>& latitudes() const override;
+    std::vector<double> longitudes(size_t j) const override;
+
 private:
 
     // -- Members
@@ -68,9 +71,6 @@ private:
 
     void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;
-
-    const std::vector<double>& latitudes() const override;
-    std::vector<double> longitudes(size_t j) const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 };

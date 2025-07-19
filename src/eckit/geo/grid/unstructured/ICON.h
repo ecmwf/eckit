@@ -63,6 +63,9 @@ public:
     uid_t calculate_uid() const override;
     const std::string& type() const override;
 
+    [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
+
     // -- Class methods
 
     [[nodiscard]] static Spec* spec(const std::string& name);

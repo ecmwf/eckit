@@ -142,6 +142,12 @@ Point Grid::first_point() const {
 }
 
 
+Point Grid::last_point() const {
+    ASSERT(!empty());
+    return to_points().back();
+}
+
+
 std::vector<Point> Grid::to_points() const {
     std::vector<Point> points;
     points.reserve(size());

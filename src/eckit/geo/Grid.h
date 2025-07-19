@@ -25,7 +25,6 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
@@ -160,6 +159,7 @@ public:
     virtual bool isPeriodicWestEast() const;
 
     [[nodiscard]] virtual Point first_point() const;
+    [[nodiscard]] virtual Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 

@@ -16,6 +16,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Reduced.h"
+#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -127,7 +128,7 @@ void ReducedGaussian::fill_spec(spec::Custom& custom) const {
     }
 
     if (order() != order::Scan::order_default()) {
-        custom.set("ordering", order());
+        custom.set("order", order());
     }
 }
 

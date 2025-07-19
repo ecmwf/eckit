@@ -179,6 +179,18 @@ const std::string& ICON::type() const {
 }
 
 
+Point ICON::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.front(), record_.latitudes_.front()};
+}
+
+
+Point ICON::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.back(), record_.latitudes_.back()};
+}
+
+
 static const GridRegisterType<ICON> GRIDTYPE("ICON");
 
 

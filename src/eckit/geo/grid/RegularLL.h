@@ -24,8 +24,8 @@ public:
     // -- Constructors
 
     explicit RegularLL(const Spec&);
-    explicit RegularLL(const Increments&, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
-    RegularLL(const Increments&, const area::BoundingBox&, projection::Rotation*, const PointLonLat& ref);
+    explicit RegularLL(const Increments&, const area::BoundingBox& = {}, const PointLonLat& ref = {0., 0.},
+                       Projection* = nullptr);
 
     // -- Methods
 
@@ -42,6 +42,7 @@ public:
     const std::string& type() const override;
 
     [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
     [[nodiscard]] std::vector<Point> to_points() const override;
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 

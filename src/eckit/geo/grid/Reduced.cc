@@ -18,6 +18,22 @@
 namespace eckit::geo::grid {
 
 
+Point Reduced::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{longitudes(0).front(), latitudes().front()};
+}
+
+
+Point Reduced::last_point() const {
+    ASSERT(!empty());
+
+    auto j = static_cast<int>(ny()) - 1;
+    ASSERT(0 <= j);
+
+    return PointLonLat{longitudes(j).back(), latitudes().back()};
+}
+
+
 std::vector<Point> Reduced::to_points() const {
     std::vector<Point> points;
     points.reserve(size());

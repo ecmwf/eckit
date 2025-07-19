@@ -88,6 +88,16 @@ size_t HEALPix::size() const {
 }
 
 
+Point HEALPix::first_point() const {
+    return order() == order::HEALPix::ring ? Reduced::first_point() : to_points().front();
+}
+
+
+Point HEALPix::last_point() const {
+    return order() == order::HEALPix::ring ? Reduced::last_point() : to_points().back();
+}
+
+
 std::vector<Point> HEALPix::to_points() const {
     const auto points = Reduced::to_points();
 

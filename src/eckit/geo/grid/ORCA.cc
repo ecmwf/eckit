@@ -222,7 +222,13 @@ Grid::uid_t ORCA::calculate_uid() const {
 
 Point ORCA::first_point() const {
     ASSERT(!empty());
-    return PointLonLat{record_.longitudes_[0], record_.latitudes_[0]};
+    return PointLonLat{record_.longitudes_.front(), record_.latitudes_.front()};
+}
+
+
+Point ORCA::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.back(), record_.latitudes_.back()};
 }
 
 

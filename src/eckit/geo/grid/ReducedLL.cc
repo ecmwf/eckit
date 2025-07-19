@@ -85,7 +85,7 @@ void ReducedLL::fill_spec(spec::Custom& custom) const {
     custom.set("pl", pl_);
 
     if (order() != order::Scan::order_default()) {
-        custom.set("ordering", order());
+        custom.set("order", order());
     }
 }
 

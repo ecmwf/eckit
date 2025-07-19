@@ -114,6 +114,8 @@ list(APPEND eckit_geo_srcs
     projection/AlbersEqualArea.h
     projection/Composer.cc
     projection/Composer.h
+    projection/EquidistantCylindrical.cc
+    projection/EquidistantCylindrical.h
     projection/LambertAzimuthalEqualArea.cc
     projection/LambertAzimuthalEqualArea.h
     projection/LambertConformalConic.cc

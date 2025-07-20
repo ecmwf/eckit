@@ -8,23 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/SysLog.h"
+
 #include <unistd.h>
 
 #include <sstream>
-
-#include "eckit/log/Log.h"
-#include "eckit/log/SysLog.h"
-#include "eckit/log/Timer.h"
-#include "eckit/runtime/Main.h"
+#include <string>
+#include <utility>
 
 #include "eckit/log/TimeStamp.h"
 #include "eckit/net/IPAddress.h"
+#include "eckit/runtime/Main.h"
 
 namespace eckit {
 
 
-SysLog::SysLog(const std::string& msg, int msgid, Facility f, Severity s) :
-    facility_(f), severity_(s), appName_(Main::instance().name()), msgid_(msgid), msg_(msg) {
+SysLog::SysLog(std::string msg, int msgid, Facility f, Severity s) :
+    facility_(f), severity_(s), appName_(Main::instance().name()), msgid_(msgid), msg_(std::move(msg)) {
     timestamp_ = TimeStamp("%Y-%m-%dT%H:%M:%SZ");  ///< assumes we are in UTC
 }
 

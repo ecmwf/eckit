@@ -70,7 +70,7 @@ public:  // methods
     static char nilvalue() { return '-'; }
 
 
-    SysLog(const std::string& msg, int msgid = 0, Facility f = SysLog::User, Severity s = SysLog::Info);
+    explicit SysLog(std::string msg, int msgid = 0, Facility f = SysLog::User, Severity s = SysLog::Info);
 
     unsigned priority() const { return facility_ * 8 + severity_; }
 

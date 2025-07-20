@@ -31,13 +31,6 @@ public:
 
     using P::P;
 
-    // -- Methods
-
-    using P::figure;
-
-    using P::spec;
-    using P::spec_str;
-
     // -- Overridden methods
 
     inline Point fwd(const Point& p) const override { return P::inv(p); }

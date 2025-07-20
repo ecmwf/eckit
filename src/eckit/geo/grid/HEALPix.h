@@ -43,7 +43,6 @@ public:
 
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
-    [[nodiscard]] std::vector<Point> to_points() const override;
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     const order_type& order() const override { return healpix_.order(); }

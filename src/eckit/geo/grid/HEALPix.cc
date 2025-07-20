@@ -98,26 +98,6 @@ Point HEALPix::last_point() const {
 }
 
 
-std::vector<Point> HEALPix::to_points() const {
-    const auto points = Reduced::to_points();
-
-    if (order() == order::HEALPix::ring) {
-        return points;
-    }
-
-    ASSERT(order() == order::HEALPix::nested);
-
-    std::vector<Point> points_nested;
-    points_nested.reserve(size());
-
-    for (size_t i = 0; i < size(); ++i) {
-        points_nested.emplace_back(std::get<PointLonLat>(points[healpix_.nest_to_ring(static_cast<int>(i))]));
-    }
-
-    return points_nested;
-}
-
-
 std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlons() const {
     std::pair<std::vector<double>, std::vector<double>> latlon;
     latlon.first.reserve(size());

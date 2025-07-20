@@ -53,18 +53,14 @@ public:
 
     using order_type = Order::value_type;
 
-    struct Iterator final : std::unique_ptr<geo::Iterator> {
-        explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
+    struct Iterator final : std::shared_ptr<geo::Iterator> {
+        explicit Iterator(geo::Iterator* it) : shared_ptr(it) { ASSERT(shared_ptr::operator bool()); }
 
-        using difference_type = unique_ptr::element_type::difference_type;
-
-        Iterator(const Iterator&) = delete;
-        Iterator(Iterator&&)      = delete;
-
-        ~Iterator() = default;
-
-        void operator=(const Iterator&) = delete;
-        void operator=(Iterator&&)      = delete;
+        using iterator_category = element_type::iterator_category;
+        using difference_type   = element_type::difference_type;
+        using value_type        = element_type::value_type;
+        using pointer           = element_type::pointer;
+        using reference         = element_type::reference;
 
         bool operator==(const Iterator& other) const { return get()->operator==(*(other.get())); }
         bool operator!=(const Iterator& other) const { return get()->operator!=(*(other.get())); }
@@ -89,25 +85,19 @@ public:
         NextIterator(const NextIterator&) = delete;
         NextIterator(NextIterator&&)      = delete;
 
-        ~NextIterator() {
-            delete current_;
-            delete end_;
-        }
-
         void operator=(const NextIterator&) = delete;
         void operator=(NextIterator&&)      = delete;
 
-        bool next(Point&) const;
-        bool has_next() const { return *current_ != *end_; }
-        size_t index() const { return index_; }
+        bool next(Point&);
+        bool has_next() const { return current_ != end_; }
+        size_t index() const { return current_.index(); }
 
     private:
 
-        NextIterator(geo::Iterator* current, const geo::Iterator* end);
+        NextIterator(Iterator&& current, Iterator&& end) : current_(std::move(current)), end_(std::move(end)) {}
 
-        geo::Iterator* current_;
-        const geo::Iterator* end_;
-        mutable size_t index_;
+        Iterator current_;
+        Iterator end_;
 
         friend class Grid;
     };
@@ -134,11 +124,9 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    NextIterator next_iterator() const { return {cbegin().release(), cend().release()}; }
+    NextIterator next_iterator() const { return {cbegin(), cend()}; }
 
-    [[nodiscard]] NextIterator* make_next_iterator() const {
-        return new NextIterator{cbegin().release(), cend().release()};
-    }
+    [[nodiscard]] NextIterator* make_next_iterator() const { return new NextIterator{cbegin(), cend()}; }
 
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }

@@ -60,18 +60,13 @@ const std::string& RegularXY::type() const {
 
 Point RegularXY::first_point() const {
     ASSERT(!empty());
-    return PointXY{x().a(), y().a()};  // First longitude and first latitude
+    return PointXY{x().values().front(), y().values().front()};
 }
 
 
 Point RegularXY::last_point() const {
     ASSERT(!empty());
-    return PointXY{x().b(), y().b()};  // Last longitude and first latitude
-}
-
-
-std::vector<Point> RegularXY::to_points() const {
-    // TODO
+    return PointXY{x().values().back(), y().values().back()};
 }
 
 

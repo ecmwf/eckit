@@ -40,7 +40,6 @@ public:
 
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
-    [[nodiscard]] std::vector<Point> to_points() const override;
 
 protected:
 

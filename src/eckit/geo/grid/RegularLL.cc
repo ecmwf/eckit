@@ -16,7 +16,8 @@
 #include <vector>
 
 #include "eckit/geo/Increments.h"
-#include "eckit/geo/projection/Composer.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
@@ -56,7 +57,7 @@ RegularLL::RegularLL(const Spec& spec) :
 RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref, Projection* proj) :
     Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon, 0.),
              new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat, 0.)},
-            proj) {
+            proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
     ASSERT(!empty());
 }
 
@@ -93,26 +94,13 @@ const std::string& RegularLL::type() const {
 
 Point RegularLL::first_point() const {
     ASSERT(!empty());
-    return PointLonLat{x().a(), y().a()};  // First longitude and first latitude
+    return PointLonLat{x().values().front(), y().values().front()};  // First longitude and first latitude
 }
 
 
 Point RegularLL::last_point() const {
     ASSERT(!empty());
-    return PointLonLat{x().b(), y().b()};
-}
-
-
-std::vector<Point> RegularLL::to_points() const {
-    std::vector<Point> points;
-    points.reserve(size());
-
-    for (auto point : *this) {
-        const auto& p = std::get<PointLonLat>(point);
-        points.emplace_back(PointLonLat{p.lon, p.lat});
-    }
-
-    return points;
+    return PointLonLat{x().values().back(), y().values().back()};
 }
 
 

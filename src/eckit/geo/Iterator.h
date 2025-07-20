@@ -13,6 +13,7 @@
 #pragma once
 
 #include <cstddef>
+#include <iterator>
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/spec/Custom.h"
@@ -36,12 +37,16 @@ public:
     using builder_t = BuilderT1<Iterator>;
     using ARG1      = const Spec&;
 
-    using difference_type = std::ptrdiff_t;
+    using iterator_category = std::input_iterator_tag;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = Point;
+    using pointer           = value_type*;
+    using reference         = value_type&;
 
     // -- Constructors
 
-    Iterator(const Iterator&) = delete;
-    Iterator(Iterator&&)      = delete;
+    Iterator(const Iterator&) = default;
+    Iterator(Iterator&&)      = default;
 
     // -- Destructor
 
@@ -49,8 +54,8 @@ public:
 
     // -- Operators
 
-    void operator=(const Iterator&) = delete;
-    void operator=(Iterator&&)      = delete;
+    Iterator& operator=(const Iterator&) = default;
+    Iterator& operator=(Iterator&&)      = default;
 
     virtual bool operator==(const Iterator&) const = 0;
     bool operator!=(const Iterator& other) const { return !operator==(other); }
@@ -62,7 +67,7 @@ public:
     virtual bool operator-=(difference_type diff) { return operator+=(-diff); }
 
     virtual explicit operator bool() const = 0;
-    virtual Point operator*() const        = 0;
+    virtual value_type operator*() const   = 0;
 
     // -- Methods
 

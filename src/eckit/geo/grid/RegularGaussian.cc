@@ -61,13 +61,13 @@ const std::string& RegularGaussian::type() const {
 
 Point RegularGaussian::first_point() const {
     ASSERT(!empty());
-    return PointLonLat{x().a(), y().a()};
+    return PointLonLat{x().values().front(), y().values().front()};
 }
 
 
 Point RegularGaussian::last_point() const {
     ASSERT(!empty());
-    return PointLonLat{x().b(), y().b()};
+    return PointLonLat{x().values().back(), y().values().back()};
 }
 
 

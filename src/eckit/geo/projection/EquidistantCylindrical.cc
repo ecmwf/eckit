@@ -29,18 +29,14 @@ EquidistantCylindrical::EquidistantCylindrical(const Spec& spec) :
     EquidistantCylindrical(spec.get_double("lat_ts", 0.), spec.get_double("lat_0", 0.)) {}
 
 
-EquidistantCylindrical::EquidistantCylindrical(double lat_ts, double lat_0) : lat_ts_(lat_ts), lat_0_(lat_0) {
-    auto validate_latitude = [](double lat) {
-        return types::is_strictly_greater(NORTH_POLE.lat, lat, PointLonLat::EPS) &&
-               types::is_strictly_greater(lat, SOUTH_POLE.lat, PointLonLat::EPS);
-    };
-
-    ASSERT(validate_latitude(lat_ts_));
-    ASSERT(validate_latitude(lat_0_));
+EquidistantCylindrical::EquidistantCylindrical(double lat_ts, double lat_0) :
+    lat_ts_(types::is_approximately_equal(lat_ts, 0., PointLonLat::EPS) ? 0. : lat_ts), lat_0_(lat_0) {
+    auto cos_lat_ts = std::cos(util::DEGREE_TO_RADIAN * lat_ts_);
+    ASSERT(!types::is_approximately_equal(0., cos_lat_ts));
 
     struct General final : Implementation {
-        explicit General(double lat_ts, double lat_0) :
-            cos_lat_ts_(std::cos(util::DEGREE_TO_RADIAN * lat_ts)), inv_cos_lat_ts_(1. / cos_lat_ts_), lat_0_(lat_0) {}
+        explicit General(double cos_lat_ts, double lat_0) :
+            cos_lat_ts_(cos_lat_ts), inv_cos_lat_ts_(1. / cos_lat_ts_), lat_0_(lat_0) {}
         PointXY fwd(const PointLonLat& p) const override { return {p.lon * cos_lat_ts_, p.lat - lat_0_}; }
         PointLonLat inv(const PointXY& q) const override { return {q.X * inv_cos_lat_ts_, q.Y + lat_0_}; }
         const double cos_lat_ts_;
@@ -55,8 +51,9 @@ EquidistantCylindrical::EquidistantCylindrical(double lat_ts, double lat_0) : la
         const double lat_0_;
     };
 
-    impl_.reset(types::is_approximately_equal(lat_ts_, 0.) ? static_cast<Implementation*>(new Specific(lat_0_))
-                                                           : new General(lat_ts_, lat_0_));
+    impl_.reset(types::is_approximately_equal(lat_ts_, 0., PointLonLat::EPS)
+                    ? static_cast<Implementation*>(new Specific(lat_0_))
+                    : new General{cos_lat_ts, lat_0_});
 }
 
 

@@ -42,7 +42,7 @@ HEALPix::HEALPix(size_t Nside, order_type order) :
 
 
 Grid::iterator HEALPix::cbegin() const {
-    (void)to_points();
+    std::ignore = to_points();
     ASSERT(points_);
 
     return iterator{new geo::iterator::Unstructured(*this, 0, points_)};

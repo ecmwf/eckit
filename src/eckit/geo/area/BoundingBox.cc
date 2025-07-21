@@ -26,9 +26,9 @@
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/Composer.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
-#include "eckit/geo/projection/XYToLonLat.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
@@ -401,7 +401,7 @@ BoundingBox BoundingBox::make_from_projection(PointXY min, PointXY max, const Pr
 
 BoundingBox BoundingBox::make_from_projection(PointLonLat min, PointLonLat max, const projection::Rotation& rotation) {
     projection::Composer projection{new projection::Reverse<projection::Rotation>(rotation.spec()),
-                                    new projection::Reverse<projection::XYToLonLat>};
+                                    new projection::EquidistantCylindrical};
 
     auto after = make_from_projection(PointXY{min.lon, min.lat}, PointXY{max.lon, max.lat}, projection);
     if (after.periodic()) {

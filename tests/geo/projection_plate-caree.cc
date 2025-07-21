@@ -24,15 +24,15 @@ using P = std::unique_ptr<Projection>;
 
 
 CASE("projection: plate-caree") {
-    Point p = PointLonLat{1, 1};
-    Point q = PointXY{1, 1};
+    Point p = PointXY{1, 1};
+    Point q = PointLonLat{1, 1};
     P projection(ProjectionFactoryType::instance().get("plate-carree").create(spec::Custom{}));
 
     EXPECT(points_equal(q, projection->inv(p)));
-    EXPECT(std::holds_alternative<PointXY>(projection->inv(p)));
+    EXPECT(std::holds_alternative<PointLonLat>(projection->inv(p)));
 
     EXPECT(points_equal(p, projection->fwd(q)));
-    EXPECT(std::holds_alternative<PointLonLat>(projection->fwd(q)));
+    EXPECT(std::holds_alternative<PointXY>(projection->fwd(q)));
 }
 
 

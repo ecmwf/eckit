@@ -22,7 +22,8 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionRegisterType<EquidistantCylindrical> PROJECTION("eqc");
+static ProjectionRegisterType<EquidistantCylindrical> PROJECTION1("eqc");
+static ProjectionRegisterType<EquidistantCylindrical> PROJECTION2("plate-carree");
 
 
 EquidistantCylindrical::EquidistantCylindrical(const Spec& spec) :
@@ -64,15 +65,20 @@ const std::string& EquidistantCylindrical::type() const {
 
 
 void EquidistantCylindrical::fill_spec(spec::Custom& custom) const {
-    auto custom_angle = [&custom](const std::string& key, double angle) {
-        if (!types::is_approximately_equal(angle, 0., PointLonLat::EPS)) {
-            custom.set(key, angle);
+    // this is the default projection so spec is only set with non-default parameters
+    if (auto set_lat_ts = !types::is_approximately_equal(lat_ts_, 0., PointLonLat::EPS),
+        set_lat_0       = !types::is_approximately_equal(lat_0_, 0., PointLonLat::EPS);
+        set_lat_ts || set_lat_0) {
+        if (set_lat_ts) {
+            custom.set("lat_ts", lat_ts_);
         }
-    };
 
-    custom_angle("lat_ts", lat_ts_);
-    custom_angle("lat_0", lat_0_);
-    custom.set("type", type());
+        if (set_lat_0) {
+            custom.set("lat_0", lat_0_);
+        }
+
+        custom.set("type", type());
+    }
 }
 
 

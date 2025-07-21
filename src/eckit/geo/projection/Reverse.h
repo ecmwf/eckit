@@ -42,7 +42,11 @@ private:
 
     void fill_spec(spec::Custom& custom) const override {
         P::fill_spec(custom);
-        custom.set("type", "reverse_" + custom.get_string("type"));
+
+        // spec is only set of non-default projection, or default projection with non-default parameters
+        if (!custom.empty()) {
+            custom.set("type", "reverse-" + custom.get_string("type"));
+        }
     }
 };
 

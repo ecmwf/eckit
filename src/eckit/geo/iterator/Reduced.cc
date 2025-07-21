@@ -95,7 +95,7 @@ Reduced::operator bool() const {
 
 
 Point Reduced::operator*() const {
-    return projection_.fwd(PointLonLat{longitudes_j_.at(index_ - niacc_[j_]), latitudes_.at(j_)});
+    return projection_.fwd(PointXY{longitudes_j_.at(index_ - niacc_[j_]), latitudes_.at(j_)});
 }
 
 

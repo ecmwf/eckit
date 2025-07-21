@@ -16,7 +16,8 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/projection/Rotation.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -40,23 +41,30 @@ Range* make_y_range(size_t N, area::BoundingBox* bbox) {
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
     ReducedGaussian(spec.get_long_vector("pl"), new area::BoundingBox(area::BoundingBox::make_from_spec(spec)),
-                    projection::Rotation::make_from_spec(spec)) {}
+                    spec.has("projection") ? Projection::make_from_spec(spec)
+                                           : new projection::Reverse<projection::EquidistantCylindrical>) {}
 
 
-ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, projection::Rotation* rotation) :
-    ReducedGaussian(pl.size() / 2, pl, bbox, rotation) {}
+ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, Projection* proj) :
+    ReducedGaussian(pl.size() / 2, pl, bbox, proj) {}
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, projection::Rotation* rotation) :
-    Reduced(bbox, rotation), N_(N), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
+ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, Projection* proj) :
+    Reduced(bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
+    N_(N),
+    pl_(pl),
+    j_(0),
+    Nj_(pl.size()),
+    x_(Nj_),
+    y_(make_y_range(N, bbox)) {
     ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
     ASSERT(y_);
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, area::BoundingBox* bbox, projection::Rotation* rotation) :
-    ReducedGaussian(N, util::reduced_octahedral_pl(N), bbox, rotation) {}
+ReducedGaussian::ReducedGaussian(size_t N, area::BoundingBox* bbox, Projection* proj) :
+    ReducedGaussian(N, util::reduced_octahedral_pl(N), bbox, proj) {}
 
 
 Grid::iterator ReducedGaussian::cbegin() const {

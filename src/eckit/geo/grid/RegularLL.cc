@@ -18,7 +18,6 @@
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -49,7 +48,8 @@ RegularLL::RegularLL(const Spec& spec) :
             area::BoundingBox area{spec};
             return {area.west, area.south};
         }(),
-        projection::Rotation::make_from_spec(spec)) {
+        spec.has("projection") ? Projection::make_from_spec(spec)
+                               : new projection::Reverse<projection::EquidistantCylindrical>) {
     ASSERT(!empty());
 }
 

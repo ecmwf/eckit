@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include <memory>
+
+#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/HEALPix.h"
 
@@ -41,9 +44,7 @@ public:
     size_t nx(size_t j) const override;
     size_t ny() const override;
 
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
-    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
+    [[nodiscard]] std::vector<Point> to_points() const override;
 
     const order_type& order() const override { return healpix_.order(); }
     Reordering reorder(const order_type& to) const override { return healpix_.reorder(to); }
@@ -70,6 +71,7 @@ private:
     const size_t Nside_;
     order::HEALPix healpix_;
 
+    mutable std::shared_ptr<container::PointsInstance> points_;
     mutable std::vector<double> latitudes_;
 
     // -- Overridden methods

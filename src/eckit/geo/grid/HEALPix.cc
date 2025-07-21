@@ -16,11 +16,12 @@
 #include <cctype>
 #include <cmath>
 #include <regex>
+#include <utility>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/projection/None.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 
@@ -36,19 +37,20 @@ HEALPix::HEALPix(const Spec& spec) :
             spec.get_string("order", order::HEALPix::order_default())) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), healpix_(order, HEALPix::size_from_nside(Nside)) {}
+HEALPix::HEALPix(size_t Nside, order_type order) :
+    Reduced({}, new projection::None), Nside_(Nside), healpix_(order, HEALPix::size_from_nside(Nside)) {}
 
 
 Grid::iterator HEALPix::cbegin() const {
-    return order() == order::HEALPix::ring ? iterator{new geo::iterator::Reduced(*this, 0)}
-                                           : iterator{new geo::iterator::Unstructured(
-                                                 *this, 0, std::make_shared<container::PointsInstance>(to_points()))};
+    (void)to_points();
+    ASSERT(points_);
+
+    return iterator{new geo::iterator::Unstructured(*this, 0, points_)};
 }
 
 
 Grid::iterator HEALPix::cend() const {
-    return order() == order::HEALPix::ring ? iterator{new geo::iterator::Reduced(*this, size())}
-                                           : iterator{new geo::iterator::Unstructured(*this)};
+    return iterator{new geo::iterator::Unstructured(*this)};
 }
 
 
@@ -88,28 +90,25 @@ size_t HEALPix::size() const {
 }
 
 
-Point HEALPix::first_point() const {
-    return order() == order::HEALPix::ring ? Reduced::first_point() : to_points().front();
-}
+std::vector<Point> HEALPix::to_points() const {
+    if (!points_) {
+        // reorder to this grid's order
+        const auto ren = order::HEALPix(order::HEALPix::ring, size()).reorder(order());
 
+        std::vector<Point> points(size());
 
-Point HEALPix::last_point() const {
-    return order() == order::HEALPix::ring ? Reduced::last_point() : to_points().back();
-}
+        const auto& lats = latitudes();
+        for (size_t j = 0, k = 0; j < lats.size(); ++j) {
+            for (const auto lon : longitudes(j)) {
+                points[ren.at(k++)] = PointLonLat{lon, lats[j]};
+            }
+        }
 
-
-std::pair<std::vector<double>, std::vector<double>> HEALPix::to_latlons() const {
-    std::pair<std::vector<double>, std::vector<double>> latlon;
-    latlon.first.reserve(size());
-    latlon.second.reserve(size());
-
-    for (const auto& p : to_points()) {
-        const auto& q = std::get<PointLonLat>(p);
-        latlon.first.push_back(q.lat);
-        latlon.second.push_back(q.lon);
+        points_ = std::make_shared<container::PointsInstance>(std::move(points));
     }
 
-    return latlon;
+    ASSERT(points_);
+    return points_->to_points();
 }
 
 

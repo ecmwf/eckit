@@ -25,8 +25,8 @@ public:
 
     explicit RegularGaussian(const Spec&);
     explicit RegularGaussian(size_t N,
-                             area::BoundingBox*    = new area::BoundingBox(area::BoundingBox::make_global_prime()),
-                             projection::Rotation* = nullptr);
+                             area::BoundingBox* = new area::BoundingBox(area::BoundingBox::make_global_prime()),
+                             Projection*        = nullptr);
 
     // -- Methods
 
@@ -38,8 +38,6 @@ public:
 
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
-    [[nodiscard]] std::vector<Point> to_points() const override;
-    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 

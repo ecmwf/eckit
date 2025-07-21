@@ -12,9 +12,8 @@
 
 #include "eckit/geo/grid/RegularGaussian.h"
 
-#include <memory>
-
-#include "eckit/geo/projection/Rotation.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -26,13 +25,14 @@ namespace eckit::geo::grid {
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
     RegularGaussian(spec.get_unsigned("N"), new area::BoundingBox(area::BoundingBox::make_from_spec(spec)),
-                    projection::Rotation::make_from_spec(spec)) {}
+                    spec.has("projection") ? Projection::make_from_spec(spec)
+                                           : new projection::Reverse<projection::EquidistantCylindrical>) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, area::BoundingBox* bbox, projection::Rotation* rotation) :
+RegularGaussian::RegularGaussian(size_t N, area::BoundingBox* bbox, Projection* proj) :
     Regular({range::RegularLongitude(4 * N, 0., 360.).make_range_cropped(bbox->west, bbox->east),
              range::GaussianLatitude(N, false).make_range_cropped(bbox->north, bbox->south)},
-            rotation),
+            proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
     N_(N) {
     ASSERT(!empty());
 }
@@ -68,38 +68,6 @@ Point RegularGaussian::first_point() const {
 Point RegularGaussian::last_point() const {
     ASSERT(!empty());
     return PointLonLat{x().values().back(), y().values().back()};
-}
-
-
-std::vector<Point> RegularGaussian::to_points() const {
-    std::vector<Point> points;
-    points.reserve(size());
-
-    for (auto point : *this) {
-        const auto& p = std::get<PointLonLat>(point);
-        points.emplace_back(PointLonLat{p.lon, p.lat});
-    }
-
-    return points;
-}
-
-
-std::pair<std::vector<double>, std::vector<double>> RegularGaussian::to_latlons() const {
-    const auto N = size();
-
-    std::pair<std::vector<double>, std::vector<double>> latlon;
-    auto& lat = latlon.first;
-    auto& lon = latlon.second;
-    lat.reserve(N);
-    lon.reserve(N);
-
-    for (auto point : *this) {
-        const auto& p = std::get<PointLonLat>(point);
-        lat.emplace_back(p.lat);
-        lon.emplace_back(p.lon);
-    }
-
-    return latlon;
 }
 
 

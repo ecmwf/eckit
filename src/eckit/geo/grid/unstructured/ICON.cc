@@ -169,7 +169,9 @@ std::string ICON::arrangement_to_string(Arrangement a) {
 
 void ICON::fill_spec(spec::Custom& custom) const {
     custom.set("type", "ICON");
-    custom.set("uid", uid());
+    if (auto _uid = uid(); !GridSpecByUID::instance().exists(_uid)) {
+        custom.set("uid", _uid);
+    }
 }
 
 

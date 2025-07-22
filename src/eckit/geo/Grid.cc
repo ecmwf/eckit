@@ -62,11 +62,6 @@ const Spec& Grid::spec() const {
 
         auto& custom = *spec_;
         fill_spec(custom);
-
-        if (std::string name; GridSpecByName::instance().match(custom, name)) {
-            custom.clear();
-            custom.set(className(), name);
-        }
     }
 
     return *spec_;

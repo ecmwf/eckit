@@ -461,6 +461,8 @@ list( APPEND eckit_log_srcs
     log/StatusTarget.h
     log/SysLog.cc
     log/SysLog.h
+    log/TCPTarget.cc
+    log/TCPTarget.h
     log/TeeTarget.cc
     log/TeeTarget.h
     log/TimeStamp.cc

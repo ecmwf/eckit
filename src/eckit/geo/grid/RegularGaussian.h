@@ -24,9 +24,8 @@ public:
     // -- Constructors
 
     explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N,
-                             area::BoundingBox* = new area::BoundingBox(area::BoundingBox::make_global_prime()),
-                             Projection*        = nullptr);
+    explicit RegularGaussian(size_t N, area::BoundingBox* = area::BoundingBox::make_global_prime().release(),
+                             Projection* = nullptr);
 
     // -- Methods
 

@@ -40,7 +40,7 @@ Range* make_y_range(size_t N, area::BoundingBox* bbox) {
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), new area::BoundingBox(area::BoundingBox::make_from_spec(spec)),
+    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec).release(),
                     spec.has("projection") ? Projection::make_from_spec(spec)
                                            : new projection::Reverse<projection::EquidistantCylindrical>) {}
 

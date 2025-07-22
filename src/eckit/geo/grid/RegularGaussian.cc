@@ -24,7 +24,7 @@ namespace eckit::geo::grid {
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), new area::BoundingBox(area::BoundingBox::make_from_spec(spec)),
+    RegularGaussian(spec.get_unsigned("N"), area::BoundingBox::make_from_spec(spec).release(),
                     spec.has("projection") ? Projection::make_from_spec(spec)
                                            : new projection::Reverse<projection::EquidistantCylindrical>) {}
 

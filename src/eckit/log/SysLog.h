@@ -20,10 +20,11 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// SysLog implements the RFC 5424 format for logging
 
 class SysLog {
-
 
 public:
 
@@ -90,6 +91,12 @@ public:  // methods
     /// Follows some application classification therefore semantics is application dependent
     int msgid() const { return msgid_; }
 
+    /// Sets the message ID
+    void msgid(int msg_id);
+
+    /// Sets the message (updates timestamp)
+    void message(std::string msg);
+
     std::string structuredData() const;
 
     operator std::string() const;
@@ -108,6 +115,8 @@ private:  // methods
 
     void print(std::ostream& out) const;
 
+    void updateTimestamp();
+
 private:  // members
 
     Facility facility_;
@@ -125,6 +134,8 @@ private:  // members
     std::string swVersion_;
     std::string enterpriseId_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
 

@@ -25,7 +25,7 @@ namespace eckit::geo::test {
 
 
 static const std::string GRID = "ORCA2_T";
-static const Grid::uid_t UID = "d5bde4f52ff3a9bea5629cd9ac514410";
+static const Grid::uid_t UID  = "d5bde4f52ff3a9bea5629cd9ac514410";
 static const std::vector<long> SHAPE{182, 149};
 
 
@@ -74,7 +74,7 @@ CASE("spec") {
 
     grid::ORCA grid3(UID);
 
-    const std::string expected_spec_str = R"({"grid":")" + GRID + R"(","uid":")" + UID + R"("})";
+    const std::string expected_spec_str = R"({"grid":")" + GRID + R"("})";
     Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
 
     EXPECT(grid3.uid() == UID);

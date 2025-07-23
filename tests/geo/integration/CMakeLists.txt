@@ -179,7 +179,7 @@ foreach(gridspec shape IN ZIP_LISTS TESTS SHAPES)
         TARGET      ${name}_gridspec
         COMMAND     eckit_grid_spec
         ARGS        "${gridspec}"
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/../eckit_geo_cache" )
 
     string(REPLACE "[" [=[\[]=] regex "${gridspec}")
     string(REPLACE "]" [=[\]]=] regex "${regex}")
@@ -190,7 +190,7 @@ foreach(gridspec shape IN ZIP_LISTS TESTS SHAPES)
         TARGET      ${name}_shape
         COMMAND     eckit_grid_spec
         ARGS        "${gridspec}" --shape
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/../eckit_geo_cache" )
 
     string(REPLACE "[" [=[\[]=] regex "${shape}")
     string(REPLACE "]" [=[\]]=] regex "${regex}")

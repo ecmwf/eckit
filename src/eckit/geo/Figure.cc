@@ -55,7 +55,7 @@ double Figure::area() const {
 }
 
 
-double Figure::area(const area::BoundingBox&) {
+double Figure::area(const area::BoundingBox&) const {
     NOTIMP;
 }
 
@@ -72,6 +72,11 @@ spec::Custom* Figure::spec() const {
 std::string Figure::spec_str() const {
     std::unique_ptr<const spec::Custom> custom(spec());
     return custom->str();
+}
+
+
+bool Figure::spherical() const {
+    return types::is_approximately_equal(a(), b());
 }
 
 

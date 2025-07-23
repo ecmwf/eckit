@@ -75,12 +75,13 @@ public:
     virtual double area() const;
 
     /// Surface area between parallels and meridians [L^2]
-    virtual double area(const area::BoundingBox&);
+    virtual double area(const area::BoundingBox&) const;
 
     [[nodiscard]] spec::Custom* spec() const;
     std::string spec_str() const;
     std::string proj_str() const;
 
+    bool spherical() const;
     double eccentricity() const;
     double flattening() const;
 

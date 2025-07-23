@@ -6,6 +6,7 @@ grid_names:
   - ICON_01_R02B05: &ICON_01_R02B05
     description: "Reduced radiation grid (global, R02B05). 80 km resolution."
     type: ICON
+    name: ICON_01_R02B05
     file: "icon_grid_0001_R02B05_R.nc"
     shape: [81920]
     icon_number_of_grid_used: 1
@@ -18,6 +19,7 @@ grid_names:
   - ICON_02_R02B06: &ICON_02_R02B06
     description: "Global R02B06 grid. 40 km resolution."
     type: ICON
+    name: ICON_02_R02B06
     file: "icon_extpar_0002_R02B06_G.g2"
     shape: [327680]
     icon_number_of_grid_used: 2
@@ -30,6 +32,7 @@ grid_names:
   - ICON_03_R02B06: &ICON_03_R02B06
     description: "Reduced radiation grid (global, R02B06). 40 km resolution."
     type: ICON
+    name: ICON_03_R02B06
     file: "icon_grid_0003_R02B06_R.nc"
     shape: [327680]
     icon_number_of_grid_used: 3
@@ -42,6 +45,7 @@ grid_names:
   - ICON_04_R02B07: &ICON_04_R02B07
     description: "Global R02B07 grid. 20 km resolution."
     type: ICON
+    name: ICON_04_R02B07
     file: "icon_extpar_0004_R02B07_G.g2"
     shape: [1310720]
     icon_number_of_grid_used: 4
@@ -54,6 +58,7 @@ grid_names:
   - ICON_05_R03B06: &ICON_05_R03B06
     description: "Reduced radiation grid (global, R03B06)."
     type: ICON
+    name: ICON_05_R03B06
     file: "icon_grid_0005_R03B06_R.nc"
     shape: [737280]
     icon_number_of_grid_used: 5
@@ -66,6 +71,7 @@ grid_names:
   - ICON_06_R03B07: &ICON_06_R03B07
     description: "Global R03B07 grid."
     type: ICON
+    name: ICON_06_R03B07
     file: "icon_extpar_0006_R03B07_G.g2"
     shape: [2949120]
     icon_number_of_grid_used: 6
@@ -78,6 +84,7 @@ grid_names:
   - ICON_07_R02B04: &ICON_07_R02B04
     description: "Reduced radiation grid (global, R02B04). 160 km resolution."
     type: ICON
+    name: ICON_07_R02B04
     file: "icon_grid_0007_R02B04_R.nc"
     shape: [20480]
     icon_number_of_grid_used: 7
@@ -90,6 +97,7 @@ grid_names:
   - ICON_08_R02B05: &ICON_08_R02B05
     description: "Global R02B05 grid. 80 km resolution."
     type: ICON
+    name: ICON_08_R02B05
     file: "icon_extpar_0008_R02B05_G.g2"
     shape: [81920]
     icon_number_of_grid_used: 8
@@ -102,6 +110,7 @@ grid_names:
   - ICON_09_R02B03: &ICON_09_R02B03
     description: "Reduced radiation grid (global, R02B03). 320 km resolution."
     type: ICON
+    name: ICON_09_R02B03
     file: "icon_grid_0009_R02B03_R.nc"
     shape: [5120]
     icon_number_of_grid_used: 9
@@ -114,6 +123,7 @@ grid_names:
   - ICON_10_R02B04: &ICON_10_R02B04
     description: "Global R02B04 grid. 160 km resolution."
     type: ICON
+    name: ICON_10_R02B04
     file: "icon_extpar_0010_R02B04_G.g2"
     shape: [20480]
     icon_number_of_grid_used: 10
@@ -126,6 +136,7 @@ grid_names:
   - ICON_11_R02B03: &ICON_11_R02B03
     description: "Reduced radiation grid (global, R02B03). 320 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_11_R02B03
     file: "icon_grid_0011_R02B03_R.nc"
     icon_number_of_grid_used: 11
     icon_type: hrz_radiation
@@ -138,6 +149,7 @@ grid_names:
   - ICON_12_R02B04: &ICON_12_R02B04
     description: "Global R02B04 grid. 160 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_12_R02B04
     file: "icon_extpar_0012_R02B04_G_20131001.g2"
     shape: [20480]
     icon_number_of_grid_used: 12
@@ -150,6 +162,7 @@ grid_names:
   - ICON_13_R02B04: &ICON_13_R02B04
     description: "Reduced radiation grid (global, R02B04). 160 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_13_R02B04
     file: "icon_grid_0013_R02B04_R.nc"
     shape: [20480]
     icon_number_of_grid_used: 13
@@ -162,6 +175,7 @@ grid_names:
   - ICON_14_R02B05: &ICON_14_R02B05
     description: "Global R02B05 grid. 80 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_14_R02B05
     file: "icon_extpar_0014_R02B05_G_20131001.g2"
     shape: [81920]
     icon_number_of_grid_used: 14
@@ -174,6 +188,7 @@ grid_names:
   - ICON_15_R02B05: &ICON_15_R02B05
     description: "Reduced radiation grid (global, R02B05). 80 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_15_R02B05
     file: "icon_grid_0015_R02B05_R.nc"
     shape: [81920]
     icon_number_of_grid_used: 15
@@ -186,6 +201,7 @@ grid_names:
   - ICON_16_R02B06: &ICON_16_R02B06
     description: "Global R02B06 grid. 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_16_R02B06
     file: "icon_extpar_0016_R02B06_G_20131001.g2"
     shape: [327680]
     icon_number_of_grid_used: 16
@@ -198,6 +214,7 @@ grid_names:
   - ICON_17_R02B06: &ICON_17_R02B06
     description: "Reduced radiation grid (global, R02B06). 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_17_R02B06
     file: "icon_grid_0017_R02B06_R.nc"
     shape: [327680]
     icon_number_of_grid_used: 17
@@ -210,6 +227,7 @@ grid_names:
   - ICON_18_R02B07: &ICON_18_R02B07
     description: "Global R02B07 grid. 20 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_18_R02B07
     file: "icon_extpar_0018_R02B07_G_20131001.g2"
     shape: [1310720]
     icon_number_of_grid_used: 18
@@ -222,6 +240,7 @@ grid_names:
   - ICON_19_R03B05: &ICON_19_R03B05
     description: "Reduced radiation grid (global, R03B05). 53 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_19_R03B05
     file: "icon_grid_0019_R03B05_R.nc"
     shape: [184320]
     icon_number_of_grid_used: 19
@@ -234,6 +253,7 @@ grid_names:
   - ICON_20_R03B06: &ICON_20_R03B06
     description: "Global R03B06 grid. 26 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_20_R03B06
     file: "icon_extpar_0020_R03B06_G_20131001.g2"
     shape: [737280]
     icon_number_of_grid_used: 20
@@ -246,6 +266,7 @@ grid_names:
   - ICON_21_R03B06: &ICON_21_R03B06
     description: "Reduced radiation grid (global, R03B06). 26 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_21_R03B06
     file: "icon_grid_0021_R03B06_R.nc"
     shape: [737280]
     icon_number_of_grid_used: 21
@@ -258,6 +279,7 @@ grid_names:
   - ICON_22_R03B07: &ICON_22_R03B07
     description: "Global R03B07 grid. 13 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_22_R03B07
     file: "icon_extpar_0022_R03B07_G_20131001.g2"
     shape: [2949120]
     icon_number_of_grid_used: 22
@@ -270,6 +292,7 @@ grid_names:
   - ICON_23_R02B05: &ICON_23_R02B05
     description: "Reduced radiation grid (global, R02B05). 80 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_23_R02B05
     file: "icon_grid_0023_R02B05_R.nc"
     shape: [81920]
     icon_number_of_grid_used: 23
@@ -282,6 +305,7 @@ grid_names:
   - ICON_24_R02B06: &ICON_24_R02B06
     description: "Global R02B06 grid. 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_24_R02B06
     file: "icon_extpar_0024_R02B06_G_20140731.g2"
     shape: [327680]
     icon_number_of_grid_used: 24
@@ -294,6 +318,7 @@ grid_names:
   - ICON_25_R03B06: &ICON_25_R03B06
     description: "Reduced radiation grid (global, R03B06). 26 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_25_R03B06
     file: "icon_grid_0025_R03B06_R.nc"
     shape: [737280]
     icon_number_of_grid_used: 25
@@ -306,6 +331,7 @@ grid_names:
   - ICON_26_R03B07: &ICON_26_R03B07
     description: "Global R03B07 grid. 13 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_26_R03B07
     file: "icon_extpar_0026_R03B07_G_20140731.g2"
     shape: [2949120]
     icon_number_of_grid_used: 26
@@ -318,6 +344,7 @@ grid_names:
   - ICON_27_R03B08: &ICON_27_R03B08
     description: "Regional R03B08 grid (Europe). 6.5 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_27_R03B08
     file: "icon_extpar_0027_R03B08_N02_20150224.g2"
     shape: [659156]
     icon_number_of_grid_used: 27
@@ -330,6 +357,7 @@ grid_names:
   - ICON_28_R02B07: &ICON_28_R02B07
     description: "Regional R02B07 grid (Europe). 20 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_28_R02B07
     file: "icon_extpar_0028_R02B07_N02_20150521.g2"
     shape: [75948]
     icon_number_of_grid_used: 28
@@ -342,6 +370,7 @@ grid_names:
   - ICON_29_R02B04: &ICON_29_R02B04
     description: "Reduced radiation grid (global, R02B04). 160 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_29_R02B04
     file: "icon_grid_0029_R02B04_R.nc"
     shape: [20480]
     icon_number_of_grid_used: 29
@@ -354,6 +383,7 @@ grid_names:
   - ICON_30_R02B05: &ICON_30_R02B05
     description: "Global R02B05 grid. 80 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_30_R02B05
     file: "icon_extpar_0030_R02B05_G_20150521.g2"
     shape: [81920]
     icon_number_of_grid_used: 30
@@ -366,6 +396,7 @@ grid_names:
   - ICON_31_R02B06: &ICON_31_R02B06
     description: "Regional R02B06 grid (Europe). 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_31_R02B06
     file: "icon_extpar_0031_R02B06_N02_20150521.g2"
     shape: [19744]
     icon_number_of_grid_used: 31
@@ -378,6 +409,7 @@ grid_names:
   - ICON_32_R03B04: &ICON_32_R03B04
     description: "Reduced radiation grid (global, R03B04). 106 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_32_R03B04
     file: "icon_grid_0032_R03B04_R.nc"
     shape: [46080]
     icon_number_of_grid_used: 32
@@ -390,6 +422,7 @@ grid_names:
   - ICON_33_R03B05: &ICON_33_R03B05
     description: "Global R03B05 grid. 53 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_33_R03B05
     file: "icon_extpar_0033_R03B05_G_20150521.g2"
     shape: [184320]
     icon_number_of_grid_used: 33
@@ -402,6 +435,7 @@ grid_names:
   - ICON_34_R03B06: &ICON_34_R03B06
     description: "Regional R03B06 grid (Europe). 26.5 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_34_R03B06
     file: "icon_extpar_0034_R03B06_N02_20150521.g2"
     shape: [42800]
     icon_number_of_grid_used: 34
@@ -414,6 +448,7 @@ grid_names:
   - ICON_35_R03B05: &ICON_35_R03B05
     description: "Reduced radiation grid (global, R03B05). 53 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_35_R03B05
     file: "icon_grid_0035_R03B05_R.nc"
     shape: [184320]
     icon_number_of_grid_used: 35
@@ -426,6 +461,7 @@ grid_names:
   - ICON_36_R03B06: &ICON_36_R03B06
     description: "Global R03B06 grid. 26.5 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_36_R03B06
     file: "icon_extpar_0036_R03B06_G_20150521.g2"
     shape: [737280]
     icon_number_of_grid_used: 36
@@ -438,6 +474,7 @@ grid_names:
   - ICON_37_R03B07: &ICON_37_R03B07
     description: "Regional R03B07 grid (Europe). 13 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_37_R03B07
     file: "icon_extpar_0037_R03B07_N02_20150521.g2"
     shape: [164984]
     icon_number_of_grid_used: 37
@@ -450,6 +487,7 @@ grid_names:
   - ICON_38_R02B06: &ICON_38_R02B06
     description: "Reduced radiation grid (global, R02B06). 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_38_R02B06
     file: "icon_grid_0038_R02B06_R.nc"
     shape: [327680]
     icon_number_of_grid_used: 38
@@ -462,6 +500,7 @@ grid_names:
   - ICON_39_R02B07: &ICON_39_R02B07
     description: "Global R02B07 grid. 20.0 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_39_R02B07
     file: "icon_extpar_0039_R02B07_G_20150521.g2"
     shape: [1310720]
     icon_number_of_grid_used: 39
@@ -474,6 +513,7 @@ grid_names:
   - ICON_40_R02B08: &ICON_40_R02B08
     description: "Regional R02B08 grid (Europe). 10 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
+    name: ICON_40_R02B08
     file: "icon_extpar_0040_R02B08_N02_20150521.g2"
     shape: [293084]
     icon_number_of_grid_used: 40
@@ -486,6 +526,7 @@ grid_names:
   - ICON_41_R02B09: &ICON_41_R02B09
     description: "Radiation grid (Germany): COSMO-DE area with 5 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_41_R02B09
     file: "icon_grid_0041_R02B09_LR.nc"
     shape: [63380]
     icon_number_of_grid_used: 41
@@ -498,6 +539,7 @@ grid_names:
   - ICON_42_R02B10: &ICON_42_R02B10
     description: "Limited area grid (Germany): COSMO-DE area with 2.5 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_42_R02B10
     file: "icon_extpar_0042_R02B10_L_20180209_tiles.g2"
     shape: [253520]
     icon_number_of_grid_used: 42
@@ -510,6 +552,7 @@ grid_names:
   - ICON_43_R19B06: &ICON_43_R19B06
     description: "Radiation grid (Germany): COSMO-D2 area with 4 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_43_R19B06
     file: "icon_grid_0043_R19B06_LR.nc"
     shape: [134541]
     icon_number_of_grid_used: 43
@@ -522,6 +565,7 @@ grid_names:
   - ICON_44_R19B07: &ICON_44_R19B07
     description: "Limited area grid (Germany): COSMO-D2 area with 2 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_44_R19B07
     file: "icon_extpar_0044_R19B07_L_20180209_tiles.g2"
     shape: [538164]
     icon_number_of_grid_used: 44
@@ -534,6 +578,7 @@ grid_names:
   - ICON_45_R19B08: &ICON_45_R19B08
     description: "Limited area grid (COSMO-D2 nest, Germany) with 1 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_45_R19B08
     file: "icon_extpar_0045_R19B08_LN02_20180209_tiles.g2"
     shape: [716980]
     icon_number_of_grid_used: 45
@@ -546,6 +591,7 @@ grid_names:
   - ICON_46_R19B06: &ICON_46_R19B06
     description: "Radiation grid (Germany): Enhanced COSMO-D2 area with 4 km resolution, generated by Ch. Koziar, 2020-05-27. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_46_R19B06
     file: "icon_grid_0046_R19B06_LR.nc"
     shape: [135510]
     icon_number_of_grid_used: 46
@@ -558,6 +604,7 @@ grid_names:
   - ICON_47_R19B07: &ICON_47_R19B07
     description: "Limited area grid (Germany): Enhanced COSMO-D2 area with 2 km resolution, generated by Ch. Koziar, 2020-05-27. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_47_R19B07
     file: "icon_extpar_0047_R19B07_L_20200527_tiles.g2"
     shape: [542040]
     icon_number_of_grid_used: 47
@@ -570,6 +617,7 @@ grid_names:
   - ICON_48_R03B07: &ICON_48_R03B07
     description: "Radiation grid (Europe): Pollen forecast area with 13 km resolution, generated by J. Foerstner, 2020-11-12. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_48_R03B07
     file: "icon_grid_0048_R03B07_LR.nc"
     shape: [63057]
     icon_number_of_grid_used: 48
@@ -582,6 +630,7 @@ grid_names:
   - ICON_49_R03B08: &ICON_49_R03B08
     description: "Limited area grid (Europe): Pollen forecast area with 6.5 km resolution, generated by J. Foerstner, 2020-11-12. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_49_R03B08
     file: "icon_extpar_0049_R03B08_L_20201112_tiles.g2"
     shape: [252228]
     icon_number_of_grid_used: 49
@@ -594,6 +643,7 @@ grid_names:
   - ICON_50_R02B07: &ICON_50_R02B07
     description: "Regional R02B07 grid (Europe, North Atlantic and North Africa), generated by J. Foerstner, 2021-10-26. Bigger nest for prognostic aerosol forecasts with ICON-ART. 20 km resolution. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_50_R02B07
     file: "icon_extpar_0050_R02B07_N02_20211026_tiles.g2"
     shape: [254588]
     icon_number_of_grid_used: 50
@@ -606,6 +656,7 @@ grid_names:
   - ICON_51_R03B07: &ICON_51_R03B07
     description: "Regional R03B07 grid (Europe, North Atlantic and North Africa), generated by J. Foerstner, 2022-02-28. Bigger nest for prognostic aerosol forecasts with ICON-ART. 13 km resolution. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
+    name: ICON_51_R03B07
     file: "icon_extpar_0051_R03B07_N02_20220301_tiles.g2"
     shape: [571088]
     icon_number_of_grid_used: 51
@@ -618,6 +669,7 @@ grid_names:
   - ICON_52_R03B07: &ICON_52_R03B07
     description: "Radiation grid (Europe): Passive tracer forecast area (ITMS) with 13 km resolution, generated by B. Mamtimin, 2022-06-24. Generated with DWD ICON Tools grid generator."
     type: ICON
+    name: ICON_52_R03B07
     file: "icon_grid_0052_R03B07_LR.nc"
     shape: [123718]
     icon_number_of_grid_used: 52
@@ -630,6 +682,7 @@ grid_names:
   - ICON_53_R03B08: &ICON_53_R03B08
     description: "Limited area grid (Europe): Passive tracer forecast area (ITMS) with 6.5 km resolution, generated by B. Mamtimin, 2022-06-24. Generated with DWD ICON Tools grid generator."
     type: ICON
+    name: ICON_53_R03B08
     file: "icon_extpar_0053_R03B08_L_20231113_tiles.g2"
     shape: [494872]
     icon_number_of_grid_used: 53
@@ -642,6 +695,7 @@ grid_names:
   - ICON_54_R02B04: &ICON_54_R02B04
     description: "Global R02B04 grid. 160 km resolution. Use case: ICON training idealized JW test. Generated by D. Reinert 2023-03-10 with DWD ICON Tools grid generator."
     type: ICON
+    name: ICON_54_R02B04
     file: "icon_grid_0054_R02B04_G.nc"
     shape: [20480]
     icon_number_of_grid_used: 54
@@ -654,6 +708,7 @@ grid_names:
   - ICON_55_R02B05: &ICON_55_R02B05
     description: "Regional R02B05 grid. 80 km resolution. Use case: ICON training idealized JW test. Generated by D. Reinert 2023-03-10 with DWD ICON Tools grid generator."
     type: ICON
+    name: ICON_55_R02B05
     file: "icon_grid_0055_R02B05_N.nc"
     shape: [2656]
     icon_number_of_grid_used: 55
@@ -666,6 +721,7 @@ grid_names:
   - ICON_56_R02B05: &ICON_56_R02B05
     description: "Regional R02B05 grid. 80 km resolution. Use case: ICON training idealized JW test. Generated by D. Reinert 2023-03-10 with DWD ICON Tools grid generator."
     type: ICON
+    name: ICON_56_R02B05
     file: "icon_grid_0056_R02B05_N.nc"
     shape: [2628]
     icon_number_of_grid_used: 56

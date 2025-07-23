@@ -14,6 +14,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/Reduced.h"
@@ -22,17 +23,32 @@
 namespace eckit::geo::iterator {
 
 
+struct Instance {
+    explicit Instance(const Spec& spec) : grid(dynamic_cast<const grid::Reduced*>(GridFactory::build(spec))) {
+        ASSERT(grid);
+    }
+
+    std::unique_ptr<const grid::Reduced> grid;
+};
+
+
+struct ReducedInstance : Instance, Reduced {
+    explicit ReducedInstance(const Spec& spec) : Instance(spec), Reduced(*grid) {}
+};
+
+
 Reduced::Reduced(const Grid& grid, size_t index) :
     grid_(dynamic_cast<const grid::Reduced&>(grid)),
+    projection_(grid_.projection()),
     latitudes_(grid_.latitudes()),
-    niacc_(grid_.niacc()),
+    niacc_(grid_.nxacc()),
     size_(grid.size()),
     j_(0),
     index_(index) {
     if (index_ < size_) {
         longitudes_j_ = grid_.longitudes(j_ = j(index_));
         ASSERT(niacc_[j_] <= index && index_ < niacc_[j_ + 1]);
-        ASSERT(latitudes_.size() == grid_.nj());
+        ASSERT(latitudes_.size() == grid_.ny());
     }
 }
 
@@ -79,7 +95,7 @@ Reduced::operator bool() const {
 
 
 Point Reduced::operator*() const {
-    return PointLonLat{longitudes_j_.at(index_ - niacc_[j_]), latitudes_.at(j_)};
+    return projection_.fwd(PointXY{longitudes_j_.at(index_ - niacc_[j_]), latitudes_.at(j_)});
 }
 
 
@@ -93,9 +109,7 @@ size_t Reduced::j(size_t idx) const {
 }
 
 
-void Reduced::fill_spec(spec::Custom&) const {
-    // FIXME implement
-}
+static const IteratorRegisterType<ReducedInstance> ITERATOR_TYPE("reduced");
 
 
 }  // namespace eckit::geo::iterator

@@ -63,7 +63,6 @@ public:
     // -- Overridden methods
 
     const std::string& type() const override;
-    void fill_spec(spec::Custom&) const override;
 
     bool intersects(BoundingBox&) const override;
     bool contains(const Point&) const override;
@@ -72,6 +71,10 @@ public:
     // -- Class methods
 
     [[nodiscard]] static Polygon* make_from_spec(const Spec&);
+
+private:
+
+    void fill_spec(spec::Custom&) const override;
 };
 
 

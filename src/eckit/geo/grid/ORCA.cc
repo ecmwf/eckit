@@ -16,11 +16,11 @@
 
 #include "eckit/codec/codec.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
@@ -51,7 +51,7 @@ const ORCA::ORCARecord& orca_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
-    static CacheT<PathName, ORCA::ORCARecord> cache;
+    static cache::MemoryCacheT<PathName, ORCA::ORCARecord> cache;
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
@@ -220,6 +220,18 @@ Grid::uid_t ORCA::calculate_uid() const {
 }
 
 
+Point ORCA::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.front(), record_.latitudes_.front()};
+}
+
+
+Point ORCA::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.back(), record_.latitudes_.back()};
+}
+
+
 std::vector<Point> ORCA::to_points() const {
     std::vector<Point> p;
     p.reserve(size());
@@ -274,7 +286,9 @@ std::string ORCA::arrangement_to_string(Arrangement a) {
 
 void ORCA::fill_spec(spec::Custom& custom) const {
     custom.set("grid", name_ + "_" + arrangement_to_string(arrangement_));
-    custom.set("uid", uid());
+    if (auto _uid = uid(); !GridSpecByUID::instance().exists(_uid)) {
+        custom.set("uid", _uid);
+    }
 }
 
 

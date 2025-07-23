@@ -15,23 +15,23 @@
 #include <string>
 #include <vector>
 
-#include "eckit/geo/cache/CacheRoot.h"
+#include "eckit/geo/cache/DiskCache.h"
 
 
 namespace eckit::geo::cache {
 
 
-class Unzip final : public CacheRoot {
+class Unzip final : public DiskCache {
 public:
 
     // -- Constructors
 
-    explicit Unzip(const PathName& root = ".") : CacheRoot(root) {}
+    explicit Unzip(const PathName& root = ".") : DiskCache(root) {}
 
     // -- Methods
 
     PathName to_cached_path(const PathName& zip, const std::string& what = {}, const std::string& prefix = "",
-                            const std::string& extension = ".unzip") const;
+                            const std::string& suffix = ".unzip") const;
 
     // -- Class methods
 

@@ -61,8 +61,6 @@ public:
 
     const std::string& type() const override;
 
-    void fill_spec(spec::Custom&) const override;
-
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
@@ -70,6 +68,12 @@ public:
 
     [[nodiscard]] static Projection* compose_back(Projection*, const Spec&);
     [[nodiscard]] static Projection* compose_front(const Spec&, Projection*);
+
+private:
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
 };
 
 

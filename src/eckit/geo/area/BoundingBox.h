@@ -84,6 +84,9 @@ public:
     bool contains(const BoundingBox&) const;
     bool empty() const;
 
+    /// Surface area, assuming Earth [L^2]
+    double area() const override;
+
     // -- Overridden methods
 
     const std::string& type() const override;
@@ -97,9 +100,9 @@ public:
 
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_global_prime();
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_global_antiprime();
+
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_area(value_type n, value_type w, value_type s,
                                                                      value_type e);
-
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_spec(const Spec&);
 
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_from_projection(PointXY min, PointXY max, const Projection&);

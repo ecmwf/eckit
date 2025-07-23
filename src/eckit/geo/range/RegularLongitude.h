@@ -14,6 +14,7 @@
 
 #include <utility>
 
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/range/Regular.h"
 
 
@@ -25,10 +26,8 @@ public:
 
     // -- Constructors
 
-    explicit RegularLongitude(double inc, double a, double b, double ref, double eps = 0.);
-    explicit RegularLongitude(double inc, double a, double b, double eps = 0.) : RegularLongitude(inc, a, b, a, eps) {}
-
-    explicit RegularLongitude(size_t n, double a, double b, double eps = 0.);
+    explicit RegularLongitude(double inc, double a, double b, double ref);
+    explicit RegularLongitude(size_t n, double a, double b);
 
     // -- Overridden methods
 
@@ -41,8 +40,8 @@ private:
 
     // -- Constructors
 
-    RegularLongitude(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
-        Regular(n, a, b, std::move(values), periodic, eps) {}
+    RegularLongitude(size_t n, double a, double b, std::vector<double>&& values, bool periodic) :
+        Regular(n, a, b, std::move(values), periodic, PointLonLat::EPS) {}
 };
 
 

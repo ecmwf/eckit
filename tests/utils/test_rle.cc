@@ -29,7 +29,7 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void test(const std::vector<long>& in, EncodingClock::duration timeout = std::chrono::milliseconds(2),
+void test(const std::vector<long>& in, EncodingClock::duration timeout = std::chrono::milliseconds(2), long depth = -1,
           long expectedSize = -1) {
 
     std::vector<long> out;
@@ -46,7 +46,7 @@ void test(const std::vector<long>& in, EncodingClock::duration timeout = std::ch
     }
     {
         eckit::Timer timer;
-        t = RLEencode2(in.begin(), in.end(), std::back_inserter(outTimeout), maxLoop, timeout);
+        t = RLEencode2(in.begin(), in.end(), std::back_inserter(outTimeout), maxLoop, timeout, depth);
         LOG_DEBUG_LIB(LibEcKit) << "timeout " << std::chrono::duration_cast<std::chrono::milliseconds>(timeout).count()
                                 << "ms - time elapsed: " << timer.elapsed() << " - output size: " << outTimeout.size()
                                 << std::endl;
@@ -79,7 +79,7 @@ void test(const std::vector<long>& in, EncodingClock::duration timeout = std::ch
 CASE("single") {
     std::vector<long> in = {4};
 
-    test(in, std::chrono::seconds(1), 1);
+    test(in, std::chrono::seconds(1), 10, 1);
 }
 
 CASE("identical") {
@@ -90,7 +90,7 @@ CASE("identical") {
         in.push_back(4);
     }
 
-    test(in, std::chrono::seconds(1), 2);  /// we expect [-1000,4]
+    test(in, std::chrono::seconds(1), 10, 2);  /// we expect [-1000,4]
 }
 
 CASE("interleaved") {
@@ -101,7 +101,7 @@ CASE("interleaved") {
         in.push_back(i % 2);
     }
 
-    test(in, std::chrono::seconds(1), 4);  /// we expect [-500,-2,0,1]
+    test(in, std::chrono::seconds(1), 10, 4);  /// we expect [-500,-2,0,1]
 }
 
 CASE("pattern") {
@@ -112,22 +112,20 @@ CASE("pattern") {
         in.push_back(std::ceil(std::sqrt(i)));
     }
 
-    test(in);
+    test(in, std::chrono::milliseconds(50), 1000);
 }
 
-
-void randTest(int limit) {
+void randTest(int limit, int size = 10000000) {
     std::random_device rd;   // a seed source for the random number engine
     std::mt19937 gen(rd());  // mersenne_twister_engine seeded with rd()
-    std::uniform_int_distribution<> distrib(1, std::numeric_limits<int>::max());
+    std::uniform_int_distribution<> distrib(1, limit);
 
-    size_t size = 10000000;
     std::vector<long> in;
     in.reserve(size);
     for (size_t i = 0; i < size; i++) {
         in.push_back(distrib(gen));
     }
-    test(in);
+    test(in, std::chrono::seconds(2000), 10000);
 }
 
 CASE("randMaxInt") {
@@ -139,11 +137,11 @@ CASE("rand100") {
 }
 
 CASE("rand10") {
-    randTest(10);
+    randTest(10, 1000000);
 }
 
 CASE("rand2") {
-    randTest(2);
+    randTest(2, 1000000);
 }
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -25,7 +25,7 @@ namespace eckit::geo::test {
 
 
 static const std::string GRID = "ICON_55_R02B05";
-static const Grid::uid_t UID = "e234e01a8556e9a84bcb42361d2f24e0";
+static const Grid::uid_t UID  = "e234e01a8556e9a84bcb42361d2f24e0";
 static const std::vector<long> SHAPE{2656};
 
 
@@ -77,9 +77,8 @@ CASE("spec") {
 
     grid::unstructured::ICON grid3(UID);
 
-    // const std::string expected_spec_str = R"({"grid":")" + GRID + R"(","uid":")" + UID + R"("})";
-    const std::string expected_spec_str = R"({"type":"ICON","uid":")" + UID + R"("})";
-    // Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
+    const std::string expected_spec_str = R"({"grid":")" + GRID + R"("})";
+    Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
 
     EXPECT(grid3.uid() == UID);
     EXPECT(static_cast<const Grid&>(grid3).spec_str() == expected_spec_str);

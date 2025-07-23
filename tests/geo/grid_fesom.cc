@@ -26,8 +26,8 @@ namespace eckit::geo::test {
 
 
 static const std::string GRID_N = "pi_N";
-static const Grid::uid_t UID_N = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
-static const size_t SHAPE_N    = 3140;
+static const Grid::uid_t UID_N  = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
+static const size_t SHAPE_N     = 3140;
 
 static const std::string GRID_C = "pi_C";
 static const Grid::uid_t UID_C  = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
@@ -77,7 +77,7 @@ CASE("spec") {
 
     grid::unstructured::FESOM grid3(UID_N);
 
-    const std::string expected_spec_str = R"({"grid":")" + GRID_N + R"(","uid":")" + UID_N + R"("})";
+    const std::string expected_spec_str = R"({"grid":")" + GRID_N + R"("})";
     Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
 
     EXPECT(grid3.uid() == UID_N);

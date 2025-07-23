@@ -12,6 +12,8 @@
 
 #include "eckit/geo/iterator/Regular.h"
 
+#include <memory>
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/Regular.h"
 
@@ -19,16 +21,31 @@
 namespace eckit::geo::iterator {
 
 
+struct Instance {
+    explicit Instance(const Spec& spec) : grid(dynamic_cast<const grid::Regular*>(GridFactory::build(spec))) {
+        ASSERT(grid);
+    }
+
+    std::unique_ptr<const grid::Regular> grid;
+};
+
+
+struct RegularInstance : Instance, Regular {
+    explicit RegularInstance(const Spec& spec) : Instance(spec), Regular(*grid) {}
+};
+
+
 Regular::Regular(const grid::Regular& grid, size_t index) :
-    // grid_(grid),
+    grid_(grid),
+    projection_(grid_.projection()),
     x_(grid.x().values()),
     y_(grid.y().values()),
-    i_(0),
-    j_(0),
+    ix_(0),
+    iy_(0),
     index_(index),
-    ni_(x_.size()),
-    nj_(y_.size()),
-    size_(ni_ * nj_) {}
+    nx_(x_.size()),
+    ny_(y_.size()),
+    size_(nx_ * ny_) {}
 
 
 bool Regular::operator==(const Iterator& other) const {
@@ -38,10 +55,10 @@ bool Regular::operator==(const Iterator& other) const {
 
 
 bool Regular::operator++() {
-    if (index_++, i_++; index_ < size_) {
-        if (i_ >= ni_) {
-            i_ = 0;
-            j_++;
+    if (index_++, ix_++; index_ < size_) {
+        if (ix_ >= nx_) {
+            ix_ = 0;
+            iy_++;
         }
 
         return true;
@@ -63,13 +80,11 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return PointLonLat{x_.at(i_), y_.at(j_)};
+    return projection_.fwd(PointXY{x_.at(ix_), y_.at(iy_)});
 }
 
 
-void Regular::fill_spec(spec::Custom&) const {
-    // FIXME implement
-}
+static const IteratorRegisterType<RegularInstance> ITERATOR_TYPE("regular");
 
 
 }  // namespace eckit::geo::iterator

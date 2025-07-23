@@ -24,7 +24,8 @@
 namespace eckit::geo::grid {
 
 
-RegularXY::RegularXY(const Spec& spec) : Regular(make_ranges_from_spec(spec), ProjectionFactory::build(spec)) {}
+RegularXY::RegularXY(const Spec& spec) :
+    Regular(make_ranges_from_spec(spec), area::BoundingBox(spec), ProjectionFactory::build(spec)) {}
 
 
 Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
@@ -55,6 +56,18 @@ Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
 
 const std::string& RegularXY::type() const {
     return projection().type();
+}
+
+
+Point RegularXY::first_point() const {
+    ASSERT(!empty());
+    return PointXY{x().values().front(), y().values().front()};
+}
+
+
+Point RegularXY::last_point() const {
+    ASSERT(!empty());
+    return PointXY{x().values().back(), y().values().back()};
 }
 
 

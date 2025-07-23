@@ -17,7 +17,7 @@
 
 namespace eckit::geo::util {
 void hash_vector_double(MD5&, const std::vector<double>&);
-}  // namespace eckit::geo::util
+}
 
 
 namespace eckit::geo::container {

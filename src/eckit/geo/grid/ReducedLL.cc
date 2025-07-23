@@ -52,12 +52,12 @@ Grid::iterator ReducedLL::cend() const {
 }
 
 
-size_t ReducedLL::ni(size_t j) const {
+size_t ReducedLL::nx(size_t j) const {
     return pl_.at(j);
 }
 
 
-size_t ReducedLL::nj() const {
+size_t ReducedLL::ny() const {
     return pl_.size();
 }
 
@@ -68,7 +68,7 @@ const std::vector<double>& ReducedLL::latitudes() const {
 
 
 std::vector<double> ReducedLL::longitudes(size_t j) const {
-    auto Ni = ni(j);
+    auto Ni = nx(j);
     if (!x_ || x_->size() != Ni) {
         auto bbox                               = boundingBox();
         const_cast<std::unique_ptr<Range>&>(x_) = std::make_unique<range::RegularLongitude>(Ni, bbox.west, bbox.east);
@@ -85,7 +85,7 @@ void ReducedLL::fill_spec(spec::Custom& custom) const {
     custom.set("pl", pl_);
 
     if (order() != order::Scan::order_default()) {
-        custom.set("ordering", order());
+        custom.set("order", order());
     }
 }
 

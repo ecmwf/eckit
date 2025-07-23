@@ -30,9 +30,9 @@ public:
     // -- Constructors
 
     explicit ReducedGaussian(const Spec&);
-    explicit ReducedGaussian(const pl_type&, area::BoundingBox* = nullptr, projection::Rotation* = nullptr);
-    explicit ReducedGaussian(size_t N, const pl_type&, area::BoundingBox* = nullptr, projection::Rotation* = nullptr);
-    explicit ReducedGaussian(size_t N, area::BoundingBox* = nullptr, projection::Rotation* = nullptr);
+    explicit ReducedGaussian(const pl_type&, area::BoundingBox* = nullptr, Projection* = nullptr);
+    explicit ReducedGaussian(size_t N, const pl_type&, area::BoundingBox* = nullptr, Projection* = nullptr);
+    explicit ReducedGaussian(size_t N, area::BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 
@@ -45,11 +45,14 @@ public:
     iterator cend() const override;
 
     size_t size() const override;
-    size_t ni(size_t j) const override;
-    size_t nj() const override;
+    size_t nx(size_t j) const override;
+    size_t ny() const override;
 
     const order_type& order() const override { return scan_.order(); }
     Reordering reorder(const order_type& to) const override { return scan_.reorder(to); }
+
+    const std::vector<double>& latitudes() const override;
+    std::vector<double> longitudes(size_t j) const override;
 
 private:
 
@@ -68,9 +71,6 @@ private:
 
     void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;
-
-    const std::vector<double>& latitudes() const override;
-    std::vector<double> longitudes(size_t j) const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 };

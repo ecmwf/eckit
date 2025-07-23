@@ -325,7 +325,7 @@ CASE("Spec <- Custom") {
 
 
     SECTION("json") {
-        // test ordering
+        // test order
         std::unique_ptr<Spec> a(new Custom({{"c", "c"}, {"a", "a"}, {"b", 1}}));
 
         const std::string a_str = a->str();

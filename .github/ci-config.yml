@@ -1,4 +1,3 @@
-cmake_options: -DENABLE_ECKIT_GEO=ON
 dependencies: |
   ecmwf/ecbuild
   MathisRosenhauer/libaec@refs/tags/v1.1.3

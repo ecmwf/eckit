@@ -19,10 +19,10 @@
 #include "eckit/geo/util/mutex.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::cache {
 
 
-class Cache {
+class MemoryCache {
 public:
 
     using bytes_size_t = decltype(sizeof(int));
@@ -32,7 +32,7 @@ public:
 
 protected:
 
-    Cache();
+    MemoryCache();
 
 private:
 
@@ -42,7 +42,7 @@ private:
 
 
 template <typename Key, typename Value>
-class CacheT final : private Cache {
+class MemoryCacheT final : private MemoryCache {
 private:
 
     template <typename V>
@@ -59,15 +59,15 @@ public:
     using key_type   = Key;
     using value_type = Value;
 
-    CacheT() : mutex_(new util::recursive_mutex) { ASSERT(mutex_ != nullptr); }
+    MemoryCacheT() : mutex_(new util::recursive_mutex) { ASSERT(mutex_ != nullptr); }
 
-    ~CacheT() { delete mutex_; }
+    ~MemoryCacheT() { delete mutex_; }
 
-    CacheT(const CacheT&) = delete;
-    CacheT(CacheT&&)      = delete;
+    MemoryCacheT(const MemoryCacheT&) = delete;
+    MemoryCacheT(MemoryCacheT&&)      = delete;
 
-    CacheT& operator=(const CacheT&) = delete;
-    CacheT& operator=(CacheT&&)      = delete;
+    MemoryCacheT& operator=(const MemoryCacheT&) = delete;
+    MemoryCacheT& operator=(MemoryCacheT&&)      = delete;
 
     bool contains(const key_type& key) const {
         util::lock_guard<util::recursive_mutex> lock(*mutex_);
@@ -108,4 +108,4 @@ private:
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::cache

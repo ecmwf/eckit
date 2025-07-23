@@ -13,6 +13,7 @@
 #include "eckit/geo/area/BoundingBox.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstddef>
 #include <cstring>
 #include <memory>
@@ -22,12 +23,14 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/Composer.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
-#include "eckit/geo/projection/XYToLonLat.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -56,7 +59,11 @@ PointLonLat longitude_in_range(double reference, const PointLonLat& p) {
 struct BoundLonLat {
     BoundLonLat(PointLonLat min, PointLonLat max) : min_(min), max_(max) {}
 
-    explicit operator BoundingBox() const { return {max_.lat, min_.lon, min_.lat, max_.lon}; }
+    explicit operator BoundingBox() const {
+        // MIR-661 account for "excessive" bounds
+        auto max_lon = std::min(max_.lon, min_.lon + PointLonLat::FULL_ANGLE);
+        return {max_.lat, min_.lon, min_.lat, max_lon};
+    }
 
     void extend(PointLonLat p, PointLonLat eps) {
         ASSERT(0. <= eps.lon && 0. <= eps.lat);
@@ -397,7 +404,7 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointXY min, Poin
 std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, PointLonLat max,
                                                                const projection::Rotation& rotation) {
     projection::Composer projection{new projection::Reverse<projection::Rotation>(rotation.spec()),
-                                    new projection::Reverse<projection::XYToLonLat>};
+                                    new projection::EquidistantCylindrical};
 
     auto after = make_from_projection(PointXY{min.lon, min.lat}, PointXY{max.lon, max.lat}, projection);
     if (after->periodic()) {
@@ -433,7 +440,7 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_area(value_type n, value_typ
 }
 
 
-BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*std::unique_ptr<BoundingBox>(make_from_spec(spec))) {}
+BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*make_from_spec(spec)) {}
 
 
 BoundingBox::BoundingBox(value_type n, value_type w, value_type s, value_type e) : array{n, w, s, e} {
@@ -446,7 +453,7 @@ BoundingBox::BoundingBox(value_type n, value_type w, value_type s, value_type e)
 }
 
 
-BoundingBox::BoundingBox() : BoundingBox(*std::unique_ptr<BoundingBox>(make_global_prime())) {}
+BoundingBox::BoundingBox() : BoundingBox(*make_global_prime()) {}
 
 
 bool BoundingBox::global() const {
@@ -548,6 +555,11 @@ bool BoundingBox::empty() const {
 }
 
 
+double BoundingBox::area() const {
+    return figure::Earth::_area(*this);
+}
+
+
 const std::string& BoundingBox::type() const {
     static const std::string type{"bounding-box"};
     return type;
@@ -555,8 +567,11 @@ const std::string& BoundingBox::type() const {
 
 
 bool bounding_box_equal(const BoundingBox& a, const BoundingBox& b) {
-    const std::unique_ptr<BoundingBox> c(BoundingBox::make_from_area(a.north, a.west, a.south, a.east));
-    const std::unique_ptr<BoundingBox> d(BoundingBox::make_from_area(b.north, b.west, b.south, b.east));
+    const auto c = BoundingBox::make_from_area(a.north, a.west, a.south, a.east);
+    ASSERT(c);
+
+    const auto d = BoundingBox::make_from_area(b.north, b.west, b.south, b.east);
+    ASSERT(c);
 
     return is_approximately_equal(c->north, d->north) && is_approximately_equal(c->south, d->south) &&
            is_approximately_equal(c->west, d->west) && is_approximately_equal(c->east, d->east);

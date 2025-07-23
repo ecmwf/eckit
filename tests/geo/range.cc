@@ -41,7 +41,7 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
 
 CASE("range::RegularLongitude") {
     SECTION("simple") {
-        const range::RegularLongitude range1(1., -1., 2.);
+        const range::RegularLongitude range1(1., -1., 2., -1.);
 
         EXPECT(range1.size() == 4);
 
@@ -57,9 +57,9 @@ CASE("range::RegularLongitude") {
         EXPECT_APPROX(values[3], 2.);
 
         for (const auto& range : {
-                 range::RegularLongitude(1., 0., 360.),
-                 range::RegularLongitude(1., 0.5, 359.5),
-                 range::RegularLongitude(1., 0., 360., 0.5, 0.),
+                 range::RegularLongitude(1., 0., 360., 0.),
+                 range::RegularLongitude(1., 0.5, 359.5, 0.5),
+                 range::RegularLongitude(1., 0., 360., 0.5),
              }) {
             EXPECT(range.periodic());
             EXPECT(range.size() == 360);
@@ -143,7 +143,7 @@ CASE("range::RegularLongitude") {
         const std::unique_ptr<Range> range2(range.make_range_cropped(-180., 170.));
 
         EXPECT(range2->size() == 36);
-        EXPECT(range2->b() == 180.);  // because it's how we can distinguish without additional metadata
+        EXPECT(range2->b() == 170.);
         EXPECT(range2->periodic());
 
         const std::unique_ptr<Range> range3(range.make_range_cropped(-180., 160.));
@@ -243,6 +243,53 @@ CASE("range::Gaussian") {
 
         EXPECT_APPROX(cropped->values()[0], ref[0]);
         EXPECT_APPROX(cropped->values()[1], ref[1]);
+    }
+}
+
+
+CASE("range::RegularLatitude/range::RegularLongitude") {
+    struct test {
+        double inc;
+        size_t nlat;
+        size_t nlon;
+    };
+
+    for (const auto& t : std::vector<test>{
+             {30., 7, 12},         //
+             {10., 19, 36},        //
+             {5., 37, 72},         //
+             {2.5, 73, 144},       //
+             {2., 91, 180},        //
+             {1.8, 101, 200},      //
+             {1.6, 113, 225},      //
+             {1.5, 121, 240},      //
+             {1.4, 129, 258},      //
+             {1.25, 145, 288},     //
+             {1.2, 151, 300},      //
+             {1., 181, 360},       //
+             {0.9, 201, 400},      //
+             {0.8, 225, 450},      //
+             {0.75, 241, 480},     //
+             {0.7, 257, 515},      //
+             {0.6, 301, 600},      //
+             {0.5, 361, 720},      //
+             {0.4, 451, 900},      //
+             {0.35, 515, 1029},    //
+             {0.3, 601, 1200},     //
+             {0.25, 721, 1440},    //
+             {0.2, 901, 1800},     //
+             {0.15, 1201, 2400},   //
+             {0.125, 1441, 2880},  //
+             {0.1, 1801, 3600},    //
+             {0.05, 3601, 7200},   //
+         }) {
+        range::RegularLatitude lat(t.inc, -90., 90., 0.);
+        EXPECT_APPROX(lat.increment(), t.inc);
+        EXPECT_EQUAL(lat.size(), t.nlat);
+
+        range::RegularLongitude lon(t.inc, 0., 360., 0.);
+        EXPECT_APPROX(lon.increment(), t.inc);
+        EXPECT_EQUAL(lon.size(), t.nlon);
     }
 }
 

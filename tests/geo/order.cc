@@ -24,7 +24,7 @@
 namespace eckit::geo::test {
 
 
-CASE("ordering scan") {
+CASE("scan") {
     using order::Scan;
 
 
@@ -68,7 +68,7 @@ CASE("ordering scan") {
 }
 
 
-CASE("ordering healpix") {
+CASE("healpix") {
     using order::HEALPix;
 
     auto is_power_of_two = [](size_t n) { return (n & (n - 1)) == 0; };

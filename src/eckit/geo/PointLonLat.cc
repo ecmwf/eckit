@@ -48,6 +48,16 @@ bool PointLonLat::pole(value_type eps) const {
 }
 
 
+bool PointLonLat::north_pole(value_type eps) const {
+    return types::is_approximately_equal(make(lon, lat).lat, RIGHT_ANGLE, eps);
+}
+
+
+bool PointLonLat::south_pole(value_type eps) const {
+    return types::is_approximately_equal(make(lon, lat).lat, -RIGHT_ANGLE, eps);
+}
+
+
 void PointLonLat::assert_latitude_range(const PointLonLat& P) {
     if (!(-RIGHT_ANGLE <= P.lat && P.lat <= RIGHT_ANGLE)) {
         std::ostringstream oss;

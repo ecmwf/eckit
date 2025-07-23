@@ -18,11 +18,11 @@
 
 #include "eckit/codec/codec.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
@@ -46,7 +46,7 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
-    static CacheT<PathName, ICON::ICONRecord> cache;
+    static cache::MemoryCacheT<PathName, ICON::ICONRecord> cache;
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/icon");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
@@ -169,13 +169,27 @@ std::string ICON::arrangement_to_string(Arrangement a) {
 
 void ICON::fill_spec(spec::Custom& custom) const {
     custom.set("type", "ICON");
-    custom.set("uid", uid());
+    if (auto _uid = uid(); !GridSpecByUID::instance().exists(_uid)) {
+        custom.set("uid", _uid);
+    }
 }
 
 
 const std::string& ICON::type() const {
     static const std::string type{"icon"};
     return type;
+}
+
+
+Point ICON::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.front(), record_.latitudes_.front()};
+}
+
+
+Point ICON::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.back(), record_.latitudes_.back()};
 }
 
 

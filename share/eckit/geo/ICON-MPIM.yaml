@@ -6,6 +6,7 @@ grid_names:
   - ICON_O_16: &ICON_O_16
     description: "Ocean global R02B09 grid. 5 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Grid includes ocean cells only."
     type: ICON
+    name: ICON_O_16
     file: "icon_grid_0016_R02B09_O.nc"
     shape: [14886338]
     icon_number_of_grid_used: 16
@@ -18,6 +19,7 @@ grid_names:
   - ICON_O_20: &ICON_O_20
     description: "Ocean global R02B05 grid. 80 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Grid includes ocean cells only."
     type: ICON
+    name: ICON_O_20
     file: "icon_grid_0020_R02B05_O.nc"
     shape: [59261]
     icon_number_of_grid_used: 20
@@ -30,6 +32,7 @@ grid_names:
   - ICON_O_24: &ICON_O_24
     description: "Ocean global R02B07 grid. 20 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Grid includes ocean cells only."
     type: ICON
+    name: ICON_O_24
     file: "icon_grid_0024_R02B07_O.nc"
     shape: [933398]
     icon_number_of_grid_used: 24
@@ -42,6 +45,7 @@ grid_names:
   - ICON_O_36: &ICON_O_36
     description: "Ocean global R02B04 grid. 160 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Grid includes ocean cells only."
     type: ICON
+    name: ICON_O_36
     file: "icon_grid_0036_R02B04_O.nc"
     shape: [15105]
     icon_number_of_grid_used: 36
@@ -54,6 +58,7 @@ grid_names:
   - ICON_O_38: &ICON_O_38
     description: "Ocean global R02B11 grid. 1.2 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. GEBCO 2023 bathymetry. Grid includes ocean cells only."
     type: ICON
+    name: ICON_O_38
     file: "icon_grid_0038_R02B11_O.nc"
     shape: [237316813]
     icon_number_of_grid_used: 38
@@ -66,6 +71,7 @@ grid_names:
   - ICON_O_40: &ICON_O_40
     description: "Ocean global R02B10 grid. 2.5 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. GEBCO 2023 bathymetry. Grid includes ocean cells only."
     type: ICON
+    name: ICON_O_40
     file: "icon_grid_0040_R02B10_O.nc"
     shape: [59359799]
     icon_number_of_grid_used: 40
@@ -78,6 +84,7 @@ grid_names:
   - ICON_O_46: &ICON_O_46
     description: "Ocean global R02B06 grid. 40 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Improved sill-depths in the North Atlantic (Denmark Strait, Faroer-Bank-Channel, Florida Strait, Gibraltar) Grid includes ocean cells only."
     type: ICON
+    name: ICON_O_46
     file: "icon_grid_0046_R02B06_O.nc"
     shape: [235403]
     icon_number_of_grid_used: 46

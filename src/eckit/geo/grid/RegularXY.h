@@ -23,7 +23,8 @@ public:
 
     // -- Constructors
 
-    RegularXY(Range* x, Range* y, const Projection* proj) : Regular({x, y}, proj) {}
+    RegularXY(Range* x, Range* y, const area::BoundingBox* bbox, const Projection* proj) :
+        Regular({x, y}, bbox == nullptr ? area::BoundingBox{} : *bbox, proj) {}
     explicit RegularXY(const Spec&);
 
     // -- Methods
@@ -37,6 +38,9 @@ public:
     // -- Overridden methods
 
     const std::string& type() const override;
+
+    [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
 
 protected:
 

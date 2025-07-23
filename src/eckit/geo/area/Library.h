@@ -53,13 +53,15 @@ public:
     [[nodiscard]] virtual Area* make_area(size_t) const                       = 0;
     [[nodiscard]] virtual Area* make_area_from_name(const std::string&) const = 0;
 
-    virtual void fill_spec(spec::Custom&) const = 0;
-
 protected:
 
     // -- Constructors
 
     Library() = default;
+
+    // -- Methods
+
+    virtual void fill_spec(spec::Custom&) const = 0;
 };
 
 

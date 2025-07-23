@@ -12,8 +12,6 @@
 
 #include "eckit/geo/projection/None.h"
 
-// #include "eckit/geo/spec/Custom.h"
-
 
 namespace eckit::geo::projection {
 

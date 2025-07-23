@@ -46,8 +46,8 @@ CASE("projection: reverse") {
     EXPECT(points_equal(p, ba.fwd(q)));
     EXPECT(points_equal(q, ba.inv(p)));
 
-    ASSERT(ab.spec().get_string("type") == "ll_to_xyz");
-    EXPECT(ba.spec().get_string("type") == "reverse_ll_to_xyz");
+    ASSERT(ab.spec().get_string("type") == "ll-to-xyz");
+    EXPECT(ba.spec().get_string("type") == "reverse-ll-to-xyz");
 }
 
 

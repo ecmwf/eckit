@@ -33,6 +33,7 @@ public:
     // -- Overridden methods
 
     uid_t calculate_uid() const override;
+    const std::string& type() const override;
 
     // -- Class methods
 
@@ -47,7 +48,6 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-    const std::string& type() const override;
 };
 
 

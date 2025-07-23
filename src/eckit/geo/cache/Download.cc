@@ -17,8 +17,8 @@
 #include <fstream>
 #include <iterator>
 
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Log.h"
@@ -122,7 +122,7 @@ PathName Download::to_cached_path(const url_type& url, const std::string& prefix
     // control concurrent access
     lock_type lock;
 
-    static CacheT<MD5::digest_t, std::string> CACHE;
+    static MemoryCacheT<MD5::digest_t, std::string> CACHE;
 
     // set cache key, return path early if possible
     const auto key = MD5{url}.digest();

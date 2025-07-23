@@ -80,13 +80,16 @@ public:
     iterator cend() const override;
 
     uid_t calculate_uid() const override;
+    const std::string& type() const override;
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }  // FIXME: not sure this is semanticaly correct
     bool isPeriodicWestEast() const override { return true; }
 
-    std::vector<Point> to_points() const override;
-    std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
+    [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
+    [[nodiscard]] std::vector<Point> to_points() const override;
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     const order_type& order() const override;
     Reordering reorder(const order_type& to) const override;
@@ -110,7 +113,6 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-    const std::string& type() const override;
 };
 
 

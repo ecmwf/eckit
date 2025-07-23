@@ -99,8 +99,8 @@ CASE("projection: proj") {
         };
 
         for (const auto& test : tests_bbox) {
-            std::unique_ptr<area::BoundingBox> bbox(
-                area::BoundingBox::make_from_projection(test.min, test.max, *test.projection));
+            auto bbox = area::BoundingBox::make_from_projection(test.min, test.max, *test.projection);
+            ASSERT(bbox);
 
             EXPECT_EQUAL(test.periodic, bbox->periodic());
             EXPECT_EQUAL(test.contains_north_pole, bbox->contains(NORTH_POLE));

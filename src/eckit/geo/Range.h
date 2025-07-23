@@ -29,8 +29,8 @@ public:
 
     // -- Constructors
 
-    Range(const Range&) = delete;
-    Range(Range&&)      = delete;
+    Range(const Range&) = default;
+    Range(Range&&)      = default;
 
     // -- Destructors
 
@@ -38,8 +38,8 @@ public:
 
     // -- Operators
 
-    Range& operator=(const Range&) = delete;
-    Range& operator=(Range&&)      = delete;
+    Range& operator=(const Range&) = default;
+    Range& operator=(Range&&)      = default;
 
     // -- Methods
 
@@ -63,7 +63,7 @@ protected:
 
     // -- Constructors
 
-    explicit Range(size_t n, double a, double b, double eps = 0.);
+    explicit Range(size_t n, double a, double b, double eps);
 
     // --Methods
 
@@ -78,7 +78,7 @@ private:
     size_t n_;
     double a_;
     double b_;
-    const double eps_;
+    double eps_;
 };
 
 

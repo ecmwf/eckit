@@ -22,7 +22,7 @@
 namespace eckit::geo::test {
 
 
-CASE("projection: ll_to_xyz") {
+CASE("projection: ll-to-xyz") {
     struct P : std::unique_ptr<Projection> {
         explicit P(Projection* ptr) : unique_ptr(ptr) { ASSERT(unique_ptr::operator bool()); }
     };
@@ -37,7 +37,7 @@ CASE("projection: ll_to_xyz") {
 
 
     // spherical projections
-    P to_xyz_1(ProjectionFactoryType::instance().get("ll_to_xyz").create(spec::Custom{{"R", 1.}}));
+    P to_xyz_1(ProjectionFactoryType::instance().get("ll-to-xyz").create(spec::Custom{{"R", 1.}}));
     P to_xyz_2(new projection::LonLatToXYZ(1., 1.));
 
     EXPECT(*to_xyz_1 == *to_xyz_2);
@@ -45,7 +45,7 @@ CASE("projection: ll_to_xyz") {
 
 
     // oblate spheroid projections
-    P to_xyz_3(ProjectionFactoryType::instance().get("ll_to_xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
+    P to_xyz_3(ProjectionFactoryType::instance().get("ll-to-xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
     P to_xyz_4(new projection::LonLatToXYZ(1., 0.5));
 
     EXPECT(*to_xyz_3 == *to_xyz_4);
@@ -60,10 +60,10 @@ CASE("projection: ll_to_xyz") {
         Log::info() << to_xyz_2->spec_str() << std::endl;
         Log::info() << to_xyz_3->spec_str() << std::endl;
         Log::info() << to_xyz_4->spec_str() << std::endl;
-        EXPECT(to_xyz_1->spec_str() == R"({"r":1,"type":"ll_to_xyz"})");
-        EXPECT(to_xyz_2->spec_str() == R"({"r":1,"type":"ll_to_xyz"})");
-        EXPECT(to_xyz_3->spec_str() == R"({"a":1,"b":0.5,"type":"ll_to_xyz"})");
-        EXPECT(to_xyz_4->spec_str() == R"({"a":1,"b":0.5,"type":"ll_to_xyz"})");
+        EXPECT(to_xyz_1->spec_str() == R"({"r":1,"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_2->spec_str() == R"({"r":1,"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_3->spec_str() == R"({"a":1,"b":0.5,"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_4->spec_str() == R"({"a":1,"b":0.5,"type":"ll-to-xyz"})");
     }
 
 

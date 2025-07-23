@@ -61,6 +61,10 @@ public:
     // -- Overridden methods
 
     uid_t calculate_uid() const override;
+    const std::string& type() const override;
+
+    [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
 
     // -- Class methods
 
@@ -80,7 +84,6 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-    const std::string& type() const override;
 };
 
 

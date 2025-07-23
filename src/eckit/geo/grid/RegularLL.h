@@ -24,8 +24,8 @@ public:
     // -- Constructors
 
     explicit RegularLL(const Spec&);
-    explicit RegularLL(const Increments&, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
-    RegularLL(const Increments&, const area::BoundingBox&, projection::Rotation*, const PointLonLat& ref);
+    explicit RegularLL(const Increments&, Projection* = nullptr);
+    explicit RegularLL(const Increments&, area::BoundingBox, PointLonLat ref = {}, Projection* = nullptr);
 
     // -- Methods
 
@@ -39,11 +39,20 @@ public:
 
     // -- Overridden methods
 
-    void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;
+
+    [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] area::BoundingBox* calculate_bbox() const override;
+
+private:
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
 };
 
 

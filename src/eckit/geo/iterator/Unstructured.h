@@ -17,15 +17,18 @@
 #include "eckit/geo/Iterator.h"
 
 
-namespace eckit::geo::container {
+namespace eckit::geo {
+class Projection;
+namespace container {
 class PointsContainer;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::iterator {
 
 
-class Unstructured final : public Iterator {
+class Unstructured : public Iterator {
 public:
 
     // -- Constructors
@@ -36,6 +39,8 @@ public:
 private:
 
     // -- Members
+
+    const Projection& projection_;
 
     std::shared_ptr<container::PointsContainer> container_;
     size_t index_;
@@ -52,8 +57,6 @@ private:
     Point operator*() const override;
 
     size_t index() const override { return index_; }
-
-    void fill_spec(spec::Custom&) const override;
 };
 
 

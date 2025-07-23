@@ -16,6 +16,8 @@
 #include <vector>
 
 #include "eckit/geo/Increments.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -31,34 +33,34 @@ static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REA
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(Increments{spec}, area::BoundingBox{spec}, projection::Rotation::make_from_spec(spec),
-              [&spec]() -> PointLonLat {
-                  std::vector<PointLonLat::value_type> v(2);
-                  if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
-                      return {v[0], v[1]};
-                  }
+    RegularLL(
+        Increments{spec}, area::BoundingBox{spec},
+        [&spec]() -> PointLonLat {
+            std::vector<PointLonLat::value_type> v(2);
+            if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
+                return {v[0], v[1]};
+            }
 
-                  if (spec.get("reference_lonlat", v) && v.size() == 2) {
-                      return {v[0], v[1]};
-                  }
+            if (spec.get("reference_lonlat", v) && v.size() == 2) {
+                return {v[0], v[1]};
+            }
 
-                  area::BoundingBox area{spec};
-                  return {area.west, area.south};
-              }()) {
-    ASSERT(size() > 0);
+            return {0, 0};
+        }(),
+        spec.has("projection") ? Projection::make_from_spec(spec)
+                               : new projection::Reverse<projection::EquidistantCylindrical>) {
+    ASSERT(!empty());
 }
 
 
-RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, projection::Rotation* rotation) :
-    RegularLL(inc, bbox, rotation, {bbox.south, bbox.west}) {}
+RegularLL::RegularLL(const Increments& inc, Projection* proj) : RegularLL(inc, area::BoundingBox{}, {0, 0}, proj) {}
 
 
-RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, projection::Rotation* rotation,
-                     const PointLonLat& ref) :
-    Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon, 0.),
-             new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat, 0.)},
-            rotation) {
-    ASSERT(size() > 0);
+RegularLL::RegularLL(const Increments& inc, area::BoundingBox bbox, PointLonLat ref, Projection* proj) :
+    Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon),
+             new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat)},
+            bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
+    ASSERT(!empty());
 }
 
 
@@ -78,10 +80,6 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 
     custom.set("grid", std::vector<double>{dx(), dy()});
 
-    if (!boundingBox().global()) {
-        custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
-    }
-
     boundingBox().fill_spec(custom);
 }
 
@@ -89,6 +87,37 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 const std::string& RegularLL::type() const {
     static const std::string type{"regular-ll"};
     return type;
+}
+
+
+Point RegularLL::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{x().values().front(), y().values().front()};  // First longitude and first latitude
+}
+
+
+Point RegularLL::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{x().values().back(), y().values().back()};
+}
+
+
+std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlons() const {
+    const auto N = size();
+
+    std::pair<std::vector<double>, std::vector<double>> latlon;
+    auto& lat = latlon.first;
+    auto& lon = latlon.second;
+    lat.reserve(N);
+    lon.reserve(N);
+
+    for (auto point : *this) {
+        const auto& p = std::get<PointLonLat>(point);
+        lat.emplace_back(p.lat);
+        lon.emplace_back(p.lon);
+    }
+
+    return latlon;
 }
 
 

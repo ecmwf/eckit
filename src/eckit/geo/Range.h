@@ -63,7 +63,7 @@ protected:
 
     // -- Constructors
 
-    explicit Range(size_t n, double a, double b, double eps = 0.);
+    explicit Range(size_t n, double a, double b, double eps);
 
     // --Methods
 

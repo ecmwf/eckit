@@ -1,4 +1,3 @@
-
 list(APPEND TESTS
     [=[{"grid":"H2","order":"nested"}]=]
     [=[{"grid":"H2"}]=]
@@ -138,7 +137,7 @@ list(APPEND SHAPES
     [901,1800]
     [721,1440]
     [601,1200]
-    [517,1024]
+    [515,1029]
     [451,900]
     [361,720]
     [301,600]
@@ -170,19 +169,19 @@ if(eckit_HAVE_GEO_GRID_FESOM)
     list(APPEND SHAPES [3140])
 endif()
 
-foreach(test shape IN ZIP_LISTS TESTS SHAPES)
-    set(name "eckit_test_geo_integration_eckit-regrid_${test}")
+foreach(gridspec shape IN ZIP_LISTS TESTS SHAPES)
+    set(name "eckit_test_geo_integration_${gridspec}")
     string(MAKE_C_IDENTIFIER "${name}" name)
-    string(REGEX REPLACE "_+" "_" name "${name}")
+    string(REGEX REPLACE "__+" "_" name "${name}")
     string(REGEX REPLACE "_$" "" name "${name}")
 
     ecbuild_add_test(
         TARGET      ${name}_gridspec
         COMMAND     eckit_grid_spec
-        ARGS        "${test}"
+        ARGS        "${gridspec}"
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
 
-    string(REPLACE "[" [=[\[]=] regex "${test}")
+    string(REPLACE "[" [=[\[]=] regex "${gridspec}")
     string(REPLACE "]" [=[\]]=] regex "${regex}")
 
     set_tests_properties(${name}_gridspec PROPERTIES PASS_REGULAR_EXPRESSION "${regex}")
@@ -190,19 +189,11 @@ foreach(test shape IN ZIP_LISTS TESTS SHAPES)
     ecbuild_add_test(
         TARGET      ${name}_shape
         COMMAND     eckit_grid_spec
-        ARGS        "${test}" --shape
+        ARGS        "${gridspec}" --shape
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
 
     string(REPLACE "[" [=[\[]=] regex "${shape}")
     string(REPLACE "]" [=[\]]=] regex "${regex}")
 
     set_tests_properties(${name}_shape PROPERTIES PASS_REGULAR_EXPRESSION "${regex}")
-endforeach()
-
-# wip
-foreach(test
-    eckit_test_geo_integration_eckit_regrid_gridspec_grid_0_7_0_7
-    eckit_test_geo_integration_eckit_regrid_gridspec_grid_1_4_1_4
-    eckit_test_geo_integration_eckit_regrid_gridspec_grid_1_6_1_6 )
-    set_tests_properties(${test} PROPERTIES WILL_FAIL TRUE)
 endforeach()

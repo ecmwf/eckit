@@ -24,15 +24,15 @@ namespace eckit::geo::grid {
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), area::BoundingBox::make_from_spec(spec).release(),
+    RegularGaussian(spec.get_unsigned("N"), area::BoundingBox(spec),
                     spec.has("projection") ? Projection::make_from_spec(spec)
                                            : new projection::Reverse<projection::EquidistantCylindrical>) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, area::BoundingBox* bbox, Projection* proj) :
-    Regular({range::RegularLongitude(4 * N, 0., 360.).make_range_cropped(bbox->west, bbox->east),
-             range::GaussianLatitude(N, false).make_range_cropped(bbox->north, bbox->south)},
-            proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
+RegularGaussian::RegularGaussian(size_t N, area::BoundingBox bbox, Projection* proj) :
+    Regular({range::RegularLongitude(4 * N, 0., 360.).make_range_cropped(bbox.west, bbox.east),
+             range::GaussianLatitude(N, false).make_range_cropped(bbox.north, bbox.south)},
+            bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
     N_(N) {
     ASSERT(!empty());
 }
@@ -73,7 +73,7 @@ Point RegularGaussian::last_point() const {
 
 Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularGaussian(N_, new area::BoundingBox(cropped));
+        return new RegularGaussian(N_, cropped);
     }
 
     throw UserError("RegularGaussian: cannot crop grid (empty intersection)", Here());

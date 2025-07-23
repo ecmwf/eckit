@@ -24,8 +24,8 @@ public:
     // -- Constructors
 
     explicit RegularLL(const Spec&);
-    explicit RegularLL(const Increments&, const area::BoundingBox& = {}, const PointLonLat& ref = {},
-                       Projection* = nullptr);
+    explicit RegularLL(const Increments&, Projection* = nullptr);
+    explicit RegularLL(const Increments&, area::BoundingBox, PointLonLat ref = {}, Projection* = nullptr);
 
     // -- Methods
 

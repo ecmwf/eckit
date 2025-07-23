@@ -12,6 +12,7 @@
 
 #include "eckit/geo/range/GaussianLatitude.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"

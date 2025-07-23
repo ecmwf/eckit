@@ -174,7 +174,7 @@ protected:
     // -- Constructors
 
     explicit Grid(const Spec&);
-    explicit Grid(area::BoundingBox*, const Projection*);
+    explicit Grid(const area::BoundingBox*, const Projection*);
 
     // -- Methods
 
@@ -190,7 +190,7 @@ private:
     // -- Members
 
     mutable std::unique_ptr<Area> area_;
-    mutable std::unique_ptr<area::BoundingBox> bbox_;
+    mutable std::unique_ptr<const area::BoundingBox> bbox_;
     mutable std::unique_ptr<const Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;

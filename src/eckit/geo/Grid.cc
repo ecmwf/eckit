@@ -51,7 +51,7 @@ class lock_type {
 Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
-Grid::Grid(area::BoundingBox* bbox, const Projection* projection) :
+Grid::Grid(const area::BoundingBox* bbox, const Projection* projection) :
     bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime().release() : bbox), projection_(projection) {}
 
 

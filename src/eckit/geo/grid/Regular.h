@@ -67,7 +67,7 @@ protected:
     // -- Constructors
 
     explicit Regular(const Spec&);
-    explicit Regular(Ranges, const Projection* = nullptr);
+    explicit Regular(Ranges, area::BoundingBox, const Projection* = nullptr);
 
     // -- Overridden methods
 

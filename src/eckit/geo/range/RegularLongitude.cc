@@ -18,7 +18,6 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
@@ -27,28 +26,25 @@ namespace eckit::geo::range {
 static const Fraction PERIOD(360, 1);
 
 
-RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _ref, double _eps) :
-    Regular(_inc, _a, _b, _ref, _eps) {
+RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _ref) :
+    Regular(_inc, _a, _b, _ref, PointLonLat::EPS) {
     ASSERT(!types::is_approximately_equal(_a, _b));
     ASSERT(_a < _b);  // FIXME temporary
-    const Fraction inc(_inc);
 
-    auto n = 1 + (std::min(Fraction(b() - a()), PERIOD) / inc).integralPart();
-    setPeriodic(n * inc >= PERIOD);
+    auto n = 1 + (std::min(Fraction(b() - a()), PERIOD) / increment()).integralPart();
+    auto p = n * increment() >= PERIOD;
 
-    if (periodic()) {
-        b(a() + PERIOD);
-        resize((PERIOD / inc).integralPart());
+    while (n * increment() >= PERIOD) {
+        --n;
     }
-    else {
-        b(Fraction(a()) + (n - 1) * inc);
-        resize(n);
-    }
+
+    setPeriodic(p);
+    resize(p ? n + 1 : n);
 }
 
 
-RegularLongitude::RegularLongitude(size_t n, double _a, double _b, double _eps) :
-    Regular(n, _a, _b, types::is_approximately_lesser_or_equal<double>(PERIOD, std::abs(_b - _a)), _eps) {}
+RegularLongitude::RegularLongitude(size_t n, double _a, double _b) :
+    Regular(n, _a, _b, types::is_approximately_lesser_or_equal<double>(PERIOD, std::abs(_b - _a)), PointLonLat::EPS) {}
 
 
 Range* RegularLongitude::make_range_cropped(double crop_a, double crop_b) const {
@@ -58,14 +54,14 @@ Range* RegularLongitude::make_range_cropped(double crop_a, double crop_b) const 
         const auto inc(increment());
 
         if (periodic()) {
-            return new RegularLongitude(inc, crop_a, crop_b, a(), eps());
+            return new RegularLongitude(inc, crop_a, crop_b, a());
         }
 
-        RegularLongitude crop(inc, crop_a, crop_b, a(), eps());
+        RegularLongitude crop(inc, crop_a, crop_b, a());
         if (crop.periodic()) {
             auto _a = std::max(a(), PointLonLat::normalise_angle_to_minimum(crop_a, crop.a()));
             auto _b = PointLonLat::normalise_angle_to_minimum(crop_b, _a);
-            return new RegularLongitude(inc, _a, _b, a(), eps());
+            return new RegularLongitude(inc, _a, _b, a());
         }
 
         ASSERT(a() <= crop_a && crop_b <= b());  // FIXME do better
@@ -80,7 +76,7 @@ Range* RegularLongitude::make_range_cropped(double crop_a, double crop_b) const 
         auto n = static_cast<size_t>(nf.integralPart() + (nf * inc >= PERIOD ? 0 : 1));
         ASSERT(0 < n && n <= size());
 
-        return new RegularLongitude(n, _a, _b, eps());
+        return new RegularLongitude(n, _a, _b);
     }
 
     NOTIMP;

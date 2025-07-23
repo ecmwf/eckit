@@ -45,8 +45,7 @@ RegularLL::RegularLL(const Spec& spec) :
                 return {v[0], v[1]};
             }
 
-            area::BoundingBox area{spec};
-            return {area.west, area.south};
+            return {0, 0};
         }(),
         spec.has("projection") ? Projection::make_from_spec(spec)
                                : new projection::Reverse<projection::EquidistantCylindrical>) {
@@ -54,10 +53,13 @@ RegularLL::RegularLL(const Spec& spec) :
 }
 
 
-RegularLL::RegularLL(const Increments& inc, const area::BoundingBox& bbox, const PointLonLat& ref, Projection* proj) :
-    Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon, 0.),
-             new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat, 0.)},
-            proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
+RegularLL::RegularLL(const Increments& inc, Projection* proj) : RegularLL(inc, area::BoundingBox{}, {0, 0}, proj) {}
+
+
+RegularLL::RegularLL(const Increments& inc, area::BoundingBox bbox, PointLonLat ref, Projection* proj) :
+    Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon),
+             new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat)},
+            bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
     ASSERT(!empty());
 }
 
@@ -77,10 +79,6 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
     custom.set("grid", std::vector<double>{dx(), dy()});
-
-    if (!boundingBox().global()) {
-        custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
-    }
 
     boundingBox().fill_spec(custom);
 }

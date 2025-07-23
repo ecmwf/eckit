@@ -64,7 +64,7 @@ CASE("global") {
 
 
     SECTION("4") {
-        RegularLL grid({1., 1.}, {89.5, 0.5, -89.5, 359.5});
+        RegularLL grid({1., 1.}, {89.5, 0.5, -89.5, 359.5}, {0.5, 0.5});
 
         EXPECT(grid.nx() == 360);
         EXPECT(grid.ny() == 180);
@@ -73,7 +73,7 @@ CASE("global") {
 
 
     SECTION("5") {
-        RegularLL grid({1., 1.}, {90., 0., -90, 360.});
+        RegularLL grid({1., 1.}, {90., 0., -90, 360.}, {0.5, 0.5});
 
         EXPECT(grid.nx() == 360);
         EXPECT(grid.ny() == 180);
@@ -122,7 +122,7 @@ CASE("non-global") {
          * -1  .  .  .  .
          *    -1  0  1  2
          */
-        RegularLL grid({1, 2}, {1, -1, -1, 2});
+        RegularLL grid({1, 2}, {1, -1, -1, 2}, {-1, -1});
 
         const std::vector<PointLonLat> ref{
             {-1., 1.}, {0., 1.}, {1., 1.}, {2., 1.}, {-1., -1.}, {0., -1.}, {1., -1.}, {2., -1.},

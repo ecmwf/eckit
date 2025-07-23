@@ -334,25 +334,25 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
     // force colour output unless explicitly deactivated
     // this is useful for test harness ctest that redirects output and is not attached to a tty
-    if (not::getenv("ECKIT_COLOUR_OUTPUT")) {
+    if (not ::getenv("ECKIT_COLOUR_OUTPUT")) {
         ::setenv("ECKIT_COLOUR_OUTPUT", "1", true);
     }
 
     // Suppress noisy exceptions in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
+    if (not ::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
         ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
     }
 
     // Suppress noisy ASSERT in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+    if (not ::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
         ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
     }
 
     // Suppress noisy SeriousBug exception in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
+    if (not ::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
         ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
     }
 

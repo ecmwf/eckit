@@ -32,7 +32,7 @@ long long RLEencode2(InputIterator first, InputIterator last, OutputIterator res
 
 template <class InputIterator, class OutputIterator>
 long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop,
-                     const EncodingClock::duration timelimit, long depth);
+                     const EncodingClock::duration timelimit, size_t depth);
 
 template <class InputIterator, class OutputIterator>
 void RLEdecode2(InputIterator first, InputIterator last, OutputIterator result);

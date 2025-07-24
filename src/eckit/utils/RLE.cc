@@ -47,7 +47,7 @@ dummy_iterator<T> make_dummy(T*) {
 
 template <class T, class U>
 long long RLEencode2timeout(T first, T last, U output, long long maxLoop,
-                            std::optional<EncodingClock::time_point> deadline, long depth) {
+                            std::optional<EncodingClock::time_point> deadline, std::optional<size_t> maxDepth) {
 
     long long x    = 0;
     long long m    = 0;
@@ -80,18 +80,18 @@ long long RLEencode2timeout(T first, T last, U output, long long maxLoop,
                 m = a;
                 x = n;
                 j = i;
-                if (m > enough || depth == 0 || (deadline && EncodingClock::now() > deadline.value()))
+                if (m > enough || (maxDepth && maxDepth.value() == 0) || (deadline && EncodingClock::now() > deadline.value()))
                     goto stop;
             }
         }
 
-        if (depth == 0 || (deadline && EncodingClock::now() > deadline.value())) {
+        if ((maxDepth && maxDepth.value() == 0) || (deadline && EncodingClock::now() > deadline.value())) {
             goto stop;
         }
     }
 stop:
 
-    if (m == 0 || depth == 0) {
+    if (m == 0 || (maxDepth && maxDepth.value() == 0)) {
         std::copy(first, last, output);
         return last - first;
     }
@@ -104,13 +104,16 @@ stop:
             other += x;
         }
 
-        long long n = RLEencode2timeout(first, from, output, maxLoop, deadline, depth > 0 ? depth - 1 : -1);
+        if (maxDepth) {
+            maxDepth.value()--;     
+        }
+        long long n = RLEencode2timeout(first, from, output, maxLoop, deadline, maxDepth);
 
         if (k > 1) {
             *output++ = -k;
             n++;
             int m = RLEencode2timeout(from, from + x, make_dummy((typename std::iterator_traits<T>::value_type*)(0)),
-                                      maxLoop, deadline, depth > 0 ? depth - 1 : -1);
+                                      maxLoop, deadline, maxDepth);
 
             if (m > 1) {
                 *output++ = -m;
@@ -118,8 +121,8 @@ stop:
             }
         }
 
-        n += RLEencode2timeout(from, from + x, output, maxLoop, deadline, depth > 0 ? depth - 1 : -1);
-        n += RLEencode2timeout(from + k * x, last, output, maxLoop, deadline, depth > 0 ? depth - 1 : -1);
+        n += RLEencode2timeout(from, from + x, output, maxLoop, deadline, maxDepth);
+        n += RLEencode2timeout(from + k * x, last, output, maxLoop, deadline, maxDepth);
 
         return n;
     }
@@ -127,14 +130,15 @@ stop:
 
 template <class T, class U>
 long long RLEencode2(T first, T last, U output, long long maxLoop) {
-    return RLEencode2timeout(first, last, output, maxLoop, std::optional<EncodingClock::time_point>{}, -1);
+    return RLEencode2timeout(first, last, output, maxLoop, std::optional<EncodingClock::time_point>{}, std::optional<size_t>{});
 }
 
 template <class T, class U>
 long long RLEencode2(T first, T last, U output, long long maxLoop, const EncodingClock::duration timelimit,
-                     long depth) {
+                     long maxDepth) {
     return RLEencode2timeout(first, last, output, maxLoop,
-                             std::optional<EncodingClock::time_point>{EncodingClock::now() + timelimit}, depth);
+                             std::optional<EncodingClock::time_point>{EncodingClock::now() + timelimit},
+                             std::optional<size_t>{maxDepth});
 }
 
 template <class InputIterator, class OutputIterator>
@@ -142,7 +146,7 @@ long long RLEencode2(InputIterator first, InputIterator last, OutputIterator res
 
 template <class InputIterator, class OutputIterator>
 long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop,
-                     const EncodingClock::duration timelimit, long depth);
+                     const EncodingClock::duration timelimit, size_t maxDepth);
 
 template <class T, class U>
 void RLEdecode2(T first, T last, U output) {

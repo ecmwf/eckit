@@ -115,7 +115,7 @@ CASE("pattern") {
     test(in, std::chrono::milliseconds(50), 1000);
 }
 
-void randTest(int limit, int size = 10000000) {
+void randTest(int limit, int size) {
     std::random_device rd;   // a seed source for the random number engine
     std::mt19937 gen(rd());  // mersenne_twister_engine seeded with rd()
     std::uniform_int_distribution<> distrib(1, limit);
@@ -125,15 +125,15 @@ void randTest(int limit, int size = 10000000) {
     for (size_t i = 0; i < size; i++) {
         in.push_back(distrib(gen));
     }
-    test(in, std::chrono::seconds(2000), 10000);
+    test(in, std::chrono::seconds(2), 10000);
 }
 
 CASE("randMaxInt") {
-    randTest(std::numeric_limits<int>::max());
+    randTest(std::numeric_limits<int>::max(), 10000000);
 }
 
 CASE("rand100") {
-    randTest(100);
+    randTest(100, 10000000);
 }
 
 CASE("rand10") {

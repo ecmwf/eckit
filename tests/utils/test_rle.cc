@@ -125,7 +125,7 @@ void randTest(int limit, int size) {
     for (size_t i = 0; i < size; i++) {
         in.push_back(distrib(gen));
     }
-    test(in, std::chrono::seconds(2), 10000);
+    test(in, std::chrono::seconds(2), 1000);
 }
 
 CASE("randMaxInt") {

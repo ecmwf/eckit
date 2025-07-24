@@ -80,7 +80,8 @@ long long RLEencode2timeout(T first, T last, U output, long long maxLoop,
                 m = a;
                 x = n;
                 j = i;
-                if (m > enough || (maxDepth && maxDepth.value() == 0) || (deadline && EncodingClock::now() > deadline.value()))
+                if (m > enough || (maxDepth && maxDepth.value() == 0) ||
+                    (deadline && EncodingClock::now() > deadline.value()))
                     goto stop;
             }
         }
@@ -105,7 +106,7 @@ stop:
         }
 
         if (maxDepth) {
-            maxDepth.value()--;     
+            maxDepth.value()--;
         }
         long long n = RLEencode2timeout(first, from, output, maxLoop, deadline, maxDepth);
 
@@ -130,7 +131,8 @@ stop:
 
 template <class T, class U>
 long long RLEencode2(T first, T last, U output, long long maxLoop) {
-    return RLEencode2timeout(first, last, output, maxLoop, std::optional<EncodingClock::time_point>{}, std::optional<size_t>{});
+    return RLEencode2timeout(first, last, output, maxLoop, std::optional<EncodingClock::time_point>{},
+                             std::optional<size_t>{});
 }
 
 template <class T, class U>

@@ -28,11 +28,11 @@ using EncodingClock = std::chrono::steady_clock;
 class Stream;
 
 template <class InputIterator, class OutputIterator>
-long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop);
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxLoop);
 
 template <class InputIterator, class OutputIterator>
-long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxloop,
-                     const EncodingClock::duration timelimit);
+long long RLEencode2(InputIterator first, InputIterator last, OutputIterator result, long long maxLoop,
+                     const EncodingClock::duration timeLimit, size_t maxDepth = 1000);
 
 template <class InputIterator, class OutputIterator>
 void RLEdecode2(InputIterator first, InputIterator last, OutputIterator result);

@@ -23,7 +23,8 @@
 namespace eckit::geo::range {
 
 
-Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) : Range(2, _a, _b, eps), increment_(_inc) {
+Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) :
+    Range(2, _a, _b, eps), increment_(_inc), periodic_(false) {
     ASSERT(0. <= _inc);
 
     if (increment_ == 0 || types::is_approximately_equal(_a, _b)) {

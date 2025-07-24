@@ -10,6 +10,7 @@
  */
 
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <type_traits>
@@ -282,12 +283,12 @@ CASE("Spec <- Custom") {
         c.set("foo", two);
         EXPECT(c.has("foo"));
         EXPECT_THROWS_AS(c.get_int("foo"), exception::SpecError);  // cannot access as int
-        EXPECT(::eckit::types::is_approximately_equal(c.get_double("foo"), two));
+        EXPECT(types::is_approximately_equal(c.get_double("foo"), two));
         EXPECT(c.get_string("foo") == std::to_string(two));
 
         c.set("bar", one);
         EXPECT(c.get_int("bar") == one);
-        EXPECT(::eckit::types::is_approximately_equal(c.get_double("bar"), static_cast<double>(one)));
+        EXPECT(types::is_approximately_equal(c.get_double("bar"), static_cast<double>(one)));
         EXPECT(c.get_string("bar") == "1");
 
         c.set("foo", three);
@@ -321,6 +322,25 @@ CASE("Spec <- Custom") {
 
         EXPECT(e.get("zero", maybe) && !maybe);
         EXPECT(e.get("one", maybe) && maybe);
+    }
+
+
+    SECTION("conversion (5)") {
+        std::unique_ptr<Spec> custom(
+            Custom::make_from_value(YAMLParser::decodeString("{long_list: [1, 2, 3], double_list: [1, 2.1, 3]}")));
+
+        const std::vector<long> expected_long_list{1, 2, 3};
+        auto long_list = custom->get_double_vector("long_list");
+
+        EXPECT(long_list.size() == expected_long_list.size());
+        EXPECT(std::equal(long_list.begin(), long_list.end(), expected_long_list.begin()));
+
+        const std::vector<double> expected_double_list{1, 2.1, 3};
+        auto double_list = custom->get_double_vector("double_list");
+
+        EXPECT(double_list.size() == expected_double_list.size());
+        EXPECT(std::equal(double_list.begin(), double_list.end(), expected_double_list.begin(),
+                          [](const auto& a, const auto& b) { return types::is_approximately_equal(a, b); }));
     }
 
 

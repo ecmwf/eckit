@@ -24,10 +24,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
 SysLog::SysLog(std::string msg, int msgid, Facility f, Severity s) :
     facility_(f), severity_(s), appName_(Main::instance().name()), msgid_(msgid), msg_(std::move(msg)) {
     updateTimestamp();
 }
+
+SysLog::SysLog(int msgid, Facility f, Severity s) : SysLog("", msgid, f, s) {}
 
 std::string SysLog::fqdn() const {
     return Main::hostname();

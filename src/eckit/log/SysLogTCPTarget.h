@@ -27,7 +27,7 @@ class TCPSocket;
 class SysLogTCPTarget : public TCPTarget {
 
     /// Example SysLog:
-    /// SysLog log("message", 0, SysLog::Local7, SysLog::Info);
+    /// SysLog log(SysLog::Local7, SysLog::Info);
     /// log.enterpriseId("7464");  // ECMWF's id
     /// log.appName("mars-client-cpp");
     /// log.software("mars");

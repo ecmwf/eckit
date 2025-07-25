@@ -24,7 +24,7 @@ public:
 
     ProxiedTCPServer(int port = 0, const net::SocketOptions& = net::SocketOptions::server());
 
-    ~ProxiedTCPServer();
+    ~ProxiedTCPServer() override;
 
     // accept a client, more can be accepted
 

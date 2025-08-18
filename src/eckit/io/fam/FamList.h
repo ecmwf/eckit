@@ -51,13 +51,19 @@ public:  // types
 
 public:  // methods
 
+
     FamList(const FamRegion& region, const Descriptor& desc);
 
     FamList(const FamRegion& region, const std::string& list_name);
 
-    FamList(const FamRegionName& name);
+    explicit FamList(const FamRegionName& name);
 
-    ~FamList() = default;
+    // rules
+    // FamList(const FamList&)            = default;
+    // FamList& operator=(const FamList&) = default;
+    // FamList(FamList&&)                 = delete;
+    // FamList& operator=(FamList&&)      = delete;
+    // ~FamList() = default;
 
     auto descriptor() const -> Descriptor;
 

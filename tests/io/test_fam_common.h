@@ -46,7 +46,7 @@ inline auto random_number() -> std::string {
     return std::to_string(::random());
 }
 
-const auto test_endpoint = "127.0.0.1:8880"s;
+const auto test_endpoint = "172.21.0.2:8880"s;
 
 class TestFam {
 public:

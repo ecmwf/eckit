@@ -24,6 +24,7 @@
 #include <functional>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "eckit/io/fam/FamMapIterator.h"
 #include "eckit/io/fam/FamObject.h"
@@ -41,9 +42,9 @@ class FamRegionName;
 // FAM HASHER
 
 /// @brief Hash functor. Override this to make a specialized hasher
-template <typename KeyType>
+template <typename T>
 struct FamHash {
-    auto operator()(const KeyType& key) const noexcept -> std::size_t {
+    auto operator()(const T& key) const noexcept -> std::size_t {
         return std::hash<std::string>{}(key.asString());
         /// @note example for a 3-level key
         // const auto l1 = std::hash<std::string> {}(key.firstLevel);
@@ -61,19 +62,23 @@ struct FamHash {
 //     unsigned int index = key % table->size;
 
 class FamHashTable {
-    static constexpr auto key_size = 32;  // template?
+    static constexpr auto key_size = 32;
 
     static constexpr auto capacity = 1024;
 
 public:  // types
 
-    using key_type  = FixedString<key_size>;
-    using hash_type = FamHash<key_type>;
-    /// @todo char array ?
+    using key_type   = FixedString<key_size>;
     using value_type = char;
     // using key_equal  = key_equal;
-    using size_type       = fam::size_t;
+    using size_type       = std::size_t;
     using difference_type = size_type;
+
+    using hash_type = FamHash<key_type>;
+
+    /// @todo char array ?
+    // using key_equal  = key_equal;
+    // using difference_type = size_type;
 
     // using mapped_type    = mapped_type;
     // using allocator_type = allocator_type;
@@ -89,7 +94,7 @@ public:  // types
     // using local_iterator       = local_iterator;
     // using const_local_iterator = const_local_iterator;
 
-    using node_type = std::optional<FamList>;
+    using node_type = FamList;
 
 public:  // methods
 
@@ -103,10 +108,9 @@ private:  // members
 
     FamRegion region_;
 
-    FamObject begin_;
     FamObject count_;
 
-    std::array<node_type, capacity> table_;
+    std::array<node_type, capacity> buckets_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

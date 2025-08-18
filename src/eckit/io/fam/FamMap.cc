@@ -15,8 +15,6 @@
 
 #include "eckit/io/fam/FamMap.h"
 
-#include "detail/FamMapNode.h"
-
 #include <iostream>
 #include <string>
 
@@ -24,6 +22,7 @@
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
+#include "eckit/io/fam/detail/FamMapNode.h"
 
 namespace eckit {
 
@@ -99,13 +98,7 @@ auto FamMap::contains(const key_type& /* key */) const -> bool {
 //----------------------------------------------------------------------------------------------------------------------
 // modifiers
 
-auto FamMap::insert(const value_type& /* value */) -> iterator {
-    NOTIMP;
-}
-
-auto FamMap::insert(value_type&& /* value */) -> iterator {
-    NOTIMP;
-}
+auto FamMap::insert(const value_type& value) -> iterator {}
 
 // void FamMap::push_back(const void* data, const fam::size_t length) {
 //     // allocate an object
@@ -132,6 +125,10 @@ auto FamMap::insert(value_type&& /* value */) -> iterator {
 //     // increment size
 //     size_.add(0, 1UL);
 // }
+
+auto FamMap::insert(value_type&& /* value */) -> iterator {
+    NOTIMP;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 // capacity

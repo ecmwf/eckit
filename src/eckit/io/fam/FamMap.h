@@ -21,6 +21,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <utility>
 
 #include "eckit/io/fam/FamHashTable.h"
 #include "eckit/io/fam/FamMapIterator.h"
@@ -35,8 +36,8 @@ class FamRegionName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @brief FamMap is an associative key-value container on FAM. Each element is organized depending on the
-/// hash value of its key.
+/// @brief FamMap is an associative key-value container on FAM.
+/// Each element is organized depending on the hash value of its key.
 class FamMap {
     static constexpr auto key_size = 32;  // template?
 
@@ -44,12 +45,15 @@ class FamMap {
 
 public:  // types
 
-    using key_type   = FixedString<key_size>;
-    using hash_type  = FamHash<key_type>;
-    using value_type = char;
+    using key_type    = FixedString<key_size>;
+    using mapped_type = char;
+
+    using value_type = std::pair<const key_type, mapped_type>;
     // using key_equal  = key_equal;
     using size_type       = fam::size_t;
     using difference_type = size_type;
+
+    using hash_type = FamHash<key_type>;
 
     // using mapped_type    = mapped_type;
     // using allocator_type = allocator_type;
@@ -87,7 +91,7 @@ public:  // methods
 
     auto empty() const -> bool;
 
-    auto maxSize() const noexcept -> size_type { return capacity; }
+    // auto maxSize() const noexcept -> size_type { return capacity; }
 
     // iterators
 
@@ -99,7 +103,7 @@ public:  // methods
 
     auto cend() const -> const_iterator;
 
-    // lookup
+    // accessors
 
     // Returns reference to the element with specified key.
     // throws std::out_of_range if not found
@@ -120,12 +124,9 @@ public:  // methods
     auto insert(const value_type& value) -> iterator;
     auto insert(value_type&& value) -> iterator;
 
-    // void push_back(const void* data, size_type length);
-    // void push_front(const void* data, size_type length);
-    // void pop_front();
-    // void pop_back();
+    size_type erase(const key_type& key);
 
-    // void clear() noexcept;
+    void clear() noexcept;
 
 private:  // methods
 

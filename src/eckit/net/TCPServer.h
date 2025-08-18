@@ -26,7 +26,7 @@ public:
     TCPServer(const SocketOptions& = SocketOptions::server());
     explicit TCPServer(int port, const SocketOptions& = SocketOptions::server());
 
-    ~TCPServer();
+    ~TCPServer() override;
 
     void willFork(bool);
 
@@ -73,6 +73,8 @@ public:
 
     EphemeralTCPServer(const SocketOptions& = SocketOptions::data());
     explicit EphemeralTCPServer(int port, const SocketOptions& = SocketOptions::data());
+
+    ~EphemeralTCPServer() override = default;
 };
 
 }  // namespace eckit::net

@@ -20,6 +20,14 @@ AreaError::AreaError(const std::string& what, const CodeLocation& location) :
     Exception("AreaError: [" + what + "]", location) {}
 
 
+FigureError::FigureError(const std::string& what, const CodeLocation& location) :
+    Exception("FigureError: [" + what + "]", location) {}
+
+
+GridError::GridError(const std::string& what, const CodeLocation& location) :
+    Exception("GridError: [" + what + "]", location) {}
+
+
 OrderError::OrderError(const std::string& what, const CodeLocation& location) :
     Exception("OrderError: [" + what + "]", location) {}
 
@@ -30,6 +38,10 @@ ProjectionError::ProjectionError(const std::string& what, const CodeLocation& lo
 
 SpecError::SpecError(const std::string& what, const CodeLocation& location) :
     Exception("SpecError: [" + what + "]", location) {}
+
+
+SearchError::SearchError(const std::string& what, const CodeLocation& location) :
+    Exception("SearchError: [" + what + "]", location) {}
 
 
 }  // namespace eckit::geo::exception

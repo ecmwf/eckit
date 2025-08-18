@@ -74,6 +74,8 @@ public:
     using container_type::data;
 
     bool pole(value_type eps = EPS) const;
+    bool north_pole(value_type eps = EPS) const;
+    bool south_pole(value_type eps = EPS) const;
 
     static size_t dimensions() { return DIMS; }
 

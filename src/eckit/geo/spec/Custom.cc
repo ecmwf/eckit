@@ -189,10 +189,19 @@ Custom* Custom::make_from_value(const Value& value) {
         const auto list(value.as<ValueList>());
         ASSERT(!list.empty());
 
-        return list.front().isNumber()   ? value_type(std::vector<int>(list.begin(), list.end()))
-               : list.front().isDouble() ? value_type(std::vector<double>(list.begin(), list.end()))
-               : list.front().isString() ? std::vector<std::string>(list.begin(), list.end())
-                                         : throw BadValue(value, Here());
+        if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isNumber(); })) {
+            return std::vector<int>(list.begin(), list.end());
+        }
+
+        if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isDouble() || v.isNumber(); })) {
+            return std::vector<double>(list.begin(), list.end());
+        }
+
+        if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isString(); })) {
+            return std::vector<std::string>(list.begin(), list.end());
+        }
+
+        throw BadValue(value, Here());
     };
 
     auto* custom = new Custom;

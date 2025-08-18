@@ -3,8 +3,6 @@ list(APPEND eckit_geo_srcs
     Area.cc
     Area.h
     Arrangement.h
-    Cache.cc
-    Cache.h
     Container.h
     Exceptions.cc
     Exceptions.h
@@ -36,11 +34,14 @@ list(APPEND eckit_geo_srcs
     Projection.h
     Range.cc
     Range.h
+    Search.cc
     Search.h
     Shape.cc
     Shape.h
     Spec.cc
     Spec.h
+    Trace.cc
+    Trace.h
     area/BoundingBox.cc
     area/BoundingBox.h
     area/BoundingBoxXY.cc
@@ -53,10 +54,12 @@ list(APPEND eckit_geo_srcs
     area/Polygon.h
     area/library/GeoJSON.cc
     area/library/GeoJSON.h
-    cache/CacheRoot.cc
-    cache/CacheRoot.h
+    cache/DiskCache.cc
+    cache/DiskCache.h
     cache/Download.cc
     cache/Download.h
+    cache/MemoryCache.cc
+    cache/MemoryCache.h
     cache/Unzip.cc
     cache/Unzip.h
     container/PointsContainer.cc
@@ -87,6 +90,8 @@ list(APPEND eckit_geo_srcs
     grid/RegularLL.h
     grid/RegularXY.cc
     grid/RegularXY.h
+    grid/SphericalHarmonics.cc
+    grid/SphericalHarmonics.h
     grid/Unstructured.cc
     grid/Unstructured.h
     grid/unstructured/UnstructuredGeneric.cc
@@ -109,6 +114,8 @@ list(APPEND eckit_geo_srcs
     projection/AlbersEqualArea.h
     projection/Composer.cc
     projection/Composer.h
+    projection/EquidistantCylindrical.cc
+    projection/EquidistantCylindrical.h
     projection/LambertAzimuthalEqualArea.cc
     projection/LambertAzimuthalEqualArea.h
     projection/LambertConformalConic.cc
@@ -128,8 +135,6 @@ list(APPEND eckit_geo_srcs
     projection/SpaceView.h
     projection/Stretch.cc
     projection/Stretch.h
-    projection/XYToLonLat.cc
-    projection/XYToLonLat.h
     range/GaussianLatitude.cc
     range/GaussianLatitude.h
     range/Regular.cc
@@ -140,6 +145,16 @@ list(APPEND eckit_geo_srcs
     range/RegularLatitude.h
     range/RegularLongitude.cc
     range/RegularLongitude.h
+    search/Tree.cc
+    search/Tree.h
+    search/TreeMapped.cc
+    search/TreeMapped.h
+    search/TreeMappedAnonymousMemory.cc
+    search/TreeMappedAnonymousMemory.h
+    search/TreeMappedFile.cc
+    search/TreeMappedFile.h
+    search/TreeMemory.cc
+    search/TreeMemory.h
     share/Area.cc
     share/Area.h
     share/Grid.cc

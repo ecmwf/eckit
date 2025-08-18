@@ -12,11 +12,9 @@
 
 #include "eckit/geo/range/RegularCartesian.h"
 
-#include <algorithm>
-
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
@@ -33,6 +31,9 @@ static Fraction regular_adjust(const Fraction& target, const Fraction& inc, bool
 
     return n * inc;
 };
+
+
+RegularCartesian::RegularCartesian(size_t n, double a, double b) : Regular(n, a, b, false, PointXY::EPS) {}
 
 
 Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const {
@@ -57,7 +58,7 @@ Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const 
         auto n = static_cast<size_t>(nf.integralPart() + 1);
         ASSERT(0 < n && n <= size());
 
-        return new RegularCartesian(n, _a, _b, eps());
+        return new RegularCartesian(n, _a, _b);
     }
 
     NOTIMP;
@@ -65,7 +66,7 @@ Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const 
 
 
 Range* RegularCartesian::make_range_flipped() const {
-    return new RegularCartesian(size(), b(), a(), eps());
+    return new RegularCartesian(size(), b(), a());
 }
 
 

@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/Range.h"
 
 
@@ -23,7 +24,7 @@ public:
 
     // -- Constructors
 
-    explicit GaussianLatitude(size_t N, bool increasing, double eps = 0.);
+    explicit GaussianLatitude(size_t N, bool increasing, double eps = PointLonLat::EPS);
 
     // -- Methods
 

@@ -25,7 +25,6 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
@@ -54,18 +53,14 @@ public:
 
     using order_type = Order::value_type;
 
-    struct Iterator final : std::unique_ptr<geo::Iterator> {
-        explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
+    struct Iterator final : std::shared_ptr<geo::Iterator> {
+        explicit Iterator(geo::Iterator* it) : shared_ptr(it) { ASSERT(shared_ptr::operator bool()); }
 
-        using difference_type = unique_ptr::element_type::difference_type;
-
-        Iterator(const Iterator&) = delete;
-        Iterator(Iterator&&)      = delete;
-
-        ~Iterator() = default;
-
-        void operator=(const Iterator&) = delete;
-        void operator=(Iterator&&)      = delete;
+        using iterator_category = element_type::iterator_category;
+        using difference_type   = element_type::difference_type;
+        using value_type        = element_type::value_type;
+        using pointer           = element_type::pointer;
+        using reference         = element_type::reference;
 
         bool operator==(const Iterator& other) const { return get()->operator==(*(other.get())); }
         bool operator!=(const Iterator& other) const { return get()->operator!=(*(other.get())); }
@@ -90,25 +85,19 @@ public:
         NextIterator(const NextIterator&) = delete;
         NextIterator(NextIterator&&)      = delete;
 
-        ~NextIterator() {
-            delete current_;
-            delete end_;
-        }
-
         void operator=(const NextIterator&) = delete;
         void operator=(NextIterator&&)      = delete;
 
-        bool next(Point&) const;
-        bool has_next() const { return *current_ != *end_; }
-        size_t index() const { return index_; }
+        bool next(Point&);
+        bool has_next() const { return current_ != end_; }
+        size_t index() const { return current_.index(); }
 
     private:
 
-        NextIterator(geo::Iterator* current, const geo::Iterator* end);
+        NextIterator(Iterator&& current, Iterator&& end) : current_(std::move(current)), end_(std::move(end)) {}
 
-        geo::Iterator* current_;
-        const geo::Iterator* end_;
-        mutable size_t index_;
+        Iterator current_;
+        Iterator end_;
 
         friend class Grid;
     };
@@ -135,11 +124,9 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    NextIterator next_iterator() const { return {cbegin().release(), cend().release()}; }
+    NextIterator next_iterator() const { return {cbegin(), cend()}; }
 
-    [[nodiscard]] NextIterator* make_next_iterator() const {
-        return new NextIterator{cbegin().release(), cend().release()};
-    }
+    [[nodiscard]] NextIterator* make_next_iterator() const { return new NextIterator{cbegin(), cend()}; }
 
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
@@ -147,6 +134,7 @@ public:
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;
 
+    virtual bool empty() const;
     virtual size_t size() const;
 
     uid_t uid() const;
@@ -158,6 +146,8 @@ public:
     virtual bool includesSouthPole() const;
     virtual bool isPeriodicWestEast() const;
 
+    [[nodiscard]] virtual Point first_point() const;
+    [[nodiscard]] virtual Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
@@ -184,7 +174,7 @@ protected:
     // -- Constructors
 
     explicit Grid(const Spec&);
-    explicit Grid(area::BoundingBox*, const Projection*);
+    explicit Grid(const area::BoundingBox*, const Projection*);
 
     // -- Methods
 
@@ -200,7 +190,7 @@ private:
     // -- Members
 
     mutable std::unique_ptr<Area> area_;
-    mutable std::unique_ptr<area::BoundingBox> bbox_;
+    mutable std::unique_ptr<const area::BoundingBox> bbox_;
     mutable std::unique_ptr<const Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;

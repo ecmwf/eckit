@@ -11,7 +11,7 @@
 
 cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
-find_package( ecbuild 3.9.1 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
+find_package( ecbuild 3.11 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
 
 project( eckit LANGUAGES CXX )
 
@@ -198,17 +198,17 @@ ecbuild_add_option( FEATURE ECKIT_GEO
 
 ecbuild_add_option( FEATURE GEO_GRID_FESOM
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
                     DESCRIPTION "eckit::geo geometry library support for FESOM grids" )
 
 ecbuild_add_option( FEATURE GEO_GRID_ICON
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
                     DESCRIPTION "eckit::geo geometry library support for ICON grids" )
 
 ecbuild_add_option( FEATURE GEO_GRID_ORCA
                     DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
                     DESCRIPTION "eckit::geo geometry library support for ORCA grids" )
 
 ecbuild_add_option( FEATURE GEO_CACHING

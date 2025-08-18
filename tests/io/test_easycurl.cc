@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <string>

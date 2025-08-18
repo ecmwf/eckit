@@ -31,10 +31,27 @@ public:
 namespace eckit::geo::exception {
 
 
+using SeriousBug = SeriousBug;
+
+
 class AreaError : public geo::Exception {
 public:
 
     explicit AreaError(const std::string&, const CodeLocation&);
+};
+
+
+class FigureError : public geo::Exception {
+public:
+
+    explicit FigureError(const std::string&, const CodeLocation&);
+};
+
+
+class GridError : public geo::Exception {
+public:
+
+    explicit GridError(const std::string&, const CodeLocation&);
 };
 
 
@@ -56,6 +73,13 @@ class SpecError : public geo::Exception {
 public:
 
     explicit SpecError(const std::string&, const CodeLocation&);
+};
+
+
+class SearchError : public geo::Exception {
+public:
+
+    explicit SearchError(const std::string&, const CodeLocation&);
 };
 
 

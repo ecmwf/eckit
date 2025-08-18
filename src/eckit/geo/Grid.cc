@@ -51,7 +51,7 @@ class lock_type {
 Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
-Grid::Grid(area::BoundingBox* bbox, const Projection* projection) :
+Grid::Grid(const area::BoundingBox* bbox, const Projection* projection) :
     bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime().release() : bbox), projection_(projection) {}
 
 
@@ -62,14 +62,14 @@ const Spec& Grid::spec() const {
 
         auto& custom = *spec_;
         fill_spec(custom);
-
-        if (std::string name; GridSpecByName::instance().match(custom, name)) {
-            custom.clear();
-            custom.set(className(), name);
-        }
     }
 
     return *spec_;
+}
+
+
+bool Grid::empty() const {
+    return size() == 0;
 }
 
 
@@ -130,13 +130,20 @@ bool Grid::isPeriodicWestEast() const {
 }
 
 
+Point Grid::first_point() const {
+    ASSERT(!empty());
+    return to_points().front();
+}
+
+
+Point Grid::last_point() const {
+    ASSERT(!empty());
+    return to_points().back();
+}
+
+
 std::vector<Point> Grid::to_points() const {
-    std::vector<Point> points;
-    points.reserve(size());
-
-    std::for_each(cbegin(), cend(), [&points](const auto& p) { points.emplace_back(p); });
-
-    return points;
+    return {cbegin(), cend()};
 }
 
 
@@ -245,8 +252,8 @@ const Grid* GridFactory::make_from_string(const std::string& str) {
 
 
 GridFactory& GridFactory::instance() {
-    static GridFactory obj;
-    return obj;
+    static GridFactory INSTANCE;
+    return INSTANCE;
 }
 
 
@@ -272,7 +279,7 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
     ASSERT(cfg != nullptr);
 
 
-    // hardcoded, interpreted options (contributing to gridspec)
+    // hardcoded, interpreted options (contributing to spec)
 
     auto back = std::make_unique<spec::Custom>();
     ASSERT(back);
@@ -305,23 +312,10 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
 }
 
 
-Grid::NextIterator::NextIterator(geo::Iterator* current, const geo::Iterator* end) :
-    current_([](auto* ptr) {
-        ASSERT(ptr != nullptr);
-        return ptr;
-    }(current)),
-    end_([](auto* ptr) {
-        ASSERT(ptr != nullptr);
-        return ptr;
-    }(end)),
-    index_(current_->index()) {}
-
-
-bool Grid::NextIterator::next(Point& point) const {
-    if (auto& current(*current_); current != *end_) {
-        point  = *current;
-        index_ = current.index();
-        ++current;
+bool Grid::NextIterator::next(Point& point) {
+    if (current_ != end_) {
+        point = *current_;
+        ++current_;
         return true;
     }
 

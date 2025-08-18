@@ -98,6 +98,10 @@ void Message::getDoubleArray(const std::string& key, std::vector<double>& v) con
     return content_->getDoubleArray(key, v);
 }
 
+void Message::getFloatArray(const std::string& key, std::vector<float>& v) const {
+    return content_->getFloatArray(key, v);
+}
+
 size_t Message::getSize(const std::string& key) const {
     return content_->getSize(key);
 }
@@ -106,6 +110,9 @@ void Message::getDoubleArray(const std::string& key, double* data, size_t len) c
     return content_->getDoubleArray(key, data, len);
 }
 
+void Message::getFloatArray(const std::string& key, float* data, size_t len) const {
+    return content_->getFloatArray(key, data, len);
+}
 
 eckit::Buffer Message::decode() const {
     return lookupDecoder().decode(*this);

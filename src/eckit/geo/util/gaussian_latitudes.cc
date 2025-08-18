@@ -16,8 +16,8 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util.h"
 
 
@@ -27,7 +27,7 @@ namespace eckit::geo::util {
 const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
     ASSERT(N > 0);
 
-    using cache_t = CacheT<std::pair<size_t, bool>, std::vector<double>>;
+    using cache_t = cache::MemoryCacheT<std::pair<size_t, bool>, std::vector<double>>;
     const cache_t::key_type key{N, increasing};
 
     static cache_t cache;

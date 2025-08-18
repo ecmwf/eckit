@@ -18,7 +18,7 @@
 namespace eckit::geo::cache {
 
 
-class CacheRoot {
+class DiskCache {
 public:
 
     // -- Methods
@@ -31,7 +31,7 @@ protected:
 
     // -- Constructors
 
-    explicit CacheRoot(const PathName& root) : root_{root} {}
+    explicit DiskCache(const PathName& root) : root_{root} {}
 
     // -- Methods
 

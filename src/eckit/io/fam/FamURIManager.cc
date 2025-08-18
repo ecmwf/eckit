@@ -15,8 +15,14 @@
 
 #include "eckit/io/fam/FamURIManager.h"
 
+#include <string>
+
 #include "eckit/filesystem/URI.h"
+#include "eckit/filesystem/URIManager.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamObjectName.h"
+#include "eckit/io/fam/FamPath.h"
 
 namespace eckit {
 
@@ -38,8 +44,8 @@ DataHandle* FamURIManager::newReadHandle(const URI& uri) {
     return FamObjectName(uri).dataHandle();
 }
 
-DataHandle* FamURIManager::newReadHandle(const URI& uri, const OffsetList& /*offsets*/, const LengthList& /*lengths*/) {
-    return FamObjectName(uri).dataHandle();
+DataHandle* FamURIManager::newReadHandle(const URI& uri, const OffsetList& offsets, const LengthList& lengths) {
+    return FamObjectName(uri).partHandle(offsets, lengths);
 }
 
 std::string FamURIManager::asString(const URI& uri) const {

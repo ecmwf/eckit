@@ -67,8 +67,8 @@ auto FamObjectName::dataHandle(const bool overwrite) const -> DataHandle* {
     return new FamHandle(*this, overwrite);
 }
 
-auto FamObjectName::dataHandle(const Offset& offset, const Length& length) const -> DataHandle* {
-    return new FamHandle(*this, offset, length, true);
+auto FamObjectName::partHandle(const OffsetList& offsets, const LengthList& lengths) const -> DataHandle* {
+    return new FamHandle(*this, offsets[0], lengths[0], true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

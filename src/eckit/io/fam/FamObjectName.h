@@ -55,7 +55,7 @@ public:  // methods
     auto dataHandle(bool overwrite = false) const -> DataHandle*;
 
     [[nodiscard]]
-    auto dataHandle(const Offset& offset, const Length& length) const -> DataHandle*;
+    auto partHandle(const OffsetList& offsets, const LengthList& lengths) const -> DataHandle*;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

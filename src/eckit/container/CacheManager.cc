@@ -74,7 +74,7 @@ void CacheManagerBase::rescanCache(const PathName& base) const {
 
     std::ofstream out(mapping.asString().c_str(), std::ios::app);
 
-    for (const auto & file : files) {
+    for (const auto& file : files) {
         if (file.extension() != extension_) {
             continue;
         }
@@ -172,8 +172,7 @@ void CacheManagerBase::touch(const PathName& base, const PathName& path) const {
 
                 // Cleanup
                 Log::info() << "CACHE-MANAGER cleanup " << db << ", size is " << Bytes(total_entry.size_)
-                                   << ", max size is " << Bytes(maxCacheSize_) << ", removing "
-                                   << Bytes(remove) << std::endl;
+                            << ", max size is " << Bytes(maxCacheSize_) << ", removing " << Bytes(remove) << std::endl;
 
 
                 std::map<std::string, PathName> md5_to_path;
@@ -187,9 +186,8 @@ void CacheManagerBase::touch(const PathName& base, const PathName& path) const {
                     PathName p(t);
 
                     if (s.length() != MD5_DIGEST_LENGTH * 2 || not sub_path_of(base, p)) {
-                        Log::warning()
-                            << "CACHE-MANAGER cleanup " << mapping << ", invalid entry [" << s << "] and [" << t
-                            << "], ignoring but will rebuild index later" << std::endl;
+                        Log::warning() << "CACHE-MANAGER cleanup " << mapping << ", invalid entry [" << s << "] and ["
+                                       << t << "], ignoring but will rebuild index later" << std::endl;
                         rescan = true;
                         continue;
                     }
@@ -246,18 +244,17 @@ void CacheManagerBase::touch(const PathName& base, const PathName& path) const {
 
                     deleted += unlinked;
 
-                    Log::warning()
-                        << "CACHE-MANAGER cleanup " << file << ", deleted: " << Bytes(unlinked) << std::endl;
+                    Log::warning() << "CACHE-MANAGER cleanup " << file << ", deleted: " << Bytes(unlinked) << std::endl;
                 }
 
                 if (deleted < remove) {
                     Log::warning() << "CACHE-MANAGER cleanup " << mapping << ", could not delete enough space"
-                                          << " total is " << Bytes(total_entry.size_) << std::endl;
+                                   << " total is " << Bytes(total_entry.size_) << std::endl;
                 }
 
                 if (rescan) {
                     Log::warning() << "CACHE-MANAGER cleanup " << mapping
-                                          << ", inconsitent cache index, needs rebuilding" << std::endl;
+                                   << ", inconsitent cache index, needs rebuilding" << std::endl;
 
                     // TODO: rebuild index + mapping from directory scan
                     mapping.unlink();
@@ -322,8 +319,7 @@ void CacheManagerFileSemaphoreLock::unlock() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CacheManagerFileFlock::CacheManagerFileFlock(const std::string& path) :
-    lock_(lockFile(path)) {}
+CacheManagerFileFlock::CacheManagerFileFlock(const std::string& path) : lock_(lockFile(path)) {}
 
 void CacheManagerFileFlock::lock() {
     lock_.lock();

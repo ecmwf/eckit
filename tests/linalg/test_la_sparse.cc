@@ -11,6 +11,9 @@
 #include "eckit/config/Resource.h"
 #include "util.h"
 
+#include "eckit/linalg/allocator/NonOwningAllocator.h"
+#include "eckit/linalg/allocator/StandardContainerAllocator.h"
+
 using namespace eckit::linalg;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -72,7 +75,7 @@ CASE("eckit la sparse") {
     }
 
     SECTION("set from triplets with rows in wrong order") {
-        //  (not triggering right now since triplets are sorted)
+        //  (not triggering right now since triplets are expected to be sorted)
         // EXPECT_THROWS_AS( S(2, 2, 2, 1, 1, 1., 0, 0, 1.), AssertionFailed );
     }
 
@@ -191,6 +194,34 @@ CASE("eckit la sparse") {
         Scalar data[4] = {1., 3., 4., 2.};
         SparseMatrix B(G.A);
         EXPECT(equal_sparse_matrix(B.transpose(), outer, inner, data));
+    }
+
+    SECTION("non-owning allocator") {
+        SparseMatrix FA(
+            new allocator::NonOwningAllocator(F.A.rows(), F.A.cols(), F.A.nonZeros(), const_cast<Index*>(F.A.outer()),
+                                              const_cast<Index*>(F.A.inner()), const_cast<Scalar*>(F.A.data())));
+
+        EXPECT(F.A.outerIndex() == FA.outerIndex());
+        EXPECT(F.A.inner() == FA.inner());
+        EXPECT(F.A.data() == FA.data());
+
+        SparseMatrix GA(
+            new allocator::NonOwningAllocator(G.A.rows(), G.A.cols(), G.A.nonZeros(), const_cast<Index*>(G.A.outer()),
+                                              const_cast<Index*>(G.A.inner()), const_cast<Scalar*>(G.A.data())));
+
+        EXPECT(G.A.outerIndex() == GA.outerIndex());
+        EXPECT(G.A.inner() == GA.inner());
+        EXPECT(G.A.data() == GA.data());
+    }
+
+    SECTION("containers allocator") {
+        SparseMatrix FA(new allocator::StandardContainerAllocator(3, 3, {{{0, 2.}, {2, -3.}}, {{1, 2.}}, {{2, 2.}}}));
+
+        EXPECT(equal_sparse_matrix(FA, F.A.outer(), F.A.inner(), F.A.data()));
+
+        SparseMatrix GA(new allocator::StandardContainerAllocator(2, 3, {{{0, 1.}, {2, 2.}}, {{0, 3.}, {1, 4.}}}));
+
+        EXPECT(equal_sparse_matrix(GA, GA.outer(), G.A.inner(), G.A.data()));
     }
 }
 

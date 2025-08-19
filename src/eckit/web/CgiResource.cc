@@ -20,8 +20,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CgiResource::CgiResource() :
-    HtmlResource("/cgi") {}
+CgiResource::CgiResource() : HtmlResource("/cgi") {}
 
 CgiResource::~CgiResource() {}
 

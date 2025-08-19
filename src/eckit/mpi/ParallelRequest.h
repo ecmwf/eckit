@@ -28,10 +28,12 @@ class Parallel;
 class ParallelRequest : public RequestContent {
 
 private:  // constructor
+
     ParallelRequest();
     ParallelRequest(MPI_Request);
 
 private:  // methods
+
     void print(std::ostream&) const override;
 
     int request() const override;
@@ -39,6 +41,7 @@ private:  // methods
     bool test() override;
 
 private:  // members
+
     friend class Parallel;
 
     MPI_Request request_;

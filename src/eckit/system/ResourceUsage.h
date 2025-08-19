@@ -26,6 +26,7 @@ namespace eckit::system {
 class ResourceUsage {
 
 public:  // methods
+
     ResourceUsage();
 
     size_t maxResidentSetSize() const;
@@ -33,6 +34,7 @@ public:  // methods
     size_t numberOfSwaps() const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const ResourceUsage& p) {
@@ -41,6 +43,7 @@ protected:  // methods
     }
 
 private:  // members
+
     size_t factor_;
     struct rusage usage_;
 };

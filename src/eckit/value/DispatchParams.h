@@ -27,6 +27,7 @@ template <class Derived>
 class DispatchParams {
 
 public:  // methods
+
     DispatchParams() {}
     DispatchParams(Stream& s) { NOTIMP; }
 
@@ -40,6 +41,7 @@ public:  // methods
     friend void encode(const DispatchParams<T>&, Stream&);
 
 protected:  // members
+
     typedef Params::value_t (Derived::*parametrizer_t)(const Params::key_t&) const;
     typedef std::map<std::string, parametrizer_t> store_t;
 

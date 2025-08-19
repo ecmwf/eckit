@@ -22,6 +22,7 @@ struct AIOBuffer;
 class AIOHandle : public DataHandle {
 
 public:  // methods
+
     AIOHandle(const PathName& path, size_t count = 16, size_t buffsize = 1024 * 1024, bool fsync = false);
 
     ~AIOHandle() override;
@@ -44,12 +45,15 @@ public:  // methods
     bool canSeek() const override { return false; }
 
 private:  // methods
+
     size_t getFreeSlot();
 
 protected:  // members
+
     PathName path_;
 
 private:  // members
+
     std::vector<AIOBuffer*> buffers_;
 
     size_t used_;

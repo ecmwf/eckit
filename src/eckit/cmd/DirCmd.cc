@@ -8,8 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <climits>
 #include <unistd.h>
+#include <climits>
 
 #include "eckit/cmd/DirCmd.h"
 #include "eckit/exception/Exceptions.h"
@@ -21,8 +21,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-DirCmd::DirCmd() :
-    CmdResource("cd,pwd") {}
+DirCmd::DirCmd() : CmdResource("cd,pwd") {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -31,12 +31,9 @@ struct Timing {
     double cpu_;
     size_t updates_;
 
-    Timing() :
-        elapsed_(0), cpu_(0), updates_(0) {}
-    Timing(double elapsed, double cpu, size_t updates) :
-        elapsed_(elapsed), cpu_(cpu), updates_(updates) {}
-    Timing(Timer& timer) :
-        elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
+    Timing() : elapsed_(0), cpu_(0), updates_(0) {}
+    Timing(double elapsed, double cpu, size_t updates) : elapsed_(elapsed), cpu_(cpu), updates_(updates) {}
+    Timing(Timer& timer) : elapsed_(timer.elapsed()), cpu_(timer.elapsed_cpu()), updates_(1) {}
     Timing& operator+=(const Timing&);
     Timing& operator-=(const Timing&);
     Timing operator-(const Timing&) const;
@@ -51,6 +48,7 @@ std::ostream& operator<<(std::ostream&, const Timing&);
 
 class Statistics {
 public:
+
     static void reportUnit(std::ostream& out, const char* title, const char* unit, double value,
                            const char* indent = "", bool always = false);
     static void reportRate(std::ostream& out, const char* title, unsigned long long value, const char* indent = "",
@@ -73,6 +71,7 @@ public:
     static Timer& timer() { return timer_; }
 
 private:
+
     static Timer timer_;
 };
 
@@ -83,8 +82,8 @@ class AutoTiming {
     Timing start_;
 
 public:
-    AutoTiming(Timing& timing) :
-        timing_(timing), start_(Statistics::timer()) {}
+
+    AutoTiming(Timing& timing) : timing_(timing), start_(Statistics::timer()) {}
     ~AutoTiming() { timing_ += Timing(Statistics::timer()) - start_; }
 };
 

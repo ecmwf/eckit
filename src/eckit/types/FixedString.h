@@ -42,6 +42,7 @@ namespace eckit {
 template <int SIZE>
 class FixedString {
 public:
+
     /// Constructors
     /// @note that constructing FixedStrings initialised from another FixedString of a different SIZE actually
     ///       routes through the const std::string& constructor, via the provided implicit cast to std::string below.
@@ -85,6 +86,7 @@ public:
     static size_t static_size() { return SIZE; }
 
 private:
+
     char data_[SIZE];
 
     void print(std::ostream& s) const;

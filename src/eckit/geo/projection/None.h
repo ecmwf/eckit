@@ -20,6 +20,7 @@ namespace eckit::geo::projection {
 
 class None : public Projection {
 public:
+
     // -- Constructors
 
     explicit None() = default;
@@ -31,6 +32,10 @@ public:
     inline Point inv(const Point& q) const override { return q; }
 
     const std::string& type() const override;
+
+private:
+
+    // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override {}
 };

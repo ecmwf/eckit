@@ -20,6 +20,7 @@ namespace eckit::geo::projection {
 
 class Stretch : public Projection {
 public:
+
     // -- Constructors
 
     explicit Stretch(double c);
@@ -38,11 +39,13 @@ public:
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Members
 
     double c_;

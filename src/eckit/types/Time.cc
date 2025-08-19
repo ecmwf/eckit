@@ -19,20 +19,22 @@
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/types/Time.h"
 #include "eckit/utils/Hash.h"
+#include "eckit/utils/Tokenizer.h"
 
 namespace {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-const std::regex hhmmss_("^([0-9]+):([0-5]?[0-9])(:[0-5]?[0-9])?$");
+// const std::regex hhmmss_("^([0-9]+):([0-5]?[0-9])(:[0-5]?[0-9])?$");
 const std::regex ddhhmmss_("^-?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?$");
 
 // DIGITS: "^-?[0-9]+$"
 // FLOAT:  "^-?[0-9]*\\.[0-9]+$"
 enum class TimeFormat
 {
-    UNKOWN,
+    INVALID,
     OTHER,
+    COLON,
     DIGITS,
     DECIMAL
 };
@@ -40,15 +42,19 @@ enum class TimeFormat
 TimeFormat checkTimeFormat(const std::string_view time) {
     bool hasDigit   = false;
     bool hasDecimal = false;
+    bool hasColon   = false;
 
     const std::size_t start = (time[0] == '-') ? 1 : 0;
 
     for (auto i = start; i < time.length(); i++) {
         if (time[i] == '.') {
             if (hasDecimal || i == time.length() - 1) {
-                return TimeFormat::UNKOWN;
+                return TimeFormat::INVALID;
             }
             hasDecimal = true;
+        }
+        else if (time[i] == ':') {
+            hasColon = true;
         }
         else if (isdigit(time[i]) == 0) {
             return TimeFormat::OTHER;
@@ -59,10 +65,10 @@ TimeFormat checkTimeFormat(const std::string_view time) {
     }
 
     if (!hasDigit) {
-        return TimeFormat::UNKOWN;
+        return TimeFormat::INVALID;
     }
 
-    return hasDecimal ? TimeFormat::DECIMAL : TimeFormat::DIGITS;
+    return hasColon ? TimeFormat::COLON : (hasDecimal ? TimeFormat::DECIMAL : TimeFormat::DIGITS);
 }
 
 void printTime(std::ostream& s, long n) {
@@ -94,92 +100,91 @@ Time::Time(const std::string& s, bool extended) {
 
     const auto format = checkTimeFormat(s);
 
-    if (format == TimeFormat::DIGITS) {
-        long t   = std::stol(s);
-        int sign = (s[0] == '-' ? 1 : 0);
-        if (extended || s.length() <= 2 + sign) {  // cases: h, hh, (or hhh..h for step parsing)
-            hh = t;
-        }
-        else {
-            if (s.length() <= 4 + sign) {  // cases: hmm, hhmm
-                hh = t / 100;
-                mm = t % 100;
+    switch (checkTimeFormat(s)) {
+        case TimeFormat::DIGITS : {
+            long t   = std::stol(s);
+            int sign = (s[0] == '-' ? 1 : 0);
+            if (extended || s.length() <= 2 + sign) {  // cases: h, hh, (or hhh..h for step parsing)
+                hh = t;
             }
-            else {  // cases: hmmss, hhmmss
-                hh = t / 10000;
-                mm = (t / 100) % 100;
-                ss = t % 100;
-            }
-        }
-    }
-    else if (format == TimeFormat::DECIMAL) {
-        long sec = std::round(std::stod(s) * 3600);
-        hh       = sec / 3600;
-        sec -= hh * 3600;
-        mm = sec / 60;
-        sec -= mm * 60;
-        ss = sec;
-    }
-    else if (format == TimeFormat::OTHER) {
-        std::smatch m;
-        if (std::regex_match(s, m, hhmmss_)) {
-            for (int i = 1; i < m.size(); i++) {
-                if (m[i].matched) {
-                    switch (i) {
-                        case 1:
-                            hh = std::stol(m[i].str());
-                            break;
-                        case 2:
-                            mm = std::stol(m[i].str());
-                            break;
-                        case 3:
-                            std::string aux = m[i].str();
-                            aux.erase(0, 1);
-                            ss = std::stol(aux);
-                            break;
-                    }
+            else {
+                if (s.length() <= 4 + sign) {  // cases: hmm, hhmm
+                    hh = t / 100;
+                    mm = t % 100;
+                }
+                else {  // cases: hmmss, hhmmss
+                    hh = t / 10000;
+                    mm = (t / 100) % 100;
+                    ss = t % 100;
                 }
             }
+
+            break;
         }
-        else if (std::regex_match(s, m, ddhhmmss_)) {
-            for (int i = 1; i < m.size(); i++) {
-                if (m[i].matched) {
-                    std::string aux = m[i].str();
-                    aux.pop_back();
-                    long t = std::stol(aux);
-                    switch (i) {
-                        case 1:
-                            dd = t;
-                            break;
-                        case 2:
-                            hh = t;
-                            break;
-                        case 3:
-                            mm = t;
-                            break;
-                        case 4:
-                            ss = t;
+        case TimeFormat::DECIMAL : {
+            long sec = std::lround(std::stod(s) * 3600);
+            hh       = sec / 3600;
+            sec -= hh * 3600;
+            mm = sec / 60;
+            sec -= mm * 60;
+            ss = sec;
+
+            break;
+        }
+        case TimeFormat::COLON : {
+            Tokenizer parse(":");
+            std::vector<std::string> result;
+
+            parse(s, result);
+            ASSERT(result.size() == 2 || result.size() == 3);
+
+            hh = std::stol(result[0]);
+            mm = std::stol(result[1]);
+            if (result.size() == 3)
+                ss = std::stol(result[2]);
+            
+            break;
+        }
+        case TimeFormat::OTHER : {
+            if (std::regex_match(s, m, ddhhmmss_)) {
+                for (int i = 1; i < m.size(); i++) {
+                    if (m[i].matched) {
+                        std::string aux = m[i].str();
+                        aux.pop_back();
+                        long t = std::stol(aux);
+                        switch (i) {
+                            case 1:
+                                dd = t;
+                                break;
+                            case 2:
+                                hh = t;
+                                break;
+                            case 3:
+                                mm = t;
+                                break;
+                            case 4:
+                                ss = t;
+                        }
                     }
                 }
+                ss += 60 * (mm + 60 * (hh + 24 * dd));
+                if (s[0] == '-') {
+                    ss = -ss;
+                }
+                dd = ss / 86400;
+                hh = (ss / 3600) % 24;
+                mm = (ss / 60) % 60;
+                ss = ss % 60;
+
+                break;
             }
-            ss += 60 * (mm + 60 * (hh + 24 * dd));
-            if (s[0] == '-') {
-                ss = -ss;
+            else {
+                throw BadTime("Wrong input for time: " + s);
             }
-            dd = ss / 86400;
-            hh = (ss / 3600) % 24;
-            mm = (ss / 60) % 60;
-            ss = ss % 60;
         }
-        else {
-            throw BadTime("Wrong input for time: " + s);
-        }
-    }
-    else if (format == TimeFormat::UNKOWN) {
-        throw BadTime("Unkown format for time: " + s);
-    }
-    else {
-        throw SeriousBug("Unhandled time format!");
+        case TimeFormat::INVALID :
+        default:
+            throw BadTime("Unkown format for time: " + s);
     }
 
     if (mm >= 60 || ss >= 60 || (!extended && (hh >= 24 || dd > 0 || hh < 0 || mm < 0 || ss < 0))) {

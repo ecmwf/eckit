@@ -1,0 +1,26 @@
+---
+
+url_prefix: &url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/icon-ch/
+
+grid_names:
+  - ICON_CH1_EPS: &ICON_CH1_EPS
+    type: ICON
+    name: ICON_CH1_EPS
+    shape: [1147981]
+    icon_arrangement: T
+    icon_uid: "17643da2574959b644d254a3cd6e2bc0"
+    url_prefix: *url_prefix
+    url: ICON_CH1_EPS.icon.ek
+
+  - ICON_CH2_EPS: &ICON_CH2_EPS
+    type: ICON
+    name: ICON_CH2_EPS
+    shape: [283876]
+    icon_arrangement: T
+    icon_uid: "bbbd5a09855499243c7a4aa4c8762920"
+    url_prefix: *url_prefix
+    url: ICON_CH2_EPS.icon.ek
+
+grid_uids:
+  - "17643da2574959b644d254a3cd6e2bc0": *ICON_CH1_EPS
+  - "bbbd5a09855499243c7a4aa4c8762920": *ICON_CH2_EPS

@@ -25,6 +25,7 @@ namespace eckit {
 
 class TailCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     TailCmd();
@@ -34,6 +35,7 @@ public:
     ~TailCmd();
 
 private:
+
     // -- Overridden methods
 
     // From CmdResource

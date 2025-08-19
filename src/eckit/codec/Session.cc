@@ -29,10 +29,12 @@ using lock_guard = std::lock_guard<std::recursive_mutex>;
 
 class SessionImpl {
 public:
+
     void store(Stream stream);
     Record record(const std::string& path, size_t offset);
 
 private:
+
     std::recursive_mutex mutex_;
 
     std::vector<Stream> handles_;
@@ -43,6 +45,7 @@ private:
 
 class ActiveSession {
 public:
+
     static ActiveSession& instance();
     SessionImpl& current();
     void push();
@@ -53,6 +56,7 @@ public:
     void store(Stream stream);
 
 private:
+
     friend class Session;
     std::recursive_mutex mutex_;
 

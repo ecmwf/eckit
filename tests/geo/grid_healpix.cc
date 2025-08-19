@@ -21,19 +21,41 @@ namespace eckit::geo::test {
 
 
 CASE("gridspec") {
-    spec::Custom spec1({{"grid", "h3"}});
+    for (size_t n : {1, 2}) {
+        for (const std::string& suffix : {"", "n", "_nested", "r", "_ring"}) {
+            const auto spec = "{grid: H" + std::to_string(n) + suffix + "}";
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+            EXPECT(grid->size() == 12 * n * n);
+        }
+    }
+
+    spec::Custom spec1({{"grid", "H3"}});
     std::unique_ptr<const Grid> grid1(GridFactory::build(spec1));
-    auto n1 = grid1->size();
 
-    EXPECT_EQUAL(n1, 108);
-    EXPECT_EQUAL(grid1->spec_str(), R"({"grid":"H3","ordering":"ring"})");
+    EXPECT_EQUAL(grid1->size(), 108);
+    EXPECT_EQUAL(grid1->spec_str(), R"({"grid":"H3"})");
 
-    spec::Custom spec2({{"grid", "h2"}, {"ordering", "nested"}});
+    spec::Custom spec2({{"grid", "h2"}, {"order", "nested"}});
     std::unique_ptr<const Grid> grid2(GridFactory::build(spec2));
-    auto n2 = grid2->size();
 
-    EXPECT_EQUAL(n2, 48);
-    EXPECT_EQUAL(grid2->spec_str(), R"({"grid":"H2","ordering":"nested"})");
+    EXPECT_EQUAL(grid2->size(), 48);
+    EXPECT_EQUAL(grid2->spec_str(), R"({"grid":"H2","order":"nested"})");
+
+    spec::Custom spec3({{"grid", "h2"}, {"order", "ring"}});
+    std::unique_ptr<const Grid> grid3(GridFactory::build(spec3));
+
+    EXPECT_EQUAL(grid3->size(), 48);
+    EXPECT_EQUAL(grid3->spec_str(), R"({"grid":"H2"})");
+
+    for (const std::string& name : {"h2N", "Hn2", "h2_nEsted"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{"grid", name}}));
+        EXPECT(*grid2 == *grid);
+    }
+
+    for (const std::string& name : {"H2", "h2r", "hR2", "h2_rinG"}) {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{"grid", name}}));
+        EXPECT(*grid3 == *grid);
+    }
 }
 
 
@@ -59,14 +81,14 @@ CASE("sizes") {
 CASE("points") {
     std::unique_ptr<const Grid> ring(new grid::HEALPix(2));
 
-    EXPECT(ring->ordering() == Ordering::healpix_ring);
+    EXPECT(ring->order() == order::HEALPix::ring);
 
 
-    std::unique_ptr<const Grid> nested(new grid::HEALPix(2, Ordering::healpix_nested));
+    std::unique_ptr<const Grid> nested(new grid::HEALPix(2, order::HEALPix::nested));
 
-    EXPECT(nested->ordering() == Ordering::healpix_nested);
+    EXPECT(nested->order() == order::HEALPix::nested);
 
-    // reference coordinates in ring ordering
+    // reference coordinates in ring order()
     const std::vector<PointLonLat> ref{
         {45., 66.443535691},
         {135., 66.443535691},
@@ -141,7 +163,7 @@ CASE("points") {
     EXPECT(i == ring->size());
 
 
-    auto ren      = nested->reorder(Ordering::healpix_ring);
+    auto ren      = nested->reorder(order::HEALPix::ring);
     auto points_n = nested->to_points();
 
     EXPECT(points_n.size() == nested->size());
@@ -174,11 +196,11 @@ CASE("equals") {
     EXPECT(*grid2 == *grid3);
     EXPECT(*grid3 == *grid1);
 
-    EXPECT(grid1->ordering() == Ordering::healpix_ring);
+    EXPECT(grid1->order() == order::HEALPix::ring);
 
-    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "h2"}, {"ordering", "nested"}})));
-    std::unique_ptr<const Grid> grid5(GridFactory::make_from_string("{type: HEALPix, Nside: 2, ordering: nested}"));
-    std::unique_ptr<const Grid> grid6(new grid::HEALPix(2, Ordering::healpix_nested));
+    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "h2"}, {"order", "nested"}})));
+    std::unique_ptr<const Grid> grid5(GridFactory::make_from_string("{type: HEALPix, Nside: 2, order: nested}"));
+    std::unique_ptr<const Grid> grid6(new grid::HEALPix(2, order::HEALPix::nested));
 
     EXPECT(*grid4 != *grid1);
 
@@ -186,14 +208,14 @@ CASE("equals") {
     EXPECT(*grid5 == *grid6);
     EXPECT(*grid6 == *grid4);
 
-    EXPECT(grid4->ordering() == Ordering::healpix_nested);
+    EXPECT(grid4->order() == order::HEALPix::nested);
 }
 
 
 CASE("wrong spec") {
     EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h0}"), exception::SpecError);
-    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, ordering:nested}"), exception::SpecError);
-    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, ordering:?}"), exception::SpecError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:nested}"), exception::OrderError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:?}"), exception::OrderError);
 }
 
 

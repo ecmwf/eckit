@@ -33,6 +33,7 @@ namespace eckit::geo {
  */
 class PointLonLatR final : protected std::array<double, 2> {
 public:
+
     // -- Types
 
     using container_type = array;
@@ -71,26 +72,30 @@ public:
 
     // -- Methods
 
-    static value_type normalise_angle_to_minimum(value_type, value_type minimum);
+    using container_type::data;
 
+    bool pole(value_type eps = EPS) const;
+
+    static size_t dimensions() { return DIMS; }
+
+    static value_type normalise_angle_to_minimum(value_type, value_type minimum);
     static value_type normalise_angle_to_maximum(value_type, value_type maximum);
 
     [[nodiscard]] static PointLonLatR make(value_type lonr, value_type latr, value_type lonr_minimum = 0.,
                                            value_type eps = EPS);
 
-    [[nodiscard]] static PointLonLatR make_from_lonlat(value_type lon, value_type lat, value_type lon_minimum = 0.);
+    [[nodiscard]] static PointLonLatR make_from_lonlat(value_type lon, value_type lat, value_type lonr_minimum = 0.);
 
     PointLonLatR antipode() const { return make(lonr, latr + FLAT_ANGLE); }
 
     // -- Class members
 
+    static constexpr size_t DIMS    = 2;
+    static constexpr value_type EPS = 1e-10;
+
     static constexpr value_type FULL_ANGLE  = 2. * M_PI;
     static constexpr value_type FLAT_ANGLE  = M_PI;
     static constexpr value_type RIGHT_ANGLE = M_PI_2;
-    static constexpr value_type EPS         = 1e-10;
-
-    // -- Class methods
-    // None
 
     // -- Friends
 

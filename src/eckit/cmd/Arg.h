@@ -28,8 +28,8 @@ class ArgContent;
 
 class Arg {
 public:
-    enum Type
-    {
+
+    enum Type {
         number,
         text,
         path,
@@ -62,11 +62,13 @@ public:
     std::vector<std::string> completion(std::vector<std::string>&);
 
 protected:
+
     // -- Methods
 
     void print(std::ostream&) const;
 
 private:
+
     Arg(ArgContent*);
 
     // -- Members

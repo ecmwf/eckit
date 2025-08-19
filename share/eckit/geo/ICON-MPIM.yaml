@@ -1,0 +1,103 @@
+---
+
+url_prefix: &url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/icon-mpim/
+
+grid_names:
+  - ICON_O_16: &ICON_O_16
+    description: "Ocean global R02B09 grid. 5 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Grid includes ocean cells only."
+    type: ICON
+    name: ICON_O_16
+    file: "icon_grid_0016_R02B09_O.nc"
+    shape: [14886338]
+    icon_number_of_grid_used: 16
+    icon_type: hrz_global_ocean_only
+    icon_arrangement: T
+    icon_uid: "375cb0cc637e11e89d6f8f41a9b9ff4b"
+    url_prefix: *url_prefix
+    url: ICON_O_16.icon.ek
+
+  - ICON_O_20: &ICON_O_20
+    description: "Ocean global R02B05 grid. 80 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Grid includes ocean cells only."
+    type: ICON
+    name: ICON_O_20
+    file: "icon_grid_0020_R02B05_O.nc"
+    shape: [59261]
+    icon_number_of_grid_used: 20
+    icon_type: hrz_global_ocean_only
+    icon_arrangement: T
+    icon_uid: "e96d69e2ab5811e89e299566f2744a3c"
+    url_prefix: *url_prefix
+    url: ICON_O_20.icon.ek
+
+  - ICON_O_24: &ICON_O_24
+    description: "Ocean global R02B07 grid. 20 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Grid includes ocean cells only."
+    type: ICON
+    name: ICON_O_24
+    file: "icon_grid_0024_R02B07_O.nc"
+    shape: [933398]
+    icon_number_of_grid_used: 24
+    icon_type: hrz_global_ocean_only
+    icon_arrangement: T
+    icon_uid: "28f3a5e2de9c11e88555cbf786e364f5"
+    url_prefix: *url_prefix
+    url: ICON_O_24.icon.ek
+
+  - ICON_O_36: &ICON_O_36
+    description: "Ocean global R02B04 grid. 160 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Grid includes ocean cells only."
+    type: ICON
+    name: ICON_O_36
+    file: "icon_grid_0036_R02B04_O.nc"
+    shape: [15105]
+    icon_number_of_grid_used: 36
+    icon_type: hrz_global_ocean_only
+    icon_arrangement: T
+    icon_uid: "5bd948e8ac1a11eaa6b1d317264fdca9"
+    url_prefix: *url_prefix
+    url: ICON_O_36.icon.ek
+
+  - ICON_O_38: &ICON_O_38
+    description: "Ocean global R02B11 grid. 1.2 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. GEBCO 2023 bathymetry. Grid includes ocean cells only."
+    type: ICON
+    name: ICON_O_38
+    file: "icon_grid_0038_R02B11_O.nc"
+    shape: [237316813]
+    icon_number_of_grid_used: 38
+    icon_type: hrz_global_ocean_only
+    icon_arrangement: T
+    icon_uid: "9b323b62670411eb85afdd9149101e1a"
+    url_prefix: *url_prefix
+    url: ICON_O_38.icon.ek
+
+  - ICON_O_40: &ICON_O_40
+    description: "Ocean global R02B10 grid. 2.5 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. GEBCO 2023 bathymetry. Grid includes ocean cells only."
+    type: ICON
+    name: ICON_O_40
+    file: "icon_grid_0040_R02B10_O.nc"
+    shape: [59359799]
+    icon_number_of_grid_used: 40
+    icon_type: hrz_global_ocean_only
+    icon_arrangement: T
+    icon_uid: "99c03a3c657811eb8e42f565c1ad0089"
+    url_prefix: *url_prefix
+    url: ICON_O_40.icon.ek
+
+  - ICON_O_46: &ICON_O_46
+    description: "Ocean global R02B06 grid. 40 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Improved sill-depths in the North Atlantic (Denmark Strait, Faroer-Bank-Channel, Florida Strait, Gibraltar) Grid includes ocean cells only."
+    type: ICON
+    name: ICON_O_46
+    file: "icon_grid_0046_R02B06_O.nc"
+    shape: [235403]
+    icon_number_of_grid_used: 46
+    icon_type: hrz_global_ocean_only
+    icon_arrangement: T
+    icon_uid: "f4ed57f6b2ea11e9ae92c52a3fa37d96"
+    url_prefix: *url_prefix
+    url: ICON_O_46.icon.ek
+
+grid_uids:
+  - "375cb0cc637e11e89d6f8f41a9b9ff4b": *ICON_O_16
+  - "e96d69e2ab5811e89e299566f2744a3c": *ICON_O_20
+  - "28f3a5e2de9c11e88555cbf786e364f5": *ICON_O_24
+  - "5bd948e8ac1a11eaa6b1d317264fdca9": *ICON_O_36
+  - "99c03a3c657811eb8e42f565c1ad0089": *ICON_O_40
+  - "f4ed57f6b2ea11e9ae92c52a3fa37d96": *ICON_O_46

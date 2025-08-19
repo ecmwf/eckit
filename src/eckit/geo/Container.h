@@ -21,9 +21,11 @@ namespace eckit::geo {
 template <typename T>
 class Container {
 protected:
+
     Container() = default;
 
 public:
+
     virtual ~Container() = default;
 
     Container(const Container&) = delete;

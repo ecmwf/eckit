@@ -40,6 +40,7 @@ namespace eckit {
 class FilePool : private eckit::NonCopyable {
 
 public:
+
     FilePool(size_t capacity);
 
     ~FilePool();
@@ -80,6 +81,7 @@ public:
     }
 
 private:
+
     std::map<PathName, DataHandle*> inUse_;
 
     eckit::CacheLRU<PathName, DataHandle*> cache_;

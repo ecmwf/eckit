@@ -14,6 +14,9 @@
 #include <sstream>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/log/JSON.h"
 
 

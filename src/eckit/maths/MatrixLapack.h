@@ -73,12 +73,14 @@ template <typename Scalar, typename Index = std::ptrdiff_t>
 class Matrix : private eckit::NonCopyable {
 
 protected:
+
     Scalar* data_{nullptr};
     Index nr_{0};
     Index nc_{0};
     bool is_proxy_{false};
 
 public:
+
     using MapType      = Matrix;
     using ConstMapType = MapType;
 
@@ -91,12 +93,7 @@ public:
     }
 
     template <typename T0, typename T1>
-    Matrix(Scalar* data, const T0& nr, const T1& nc) :
-        data_{data},
-        nr_{nr},
-        nc_{nc},
-        is_proxy_{true} {
-    }
+    Matrix(Scalar* data, const T0& nr, const T1& nc) : data_{data}, nr_{nr}, nc_{nc}, is_proxy_{true} {}
 
     // This constructor allows you to construct Matrix from Eigen expressions
     Matrix(const Matrix& other) {
@@ -228,7 +225,9 @@ public:
                 break;
             }
             case 3: {
-                Scalar deti = 1. / (at(0, 0) * at(1, 1) * at(2, 2) + at(1, 0) * at(2, 1) * at(0, 2) + at(2, 0) * at(0, 1) * at(1, 2) - at(0, 0) * at(2, 1) * at(1, 2) - at(2, 0) * at(1, 1) * at(0, 2) - at(1, 0) * at(0, 1) * at(2, 2));
+                Scalar deti = 1. / (at(0, 0) * at(1, 1) * at(2, 2) + at(1, 0) * at(2, 1) * at(0, 2) +
+                                    at(2, 0) * at(0, 1) * at(1, 2) - at(0, 0) * at(2, 1) * at(1, 2) -
+                                    at(2, 0) * at(1, 1) * at(0, 2) - at(1, 0) * at(0, 1) * at(2, 2));
 
                 inv(0, 0) = at(1, 1) * at(2, 2) - at(1, 2) * at(2, 1);
                 inv(0, 1) = at(0, 2) * at(2, 1) - at(0, 1) * at(2, 2);
@@ -363,7 +362,9 @@ public:
                 return (at(0, 0) * at(1, 1) - at(0, 1) * at(1, 0));
             }
             case 3: {
-                return (at(0, 0) * at(1, 1) * at(2, 2) + at(1, 0) * at(2, 1) * at(0, 2) + at(2, 0) * at(0, 1) * at(1, 2) - at(0, 0) * at(2, 1) * at(1, 2) - at(2, 0) * at(1, 1) * at(0, 2) - at(1, 0) * at(0, 1) * at(2, 2));
+                return (at(0, 0) * at(1, 1) * at(2, 2) + at(1, 0) * at(2, 1) * at(0, 2) +
+                        at(2, 0) * at(0, 1) * at(1, 2) - at(0, 0) * at(2, 1) * at(1, 2) -
+                        at(2, 0) * at(1, 1) * at(0, 2) - at(1, 0) * at(0, 1) * at(2, 2));
             }
             case 4: {
                 return detail::ColMajor_4x4::det(data());
@@ -383,11 +384,11 @@ public:
     template <typename S, typename I>
     friend std::ostream& operator<<(std::ostream& os, const Matrix<S, I>& v);
 
-#define UNARY_OPERATOR_Scalar(OP)             \
-    Matrix& operator OP(const Scalar& scal) { \
-        for (Index i = 0; i < size(); ++i)    \
-            data_[i] OP scal;                 \
-        return *this;                         \
+#define UNARY_OPERATOR_Scalar(OP)              \
+    Matrix& operator OP(const Scalar & scal) { \
+        for (Index i = 0; i < size(); ++i)     \
+            data_[i] OP scal;                  \
+        return *this;                          \
     }
     UNARY_OPERATOR_Scalar(+=) UNARY_OPERATOR_Scalar(-=) UNARY_OPERATOR_Scalar(*=) UNARY_OPERATOR_Scalar(/=)
 #undef UNARY_OPERATOR_Scalar
@@ -463,6 +464,7 @@ public:
 
 
 private:
+
     Scalar& at(const Index i, const Index j) { return data_[i + nr_ * j]; }
 
     const Scalar& at(const Index i, const Index j) const {
@@ -504,25 +506,23 @@ class RowVector : public Matrix<Scalar, Index> {
     using Base = Matrix<Scalar, Index>;
 
 public:
+
     using MapType      = RowVector;
     using ConstMapType = MapType;
 
 public:
-    RowVector() :
-        Base() {}
+
+    RowVector() : Base() {}
 
     // Constructor that allocates matrix with sizes
     template <typename T0>
-    RowVector(const T0& nc) :
-        Base(1, nc) {}
+    RowVector(const T0& nc) : Base(1, nc) {}
 
     template <typename T0>
-    RowVector(Scalar* data, const T0& nc) :
-        Base(data, 1, nc) {}
+    RowVector(Scalar* data, const T0& nc) : Base(data, 1, nc) {}
 
     // This constructor allows you to construct Matrix from Eigen expressions
-    RowVector(const Base& other) :
-        Base(other) {}
+    RowVector(const Base& other) : Base(other) {}
 
     void resize(Index nc) { Base::resize(1, nc); }
 
@@ -549,25 +549,23 @@ class ColVector : public Matrix<Scalar, Index> {
     using Base = Matrix<Scalar, Index>;
 
 public:
+
     using MapType      = ColVector;
     using ConstMapType = MapType;
 
 public:
-    ColVector() :
-        Base() {}
+
+    ColVector() : Base() {}
 
     // Constructor that allocates matrix with sizes
     template <typename T0>
-    ColVector(const T0& nr) :
-        Base(nr, 1) {}
+    ColVector(const T0& nr) : Base(nr, 1) {}
 
     template <typename T0>
-    ColVector(Scalar* data, const T0& nr) :
-        Base(data, nr, 1) {}
+    ColVector(Scalar* data, const T0& nr) : Base(data, nr, 1) {}
 
     // This constructor allows you to construct Matrix from Eigen expressions
-    ColVector(const Base& other) :
-        Base(other) {}
+    ColVector(const Base& other) : Base(other) {}
 
     void resize(Index nr) { Base::resize(nr, 1); }
 
@@ -609,30 +607,45 @@ namespace ColMajor_4x4 {
 template <typename Scalar>
 inline void invert(Scalar m[16], typename remove_const<Scalar>::type inv[16]) {
 
-    inv[0]  = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
-    inv[4]  = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10];
-    inv[8]  = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9];
-    inv[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9];
-    inv[1]  = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] + m[9] * m[2] * m[15] - m[9] * m[3] * m[14] - m[13] * m[2] * m[11] + m[13] * m[3] * m[10];
-    inv[5]  = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] + m[8] * m[3] * m[14] + m[12] * m[2] * m[11] - m[12] * m[3] * m[10];
-    inv[9]  = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] - m[8] * m[3] * m[13] - m[12] * m[1] * m[11] + m[12] * m[3] * m[9];
-    inv[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] + m[8] * m[2] * m[13] + m[12] * m[1] * m[10] - m[12] * m[2] * m[9];
-    inv[2]  = m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] + m[5] * m[3] * m[14] + m[13] * m[2] * m[7] - m[13] * m[3] * m[6];
-    inv[6]  = -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] - m[4] * m[3] * m[14] - m[12] * m[2] * m[7] + m[12] * m[3] * m[6];
-    inv[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] + m[4] * m[3] * m[13] + m[12] * m[1] * m[7] - m[12] * m[3] * m[5];
-    inv[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] - m[4] * m[2] * m[13] - m[12] * m[1] * m[6] + m[12] * m[2] * m[5];
-    inv[3]  = -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] - m[5] * m[3] * m[10] - m[9] * m[2] * m[7] + m[9] * m[3] * m[6];
-    inv[7]  = m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] + m[4] * m[3] * m[10] + m[8] * m[2] * m[7] - m[8] * m[3] * m[6];
-    inv[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] - m[4] * m[3] * m[9] - m[8] * m[1] * m[7] + m[8] * m[3] * m[5];
-    inv[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] + m[4] * m[2] * m[9] + m[8] * m[1] * m[6] - m[8] * m[2] * m[5];
+    inv[0] = m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] +
+             m[13] * m[6] * m[11] - m[13] * m[7] * m[10];
+    inv[4] = -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] -
+             m[12] * m[6] * m[11] + m[12] * m[7] * m[10];
+    inv[8] = m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] +
+             m[12] * m[5] * m[11] - m[12] * m[7] * m[9];
+    inv[12] = -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] -
+              m[12] * m[5] * m[10] + m[12] * m[6] * m[9];
+    inv[1] = -m[1] * m[10] * m[15] + m[1] * m[11] * m[14] + m[9] * m[2] * m[15] - m[9] * m[3] * m[14] -
+             m[13] * m[2] * m[11] + m[13] * m[3] * m[10];
+    inv[5] = m[0] * m[10] * m[15] - m[0] * m[11] * m[14] - m[8] * m[2] * m[15] + m[8] * m[3] * m[14] +
+             m[12] * m[2] * m[11] - m[12] * m[3] * m[10];
+    inv[9] = -m[0] * m[9] * m[15] + m[0] * m[11] * m[13] + m[8] * m[1] * m[15] - m[8] * m[3] * m[13] -
+             m[12] * m[1] * m[11] + m[12] * m[3] * m[9];
+    inv[13] = m[0] * m[9] * m[14] - m[0] * m[10] * m[13] - m[8] * m[1] * m[14] + m[8] * m[2] * m[13] +
+              m[12] * m[1] * m[10] - m[12] * m[2] * m[9];
+    inv[2] = m[1] * m[6] * m[15] - m[1] * m[7] * m[14] - m[5] * m[2] * m[15] + m[5] * m[3] * m[14] +
+             m[13] * m[2] * m[7] - m[13] * m[3] * m[6];
+    inv[6] = -m[0] * m[6] * m[15] + m[0] * m[7] * m[14] + m[4] * m[2] * m[15] - m[4] * m[3] * m[14] -
+             m[12] * m[2] * m[7] + m[12] * m[3] * m[6];
+    inv[10] = m[0] * m[5] * m[15] - m[0] * m[7] * m[13] - m[4] * m[1] * m[15] + m[4] * m[3] * m[13] +
+              m[12] * m[1] * m[7] - m[12] * m[3] * m[5];
+    inv[14] = -m[0] * m[5] * m[14] + m[0] * m[6] * m[13] + m[4] * m[1] * m[14] - m[4] * m[2] * m[13] -
+              m[12] * m[1] * m[6] + m[12] * m[2] * m[5];
+    inv[3] = -m[1] * m[6] * m[11] + m[1] * m[7] * m[10] + m[5] * m[2] * m[11] - m[5] * m[3] * m[10] -
+             m[9] * m[2] * m[7] + m[9] * m[3] * m[6];
+    inv[7] = m[0] * m[6] * m[11] - m[0] * m[7] * m[10] - m[4] * m[2] * m[11] + m[4] * m[3] * m[10] +
+             m[8] * m[2] * m[7] - m[8] * m[3] * m[6];
+    inv[11] = -m[0] * m[5] * m[11] + m[0] * m[7] * m[9] + m[4] * m[1] * m[11] - m[4] * m[3] * m[9] -
+              m[8] * m[1] * m[7] + m[8] * m[3] * m[5];
+    inv[15] = m[0] * m[5] * m[10] - m[0] * m[6] * m[9] - m[4] * m[1] * m[10] + m[4] * m[2] * m[9] + m[8] * m[1] * m[6] -
+              m[8] * m[2] * m[5];
 
     typename remove_const<Scalar>::type det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
 
     if (det == 0) {
         Matrix<Scalar> mat(m, 4, 4);
         std::stringstream msg;
-        msg << "Trying to invert 4x4 matrix with zero determinant.\nMatrix = \n"
-            << mat;
+        msg << "Trying to invert 4x4 matrix with zero determinant.\nMatrix = \n" << mat;
         throw eckit::Exception(msg.str(), Here());
     }
 
@@ -645,10 +658,14 @@ inline void invert(Scalar m[16], typename remove_const<Scalar>::type inv[16]) {
 template <typename Scalar>
 Scalar det(Scalar m[16]) {
     Scalar inv[4] = {
-        m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] - m[13] * m[7] * m[10],
-        -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] - m[12] * m[6] * m[11] + m[12] * m[7] * m[10],
-        m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] - m[12] * m[7] * m[9],
-        -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] + m[12] * m[6] * m[9],
+        m[5] * m[10] * m[15] - m[5] * m[11] * m[14] - m[9] * m[6] * m[15] + m[9] * m[7] * m[14] + m[13] * m[6] * m[11] -
+            m[13] * m[7] * m[10],
+        -m[4] * m[10] * m[15] + m[4] * m[11] * m[14] + m[8] * m[6] * m[15] - m[8] * m[7] * m[14] -
+            m[12] * m[6] * m[11] + m[12] * m[7] * m[10],
+        m[4] * m[9] * m[15] - m[4] * m[11] * m[13] - m[8] * m[5] * m[15] + m[8] * m[7] * m[13] + m[12] * m[5] * m[11] -
+            m[12] * m[7] * m[9],
+        -m[4] * m[9] * m[14] + m[4] * m[10] * m[13] + m[8] * m[5] * m[14] - m[8] * m[6] * m[13] - m[12] * m[5] * m[10] +
+            m[12] * m[6] * m[9],
     };
     return m[0] * inv[0] + m[1] * inv[1] + m[2] * inv[2] + m[3] * inv[3];
 }
@@ -660,7 +677,9 @@ namespace RowMajor_4x4 {
 // minor
 template <typename Scalar>
 inline Scalar mnr(Scalar m[16], int r0, int r1, int r2, int c0, int c1, int c2) {
-    return m[4 * r0 + c0] * (m[4 * r1 + c1] * m[4 * r2 + c2] - m[4 * r2 + c1] * m[4 * r1 + c2]) - m[4 * r0 + c1] * (m[4 * r1 + c0] * m[4 * r2 + c2] - m[4 * r2 + c0] * m[4 * r1 + c2]) + m[4 * r0 + c2] * (m[4 * r1 + c0] * m[4 * r2 + c1] - m[4 * r2 + c0] * m[4 * r1 + c1]);
+    return m[4 * r0 + c0] * (m[4 * r1 + c1] * m[4 * r2 + c2] - m[4 * r2 + c1] * m[4 * r1 + c2]) -
+           m[4 * r0 + c1] * (m[4 * r1 + c0] * m[4 * r2 + c2] - m[4 * r2 + c0] * m[4 * r1 + c2]) +
+           m[4 * r0 + c2] * (m[4 * r1 + c0] * m[4 * r2 + c1] - m[4 * r2 + c0] * m[4 * r1 + c1]);
 }
 
 template <typename Scalar>
@@ -685,7 +704,8 @@ inline void adjoint(Scalar m[16], Scalar adj[16]) {
 
 template <typename Scalar>
 inline Scalar det(Scalar m[16]) {
-    return m[0] * mnr(m, 1, 2, 3, 1, 2, 3) - m[1] * mnr(m, 1, 2, 3, 0, 2, 3) + m[2] * mnr(m, 1, 2, 3, 0, 1, 3) - m[3] * mnr(m, 1, 2, 3, 0, 1, 2);
+    return m[0] * mnr(m, 1, 2, 3, 1, 2, 3) - m[1] * mnr(m, 1, 2, 3, 0, 2, 3) + m[2] * mnr(m, 1, 2, 3, 0, 1, 3) -
+           m[3] * mnr(m, 1, 2, 3, 0, 1, 2);
 }
 
 template <typename Scalar>

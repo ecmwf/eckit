@@ -189,10 +189,19 @@ Custom* Custom::make_from_value(const Value& value) {
         const auto list(value.as<ValueList>());
         ASSERT(!list.empty());
 
-        return list.front().isNumber()   ? value_type(std::vector<int>(list.begin(), list.end()))
-               : list.front().isDouble() ? value_type(std::vector<double>(list.begin(), list.end()))
-               : list.front().isString() ? std::vector<std::string>(list.begin(), list.end())
-                                         : throw BadValue(value, Here());
+        if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isNumber(); })) {
+            return std::vector<int>(list.begin(), list.end());
+        }
+
+        if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isDouble() || v.isNumber(); })) {
+            return std::vector<double>(list.begin(), list.end());
+        }
+
+        if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isString(); })) {
+            return std::vector<std::string>(list.begin(), list.end());
+        }
+
+        throw BadValue(value, Here());
     };
 
     auto* custom = new Custom;
@@ -211,8 +220,8 @@ Custom* Custom::make_from_value(const Value& value) {
 
 
 bool Custom::operator==(const Custom& other) const {
-    auto custom_value_equal
-        = [](const Custom& ca, const Custom& cb, const Custom::key_type& name, const auto& type_instance) -> bool {
+    auto custom_value_equal = [](const Custom& ca, const Custom& cb, const Custom::key_type& name,
+                                 const auto& type_instance) -> bool {
         auto a = type_instance;
         auto b = type_instance;
         return ca.get(name, a) && cb.get(name, b) && a == b;
@@ -222,13 +231,12 @@ bool Custom::operator==(const Custom& other) const {
     return std::all_of(map_.begin(), map_.end(), [&](const auto& _a) {
         const auto& name = _a.first;
         auto _b          = other.map_.find(name);
-        return _b != other.map_.end()
-               && (custom_value_equal(*this, other, name, long{})
-                   || custom_value_equal(*this, other, name, std::vector<long>{})
-                   || custom_value_equal(*this, other, name, double{})
-                   || custom_value_equal(*this, other, name, std::vector<double>{})
-                   || custom_value_equal(*this, other, name, std::string{})
-                   || custom_value_equal(*this, other, name, std::vector<std::string>{}));
+        return _b != other.map_.end() && (custom_value_equal(*this, other, name, long{}) ||
+                                          custom_value_equal(*this, other, name, std::vector<long>{}) ||
+                                          custom_value_equal(*this, other, name, double{}) ||
+                                          custom_value_equal(*this, other, name, std::vector<double>{}) ||
+                                          custom_value_equal(*this, other, name, std::string{}) ||
+                                          custom_value_equal(*this, other, name, std::vector<std::string>{}));
     });
 }
 
@@ -308,7 +316,7 @@ void Custom::set(const std::string& name, const std::vector<std::string>& value)
 }
 
 
-void Custom::set(const std::string& key, const Value& value) {
+void Custom::set(const std::string& name, const Value& value) {
     using number_type = pl_type::value_type;
 
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
@@ -322,7 +330,7 @@ void Custom::set(const std::string& key, const Value& value) {
                : value.isNumber() ? from_value_t<number_type>(value)
                                   : from_value_t<std::string>(value);
 
-    std::visit([&](const auto& val) { set(key, val); }, val);
+    std::visit([&](const auto& val) { set(name, val); }, val);
 }
 
 

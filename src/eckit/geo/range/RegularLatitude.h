@@ -20,15 +20,18 @@ namespace eckit::geo::range {
 
 class RegularLatitude final : public Regular {
 public:
+
     // -- Constructors
 
-    explicit RegularLatitude(double inc, double a, double b, double ref, double eps = 0.);
-    explicit RegularLatitude(size_t n, double a, double b, double eps = 0.);
+    using Regular::Regular;
+
+    explicit RegularLatitude(double inc, double a, double b, double ref);
+    explicit RegularLatitude(size_t n, double a, double b);
 
     // -- Overridden methods
 
     [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
-    [[nodiscard]] Range* make_range_flipped() const override { return new RegularLatitude(size(), b(), a(), eps()); }
+    [[nodiscard]] Range* make_range_flipped() const override { return new RegularLatitude(size(), b(), a()); }
 };
 
 

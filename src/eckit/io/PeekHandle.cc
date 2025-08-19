@@ -19,11 +19,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-PeekHandle::PeekHandle(DataHandle* h) :
-    HandleHolder(h) {}
+PeekHandle::PeekHandle(DataHandle* h) : HandleHolder(h) {}
 
-PeekHandle::PeekHandle(DataHandle& h) :
-    HandleHolder(h) {}
+PeekHandle::PeekHandle(DataHandle& h) : HandleHolder(h) {}
 
 PeekHandle::~PeekHandle() {}
 

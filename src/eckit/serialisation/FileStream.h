@@ -28,6 +28,7 @@ namespace eckit {
 class FileStream : public Stream {
 
 public:  // methods
+
     FileStream(const PathName& name, const char* mode);
 
     ~FileStream() override;
@@ -41,12 +42,14 @@ public:  // methods
     void close();
 
 protected:  // members
+
     StdFile file_;
     bool read_;
     PathName name_;
 
 protected:  // methods
             // Overriden from Stream
+
     std::string name() const override;
 
     void print(std::ostream& s) const override;

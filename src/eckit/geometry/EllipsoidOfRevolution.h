@@ -24,12 +24,8 @@ class Point3;
 
 struct EllipsoidOfRevolution {
     // Convert elliptic coordinates to Cartesian
-    static void convertSphericalToCartesian(const double& radiusA,
-                                            const double& radiusB,
-                                            const Point2& Alonlat,
-                                            Point3& B,
-                                            double height        = 0.,
-                                            bool normalise_angle = false);
+    static void convertSphericalToCartesian(const double& radiusA, const double& radiusB, const Point2& Alonlat,
+                                            Point3& B, double height = 0., bool normalise_angle = false);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

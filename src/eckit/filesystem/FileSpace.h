@@ -26,6 +26,7 @@ namespace eckit {
 class FileSpace : private NonCopyable {
 
 public:  // methods
+
     const PathName& sameFileSystem(const PathName&) const;
     const std::vector<PathName>& fileSystems() const { return fileSystems_; }
 
@@ -42,6 +43,7 @@ public:  // methods
     static const FileSpace& lookUp(const std::string&);
 
 private:  // methods
+
     FileSpace(const std::string&);
 
     ~FileSpace();
@@ -51,6 +53,7 @@ private:  // methods
     const PathName& find(const PathName&, bool&) const;
 
 private:  // members
+
     std::string name_;
     time_t last_;
     std::vector<PathName> fileSystems_;

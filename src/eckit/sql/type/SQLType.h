@@ -28,8 +28,8 @@ namespace type {
 
 class SQLType : private eckit::NonCopyable {
 public:
-    enum
-    {
+
+    enum {
         realType    = 0,
         integerType = 1,
         stringType  = 2,
@@ -64,10 +64,12 @@ public:
     static SQLType* registerType(SQLType*);
 
 protected:
+
     virtual void print(std::ostream&) const;
     static bool exists(const std::string&);
 
 private:
+
     std::string name_;
 
     friend std::ostream& operator<<(std::ostream& s, const SQLType& p) {
@@ -78,6 +80,7 @@ private:
 
 class DynamicallyCreatedTypesDestroyer {
 public:
+
     static SQLType* registerType(SQLType*);
     ~DynamicallyCreatedTypesDestroyer();
 };

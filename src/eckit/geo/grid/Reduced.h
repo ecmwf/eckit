@@ -25,37 +25,40 @@ namespace eckit::geo::grid {
 
 class Reduced : public Grid {
 public:
+
     // -- Methods
 
-    size_t size() const override { return niacc().back(); }
+    size_t size() const override { return nxacc().back(); }
     std::vector<size_t> shape() const override { return {size()}; }
 
     // -- Overridden methods
 
-    std::vector<Point> to_points() const override;
-    std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
-
-protected:
-    // -- Constructors
-
-    explicit Reduced(const area::BoundingBox& = {}, Projection* = nullptr);
-
-    // -- Methods
-
-    const std::vector<size_t>& niacc() const;
-
-    virtual size_t ni(size_t j) const = 0;
-    virtual size_t nj() const         = 0;
-
-private:
-    // -- Members
-
-    mutable std::vector<size_t> niacc_;
+    [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
 
     // Methods
 
-    virtual const std::vector<double>& latitudes() const   = 0;
-    virtual std::vector<double> longitudes(size_t i) const = 0;
+    virtual const std::vector<double>& latitudes() const = 0;
+    virtual std::vector<double> longitudes(size_t) const = 0;
+
+protected:
+
+    // -- Constructors
+
+    explicit Reduced(area::BoundingBox* bbox = nullptr, Projection* projection = nullptr) : Grid(bbox, projection) {}
+
+    // -- Methods
+
+    const std::vector<size_t>& nxacc() const;
+
+    virtual size_t nx(size_t) const = 0;
+    virtual size_t ny() const       = 0;
+
+private:
+
+    // -- Members
+
+    mutable std::vector<size_t> nxacc_;
 
     // -- Friends
 

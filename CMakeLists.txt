@@ -11,7 +11,7 @@
 
 cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
 
-find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
+find_package( ecbuild 3.11 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
 
 project( eckit LANGUAGES CXX )
 
@@ -148,6 +148,10 @@ ecbuild_add_option( FEATURE AEC
                     DESCRIPTION "AEC support for compression"
                     REQUIRED_PACKAGES AEC )
 
+ecbuild_add_option( FEATURE ZIP
+                    DESCRIPTION "ZIP support for compression"
+                    REQUIRED_PACKAGES libzip )
+
 ### Hashing options
 
 ecbuild_add_option( FEATURE XXHASH
@@ -182,7 +186,7 @@ endif()
 ### eckit::geo
 
 ecbuild_add_option( FEATURE ECKIT_GEO
-                    DEFAULT OFF
+                    DEFAULT ON
                     DESCRIPTION "eckit::geo geometry library" )
 
 ecbuild_add_option( FEATURE GEO_GRID_FESOM
@@ -202,18 +206,30 @@ ecbuild_add_option( FEATURE GEO_GRID_ORCA
 
 ecbuild_add_option( FEATURE GEO_CACHING
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default caching behaviour" )
 
 ecbuild_add_option( FEATURE GEO_BITREPRODUCIBLE
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library bit reproducibility tests" )
 
 ecbuild_add_option( FEATURE GEO_PROJECTION_PROJ_DEFAULT
                     DEFAULT OFF
-                    CONDITION HAVE_ECKIT_GEO
+                    CONDITION eckit_HAVE_ECKIT_GEO
                     DESCRIPTION "eckit::geo geometry library default to PROJ-based projections" )
+
+ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
+                    DEFAULT ON
+                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ZIP
+                    REQUIRED_PACKAGES shapelib
+                    DESCRIPTION "eckit::geo geometry library support for shapefiles" )
+
+if( eckit_HAVE_GEO_AREA_SHAPEFILE )
+    if( NOT TARGET shapelib::shp OR NOT TARGET libzip::zip )
+        message( FATAL_ERROR "eckit::geo geometry library support for shapefiles requires the shapelib::shp and libzip::zip libraries" )
+    endif()
+endif()
 
 set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" )
 
@@ -260,9 +276,15 @@ ecbuild_add_option( FEATURE JEMALLOC
 
 ecbuild_add_option( FEATURE CUDA
                     DEFAULT OFF
-                    CONDITION HAVE_EXPERIMENTAL
                     DESCRIPTION "CUDA GPU linear algebra operations"
-                    REQUIRED_PACKAGES CUDA )
+                    REQUIRED_PACKAGES CUDAToolkit )
+
+#### HIP
+
+ecbuild_add_option( FEATURE HIP
+                    DEFAULT OFF
+                    DESCRIPTION "HIP GPU linear algebra operations"
+                    REQUIRED_PACKAGES hip hipsparse )
 
 ### ViennaCL
 
@@ -315,7 +337,7 @@ ecbuild_add_option( FEATURE AIO
 ecbuild_add_option( FEATURE PROJ
                     DEFAULT OFF
                     DESCRIPTION "support PROJ-based projections"
-                    REQUIRED_PACKAGES "PROJ 9.2" )
+                    REQUIRED_PACKAGES "PROJ 9.1.1" )
 
 ### c math library, needed when including "math.h"
 
@@ -328,7 +350,7 @@ if( CMAKE_SYSTEM_NAME MATCHES "Linux" )
         set( RT_LIBRARIES ${RT_LIB} )
     endif()
 else()
-  set( RT_LIBRARIES "" )
+    set( RT_LIBRARIES "" )
 endif()
 
 ### sanity checks
@@ -351,8 +373,11 @@ add_subdirectory( src )
 add_subdirectory( bamboo )
 add_subdirectory( doc )
 add_subdirectory( share )
-add_subdirectory( tests )
-add_subdirectory( regressions )
+
+if( eckit_HAVE_TESTS )
+    add_subdirectory( tests )
+    add_subdirectory( regressions )
+endif()
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
                        SOURCES AUTHORS README.md NOTICE LICENSE

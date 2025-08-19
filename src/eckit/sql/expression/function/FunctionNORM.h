@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionNORM : public FunctionExpression {
 public:
+
     FunctionNORM(const std::string&, const expression::Expressions&);
     FunctionNORM(const FunctionNORM&);
     ~FunctionNORM();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 2; }
 
 private:
+
     // No copy allowed
     FunctionNORM& operator=(const FunctionNORM&);
 

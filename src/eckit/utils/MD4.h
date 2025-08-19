@@ -30,6 +30,7 @@ namespace eckit {
 class MD4 : public Hash {
 
 public:  // types
+
     MD4();
 
     explicit MD4(const char*);
@@ -54,6 +55,7 @@ public:  // types
     }
 
 private:  // members
+
     mutable MD4_CTX ctx_;
 };
 

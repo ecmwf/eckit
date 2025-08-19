@@ -26,7 +26,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<PROJ> PROJECTION("proj");
+static ProjectionRegisterType<PROJ> PROJECTION("proj");
 
 
 namespace {
@@ -75,22 +75,38 @@ struct LonLat final : Convert {
 
 struct XY final : Convert {
     PJ_COORD to_coord(const Point& p) const final {
-        const auto& q = std::get<Point2>(p);
+        const auto& q = std::get<PointXY>(p);
         return proj_coord(q.X, q.Y, 0, 0);
     }
 
-    Point to_point(const PJ_COORD& c) const final { return Point2{c.xy.x, c.xy.y}; }
+    Point to_point(const PJ_COORD& c) const final { return PointXY{c.xy.x, c.xy.y}; }
 };
 
 
 struct XYZ final : Convert {
     PJ_COORD to_coord(const Point& p) const final {
-        const auto& q = std::get<Point3>(p);
+        const auto& q = std::get<PointXYZ>(p);
         return proj_coord(q.X, q.Y, q.Z, 0);
     }
 
-    Point to_point(const PJ_COORD& c) const final { return Point3{c.xy.x, c.xy.y, c.xyz.z}; }
+    Point to_point(const PJ_COORD& c) const final { return PointXYZ{c.xy.x, c.xy.y, c.xyz.z}; }
 };
+
+
+Figure* make_figure(const std::string& proj_str) {
+    pj_t identity(proj_create_crs_to_crs(CTX, proj_str.c_str(), proj_str.c_str(), nullptr));
+
+    pj_t crs(proj_get_target_crs(CTX, identity.get()));
+    pj_t ellipsoid(proj_get_ellipsoid(CTX, crs.get()));
+    ASSERT(ellipsoid);
+
+    double a = 0;
+    double b = 0;
+    ASSERT(proj_ellipsoid_get_parameters(CTX, ellipsoid.get(), &a, &b, nullptr, nullptr));
+    ASSERT(0 < b && b <= a);
+
+    return FigureFactory::build(spec::Custom{{{"a", a}, {"b", b}}});
+}
 
 
 }  // namespace
@@ -113,6 +129,7 @@ struct PROJ::Implementation {
     }
 
 private:
+
     const pj_t proj_;
     const ctx_t ctx_;
     const std::unique_ptr<Convert> source_;
@@ -121,8 +138,9 @@ private:
 
 
 PROJ::PROJ(const std::string& source, const std::string& target, double lon_minimum) :
-    source_(source), target_(target) {
-    ASSERT(!source.empty());
+    Projection(make_figure(target)), source_(source), target_(target) {
+    ASSERT(!source_.empty());
+    ASSERT(!target_.empty());
 
     auto make_convert = [lon_minimum](const std::string& string) -> Convert* {
         pj_t identity(proj_create_crs_to_crs(CTX, string.c_str(), string.c_str(), nullptr));
@@ -151,29 +169,13 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 
 
 PROJ::PROJ(const Spec& spec) :
-    PROJ(spec.get_string("source", spec.get_string("proj", DEFAULT)), spec.get_string("target", DEFAULT),
+    PROJ(spec.get_string("source", DEFAULT), spec.get_string("target", spec.get_string("proj", DEFAULT)),
          spec.get_double("lon_minimum", 0)) {}
 
 
 const std::string& PROJ::type() const {
     static const std::string type{"proj"};
     return type;
-}
-
-
-Figure* PROJ::make_figure() const {
-    pj_t identity(proj_create_crs_to_crs(CTX, target_.c_str(), target_.c_str(), nullptr));
-
-    pj_t crs(proj_get_target_crs(CTX, identity.get()));
-    pj_t ellipsoid(proj_get_ellipsoid(CTX, crs.get()));
-    ASSERT(ellipsoid);
-
-    double a = 0;
-    double b = 0;
-    ASSERT(proj_ellipsoid_get_parameters(CTX, ellipsoid.get(), &a, &b, nullptr, nullptr));
-    ASSERT(0 < b && b <= a);
-
-    return FigureFactory::build(spec::Custom{{{"a", a}, {"b", b}}});
 }
 
 
@@ -214,7 +216,7 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
     };
 
     static const std::map<std::string, std::string> KEYS{
-        {"projection", "proj"},
+        {"type", "proj"},
         {"figure", "ellps"},
         {"r", "R"},
     };
@@ -251,7 +253,7 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 
 
 void PROJ::fill_spec(spec::Custom& custom) const {
-    custom.set("projection", "proj");
+    custom.set("type", "proj");
     if (source_ != DEFAULT) {
         custom.set("source", source_);
     }

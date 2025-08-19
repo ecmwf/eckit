@@ -24,6 +24,7 @@ namespace eckit {
 class MapContent : public Content {
 
 protected:
+
     // -- Constructor
 
     MapContent();
@@ -95,6 +96,7 @@ protected:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- Members
 
     ValueMap value_;

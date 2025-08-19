@@ -20,8 +20,7 @@ namespace eckit {
 
 static void print_indent(std::ostream& out, int indent) {
     indent = std::max(0, indent);
-    out << "\n"
-        << std::string(size_t(indent), ' ');
+    out << "\n" << std::string(size_t(indent), ' ');
 }
 
 static bool check(const JSON::Formatting& formatting, int flag) {
@@ -39,8 +38,7 @@ JSON::Formatting JSON::Formatting::indent(int indentation) {
     return Formatting(INDENT_DICT, indentation);
 }
 
-JSON::Formatting::Formatting(int formatting, int indentation) :
-    flags_{formatting}, indentation_{indentation} {}
+JSON::Formatting::Formatting(int formatting, int indentation) : flags_{formatting}, indentation_{indentation} {}
 
 int JSON::Formatting::indentation() const {
     return indentation_;
@@ -52,14 +50,12 @@ int JSON::Formatting::flags() const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JSON::JSON(std::ostream& out, bool null) :
-    out_(out), null_(null) {
+JSON::JSON(std::ostream& out, bool null) : out_(out), null_(null) {
     sep_.push_back("");
     state_.push_back(true);
 }
 
-JSON::JSON(std::ostream& out, JSON::Formatting formatting) :
-    JSON(out, true) {
+JSON::JSON(std::ostream& out, JSON::Formatting formatting) : JSON(out, true) {
     formatting_ = formatting;
 }
 

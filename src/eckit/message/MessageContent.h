@@ -39,6 +39,7 @@ class MetadataGatherer;
 
 class Transformer {
 public:
+
     // virtual MessageContent* tranform(CodesContent*) const = 0;
 };
 
@@ -47,6 +48,7 @@ public:
 class MessageContent : public eckit::Counted {
 
 public:
+
     virtual operator bool() const;
 
     virtual void write(eckit::DataHandle&) const;
@@ -61,10 +63,13 @@ public:
 
     virtual void getDoubleArray(const std::string& key, std::vector<double>&) const;
 
+    virtual void getFloatArray(const std::string& key, std::vector<float>&) const;
+
     virtual size_t getSize(const std::string& key) const;
 
     // Write double array at key to pre allocated array.
     virtual void getDoubleArray(const std::string& key, double* data, size_t len) const;
+    virtual void getFloatArray(const std::string& key, float* data, size_t len) const;
 
     virtual eckit::DataHandle* readHandle() const;
 
@@ -76,6 +81,7 @@ public:
     virtual MessageContent* transform(const eckit::StringDict&) const;
 
 private:
+
     virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const MessageContent& p) {

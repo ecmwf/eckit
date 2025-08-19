@@ -27,6 +27,7 @@ class DataHandle;
 class BitIO {
 
 public:  // methods
+
     /// Contructor
 
     // padded: pad the last bits with zero at end-of-file
@@ -53,6 +54,7 @@ public:  // methods
 
 
 private:  // members
+
     DataHandle& handle_;
 
     unsigned long long buffer_;

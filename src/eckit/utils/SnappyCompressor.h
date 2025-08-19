@@ -22,6 +22,7 @@ class Buffer;
 class SnappyCompressor : public eckit::Compressor {
 
 public:  // methods
+
     SnappyCompressor();
 
     ~SnappyCompressor() override;

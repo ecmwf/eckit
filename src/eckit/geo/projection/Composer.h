@@ -23,10 +23,27 @@ namespace eckit::geo::projection {
 
 class Composer : public Projection, private std::deque<Projection*> {
 public:
+
     // -- Constructors
 
-    explicit Composer() = default;
     using deque::deque;
+    explicit Composer() = default;
+
+    Composer(const Composer&) = delete;
+    Composer(Composer&&)      = delete;
+
+    // -- Destructor
+
+    ~Composer() override {
+        for (auto* p : *this) {
+            delete p;
+        }
+    }
+
+    // -- Operators
+
+    Composer& operator=(const Composer&) = delete;
+    Composer& operator=(Composer&&)      = delete;
 
     // -- Methods
 
@@ -44,8 +61,6 @@ public:
 
     const std::string& type() const override;
 
-    void fill_spec(spec::Custom&) const override;
-
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
 
@@ -53,6 +68,12 @@ public:
 
     [[nodiscard]] static Projection* compose_back(Projection*, const Spec&);
     [[nodiscard]] static Projection* compose_front(const Spec&, Projection*);
+
+private:
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
 };
 
 

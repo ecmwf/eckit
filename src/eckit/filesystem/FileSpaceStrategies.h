@@ -25,6 +25,7 @@ namespace eckit {
 
 class FileSpaceStrategies : private NonCopyable {
 public:
+
     static const PathName& selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s);
 
     static const PathName& leastUsed(const std::vector<PathName>& fileSystems);

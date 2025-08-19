@@ -18,68 +18,36 @@
 namespace eckit::geo::grid {
 
 
-std::vector<Point> Reduced::to_points() const {
-    std::vector<Point> points;
-    points.reserve(size());
-
-    const auto& lats = latitudes();
-    ASSERT(lats.size() == nj());
-
-    for (size_t j = 0; j < nj(); ++j) {
-        const auto lons = longitudes(j);
-        ASSERT(lons.size() == ni(j));
-
-        const auto lat = lats.at(j);
-        for (auto lon : lons) {
-            points.emplace_back(PointLonLat{lon, lat});
-        }
-    }
-
-    return points;
+Point Reduced::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{longitudes(0).front(), latitudes().front()};
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> Reduced::to_latlons() const {
-    const auto N = size();
+Point Reduced::last_point() const {
+    ASSERT(!empty());
 
-    std::pair<std::vector<double>, std::vector<double>> latlon;
-    auto& lat = latlon.first;
-    auto& lon = latlon.second;
-    lat.reserve(N);
-    lon.reserve(N);
+    auto j = static_cast<int>(ny()) - 1;
+    ASSERT(0 <= j);
 
-    const auto& lats = latitudes();
-    ASSERT(lats.size() == nj());
-
-    for (size_t j = 0; j < nj(); ++j) {
-        const auto lons = longitudes(j);
-
-        lat.insert(lat.end(), lons.size(), lats.at(j));
-        lon.insert(lon.end(), lons.begin(), lons.end());
-    }
-
-    ASSERT(lat.size() == N && lon.size() == N);
-    return latlon;
+    return PointLonLat{longitudes(j).back(), latitudes().back()};
 }
 
 
-Reduced::Reduced(const area::BoundingBox& bbox, Projection* projection) : Grid(bbox, projection) {}
-
-
-const std::vector<size_t>& Reduced::niacc() const {
-    if (niacc_.empty()) {
-        niacc_.resize(1 + nj());
-        niacc_.front() = 0;
+const std::vector<size_t>& Reduced::nxacc() const {
+    if (nxacc_.empty()) {
+        nxacc_.resize(1 + ny());
+        nxacc_.front() = 0;
 
         size_t j = 0;
-        for (auto a = niacc_.begin(), b = a + 1; b != niacc_.end(); ++j, ++a, ++b) {
-            *b = *a + ni(j);
+        for (auto a = nxacc_.begin(), b = a + 1; b != nxacc_.end(); ++j, ++a, ++b) {
+            *b = *a + nx(j);
         }
 
-        ASSERT(niacc_.back() == size());
+        ASSERT(nxacc_.back() == size());
     }
 
-    return niacc_;
+    return nxacc_;
 }
 
 

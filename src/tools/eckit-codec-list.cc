@@ -30,10 +30,12 @@ namespace eckit::tools {
 
 class EckitCodecTool : public eckit::Tool {
 public:
+
     using Options = std::vector<eckit::option::Option*>;
     using Args    = eckit::option::CmdArgs;
 
 protected:
+
     virtual std::string indent() { return "      "; }
     virtual std::string briefDescription() { return ""; }
     virtual std::string longDescription() { return ""; }
@@ -70,9 +72,9 @@ protected:
         }
         out << '\n';
         out << "OPTIONS\n";
-        for (Options::const_iterator it = options_.begin(); it != options_.end(); ++it) {
+        for (const auto* option : options_) {
             std::stringstream s;
-            s << **it;
+            s << *option;
             out << indented(s.str()) << "\n\n";
         }
         out << std::flush;
@@ -92,8 +94,8 @@ protected:
     }
 
 public:
-    EckitCodecTool(int argc, char** argv) :
-        eckit::Tool(argc, argv) {
+
+    EckitCodecTool(int argc, char** argv) : eckit::Tool(argc, argv) {
         add_option(new eckit::option::SimpleOption<bool>("help", "Print this help"));
     }
 
@@ -110,7 +112,7 @@ public:
 
             Options opts                                  = options_;
             std::function<void(const std::string&)> dummy = [](const std::string&) {};
-            Args args(dummy, opts, numberOfPositionalArguments(), minimumPositionalArguments() > 0);
+            Args args(dummy, opts, numberOfPositionalArguments(), minimumPositionalArguments());
 
             int err_code = execute(args);
             return err_code;
@@ -134,6 +136,7 @@ public:
     static constexpr int failed() { return 1; }
 
 private:
+
     Options options_;
 };
 
@@ -149,8 +152,7 @@ struct EckitCodecList : public EckitCodecTool {
                "       <file>: path to eckit::codec file";
     }
 
-    EckitCodecList(int argc, char** argv) :
-        EckitCodecTool(argc, argv) {
+    EckitCodecList(int argc, char** argv) : EckitCodecTool(argc, argv) {
         add_option(new eckit::option::SimpleOption<std::string>("format", "Output format"));
         add_option(new eckit::option::SimpleOption<bool>("version", "Print version of records"));
         add_option(new eckit::option::SimpleOption<bool>("details", "Print detailed information"));

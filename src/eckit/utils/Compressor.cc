@@ -9,7 +9,6 @@
  */
 
 #include <cstring>
-#include <map>
 
 #include "eckit/utils/Compressor.h"
 
@@ -23,7 +22,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CompressorFactory::CompressorFactory() {}
+CompressorFactory::CompressorFactory() = default;
 
 CompressorFactory& CompressorFactory::instance() {
     static CompressorFactory theOne;
@@ -31,76 +30,73 @@ CompressorFactory& CompressorFactory::instance() {
 }
 
 void CompressorFactory::add(const std::string& name, CompressorBuilderBase* builder) {
-    std::string nameLowercase = StringTools::lower(name);
-
     AutoLock<Mutex> lock(mutex_);
-    if (has(nameLowercase)) {
-        throw SeriousBug("Duplicate entry in CompressorFactory: " + nameLowercase, Here());
+
+    auto key = StringTools::lower(name);
+    if (has(key)) {
+        throw SeriousBug("Duplicate entry in CompressorFactory: " + key, Here());
     }
-    builders_[nameLowercase] = builder;
+    builders_[key] = builder;
 }
 
 void CompressorFactory::remove(const std::string& name) {
-    std::string nameLowercase = StringTools::lower(name);
-
     AutoLock<Mutex> lock(mutex_);
-    builders_.erase(nameLowercase);
+
+    auto key = StringTools::lower(name);
+    builders_.erase(key);
 }
 
 bool CompressorFactory::has(const std::string& name) {
-    std::string nameLowercase = StringTools::lower(name);
-
     AutoLock<Mutex> lock(mutex_);
-    return builders_.find(nameLowercase) != builders_.end();
+
+    auto key = StringTools::lower(name);
+    return builders_.find(key) != builders_.end();
+}
+
+std::vector<std::string> CompressorFactory::keys() const {
+    AutoLock<Mutex> lock(mutex_);
+
+    std::vector<std::string> keys;
+    for (const auto& builder : builders_) {
+        keys.push_back(builder.first);
+    }
+    return keys;
 }
 
 void CompressorFactory::list(std::ostream& out) {
     AutoLock<Mutex> lock(mutex_);
-    const char* sep = "";
-    for (std::map<std::string, CompressorBuilderBase*>::const_iterator j = builders_.begin(); j != builders_.end();
-         ++j) {
-        out << sep << (*j).first;
+
+    const auto* sep = "";
+    for (const auto& j : builders_) {
+        out << sep << j.first;
         sep = ", ";
     }
 }
 
 Compressor* CompressorFactory::build() {
+    std::string compression = Resource<std::string>("defaultCompression;ECKIT_DEFAULT_COMPRESSION", "snappy");
 
-    std::string compression = eckit::Resource<std::string>("defaultCompression;ECKIT_DEFAULT_COMPRESSION", "snappy");
-
-    if (has(compression)) {
-        return build(compression);
-    }
-
-    return build("none");
+    return build(has(compression) ? compression : "none");
 }
 
 Compressor* CompressorFactory::build(const std::string& name) {
-    std::string nameLowercase = StringTools::lower(name);
-
     AutoLock<Mutex> lock(mutex_);
 
-    auto j = builders_.find(nameLowercase);
-
-    eckit::Log::debug() << "Looking for CompressorBuilder [" << nameLowercase << "]" << std::endl;
-
-    if (j == builders_.end()) {
-        eckit::Log::error() << "No CompressorBuilder for [" << nameLowercase << "]" << std::endl;
-        eckit::Log::error() << "CompressorBuilders are:" << std::endl;
-        for (j = builders_.begin(); j != builders_.end(); ++j) {
-            eckit::Log::error() << "   " << (*j).first << std::endl;
-        }
-        throw eckit::SeriousBug(std::string("No CompressorBuilder called ") + nameLowercase);
+    auto key = StringTools::lower(name);
+    if (auto j = builders_.find(key); j != builders_.end()) {
+        return (*j).second->make();
     }
 
-    return (*j).second->make();
+    list(Log::error() << "No CompressorBuilder for [" << key << "]. CompressorBuilders are:");
+    Log::error() << std::endl;
+
+    throw SeriousBug(std::string("No CompressorBuilder called ") + key);
 }
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CompressorBuilderBase::CompressorBuilderBase(const std::string& name) :
-    name_(name) {
+CompressorBuilderBase::CompressorBuilderBase(const std::string& name) : name_(name) {
     CompressorFactory::instance().add(name_, this);
 }
 
@@ -110,13 +106,7 @@ CompressorBuilderBase::~CompressorBuilderBase() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Compressor::Compressor() {}
-
-Compressor::~Compressor() {}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-NoCompressor::NoCompressor() {}
+NoCompressor::NoCompressor() = default;
 
 size_t NoCompressor::compress(const void* in, size_t len, Buffer& out) const {
     if (out.size() < len) {

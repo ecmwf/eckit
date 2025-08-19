@@ -13,19 +13,31 @@
 #include "eckit/geo/grid/ReducedLL.h"
 
 #include "eckit/geo/iterator/Reduced.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/RegularLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
-#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::grid {
 
 
-ReducedLL::ReducedLL(const Spec& spec) : ReducedLL(spec.get_long_vector("pl"), area::BoundingBox(spec)) {}
+namespace {
 
 
-ReducedLL::ReducedLL(const pl_type& pl, const area::BoundingBox& bbox) :
-    Reduced(bbox), pl_(pl), y_(new range::RegularLatitude(pl_.size(), bbox.north, bbox.south)) {
+Range* make_y_range(const pl_type& pl, area::BoundingBox* bbox) {
+    return new range::RegularLatitude(pl.size(), bbox == nullptr ? NORTH_POLE.lat : bbox->north,
+                                      bbox == nullptr ? SOUTH_POLE.lat : bbox->south);
+}
+
+
+}  // namespace
+
+
+ReducedLL::ReducedLL(const Spec& spec) :
+    ReducedLL(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec).release()) {}
+
+
+ReducedLL::ReducedLL(const pl_type& pl, area::BoundingBox* bbox) : Reduced(bbox), pl_(pl), y_(make_y_range(pl, bbox)) {
     ASSERT(y_);
 }
 
@@ -40,12 +52,12 @@ Grid::iterator ReducedLL::cend() const {
 }
 
 
-size_t ReducedLL::ni(size_t j) const {
+size_t ReducedLL::nx(size_t j) const {
     return pl_.at(j);
 }
 
 
-size_t ReducedLL::nj() const {
+size_t ReducedLL::ny() const {
     return pl_.size();
 }
 
@@ -56,7 +68,7 @@ const std::vector<double>& ReducedLL::latitudes() const {
 
 
 std::vector<double> ReducedLL::longitudes(size_t j) const {
-    auto Ni = ni(j);
+    auto Ni = nx(j);
     if (!x_ || x_->size() != Ni) {
         auto bbox                               = boundingBox();
         const_cast<std::unique_ptr<Range>&>(x_) = std::make_unique<range::RegularLongitude>(Ni, bbox.west, bbox.east);
@@ -69,8 +81,12 @@ std::vector<double> ReducedLL::longitudes(size_t j) const {
 void ReducedLL::fill_spec(spec::Custom& custom) const {
     Reduced::fill_spec(custom);
 
-    custom.set("type", "reduced_ll");
+    custom.set("type", type());
     custom.set("pl", pl_);
+
+    if (order() != order::Scan::order_default()) {
+        custom.set("order", order());
+    }
 }
 
 

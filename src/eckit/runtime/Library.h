@@ -23,6 +23,7 @@ namespace eckit {
 class Library : public Main {
 
 public:  // methods
+
     /// Contructors
 
     Library(int argc, char** argv, const char* homeenv = nullptr);
@@ -32,6 +33,7 @@ public:  // methods
     ~Library() override;
 
 protected:
+
     virtual Channel* createChannel() const;
 };
 

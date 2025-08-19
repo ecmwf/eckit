@@ -955,8 +955,9 @@ CASE("test_probe") {
         EXPECT(sz == 1);
 
         comm.receive(&data[status.source()], sz, status.source(), status.tag());
-        errstr << "[test_probe:" << irank << "] receive data["<<status.source()<<"] = " << data[status.source()] << "  -- EXPECTED: " << status.source() << '\n';
-        if( data[status.source()] != status.source()) {
+        errstr << "[test_probe:" << irank << "] receive data[" << status.source() << "] = " << data[status.source()]
+               << "  -- EXPECTED: " << status.source() << '\n';
+        if (data[status.source()] != status.source()) {
             error = true;
         }
         --count;
@@ -964,7 +965,7 @@ CASE("test_probe") {
 
     if (error) {
         errstr << "[test_probe:" << irank << "] data = [ ";
-        for( auto& v: data ) {
+        for (auto& v : data) {
             errstr << v << " ";
         }
         errstr << " ]\n";
@@ -1014,8 +1015,9 @@ CASE("test_iProbe") {
         EXPECT(sz == 1);
 
         comm.receive(&data[status.source()], sz, status.source(), status.tag());
-        errstr << "[test_iProbe:" << irank << "] receive data["<<status.source()<<"] = " << data[status.source()] << "  -- EXPECTED: " << status.source() << '\n';
-        if( data[status.source()] != status.source()) {
+        errstr << "[test_iProbe:" << irank << "] receive data[" << status.source() << "] = " << data[status.source()]
+               << "  -- EXPECTED: " << status.source() << '\n';
+        if (data[status.source()] != status.source()) {
             error = true;
         }
         --count;
@@ -1023,7 +1025,7 @@ CASE("test_iProbe") {
 
     if (error) {
         errstr << "[test_iProbe:" << irank << "] data = [ ";
-        for( auto& v: data ) {
+        for (auto& v : data) {
             errstr << v << " ";
         }
         errstr << " ]\n";

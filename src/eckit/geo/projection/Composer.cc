@@ -12,9 +12,6 @@
 
 #include "eckit/geo/projection/Composer.h"
 
-#include <vector>
-
-#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/spec/Custom.h"
 
 
@@ -92,12 +89,12 @@ Point Composer::inv(const Point& p) const {
 
 
 Projection* Composer::compose_back(Projection* p, const Spec& spec) {
-    return new Composer{p, ProjectionFactory::instance().get(spec.get_string("projection")).create(spec)};
+    return new Composer{p, ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec)};
 }
 
 
 Projection* Composer::compose_front(const Spec& spec, Projection* p) {
-    return new Composer{ProjectionFactory::instance().get(spec.get_string("projection")).create(spec), p};
+    return new Composer{ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec), p};
 }
 
 

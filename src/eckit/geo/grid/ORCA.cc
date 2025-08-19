@@ -16,11 +16,11 @@
 
 #include "eckit/codec/codec.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/Cache.h"
-#include "eckit/geo/Download.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Spec.h"
+#include "eckit/geo/cache/Download.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
@@ -51,11 +51,11 @@ const ORCA::ORCARecord& orca_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
-    static CacheT<PathName, ORCA::ORCARecord> cache;
-    static Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
+    static cache::MemoryCacheT<PathName, ORCA::ORCARecord> cache;
+    static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
 
     auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
-    auto path = download.to_cached_path(url, spec.get_string("name", ""), ".ek");
+    auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
     ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
 
     if (cache.contains(path)) {
@@ -109,16 +109,16 @@ Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     util::hash_vector_double(hash, longitudes_);
 
     auto d = hash.digest();
-    ASSERT(d.length() == 32);
+    ASSERT(Grid::is_uid(d));
 
     return {d};
 }
 
 
 ORCA::ORCARecord::bytes_t ORCA::ORCARecord::footprint() const {
-    return sizeof(dimensions_.front()) * dimensions_.size() + sizeof(halo_.front()) * halo_.size()
-           + sizeof(pivot_.front()) * pivot_.size() + sizeof(longitudes_.front()) * longitudes_.size()
-           + sizeof(latitudes_.front()) * latitudes_.size() + sizeof(flags_.front()) * flags_.size();
+    return sizeof(dimensions_.front()) * dimensions_.size() + sizeof(halo_.front()) * halo_.size() +
+           sizeof(pivot_.front()) * pivot_.size() + sizeof(longitudes_.front()) * longitudes_.size() +
+           sizeof(latitudes_.front()) * latitudes_.size() + sizeof(flags_.front()) * flags_.size();
 }
 
 
@@ -158,7 +158,7 @@ void ORCA::ORCARecord::read(const PathName& p) {
 void ORCA::ORCARecord::check(const Spec& spec) const {
     if (spec.get_bool("orca_uid_check", false)) {
         auto uid = spec.get_string("orca_uid");
-        ASSERT(uid.length() == 32);
+        ASSERT(Grid::is_uid(uid));
         ASSERT(uid == calculate_uid(arrangement_from_string(spec.get_string("orca_arrangement"))));
     }
 
@@ -220,6 +220,18 @@ Grid::uid_t ORCA::calculate_uid() const {
 }
 
 
+Point ORCA::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.front(), record_.latitudes_.front()};
+}
+
+
+Point ORCA::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{record_.longitudes_.back(), record_.latitudes_.back()};
+}
+
+
 std::vector<Point> ORCA::to_points() const {
     std::vector<Point> p;
     p.reserve(size());
@@ -236,8 +248,18 @@ std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlons() const {
 }
 
 
-Spec* ORCA::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+const Grid::order_type& ORCA::order() const {
+    NOTIMP;
+}
+
+
+Reordering ORCA::reorder(const order_type& to) const {
+    NOTIMP;
+}
+
+
+Spec* ORCA::spec_from_uid(const uid_t& uid) {
+    return GridSpecByUID::instance().get(uid).spec();
 }
 
 
@@ -264,7 +286,9 @@ std::string ORCA::arrangement_to_string(Arrangement a) {
 
 void ORCA::fill_spec(spec::Custom& custom) const {
     custom.set("grid", name_ + "_" + arrangement_to_string(arrangement_));
-    custom.set("uid", uid());
+    if (auto _uid = uid(); !GridSpecByUID::instance().exists(_uid)) {
+        custom.set("uid", _uid);
+    }
 }
 
 

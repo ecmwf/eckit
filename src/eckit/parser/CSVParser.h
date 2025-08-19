@@ -25,6 +25,7 @@ namespace eckit {
 class CSVParser : public StreamParser {
 
 public:  // methods
+
     CSVParser(std::istream& in, bool hasHeader);
     Value parse();
 
@@ -34,6 +35,7 @@ public:  // methods
     static Value decodeString(const std::string& str, bool hasHeader);
 
 private:
+
     bool hasHeader_;
     Value header_;
 

@@ -25,6 +25,7 @@ namespace eckit {
 
 class MultiHandle : public DataHandle {
 public:
+
     typedef std::vector<DataHandle*> HandleList;
 
     // -- Contructors
@@ -88,6 +89,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- Members
 
     HandleList datahandles_;

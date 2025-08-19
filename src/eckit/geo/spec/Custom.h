@@ -29,6 +29,7 @@ namespace eckit::geo::spec {
 
 class Custom final : public Spec {
 public:
+
     // -- Types
 
     struct custom_ptr : std::shared_ptr<Custom> {
@@ -116,6 +117,7 @@ public:
     [[nodiscard]] static Custom* make_from_value(const Value&);
 
 private:
+
     // -- Members
 
     container_type map_;

@@ -21,10 +21,10 @@
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
 #include <setjmp.h>
-#include <csignal>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <csignal>
 
 #include <cstring>
 
@@ -48,16 +48,10 @@ static in_addr none = {INADDR_NONE};
 
 static StaticMutex local_mutex;
 
-TCPSocket::UnknownHost::UnknownHost(const std::string& host) :
-    Exception(std::string("Unknown host ") + host) {}
+TCPSocket::UnknownHost::UnknownHost(const std::string& host) : Exception(std::string("Unknown host ") + host) {}
 
 
-TCPSocket::TCPSocket() :
-    socket_(-1),
-    localPort_(-1),
-    remotePort_(-1),
-    remoteAddr_(none),
-    localAddr_(none) {}
+TCPSocket::TCPSocket() : socket_(-1), localPort_(-1), remotePort_(-1), remoteAddr_(none), localAddr_(none) {}
 
 // This contructor performs a change of ownership of the socket
 TCPSocket::TCPSocket(net::TCPSocket& other) :
@@ -121,8 +115,7 @@ long TCPSocket::write(const void* buf, long length) const {
 
         if (debug_.mode != 'w') {
             debug_.newline = true;
-            std::cout << std::endl
-                      << std::endl;
+            std::cout << std::endl << std::endl;
             debug_.mode = 'w';
         }
 
@@ -137,8 +130,7 @@ long TCPSocket::write(const void* buf, long length) const {
                 std::cout << "\\r";
             }
             else if (p[i] == '\n') {
-                std::cout << "\\n"
-                          << std::endl;
+                std::cout << "\\n" << std::endl;
                 debug_.newline = true;
             }
             else {
@@ -266,8 +258,7 @@ long TCPSocket::read(void* buf, long length) const {
 
             if (debug_.mode != 'r') {
                 debug_.newline = true;
-                std::cout << std::endl
-                          << std::endl;
+                std::cout << std::endl << std::endl;
                 debug_.mode = 'r';
             }
 
@@ -281,8 +272,7 @@ long TCPSocket::read(void* buf, long length) const {
                     std::cout << "\\r";
                 }
                 else if (p[i] == '\n') {
-                    std::cout << "\\n"
-                              << std::endl;
+                    std::cout << "\\n" << std::endl;
                     debug_.newline = true;
                 }
                 else {
@@ -508,8 +498,8 @@ void set_socket_buffer_size(int& socket, const char* ssock, const int& stype, co
         warn &= !(flg == 2 * size);
 #endif
         if (warn) {
-            Log::warning() << "Attempt to set " << stype << " buffer size to " << size
-                           << " but kernel set size to " << flg << std::endl;
+            Log::warning() << "Attempt to set " << stype << " buffer size to " << size << " but kernel set size to "
+                           << flg << std::endl;
         }
     }
 }
@@ -680,7 +670,7 @@ std::string TCPSocket::addrToHost(in_addr addr) {
     else
         h = &host;
 #else
-    h             = gethostbyaddr(reinterpret_cast<char*>(&addr), sizeof(addr), AF_INET);
+    h = gethostbyaddr(reinterpret_cast<char*>(&addr), sizeof(addr), AF_INET);
 #endif
 
     std::string s      = h ? std::string(h->h_name) : IPAddress(addr).asString();

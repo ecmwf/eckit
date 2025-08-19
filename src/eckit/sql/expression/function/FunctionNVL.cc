@@ -20,8 +20,7 @@ static FunctionBuilder<FunctionNVL> nvlFunctionBuilder("nvl");
 FunctionNVL::FunctionNVL(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
-FunctionNVL::FunctionNVL(const FunctionNVL& other) :
-    FunctionExpression(other.name_, other.args_) {}
+FunctionNVL::FunctionNVL(const FunctionNVL& other) : FunctionExpression(other.name_, other.args_) {}
 
 FunctionNVL::~FunctionNVL() {}
 

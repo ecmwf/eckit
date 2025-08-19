@@ -27,6 +27,7 @@ namespace eckit {
 
 class RemoteCommandable : private eckit::NonCopyable {
 public:
+
     // -- Contructors
 
     RemoteCommandable(int port = 0);
@@ -36,6 +37,7 @@ public:
     ~RemoteCommandable();
 
 private:
+
     // -- Members
 
     eckit::ThreadControler commander_;

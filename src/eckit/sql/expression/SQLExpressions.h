@@ -31,10 +31,9 @@ typedef std::vector<std::shared_ptr<SQLExpression>> ExpressionsVector;
 
 class Expressions : public SQLExpression, public ExpressionsVector {
 public:
-    Expressions() :
-        ExpressionsVector() {}
-    Expressions(size_t i) :
-        ExpressionsVector(i, 0) {}
+
+    Expressions() : ExpressionsVector() {}
+    Expressions(size_t i) : ExpressionsVector(i, 0) {}
 
     Expressions(const Expressions&)            = default;
     Expressions& operator=(const Expressions&) = default;

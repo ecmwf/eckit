@@ -28,6 +28,7 @@ class Thread;
 /// @note Don't subclass from ThreadControler but from Thread
 class ThreadControler : public Task {
 public:
+
     /// @note ThreadControler takes ownership of Thread
     explicit ThreadControler(Thread*, bool detached = true, size_t stack = 0);
 
@@ -40,16 +41,19 @@ public:
     bool active() override;
 
 protected:  // members
+
     MutexCond cond_;
     bool detached_;
 
 private:  // members
+
     pthread_t thread_;
     Thread* proc_;
     size_t stack_;
     bool running_;
 
 private:  // methods
+
     void execute();
 
     static void* startThread(void* data);

@@ -45,21 +45,23 @@ void Grid::load(const PathName& path) {
     auto* custom = dynamic_cast<spec::Custom*>(spec_.get());
     ASSERT(custom != nullptr);
 
-    struct SpecByUIDGenerator final : SpecByUID::generator_t {
+    struct SpecByUIDGenerator final : GridSpecByUID::generator_t {
         explicit SpecByUIDGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
         Spec* spec() const override { return new spec::Custom(spec_->container()); }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
 
     private:
+
         std::unique_ptr<spec::Custom> spec_;
     };
 
-    struct SpecByNameGenerator final : SpecByName::generator_t {
+    struct SpecByNameGenerator final : GridSpecByName::generator_t {
         explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
-        Spec* spec(SpecByName::generator_t::arg1_t) const override { return new spec::Custom(spec_->container()); }
+        Spec* spec(GridSpecByName::generator_t::arg1_t) const override { return new spec::Custom(spec_->container()); }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
 
     private:
+
         std::unique_ptr<spec::Custom> spec_;
     };
 
@@ -72,7 +74,7 @@ void Grid::load(const PathName& path) {
             if (key == "grid_uids") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
                     ASSERT(m.size() == 1);
-                    SpecByUID::instance().regist(
+                    GridSpecByUID::instance().regist(
                         m.begin()->first.as<std::string>(),
                         new SpecByUIDGenerator(spec::Custom::make_from_value(m.begin()->second)));
                 }
@@ -82,7 +84,7 @@ void Grid::load(const PathName& path) {
             if (key == "grid_names") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
                     ASSERT(m.size() == 1);
-                    SpecByName::instance().regist(
+                    GridSpecByName::instance().regist(
                         m.begin()->first.as<std::string>(),
                         new SpecByNameGenerator(spec::Custom::make_from_value(m.begin()->second)));
                 }

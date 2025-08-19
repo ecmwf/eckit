@@ -29,6 +29,7 @@ namespace eckit {
 
 class InstantTCPSocketHandle : public DataHandle {
 public:
+
     // -- Contructors
 
     InstantTCPSocketHandle(net::TCPSocket&);
@@ -59,11 +60,13 @@ public:
     // -- Class methods
 
 protected:
+
     // -- Members
 
     net::TCPSocket& connection_;
 
 private:
+
     // No copy allowed
 
     InstantTCPSocketHandle(const InstantTCPSocketHandle&);
@@ -80,9 +83,11 @@ private:
 
 class TCPSocketHandle : public InstantTCPSocketHandle {
 public:
+
     TCPSocketHandle(net::TCPSocket&);
 
 private:
+
     net::TCPSocket socket_;
 
     void print(std::ostream&) const override;

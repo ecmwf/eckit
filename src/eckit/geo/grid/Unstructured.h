@@ -29,6 +29,7 @@ namespace eckit::geo::grid {
 
 class Unstructured : public Grid {
 public:
+
     // -- Constructors
 
     explicit Unstructured(const Spec& spec) : Grid(spec) {}
@@ -62,12 +63,17 @@ public:
     [[nodiscard]] static Unstructured* make_from_latlon(const std::vector<double>&, const std::vector<double>&);
 
 protected:
+
+    // -- Constructors
+
+    explicit Unstructured(container::PointsContainer*);
+
     // -- Methods
 
     void resetContainer(container::PointsContainer* container) { container_.reset(container); }
 
-
 private:
+
     // -- Members
 
     std::shared_ptr<container::PointsContainer> container_;

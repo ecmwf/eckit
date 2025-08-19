@@ -26,8 +26,7 @@ const type::SQLType* FunctionEQ::type() const {
     return &type::SQLType::lookup("double");
 }
 
-FunctionEQ::FunctionEQ(const FunctionEQ& other) :
-    FunctionExpression(other.name_, other.args_), tmp_(other.tmp_) {}
+FunctionEQ::FunctionEQ(const FunctionEQ& other) : FunctionExpression(other.name_, other.args_), tmp_(other.tmp_) {}
 
 FunctionEQ::FunctionEQ(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args), tmp_(0) {}

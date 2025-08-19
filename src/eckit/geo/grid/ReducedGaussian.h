@@ -17,6 +17,7 @@
 
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/util.h"
 
 
@@ -25,12 +26,13 @@ namespace eckit::geo::grid {
 
 class ReducedGaussian : public Reduced {
 public:
+
     // -- Constructors
 
     explicit ReducedGaussian(const Spec&);
-    explicit ReducedGaussian(const pl_type&, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
-    explicit ReducedGaussian(size_t N, const pl_type&, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
-    explicit ReducedGaussian(size_t N, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
+    explicit ReducedGaussian(const pl_type&, area::BoundingBox* = nullptr, Projection* = nullptr);
+    explicit ReducedGaussian(size_t N, const pl_type&, area::BoundingBox* = nullptr, Projection* = nullptr);
+    explicit ReducedGaussian(size_t N, area::BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 
@@ -43,10 +45,17 @@ public:
     iterator cend() const override;
 
     size_t size() const override;
-    size_t ni(size_t j) const override;
-    size_t nj() const override;
+    size_t nx(size_t j) const override;
+    size_t ny() const override;
+
+    const order_type& order() const override { return scan_.order(); }
+    Reordering reorder(const order_type& to) const override { return scan_.reorder(to); }
+
+    const std::vector<double>& latitudes() const override;
+    std::vector<double> longitudes(size_t j) const override;
 
 private:
+
     // -- Members
 
     const size_t N_;
@@ -56,14 +65,12 @@ private:
 
     std::vector<std::unique_ptr<Range>> x_;
     std::unique_ptr<Range> y_;
+    order::Scan scan_;
 
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;
-
-    const std::vector<double>& latitudes() const override;
-    std::vector<double> longitudes(size_t i) const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 };

@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
 #include <unistd.h>
+#include <cstring>
 #include <fstream>
 #include <sstream>
 
@@ -32,8 +32,8 @@ class Client : public Application {
     void grid(const std::string& host, int port);
 
 public:
-    Client(int argc, char** argv) :
-        Application(argc, argv, "HOME") {}
+
+    Client(int argc, char** argv) : Application(argc, argv, "HOME") {}
 };
 
 void Client::test(const std::string& host, int port) {

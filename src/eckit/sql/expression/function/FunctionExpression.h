@@ -23,6 +23,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionExpression : public SQLExpression {
 public:
+
     FunctionExpression(const std::string&, const expression::Expressions&);
     FunctionExpression(const FunctionExpression&);
     ~FunctionExpression();
@@ -48,6 +49,7 @@ public:
     static const char* help() { return ""; }
 
 protected:
+
     std::string name_;
     expression::Expressions args_;
     // void print(std::ostream&) const override;
@@ -57,6 +59,7 @@ protected:
     void tables(std::set<const SQLTable*>&) override;
 
 private:
+
     FunctionExpression& operator=(const FunctionExpression&);
 
     // For use inside reshift()

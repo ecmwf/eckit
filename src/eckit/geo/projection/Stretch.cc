@@ -23,7 +23,7 @@
 namespace eckit::geo::projection {
 
 
-static ProjectionBuilder<Stretch> PROJECTION("stretch");
+static ProjectionRegisterType<Stretch> PROJECTION("stretch");
 
 
 Stretch::Stretch(double c) : c_(c) {
@@ -51,7 +51,7 @@ double Stretch::stretch(double a, double c) {
 
 
 void Stretch::fill_spec(spec::Custom& spec) const {
-    spec.set("projection", "stretch");
+    spec.set("type", "stretch");
     spec.set("stretching_factor", c_);
 }
 

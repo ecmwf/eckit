@@ -11,14 +11,14 @@
 #include "LocalPathName.h"
 
 #include <dirent.h>
-#include <climits>
 #include <pwd.h>
-#include <cstdlib>
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <utime.h>
+#include <climits>
+#include <cstdlib>
 
 #include <cstring>  // for strlen
 #include <deque>
@@ -150,8 +150,7 @@ static void init() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-LocalPathName::LocalPathName(const PathName& path) :
-    LocalPathName(path.path(), false, true) {}
+LocalPathName::LocalPathName(const PathName& path) : LocalPathName(path.path(), false, true) {}
 
 LocalPathName LocalPathName::baseName(bool ext) const {
     const char* q = path_.c_str();
@@ -420,13 +419,13 @@ void operator>>(Stream& s, LocalPathName& path) {
 }
 
 LocalPathName operator/(const LocalPathName& p1, const LocalPathName& p2) {
-    bool tildeIsUserHome = false;
+    bool tildeIsUserHome    = false;
     bool skipTildeExpansion = true;
     return eckit::LocalPathName(p1.path() + "/" + p2.path(), tildeIsUserHome, skipTildeExpansion);
 }
 
 LocalPathName operator/(const LocalPathName& p1, const char* p2) {
-    bool tildeIsUserHome = false;
+    bool tildeIsUserHome    = false;
     bool skipTildeExpansion = true;
     return eckit::LocalPathName(p1.path() + "/" + p2, tildeIsUserHome, skipTildeExpansion);
 }

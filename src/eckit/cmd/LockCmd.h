@@ -21,6 +21,7 @@ namespace eckit {
 
 class LockCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     LockCmd();
@@ -30,6 +31,7 @@ public:
     ~LockCmd();
 
 private:
+
     // No copy allowed
 
     LockCmd(const LockCmd&);

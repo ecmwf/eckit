@@ -35,6 +35,12 @@ PointLonLatR::value_type PointLonLatR::normalise_angle_to_maximum(value_type a, 
 }
 
 
+bool PointLonLatR::pole(value_type eps) const {
+    const auto p = make(lonr, latr);
+    return types::is_approximately_equal(p.latr, RIGHT_ANGLE, eps) ||
+           types::is_approximately_equal(p.latr, -RIGHT_ANGLE, eps);
+}
+
 PointLonLatR PointLonLatR::make(value_type lonr, value_type latr, value_type lonr_minimum, value_type eps) {
     latr = normalise_angle_to_minimum(latr, -RIGHT_ANGLE);
 
@@ -50,8 +56,8 @@ PointLonLatR PointLonLatR::make(value_type lonr, value_type latr, value_type lon
 }
 
 
-PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, value_type lon_minimum) {
-    return make(util::DEGREE_TO_RADIAN * lon, util::DEGREE_TO_RADIAN * lat, util::DEGREE_TO_RADIAN * lon_minimum);
+PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, value_type lonr_minimum) {
+    return make(util::DEGREE_TO_RADIAN * lon, util::DEGREE_TO_RADIAN * lat, lonr_minimum);
 }
 
 

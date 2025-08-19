@@ -24,6 +24,10 @@
 namespace eckit::geo::grid {
 
 
+RegularXY::RegularXY(const Spec& spec) :
+    Regular(make_ranges_from_spec(spec), area::BoundingBox(spec), ProjectionFactory::build(spec)) {}
+
+
 Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
 #if 0
     Increments inc(spec);
@@ -40,13 +44,30 @@ Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
     // TODO;
 
 
-    Point2 a = std::get<Point2>(projection->inv(first_lonlat));
-    Point2 b{a.X + inc.dx * static_cast<double>(shape.nx - 1), a.Y - inc.dy * static_cast<double>(shape.ny - 1)};
+    PointXY a = std::get<PointXY>(projection->inv(first_lonlat));
+    PointXY b{a.X + inc.dx * static_cast<double>(shape.nx - 1), a.Y - inc.dy * static_cast<double>(shape.ny - 1)};
 
     return {new range::RegularCartesian(shape.nx, a.X, b.X), new range::RegularCartesian(shape.ny, a.Y, b.Y)};
 #else
     return {new range::RegularCartesian(11, 0, 10), new range::RegularCartesian(11, 0, 10)};
 #endif
+}
+
+
+const std::string& RegularXY::type() const {
+    return projection().type();
+}
+
+
+Point RegularXY::first_point() const {
+    ASSERT(!empty());
+    return PointXY{x().values().front(), y().values().front()};
+}
+
+
+Point RegularXY::last_point() const {
+    ASSERT(!empty());
+    return PointXY{x().values().back(), y().values().back()};
 }
 
 
@@ -57,6 +78,10 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
     custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
     custom.set("first_lonlat", std::vector<double>{first_lonlat.lon, first_lonlat.lat});
 }
+
+
+static const GridRegisterType<RegularXY> GRID1("lambert");
+static const GridRegisterType<RegularXY> GRID2("lambert_lam");
 
 
 }  // namespace eckit::geo::grid

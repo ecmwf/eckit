@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionTIMESTAMP : public FunctionIntegerExpression {
 public:
+
     FunctionTIMESTAMP(const std::string&, const expression::Expressions&);
     FunctionTIMESTAMP(const FunctionTIMESTAMP&);
     ~FunctionTIMESTAMP();
@@ -32,6 +33,7 @@ public:
     static int arity() { return 2; }
 
 private:
+
     FunctionTIMESTAMP& operator=(const FunctionTIMESTAMP&);
 
     // -- Overridden methods

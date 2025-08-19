@@ -11,10 +11,13 @@
 
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/grid/FESOM.h"
+#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/grid/unstructured/FESOM.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -22,13 +25,18 @@
 namespace eckit::geo::test {
 
 
-static const Grid::uid_t UID_C = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
-static const Grid::uid_t UID_N = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
-static const size_t SHAPE_N    = 3140;
+static const std::string GRID_N = "pi_N";
+static const Grid::uid_t UID_N  = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
+static const size_t SHAPE_N     = 3140;
+
+static const std::string GRID_C = "pi_C";
+static const Grid::uid_t UID_C  = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
 
 
 CASE("caching") {
     if (LibEcKitGeo::caching()) {
+        using Cache = cache::MemoryCache;
+
         SECTION("Grid::build_from_uid") {
             spec::Custom spec({{"uid", UID_N}});
 
@@ -67,9 +75,10 @@ CASE("spec") {
     EXPECT(grid2->size() == SHAPE_N);
     EXPECT(grid2->uid() == UID_N);
 
-    grid::FESOM grid3(UID_N);
+    grid::unstructured::FESOM grid3(UID_N);
 
-    const std::string expected_spec_str = R"({"grid":"pi_N","uid":")" + UID_N + R"("})";
+    const std::string expected_spec_str = R"({"grid":")" + GRID_N + R"("})";
+    Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
 
     EXPECT(grid3.uid() == UID_N);
     EXPECT(grid3.calculate_uid() == UID_N);
@@ -77,7 +86,7 @@ CASE("spec") {
 
     EXPECT(grid1->spec_str() == grid2->spec_str());
 
-    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "pi_N"}})));
+    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", GRID_N}})));
     EXPECT(grid4->spec_str() == expected_spec_str);
 
     std::unique_ptr<const Grid> grid5(GridFactory::build(spec::Custom({{"uid", UID_N}})));
@@ -87,11 +96,14 @@ CASE("spec") {
 
 
 CASE("equals") {
-    for (const auto& [uid, grid] : {std::pair<std::string, std::string>{UID_N, "pi_N"}, {UID_C, "pi_C"}}) {
+    for (const auto& p : std::vector<std::pair<std::string, std::string>>{{UID_N, GRID_N}, {UID_C, GRID_C}}) {
+        const auto& uid  = p.first;
+        const auto& grid = p.second;
+
         std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + uid + "}"));
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", uid}})));
         std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", grid}})));
-        grid::FESOM grid4(uid);
+        grid::unstructured::FESOM grid4(uid);
 
         EXPECT(*grid1 == *grid2);
         EXPECT(*grid2 == *grid3);

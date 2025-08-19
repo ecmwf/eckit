@@ -25,6 +25,7 @@ namespace eckit {
 
 class JavaServer {
 public:
+
     // -- Contructors
 
     JavaServer(int port);
@@ -34,6 +35,7 @@ public:
     ~JavaServer();
 
 private:
+
     // No copy allowed
 
     JavaServer(const JavaServer&);

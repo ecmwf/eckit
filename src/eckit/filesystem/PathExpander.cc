@@ -91,8 +91,7 @@ std::string PathExpander::expand(const std::string& path) {
     return newpath;
 }
 
-PathExpander::PathExpander(const std::string& name) :
-    name_(name) {
+PathExpander::PathExpander(const std::string& name) : name_(name) {
     eckit::AutoLock<PathExpanderRegistry> locker(PathExpanderRegistry::instance());
 
     PathExpanderMap& m = PathExpanderRegistry::instance().map();
@@ -117,8 +116,8 @@ std::ostream& operator<<(std::ostream& s, const PathExpander& p) {
 
 class ENVVAR : public PathExpander {
 public:
-    ENVVAR(const std::string& name) :
-        PathExpander(name) {}
+
+    ENVVAR(const std::string& name) : PathExpander(name) {}
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         size_t pos      = var.find_first_of("?");
@@ -151,8 +150,8 @@ static ENVVAR envvar("ENVVAR");
 
 class FILE : public PathExpander {
 public:
-    FILE(const std::string& name) :
-        PathExpander(name) {}
+
+    FILE(const std::string& name) : PathExpander(name) {}
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         size_t pos      = var.find_first_of("?");
@@ -187,8 +186,8 @@ static FILE file("FILE");
 
 class CWDFS : public PathExpander {
 public:
-    CWDFS(const std::string& name) :
-        PathExpander(name) {}
+
+    CWDFS(const std::string& name) : PathExpander(name) {}
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         LocalPathName mnt = LocalPathName::cwd().mountPoint();
@@ -203,8 +202,8 @@ static CWDFS cwdfs("CWDFS");
 
 class CWD : public PathExpander {
 public:
-    CWD(const std::string& name) :
-        PathExpander(name) {}
+
+    CWD(const std::string& name) : PathExpander(name) {}
 
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const {
         LocalPathName mnt = LocalPathName::cwd();

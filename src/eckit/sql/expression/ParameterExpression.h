@@ -23,6 +23,7 @@ namespace eckit::sql::expression {
 
 class ParameterExpression : public SQLExpression {
 public:
+
     ParameterExpression(int);
     ParameterExpression(const ParameterExpression&);
     ~ParameterExpression();
@@ -31,6 +32,7 @@ public:
     std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override { return clone(); }
 
 private:
+
     // No copy allowed
     ParameterExpression& operator=(const ParameterExpression&);
 

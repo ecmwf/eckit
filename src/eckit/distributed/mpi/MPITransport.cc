@@ -33,9 +33,7 @@ namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MPITransport::MPITransport(const eckit::option::CmdArgs& args) :
-    Transport(args),
-    comm_(eckit::mpi::comm("world")) {
+MPITransport::MPITransport(const eckit::option::CmdArgs& args) : Transport(args), comm_(eckit::mpi::comm("world")) {
 
 
     // eckit::mpi::createCo5mm("atlas", eckit::mpi::comm().self());
@@ -120,22 +118,16 @@ MPITransport::MPITransport(const eckit::option::CmdArgs& args) :
 
     std::string hostname = eckit::Main::hostname();
 
-    eckit::Log::info() << "Start of "
-                       << title_
-                       << " host: " << hostname
-                       << " pid: " << ::getpid()
-                       << std::endl;
+    eckit::Log::info() << "Start of " << title_ << " host: " << hostname << " pid: " << ::getpid() << std::endl;
 }
 
-MPITransport::~MPITransport() {
-}
+MPITransport::~MPITransport() {}
 
 bool MPITransport::single() const {
     return totalRanks_ == 1;
 }
 
-void MPITransport::initialise() {
-}
+void MPITransport::initialise() {}
 
 void MPITransport::abort() {
     eckit::AutoAlarm alarm(10);
@@ -224,10 +216,7 @@ void MPITransport::getNextWriteMessage(Message& message) {
     message.rewind();
     message.messageReceived(tag, source);
 
-    ASSERT(tag == Actor::WRITE
-           || tag == Actor::OPEN
-           || tag == Actor::CLOSE
-           || tag == Actor::SHUTDOWN);
+    ASSERT(tag == Actor::WRITE || tag == Actor::OPEN || tag == Actor::CLOSE || tag == Actor::SHUTDOWN);
 }
 
 void MPITransport::send(const Message& message, int target, int tag) {
@@ -275,10 +264,7 @@ void MPITransport::sendShutDownMessage(const Actor& actor) {
     // Shutdown workers
     size_t count = totalRanks_ - ranksToWriters_.size() - 1;
 
-    eckit::Log::info()
-        << " shutdown workers count="
-        << count
-        << std::endl;
+    eckit::Log::info() << " shutdown workers count=" << count << std::endl;
 
     std::set<int> r;
 
@@ -298,11 +284,7 @@ void MPITransport::sendShutDownMessage(const Actor& actor) {
 
         switch (tag) {
             case Actor::READY:
-                eckit::Log::info()
-                    << " shutdown worker="
-                    << worker
-                    << " left=" << count
-                    << std::endl;
+                eckit::Log::info() << " shutdown worker=" << worker << " left=" << count << std::endl;
                 send(Message::shutdownMessage(), worker, Actor::SHUTDOWN);
                 break;
 
@@ -310,12 +292,7 @@ void MPITransport::sendShutDownMessage(const Actor& actor) {
                 actor.messageFromWorker(message, worker);
                 r.erase(worker);
                 count--;
-                eckit::Log::info()
-                    << " stats from worker="
-                    << worker
-                    << " left=" << count
-                    << " " << r
-                    << std::endl;
+                eckit::Log::info() << " stats from worker=" << worker << " left=" << count << " " << r << std::endl;
                 break;
 
             default:
@@ -326,10 +303,7 @@ void MPITransport::sendShutDownMessage(const Actor& actor) {
 
     count = ranksToWriters_.size();
 
-    eckit::Log::info()
-        << " shutdown workers count="
-        << count
-        << std::endl;
+    eckit::Log::info() << " shutdown workers count=" << count << std::endl;
 
     for (auto j = writersToRanks_.begin(); j != writersToRanks_.end(); ++j) {
         send(Message::shutdownMessage(), (*j).second, Actor::SHUTDOWN);
@@ -351,12 +325,7 @@ void MPITransport::sendShutDownMessage(const Actor& actor) {
                 actor.messageFromWriter(message, writer);
                 r.erase(writer);
                 count--;
-                eckit::Log::info()
-                    << " stats from writer="
-                    << writer
-                    << " left=" << count
-                    << r
-                    << std::endl;
+                eckit::Log::info() << " stats from writer=" << writer << " left=" << count << r << std::endl;
                 break;
 
             default:
@@ -371,4 +340,4 @@ void MPITransport::sendShutDownMessage(const Actor& actor) {
 
 static TransportBuilder<MPITransport> builder("mpi");
 
-}  // namespace eckit
+}  // namespace eckit::distributed

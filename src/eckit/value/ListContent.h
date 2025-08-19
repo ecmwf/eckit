@@ -25,6 +25,7 @@ namespace eckit {
 class ListContent : public Content {
 
 protected:
+
     // -- Constructor
 
     ListContent();
@@ -98,6 +99,7 @@ protected:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     ListContent(const ListContent&);
     ListContent& operator=(const ListContent&);
 

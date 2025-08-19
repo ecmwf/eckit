@@ -26,8 +26,7 @@ const type::SQLType* FunctionNE::type() const {
     return &type::SQLType::lookup("double");
 }
 
-FunctionNE::FunctionNE(const FunctionNE& other) :
-    FunctionExpression(other.name_, other.args_), tmp_(other.tmp_) {}
+FunctionNE::FunctionNE(const FunctionNE& other) : FunctionExpression(other.name_, other.args_), tmp_(other.tmp_) {}
 
 FunctionNE::FunctionNE(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args), tmp_(0) {}

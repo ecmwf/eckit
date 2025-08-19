@@ -31,6 +31,7 @@ class PooledHandle;
 
 class PartFileHandle : public DataHandle {
 public:  // methods
+
     PartFileHandle(const PathName&, const OffsetList&, const LengthList&);
     PartFileHandle(const PathName&, const Offset&, const Length&);
     explicit PartFileHandle(Stream&);
@@ -82,6 +83,7 @@ public:  // methods
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:  // members
+
     PathName path_;
     std::unique_ptr<PooledHandle> handle_;
     long long pos_;
@@ -90,6 +92,7 @@ private:  // members
     LengthList length_;
 
 private:  // methods
+
     long read1(char*, long);
 
     static ClassSpec classSpec_;

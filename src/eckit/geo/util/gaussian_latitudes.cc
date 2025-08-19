@@ -16,8 +16,8 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util.h"
 
 
@@ -27,7 +27,7 @@ namespace eckit::geo::util {
 const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
     ASSERT(N > 0);
 
-    using cache_t = CacheT<std::pair<size_t, bool>, std::vector<double>>;
+    using cache_t = cache::MemoryCacheT<std::pair<size_t, bool>, std::vector<double>>;
     const cache_t::key_type key{N, increasing};
 
     static cache_t cache;
@@ -51,8 +51,8 @@ const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
             }
 
             for (size_t j = 2; j <= i - (i % 2); j += 2) {
-                zfn[i - j] = zfn[i - j + 2] * static_cast<double>((j - 1) * (2 * i - j + 2))
-                             / static_cast<double>(j * (2 * i - j + 1));
+                zfn[i - j] = zfn[i - j + 2] * static_cast<double>((j - 1) * (2 * i - j + 2)) /
+                             static_cast<double>(j * (2 * i - j + 1));
             }
         }
 
@@ -94,8 +94,8 @@ const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
         }
 
         if (!converged) {
-            throw BadValue("Could not calculate latitude within accuracy/iterations: " + std::to_string(eps) + "/"
-                               + std::to_string(Nmax),
+            throw BadValue("Could not calculate latitude within accuracy/iterations: " + std::to_string(eps) + "/" +
+                               std::to_string(Nmax),
                            Here());
         }
 

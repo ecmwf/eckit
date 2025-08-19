@@ -18,7 +18,7 @@
 namespace eckit::geo {
 
 
-using Renumber = std::vector<size_t>;
+using Reorder = std::vector<size_t>;
 
 
 }  // namespace eckit::geo

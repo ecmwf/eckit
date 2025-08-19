@@ -11,9 +11,11 @@
 
 
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/ORCA.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -22,12 +24,15 @@
 namespace eckit::geo::test {
 
 
-static const Grid::uid_t UID = "d5bde4f52ff3a9bea5629cd9ac514410";
+static const std::string GRID = "ORCA2_T";
+static const Grid::uid_t UID  = "d5bde4f52ff3a9bea5629cd9ac514410";
 static const std::vector<long> SHAPE{182, 149};
 
 
 CASE("caching") {
     if (LibEcKitGeo::caching()) {
+        using Cache = cache::MemoryCache;
+
         SECTION("Grid::build_from_uid") {
             spec::Custom spec({{"uid", UID}});
 
@@ -69,7 +74,7 @@ CASE("spec") {
 
     grid::ORCA grid3(UID);
 
-    const std::string expected_spec_str = R"({"grid":"ORCA2_T","uid":")" + UID + R"("})";
+    const std::string expected_spec_str = R"({"grid":")" + GRID + R"("})";
     Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
 
     EXPECT(grid3.uid() == UID);
@@ -78,7 +83,7 @@ CASE("spec") {
 
     EXPECT(grid1->spec_str() == grid2->spec_str());
 
-    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "ORCA2_T"}})));
+    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", GRID}})));
 
     EXPECT(grid4->spec_str() == expected_spec_str);
 
@@ -91,7 +96,7 @@ CASE("spec") {
 CASE("equals") {
     std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + UID + "}"));
     std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", UID}})));
-    std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", "ORCA2_T"}})));
+    std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", GRID}})));
     grid::ORCA grid4(UID);
 
     EXPECT(*grid1 == *grid2);

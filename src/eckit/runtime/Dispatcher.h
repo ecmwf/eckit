@@ -67,6 +67,7 @@ struct DequeuePicker {
 template <class Traits>
 class Dispatcher : public Configurable {
 public:
+
     typedef typename Traits::Request Request;
     typedef typename Traits::Handler Handler;
 
@@ -119,6 +120,7 @@ public:
     virtual std::string name() const { return name_; }
 
 protected:
+
     // -- Members
 
     // Request queue
@@ -144,6 +146,7 @@ protected:
     mutable Mutex lock_;
 
 private:
+
     // No copy allowed
 
     Dispatcher(const Dispatcher<Traits>&);
@@ -173,6 +176,7 @@ private:
 template <class Traits>
 class DispatchTask : public Thread, public Monitorable {
 public:
+
     typedef typename Traits::Handler Handler;
     typedef typename Traits::Request Request;
 
@@ -184,6 +188,7 @@ public:
         id_(id) {}
 
 private:
+
     // -- Members
 
     // Dispatcher owning this thread
@@ -225,8 +230,8 @@ class DispatchInfo : public Thread {
     void run() override;
 
 public:
-    DispatchInfo(Dispatcher<Traits>& owner) :
-        owner_(owner) {}
+
+    DispatchInfo(Dispatcher<Traits>& owner) : owner_(owner) {}
 };
 
 //=================================================================

@@ -22,6 +22,7 @@ namespace eckit {
 
 class AutoAlarm {
 public:
+
     // -- Contructors
 
     AutoAlarm(int, bool = false);
@@ -35,6 +36,7 @@ public:
     static bool caught() { return caught_; }
 
 private:
+
     // No copy allowed
 
     AutoAlarm(const AutoAlarm&);

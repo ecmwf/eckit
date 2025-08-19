@@ -17,6 +17,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
+#include "eckit/option/SimpleOption.h"
 #include "eckit/parser/YAMLParser.h"
 
 
@@ -24,10 +25,16 @@ namespace eckit {
 
 class EckitGridSpec final : public EckitTool {
 public:
-    EckitGridSpec(int argc, char** argv) : EckitTool(argc, argv) {}
+
+    EckitGridSpec(int argc, char** argv) : EckitTool(argc, argv) {
+        options_.push_back(new option::SimpleOption<bool>("shape", "Grid shape"));
+    }
 
 private:
+
     void execute(const option::CmdArgs& args) override {
+        auto shape = args.getBool("shape", false);
+
         std::string user;
 
         if (args.count() == 0) {
@@ -42,8 +49,13 @@ private:
         }
 
         std::unique_ptr<const geo::Grid> grid(geo::GridFactory::make_from_string(user));
-        auto spec = grid->spec_str();
-        Log::info() << spec << std::endl;
+
+        if (shape) {
+            Log::info() << grid->shape() << std::endl;
+            return;
+        }
+
+        Log::info() << grid->spec_str() << std::endl;
     }
 
     void usage(const std::string& tool) const override {

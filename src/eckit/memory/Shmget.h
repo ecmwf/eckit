@@ -25,6 +25,7 @@ namespace eckit {
 class Shmget {
 
 public:  // methods
+
     static int shmget(key_t key, size_t size, int shmflg);
     static void* shmat(int shmid, const void* shmaddr, int shmflg);
     static int shmdt(const void* shmaddr);

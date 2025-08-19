@@ -24,6 +24,7 @@ namespace eckit::option {
 
 class Separator : public Option {
 public:
+
     // -- Exceptions
     // None
 
@@ -58,6 +59,7 @@ public:
     // None
 
 protected:
+
     // -- Members
 
     // -- Methods
@@ -74,6 +76,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     Separator(const Separator&);

@@ -16,14 +16,32 @@
 namespace eckit::geo::exception {
 
 
-ProjectionError::ProjectionError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    reason("ProjectionError: [" + what + "], in " + loc.asString());
-};
+AreaError::AreaError(const std::string& what, const CodeLocation& location) :
+    Exception("AreaError: [" + what + "]", location) {}
 
 
-SpecError::SpecError(const std::string& what, const CodeLocation& loc) : Exception(loc) {
-    reason("SpecError: [" + what + "], in " + loc.asString());
-};
+FigureError::FigureError(const std::string& what, const CodeLocation& location) :
+    Exception("FigureError: [" + what + "]", location) {}
+
+
+GridError::GridError(const std::string& what, const CodeLocation& location) :
+    Exception("GridError: [" + what + "]", location) {}
+
+
+OrderError::OrderError(const std::string& what, const CodeLocation& location) :
+    Exception("OrderError: [" + what + "]", location) {}
+
+
+ProjectionError::ProjectionError(const std::string& what, const CodeLocation& location) :
+    Exception("ProjectionError: [" + what + "]", location) {}
+
+
+SpecError::SpecError(const std::string& what, const CodeLocation& location) :
+    Exception("SpecError: [" + what + "]", location) {}
+
+
+SearchError::SearchError(const std::string& what, const CodeLocation& location) :
+    Exception("SearchError: [" + what + "]", location) {}
 
 
 }  // namespace eckit::geo::exception

@@ -24,6 +24,7 @@ namespace type {
 
 class SQLDouble : public SQLType {
 public:
+
     SQLDouble(const std::string&);
     ~SQLDouble();
 
@@ -32,6 +33,7 @@ public:
     void output(SQLOutput&, double, bool) const override;
 
 private:
+
     // No copy allowed
     SQLDouble(const SQLDouble&);
     SQLDouble& operator=(const SQLDouble&);

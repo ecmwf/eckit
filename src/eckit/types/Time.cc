@@ -9,7 +9,9 @@
  */
 
 #include <cctype>
+#ifdef 0
 #include <charconv>
+#endif
 #include <cmath>
 #include <cstddef>
 #include <string>
@@ -151,11 +153,11 @@ long s2l(const std::string_view& str) {
         return 0;
     }
     long result;
-#ifdef __clang__
-    result = std::stol(std::string(str));  // Clang does not support std::from_chars
-#else
+#ifdef 0
     auto [ptr, err] = std::from_chars(str.data(), str.data() + str.size(), result);
     ASSERT(err == std::errc());
+#else
+    result = std::stol(std::string(str));  // Clang does not support std::from_chars
 #endif
     return result;
 }
@@ -164,11 +166,11 @@ double s2d(const std::string_view& str) {
         return 0;
     }
     double result;
-#ifdef __clang__
-    result = std::stod(std::string(str));  // Clang does not support std::from_chars
-#else
+#ifdef 0
     auto [ptr, err] = std::from_chars(str.data(), str.data() + str.size(), result);
     ASSERT(err == std::errc());
+#else
+    result = std::stod(std::string(str));  // Clang does not support std::from_chars
 #endif
     return result;
 }

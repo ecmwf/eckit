@@ -9,7 +9,7 @@
  */
 
 #include <cctype>
-#ifdef 0
+#if 0
 #include <charconv>
 #endif
 #include <cmath>
@@ -153,7 +153,7 @@ long s2l(const std::string_view& str) {
         return 0;
     }
     long result;
-#ifdef 0
+#if 0
     auto [ptr, err] = std::from_chars(str.data(), str.data() + str.size(), result);
     ASSERT(err == std::errc());
 #else
@@ -166,7 +166,7 @@ double s2d(const std::string_view& str) {
         return 0;
     }
     double result;
-#ifdef 0
+#if 0
     auto [ptr, err] = std::from_chars(str.data(), str.data() + str.size(), result);
     ASSERT(err == std::errc());
 #else

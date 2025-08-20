@@ -25,13 +25,9 @@ namespace {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-// const std::regex hhmmss_("^([0-9]+):([0-5]?[0-9])(:[0-5]?[0-9])?$");
 const std::regex ddhhmmss_("^-?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?$");
 
-// DIGITS: "^-?[0-9]+$"
-// FLOAT:  "^-?[0-9]*\\.[0-9]+$"
-enum class TimeFormat
-{
+enum class TimeFormat {
     INVALID,
     OTHER,
     COLON,
@@ -40,9 +36,9 @@ enum class TimeFormat
 };
 
 TimeFormat checkTimeFormat(const std::string_view time) {
-    bool hasDigit   = false;
-    bool hasDecimal = false;
-    bool hasColon   = false;
+    bool hasDigit    = false;
+    bool hasDecimal  = false;
+    size_t numColons = 0;
 
     const std::size_t start = (time[0] == '-') ? 1 : 0;
 
@@ -54,7 +50,10 @@ TimeFormat checkTimeFormat(const std::string_view time) {
             hasDecimal = true;
         }
         else if (time[i] == ':') {
-            hasColon = true;
+            if (numColons >= 2 || (i > 0 && time[i - 1] == ':')) {
+                return TimeFormat::INVALID;
+            }
+            numColons++;
         }
         else if (isdigit(time[i]) == 0) {
             return TimeFormat::OTHER;
@@ -67,8 +66,7 @@ TimeFormat checkTimeFormat(const std::string_view time) {
     if (!hasDigit) {
         return TimeFormat::INVALID;
     }
-
-    return hasColon ? TimeFormat::COLON : (hasDecimal ? TimeFormat::DECIMAL : TimeFormat::DIGITS);
+    return numColons > 0 ? TimeFormat::COLON : (hasDecimal ? TimeFormat::DECIMAL : TimeFormat::DIGITS);
 }
 
 void printTime(std::ostream& s, long n) {
@@ -98,10 +96,8 @@ Time::Time(const std::string& s, bool extended) {
     long hh = 0;
     long dd = 0;
 
-    const auto format = checkTimeFormat(s);
-
     switch (checkTimeFormat(s)) {
-        case TimeFormat::DIGITS : {
+        case TimeFormat::DIGITS: {
             long t   = std::stol(s);
             int sign = (s[0] == '-' ? 1 : 0);
             if (extended || s.length() <= 2 + sign) {  // cases: h, hh, (or hhh..h for step parsing)
@@ -118,10 +114,9 @@ Time::Time(const std::string& s, bool extended) {
                     ss = t % 100;
                 }
             }
-
             break;
         }
-        case TimeFormat::DECIMAL : {
+        case TimeFormat::DECIMAL: {
             long sec = std::lround(std::stod(s) * 3600);
             hh       = sec / 3600;
             sec -= hh * 3600;
@@ -131,21 +126,24 @@ Time::Time(const std::string& s, bool extended) {
 
             break;
         }
-        case TimeFormat::COLON : {
+        case TimeFormat::COLON: {
             Tokenizer parse(":");
             std::vector<std::string> result;
 
             parse(s, result);
-            ASSERT(result.size() == 2 || result.size() == 3);
+            if (result.size() < 2 || result.size() > 3) {
+                throw BadTime("Wrong input for time: " + s);
+            }
 
             hh = std::stol(result[0]);
             mm = std::stol(result[1]);
             if (result.size() == 3)
                 ss = std::stol(result[2]);
-            
+
             break;
         }
-        case TimeFormat::OTHER : {
+        case TimeFormat::OTHER: {
+            std::smatch m;
             if (std::regex_match(s, m, ddhhmmss_)) {
                 for (int i = 1; i < m.size(); i++) {
                     if (m[i].matched) {
@@ -182,7 +180,7 @@ Time::Time(const std::string& s, bool extended) {
                 throw BadTime("Wrong input for time: " + s);
             }
         }
-        case TimeFormat::INVALID :
+        case TimeFormat::INVALID:
         default:
             throw BadTime("Unkown format for time: " + s);
     }

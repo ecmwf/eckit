@@ -77,10 +77,10 @@ const std::vector<double>& gaussian_quadrature_weights(size_t N) {
             auto f  = 0.5 * zzfn[0];  // normalised ordinary Legendre polynomial == \overbar{P_n}^0
             auto fp = 0.;             // normalised derivative == d/d\theta(\overbar{P_n}^0)
 
-            for (size_t i = 1; i <= N; ++i) {
-                const auto i2 = static_cast<double>(i * 2);
-                f += zzfn[i] * std::cos(i2 * x);
-                fp -= zzfn[i] * std::sin(i2 * x) * i2;
+            for (size_t j = 1; j <= N; ++j) {
+                const auto i2 = static_cast<double>(j * 2);
+                f += zzfn[j] * std::cos(i2 * x);
+                fp -= zzfn[j] * std::sin(i2 * x) * i2;
             }
 
             auto dx = -f / fp;

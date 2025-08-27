@@ -8,33 +8,185 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cctype>
+#if 0
+#include <charconv>
+#endif
 #include <cmath>
-#include <regex>
+#include <cstddef>
+#include <string>
+#include <string_view>
 
-#include "eckit/eckit.h"
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/types/Time.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace {
-static thread_local std::regex digits_time_("^-?[0-9]+$");
-static thread_local std::regex float_hours_("^-?[0-9]*\\.[0-9]+$");
-static thread_local std::regex hhmmss_("^([0-9]+):([0-5]?[0-9])(:[0-5]?[0-9])?$");
-static thread_local std::regex ddhhmmss_("^-?([0-9]+[dD])?([0-9]+[hH])?([0-9]+[mM])?([0-9]+[sS])?$");
-}  // namespace
-
-namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-inline void printTime(std::ostream& s, long n) {
+enum class TimeFormat {
+    INVALID,
+    UNITS,
+    COLON,
+    DIGITS,
+    DECIMAL
+};
+
+struct tokenized_time {
+    TimeFormat type;
+    bool minus{false};
+    std::string_view integers[4];
+};
+
+tokenized_time checkTimeFormat(const std::string_view time) {
+    tokenized_time tt;
+    tt.minus     = time[0] == '-';
+    size_t start = tt.minus ? 1 : 0;
+
+    bool hasDigit   = false;
+    bool hasDecimal = false;
+    bool hasColon   = false;
+    bool hasUnits   = false;
+
+    size_t tokenId    = 0;
+    size_t tokenStart = start;
+
+    for (auto i = start; i < time.length(); i++) {
+        switch (std::tolower(time[i])) {
+            case 'd': {
+                if (hasColon || hasDecimal || tokenId > 0) {
+                    tt.type = TimeFormat::INVALID;
+                    return tt;
+                }
+                hasUnits       = true;
+                tt.type        = TimeFormat::UNITS;
+                tt.integers[0] = time.substr(tokenStart, i - tokenStart);
+                tokenId        = 1;
+                tokenStart     = i + 1;
+                break;
+            }
+            case 'h': {
+                if (hasColon || hasDecimal || tokenId > 1) {
+                    tt.type = TimeFormat::INVALID;
+                    return tt;
+                }
+                hasUnits       = true;
+                tt.type        = TimeFormat::UNITS;
+                tt.integers[1] = time.substr(tokenStart, i - tokenStart);
+                tokenId        = 2;
+                tokenStart     = i + 1;
+                break;
+            }
+            case 'm': {
+                if (hasColon || hasDecimal || tokenId > 2) {
+                    tt.type = TimeFormat::INVALID;
+                    return tt;
+                }
+                hasUnits       = true;
+                tt.type        = TimeFormat::UNITS;
+                tt.integers[2] = time.substr(tokenStart, i - tokenStart);
+                tokenId        = 3;
+                tokenStart     = i + 1;
+                break;
+            }
+            case 's': {
+                if (hasColon || hasDecimal || tokenId > 3) {
+                    tt.type = TimeFormat::INVALID;
+                    return tt;
+                }
+                hasUnits       = true;
+                tt.type        = TimeFormat::UNITS;
+                tt.integers[3] = time.substr(tokenStart, i - tokenStart);
+                tokenId        = 4;
+                tokenStart     = i + 1;
+                break;
+            }
+            case '.': {
+                if (hasDecimal || hasColon || hasUnits || i == time.length() - 1) {
+                    tt.type = TimeFormat::INVALID;
+                    return tt;
+                }
+                hasDecimal = true;
+                break;
+            }
+            case ':': {
+                if (!hasColon) {  // First colon, skip the dd token
+                    tt.type  = TimeFormat::COLON;
+                    hasColon = true;
+                    tokenId  = 1;
+                }
+                if (tokenId > 2 || i <= tokenStart) {
+                    tt.type = TimeFormat::INVALID;
+                    return tt;
+                }
+                tt.integers[tokenId] = time.substr(tokenStart, i - tokenStart);
+
+                tokenId++;
+                tokenStart = i + 1;
+                break;
+            }
+            default: {
+                if (!isdigit(time[i])) {
+                    tt.type = TimeFormat::INVALID;
+                    return tt;
+                }
+            }
+        }
+    }
+    if (hasColon) {
+        if (tokenStart < time.length()) {
+            tt.integers[tokenId] = time.substr(tokenStart, time.length() - tokenStart);
+        }
+    }
+    else if (!hasUnits) {
+        tt.integers[1] = time.substr(tokenStart);
+        tt.type        = hasDecimal ? TimeFormat::DECIMAL : TimeFormat::DIGITS;
+    }
+    return tt;
+}
+
+long s2l(const std::string_view& str) {
+    if (str.empty()) {
+        return 0;
+    }
+    long result;
+#if 0
+    auto [ptr, err] = std::from_chars(str.data(), str.data() + str.size(), result);
+    ASSERT(err == std::errc());
+#else
+    result = std::stol(std::string(str));  // Clang does not support std::from_chars
+#endif
+    return result;
+}
+double s2d(const std::string_view& str) {
+    if (str.empty()) {
+        return 0;
+    }
+    double result;
+#if 0
+    auto [ptr, err] = std::from_chars(str.data(), str.data() + str.size(), result);
+    ASSERT(err == std::errc());
+#else
+    result = std::stod(std::string(str));  // Clang does not support std::from_chars
+#endif
+    return result;
+}
+
+void printTime(std::ostream& s, long n) {
     if (n < 10) {
         s << '0';
     }
     s << n;
 }
+
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
+namespace eckit {
 
 Time::Time(long seconds, bool extended) : seconds_(static_cast<Second>(seconds)) {
     if ((seconds >= 86400 && !extended) || seconds < 0) {
@@ -49,93 +201,62 @@ Time::Time(const std::string& s, bool extended) {
     long mm = 0;
     long hh = 0;
     long dd = 0;
-    std::smatch m;
 
-    if (std::regex_match(s, m, digits_time_)) {
-        long t   = std::stol(s);
-        int sign = (s[0] == '-' ? 1 : 0);
-        if (extended || s.length() <= 2 + sign) {  // cases: h, hh, (or hhh..h for step parsing)
-            hh = t;
-        }
-        else {
-            if (s.length() <= 4 + sign) {  // cases: hmm, hhmm
-                hh = t / 100;
-                mm = t % 100;
+    auto tt = checkTimeFormat(s);
+
+    switch (tt.type) {
+        case TimeFormat::DIGITS: {
+            long t   = (tt.minus ? -1 : 1) * s2l(tt.integers[1]);
+            int sign = (tt.minus ? 1 : 0);
+            if (extended || s.length() <= 2 + sign) {  // cases: h, hh, (or hhh..h for step parsing)
+                hh = t;
             }
-            else {  // cases: hmmss, hhmmss
-                hh = t / 10000;
-                mm = (t / 100) % 100;
-                ss = t % 100;
+            else {
+                if (s.length() <= 4 + sign) {  // cases: hmm, hhmm
+                    hh = t / 100;
+                    mm = t % 100;
+                }
+                else {  // cases: hmmss, hhmmss
+                    hh = t / 10000;
+                    mm = (t / 100) % 100;
+                    ss = t % 100;
+                }
             }
+            break;
         }
-    }
-    else {
-        if (std::regex_match(s, m, float_hours_)) {
-            long sec = std::round(std::stod(s) * 3600);
+        case TimeFormat::DECIMAL: {
+            long sec = std::lround((tt.minus ? -1 : 1) * s2d(tt.integers[1]) * 3600);
             hh       = sec / 3600;
             sec -= hh * 3600;
             mm = sec / 60;
             sec -= mm * 60;
             ss = sec;
+            break;
         }
-        else {
-            if (std::regex_match(s, m, hhmmss_)) {
-                for (int i = 1; i < m.size(); i++) {
-                    if (m[i].matched) {
-                        switch (i) {
-                            case 1:
-                                hh = std::stol(m[i].str());
-                                break;
-                            case 2:
-                                mm = std::stol(m[i].str());
-                                break;
-                            case 3:
-                                std::string aux = m[i].str();
-                                aux.erase(0, 1);
-                                ss = std::stol(aux);
-                                break;
-                        }
-                    }
-                }
+        case TimeFormat::COLON:
+            hh = s2l(tt.integers[1]);
+            mm = s2l(tt.integers[2]);
+            ss = s2l(tt.integers[3]);
+            break;
+        case TimeFormat::UNITS:
+            dd = s2l(tt.integers[0]);
+            hh = s2l(tt.integers[1]);
+            mm = s2l(tt.integers[2]);
+            ss = s2l(tt.integers[3]);
+
+            ss += 60 * (mm + 60 * (hh + 24 * dd));
+            if (tt.minus) {
+                ss = -ss;
             }
-            else {
-                if (std::regex_match(s, m, ddhhmmss_)) {
-                    for (int i = 1; i < m.size(); i++) {
-                        if (m[i].matched) {
-                            std::string aux = m[i].str();
-                            aux.pop_back();
-                            long t = std::stol(aux);
-                            switch (i) {
-                                case 1:
-                                    dd = t;
-                                    break;
-                                case 2:
-                                    hh = t;
-                                    break;
-                                case 3:
-                                    mm = t;
-                                    break;
-                                case 4:
-                                    ss = t;
-                            }
-                        }
-                    }
-                    ss += 60 * (mm + 60 * (hh + 24 * dd));
-                    if (s[0] == '-') {
-                        ss = -ss;
-                    }
-                    dd = ss / 86400;
-                    hh = (ss / 3600) % 24;
-                    mm = (ss / 60) % 60;
-                    ss = ss % 60;
-                }
-                else {
-                    std::string msg = "Wrong input for time: ";
-                    msg += s;
-                    throw BadTime(msg);
-                }
-            }
-        }
+            dd = ss / 86400;
+            hh = (ss / 3600) % 24;
+            mm = (ss / 60) % 60;
+            ss = ss % 60;
+
+            break;
+        case TimeFormat::INVALID:
+        default:
+            throw BadTime("Unkown format for time: " + s);
     }
 
     if (mm >= 60 || ss >= 60 || (!extended && (hh >= 24 || dd > 0 || hh < 0 || mm < 0 || ss < 0))) {

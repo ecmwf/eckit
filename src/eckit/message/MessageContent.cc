@@ -103,13 +103,13 @@ const void* MessageContent::data() const {
     throw eckit::SeriousBug(oss.str());
 }
 
-MessageContent* MessageContent::transform(const Transformer&) const {
+void MessageContent::transform(const Transformer&) {
     std::ostringstream oss;
     oss << "Not implemented " << *this << " tranform(Transformer)";
     throw eckit::SeriousBug(oss.str());
 }
 
-MessageContent* MessageContent::transform(const StringDict&) const {
+void MessageContent::transform(const StringDict&) {
     std::ostringstream oss;
     oss << "Not implemented " << *this << " tranform(StringDict)";
     throw eckit::SeriousBug(oss.str());

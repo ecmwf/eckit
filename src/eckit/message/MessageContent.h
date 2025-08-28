@@ -77,8 +77,8 @@ public:
 
     virtual const void* data() const;
 
-    virtual MessageContent* transform(const Transformer&) const;
-    virtual MessageContent* transform(const eckit::StringDict&) const;
+    virtual void transform(const Transformer&);
+    virtual void transform(const eckit::StringDict&);
 
 private:
 

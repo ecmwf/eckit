@@ -12,6 +12,8 @@
 #include <memory>
 #include <string>
 
+#include <lustre/lustreapi.h>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
@@ -77,6 +79,9 @@ public:
     void doClose() {
         if (handle_) {
             LOG_DEBUG_LIB(LibEcKit) << "PooledHandle::close(" << *handle_ << ")" << std::endl;
+            int fd = ::fileno(handle_->stdioStream());
+            int rc = llapi_group_unlock(fd, 7777);
+            ASSERT(rc == 0);
             handle_->close();
             handle_.reset();
         }
@@ -114,6 +119,9 @@ public:
             ASSERT(handle_);
             LOG_DEBUG_LIB(LibEcKit) << "PooledHandle::openForRead(" << *handle_ << ")" << std::endl;
             estimate_ = handle_->openForRead();
+            int fd = ::fileno(handle_->stdioStream());
+            int rc = llapi_group_lock(fd, 7777);
+            ASSERT(rc == 0);
         }
 
         s->second.opened_   = true;

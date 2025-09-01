@@ -339,6 +339,16 @@ ecbuild_add_option( FEATURE PROJ
                     DESCRIPTION "support PROJ-based projections"
                     REQUIRED_PACKAGES "PROJ 9.1.1" )
 
+
+### support for Lustre API control of file stripping
+
+find_package( LUSTREAPI QUIET )
+
+ecbuild_add_option( FEATURE LUSTRE  # option defined in fdb5_config.h
+                    CONDITION LUSTREAPI_FOUND
+                    DEFAULT ON
+                    DESCRIPTION "Support for Lustre API control of file stripping " )
+
 ### c math library, needed when including "math.h"
 
 find_package( CMath )

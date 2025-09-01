@@ -34,6 +34,7 @@ public:
     void advance(const Length&);
 
     const std::string& path() const { return name_; }
+    const FILE* stdioStream() const { return file_; }
 
     // -- Overridden methods
 

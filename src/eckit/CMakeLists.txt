@@ -940,6 +940,7 @@ ecbuild_add_library(
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
+              "${LUSTREAPI_INCLUDE_DIRS}"
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
@@ -951,6 +952,7 @@ ecbuild_add_library(
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+              "${LUSTREAPI_LIBRARIES}"
 
           PUBLIC_LIBS
               ${CMATH_LIBRARIES}

@@ -12,6 +12,8 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <lustre/lustreapi.h>
+
 #include "eckit/io/FDataSync.h"
 #include "eckit/io/PooledFileDescriptor.h"
 
@@ -33,6 +35,8 @@ void PooledFileDescriptor::open() {
     else {
         SYSCALL2(fd_ = ::open(path_.localPath(), O_RDWR | O_CREAT, 0777), path_);
     }
+    int rc = llapi_group_lock(fd_, 7777);
+    ASSERT(rc == 0);
 }
 
 void PooledFileDescriptor::close() {
@@ -40,6 +44,8 @@ void PooledFileDescriptor::close() {
         return;
     }
 
+    int rc = llapi_group_unlock(fd_, 7777);
+    ASSERT(rc == 0);
     if (readOnly_) {
         ASSERT(file_);
         file_->close();

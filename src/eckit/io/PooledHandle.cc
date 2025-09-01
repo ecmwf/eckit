@@ -19,9 +19,14 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/FileHandle.h"
 #include "eckit/io/PooledHandle.h"
 #include "eckit/utils/MD5.h"
 
+extern "C" {
+int eckit_lustreapi_group_lock(const char* path, int fd, int gid);
+int eckit_lustreapi_group_unlock(const char* path, int fd, int gid);
+}
 
 namespace eckit {
 
@@ -79,8 +84,8 @@ public:
     void doClose() {
         if (handle_) {
             LOG_DEBUG_LIB(LibEcKit) << "PooledHandle::close(" << *handle_ << ")" << std::endl;
-            int fd = ::fileno(handle_->stdioStream());
-            int rc = llapi_group_unlock(fd, 7777);
+            int fd = ::fileno(dynamic_cast<eckit::FileHandle*>(handle_.get())->stdioStream());
+            int rc = eckit_lustreapi_group_unlock(fd, 7777);
             ASSERT(rc == 0);
             handle_->close();
             handle_.reset();
@@ -119,8 +124,8 @@ public:
             ASSERT(handle_);
             LOG_DEBUG_LIB(LibEcKit) << "PooledHandle::openForRead(" << *handle_ << ")" << std::endl;
             estimate_ = handle_->openForRead();
-            int fd = ::fileno(handle_->stdioStream());
-            int rc = llapi_group_lock(fd, 7777);
+            int fd = ::fileno(dynamic_cast<eckit::FileHandle*>(handle_.get())->stdioStream());
+            int rc = eckit_lustreapi_group_lock(fd, 7777);
             ASSERT(rc == 0);
         }
 

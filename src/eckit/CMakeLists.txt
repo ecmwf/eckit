@@ -124,6 +124,7 @@ list( APPEND eckit_container_srcs
     container/sptree/SPValue.h
 )
 
+list( APPEND eckit_io_srcs io/eckit_lustreapi_group_lock.c )
 list( APPEND eckit_io_srcs
     io/AIOHandle.cc
     io/AIOHandle.h

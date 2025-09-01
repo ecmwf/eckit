@@ -17,6 +17,11 @@
 #include "eckit/io/FDataSync.h"
 #include "eckit/io/PooledFileDescriptor.h"
 
+extern "C" {
+int eckit_lustreapi_group_lock(const char* path, int fd, int gid);
+int eckit_lustreapi_group_unlock(const char* path, int fd, int gid);
+}
+
 namespace eckit {
 
 PooledFileDescriptor::PooledFileDescriptor(const PathName& path, bool readOnly) :
@@ -35,7 +40,7 @@ void PooledFileDescriptor::open() {
     else {
         SYSCALL2(fd_ = ::open(path_.localPath(), O_RDWR | O_CREAT, 0777), path_);
     }
-    int rc = llapi_group_lock(fd_, 7777);
+    int rc = eckit_lustreapi_group_lock(fd_, 7777);
     ASSERT(rc == 0);
 }
 
@@ -44,7 +49,7 @@ void PooledFileDescriptor::close() {
         return;
     }
 
-    int rc = llapi_group_unlock(fd_, 7777);
+    int rc = eckit_lustreapi_group_unlock(fd_, 7777);
     ASSERT(rc == 0);
     if (readOnly_) {
         ASSERT(file_);

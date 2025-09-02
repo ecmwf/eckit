@@ -12,8 +12,6 @@
 #include <memory>
 #include <string>
 
-#include <lustre/lustreapi.h>
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
@@ -24,8 +22,8 @@
 #include "eckit/utils/MD5.h"
 
 extern "C" {
-int eckit_lustreapi_group_lock(const char* path, int fd, int gid);
-int eckit_lustreapi_group_unlock(const char* path, int fd, int gid);
+int eckit_lustreapi_group_lock(int fd, int gid);
+int eckit_lustreapi_group_unlock(int fd, int gid);
 }
 
 namespace eckit {

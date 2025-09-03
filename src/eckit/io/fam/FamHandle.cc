@@ -15,7 +15,9 @@
 
 #include "eckit/io/fam/FamHandle.h"
 
+#include <algorithm>
 #include <ostream>
+#include <string>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
@@ -23,6 +25,7 @@
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamObjectName.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {
@@ -72,7 +75,8 @@ Length FamHandle::size() {
 Length FamHandle::openForRead() {
     open(Mode::READ);
     handle_ = name_.lookup();
-    return estimate();
+    len_    = size();
+    return len_;
 }
 
 void FamHandle::openForWrite(const Length& length) {
@@ -95,13 +99,16 @@ void FamHandle::openForWrite(const Length& length) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-long FamHandle::read(void* buffer, const long length) {
+long FamHandle::read(void* buffer, long length) {
     ASSERT(mode_ == Mode::READ);
     ASSERT(0 <= pos_);
 
     if (size() <= pos_) {
         return 0;
     }
+
+    // Adjust length to read only up to the end of the object
+    length = std::min<long>(len_ - pos_, length);
 
     handle_->get(buffer, pos_, length);
 

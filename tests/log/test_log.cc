@@ -12,6 +12,8 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
+#include "eckit/log/Seconds.h"
+#include "eckit/types/DateTime.h"
 #include "eckit/runtime/Tool.h"
 
 #include "eckit/testing/Test.h"
@@ -94,6 +96,32 @@ CASE("test_bytes") {
     EXPECT("99Y" == b.shorten());
 }
 //----------------------------------------------------------------------------------------------------------------------
+
+CASE("test_seconds") {
+    double time = 4.0 + (1.0/3.0);
+    eckit::Seconds s(std::lround(time* 3600.));
+    EXPECT_EQUAL("4 hours 20 minutes", std::string(s));
+    eckit::Seconds sc(std::lround(time* 3600.), true);
+    EXPECT_EQUAL("4h20m0s", std::string(sc));
+}
+
+CASE("test_datetime") {
+    double time = 4.0 + (1.0/3.0);
+    {
+        eckit::DateTime dt(Date(2016, 3, 31), Time(0,0,0));
+        EXPECT_EQUAL("2016-03-31T00:00:00Z",dt.iso(true));
+
+        dt = dt + eckit::Seconds(time * 3600.);
+        // not desirable
+        EXPECT_EQUAL("2016-03-31T04:19:59Z",dt.iso(true));
+    }
+    {
+        eckit::DateTime dt(Date(2016, 3, 31), Time(0,0,0));
+
+        dt = dt + eckit::Seconds(std::lround(time * 3600.));
+        EXPECT_EQUAL("2016-03-31T04:20:00Z",dt.iso(true));
+    }
+}
 
 }  // namespace eckit::test
 

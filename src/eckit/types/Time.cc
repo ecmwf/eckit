@@ -195,6 +195,8 @@ Time::Time(Second seconds, bool extended) : seconds_(seconds) {
         throw BadTime(msg);
     }
 }
+Time::Time(long seconds, bool extended) : Time(static_cast<Second>(seconds), extended) {}
+Time::Time(int seconds, bool extended) : Time(static_cast<Second>(seconds), extended) {}
 
 Time::Time(const std::string& s, bool extended) {
     long ss = 0;

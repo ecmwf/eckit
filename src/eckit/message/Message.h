@@ -51,8 +51,8 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Message represents an immutable data object with metadata attached
-/// Modifications to messages create new messages via transformation actions
+/// Message represents a data object with metadata attached
+/// Applying a transformation to a message modifies it in place
 class Message {
 public:
 

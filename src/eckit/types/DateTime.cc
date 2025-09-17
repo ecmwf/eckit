@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cmath>
 #include <locale>
 
 #include "eckit/eckit.h"

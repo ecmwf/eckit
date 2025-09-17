@@ -125,8 +125,8 @@ Second DateTime::operator-(const DateTime& other) const {
 }
 
 DateTime DateTime::operator+(const Second& s) const {
-    Date d = date();
-    double t = time();
+    Date d    = date();
+    double t  = time();
     long days = std::lround(s) / (24 * 3600);
     d += days;
     t += s - days * (24 * 3600);

@@ -188,8 +188,8 @@ void printTime(std::ostream& s, long n) {
 
 namespace eckit {
 
-Time::Time(long seconds, bool extended) : seconds_(static_cast<Second>(seconds)) {
-    if ((seconds >= 86400 && !extended) || seconds < 0) {
+Time::Time(Second seconds, bool extended) : seconds_(seconds) {
+    if ((seconds >= Second{86400} && !extended) || seconds < Second{0}) {
         std::string msg = "Time in seconds must be positive and less than 86400 seconds (24h): ";
         msg += std::to_string(seconds);
         throw BadTime(msg);
@@ -313,17 +313,17 @@ bool Time::operator!=(const Time& other) const {
 }
 
 long Time::hours() const {
-    long l = seconds_;
+    long l = std::lround(seconds_);
     return l / 3600;
 }
 
 long Time::minutes() const {
-    long l = seconds_;
+    long l = std::lround(seconds_);
     return (l % 3600) / 60;
 }
 
 long Time::seconds() const {
-    long l = seconds_;
+    long l = std::lround(seconds_);
     return l % 60;
 }
 

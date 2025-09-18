@@ -36,7 +36,7 @@ typedef std::vector<Ordinal> OrdinalList;
 typedef std::vector<std::string> StringList;
 typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringDict;
-typedef std::vector<std::pair<std::string,std::string>> OrderedStringDict;
+typedef std::vector<std::pair<std::string, std::string>> OrderedStringDict;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -110,7 +110,7 @@ struct VectorPrintSelector<double> {
     typedef VectorPrintSimple selector;
 };
 template <typename K, typename V>
-struct VectorPrintSelector<std::pair<K, V> > {
+struct VectorPrintSelector<std::pair<K, V>> {
     typedef VectorPrintSimple selector;
 };
 

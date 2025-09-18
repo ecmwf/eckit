@@ -60,8 +60,6 @@ list(APPEND eckit_geo_srcs
     cache/Download.h
     cache/MemoryCache.cc
     cache/MemoryCache.h
-    cache/Unzip.cc
-    cache/Unzip.h
     container/PointsContainer.cc
     container/PointsContainer.h
     figure/Earth.cc
@@ -218,7 +216,12 @@ if(eckit_HAVE_GEO_GRID_ORCA)
 endif()
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)
-    list(APPEND eckit_geo_srcs area/library/Shapefile.cc area/library/Shapefile.h)
+    list(APPEND eckit_geo_srcs
+        area/library/Shapefile.cc
+        area/library/Shapefile.h
+        cache/Unzip.cc
+        cache/Unzip.h
+    )
     list(APPEND eckit_geo_libs shapelib::shp libzip::zip)
 endif()
 

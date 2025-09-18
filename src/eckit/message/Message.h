@@ -93,7 +93,7 @@ public:
 
     mars::MarsRequest request() const;
 
-    void transform(const eckit::StringDict& modifiers);
+    void transform(const eckit::OrderedStringDict& modifiers);
 
 private:
 

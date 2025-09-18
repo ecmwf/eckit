@@ -109,9 +109,9 @@ void MessageContent::transform(const Transformer&) {
     throw eckit::SeriousBug(oss.str());
 }
 
-void MessageContent::transform(const StringDict&) {
+void MessageContent::transform(const OrderedStringDict&) {
     std::ostringstream oss;
-    oss << "Not implemented " << *this << " tranform(StringDict)";
+    oss << "Not implemented " << *this << " tranform(OrderedStringDict)";
     throw eckit::SeriousBug(oss.str());
 }
 

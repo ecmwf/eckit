@@ -36,6 +36,7 @@ typedef std::vector<Ordinal> OrdinalList;
 typedef std::vector<std::string> StringList;
 typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringDict;
+typedef std::vector<std::pair<std::string,std::string>> OrderedStringDict;
 
 //----------------------------------------------------------------------------------------------------------------------
 

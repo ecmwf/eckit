@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cmath>
 #include <locale>
 
 #include "eckit/eckit.h"
@@ -125,11 +126,12 @@ Second DateTime::operator-(const DateTime& other) const {
 }
 
 DateTime DateTime::operator+(const Second& s) const {
-    Date d = date();
-    long t = time();
-    d += long(s) / (24 * 3600);
-    t += long(s) % (24 * 3600);
-    while (t >= 3600 * 24) {
+    Date d    = date();
+    double t  = time();
+    long days = std::lround(s) / (24 * 3600);
+    d += days;
+    t += s - days * (24 * 3600);
+    if (t > 3600 * 24) {
         d += 1;
         t -= 3600 * 24;
     }

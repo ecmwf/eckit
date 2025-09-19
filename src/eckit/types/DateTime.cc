@@ -119,7 +119,7 @@ DateTime& DateTime::operator=(const DateTime& other) {
 }
 
 Second DateTime::operator-(const DateTime& other) const {
-    Second date = (date_ - other.date_) * 24 * 3600;
+    Second date = (date_ - other.date_) * 86400;
     Second time = time_ - other.time_;
 
     return date + time;
@@ -128,12 +128,12 @@ Second DateTime::operator-(const DateTime& other) const {
 DateTime DateTime::operator+(const Second& s) const {
     Date d    = date();
     double t  = time();
-    long days = std::lround(s) / (24 * 3600);
+    long days = std::lround(s) / (86400);
     d += days;
-    t += s - days * (24 * 3600);
-    if (t > 3600 * 24) {
+    t += s - days * (86400);
+    if (t >= 86400) {
         d += 1;
-        t -= 3600 * 24;
+        t -= 86400;
     }
 
     return DateTime(d, Second(t));
@@ -143,8 +143,8 @@ DateTime DateTime::round(const Second& rnd) const {
     long long seconds = double(date_.julian_) * 24.0 * 3600 + Second(time_);
     seconds           = (seconds / long(rnd)) * rnd;
 
-    long d   = seconds / (3600 * 24);
-    Second t = seconds % (3600 * 24);
+    long d   = seconds / (86400);
+    Second t = seconds % (86400);
 
     return DateTime(Date(d, true), Time(t));
 }

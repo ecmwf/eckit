@@ -123,6 +123,11 @@ CASE("test_datetime") {
         EXPECT_EQUAL("2016-03-31T04:20:00Z", dt.iso(true));
     }
     {
+        eckit::DateTime dt(Date(2016, 3, 31), Time(12, 0, 0, true));
+        dt = dt + eckit::Second{12 * 3600.};
+        EXPECT_EQUAL("2016-04-01T00:00:00Z", dt.iso(true));
+    }
+    {
         eckit::DateTime dt{Date{2016, 3, 31}, Second{10.4}};
         EXPECT_EQUAL("2016-03-31T00:00:10Z", dt.iso(true));
 

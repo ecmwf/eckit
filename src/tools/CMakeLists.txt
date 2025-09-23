@@ -12,6 +12,11 @@ ecbuild_add_executable( TARGET      eckit_info
                         SOURCES     eckit-info.cc
                         LIBS        eckit_option eckit )
 
+ecbuild_add_executable( TARGET      eckit_fraction
+                        OUTPUT_NAME eckit-fraction
+                        SOURCES     eckit-fraction.cc
+                        LIBS        eckit_option eckit )
+
 ecbuild_add_executable( TARGET      eckit_codec_list
                         OUTPUT_NAME eckit-codec-list
                         CONDITION   eckit_HAVE_ECKIT_CODEC

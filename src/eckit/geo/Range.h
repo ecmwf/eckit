@@ -46,14 +46,12 @@ public:
     size_t size() const { return n_; }
     double a() const { return a_; }
     double b() const { return b_; }
-    double eps() const { return eps_; }
 
     double min() const { return a_ < b_ ? a_ : b_; }
     double max() const { return a_ < b_ ? b_ : a_; }
 
     virtual bool periodic() const { return false; }
 
-    [[nodiscard]] virtual Range* make_range_flipped() const                             = 0;
     [[nodiscard]] virtual Range* make_range_cropped(double crop_a, double crop_b) const = 0;
 
     virtual Fraction increment() const                = 0;
@@ -63,7 +61,7 @@ protected:
 
     // -- Constructors
 
-    explicit Range(size_t n, double a, double b, double eps);
+    explicit Range(size_t n, double a, double b);
 
     // --Methods
 
@@ -78,7 +76,6 @@ private:
     size_t n_;
     double a_;
     double b_;
-    double eps_;
 };
 
 

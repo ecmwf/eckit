@@ -30,7 +30,6 @@ public:
     // -- Overridden methods
 
     [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
-    [[nodiscard]] Range* make_range_flipped() const override;
 };
 
 

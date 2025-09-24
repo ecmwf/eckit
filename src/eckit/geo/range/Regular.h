@@ -41,13 +41,12 @@ protected:
      * @param b range end
      * @param ref User-defined coordinate reachable with (multiples of) integer increment; Can be defined out of the [a,
      * b] range. Support both "shifted" and "non-shifted" ranges, for the same definition of [a, b] range and increment
-     * @param eps tolerace to check range start/end against
      */
-    Regular(double inc, double a, double b, double ref, double eps);
+    Regular(double inc, double a, double b, double ref);
 
-    Regular(size_t n, double a, double b, bool periodic, double eps);
+    Regular(size_t n, double a, double b, bool periodic);
 
-    Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps);
+    Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic);
 
     Regular(const Regular&) = default;
     Regular(Regular&&)      = default;

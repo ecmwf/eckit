@@ -64,8 +64,10 @@ const std::vector<double>& gaussian_quadrature_weights(size_t N);
 std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);
 
 
-std::pair<difference_type, difference_type> monotonic_crop(const std::vector<double>&, double min, double max,
-                                                           double eps);
+std::pair<difference_type, difference_type> monotonic_crop(const std::vector<double>&, double min, double max);
+
+
+std::vector<double> reverse(const std::vector<double>&);
 
 
 bool reduced_classical_pl_known(size_t N);

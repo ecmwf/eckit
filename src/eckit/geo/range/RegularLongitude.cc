@@ -26,8 +26,7 @@ namespace eckit::geo::range {
 static const Fraction PERIOD(360, 1);
 
 
-RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _ref) :
-    Regular(_inc, _a, _b, _ref, PointLonLat::EPS) {
+RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _ref) : Regular(_inc, _a, _b, _ref) {
     ASSERT(!types::is_approximately_equal(_a, _b));
     ASSERT(_a < _b);  // FIXME temporary
 
@@ -44,7 +43,7 @@ RegularLongitude::RegularLongitude(double _inc, double _a, double _b, double _re
 
 
 RegularLongitude::RegularLongitude(size_t n, double _a, double _b) :
-    Regular(n, _a, _b, types::is_approximately_lesser_or_equal<double>(PERIOD, std::abs(_b - _a)), PointLonLat::EPS) {}
+    Regular(n, _a, _b, types::is_approximately_lesser_or_equal<double>(PERIOD, std::abs(_b - _a))) {}
 
 
 Range* RegularLongitude::make_range_cropped(double crop_a, double crop_b) const {
@@ -80,15 +79,6 @@ Range* RegularLongitude::make_range_cropped(double crop_a, double crop_b) const 
     }
 
     NOTIMP;
-}
-
-
-Range* RegularLongitude::make_range_flipped() const {
-    std::vector<double> flipped(size());
-    const auto& v = values();
-    std::reverse_copy(v.begin(), v.end(), flipped.begin());
-
-    return new RegularLongitude(size(), b(), a(), eps());
 }
 
 

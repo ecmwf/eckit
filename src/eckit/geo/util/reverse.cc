@@ -10,28 +10,19 @@
  */
 
 
-#include "eckit/geo/Range.h"
-
-#include "eckit/geo/Exceptions.h"
-#include "eckit/types/FloatCompare.h"
+#include <algorithm>
+#include <vector>
 
 
-namespace eckit::geo {
+namespace eckit::geo::util {
 
 
-Range::Range(size_t n, double _a, double _b) : n_(n), a_(_a), b_(_b) {
-    ASSERT(0 < n);
-    if (types::is_approximately_equal(_a, _b)) {
-        n_ = 1;
-        b(_a);
-    }
+std::vector<double> reverse(const std::vector<double>& v) {
+    std::vector<double> flipped(v.size());
+    std::reverse_copy(v.begin(), v.end(), flipped.begin());
+
+    return v;
 }
 
 
-void Range::resize(size_t n) {
-    ASSERT(0 < n);
-    n_ = n;
-}
-
-
-}  // namespace eckit::geo
+}  // namespace eckit::geo::util

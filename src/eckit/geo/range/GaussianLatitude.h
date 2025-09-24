@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/Range.h"
 
 
@@ -24,7 +23,7 @@ public:
 
     // -- Constructors
 
-    explicit GaussianLatitude(size_t N, bool increasing, double eps = PointLonLat::EPS);
+    explicit GaussianLatitude(size_t N, bool increasing);
 
     // -- Methods
 
@@ -32,7 +31,6 @@ public:
 
     // -- Overridden methods
 
-    [[nodiscard]] Range* make_range_flipped() const override;
     [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
 
     Fraction increment() const override;
@@ -42,8 +40,8 @@ private:
 
     // -- Constructors
 
-    GaussianLatitude(size_t N, std::vector<double>&& values, double _eps) :
-        Range(values.size(), values.front(), values.back(), _eps), N_(N), values_(values) {}
+    GaussianLatitude(size_t N, std::vector<double>&& values) :
+        Range(values.size(), values.front(), values.back()), N_(N), values_(values) {}
 
     // -- Members
 

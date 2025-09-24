@@ -20,11 +20,10 @@
 namespace eckit::geo::range {
 
 
-RegularLatitude::RegularLatitude(double _inc, double _a, double _b, double _ref) :
-    Regular(_inc, _a, _b, _ref, PointLonLat::EPS) {}
+RegularLatitude::RegularLatitude(double _inc, double _a, double _b, double _ref) : Regular(_inc, _a, _b, _ref) {}
 
 
-RegularLatitude::RegularLatitude(size_t n, double _a, double _b) : Regular(n, _a, _b, false, PointLonLat::EPS) {
+RegularLatitude::RegularLatitude(size_t n, double _a, double _b) : Regular(n, _a, _b, false) {
     ASSERT(SOUTH_POLE.lat <= a() && a() <= NORTH_POLE.lat);
     ASSERT(SOUTH_POLE.lat <= b() && b() <= NORTH_POLE.lat);
 }
@@ -32,10 +31,9 @@ RegularLatitude::RegularLatitude(size_t n, double _a, double _b) : Regular(n, _a
 
 Range* RegularLatitude::make_range_cropped(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
-           (types::is_approximately_equal(a(), b(), PointLonLat::EPS) &&
-            types::is_approximately_equal(crop_a, crop_b, PointLonLat::EPS)));
+           (types::is_approximately_equal(a(), b()) && types::is_approximately_equal(crop_a, crop_b)));
 
-    if (types::is_approximately_equal(crop_a, crop_b, PointLonLat::EPS)) {
+    if (types::is_approximately_equal(crop_a, crop_b)) {
         NOTIMP;  // FIXME
     }
 

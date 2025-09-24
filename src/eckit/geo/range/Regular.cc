@@ -23,8 +23,8 @@
 namespace eckit::geo::range {
 
 
-Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) :
-    Range(2, _a, _b, eps), increment_(_inc), periodic_(false) {
+Regular::Regular(double _inc, double _a, double _b, double _ref) :
+    Range(2, _a, _b), increment_(_inc), periodic_(false) {
     ASSERT(0. <= _inc);
 
     if (increment_ == 0 || types::is_approximately_equal(_a, _b)) {
@@ -45,16 +45,16 @@ Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) :
 }
 
 
-Regular::Regular(size_t n, double a, double b, bool periodic, double eps) :
-    Range(n, a, b, eps),  //
+Regular::Regular(size_t n, double a, double b, bool periodic) :
+    Range(n, a, b),  //
     increment_(types::is_approximately_equal(a, b)
                    ? 0.
                    : (b - a) / static_cast<double>(std::max<size_t>(1, periodic ? n : n - 1))),
     periodic_(periodic) {}
 
 
-Regular::Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
-    Range(n, a, b, eps),  //
+Regular::Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic) :
+    Range(n, a, b),  //
     increment_(types::is_approximately_equal(a, b)
                    ? 0.
                    : (b - a) / static_cast<double>(std::max<size_t>(1, periodic ? n : n - 1))),

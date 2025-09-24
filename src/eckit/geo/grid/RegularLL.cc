@@ -18,8 +18,7 @@
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/range/RegularLatitude.h"
-#include "eckit/geo/range/RegularLongitude.h"
+#include "eckit/geo/range/Regular.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/utils/Translator.h"
 

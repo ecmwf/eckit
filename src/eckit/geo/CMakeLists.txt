@@ -137,12 +137,6 @@ list(APPEND eckit_geo_srcs
     range/GaussianLatitude.h
     range/Regular.cc
     range/Regular.h
-    range/RegularCartesian.cc
-    range/RegularCartesian.h
-    range/RegularLatitude.cc
-    range/RegularLatitude.h
-    range/RegularLongitude.cc
-    range/RegularLongitude.h
     search/Tree.cc
     search/Tree.h
     search/TreeMapped.cc

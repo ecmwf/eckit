@@ -13,7 +13,6 @@
 #include "eckit/geo/range/RegularCartesian.h"
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointXY.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -33,14 +32,14 @@ static Fraction regular_adjust(const Fraction& target, const Fraction& inc, bool
 };
 
 
-RegularCartesian::RegularCartesian(size_t n, double a, double b) : Regular(n, a, b, false, PointXY::EPS) {}
+RegularCartesian::RegularCartesian(size_t n, double a, double b) : Regular(n, a, b, false) {}
 
 
 Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
-           (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
+           (types::is_approximately_equal(a(), b()) && types::is_approximately_equal(crop_a, crop_b)));
 
-    if (types::is_approximately_equal(crop_a, crop_b, eps())) {
+    if (types::is_approximately_equal(crop_a, crop_b)) {
         NOTIMP;  // FIXME
     }
 
@@ -62,11 +61,6 @@ Range* RegularCartesian::make_range_cropped(double crop_a, double crop_b) const 
     }
 
     NOTIMP;
-}
-
-
-Range* RegularCartesian::make_range_flipped() const {
-    return new RegularCartesian(size(), b(), a());
 }
 
 

@@ -14,7 +14,6 @@
 
 #include <utility>
 
-#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/range/Regular.h"
 
 
@@ -32,7 +31,6 @@ public:
     // -- Overridden methods
 
     [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
-    [[nodiscard]] Range* make_range_flipped() const override;
 
     bool periodic() const override { return getPeriodic(); }
 
@@ -41,7 +39,7 @@ private:
     // -- Constructors
 
     RegularLongitude(size_t n, double a, double b, std::vector<double>&& values, bool periodic) :
-        Regular(n, a, b, std::move(values), periodic, PointLonLat::EPS) {}
+        Regular(n, a, b, std::move(values), periodic) {}
 };
 
 

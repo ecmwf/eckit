@@ -130,7 +130,7 @@ CASE("eckit::geo::util::monotonic_crop") {
     };
 
     for (const auto& test : tests) {
-        auto [from, to] = util::monotonic_crop(test.values, test.min, test.max, 0.);
+        auto [from, to] = util::monotonic_crop(test.values, test.min, test.max);
 
         EXPECT(from == test.expected.first);
         EXPECT(to == test.expected.second);

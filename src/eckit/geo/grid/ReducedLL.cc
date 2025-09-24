@@ -14,8 +14,7 @@
 
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/order/Scan.h"
-#include "eckit/geo/range/RegularLatitude.h"
-#include "eckit/geo/range/RegularLongitude.h"
+#include "eckit/geo/range/Regular.h"
 
 
 namespace eckit::geo::grid {

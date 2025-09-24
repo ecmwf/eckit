@@ -17,7 +17,7 @@
 #include "eckit/geo/Increments.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Shape.h"
-#include "eckit/geo/range/RegularCartesian.h"
+#include "eckit/geo/range/Regular.h"
 #include "eckit/geo/spec/Custom.h"
 
 

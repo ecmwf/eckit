@@ -14,8 +14,7 @@
 #include <vector>
 
 #include "eckit/geo/range/GaussianLatitude.h"
-#include "eckit/geo/range/RegularLatitude.h"
-#include "eckit/geo/range/RegularLongitude.h"
+#include "eckit/geo/range/Regular.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"

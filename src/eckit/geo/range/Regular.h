@@ -78,4 +78,58 @@ private:
 };
 
 
+class RegularCartesian final : public Regular {
+public:
+
+    // -- Constructors
+
+    using Regular::Regular;
+
+    RegularCartesian(size_t n, double a, double b);
+
+    // -- Overridden methods
+
+    [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
+};
+
+
+class RegularLatitude final : public Regular {
+public:
+
+    // -- Constructors
+
+    using Regular::Regular;
+
+    explicit RegularLatitude(double inc, double a, double b, double ref);
+    explicit RegularLatitude(size_t n, double a, double b);
+
+    // -- Overridden methods
+
+    [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
+};
+
+
+class RegularLongitude final : public Regular {
+public:
+
+    // -- Constructors
+
+    explicit RegularLongitude(double inc, double a, double b, double ref);
+    explicit RegularLongitude(size_t n, double a, double b);
+
+    // -- Overridden methods
+
+    [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
+
+    bool periodic() const override { return getPeriodic(); }
+
+private:
+
+    // -- Constructors
+
+    RegularLongitude(size_t n, double a, double b, std::vector<double>&& values, bool periodic) :
+        Regular(n, a, b, std::move(values), periodic) {}
+};
+
+
 }  // namespace eckit::geo::range

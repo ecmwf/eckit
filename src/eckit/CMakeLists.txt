@@ -966,7 +966,7 @@ foreach(_p IN LISTS CMAKE_PREFIX_PATH)
 endforeach()
 install(CODE "
     file(GET_RUNTIME_DEPENDENCIES
-        LIBRARIES \${CMAKE_INSTALL_PREFIX}/${INSTALL_BIN_DIR}/$<TARGET_FILE_NAME:eckit>
+        LIBRARIES $<TARGET_FILE:eckit>
         RESOLVED_DEPENDENCIES_VAR resolved_deps
         UNRESOLVED_DEPENDENCIES_VAR unresolved_deps
         DIRECTORIES ${_runtime_deps_paths}

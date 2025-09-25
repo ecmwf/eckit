@@ -963,7 +963,7 @@ foreach(_p IN LISTS CMAKE_PREFIX_PATH)
   list(APPEND _runtime_deps_paths "${_p}/lib")
   list(APPEND _runtime_deps_paths "${_p}/lib64")
 endforeach()
-ecbuild_target_rpath(eckit APPEND ${CMAKE_PREFIX_PATH})
+ecbuild_target_rpath(eckit APPEND ${_runtime_deps_paths})
 install(RUNTIME_DEPENDENCY_SET eckit-deps
     #PRE_EXCLUDE_REGEXES ${pre_exclude_regexes}
     #POST_EXCLUDE_REGEXES ${post_exclude_regexes}

@@ -967,10 +967,10 @@ endforeach()
 set(_runtime_target_file_eckit "$<TARGET_FILE:eckit>")
 install(CODE "
     file(GET_RUNTIME_DEPENDENCIES
-        LIBRARIES \${_runtime_target_file_eckit}
+        LIBRARIES ${_runtime_target_file_eckit}
         RESOLVED_DEPENDENCIES_VAR resolved_deps
         UNRESOLVED_DEPENDENCIES_VAR unresolved_deps
-        DIRECTORIES \${_runtime_deps_paths}
+        DIRECTORIES ${_runtime_deps_paths}
     )
     
     foreach(dep \${resolved_deps})

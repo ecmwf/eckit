@@ -70,7 +70,8 @@ std::vector<double> ReducedLL::longitudes(size_t j) const {
     auto Ni = nx(j);
     if (!x_ || x_->size() != Ni) {
         auto bbox                               = boundingBox();
-        const_cast<std::unique_ptr<Range>&>(x_) = std::make_unique<range::RegularLongitude>(Ni, bbox.west, bbox.east);
+        const_cast<std::unique_ptr<Range>&>(x_) =
+            range::Regular::make_regular_longitude_range(Ni, bbox.west, bbox.east);
     }
 
     return x_->values();

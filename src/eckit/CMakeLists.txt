@@ -965,33 +965,9 @@ foreach(_p IN LISTS CMAKE_PREFIX_PATH)
 endforeach()
 ecbuild_target_rpath(eckit APPEND ${_runtime_deps_paths})
 install(RUNTIME_DEPENDENCY_SET eckit-deps
-    #PRE_EXCLUDE_REGEXES ${pre_exclude_regexes}
-    #POST_EXCLUDE_REGEXES ${post_exclude_regexes}
+    PRE_EXCLUDE_REGEXES ".*"
+    PRE_INCLUDE_REGEXES ".*libaec.*"
 )
-      # set(_runtime_deps_paths)
-      # foreach(_p IN LISTS CMAKE_PREFIX_PATH)
-      #   list(APPEND _runtime_deps_paths "${_p}/lib")
-      #   list(APPEND _runtime_deps_paths "${_p}/lib64")
-      # endforeach()
-      # install(CODE "set(_runtime_deps_paths \"${_runtime_deps_paths}\")")
-      # install(CODE [[
-      #     file(GET_RUNTIME_DEPENDENCIES
-      #         LIBRARIES $<TARGET_FILE:eckit>
-      #         RESOLVED_DEPENDENCIES_VAR resolved_deps
-      #         UNRESOLVED_DEPENDENCIES_VAR unresolved_deps
-      #         DIRECTORIES ${_runtime_deps_paths}
-      #     )
-      #     
-      #     foreach(dep ${resolved_deps})
-      #         get_filename_component(dep_name ${dep} NAME)
-      #         file(INSTALL ${dep} DESTINATION ${CMAKE_INSTALL_PREFIX}/${INSTALL_LIB_DIR})
-      #         message(STATUS "Installed runtime dependency: ${dep_name}")
-      #     endforeach()
-      #     
-      #     if(unresolved_deps)
-      #         message(STATUS "Unresolved dependencies: ${unresolved_deps}")
-      #     endif()
-      # ]])
 
 if(ENABLE_INSTALL_BUNDLED_DEPENDENCIES)
     ecbuild_install_dependency_with_soversion(libaec::aec)

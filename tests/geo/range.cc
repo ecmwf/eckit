@@ -35,7 +35,6 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
     }
     return out;
 }
-#endif
 
 
 CASE("range::RegularLongitude") {
@@ -291,6 +290,7 @@ CASE("range::RegularLatitude/range::RegularLongitude") {
         EXPECT_EQUAL(lon.size(), t.nlon);
     }
 }
+#endif
 
 
 }  // namespace eckit::geo::test

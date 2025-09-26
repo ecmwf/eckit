@@ -19,10 +19,16 @@
 namespace eckit::geo::range {
 
 
-class Regular : public Range {
+class Regular final : public Range {
 public:
 
     // -- Methods
+
+    [[nodiscard]] static Range* make_regular_xy_range(double inc, double a, double b, double ref = 0);
+    [[nodiscard]] static Range* make_regular_latitude_range(double inc, double a, double b, double ref = 0);
+    [[nodiscard]] static Range* make_regular_longitude_range(double inc, double a, double b, double ref = 0);
+
+    [[nodiscard]] Range* make_range_cropped(double a, double b) const override;
 
     Fraction increment() const override;
 
@@ -30,105 +36,18 @@ public:
 
     const std::vector<double>& values() const override;
 
-protected:
+private:
 
     // -- Constructors
 
-    /**
-     * @brief Regular
-     * @param inc regular increment
-     * @param a range start
-     * @param b range end
-     * @param ref User-defined coordinate reachable with (multiples of) integer increment; Can be defined out of the [a,
-     * b] range. Support both "shifted" and "non-shifted" ranges, for the same definition of [a, b] range and increment
-     */
-    Regular(double inc, double a, double b, double ref);
-
-    Regular(size_t n, double a, double b, bool periodic);
-
-    Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic);
-
-    Regular(const Regular&) = default;
-    Regular(Regular&&)      = default;
-
-    // -- Destructor
-
-    ~Regular() override = default;
-
-    // -- Operators
-
-    Regular& operator=(Regular&&)      = default;
-    Regular& operator=(const Regular&) = default;
-
-    // -- Methods
-
-    static Fraction adjust(const Fraction& target, const Fraction& inc, bool up);
-    void increment(Fraction);
-
-    void setPeriodic(bool p) { periodic_ = p; }
-    bool getPeriodic() const { return periodic_; }
-
-private:
+    Regular(double a, double b, size_t num, bool endpoint);
 
     // -- Members
 
-    Fraction increment_;
-    std::vector<double> values_;
-    bool periodic_;
-};
-
-
-class RegularCartesian final : public Regular {
-public:
-
-    // -- Constructors
-
-    using Regular::Regular;
-
-    RegularCartesian(size_t n, double a, double b);
-
-    // -- Overridden methods
-
-    [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
-};
-
-
-class RegularLatitude final : public Regular {
-public:
-
-    // -- Constructors
-
-    using Regular::Regular;
-
-    explicit RegularLatitude(double inc, double a, double b, double ref);
-    explicit RegularLatitude(size_t n, double a, double b);
-
-    // -- Overridden methods
-
-    [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
-};
-
-
-class RegularLongitude final : public Regular {
-public:
-
-    // -- Constructors
-
-    explicit RegularLongitude(double inc, double a, double b, double ref);
-    explicit RegularLongitude(size_t n, double a, double b);
-
-    // -- Overridden methods
-
-    [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
-
-    bool periodic() const override { return getPeriodic(); }
-
-private:
-
-    // -- Constructors
-
-    RegularLongitude(size_t n, double a, double b, std::vector<double>&& values, bool periodic) :
-        Regular(n, a, b, std::move(values), periodic) {}
+    const double start_;
+    const double stop_;
+    const size_t num_;
+    const bool endpoint_;
 };
 
 

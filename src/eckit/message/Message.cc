@@ -118,8 +118,8 @@ eckit::Buffer Message::decode() const {
     return lookupDecoder().decode(*this);
 };
 
-Message Message::transform(const eckit::StringDict& dict) const {
-    return Message(content_->transform(dict));
+void Message::transform(const eckit::OrderedStringDict& dict) {
+    content_->transform(dict);
 }
 
 eckit::DataHandle* Message::readHandle() const {

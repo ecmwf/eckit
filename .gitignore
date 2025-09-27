@@ -10,4 +10,5 @@ doc/latex
 .vscode
 .idea
 build/
+_build
 *.ccls-cache

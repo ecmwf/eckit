@@ -127,7 +127,7 @@ CASE("download: error handling") {
     EXPECT_THROWS_AS(cache::Download::to_path("https://does.not/exist", path), UserError);
     EXPECT(!path.exists());
 
-    EXPECT_THROWS_AS(cache::Download::to_path("https://get.ecmwf.int/repository/does/not/exist", path), UserError);
+    EXPECT_THROWS_AS(cache::Download::to_path("https://sites.ecmwf.int/repository/does/not/exist", path), UserError);
     EXPECT(!path.exists());
 }
 

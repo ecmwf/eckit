@@ -1,6 +1,6 @@
 ---
 
-url_prefix: &url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/icon/
+url_prefix: &url_prefix https://sites.ecmwf.int/repository/eckit/geo/grid/icon/
 
 grid_names:
   - ICON_01_R02B05: &ICON_01_R02B05

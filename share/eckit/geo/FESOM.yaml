@@ -1,6 +1,6 @@
 ---
 
-url_prefix: &url_prefix https://sites.ecmwf.int/repository/eckit/geo/grid/fesom/
+url_prefix: &url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/fesom/
 
 grid_names:
   - pi_C: &pi_C

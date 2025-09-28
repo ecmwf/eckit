@@ -176,10 +176,11 @@ foreach(gridspec shape IN ZIP_LISTS TESTS SHAPES)
     string(REGEX REPLACE "_$" "" name "${name}")
 
     ecbuild_add_test(
-        TARGET      ${name}_gridspec
-        COMMAND     eckit_grid_spec
-        ARGS        "${gridspec}"
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/../eckit_geo_cache" )
+        TARGET        ${name}_gridspec
+        COMMAND       eckit_grid_spec
+        ARGS          "${gridspec}"
+        TEST_DEPENDS  eckit_test_geo_cache
+        ENVIRONMENT   "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/../eckit_geo_cache" )
 
     string(REPLACE "[" [=[\[]=] regex "${gridspec}")
     string(REPLACE "]" [=[\]]=] regex "${regex}")
@@ -187,10 +188,11 @@ foreach(gridspec shape IN ZIP_LISTS TESTS SHAPES)
     set_tests_properties(${name}_gridspec PROPERTIES PASS_REGULAR_EXPRESSION "${regex}")
 
     ecbuild_add_test(
-        TARGET      ${name}_shape
-        COMMAND     eckit_grid_spec
-        ARGS        "${gridspec}" --shape
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/../eckit_geo_cache" )
+        TARGET        ${name}_shape
+        COMMAND       eckit_grid_spec
+        ARGS          "${gridspec}" --shape
+        TEST_DEPENDS  eckit_test_geo_cache
+        ENVIRONMENT   "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/../eckit_geo_cache" )
 
     string(REPLACE "[" [=[\[]=] regex "${shape}")
     string(REPLACE "]" [=[\]]=] regex "${regex}")

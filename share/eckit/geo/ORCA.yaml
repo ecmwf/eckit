@@ -1,6 +1,6 @@
 ---
 
-url_prefix: &url_prefix https://get.ecmwf.int/repository/atlas/grids/orca/v0/
+url_prefix: &url_prefix https://sites.ecmwf.int/repository/atlas/grids/orca/v0/
 
 grid_names:
   - ORCA2_F: &ORCA2_F

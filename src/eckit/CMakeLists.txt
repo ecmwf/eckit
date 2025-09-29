@@ -962,6 +962,9 @@ ecbuild_add_library(
 
           LINKER_LANGUAGE CXX )
 
+if(ENABLE_INSTALL_DEPENDENCIES)
+    ecbuild_install_dependency_with_soversion(libaec::aec)
+endif()
 ### sub-directories
 
 if( eckit_HAVE_ECKIT_CMD )

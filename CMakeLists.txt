@@ -20,6 +20,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ########################################################################################################################
 ### dependencies and options
+option(ENABLE_INSTALL_DEPENDENCIES "Install bundled dependencies" OFF)
 
 ecbuild_add_option( FEATURE BUILD_TOOLS
                     DEFAULT ON
@@ -145,8 +146,8 @@ ecbuild_add_option( FEATURE LZ4
                     REQUIRED_PACKAGES LZ4 )
 
 ecbuild_add_option( FEATURE AEC
-                    DESCRIPTION "AEC support for compression" 
-                    REQUIRED_PACKAGES "NAME libaec VERSION 1.0.6")
+                    REQUIRED_PACKAGES "NAME libaec VERSION 1.0.6"
+                    DESCRIPTION "AEC support for compression" )
 
 ecbuild_add_option( FEATURE ZIP
                     DESCRIPTION "ZIP support for compression"

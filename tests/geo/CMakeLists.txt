@@ -13,6 +13,7 @@ foreach(_test
         grid_reorder
         grid_to_points
         increments
+        integration
         iterator
         kdtree
         order
@@ -34,9 +35,10 @@ foreach(_test
         spec_layered
         util )
     ecbuild_add_test(
-        TARGET  eckit_test_geo_${_test}
-        SOURCES ${_test}.cc
-        LIBS    eckit_geo )
+        TARGET      eckit_test_geo_${_test}
+        SOURCES     ${_test}.cc
+        LIBS        eckit_geo
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
 endforeach()
 
 set_tests_properties(
@@ -78,23 +80,3 @@ endif()
 if(eckit_HAVE_GEO_GRID_ORCA)
     ecbuild_add_test_geo_grid(orca)
 endif()
-
-ecbuild_add_test(
-    TARGET  eckit_test_geo_tool_grid_spec_1_1
-    COMMAND eckit_grid_spec ARGS "grid: 1/1.0" )
-
-set_tests_properties(
-    eckit_test_geo_tool_grid_spec_1_1
-    PROPERTIES
-    PASS_REGULAR_EXPRESSION [=[{"grid":\[1,1\]}]=] )
-
-ecbuild_add_test(
-    TARGET  eckit_test_geo_tool_grid_spec_025_01
-    COMMAND eckit_grid_spec ARGS "grid: .250/001e-1" )
-
-set_tests_properties(
-    eckit_test_geo_tool_grid_spec_025_01
-    PROPERTIES
-    PASS_REGULAR_EXPRESSION [=[{"grid":\[0\.25,0\.1\]}]=] )
-
-add_subdirectory( integration )

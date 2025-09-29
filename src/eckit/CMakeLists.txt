@@ -936,7 +936,6 @@ ecbuild_add_library(
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
-              "${AEC_INCLUDE_DIRS}"
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
@@ -946,11 +945,11 @@ ecbuild_add_library(
               "${LIBRSYNC_LIBRARIES}"
               "${LZ4_LIBRARIES}"
               "${BZIP2_LIBRARIES}"
-              "${AEC_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+              $<${HAVE_AEC}:libaec::aec>
 
           PUBLIC_LIBS
               ${CMATH_LIBRARIES}

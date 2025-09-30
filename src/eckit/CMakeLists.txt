@@ -961,10 +961,10 @@ ecbuild_add_library(
           LINKER_LANGUAGE CXX )
 
 if(ENABLE_BUNDLED_DEPENDENCIES)
-    get_target_property(_aec libaec::aec IMPORTED_LOCATION)
-    get_filename_component(LIBAEC_DIR ${LIBAEC_LOCATION} DIRECTORY)
-    file(GLOB LIBAEC_ALL_FILES "${LIBAEC_DIR}/libaec*.dylib")
-    install(FILES ${LIBAEC_ALL_FILES} DESTINATION lib)
+    get_target_property(_libaec_loc libaec::aec IMPORTED_LOCATION)
+    get_filename_component(_libaec_dir ${_libaec_loc} DIRECTORY)
+    file(GLOB _libaec_files "${_libaec_dir}/libaec*.dylib")
+    install(FILES ${_libaec_files} DESTINATION lib)
 endif()
 
 if(ENABLE_INSTALL_BUNDLED_DEPENDENCIES)

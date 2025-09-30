@@ -970,7 +970,7 @@ ecbuild_add_library(
       #     PRE_INCLUDE_REGEXES ".*libaec.*"
       # )
 install(
-    FILES $<TARGET_FILE:libaec:aec>
+    FILES $<TARGET_FILE:libaec::aec>
     TYPE LIB
 )
 

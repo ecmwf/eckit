@@ -1,0 +1,49 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/*
+ * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
+ * (Grant agreement: 101092984) horizon-opencube.eu
+ */
+
+#include "eckit/io/fam/FamHashTable.h"
+
+#include <string>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamObjectName.h"
+#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamRegionName.h"
+// #include "eckit/io/fam/detail/FamHashNode.h"
+
+namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+FamHashTable::FamHashTable(const FamRegionName& region_name, const std::string& table_name) :
+    region_{region_name.lookup()},
+    begin_{initSentinel(table_name + "-hash-begin", sizeof(FamDescriptor))},
+    count_{initSentinel(table_name + "-hash-count", sizeof(size_type))} {}
+
+auto FamHashTable::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject {
+    try {
+        return region_.allocateObject(size, name);
+    }
+    catch (const AlreadyExists&) {
+        auto object = region_.lookupObject(name);
+        ASSERT(object.size() == size);
+        return object;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit

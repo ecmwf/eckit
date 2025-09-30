@@ -187,6 +187,30 @@ public:
     explicit Retry(const std::string&, const CodeLocation& = {});
 };
 
+class PermissionDenied : public Exception {
+public:
+
+    explicit PermissionDenied(const std::string& /* w */, const CodeLocation& = {});
+};
+
+class NotFound : public Exception {
+public:
+
+    explicit NotFound(const std::string& /* w */, const CodeLocation& = {});
+};
+
+class AlreadyExists : public Exception {
+public:
+
+    explicit AlreadyExists(const std::string& /* w */, const CodeLocation& = {});
+};
+
+class OutOfStorage : public Exception {
+public:
+
+    explicit OutOfStorage(const std::string& /* w */, const CodeLocation& = {});
+};
+
 class UserError : public Exception {
 public:
 

@@ -8,13 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/exception/Exceptions.h"
+
 #include <unistd.h>
 
 #include <csignal>
 #include <cstdlib>
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/thread/ThreadSingleton.h"
@@ -151,6 +152,15 @@ Abort::Abort(const std::string& w, const CodeLocation& loc) : Exception("Abort: 
 Cancel::Cancel(const std::string& w, const CodeLocation& loc) : Exception("Cancel: " + w, loc) {}
 
 Retry::Retry(const std::string& w, const CodeLocation& loc) : Exception("Retry: " + w, loc) {}
+
+PermissionDenied::PermissionDenied(const std::string& w, const CodeLocation& loc) :
+    Exception("Permission denied: " + w, loc) {}
+
+NotFound::NotFound(const std::string& w, const CodeLocation& loc) : Exception("Not found: " + w, loc) {}
+
+AlreadyExists::AlreadyExists(const std::string& w, const CodeLocation& loc) : Exception("Already exists: " + w, loc) {}
+
+OutOfStorage::OutOfStorage(const std::string& w, const CodeLocation& loc) : Exception("Out of storage: " + w, loc) {}
 
 UserError::UserError(const std::string& w, const CodeLocation& loc) : Exception("UserError: " + w, loc) {}
 

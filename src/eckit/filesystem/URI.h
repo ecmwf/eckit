@@ -24,6 +24,7 @@
 #include "eckit/io/Offset.h"
 #include "eckit/net/Endpoint.h"
 
+#include <string>
 
 namespace eckit {
 
@@ -49,6 +50,7 @@ public:  // methods
     URI(const std::string& scheme, const URI& uri);
     URI(const std::string& scheme, const std::string& hostname, int port);
     URI(const std::string& scheme, const URI& uri, const std::string& hostname, int port);
+    URI(std::string scheme, const net::Endpoint& endpoint, std::string name) noexcept;
     URI(Stream& s);
 
     // Destructor
@@ -63,7 +65,9 @@ public:  // methods
     DataHandle* newReadHandle(const OffsetList&, const LengthList&) const;
     DataHandle* newReadHandle() const;
 
-    void endpoint(const eckit::net::Endpoint& endpoint) {
+    net::Endpoint endpoint() const { return {host_, port_}; }
+
+    void endpoint(const net::Endpoint& endpoint) {
         host_ = endpoint.host();
         port_ = endpoint.port();
     }

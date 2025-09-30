@@ -959,13 +959,29 @@ ecbuild_add_library(
               ${ECKIT_SYSTEM_EXTRA_LIBS}
 
           LINKER_LANGUAGE CXX )
+ecbuild_install_dependency_with_soversion(libaec::aec)
 
-if(ENABLE_BUNDLED_DEPENDENCIES)
-    get_target_property(_libaec_loc libaec::aec IMPORTED_LOCATION)
-    get_filename_component(_libaec_dir ${_libaec_loc} DIRECTORY)
-    file(GLOB _libaec_files "${_libaec_dir}/libaec*.dylib")
-    install(FILES ${_libaec_files} DESTINATION lib)
-endif()
+
+
+      # foreach(_p IN LISTS CMAKE_PREFIX_PATH)
+      #   list(APPEND _runtime_deps_paths "${_p}/lib")
+      #   list(APPEND _runtime_deps_paths "${_p}/lib64")
+      # endforeach()
+      # # ecbuild_target_rpath(eckit APPEND ${_runtime_deps_paths})
+      # install(RUNTIME_DEPENDENCY_SET eckit-deps
+      #     DIRECTORIES ${_runtime_deps_paths}
+      #     PRE_EXCLUDE_REGEXES ".*"
+      #     PRE_INCLUDE_REGEXES ".*libaec.*"
+      # )
+      # install(
+      #     FILES $<TARGET_FILE:libaec::aec>
+      #     TYPE LIB
+      # )
+      # 
+      # install(IMPORTED_RUNTIME_ARTIFACTS libaec::aec
+      #     LIBRARY DESTINATION lib
+      #     RUNTIME DESTINATION bin
+      # )
 
 if(ENABLE_INSTALL_BUNDLED_DEPENDENCIES)
     ecbuild_install_dependency_with_soversion(libaec::aec)

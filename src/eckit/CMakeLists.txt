@@ -960,9 +960,12 @@ ecbuild_add_library(
 
           LINKER_LANGUAGE CXX )
 
-install(IMPORTED_RUNTIME_ARTIFACTS libaec::aec
-    LIBRARY DESTINATION lib
-)
+if(ENABLE_BUNDLED_DEPENDENCIES)
+    get_target_property(_aec libaec::aec IMPORTED_LOCATION)
+    get_filename_component(LIBAEC_DIR ${LIBAEC_LOCATION} DIRECTORY)
+    file(GLOB LIBAEC_ALL_FILES "${LIBAEC_DIR}/libaec*.dylib")
+    install(FILES ${LIBAEC_ALL_FILES} DESTINATION lib)
+endif()
 
 if(ENABLE_INSTALL_BUNDLED_DEPENDENCIES)
     ecbuild_install_dependency_with_soversion(libaec::aec)

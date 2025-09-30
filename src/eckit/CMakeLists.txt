@@ -959,19 +959,9 @@ ecbuild_add_library(
               ${ECKIT_SYSTEM_EXTRA_LIBS}
 
           LINKER_LANGUAGE CXX )
-      # foreach(_p IN LISTS CMAKE_PREFIX_PATH)
-      #   list(APPEND _runtime_deps_paths "${_p}/lib")
-      #   list(APPEND _runtime_deps_paths "${_p}/lib64")
-      # endforeach()
-      # # ecbuild_target_rpath(eckit APPEND ${_runtime_deps_paths})
-      # install(RUNTIME_DEPENDENCY_SET eckit-deps
-      #     DIRECTORIES ${_runtime_deps_paths}
-      #     PRE_EXCLUDE_REGEXES ".*"
-      #     PRE_INCLUDE_REGEXES ".*libaec.*"
-      # )
-install(
-    FILES $<TARGET_FILE:libaec::aec>
-    TYPE LIB
+
+install(IMPORTED_RUNTIME_ARTIFACTS libaec::aec
+    LIBRARY DESTINATION lib
 )
 
 if(ENABLE_INSTALL_BUNDLED_DEPENDENCIES)

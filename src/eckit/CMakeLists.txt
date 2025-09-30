@@ -963,8 +963,9 @@ foreach(_p IN LISTS CMAKE_PREFIX_PATH)
   list(APPEND _runtime_deps_paths "${_p}/lib")
   list(APPEND _runtime_deps_paths "${_p}/lib64")
 endforeach()
-ecbuild_target_rpath(eckit APPEND ${_runtime_deps_paths})
+# ecbuild_target_rpath(eckit APPEND ${_runtime_deps_paths})
 install(RUNTIME_DEPENDENCY_SET eckit-deps
+    DIRECTORIES ${_runtime_deps_paths}
     PRE_EXCLUDE_REGEXES ".*"
     PRE_INCLUDE_REGEXES ".*libaec.*"
 )

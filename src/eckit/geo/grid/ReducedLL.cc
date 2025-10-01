@@ -20,23 +20,16 @@
 namespace eckit::geo::grid {
 
 
-namespace {
-
-
-Range* make_y_range(const pl_type& pl, area::BoundingBox* bbox) {
-    return new range::RegularLatitude(pl.size(), bbox == nullptr ? NORTH_POLE.lat : bbox->north,
-                                      bbox == nullptr ? SOUTH_POLE.lat : bbox->south);
-}
-
-
-}  // namespace
-
-
 ReducedLL::ReducedLL(const Spec& spec) :
     ReducedLL(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec).release()) {}
 
 
-ReducedLL::ReducedLL(const pl_type& pl, area::BoundingBox* bbox) : Reduced(bbox), pl_(pl), y_(make_y_range(pl, bbox)) {
+ReducedLL::ReducedLL(const pl_type& pl, area::BoundingBox* bbox) :
+    Reduced(bbox),
+    pl_(pl),
+    y_(range::Regular::make_latitude_range((bbox == nullptr ? 180. : bbox->north - bbox->south) / (pl.size() - 1),
+                                           bbox == nullptr ? NORTH_POLE.lat : bbox->north,
+                                           bbox == nullptr ? SOUTH_POLE.lat : bbox->south)) {
     ASSERT(y_);
 }
 
@@ -68,10 +61,12 @@ const std::vector<double>& ReducedLL::latitudes() const {
 
 std::vector<double> ReducedLL::longitudes(size_t j) const {
     auto Ni = nx(j);
+    ASSERT(Ni >= 2);
     if (!x_ || x_->size() != Ni) {
-        auto bbox                               = boundingBox();
-        const_cast<std::unique_ptr<Range>&>(x_) =
-            range::Regular::make_regular_longitude_range(Ni, bbox.west, bbox.east);
+        auto bbox = boundingBox();
+        auto inc  = (bbox.periodic() ? 360. : bbox.east - bbox.west) / (Ni - 1);
+
+        x_.reset(range::Regular::make_longitude_range(inc, bbox.west, bbox.east, bbox.west));
     }
 
     return x_->values();

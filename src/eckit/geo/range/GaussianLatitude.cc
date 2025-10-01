@@ -12,7 +12,6 @@
 
 #include "eckit/geo/range/GaussianLatitude.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
@@ -32,7 +31,7 @@ GaussianLatitude::GaussianLatitude(size_t N, bool increasing) :
     Range(2 * N, increasing ? -90. : 90., increasing ? 90. : -90.), N_(N) {}
 
 
-Range* GaussianLatitude::make_range_cropped(double crop_a, double crop_b) const {
+Range* GaussianLatitude::make_cropped_range(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
            (types::is_approximately_equal(a(), b()) && types::is_approximately_equal(crop_a, crop_b)));
 

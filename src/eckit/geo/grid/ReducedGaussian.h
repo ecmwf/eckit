@@ -63,7 +63,7 @@ private:
     size_t j_;
     size_t Nj_;
 
-    std::vector<std::unique_ptr<Range>> x_;
+    mutable std::vector<std::unique_ptr<Range>> x_;
     std::unique_ptr<Range> y_;
     order::Scan scan_;
 

@@ -51,11 +51,10 @@ public:
     double max() const { return a_ < b_ ? b_ : a_; }
 
     virtual bool periodic() const { return false; }
-
-    [[nodiscard]] virtual Range* make_range_cropped(double crop_a, double crop_b) const = 0;
-
     virtual Fraction increment() const                = 0;
     virtual const std::vector<double>& values() const = 0;
+
+    [[nodiscard]] virtual Range* make_cropped_range(double crop_a, double crop_b) const = 0;
 
 protected:
 

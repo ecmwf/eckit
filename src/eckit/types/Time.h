@@ -43,7 +43,9 @@ public:  // types
 public:  // methods
 
     Time(long hours, long minutes, long seconds, bool extended = false);
-    Time(long seconds = 0, bool extended = false);
+    Time(Second seconds = Second{0}, bool extended = false);
+    Time(long seconds, bool extended = false);
+    Time(int seconds, bool extended = false);
     Time(const std::string& time, bool extended = false);
 
 #include "eckit/types/Time.b"

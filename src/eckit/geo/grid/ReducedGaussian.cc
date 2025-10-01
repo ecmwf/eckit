@@ -30,9 +30,25 @@ namespace eckit::geo::grid {
 namespace {
 
 
+size_t check_N(size_t N) {
+    ASSERT(N > 0);
+    return N;
+}
+
+
+Range* make_x_range(size_t N, size_t Ni, area::BoundingBox* bbox) {
+    check_N(Ni);
+
+    auto* global = range::Regular::make_longitude_range(360. / static_cast<double>(check_N(4 * N)), 0., 360.);
+    return bbox == nullptr ? global : std::unique_ptr<Range>(global)->make_cropped_range(bbox->west, bbox->east);
+}
+
+
 Range* make_y_range(size_t N, area::BoundingBox* bbox) {
-    return range::GaussianLatitude(N, false).make_range_cropped(bbox == nullptr ? NORTH_POLE.lat : bbox->north,
-                                                                bbox == nullptr ? SOUTH_POLE.lat : bbox->south);
+    check_N(N);
+
+    auto* global = new range::GaussianLatitude(N, false);
+    return bbox == nullptr ? global : std::unique_ptr<Range>(global)->make_cropped_range(bbox->north, bbox->south);
 }
 
 
@@ -51,7 +67,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, Pro
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, Projection* proj) :
     Reduced(bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
-    N_(N),
+    N_(check_N(N)),
     pl_(pl),
     j_(0),
     Nj_(pl.size()),
@@ -88,8 +104,7 @@ size_t ReducedGaussian::nx(size_t j) const {
         auto Ni   = pl_.at(j_ + j);
         ASSERT(Ni >= 0);
 
-        range::RegularLongitude x(static_cast<size_t>(Ni), 0., 360.);
-        const_cast<std::vector<std::unique_ptr<Range>>&>(x_)[j].reset(x.make_range_cropped(bbox.west, bbox.east));
+        x_[j].reset(make_x_range(N_, static_cast<size_t>(Ni), &bbox));
         ASSERT(x_[j]);
     }
 
@@ -108,17 +123,12 @@ const std::vector<double>& ReducedGaussian::latitudes() const {
 
 
 std::vector<double> ReducedGaussian::longitudes(size_t j) const {
-    if (!x_.at(j_ + j)) {
-        auto bbox = boundingBox();
-        auto Ni   = pl_.at(j_ + j);
-        ASSERT(Ni >= 0);
-
-        range::RegularLongitude x(static_cast<size_t>(Ni), 0., 360.);
-        const_cast<std::vector<std::unique_ptr<Range>>&>(x_)[j].reset(x.make_range_cropped(bbox.west, bbox.east));
+    if (nx(j) > 0) {
         ASSERT(x_[j]);
+        return x_[j]->values();
     }
 
-    return x_[j]->values();
+    return {};
 }
 
 

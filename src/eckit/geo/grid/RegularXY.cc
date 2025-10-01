@@ -29,28 +29,23 @@ RegularXY::RegularXY(const Spec& spec) :
 
 
 Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
-#if 0
     Increments inc(spec);
     Shape shape(spec);
 
-    std::unique_ptr<Projection> projection(ProjectionFactory::instance().get("proj").create(spec));
+    std::unique_ptr<const Projection> projection(ProjectionFactory::build(spec));
 
     std::vector<PointLonLat::value_type> v(2);
-    auto first_lonlat((spec.get("first_lon", v[0]) && spec.get("first_lat", v[1]))
-                   || (spec.get("first_lonlat", v) && v.size() == 2)
-               ? PointLonLat{v[0], v[1]}
-               : throw SpecNotFound("['first_lonlat' = ['first_lon', 'first_lat'] expected", Here()));
-
-    // TODO;
-
+    auto first_lonlat(
+        (spec.get("first_lon", v[0]) && spec.get("first_lat", v[1])) || (spec.get("first_lonlat", v) && v.size() == 2)
+            ? PointLonLat{v[0], v[1]}
+            : throw exception::SpecError("['first_lonlat' = ['first_lon', 'first_lat'] expected", Here()));
 
     PointXY a = std::get<PointXY>(projection->inv(first_lonlat));
-    PointXY b{a.X + inc.dx * static_cast<double>(shape.nx - 1), a.Y - inc.dy * static_cast<double>(shape.ny - 1)};
+    PointXY b{a.X + (shape.nx > 1 ? inc.dx * static_cast<double>(shape.nx - 1) : 0),  //
+              a.Y - (shape.ny > 1 ? inc.dy * static_cast<double>(shape.ny - 1) : 0)};
 
-    return {new range::RegularCartesian(shape.nx, a.X, b.X), new range::RegularCartesian(shape.ny, a.Y, b.Y)};
-#else
-    return {new range::RegularCartesian(11, 0, 10), new range::RegularCartesian(11, 0, 10)};
-#endif
+    return {range::Regular::make_xy_range(inc.dx, a.X, b.X, a.X),
+            range::Regular::make_xy_range(inc.dy, a.Y, b.Y, a.Y)};
 }
 
 

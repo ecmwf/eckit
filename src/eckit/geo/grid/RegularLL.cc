@@ -56,8 +56,8 @@ RegularLL::RegularLL(const Increments& inc, Projection* proj) : RegularLL(inc, a
 
 
 RegularLL::RegularLL(const Increments& inc, area::BoundingBox bbox, PointLonLat ref, Projection* proj) :
-    Regular({new range::RegularLongitude(inc.dx, bbox.west, bbox.east, ref.lon),
-             new range::RegularLatitude(inc.dy, bbox.north, bbox.south, ref.lat)},
+    Regular({range::Regular::make_longitude_range(inc.dx, bbox.west, bbox.east, ref.lon),
+             range::Regular::make_latitude_range(inc.dy, bbox.north, bbox.south, ref.lat)},
             bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
     ASSERT(!empty());
 }

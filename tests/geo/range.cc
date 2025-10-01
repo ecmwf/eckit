@@ -15,6 +15,7 @@
 
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
@@ -26,7 +27,6 @@
 namespace eckit::geo::test {
 
 
-#if 0
 std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
     const char* sep = "";
     for (const auto& e : v) {
@@ -37,34 +37,68 @@ std::ostream& operator<<(std::ostream& out, const std::vector<double>& v) {
 }
 
 
-CASE("range::RegularLongitude") {
-    SECTION("simple") {
-        const range::RegularLongitude range1(1., -1., 2., -1.);
+CASE("range::Regular") {
 
-        EXPECT(range1.size() == 4);
+    struct test_type {
+        double inc;
+        double a;
+        double b;
+        double ref;
+    };
 
-        EXPECT_APPROX(range1.a(), -1.);
-        EXPECT_APPROX(range1.b(), 2.);
-        EXPECT_APPROX(range1.increment(), 1.);
 
-        const auto& values = range1.values();
+#if 0
+    SECTION("make_xy_range") {
+        test_type test{1., -1., 2., -1.};
+        std::unique_ptr<Range> range(range::Regular::make_xy_range(test.inc, test.a, test.b, test.ref));
+
+        EXPECT(range->size() == 4);
+
+        EXPECT_APPROX(range->a(), -1.);
+        EXPECT_APPROX(range->b(), 2.);
+        EXPECT_APPROX(range->increment(), 1.);
+
+        const auto& values = range->values();
+
+        EXPECT_APPROX(values[0], -1.);
+        EXPECT_APPROX(values[1], 0.);
+        EXPECT_APPROX(values[2], 1.);
+        EXPECT_APPROX(values[3], 2.);
+    }
+#endif
+
+
+    SECTION("make_longitude_range") {
+        test_type test{1., -1., 2., -1.};
+        std::unique_ptr<Range> range(range::Regular::make_longitude_range(test.inc, test.a, test.b, test.ref));
+
+        EXPECT(range->size() == 4);
+
+        EXPECT_APPROX(range->a(), -1.);
+        EXPECT_APPROX(range->b(), 2.);
+        EXPECT_APPROX(range->increment(), 1.);
+
+        const auto& values = range->values();
 
         EXPECT_APPROX(values[0], -1.);
         EXPECT_APPROX(values[1], 0.);
         EXPECT_APPROX(values[2], 1.);
         EXPECT_APPROX(values[3], 2.);
 
-        for (const auto& range : {
-                 range::RegularLongitude(1., 0., 360., 0.),
-                 range::RegularLongitude(1., 0.5, 359.5, 0.5),
-                 range::RegularLongitude(1., 0., 360., 0.5),
+        for (const auto& test : {
+                 test_type{1., 0., 360., 0.},
+                 {1., 0., 360., 0.},
+                 {1., 0.5, 359.5, 0.5},
+                 {1., 0., 360., 0.5},
              }) {
-            EXPECT(range.periodic());
-            EXPECT(range.size() == 360);
+            std::unique_ptr<Range> range(range::Regular::make_longitude_range(test.inc, test.a, test.b, test.ref));
+            EXPECT(range->periodic());
+            EXPECT(range->size() == 360);
         }
     }
 
 
+#if 0
     SECTION("degenerate") {
         EXPECT_THROWS_AS(range::RegularLongitude(static_cast<size_t>(0), 0., 0.), eckit::AssertionFailed);
         EXPECT_THROWS_AS(range::RegularLongitude(static_cast<size_t>(0), 0., 10.), eckit::AssertionFailed);
@@ -185,9 +219,11 @@ CASE("range::RegularLongitude") {
         EXPECT(range4->b() == 170.);
         EXPECT_NOT(range4->periodic());
     }
+#endif
 }
 
 
+#if 0
 CASE("range::RegularLatitude") {
     SECTION("simple") {
         const range::RegularLatitude range1(1., 90., -90., 0.5);

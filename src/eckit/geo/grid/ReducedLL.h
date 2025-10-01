@@ -55,7 +55,7 @@ private:
 
     const pl_type pl_;
 
-    std::unique_ptr<Range> x_;
+    mutable std::unique_ptr<Range> x_;
     std::unique_ptr<Range> y_;
     order::Scan scan_;
 

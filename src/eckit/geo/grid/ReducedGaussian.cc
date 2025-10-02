@@ -36,10 +36,8 @@ size_t check_N(size_t N) {
 }
 
 
-Range* make_x_range(size_t N, size_t Ni, area::BoundingBox* bbox) {
-    check_N(Ni);
-
-    auto* global = range::Regular::make_longitude_range(360. / static_cast<double>(check_N(4 * N)), 0., 360.);
+Range* make_x_range(size_t Ni, area::BoundingBox* bbox) {
+    auto* global = range::Regular::make_longitude_range(360. / static_cast<double>(check_N(Ni)), 0., 360.);
     return bbox == nullptr ? global : std::unique_ptr<Range>(global)->make_cropped_range(bbox->west, bbox->east);
 }
 
@@ -104,7 +102,7 @@ size_t ReducedGaussian::nx(size_t j) const {
         auto Ni   = pl_.at(j_ + j);
         ASSERT(Ni >= 0);
 
-        x_[j].reset(make_x_range(N_, static_cast<size_t>(Ni), &bbox));
+        x_[j].reset(make_x_range(static_cast<size_t>(Ni), &bbox));
         ASSERT(x_[j]);
     }
 

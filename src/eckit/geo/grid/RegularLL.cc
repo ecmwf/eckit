@@ -57,7 +57,7 @@ RegularLL::RegularLL(const Increments& inc, Projection* proj) : RegularLL(inc, a
 
 RegularLL::RegularLL(const Increments& inc, area::BoundingBox bbox, PointLonLat ref, Projection* proj) :
     Regular({range::Regular::make_longitude_range(inc.dx, bbox.west, bbox.east, ref.lon),
-             range::Regular::make_latitude_range(inc.dy, bbox.north, bbox.south, ref.lat)},
+             range::Regular::make_latitude_range(-inc.dy, bbox.north, bbox.south, ref.lat)},
             bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
     ASSERT(!empty());
 }
@@ -77,7 +77,7 @@ Spec* RegularLL::spec(const std::string& name) {
 void RegularLL::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
-    custom.set("grid", std::vector<double>{dx(), dy()});
+    custom.set("grid", std::vector<double>{dx(), -dy()});
 
     boundingBox().fill_spec(custom);
 }

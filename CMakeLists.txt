@@ -146,8 +146,7 @@ ecbuild_add_option( FEATURE LZ4
                     REQUIRED_PACKAGES LZ4 )
 
 ecbuild_add_option( FEATURE AEC
-                    DESCRIPTION "AEC support for compression" 
-                    REQUIRED_PACKAGES "NAME libaec VERSION 1.0.6")
+                    REQUIRED_PACKAGES "NAME libaec VERSION 1.0.6"
                     DESCRIPTION "AEC support for compression" )
 
 ecbuild_add_option( FEATURE ZIP

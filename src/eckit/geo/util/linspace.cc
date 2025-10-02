@@ -21,8 +21,8 @@
 namespace eckit::geo::util {
 
 
-const std::vector<double>& linspace(double start, double stop, size_t num, bool endpoint) {
-    const auto key = (eckit::MD5{} << start << stop << num << endpoint).digest();
+const std::vector<double>& linspace(double start, double stop, size_t num) {
+    const auto key = (eckit::MD5{} << start << stop << num).digest();
 
     static cache::MemoryCacheT<decltype(key), std::vector<double>> cache;
     if (cache.contains(key)) {
@@ -37,7 +37,7 @@ const std::vector<double>& linspace(double start, double stop, size_t num, bool 
         return (cache[key] = {start});
     }
 
-    const auto step = (stop - start) / static_cast<double>(endpoint ? (num - 1) : num);
+    const auto step = (stop - start) / static_cast<double>(num - 1);
 
     std::vector<double> l(num);
     std::generate_n(l.begin(), num,

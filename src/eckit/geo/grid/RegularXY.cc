@@ -44,8 +44,7 @@ Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
     PointXY b{a.X + (shape.nx > 1 ? inc.dx * static_cast<double>(shape.nx - 1) : 0),  //
               a.Y - (shape.ny > 1 ? inc.dy * static_cast<double>(shape.ny - 1) : 0)};
 
-    return {range::Regular::make_xy_range(inc.dx, a.X, b.X, a.X),
-            range::Regular::make_xy_range(inc.dy, a.Y, b.Y, a.Y)};
+    return {range::Regular::make_xy_range(inc.dx, a.X, b.X, a.X), range::Regular::make_xy_range(inc.dy, a.Y, b.Y, a.Y)};
 }
 
 

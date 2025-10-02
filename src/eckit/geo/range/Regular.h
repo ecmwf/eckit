@@ -22,15 +22,11 @@ namespace eckit::geo::range {
 class Regular final : public Range {
 public:
 
-    // -- Constructors
-
-    Regular(double a, double b, size_t num, bool periodic = false);
-
     // -- Methods
 
-    [[nodiscard]] static Range* make_xy_range(double inc, double a, double b, double ref = 0);
-    [[nodiscard]] static Range* make_latitude_range(double inc, double a, double b, double ref = 0);
-    [[nodiscard]] static Range* make_longitude_range(double inc, double a, double b, double ref = 0);
+    [[nodiscard]] static Regular* make_xy_range(double inc, double a, double b, double ref = 0);
+    [[nodiscard]] static Regular* make_latitude_range(double inc, double a, double b, double ref = 0);
+    [[nodiscard]] static Regular* make_longitude_range(double inc, double a, double b, double ref = 0);
 
     [[nodiscard]] Range* make_cropped_range(double crop_a, double crop_b) const override;
 
@@ -42,9 +38,15 @@ public:
 
 private:
 
+    // -- Constructors
+
+    Regular(Fraction inc, Fraction a, Fraction b, bool periodic);
+
     // -- Members
 
     const Fraction increment_;
+    const Fraction a_;
+    const Fraction b_;
     const bool periodic_;
 };
 

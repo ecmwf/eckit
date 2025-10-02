@@ -21,6 +21,10 @@ ecbuild_add_test( TARGET      eckit_test_utils_string_tools
                   SOURCES     test_string_tools.cc
                   LIBS        eckit )
 
+ecbuild_add_test( TARGET      eckit_test_type_to_string
+                  SOURCES     test_type_to_string.cc
+                  LIBS        eckit )
+
 ecbuild_add_test( TARGET      eckit_test_utils_translator
                   SOURCES     test_translator.cc
                   LIBS        eckit )

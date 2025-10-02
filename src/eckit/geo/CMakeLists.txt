@@ -189,25 +189,24 @@ if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_libs PROJ::proj)
 endif()
 
-if(eckit_HAVE_GEO_GRID_FESOM)
-    list(APPEND eckit_geo_srcs grid/unstructured/FESOM.cc grid/unstructured/FESOM.h)
-    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
-    list(APPEND eckit_geo_libs eckit_codec)
-    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/FESOM.yaml")
-endif()
+if(ECKIT_GEO_CODEC_GRIDS)
+    list(APPEND eckit_geo_srcs
+        grid/unstructured/FESOM.cc
+        grid/unstructured/FESOM.h
+        grid/unstructured/ICON.cc
+        grid/unstructured/ICON.h
+        grid/ORCA.cc grid/ORCA.h
+    )
 
-if(eckit_HAVE_GEO_GRID_ICON)
-    list(APPEND eckit_geo_srcs grid/unstructured/ICON.cc grid/unstructured/ICON.h)
-    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
-    list(APPEND eckit_geo_libs eckit_codec)
-    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ICON-CH.yaml" "~eckit/share/eckit/geo/ICON-DWD.yaml" "~eckit/share/eckit/geo/ICON-MPIM.yaml")
-endif()
+    list(APPEND eckit_GEO_SHARE_GRID
+        "~eckit/share/eckit/geo/FESOM.yaml"
+        "~eckit/share/eckit/geo/ICON-CH.yaml"
+        "~eckit/share/eckit/geo/ICON-DWD.yaml"
+        "~eckit/share/eckit/geo/ICON-MPIM.yaml"
+        "~eckit/share/eckit/geo/ORCA.yaml"
+    )
 
-if(eckit_HAVE_GEO_GRID_ORCA)
-    list(APPEND eckit_geo_srcs grid/ORCA.cc grid/ORCA.h)
-    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
-    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ORCA.yaml")
 endif()
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)

@@ -42,6 +42,7 @@ class CodesContent;
 
 class MetadataGatherer {
 public:
+
     virtual ~MetadataGatherer();
     virtual void setValue(const std::string& key, const std::string& value) = 0;
     virtual void setValue(const std::string& key, long value)               = 0;
@@ -50,10 +51,11 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// Message represents an immutable data object with metadata attached
-/// Modifications to messages create new messages via transformation actions
+/// Message represents a data object with metadata attached
+/// Applying a transformation to a message modifies it in place
 class Message {
 public:
+
     Message();
 
     explicit Message(MessageContent*);
@@ -76,10 +78,12 @@ public:
     long getLong(const std::string& key) const;
     double getDouble(const std::string& key) const;
     void getDoubleArray(const std::string& key, std::vector<double>&) const;
+    void getFloatArray(const std::string& key, std::vector<float>&) const;
     size_t getSize(const std::string& key) const;
 
     // Write double array at key to pre allocated array
     void getDoubleArray(const std::string& key, double* data, size_t len) const;
+    void getFloatArray(const std::string& key, float* data, size_t len) const;
 
     void getMetadata(MetadataGatherer&, GetMetadataOptions options = GetMetadataOptions{}) const;
 
@@ -89,9 +93,10 @@ public:
 
     mars::MarsRequest request() const;
 
-    Message transform(const eckit::StringDict& modifiers) const;
+    void transform(const eckit::OrderedStringDict& modifiers);
 
 private:
+
     MessageContent* content_;
     mutable MessageDecoder* decoder_ = nullptr;  // non-owning
 
@@ -111,17 +116,15 @@ template <class T>
 class StringSetter : public MetadataGatherer {
     T& object_;
 
-    void setValue(const std::string& key, const std::string& value) override {
-        object_.setValue(key, value);
-    }
+    void setValue(const std::string& key, const std::string& value) override { object_.setValue(key, value); }
 
     void setValue(const std::string& /*key*/, long /*value*/) override {}
 
     void setValue(const std::string& /*key*/, double /*value*/) override {}
 
 public:
-    StringSetter(T& object) :
-        object_(object) {}
+
+    StringSetter(T& object) : object_(object) {}
 };
 
 template <class T>
@@ -135,8 +138,8 @@ class TypedSetter : public MetadataGatherer {
     void setValue(const std::string& key, double value) override { object_.setValue(key, value); }
 
 public:
-    TypedSetter(T& object) :
-        object_(object) {}
+
+    TypedSetter(T& object) : object_(object) {}
 };
 //----------------------------------------------------------------------------------------------------------------------
 

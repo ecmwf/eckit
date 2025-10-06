@@ -245,19 +245,14 @@ struct StringWrap {
     int uid;  // Unique id that gets generated even on movemment
     int id;   // Id that will also be moved - i.e. will be set to 0
 
-    StringWrap(const char* v) :
-        str(v), uid(++idCounter), id(uid) {}
-    StringWrap(const std::string& v) :
-        str(v), uid(++idCounter), id(uid) {}
-    StringWrap() :
-        str(), uid(++idCounter), id(uid) {}
+    StringWrap(const char* v) : str(v), uid(++idCounter), id(uid) {}
+    StringWrap(const std::string& v) : str(v), uid(++idCounter), id(uid) {}
+    StringWrap() : str(), uid(++idCounter), id(uid) {}
 
     // Copy contructor
-    StringWrap(const StringWrap& other) :
-        str(other.str), uid(++idCounter), id(uid) {}
+    StringWrap(const StringWrap& other) : str(other.str), uid(++idCounter), id(uid) {}
     // Move contructor
-    StringWrap(StringWrap&& other) :
-        str(std::move(other.str)), uid(++idCounter), id(other.id) {
+    StringWrap(StringWrap&& other) : str(std::move(other.str)), uid(++idCounter), id(other.id) {
         other.str = "";
         other.id  = 0;
     }
@@ -278,12 +273,8 @@ struct StringWrap {
     static std::set<int> deletedIds;
     static std::set<int> deletedUIds;
 
-    static bool idIsDeleted(int i) {
-        return (deletedIds.find(i) != deletedIds.end());
-    }
-    static bool uidIsDeleted(int i) {
-        return (deletedUIds.find(i) != deletedUIds.end());
-    }
+    static bool idIsDeleted(int i) { return (deletedIds.find(i) != deletedIds.end()); }
+    static bool uidIsDeleted(int i) { return (deletedUIds.find(i) != deletedUIds.end()); }
     static void printIdsDeleted() {
         std::cout << "Id deleted: ";
         for (int i : deletedIds) {
@@ -332,10 +323,12 @@ CASE("test destructor on non-trivial object: copy assign value") {
         int testCopyAssignValue2OptUId = opt.value().uid;
         EXPECT_NOT_EQUAL(testCopyAssignValue2OptId, testCopyAssignValue2Id);
         EXPECT_NOT_EQUAL(testCopyAssignValue2OptUId, testCopyAssignValue2UId);
-        EXPECT_EQUAL(testCopyAssignValue2OptId, testCopyAssignValue1OptId);    // ID and UID is preserved on copy assignment
-        EXPECT_EQUAL(testCopyAssignValue2OptUId, testCopyAssignValue1OptUId);  // ID and UID is preserved on copy assignment
-        EXPECT(!StringWrap::idIsDeleted(testCopyAssignValue1OptId));           // ID and UID is preserved on copy assignment
-        EXPECT(!StringWrap::uidIsDeleted(testCopyAssignValue1OptUId));         // ID and UID is preserved on copy assignment
+        EXPECT_EQUAL(testCopyAssignValue2OptId,
+                     testCopyAssignValue1OptId);  // ID and UID is preserved on copy assignment
+        EXPECT_EQUAL(testCopyAssignValue2OptUId,
+                     testCopyAssignValue1OptUId);                       // ID and UID is preserved on copy assignment
+        EXPECT(!StringWrap::idIsDeleted(testCopyAssignValue1OptId));    // ID and UID is preserved on copy assignment
+        EXPECT(!StringWrap::uidIsDeleted(testCopyAssignValue1OptUId));  // ID and UID is preserved on copy assignment
 
         // Reset
         opt = Optional<StringWrap>{};
@@ -556,7 +549,9 @@ CASE("constexpr") {
         static_assert(pod->b == 2, "Trivial optional constexpr");
 
         // Composing not possible with C++11 limitations
-        // constexpr Optional<TestOptionalConstexprPOD> pod2 = bool(pod) ? Optional<TestOptionalConstexprPOD>(TestOptionalConstexprPOD{pod().a+1,2}) : Optional<TestOptionalConstexprPOD>{};
+        // constexpr Optional<TestOptionalConstexprPOD> pod2 = bool(pod) ?
+        // Optional<TestOptionalConstexprPOD>(TestOptionalConstexprPOD{pod().a+1,2}) :
+        // Optional<TestOptionalConstexprPOD>{};
 
         // // Constexpr copy is not possible in C++11 (requires c++14 anyway)
         // // constexpr Optional<int> v3(v2);

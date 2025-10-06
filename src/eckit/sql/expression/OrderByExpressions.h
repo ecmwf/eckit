@@ -26,6 +26,7 @@ namespace eckit::sql::expression {
 
 class OrderByExpressions : public Expressions {
 public:
+
     OrderByExpressions(const OrderByExpressions& o);
 
     OrderByExpressions(const std::vector<bool>& ascending);
@@ -38,6 +39,7 @@ public:
     bool operator==(const OrderByExpressions&) const;
 
 private:
+
     const std::vector<bool>& ascending_;
 };
 

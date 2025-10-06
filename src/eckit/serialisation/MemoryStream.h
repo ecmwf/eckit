@@ -25,6 +25,7 @@ class Buffer;
 
 class MemoryStream : public Stream {
 public:
+
     MemoryStream(const Buffer&);
     MemoryStream(Buffer&);
 
@@ -41,6 +42,7 @@ public:
     size_t position() const;
 
 private:  // members
+
     char* address_;
     const size_t size_;
 

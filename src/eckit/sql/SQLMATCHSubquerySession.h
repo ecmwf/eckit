@@ -37,12 +37,14 @@ namespace sql {
 
 class SQLMATCHSubquerySession : public SQLSession {
 public:
+
     SQLMATCHSubquerySession(expression::function::FunctionMATCH&);
     ~SQLMATCHSubquerySession();
 
     SQLStatement* statement();
 
 private:
+
     // No copy allowed
     SQLMATCHSubquerySession(const SQLMATCHSubquerySession&);
     SQLMATCHSubquerySession& operator=(const SQLMATCHSubquerySession&);

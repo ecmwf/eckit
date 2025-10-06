@@ -57,8 +57,7 @@ std::shared_ptr<SQLExpression> FunctionROWNUMBER::simplify(bool&) {
     return 0;
 }
 
-void FunctionROWNUMBER::partialResult() { /*NOTIMP;*/
-}
+void FunctionROWNUMBER::partialResult() { /*NOTIMP;*/ }
 
 const eckit::sql::type::SQLType* FunctionROWNUMBER::type() const {
     return &eckit::sql::type::SQLType::lookup("integer");

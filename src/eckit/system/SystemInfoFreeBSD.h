@@ -28,6 +28,7 @@ namespace system {
 class SystemInfoFreeBSD : public SystemInfo {
 
 public:  // methods
+
     ~SystemInfoFreeBSD() override;
 
     virtual eckit::LocalPathName executablePath() const;
@@ -37,7 +38,8 @@ public:  // methods
     virtual std::string dynamicLibraryName(const std::string& name) const;
 
 protected:  // methods
-private:    // members
+
+private:  // members
 };
 
 //----------------------------------------------------------------------------------------------------------------------

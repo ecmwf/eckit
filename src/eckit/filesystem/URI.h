@@ -24,6 +24,7 @@
 #include "eckit/io/Offset.h"
 #include "eckit/net/Endpoint.h"
 
+#include <string>
 
 namespace eckit {
 
@@ -35,6 +36,7 @@ class DataHandle;
 class URI {
 
 public:  // methods
+
     friend Stream& operator<<(Stream& s, const URI& uri) {
         uri.encode(s);
         return s;
@@ -48,6 +50,7 @@ public:  // methods
     URI(const std::string& scheme, const URI& uri);
     URI(const std::string& scheme, const std::string& hostname, int port);
     URI(const std::string& scheme, const URI& uri, const std::string& hostname, int port);
+    URI(std::string scheme, const net::Endpoint& endpoint, std::string name) noexcept;
     URI(Stream& s);
 
     // Destructor
@@ -62,7 +65,9 @@ public:  // methods
     DataHandle* newReadHandle(const OffsetList&, const LengthList&) const;
     DataHandle* newReadHandle() const;
 
-    void endpoint(const eckit::net::Endpoint& endpoint) {
+    net::Endpoint endpoint() const { return {host_, port_}; }
+
+    void endpoint(const net::Endpoint& endpoint) {
         host_ = endpoint.host();
         port_ = endpoint.port();
     }
@@ -89,26 +94,31 @@ public:  // methods
     std::string asRawString() const;
 
     bool operator!=(const URI& other) const {
-        return scheme_ != other.scheme_ || name_ != other.name_ || user_ != other.user_ || host_ != other.host_ || port_ != other.port_ || queryValues_ != other.queryValues_ || fragment_ != other.fragment_;
+        return scheme_ != other.scheme_ || name_ != other.name_ || user_ != other.user_ || host_ != other.host_ ||
+               port_ != other.port_ || queryValues_ != other.queryValues_ || fragment_ != other.fragment_;
     }
 
     bool operator==(const URI& other) const {
-        return scheme_ == other.scheme_ && name_ == other.name_ && user_ == other.user_ && host_ == other.host_ && port_ == other.port_ && queryValues_ == other.queryValues_ && fragment_ == other.fragment_;
+        return scheme_ == other.scheme_ && name_ == other.name_ && user_ == other.user_ && host_ == other.host_ &&
+               port_ == other.port_ && queryValues_ == other.queryValues_ && fragment_ == other.fragment_;
     }
 
 protected:  // methods
+
     void print(std::ostream&) const;
     void encode(Stream& s) const;
 
 private:  // methods
+
     size_t parseScheme(const std::string& uri);
     void parse(const std::string& uri, size_t first, bool authority, bool query, bool fragment);
     void parseQueryValues(const std::string& query);
 
-    static std::string encode(const std::string &value);
-    static std::string decode(const std::string &value);
+    static std::string encode(const std::string& value);
+    static std::string decode(const std::string& value);
 
 private:  // members
+
     std::string name_;
     std::string scheme_;
     std::string user_;

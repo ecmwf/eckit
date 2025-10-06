@@ -29,13 +29,14 @@ namespace eckit {
 
 class HyperCube {
 public:  // types
+
     typedef std::vector<Ordinal> Dimensions;
     typedef std::vector<Ordinal> Coordinates;
     typedef std::vector<Ordinal> Remapping;
 
 public:  // methods
-    explicit HyperCube(const Dimensions& d) :
-        dimensions_(d) {}
+
+    explicit HyperCube(const Dimensions& d) : dimensions_(d) {}
 
     /// Translate coordinates into an index to a 1 dimension array
     Ordinal index(const Coordinates&) const;
@@ -60,6 +61,7 @@ public:  // methods
     static void combine(Remapping&, const Remapping&);
 
 private:  // members
+
     Dimensions dimensions_;
 };
 

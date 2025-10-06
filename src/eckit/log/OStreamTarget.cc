@@ -16,13 +16,13 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-OStreamTarget::OStreamTarget(std::ostream& out) :
-    out_(out) {}
+OStreamTarget::OStreamTarget(std::ostream& out) : out_(out) {}
 
 OStreamTarget::~OStreamTarget() {}
 
 void OStreamTarget::write(const char* start, const char* end) {
-    if (start >= end) return;
+    if (start >= end)
+        return;
     out_.write(start, end - start);
 }
 void OStreamTarget::flush() {

@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionCOUNT : public FunctionExpression {
 public:
+
     FunctionCOUNT(const std::string&, const expression::Expressions&);
     FunctionCOUNT(const FunctionCOUNT&);
     ~FunctionCOUNT();
@@ -30,6 +31,7 @@ public:
     static const char* help() { return "Average (aggregate function)"; }
 
 private:
+
     // No copy allowed
     FunctionCOUNT& operator=(const FunctionCOUNT&);
 

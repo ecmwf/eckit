@@ -25,12 +25,15 @@ namespace eckit::net {
 class TCPSocket {
 
 public:  // types
+
     class UnknownHost : public Exception {
     public:
+
         explicit UnknownHost(const std::string&);
     };
 
 public:  // methods
+
     TCPSocket();
 
     // From an existing TCPSocket (see TCPServer::accept)
@@ -47,7 +50,7 @@ public:  // methods
 
     TCPSocket& operator=(net::TCPSocket&);
 
-    long write(const void* buf, long length);
+    long write(const void* buf, long length) const;
 
     /// Read from a TCP socket
     ///
@@ -59,7 +62,7 @@ public:  // methods
     ///   on flaky connections
     /// \arg **socketSelectTimeout** (*long*): timeout in seconds for the select
     ///   (only if **useSelectOnTCPSocket** is enabled)
-    long read(void* buf, long length);
+    long read(void* buf, long length) const;
 
     long rawRead(void*, long);  // Non-blocking version
 
@@ -85,13 +88,9 @@ public:  // methods
         sendBufferSize(n);
     }
 
-    void receiveBufferSize(int n) {
-        receiveBufferSize_ = n;
-    }
+    void receiveBufferSize(int n) { receiveBufferSize_ = n; }
 
-    void sendBufferSize(int n) {
-        sendBufferSize_ = n;
-    }
+    void sendBufferSize(int n) { sendBufferSize_ = n; }
 
     virtual int socket();
 
@@ -101,6 +100,7 @@ public:  // methods
     void debug(bool on);
 
 public:  // class methods
+
     static std::string addrToHost(in_addr);
     static in_addr hostToAddr(const std::string&);
     static std::string hostName(const std::string& h, bool full = false);
@@ -108,7 +108,8 @@ public:  // class methods
     /// @note uses sigaction to ignore SIGPIPE
     static void register_ignore_sigpipe();
 
-protected:                    // members
+protected:  // members
+
     int socket_;              // i/o socket
     int localPort_;           // effective port
     int remotePort_;          // remote port
@@ -121,16 +122,20 @@ protected:                    // members
     int sendBufferSize_    = 0;
 
     // Debug
-    bool debug_;
-    bool newline_;
-    char mode_;
+    struct {
+        bool on{false};
+        mutable bool newline{true};
+        mutable char mode{0};
+    } debug_;
 
 protected:  // methods
+
     int createSocket(int port, const SocketOptions& options);
 
     virtual void print(std::ostream& s) const;
 
 private:  // methods
+
     /// @pre socket must be made
     virtual void bind();
     virtual std::string bindingAddress() const;

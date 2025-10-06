@@ -23,11 +23,13 @@ namespace eckit {
 
 class RemoteCommandUser : public eckit::net::NetUser {
 public:
+
     RemoteCommandUser(eckit::net::TCPSocket&);
     ~RemoteCommandUser() override;
     static void terminate(RemoteCommandUser& other) { other.stop(); }
 
 private:
+
     void serve(eckit::Stream&, std::istream&, std::ostream&) override;
     std::string from_;
 };

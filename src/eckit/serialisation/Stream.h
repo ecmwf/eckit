@@ -34,6 +34,7 @@ class Buffer;
 
 class Stream : private NonCopyable {
 public:
+
     virtual ~Stream();
 
     // Output
@@ -133,6 +134,7 @@ public:
 
 
 protected:
+
     // -- Contructors
 
     Stream();
@@ -145,8 +147,8 @@ protected:
     size_t blobSize();
 
 private:
-    enum tag
-    {
+
+    enum tag {
         tag_zero,
         tag_start_obj,
         tag_end_obj,

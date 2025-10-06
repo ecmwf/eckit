@@ -25,6 +25,7 @@ typedef void (*abort_handler_t)();
 class LibEcKit : public eckit::system::Library {
 
 public:  // methods
+
     LibEcKit();
 
     static LibEcKit& instance();
@@ -36,6 +37,7 @@ public:  // methods
     bool dontDeregisterFactories() const;
 
 protected:  // methods
+
     const void* addr() const;
 
     virtual std::string version() const;
@@ -43,6 +45,7 @@ protected:  // methods
     virtual std::string gitsha1(unsigned int count) const;
 
 private:  // members
+
     abort_handler_t abort_handler_;
     bool dontDeregisterFactories_;
 };

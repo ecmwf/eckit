@@ -40,13 +40,11 @@ void MMappedFileHandle::encode(Stream& s) const {
     s << path_;
 }
 
-MMappedFileHandle::MMappedFileHandle(Stream& s) :
-    DataHandle(s), mmap_(nullptr), fd_(-1) {
+MMappedFileHandle::MMappedFileHandle(Stream& s) : DataHandle(s), mmap_(nullptr), fd_(-1) {
     s >> path_;
 }
 
-MMappedFileHandle::MMappedFileHandle(const std::string& path) :
-    path_(path), mmap_(nullptr), fd_(-1) {}
+MMappedFileHandle::MMappedFileHandle(const std::string& path) : path_(path), mmap_(nullptr), fd_(-1) {}
 
 MMappedFileHandle::~MMappedFileHandle() {}
 

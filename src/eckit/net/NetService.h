@@ -24,6 +24,7 @@ class NetUser;
 class NetService : public Thread {
 
 public:
+
     /// @param[in]  port     TCP port to listen on
     /// @param[in]  visible  Make the thread this service is running in visible on the Monitor (defaults to false)
     NetService(int port, bool visible = true, const SocketOptions& options = SocketOptions::server());
@@ -38,10 +39,12 @@ public:
     void run() override;
 
 private:
+
     TCPServer server_;
     bool visible_;  ///< Visible on the Monitor?
 
 private:
+
     virtual NetUser* newUser(net::TCPSocket&) const = 0;
     virtual std::string name() const                = 0;
 

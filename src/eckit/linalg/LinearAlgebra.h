@@ -25,6 +25,7 @@ namespace eckit::linalg {
 
 class LinearAlgebra {
 public:
+
     // - Static methods
 
     /// Get the currently selected backend (instance)
@@ -67,21 +68,15 @@ public:
     static std::string name();
 
     /// Compute the inner product of vectors x and y
-    static Scalar dot(const Vector& x, const Vector& y) {
-        return LinearAlgebraDense::backend().dot(x, y);
-    }
+    static Scalar dot(const Vector& x, const Vector& y) { return LinearAlgebraDense::backend().dot(x, y); }
 
     /// Compute the product of a dense matrix A and vector x
     /// @note y must be allocated and sized correctly
-    static void gemv(const Matrix& A, const Vector& x, Vector& y) {
-        LinearAlgebraDense::backend().gemv(A, x, y);
-    }
+    static void gemv(const Matrix& A, const Vector& x, Vector& y) { LinearAlgebraDense::backend().gemv(A, x, y); }
 
     /// Compute the product of dense matrices A and X
     /// @note Y must be allocated and sized correctly
-    static void gemm(const Matrix& A, const Matrix& X, Matrix& Y) {
-        LinearAlgebraDense::backend().gemm(A, X, Y);
-    }
+    static void gemm(const Matrix& A, const Matrix& X, Matrix& Y) { LinearAlgebraDense::backend().gemm(A, X, Y); }
 
     /// Compute the product of a sparse matrix A and vector x
     /// @note y must be allocated and sized correctly
@@ -103,14 +98,17 @@ public:
     }
 
 protected:
+
     LinearAlgebra() = default;
 
 private:
+
     LinearAlgebra(const LinearAlgebra&)            = delete;
     LinearAlgebra& operator=(const LinearAlgebra&) = delete;
 
     friend std::ostream& operator<<(std::ostream& s, const LinearAlgebra&) {
-        return s << "LinearAlgebra[LinearAlgebraDense=[" << LinearAlgebraDense::backend() << "],LinearAlgebraSparse=[" << LinearAlgebraSparse::backend() << "]]";
+        return s << "LinearAlgebra[LinearAlgebraDense=[" << LinearAlgebraDense::backend() << "],LinearAlgebraSparse=["
+                 << LinearAlgebraSparse::backend() << "]]";
     }
 };
 

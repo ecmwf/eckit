@@ -72,6 +72,7 @@ struct KDMemory : public StatCollector {
     size_t nbItems() const { return nbItems_; }
 
 private:
+
     size_t nbItems_{0};
 };
 

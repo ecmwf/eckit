@@ -24,6 +24,7 @@ namespace eckit {
 
 class FileDescHandle : public DataHandle {
 public:
+
     // -- Contructors
 
     FileDescHandle(int, bool close = false);
@@ -58,6 +59,7 @@ public:
 
 
 private:
+
     // -- Members
 
     int fd_;

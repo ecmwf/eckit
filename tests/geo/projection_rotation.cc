@@ -11,7 +11,9 @@
 
 
 #include <memory>
+#include <vector>
 
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/spec/Custom.h"
@@ -29,13 +31,13 @@ constexpr double EPS = 1e-6;
 
 CASE("rotation (1)") {
     spec::Custom spec({
-        {"projection", "rotation"},
+        {"type", "rotation"},
         {"south_pole_lat", -91.},
         {"south_pole_lon", -361.},
     });
 
     Point p = PointLonLat{1, 1};
-    P projection(ProjectionFactory::instance().get(spec.get_string("projection")).create(spec));
+    P projection(ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec));
 
     EXPECT(points_equal(p, projection->inv(projection->fwd(p))));
     EXPECT(points_equal(p, projection->fwd(projection->inv(p))));
@@ -49,7 +51,7 @@ CASE("rotation (2)") {
     for (auto a : delta) {
         for (auto b : delta) {
             for (auto c : delta) {
-                projection::Rotation rot(0. + static_cast<double>(b), -90. + static_cast<double>(a),
+                projection::Rotation rot({0. + static_cast<double>(b), -90. + static_cast<double>(a)},
                                          static_cast<double>(c));
                 EXPECT(rot.rotated() == (a % 360 != 0 || (b - c) % 360 != 0));
 
@@ -63,7 +65,7 @@ CASE("rotation (2)") {
 
 CASE("rotation (3)") {
     const PointLonLat sp(182., -46.7);
-    projection::Rotation rot(sp.lon, sp.lat, 0.);
+    projection::Rotation rot({sp.lon, sp.lat}, 0.);
 
     ASSERT(points_equal(sp.antipode(), PointLonLat{2., 46.7}));
 
@@ -185,9 +187,9 @@ CASE("rotation (3)") {
 
 
 CASE("rotation (4)") {
-    const projection::Rotation non_rotated(0., -90., 0.);
-    const projection::Rotation rotation_angle(0., -90., -180.);
-    const projection::Rotation rotation_matrix(4., -40., 180.);
+    const projection::Rotation non_rotated({0., -90.}, 0.);
+    const projection::Rotation rotation_angle({0., -90.}, -180.);
+    const projection::Rotation rotation_matrix({4., -40.}, 180.);
 
     EXPECT(not non_rotated.rotated());
     EXPECT(rotation_angle.rotated());
@@ -226,14 +228,14 @@ CASE("rotation (4)") {
 
 CASE("rotation (5)") {
     spec::Custom spec({
-        {"projection", "rotation"},
+        {"type", "rotation"},
         {"south_pole_lat", -90.},
         {"south_pole_lon", 0.},
         {"rotation_angle", 45.},
     });
 
     // compose sequentially
-    const auto& builder = ProjectionFactory::instance().get("rotation");
+    const auto& builder = ProjectionFactoryType::instance().get(spec.get_string("type"));
     P composition1(new projection::Composer{
         builder.create(spec),
         builder.create(spec),
@@ -280,6 +282,52 @@ CASE("rotation (5)") {
         EXPECT(points_equal(qs1[6], qs2[0]));
         EXPECT(points_equal(qs1[7], qs2[1]));
     }
+}
+
+
+CASE("make_from_projection (1)") {
+    projection::Rotation rotation(spec::Custom({
+        {"type", "rotation"},
+        {"south_pole_lat", 10.},
+        {"south_pole_lon", 20.},
+    }));
+
+
+    struct test_t {
+        PointLonLat p;
+        PointLonLat q;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {{0., 1.}, {-160., 79.}},
+             {{2., 1.}, {-170.369068, 78.821318}},
+             {{0., 0.}, {-160., 80.}},
+             {{2., 0.}, {-171.370559, 79.803957}},
+         }) {
+        EXPECT(points_equal(rotation.fwd(test.p), test.q, EPS));
+    }
+
+    EXPECT_THROWS_AS(auto dummy = area::BoundingBox::make_from_projection(PointXY{0., 0.}, PointXY{2., 1.}, rotation),
+                     std::bad_variant_access);
+
+    auto bbox = area::BoundingBox::make_from_projection(PointLonLat{0., 0.}, PointLonLat{2., 1.}, rotation);
+    ASSERT(bbox);
+
+    EXPECT(points_equal(PointLonLat{bbox->west, bbox->north}, {-171.37056, 80.000001}, EPS));
+    EXPECT(points_equal(PointLonLat{bbox->east, bbox->south}, {-160., 78.821318}, EPS));
+}
+
+
+CASE("make_from_projection (2)") {
+    projection::Rotation rotation({22, -40});
+    PointLonLat min(-27, 33);
+    PointLonLat max(45, 73);
+
+    auto bbox = area::BoundingBox::make_from_projection(min, max, rotation);
+    ASSERT(bbox);
+
+    EXPECT(points_equal(PointLonLat{0, bbox->north}, NORTH_POLE));
+    EXPECT(bbox->periodic());
 }
 
 

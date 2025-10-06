@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionRMS : public FunctionExpression {
 public:
+
     FunctionRMS(const std::string&, const expression::Expressions&);
     FunctionRMS(const FunctionRMS&);
     ~FunctionRMS();
@@ -33,6 +34,7 @@ public:
     static int arity() { return 1; }
 
 private:
+
     // No copy allowed
     FunctionRMS& operator=(const FunctionRMS&);
 

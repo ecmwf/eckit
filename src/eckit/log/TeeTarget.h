@@ -26,18 +26,22 @@ namespace eckit {
 class TeeTarget : public LogTarget {
 
 public:  // methods
+
     TeeTarget(LogTarget* left, LogTarget* right);
 
     ~TeeTarget() override;
 
 protected:
+
     void print(std::ostream& s) const override;
 
 private:
+
     LogTarget* left_;
     LogTarget* right_;
 
 private:
+
     void write(const char* start, const char* end) override;
     void flush() override;
 };

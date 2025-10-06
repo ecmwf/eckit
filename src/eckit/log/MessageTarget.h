@@ -25,9 +25,11 @@ namespace eckit {
 class MessageTarget : public LineBasedTarget {
 
 public:  // methods
+
     MessageTarget();
 
 private:
+
     void line(const char* line) override;
     void print(std::ostream& s) const override;
 };

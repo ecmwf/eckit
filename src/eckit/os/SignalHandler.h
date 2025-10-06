@@ -29,8 +29,8 @@ namespace eckit {
 class SignalHandler : private NonCopyable {
 
 public:  // methods
-    enum Signal
-    {
+
+    enum Signal {
         SigInt  = 2,
         SigQuit = 3
     };
@@ -46,9 +46,11 @@ public:  // methods
     static void checkInterrupt();
 
 private:  // methods
+
     static void interrupt(int);
 
 private:  // members
+
     int signal_;
 
     // unused // sigjmp_buf       buf_;

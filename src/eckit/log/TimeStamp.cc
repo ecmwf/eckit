@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
-#include <iomanip>
 #include <cstdint>
+#include <iomanip>
+#include <sstream>
 
 #include "eckit/eckit.h"
 
@@ -22,11 +22,9 @@ namespace eckit {
 
 const char* TimeStamp::defaultFormat_ = "%Y-%m-%d %H:%M:%S";
 
-TimeStamp::TimeStamp(const std::string& format) :
-    time_(Clock::now()), format_(format) {}
+TimeStamp::TimeStamp(const std::string& format) : time_(Clock::now()), format_(format) {}
 
-TimeStamp::TimeStamp(time_t t, const std::string& format) :
-    time_(t), format_(format) {}
+TimeStamp::TimeStamp(time_t t, const std::string& format) : time_(t), format_(format) {}
 
 std::ostream& operator<<(std::ostream& s, const TimeStamp& x) {
 

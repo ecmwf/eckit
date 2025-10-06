@@ -44,8 +44,8 @@ MultiValueOption::MultiValueOption(const std::string& name, const std::string& d
 size_t MultiValueOption::set(Configured& parametrisation, [[maybe_unused]] size_t values, args_t::const_iterator begin,
                              args_t::const_iterator end) const {
     if (std::distance(begin, end) < n_mandatory_values_) {
-        throw UserError("Not enough option values found for MultiValueOption, where at least "
-                        + std::to_string(n_mandatory_values_) + " were expected");
+        throw UserError("Not enough option values found for MultiValueOption, where at least " +
+                        std::to_string(n_mandatory_values_) + " were expected");
     }
 
     // Collect n_mandatory_values_ mandatory values from the range [begin, end)

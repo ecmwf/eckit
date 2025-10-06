@@ -26,6 +26,7 @@ namespace eckit {
 
 class Configured {
 public:
+
     // -- Exceptions
     // None
 
@@ -73,6 +74,7 @@ public:
     // None
 
 protected:
+
     // -- Members
 
     // -- Methods
@@ -88,6 +90,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
 

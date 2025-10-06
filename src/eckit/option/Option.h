@@ -29,9 +29,11 @@ namespace eckit::option {
 
 class Option : private eckit::NonCopyable {
 public:
+
     using args_t = std::vector<std::string>;
 
 public:  // methods
+
     Option(const std::string& name, const std::string& description);
     virtual ~Option() = default;
 
@@ -65,18 +67,21 @@ public:  // methods
     }
 
 protected:  // members
+
     std::string name_;
     std::string description_;
 
     virtual void print(std::ostream&) const = 0;
 
 private:
+
     friend std::ostream& operator<<(std::ostream& s, const Option& p);
 };
 
 template <class T>
 class BaseOption : public Option {
 public:
+
     BaseOption(const std::string& name, const std::string& description) :
         Option(name, description), default_value_{std::nullopt} {};
     BaseOption(const std::string& name, const std::string& description, const T& default_value) :
@@ -99,12 +104,14 @@ public:
     }
 
 protected:
+
     virtual void set_value(const T& value, Configured& parametrisation) const = 0;
 
     // Performs the conversion from 'string' value to actual 'type' value
     virtual T translate(const std::string& value) const = 0;
 
 private:
+
     std::optional<T> default_value_;
 };
 

@@ -25,6 +25,7 @@ namespace eckit {
 
 class CommandStream : public Stream {
 public:
+
     // -- Contructors
 
     CommandStream(const std::string& name, const char* mode);
@@ -41,6 +42,7 @@ public:
     long write(const void*, long) override;
 
 private:
+
     // -- Members
 
     FILE* file_;

@@ -14,8 +14,8 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include <string>
 #include <sstream>
+#include <string>
 #include <utility>
 
 #include "eckit/config/LibEcKit.h"
@@ -34,11 +34,13 @@ namespace {
 class Pool {
 
 private:
+
     Pool() {}
     std::map<eckit::PathName, std::unique_ptr<eckit::PoolFileEntry>> filePool_;
     std::mutex filePoolMutex_;
 
 public:
+
     static Pool& instance() {
         static Pool pool;
         return pool;
@@ -47,7 +49,7 @@ public:
     void erase(const eckit::PathName& name);
 };
 
-}
+}  // namespace
 
 namespace eckit {
 
@@ -56,12 +58,12 @@ struct PoolFileEntryStatus {
     off_t position_;
     bool opened_;
 
-    PoolFileEntryStatus() :
-        position_(0), opened_(false) {}
+    PoolFileEntryStatus() : position_(0), opened_(false) {}
 };
 
 class PoolFileEntry {
 public:
+
     std::string name_;
     FILE* file_;
     size_t count_;
@@ -75,8 +77,8 @@ public:
     size_t nbSeeks_ = 0;
 
 public:
-    PoolFileEntry(const std::string& name) :
-        name_(name), file_(nullptr), count_(0) {}
+
+    PoolFileEntry(const std::string& name) : name_(name), file_(nullptr), count_(0) {}
 
     void doClose() {
         if (file_) {
@@ -120,7 +122,8 @@ public:
 
             Log::debug<LibEcKit>() << "PooledFile::openForRead " << name_ << std::endl;
 
-            static size_t bufferSize = Resource<size_t>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
+            static size_t bufferSize =
+                Resource<size_t>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
 
             if (bufferSize) {
                 Log::debug<LibEcKit>() << "PooledFile using " << Bytes(bufferSize) << std::endl;
@@ -215,8 +218,7 @@ public:
 };
 
 
-PooledFile::PooledFile(const PathName& name) :
-    name_(name), entry_(Pool::instance().get(name)) {
+PooledFile::PooledFile(const PathName& name) : name_(name), entry_(Pool::instance().get(name)) {
 
     entry_->add(this);
 }
@@ -296,4 +298,4 @@ void Pool::erase(const eckit::PathName& name) {
     filePool_.erase(name);
 }
 
-}
+}  // namespace

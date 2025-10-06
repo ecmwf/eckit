@@ -28,6 +28,7 @@ namespace eckit::codec {
 
 class RecordPrinter {
 public:
+
     explicit RecordPrinter(const Record::URI&, const Configuration& = NoConfig());
 
     explicit RecordPrinter(const PathName&, const Configuration& = NoConfig());
@@ -47,6 +48,7 @@ public:
     friend std::ostream& operator<<(std::ostream&, const RecordPrinter&);
 
 private:
+
     Session session_;
 
     Record::URI uri_;

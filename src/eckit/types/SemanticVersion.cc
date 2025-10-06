@@ -21,8 +21,7 @@
 
 namespace eckit {
 
-SemanticVersion::SemanticVersion() :
-    major_(0), minor_(0), patch_(0) {}
+SemanticVersion::SemanticVersion() : major_(0), minor_(0), patch_(0) {}
 
 SemanticVersion::SemanticVersion(unsigned long major, unsigned long minor, unsigned long patch) :
     major_(major), minor_(minor), patch_(patch) {}

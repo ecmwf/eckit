@@ -36,10 +36,12 @@ class Message;
 
 class MPITransport : public Transport {
 public:  // methods
+
     MPITransport(const eckit::option::CmdArgs& args);
     virtual ~MPITransport() override;
 
 private:  // methods
+
     virtual void sendMessageToNextWorker(const Message& message) override;
     virtual void getNextWorkMessage(Message& message) override;
     virtual void sendStatisticsToProducer(const Message& message) override;
@@ -61,6 +63,7 @@ private:  // methods
     void synchronisedSend(const Message& message, int target, int tag);
 
 private:  // members
+
     int totalRanks_;
     int rank_;
 
@@ -76,4 +79,4 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit
+}  // namespace eckit::distributed

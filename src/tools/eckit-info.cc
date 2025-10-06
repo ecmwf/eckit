@@ -27,8 +27,8 @@ using namespace eckit::system;
 class EckitInfo : public eckit::EckitTool {
 
 public:  // methods
-    EckitInfo(int argc, char** argv) :
-        eckit::EckitTool(argc, argv) {
+
+    EckitInfo(int argc, char** argv) : eckit::EckitTool(argc, argv) {
 
         options_.push_back(new eckit::option::SimpleOption<bool>("json", "Produce JSON output"));
 
@@ -40,16 +40,14 @@ public:  // methods
     }
 
 private:  // methods
+
     virtual void execute(const eckit::option::CmdArgs& args);
     virtual void usage(const std::string& tool) const;
-    virtual int minimumPositionalArguments() const {
-        return 0;
-    }
+    virtual int minimumPositionalArguments() const { return 0; }
 };
 
 void EckitInfo::usage(const std::string& tool) const {
-    eckit::Log::info() << std::endl
-                       << "Usage: " << tool << "[options] ..." << std::endl;
+    eckit::Log::info() << std::endl << "Usage: " << tool << "[options] ..." << std::endl;
     eckit::EckitTool::usage(tool);
 }
 
@@ -112,11 +110,8 @@ void EckitInfo::execute(const eckit::option::CmdArgs& args) {
             std::cout << "Libraries:" << std::endl;
             for (const std::string& libname : LibraryManager::list()) {
                 const Library& lib = LibraryManager::lookup(libname);
-                std::cout << "  "
-                          << lib.name() << " "
-                          << lib.version() << " "
-                          << "(" << lib.gitsha1(7) << ") "
-                          << lib.libraryPath() << std::endl;
+                std::cout << "  " << lib.name() << " " << lib.version() << " "
+                          << "(" << lib.gitsha1(7) << ") " << lib.libraryPath() << std::endl;
             }
         }
 

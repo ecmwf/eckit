@@ -30,6 +30,7 @@ namespace eckit {
 
 class DblBufferError : public Exception {
 public:
+
     DblBufferError(const std::string& what) { reason(std::string("Double buffer error: ") + what); }
 };
 
@@ -39,8 +40,7 @@ struct OneBuffer {
     bool full_;
     long length_;
     char* buffer_;
-    OneBuffer() :
-        full_(false), length_(0), buffer_(0) {}
+    OneBuffer() : full_(false), length_(0), buffer_(0) {}
 };
 
 class DblBufferTask : public Thread {
@@ -51,6 +51,7 @@ class DblBufferTask : public Thread {
     long parent_;
 
 public:
+
     DblBufferTask(DataHandle&, DblBuffer&, OneBuffer*, const Length&, long parent);
     virtual void run();
 };
@@ -220,8 +221,7 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out, const Length& estimate) 
     Log::info() << "Read done " << Bytes(inBytes_) << std::endl;
     Log::info() << "Read rate " << Bytes(inBytes_ / rate) << "/s" << std::endl;
     if (first != rate) {
-        Log::info() << "Read rate no mount " << Bytes(inBytes_ / (rate - first)) << "/s"
-                    << std::endl;
+        Log::info() << "Read rate no mount " << Bytes(inBytes_ / (rate - first)) << "/s" << std::endl;
     }
 
     thread.wait();
@@ -326,8 +326,7 @@ void DblBufferTask::run() {
     Log::info() << "Write done " << Bytes(owner_.outBytes_) << std::endl;
     Log::info() << "Write rate " << Bytes(owner_.outBytes_ / rate) << "/s" << std::endl;
     if (rate != first) {
-        Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s"
-                    << std::endl;
+        Log::info() << "Write rate no mount " << Bytes(owner_.outBytes_ / (rate - first)) << "/s" << std::endl;
     }
 
     Metrics::set("write_time", rate);

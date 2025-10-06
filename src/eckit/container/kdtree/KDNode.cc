@@ -26,8 +26,7 @@ namespace eckit {
 
 
 template <class Traits>
-KDNode<Traits>::KDNode(const Value& value, size_t axis) :
-    SPNodeType(value), axis_(axis) {}
+KDNode<Traits>::KDNode(const Value& value, size_t axis) : SPNodeType(value), axis_(axis) {}
 
 
 template <class Traits>
@@ -122,8 +121,7 @@ template <class Value>
 struct sorter {
     int axis_;
     bool operator()(const Value& a, const Value& b) { return (a.point().x(axis_) < b.point().x(axis_)); }
-    sorter(size_t axis) :
-        axis_(axis) {}
+    sorter(size_t axis) : axis_(axis) {}
 };
 
 

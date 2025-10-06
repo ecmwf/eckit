@@ -39,6 +39,7 @@ std::string MetadataPrettyPrintBase::str() const {
 
 class DefaultMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
+
     explicit DefaultMetadataPrettyPrint(const Metadata&) {}
     void print(std::ostream&) const override {}
 };
@@ -59,6 +60,7 @@ class ArrayMetadataPrettyPrint : public MetadataPrettyPrintBase {
     }
 
 public:
+
     explicit ArrayMetadataPrettyPrint(const Metadata& m) : metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
@@ -97,11 +99,13 @@ public:
     }
 
 private:
+
     Metadata metadata_;
 };
 
 class StringMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
+
     explicit StringMetadataPrettyPrint(const Metadata& m) : metadata_(m) {}
     void print(std::ostream& out) const override {
         std::string type = metadata_.getString("type");
@@ -116,11 +120,13 @@ public:
     }
 
 private:
+
     Metadata metadata_;
 };
 
 class ScalarMetadataPrettyPrint : public MetadataPrettyPrintBase {
 public:
+
     explicit ScalarMetadataPrettyPrint(const Metadata& m) : metadata_(m) {}
     template <typename T>
     T decode() const {
@@ -152,6 +158,7 @@ public:
     }
 
 private:
+
     Metadata metadata_;
 };
 

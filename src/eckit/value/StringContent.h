@@ -29,6 +29,7 @@ class Hash;
 class StringContent : public Content {
 
 protected:
+
     // -- Constructor
 
     StringContent(const std::string&);
@@ -94,6 +95,7 @@ protected:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- No copy allowed
 
     StringContent(const StringContent&);

@@ -38,6 +38,7 @@ struct FileSystemSize;
 
 class LocalPathName {
 public:  // methods
+
     friend void operator<<(Stream&, const LocalPathName&);
     friend void operator>>(Stream&, LocalPathName&);
 
@@ -56,8 +57,7 @@ public:  // methods
         }
     }
     explicit LocalPathName(const PathName& path);
-    LocalPathName(const LocalPathName& p) :
-        path_(p.path_) {}
+    LocalPathName(const LocalPathName& p) : path_(p.path_) {}
 
     // Assignment
 
@@ -259,6 +259,7 @@ public:  // methods
     static LocalPathName cwd();
 
 private:
+
     // Members
 
     std::string path_;

@@ -37,8 +37,7 @@ void RadosWriteHandle::encode(Stream& s) const {
     s << Length(0);  // For future extensio
 }
 
-RadosWriteHandle::RadosWriteHandle(Stream& s) :
-    DataHandle(s), object_(s), opened_(false) {
+RadosWriteHandle::RadosWriteHandle(Stream& s) : DataHandle(s), object_(s), opened_(false) {
     s >> maxObjectSize_;
     if (!maxObjectSize_) {
         maxObjectSize_ = RadosCluster::instance().maxObjectSize();

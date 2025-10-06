@@ -23,6 +23,7 @@ namespace eckit {
 
 class CmdArg : public eckit::Streamable {
 public:
+
     // -- Contructors
 
     CmdArg();
@@ -77,6 +78,7 @@ public:
     }
 
 protected:
+
     // -- Methods
 
     void print(std::ostream&) const;
@@ -86,6 +88,7 @@ protected:
     void set(const std::string&, const eckit::Value&);
 
 private:
+
     // -- Members
 
     typedef std::map<std::string, eckit::Value, std::less<std::string> > CmdMap;

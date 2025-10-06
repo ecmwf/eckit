@@ -24,19 +24,17 @@ namespace eckit::distributed {
 
 class Producer : public Actor {
 
-public: // methods
+public:  // methods
 
-    Producer(Transport &transport);
+    Producer(Transport& transport);
 
     virtual void run();
 
-    virtual bool produce(Message &message) = 0;
-
-
+    virtual bool produce(Message& message) = 0;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

@@ -41,6 +41,7 @@ namespace eckit::sql {
 class SQLSelect : public SQLStatement {
 
 public:
+
     typedef std::pair<const double*, bool> ValueLookup;
 
     SQLSelect(const Expressions& columns, const std::vector<std::reference_wrapper<const SQLTable>>& tables,
@@ -72,9 +73,11 @@ public:
     unsigned long long execute() override;
 
 protected:
+
     void print(std::ostream&) const override;
 
 private:
+
     // No copy allowed
     SQLSelect(const SQLSelect&);
     SQLSelect& operator=(const SQLSelect&);

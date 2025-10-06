@@ -36,6 +36,7 @@ class FOpenDataHandle {
     off_t position_;  // Keep track of position to cater for
 
 public:
+
     FOpenDataHandle(DataHandle* handle, const char* mode, bool delete_on_close, bool open_close);
     ~FOpenDataHandle();
 

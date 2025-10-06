@@ -28,17 +28,20 @@ namespace eckit {
 class ScopeParams {
 
 public:  // methods
+
     ScopeParams(const Params::key_t& scope_key, const Params& p);
     ScopeParams(Stream& s);
 
     static const char* className() { return "eckit::ScopeParams"; }
 
 private:  // methods
+
     friend Params::value_t getValue(const ScopeParams& p, const Params::key_t& key);
     friend void print(const ScopeParams& p, std::ostream& s);
     friend void encode(const ScopeParams& p, Stream& s);
 
 private:  // members
+
     Params::key_t scope_;
     Params p_;
 };

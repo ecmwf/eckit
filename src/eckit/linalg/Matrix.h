@@ -25,9 +25,11 @@ namespace eckit::linalg {
 /// Dense matrix in column major storage order
 class Matrix {
 public:  // types
+
     using Size = linalg::Size;
 
 public:  // methods
+
     // -- Constructors
 
     /// Default constructor (empty matrix)
@@ -107,6 +109,7 @@ public:  // methods
     const Scalar* end() const { return array_ + size(); }
 
 protected:  // member variables
+
     /// Container
     Scalar* array_;
 

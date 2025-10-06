@@ -25,6 +25,7 @@ namespace eckit {
 
 class ConfigCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     ConfigCmd();
@@ -34,6 +35,7 @@ public:
     ~ConfigCmd();
 
 private:
+
     // No copy allowed
 
     ConfigCmd(const ConfigCmd&);

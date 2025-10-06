@@ -23,9 +23,9 @@ namespace eckit::net {
 
 class IPAddress {
 public:
+
     // Contructors
-    IPAddress(const in_addr& address) :
-        address_(address) {}
+    IPAddress(const in_addr& address) : address_(address) {}
 
     IPAddress(const std::string&);
     IPAddress(const char*);
@@ -40,6 +40,7 @@ public:
     bool operator==(const IPAddress& other) const;
 
 private:
+
     // Members
 
     in_addr address_;

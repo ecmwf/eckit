@@ -25,18 +25,21 @@ namespace eckit {
 class UUID {
 
 public:  // types
+
     typedef uint8_t value_type;
 
     typedef uint8_t* iterator;
     typedef uint8_t const* const_iterator;
 
 public:
+
     UUID();
     UUID(const std::string&);
 
     ~UUID();
 
 public:  // methods
+
     iterator begin() { return data_; }
     const_iterator begin() const { return data_; }
     iterator end() { return data_ + size(); }
@@ -53,9 +56,11 @@ public:  // methods
     void fromString(const std::string&);
 
 protected:  // methods
+
     void print(std::ostream& s) const;
 
 private:  // members
+
     uint8_t data_[16];
 
     friend std::ostream& operator<<(std::ostream& os, const UUID& u) {

@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionSUM : public FunctionExpression {
 public:
+
     FunctionSUM(const std::string&, const expression::Expressions&);
     FunctionSUM(const FunctionSUM&);
     ~FunctionSUM();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 1; }
 
 private:
+
     // No copy allowed
     FunctionSUM& operator=(const FunctionSUM&);
 

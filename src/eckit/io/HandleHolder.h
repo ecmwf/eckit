@@ -26,6 +26,7 @@ namespace eckit {
 
 class HandleHolder {
 public:
+
     // -- Contructors
 
     HandleHolder(DataHandle& handle);
@@ -41,10 +42,12 @@ public:
 
 
 protected:
+
     DataHandle& handle() { return *handle_; }
     const DataHandle& handle() const { return *handle_; }
 
 private:
+
     // -- Members
 
     DataHandle* handle_;

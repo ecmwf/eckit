@@ -23,6 +23,7 @@ class Endpoint;
 
 class TCPClient : public TCPSocket, private eckit::NonCopyable {
 public:
+
     TCPClient(const SocketOptions& options = SocketOptions::none());
     TCPClient(int port, const SocketOptions& options = SocketOptions::none());
 
@@ -32,15 +33,18 @@ public:
     virtual TCPSocket& connect(const net::Endpoint& endpoint, int retries = 5, int timeout = 0);
 
 protected:  // methods
+
     void print(std::ostream& s) const override;
 
     void buildSockAddress();
 
 private:  // members
+
     int port_;
     SocketOptions options_;
 
 private:  // methods
+
     void bind() override;
     std::string bindingAddress() const override { return options_.bindAddress(); }
 };

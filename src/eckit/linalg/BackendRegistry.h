@@ -24,8 +24,8 @@ namespace eckit::linalg {
 template <typename LA>
 class BackendRegistry {
 public:
-    BackendRegistry(const char* default_name, const char* env_var) :
-        default_(default_name) {
+
+    BackendRegistry(const char* default_name, const char* env_var) : default_(default_name) {
         ASSERT(!default_.empty());
 
         const auto* envBackend = ::getenv(env_var);
@@ -45,9 +45,7 @@ public:
         default_ = name;
     }
 
-    const std::string& name() const {
-        return default_;
-    }
+    const std::string& name() const { return default_; }
 
     bool has(const std::string& name) const {
         AutoLock<Mutex> lock(mutex_);
@@ -93,6 +91,7 @@ public:
     }
 
 private:  // members
+
     std::map<std::string, const LA*> map_;
     std::string default_;
     mutable Mutex mutex_;

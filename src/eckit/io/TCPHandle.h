@@ -23,6 +23,7 @@ namespace eckit {
 
 class TCPHandle : public DataHandle {
 public:
+
     // -- Contructors
 
     TCPHandle(Stream&);
@@ -65,11 +66,13 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 protected:
+
     std::string host_;
     int port_;
     net::TCPClient connection_;
 
 private:
+
     static ClassSpec classSpec_;
     static Reanimator<TCPHandle> reanimator_;
 };

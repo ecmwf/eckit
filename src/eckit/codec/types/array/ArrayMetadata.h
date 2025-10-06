@@ -25,9 +25,11 @@ namespace eckit::codec {
 
 class ArrayShape : public std::vector<size_t> {
 private:
+
     using Base = std::vector<size_t>;
 
 public:
+
     ArrayShape() = default;
 
     ArrayShape(Base&& base) : Base(std::forward<Base>(base)) {}
@@ -58,9 +60,9 @@ public:
         operator[](1) = j;
     }
 
-    template <typename Int1, typename Int2, typename Int3,
-              typename
-              = std::enable_if_t<std::is_integral_v<Int1> && std::is_integral_v<Int2> && std::is_integral_v<Int3>>>
+    template <
+        typename Int1, typename Int2, typename Int3,
+        typename = std::enable_if_t<std::is_integral_v<Int1> && std::is_integral_v<Int2> && std::is_integral_v<Int3>>>
     ArrayShape(Int1 i, Int2 j, Int3 k) {
         resize(3);
         operator[](0) = i;
@@ -69,8 +71,8 @@ public:
     }
 
     template <typename Int1, typename Int2, typename Int3, typename Int4,
-              typename = std::enable_if_t<std::is_integral_v<Int1> && std::is_integral_v<Int2>
-                                          && std::is_integral_v<Int3> && std::is_integral_v<Int4>>>
+              typename = std::enable_if_t<std::is_integral_v<Int1> && std::is_integral_v<Int2> &&
+                                          std::is_integral_v<Int3> && std::is_integral_v<Int4>>>
     ArrayShape(Int1 i, Int2 j, Int3 k, Int4 l) {
         resize(4);
         operator[](0) = i;
@@ -84,12 +86,14 @@ public:
 
 class ArrayMetadata {
 public:
+
     using ArrayShape = eckit::codec::ArrayShape;
     using DataType   = eckit::codec::DataType;
 
     static std::string type() { return "array"; }
 
 public:
+
     ArrayMetadata();
 
     explicit ArrayMetadata(const Metadata&);
@@ -117,6 +121,7 @@ public:
     friend size_t encode_metadata(const ArrayMetadata& value, Metadata& out);
 
 private:
+
     ArrayShape shape_;
     DataType datatype_;
 };

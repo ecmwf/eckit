@@ -34,6 +34,7 @@ class ReaderIterator;
 
 class SQLMATCHSubquerySessionOutput : public SQLOutput {
 public:
+
     SQLMATCHSubquerySessionOutput(odb::sql::expression::function::FunctionMATCH&);
     SQLMATCHSubquerySessionOutput(const SQLMATCHSubquerySessionOutput&);
     ~SQLMATCHSubquerySessionOutput() override;
@@ -41,6 +42,7 @@ public:
     SQLMATCHSubquerySessionOutput& operator=(const SQLMATCHSubquerySessionOutput&);
 
 protected:
+
     void print(std::ostream&) const override;
 
 
@@ -67,6 +69,7 @@ protected:
     virtual void outputBitfield(double, bool) { NOTIMP; };
 
 private:
+
     unsigned long long count_;
 };
 

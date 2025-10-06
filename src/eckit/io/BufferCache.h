@@ -28,6 +28,7 @@ namespace eckit {
 
 class BufferCache {
 public:
+
     // -- Exceptions
     // None
 
@@ -70,6 +71,7 @@ public:
     // None
 
 protected:
+
     // -- Members
     // None
 
@@ -87,6 +89,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
 

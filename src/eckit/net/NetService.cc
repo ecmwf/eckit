@@ -22,9 +22,11 @@ namespace eckit::net {
 
 class NetServiceProcessControler : public ProcessControler {
 public:
+
     NetServiceProcessControler(const std::string& name, NetUser* user, TCPServer& server, long parent, bool visible);
 
 private:
+
     std::string name_;
     std::unique_ptr<NetUser> user_;
     TCPServer& server_;
@@ -73,11 +75,7 @@ void NetService::run() {
         NetUser* user = newUser(server_.accept(oss.str()));
 
         if (runAsProcess()) {
-            NetServiceProcessControler t(name(),
-                                         user,
-                                         server_,
-                                         Monitor::instance().self(),
-                                         visible_);
+            NetServiceProcessControler t(name(), user, server_, Monitor::instance().self(), visible_);
             t.start();
         }
         else {

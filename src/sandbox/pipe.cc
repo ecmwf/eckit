@@ -19,8 +19,8 @@ class Test : public Application {
     virtual void run();
 
 public:
-    Test(int argc, char** argv) :
-        Application(argc, argv, "HOME") {}
+
+    Test(int argc, char** argv) : Application(argc, argv, "HOME") {}
 };
 
 static void reader(Pipe<std::string>& p) {

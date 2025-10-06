@@ -25,6 +25,7 @@ namespace eckit {
 
 class Progress {
 public:
+
     // -- Exceptions
     // None
 
@@ -57,6 +58,7 @@ public:
 
 
 protected:
+
     // -- Members
     // None
 
@@ -74,6 +76,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     Progress(const Progress&);

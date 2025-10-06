@@ -28,6 +28,7 @@ namespace memory::detail {
 
 class ThreadedLock {
 public:
+
     void lock() const { mutex_.lock(); }
     void unlock() const { mutex_.unlock(); }
 
@@ -36,6 +37,7 @@ public:
 
 class NoLock {
 public:
+
     void lock() const {}
     void unlock() const {}
 };
@@ -50,6 +52,7 @@ public:
 
 class Counted : private NonCopyable, private memory::detail::ThreadedLock {
 public:  // methods
+
     void attach() const {
         lock();
         count_++;
@@ -74,12 +77,13 @@ public:  // methods
     void unlock() const { memory::detail::ThreadedLock::unlock(); }
 
 public:
-    Counted() :
-        count_(0) {}
+
+    Counted() : count_(0) {}
 
     virtual ~Counted();
 
 private:  // members
+
     mutable size_t count_;
 };
 

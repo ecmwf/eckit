@@ -24,10 +24,12 @@ namespace eckit {
 class LineBasedTarget : public LogTarget {
 
 protected:  // methods
+
     LineBasedTarget();
     ~LineBasedTarget();
 
 private:
+
     void write(const char* start, const char* end) override;
     void flush() override;
     virtual void line(const char* line) = 0;

@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionLAST : public FunctionExpression {
 public:
+
     FunctionLAST(const std::string&, const expression::Expressions&);
     FunctionLAST(const FunctionLAST&);
     ~FunctionLAST();
@@ -30,6 +31,7 @@ public:
     static const char* help() { return ""; }
 
 private:
+
     // No copy allowed
     FunctionLAST& operator=(const FunctionLAST&);
 

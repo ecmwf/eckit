@@ -22,6 +22,7 @@ namespace eckit::geometry {
 
 class GreatCircle {
 public:
+
     /// Great circle given two points in geographic coordinates
     GreatCircle(const Point2&, const Point2&);
 
@@ -34,6 +35,7 @@ public:
     bool crossesPoles() const;
 
 private:
+
     const Point2 A_;
     const Point2 B_;
 

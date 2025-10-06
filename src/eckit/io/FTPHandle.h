@@ -24,6 +24,7 @@ namespace eckit {
 
 class FTPHandle : public DataHandle {
 public:
+
     // -- Exceptions
 
     class FTPError : public std::exception {
@@ -64,6 +65,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- Members
 
     std::string remote_;

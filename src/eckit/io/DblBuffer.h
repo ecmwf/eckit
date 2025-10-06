@@ -27,6 +27,7 @@ namespace eckit {
 
 class DblBuffer : private NonCopyable {
 public:
+
     // -- Contructors
 
     DblBuffer(long count = 5, long size = 1024 * 1024, TransferWatcher& = TransferWatcher::dummy());
@@ -44,9 +45,11 @@ public:
     void restart(RestartTransfer&);
 
 private:  // methods
+
     Length copy(DataHandle&, DataHandle&, const Length&);
 
 private:  // members
+
     Mutex mutex_;
 
     long count_;

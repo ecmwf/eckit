@@ -27,6 +27,7 @@ namespace system {
 class SystemInfoLinux : public SystemInfo {
 
 public:  // methods
+
     ~SystemInfoLinux() override;
 
     eckit::LocalPathName executablePath() const override;
@@ -39,7 +40,8 @@ public:  // methods
     std::string dynamicLibraryName(const std::string& name) const override;
 
 protected:  // methods
-private:    // members
+
+private:  // members
 };
 
 //----------------------------------------------------------------------------------------------------------------------

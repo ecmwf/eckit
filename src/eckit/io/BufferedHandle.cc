@@ -18,10 +18,26 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 BufferedHandle::BufferedHandle(DataHandle* h, size_t size, bool opened) :
-    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0), opened_(opened) {}
+    HandleHolder(h),
+    buffer_(size),
+    pos_(0),
+    size_(size),
+    used_(0),
+    eof_(false),
+    read_(false),
+    position_(0),
+    opened_(opened) {}
 
 BufferedHandle::BufferedHandle(DataHandle& h, size_t size, bool opened) :
-    HandleHolder(h), buffer_(size), pos_(0), size_(size), used_(0), eof_(false), read_(false), position_(0), opened_(opened) {}
+    HandleHolder(h),
+    buffer_(size),
+    pos_(0),
+    size_(size),
+    used_(0),
+    eof_(false),
+    read_(false),
+    position_(0),
+    opened_(opened) {}
 
 BufferedHandle::~BufferedHandle() {}
 

@@ -20,14 +20,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Month::Month(long year, long month) :
-    date_(year, month, 1) {}
+Month::Month(long year, long month) : date_(year, month, 1) {}
 
-Month::Month(const Date& date) :
-    date_(date.year(), date.month(), 1) {}
+Month::Month(const Date& date) : date_(date.year(), date.month(), 1) {}
 
-Month::Month(const std::string& s) :
-    date_(1997, 10, 10) {
+Month::Month(const std::string& s) : date_(1997, 10, 10) {
     Tokenizer parse("-");
     std::vector<std::string> result;
 

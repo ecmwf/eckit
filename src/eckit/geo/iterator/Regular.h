@@ -18,7 +18,7 @@
 
 
 namespace eckit::geo {
-class Range;
+class Projection;
 namespace grid {
 class Regular;
 }
@@ -28,21 +28,26 @@ class Regular;
 namespace eckit::geo::iterator {
 
 
-class Regular final : public Iterator {
+class Regular : public Iterator {
 public:
+
     // -- Constructors
 
     explicit Regular(const grid::Regular&, size_t index = 0);
 
 private:
+
     // -- Members
 
     const grid::Regular& grid_;
+    const Projection& projection_;
+
     const std::vector<double>& x_;
     const std::vector<double>& y_;
-    size_t i_;
-    size_t j_;
+    size_t ix_;
+    size_t iy_;
     size_t index_;
+
     const size_t nx_;
     const size_t ny_;
     const size_t size_;
@@ -56,8 +61,6 @@ private:
     Point operator*() const override;
 
     size_t index() const override { return index_; }
-
-    void fill_spec(spec::Custom&) const override;
 };
 
 

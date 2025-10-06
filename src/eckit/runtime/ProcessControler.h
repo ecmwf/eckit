@@ -25,6 +25,7 @@ namespace eckit {
 
 class ProcessControler : public Task, public ClassExtent<ProcessControler> {
 public:
+
     struct result {
         bool found_;
         pid_t pid_;
@@ -59,12 +60,14 @@ public:
 
 
 private:  // members
+
     pid_t pid_;
     bool child_;
     int status_;
     bool forget_;
 
 private:  // methods
+
     void end(result&);
 
     // To override if needed

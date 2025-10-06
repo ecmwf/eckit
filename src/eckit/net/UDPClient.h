@@ -28,6 +28,7 @@ namespace net {
 class UDPClient : private NonCopyable {
 
 public:  // methods
+
     explicit UDPClient(const Configuration& cfg);
     UDPClient(const std::string& hostname, int port);
 
@@ -36,6 +37,7 @@ public:  // methods
     void send(const void* buf, size_t length);
 
 protected:  // methods
+
     void print(std::ostream& s) const;
 
     friend std::ostream& operator<<(std::ostream& s, const UDPClient& socket) {
@@ -44,6 +46,7 @@ protected:  // methods
     }
 
 private:  // members
+
     std::string hostname_;
 
     int port_;

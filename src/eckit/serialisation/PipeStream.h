@@ -26,6 +26,7 @@ namespace eckit {
 
 class PipeStream : public Stream {
 public:
+
     // -- Contructors
 
     PipeStream();
@@ -46,6 +47,7 @@ public:
     int out() { return out_; }
 
 private:
+
     // -- Members
 
     int toChild_[2];

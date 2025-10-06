@@ -23,6 +23,7 @@ namespace eckit {
 
 class UserBuffer : public std::streambuf {
 public:
+
     typedef UserChannel::MsgType MsgType;
 
     UserBuffer(std::size_t size = 1024) :
@@ -41,6 +42,7 @@ public:
     UserMsg* userMsg() const { return user_; }
 
 private:
+
     std::vector<char> buffer_;  ///< internal buffer
     MsgType msgType_;           ///< type of next message
     UserMsg* user_;             ///< interface to user messeges
@@ -73,6 +75,7 @@ private:
     }
 
 protected:
+
     virtual int_type overflow(int_type ch) {
         if (ch == traits_type::eof()) {
             return sync();
@@ -87,8 +90,7 @@ protected:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-UserChannel::UserChannel() :
-    std::ostream(new UserBuffer()), buffer_(dynamic_cast<UserBuffer*>(rdbuf())) {
+UserChannel::UserChannel() : std::ostream(new UserBuffer()), buffer_(dynamic_cast<UserBuffer*>(rdbuf())) {
     ASSERT(buffer_);
 }
 

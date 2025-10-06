@@ -16,7 +16,7 @@
 namespace eckit::geo::figure {
 
 
-static const ConcreteBuilderT1<Figure, UnitSphere> REGISTER("unit-sphere");
+static const FigureBuilder<UnitSphere> REGISTER("unit-sphere");
 
 
 }  // namespace eckit::geo::figure

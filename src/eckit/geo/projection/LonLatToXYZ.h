@@ -14,18 +14,20 @@
 
 #include <memory>
 
-#include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/geo/figure/Earth.h"
 
 
 namespace eckit::geo::projection {
 
 
 /// Calculate coordinates of a point on a sphere or spheroid, in [x, y, z]
-class LonLatToXYZ : public ProjectionOnFigure {
+class LonLatToXYZ : public Projection {
 public:
+
     // -- Constructors
 
-    explicit LonLatToXYZ(Figure* = nullptr);
+    explicit LonLatToXYZ(Figure* = new figure::Earth);
 
     explicit LonLatToXYZ(double R);
     explicit LonLatToXYZ(double a, double b);
@@ -34,20 +36,24 @@ public:
 
     // -- Methods
 
-    inline Point3 fwd(const PointLonLat& p) const { return (*impl_)(p); }
-    inline PointLonLat inv(const Point3& q) const { return (*impl_)(q); }
+    inline PointXYZ fwd(const PointLonLat& p) const { return (*impl_)(p); }
+    inline PointLonLat inv(const PointXYZ& q) const { return (*impl_)(q); }
 
     // -- Overridden methods
 
+    const std::string& type() const override;
+
     inline Point fwd(const Point& p) const override { return (*impl_)(std::get<PointLonLat>(p)); }
-    inline Point inv(const Point& q) const override { return (*impl_)(std::get<Point3>(q)); }
+    inline Point inv(const Point& q) const override { return (*impl_)(std::get<PointXYZ>(q)); }
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Types
 
     struct Implementation {
@@ -59,8 +65,8 @@ private:
         void operator=(const Implementation&) = delete;
         void operator=(Implementation&&)      = delete;
 
-        virtual Point3 operator()(const PointLonLat&) const = 0;
-        virtual PointLonLat operator()(const Point3&) const = 0;
+        virtual PointXYZ operator()(const PointLonLat&) const = 0;
+        virtual PointLonLat operator()(const PointXYZ&) const = 0;
     };
 
     // -- Members

@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/geo/spec/Custom.h"
@@ -21,14 +22,14 @@
 namespace eckit::geo::test {
 
 
-CASE("projection: ll_to_xyz") {
+CASE("projection: ll-to-xyz") {
     struct P : std::unique_ptr<Projection> {
         explicit P(Projection* ptr) : unique_ptr(ptr) { ASSERT(unique_ptr::operator bool()); }
     };
 
     struct test_t {
         PointLonLat a;
-        Point3 b;
+        PointXYZ b;
     };
 
     constexpr double R = 1.;
@@ -36,7 +37,7 @@ CASE("projection: ll_to_xyz") {
 
 
     // spherical projections
-    P to_xyz_1(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom{{"R", 1.}}));
+    P to_xyz_1(ProjectionFactoryType::instance().get("ll-to-xyz").create(spec::Custom{{"R", 1.}}));
     P to_xyz_2(new projection::LonLatToXYZ(1., 1.));
 
     EXPECT(*to_xyz_1 == *to_xyz_2);
@@ -44,7 +45,7 @@ CASE("projection: ll_to_xyz") {
 
 
     // oblate spheroid projections
-    P to_xyz_3(ProjectionFactory::instance().get("ll_to_xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
+    P to_xyz_3(ProjectionFactoryType::instance().get("ll-to-xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
     P to_xyz_4(new projection::LonLatToXYZ(1., 0.5));
 
     EXPECT(*to_xyz_3 == *to_xyz_4);
@@ -59,10 +60,10 @@ CASE("projection: ll_to_xyz") {
         Log::info() << to_xyz_2->spec_str() << std::endl;
         Log::info() << to_xyz_3->spec_str() << std::endl;
         Log::info() << to_xyz_4->spec_str() << std::endl;
-        EXPECT(to_xyz_1->spec_str() == R"({"projection":"ll_to_xyz","r":1})");
-        EXPECT(to_xyz_2->spec_str() == R"({"projection":"ll_to_xyz","r":1})");
-        EXPECT(to_xyz_3->spec_str() == R"({"a":1,"b":0.5,"projection":"ll_to_xyz"})");
-        EXPECT(to_xyz_4->spec_str() == R"({"a":1,"b":0.5,"projection":"ll_to_xyz"})");
+        EXPECT(to_xyz_1->spec_str() == R"({"r":1,"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_2->spec_str() == R"({"r":1,"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_3->spec_str() == R"({"a":1,"b":0.5,"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_4->spec_str() == R"({"a":1,"b":0.5,"type":"ll-to-xyz"})");
     }
 
 
@@ -88,25 +89,25 @@ CASE("projection: ll_to_xyz") {
 
 
     SECTION("sphere (ll -> xyz, xyz -> ll)") {
-        for (const auto& test : {
-                 test_t{{0, 90}, {0, 0, R}},  //
-                 {{0, -90}, {0, 0, -R}},      //
-                 {{0, 0}, {R, 0, 0}},         //
-                 {{-360, 0}, {R, 0, 0}},      //
-                 {{90, 0}, {0, R, 0}},        //
-                 {{-270, 0}, {0, R, 0}},      //
-                 {{180, 0}, {-R, 0, 0}},      //
-                 {{-180, 0}, {-R, 0, 0}},     //
-                 {{270, 0}, {0, -R, 0}},      //
-                 {{-90, 0}, {0, -R, 0}},      //
-                 {{45, 0}, {L, L, 0}},        //
-                 {{-315, 0}, {L, L, 0}},      //
-                 {{135, 0}, {-L, L, 0}},      //
-                 {{-225, 0}, {-L, L, 0}},     //
-                 {{225, 0}, {-L, -L, 0}},     //
-                 {{-135, 0}, {-L, -L, 0}},    //
-                 {{315, 0}, {L, -L, 0}},      //
-                 {{-45, 0}, {L, -L, 0}},      //
+        for (const auto& test : std::vector<test_t>{
+                 {{0, 90}, {0, 0, R}},      //
+                 {{0, -90}, {0, 0, -R}},    //
+                 {{0, 0}, {R, 0, 0}},       //
+                 {{-360, 0}, {R, 0, 0}},    //
+                 {{90, 0}, {0, R, 0}},      //
+                 {{-270, 0}, {0, R, 0}},    //
+                 {{180, 0}, {-R, 0, 0}},    //
+                 {{-180, 0}, {-R, 0, 0}},   //
+                 {{270, 0}, {0, -R, 0}},    //
+                 {{-90, 0}, {0, -R, 0}},    //
+                 {{45, 0}, {L, L, 0}},      //
+                 {{-315, 0}, {L, L, 0}},    //
+                 {{135, 0}, {-L, L, 0}},    //
+                 {{-225, 0}, {-L, L, 0}},   //
+                 {{225, 0}, {-L, -L, 0}},   //
+                 {{-135, 0}, {-L, -L, 0}},  //
+                 {{315, 0}, {L, -L, 0}},    //
+                 {{-45, 0}, {L, -L, 0}},    //
              }) {
             EXPECT(points_equal(to_xyz_1->fwd(test.a), test.b));
             EXPECT(points_equal(to_xyz_1->inv(test.b), test.a));
@@ -118,11 +119,11 @@ CASE("projection: ll_to_xyz") {
 
 
     SECTION("spheroid (ll -> xyz)") {
-        for (const auto& test : {
-                 test_t{{0, -90}, {0, 0, -0.5}},  //
-                 {{42, -90}, {0, 0, -0.5}},       //
-                 {{0, 90}, {0, 0, 0.5}},          //
-                 {{42, 90}, {0, 0, 0.5}},         //
+        for (const auto& test : std::vector<test_t>{
+                 {{0, -90}, {0, 0, -0.5}},   //
+                 {{42, -90}, {0, 0, -0.5}},  //
+                 {{0, 90}, {0, 0, 0.5}},     //
+                 {{42, 90}, {0, 0, 0.5}},    //
              }) {
             EXPECT(points_equal(to_xyz_3->fwd(test.a), test.b));
             EXPECT(points_equal(to_xyz_4->fwd(test.a), test.b));

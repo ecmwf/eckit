@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionAVG : public FunctionExpression {
 public:
+
     FunctionAVG(const std::string&, const expression::Expressions&);
     FunctionAVG(const FunctionAVG&);
     ~FunctionAVG();
@@ -30,6 +31,7 @@ public:
     static const char* help() { return "Average (aggregate function)"; }
 
 private:
+
     // No copy allowed
     FunctionAVG& operator=(const FunctionAVG&);
 

@@ -169,9 +169,8 @@ Record& Record::read(Stream& in, bool read_to_end) {
     }
 
     if (r.metadata_length < sizeof(RecordMetadataSection::Begin) + sizeof(RecordMetadataSection::End)) {
-        throw InvalidRecord(
-            "Unexpected metadata section length: " + std::to_string(r.metadata_length) + " < "
-            + std::to_string(sizeof(RecordMetadataSection::Begin) + sizeof(RecordMetadataSection::End)));
+        throw InvalidRecord("Unexpected metadata section length: " + std::to_string(r.metadata_length) + " < " +
+                            std::to_string(sizeof(RecordMetadataSection::Begin) + sizeof(RecordMetadataSection::End)));
     }
 
     if (r.index_length < sizeof(RecordDataIndexSection::Begin) + sizeof(RecordDataIndexSection::End)) {
@@ -186,12 +185,12 @@ Record& Record::read(Stream& in, bool read_to_end) {
     in.seek(r.metadata_offset);
     auto metadata_begin = read_struct<RecordMetadataSection::Begin>(in);
     if (not metadata_begin.valid()) {
-        throw InvalidRecord("Metadata section is not valid. Invalid section begin marker: [" + metadata_begin.str()
-                            + "]");
+        throw InvalidRecord("Metadata section is not valid. Invalid section begin marker: [" + metadata_begin.str() +
+                            "]");
     }
     std::string metadata_str;
-    metadata_str.resize(static_cast<size_t>(r.metadata_length) - sizeof(RecordMetadataSection::Begin)
-                        - sizeof(RecordMetadataSection::End));
+    metadata_str.resize(static_cast<size_t>(r.metadata_length) - sizeof(RecordMetadataSection::Begin) -
+                        sizeof(RecordMetadataSection::End));
     if (in.read(const_cast<char*>(metadata_str.data()), metadata_str.size()) != metadata_str.size()) {
         throw InvalidRecord("Unexpected EOF reached");
     }
@@ -223,11 +222,11 @@ Record& Record::read(Stream& in, bool read_to_end) {
     in.seek(r.index_offset);
     auto index_begin = read_struct<RecordDataIndexSection::Begin>(in);
     if (not index_begin.valid()) {
-        throw InvalidRecord("Data index section is not valid. Invalid section begin marker: [" + index_begin.str()
-                            + "]");
+        throw InvalidRecord("Data index section is not valid. Invalid section begin marker: [" + index_begin.str() +
+                            "]");
     }
-    const auto index_length = (static_cast<size_t>(r.index_length) - sizeof(RecordDataIndexSection::Begin)
-                               - sizeof(RecordDataIndexSection::End));
+    const auto index_length = (static_cast<size_t>(r.index_length) - sizeof(RecordDataIndexSection::Begin) -
+                               sizeof(RecordDataIndexSection::End));
     const auto index_size   = index_length / sizeof(RecordDataIndexSection::Entry);
     auto& data_sections     = record_->data_sections;
     data_sections.resize(index_size);
@@ -275,8 +274,8 @@ void ParsedRecord::parse() {
         if (item.data.section() != 0) {
             auto& data_section = data_sections.at(static_cast<size_t>(item.data.section() - 1));
             item.data.checksum(data_section.checksum);
-            item.data.compressed_size(data_section.length - sizeof(RecordDataSection::Begin)
-                                      - sizeof(RecordDataSection::End));
+            item.data.compressed_size(data_section.length - sizeof(RecordDataSection::Begin) -
+                                      sizeof(RecordDataSection::End));
             if (item.data.compressed()) {
                 item.data.size(uncompressed_size(item));
             }

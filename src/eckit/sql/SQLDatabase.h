@@ -42,6 +42,7 @@ typedef std::map<std::string, std::shared_ptr<expression::SQLExpression>> Variab
 
 class SQLDatabase {
 public:
+
     SQLDatabase(const std::string& name = "default");
     virtual ~SQLDatabase();
 
@@ -86,6 +87,7 @@ public:
     const std::vector<eckit::PathName>& includePath() const { return includePath_; }
 
 protected:
+
     Links links_;
     std::map<std::string, std::unique_ptr<SQLTable>> tablesByName_;
     std::vector<std::unique_ptr<SQLTable>> implicitTables_;
@@ -97,6 +99,7 @@ protected:
     SchemaAnalyzer schemaAnalyzer_;
 
 private:
+
     // No copy allowed
 
     void loadIOMAP();

@@ -20,14 +20,15 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// SysLog implements the RFC 5424 format for logging
 
 class SysLog {
 
-
 public:
-    enum Facility
-    {
+
+    enum Facility {
         Kernel = 0,
         User,
         Mail,
@@ -54,8 +55,7 @@ public:
         Local7,  //< we use this for MARS
     };
 
-    enum Severity
-    {
+    enum Severity {
         Emergency = 0,
         Alert,
         Critical,
@@ -67,10 +67,12 @@ public:
     };
 
 public:  // methods
+
     static char nilvalue() { return '-'; }
 
+    explicit SysLog(std::string msg, int msgid = 0, Facility f = SysLog::User, Severity s = SysLog::Info);
 
-    SysLog(const std::string& msg, int msgid = 0, Facility f = SysLog::User, Severity s = SysLog::Info);
+    explicit SysLog(int msgid = 0, Facility f = SysLog::User, Severity s = SysLog::Info);
 
     unsigned priority() const { return facility_ * 8 + severity_; }
 
@@ -90,6 +92,12 @@ public:  // methods
     /// Follows some application classification therefore semantics is application dependent
     int msgid() const { return msgid_; }
 
+    /// Sets the message ID
+    void msgid(int msg_id);
+
+    /// Sets the message (updates timestamp)
+    void message(std::string msg);
+
     std::string structuredData() const;
 
     operator std::string() const;
@@ -105,9 +113,13 @@ public:  // methods
     void enterpriseId(const std::string& id) { enterpriseId_ = id; }
 
 private:  // methods
+
     void print(std::ostream& out) const;
 
+    void updateTimestamp();
+
 private:  // members
+
     Facility facility_;
     Severity severity_;
 
@@ -123,6 +135,8 @@ private:  // members
     std::string swVersion_;
     std::string enterpriseId_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
 

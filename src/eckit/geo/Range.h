@@ -26,10 +26,11 @@ namespace eckit::geo {
 
 class Range {
 public:
+
     // -- Constructors
 
-    Range(const Range&) = delete;
-    Range(Range&&)      = delete;
+    Range(const Range&) = default;
+    Range(Range&&)      = default;
 
     // -- Destructors
 
@@ -37,8 +38,8 @@ public:
 
     // -- Operators
 
-    Range& operator=(const Range&) = delete;
-    Range& operator=(Range&&)      = delete;
+    Range& operator=(const Range&) = default;
+    Range& operator=(Range&&)      = default;
 
     // -- Methods
 
@@ -46,6 +47,9 @@ public:
     double a() const { return a_; }
     double b() const { return b_; }
     double eps() const { return eps_; }
+
+    double min() const { return a_ < b_ ? a_ : b_; }
+    double max() const { return a_ < b_ ? b_ : a_; }
 
     virtual bool periodic() const { return false; }
 
@@ -56,9 +60,10 @@ public:
     virtual const std::vector<double>& values() const = 0;
 
 protected:
+
     // -- Constructors
 
-    explicit Range(size_t n, double a, double b, double eps = 0.);
+    explicit Range(size_t n, double a, double b, double eps);
 
     // --Methods
 
@@ -67,12 +72,13 @@ protected:
     void b(double value) { b_ = value; }
 
 private:
+
     // -- Members
 
     size_t n_;
     double a_;
     double b_;
-    const double eps_;
+    double eps_;
 };
 
 

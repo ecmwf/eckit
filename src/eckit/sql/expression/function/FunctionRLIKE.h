@@ -23,6 +23,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionRLIKE : public FunctionExpression {
 public:
+
     FunctionRLIKE(const std::string&, const expression::Expressions&);
     FunctionRLIKE(const FunctionRLIKE&);
     ~FunctionRLIKE();
@@ -36,6 +37,7 @@ public:
     static int arity() { return 2; }
 
 private:
+
     // No copy allowed
     FunctionRLIKE& operator=(const FunctionRLIKE&);
 

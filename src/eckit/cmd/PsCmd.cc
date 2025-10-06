@@ -25,8 +25,7 @@ namespace eckit {
 static PsCmd ps;
 
 
-PsCmd::PsCmd() :
-    CmdResource("ps") {}
+PsCmd::PsCmd() : CmdResource("ps") {}
 
 
 PsCmd::~PsCmd() {}
@@ -169,7 +168,8 @@ static bool isParent(Monitor::TaskArray& info, int taskid, int task) {
         return true;
     }
 
-    return ((parenttask != -1) && isParent(info, taskid, parenttask)) || ((parentid != -1) && isParent(info, parentid, task));
+    return ((parenttask != -1) && isParent(info, taskid, parenttask)) ||
+           ((parentid != -1) && isParent(info, parentid, task));
 }
 
 

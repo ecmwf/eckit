@@ -17,8 +17,7 @@ namespace eckit::linalg::sparse {
 
 struct LinearAlgebraGeneric final : public LinearAlgebraSparse {
     LinearAlgebraGeneric() {}
-    LinearAlgebraGeneric(const std::string& name) :
-        LinearAlgebraSparse(name) {}
+    LinearAlgebraGeneric(const std::string& name) : LinearAlgebraSparse(name) {}
 
     void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
     void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;

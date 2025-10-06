@@ -22,6 +22,7 @@ namespace eckit::sql::expression {
 
 class StringExpression : public SQLExpression {
 public:
+
     StringExpression(const std::string&);
     StringExpression(const StringExpression&);
     ~StringExpression();
@@ -30,6 +31,7 @@ public:
     std::shared_ptr<SQLExpression> reshift(int minColumnShift) const override;
 
 private:
+
     // No copy allowed
     StringExpression& operator=(const StringExpression&);
 

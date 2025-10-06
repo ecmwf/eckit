@@ -26,11 +26,8 @@ constexpr double tolerance = 1.e-8;
 CASE("test_determinant") {
     using Matrix = eckit::maths::Matrix<double>;
 
-    Matrix m{{9., 6., 2., 0., 3.},
-             {3., 6., 8., 10., 12.},
-             {4., 8., 2., 6., 9.},
-             {1., 5., 5., 3., 2.},
-             {1., 3., 6., 8., 10}};
+    Matrix m{
+        {9., 6., 2., 0., 3.}, {3., 6., 8., 10., 12.}, {4., 8., 2., 6., 9.}, {1., 5., 5., 3., 2.}, {1., 3., 6., 8., 10}};
 
     EXPECT(is_approximately_equal(m.determinant(), 1124., tolerance));
 }
@@ -40,19 +37,14 @@ CASE("test_inverse") {
     using Matrix = eckit::maths::Matrix<double>;
 
     Matrix m{
-        {9., 6., 2., 0., 3.},
-        {3., 6., 8., 10., 12.},
-        {4., 8., 2., 6., 9.},
-        {1., 5., 5., 3., 2.},
-        {1., 3., 6., 8., 10}};
+        {9., 6., 2., 0., 3.}, {3., 6., 8., 10., 12.}, {4., 8., 2., 6., 9.}, {1., 5., 5., 3., 2.}, {1., 3., 6., 8., 10}};
 
     // Expected inverse
-    Matrix minv = {
-        {0.03024911, 0.78113879, -0.1405694, -0.29181495, -0.76156584},
-        {-0.01067616, -0.33451957, 0.16725979, 0.22064057, 0.20996441},
-        {0.12366548, -0.54181495, -0.10409253, 0.27758007, 0.65124555},
-        {-0.31939502, 2.07562278, -0.16281139, -0.5658363, -2.13523132},
-        {0.18149466, -1.31316726, 0.15658363, 0.24911032, 1.43060498}};
+    Matrix minv                     = {{0.03024911, 0.78113879, -0.1405694, -0.29181495, -0.76156584},
+                                       {-0.01067616, -0.33451957, 0.16725979, 0.22064057, 0.20996441},
+                                       {0.12366548, -0.54181495, -0.10409253, 0.27758007, 0.65124555},
+                                       {-0.31939502, 2.07562278, -0.16281139, -0.5658363, -2.13523132},
+                                       {0.18149466, -1.31316726, 0.15658363, 0.24911032, 1.43060498}};
     constexpr double minv_precision = 1.e-4;
 
 
@@ -78,10 +70,7 @@ CASE("test matrix operations") {
 
     SECTION("bounds") {
 
-        const auto A = Matrix{
-            {1., 2.},
-            {3., 4.},
-            {5., 6.}};
+        const auto A = Matrix{{1., 2.}, {3., 4.}, {5., 6.}};
 
         EXPECT_EQUAL(A.rows(), 3);
         EXPECT_EQUAL(A.cols(), 2);
@@ -97,186 +86,114 @@ CASE("test matrix operations") {
 
     SECTION("addition") {
 
-        const auto A = Matrix{
-            {1., 2.},
-            {3., 4.}};
+        const auto A = Matrix{{1., 2.}, {3., 4.}};
 
-        const auto B = Matrix{
-            {5., 6.},
-            {7., 8.}};
+        const auto B = Matrix{{5., 6.}, {7., 8.}};
 
-        const auto APlusB = Matrix{
-            {6., 8.},
-            {10., 12.}};
+        const auto APlusB = Matrix{{6., 8.}, {10., 12.}};
 
         EXPECT(A + B == APlusB);
         EXPECT(APlusB - B == A);
 
-        Log::info() << "A = " << std::endl
-                    << A << std::endl;
-        Log::info() << "B = " << std::endl
-                    << B << std::endl;
-        Log::info() << "A + B = " << std::endl
-                    << A + B << std::endl
-                    << std::endl;
+        Log::info() << "A = " << std::endl << A << std::endl;
+        Log::info() << "B = " << std::endl << B << std::endl;
+        Log::info() << "A + B = " << std::endl << A + B << std::endl << std::endl;
     }
 
     SECTION("multiplication") {
 
-        const auto A = Matrix{
-            {1., 0., 1.},
-            {2., 1., 1.},
-            {0., 1., 1.},
-            {1., 1., 2.}};
+        const auto A = Matrix{{1., 0., 1.}, {2., 1., 1.}, {0., 1., 1.}, {1., 1., 2.}};
 
-        const auto B = Matrix{
-            {1., 2., 1.},
-            {2., 3., 1.},
-            {4., 2., 2.}};
+        const auto B = Matrix{{1., 2., 1.}, {2., 3., 1.}, {4., 2., 2.}};
 
-        const auto AB = Matrix{
-            {5., 4., 3.},
-            {8., 9., 5.},
-            {6., 5., 3.},
-            {11., 9., 6.}};
+        const auto AB = Matrix{{5., 4., 3.}, {8., 9., 5.}, {6., 5., 3.}, {11., 9., 6.}};
 
         EXPECT(A * B == AB);
 
-        Log::info() << "A = " << std::endl
-                    << A << std::endl;
-        Log::info() << "B = " << std::endl
-                    << B << std::endl;
-        Log::info() << "A x B = " << std::endl
-                    << A * B << std::endl
-                    << std::endl;
+        Log::info() << "A = " << std::endl << A << std::endl;
+        Log::info() << "B = " << std::endl << B << std::endl;
+        Log::info() << "A x B = " << std::endl << A * B << std::endl << std::endl;
     }
 
 
     SECTION("inverse") {
 
-        const auto A = Matrix{
-            {-1., 1.5},
-            {1., -1.}};
+        const auto A = Matrix{{-1., 1.5}, {1., -1.}};
 
-        const auto invA = Matrix{
-            {2., 3.},
-            {2., 2.}};
+        const auto invA = Matrix{{2., 3.}, {2., 2.}};
 
         EXPECT(A.inverse() == invA);
 
-        Log::info() << "A = " << std::endl
-                    << A << std::endl;
-        Log::info() << "A^-1 = " << std::endl
-                    << A.inverse() << std::endl
-                    << std::endl;
+        Log::info() << "A = " << std::endl << A << std::endl;
+        Log::info() << "A^-1 = " << std::endl << A.inverse() << std::endl << std::endl;
     }
 
     SECTION("transpose") {
 
-        const auto A = Matrix{
-            {1., 2.},
-            {3., 4.}};
+        const auto A = Matrix{{1., 2.}, {3., 4.}};
 
 
-        const auto At = Matrix{
-            {1., 3.},
-            {2., 4.}};
+        const auto At = Matrix{{1., 3.}, {2., 4.}};
 
         EXPECT(A.transpose() == At);
 
-        Log::info() << "A = " << std::endl
-                    << A << std::endl;
-        Log::info() << "A^T = " << std::endl
-                    << A.transpose() << std::endl
-                    << std::endl;
+        Log::info() << "A = " << std::endl << A << std::endl;
+        Log::info() << "A^T = " << std::endl << A.transpose() << std::endl << std::endl;
     }
 
     SECTION("determinant") {
 
-        const auto A = Matrix{
-            {3., 7.},
-            {1., -4.}};
+        const auto A = Matrix{{3., 7.}, {1., -4.}};
 
         EXPECT(is_approximately_equal(A.determinant(), -19., tolerance));
 
-        Log::info() << "A = " << std::endl
-                    << A << std::endl;
-        Log::info() << "|A| = " << std::endl
-                    << A.determinant() << std::endl
-                    << std::endl;
+        Log::info() << "A = " << std::endl << A << std::endl;
+        Log::info() << "|A| = " << std::endl << A.determinant() << std::endl << std::endl;
     }
 
     SECTION("row/col slice") {
 
-        const auto A = Matrix{
-            {1., 2., 1.},
-            {2., 3., 1.},
-            {4., 2., 2.}};
+        const auto A = Matrix{{1., 2., 1.}, {2., 3., 1.}, {4., 2., 2.}};
 
-        const auto ARow0 = Matrix{
-            {1., 2., 1.}};
+        const auto ARow0 = Matrix{{1., 2., 1.}};
 
-        const auto ACol0 = Matrix{
-            {1.},
-            {2.},
-            {4.}};
+        const auto ACol0 = Matrix{{1.}, {2.}, {4.}};
 
         EXPECT(A.row(0) == ARow0);
         EXPECT(A.col(0) == ACol0);
 
-        Log::info() << "A = " << std::endl
-                    << A << std::endl;
-        Log::info() << "A(0, j) = " << std::endl
-                    << ARow0 << std::endl;
-        Log::info() << "A(i, 0) = " << std::endl
-                    << ACol0 << std::endl
-                    << std::endl;
+        Log::info() << "A = " << std::endl << A << std::endl;
+        Log::info() << "A(0, j) = " << std::endl << ARow0 << std::endl;
+        Log::info() << "A(i, 0) = " << std::endl << ACol0 << std::endl << std::endl;
     }
 
     SECTION("matrix times scalar") {
 
-        const auto A = Matrix{
-            {1., 2.},
-            {3., 4.}};
+        const auto A = Matrix{{1., 2.}, {3., 4.}};
 
 
-        const auto ATimes2 = Matrix{
-            {2., 4.},
-            {6., 8.}};
+        const auto ATimes2 = Matrix{{2., 4.}, {6., 8.}};
 
         EXPECT(A * 2 == ATimes2);
 
-        Log::info() << "A = " << std::endl
-                    << A << std::endl;
-        Log::info() << "2A = " << std::endl
-                    << ATimes2 << std::endl
-                    << std::endl;
+        Log::info() << "A = " << std::endl << A << std::endl;
+        Log::info() << "2A = " << std::endl << ATimes2 << std::endl << std::endl;
     }
 
     SECTION("coefficient wise product") {
 
-        const auto A = Matrix{
-            {1., 2.},
-            {3., 4.}};
+        const auto A = Matrix{{1., 2.}, {3., 4.}};
 
-        const auto B = Matrix{
-            {5., 6.},
-            {7., 8.}};
+        const auto B = Matrix{{5., 6.}, {7., 8.}};
 
-        const auto ATimesB = Matrix{
-            {5., 12.},
-            {21., 32.}};
+        const auto ATimesB = Matrix{{5., 12.}, {21., 32.}};
 
         EXPECT(A.cwiseProduct(B) == ATimesB);
         EXPECT(B.cwiseProduct(A) == ATimesB);
 
-        Log::info() << "A = " << std::endl
-                    << A << std::endl;
-        Log::info() << "B = " << std::endl
-                    << B << std::endl;
-        Log::info() << "cwiseProd(A, B) = " << std::endl
-                    << A.cwiseProduct(B) << std::endl
-                    << std::endl;
+        Log::info() << "A = " << std::endl << A << std::endl;
+        Log::info() << "B = " << std::endl << B << std::endl;
+        Log::info() << "cwiseProd(A, B) = " << std::endl << A.cwiseProduct(B) << std::endl << std::endl;
     }
 }
 

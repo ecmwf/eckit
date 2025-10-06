@@ -21,6 +21,7 @@ namespace eckit::sql::type {
 
 class SQLBitfield : public SQLType {
 public:
+
     SQLBitfield(const std::string&, const FieldNames&, const Sizes&);
     ~SQLBitfield();
 
@@ -34,6 +35,7 @@ public:
     static std::string make(const std::string&, const FieldNames&, const Sizes&, const char* aliasName = NULL);
 
 private:
+
     SQLBitfield(const SQLBitfield&);
     SQLBitfield& operator=(const SQLBitfield&);
 

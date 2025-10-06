@@ -23,11 +23,13 @@ namespace eckit {
 
 class FileResource : public HtmlResource {
 public:
+
     FileResource();
 
     ~FileResource() override;
 
 protected:
+
     std::string name_;
 
     void GET(std::ostream&, Url&) override;

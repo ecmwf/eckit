@@ -45,8 +45,7 @@ static bool pole(const double lat) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-GreatCircle::GreatCircle(const Point2& Alonlat, const Point2& Blonlat) :
-    A_(Alonlat), B_(Blonlat) {
+GreatCircle::GreatCircle(const Point2& Alonlat, const Point2& Blonlat) : A_(Alonlat), B_(Blonlat) {
     using namespace std;
     using types::is_approximately_equal;
 

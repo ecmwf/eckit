@@ -29,8 +29,8 @@ namespace runtime {
 
 class Report {
 public:
-    enum Type
-    {
+
+    enum Type {
         APPSTART = 0,
         APPSTOP,
         INFO,
@@ -41,6 +41,7 @@ public:
     };
 
 public:
+
     virtual ~Report();
 
     virtual void json(JSON& s) const = 0;
@@ -53,6 +54,7 @@ public:
 
 class Telemetry : public NonCopyable {
 public:
+
     static std::string report(Report::Type);
     static std::string report(Report::Type, const Report&);
     static std::string report(Report::Type, std::function<void(JSON&)>);

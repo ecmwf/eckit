@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionMAX : public FunctionExpression {
 public:
+
     FunctionMAX(const std::string&, const expression::Expressions&);
     FunctionMAX(const FunctionMAX&);
     ~FunctionMAX();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 1; }
 
 private:
+
     // No copy allowed
     FunctionMAX& operator=(const FunctionMAX&);
 

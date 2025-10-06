@@ -22,6 +22,7 @@ namespace eckit::codec {
 
 class Decoder {
 public:
+
     template <typename T, enable_if_decodable_t<T> = 0>
     explicit Decoder(T& value) : self_(new DecodableItem<T>(value)) {}
 
@@ -29,6 +30,7 @@ public:
     friend void decode(const Metadata& metadata, const Data& data, Decoder&&);
 
 private:
+
     struct Decodable {
         virtual ~Decodable()                               = default;
         virtual void decode_(const Metadata&, const Data&) = 0;

@@ -22,11 +22,9 @@ ClassSpec TxnEvent::classSpec_ = {
 };
 Reanimator<TxnEvent> TxnEvent::reanimator_;
 
-TxnEvent::TxnEvent() :
-    txnID_(0) {}
+TxnEvent::TxnEvent() : txnID_(0) {}
 
-TxnEvent::TxnEvent(Stream& s) :
-    txnID_(0) {
+TxnEvent::TxnEvent(Stream& s) : txnID_(0) {
     s >> txnID_;
 }
 

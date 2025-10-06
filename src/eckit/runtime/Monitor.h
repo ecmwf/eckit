@@ -30,9 +30,11 @@ namespace eckit {
 class Monitor : private NonCopyable {
 
 public:  // types
+
     class TaskArray : private eckit::NonCopyable {
 
     public:
+
         typedef TaskInfo* iterator;
         typedef const TaskInfo* const_iterator;
 
@@ -54,6 +56,7 @@ public:  // types
     };
 
 public:  // methods
+
     static Monitor& instance();
 
     static bool active();
@@ -114,12 +117,14 @@ public:  // methods
 
 
 private:  // members
+
     unsigned long slot_;
     bool ready_;
     bool check_;
 
 private:  // methods
           /// Contructors
+
     Monitor();
 
     /// Destructor
@@ -144,8 +149,8 @@ class AutoState {
     char old_;
 
 public:
-    AutoState(char c) :
-        old_(Monitor::instance().state(c)) {}
+
+    AutoState(char c) : old_(Monitor::instance().state(c)) {}
 
     ~AutoState() { Monitor::instance().state(old_); }
 
@@ -160,10 +165,9 @@ class AutoLockTag {
     AutoLock<T> lock_;
 
 public:
-    AutoLockTag(T& t) :
-        state_(t.tag()), lock_(t) { state_.set(t.tag() - 'a' + 'A'); }
-    AutoLockTag(T* t) :
-        state_(t->tag()), lock_(t) { state_.set(t->tag() - 'a' + 'A'); }
+
+    AutoLockTag(T& t) : state_(t.tag()), lock_(t) { state_.set(t.tag() - 'a' + 'A'); }
+    AutoLockTag(T* t) : state_(t->tag()), lock_(t) { state_.set(t->tag() - 'a' + 'A'); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

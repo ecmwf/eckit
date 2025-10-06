@@ -93,11 +93,13 @@ struct SocketOptions {
     void print(std::ostream& s) const;
 
 private:
+
     SocketOptions();
 
     friend std::ostream& operator<<(std::ostream& s, const SocketOptions& socket);
 
 private:
+
     /// Binding address for this socket
     std::string bindAddr_ = "";
 

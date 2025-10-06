@@ -29,25 +29,15 @@ struct xxHash::Context {
         reset();
     }
 
-    ~Context() {
-        XXH64_freeState(state_);
-    }
+    ~Context() { XXH64_freeState(state_); }
 
-    void reset() {
-        XXH64_reset(state_, 0);
-    }
+    void reset() { XXH64_reset(state_, 0); }
 
-    void update(const void* buffer, long length) {
-        XXH64_update(state_, buffer, size_t(length));
-    }
+    void update(const void* buffer, long length) { XXH64_update(state_, buffer, size_t(length)); }
 
-    std::string digest() {
-        return toString(XXH64_digest(state_));
-    }
+    std::string digest() { return toString(XXH64_digest(state_)); }
 
-    static std::string compute(const void* buffer, long length) {
-        return toString(XXH64(buffer, size_t(length), 0));
-    }
+    static std::string compute(const void* buffer, long length) { return toString(XXH64(buffer, size_t(length), 0)); }
 
     static std::string toString(XXH64_hash_t hash) {
         static const char* hex = "0123456789abcdef";

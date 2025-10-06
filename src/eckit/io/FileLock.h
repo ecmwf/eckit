@@ -28,6 +28,7 @@ class PathName;
 class FileLock : public NonCopyable {
 
 public:
+
     /// Constructor
     /// creates the lock file if needed
     FileLock(const PathName& lockFile);
@@ -38,6 +39,7 @@ public:
     void unlock();
 
 private:
+
     int fd_;
 
     FileLocker locker_;

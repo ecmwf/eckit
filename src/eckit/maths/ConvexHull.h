@@ -22,6 +22,7 @@ namespace eckit::maths {
 
 class ConvexHull {
 public:
+
     // -- Types
 
     using coord_t    = typename Qhull::coord_t;
@@ -77,6 +78,7 @@ public:
     virtual std::vector<size_t> facets(size_t n) const = 0;
 
 protected:
+
     // -- Constructors
 
     ConvexHull() /*noexcept*/ = default;

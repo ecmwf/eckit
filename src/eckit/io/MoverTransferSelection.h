@@ -15,9 +15,9 @@
 #ifndef eckit_MoverTransferSelection_h
 #define eckit_MoverTransferSelection_h
 
+#include <map>
 #include <set>
 #include <string>
-#include <map>
 
 
 #include "eckit/io/Length.h"
@@ -59,6 +59,7 @@ public:
     // None
 
 protected:
+
     // -- Members
     // None
 
@@ -76,6 +77,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     MoverTransferSelection(const MoverTransferSelection&);

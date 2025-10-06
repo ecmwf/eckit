@@ -25,6 +25,7 @@ namespace eckit {
 
 class MultiSocketHandle : public DataHandle {
 public:
+
     // -- Contructors
 
     MultiSocketHandle(Stream&);
@@ -65,6 +66,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 protected:
+
     std::string host_;
     int port_ = 0;
     std::unique_ptr<net::MultiSocket> connection_;
@@ -73,6 +75,7 @@ protected:
     size_t bufferSize_  = 0;
 
 private:
+
     static ClassSpec classSpec_;
     static Reanimator<MultiSocketHandle> reanimator_;
 };

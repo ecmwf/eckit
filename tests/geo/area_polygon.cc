@@ -12,136 +12,195 @@
 
 #include <vector>
 
-#include "eckit/geo/Point2.h"
 #include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/polygon/LonLatPolygon.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/geo/polygon/Polygon.h"
+#include "eckit/geo/polygon/PolygonXY.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-CASE("Polygon") {
-    using geo::polygon::Polygon;
+CASE("PolygonXY") {
+    using Polygon = geo::polygon::PolygonXY;
 
 
     SECTION("empty polygon") {
         Polygon poly1;
         Polygon poly2;
 
-        EXPECT(poly1.sameAs(poly2));
+        EXPECT(poly1 == poly2);
     }
 
 
-    SECTION("equality") {
-        Polygon poly1;
-        Polygon poly2;
-
-        EXPECT(poly1.num_vertices() == 0);
-
+    SECTION("equality/congruence") {
         Polygon::value_type p1 = {1.0, 2.0};
-        poly1.push_front(p1);
-        EXPECT(poly1.num_vertices() == 1);
-        EXPECT(poly1.vertex(0) == p1);
-
-        EXPECT(!poly1.sameAs(poly2));
-
-        poly2.push_back(p1);
-        EXPECT(poly1.sameAs(poly2));
-
         Polygon::value_type p2 = {2.0, 1.0};
-        poly1.push_front(p2);
-        EXPECT(!poly1.sameAs(poly2));
-
-        poly2.push_back(p2);
-        EXPECT(!poly1.sameAs(poly2));
-    }
-
-
-    SECTION("congruence") {
-        Polygon poly1;
-        Polygon poly2;
-        EXPECT(poly1.congruent(poly2));
-
-        Polygon::value_type p1 = {1.0, 2.0};
-        poly1.push_front(p1);
-        EXPECT(!poly1.congruent(poly2));
-
-        poly2.push_back(p1);
-        EXPECT(poly1.congruent(poly2));
-
-        Polygon::value_type p2 = {2.0, 1.0};
-        poly1.push_front(p2);
-        EXPECT(!poly1.congruent(poly2));
-
-        poly2.push_back(p2);
-        EXPECT(poly1.congruent(poly2));
-
         Polygon::value_type p3 = {3.0, 4.0};
+
+        // strict equality/congruence
+        Polygon permutations[] = {{p1, p2, p3}, {p2, p3, p1}, {p3, p1, p2}};
+        EXPECT(static_cast<Polygon::container_type>(permutations[0]) != permutations[1]);
+        EXPECT(static_cast<Polygon::container_type>(permutations[1]) != permutations[2]);
+        EXPECT(permutations[0] == permutations[1]);
+        EXPECT(permutations[1] == permutations[2]);
+
+        Polygon poly1;
+        Polygon poly2;
+
+        EXPECT(poly1.empty());
+
+        poly1.push_back(p1);
+        EXPECT(poly1.size() == 1);
+        EXPECT(poly1.at(0) == p1);
+
+        EXPECT(poly1 != poly2);
+
+        poly2.push_back(p1);
+        EXPECT(poly1 == poly2);
+
+        poly1 = {p2, p1};
+        EXPECT(poly1 != poly2);
+
+        poly2.push_back(p2);
+        EXPECT(static_cast<Polygon::container_type>(poly1) != poly2);
+        EXPECT(poly1 == poly2);
+
+        poly1.clear();
+        poly2.clear();
+        EXPECT(poly1 == poly2);
+
+        poly1.push_back(p1);
+        EXPECT(poly1 != poly2);
+
+        poly2.push_back(p1);
+        EXPECT(poly1 == poly2);
+
+        poly1 = {p2, p1};
+        EXPECT(poly1 != poly2);
+
+        poly2.push_back(p2);
+        EXPECT(static_cast<Polygon::container_type>(poly1) != poly2);
+        EXPECT(poly1 == poly2);
+
         poly2.push_back(p3);
         Polygon poly3 = {p2, p3, p1};
-        EXPECT(!poly2.sameAs(poly3));
-        EXPECT(poly2.congruent(poly3));
+        EXPECT(static_cast<Polygon::container_type>(poly2) != poly3);
+        EXPECT(poly2 == poly3);
 
-        EXPECT(poly2.num_vertices() == 3);
-        EXPECT(poly2.vertex(2) == poly3.vertex(1));
+        EXPECT(poly2.size() == 3);
+        EXPECT(poly2.at(2) == poly3.at(1));
 
         Polygon poly4 = {p3, p1, p2};
-        EXPECT(!poly2.sameAs(poly4));
-        EXPECT(poly2.congruent(poly4));
+        EXPECT(static_cast<Polygon::container_type>(poly2) != poly4);
+        EXPECT(poly2 == poly4);
+    }
+
+
+    SECTION("simplify") {
+        Polygon poly{{0., -1.}, {1., 1.}, {-1., 1.}, {0., -1.}};
+        poly.simplify();
+
+        Polygon expected{{-1., 1.}, {0., -1.}, {1., 1.}};
+        EXPECT(poly == expected);
+    }
+
+
+    SECTION("partitioning") {  // includePoles=false
+        auto mid = [](double a, double b) { return (a + b) / 2.; };
+
+        constexpr double lon[] = {0, 90, 180, 270, 360};
+        constexpr double lat[] = {90, 0, -90};
+
+        Polygon polys[] = {Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[0]}, {lon[0], lat[0]}}),
+                           Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[0]}, {lon[1], lat[0]}}),
+                           Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[0]}, {lon[2], lat[0]}}),
+                           Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[0]}, {lon[3], lat[0]}}),
+                           Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[2]}, {lon[0], lat[2]}}),
+                           Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[2]}, {lon[1], lat[2]}}),
+                           Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[2]}, {lon[2], lat[2]}}),
+                           Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[2]}, {lon[3], lat[2]}})};
+
+
+        Polygon::container_type points;
+        const std::vector<double> list_lons{lon[0], mid(lon[0], lon[1]), lon[1], mid(lon[1], lon[2]),
+                                            lon[2], mid(lon[2], lon[3]), lon[3], mid(lon[3], lon[4])};
+        const std::vector<double> list_lats{lat[0], mid(lat[0], lat[1]), lat[1], mid(lat[1], lat[2]), lat[2]};
+
+        for (double lon : list_lons) {
+            for (double lat : list_lats) {
+                points.emplace_back(lon, lat);
+            }
+        }
+
+        std::vector<size_t> counts(points.size(), 0);
+        for (size_t i = 0; i < points.size(); ++i) {
+            for (const auto& poly : polys) {
+                if (poly.contains(points[i])) {
+                    ++counts[i];
+                }
+            }
+        }
+
+        std::vector<size_t> expected{
+            1, 1, 2, 1, 1,  // (for this meridian, note that PolygonXY is not periodic)
+            1, 1, 2, 1, 1,  //
+            2, 2, 4, 2, 2,  //
+            1, 1, 2, 1, 1,  //
+            2, 2, 4, 2, 2,  //
+            1, 1, 2, 1, 1,  //
+            2, 2, 4, 2, 2,  //
+            1, 1, 2, 1, 1,  //
+        };
+
+        EXPECT(counts == expected);
     }
 }
 
 
-CASE("LonLatPolygon") {
-    using Polygon = geo::polygon::LonLatPolygon;
+CASE("Polygon") {
+    using geo::polygon::Polygon;
+
+    auto is_approximately_equal = [](double a, double b) { return eckit::types::is_approximately_equal(a, b, 1e-6); };
+
+    const Polygon clipper{{-1, -1}, {1, -1}, {1, 1}, {-1, 1}};
 
 
     SECTION("Construction") {
-        const std::vector<Polygon::value_type> points1{{0, 0}, {1, 1}, {2, 2}, {0, 0}};
-        const std::vector<Polygon::value_type> points2{{0, 0}, {1, 0}, {2, 0}, {2, 1}, {2, 2},
-                                                       {1, 2}, {0, 2}, {0, 1}, {0, 0}};
+        struct test_t {
+            Polygon::container_type points;
+            size_t size;
+        };
 
-        EXPECT_EQUAL(Polygon(points1).size(), 2);
-        EXPECT_EQUAL(Polygon(points1.begin(), points1.end()).size(), 2);
+        for (const auto& test : {test_t{{{0, 0}, {2, 1}, {1, 2}, {0, 0}}, 3},
+                                 test_t{{{1, 0}, {2, 0}, {2, 1}, {2, 2}, {1, 2}, {0, 2}, {0, 1}, {0, 0}, {1, 0}}, 4}}) {
+            Polygon poly1(test.points);
+            poly1.simplify();
+            EXPECT_EQUAL(poly1.size(), test.size);
 
-        EXPECT_EQUAL(Polygon(points2).size(), 5);
-        EXPECT_EQUAL(Polygon(points2.begin(), points2.end()).size(), 5);
+            Polygon poly2(test.points.begin(), test.points.end());
+            poly2.simplify();
+            EXPECT_EQUAL(poly2.size(), test.size);
+        }
     }
 
 
     SECTION("Contains North pole") {
-        const std::vector<Polygon::value_type> points{{0, 90}, {0, 0}, {1, 0}, {1, 90}, {0, 90}};
-
-        Polygon poly1(points);
-        EXPECT(poly1.contains({0, 90}));
-        EXPECT(poly1.contains({10, 90}));
-        EXPECT_NOT(poly1.contains({0, -90}));
-        EXPECT_NOT(poly1.contains({10, -90}));
-
-        Polygon poly2(points, false);
-        EXPECT(poly2.contains({0, 90}));
-        EXPECT_NOT(poly2.contains({10, 90}));
-        EXPECT_NOT(poly2.contains({0, -90}));
-        EXPECT_NOT(poly2.contains({10, -90}));
+        Polygon poly{{0, 90}, {0, 0}, {1, 0}, {1, 90}, {0, 90}};
+        EXPECT(poly.contains({0, 90}));
+        EXPECT(poly.contains({10, 90}));
+        EXPECT_NOT(poly.contains({0, -90}));
+        EXPECT_NOT(poly.contains({10, -90}));
     }
 
 
     SECTION("Contains South pole") {
-        const std::vector<Polygon::value_type> points{{0, -90}, {0, 0}, {1, 0}, {1, -90}, {0, -90}};
-
-        Polygon poly1(points);
-        EXPECT_NOT(poly1.contains({0, 90}));
-        EXPECT_NOT(poly1.contains({10, 90}));
-        EXPECT(poly1.contains({0, -90}));
-        EXPECT(poly1.contains({10, -90}));
-
-        Polygon poly2(points, false);
-        EXPECT_NOT(poly2.contains({0, 90}));
-        EXPECT_NOT(poly2.contains({10, 90}));
-        EXPECT(poly2.contains({0, -90}));
-        EXPECT_NOT(poly2.contains({10, -90}));
+        Polygon poly{{0, -90}, {0, 0}, {1, 0}, {1, -90}, {0, -90}};
+        EXPECT_NOT(poly.contains({0, 90}));
+        EXPECT_NOT(poly.contains({10, 90}));
+        EXPECT(poly.contains({0, -90}));
+        EXPECT(poly.contains({10, -90}));
     }
 
 
@@ -293,10 +352,9 @@ CASE("LonLatPolygon") {
 
 
     SECTION("Parallelogram") {
-        const std::vector<Polygon::value_type> points{{0, 0}, {1, 1}, {2, 1}, {1, 0}, {0, 0}};
-        Polygon poly(points);
+        Polygon poly({{0, 0}, {1, 1}, {2, 1}, {1, 0}, {0, 0}});
 
-        for (const auto& p : points) {
+        for (const auto& p : poly) {
             EXPECT(poly.contains(p));
         }
         EXPECT_NOT(poly.contains({0, 1}));
@@ -305,15 +363,13 @@ CASE("LonLatPolygon") {
 
 
     SECTION("Degenerate polygon") {
-        const std::vector<Polygon::value_type> points{{0, 0}, {2, 0}, {2, 0} /*duplicate*/, {0, 2}, {0, 0}};
+        Polygon poly({{0, 0}, {2, 0}, {2, 0} /*duplicate*/, {0, 2}, {0, 0}});
 
-        Polygon poly(points);
-
-        for (const auto& p : points) {
+        for (const auto& p : poly) {
             EXPECT(poly.contains(p));
         }
 
-        for (const auto& p : std::vector<Polygon::value_type>{{2, 2}}) {
+        for (const auto& p : Polygon::container_type{{2, 2}}) {
             EXPECT_NOT(poly.contains(p));
         }
     }
@@ -349,56 +405,130 @@ CASE("LonLatPolygon") {
     }
 
 
-    SECTION("Partitioning (includePoles=false)") {
-        auto mid = [](double a, double b) { return (a + b) / 2.; };
+    SECTION("simplify") {
+        Polygon poly{{0., -1.}, {1., 1.}, {-1., 1.}, {0., -1.}};
+        poly.simplify();
 
-        constexpr double lon[] = {0, 90, 180, 270, 360};
-        constexpr double lat[] = {90, 0, -90};
-
-        Polygon polys[] = {
-            Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[0]}, {lon[0], lat[0]}, {lon[0], lat[1]}}, false),
-            Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[0]}, {lon[1], lat[0]}, {lon[1], lat[1]}}, false),
-            Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[0]}, {lon[2], lat[0]}, {lon[2], lat[1]}}, false),
-            Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[0]}, {lon[3], lat[0]}, {lon[3], lat[1]}}, false),
-            Polygon({{lon[0], lat[1]}, {lon[1], lat[1]}, {lon[1], lat[2]}, {lon[0], lat[2]}, {lon[0], lat[1]}}, false),
-            Polygon({{lon[1], lat[1]}, {lon[2], lat[1]}, {lon[2], lat[2]}, {lon[1], lat[2]}, {lon[1], lat[1]}}, false),
-            Polygon({{lon[2], lat[1]}, {lon[3], lat[1]}, {lon[3], lat[2]}, {lon[2], lat[2]}, {lon[2], lat[1]}}, false),
-            Polygon({{lon[3], lat[1]}, {lon[4], lat[1]}, {lon[4], lat[2]}, {lon[3], lat[2]}, {lon[3], lat[1]}}, false)};
+        Polygon expected{{-1., 1.}, {0., -1.}, {1., 1.}};
+        EXPECT(poly == expected);
+    }
 
 
-        std::vector<Polygon::value_type> points;
-        const std::vector<double> list_lons{lon[0], mid(lon[0], lon[1]), lon[1], mid(lon[1], lon[2]),
-                                            lon[2], mid(lon[2], lon[3]), lon[3], mid(lon[3], lon[4])};
-        const std::vector<double> list_lats{lat[0], mid(lat[0], lat[1]), lat[1], mid(lat[1], lat[2]), lat[2]};
+    SECTION("clipping: empty") {
+        Polygon poly;
+        poly.clip(clipper);
+        EXPECT(poly.empty());
+    }
 
-        for (double lon : list_lons) {
-            for (double lat : list_lats) {
-                points.emplace_back(lon, lat);
-            }
-        }
 
-        std::vector<size_t> counts(points.size(), 0);
-        for (size_t i = 0; i < points.size(); ++i) {
-            for (const auto& poly : polys) {
-                if (poly.contains(points[i])) {
-                    ++counts[i];
-                }
-            }
-        }
+    SECTION("clipping: completely covers the clipping polygon") {
+        Polygon poly{{-2, 0}, {0, -2}, {2, 0}, {0, 2}};
+        poly.clip(clipper);
+        EXPECT(poly == clipper);
+    }
 
-        for (size_t i = 0; i < counts.size(); i += list_lats.size() * 2) {
-            EXPECT(counts[i + 0] == 2);
-            EXPECT(counts[i + 1] == 2);
-            EXPECT(counts[i + 2] == 4);
-            EXPECT(counts[i + 3] == 2);
-            EXPECT(counts[i + 4] == 2);
 
-            EXPECT(counts[i + 5] == 1);
-            EXPECT(counts[i + 6] == 1);
-            EXPECT(counts[i + 7] == 2);
-            EXPECT(counts[i + 8] == 1);
-            EXPECT(counts[i + 9] == 1);
-        }
+    SECTION("clipping: exactly aligns with clipping boundary") {
+        auto poly = clipper;
+        EXPECT(poly == clipper);
+
+        poly.push_back((clipper.back() + clipper.front()) * 0.5);
+        EXPECT(poly != clipper);
+
+        poly.clip(clipper);
+
+        EXPECT(poly == clipper);
+    }
+
+
+    SECTION("clipping: completely inside the clipping polygon") {
+        Polygon poly{{0, 0}, {0.5, 0.5}, {-0.5, 0.5}};
+        auto expected = poly;
+        poly.clip(clipper);
+
+        EXPECT(poly == expected);
+    }
+
+
+    SECTION("clipping: vertix/vertices outside the clipping polygon (1)") {
+        Polygon poly{{-1., 0.5}, {-2., 0.}, {-1., -2.}, {0.5, -1.}};
+        poly.clip(clipper);
+
+        Polygon expected{{-1., -1.}, {0.5, -1.}, {-1., 0.5}};
+        EXPECT(poly == expected);
+        EXPECT(is_approximately_equal(poly.area(), 1.125));
+    }
+
+
+    SECTION("clipping: vertix/vertices outside the clipping polygon (2)") {
+        Polygon poly{{0., 0.}, {2., 0.}, {1., 2.}};
+        poly.clip(clipper);
+
+        Polygon expected{{0.5, 1.}, {0., 0.}, {1., 0.}, {1., 1.}};
+        EXPECT(poly == expected);
+    }
+
+
+    SECTION("clipping: vertix/vertices outside the clipping polygon (3)") {
+        Polygon poly{{1., 1.5}, {2., 0.5}, {-0.5, -2.}, {-2., 0.}};
+        poly.clip(clipper);
+
+        Polygon expected{{-1., 0.5}, {0., 1.}, {1., 1.}, {1., -0.5}, {0.5, -1.}, {-1., -1.}};
+        EXPECT(poly == expected);
+        EXPECT(is_approximately_equal(poly.area(), 3.625));
+        EXPECT(is_approximately_equal(poly.area(true), -3.625));
+    }
+
+
+    SECTION("clipping: vertix/vertices outside the clipping polygon (4)") {
+        Polygon poly{{-2, 0}, {0, -2}, {2, 0}, {0, 2}};
+        poly.clip(clipper);
+
+        EXPECT(poly == clipper);
+        EXPECT(is_approximately_equal(poly.area(), 4.));
+    }
+
+
+    SECTION("clipping: vertix/vertices outside the clipping polygon (5)") {
+        Polygon poly{{1., -0.5}, {1., 0.5}, {-1., 0.}};
+        Polygon clipper{{0.5, 0.}, {0., 0.5}, {0., 0.}};
+        poly.clip(clipper);
+
+        Polygon expected{{0., 0.}, {0.5, 0.}, {0.2, 0.3}, {0., 0.25}};
+        EXPECT(poly == expected);
+    }
+
+
+    SECTION("clipping: completely outside the clipping polygon") {
+        Polygon poly{{2, 2}, {3, 3}, {3, 2}};
+        poly.clip(clipper);
+
+        EXPECT(poly.empty());
+        EXPECT(is_approximately_equal(poly.area(), 0.));
+    }
+
+
+    SECTION("clipping: concave polygon where part is clipped but part remains inside.") {
+        Polygon poly{{-2., 2.}, {-2., -2.}, {2., -2.}};
+        poly.clip(clipper);
+
+        Polygon expected{{-1, -1}, {1, -1}, {-1, 1}};
+        EXPECT(poly == expected);
+        EXPECT(is_approximately_equal(poly.area(), 2.));
+    }
+
+
+    SECTION("clipping: polygon intersection") {
+        Polygon poly{{0.000304552, -5.32E-06}, {0, 0.026185917}, {0., 0.}};
+        Polygon clipper{{0.000304598, 0.008724209}, {-0.000304598, 0.008724209}, {0, -0.008726866}};
+        poly.clip(clipper);
+
+        Polygon expected{{0.0001522757595430324, -2.659995799630596e-06},
+                         {0.0002436488701595806, 0.005232302171885906},
+                         {0.0002030449380766552, 0.008724209},
+                         {0, 0.008724209},
+                         {0, 0}};
+        EXPECT(poly == expected);
     }
 }
 

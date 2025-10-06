@@ -22,6 +22,7 @@ namespace eckit::linalg {
 
 class LinearAlgebraDense {
 public:
+
     // - Static methods
 
     /// Get backend, re-setting default
@@ -53,12 +54,14 @@ public:
     virtual void gemm(const Matrix& A, const Matrix& X, Matrix& Y) const = 0;
 
 protected:
+
     LinearAlgebraDense() = default;
     LinearAlgebraDense(const std::string& name);
 
     virtual ~LinearAlgebraDense() = default;
 
 private:
+
     virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const LinearAlgebraDense& p) {

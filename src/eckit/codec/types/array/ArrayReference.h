@@ -22,6 +22,7 @@ namespace eckit::codec {
 
 class ArrayReference : public ArrayMetadata {
 public:
+
     ArrayReference() = default;
 
     ArrayReference(const void* data, DataType, const ArrayShape&);
@@ -39,6 +40,7 @@ public:
     friend void decode(const Metadata&, const Data&, ArrayReference&);
 
 private:
+
     void* data_{nullptr};
 };
 

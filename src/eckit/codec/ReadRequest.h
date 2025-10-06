@@ -25,6 +25,7 @@ namespace eckit::codec {
 
 class ReadRequest {
 public:
+
     ReadRequest(ReadRequest&& other);
 
     template <typename T>
@@ -55,6 +56,7 @@ public:
     void checksum(bool);
 
 private:
+
     ReadRequest(const std::string& URI, Decoder* decoder);
     ReadRequest(Stream, size_t offset, const std::string& key, Decoder*);
 

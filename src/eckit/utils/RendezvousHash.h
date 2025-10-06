@@ -32,6 +32,7 @@ namespace eckit {
 class RendezvousHash : private eckit::NonCopyable {
 
 public:  // types
+
     typedef std::string Node;
 
     typedef std::map<std::string, std::string> Key;
@@ -39,9 +40,11 @@ public:  // types
     typedef std::string (*hash_func_ptr)(const std::string&);
 
 private:  // types
+
     typedef std::vector<Node>::iterator iterator;
 
 public:  // methods
+
     static std::string md5(const std::string& str);
 
     RendezvousHash(const hash_func_ptr hash = &md5);
@@ -65,11 +68,13 @@ public:  // methods
     bool removeNode(const Node& node);
 
 private:  // methods
+
     std::string flatten(const Key&) const;
 
     void hashOrderInternal(const Key& key, std::vector<size_t>& indexes);
 
-private:                  // types
+private:  // types
+
     eckit::Mutex mutex_;  //< protects addition and removal of nodes
 
     hash_func_ptr hash_;

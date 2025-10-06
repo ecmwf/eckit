@@ -24,6 +24,7 @@ namespace eckit {
 class Tool : public Main {
 
 public:  // methods
+
     Tool(int argc, char** argv, const char* homeenv = nullptr);
 
     ~Tool() override;
@@ -36,9 +37,11 @@ public:  // methods
     LogTarget* createErrorLogTarget() const override;
 
 protected:  // method
+
     void sendLogErrWarnToStdOut(bool send) { sendLogErrWarnToStdOut_ = send; }
 
 private:  // members
+
     bool sendLogErrWarnToStdOut_;
 };
 

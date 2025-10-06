@@ -26,6 +26,7 @@ namespace {
 template <typename Value>
 class FixedFormat {
 public:
+
     using value_type = Value;
     FixedFormat(value_type x, long precision) : x_(x), precision_(precision > 0 ? precision : 20) {}
     void print(std::ostream& out) const {
@@ -53,6 +54,7 @@ public:
     }
 
 private:
+
     value_type x_;
     long precision_;
 };

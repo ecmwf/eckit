@@ -23,33 +23,24 @@ namespace eckit::geo::projection {
 /// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
 class Rotation : public Projection {
 public:
+
     // -- Constructors
 
-    explicit Rotation(const Spec& spec) : Rotation(*std::unique_ptr<Rotation>(make_from_spec(spec))) {}
-
-    Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
-    Rotation(double south_pole_lon, double south_pole_lat, double angle = 0);
-
-    Rotation(const Rotation&) = default;
-    Rotation(Rotation&&)      = default;
-
-    // -- Destructor
-
-    ~Rotation() override = default;
-
-    // -- Operators
-
-    Rotation& operator=(const Rotation&) = default;
-    Rotation& operator=(Rotation&&)      = default;
+    explicit Rotation(const Spec&);
+    explicit Rotation(const PointLonLat& = SOUTH_POLE, double angle = 0);
 
     // -- Methods
 
+    PointLonLat south_pole() const { return south_pole_; }
+    double angle() const { return angle_; }
     bool rotated() const { return rotated_; }
 
     inline PointLonLat fwd(const PointLonLat& p) const { return (*fwd_)(p); }
     inline PointLonLat inv(const PointLonLat& q) const { return (*inv_)(q); }
 
     // -- Overridden methods
+
+    const std::string& type() const override;
 
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
@@ -59,11 +50,13 @@ public:
     [[nodiscard]] static Rotation* make_from_spec(const Spec&);
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Types
 
     struct Implementation {

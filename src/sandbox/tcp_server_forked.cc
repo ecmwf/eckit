@@ -96,20 +96,21 @@ class FDBForker : public ProcessControler {
     }
 
 public:
-    FDBForker(net::TCPSocket& socket) :
-        ProcessControler(true), socket_(socket) {}
+
+    FDBForker(net::TCPSocket& socket) : ProcessControler(true), socket_(socket) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class FDBSvrApp : public Application {
 public:
-    FDBSvrApp(int argc, char** argv) :
-        Application(argc, argv, "HOME") {}
+
+    FDBSvrApp(int argc, char** argv) : Application(argc, argv, "HOME") {}
 
     ~FDBSvrApp() {}
 
 private:
+
     int port_;
 
     FDBSvrApp(const FDBSvrApp&)            = delete;

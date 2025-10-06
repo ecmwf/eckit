@@ -21,6 +21,7 @@ namespace eckit {
 
 class BadTag : public eckit::Exception {
 public:
+
     BadTag(const std::string& what);
 };
 

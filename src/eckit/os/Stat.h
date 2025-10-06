@@ -32,6 +32,7 @@ struct Stat {
     static int fstat(int fd, Struct* s) { return ::fstat(fd, s); }
 
 private:
+
     Stat();  ///< non-instantiable
 };
 

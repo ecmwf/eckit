@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionVAR : public FunctionExpression {
 public:
+
     FunctionVAR(const std::string&, const expression::Expressions&);
     FunctionVAR(const FunctionVAR&);
     ~FunctionVAR();
@@ -37,11 +38,13 @@ public:
     static int arity() { return 1; }
 
 protected:
+
     // -- Overridden methods
     using FunctionExpression::eval;
     double eval(bool& missing) const override;
 
 private:
+
     // No copy allowed
     FunctionVAR& operator=(const FunctionVAR&);
 

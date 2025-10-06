@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionOR : public FunctionExpression {
 public:
+
     FunctionOR(const std::string&, const expression::Expressions&);
     FunctionOR(const FunctionOR&);
     ~FunctionOR();
@@ -36,6 +37,7 @@ public:
     static const char* help() { return ""; }
 
 private:
+
     // No copy allowed
     FunctionOR& operator=(const FunctionOR&);
 

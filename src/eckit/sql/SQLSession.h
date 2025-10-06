@@ -42,6 +42,7 @@ class SQLOutputConfig;
 
 class SQLSession : private eckit::OnlyMovable {
 public:
+
     // Constructors
 
     SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config = 0,
@@ -83,9 +84,11 @@ public:
     static std::string readIncludeFile(const std::string&);
 
 protected:
+
     void loadDefaultSchema();
 
 private:
+
     static std::string schemaFile();
     static std::vector<std::string> includePaths();
 

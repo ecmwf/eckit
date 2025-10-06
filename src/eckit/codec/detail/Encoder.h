@@ -28,6 +28,7 @@ namespace eckit::codec {
 
 class Encoder {
 public:
+
     Encoder() = default;
 
     operator bool() const { return static_cast<bool>(self_); }
@@ -55,6 +56,7 @@ public:
     bool encodes_data() const { return self_->encodes_data_(); }
 
 private:
+
     struct Encodable {
         virtual ~Encodable()                             = default;
         virtual size_t encode_metadata_(Metadata&) const = 0;

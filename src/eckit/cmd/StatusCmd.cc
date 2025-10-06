@@ -16,8 +16,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-StatusCmd::StatusCmd() :
-    CmdResource("status") {}
+StatusCmd::StatusCmd() : CmdResource("status") {}
 
 StatusCmd::~StatusCmd() {}
 

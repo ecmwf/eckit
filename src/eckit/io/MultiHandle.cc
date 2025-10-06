@@ -26,14 +26,12 @@ ClassSpec MultiHandle::classSpec_ = {
 };
 Reanimator<MultiHandle> MultiHandle::reanimator_;
 
-MultiHandle::MultiHandle() :
-    current_(datahandles_.end()), read_(false) {}
+MultiHandle::MultiHandle() : current_(datahandles_.end()), read_(false) {}
 
 MultiHandle::MultiHandle(const std::vector<DataHandle*>& v) :
     datahandles_(v), current_(datahandles_.end()), read_(false) {}
 
-MultiHandle::MultiHandle(Stream& s) :
-    DataHandle(s), read_(false) {
+MultiHandle::MultiHandle(Stream& s) : DataHandle(s), read_(false) {
     unsigned long size;
     s >> size;
 

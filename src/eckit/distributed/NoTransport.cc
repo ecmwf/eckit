@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Seconds.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/os/AutoAlarm.h"
 
+#include "eckit/distributed/Actor.h"
+#include "eckit/distributed/Message.h"
 #include "eckit/distributed/NoTransport.h"
 #include "eckit/distributed/Transport.h"
-#include "eckit/distributed/Message.h"
-#include "eckit/distributed/Actor.h"
 
 using eckit::Log;
 
@@ -24,17 +24,11 @@ namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-NoTransport::~NoTransport() {
-}
+NoTransport::~NoTransport() {}
 
-NoTransport::NoTransport(const eckit::option::CmdArgs &args):
-    Transport(args) {
+NoTransport::NoTransport(const eckit::option::CmdArgs& args) : Transport(args) {}
 
-}
-
-void NoTransport::initialise() {
-
-}
+void NoTransport::initialise() {}
 
 void NoTransport::abort() {
     eckit::Log::info() << "NoTransport::abort() called" << std::endl;
@@ -42,8 +36,7 @@ void NoTransport::abort() {
 }
 
 
-void NoTransport::synchronise() {
-}
+void NoTransport::synchronise() {}
 
 
 bool NoTransport::single() const {
@@ -54,11 +47,11 @@ bool NoTransport::writer() const {
     return false;
 }
 
-void NoTransport::sendMessageToNextWorker(const Message &msg) {
+void NoTransport::sendMessageToNextWorker(const Message& msg) {
     NOTIMP;
 }
 
-void NoTransport::getNextWorkMessage(Message &message) {
+void NoTransport::getNextWorkMessage(Message& message) {
     NOTIMP;
 }
 
@@ -70,16 +63,16 @@ void NoTransport::print(std::ostream& out) const {
     out << "NoTransport[]";
 }
 
-void NoTransport::sendToWriter(size_t writer, const Message &message) {
+void NoTransport::sendToWriter(size_t writer, const Message& message) {
     NOTIMP;
 }
 
-void NoTransport::getNextWriteMessage(Message &message) {
+void NoTransport::getNextWriteMessage(Message& message) {
     NOTIMP;
 }
 
 
-void NoTransport::sendStatisticsToProducer(const Message &message) {
+void NoTransport::sendStatisticsToProducer(const Message& message) {
     NOTIMP;
 }
 
@@ -92,5 +85,4 @@ void NoTransport::sendShutDownMessage(const Actor&) {
 static TransportBuilder<NoTransport> builder("none");
 
 
-} // namespace eckit
-
+}  // namespace eckit::distributed

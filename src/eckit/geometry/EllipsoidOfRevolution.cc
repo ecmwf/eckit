@@ -31,12 +31,8 @@ static const double degrees_to_radians = M_PI / 180.;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a,
-                                                        const double& b,
-                                                        const Point2& Alonlat,
-                                                        Point3& B,
-                                                        double height,
-                                                        bool normalise_angle) {
+void EllipsoidOfRevolution::convertSphericalToCartesian(const double& a, const double& b, const Point2& Alonlat,
+                                                        Point3& B, double height, bool normalise_angle) {
     ASSERT(a > 0.);
     ASSERT(b > 0.);
 

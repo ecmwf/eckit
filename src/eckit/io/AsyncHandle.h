@@ -28,6 +28,7 @@ namespace eckit {
 
 class AsyncHandle : public DataHandle, public HandleHolder {
 public:
+
     /// Contructor, taking ownership
 
     AsyncHandle(DataHandle*, size_t = 1024 * 1024, size_t rounding = 64 * 1024);
@@ -80,7 +81,9 @@ public:
 #endif
 
 private:  // methods
+
 private:  // members
+
     std::string message_;
     size_t maxSize_;
     size_t used_;

@@ -24,6 +24,7 @@ class Offset;
 
 class TransferWatcher {
 public:
+
     // -- Methods
 
     virtual void watch(const void*, long) = 0;

@@ -22,6 +22,7 @@ namespace eckit {
 class MD5 : public Hash {
 
 public:  // types
+
     MD5();
 
     explicit MD5(const char*);
@@ -82,7 +83,8 @@ public:  // types
 
     void numericalDigest(unsigned char out[MD5_DIGEST_LENGTH]) const;
 
-private:                       // members
+private:  // members
+
     mutable digest_t digest_;  ///< cached digest
 
     /* POINTER defines a generic pointer type */

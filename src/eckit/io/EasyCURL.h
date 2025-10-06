@@ -32,6 +32,7 @@ class EasyCURLResponse {
     mutable EasyCURLResponseImp* imp_;
 
 public:
+
     EasyCURLResponse(EasyCURLResponseImp*);
     ~EasyCURLResponse();
 
@@ -49,6 +50,7 @@ public:
     eckit::DataHandle* dataHandle(const std::string& message = "") const;
 
 private:
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const EasyCURLResponse& c) {
@@ -61,6 +63,7 @@ private:
 
 class EasyCURL {
 public:
+
     EasyCURL();
 
     ~EasyCURL();
@@ -84,9 +87,11 @@ public:
     void userAgent(const std::string&);
 
 public:
+
     void print(std::ostream&) const;
 
 private:
+
     CURLHandle* ch_;
 
     EasyCURLResponse request(const std::string& url, bool stream = false);

@@ -24,6 +24,7 @@ namespace eckit {
 
 class DayOfYear {
 public:
+
     // -- Contructors
 
     DayOfYear(const Date& = Date(0));
@@ -71,6 +72,7 @@ public:
     }
 
 protected:
+
     // -- Members
     // None
 
@@ -87,6 +89,7 @@ protected:
     // None
 
 private:
+
     // -- Members
 
     long value_;

@@ -63,8 +63,7 @@ std::string SQLBitfield::make(const std::string& name, const FieldNames& fields,
     std::stringstream s;
     s << name << "[";
     for (size_t i = 0; i < fields.size(); ++i) {
-        s << fields[i] << ":" << Translator<int, std::string>()(sizes[i])
-          << ((i + 1 != fields.size()) ? ";" : "");
+        s << fields[i] << ":" << Translator<int, std::string>()(sizes[i]) << ((i + 1 != fields.size()) ? ";" : "");
     }
     s << "]";
     std::string typeName = s.str();

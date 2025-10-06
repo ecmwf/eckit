@@ -45,7 +45,8 @@ void timeAdd(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.stop();
 
-    std::cout << " - " << N << " x " << M << " x add(" << Bytes(buffer.size()) << ") rate " << Bytes(N * M * buffer.size(), timer) << std::endl;
+    std::cout << " - " << N << " x " << M << " x add(" << Bytes(buffer.size()) << ") rate "
+              << Bytes(N * M * buffer.size(), timer) << std::endl;
 }
 
 template <int N>
@@ -60,7 +61,8 @@ void timeCompute(Hash& hash, eckit::Buffer& buffer, eckit::Timer& timer) {
 
     timer.stop();
 
-    std::cout << " - " << N << " x compute(" << Bytes(buffer.size()) << ") rate " << Bytes(N * buffer.size(), timer) << std::endl;
+    std::cout << " - " << N << " x compute(" << Bytes(buffer.size()) << ") rate " << Bytes(N * buffer.size(), timer)
+              << std::endl;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

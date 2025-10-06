@@ -24,6 +24,7 @@ namespace eckit {
 class OStreamTarget : public LogTarget {
 
 public:  // methods
+
     OStreamTarget(std::ostream& out);
 
     ~OStreamTarget() override;
@@ -33,6 +34,7 @@ public:  // methods
     void print(std::ostream& s) const override;
 
 private:
+
     std::ostream& out_;
 };
 

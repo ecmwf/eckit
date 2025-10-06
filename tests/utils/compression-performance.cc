@@ -57,8 +57,8 @@ size_t timeCompress(const Compressor& compressor, eckit::Buffer& inBuffer, eckit
 }
 
 template <int N>
-void timeDecompress(const Compressor& compressor, eckit::Buffer& inBuffer, size_t inlen, eckit::Buffer& outBuffer, size_t outlen,
-                    eckit::Timer& timer) {
+void timeDecompress(const Compressor& compressor, eckit::Buffer& inBuffer, size_t inlen, eckit::Buffer& outBuffer,
+                    size_t outlen, eckit::Timer& timer) {
 
     timer.start();
 
@@ -75,8 +75,7 @@ void timeDecompress(const Compressor& compressor, eckit::Buffer& inBuffer, size_
 struct BinaryData {
     eckit::Buffer in;
     std::string description;
-    BinaryData(const eckit::PathName& path, const std::string& desc) :
-        in(path.size()), description(desc) {
+    BinaryData(const eckit::PathName& path, const std::string& desc) : in(path.size()), description(desc) {
         std::unique_ptr<DataHandle> dh(path.fileHandle());
         dh->openForRead();
         dh->read(in, in.size());

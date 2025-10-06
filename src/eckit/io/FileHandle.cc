@@ -17,12 +17,12 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/FDataSync.h"
 #include "eckit/io/FileHandle.h"
+#include "eckit/io/MoverTransferSelection.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/Stat.h"
 #include "eckit/utils/MD5.h"
-#include "eckit/io/MoverTransferSelection.h"
 
 
 namespace eckit {
@@ -44,8 +44,7 @@ void FileHandle::encode(Stream& s) const {
     s << overwrite_;
 }
 
-FileHandle::FileHandle(Stream& s) :
-    DataHandle(s), overwrite_(false), file_(nullptr), read_(false) {
+FileHandle::FileHandle(Stream& s) : DataHandle(s), overwrite_(false), file_(nullptr), read_(false) {
     s >> name_;
     s >> overwrite_;
 }
@@ -70,8 +69,9 @@ void FileHandle::open(const char* mode) {
         setbuf(file_, 0);
     }
     else {
-        static long bufSize = Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
-        long size           = bufSize;
+        static long bufSize =
+            Resource<long>("FileHandleIOBufferSize;$FILEHANDLE_IO_BUFFERSIZE;-FileHandleIOBufferSize", 0);
+        long size = bufSize;
         if (size) {
             Log::debug() << "FileHandle using " << Bytes(size) << std::endl;
             buffer_.reset(new Buffer(size));

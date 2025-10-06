@@ -30,12 +30,14 @@ class BasePathName;
 
 class PathNameFactory {
 public:  // methods
+
     static BasePathName* build(const std::string& path, bool tildeIsUserHome = false);
     static BasePathName* build(const std::string& type, const std::string& path, bool tildeIsUserHome = false);
 };
 
 class PathNameBuilderBase {
 public:
+
     PathNameBuilderBase(const std::string& name);
     virtual ~PathNameBuilderBase();
     virtual BasePathName* make(const std::string& path, bool tildeIsUserHome) const = 0;
@@ -44,6 +46,7 @@ public:
 template <typename T>
 class PathNameBuilder : public PathNameBuilderBase {
 public:
+
     using PathNameBuilderBase::PathNameBuilderBase;
     BasePathName* make(const std::string& path, bool tildeIsUserHome) const override {
         return new BasePathNameT<T>(path, tildeIsUserHome);

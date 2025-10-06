@@ -25,6 +25,7 @@ namespace eckit {
 
 class BufferedHandle : public DataHandle, public HandleHolder {
 public:
+
     /// Contructor, taking ownership
 
     BufferedHandle(DataHandle*, size_t = 1024 * 1024, bool opened = false);
@@ -61,9 +62,11 @@ public:
     DataHandle* clone() const override;
 
 private:  // methods
+
     void bufferFlush();
 
 private:  // members
+
     Buffer buffer_;
     size_t pos_;
     size_t size_;

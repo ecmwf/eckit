@@ -32,8 +32,9 @@ class TocHandler;
 
 class TransportStatistics : public eckit::Statistics {
 public:
-    TransportStatistics() ;
-    TransportStatistics(eckit::Stream &) ;
+
+    TransportStatistics();
+    TransportStatistics(eckit::Stream&);
 
 
     size_t sendCount_;
@@ -48,18 +49,18 @@ public:
     eckit::Timing shutdownTiming_;
 
 
-    TransportStatistics &operator+=(const TransportStatistics &other) ;
-    TransportStatistics &operator/=(size_t) ;
+    TransportStatistics& operator+=(const TransportStatistics& other);
+    TransportStatistics& operator/=(size_t);
 
-    void report(std::ostream &out, const char *indent = "") const;
+    void report(std::ostream& out, const char* indent = "") const;
 
     void csvHeader(std::ostream& out) const;
 
     void csvRow(std::ostream& out) const;
 
-    void encode(eckit::Stream &) const;
+    void encode(eckit::Stream&) const;
 
-    friend eckit::Stream &operator<<(eckit::Stream &s, const TransportStatistics &x) {
+    friend eckit::Stream& operator<<(eckit::Stream& s, const TransportStatistics& x) {
         x.encode(s);
         return s;
     }
@@ -67,6 +68,6 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

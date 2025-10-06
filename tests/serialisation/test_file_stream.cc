@@ -87,7 +87,8 @@ CASE("write_data") {
 CASE("read_data") {
     FileStream sin(F::filename, "r");
     auto c = closer(sin);
-    sin >> v_char >> v_uchar >> v_bool >> v_int >> v_uint >> v_short >> v_ushort >> v_long >> v_ulong >> v_longlong >> v_ulonglong
+    sin >> v_char >> v_uchar >> v_bool >> v_int >> v_uint >> v_short >> v_ushort >> v_long >> v_ulong >> v_longlong >>
+        v_ulonglong
         //  >> v_float
         >> v_double >> v_string >> v_charp;
 }

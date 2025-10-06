@@ -20,6 +20,7 @@ namespace eckit::net {
 
 class Telnet : public NetService {
 public:
+
     // -- Contructors
 
     Telnet(int);
@@ -29,6 +30,7 @@ public:
     ~Telnet();
 
 private:
+
     // No copy allowed
 
     Telnet(const Telnet&);

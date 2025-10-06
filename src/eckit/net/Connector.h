@@ -30,14 +30,15 @@ class ConnectorException : public Exception {
     virtual bool retryOnClient() const { return true; }
 
 public:
-    ConnectorException(const std::string& what) :
-        Exception(what) {}
+
+    ConnectorException(const std::string& what) : Exception(what) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class Connector : public Stream {
 public:
+
     Connector(const std::string& name, const std::string& node);
 
     ~Connector();
@@ -64,6 +65,7 @@ public:
     static NodeInfo nodeInfo(const std::string& name, const std::string& node);
 
 protected:
+
     // -- Members
     // None
     Connector(const std::string&, int, const std::string&);
@@ -81,6 +83,7 @@ protected:
     // None
 
 private:
+
     // -- Members
 
     std::string host_;
@@ -143,8 +146,8 @@ class AutoMemoize {
     unsigned long t_;
 
 public:
-    AutoMemoize(Connector& c, unsigned long t) :
-        c_(c), t_(t) { c_.memoize(true, t_); }
+
+    AutoMemoize(Connector& c, unsigned long t) : c_(c), t_(t) { c_.memoize(true, t_); }
     ~AutoMemoize() { c_.memoize(false, t_); }
 };
 

@@ -157,8 +157,7 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<cons
     if (beginIndex_ != -1 && endIndex_ != -1) {
         ASSERT(beginIndex_ <= endIndex_);
         for (int i = beginIndex_; i <= endIndex_; i++) {
-            e.push_back(std::make_shared<ColumnExpression>(columnName_ + "_"
-                                                               + Translator<int, std::string>()(i),
+            e.push_back(std::make_shared<ColumnExpression>(columnName_ + "_" + Translator<int, std::string>()(i),
                                                            this->table()));
         }
         return;
@@ -178,7 +177,9 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<cons
         std::vector<std::string> names = table.columnNames();
 
         for (size_t i = 0; i < names.size(); i++) {
-            if ((tableReference_.size()) && ((names[i].rfind(tableReference_) == std::string::npos) || (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size()))) {
+            if ((tableReference_.size()) &&
+                ((names[i].rfind(tableReference_) == std::string::npos) ||
+                 (names[i].rfind(tableReference_) + tableReference_.size() < names[i].size()))) {
                 L << "ColumnExpression::expandStars: skip '" << names[i] << "'" << std::endl;
                 continue;
             }
@@ -189,8 +190,7 @@ void ColumnExpression::expandStars(const std::vector<std::reference_wrapper<cons
         }
     }
     if (!matched) {
-        throw eckit::UserError(std::string("No columns matching ") + columnName_ + tableReference_
-                               + " found.");
+        throw eckit::UserError(std::string("No columns matching ") + columnName_ + tableReference_ + " found.");
     }
 
     L << "ColumnExpression::expandStars: added " << ss.str() << std::endl;

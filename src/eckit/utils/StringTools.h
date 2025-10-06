@@ -29,6 +29,7 @@ namespace eckit {
 
 class StringTools : private NonCopyable {
 public:
+
     static std::string substitute(const std::string&, const std::map<std::string, std::string>&);
 
     /// @deprecated Use extract variables
@@ -64,6 +65,7 @@ public:
     static std::string unQuote(const std::string& value);
 
 private:
+
     StringTools();  // Non instantiable
 };
 

@@ -19,8 +19,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HandleBuf::HandleBuf(DataHandle& handle, bool throwOnError) :
-    handle_(handle), throwOnError_(throwOnError) {
+HandleBuf::HandleBuf(DataHandle& handle, bool throwOnError) : handle_(handle), throwOnError_(throwOnError) {
     setg(in_, in_, in_);
     setp(out_, out_ + sizeof(out_));
 }

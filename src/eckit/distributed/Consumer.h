@@ -29,19 +29,18 @@ class Consumer : public Actor {
     virtual void getNextMessage(Message& message) const = 0;
 
 
-public: // methods
+public:  // methods
 
-    Consumer(Transport &transport);
+    Consumer(Transport& transport);
 
 
     virtual void consume(Message& message) = 0;
     virtual void failure(Message& message);
     virtual void shutdown(Message& message);
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

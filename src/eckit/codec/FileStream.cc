@@ -31,6 +31,7 @@ namespace {
 ///       * append: for appending implemented via write and seek to eof.
 class FileHandle : public eckit::FileHandle {
 public:
+
     FileHandle(const PathName& path, char openmode) : eckit::FileHandle(path, openmode == 'a' /*overwrite*/) {
         if (openmode == 'r') {
             openForRead();
@@ -67,6 +68,7 @@ public:
     void operator=(FileHandle&&)      = delete;
 
 private:
+
     bool closed_{false};
 };
 
@@ -82,6 +84,7 @@ private:
 ///   - Automatic opening and closing of file
 class PooledHandle : public eckit::PooledHandle {
 public:
+
     explicit PooledHandle(const PathName& path) : eckit::PooledHandle(path), path_(path) { openForRead(); }
 
     PooledHandle(const PooledHandle&) = delete;

@@ -33,6 +33,7 @@ namespace eckit {
 
 class BTreeLock {
 public:
+
     static void lockRange(int fd, off_t start, off_t len, int cmd, int type) {
         struct flock lock;
 
@@ -47,6 +48,7 @@ public:
 
 class BTreeNoLock {
 public:
+
     static void lockRange(int fd, off_t start, off_t len, int cmd, int type) {}
 };
 
@@ -63,6 +65,7 @@ public:
 template <class K, class V, int S, class L = BTreeNoLock>
 class BTree : private NonCopyable {
 public:
+
     typedef K key_type;
     typedef V value_type;
     typedef std::pair<K, V> result_type;
@@ -109,11 +112,13 @@ public:
     const PathName& path() const { return path_; }
 
 private:  // methods
+
     void dump(std::ostream&, unsigned long page, int depth) const;
 
     void print(std::ostream& o) const { dump(o); }
 
 private:
+
     struct _Header {};
 
     struct NodeEntry {
@@ -234,8 +239,7 @@ private:
         time_t last_;
         bool dirty_;
 
-        _PageInfo(Page* page = 0) :
-            page_(page), count_(0), last_(time(nullptr)), dirty_(false) {}
+        _PageInfo(Page* page = 0) : page_(page), count_(0), last_(time(nullptr)), dirty_(false) {}
     };
 
     typedef std::map<unsigned long, _PageInfo> Cache;

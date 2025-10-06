@@ -24,6 +24,7 @@ class Stream;
 
 class Data {
 public:
+
     Data() = default;
     Data(void*, size_t);
 
@@ -45,6 +46,7 @@ public:
     std::string checksum(const std::string& algorithm = "") const;
 
 private:
+
     Buffer buffer_;
     size_t size_{0};
 };

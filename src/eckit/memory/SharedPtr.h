@@ -70,26 +70,25 @@ struct NewArrayDealloc {
 template <class T, class ALLOC = NewDealloc<T> >
 class DEPRECATED("Use C++11 std::shared_ptr instead") SharedPtr {
 public:  // types
+
     typedef T element_type;
     typedef T* pointer_type;
 
 public:  // methods
+
     /// Constructor
-    SharedPtr() :
-        ptr_(0) {}
+    SharedPtr() : ptr_(0) {}
 
     /// Constructor.
     /// @param ptr naked pointer
-    explicit SharedPtr(T* ptr) :
-        ptr_(ptr) {
+    explicit SharedPtr(T* ptr) : ptr_(ptr) {
         if (!null()) {
             ptr_->attach();
         }
     }
 
     /// Copy constructor
-    SharedPtr(const SharedPtr& other) :
-        ptr_(other.ptr_) {
+    SharedPtr(const SharedPtr& other) : ptr_(other.ptr_) {
         if (!null()) {
             ptr_->attach();
         }
@@ -211,10 +210,12 @@ public:  // methods
     size_t use_count() const { return owners(); }
 
 private:  // methods
+
     /// @returns true if ptr_ == 0
     bool null() const { return (ptr_ == 0); }
 
-private:                // members
+private:  // members
+
     pointer_type ptr_;  ///< raw pointer
 };
 

@@ -18,6 +18,7 @@ namespace eckit::mpi {
 
 class NullRequestContent : public RequestContent {
 public:
+
     virtual ~NullRequestContent() {}
 
     virtual void print(std::ostream& os) const { os << "NullRequest()"; }
@@ -29,18 +30,15 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Request::Request() :
-    content_(new NullRequestContent()) {
+Request::Request() : content_(new NullRequestContent()) {
     content_->attach();
 }
 
-Request::Request(int request) :
-    content_(0) {
+Request::Request(int request) : content_(0) {
     *this = eckit::mpi::comm().request(request);
 }
 
-Request::Request(RequestContent* p) :
-    content_(p) {
+Request::Request(RequestContent* p) : content_(p) {
     content_->attach();
 }
 
@@ -48,8 +46,7 @@ Request::~Request() {
     content_->detach();
 }
 
-Request::Request(const Request& s) :
-    content_(s.content_) {
+Request::Request(const Request& s) : content_(s.content_) {
     content_->attach();
 }
 

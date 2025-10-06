@@ -27,6 +27,7 @@ namespace eckit {
 
 class SeekableHandle : public DataHandle {
 public:
+
     SeekableHandle(PeekHandle*);
     SeekableHandle(PeekHandle&);
 
@@ -62,6 +63,7 @@ public:
 
 
 private:  // members
+
     bool owned_;
     PeekHandle* handle_;
     Offset seekableStart_;

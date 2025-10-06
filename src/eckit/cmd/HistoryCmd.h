@@ -23,6 +23,7 @@ namespace eckit {
 
 class HistoryCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     HistoryCmd();
@@ -32,6 +33,7 @@ public:
     ~HistoryCmd();
 
 private:
+
     // No copy allowed
 
     HistoryCmd(const HistoryCmd&);

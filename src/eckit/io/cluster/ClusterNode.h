@@ -28,6 +28,7 @@ class NodeInfo;
 
 class ClusterNode : private eckit::NonCopyable {
 public:
+
     ClusterNode();
 
     virtual ~ClusterNode();

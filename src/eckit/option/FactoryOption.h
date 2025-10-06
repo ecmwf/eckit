@@ -27,6 +27,7 @@ namespace eckit::option {
 template <class T>
 class FactoryOption : public BaseOption<std::string> {
 public:
+
     using base_t = BaseOption<std::string>;
 
     FactoryOption(const std::string& name, const std::string& description);
@@ -37,9 +38,11 @@ public:
     size_t set(Configured&, size_t values, args_t::const_iterator begin, args_t::const_iterator end) const override;
 
 protected:
+
     void print(std::ostream&) const override;
 
 private:
+
     void set_value(const std::string& value, Configured&) const override;
 
     [[nodiscard]] std::string translate(const std::string& value) const override;

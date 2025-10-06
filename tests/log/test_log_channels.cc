@@ -55,10 +55,11 @@ namespace eckit::test {
 
 class CapitalizerTarget : public WrapperTarget {
 public:
-    CapitalizerTarget(LogTarget* target) :
-        WrapperTarget(target) {}
+
+    CapitalizerTarget(LogTarget* target) : WrapperTarget(target) {}
 
 private:
+
     virtual void write(const char* start, const char* end) {
 
         std::string::size_type length = std::distance(start, end);

@@ -23,13 +23,13 @@ namespace eckit::geometry::polygon {
 
 class Polygon : protected std::deque<Point2> {
 public:
+
     using container_type = std::deque<value_type>;
     using container_type::value_type;
 
     Polygon() = default;
 
-    Polygon(std::initializer_list<value_type> l) :
-        container_type(l) {}
+    Polygon(std::initializer_list<value_type> l) : container_type(l) {}
 
     using container_type::push_back;
     using container_type::push_front;

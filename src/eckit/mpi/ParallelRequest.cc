@@ -10,9 +10,9 @@
 
 #include <string_view>
 
-#include "eckit/mpi/ParallelRequest.h"
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Parallel.h"
+#include "eckit/mpi/ParallelRequest.h"
 
 namespace eckit {
 namespace mpi {
@@ -25,8 +25,7 @@ void MPICall(int code, std::string_view mpifunc, const eckit::CodeLocation& loc)
 
 ParallelRequest::ParallelRequest() {}
 
-ParallelRequest::ParallelRequest(MPI_Request request) :
-    request_(request) {}
+ParallelRequest::ParallelRequest(MPI_Request request) : request_(request) {}
 
 void ParallelRequest::print(std::ostream& os) const {
     os << "ParallelRequest("

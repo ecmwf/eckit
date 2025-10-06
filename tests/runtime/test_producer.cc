@@ -46,8 +46,7 @@ struct P : public Producer<string> {
         count_--;
     }
 
-    P() :
-        count_(5) {}
+    P() : count_(5) {}
 };
 
 CASE("test_producer") {

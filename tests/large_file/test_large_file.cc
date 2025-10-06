@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cerrno>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <cassert>
+#include <cerrno>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>

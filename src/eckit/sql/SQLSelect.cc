@@ -270,7 +270,8 @@ void SQLSelect::prepareExecute() {
                                    << "->" << x.table2_->fullName() << std::endl;
                     continue;
                 }
-                Log::debug<LibEcKit>() << "Using link " << table1->fullName() << "->" << table2->fullName() << std::endl;
+                Log::debug<LibEcKit>() << "Using link " << table1->fullName() << "->" << table2->fullName()
+                                       << std::endl;
 
                 //
                 std::string o      = name2 + ".offset";
@@ -380,8 +381,8 @@ void SQLSelect::prepareExecute() {
 
                         if (ok) {
                             (*k)->check_.push_back(e[i]);
-                            Log::debug<LibEcKit>() << "WHERE multi-table quick check for " << table->fullName() << " " << (*e[i])
-                                                   << std::endl;
+                            Log::debug<LibEcKit>() << "WHERE multi-table quick check for " << table->fullName() << " "
+                                                   << (*e[i]) << std::endl;
 
                             e[i] = 0;
                         }

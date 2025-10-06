@@ -23,6 +23,7 @@ namespace eckit {
 
 class VerifyingDate : public DateTime {
 public:
+
     // -- Contructors
 
     VerifyingDate(time_t = ::time(0));
@@ -45,6 +46,7 @@ public:
     // -- Class methods
 
 protected:
+
     // -- Members
     // None
 
@@ -61,6 +63,7 @@ protected:
     // None
 
 private:
+
     // -- Members
 
     // -- Methods

@@ -21,8 +21,7 @@ namespace dense {
 
 struct LinearAlgebraViennaCL final : public LinearAlgebraDense {
     LinearAlgebraViennaCL() {}
-    LinearAlgebraViennaCL(const std::string& name) :
-        LinearAlgebraDense(name) {}
+    LinearAlgebraViennaCL(const std::string& name) : LinearAlgebraDense(name) {}
 
     Scalar dot(const Vector&, const Vector&) const override;
     void gemv(const Matrix&, const Vector&, Vector&) const override;

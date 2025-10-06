@@ -11,8 +11,8 @@
 #include "eckit/eckit.h"
 
 #include <fcntl.h>
-#include <climits>
 #include <unistd.h>
+#include <climits>
 
 #include <algorithm>
 
@@ -37,6 +37,7 @@ namespace eckit {
 struct AIOBuffer : private eckit::NonCopyable {
 
 public:  // methods
+
     explicit AIOBuffer() { eckit::zero(aio_); }
     ~AIOBuffer() { delete buff_; }
 
@@ -70,9 +71,7 @@ public:  // methods
         active_ = true;
     }
 
-    struct aiocb* aioptr() {
-        return &aio_;
-    }
+    struct aiocb* aioptr() { return &aio_; }
 
     const struct aiocb* caioptr() const { return caioptr_; }
 
@@ -81,6 +80,7 @@ public:  // methods
     size_t length() const { return len_; }
 
 private:  // members
+
     aiocb aio_;
     const aiocb* caioptr_ = nullptr;
     eckit::Buffer* buff_  = nullptr;

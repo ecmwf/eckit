@@ -24,6 +24,7 @@ namespace eckit {
 
 class NilContent : public Content {
 protected:
+
     // -- Constructors
 
     NilContent();
@@ -89,6 +90,7 @@ protected:
     void hash(Hash&) const override;
 
 private:
+
     // -- No copy allowed
 
     NilContent(const NilContent&);

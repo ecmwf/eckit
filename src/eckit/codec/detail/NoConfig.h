@@ -20,6 +20,7 @@ namespace eckit::codec {
 
 class NoConfig : public LocalConfiguration {
 public:
+
     NoConfig()          = default;
     virtual ~NoConfig() = default;
 };

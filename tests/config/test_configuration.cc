@@ -375,7 +375,7 @@ CASE("test_local_configuration") {
     EXPECT(conf.get("manager", manager));
 
     EXPECT(conf.isSubConfigurationList("staff"));
-    EXPECT(conf.isConvertible("staff",staff));
+    EXPECT(conf.isConvertible("staff", staff));
     EXPECT(conf.get("staff", staff));
 
     std::string name;
@@ -403,7 +403,7 @@ CASE("test_local_configuration") {
 
     LocalConfiguration books;
     EXPECT(conf.isSubConfiguration("books"));
-    conf.get("books",books);
+    conf.get("books", books);
     EXPECT(books.getInt("count") == 10);
 
     EXPECT(conf.isConvertible<LocalConfiguration>("books"));
@@ -435,7 +435,6 @@ CASE("test_local_configuration") {
     local.set("a", "a");
     const eckit::Parametrisation& p = conf;
     EXPECT(!p.has("a.b"));
-
 }
 
 CASE("Hash a configuration") {

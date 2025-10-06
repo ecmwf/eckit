@@ -24,8 +24,7 @@ class SQLTableIterator;
 
 struct Environment {
 
-    Environment(SortedTables::iterator it) :
-        tableIterator(it) {}
+    Environment(SortedTables::iterator it) : tableIterator(it) {}
     ~Environment() {}
 
     const SelectOneTable& table() const { return **tableIterator; }

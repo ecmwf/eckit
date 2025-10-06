@@ -22,6 +22,7 @@ class DataHandle;
 class Compress {
 
 public:  // methods
+
     Compress(size_t maxBits = 16);
     // --
 
@@ -29,6 +30,7 @@ public:  // methods
     size_t encode(DataHandle& in, DataHandle& out);
 
 private:
+
     const size_t maxBits_;
 };
 

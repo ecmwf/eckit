@@ -44,9 +44,11 @@ Interpreted interprete(T& in) {
 /// @brief Write record
 class RecordWriter {
 public:
+
     using Key = std::string;
 
 public:
+
     /// @brief Set compression
     void compression(const std::string&);
 
@@ -117,6 +119,7 @@ public:
     size_t estimateMaximumSize() const;
 
 private:
+
     std::vector<std::string> keys_;
     std::map<std::string, Encoder> encoders_;
     std::map<std::string, DataInfo> info_;

@@ -31,6 +31,7 @@ template <class T>
 class Trie : private NonCopyable {
 
 public:  // methods
+
     Trie();
     ~Trie();
 
@@ -42,14 +43,17 @@ public:  // methods
     T* find(const std::string& key) const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
 private:  // members
+
     Trie<T>* find(const unsigned char*, bool);
 
     bool remove(const unsigned char* key);
 
 private:  // members
+
     unsigned short from_;
 
     /// Do we have a value in the value_ (or is just uninintialised POD/default constructed).
@@ -59,6 +63,7 @@ private:  // members
     T value_;
 
 private:  // friends
+
     friend std::ostream& operator<<(std::ostream& s, const Trie<T>& p) {
         p.print(s);
         return s;

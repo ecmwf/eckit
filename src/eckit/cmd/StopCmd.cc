@@ -8,8 +8,8 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <csignal>
 #include <unistd.h>
+#include <csignal>
 
 #include "eckit/cmd/StopCmd.h"
 #include "eckit/runtime/Monitor.h"
@@ -19,8 +19,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-StopCmd::StopCmd() :
-    CmdResource("stop") {}
+StopCmd::StopCmd() : CmdResource("stop") {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

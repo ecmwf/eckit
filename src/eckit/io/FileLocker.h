@@ -24,6 +24,7 @@ namespace eckit {
 
 class FileLocker {
 public:
+
     // -- Exceptions
     // None
 
@@ -58,6 +59,7 @@ public:
 
 
 protected:
+
     // -- Members
     // None
 
@@ -75,6 +77,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     FileLocker(const FileLocker&);

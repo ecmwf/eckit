@@ -28,8 +28,8 @@ class DumpLoad;
 
 class Grid {
 public:
-    enum
-    {
+
+    enum {
         undef = -1
     };
 
@@ -37,6 +37,7 @@ public:
 
     class InvalidGrid : public Exception {
     public:
+
         InvalidGrid(const std::string& s);
     };
 
@@ -44,8 +45,7 @@ public:
 
     Grid(const std::string&);
 
-    Grid(double ns = undef, double ew = undef) :
-        northSouth_(ns), eastWest_(ew) {}
+    Grid(double ns = undef, double ew = undef) : northSouth_(ns), eastWest_(ew) {}
 
     Grid(const std::vector<double>&);
 
@@ -105,6 +105,7 @@ public:
     // None
 
 protected:
+
     // -- Members
     // None
 
@@ -122,6 +123,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     // -- Members

@@ -15,8 +15,7 @@
 
 namespace eckit::net {
 
-NetUser::NetUser(net::TCPSocket& protocol) :
-    protocol_(protocol) {
+NetUser::NetUser(net::TCPSocket& protocol) : protocol_(protocol) {
     Log::status() << "New connection from " << protocol_.remoteHost() << std::endl;
 }
 

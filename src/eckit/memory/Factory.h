@@ -34,6 +34,7 @@ namespace eckit {
 template <class T>
 class Factory {
 public:
+
     // -- Types
 
     using product_t = T;
@@ -83,6 +84,7 @@ public:
     std::vector<key_t> keys() const;
 
 private:
+
     // -- Constructors
 
     Factory() = default;

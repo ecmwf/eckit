@@ -25,6 +25,7 @@ namespace eckit {
 
 class MemoryCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     MemoryCmd();
@@ -34,6 +35,7 @@ public:
     ~MemoryCmd();
 
 private:
+
     // No copy allowed
 
     MemoryCmd(const MemoryCmd&);

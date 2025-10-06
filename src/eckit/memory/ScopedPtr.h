@@ -29,15 +29,16 @@ template <typename T>
 class DEPRECATED("Use C++11 std::unique_ptr instead") ScopedPtr : private NonCopyable {
 
 public:  // types
+
     typedef T element_type;
     typedef T* pointer_type;
     typedef T& reference_type;
 
 public:  // methods
+
     /// Constructor
     /// @throws nothing
-    explicit ScopedPtr(pointer_type ptr = 0) :
-        ptr_(ptr) {}
+    explicit ScopedPtr(pointer_type ptr = 0) : ptr_(ptr) {}
 
     /// Destructor
     /// @throws nothing
@@ -98,12 +99,14 @@ public:  // methods
     }
 
 protected:  // methods
+
     void destroy() {
         delete ptr_;
         ptr_ = 0;
     }
 
 private:  // members
+
     pointer_type ptr_;
 };
 

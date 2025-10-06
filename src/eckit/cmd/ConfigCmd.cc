@@ -18,8 +18,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ConfigCmd::ConfigCmd() :
-    CmdResource("config") {}
+ConfigCmd::ConfigCmd() : CmdResource("config") {}
 
 ConfigCmd::~ConfigCmd() {}
 

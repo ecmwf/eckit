@@ -30,6 +30,7 @@ namespace eckit {
 class MemoryBuffer : private NonCopyable {
 
 public:  // methods
+
     MemoryBuffer(size_t size);
     MemoryBuffer(const std::string& s);
     MemoryBuffer(const char*, size_t size);
@@ -52,6 +53,7 @@ public:  // methods
     void swap(MemoryBuffer& rhs);
 
 protected:  // methods
+
     void create();
     void destroy();
 
@@ -59,6 +61,7 @@ protected:  // methods
     void copy(const char*, size_t size);
 
 private:  // members
+
     void* buffer_;
     size_t size_;
 };

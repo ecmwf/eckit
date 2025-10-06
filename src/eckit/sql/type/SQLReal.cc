@@ -16,8 +16,7 @@ namespace eckit::sql::type {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SQLReal::SQLReal(const std::string& name) :
-    SQLType(name) {}
+SQLReal::SQLReal(const std::string& name) : SQLType(name) {}
 
 SQLReal::~SQLReal() {}
 

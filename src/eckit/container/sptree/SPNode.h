@@ -23,6 +23,7 @@ namespace eckit {
 template <class Traits, class NodeType>
 class SPNode {
 public:
+
     typedef typename Traits::Point Point;
     typedef typename Traits::Payload Payload;
     typedef typename Traits::Alloc Alloc;
@@ -35,6 +36,7 @@ public:
     typedef NodeType Node;
 
 protected:
+
     Value value_;
 
     typedef typename Alloc::Ptr Ptr;
@@ -46,6 +48,7 @@ protected:
 
 
 public:
+
     // SPNode(const Value& value);
 
     template <class V>
@@ -82,6 +85,7 @@ public:
     Node* asNode() { return static_cast<Node*>(this); }
 
 public:  // because of a clang bug. Should be protected
+
     // void nearestNeighbourX(Alloc& a,const Point& p, Node*& best, double& max, int depth) = 0;
     void nearestNeighbourBruteForceX(Alloc& a, const Point& p, Node*& best, double& max, int depth);
     // void findInSphereX(Alloc& a,const Point& p ,double radius, NodeList& result, int depth) = 0;
@@ -90,7 +94,9 @@ public:  // because of a clang bug. Should be protected
     void kNearestNeighboursBruteForceX(Alloc& a, const Point& p, size_t k, NodeQueue& result, int depth);
 
     //==========================
+
 public:
+
     Node* left(Alloc& a) const { return a.convert(left_, (Node*)0); }
     Node* right(Alloc& a) const { return a.convert(right_, (Node*)0); }
     Node* next(Alloc& a) const { return a.convert(next_, (Node*)0); }

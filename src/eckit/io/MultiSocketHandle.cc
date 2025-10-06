@@ -38,8 +38,7 @@ void MultiSocketHandle::encode(Stream& s) const {
     s << bufferSize_;
 }
 
-MultiSocketHandle::MultiSocketHandle(Stream& s) :
-    DataHandle(s), port_(0) {
+MultiSocketHandle::MultiSocketHandle(Stream& s) : DataHandle(s), port_(0) {
     s >> host_;
     s >> port_;
     s >> streams_;

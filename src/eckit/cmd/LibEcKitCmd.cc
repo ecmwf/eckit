@@ -18,8 +18,7 @@ namespace eckit {
 
 REGISTER_LIBRARY(LibEcKitCmd);
 
-LibEcKitCmd::LibEcKitCmd() :
-    Library("eckit_cmd") {}
+LibEcKitCmd::LibEcKitCmd() : Library("eckit_cmd") {}
 
 LibEcKitCmd& LibEcKitCmd::instance() {
     static LibEcKitCmd lib;

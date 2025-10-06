@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionMIN : public FunctionExpression {
 public:
+
     FunctionMIN(const std::string&, const expression::Expressions&);
     FunctionMIN(const FunctionMIN&);
     ~FunctionMIN();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 1; }
 
 private:
+
     // No copy allowed
     FunctionMIN& operator=(const FunctionMIN&);
 

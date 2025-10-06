@@ -31,8 +31,8 @@ class UrlAccess {
 
 
 public:
-    UrlAccess(Url& url, const std::string& s) :
-        url_(url), s_(s) {}
+
+    UrlAccess(Url& url, const std::string& s) : url_(url), s_(s) {}
 
     operator std::string();
     operator long();
@@ -45,6 +45,7 @@ public:
 
 class Url : private eckit::NonCopyable {
 public:
+
     Url(std::istream&);
     Url(const std::string&);
 
@@ -103,9 +104,11 @@ public:
     const std::string& streamType() const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
 private:  // methods
+
     void parse(const std::string&, bool);
     void parse(std::istream&);
 
@@ -115,6 +118,7 @@ private:  // methods
     }
 
 private:  // members
+
     typedef std::map<std::string, std::string> dict_t;
 
     std::unique_ptr<DataHandle> handle_;

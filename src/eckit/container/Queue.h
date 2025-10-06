@@ -29,6 +29,7 @@ namespace eckit {
 
 class QueueInterruptedError : public Exception {
 public:
+
     QueueInterruptedError(const std::string& msg, const CodeLocation& here) :
         Exception(std::string("Threaded queue interrupted") + (msg.size() ? (std::string(": ") + msg) : std::string()),
                   here) {}
@@ -40,8 +41,8 @@ template <typename ELEM>
 class Queue {
 
 public:  // public
-    Queue(size_t max) :
-        max_(max), interrupt_(nullptr), closed_(false) { ASSERT(max > 0); }
+
+    Queue(size_t max) : max_(max), interrupt_(nullptr), closed_(false) { ASSERT(max > 0); }
 
     Queue(const Queue&)            = delete;
     Queue& operator=(const Queue&) = delete;
@@ -151,6 +152,7 @@ public:  // public
     }
 
 private:  // members
+
     std::queue<ELEM> queue_;
     std::mutex mutex_;
     std::condition_variable cv_;

@@ -18,6 +18,7 @@ namespace eckit::mpi {
 
 class NullGroupContent : public GroupContent {
 public:
+
     virtual ~NullGroupContent() {}
 
     virtual void print(std::ostream& os) const { os << "NullGroup()"; }
@@ -40,27 +41,30 @@ public:
 
     virtual NullGroupContent* incl(const std::vector<int>& ranks) const { return new NullGroupContent(); };
 
-    virtual NullGroupContent* range_excl(const std::vector<std::array<int, 3>>& ranks) const { return new NullGroupContent(); };
+    virtual NullGroupContent* range_excl(const std::vector<std::array<int, 3>>& ranks) const {
+        return new NullGroupContent();
+    };
 
-    virtual NullGroupContent* range_incl(const std::vector<std::array<int, 3>>& ranks) const { return new NullGroupContent(); };
+    virtual NullGroupContent* range_incl(const std::vector<std::array<int, 3>>& ranks) const {
+        return new NullGroupContent();
+    };
 
-    virtual std::unordered_map<int, int> translate_ranks(const std::vector<int>&, const GroupContent&) const { return std::unordered_map<int, int>{}; };
+    virtual std::unordered_map<int, int> translate_ranks(const std::vector<int>&, const GroupContent&) const {
+        return std::unordered_map<int, int>{};
+    };
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Group::Group() :
-    content_(new NullGroupContent()) {
+Group::Group() : content_(new NullGroupContent()) {
     content_->attach();
 }
 
-Group::Group(int group) :
-    content_(0) {
+Group::Group(int group) : content_(0) {
     *this = eckit::mpi::comm().group(group);
 }
 
-Group::Group(GroupContent* p) :
-    content_(p) {
+Group::Group(GroupContent* p) : content_(p) {
     content_->attach();
 }
 
@@ -68,8 +72,7 @@ Group::~Group() {
     content_->detach();
 }
 
-Group::Group(const Group& s) :
-    content_(s.content_) {
+Group::Group(const Group& s) : content_(s.content_) {
     content_->attach();
 }
 

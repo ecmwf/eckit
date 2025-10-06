@@ -27,6 +27,7 @@ namespace eckit::codec {
 /// on how to retrieve data at a later stage
 class ParsedRecord {
 public:
+
     RecordHead head;                                           ///< head section of parsed record
     std::vector<std::string> keys;                             ///< Keys of items encoded in parsed record
     std::map<std::string, Metadata> items;                     ///< Items encoded in parsed record

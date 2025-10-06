@@ -26,6 +26,7 @@ namespace eckit {
 class NumberContent : public Content {
 
 protected:
+
     // -- Constructor
 
     NumberContent(long long);
@@ -101,6 +102,7 @@ protected:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     NumberContent(const NumberContent&);
     NumberContent& operator=(const NumberContent&);
 

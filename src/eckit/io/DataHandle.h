@@ -36,8 +36,8 @@ class RestartTransfer {
     Offset from_;
 
 public:
-    RestartTransfer(const Offset& from) :
-        from_(from) {}
+
+    RestartTransfer(const Offset& from) : from_(from) {}
     const Offset& from() const { return from_; }
 };
 
@@ -46,6 +46,7 @@ public:
 
 class DataHandle : public Streamable {
 public:
+
     friend std::ostream& operator<<(std::ostream& s, const DataHandle& handle) {
         handle.print(s);
         return s;
@@ -99,7 +100,8 @@ public:
 
     /// Quiet version of saveInto
     /// Does not support progess, restart and double buffering
-    virtual Length copyTo(DataHandle&, long bufsize = -1, Length maxsize = -1, TransferWatcher& = TransferWatcher::dummy());
+    virtual Length copyTo(DataHandle&, long bufsize = -1, Length maxsize = -1,
+                          TransferWatcher& = TransferWatcher::dummy());
 
 
     // /// Append to an other datahandle
@@ -159,6 +161,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- Class members
 
     static ClassSpec classSpec_;
@@ -171,8 +174,8 @@ class AutoClose {
     DataHandle& handle_;
 
 public:
-    AutoClose(DataHandle& handle) :
-        handle_(handle) {}
+
+    AutoClose(DataHandle& handle) : handle_(handle) {}
     ~AutoClose() noexcept(false);
 };
 

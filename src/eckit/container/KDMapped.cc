@@ -56,12 +56,14 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
 
         ASSERT(header_.headerSize_ == sizeof(header_));
 
-        base   = ((header_.headerSize_ + header_.metadataSize_ + header_.itemSize_ - 1) / header_.itemSize_) * header_.itemSize_;
+        base = ((header_.headerSize_ + header_.metadataSize_ + header_.itemSize_ - 1) / header_.itemSize_) *
+               header_.itemSize_;
         count_ = header_.itemCount_;
     }
     else {
         readonly_ = false;
-        base      = ((header_.headerSize_ + header_.metadataSize_ + header_.itemSize_ - 1) / header_.itemSize_) * header_.itemSize_;
+        base      = ((header_.headerSize_ + header_.metadataSize_ + header_.itemSize_ - 1) / header_.itemSize_) *
+               header_.itemSize_;
 
         char c = 0;
 

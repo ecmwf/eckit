@@ -18,6 +18,7 @@ namespace eckit {
 template <class Traits>
 class SPValue {
 public:
+
     typedef typename Traits::Point Point;
     typedef typename Traits::Payload Payload;
 
@@ -25,12 +26,11 @@ public:
     Payload payload_;
 
 public:
-    SPValue(const Point& point, const Payload& payload) :
-        point_(point), payload_(payload) {}
+
+    SPValue(const Point& point, const Payload& payload) : point_(point), payload_(payload) {}
 
     template <class V>
-    SPValue(const V& v) :
-        point_(v.point()), payload_(v.payload()) {}
+    SPValue(const V& v) : point_(v.point()), payload_(v.payload()) {}
 
     const Point& point() const { return point_; }
     const Payload& payload() const { return payload_; }

@@ -37,8 +37,7 @@ Reader::Reader(eckit::DataHandle& h, bool opened) :
     init();
 }
 
-Reader::Reader(const eckit::PathName& path) :
-    handle_(new BufferedHandle(path.fileHandle(), readerBufferSize())) {
+Reader::Reader(const eckit::PathName& path) : handle_(new BufferedHandle(path.fileHandle(), readerBufferSize())) {
     init();
 }
 

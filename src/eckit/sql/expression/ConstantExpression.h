@@ -33,6 +33,7 @@ class ConstantExpression : public SQLExpression {
     struct PrivateKey {};  // This is just to allow make_shared to access private constructor.
 
 public:
+
     ConstantExpression(double, bool, const type::SQLType*);
     ConstantExpression(const ConstantExpression&, const PrivateKey&);
     ConstantExpression& operator=(const ConstantExpression&) = delete;
@@ -80,6 +81,7 @@ public:
     double missingValue() const { return missingValue_; }
 
 protected:
+
     void print(std::ostream&) const override { NOTIMP; }
 
     bool isBitfield_;

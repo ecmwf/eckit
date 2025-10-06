@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionSTDEV : public FunctionVAR {
 public:
+
     FunctionSTDEV(const std::string&, const expression::Expressions&);
     FunctionSTDEV(const FunctionSTDEV&);
     ~FunctionSTDEV();
@@ -27,6 +28,7 @@ public:
     std::shared_ptr<SQLExpression> clone() const override;
 
 private:
+
     // No copy allowed
     FunctionSTDEV& operator=(const FunctionSTDEV&);
 

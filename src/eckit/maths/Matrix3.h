@@ -16,7 +16,7 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Point3.h"
+#include "eckit/geo/PointXYZ.h"
 
 
 namespace eckit::maths {
@@ -25,11 +25,13 @@ namespace eckit::maths {
 template <typename T>
 class Matrix3 final : protected std::array<T, 9> {
 public:
+
     // -- Types
 
     using container_type = std::array<T, 9>;
 
 public:
+
     // -- Constructors
 
     Matrix3(T xx, T xy, T xz, T yx, T yy, T yz, T zx, T zy, T zz) :
@@ -54,7 +56,7 @@ public:
         return *this;
     }
 
-    geo::Point3 operator*(const geo::Point3& p) const {
+    geo::PointXYZ operator*(const geo::PointXYZ& p) const {
         return {XX * p.X + XY * p.Y + XZ * p.Z, YX * p.X + YY * p.Y + YZ * p.Z, ZX * p.X + ZY * p.Y + ZZ * p.Z};
     }
 

@@ -19,11 +19,9 @@
 
 namespace eckit::option {
 
-Option::Option(const std::string& name, const std::string& description) :
-    name_(name), description_(description) {}
+Option::Option(const std::string& name, const std::string& description) : name_(name), description_(description) {}
 
-std::ostream& operator<<(std::ostream& s, const Option& p)
-{
+std::ostream& operator<<(std::ostream& s, const Option& p) {
     p.print(s);
     return s;
 }

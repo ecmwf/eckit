@@ -28,8 +28,7 @@ MultiSocket::MultiSocket(int port) {
 }
 
 
-MultiSocket::MultiSocket(size_t streams, size_t messageSize) :
-    streams_(streams), messageSize_(messageSize) {
+MultiSocket::MultiSocket(size_t streams, size_t messageSize) : streams_(streams), messageSize_(messageSize) {
     ASSERT(streams > 0);
     ASSERT(messageSize > 0);
 }
@@ -225,8 +224,7 @@ MultiSocket& MultiSocket::accept() {
     return *this;
 }
 
-MultiSocket::MultiSocket(MultiSocket& other) :
-    streams_(other.streams_), messageSize_(other.messageSize_) {
+MultiSocket::MultiSocket(MultiSocket& other) : streams_(other.streams_), messageSize_(other.messageSize_) {
     ASSERT(messageSize_);
     std::swap(sockets_, other.sockets_);
     ASSERT(sockets_.size() == streams_);

@@ -20,10 +20,11 @@ namespace eckit::geo::grid {
 
 class RegularGaussian final : public Regular {
 public:
+
     // -- Constructors
 
     explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N, const area::BoundingBox& = {}, projection::Rotation* = nullptr);
+    explicit RegularGaussian(size_t N, area::BoundingBox = {}, Projection* = nullptr);
 
     // -- Methods
 
@@ -31,7 +32,10 @@ public:
 
     // -- Overridden methods
 
-    void fill_spec(spec::Custom&) const override;
+    const std::string& type() const override;
+
+    [[nodiscard]] Point first_point() const override;
+    [[nodiscard]] Point last_point() const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 
@@ -40,7 +44,14 @@ public:
     [[nodiscard]] static Spec* spec(const std::string& name);
 
 private:
+
+    // -- Members
+
     const size_t N_;
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
 };
 
 

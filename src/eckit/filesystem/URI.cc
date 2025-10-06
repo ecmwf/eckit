@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
+#include <iomanip>
 #include <iostream>
 #include <vector>
-#include <iomanip>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
@@ -67,6 +67,9 @@ URI::URI(const std::string& scheme, const URI& uri, const std::string& hostname,
     fragment_(uri.fragment_),
     queryValues_(uri.queryValues_) {}
 
+URI::URI(std::string scheme, const net::Endpoint& endpoint, std::string name) noexcept :
+    name_(std::move(name)), scheme_(std::move(scheme)), host_(endpoint.host()), port_(endpoint.port()) {}
+
 URI::URI(Stream& s) {
     s >> scheme_;
     s >> user_;
@@ -86,8 +89,9 @@ bool URI::operator<(const URI& other) const {
 size_t URI::parseScheme(const std::string& uri) {
     std::size_t schemeEnd = uri.find(":");
     if (schemeEnd != std::string::npos) {
-        std::string schemeLowercase       = StringTools::lower(uri.substr(0, schemeEnd));
-        std::size_t acceptableProtocolEnd = schemeLowercase.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
+        std::string schemeLowercase = StringTools::lower(uri.substr(0, schemeEnd));
+        std::size_t acceptableProtocolEnd =
+            schemeLowercase.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789+-.");
         if (acceptableProtocolEnd == std::string::npos) {
             scheme_ = schemeEnd == 0 ? "unix" : uri.substr(0, schemeEnd);
             return schemeEnd + 1;
@@ -221,7 +225,8 @@ std::string URI::authority() const {
 void URI::query(const std::string& attribute, const std::string& value) {
     if (value.empty()) {
         queryValues_.erase(attribute);
-    } else {
+    }
+    else {
         queryValues_[attribute] = encode(value);
     }
 }
@@ -268,13 +273,13 @@ std::string URI::encode(const std::string& value) {
 
     for (std::string::value_type c : value) {
         // Keep alphanumeric and other accepted characters intact
-        if (isalnum((unsigned char) c) || c == '-' || c == '_' || c == '.' || c == '~') {
+        if (isalnum((unsigned char)c) || c == '-' || c == '_' || c == '.' || c == '~') {
             escaped << c;
         }
         else {
             // Any other characters are percent-encoded
             escaped << std::uppercase;
-            escaped << '%' << std::setw(2) << int((unsigned char) c);
+            escaped << '%' << std::setw(2) << int((unsigned char)c);
             escaped << std::nouppercase;
         }
     }
@@ -285,19 +290,19 @@ std::string URI::encode(const std::string& value) {
 std::string URI::decode(const std::string& value) {
     std::string out;
 
-    for (int i=0; i<value.length(); i++) {
-        if (value[i]=='%') {
-            unsigned int x = std::stoul(value.substr(i+1,2), nullptr, 16);
-            out+=static_cast<char>(x);
-            i+=2;
-        } else {
-            out+=value[i];
+    for (int i = 0; i < value.length(); i++) {
+        if (value[i] == '%') {
+            unsigned int x = std::stoul(value.substr(i + 1, 2), nullptr, 16);
+            out += static_cast<char>(x);
+            i += 2;
+        }
+        else {
+            out += value[i];
         }
     }
 
     return out;
 }
-
 
 
 std::string URI::asRawString() const {

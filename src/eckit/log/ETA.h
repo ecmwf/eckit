@@ -24,6 +24,7 @@ namespace eckit {
 
 class ETA {
 public:
+
     // -- Contructors
 
     ETA(double);
@@ -36,6 +37,7 @@ public:
     friend std::ostream& operator<<(std::ostream&, const ETA&);
 
 private:
+
     // There is no private copy constructor as this will confuse g++ 4.x.x
 
     // -- Members

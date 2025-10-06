@@ -31,9 +31,11 @@ template <typename T>
 class BloomFilter : private NonCopyable {
 
 public:  // types
+
     typedef unsigned long long data_type;
 
 public:  // methods
+
     BloomFilter(size_t size);
     ~BloomFilter();
 
@@ -42,15 +44,18 @@ public:  // methods
     bool contains(const T& value) const;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 
 private:  // members
+
     static size_t elementCount(size_t nbits);
 
     /// Which bit should we be considering?
     size_t index(const T& value) const;
 
 private:  // members
+
     size_t size_;
     size_t entries_;
 
@@ -60,6 +65,7 @@ private:  // members
     std::vector<data_type> data_;
 
 private:  // friends
+
     friend std::ostream& operator<<(std::ostream& s, const BloomFilter<T>& p) {
         p.print(s);
         return s;

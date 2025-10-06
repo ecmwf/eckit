@@ -26,6 +26,7 @@ namespace eckit {
 
 class PeekHandle : public DataHandle, public HandleHolder {
 public:
+
     /// Contructor, taking ownership
 
     PeekHandle(DataHandle*);
@@ -71,6 +72,7 @@ public:
     void collectMetrics(const std::string& what) const override;  // Tag for metrics collection
 
 private:  // members
+
     std::deque<unsigned char> peek_;
 };
 

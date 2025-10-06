@@ -11,8 +11,8 @@
 #include <unistd.h>
 
 #include "eckit/log/Log.h"
-#include "eckit/log/TimeStamp.h"
 #include "eckit/log/ResourceUsage.h"
+#include "eckit/log/TimeStamp.h"
 
 #include "eckit/distributed/Consumer.h"
 #include "eckit/distributed/Message.h"
@@ -24,9 +24,7 @@ namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Consumer::Consumer(Transport &transport):
-    Actor(transport) {
-}
+Consumer::Consumer(Transport& transport) : Actor(transport) {}
 
 void Consumer::run() {
 
@@ -38,7 +36,8 @@ void Consumer::run() {
     while (true) {
 
         msg.rewind();
-        // eckit::Log::info() << eckit::TimeStamp() << " " << transport_.title()  << " begin getNextMessage" << std::endl;
+        // eckit::Log::info() << eckit::TimeStamp() << " " << transport_.title()  << " begin getNextMessage" <<
+        // std::endl;
 
         getNextMessage(msg);
         // eckit::Log::info() << eckit::TimeStamp() << " " << transport_.title()  << " end getNextMessage" << std::endl;
@@ -55,29 +54,24 @@ void Consumer::run() {
 
             consume(msg);
             // eckit::Log::info() << eckit::TimeStamp() << " " << transport_.title()  << " end consume" << std::endl;
-
-        } catch (eckit::Exception &e) {
-            eckit::Log::info() << "Failure: "  << e.what() << std::endl;
+        }
+        catch (eckit::Exception& e) {
+            eckit::Log::info() << "Failure: " << e.what() << std::endl;
             failure(msg);
             // eckit::Log::info() << eckit::TimeStamp() << " " << transport_.title()  << " end failure" << std::endl;
-
         }
     }
 
     // eckit::Log::info() << eckit::TimeStamp() << " " << transport_.title()  << " exiting " << std::endl;
     transport_.synchronise();
-
 }
 
-void Consumer::shutdown(Message &message) {
+void Consumer::shutdown(Message& message) {
     message << "OK";
 }
 
-void Consumer::failure(Message &message) {
-
-}
+void Consumer::failure(Message& message) {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit::distributed

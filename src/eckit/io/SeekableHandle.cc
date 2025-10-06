@@ -18,17 +18,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SeekableHandle::SeekableHandle(PeekHandle* h) :
-    owned_(true),
-    handle_(h),
-    seekableStart_(0),
-    position_(0) {}
+SeekableHandle::SeekableHandle(PeekHandle* h) : owned_(true), handle_(h), seekableStart_(0), position_(0) {}
 
-SeekableHandle::SeekableHandle(PeekHandle& h) :
-    owned_(false),
-    handle_(&h),
-    seekableStart_(0),
-    position_(0) {}
+SeekableHandle::SeekableHandle(PeekHandle& h) : owned_(false), handle_(&h), seekableStart_(0), position_(0) {}
 
 SeekableHandle::~SeekableHandle() {
     if (owned_) {

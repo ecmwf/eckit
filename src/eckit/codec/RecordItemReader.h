@@ -24,6 +24,7 @@ namespace eckit::codec {
 
 class RecordItemReader {
 public:
+
     RecordItemReader(Stream, size_t offset, const std::string& key);
 
     RecordItemReader(Stream, const std::string& key);
@@ -37,6 +38,7 @@ public:
     void read(Metadata&, Data&);
 
 private:
+
     RecordItemReader(const std::string& ref, const std::string& uri);
 
     Stream in_;

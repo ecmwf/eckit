@@ -25,6 +25,7 @@ namespace eckit::test {
 
 class Base0 {
 public:
+
     using builder_t = BuilderT0<Base0>;
 
     static std::string className() { return "eckit_test.Base0"; }
@@ -36,6 +37,7 @@ public:
 
 class A0 : public Base0 {
 public:
+
     static std::string className() { return "eckit_test.A0"; }
 
     A0() : s1_("A.0") {}
@@ -43,11 +45,13 @@ public:
     std::string foo() const override { return className() + "." + s1_; }
 
 private:
+
     std::string s1_;
 };
 
 class B0 : public Base0 {
 public:
+
     static std::string className() { return "eckit_test.B0"; }
 
     B0() : s2_("B.0") {}
@@ -55,6 +59,7 @@ public:
     std::string foo() const override { return className() + "." + s2_; }
 
 private:
+
     std::string s2_;
 };
 
@@ -65,6 +70,7 @@ static const ConcreteBuilderT0<Base0, B0> builder_B0;
 
 class Base1 : public Owned {
 public:
+
     using builder_t = BuilderT1<Base1>;
     using ARG1      = const Properties&;
 
@@ -77,6 +83,7 @@ public:
 
 class A1 : public Base1 {
 public:
+
     static std::string className() { return "eckit_test.A1"; }
 
     explicit A1(const Properties& p) : s1_(p["mystr"].as<std::string>() + ".1") {}
@@ -84,11 +91,13 @@ public:
     std::string foo() const override { return className() + "." + s1_; }
 
 private:
+
     std::string s1_;
 };
 
 class B1 : public Base1 {
 public:
+
     static std::string className() { return "eckit_test.B1"; }
 
     explicit B1(const Properties& p) : s2_(p["mystr"].as<std::string>() + ".2") {}
@@ -96,6 +105,7 @@ public:
     std::string foo() const override { return className() + "." + s2_; }
 
 private:
+
     std::string s2_;
 };
 
@@ -106,6 +116,7 @@ static const ConcreteBuilderT1<Base1, B1> builder_B1;
 
 class Base2 : public Owned {
 public:
+
     using builder_t = BuilderT2<Base2>;
     using ARG1      = std::string;
     using ARG2      = int;
@@ -119,6 +130,7 @@ public:
 
 class A2 : public Base2 {
 public:
+
     static std::string className() { return "eckit_test.A2"; }
 
     A2(std::string s, int i) : s1_(s + "." + std::to_string(i)) {}
@@ -126,11 +138,13 @@ public:
     std::string foo() const override { return className() + "." + s1_; }
 
 private:
+
     std::string s1_;
 };
 
 class B2 : public Base2 {
 public:
+
     static std::string className() { return "eckit_test.B2"; }
 
     B2(std::string s, int i) : s2_(s + "." + std::to_string(i)) {}
@@ -138,6 +152,7 @@ public:
     std::string foo() const override { return className() + "." + s2_; }
 
 private:
+
     std::string s2_;
 };
 

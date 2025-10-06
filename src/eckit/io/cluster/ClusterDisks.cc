@@ -42,6 +42,7 @@ class ClusterDisk {
     char path_[2048];
 
 public:
+
     ClusterDisk(const std::string& node, const std::string& type, const std::string& path) :
         active_(true), offLine_(false), lastSeen_(::time(0)) {
         zero(node_);
@@ -140,6 +141,7 @@ inline unsigned long version(ClusterDisk*) {
 class DiskArray : private eckit::NonCopyable {
 
 public:
+
     typedef ClusterDisk* iterator;
     typedef const ClusterDisk* const_iterator;
 
@@ -176,8 +178,8 @@ class MemoryMappedDiskArray : public DiskArray {
     MappedArray<ClusterDisk> map_;
 
 public:
-    MemoryMappedDiskArray(const PathName& path, unsigned long size) :
-        DiskArray(), map_(path, size) {}
+
+    MemoryMappedDiskArray(const PathName& path, unsigned long size) : DiskArray(), map_(path, size) {}
 };
 
 class SharedMemoryDiskArray : public DiskArray {
@@ -198,6 +200,7 @@ class SharedMemoryDiskArray : public DiskArray {
     SharedMemArray<ClusterDisk> map_;
 
 public:
+
     SharedMemoryDiskArray(const PathName& path, const std::string& name, unsigned long size) :
         DiskArray(), map_(path, name, size) {}
 };

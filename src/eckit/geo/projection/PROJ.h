@@ -23,6 +23,7 @@ namespace eckit::geo::projection {
 /// Calculate coordinates using PROJ
 class PROJ : public Projection {
 public:
+
     // -- Constructors
 
     PROJ(const std::string& source, const std::string& target, double lon_minimum = 0.);
@@ -35,16 +36,17 @@ public:
 
     // -- Overridden methods
 
+    const std::string& type() const override;
+
     Point fwd(const Point&) const override;
     Point inv(const Point&) const override;
-
-    [[nodiscard]] Figure* make_figure() const override;
 
     // -- Class methods
 
     static std::string proj_str(const spec::Custom&);
 
 private:
+
     // -- Types
 
     struct Implementation;

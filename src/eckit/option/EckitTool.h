@@ -30,15 +30,19 @@ class CmdArgs;
 class EckitTool : public Tool {
 
 protected:  // methods
+
     EckitTool(int argc, char** argv);
 
 public:
+
     virtual void usage(const std::string& tool) const = 0;
 
 protected:  // members
+
     std::vector<eckit::option::Option*> options_;
 
 private:  // methods
+
     virtual void init(const option::CmdArgs&) {}
     virtual void execute(const option::CmdArgs&) = 0;
     virtual void finish(const option::CmdArgs&) {}

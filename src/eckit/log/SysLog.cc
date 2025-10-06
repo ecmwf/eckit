@@ -8,25 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/SysLog.h"
+
 #include <unistd.h>
 
 #include <sstream>
-
-#include "eckit/log/Log.h"
-#include "eckit/log/SysLog.h"
-#include "eckit/log/Timer.h"
-#include "eckit/runtime/Main.h"
+#include <string>
+#include <utility>
 
 #include "eckit/log/TimeStamp.h"
 #include "eckit/net/IPAddress.h"
+#include "eckit/runtime/Main.h"
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
 
-SysLog::SysLog(const std::string& msg, int msgid, Facility f, Severity s) :
-    facility_(f), severity_(s), appName_(Main::instance().name()), msgid_(msgid), msg_(msg) {
-    timestamp_ = TimeStamp("%Y-%m-%dT%H:%M:%SZ");  ///< assumes we are in UTC
+
+SysLog::SysLog(std::string msg, int msgid, Facility f, Severity s) :
+    facility_(f), severity_(s), appName_(Main::instance().name()), msgid_(msgid), msg_(std::move(msg)) {
+    updateTimestamp();
 }
+
+SysLog::SysLog(int msgid, Facility f, Severity s) : SysLog("", msgid, f, s) {}
 
 std::string SysLog::fqdn() const {
     return Main::hostname();
@@ -44,6 +48,18 @@ int SysLog::procid() const {
     return ::getpid();
 }
 
+void SysLog::updateTimestamp() {
+    timestamp_ = TimeStamp("%Y-%m-%dT%H:%M:%SZ");  ///< assumes we are in UTC
+}
+
+void SysLog::msgid(int msg_id) {
+    msgid_ = msg_id;
+}
+
+void SysLog::message(std::string msg) {
+    msg_ = std::move(msg);
+    updateTimestamp();
+}
 
 std::string SysLog::structuredData() const {
     if (software_.empty() && swVersion_.empty() && enterpriseId_.empty()) {
@@ -86,5 +102,7 @@ SysLog::operator std::string() const {
 
     return os.str();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

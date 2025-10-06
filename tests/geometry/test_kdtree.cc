@@ -36,14 +36,17 @@ struct TestTreeTrait {
 template <typename TreeTrait>
 class PointInBoxInteriorFinder {
 public:
+
     typedef eckit::KDTreeX<TreeTrait> KDTree;
     typedef typename KDTree::Point Point;
 
 private:
+
     typedef typename KDTree::Alloc Alloc;
     typedef typename KDTree::Node Node;
 
 public:
+
     /// \brief Returns true if any point in \p tree lies in the interior of the specified
     /// axis-aligned box.
     ///
@@ -64,6 +67,7 @@ public:
     }
 
 private:
+
     /// \brief Returns true if the point stored in \p node or any of its descendants lies in the
     /// interior of the axis-aligned box with bottom-left and top-right corners at
     /// \p lbound and \p ubound.

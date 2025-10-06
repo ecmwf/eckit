@@ -56,6 +56,7 @@ typedef std::map<Value, Value> ValueMap;
 
 class Content : public Counted, public Streamable {
 public:
+
     // Double-dispatching on subclasses
     // Needs a compare??? for every new subclass
 
@@ -137,6 +138,7 @@ public:
     virtual void hash(Hash&) const = 0;
 
 protected:
+
     // -- Constructor
 
     Content();
@@ -213,6 +215,7 @@ protected:
     const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:
+
     // -- No copy allowed
 
     Content(const Content&);

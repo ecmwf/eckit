@@ -28,6 +28,7 @@ namespace eckit {
 template <class Request>
 class PipeHandler : public ProcessControler, public ClassExtent<PipeHandler<Request> >, public DefaultHandler<Request> {
 public:
+
     PipeHandler();
     ~PipeHandler();
 
@@ -43,9 +44,11 @@ public:
     void stop() override;
 
 protected:  // methods
+
     bool canPick();
 
 private:  // methods
+
     virtual void endBatch(Stream&);
 
     void send(Request*);
@@ -54,6 +57,7 @@ private:  // methods
     void run() override;
 
 private:  // members
+
     PipeStream* pipe_;
     bool busy_;
     time_t last_;

@@ -107,16 +107,24 @@ CASE("Test MPI Communicator group") {
     EXPECT(remoteChildGroup.compare(parentGroup.excl(localRanks)) >= 0);
 
     // Expressed by range incl
-    EXPECT(childGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[1], 1}})) >= 0);
-    EXPECT(remoteChildGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[1], 1}})) >= 0);
-    EXPECT(childGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[1], 1}})) >= 0);
-    EXPECT(remoteChildGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[1], 1}})) >= 0);
+    EXPECT(childGroup.compare(
+               parentGroup.range_incl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[1], 1}})) >= 0);
+    EXPECT(remoteChildGroup.compare(
+               parentGroup.range_incl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[1], 1}})) >= 0);
+    EXPECT(childGroup.compare(
+               parentGroup.range_excl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[1], 1}})) >= 0);
+    EXPECT(remoteChildGroup.compare(
+               parentGroup.range_excl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[1], 1}})) >= 0);
 
     // Expressed by range incl (explicit)
-    EXPECT(childGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[0], 1}, {localRanks[1], localRanks[1], 1}})) >= 0);
-    EXPECT(remoteChildGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[0], 1}, {remoteRanks[1], remoteRanks[1], 1}})) >= 0);
-    EXPECT(childGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{{remoteRanks[0], remoteRanks[0], 1}, {remoteRanks[1], remoteRanks[1], 1}})) >= 0);
-    EXPECT(remoteChildGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{{localRanks[0], localRanks[0], 1}, {localRanks[1], localRanks[1], 1}})) >= 0);
+    EXPECT(childGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{
+               {localRanks[0], localRanks[0], 1}, {localRanks[1], localRanks[1], 1}})) >= 0);
+    EXPECT(remoteChildGroup.compare(parentGroup.range_incl(std::vector<std::array<int, 3>>{
+               {remoteRanks[0], remoteRanks[0], 1}, {remoteRanks[1], remoteRanks[1], 1}})) >= 0);
+    EXPECT(childGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{
+               {remoteRanks[0], remoteRanks[0], 1}, {remoteRanks[1], remoteRanks[1], 1}})) >= 0);
+    EXPECT(remoteChildGroup.compare(parentGroup.range_excl(std::vector<std::array<int, 3>>{
+               {localRanks[0], localRanks[0], 1}, {localRanks[1], localRanks[1], 1}})) >= 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

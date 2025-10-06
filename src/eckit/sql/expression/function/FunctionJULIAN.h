@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionJULIAN : public FunctionExpression {
 public:
+
     FunctionJULIAN(const std::string&, const expression::Expressions&);
     FunctionJULIAN(const FunctionJULIAN&);
     ~FunctionJULIAN();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 2; }
 
 private:
+
     // No copy allowed
     FunctionJULIAN& operator=(const FunctionJULIAN&);
 

@@ -32,6 +32,7 @@ class DataHandle;
 
 class URIManager {
 public:
+
     virtual bool authority() { return false; }
     virtual bool query() { return false; }
     virtual bool fragment() { return false; }
@@ -49,6 +50,7 @@ public:
     static URIManager& lookUp(const std::string&);
 
 protected:
+
     URIManager(const std::string&);
 
     virtual ~URIManager();
@@ -56,6 +58,7 @@ protected:
     virtual void print(std::ostream&) const;
 
 private:
+
     std::string name_;
 
     friend std::ostream& operator<<(std::ostream& s, const URIManager& p) {

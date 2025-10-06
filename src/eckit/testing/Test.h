@@ -36,18 +36,16 @@ namespace eckit::testing {
 
 class TestException : public Exception {
 public:
-    TestException(const std::string& w, const CodeLocation& l) :
-        Exception(w, l) {}
+
+    TestException(const std::string& w, const CodeLocation& l) : Exception(w, l) {}
 };
 
-enum TestVerbosity
-{
+enum TestVerbosity {
     Silent      = 0,
     Summary     = 1,
     AllFailures = 2
 };
-enum InitEckitMain
-{
+enum InitEckitMain {
     NoInitEckitMain = 0,
     DoInitEckitMain = 1
 };
@@ -56,8 +54,8 @@ enum InitEckitMain
 
 class SetEnv {
 public:
-    SetEnv(const char* key, const char* val) :
-        key_(key), value_(val) {
+
+    SetEnv(const char* key, const char* val) : key_(key), value_(val) {
         oldValue_ = ::getenv(key_);
         ::setenv(key_, value_, true);
     }
@@ -72,6 +70,7 @@ public:
     }
 
 private:
+
     const char* key_;
     const char* value_;
     const char* oldValue_;
@@ -84,6 +83,7 @@ private:
 class Test {
 
 public:  // methods
+
     Test(const std::string& description, std::function<void(std::string&, int&, int)> testFn) :
         description_(description), testFn_(std::move(testFn)) {}
 
@@ -155,11 +155,10 @@ public:  // methods
         return description_;
     }
 
-    const std::string& descriptionNoSection() const {
-        return description_;
-    }
+    const std::string& descriptionNoSection() const { return description_; }
 
 private:  // members
+
     std::string description_;
     std::string subsection_;
 
@@ -177,6 +176,7 @@ std::vector<Test>& specification() {
 
 class TestRegister {
 public:
+
     TestRegister(const std::string& description, void (*testFn)(std::string&, int&, int)) {
         specification().push_back(Test(description, testFn));
     }
@@ -190,13 +190,11 @@ public:
 template <typename T>
 class ArrayView {
 public:
+
     // -- Constructors
-    ArrayView(const T* data, size_t size) :
-        data_(data), size_(size) {}
-    ArrayView(const T* begin, const T* end) :
-        data_(begin), size_(end - begin) {}
-    explicit ArrayView(const std::vector<T>& vec) :
-        data_(&vec[0]), size_(vec.size()) {}
+    ArrayView(const T* data, size_t size) : data_(data), size_(size) {}
+    ArrayView(const T* begin, const T* end) : data_(begin), size_(end - begin) {}
+    explicit ArrayView(const std::vector<T>& vec) : data_(&vec[0]), size_(vec.size()) {}
 
     // -- Accessors
     const T& operator[](int i) const { return data_[i]; }
@@ -235,6 +233,7 @@ public:
     }
 
 private:
+
     // -- Private Methods
     template <typename U>
     bool compareEqual_(const U* data, const size_t size) const {
@@ -335,32 +334,33 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 
     // force colour output unless explicitly deactivated
     // this is useful for test harness ctest that redirects output and is not attached to a tty
-    if (not ::getenv("ECKIT_COLOUR_OUTPUT")) {
+    if (not::getenv("ECKIT_COLOUR_OUTPUT")) {
         ::setenv("ECKIT_COLOUR_OUTPUT", "1", true);
     }
 
     // Suppress noisy exceptions in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not ::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
+    if (not::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
         ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
     }
 
     // Suppress noisy ASSERT in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not ::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+    if (not::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
         ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
     }
 
     // Suppress noisy SeriousBug exception in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
-    if (not ::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
+    if (not::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
         ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
     }
 
     bool run_all = true;
     std::set<long> runTests;
-    if (::getenv("ECKIT_TEST_TESTS")) {
-        auto tsts = eckit::Translator<std::string, std::vector<long>>()(::getenv("ECKIT_TEST_TESTS"));
+    const char* ECKIT_TEST_TESTS = ::getenv("ECKIT_TEST_TESTS");
+    if (ECKIT_TEST_TESTS != nullptr) {
+        auto tsts = eckit::Translator<std::string, std::vector<long>>()(ECKIT_TEST_TESTS);
         runTests.insert(tsts.begin(), tsts.end());
         run_all = false;
     }
@@ -427,10 +427,10 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 #if ECKIT_TESTING_SELF_REGISTER_CASES
 
-#define CASE(description)                                                                                                 \
-    void UNIQUE_NAME2(test_, __LINE__)(std::string&, int&, int);                                                          \
-    static const eckit::testing::TestRegister UNIQUE_NAME2(test_registration_, __LINE__)(description,                     \
-                                                                                         &UNIQUE_NAME2(test_, __LINE__)); \
+#define CASE(description)                                                                 \
+    void UNIQUE_NAME2(test_, __LINE__)(std::string&, int&, int);                          \
+    static const eckit::testing::TestRegister UNIQUE_NAME2(test_registration_, __LINE__)( \
+        description, &UNIQUE_NAME2(test_, __LINE__));                                     \
     void UNIQUE_NAME2(test_, __LINE__)(std::string & _test_subsection, int& _num_subsections, int _subsection)
 
 #else  // ECKIT_TESTING_SELF_REGISTER_CASES

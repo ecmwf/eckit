@@ -19,8 +19,7 @@
 namespace eckit {
 
 
-SharedInt::SharedInt(const PathName& path, int count) :
-    Semaphore(path, 2 * count) {}
+SharedInt::SharedInt(const PathName& path, int count) : Semaphore(path, 2 * count) {}
 
 SharedInt::~SharedInt() {}
 

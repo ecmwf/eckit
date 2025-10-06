@@ -24,6 +24,7 @@ namespace eckit {
 ///
 class SemanticVersion {
 public:  // methods
+
     SemanticVersion();
     SemanticVersion(unsigned long major, unsigned long minor, unsigned long patch);
     SemanticVersion(const std::string&);
@@ -38,6 +39,7 @@ public:  // methods
     bool operator>=(const SemanticVersion& o) const { return (*this > o) or (*this == o); }
 
 private:  // methods
+
     void print(std::ostream& s) const { s << std::string(*this); }
 
     friend std::ostream& operator<<(std::ostream& os, const SemanticVersion& u) {
@@ -46,6 +48,7 @@ private:  // methods
     }
 
 private:  // members
+
     unsigned long major_;
     unsigned long minor_;
     unsigned long patch_;

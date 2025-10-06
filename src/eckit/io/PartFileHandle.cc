@@ -17,8 +17,8 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/PartFileHandle.h"
 
-#include "eckit/io/PooledHandle.h"
 #include "eckit/io/MoverTransferSelection.h"
+#include "eckit/io/PooledHandle.h"
 
 namespace eckit {
 
@@ -35,8 +35,7 @@ void PartFileHandle::print(std::ostream& s) const {
         s << "PartFileHandle";
     }
     else {
-        s << "PartFileHandle[path=" << path_ << ",offset=" << offset_ << ",length=" << length_
-          << ']';
+        s << "PartFileHandle[path=" << path_ << ",offset=" << offset_ << ",length=" << length_ << ']';
     }
 }
 
@@ -47,8 +46,7 @@ void PartFileHandle::encode(Stream& s) const {
     s << length_;
 }
 
-PartFileHandle::PartFileHandle(Stream& s) :
-    DataHandle(s), pos_(0), index_(0) {
+PartFileHandle::PartFileHandle(Stream& s) : DataHandle(s), pos_(0), index_(0) {
     s >> path_;
     s >> offset_;
     s >> length_;

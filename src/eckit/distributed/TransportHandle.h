@@ -17,7 +17,6 @@
 #include "eckit/io/DataHandle.h"
 
 
-
 namespace eckit::distributed {
 
 class Transport;
@@ -26,15 +25,12 @@ class Transport;
 
 class TransportHandle : public eckit::DataHandle {
 
-public: // methods
+public:  // methods
 
 
     /// Contructor
 
-    TransportHandle(Transport& transport,
-                    const std::string& path,
-                    size_t writers,
-                    bool exclusive);
+    TransportHandle(Transport& transport, const std::string& path, size_t writers, bool exclusive);
 
     /// Destructor
 
@@ -56,26 +52,25 @@ public: // methods
     virtual eckit::Length estimate() override;
     virtual eckit::Offset position() override;
 
-private: // members
+private:  // members
 
-    Transport&  transport_;
+    Transport& transport_;
     std::string path_;
-    size_t      writer_;
+    size_t writer_;
 
-    bool        opened_;
-    bool        append_;
-    size_t      position_;
+    bool opened_;
+    bool append_;
+    size_t position_;
 
     virtual std::string title() const override;
 
-    void send(const void *buffer, size_t length);
-
+    void send(const void* buffer, size_t length);
 };
 
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

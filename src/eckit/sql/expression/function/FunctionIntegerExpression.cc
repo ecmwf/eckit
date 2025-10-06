@@ -15,13 +15,12 @@
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 #include "eckit/utils/Translator.h"
 
-#define ftrunc(x) ((x)-fmod((x), 1))
-#define F90nint(x) (((x) > 0) ? (int)((x) + 0.5) : (int)((x)-0.5))
+#define ftrunc(x) ((x) - fmod((x), 1))
+#define F90nint(x) (((x) > 0) ? (int)((x) + 0.5) : (int)((x) - 0.5))
 
 namespace eckit::sql::expression::function {
 
-FunctionIntegerExpression::FunctionIntegerExpression(const std::string& name,
-                                                     const expression::Expressions& args) :
+FunctionIntegerExpression::FunctionIntegerExpression(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
 FunctionIntegerExpression::~FunctionIntegerExpression() {}
@@ -46,12 +45,14 @@ template <double (*FN)(double)>
 class MathFunctionIntegerExpression_1 : public FunctionIntegerExpression {
 
 public:  // methods
+
     MathFunctionIntegerExpression_1(const std::string& name, const expression::Expressions& args) :
         FunctionIntegerExpression(name, args) {
         this->missingValue_ = DEFAULT_MDI;
     }
 
 private:  // methods
+
     using FunctionIntegerExpression::eval;
     double eval(bool& m) const {
         bool missing = false;

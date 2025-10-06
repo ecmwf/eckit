@@ -18,8 +18,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MutexCond::MutexCond(char tag) :
-    tag_(tag) {
+MutexCond::MutexCond(char tag) : tag_(tag) {
     pthread_mutexattr_t attr;
     pthread_condattr_t cattr;
 

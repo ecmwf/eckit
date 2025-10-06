@@ -30,6 +30,7 @@ template <typename K, typename V>
 class CacheLRU : private NonCopyable {
 
 public:  // types
+
     typedef K key_type;
     typedef V value_type;
 
@@ -38,8 +39,7 @@ public:  // types
         key_type key_;
         value_type value_;
 
-        Entry(const key_type& k, const value_type& v) :
-            key_(k), value_(v) {}
+        Entry(const key_type& k, const value_type& v) : key_(k), value_(v) {}
 
         friend std::ostream& operator<<(std::ostream& s, const Entry& e) {
             s << "key=" << e.key_;
@@ -56,6 +56,7 @@ public:  // types
     typedef void (*purge_handler_type)(key_type&, value_type&);
 
 public:  // methods
+
     CacheLRU(size_t capacity, purge_handler_type purge = 0);
 
     ~CacheLRU();
@@ -102,6 +103,7 @@ public:  // methods
     }
 
 private:  // methods
+
     void erase(typename map_type::iterator itr);
 
     void trim();
@@ -113,6 +115,7 @@ private:  // methods
     void purge(key_type& key, value_type& value) const;
 
 private:  // members
+
     storage_type storage_;
 
     map_type map_;

@@ -53,8 +53,7 @@ struct TestFactory::PImpl {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TestFactory::TestFactory() :
-    pimpl_(new TestFactory::PImpl()) {}
+TestFactory::TestFactory() : pimpl_(new TestFactory::PImpl()) {}
 
 TestFactory& TestFactory::instance() {
     // autolock mutex

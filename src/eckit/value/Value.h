@@ -147,6 +147,7 @@ class JSON;
 
 class Value {
 public:
+
     // -- Contructors
 
     Value();
@@ -336,6 +337,7 @@ public:
     void hash(eckit::Hash&) const;
 
 public:
+
     bool contains(const char*) const;
     bool contains(const std::string&) const;
     bool contains(const Value&) const;
@@ -383,12 +385,15 @@ public:
 
 
 protected:
+
     Value(Content*);
 
 private:  // members
+
     Content* content_;
 
 private:  // methods
+
     void json(JSON& s) const { s << *content_; }
     void print(std::ostream& s) const { s << *content_; }
     void encode(Stream& s) const { s << *content_; }

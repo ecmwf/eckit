@@ -19,11 +19,13 @@ namespace eckit {
 
 class NotSubClass : public Exception {
 public:
+
     NotSubClass(const std::string&, const std::string&);
 };
 
 class UnknowClass : public Exception {
 public:
+
     UnknowClass(const std::string&);
 };
 
@@ -41,8 +43,7 @@ static Map& theMap() {
     return m;
 }
 
-ReanimatorBase::ReanimatorBase(const ClassSpec& spec) :
-    spec_(spec) {
+ReanimatorBase::ReanimatorBase(const ClassSpec& spec) : spec_(spec) {
     theMap()[std::string(spec_.name_)] = this;
     //	std::cout << "ReanimatorBase::ReanimatorBase " << spec_.name_ << std::endl;
 }
@@ -53,11 +54,11 @@ ReanimatorBase::~ReanimatorBase() {
 }
 
 
-UnknowClass::UnknowClass(const std::string& w) :
-    Exception(std::string("Unknow class: ") + w) {}
+UnknowClass::UnknowClass(const std::string& w) : Exception(std::string("Unknow class: ") + w) {}
 
 NotSubClass::NotSubClass(const std::string& found, const std::string& clss) :
-    Exception(std::string("Not a sub class: object ") + found + std::string(" found, but it is not subclass of ") + clss) {}
+    Exception(std::string("Not a sub class: object ") + found + std::string(" found, but it is not subclass of ") +
+              clss) {}
 
 
 Streamable* ReanimatorBase::reanimate(Stream& s, const ClassSpec* c) {

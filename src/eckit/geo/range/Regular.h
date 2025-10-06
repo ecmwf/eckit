@@ -13,6 +13,7 @@
 #pragma once
 
 #include "eckit/geo/Range.h"
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
@@ -20,6 +21,7 @@ namespace eckit::geo::range {
 
 class Regular : public Range {
 public:
+
     // -- Methods
 
     Fraction increment() const override;
@@ -29,6 +31,7 @@ public:
     const std::vector<double>& values() const override;
 
 protected:
+
     // -- Constructors
 
     /**
@@ -42,21 +45,35 @@ protected:
      */
     Regular(double inc, double a, double b, double ref, double eps);
 
-    Regular(size_t n, double a, double b, bool periodic, double eps) : Range(n, a, b, eps), periodic_(periodic) {}
+    Regular(size_t n, double a, double b, bool periodic, double eps);
 
-    Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
-        Range(n, a, b, eps), values_(values), periodic_(periodic) {}
+    Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps);
+
+    Regular(const Regular&) = default;
+    Regular(Regular&&)      = default;
+
+    // -- Destructor
+
+    ~Regular() override = default;
+
+    // -- Operators
+
+    Regular& operator=(Regular&&)      = default;
+    Regular& operator=(const Regular&) = default;
 
     // -- Methods
 
     static Fraction adjust(const Fraction& target, const Fraction& inc, bool up);
+    void increment(Fraction);
 
     void setPeriodic(bool p) { periodic_ = p; }
     bool getPeriodic() const { return periodic_; }
 
 private:
+
     // -- Members
 
+    Fraction increment_;
     std::vector<double> values_;
     bool periodic_;
 };

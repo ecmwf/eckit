@@ -25,6 +25,7 @@ namespace eckit {
 
 class StopCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     StopCmd();
@@ -34,6 +35,7 @@ public:
     ~StopCmd();
 
 private:
+
     // -- Overridden methods
 
     // From CmdResource

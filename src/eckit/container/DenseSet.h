@@ -18,8 +18,8 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/log/JSON.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/JSON.h"
 
 
 namespace eckit {
@@ -27,20 +27,22 @@ namespace eckit {
 
 template <typename V>
 class DenseSet {
-public:                    // types
+public:  // types
+
     typedef V value_type;  ///< value type
 
 private:  // types
+
     typedef std::vector<value_type> store_t;
 
 public:  // methods
+
     typedef typename store_t::const_reference const_reference;
 
     typedef typename store_t::const_iterator iterator;
     typedef typename store_t::const_iterator const_iterator;
 
-    DenseSet(size_t s = 0) :
-        sorted_(true) {
+    DenseSet(size_t s = 0) : sorted_(true) {
         if (s > 0) {
             reserve(s);
         }
@@ -156,7 +158,8 @@ public:  // methods
 
     void merge(const DenseSet& other) {
 
-        if (other.empty()) return;
+        if (other.empty())
+            return;
 
         if (empty()) {
             values_ = other.values_;
@@ -176,20 +179,23 @@ public:  // methods
 
             if (i >= values_.size() || values_[i] > other.values_[j]) {
                 if (values_.capacity() == values_.size()) {
-                    values_.reserve(std::max(values_.size(), other.values_.size())*2);
+                    values_.reserve(std::max(values_.size(), other.values_.size()) * 2);
                 }
-                values_.insert(values_.begin()+i, other.values_[j]);
+                values_.insert(values_.begin() + i, other.values_[j]);
                 i++;
                 j++;
-            } else if (values_[i] == other.values_[j]) {
+            }
+            else if (values_[i] == other.values_[j]) {
                 j++;
-            } else { // if (*it1 < *it2)
+            }
+            else {  // if (*it1 < *it2)
                 i++;
             }
         }
     }
 
-private:              // members
+private:  // members
+
     store_t values_;  ///< storage of the values
 
     bool sorted_;

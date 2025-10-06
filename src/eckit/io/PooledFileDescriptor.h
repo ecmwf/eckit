@@ -24,6 +24,7 @@ namespace eckit {
 
 class PooledFileDescriptor {
 public:
+
     PooledFileDescriptor(const PathName& path, bool readOnly);
 
     ~PooledFileDescriptor();
@@ -42,6 +43,7 @@ public:
     int fileno() const { return fd_; }
 
 private:
+
     PathName path_;
     std::unique_ptr<PooledFile> file_;
     int fd_;

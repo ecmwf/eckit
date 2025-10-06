@@ -25,6 +25,7 @@ namespace eckit {
 class NodeInfo {
 
 public:  // methods
+
     NodeInfo();
 
     void port(int p) { port_ = p; }
@@ -64,6 +65,7 @@ public:  // methods
     static NodeInfo sendLogin(Stream&);
 
 private:  // members
+
     std::string name_;
     std::string node_;
     std::string user_;
@@ -76,6 +78,7 @@ private:  // members
     long task_;
 
 private:  // methods
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const NodeInfo& p) {

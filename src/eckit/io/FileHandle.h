@@ -25,6 +25,7 @@ namespace eckit {
 class FileHandle : public DataHandle {
 
 public:
+
     FileHandle(const std::string&, bool = false);
     FileHandle(Stream&);
 
@@ -80,6 +81,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:  // members
+
     std::string name_;
     bool overwrite_;
     FILE* file_;
@@ -88,6 +90,7 @@ private:  // members
     std::unique_ptr<Buffer> buffer_;
 
 private:  // methods
+
     void open(const char*);
 
     static ClassSpec classSpec_;

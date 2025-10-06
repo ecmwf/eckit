@@ -16,8 +16,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Tool::Tool(int argc, char** argv, const char* homeenv) :
-    Main(argc, argv, homeenv), sendLogErrWarnToStdOut_(false) {}
+Tool::Tool(int argc, char** argv, const char* homeenv) : Main(argc, argv, homeenv), sendLogErrWarnToStdOut_(false) {}
 
 Tool::~Tool() {}
 

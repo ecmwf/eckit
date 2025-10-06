@@ -30,6 +30,7 @@ namespace eckit {
 class StaticMutex : private NonCopyable {
 
 public:  // methods
+
     StaticMutex();
 
     ~StaticMutex();
@@ -38,6 +39,7 @@ public:  // methods
     void unlock();
 
 protected:  // members
+
     void init();
 
     /// since this will be static memory, it should be initialized to zero by the system

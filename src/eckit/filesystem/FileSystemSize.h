@@ -17,8 +17,7 @@ namespace eckit {
 struct FileSystemSize {
     unsigned long long available;
     unsigned long long total;
-    FileSystemSize() :
-        available(0), total(0) {}
+    FileSystemSize() : available(0), total(0) {}
 };
 
 //-----------------------------------------------------------------------------

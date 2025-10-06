@@ -28,6 +28,7 @@ namespace eckit {
 template <class PAYLOAD>
 class Producer {
 public:
+
     virtual ~Producer() {}
     virtual bool done()            = 0;
     virtual void produce(PAYLOAD&) = 0;
@@ -36,6 +37,7 @@ public:
 template <class PAYLOAD>
 class Consumer {
 public:
+
     virtual ~Consumer() {}
     virtual void consume(PAYLOAD&) = 0;
 };
@@ -46,6 +48,7 @@ class ProducerConsumerTask;
 template <class PAYLOAD>
 class ProducerConsumer {
 public:
+
     // -- Contructors
 
     ProducerConsumer(long count = 2);
@@ -63,6 +66,7 @@ public:
     void error(const std::string&);
 
 private:
+
     // No copy allowed
 
     ProducerConsumer(const ProducerConsumer&);
@@ -94,8 +98,7 @@ struct OnePayload {
     bool ready_;
     bool done_;
     PAYLOAD payload_;
-    OnePayload() :
-        ready_(false), done_(false), payload_() {}
+    OnePayload() : ready_(false), done_(false), payload_() {}
 };
 
 template <class PAYLOAD>
@@ -108,14 +111,14 @@ class ProducerConsumerTask : public Thread {
     OnePayload<PAYLOAD>* payloads_;
 
 public:
+
     ProducerConsumerTask(Consumer<PAYLOAD>&, ProducerConsumer<PAYLOAD>&, OnePayload<PAYLOAD>*);
     void run() override;
 };
 
 
 template <class PAYLOAD>
-ProducerConsumer<PAYLOAD>::ProducerConsumer(long count) :
-    count_(count), error_(false) {}
+ProducerConsumer<PAYLOAD>::ProducerConsumer(long count) : count_(count), error_(false) {}
 template <class PAYLOAD>
 ProducerConsumer<PAYLOAD>::~ProducerConsumer() {}
 

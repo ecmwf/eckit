@@ -22,6 +22,7 @@ namespace eckit::geo {
 
 class GreatCircle {
 public:
+
     /// Great circle given two points in geographic coordinates
     GreatCircle(const PointLonLat&, const PointLonLat&);
 
@@ -46,6 +47,7 @@ public:
     std::pair<double, double> course() const;
 
 private:
+
     const PointLonLat A_;
     const PointLonLat B_;
 

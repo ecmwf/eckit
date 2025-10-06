@@ -37,6 +37,7 @@ class Exporter : private NonCopyable {
         unsigned long long unsigned_;
 
     public:
+
         Datatype();
         Datatype(double d);
         Datatype(long long d);
@@ -58,6 +59,7 @@ class Exporter : private NonCopyable {
     };
 
 public:
+
     // -- Exceptions
     // None
 
@@ -142,6 +144,7 @@ public:
     // None
 
 protected:
+
     // -- Members
     // None
 
@@ -159,6 +162,7 @@ protected:
     // None
 
 private:  // members
+
     DataHandle& handle_;
     unsigned long long type_;
     unsigned long long location_;

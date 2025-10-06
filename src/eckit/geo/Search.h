@@ -12,71 +12,70 @@
 
 #pragma once
 
-#include <vector>
+#include <memory>
 
-#include "eckit/container/KDTree.h"
-#include "eckit/container/sptree/SPValue.h"
-#include "eckit/geo/Point.h"
-#include "eckit/geo/geometry/UnitSphere.h"
+#include "eckit/geo/search/Tree.h"
+#include "eckit/geo/spec/Custom.h"
+
+
+namespace eckit::geo {
+class Grid;
+}
 
 
 namespace eckit::geo {
 
 
-namespace search {
-template <typename PointT, typename PayloadT>
-struct Traits {
-    using Point   = PointT;
-    using Payload = PayloadT;
-};
-}  // namespace search
+class Search {
+public:
 
+    // -- Types
 
-using Search3 = KDTreeMemory<search::Traits<geo::Point3, size_t>>;
+    using ValueType      = search::Tree::Payload;
+    using PointType      = search::Tree::Point;
+    using PointValueType = search::Tree::PointValueType;
 
+    // -- Constructors
 
-using Search2 = KDTreeMemory<search::Traits<geo::Point2, size_t>>;
+    explicit Search(const Grid&, const Spec& = spec::Custom{});
 
+    Search(const Search&) = delete;
+    Search(Search&&)      = delete;
 
-struct SearchLonLat : Search3 {
-    using Point = geo::PointLonLat;
-    using Value = SPValue<TT<search::Traits<Point, Payload>, KDMemory>>;
+    // -- Operators
 
-    using Search3::Search3;
+    void operator=(const Search&) = delete;
+    void operator=(Search&&)      = delete;
 
-    void insert(const SearchLonLat::Value& value) { Search3::insert({to_cartesian(value.point()), value.payload()}); }
+    // -- Methods
 
-    template <typename Container>
-    void build(const Container& c) {
-        size_t index = 0;
-        for (const auto& p : c) {
-            insert({std::get<Point>(p), index++});
-        }
-    }
+    /// Finds closest point to an input point
+    PointValueType closestPoint(const PointType&) const;
 
-    size_t nearestNeighbour(const Point& p) {
-        auto n = Search3::nearestNeighbour(to_cartesian(p));
-        return n.payload();
-    }
+    /// Finds closest N points to an input point
+    void closestNPoints(const PointType&, size_t n, std::vector<PointValueType>& closest) const;
 
-    std::vector<size_t> findInSphere(const Point& p, double radius) {
-        std::vector<size_t> near;
-        for (auto& n : Search3::findInSphere(to_cartesian(p), radius)) {
-            near.emplace_back(n.payload());
-        }
-        return near;
-    }
-
-    std::vector<size_t> kNearestNeighbours(const Point& p, size_t k) {
-        std::vector<size_t> near;
-        for (auto& n : Search3::kNearestNeighbours(to_cartesian(p), k)) {
-            near.emplace_back(n.payload());
-        }
-        return near;
-    }
+    /// Finds closest points within a radius
+    void closestWithinRadius(const PointType&, double radius, std::vector<PointValueType>& closest) const;
 
 private:
-    static Search3::Point to_cartesian(const Point& p) { return geometry::UnitSphere::convertSphericalToCartesian(p); }
+
+    // -- Members
+
+    std::unique_ptr<search::Tree> tree_;
+
+    // -- Methods
+
+    void build(const Grid&);
+
+    void print(std::ostream&) const;
+
+    // -- Friends
+
+    friend std::ostream& operator<<(std::ostream& out, const Search& p) {
+        p.print(out);
+        return out;
+    }
 };
 
 

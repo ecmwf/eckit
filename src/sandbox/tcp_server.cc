@@ -36,8 +36,8 @@ class FDBConnection : public Thread {
     virtual void run();
 
 public:
-    FDBConnection(net::TCPSocket& socket) :
-        socket_(socket) {}
+
+    FDBConnection(net::TCPSocket& socket) : socket_(socket) {}
 };
 
 void FDBConnection::run() {
@@ -110,8 +110,8 @@ class FDBServer : public Application {
     virtual void run();
 
 public:
-    FDBServer(int argc, char** argv) :
-        Application(argc, argv, "HOME") {}
+
+    FDBServer(int argc, char** argv) : Application(argc, argv, "HOME") {}
 
     virtual ~FDBServer() {}
 };

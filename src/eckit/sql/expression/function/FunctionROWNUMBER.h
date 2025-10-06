@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionROWNUMBER : public FunctionIntegerExpression {
 public:
+
     FunctionROWNUMBER(const std::string&, const expression::Expressions&);
     FunctionROWNUMBER(const FunctionROWNUMBER&);
     ~FunctionROWNUMBER();
@@ -32,6 +33,7 @@ public:
     static int arity() { return 0; }
 
 protected:
+
     // -- Overridden methods
     void print(std::ostream& s) const override;
     void prepare(SQLSelect&) override;
@@ -44,6 +46,7 @@ protected:
     bool isAggregate() const override { return false; }
 
 private:
+
     // No copy allowed
     FunctionROWNUMBER& operator=(const FunctionROWNUMBER&);
 

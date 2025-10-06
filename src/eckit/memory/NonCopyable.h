@@ -18,10 +18,12 @@ namespace eckit {
 
 class NonCopyable {
 protected:
+
     NonCopyable();
     ~NonCopyable();
 
 private:  // No copy allowed
+
     NonCopyable(const NonCopyable&)            = delete;
     NonCopyable& operator=(const NonCopyable&) = delete;
 };

@@ -441,11 +441,11 @@ void EasyCURL::print(std::ostream& s) const {
 
 class CURLHandle : public eckit::Counted {
 public:
+
     CURL* curl_;
     curl_slist* chunks_;
 
-    CURLHandle() :
-        curl_(nullptr), chunks_(nullptr) {
+    CURLHandle() : curl_(nullptr), chunks_(nullptr) {
         pthread_once(&once, init);
         curl_ = curl_easy_init();
         ASSERT(curl_);
@@ -461,6 +461,7 @@ public:
 
 class EasyCURLResponseImp : public eckit::Counted {
 public:
+
     EasyCURLResponseImp(const std::string& url, CURLHandle* curl);
     ~EasyCURLResponseImp();
 
@@ -519,9 +520,9 @@ bool EasyCURLResponseImp::redirect(std::string& location) {
 
 class EasyCURLResponseDirect : public EasyCURLResponseImp {
 public:
+
     std::unique_ptr<MemoryHandle> handle_;
-    EasyCURLResponseDirect(const std::string& url, CURLHandle* curl) :
-        EasyCURLResponseImp(url, curl){};
+    EasyCURLResponseDirect(const std::string& url, CURLHandle* curl) : EasyCURLResponseImp(url, curl) {};
 
     void perform() override {
         _(curl_easy_setopt(ch_->curl_, CURLOPT_URL, url_.c_str()));
@@ -568,6 +569,7 @@ void EasyCURLResponseDirect::print(std::ostream& s) const {
 
 class EasyCURLResponseStream : public EasyCURLResponseImp {
 public:
+
     CircularBuffer buffer_;
 
     EasyCURLResponseStream(const std::string& url, CURLHandle* curl) :
@@ -722,10 +724,12 @@ size_t EasyCURLResponseImp::headersCallback(const void* ptr, size_t size) {
 
 class EasyCURLHandle : public DataHandle {
 public:
+
     EasyCURLHandle(EasyCURLResponseImp* imp, const std::string& message);
     ~EasyCURLHandle() override;
 
 private:
+
     EasyCURLResponseImp* imp_;
     Timer timer_;
     double read_;
@@ -795,8 +799,7 @@ void EasyCURLHandle::close() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-EasyCURLResponse::EasyCURLResponse(EasyCURLResponseImp* imp) :
-    imp_(imp) {
+EasyCURLResponse::EasyCURLResponse(EasyCURLResponseImp* imp) : imp_(imp) {
     imp_->attach();
 }
 
@@ -804,8 +807,7 @@ EasyCURLResponse::~EasyCURLResponse() {
     imp_->detach();
 }
 
-EasyCURLResponse::EasyCURLResponse(const EasyCURLResponse& other) :
-    imp_(other.imp_) {
+EasyCURLResponse::EasyCURLResponse(const EasyCURLResponse& other) : imp_(other.imp_) {
     imp_->attach();
 }
 
@@ -855,8 +857,7 @@ void EasyCURLResponse::print(std::ostream& out) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-EasyCURL::EasyCURL() :
-    ch_(new CURLHandle()) {
+EasyCURL::EasyCURL() : ch_(new CURLHandle()) {
     ch_->attach();
 }
 

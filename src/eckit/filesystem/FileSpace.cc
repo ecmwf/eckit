@@ -30,8 +30,7 @@ typedef std::map<std::string, FileSpace*> Map;
 static StaticMutex local_mutex;
 static Map space;
 
-FileSpace::FileSpace(const std::string& name) :
-    name_(name), last_(0) {
+FileSpace::FileSpace(const std::string& name) : name_(name), last_(0) {
     AutoLock<StaticMutex> lock(local_mutex);
     space[name] = this;
     load();

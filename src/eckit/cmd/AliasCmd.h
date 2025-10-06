@@ -23,6 +23,7 @@ namespace eckit {
 
 class AliasCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     AliasCmd();
@@ -32,6 +33,7 @@ public:
     ~AliasCmd();
 
 private:
+
     // No copy allowed
 
     AliasCmd(const AliasCmd&);

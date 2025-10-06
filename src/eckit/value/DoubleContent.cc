@@ -29,11 +29,9 @@ ClassSpec DoubleContent::classSpec_ = {
 };
 Reanimator<DoubleContent> DoubleContent::reanimator_;
 
-DoubleContent::DoubleContent(double l) :
-    value_(l) {}
+DoubleContent::DoubleContent(double l) : value_(l) {}
 
-DoubleContent::DoubleContent(Stream& s) :
-    Content(s), value_(0) {
+DoubleContent::DoubleContent(Stream& s) : Content(s), value_(0) {
     s >> value_;
 }
 

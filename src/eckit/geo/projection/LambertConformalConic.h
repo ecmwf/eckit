@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "eckit/geo/projection/ProjectionOnFigure.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo::projection {
@@ -23,81 +23,53 @@ namespace eckit::geo::projection {
  * @ref Map Projections: A Working Manual, John P. Snyder (1987)
  * @ref Wolfram MathWorld (http://mathworld.wolfram.com/LambertConformalConicProjection.html)
  */
-class LambertConformalConic : public ProjectionOnFigure {
+class LambertConformalConic : public Projection {
 public:
-    // -- Types
-    // None
-
-    // -- Exceptions
-    // None
 
     // -- Constructors
 
     explicit LambertConformalConic(const Spec&);
 
-    LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1, double lat_2);
-    LambertConformalConic(PointLonLat centre, PointLonLat first, double lat_1) :
-        LambertConformalConic(centre, first, lat_1, lat_1) {}
-
-    // -- Destructor
-    // None
-
-    // -- Convertors
-    // None
-
-    // -- Operators
-    // None
+    explicit LambertConformalConic(double lat_1, double lon_0 = 0., double lat_0 = 0., double lat_2 = 0.,
+                                   Figure* = nullptr);
 
     // -- Methods
 
-    Point2 fwd(const PointLonLat& p) const;
-    PointLonLat inv(const Point2& q) const;
+    PointXY fwd(const PointLonLat&) const;
+    PointLonLat inv(const PointXY&) const;
 
     // -- Overridden methods
 
+    const std::string& type() const override;
+
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
-    inline Point inv(const Point& q) const override { return inv(std::get<Point2>(q)); }
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
+    inline Point inv(const Point& q) const override { return inv(std::get<PointXY>(q)); }
 
 protected:
+
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
 private:
+
     // -- Members
 
-    const PointLonLat centre_;     // central meridian/parallel [degree]
-    const PointLonLatR centre_r_;  // central meridian/parallel [radian]
+    /// Central meridian/longitude of natural origin, longitude of origin or longitude of false origin
+    const double lon_0_;
 
-    const PointLonLat first_;     // first point [degree]
-    const PointLonLatR first_r_;  // first point [radian]
+    /// Latitude of natural origin, latitude of false origin or latitude of projection centre
+    const double lat_0_;
 
+    /// First standard parallel
     const double lat_1_;
-    const double lat_1_r_;
+
+    /// Second standard parallel
     const double lat_2_;
-    const double lat_2_r_;
 
     double n_;
     double f_;
     double rho0_bare_;
-
-    // -- Methods
-    // None
-
-    // -- Class members
-    // None
-
-    // -- Class methods
-    // None
-
-    // -- Friends
-    // None
 };
 
 

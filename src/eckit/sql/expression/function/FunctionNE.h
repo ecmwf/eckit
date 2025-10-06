@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionNE : public FunctionExpression {
 public:
+
     FunctionNE(const std::string&, const expression::Expressions&);
     FunctionNE(const FunctionNE&);
     ~FunctionNE();
@@ -31,6 +32,7 @@ public:
     static int arity() { return 2; }
 
 private:
+
     // No copy allowed
     FunctionNE& operator=(const FunctionNE&);
 

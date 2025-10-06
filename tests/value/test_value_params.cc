@@ -41,14 +41,15 @@ const double dmax               = numeric_limits<double>::max();
 
 class TestParams : public DispatchParams<TestParams> {
 public:
-    TestParams(const std::string& payload) :
-        payload_(payload) { dispatch_["foo"] = &TestParams::getPayload; }
+
+    TestParams(const std::string& payload) : payload_(payload) { dispatch_["foo"] = &TestParams::getPayload; }
     TestParams(Stream& s) {
         dispatch_["foo"] = &TestParams::getPayload;
         s >> payload_;
     }
 
 private:
+
     Params::value_t getPayload(const Params::key_t& key) const { return payload_; }
 
     friend void encode(const TestParams&, Stream&);
@@ -99,8 +100,7 @@ struct CompositeParamsFixture {
 };
 
 struct ListParamsFixture {
-    ListParamsFixture() :
-        p(CompositeParams(ListParamsFixture::pl())) {}
+    ListParamsFixture() : p(CompositeParams(ListParamsFixture::pl())) {}
 
     static Params::List& pl() {
         static Params::List l;
@@ -123,8 +123,7 @@ struct ListParamsFixture {
 };
 
 struct ScopedParamsFixture {
-    ScopedParamsFixture() :
-        p(ScopeParams("scope", Params(Properties().set("foo", "bar")))) {}
+    ScopedParamsFixture() : p(ScopeParams("scope", Params(Properties().set("foo", "bar")))) {}
 
     Params p;
 };
@@ -139,15 +138,13 @@ struct CompositeScopedParamsFixture {
 };
 
 struct DispatchParamsFixture {
-    DispatchParamsFixture() :
-        p(TestParams("bar")) {}
+    DispatchParamsFixture() : p(TestParams("bar")) {}
 
     Params p;
 };
 
 struct AnyKeyParamsFixture {
-    AnyKeyParamsFixture() :
-        p(AnyKeyParams("foo")) {}
+    AnyKeyParamsFixture() : p(AnyKeyParams("foo")) {}
 
     Params p;
 };

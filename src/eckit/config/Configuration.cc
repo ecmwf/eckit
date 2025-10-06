@@ -25,6 +25,7 @@ namespace eckit {
 
 class ConfigurationNotFound : public Exception {
 public:
+
     ConfigurationNotFound(const std::string& name) {
         std::ostringstream s;
         s << "ConfigurationNotFound: [" << name << "]";
@@ -465,31 +466,31 @@ LocalConfiguration Configuration::getSubConfiguration(const std::string& name) c
 }
 
 bool Configuration::isIntegral(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isNumber();
 }
 
 bool Configuration::isBoolean(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isBool();
 }
 
 bool Configuration::isFloatingPoint(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isDouble();
 }
 
 bool Configuration::isString(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isString();
 }
 
 bool Configuration::isList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     return found && v.isList();
 }
@@ -507,7 +508,7 @@ bool Configuration::isNull(const std::string& name) const {
 }
 
 bool Configuration::isIntegralList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {
@@ -520,7 +521,7 @@ bool Configuration::isIntegralList(const std::string& name) const {
 }
 
 bool Configuration::isBooleanList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {
@@ -533,7 +534,7 @@ bool Configuration::isBooleanList(const std::string& name) const {
 }
 
 bool Configuration::isFloatingPointList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {
@@ -546,7 +547,7 @@ bool Configuration::isFloatingPointList(const std::string& name) const {
 }
 
 bool Configuration::isStringList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {
@@ -559,7 +560,7 @@ bool Configuration::isStringList(const std::string& name) const {
 }
 
 bool Configuration::isSubConfigurationList(const std::string& name) const {
-    bool found = false;
+    bool found     = false;
     eckit::Value v = lookUp(name, found);
     if (found && v.isList()) {
         if (v.size() == 0) {

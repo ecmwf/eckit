@@ -30,6 +30,7 @@ class JSON;
 
 struct Info {
 protected:
+
     bool busy_;
     pthread_t thread_;
     pid_t pid_;
@@ -43,8 +44,7 @@ protected:
     unsigned long late_;
 
     // Logging
-    enum
-    {
+    enum {
         size_ = 10240
     };
     char buffer_[size_];
@@ -98,6 +98,7 @@ protected:
 
 class TaskInfo : public Padded<Info, 4096>, public NonCopyable {
 public:
+
     TaskInfo();
     ~TaskInfo();
 
@@ -205,6 +206,7 @@ public:
     std::string host() const { return host_; }
 
 private:  // methods
+
     void print(std::ostream&) const;
     void json(JSON&) const;
 

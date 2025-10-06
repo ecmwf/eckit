@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionJOIN : public FunctionExpression {
 public:
+
     FunctionJOIN(const std::string&, const expression::Expressions&);
     FunctionJOIN(const FunctionJOIN&);
     ~FunctionJOIN();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 2; }
 
 private:
+
     // No copy allowed
     FunctionJOIN& operator=(const FunctionJOIN&);
 

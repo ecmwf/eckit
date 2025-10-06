@@ -24,10 +24,10 @@ namespace eckit {
 
 class EmptyHandle : public DataHandle {
 public:
+
     // -- Contructors
     EmptyHandle() {}
-    EmptyHandle(Stream& s) :
-        DataHandle(s) {}
+    EmptyHandle(Stream& s) : DataHandle(s) {}
 
     // -- Destructor
 
@@ -62,6 +62,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- Class members
 
     static ClassSpec classSpec_;

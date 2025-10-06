@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Log.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/TimeStamp.h"
 
-#include "eckit/distributed/Producer.h"
 #include "eckit/distributed/Message.h"
+#include "eckit/distributed/Producer.h"
 #include "eckit/distributed/Transport.h"
 
 using eckit::Log;
@@ -22,14 +22,12 @@ namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Producer::Producer(Transport &transport):
-    Actor(transport) {
-}
+Producer::Producer(Transport& transport) : Actor(transport) {}
 
 void Producer::run() {
 
     transport_.initialise();
-    eckit::Log::info()  << "starting " << std::endl;
+    eckit::Log::info() << "starting " << std::endl;
 
     {
         eckit::Timer timer("Producing messages");
@@ -57,13 +55,11 @@ void Producer::run() {
         sendShutDownMessage();
     }
 
-    eckit::Log::info()  << "exiting " << std::endl;
+    eckit::Log::info() << "exiting " << std::endl;
 
     transport_.synchronise();
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
-
+}  // namespace eckit::distributed

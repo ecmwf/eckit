@@ -23,6 +23,7 @@ namespace eckit {
 class MMappedFileHandle : public DataHandle {
 
 public:
+
     MMappedFileHandle(const std::string&);
     MMappedFileHandle(Stream&);
 
@@ -71,6 +72,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:  // members
+
     std::string path_;
 
 
@@ -80,6 +82,7 @@ private:  // members
     off_t length_;
 
 private:  // methods
+
     void open(const char*);
 
     static ClassSpec classSpec_;

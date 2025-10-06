@@ -29,6 +29,7 @@ class ResourceBase;
 
 class Configurable : public ClassExtent<Configurable> {
 public:
+
     // -- Contructors
 
     Configurable();
@@ -48,12 +49,14 @@ public:
     virtual std::string name() const { return "Unknown"; }
 
 protected:
+
     // -- Methods
 
     virtual void reconfigure() = 0;
 
 
 private:
+
     friend class ResourceBase;
 
     // -- Members

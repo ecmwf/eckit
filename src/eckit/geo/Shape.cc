@@ -12,7 +12,7 @@
 
 #include "eckit/geo/Shape.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Spec.h"
 
 
@@ -29,7 +29,7 @@ Shape Shape::make_from_spec(const Spec& spec) {
         return {nx, ny};
     }
 
-    throw SpecNotFound("'shape' = ['nlon', 'nlat'] = ['nx', 'ny'] expected", Here());
+    throw exception::SpecError("'shape' = ['nlon', 'nlat'] = ['nx', 'ny'] expected", Here());
 }
 
 

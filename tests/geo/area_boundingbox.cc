@@ -11,6 +11,8 @@
 
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/testing/Test.h"
@@ -19,10 +21,28 @@
 namespace eckit::geo::test {
 
 
+CASE("AreaFactory::make_from_string") {
+    const std::string expected_spec = "{}";
+    const std::unique_ptr<Area> expected_area(new area::BoundingBox);
+
+    for (const auto& spec : std::vector<std::string>{
+             "{}",
+             "{north: 90, south: -90, west: 0, east: 360}",
+             "{type: bounding_box}",
+             "{north: 90}",
+         }) {
+        std::unique_ptr<const Area> area(geo::AreaFactory::make_from_string(spec));
+
+        EXPECT(expected_spec == area->spec_str());
+        EXPECT(*expected_area == *area);
+    }
+}
+
+
 CASE("global") {
     area::BoundingBox a;
     area::BoundingBox b(90, 0, -90, 360);
-    EXPECT_EQUAL(a, b);
+    EXPECT(a == b);
 }
 
 
@@ -41,8 +61,8 @@ CASE("longitude (normalisation)") {
         EXPECT(a.empty());
 
         area::BoundingBox b{90, west, -90, west - 1};
-        std::unique_ptr<area::BoundingBox> c(
-            area::BoundingBox::make_from_area(90, west + 42 * 360., -90, west - 42 * 360. - 1));
+        auto c = area::BoundingBox::make_from_area(90, west + 42 * 360., -90, west - 42 * 360. - 1);
+        ASSERT(c);
 
         EXPECT(c->east == c->west + 360 - 1);
         EXPECT(b == *c);
@@ -55,12 +75,12 @@ CASE("assignment") {
     area::BoundingBox b(20, 2, -20, 200);
 
     EXPECT_NOT_EQUAL(a.north, b.north);
-    EXPECT_NOT_EQUAL(a, b);
+    EXPECT(a != b);
 
     b = a;
 
     EXPECT_EQUAL(a.north, b.north);
-    EXPECT_EQUAL(a, b);
+    EXPECT(a == b);
 
     b = {30., b.west, b.south, b.east};
 
@@ -70,7 +90,7 @@ CASE("assignment") {
     area::BoundingBox c(a);
 
     EXPECT_EQUAL(a.north, c.north);
-    EXPECT_EQUAL(a, c);
+    EXPECT(a == c);
 
     c = {40., c.west, c.south, c.east};
 
@@ -104,14 +124,19 @@ CASE("comparison") {
 CASE("properties") {
     area::BoundingBox a{10, 1, -10, 100};
     area::BoundingBox b{20, 2, -20, 200};
-    std::unique_ptr<area::BoundingBox> c(area::BoundingBox::make_global_prime());
-    std::unique_ptr<area::BoundingBox> d(area::BoundingBox::make_global_antiprime());
+
+    auto c = area::BoundingBox::make_global_prime();
+    ASSERT(c);
+
+    auto d = area::BoundingBox::make_global_antiprime();
+    ASSERT(c);
+
     area::BoundingBox e;
 
     for (const auto& bb : {a, b, *c, *d, e}) {
         EXPECT(!bb.empty());
-        EXPECT(bb.contains({10, 0}));
-        EXPECT(bb.global() == bb.contains({0, 0}));
+        EXPECT(bb.contains(PointLonLat{10, 0}));
+        EXPECT(bb.global() == bb.contains(PointLonLat{0, 0}));
         EXPECT(bb.global() == (bb.periodic() && bb.contains(NORTH_POLE) && bb.contains(SOUTH_POLE)));
     }
 }

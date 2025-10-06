@@ -23,6 +23,7 @@ namespace eckit::sql::expression {
 
 class NumberExpression : public SQLExpression {
 public:
+
     NumberExpression(double value);
     NumberExpression(const NumberExpression&);
     ~NumberExpression();
@@ -33,6 +34,7 @@ public:
     void value(double v) { value_ = v; }
 
 private:
+
     // No copy allowed
     NumberExpression& operator=(const NumberExpression&);
 

@@ -25,9 +25,11 @@ namespace eckit {
 
 class IndentTarget : public PrefixTarget {
 public:
+
     IndentTarget(const std::string& prefix, LogTarget* target, const char* space = " ");
 
 protected:
+
     void print(std::ostream& s) const;
 };
 

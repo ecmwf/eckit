@@ -46,11 +46,9 @@ static void deldir(eckit::PathName& p) {
     p.rmdir();
 }
 
-TmpDir::TmpDir(const char* base) :
-    PathName(tmp(base)) {}
+TmpDir::TmpDir(const char* base) : PathName(tmp(base)) {}
 
-TmpDir::TmpDir(TmpDir&& rhs) :
-    PathName(rhs) {
+TmpDir::TmpDir(TmpDir&& rhs) : PathName(rhs) {
 
     static_cast<PathName&>(rhs) = PathName("");
 }

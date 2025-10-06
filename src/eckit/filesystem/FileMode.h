@@ -32,6 +32,7 @@ class PathName;
 
 class FileMode {
 public:
+
     FileMode(mode_t m = 0);
 
     FileMode(const std::string& s);
@@ -51,6 +52,7 @@ public:
     static FileMode fromPath(const PathName& path);
 
 private:  // methods
+
     friend std::ostream& operator<<(std::ostream& os, const FileMode& mode) {
         mode.print(os);
         return os;
@@ -64,7 +66,8 @@ private:  // methods
 
     std::string toString() const;
 
-private:           // members
+private:  // members
+
     mode_t mode_;  ///< store the actual mode
 };
 

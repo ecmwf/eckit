@@ -30,14 +30,11 @@ ClassSpec StringContent::classSpec_ = {
 Reanimator<StringContent> StringContent::reanimator_;
 
 
-StringContent::StringContent(const std::string& s) :
-    value_(s) {}
+StringContent::StringContent(const std::string& s) : value_(s) {}
 
-StringContent::StringContent(const char* s) :
-    value_(s) {}
+StringContent::StringContent(const char* s) : value_(s) {}
 
-StringContent::StringContent(Stream& s) :
-    Content(s) {
+StringContent::StringContent(Stream& s) : Content(s) {
     s >> value_;
 }
 

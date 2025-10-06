@@ -25,6 +25,7 @@ class JSON;
 
 class FileSystem {
 public:
+
     FileSystem(const PathName&);
 
     ~FileSystem();
@@ -40,11 +41,13 @@ public:
     bool offLine() const { return offLine_; }
 
 protected:
+
     void json(eckit::JSON& s) const;
 
     void print(std::ostream&) const;
 
 private:
+
     PathName name_;
     PathName mount_;
     FileSystemSize fs_;

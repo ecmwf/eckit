@@ -107,7 +107,7 @@ void CmdArgs::init(std::function<void(const std::string&)> usage, int args_count
                 error = true;
             }
         }
-        else { // Position argument 'a' is found!
+        else {  // Position argument 'a' is found!
             args_.push_back(a);
         }
     }

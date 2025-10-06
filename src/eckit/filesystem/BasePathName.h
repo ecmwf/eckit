@@ -27,6 +27,7 @@ namespace eckit {
 
 class BasePathName : protected NonCopyable {
 public:
+
     BasePathName() {}
 
     virtual ~BasePathName();
@@ -83,9 +84,11 @@ public:
     virtual const std::string& path() const = 0;
 
 protected:
+
     virtual void print(std::ostream&) const = 0;
 
 private:
+
     friend std::ostream& operator<<(std::ostream& s, const BasePathName& p) {
         p.print(s);
         return s;

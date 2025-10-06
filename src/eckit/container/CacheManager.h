@@ -17,23 +17,20 @@
 
 #include <sys/stat.h>
 
-#include <functional>
 #include <memory>
 #include <string>
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/config/Resource.h"
-#include "eckit/eckit.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/FileLock.h"
-#include "eckit/memory/NonCopyable.h"
+#include "eckit/log/Log.h"
 #include "eckit/os/AutoUmask.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/types/FixedString.h"
 #include "eckit/utils/MD5.h"
-#include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
@@ -47,26 +44,35 @@ class BTreeLock;
 
 /// Filesystem Cache Manager
 
-class CacheManagerBase : private NonCopyable {
+class CacheManagerBase {
+public:
 
-public:  // methods
     CacheManagerBase(const std::string& loaderName, size_t maxCacheSize, const std::string& extension);
+
+    CacheManagerBase(const CacheManagerBase&) = delete;
+    CacheManagerBase(CacheManagerBase&&)      = delete;
+
+    CacheManagerBase& operator=(const CacheManagerBase&) = delete;
+    CacheManagerBase& operator=(CacheManagerBase&&)      = delete;
+
     ~CacheManagerBase();
 
     std::string loader() const;
 
 protected:
+
     void touch(const PathName& base, const PathName& path) const;
     void rescanCache(const eckit::PathName& base) const;
 
     bool writable(const PathName& path) const;
 
-private:  // members
+private:
+
     std::string loaderName_;
     size_t maxCacheSize_;
     std::string extension_;
 
-    typedef FixedString<MD5_DIGEST_LENGTH * 2> cache_key_t;
+    using cache_key_t = FixedString<MD5_DIGEST_LENGTH * 2>;
 
     struct cache_entry_t {
         size_t size_;
@@ -74,7 +80,7 @@ private:  // members
         time_t last_;
     };
 
-    typedef BTree<cache_key_t, cache_entry_t, 64 * 1024, BTreeLock> cache_btree_t;
+    using cache_btree_t = BTree<cache_key_t, cache_entry_t, 64 * 1024, BTreeLock>;
 
     mutable std::unique_ptr<cache_btree_t> btree_;
 };
@@ -85,7 +91,8 @@ private:  // members
 
 class CacheManagerNoLock {
 public:
-    CacheManagerNoLock() {}
+
+    CacheManagerNoLock() = default;
     void lock() {}
     void unlock() {}
 };
@@ -93,12 +100,12 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 class CacheManagerFileSemaphoreLock {
-
     PathName path_;
     eckit::Semaphore lock_;
 
 public:
-    CacheManagerFileSemaphoreLock(const std::string& path);
+
+    explicit CacheManagerFileSemaphoreLock(const std::string& path);
     void lock();
     void unlock();
 };
@@ -106,11 +113,11 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 class CacheManagerFileFlock {
-
     eckit::FileLock lock_;
 
 public:
-    CacheManagerFileFlock(const std::string& path);
+
+    explicit CacheManagerFileFlock(const std::string& path);
     void lock();
     void unlock();
 };
@@ -122,23 +129,27 @@ template <class Traits>
 class CacheManager : public CacheManagerBase {
 
 public:  // methods
-    typedef typename Traits::value_type value_type;
+
+    using value_type = typename Traits::value_type;
 
     class CacheContentCreator {
     public:
+
         virtual ~CacheContentCreator()                                       = default;
         virtual void create(const PathName&, value_type& value, bool& saved) = 0;
     };
 
-    typedef std::string key_t;
+    using key_t = std::string;
 
 public:  // methods
+
     explicit CacheManager(const std::string& loaderName, const std::string& roots, bool throwOnCacheMiss,
                           size_t maxCacheSize);
 
     PathName getOrCreate(const key_t& key, CacheContentCreator& creator, value_type& value) const;
 
 private:  // methods
+
     bool get(const key_t& key, PathName& path) const;
 
     PathName stage(const key_t& key, const PathName& root) const;
@@ -149,6 +160,7 @@ private:  // methods
     PathName base(const std::string& root) const;
 
 private:  // members
+
     std::vector<PathName> roots_;
 
     bool throwOnCacheMiss_;
@@ -187,7 +199,7 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName, const std::str
                         << "CACHE-MANAGER " << Traits::name() << ", " << p.dirName() << " not writable" << std::endl;
                 }
             }
-            catch (FailedSystemCall&) { /* ignore */
+            catch (FailedSystemCall&) {  // ignore
             }
         }
 
@@ -201,14 +213,12 @@ CacheManager<Traits>::CacheManager(const std::string& loaderName, const std::str
 }
 
 template <class Traits>
-bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
-
-    for (auto& root : roots_) {
-        PathName p = entry(key, root);
+bool CacheManager<Traits>::get(const key_t& key, PathName& path) const {
+    for (const auto& root : roots_) {
+        auto p = entry(key, root);
 
         if (p.exists()) {
-
-            v = p;
+            path = p;
 
             Log::debug<LibEcKit>() << "CACHE-MANAGER found path " << p << std::endl;
 
@@ -223,9 +233,8 @@ bool CacheManager<Traits>::get(const key_t& key, PathName& v) const {
         oss << "CacheManager cache miss: key=" << key << ", tried:";
 
         const char* sep = " ";
-        for (auto& root : roots_) {
-            PathName p = entry(key, root);
-            oss << sep << p;
+        for (const auto& root : roots_) {
+            oss << sep << entry(key, root);
             sep = ", ";
         }
 
@@ -239,20 +248,19 @@ template <class Traits>
 PathName CacheManager<Traits>::base(const std::string& root) const {
     std::ostringstream oss;
     oss << root << "/" << Traits::name();
-    return PathName(oss.str());
+    return oss.str();
 }
 
 template <class Traits>
 PathName CacheManager<Traits>::entry(const key_t& key, const std::string& root) const {
     std::ostringstream oss;
     oss << base(root).asString() << "/" << Traits::version() << "/" << key << Traits::extension();
-    return PathName(oss.str());
+    return oss.str();
 }
 
 template <class Traits>
 PathName CacheManager<Traits>::stage(const key_t& key, const PathName& root) const {
-
-    PathName p = entry(key, root);
+    auto p = entry(key, root);
     AutoUmask umask(0);
     // FIXME: mask does not seem to affect first level directory
     p.dirName().mkdir(0777);  // ensure directory exists
@@ -262,11 +270,13 @@ PathName CacheManager<Traits>::stage(const key_t& key, const PathName& root) con
 }
 
 template <class Traits>
-bool CacheManager<Traits>::commit(const key_t& key, const PathName& tmpfile, const PathName& root) const {
-    PathName file = entry(key, root);
+bool CacheManager<Traits>::commit(const key_t& key, const PathName& path, const PathName& root) const {
+    // path is the temporary file
+
+    auto file = entry(key, root);
     try {
-        SYSCALL(::chmod(tmpfile.asString().c_str(), 0444));
-        PathName::rename(tmpfile, file);
+        SYSCALL(::chmod(path.asString().c_str(), 0444));
+        PathName::rename(path, file);
     }
     catch (FailedSystemCall& e) {  // ignore failed system call -- another process nay have created the file meanwhile
         Log::debug() << "Failed rename of cache file -- " << e.what() << std::endl;
@@ -277,7 +287,6 @@ bool CacheManager<Traits>::commit(const key_t& key, const PathName& tmpfile, con
 
 template <class Traits>
 PathName CacheManager<Traits>::getOrCreate(const key_t& key, CacheContentCreator& creator, value_type& value) const {
-
     PathName path;
 
     if (get(key, path)) {
@@ -320,8 +329,7 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key, CacheContentCreator
                 Traits::load(*this, value, path);
             }
             else {
-                Log::debug() << "Loading cache file " << file << " (created by another process)"
-                             << std::endl;
+                Log::debug() << "Loading cache file " << file << " (created by another process)" << std::endl;
 
                 // touch() is done in the (successful) get() above
                 Traits::load(*this, value, path);

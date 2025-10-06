@@ -34,6 +34,7 @@ class MemStream : public eckit::Stream {
     virtual std::string name() const { return "MemStream"; }
 
 public:
+
     MemStream(const char* p, long len);
 
     long length() const { return length_; }
@@ -41,8 +42,7 @@ public:
 };
 
 
-MemStream::MemStream(const char* p, long len) :
-    in_(p, len), out_(10240), pos_(0), length_(0) {}
+MemStream::MemStream(const char* p, long len) : in_(p, len), out_(10240), pos_(0), length_(0) {}
 
 long MemStream::write(const void* buf, long len) {
     if (out_.size() - length_ < static_cast<size_t>(len)) {
@@ -68,8 +68,7 @@ long MemStream::read(void* buf, long len) {
     return size;
 }
 
-AgentResource::AgentResource() :
-    HtmlResource("/agent") {}
+AgentResource::AgentResource() : HtmlResource("/agent") {}
 
 AgentResource::~AgentResource() {}
 

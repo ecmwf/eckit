@@ -37,14 +37,11 @@ PathName::PathName(const std::string& type, const std::string& p, bool tildeIsUs
     path_ = PathNameFactory::build(type, p, tildeIsUserHome);
 }
 
-PathName::PathName(const PathName& other) :
-    path_(other.path_->clone()) {}
+PathName::PathName(const PathName& other) : path_(other.path_->clone()) {}
 
-PathName::PathName(const LocalPathName& other) :
-    path_(new BasePathNameT<LocalPathName>(other)) {}
+PathName::PathName(const LocalPathName& other) : path_(new BasePathNameT<LocalPathName>(other)) {}
 
-PathName::PathName(BasePathName* path) :
-    path_(path) {
+PathName::PathName(BasePathName* path) : path_(path) {
     ASSERT(path);
 }
 
@@ -354,8 +351,8 @@ void operator>>(Stream& s, PathName& path) {
 
 // TODO: Read from ~etc/disk/...
 
-static const char* NAMES[] = {"/locked/", "/transfer/", "/defrag/", "/temp/", "/obstmp/",
-                              "/infrequent/", "/prearc/", "/cache/", nullptr};
+static const char* NAMES[] = {"/locked/",     "/transfer/", "/defrag/", "/temp/", "/obstmp/",
+                              "/infrequent/", "/prearc/",   "/cache/",  nullptr};
 
 std::string PathName::shorten(const std::string& s) {
 

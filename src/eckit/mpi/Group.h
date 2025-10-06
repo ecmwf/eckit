@@ -24,6 +24,7 @@ namespace eckit::mpi {
 
 class GroupContent : public Counted {
 public:
+
     ~GroupContent() override;
 
     virtual void print(std::ostream&) const = 0;
@@ -53,6 +54,7 @@ public:
     virtual std::unordered_map<int, int> translate_ranks(const std::vector<int>&, const GroupContent&) const = 0;
 
 private:
+
     friend class Group;
 };
 
@@ -64,6 +66,7 @@ private:
 class Group {
 
 public:  // methods
+
     /// Null request constructor
     Group();
     /// Group constructor from the Group() integer
@@ -97,7 +100,8 @@ public:  // methods
     // Returns
     //  * an negative integer (< 0): if the groups are not equal (MPI_UNQUAL)
     //  * zero (= 0): if the groups are identical (MPI_IDENT), i.e. members are in exactly the same order in both groups
-    //  * a positive integer (> 0): if the groups are similar (MPI_SIMILAR), i.e. both groups contain the same members but in different order
+    //  * a positive integer (> 0): if the groups are similar (MPI_SIMILAR), i.e. both groups contain the same members
+    //  but in different order
     int compare(const Group&) const;
 
     Group difference(const Group&) const;
@@ -123,6 +127,7 @@ public:  // methods
     std::unordered_map<int, int> translate_ranks(const std::vector<int>&, const Group&) const;
 
 private:  // methods
+
     void print(std::ostream&) const;
 
     friend std::ostream& operator<<(std::ostream& s, const Group& o) {
@@ -131,6 +136,7 @@ private:  // methods
     }
 
 private:  // members
+
     GroupContent* content_;
 
     friend class Parallel;

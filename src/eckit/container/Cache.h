@@ -14,8 +14,8 @@
 #ifndef eckit_container_Cache_h
 #define eckit_container_Cache_h
 
-#include <cstdint>
 #include <sys/time.h>
+#include <cstdint>
 
 #include <iostream>
 #include <map>
@@ -39,9 +39,9 @@ template <typename K, typename V>
 class Cache : private NonCopyable {
 
 public:  // types
+
     struct Entry {
-        Entry(const V& v) :
-            v_(v), expired_(false), hits_(0) {
+        Entry(const V& v) : v_(v), expired_(false), hits_(0) {
             gettimeofday(&age_, 0);
             last_ = age_;
         }
@@ -86,6 +86,7 @@ public:  // types
     };
 
 public:  // methods
+
     Cache();
 
     ~Cache();
@@ -128,19 +129,20 @@ public:  // methods
     }
 
 private:  // methods
+
     /// marks an object as expired
     /// @returns true if object was present and is marked as expired
     void expire(typename store_type::iterator i);
 
 private:  // members
+
     store_type storage_;
 };
 
 //-----------------------------------------------------------------------------
 
 template <typename K, typename V>
-Cache<K, V>::Cache() :
-    storage_() {}
+Cache<K, V>::Cache() : storage_() {}
 
 template <typename K, typename V>
 Cache<K, V>::~Cache() {

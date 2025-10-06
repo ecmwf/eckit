@@ -32,6 +32,7 @@ class HttpBuf : public std::streambuf {
     HttpStream& owner_;
 
 public:
+
     explicit HttpBuf(HttpStream& s);
     virtual ~HttpBuf();
 
@@ -41,6 +42,7 @@ public:
     void print(std::ostream&) const;
 
 private:
+
     std::vector<char> buffer_;
 };
 
@@ -61,6 +63,7 @@ class back_encoder_iterator {
     }
 
 public:
+
     using iterator_category = std::output_iterator_tag;
     using value_type        = VC::value_type;
     using difference_type   = std::ptrdiff_t;
@@ -103,8 +106,7 @@ inline back_encoder_iterator back_encoder(VC& x) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HttpBuf::HttpBuf(HttpStream& s) :
-    owner_(s) {
+HttpBuf::HttpBuf(HttpStream& s) : owner_(s) {
     setp(out_, out_ + sizeof(out_));
 }
 
@@ -192,8 +194,7 @@ void HttpBuf::print(std::ostream& os) const {
     os << "HttpBuf[buffer=" << buffer_ << "]";
 }
 
-HttpStream::HttpStream() :
-    std::ostream(new HttpBuf(*this)) {
+HttpStream::HttpStream() : std::ostream(new HttpBuf(*this)) {
     buf_          = (HttpBuf*)rdbuf();
     iword(xindex) = 1;  // encode
 }

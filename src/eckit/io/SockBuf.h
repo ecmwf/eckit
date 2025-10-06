@@ -22,6 +22,7 @@ namespace eckit {
 
 class SockBuf : public std::streambuf {
 public:
+
     // -- Contructors
 
     SockBuf(net::TCPSocket& proto);
@@ -31,6 +32,7 @@ public:
     ~SockBuf();
 
 private:
+
     // No copy allowed
 
     SockBuf(const SockBuf&);

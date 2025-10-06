@@ -24,6 +24,7 @@ namespace type {
 
 class SQLReal : public SQLType {
 public:
+
     // -- Exceptions
     // None
 
@@ -55,6 +56,7 @@ public:
     // None
 
 protected:
+
     // -- Members
     // None
 
@@ -72,6 +74,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     SQLReal(const SQLReal&);

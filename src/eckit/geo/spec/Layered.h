@@ -23,6 +23,7 @@ namespace eckit::geo::spec {
 
 class Layered final : public Spec {
 public:
+
     // -- Constructors
 
     Layered();
@@ -38,12 +39,12 @@ public:
     // -- Overridden methods
 
     bool has(const std::string& name) const override {
-        return !hide_.contains(name)
-               && (std::any_of(front_.begin(), front_.end(),
-                               [&](const decltype(front_)::value_type& c) { return c->has(name); })
-                   || spec_.has(name)
-                   || std::any_of(back_.begin(), back_.end(),
-                                  [&](const decltype(back_)::value_type& c) { return c->has(name); }));
+        return !hide_.contains(name) &&
+               (std::any_of(front_.begin(), front_.end(),
+                            [&](const decltype(front_)::value_type& c) { return c->has(name); }) ||
+                spec_.has(name) || std::any_of(back_.begin(), back_.end(), [&](const decltype(back_)::value_type& c) {
+                    return c->has(name);
+                }));
     }
 
     bool get(const std::string& name, std::string& value) const override { return get_t(name, value); }
@@ -63,6 +64,7 @@ public:
     bool get(const std::string& name, std::vector<std::string>& value) const override { return get_t(name, value); }
 
 private:
+
     // -- Members
 
     struct : std::unordered_set<std::string> {
@@ -77,12 +79,12 @@ private:
 
     template <typename T>
     bool get_t(const std::string& name, T& value) const {
-        return !hide_.contains(name)
-               && (std::any_of(front_.rbegin(), front_.rend(),
-                               [&](const decltype(front_)::value_type& c) { return c->get(name, value); })
-                   || spec_.get(name, value)
-                   || std::any_of(back_.begin(), back_.end(),
-                                  [&](const decltype(back_)::value_type& c) { return c->get(name, value); }));
+        return !hide_.contains(name) &&
+               (std::any_of(front_.rbegin(), front_.rend(),
+                            [&](const decltype(front_)::value_type& c) { return c->get(name, value); }) ||
+                spec_.get(name, value) ||
+                std::any_of(back_.begin(), back_.end(),
+                            [&](const decltype(back_)::value_type& c) { return c->get(name, value); }));
     }
 
     // -- Overridden methods

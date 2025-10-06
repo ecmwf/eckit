@@ -37,6 +37,7 @@ namespace eckit {
 class TxnArray : private eckit::NonCopyable {
 
 public:
+
     typedef TxnID* iterator;
     typedef const TxnID* const_iterator;
 
@@ -60,8 +61,8 @@ class MemoryMappedTxnArray : public TxnArray {
     MappedArray<TxnID> map_;
 
 public:
-    MemoryMappedTxnArray(const PathName& path, unsigned long size) :
-        TxnArray(), map_(path, size) {}
+
+    MemoryMappedTxnArray(const PathName& path, unsigned long size) : TxnArray(), map_(path, size) {}
 };
 
 class SharedMemoryTxnArray : public TxnArray {
@@ -75,6 +76,7 @@ class SharedMemoryTxnArray : public TxnArray {
     SharedMemArray<TxnID> map_;
 
 public:
+
     SharedMemoryTxnArray(const PathName& path, const std::string& name, unsigned long size) :
         TxnArray(), map_(path, name, size) {}
 };
@@ -90,8 +92,7 @@ PathName TxnLog<T>::buildPath(const std::string& name) {
 }
 
 template <class T>
-TxnLog<T>::TxnLog(const std::string& name) :
-    path_(buildPath(name)), next_(path_ + "/next") {
+TxnLog<T>::TxnLog(const std::string& name) : path_(buildPath(name)), next_(path_ + "/next") {
     std::string txnArrayType = Resource<std::string>("txnArrayType", "MemoryMapped");
 
     if (txnArrayType == "MemoryMapped") {
@@ -195,6 +196,7 @@ class RecoverThread : public Thread {
     virtual void run();
 
 public:
+
     RecoverThread(const PathName&, TxnArray&, TxnRecoverer<T>&, long);
     void recover();
 };

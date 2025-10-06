@@ -27,6 +27,7 @@ namespace eckit {
 class RadosHandle : public eckit::DataHandle {
 
 public:  // methods
+
     RadosHandle(const RadosObject&);
     RadosHandle(const std::string&);
 
@@ -41,6 +42,7 @@ public:  // methods
     std::string title() const;
 
 public:  // methods
+
     Length openForRead() override;
     void openForWrite(const Length&) override;
     void openForAppend(const Length&) override;
@@ -62,6 +64,7 @@ public:  // methods
     const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
+
     RadosObject object_;
 
     uint64_t offset_;

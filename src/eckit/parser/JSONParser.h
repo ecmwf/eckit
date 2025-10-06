@@ -23,12 +23,14 @@ namespace eckit {
 class JSONParser : public ObjectParser {
 
 public:  // methods
+
     JSONParser(std::istream& in);
 
     static Value decodeFile(const PathName& path);
     static Value decodeString(const std::string& str);
 
 private:
+
     virtual Value parseValue();
     virtual std::string parserName() const;
 };

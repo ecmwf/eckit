@@ -32,6 +32,7 @@ struct UnencodableType {
 // The "operations" performed on this type are stored for unit-test purposes
 class EncodableType {
 public:
+
     using Operations = std::vector<std::string>;
 
     explicit EncodableType(std::string s, std::shared_ptr<Operations> operations = std::make_shared<Operations>()) :
@@ -39,17 +40,14 @@ public:
         ops->emplace_back("constructor");
     }
 
-    EncodableType() :
-        ops(std::make_shared<Operations>()) {}
+    EncodableType() : ops(std::make_shared<Operations>()) {}
 
-    EncodableType(const EncodableType& other) :
-        str(other.str), ops(other.ops) {
+    EncodableType(const EncodableType& other) : str(other.str), ops(other.ops) {
         // This constructor should not be called.
         ops->emplace_back("copy constructor");
     }
 
-    EncodableType(EncodableType&& other) :
-        str(std::move(other.str)), ops(other.ops) {
+    EncodableType(EncodableType&& other) : str(std::move(other.str)), ops(other.ops) {
         ops->emplace_back("move constructor");
     }
 
@@ -92,6 +90,7 @@ public:
     const std::vector<std::string>& operations() const { return *ops; }
 
 private:
+
     std::string str;
     mutable std::shared_ptr<std::vector<std::string>> ops;
 };
@@ -446,10 +445,7 @@ struct EncodedArray {
     codec::Data data;
     codec::Metadata metadata;
 
-    EncodedArray() :
-        in{1, 2, 3, 4, 5, 6, 7, 8} {
-        encode(in, metadata, data);
-    }
+    EncodedArray() : in{1, 2, 3, 4, 5, 6, 7, 8} { encode(in, metadata, data); }
 
     friend bool operator==(const std::vector<T>& lhs, const EncodedArray<T>& rhs) {
         if (lhs.size() != rhs.in.size()) {
@@ -465,6 +461,7 @@ struct EncodedArray {
     }
 
 private:
+
     std::vector<T> in;
 };
 
@@ -493,6 +490,7 @@ struct EncodedArray<std::byte> {
     }
 
 private:
+
     std::vector<std::byte> in;
 };
 

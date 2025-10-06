@@ -25,6 +25,7 @@ namespace eckit {
 
 class SleepCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     SleepCmd();
@@ -34,6 +35,7 @@ public:
     ~SleepCmd();
 
 private:
+
     // No copy allowed
 
     SleepCmd(const SleepCmd&);

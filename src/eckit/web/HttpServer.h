@@ -27,6 +27,7 @@ class Url;
 
 class HttpServer : public HtmlResource {
 public:
+
     // -- Contructors
 
     HttpServer(int port, bool visible = false);
@@ -36,6 +37,7 @@ public:
     ~HttpServer();
 
 private:
+
     // No copy allowed
 
     HttpServer(const HttpServer&);

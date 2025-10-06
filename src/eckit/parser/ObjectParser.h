@@ -25,14 +25,17 @@ namespace eckit {
 class ObjectParser : public StreamParser {
 
 public:  // methods
+
     ~ObjectParser() override;
 
     virtual Value parse();
 
 protected:
+
     ObjectParser(std::istream& in, bool comments, bool yaml);
 
 protected:  // methods
+
     virtual Value parseTrue();
     virtual Value parseFalse();
     virtual Value parseNull();
@@ -49,6 +52,7 @@ protected:  // methods
     virtual std::string parserName() const = 0;
 
 private:
+
     std::string unicode();
     bool yaml_;
 };

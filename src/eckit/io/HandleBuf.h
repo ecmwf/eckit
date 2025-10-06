@@ -25,6 +25,7 @@ namespace eckit {
 
 class HandleBuf : public std::streambuf {
 public:
+
     // -- Contructors
 
     HandleBuf(DataHandle& handle, bool throwOnError = false);
@@ -34,6 +35,7 @@ public:
     ~HandleBuf();
 
 private:
+
     // No copy allowed
 
     HandleBuf(const HandleBuf&);

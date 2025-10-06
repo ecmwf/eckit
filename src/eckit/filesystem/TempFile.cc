@@ -17,11 +17,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TempFile::TempFile() :
-    PathName(dir("temp")) {}
+TempFile::TempFile() : PathName(dir("temp")) {}
 
-TempFile::TempFile(const std::string& name) :
-    PathName(dir(name)) {}
+TempFile::TempFile(const std::string& name) : PathName(dir(name)) {}
 
 TempFile::~TempFile() {
     unlink();

@@ -12,7 +12,6 @@
 
 #include <memory>
 
-#include "eckit/geo/Cache.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/spec/Custom.h"

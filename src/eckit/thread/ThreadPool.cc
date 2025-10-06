@@ -28,8 +28,8 @@ class ThreadPoolThread : public Thread {
     void run();
 
 public:
-    ThreadPoolThread(ThreadPool& owner) :
-        owner_(owner) {}
+
+    ThreadPoolThread(ThreadPool& owner) : owner_(owner) {}
 };
 
 void ThreadPoolThread::run() {

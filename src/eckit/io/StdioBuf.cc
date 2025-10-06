@@ -19,8 +19,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-StdioBuf::StdioBuf(FILE* file) :
-    file_(file) {
+StdioBuf::StdioBuf(FILE* file) : file_(file) {
 #ifndef OLD_STREAMBUF
     /* setg(in_,  in_,  in_  + sizeof(in_) );  */
     setg(in_, in_, in_);

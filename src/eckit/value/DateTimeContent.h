@@ -26,6 +26,7 @@ namespace eckit {
 class DateTimeContent : public Content {
 
 protected:
+
     // -- Constructor
 
     DateTimeContent(const DateTime&);
@@ -88,6 +89,7 @@ protected:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     DateTimeContent(const DateTimeContent&);
     DateTimeContent& operator=(const DateTimeContent&);
 

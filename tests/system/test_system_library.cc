@@ -41,11 +41,9 @@ namespace eckit::test {
 
 class TestPlugin : Plugin {
 public:
-    TestPlugin() :
-        Plugin("test-plugin") {}
-    ~TestPlugin() {
-        std::cout << "~TestPlugin()" << std::endl;
-    }
+
+    TestPlugin() : Plugin("test-plugin") {}
+    ~TestPlugin() { std::cout << "~TestPlugin()" << std::endl; }
     static const TestPlugin& instance() {
         static TestPlugin instance;
         return instance;

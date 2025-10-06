@@ -48,7 +48,7 @@ struct dirent* StdDir::dirent() {
 #if eckit_HAVE_READDIR_R
 // Disable deprecation warning of using readdir_r
 #if defined(__INTEL_COMPILER)
-#pragma warning ( disable:1478 )
+#pragma warning(disable : 1478)
 #elif defined(__NVCOMPILER)
 #pragma diag_suppress 1216
 #elif defined(__GNUC__)

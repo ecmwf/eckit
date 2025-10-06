@@ -33,9 +33,8 @@ class ClusterHeartBeat : public Thread {
     virtual void run();
 
 public:
-    ClusterHeartBeat(ClusterNode& owner, int hostOffset = 0) :
-        hostOffset_(hostOffset),
-        owner_(owner) {}
+
+    ClusterHeartBeat(ClusterNode& owner, int hostOffset = 0) : hostOffset_(hostOffset), owner_(owner) {}
 };
 
 void ClusterHeartBeat::run() {

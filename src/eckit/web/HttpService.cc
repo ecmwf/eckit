@@ -22,8 +22,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-HttpService::HttpService(int port, bool visible) :
-    net::NetService(port, visible) {}
+HttpService::HttpService(int port, bool visible) : net::NetService(port, visible) {}
 
 HttpService::~HttpService() {}
 
@@ -33,8 +32,7 @@ net::NetUser* HttpService::newUser(net::TCPSocket& protocol) const {
 }
 
 
-HttpUser::HttpUser(net::TCPSocket& protocol) :
-    net::NetUser(protocol) {}
+HttpUser::HttpUser(net::TCPSocket& protocol) : net::NetUser(protocol) {}
 
 HttpUser::~HttpUser() {}
 

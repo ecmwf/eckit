@@ -31,19 +31,19 @@ namespace eckit {
 template <class From, class To>
 struct Translator {
 
-    // Test for explicit conversion through constructor (also involves implicit conversion or or user-defined conversion operator).
-    // Note: To(from) is called with () brackets and not with {} because it includes conversion of plain datatypes - MIR is using this
-    template <typename F, std::enable_if_t<
-                              (!std::is_same_v<std::decay_t<F>, To> && std::is_constructible_v<To, F>),
-                              bool> = true>
+    // Test for explicit conversion through constructor (also involves implicit conversion or or user-defined conversion
+    // operator). Note: To(from) is called with () brackets and not with {} because it includes conversion of plain
+    // datatypes - MIR is using this
+    template <typename F,
+              std::enable_if_t<(!std::is_same_v<std::decay_t<F>, To> && std::is_constructible_v<To, F>), bool> = true>
     auto operator()(F&& from) {
         return To(std::forward<F>(from));
     }
 
 
-    // If from and to type are same - simply forward - i.e. allow moving or passing references instead of performing copies
-    template <typename F, std::enable_if_t<std::is_same_v<std::decay_t<F>, To>,
-                                           bool> = true>
+    // If from and to type are same - simply forward - i.e. allow moving or passing references instead of performing
+    // copies
+    template <typename F, std::enable_if_t<std::is_same_v<std::decay_t<F>, To>, bool> = true>
     decltype(auto) operator()(F&& from) {
         if constexpr (std::is_lvalue_reference_v<F> && !std::is_const_v<F>) {
             return const_cast<const To&>(from);
@@ -232,8 +232,8 @@ struct IsTranslatable : std::false_type {};
 
 // specialization recognizes types that do support translation
 template <typename From, typename To>
-struct IsTranslatable<From, To,
-                      std::void_t<decltype(Translator<From, To>{}(std::declval<const From&>()))>> : std::true_type {};
+struct IsTranslatable<From, To, std::void_t<decltype(Translator<From, To>{}(std::declval<const From&>()))>>
+    : std::true_type {};
 
 
 template <typename From, typename To>

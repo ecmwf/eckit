@@ -19,6 +19,7 @@ namespace eckit {
 
 class System {
 public:
+
     static std::string addrToPath(const void* addr);
 };
 

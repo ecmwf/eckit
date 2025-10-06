@@ -25,6 +25,7 @@ namespace eckit {
 
 class Hour {
 public:
+
     // -- Contructors
 
     explicit Hour(double hour);
@@ -70,6 +71,7 @@ public:
 
 
 private:
+
     // -- Members
 
     long seconds_ = 0;

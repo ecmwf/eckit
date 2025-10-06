@@ -29,14 +29,16 @@ cmake_pop_check_state()
 
 ### system headers and symbols tests for eckit config headers
 
-check_symbol_exists( MAP_ANONYMOUS "sys/mman.h"  eckit_HAVE_MAP_ANONYMOUS )
-check_symbol_exists( MAP_ANON      "sys/mman.h"  eckit_HAVE_MAP_ANON )
-check_symbol_exists( funopen       "stdio.h"     eckit_HAVE_FUNOPEN )
-check_symbol_exists( fsync         "unistd.h"    eckit_HAVE_FSYNC)
-check_symbol_exists( fdatasync     "unistd.h"    eckit_HAVE_FDATASYNC)
-check_symbol_exists( F_FULLFSYNC   "fcntl.h"     eckit_HAVE_F_FULLFSYNC)
-check_symbol_exists( fmemopen      "stdio.h"     eckit_HAVE_FMEMOPEN )
-check_symbol_exists( dlinfo        "dlfcn.h"     eckit_HAVE_DLINFO)
+check_symbol_exists( MAP_ANONYMOUS   "sys/mman.h"  eckit_HAVE_MAP_ANONYMOUS )
+check_symbol_exists( MAP_ANON        "sys/mman.h"  eckit_HAVE_MAP_ANON )
+check_symbol_exists( funopen         "stdio.h"     eckit_HAVE_FUNOPEN )
+check_symbol_exists( fsync           "unistd.h"    eckit_HAVE_FSYNC )
+check_symbol_exists( fdatasync       "unistd.h"    eckit_HAVE_FDATASYNC )
+check_symbol_exists( F_FULLFSYNC     "fcntl.h"     eckit_HAVE_F_FULLFSYNC )
+check_symbol_exists( fmemopen        "stdio.h"     eckit_HAVE_FMEMOPEN )
+check_symbol_exists( dlinfo          "dlfcn.h"     eckit_HAVE_DLINFO )
+check_symbol_exists( feenableexcept  "fenv.h"      eckit_HAVE_FEENABLEEXCEPT )
+check_symbol_exists( fedisableexcept "fenv.h"      eckit_HAVE_FEDISABLEEXCEPT )
 
 check_c_source_compiles( "#define _GNU_SOURCE\n#include <stdio.h>\nint main(){ void* cookie; const char* mode; cookie_io_functions_t iof; FILE* fopencookie(void *cookie, const char *mode, cookie_io_functions_t iof); }"
     eckit_HAVE_FOPENCOOKIE )
@@ -265,6 +267,41 @@ list(APPEND eckit_message_srcs
     message/Splitter.cc
     message/Splitter.h
 )
+
+if(HAVE_OPENFAM)
+list(APPEND eckit_io_srcs
+io/fam/detail/FamSessionDetail.cc
+io/fam/FamConfig.h
+io/fam/FamHandle.cc
+io/fam/FamHandle.h
+io/fam/FamList.cc
+io/fam/FamList.h
+io/fam/FamListIterator.cc
+io/fam/FamListIterator.h
+io/fam/FamMap.cc
+io/fam/FamMap.h
+io/fam/FamMapIterator.cc
+io/fam/FamMapIterator.h
+io/fam/FamName.cc
+io/fam/FamName.h
+io/fam/FamObject.cc
+io/fam/FamObject.h
+io/fam/FamObjectName.cc
+io/fam/FamObjectName.h
+io/fam/FamPath.cc
+io/fam/FamPath.h
+io/fam/FamProperty.cc
+io/fam/FamProperty.h
+io/fam/FamRegion.cc
+io/fam/FamRegion.h
+io/fam/FamRegionName.cc
+io/fam/FamRegionName.h
+io/fam/FamSessionManager.cc
+io/fam/FamSessionManager.h
+io/fam/FamURIManager.cc
+io/fam/FamURIManager.h
+)
+endif(HAVE_OPENFAM)
 
 if(HAVE_RADOS)
     list( APPEND eckit_io_srcs
@@ -497,6 +534,10 @@ list( APPEND eckit_log_srcs
     log/StatusTarget.h
     log/SysLog.cc
     log/SysLog.h
+    log/SysLogTCPTarget.cc
+    log/SysLogTCPTarget.h
+    log/TCPTarget.cc
+    log/TCPTarget.h
     log/TeeTarget.cc
     log/TeeTarget.h
     log/TimeStamp.cc
@@ -717,6 +758,7 @@ list( APPEND eckit_utils_srcs
     utils/Hash.h
     utils/HyperCube.cc
     utils/HyperCube.h
+    utils/Literals.h
     utils/MD5.cc
     utils/MD5.h
     utils/Optional.h

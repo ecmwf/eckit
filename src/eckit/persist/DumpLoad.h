@@ -22,6 +22,7 @@ namespace eckit {
 
 class DumpLoad {
 public:
+
     // -- Exceptions
     // None
 
@@ -111,6 +112,7 @@ public:
 
 
 protected:
+
     // -- Members
     // None
 
@@ -128,6 +130,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     DumpLoad(const DumpLoad&);

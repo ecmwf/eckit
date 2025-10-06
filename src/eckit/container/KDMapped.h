@@ -30,6 +30,7 @@ struct KDMappedHeader {
 
 class KDMapped : public StatCollector {
 public:
+
     KDMapped(const PathName&, size_t itemCount, size_t itemSize, size_t metadataSize);
     ~KDMapped();
 
@@ -107,6 +108,7 @@ public:
     size_t nbItems() const { return count_; }
 
 private:
+
     PathName path_;
 
     KDMappedHeader header_;

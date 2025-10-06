@@ -25,8 +25,7 @@ namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-enum class Mode
-{
+enum class Mode {
     read,
     append,
     write,
@@ -36,6 +35,7 @@ enum class Mode
 
 class FileStream : public Stream {
 public:
+
     FileStream(const PathName&, Mode openmode);
     FileStream(const PathName&, char openmode);
     FileStream(const PathName&, const std::string& openmode);
@@ -45,6 +45,7 @@ public:
 
 class InputFileStream : public FileStream {
 public:
+
     explicit InputFileStream(const PathName&);
 };
 
@@ -52,6 +53,7 @@ public:
 
 class OutputFileStream : public FileStream {
 public:
+
     explicit OutputFileStream(const PathName&, Mode openmode = Mode::write);
     OutputFileStream(const PathName&, const std::string& openmode);
     OutputFileStream(const PathName&, char openmode);

@@ -31,6 +31,7 @@ namespace eckit::test {
 
 class Tester {
 public:
+
     Tester() {
         format(std::cout, Log::fullFormat);
         std::string base = Resource<std::string>("$TMPDIR", "/tmp");

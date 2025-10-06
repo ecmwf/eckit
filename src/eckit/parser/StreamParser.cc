@@ -115,8 +115,7 @@ char StreamParser::next(bool spaces) {
 void StreamParser::consume(char c) {
     char n = next();
     if (c != n) {
-        throw StreamParser::Error(std::string("StreamParser::consume expecting '") + c + "', got '"
-                                      + n + "'",
+        throw StreamParser::Error(std::string("StreamParser::consume expecting '") + c + "', got '" + n + "'",
                                   line_ + 1);
     }
 }
@@ -128,8 +127,7 @@ void StreamParser::consume(const char* p) {
 }
 
 
-StreamParser::Error::Error(const std::string& what, size_t line) :
-    Exception(what) {
+StreamParser::Error::Error(const std::string& what, size_t line) : Exception(what) {
     if (line) {
         std::ostringstream oss;
         oss << "Line: " << line << " " << what;

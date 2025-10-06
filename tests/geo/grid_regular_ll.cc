@@ -24,17 +24,57 @@ using RegularLL = grid::RegularLL;
 
 
 CASE("global") {
-    std::unique_ptr<Grid> grid1(new RegularLL(spec::Custom{{{"grid", std::vector<double>{1, 1}}}}));
+    SECTION("1") {
+        std::unique_ptr<Grid> grid(new RegularLL(spec::Custom{{{"grid", std::vector<double>{90, 90}}}}));
 
-    EXPECT(grid1->size() == 360 * 181);
+        EXPECT(grid->size() == 4 * 3);
 
-    std::unique_ptr<Grid> grid2(new RegularLL(
-        spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}}));
+        std::vector<PointLonLat> ref{{0., 90.},  {90., 90.},  {180., 90.},  {270., 90.},  //
+                                     {0., 0.},   {90., 0.},   {180., 0.},   {270., 0.},   //
+                                     {0., -90.}, {90., -90.}, {180., -90.}, {270., -90.}};
 
-    EXPECT(grid2->size() == 5 * 10);
+        EXPECT(points_equal(grid->first_point(), ref.front()));
+        EXPECT(points_equal(grid->last_point(), ref.back()));
 
-    for (const auto& grid : {RegularLL({1., 1.}, {89.5, 0.5, -89.5, 359.5}),
-                             RegularLL({1., 1.}, {90., 0., -90, 360.}, nullptr, {0.5, 0.5})}) {
+        const auto points = grid->to_points();
+
+        ASSERT(points.size() == ref.size());
+        EXPECT(points.size() == grid->size());
+
+        auto q = ref.cbegin();
+        for (const auto& p : points) {
+            EXPECT(points_equal(p, *q++));
+        }
+    }
+
+
+    SECTION("2") {
+        std::unique_ptr<Grid> grid(new RegularLL(spec::Custom{{{"grid", std::vector<double>{1, 1}}}}));
+
+        EXPECT(grid->size() == 360 * 181);
+    }
+
+
+    SECTION("3") {
+        RegularLL grid(
+            spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
+
+        EXPECT(grid.size() == 5 * 10);
+    }
+
+
+    SECTION("4") {
+        RegularLL grid({1., 1.}, {89.5, 0.5, -89.5, 359.5}, {0.5, 0.5});
+
+        EXPECT(grid.nx() == 360);
+        EXPECT(grid.ny() == 180);
+        EXPECT(grid.size() == 360 * 180);
+    }
+
+
+    SECTION("5") {
+        RegularLL grid({1., 1.}, {90., 0., -90, 360.}, {0.5, 0.5});
+
         EXPECT(grid.nx() == 360);
         EXPECT(grid.ny() == 180);
         EXPECT(grid.size() == 360 * 180);
@@ -43,36 +83,70 @@ CASE("global") {
 
 
 CASE("non-global") {
-    /*
-     *  1  .  .  .  .
-     *  0
-     * -1  .  .  .  .
-     *    -1  0  1  2
-     */
-    RegularLL grid({1, 2}, {1, -1, -1, 2});
+    SECTION("origin at (0, 0) (non-shifted)") {
+        /*
+         *  1
+         *  0  .  .  .  .
+         * -1
+         *    -1  0  1  2
+         */
+        RegularLL grid({1, 2}, {1, -1, -1, 2});
 
-    const std::vector<PointLonLat> ref{
-        {-1., 1.}, {0., 1.}, {1., 1.}, {2., 1.}, {-1., -1.}, {0., -1.}, {1., -1.}, {2., -1.},
-    };
+        const std::vector<PointLonLat> ref{{-1., 0.}, {0., 0.}, {1., 0.}, {2., 0.}};
 
-    auto points = grid.to_points();
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
 
-    EXPECT(points.size() == grid.size());
-    ASSERT(points.size() == ref.size());
+        EXPECT(points.size() == grid.size());
 
-    auto it = grid.begin();
-    for (size_t i = 0; i < points.size(); ++i) {
-        EXPECT(points_equal(ref[i], points[i]));
-        EXPECT(points_equal(ref[i], *it));
-        ++it;
+        auto it = grid.begin();
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+            EXPECT(points_equal(ref[i], *it));
+            ++it;
+        }
+        EXPECT(it == grid.end());
+
+        size_t i = 0;
+        for (const auto& it : grid) {
+            EXPECT(points_equal(ref[i++], it));
+        }
+        EXPECT(i == grid.size());
     }
-    EXPECT(it == grid.end());
 
-    size_t i = 0;
-    for (const auto& it : grid) {
-        EXPECT(points_equal(ref[i++], it));
+
+    SECTION("origin at (-1, -1) (shifted)") {
+        /*
+         *  1  .  .  .  .
+         *  0
+         * -1  .  .  .  .
+         *    -1  0  1  2
+         */
+        RegularLL grid({1, 2}, {1, -1, -1, 2}, {-1, -1});
+
+        const std::vector<PointLonLat> ref{
+            {-1., 1.}, {0., 1.}, {1., 1.}, {2., 1.}, {-1., -1.}, {0., -1.}, {1., -1.}, {2., -1.},
+        };
+
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
+
+        EXPECT(points.size() == grid.size());
+
+        auto it = grid.begin();
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+            EXPECT(points_equal(ref[i], *it));
+            ++it;
+        }
+        EXPECT(it == grid.end());
+
+        size_t i = 0;
+        for (const auto& it : grid) {
+            EXPECT(points_equal(ref[i++], it));
+        }
+        EXPECT(i == grid.size());
     }
-    EXPECT(i == grid.size());
 }
 
 

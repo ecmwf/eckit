@@ -17,30 +17,37 @@
 #include "eckit/geo/Iterator.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo {
+class Projection;
+namespace grid {
 class Reduced;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::iterator {
 
 
-class Reduced final : public geo::Iterator {
+class Reduced : public geo::Iterator {
 public:
+
     // -- Constructors
 
     explicit Reduced(const Grid&, size_t index = 0);
 
 private:
+
     // -- Members
 
     const grid::Reduced& grid_;
+    const Projection& projection_;
+
     std::vector<double> longitudes_j_;
     const std::vector<double>& latitudes_;
     const std::vector<size_t>& niacc_;
+    const size_t size_;
     size_t j_;
     size_t index_;
-    const size_t size_;
 
     // -- Overridden operators
 
@@ -54,8 +61,6 @@ private:
 
     size_t index() const override { return index_; }
     size_t j(size_t idx) const;
-
-    void fill_spec(spec::Custom&) const override;
 };
 
 

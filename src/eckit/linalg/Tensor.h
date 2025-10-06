@@ -44,8 +44,8 @@ template <typename S>
 class Tensor {
 
 public:  // class methods
-    enum class Layout : int
-    {  // specify underlying type to be "int" for interoperability
+
+    enum class Layout : int {  // specify underlying type to be "int" for interoperability
         Right    = 0,
         Left     = 1,
         RowMajor = Right,
@@ -78,17 +78,14 @@ public:  // class methods
     }
 
 public:  // methods
+
     /// Default constructor (empty tensor)
     Tensor(Layout layout = Layout::ColMajor) :
         array_(0), size_(0), shape_(0), strides_(0), layout_(layout), own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
     Tensor(const std::vector<Size>& shape, Layout layout = Layout::ColMajor) :
-        array_(nullptr),
-        shape_(shape),
-        strides_(strides(layout, shape)),
-        layout_(layout),
-        own_(true) {
+        array_(nullptr), shape_(shape), strides_(strides(layout, shape)), layout_(layout), own_(true) {
 
         size_ = flatSize(shape_);
         ASSERT(size() > 0);
@@ -98,10 +95,7 @@ public:  // methods
 
     /// Construct tensor from existing data (does NOT take ownership)
     Tensor(S* array, const std::vector<Size>& shape, Layout layout = Layout::ColMajor) :
-        array_(array),
-        strides_(strides(layout, shape)),
-        layout_(layout),
-        own_(false) {
+        array_(array), strides_(strides(layout, shape)), layout_(layout), own_(false) {
 
         shape_ = shape;
         size_  = flatSize(shape_);
@@ -110,8 +104,7 @@ public:  // methods
     }
 
     /// Constructor from Stream
-    Tensor(Stream& s) :
-        array_(0), size_(0), shape_(0), own_(true) {
+    Tensor(Stream& s) : array_(0), size_(0), shape_(0), own_(true) {
         Size shape_size;
 
         // layout
@@ -137,7 +130,12 @@ public:  // methods
 
     /// Copy constructor
     Tensor(const Tensor& other) :
-        array_(new S[other.size()]), size_(other.size_), shape_(other.shape_), strides_(other.strides_), layout_(other.layout_), own_(true) {
+        array_(new S[other.size()]),
+        size_(other.size_),
+        shape_(other.shape_),
+        strides_(other.strides_),
+        layout_(other.layout_),
+        own_(true) {
         ASSERT(size() > 0);
         ASSERT(array_);
         ::memcpy(array_, other.array_, size() * sizeof(S));
@@ -391,6 +389,7 @@ public:  // methods
     }
 
 private:  // methods
+
     /// compile time variadic template indexing calculation
     template <int Dim, typename Int, typename... Ints>
     constexpr Size index_part(Int idx, Ints... next_idx) const {
@@ -409,7 +408,8 @@ private:  // methods
         return index_part<0>(idx...);
     }
 
-protected:      // member variables
+protected:  // member variables
+
     S* array_;  ///< data
 
     Size size_;  ///< flattened size

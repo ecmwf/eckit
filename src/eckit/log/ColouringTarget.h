@@ -28,6 +28,7 @@ namespace eckit {
 
 class ColouringTarget : public WrapperTarget {
 public:
+
     typedef std::ostream& (*colourproc)(std::ostream&);
 
     ColouringTarget(LogTarget* target, colourproc begin, colourproc end = &Colour::reset);
@@ -35,9 +36,11 @@ public:
     ~ColouringTarget() override;
 
 protected:
+
     void print(std::ostream& s) const override;
 
 private:
+
     void writePrefix() override;
     void writeSuffix() override;
 

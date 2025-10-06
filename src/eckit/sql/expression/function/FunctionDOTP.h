@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionDOTP : public FunctionExpression {
 public:
+
     FunctionDOTP(const std::string&, const expression::Expressions&);
     FunctionDOTP(const FunctionDOTP&);
     ~FunctionDOTP();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 2; }
 
 private:
+
     // No copy allowed
     FunctionDOTP& operator=(const FunctionDOTP&);
 

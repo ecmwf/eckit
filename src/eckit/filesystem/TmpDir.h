@@ -24,6 +24,7 @@ namespace eckit {
 
 class TmpDir : public PathName, private NonCopyable {
 public:
+
     TmpDir(const char* base = nullptr);
 
     TmpDir(TmpDir&& rhs);

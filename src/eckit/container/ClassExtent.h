@@ -29,6 +29,7 @@ namespace eckit {
 template <class T>
 class ClassExtent : private NonCopyable {
 public:
+
     // -- Contructors
 
     ClassExtent(T*);
@@ -42,6 +43,7 @@ public:
     static size_t size();
 
 public:  // methods
+
     static void callAll(void (T::*)());
     static void callAll(void (T::*)() const);
 
@@ -64,6 +66,7 @@ public:  // methods
     static void callAll(void (T::*)(P1&, P2&), P1&, P2&);
 
 private:  // members
+
     struct Extent {
         typedef std::map<ClassExtent<T>*, T*, std::less<ClassExtent<T>*> > Map;
         Mutex mutex_;
@@ -231,8 +234,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P1&, P2&), P1& arg1, P2& arg2) {
 }
 
 template <class T>
-ClassExtent<T>::Extent::Extent() :
-    inited_(true) {}
+ClassExtent<T>::Extent::Extent() : inited_(true) {}
 
 template <class T>
 ClassExtent<T>::Extent::~Extent() {

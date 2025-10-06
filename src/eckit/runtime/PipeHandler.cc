@@ -23,8 +23,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class Request>
-PipeHandler<Request>::PipeHandler() :
-    ClassExtent<PipeHandler<Request> >(this), pipe_(0), busy_(false), last_(0) {
+PipeHandler<Request>::PipeHandler() : ClassExtent<PipeHandler<Request> >(this), pipe_(0), busy_(false), last_(0) {
     Monitor::instance().show(false);
 }
 

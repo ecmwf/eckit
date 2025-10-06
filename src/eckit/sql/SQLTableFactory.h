@@ -42,11 +42,13 @@ class SQLTableFactory {
     typedef std::vector<const SQLTableFactoryBase*> factory_map;
 
 private:  // methods
+
     // Can only be constructed by instance()
     SQLTableFactory()  = default;
     ~SQLTableFactory() = default;
 
 public:  // methods
+
     static SQLTableFactory& instance();
 
     /// Build an SQLTable from a give name. Location is optional - if it is not supplied
@@ -58,6 +60,7 @@ public:  // methods
     void deregister(SQLTableFactoryBase* f);
 
 private:  // methods
+
     factory_map factories_;
     std::mutex mutex_;
 };
@@ -67,6 +70,7 @@ private:  // methods
 class SQLTableFactoryBase {
 
 public:  // methods
+
     SQLTableFactoryBase();
     virtual ~SQLTableFactoryBase();
 

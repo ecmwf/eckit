@@ -10,9 +10,9 @@
 
 #include <string_view>
 
-#include "eckit/mpi/ParallelGroup.h"
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Parallel.h"
+#include "eckit/mpi/ParallelGroup.h"
 
 namespace eckit {
 namespace mpi {
@@ -29,12 +29,9 @@ ParallelGroup::~ParallelGroup() {
     }
 }
 
-ParallelGroup::ParallelGroup() :
-    valid_{false} {}
+ParallelGroup::ParallelGroup() : valid_{false} {}
 
-ParallelGroup::ParallelGroup(MPI_Group group) :
-    valid_{true},
-    group_(group) {}
+ParallelGroup::ParallelGroup(MPI_Group group) : valid_{true}, group_(group) {}
 
 void ParallelGroup::print(std::ostream& os) const {
     os << "ParallelGroup()";
@@ -151,7 +148,8 @@ GroupContent* ParallelGroup::range_incl(const std::vector<std::array<int, 3>>& r
     return new ParallelGroup(newGroup);
 }
 
-std::vector<int> ParallelGroup::translate_ranks_native(const std::vector<int>& ranks, const ParallelGroup& other) const {
+std::vector<int> ParallelGroup::translate_ranks_native(const std::vector<int>& ranks,
+                                                       const ParallelGroup& other) const {
     std::vector<int> newVector(ranks.size());
     MPI_CALL(MPI_Group_translate_ranks(group_, ranks.size(), ranks.data(), other.group_, newVector.data()));
     return newVector;
@@ -161,7 +159,8 @@ std::vector<int> ParallelGroup::translate_ranks_native(const std::vector<int>& r
     return translate_ranks_native(ranks, dynamic_cast<const ParallelGroup&>(other));
 }
 
-std::unordered_map<int, int> ParallelGroup::translate_ranks(const std::vector<int>& ranks, const GroupContent& other) const {
+std::unordered_map<int, int> ParallelGroup::translate_ranks(const std::vector<int>& ranks,
+                                                            const GroupContent& other) const {
     std::unordered_map<int, int> map;
     std::vector<int> translated = translate_ranks_native(ranks, other);
 

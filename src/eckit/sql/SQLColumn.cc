@@ -17,14 +17,22 @@ using namespace eckit;
 
 namespace eckit::sql {
 
-SQLColumn::SQLColumn(const type::SQLType& type,
-                     SQLTable& owner,
-                     const std::string& name,
-                     size_t index,
-                     bool hasMissingValue,
-                     double missingValue,
-                     const BitfieldDef& bitfieldDef) :
-    SQLIterator(type), noRows_(0), owner_(owner), name_(name), index_(index), current_(0), last_(0), position_(0), iterator_(0), hasMissingValue_(hasMissingValue), missingValue_(missingValue), isBitfield_(true), bitfieldDef_(bitfieldDef), sizeDoubles_(type.size() / 8) {
+SQLColumn::SQLColumn(const type::SQLType& type, SQLTable& owner, const std::string& name, size_t index,
+                     bool hasMissingValue, double missingValue, const BitfieldDef& bitfieldDef) :
+    SQLIterator(type),
+    noRows_(0),
+    owner_(owner),
+    name_(name),
+    index_(index),
+    current_(0),
+    last_(0),
+    position_(0),
+    iterator_(0),
+    hasMissingValue_(hasMissingValue),
+    missingValue_(missingValue),
+    isBitfield_(true),
+    bitfieldDef_(bitfieldDef),
+    sizeDoubles_(type.size() / 8) {
     ASSERT(type.size() % 8 == 0);
 }
 

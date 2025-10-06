@@ -22,6 +22,7 @@ class Buffer;
 class LZ4Compressor : public eckit::Compressor {
 
 public:  // methods
+
     LZ4Compressor();
 
     ~LZ4Compressor() override;

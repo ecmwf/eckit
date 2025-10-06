@@ -21,11 +21,13 @@ namespace eckit::net {
 
 class Port {
 public:
+
     Port(const std::string&, int);
 
     operator int() const { return port_; }
 
 private:
+
     int port_;
 };
 

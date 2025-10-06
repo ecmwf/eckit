@@ -24,6 +24,7 @@ namespace eckit::option {
 template <class T>
 class VectorOption : public BaseOption<std::vector<T>> {
 public:
+
     using base_t = BaseOption<std::vector<T>>;
     using args_t = Option::args_t;
     // -- Exceptions
@@ -58,6 +59,7 @@ public:
     // None
 
 protected:
+
     // -- Members
 
     // -- Methods
@@ -74,6 +76,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     VectorOption(const VectorOption&);

@@ -27,10 +27,12 @@ namespace eckit {
 
 struct Grids {
 public:
+
     static char lookUp(const Grid& g);
     static const Grid& lookUp(char c);
 
 private:
+
     typedef std::map<char, Grid, std::less<char> > CharGridTable;
     typedef std::map<Grid, char, std::less<Grid> > GridCharTable;
 
@@ -215,8 +217,7 @@ void Grid::load(DumpLoad& a) {
     a.load(eastWest_);
 }
 
-Grid::InvalidGrid::InvalidGrid(const std::string& s) :
-    Exception("Invalid Mars Grid '" + s + "'") {}
+Grid::InvalidGrid::InvalidGrid(const std::string& s) : Exception("Invalid Mars Grid '" + s + "'") {}
 
 //----------------------------------------------------------------------------------------------------------------------
 

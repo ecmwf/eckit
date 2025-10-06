@@ -18,8 +18,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Monitorable::Monitorable() :
-    ClassExtent<Monitorable>(this) {}
+Monitorable::Monitorable() : ClassExtent<Monitorable>(this) {}
 
 Monitorable::~Monitorable() {}
 

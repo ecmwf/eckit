@@ -35,15 +35,21 @@ const char* defaultHashType = "xxh64";
 
 class HashTool : public eckit::Tool {
 public:
-    HashTool(int argc, char** argv) :
-        Tool(argc, argv) {
-        options_.push_back(new eckit::option::SimpleOption<std::string>("type", "hash type, default=" + std::string(defaultHashType)));
-        options_.push_back(new eckit::option::SimpleOption<bool>("quiet", "silent mode with less output, only errors on check, default false"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("continue", "continues on failed comparisons, default true"));
+
+    HashTool(int argc, char** argv) : Tool(argc, argv) {
+        options_.push_back(
+            new eckit::option::SimpleOption<std::string>("type", "hash type, default=" + std::string(defaultHashType)));
+        options_.push_back(new eckit::option::SimpleOption<bool>(
+            "quiet", "silent mode with less output, only errors on check, default false"));
+        options_.push_back(
+            new eckit::option::SimpleOption<bool>("continue", "continues on failed comparisons, default true"));
         options_.push_back(new eckit::option::SimpleOption<bool>("recurse", "recurse into sub-dirs, default true"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("check", "compare hash of all files found, default true"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("generate", "generate a hash for all files found, default false"));
-        options_.push_back(new eckit::option::SimpleOption<bool>("clean", "cleans hash files for original files that no longer exist, default false"));
+        options_.push_back(
+            new eckit::option::SimpleOption<bool>("check", "compare hash of all files found, default true"));
+        options_.push_back(
+            new eckit::option::SimpleOption<bool>("generate", "generate a hash for all files found, default false"));
+        options_.push_back(new eckit::option::SimpleOption<bool>(
+            "clean", "cleans hash files for original files that no longer exist, default false"));
     }
 
     virtual void run();

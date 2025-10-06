@@ -19,16 +19,17 @@ namespace eckit {
 
 class Isa {
 public:
+
     Isa* next_;
     TypeInfo* type_;
-    Isa(TypeInfo* t, Isa* n) :
-        next_(n), type_(t) {}
+    Isa(TypeInfo* t, Isa* n) : next_(n), type_(t) {}
     static void add(TypeInfo* t, const std::string&);
     static Isa* get(const std::string&);
 };
 
 class Schema {
 public:
+
     virtual ~Schema() {}
     virtual void start(const std::string&, size_t size)                                          = 0;
     virtual void member(const std::string&, size_t size, size_t offset, const std::string& type) = 0;

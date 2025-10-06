@@ -17,8 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-JSONResource::JSONResource(const std::string& name) :
-    HttpResource(name) {}
+JSONResource::JSONResource(const std::string& name) : HttpResource(name) {}
 
 JSONResource::~JSONResource() {}
 

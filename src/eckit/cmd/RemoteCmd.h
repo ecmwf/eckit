@@ -25,6 +25,7 @@ namespace eckit {
 
 class RemoteCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     RemoteCmd();
@@ -34,6 +35,7 @@ public:
     ~RemoteCmd();
 
 private:
+
     // No copy allowed
 
     RemoteCmd(const RemoteCmd&);

@@ -18,8 +18,7 @@
 
 namespace eckit {
 
-ResizableMemoryStream::ResizableMemoryStream(Buffer& buffer) :
-    buffer_(buffer), position_(0) {}
+ResizableMemoryStream::ResizableMemoryStream(Buffer& buffer) : buffer_(buffer), position_(0) {}
 
 ResizableMemoryStream::~ResizableMemoryStream() {}
 

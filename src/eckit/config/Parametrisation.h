@@ -25,6 +25,7 @@ namespace eckit {
 class Parametrisation {
 
 public:  // methods
+
     /// Destructor redundant but fixes sanity compiler warnings
     virtual ~Parametrisation();
 

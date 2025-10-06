@@ -34,9 +34,11 @@ class Option;
 class CmdArgs : public LocalConfiguration, private NonCopyable {
 
 public:  // types
+
     typedef void (*usage_proc)(const std::string& name);
 
 public:  // methods
+
     CmdArgs(usage_proc usage, int args_count = -1, int minimum_args = 0, bool throw_on_error = false);
 
     /// Initialise argument parser with a list of options
@@ -73,11 +75,13 @@ public:  // methods
     std::vector<std::string>::iterator end() { return args_.end(); }
 
 private:  // methods
+
     void init(std::function<void(const std::string&)> usage, int args_count, int minumum_args, bool throw_on_errror);
 
     void print(std::ostream&) const override;
 
 private:  // members
+
     std::set<std::string> keys_;
     std::vector<std::string> args_;
     std::vector<Option*> options_;

@@ -73,10 +73,9 @@ double Sphere::centralAngle(const Point2& Alonlat, const Point2& Blonlat, bool n
     const double cos_lambda = std::cos(lambda);
     const double sin_lambda = std::sin(lambda);
 
-    const double angle = std::atan2(std::sqrt(squared(cos_phi2 * sin_lambda)
-                                              + squared(cos_phi1 * sin_phi2
-                                                        - sin_phi1 * cos_phi2 * cos_lambda)),
-                                    sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
+    const double angle = std::atan2(
+        std::sqrt(squared(cos_phi2 * sin_lambda) + squared(cos_phi1 * sin_phi2 - sin_phi1 * cos_phi2 * cos_lambda)),
+        sin_phi1 * sin_phi2 + cos_phi1 * cos_phi2 * cos_lambda);
 
     if (types::is_approximately_equal(angle, 0.)) {
         return 0.;
@@ -156,8 +155,8 @@ void Sphere::greatCircleLongitudeGivenLatitude(const Point2& Alonlat, const Poin
     Clon2 = lon.size() > 1 ? lon[1] : std::numeric_limits<double>::signaling_NaN();
 }
 
-void Sphere::convertSphericalToCartesian(
-    const double& radius, const Point2& Alonlat, Point3& B, double height, bool normalise_angle) {
+void Sphere::convertSphericalToCartesian(const double& radius, const Point2& Alonlat, Point3& B, double height,
+                                         bool normalise_angle) {
     ASSERT(radius > 0.);
 
     /*

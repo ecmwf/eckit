@@ -31,27 +31,29 @@ namespace eckit {
 
 class CountedBuffer : public eckit::Buffer, public eckit::Counted {
 public:  // methods
-    CountedBuffer(size_t size) :
-        Buffer(size) {}
+
+    CountedBuffer(size_t size) : Buffer(size) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SharedBuffer {
 public:  // methods
+
     SharedBuffer(size_t size);
 
     SharedBuffer(CountedBuffer* b);
 
     ~SharedBuffer() { buffer_->detach(); }
 
-    SharedBuffer(const SharedBuffer& s) :
-        buffer_(s.buffer_) { buffer_->attach(); }
+    SharedBuffer(const SharedBuffer& s) : buffer_(s.buffer_) { buffer_->attach(); }
 
     SharedBuffer& operator=(const SharedBuffer& s) {
-        buffer_->detach();
-        buffer_ = s.buffer_;
-        buffer_->attach();
+        if (&s != this) {
+            buffer_->detach();
+            buffer_ = s.buffer_;
+            buffer_->attach();
+        }
         return *this;
     }
 
@@ -73,6 +75,7 @@ public:  // methods
     operator Buffer&() { return *buffer_; }
 
 private:  // methods
+
     void print(std::ostream& os) const;
 
     friend std::ostream& operator<<(std::ostream& s, const SharedBuffer& o) {
@@ -80,7 +83,8 @@ private:  // methods
         return s;
     }
 
-private:                     // members
+private:  // members
+
     CountedBuffer* buffer_;  ///< @invariant always a valid pointer
 };
 

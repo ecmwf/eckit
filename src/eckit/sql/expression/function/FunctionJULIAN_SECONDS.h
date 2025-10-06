@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionJULIAN_SECONDS : public FunctionExpression {
 public:
+
     FunctionJULIAN_SECONDS(const std::string&, const expression::Expressions&);
     FunctionJULIAN_SECONDS(const FunctionJULIAN_SECONDS&);
     ~FunctionJULIAN_SECONDS();  // Change to virtual if base class
@@ -30,6 +31,7 @@ public:
     static const char* help() { return "Returns time in Julian calendar expressed in seconds"; }
 
 private:
+
     // No copy allowed
     FunctionJULIAN_SECONDS& operator=(const FunctionJULIAN_SECONDS&);
 

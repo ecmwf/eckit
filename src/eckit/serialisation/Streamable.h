@@ -24,6 +24,7 @@ namespace eckit {
 
 class Streamable : private NonCopyable {
 public:
+
     friend Stream& operator<<(Stream&, const Streamable&);
 
     // -- Contructors
@@ -51,6 +52,7 @@ public:
     // void operator delete(void* p)         { MemoryPool::fastDeallocate(p);     }
 
 protected:
+
     // -- Methods
 
     virtual void encode(Stream&) const;
@@ -58,6 +60,7 @@ protected:
     bool sameClass(const Streamable&) const;
 
 private:
+
     // -- Class members
 
     static ClassSpec classSpec_;

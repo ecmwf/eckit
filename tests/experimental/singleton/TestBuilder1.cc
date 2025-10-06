@@ -14,6 +14,7 @@
 
 class TestBuilder1 : public TestBuilder {
 public:
+
     void build() { std::cout << "building a b1" << std::endl; }
 };
 

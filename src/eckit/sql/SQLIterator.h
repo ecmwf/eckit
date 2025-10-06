@@ -24,12 +24,12 @@ namespace sql {
 // Forward declarations
 class SQLIterator {
 public:
+
     // void* operator new(size_t s) { return eckit::MemoryPool::fastAllocate(s); }
     // void *operator new(size_t s,void *p)  { return p;                          }
     // void operator delete(void* p) { eckit::MemoryPool::fastDeallocate(p); }
 
-    SQLIterator(const type::SQLType& type) :
-        type_(type) {}
+    SQLIterator(const type::SQLType& type) : type_(type) {}
 
     virtual ~SQLIterator() {}
 
@@ -46,11 +46,13 @@ public:
     virtual size_t dataSizeDoubles() const { return 1; }
 
 protected:
+
     std::reference_wrapper<const type::SQLType> type_;
 
     virtual void print(std::ostream&) const = 0;
 
 private:
+
     // No copy allowed
 
     SQLIterator(const SQLIterator&);

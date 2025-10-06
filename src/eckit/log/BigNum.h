@@ -27,15 +27,17 @@ namespace eckit {
 class BigNum : private eckit::NonCopyable {
 
 public:
-    BigNum(long long v) :
-        value_(v) {}
+
+    BigNum(long long v) : value_(v) {}
 
 private:
+
     void print(std::ostream&) const;
 
     static void print(std::ostream&, long long);
 
 private:  // members
+
     long long value_;
 
     friend std::ostream& operator<<(std::ostream& s, const BigNum& p) {

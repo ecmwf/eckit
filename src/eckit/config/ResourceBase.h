@@ -31,6 +31,7 @@ class Url;
 class ResourceBase : private NonCopyable {
 
 public:  // methods
+
     ResourceBase(Configurable* owner, const std::string& str);
 
     virtual ~ResourceBase();
@@ -42,11 +43,13 @@ public:  // methods
     std::string name() const;
 
 protected:  // methods
+
     void init();
 
     virtual bool setFromConfigFile();
 
 private:  // members
+
     Configurable* owner_;
 
     std::string name_;         // In the config file
@@ -56,6 +59,7 @@ private:  // members
     bool inited_;
 
 private:  // methods
+
     virtual void setValue(const std::string&) = 0;
     virtual std::string getValue() const      = 0;
 };

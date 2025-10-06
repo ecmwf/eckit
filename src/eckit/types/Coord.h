@@ -27,6 +27,7 @@ class DumpLoad;
 
 class Coord {
 public:
+
     friend std::ostream& operator<<(std::ostream& s, const Coord& x) {
         x.print(s);
         return s;
@@ -36,10 +37,8 @@ public:
 
     // -- Contructors
 
-    Coord(double l = 0) :
-        value_(l) {}
-    Coord(const Coord& other) :
-        value_(other.value_) {}
+    Coord(double l = 0) : value_(l) {}
+    Coord(const Coord& other) : value_(other.value_) {}
 
 
     // -- Operators
@@ -84,6 +83,7 @@ public:
     double value() { return value_; }
 
 protected:
+
     // -- Members
 
     double value_;
@@ -100,6 +100,7 @@ typedef std::vector<Coord> CoordList;
 
 class Longitude : public Coord {
 public:
+
     // -- Contructors
 
     Longitude(double l = 0);
@@ -111,6 +112,7 @@ public:
 
 class Latitude : public Coord {
 public:
+
     // -- Contructors
 
     Latitude(double l = 0);

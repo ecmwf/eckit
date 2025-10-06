@@ -26,6 +26,7 @@ class JSON;
 
 class Monitorable : public ClassExtent<Monitorable> {
 public:
+
     Monitorable();
 
     // -- Destructor
@@ -43,11 +44,13 @@ public:
     static void allJSON(JSON&);
 
 protected:
+
     // -- Methods
 
     virtual void print(std::ostream&) const;
 
 private:
+
     friend std::ostream& operator<<(std::ostream& s, const Monitorable& p) {
         p.print(s);
         return s;

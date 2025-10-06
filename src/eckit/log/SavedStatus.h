@@ -26,6 +26,7 @@ class SavedStatus {
     std::string status_;
 
 public:
+
     SavedStatus();
     ~SavedStatus();
 };

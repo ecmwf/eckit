@@ -12,15 +12,9 @@
 #include <string>
 
 #include "eckit/io/URLHandle.h"
-
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -50,7 +44,7 @@ CASE("Get URL 301 and follow Location redirect") {
 CASE("Get URL small file 41 bytes") {
     PathName out("/tmp/t.grib.md5");
     {
-        URLHandle h("http://get.ecmwf.int/test-data/eckit/tests/io/t.grib.md5");
+        URLHandle h("http://sites.ecmwf.int/repository/eckit/tests/io/t.grib.md5");
         h.saveInto(out);
     }
     Log::info() << out << " size " << out.size() << std::endl;
@@ -59,9 +53,9 @@ CASE("Get URL small file 41 bytes") {
 }
 
 CASE("Get URL 800K file") {
-    PathName out("/tmp/t.grib.md5");
+    PathName out("/tmp/single-field.grib");
     {
-        URLHandle h("http://get.ecmwf.int/test-data/multio/tests/server/single-field.grib");
+        URLHandle h("http://sites.ecmwf.int/repository/eckit/tests/io/single-field.grib");
         h.saveInto(out);
     }
     Log::info() << out << " size " << out.size() << std::endl;
@@ -71,11 +65,11 @@ CASE("Get URL 800K file") {
 
 CASE("Handle URLException 404") {
     PathName out("/tmp/foobar");
-    URLHandle h("http://get.ecmwf.int/test-data/eckit/tests/io/foobar");
+    URLHandle h("http://sites.ecmwf.int/repository/eckit/tests/io/foobar");
     try {
         h.saveInto(out);
     }
-    catch (eckit::URLException& e) {
+    catch (URLException& e) {
         EXPECT(e.code() == 404);
     }
 }
@@ -83,20 +77,17 @@ CASE("Handle URLException 404") {
 CASE("No use of SSL") {
     bool useSSL = false;
     PathName out("/tmp/foobar");
-    URLHandle h("https://get.ecmwf.int/atlas/grids/orca/v0/ORCA2_T.atlas", useSSL);
-    {
-        h.saveInto(out);
-    }
+    URLHandle h("https://sites.ecmwf.int/repository/eckit/geo/grid/icon/ICON_56_R02B05.icon.ek", useSSL);
+    { h.saveInto(out); }
     Log::info() << out << " size " << out.size() << std::endl;
-    EXPECT(out.size() == Length(102309));
+    EXPECT(out.size() == Length(43943));
     out.unlink();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

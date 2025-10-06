@@ -26,15 +26,18 @@ class ThreadPool;
 
 class ThreadPoolTask {
 public:
+
     virtual ~ThreadPoolTask();
     virtual void execute() = 0;
 
     friend class ThreadPoolThread;
 
 protected:
+
     ThreadPool& pool() { return *pool_; }
 
 private:
+
     ThreadPool* pool_;
 };
 
@@ -43,6 +46,7 @@ private:
 class ThreadPool : private NonCopyable {
 
 public:  // methods
+
     ThreadPool(const std::string& name, size_t count, size_t stack = 0);
 
     ~ThreadPool();
@@ -64,6 +68,7 @@ public:  // methods
     void endTask();
 
 private:  // members
+
     MutexCond ready_;
     MutexCond done_;
     MutexCond active_;

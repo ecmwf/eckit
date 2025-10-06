@@ -32,6 +32,7 @@ class TCPSocket;
 class Select : private NonCopyable {
 
 public:
+
     // -- Contructors
 
     Select();
@@ -56,6 +57,7 @@ public:
     bool set(int);
 
 private:
+
     // -- Members
 
     fd_set files_;

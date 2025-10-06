@@ -28,19 +28,19 @@ template <class T>
 class AutoLock : private NonCopyable {
 
 public:
+
     // -- Contructors
 
-    AutoLock(T& resource) :
-        resource_(resource) { resource_.lock(); }
+    AutoLock(T& resource) : resource_(resource) { resource_.lock(); }
 
-    AutoLock(T* resource) :
-        resource_(*resource) { resource_.lock(); }
+    AutoLock(T* resource) : resource_(*resource) { resource_.lock(); }
 
     // -- Destructor
 
     ~AutoLock() { resource_.unlock(); }
 
 private:  // members
+
     T& resource_;
 };
 
@@ -49,18 +49,18 @@ private:  // members
 template <class T>
 class AutoSharedLock : private NonCopyable {
 public:
+
     // -- Contructors
 
-    AutoSharedLock(T& resource) :
-        resource_(resource) { resource_.lockShared(); }
-    AutoSharedLock(T* resource) :
-        resource_(*resource) { resource_.lockShared(); }
+    AutoSharedLock(T& resource) : resource_(resource) { resource_.lockShared(); }
+    AutoSharedLock(T* resource) : resource_(*resource) { resource_.lockShared(); }
 
     // -- Destructor
 
     ~AutoSharedLock() { resource_.unlock(); }
 
 private:  // members
+
     T& resource_;
 };
 
@@ -69,10 +69,10 @@ private:  // members
 template <class T>
 class TimedAutoLock : private NonCopyable {
 public:
+
     // -- Constructors
 
-    TimedAutoLock(T& resource, const std::string& message) :
-        resource_(resource), timer_(message + " (release)") {
+    TimedAutoLock(T& resource, const std::string& message) : resource_(resource), timer_(message + " (release)") {
         resource_.lock();
         timer_.report(message + " (acquire)");
     }
@@ -82,6 +82,7 @@ public:
     ~TimedAutoLock() { resource_.unlock(); }
 
 private:  // members
+
     T& resource_;
     Timer timer_;
 };
@@ -91,10 +92,10 @@ private:  // members
 template <class T, class U>
 class TraceAutoLock : private NonCopyable {
 public:
+
     // -- Constructors
 
-    TraceAutoLock(T& resource, const std::string& message) :
-        resource_(resource), timer_(message + " (release)") {
+    TraceAutoLock(T& resource, const std::string& message) : resource_(resource), timer_(message + " (release)") {
         resource_.lock();
         timer_.report(message + " (acquire)");
     }
@@ -104,6 +105,7 @@ public:
     ~TraceAutoLock() { resource_.unlock(); }
 
 private:  // members
+
     T& resource_;
     TraceTimer<U> timer_;
 };

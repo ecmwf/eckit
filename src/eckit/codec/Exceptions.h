@@ -23,6 +23,7 @@ namespace eckit::codec {
 
 class Exception : public eckit::Exception {
 public:
+
     using eckit::Exception::Exception;
     ~Exception() override;
 };
@@ -31,6 +32,7 @@ public:
 
 class NotEncodable : Exception {
 public:
+
     NotEncodable(const std::string& type_name);
 
     template <typename T>
@@ -43,6 +45,7 @@ public:
 
 class NotDecodable : public Exception {
 public:
+
     NotDecodable(const std::string& type_name);
 
     template <typename T>
@@ -55,6 +58,7 @@ public:
 
 class InvalidRecord : public Exception {
 public:
+
     InvalidRecord(const std::string& message) : Exception("eckit::codec::InvalidRecord: " + message) {}
 
     ~InvalidRecord() override;
@@ -64,6 +68,7 @@ public:
 
 class DataCorruption : public Exception {
 public:
+
     DataCorruption(const std::string& message) : Exception("eckit::codec::DataCorruption: " + message) {}
 
     ~DataCorruption() override;
@@ -73,6 +78,7 @@ public:
 
 class WriteError : public Exception {
 public:
+
     WriteError(const std::string& message) : Exception("eckit::codec::WriteError: " + message) {}
 
     ~WriteError() override;

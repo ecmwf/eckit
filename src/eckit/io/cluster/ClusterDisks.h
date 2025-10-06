@@ -31,6 +31,7 @@ class JSON;
 
 class ClusterDisks {
 public:
+
     static void reset();
     static void cleanup();
 

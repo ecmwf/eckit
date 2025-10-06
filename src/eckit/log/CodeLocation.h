@@ -23,18 +23,17 @@ namespace eckit {
 class CodeLocation {
 
 public:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const CodeLocation& loc) {
         loc.print(s);
         return s;
     }
 
     /// Empty contructor
-    CodeLocation() :
-        line_(0), file_(nullptr), func_(nullptr) {}
+    CodeLocation() : line_(0), file_(nullptr), func_(nullptr) {}
 
     /// Full Contructor
-    CodeLocation(const char* file, int line, const char* func) :
-        line_(line), file_(file), func_(func) {}
+    CodeLocation(const char* file, int line, const char* func) : line_(line), file_(file), func_(func) {}
 
     /// @return as std::string
     std::string asString() const;
@@ -53,11 +52,13 @@ public:  // methods
     const char* func() const { return func_; }
 
 private:  // members
+
     int line_;
     const char* file_;
     const char* func_;
 
 protected:  // methods
+
     void print(std::ostream&) const;
 };
 

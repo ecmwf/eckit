@@ -62,8 +62,7 @@ void benchmark_densemap_int_string(const std::string& tname) {
                 ASSERT(it->second == "foo" + itos(idx));
             }
             else {
-                std::cout << "failed: " << idx << " " << std::string("foo") << itos(idx)
-                          << std::endl;
+                std::cout << "failed: " << idx << " " << std::string("foo") << itos(idx) << std::endl;
             }
         }
     }
@@ -95,8 +94,7 @@ void benchmark_stdmap_int_string(const std::string& tname) {
                 ASSERT(it->second == "foo" + itos(idx));
             }
             else {
-                std::cout << "failed: " << idx << " " << std::string("foo") << itos(idx)
-                          << std::endl;
+                std::cout << "failed: " << idx << " " << std::string("foo") << itos(idx) << std::endl;
             }
         }
     }

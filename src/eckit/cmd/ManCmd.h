@@ -25,6 +25,7 @@ namespace eckit {
 
 class ManCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     ManCmd();
@@ -34,6 +35,7 @@ public:
     ~ManCmd();
 
 private:
+
     // No copy allowed
 
     ManCmd(const ManCmd&);

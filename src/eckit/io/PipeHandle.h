@@ -24,6 +24,7 @@ namespace eckit {
 
 class PipeHandle : public DataHandle {
 public:
+
     // -- Contructors
 
     PipeHandle(const std::string&);
@@ -72,6 +73,7 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     // -- Members
 
     std::string name_;

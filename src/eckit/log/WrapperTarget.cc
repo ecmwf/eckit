@@ -17,8 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-WrapperTarget::WrapperTarget(LogTarget* target) :
-    target_(target), prefix_(true) {
+WrapperTarget::WrapperTarget(LogTarget* target) : target_(target), prefix_(true) {
 
     if (!target_) {
         target_ = new OStreamTarget(std::cout);

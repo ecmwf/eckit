@@ -29,6 +29,7 @@ namespace eckit {
 
 class MutexCond : private NonCopyable {
 public:
+
     // -- Contructors
 
     MutexCond(char tag = ' ');
@@ -48,6 +49,7 @@ public:
     char tag() const { return tag_; }
 
 private:
+
     // -- Members
 
     pthread_mutex_t mutex_;

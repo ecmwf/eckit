@@ -18,8 +18,7 @@
 namespace eckit {
 
 
-FileResource::FileResource() :
-    HtmlResource("/files") {}
+FileResource::FileResource() : HtmlResource("/files") {}
 
 FileResource::~FileResource() {}
 

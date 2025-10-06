@@ -24,8 +24,7 @@ namespace eckit {
 
 template <class Traits, class NodeType>
 template <class V>
-SPNode<Traits, NodeType>::SPNode(const V& value) :
-    value_(value), left_(0), right_(0), next_(0) {}
+SPNode<Traits, NodeType>::SPNode(const V& value) : value_(value), left_(0), right_(0), next_(0) {}
 
 template <class Traits, class NodeType>
 SPNodeInfo<Traits, NodeType> SPNode<Traits, NodeType>::nearestNeighbour(Alloc& a, const Point& p) {

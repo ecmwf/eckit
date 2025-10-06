@@ -19,6 +19,7 @@ namespace eckit {
 template <class Traits>
 class KDNode : public SPNode<Traits, KDNode<Traits> > {
 public:
+
     typedef SPNode<Traits, KDNode<Traits> >
         SPNodeType;  // cannot redefine as SPNode since some compilers in-class redefinitions
 
@@ -33,9 +34,11 @@ public:
     typedef KDNode<Traits> Node;
 
 private:
+
     size_t axis_;
 
 public:
+
     KDNode(const Value& value, size_t axis);
     ~KDNode() {}
 
@@ -48,6 +51,7 @@ public:
     size_t axis() const { return axis_; }
 
 public:
+
     void nearestNeighbourX(Alloc& a, const Point& p, Node*& best, double& max, int depth);
     void findInSphereX(Alloc& a, const Point& p, double radius, NodeList& result, int depth);
     void kNearestNeighboursX(Alloc& a, const Point& p, size_t k, NodeQueue& result, int depth);

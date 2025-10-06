@@ -25,11 +25,13 @@ namespace eckit::codec {
 
 class JSONFormat {
 public:
+
     JSONFormat(const Record::URI& record, const Configuration&);
 
     void print(std::ostream&) const;
 
 private:
+
     const Record record_;
     std::map<std::string, Metadata> items_;
 

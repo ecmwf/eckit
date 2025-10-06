@@ -23,8 +23,8 @@ namespace eckit {
 
 class BadBoolConversion : public Exception {
 public:
-    BadBoolConversion(const std::string& w) :
-        Exception(std::string("Bad Bool Conversion: ") + w) {}
+
+    BadBoolConversion(const std::string& w) : Exception(std::string("Bad Bool Conversion: ") + w) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -35,11 +35,9 @@ ClassSpec NumberContent::classSpec_ = {
 };
 Reanimator<NumberContent> NumberContent::reanimator_;
 
-NumberContent::NumberContent(long long l) :
-    value_(l) {}
+NumberContent::NumberContent(long long l) : value_(l) {}
 
-NumberContent::NumberContent(Stream& s) :
-    Content(s), value_(0) {
+NumberContent::NumberContent(Stream& s) : Content(s), value_(0) {
     s >> value_;
 }
 

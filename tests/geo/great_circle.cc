@@ -33,8 +33,8 @@ CASE("great circle intersections") {
     using types::is_approximately_equal;
     using types::is_approximately_greater_or_equal;
 
-    auto is_approximately_equal_longitude
-        = [](double lon1, double lon2, double epsilon = std::numeric_limits<double>::epsilon()) -> bool {
+    auto is_approximately_equal_longitude = [](double lon1, double lon2,
+                                               double epsilon = std::numeric_limits<double>::epsilon()) -> bool {
         while (lon2 < lon1) {
             lon2 += 360;
         }
@@ -76,8 +76,8 @@ CASE("great circle intersections") {
 
         auto lons = gc.longitude(mid.lat);
         EXPECT(lons.size() == 2);
-        EXPECT(is_approximately_equal_longitude(lons[0], mid.lon, 0.01)
-               || is_approximately_equal_longitude(lons[1], mid.lon, 0.01));
+        EXPECT(is_approximately_equal_longitude(lons[0], mid.lon, 0.01) ||
+               is_approximately_equal_longitude(lons[1], mid.lon, 0.01));
     }
 
     SECTION("mal-formed great circle") {
@@ -111,17 +111,17 @@ CASE("great circle intersections") {
 
                     auto lon_at_equator = gc.longitude(0);
                     EXPECT(lon_at_equator.size() == 2);
-                    EXPECT((is_approximately_equal_longitude(lon_gc + 90, lon_at_equator[0])
-                            && is_approximately_equal_longitude(lon_gc - 90, lon_at_equator[1]))
-                           || (is_approximately_equal_longitude(lon_gc - 90, lon_at_equator[0])
-                               && is_approximately_equal_longitude(lon_gc + 90, lon_at_equator[1])));
+                    EXPECT((is_approximately_equal_longitude(lon_gc + 90, lon_at_equator[0]) &&
+                            is_approximately_equal_longitude(lon_gc - 90, lon_at_equator[1])) ||
+                           (is_approximately_equal_longitude(lon_gc - 90, lon_at_equator[0]) &&
+                            is_approximately_equal_longitude(lon_gc + 90, lon_at_equator[1])));
 
                     auto lon_extrema1 = gc.longitude(lat_gc);
                     EXPECT(lon_extrema1.size() == 1 && is_approximately_equal_longitude(lon_extrema1[0], lon_gc, 0.01));
 
                     auto lon_extrema2 = gc.longitude(-lat_gc);
-                    EXPECT(lon_extrema2.size() == 1
-                           && is_approximately_equal_longitude(lon_extrema2[0], lon_gc + 180, 0.01));
+                    EXPECT(lon_extrema2.size() == 1 &&
+                           is_approximately_equal_longitude(lon_extrema2[0], lon_gc + 180, 0.01));
                 }
             }
         }
@@ -144,8 +144,8 @@ CASE("great circle intersections") {
                     }
                     else {
                         EXPECT(is_approximately_equal_longitude(lons[0] + 180, lons[1]));
-                        EXPECT(is_approximately_equal_longitude(lons[0], lon)
-                               || is_approximately_equal_longitude(lons[1], lon));
+                        EXPECT(is_approximately_equal_longitude(lons[0], lon) ||
+                               is_approximately_equal_longitude(lons[1], lon));
                     }
                 }
 
@@ -157,8 +157,8 @@ CASE("great circle intersections") {
                     EXPECT(lons.size() == 2);
 
                     EXPECT(is_approximately_equal_longitude(lons[0] + 180, lons[1]));
-                    EXPECT(is_approximately_equal_longitude(lons[0], lon)
-                           || is_approximately_equal_longitude(lons[1], lon));
+                    EXPECT(is_approximately_equal_longitude(lons[0], lon) ||
+                           is_approximately_equal_longitude(lons[1], lon));
                 }
             }
         }

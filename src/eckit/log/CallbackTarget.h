@@ -25,6 +25,7 @@ namespace eckit {
 
 class CallbackTarget : public LineBasedTarget {
 public:
+
     typedef void (*callback_t)(void* ctxt, const char* msg);
 
     CallbackTarget(callback_t callback, void* context = 0);
@@ -32,11 +33,13 @@ public:
     ~CallbackTarget() override;
 
 private:
+
     void line(const char* line) override;
 
     void print(std::ostream& s) const override;
 
 private:
+
     callback_t callback_;
     void* context_;
 };

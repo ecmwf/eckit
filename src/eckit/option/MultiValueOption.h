@@ -18,6 +18,7 @@ namespace eckit::option {
 
 class MultiValueOption : public BaseOption<std::vector<std::string>> {
 public:
+
     using base_t   = BaseOption<std::vector<std::string>>;
     using values_t = std::vector<std::string>;
 
@@ -35,6 +36,7 @@ public:
     void print(std::ostream&) const override;
 
 private:
+
     MultiValueOption(const std::string& name, const std::string& description, size_t n_mandatory_values,
                      size_t n_maximum_values, std::optional<values_t> default_values);
 

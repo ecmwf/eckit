@@ -25,6 +25,7 @@ namespace eckit {
 
 class TimeInterval {
 public:
+
     // -- Exceptions
     // None
 
@@ -46,6 +47,7 @@ public:
     bool empty() const { return begin_ > end_; }
 
 private:
+
     // -- Members
 
     DateTime begin_;

@@ -22,6 +22,7 @@ namespace eckit::net {
 
 class Telnetable {
 public:
+
     // -- Contructors
 
     Telnetable(int port);
@@ -31,6 +32,7 @@ public:
     ~Telnetable();
 
 private:
+
     // No copy allowed
 
     Telnetable(const Telnetable&);

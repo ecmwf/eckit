@@ -28,8 +28,7 @@ static Date makeDate(long year, long month, long day) {
     return Date(year, m);
 }
 
-ClimateDate::ClimateDate(long year, long month, long day) :
-    date_(makeDate(year, month, day)) {}
+ClimateDate::ClimateDate(long year, long month, long day) : date_(makeDate(year, month, day)) {}
 
 ClimateDate::~ClimateDate() {}
 
@@ -46,11 +45,9 @@ static Date makeDate(const std::string& s) {
 
 ClimateDate::ClimateDate() {}
 
-ClimateDate::ClimateDate(const Date& date) :
-    date_(date) {}
+ClimateDate::ClimateDate(const Date& date) : date_(date) {}
 
-ClimateDate::ClimateDate(const std::string& s) :
-    date_(makeDate(s)) {}
+ClimateDate::ClimateDate(const std::string& s) : date_(makeDate(s)) {}
 
 ClimateDate::operator std::string() const {
     std::ostringstream os;

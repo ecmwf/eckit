@@ -26,6 +26,7 @@ namespace eckit {
 class RadosWriteHandle : public eckit::DataHandle {
 
 public:  // methods
+
     RadosWriteHandle(const RadosObject&, const Length& maxObjectSize = 0);
     RadosWriteHandle(const std::string&, const Length& maxObjectSize = 0);
     RadosWriteHandle(Stream&);
@@ -39,6 +40,7 @@ public:  // methods
     std::string title() const;
 
 public:  // methods
+
     Length openForRead() override;
     void openForWrite(const Length&) override;
     void openForAppend(const Length&) override;
@@ -59,6 +61,7 @@ public:  // methods
     const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
+
     RadosObject object_;
 
     Length maxObjectSize_;

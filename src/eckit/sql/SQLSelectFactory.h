@@ -39,6 +39,7 @@ namespace eckit::sql {
 
 class SQLSelectFactory {
 public:
+
     SQLSelectFactory(SQLSession& session);
 
     SQLSelect* create(bool distinct, const expression::Expressions& select_list, const std::string& into,
@@ -58,6 +59,7 @@ public:
     //    static odb::MetaData toODAColumns(odb::sql::SQLSession&, const odb::sql::TableDef&);
 
 private:  // methods
+
     // No copy allowed
     SQLSelectFactory(const SQLSelectFactory&);
     SQLSelectFactory& operator=(const SQLSelectFactory&);
@@ -65,6 +67,7 @@ private:  // methods
     std::string index(const std::string& columnName, const expression::SQLExpression* index);
 
 private:  // members
+
     SQLSession& session_;
 
     // SchemaAnalyzer& analyzer();

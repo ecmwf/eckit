@@ -20,16 +20,16 @@ namespace eckit::mpi {
 
 /// Buffer handles colleciton of vector pieces into a larger vector
 
-template <typename DATA_TYPE>
+template <typename DATA_TYPE, typename Allocator = std::allocator<DATA_TYPE>>
 struct Buffer {
     typedef DATA_TYPE value_type;
-    typedef typename std::vector<DATA_TYPE>::iterator iterator;
+    typedef typename std::vector<DATA_TYPE, Allocator>::iterator iterator;
 
     int cnt;
 
     std::vector<int> counts;
     std::vector<int> displs;
-    std::vector<DATA_TYPE> buffer;
+    std::vector<DATA_TYPE, Allocator> buffer;
 
     Buffer(size_t size) {
         counts.resize(size);

@@ -15,11 +15,12 @@
 #include <algorithm>
 #include <vector>
 
-#include "eckit/geo/Increments.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/types/FloatCompare.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -31,9 +32,29 @@ static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REA
 #undef POSITIVE_REAL
 
 
+bool RegularLL::Increments::operator==(const Increments& other) const {
+    return types::is_approximately_equal(dlon, other.dlon) && types::is_approximately_equal(dlat, other.dlat);
+}
+
+
+static RegularLL::Increments make_increments_from_spec(const Spec& spec) {
+    std::vector<RegularLL::Increments::value_type> grid(2);
+
+    if (spec.get("dlon", grid[0]) && spec.get("dlat", grid[1])) {
+        return {grid[0], grid[1]};
+    }
+
+    if (spec.get("grid", grid) && grid.size() == 2) {
+        return {grid[0], grid[1]};
+    }
+
+    throw exception::SpecError("'grid' = ['dlon', 'dlat'] expected", Here());
+}
+
+
 RegularLL::RegularLL(const Spec& spec) :
     RegularLL(
-        Increments{spec}, area::BoundingBox{spec},
+        make_increments_from_spec(spec), area::BoundingBox{spec},
         [&spec]() -> PointLonLat {
             std::vector<PointLonLat::value_type> v(2);
             if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
@@ -56,10 +77,12 @@ RegularLL::RegularLL(const Increments& inc, Projection* proj) : RegularLL(inc, a
 
 
 RegularLL::RegularLL(const Increments& inc, area::BoundingBox bbox, PointLonLat ref, Projection* proj) :
-    Regular({range::Regular::make_longitude_range(inc.dx, bbox.west, bbox.east, ref.lon),
-             range::Regular::make_latitude_range(-inc.dy, bbox.north, bbox.south, ref.lat)},
+    Regular({range::Regular::make_longitude_range(inc.dlon, bbox.west, bbox.east, ref.lon),
+             range::Regular::make_latitude_range(-inc.dlat, bbox.north, bbox.south, ref.lat)},
             bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
     ASSERT(!empty());
+
+    // TODO reference to modify bounding box
 }
 
 
@@ -77,7 +100,7 @@ Spec* RegularLL::spec(const std::string& name) {
 void RegularLL::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
-    custom.set("grid", std::vector<double>{dx(), -dy()});
+    custom.set("grid", std::vector<double>{dlon(), -dlat()});
 
     boundingBox().fill_spec(custom);
 }
@@ -122,7 +145,7 @@ std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlons() cons
 
 Grid* RegularLL::make_grid_cropped(const Area& crop) const {
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularLL({dx(), dy()}, cropped);
+        return new RegularLL({dlon(), dlat()}, cropped);
     }
 
     throw UserError("RegularLL: cannot crop grid (empty intersection)", Here());

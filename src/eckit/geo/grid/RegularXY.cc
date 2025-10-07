@@ -14,14 +14,34 @@
 
 #include <memory>
 
-#include "eckit/geo/Increments.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Shape.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::grid {
+
+
+bool RegularXY::Increments::operator==(const Increments& other) const {
+    return types::is_approximately_equal(dx, other.dx) && types::is_approximately_equal(dy, other.dy);
+}
+
+
+static RegularXY::Increments make_increments_from_spec(const Spec& spec) {
+    std::vector<RegularXY::Increments::value_type> grid(2);
+
+    if (spec.get("dx", grid[0]) && spec.get("dy", grid[1])) {
+        return {grid[0], grid[1]};
+    }
+
+    if (spec.get("grid", grid) && grid.size() == 2) {
+        return {grid[0], -grid[1]};
+    }
+
+    throw exception::SpecError("'grid' = ['dx', 'dy'] expected", Here());
+}
 
 
 RegularXY::RegularXY(const Spec& spec) :
@@ -29,7 +49,7 @@ RegularXY::RegularXY(const Spec& spec) :
 
 
 Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
-    Increments inc(spec);
+    auto inc = make_increments_from_spec(spec);
     Shape shape(spec);
 
     std::unique_ptr<const Projection> projection(ProjectionFactory::build(spec));

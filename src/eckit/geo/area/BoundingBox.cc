@@ -361,11 +361,7 @@ std::unique_ptr<BoundingBox> BoundingBox::make_global_antiprime() {
 
 void BoundingBox::fill_spec(spec::Custom& custom) const {
     if (!bounding_box_equal(*this, BOUNDING_BOX_DEFAULT)) {
-        // custom.set("type", type());
-        custom.set("north", north);
-        custom.set("west", west);
-        custom.set("south", south);
-        custom.set("east", east);
+        custom.set("area", std::vector<double>{north, west, south, east});
     }
 }
 
@@ -444,9 +440,14 @@ BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*make_from_spec(spec)) 
 
 
 BoundingBox::BoundingBox(value_type n, value_type w, value_type s, value_type e) : array{n, w, s, e} {
+    auto is_approx_ge = [](value_type a, value_type b) { return is_approximately_equal(a, b) || a > b; };
+
     // normalise east in [west, west + 2 pi[
     auto a        = PointLonLat::normalise_angle_to_minimum(e, w);
-    operator[](3) = is_approximately_equal(w, e) ? w : is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
+    operator[](3) = is_approximately_equal(w, e)                   ? w
+                    : is_approximately_equal(w, a)                 ? w + PointLonLat::FULL_ANGLE
+                    : is_approx_ge(e - w, PointLonLat::FULL_ANGLE) ? w + PointLonLat::FULL_ANGLE
+                                                                   : a;
 
     ASSERT(south <= north);
     ASSERT(west <= east);

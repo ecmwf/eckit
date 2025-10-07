@@ -21,6 +21,20 @@ namespace eckit::geo::grid {
 class RegularXY : public Regular {
 public:
 
+    // -- Types
+
+    struct Increments : public std::array<double, 2> {
+        Increments(value_type dx, value_type dy) : array{dx, dy} {}
+
+        using array::array;
+
+        bool operator==(const Increments&) const;
+        bool operator!=(const Increments& other) const { return !operator==(other); }
+
+        const value_type& dx = array::operator[](0);
+        const value_type& dy = array::operator[](1);
+    };
+
     // -- Constructors
 
     RegularXY(Range* x, Range* y, const area::BoundingBox* bbox, const Projection* proj) :

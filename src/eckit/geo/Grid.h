@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/Increments.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Order.h"
 #include "eckit/geo/Point.h"

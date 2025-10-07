@@ -21,6 +21,20 @@ namespace eckit::geo::grid {
 class RegularLL final : public Regular {
 public:
 
+    // -- Types
+
+    struct Increments : public std::array<double, 2> {
+        Increments(value_type dlon, value_type dlat) : array{dlon, dlat} {}
+
+        using array::array;
+
+        bool operator==(const Increments&) const;
+        bool operator!=(const Increments& other) const { return !operator==(other); }
+
+        const value_type& dlon = array::operator[](0);
+        const value_type& dlat = array::operator[](1);
+    };
+
     // -- Constructors
 
     explicit RegularLL(const Spec&);

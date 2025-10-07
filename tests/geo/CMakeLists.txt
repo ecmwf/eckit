@@ -12,7 +12,6 @@ foreach(_test
         grid_regular_ll
         grid_reorder
         grid_to_points
-        increments
         integration
         iterator
         kdtree

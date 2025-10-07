@@ -20,12 +20,9 @@
 #include "eckit/geo/order/Scan.h"
 
 
-namespace eckit::geo {
-class Increments;
-namespace iterator {
+namespace eckit::geo::iterator {
 class Regular;
-}
-}  // namespace eckit::geo
+}  // namespace eckit::geo::iterator
 
 
 namespace eckit::geo::grid {

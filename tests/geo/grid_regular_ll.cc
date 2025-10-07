@@ -49,35 +49,31 @@ CASE("global") {
 
 
     SECTION("2") {
-        std::unique_ptr<Grid> grid(new RegularLL(spec::Custom{{{"grid", std::vector<double>{1, 1}}}}));
+        RegularLL a(spec::Custom{{{"grid", std::vector<double>{1, 1}}}});
 
-        EXPECT(grid->size() == 360 * 181);
-    }
+        EXPECT(a.size() == 360 * 181);
+        EXPECT(a.spec_str() == R"({"grid":[1,1]})");
 
+        RegularLL b(spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
 
-    SECTION("3") {
-        RegularLL grid(
-            spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
+        EXPECT(b.size() == 5 * 10);
+        EXPECT(b.spec_str() == R"({"area":[10,1,1,10],"grid":[2,1]})");
 
-        EXPECT(grid.size() == 5 * 10);
-    }
+        RegularLL c({1., 1.}, {89.5, 0.5, -89.5, 359.5}, {0.5, 0.5});
 
+        EXPECT(c.nlon() == 360);
+        EXPECT(c.nlat() == 180);
+        EXPECT(c.size() == 360 * 180);
 
-    SECTION("4") {
-        RegularLL grid({1., 1.}, {89.5, 0.5, -89.5, 359.5}, {0.5, 0.5});
+        EXPECT(c.spec_str() == R"({"area":[89.5,0.5,-89.5,359.5],"grid":[1,1]})");
 
-        EXPECT(grid.nx() == 360);
-        EXPECT(grid.ny() == 180);
-        EXPECT(grid.size() == 360 * 180);
-    }
+        RegularLL d({1., 1.}, {90., 0., -90, 370.}, {0.5, 0.5});
 
+        EXPECT(d.nlon() == 360);
+        EXPECT(d.nlat() == 180);
+        EXPECT(d.size() == 360 * 180);
 
-    SECTION("5") {
-        RegularLL grid({1., 1.}, {90., 0., -90, 360.}, {0.5, 0.5});
-
-        EXPECT(grid.nx() == 360);
-        EXPECT(grid.ny() == 180);
-        EXPECT(grid.size() == 360 * 180);
+        EXPECT(a.spec_str() == R"({"grid":[1,1]})");
     }
 }
 

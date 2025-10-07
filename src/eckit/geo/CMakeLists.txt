@@ -12,8 +12,6 @@ list(APPEND eckit_geo_srcs
     GreatCircle.h
     Grid.cc
     Grid.h
-    Increments.cc
-    Increments.h
     Iterator.cc
     Iterator.h
     LibEcKitGeo.cc

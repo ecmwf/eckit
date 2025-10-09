@@ -59,6 +59,7 @@ public:
 
     /// Constructors
     explicit Exception(const std::string& what, const CodeLocation& = {});
+    explicit Exception(const std::string& what, const CodeLocation& loc, bool quiet);
     Exception();
 
     Exception(const Exception&) = default;

@@ -172,7 +172,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
         throw ReadError(name() + " into " + other.name());
     }
 
-    if (estimate != 0 && estimate != total) {
+    if (estimate != Length(0) && estimate != total) {
         std::ostringstream os;
         os << "DataHandle::saveInto got " << total << " bytes out of " << estimate;
         throw ReadError(name() + " into " + other.name() + " " + os.str());
@@ -205,7 +205,7 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
     watcher.fromHandleOpened();
     AutoClose closer1(*this);
 
-    Length toRead = ((maxsize != -1) ? std::min(estimate, maxsize) : estimate);
+    Length toRead = ((maxsize != Length(-1)) ? std::min(estimate, maxsize) : estimate);
 
     other.openForWrite(toRead);
     watcher.toHandleOpened();
@@ -229,7 +229,7 @@ Length DataHandle::copyTo(DataHandle& other, long bufsize, Length maxsize, Trans
         throw ReadError(name() + " into " + other.name());
     }
 
-    if (toRead != 0 && toRead != total) {
+    if (toRead != Length(0) && toRead != total) {
         std::ostringstream os;
         os << "DataHandle::copyTo got " << total << " bytes out of " << toRead;
         throw ReadError(name() + " into " + other.name() + " " + os.str());

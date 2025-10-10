@@ -1,17 +1,5 @@
-// #include <cmath>
-
-// Some of the math.h/cmath functions are not clean when switching to C++11
-#if __cplusplus <= 199711L
-#include <cmath>
-#else
-#include <cmath>
-#define fpclassify(x) std::fpclassify((x))
-#define isinf(x) std::isinf((x))
-#define isnan(x) std::isnan((x))
-#define signbit(x) std::signbit((x))
-#endif
-
 #include <sys/types.h>
+#include <cmath>
 #include <limits>
 
 #include "eckit/exception/Exceptions.h"
@@ -22,13 +10,6 @@ namespace eckit::types {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace detail {
-
-// FIXME: The following functions are available in std:: as of C++11:
-// * fpclassify
-// * isinf
-// * isnan
-// * signbit
-// For the moment we have to use the (non namespaced) versions from math.h
 
 template <class T>
 inline T abs(T);
@@ -121,15 +102,15 @@ bool is_approximately_equal(T a, T b, T epsilon, int maxUlpsDiff) {
     }
 
     // NaNs and infinity are always different
-    if (isnan(a) || isnan(b) || isinf(a) || isinf(b)) {
+    if (std::isnan(a) || std::isnan(b) || std::isinf(a) || std::isinf(b)) {
         return false;
     }
 
     // Subnormal numbers are treated as 0
-    if (fpclassify(a) == FP_SUBNORMAL) {
+    if (std::fpclassify(a) == FP_SUBNORMAL) {
         a = 0;
     }
-    if (fpclassify(b) == FP_SUBNORMAL) {
+    if (std::fpclassify(b) == FP_SUBNORMAL) {
         b = 0;
     }
 
@@ -147,7 +128,7 @@ bool is_approximately_equal(T a, T b, T epsilon, int maxUlpsDiff) {
         return (1 + detail::float_distance(detail::abs(a), std::numeric_limits<T>::min())) <= maxUlpsDiff;
     }
 
-    if (signbit(a) == signbit(b)) {
+    if (std::signbit(a) == std::signbit(b)) {
         return detail::float_distance(a, b) <= maxUlpsDiff;
     }
 

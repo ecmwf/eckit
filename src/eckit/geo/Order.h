@@ -62,8 +62,9 @@ public:
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
-    virtual const std::string& type() const = 0;
-    virtual size_t size() const             = 0;
+    virtual void fill_spec(spec::Custom&) const = 0;
+
+    virtual size_t size() const = 0;
 
     virtual const value_type& order() const                = 0;
     virtual Reordering reorder(const value_type& to) const = 0;
@@ -88,10 +89,6 @@ private:
     // -- Members
 
     mutable std::shared_ptr<spec::Custom> spec_;
-
-    // -- Methods
-
-    virtual void fill_spec(spec::Custom&) const = 0;
 
     // -- Friends
 

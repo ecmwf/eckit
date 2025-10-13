@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/range/Regular.h"
@@ -100,7 +101,10 @@ Spec* RegularLL::spec(const std::string& name) {
 void RegularLL::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
-    custom.set("grid", std::vector<double>{dlon(), -dlat()});
+    custom.set("grid", std::vector<double>{std::abs(dlon()), std::abs(dlat())});
+
+    std::unique_ptr<const Order> scan(new order::Scan(order()));
+    scan->fill_spec(custom);
 
     boundingBox().fill_spec(custom);
 }

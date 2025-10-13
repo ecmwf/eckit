@@ -29,11 +29,12 @@ public:
 
     // -- Overriden methods
 
-    const std::string& type() const override { return static_type(); }
     const value_type& order() const override { return order_; }
-
     Reordering reorder(const value_type& to) const override;
+
     size_t size() const override;
+
+    void fill_spec(spec::Custom&) const override;
 
     // -- Methods
 
@@ -51,18 +52,6 @@ private:
     // -- Members
 
     value_type order_;
-
-    // -- Overriden methods
-
-    void fill_spec(spec::Custom&) const override;
-
-    // -- Class members
-
-    static const value_type DEFAULT;
-
-    // -- Class methods
-
-    static const std::string& static_type();
 };
 
 

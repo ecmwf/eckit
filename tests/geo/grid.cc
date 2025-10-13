@@ -41,8 +41,7 @@ CASE("GridFactory::build") {
     SECTION("Grid::build_from_increments (global)") {
         std::unique_ptr<const Grid> global(GridFactory::build(spec::Custom({
             {"type", "regular_ll"},
-            {"west_east_increment", 1},
-            {"south_north_increment", 1},
+            {"grid", std::vector<double>{1, 1}},
         })));
 
         auto size = global->size();
@@ -53,8 +52,7 @@ CASE("GridFactory::build") {
     SECTION("Grid::build_from_increments (non-global)") {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({
             {"type", "regular_ll"},
-            {"west_east_increment", 1},
-            {"south_north_increment", 1},
+            {"grid", std::vector<double>{1, 1}},
             {"north", 10},
             {"west", 1},
             {"south", 1},

@@ -24,12 +24,13 @@
 namespace eckit::geo::order {
 
 
-static OrderRegisterType<HEALPix> ORDERING("healpix");
-
-
 const Order::value_type HEALPix::ring    = "ring";
 const Order::value_type HEALPix::nested  = "nested";
-const Order::value_type HEALPix::DEFAULT = ring;
+
+static const auto DEFAULT = HEALPix::ring;
+
+static OrderRegisterType<HEALPix> ORDERING1(HEALPix::ring);
+static OrderRegisterType<HEALPix> ORDERING2(HEALPix::nested);
 
 
 namespace {
@@ -114,12 +115,6 @@ HEALPix::HEALPix(const value_type& order, size_t size) :
     Npix_(static_cast<int>(size)),
     Ncap_((Nside_ * (Nside_ - 1)) << 1),
     k_(is_power_of_2(Nside_) ? static_cast<int>(std::log2(Nside_)) : -1) {
-    static struct Register {
-        Register() {
-            register_order(static_type(), HEALPix::ring);
-            register_order(static_type(), HEALPix::nested);
-        }
-    } const REGISTER;
 
     if (order_ == ring) {
         return;
@@ -238,12 +233,6 @@ int HEALPix::nest_to_ring(int n) const {
 }
 
 
-const std::string& HEALPix::static_type() {
-    static const std::string type = "healpix";
-    return type;
-}
-
-
 Reordering HEALPix::reorder(const value_type& to) const {
     ASSERT(order_ == nested || order_ == ring);
     ASSERT(to == nested || to == ring);
@@ -271,7 +260,6 @@ Reordering HEALPix::reorder(const value_type& to) const {
 
 void HEALPix::fill_spec(spec::Custom& custom) const {
     if (order_ != order_default()) {
-        custom.set("type", type());
         custom.set("order", order_);
     }
 }

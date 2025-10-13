@@ -22,10 +22,10 @@
 namespace eckit::geo::order {
 
 
-static OrderRegisterType<Scan> ORDERING("scan");
+static const Order::value_type DEFAULT = "i+j+";
 
-
-const Order::value_type Scan::DEFAULT = "i+j-";
+static OrderRegisterType<Scan> ORDERING1("i+j+");
+static OrderRegisterType<Scan> ORDERING2("i+j-");
 
 
 Order::value_type Scan::order_from_arguments(bool i_pos, bool j_pos, bool ij, bool alt) {
@@ -71,17 +71,12 @@ bool Scan::is_scan_alternating(const value_type& o) {
 }
 
 
-const std::string& Scan::static_type() {
-    static const std::string type{"scan"};
-    return type;
-}
-
-
 Reordering Scan::reorder(const value_type& to) const {
     if (to == order_) {
         return no_reorder();
     }
 
+    // TODO
     NOTIMP;
 }
 
@@ -98,7 +93,6 @@ const Order::value_type& Scan::order_default() {
 
 void Scan::fill_spec(spec::Custom& custom) const {
     if (order_ != order_default()) {
-        custom.set("type", type());
         custom.set("order", order_);
     }
 }

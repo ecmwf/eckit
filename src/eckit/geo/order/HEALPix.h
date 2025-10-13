@@ -35,11 +35,12 @@ public:
 
     // -- Overriden methods
 
-    const std::string& type() const override { return static_type(); }
     size_t size() const override { return static_cast<size_t>(12 * Nside_ * Nside_); }
 
     const value_type& order() const override { return order_; }
     Reordering reorder(const value_type& to) const override;
+
+    void fill_spec(spec::Custom&) const override;
 
     // -- Class members
 
@@ -60,18 +61,6 @@ private:
     const int Npix_;
     const int Ncap_;
     const int k_;
-
-    // -- Overridden methods
-
-    void fill_spec(spec::Custom&) const override;
-
-    // -- Class members
-
-    static const value_type DEFAULT;
-
-    // -- Class methods
-
-    static const std::string& static_type();
 };
 
 

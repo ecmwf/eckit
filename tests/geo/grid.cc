@@ -13,9 +13,7 @@
 #include <memory>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
 
 
@@ -47,8 +45,7 @@ CASE("GridFactory::build") {
             {"grid", std::vector<double>{1, 1}},
         })));
 
-        auto size = global->size();
-        EXPECT_EQUAL(size, 360 * 181);
+        EXPECT_EQUAL(global->size(), 360 * 181);
     }
 
 
@@ -62,8 +59,7 @@ CASE("GridFactory::build") {
             {"east", 10},
         })));
 
-        auto size = grid->size();
-        EXPECT_EQUAL(size, 100);
+        EXPECT_EQUAL(grid->size(), 100);
     }
 }
 

@@ -30,10 +30,13 @@ CASE("GridFactory::build") {
         } tests[]{{"O2", 88}, {"f2", 32}, {"h2", 48}};
 
         for (const auto& test : tests) {
-            std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", test.name}})));
+            std::unique_ptr<const Grid> a(GridFactory::build(spec::Custom({{"grid", test.name}})));
 
-            auto size = grid->size();
-            EXPECT_EQUAL(size, test.size);
+            EXPECT_EQUAL(test.size, a->size());
+
+            std::unique_ptr<const Grid> b(GridFactory::make_from_string(test.name));
+
+            EXPECT_EQUAL(test.size, b->size());
         }
     }
 

@@ -176,6 +176,10 @@ Custom::Custom(Custom::container_type&& map) : map_(map) {
 
 
 Custom* Custom::make_from_value(const Value& value) {
+    if (value.isString()) {
+        return new Custom{{"grid", value.as<std::string>()}};
+    }
+
     ASSERT(value.isMap());
 
     auto scalar = [](const Value& value) -> value_type {

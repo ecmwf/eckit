@@ -41,8 +41,7 @@ Unstructured::Unstructured(std::vector<Point>&& points) :
     Unstructured(new container::PointsInstance{std::move(points)}) {}
 
 
-Unstructured::Unstructured(container::PointsContainer* container) :
-    Grid(area::BoundingBox::make_global_prime().release(), nullptr), container_{container} {}
+Unstructured::Unstructured(container::PointsContainer* container) : container_{container} {}
 
 
 size_t Unstructured::size() const {

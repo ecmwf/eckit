@@ -25,12 +25,12 @@
 namespace eckit::geo::test {
 
 
-static const std::string GRID_N = "pi_N";
-static const Grid::uid_t UID_N  = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
-static const size_t SHAPE_N     = 3140;
+static const std::string GRID_N   = "pi_N";
+static const Grid::uid_type UID_N = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
+static const size_t SHAPE_N       = 3140;
 
-static const std::string GRID_C = "pi_C";
-static const Grid::uid_t UID_C  = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
+static const std::string GRID_C   = "pi_C";
+static const Grid::uid_type UID_C = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
 
 
 CASE("caching") {

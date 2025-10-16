@@ -16,8 +16,6 @@ list(APPEND eckit_geo_srcs
     Iterator.h
     LibEcKitGeo.cc
     LibEcKitGeo.h
-    Order.cc
-    Order.h
     Point.cc
     Point.h
     PointLonLat.cc

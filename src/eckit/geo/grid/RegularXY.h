@@ -37,8 +37,7 @@ public:
 
     // -- Constructors
 
-    RegularXY(Range* x, Range* y, const area::BoundingBox* bbox, const Projection* proj) :
-        Regular({x, y}, bbox == nullptr ? area::BoundingBox{} : *bbox, proj) {}
+    RegularXY(Range* x, Range* y, const area::BoundingBox* bbox, const Projection* proj) : Regular(x, y) {}
     explicit RegularXY(const Spec&);
 
     // -- Methods
@@ -56,11 +55,14 @@ public:
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
 
+    // -- Class methods
+
+    static Increments make_increments_from_spec(const Spec&);
+    static PointLonLat make_first_point_from_spec(const Spec&);
+
 protected:
 
     // -- Methods
-
-    [[nodiscard]] static Ranges make_ranges_from_spec(const Spec&);
 
     void fill_spec(spec::Custom&) const override;
 

@@ -42,6 +42,16 @@ Grid::iterator Regular::cend() const {
 }
 
 
+const Regular::order_type& Regular::order() const {
+    return order_.order();
+}
+
+
+Grid::renumber_type Regular::reorder(const order_type& to) const {
+    return order_.reorder(to, nx(), ny());
+}
+
+
 const Range& Regular::x() const {
     ASSERT(x_ && x_->size() > 0);
     return *x_;
@@ -54,11 +64,13 @@ const Range& Regular::y() const {
 }
 
 
-Regular::Regular(const Spec& spec) : Grid(spec), scan_(spec.get_string("order", order::Scan::order_default())) {}
+Regular::Regular(const Spec& spec) : Grid(spec), order_(spec) {
+    ASSERT(x_ && x_->size() > 0);
+    ASSERT(y_ && y_->size() > 0);
+}
 
 
-Regular::Regular(Ranges xy, area::BoundingBox bbox, const Projection* projection) :
-    Grid(new area::BoundingBox(bbox), projection), x_(xy.first), y_(xy.second) {
+Regular::Regular(Range* x, Range* y, const Projection* projection) : x_(x), y_(y) {
     ASSERT(x_ && x_->size() > 0);
     ASSERT(y_ && y_->size() > 0);
 }
@@ -66,16 +78,10 @@ Regular::Regular(Ranges xy, area::BoundingBox bbox, const Projection* projection
 
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
-
-    if (scan_.order() != order::Scan::order_default()) {
-        custom.set("order", scan_.order());
-    }
 }
 
-
-Regular::Ranges::Ranges(Range* x, Range* y) : std::pair<Range*, Range*>(x, y) {
-    ASSERT(first != nullptr);
-    ASSERT(second != nullptr);
+void Regular::order(const order_type& to) {
+    order_.order(to);
 }
 
 

@@ -49,7 +49,7 @@ public:
     // -- Constructors
 
     explicit ICON(const Spec&);
-    explicit ICON(uid_t);
+    explicit ICON(uid_type);
 
     ICON(const std::string& name, Arrangement);
 
@@ -60,7 +60,7 @@ public:
 
     // -- Overridden methods
 
-    uid_t calculate_uid() const override;
+    uid_type calculate_uid() const override;
     const std::string& type() const override;
 
     [[nodiscard]] Point first_point() const override;

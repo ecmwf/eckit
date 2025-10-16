@@ -20,7 +20,6 @@
 
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Iterator.h"
-#include "eckit/geo/Order.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
@@ -46,11 +45,12 @@ public:
 
     // -- Types
 
-    using uid_t     = std::string;
+    using uid_type      = std::string;
+    using order_type    = std::string;
+    using renumber_type = std::vector<size_t>;
+
     using builder_t = BuilderT1<Grid>;
     using ARG1      = const Spec&;
-
-    using order_type = Order::value_type;
 
     struct Iterator final : std::shared_ptr<geo::Iterator> {
         explicit Iterator(geo::Iterator* it) : shared_ptr(it) { ASSERT(shared_ptr::operator bool()); }
@@ -136,8 +136,8 @@ public:
     virtual bool empty() const;
     virtual size_t size() const;
 
-    uid_t uid() const;
-    [[nodiscard]] virtual uid_t calculate_uid() const;
+    uid_type uid() const;
+    [[nodiscard]] virtual uid_type calculate_uid() const;
 
     static bool is_uid(const std::string& uid);
 
@@ -151,10 +151,10 @@ public:
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
     virtual const order_type& order() const;
-    virtual Reordering reorder(const order_type&) const;
+    virtual renumber_type reorder(const order_type&) const;
 
     virtual const Area& area() const;
-    virtual Reordering crop(const Area&) const;
+    virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
 
@@ -173,13 +173,13 @@ protected:
     // -- Constructors
 
     explicit Grid(const Spec&);
-    explicit Grid(const area::BoundingBox*, const Projection*);
+    explicit Grid(Projection* = nullptr);
 
     // -- Methods
 
     virtual void fill_spec(spec::Custom&) const;
 
-    void reset_uid(uid_t = {});
+    void reset_uid(uid_type = {});
 
     void area(Area* ptr) { area_.reset(ptr); }
     void projection(Projection* ptr) { projection_.reset(ptr); }
@@ -192,7 +192,7 @@ private:
     mutable std::unique_ptr<const area::BoundingBox> bbox_;
     mutable std::unique_ptr<const Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;
-    mutable uid_t uid_;
+    mutable uid_type uid_;
 
     // -- Friends
 

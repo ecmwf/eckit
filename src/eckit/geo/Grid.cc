@@ -48,11 +48,13 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
+Grid::Grid(const Spec& spec) :
+    bbox_(area::BoundingBox::make_from_spec(spec)), projection_(ProjectionFactory::build(spec)) {}
 
 
-Grid::Grid(const area::BoundingBox* bbox, const Projection* projection) :
-    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime().release() : bbox), projection_(projection) {}
+Grid::Grid(Projection* proj) : projection_(proj == nullptr ? new projection::None : proj) {
+    bbox_.reset(area::BoundingBox::make_global_prime().release());
+}
 
 
 const Spec& Grid::spec() const {
@@ -84,7 +86,7 @@ bool Grid::is_uid(const std::string& str) {
 }
 
 
-Grid::uid_t Grid::uid() const {
+Grid::uid_type Grid::uid() const {
     if (uid_.empty()) {
         const_cast<Grid*>(this)->reset_uid(calculate_uid());
     }
@@ -93,7 +95,7 @@ Grid::uid_t Grid::uid() const {
 }
 
 
-Grid::uid_t Grid::calculate_uid() const {
+Grid::uid_type Grid::calculate_uid() const {
     auto id = MD5{spec_str()}.digest();
     std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
 
@@ -102,7 +104,7 @@ Grid::uid_t Grid::calculate_uid() const {
 }
 
 
-void Grid::reset_uid(uid_t id) {
+void Grid::reset_uid(uid_type id) {
     if (id.empty()) {
         uid_.clear();
         return;
@@ -167,7 +169,7 @@ const Grid::order_type& Grid::order() const {
 }
 
 
-Reordering Grid::reorder(const order_type&) const {
+Grid::renumber_type Grid::reorder(const order_type&) const {
     NOTIMP;
 }
 
@@ -187,7 +189,7 @@ const Area& Grid::area() const {
 }
 
 
-Reordering Grid::crop(const Area&) const {
+Grid::renumber_type Grid::crop(const Area&) const {
     NOTIMP;
 }
 

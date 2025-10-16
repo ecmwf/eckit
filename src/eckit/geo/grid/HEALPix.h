@@ -28,7 +28,7 @@ public:
     // -- Constructors
 
     explicit HEALPix(const Spec&);
-    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default());
+    explicit HEALPix(size_t Nside, order_type = {});
 
     // -- Methods
 
@@ -47,7 +47,7 @@ public:
     [[nodiscard]] std::vector<Point> to_points() const override;
 
     const order_type& order() const override { return healpix_.order(); }
-    Reordering reorder(const order_type& to) const override { return healpix_.reorder(to); }
+    renumber_type reorder(const order_type& to) const override { return healpix_.reorder(to, Nside_); }
 
     [[nodiscard]] Grid* make_grid_reordered(const order_type& order) const override {
         return new HEALPix(Nside_, order);

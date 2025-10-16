@@ -38,7 +38,7 @@ bool RegularLL::Increments::operator==(const Increments& other) const {
 }
 
 
-static RegularLL::Increments make_increments_from_spec(const Spec& spec) {
+RegularLL::Increments RegularLL::make_increments_from_spec(const Spec& spec) {
     std::vector<RegularLL::Increments::value_type> grid(2);
 
     if (spec.get("dlon", grid[0]) && spec.get("dlat", grid[1])) {
@@ -78,11 +78,14 @@ RegularLL::RegularLL(const Increments& inc, Projection* proj) : RegularLL(inc, a
 
 
 RegularLL::RegularLL(const Increments& inc, area::BoundingBox bbox, PointLonLat ref, Projection* proj) :
-    Regular({range::Regular::make_longitude_range(inc.dlon, bbox.west, bbox.east, ref.lon),
-             range::Regular::make_latitude_range(-inc.dlat, bbox.north, bbox.south, ref.lat)},
-            bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
+    Regular(range::Regular::make_longitude_range(inc.dlon, bbox.west, bbox.east, ref.lon),
+            range::Regular::make_latitude_range(-inc.dlat, bbox.north, bbox.south, ref.lat)) {
     ASSERT(!empty());
 
+    order(order_type{std::string{x().increment() < 0 ? "i-" : "i+"} +  //
+                     std::string{y().increment() < 0 ? "j-" : "j+"}});
+
+    std::cout << std::endl;
     // TODO reference to modify bounding box
 }
 
@@ -103,8 +106,9 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 
     custom.set("grid", std::vector<double>{std::abs(dlon()), std::abs(dlat())});
 
-    std::unique_ptr<const Order> scan(new order::Scan(order()));
-    scan->fill_spec(custom);
+    if (auto o = order(); o != order::Scan::order_default()) {
+        custom.set("order", o);
+    }
 
     boundingBox().fill_spec(custom);
 }

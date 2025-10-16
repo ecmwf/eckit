@@ -40,7 +40,7 @@ public:
         void read(const PathName&);
         void check(const Spec&) const;
         size_t write(const PathName&, const std::string& compression = "none");
-        uid_t calculate_uid(Arrangement) const;
+        uid_type calculate_uid(Arrangement) const;
 
         using bytes_t = decltype(sizeof(int));
         bytes_t footprint() const;
@@ -60,7 +60,7 @@ public:
     // -- Constructors
 
     explicit ORCA(const Spec&);
-    explicit ORCA(uid_t);
+    explicit ORCA(uid_type);
 
     ORCA(const std::string& name, Arrangement);
 
@@ -79,7 +79,7 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    uid_t calculate_uid() const override;
+    uid_type calculate_uid() const override;
     const std::string& type() const override;
 
     bool includesNorthPole() const override { return true; }
@@ -92,7 +92,7 @@ public:
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     const order_type& order() const override;
-    Reordering reorder(const order_type& to) const override;
+    renumber_type reorder(const order_type& to) const override;
 
     // -- Class methods
 

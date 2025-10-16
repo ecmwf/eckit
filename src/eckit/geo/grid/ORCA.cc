@@ -88,7 +88,7 @@ ORCA::ORCA(const Spec& spec) :
 }
 
 
-ORCA::ORCA(uid_t uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+ORCA::ORCA(uid_type uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
 ORCA::ORCA(const std::string& name, Arrangement a) :
@@ -101,7 +101,7 @@ std::string ORCA::arrangement() const {
 }
 
 
-Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
+Grid::uid_type ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     MD5 hash;
     hash.add(arrangement_to_string(arrangement));
 
@@ -215,7 +215,7 @@ Grid::iterator ORCA::cend() const {
 }
 
 
-Grid::uid_t ORCA::calculate_uid() const {
+Grid::uid_type ORCA::calculate_uid() const {
     return record_.calculate_uid(arrangement_);
 }
 
@@ -253,12 +253,12 @@ const Grid::order_type& ORCA::order() const {
 }
 
 
-Reordering ORCA::reorder(const order_type& to) const {
+Grid::renumber_type ORCA::reorder(const order_type& to) const {
     NOTIMP;
 }
 
 
-Spec* ORCA::spec_from_uid(const uid_t& uid) {
+Spec* ORCA::spec_from_uid(const uid_type& uid) {
     return GridSpecByUID::instance().get(uid).spec();
 }
 

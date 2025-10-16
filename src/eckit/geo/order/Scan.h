@@ -12,46 +12,58 @@
 
 #pragma once
 
-#include "eckit/geo/Order.h"
-#include "eckit/geo/util.h"
+#include "eckit/geo/Grid.h"
 
 
 namespace eckit::geo::order {
 
 
-class Scan final : public Order {
+class Scan {
 public:
+
+    // -- Types
+
+    using order_type    = Grid::order_type;
+    using renumber_type = Grid::renumber_type;
 
     // -- Constructors
 
-    explicit Scan(const value_type& = order_default());
+    explicit Scan(const order_type& = order_default());
     explicit Scan(const Spec&);
 
-    // -- Overriden methods
+    Scan(const Scan&) = default;
+    Scan(Scan&&)      = default;
 
-    const value_type& order() const override { return order_; }
-    Reordering reorder(const value_type& to) const override;
+    // -- Operators
 
-    size_t size() const override;
-
-    void fill_spec(spec::Custom&) const override;
+    Scan& operator=(const Scan&) = default;
+    Scan& operator=(Scan&&)      = default;
 
     // -- Methods
 
-    bool is_scan_i_positively(const value_type&);
-    bool is_scan_j_positively(const value_type&);
-    bool is_scan_alternating(const value_type&);
+    void order(const order_type& to) { operator=(Scan{to}); }
+
+    const order_type& order() const { return order_; }
+    renumber_type reorder(const order_type& to, size_t ni, size_t nj) const;
+
+    bool is_scan_i_positive() const;
+    bool is_scan_j_positive() const;
+    bool is_scan_alternating() const;
+
+    // -- Class members
+
+    static const order_type IPOS_JPOS;
+    static const order_type IPOS_JNEG;
 
     // -- Class methods
 
-    static const Order::value_type& order_default();
-    static Order::value_type order_from_arguments(bool i_pos, bool j_pos, bool ij, bool alt);
+    static const order_type& order_default() { return IPOS_JNEG; }
 
 private:
 
     // -- Members
 
-    value_type order_;
+    order_type order_;
 };
 
 

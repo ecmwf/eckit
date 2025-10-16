@@ -64,13 +64,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, Pro
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, Projection* proj) :
-    Reduced(bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
-    N_(check_N(N)),
-    pl_(pl),
-    j_(0),
-    Nj_(pl.size()),
-    x_(Nj_),
-    y_(make_y_range(N, bbox)) {
+    N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
     ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
     ASSERT(y_);

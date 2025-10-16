@@ -45,11 +45,11 @@ RegularGaussian::RegularGaussian(const Spec& spec) :
 
 
 RegularGaussian::RegularGaussian(size_t N, area::BoundingBox bbox, Projection* proj) :
-    Regular({std::unique_ptr<Range>(
-                 range::Regular::make_longitude_range(360. / static_cast<double>(check_N(4 * N)), 0., 360.))
-                 ->make_cropped_range(bbox.west, bbox.east),
-             range::GaussianLatitude(N, false).make_cropped_range(bbox.north, bbox.south)},
-            bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
+    Regular(std::unique_ptr<Range>(
+                range::Regular::make_longitude_range(360. / static_cast<double>(check_N(4 * N)), 0., 360.))
+                ->make_cropped_range(bbox.west, bbox.east),
+            range::GaussianLatitude(N, false).make_cropped_range(bbox.north, bbox.south),
+            proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
     N_(N) {
     ASSERT(!empty());
 }

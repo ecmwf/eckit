@@ -15,7 +15,6 @@
 #include <regex>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/utils/MD5.h"
@@ -35,8 +34,7 @@ static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
 SphericalHarmonics::SphericalHarmonics(const Spec& spec) : Grid(spec), truncation_(spec.get_unsigned("truncation")) {}
 
 
-SphericalHarmonics::SphericalHarmonics(size_t T) :
-    Grid(new area::BoundingBox, ProjectionFactoryType::instance().get("none").create(spec::Custom{})), truncation_(T) {}
+SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {}
 
 
 Spec* SphericalHarmonics::spec(const std::string& name) {
@@ -76,7 +74,7 @@ bool SphericalHarmonics::empty() const {
 }
 
 
-[[nodiscard]] Grid::uid_t SphericalHarmonics::calculate_uid() const {
+[[nodiscard]] Grid::uid_type SphericalHarmonics::calculate_uid() const {
     return (MD5{} << type() << truncation()).digest();
 }
 

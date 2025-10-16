@@ -83,7 +83,7 @@ ICON::ICON(const Spec& spec) :
 }
 
 
-ICON::ICON(uid_t uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+ICON::ICON(uid_type uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
 ICON::ICON(const std::string& name, Arrangement a) :
@@ -138,7 +138,7 @@ void ICON::ICONRecord::check(const Spec& spec) const {
 }
 
 
-Grid::uid_t ICON::calculate_uid() const {
+Grid::uid_type ICON::calculate_uid() const {
     NOTIMP;
 }
 

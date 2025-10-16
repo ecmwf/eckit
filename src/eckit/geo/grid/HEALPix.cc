@@ -37,8 +37,7 @@ HEALPix::HEALPix(const Spec& spec) :
             spec.get_string("order", order::HEALPix::order_default())) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order) :
-    Reduced({}, new projection::None), Nside_(Nside), healpix_(order, HEALPix::size_from_nside(Nside)) {}
+HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), healpix_(order) {}
 
 
 Grid::iterator HEALPix::cbegin() const {
@@ -76,7 +75,7 @@ Spec* HEALPix::spec(const std::string& name) {
                   (name.find("r") == std::string::npos && name.find("R") == std::string::npos);
 
     return new spec::Custom{
-        {"type", "HEALPix"}, {"Nside", Nside}, {"order", nested ? order::HEALPix::nested : order::HEALPix::ring}};
+        {"type", "HEALPix"}, {"Nside", Nside}, {"order", nested ? order::HEALPix::NESTED : order::HEALPix::RING}};
 }
 
 
@@ -93,7 +92,7 @@ size_t HEALPix::size() const {
 std::vector<Point> HEALPix::to_points() const {
     if (!points_) {
         // reorder to this grid's order
-        const auto ren = order::HEALPix(order::HEALPix::ring, size()).reorder(order());
+        const auto ren = order::HEALPix{}.reorder(order(), Nside());
 
         std::vector<Point> points(size());
 

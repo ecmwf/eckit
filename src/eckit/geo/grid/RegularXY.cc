@@ -24,12 +24,42 @@
 namespace eckit::geo::grid {
 
 
+namespace {
+
+
+Range* make_x_range(const Spec& spec) {
+    auto inc   = RegularXY::make_increments_from_spec(spec);
+    auto first = RegularXY::make_first_point_from_spec(spec);
+    Shape shape(spec);
+
+    auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).X;
+    auto b = a + (shape.nx > 1 ? inc.dx * static_cast<double>(shape.nx - 1) : 0);
+
+    return range::Regular::make_xy_range(inc.dx, a, b, a);
+}
+
+
+Range* make_y_range(const Spec& spec) {
+    auto inc   = RegularXY::make_increments_from_spec(spec);
+    auto first = RegularXY::make_first_point_from_spec(spec);
+    Shape shape(spec);
+
+    auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).Y;
+    auto b = a + (shape.ny > 1 ? inc.dy * static_cast<double>(shape.ny - 1) : 0);
+
+    return range::Regular::make_xy_range(inc.dy, a, b, a);
+}
+
+
+}  // namespace
+
+
 bool RegularXY::Increments::operator==(const Increments& other) const {
     return types::is_approximately_equal(dx, other.dx) && types::is_approximately_equal(dy, other.dy);
 }
 
 
-static RegularXY::Increments make_increments_from_spec(const Spec& spec) {
+RegularXY::Increments RegularXY::make_increments_from_spec(const Spec& spec) {
     std::vector<RegularXY::Increments::value_type> grid(2);
 
     if (spec.get("dx", grid[0]) && spec.get("dy", grid[1])) {
@@ -44,28 +74,22 @@ static RegularXY::Increments make_increments_from_spec(const Spec& spec) {
 }
 
 
-RegularXY::RegularXY(const Spec& spec) :
-    Regular(make_ranges_from_spec(spec), area::BoundingBox(spec), ProjectionFactory::build(spec)) {}
-
-
-Regular::Ranges RegularXY::make_ranges_from_spec(const Spec& spec) {
-    auto inc = make_increments_from_spec(spec);
-    Shape shape(spec);
-
-    std::unique_ptr<const Projection> projection(ProjectionFactory::build(spec));
-
+PointLonLat RegularXY::make_first_point_from_spec(const Spec& spec) {
     std::vector<PointLonLat::value_type> v(2);
-    auto first_lonlat(
-        (spec.get("first_lon", v[0]) && spec.get("first_lat", v[1])) || (spec.get("first_lonlat", v) && v.size() == 2)
-            ? PointLonLat{v[0], v[1]}
-            : throw exception::SpecError("['first_lonlat' = ['first_lon', 'first_lat'] expected", Here()));
 
-    PointXY a = std::get<PointXY>(projection->inv(first_lonlat));
-    PointXY b{a.X + (shape.nx > 1 ? inc.dx * static_cast<double>(shape.nx - 1) : 0),  //
-              a.Y - (shape.ny > 1 ? inc.dy * static_cast<double>(shape.ny - 1) : 0)};
+    if (spec.get("first_lon", v[0]) && spec.get("first_lat", v[1])) {
+        return {v[0], v[1]};
+    }
 
-    return {range::Regular::make_xy_range(inc.dx, a.X, b.X, a.X), range::Regular::make_xy_range(inc.dy, a.Y, b.Y, a.Y)};
+    if (spec.get("first_lonlat", v) && v.size() == 2) {
+        return {v[0], v[1]};
+    }
+
+    throw exception::SpecError("['first_lonlat' = ['first_lon', 'first_lat'] expected", Here());
 }
+
+
+RegularXY::RegularXY(const Spec& spec) : Regular(make_x_range(spec), make_y_range(spec)) {}
 
 
 const std::string& RegularXY::type() const {

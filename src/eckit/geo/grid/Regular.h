@@ -13,7 +13,6 @@
 #pragma once
 
 #include <memory>
-#include <utility>
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Range.h"
@@ -50,33 +49,31 @@ public:
     size_t size() const final { return nx() * ny(); }
     std::vector<size_t> shape() const override { return {ny(), nx()}; }
 
-    const order_type& order() const override { return scan_.order(); }
-    Reordering reorder(const order_type& to) const override { return scan_.reorder(to); }
+    const order_type& order() const override;
+    renumber_type reorder(const order_type& to) const override;
 
 protected:
-
-    // -- Types
-
-    struct Ranges : std::pair<Range*, Range*> {
-        Ranges(Range*, Range*);
-    };
 
     // -- Constructors
 
     explicit Regular(const Spec&);
-    explicit Regular(Ranges, area::BoundingBox, const Projection* = nullptr);
+    explicit Regular(Range* x, Range* y, const Projection* = nullptr);
 
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
+    // -- Methods
+
+    void order(const order_type& to);
+
 private:
 
     // -- Members
 
-    std::unique_ptr<Range> x_;
-    std::unique_ptr<Range> y_;
-    order::Scan scan_;
+    const std::unique_ptr<Range> x_;
+    const std::unique_ptr<Range> y_;
+    order::Scan order_;
 
     // -- Friends
 

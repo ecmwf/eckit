@@ -12,89 +12,62 @@
 
 #include "eckit/geo/order/Scan.h"
 
-#include <algorithm>
+#include <numeric>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::order {
 
 
-static const Order::value_type DEFAULT = "i+j+";
-
-static OrderRegisterType<Scan> ORDERING1("i+j+");
-static OrderRegisterType<Scan> ORDERING2("i+j-");
+const Scan::order_type Scan::IPOS_JPOS{"i+j+"};
+const Scan::order_type Scan::IPOS_JNEG{"i+j+"};
 
 
-Order::value_type Scan::order_from_arguments(bool i_pos, bool j_pos, bool ij, bool alt) {
-    return alt ? (ij ? std::string(i_pos ? "i+-" : "i-+") + (j_pos ? "j+" : "j-")
-                     : std::string(j_pos ? "j+-" : "j-+") + (i_pos ? "i+" : "i-"))
-               : (ij ? std::string(i_pos ? "i+" : "i-") + (j_pos ? "j+" : "j-")
-                     : std::string(j_pos ? "j+" : "j-") + (i_pos ? "i+" : "i-"));
-}
+static const std::vector<Scan::order_type> MODES{"i+j+",  "i+j-",  "i-j+",  "i-j-",   //
+                                                 "i+-j+", "i+-j-", "i-+j+", "i-+j-",  //
+                                                 "j+i+",  "j+i-",  "j-i+",  "j-i-",   //
+                                                 "j+-i+", "j+-i-", "j-+i+", "j-+i-"};
 
 
-Scan::Scan(const value_type& order) : order_(order) {
-    static const std::vector<Order::value_type> MODES{"i+j+",  "i+j-",  "i-j+",  "i-j-",   //
-                                                      "i+-j+", "i+-j-", "i-+j+", "i-+j-",  //
-                                                      "j+i+",  "j+i-",  "j-i+",  "j-i-",   //
-                                                      "j+-i+", "j+-i-", "j-+i+", "j-+i-"};
-
+Scan::Scan(const order_type& order) : order_(order) {
     if (std::count(MODES.begin(), MODES.end(), order_) != 1) {
         throw exception::OrderError("Scan invalid order: '" + order_ + "'", Here());
     }
 }
 
 
-Scan::Scan(const Spec& spec) :
-    Scan(spec.get_string(
-        "order", order_from_arguments(spec.get_bool("scan-i-positively", !spec.get_bool("scan-i-negatively", false)),
-                                      spec.get_bool("scan-j-positively", !spec.get_bool("scan-j-negatively", true)),
-                                      spec.get_bool("scan-i-j", !spec.get_bool("scan-j-i", false)),
-                                      spec.get_bool("scan-alternative", false)))) {}
+Scan::Scan(const Spec& spec) : Scan(spec.get_string("order", order_default())) {}
 
 
-bool Scan::is_scan_i_positively(const value_type& o) {
-    return o.find("i+") != value_type::npos;
+bool Scan::is_scan_i_positive() const {
+    return order_.find("i+") != order_type::npos;
 }
 
 
-bool Scan::is_scan_j_positively(const value_type& o) {
-    return o.find("j+") != value_type::npos;
+bool Scan::is_scan_j_positive() const {
+    return order_.find("j+") != order_type::npos;
 }
 
 
-bool Scan::is_scan_alternating(const value_type& o) {
-    return o.find("+-") != value_type::npos || o.find("-+") != value_type::npos;
+bool Scan::is_scan_alternating() const {
+    return order_.find("+-") != order_type::npos || order_.find("-+") != order_type::npos;
 }
 
 
-Reordering Scan::reorder(const value_type& to) const {
+Scan::renumber_type Scan::reorder(const order_type& to, size_t ni, size_t nj) const {
+    ASSERT(0 < ni && 0 < nj);
+
     if (to == order_) {
-        return no_reorder();
+        // no reordering
+        renumber_type ren(ni * nj);
+        std::iota(ren.begin(), ren.end(), 0);
+        return ren;
     }
 
     // TODO
     NOTIMP;
-}
-
-
-size_t Scan::size() const {
-    NOTIMP;
-}
-
-
-const Order::value_type& Scan::order_default() {
-    return DEFAULT;
-}
-
-
-void Scan::fill_spec(spec::Custom& custom) const {
-    if (order_ != order_default()) {
-        custom.set("order", order_);
-    }
 }
 
 

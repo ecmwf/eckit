@@ -62,6 +62,10 @@ public:
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] area::BoundingBox* calculate_bbox() const override;
 
+    // -- Class methods
+
+    static Increments make_increments_from_spec(const Spec&);
+
 private:
 
     // -- Overridden methods

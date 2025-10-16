@@ -49,7 +49,7 @@ public:
     // -- Constructors
 
     explicit FESOM(const Spec&);
-    explicit FESOM(uid_t);
+    explicit FESOM(uid_type);
 
     FESOM(const std::string& name, Arrangement);
 
@@ -60,7 +60,7 @@ public:
 
     // -- Overridden methods
 
-    uid_t calculate_uid() const override;
+    uid_type calculate_uid() const override;
     const std::string& type() const override;
 
     [[nodiscard]] Point first_point() const override;

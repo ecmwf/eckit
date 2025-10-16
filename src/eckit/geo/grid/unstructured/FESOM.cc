@@ -89,7 +89,7 @@ FESOM::FESOM(const Spec& spec) :
 }
 
 
-FESOM::FESOM(uid_t uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+FESOM::FESOM(uid_type uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
 FESOM::FESOM(const std::string& name, Arrangement a) :
@@ -135,7 +135,7 @@ void FESOM::FESOMRecord::read(const PathName& p) {
 }
 
 
-Grid::uid_t FESOM::calculate_uid() const {
+Grid::uid_type FESOM::calculate_uid() const {
     if (arrangement_ == Arrangement::FESOM_N) {
         MD5 hash;
         util::hash_vector_double(hash, record_.latitudes_);

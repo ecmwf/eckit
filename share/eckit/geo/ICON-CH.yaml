@@ -6,7 +6,7 @@ grid_names:
   - ICON_CH1_EPS: &ICON_CH1_EPS
     type: ICON
     name: ICON_CH1_EPS
-    shape: [1147981]
+    shape: [1147980]
     icon_arrangement: T
     icon_uid: "17643da2574959b644d254a3cd6e2bc0"
     url_prefix: *url_prefix

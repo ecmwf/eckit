@@ -37,7 +37,7 @@ public:
 
     // -- Constructors
 
-    RegularXY(Range* x, Range* y, const area::BoundingBox* bbox, const Projection* proj) : Regular(x, y) {}
+    RegularXY(Range* x, Range* y, const BoundingBox* bbox, const Projection* proj) : Regular(x, y) {}
     explicit RegularXY(const Spec&);
 
     // -- Methods

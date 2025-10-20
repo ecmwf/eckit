@@ -49,7 +49,7 @@ public:
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }
 
-    [[nodiscard]] area::BoundingBox* calculate_bbox() const override;
+    [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
     void fill_spec(spec::Custom&) const override;
 

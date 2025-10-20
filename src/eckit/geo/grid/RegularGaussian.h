@@ -24,7 +24,7 @@ public:
     // -- Constructors
 
     explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N, area::BoundingBox = {}, Projection* = nullptr);
+    explicit RegularGaussian(size_t N, BoundingBox = {}, Projection* = nullptr);
 
     // -- Methods
 

@@ -74,8 +74,6 @@ list(APPEND eckit_geo_srcs
     grid/Reduced.h
     grid/ReducedGaussian.cc
     grid/ReducedGaussian.h
-    grid/ReducedLL.cc
-    grid/ReducedLL.h
     grid/Regular.cc
     grid/Regular.h
     grid/RegularGaussian.cc

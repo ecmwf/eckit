@@ -214,7 +214,7 @@ CASE("equals") {
 
 CASE("wrong spec") {
     EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h0}"), exception::SpecError);
-    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:nested}"), exception::OrderError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:nest}"), exception::OrderError);
     EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:?}"), exception::OrderError);
 }
 

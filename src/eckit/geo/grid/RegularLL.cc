@@ -55,7 +55,7 @@ RegularLL::Increments RegularLL::make_increments_from_spec(const Spec& spec) {
 
 RegularLL::RegularLL(const Spec& spec) :
     RegularLL(
-        make_increments_from_spec(spec), area::BoundingBox{spec},
+        make_increments_from_spec(spec), BoundingBox{spec},
         [&spec]() -> PointLonLat {
             std::vector<PointLonLat::value_type> v(2);
             if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
@@ -74,10 +74,10 @@ RegularLL::RegularLL(const Spec& spec) :
 }
 
 
-RegularLL::RegularLL(const Increments& inc, Projection* proj) : RegularLL(inc, area::BoundingBox{}, {0, 0}, proj) {}
+RegularLL::RegularLL(const Increments& inc, Projection* proj) : RegularLL(inc, BoundingBox{}, {0, 0}, proj) {}
 
 
-RegularLL::RegularLL(const Increments& inc, area::BoundingBox bbox, PointLonLat ref, Projection* proj) :
+RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, Projection* proj) :
     Regular(range::Regular::make_longitude_range(inc.dlon, bbox.west, bbox.east, ref.lon),
             range::Regular::make_latitude_range(-inc.dlat, bbox.north, bbox.south, ref.lat)) {
     ASSERT(!empty());
@@ -158,7 +158,7 @@ Grid* RegularLL::make_grid_cropped(const Area& crop) const {
 }
 
 
-area::BoundingBox* RegularLL::calculate_bbox() const {
+Grid::BoundingBox* RegularLL::calculate_bbox() const {
     // FIXME depends on ordering
     auto n = std::max(y().a(), y().b());
     auto s = std::min(y().a(), y().b());
@@ -166,7 +166,7 @@ area::BoundingBox* RegularLL::calculate_bbox() const {
     auto w = x().a();
     auto e = x().periodic() ? w + PointLonLat::FULL_ANGLE : x().b();
 
-    return new area::BoundingBox{n, w, s, e};
+    return new BoundingBox{n, w, s, e};
 }
 
 

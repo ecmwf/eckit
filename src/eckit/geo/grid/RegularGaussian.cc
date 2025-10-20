@@ -39,12 +39,12 @@ size_t check_N(size_t N) {
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), area::BoundingBox(spec),
+    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec),
                     spec.has("projection") ? Projection::make_from_spec(spec)
                                            : new projection::Reverse<projection::EquidistantCylindrical>) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, area::BoundingBox bbox, Projection* proj) :
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, Projection* proj) :
     Regular(std::unique_ptr<Range>(
                 range::Regular::make_longitude_range(360. / static_cast<double>(check_N(4 * N)), 0., 360.))
                 ->make_cropped_range(bbox.west, bbox.east),

@@ -30,9 +30,9 @@ public:
     // -- Constructors
 
     explicit ReducedGaussian(const Spec&);
-    explicit ReducedGaussian(const pl_type&, area::BoundingBox* = nullptr, Projection* = nullptr);
-    explicit ReducedGaussian(size_t N, const pl_type&, area::BoundingBox* = nullptr, Projection* = nullptr);
-    explicit ReducedGaussian(size_t N, area::BoundingBox* = nullptr, Projection* = nullptr);
+    explicit ReducedGaussian(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default());
+    explicit ReducedGaussian(size_t N, const BoundingBox& = BoundingBox::bounding_box_default());
+    explicit ReducedGaussian(size_t N, const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default());
 
     // -- Methods
 

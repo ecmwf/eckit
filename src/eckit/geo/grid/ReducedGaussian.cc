@@ -16,8 +16,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/spec/Custom.h"
@@ -36,43 +34,49 @@ size_t check_N(size_t N) {
 }
 
 
-Range* make_x_range(size_t Ni, area::BoundingBox* bbox) {
-    auto* global = range::Regular::make_longitude_range(360. / static_cast<double>(check_N(Ni)), 0., 360.);
-    return bbox == nullptr ? global : std::unique_ptr<Range>(global)->make_cropped_range(bbox->west, bbox->east);
+Range* make_x_range(size_t Ni, const area::BoundingBox& bbox) {
+    std::unique_ptr<Range> global(
+        range::Regular::make_longitude_range(360. / static_cast<double>(check_N(Ni)), 0., 360.));
+    return global->make_cropped_range(bbox.west, bbox.east);
 }
 
 
-Range* make_y_range(size_t N, area::BoundingBox* bbox) {
+Range* make_y_range(size_t N, const area::BoundingBox& bbox) {
     check_N(N);
 
-    auto* global = new range::GaussianLatitude(N, false);
-    return bbox == nullptr ? global : std::unique_ptr<Range>(global)->make_cropped_range(bbox->north, bbox->south);
+    std::unique_ptr<Range> global(new range::GaussianLatitude(N, false));
+    return global->make_cropped_range(bbox.north, bbox.south);
 }
 
 
 }  // namespace
 
 
-ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), area::BoundingBox::make_from_spec(spec).release(),
-                    spec.has("projection") ? Projection::make_from_spec(spec)
-                                           : new projection::Reverse<projection::EquidistantCylindrical>) {}
+ReducedGaussian::ReducedGaussian(const Spec& spec) : ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}) {}
 
 
-ReducedGaussian::ReducedGaussian(const pl_type& pl, area::BoundingBox* bbox, Projection* proj) :
-    ReducedGaussian(pl.size() / 2, pl, bbox, proj) {}
+ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox) :
+    ReducedGaussian(pl.size() / 2, pl, bbox) {}
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, area::BoundingBox* bbox, Projection* proj) :
-    N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
+ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const BoundingBox& bbox) :
+    Reduced(bbox), N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
     ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
     ASSERT(y_);
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, area::BoundingBox* bbox, Projection* proj) :
-    ReducedGaussian(N, util::reduced_octahedral_pl(N), bbox, proj) {}
+ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox) :
+    ReducedGaussian(N, util::reduced_octahedral_pl(N), bbox) {}
+
+
+// ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const BoundingBox& bbox) :
+//     N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
+//     ASSERT(N_ * 2 == pl_.size());
+//     ASSERT(0 < N_ && Nj_ <= 2 * N_);
+//     ASSERT(y_);
+// }
 
 
 Grid::iterator ReducedGaussian::cbegin() const {
@@ -92,11 +96,11 @@ size_t ReducedGaussian::size() const {
 
 size_t ReducedGaussian::nx(size_t j) const {
     if (!x_.at(j_ + j)) {
-        auto bbox = boundingBox();
+        const auto& bbox = boundingBox();
         auto Ni   = pl_.at(j_ + j);
         ASSERT(Ni >= 0);
 
-        x_[j].reset(make_x_range(static_cast<size_t>(Ni), &bbox));
+        x_[j].reset(make_x_range(static_cast<size_t>(Ni), bbox));
         ASSERT(x_[j]);
     }
 
@@ -151,8 +155,7 @@ const std::string& ReducedGaussian::type() const {
 
 Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new ReducedGaussian(N_, pl_,
-                                   new area::BoundingBox{cropped.north, cropped.west, cropped.south, cropped.east});
+        return new ReducedGaussian(N_, pl_, BoundingBox{cropped.north, cropped.west, cropped.south, cropped.east});
     }
 
     throw UserError("ReducedGaussian: cannot crop grid (empty intersection)", Here());

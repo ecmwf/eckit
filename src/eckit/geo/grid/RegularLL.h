@@ -39,7 +39,7 @@ public:
 
     explicit RegularLL(const Spec&);
     explicit RegularLL(const Increments&, Projection* = nullptr);
-    explicit RegularLL(const Increments&, area::BoundingBox, PointLonLat ref = {}, Projection* = nullptr);
+    explicit RegularLL(const Increments&, BoundingBox, PointLonLat ref = {}, Projection* = nullptr);
 
     // -- Methods
 
@@ -60,7 +60,7 @@ public:
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
-    [[nodiscard]] area::BoundingBox* calculate_bbox() const override;
+    [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
     // -- Class methods
 

@@ -17,7 +17,8 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/projection/None.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
@@ -52,7 +53,8 @@ Grid::Grid(const Spec& spec) :
     bbox_(area::BoundingBox::make_from_spec(spec)), projection_(ProjectionFactory::build(spec)) {}
 
 
-Grid::Grid(Projection* proj) : projection_(proj == nullptr ? new projection::None : proj) {
+Grid::Grid(Projection* proj) :
+    projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
     bbox_.reset(area::BoundingBox::make_global_prime().release());
 }
 
@@ -196,7 +198,7 @@ Grid::renumber_type Grid::crop(const Area&) const {
 
 const Projection& Grid::projection() const {
     if (!projection_) {
-        projection_ = std::make_unique<projection::None>();
+        projection_ = std::make_unique<projection::Reverse<projection::EquidistantCylindrical>>();
         ASSERT(projection_);
     }
 
@@ -209,7 +211,7 @@ Grid* Grid::make_grid_cropped(const Area&) const {
 }
 
 
-const area::BoundingBox& Grid::boundingBox() const {
+const Grid::BoundingBox& Grid::boundingBox() const {
     if (!bbox_) {
         bbox_.reset(calculate_bbox());
         ASSERT(bbox_);
@@ -219,13 +221,13 @@ const area::BoundingBox& Grid::boundingBox() const {
 }
 
 
-area::BoundingBox* Grid::calculate_bbox() const {
+Grid::BoundingBox* Grid::calculate_bbox() const {
     NOTIMP;
 }
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    static const auto& area_default_str = area::BoundingBox::bounding_box_default().spec().str();
+    static const auto& area_default_str = BoundingBox::bounding_box_default().spec().str();
     if (const auto& area_spec = area().spec(); area_spec.str() != area_default_str) {
         custom.set("area", area_spec);
     }

@@ -79,8 +79,8 @@ bool SphericalHarmonics::empty() const {
 }
 
 
-[[nodiscard]] area::BoundingBox* SphericalHarmonics::calculate_bbox() const {
-    return new area::BoundingBox;
+[[nodiscard]] Grid::BoundingBox* SphericalHarmonics::calculate_bbox() const {
+    return new BoundingBox;
 }
 
 

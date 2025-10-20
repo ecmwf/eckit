@@ -49,6 +49,8 @@ public:
     using order_type    = std::string;
     using renumber_type = std::vector<size_t>;
 
+    using BoundingBox = area::BoundingBox;
+
     using builder_t = BuilderT1<Grid>;
     using ARG1      = const Spec&;
 
@@ -158,8 +160,8 @@ public:
 
     virtual const Projection& projection() const;
 
-    virtual const area::BoundingBox& boundingBox() const;
-    [[nodiscard]] virtual area::BoundingBox* calculate_bbox() const;
+    virtual const BoundingBox& boundingBox() const;
+    [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
 
     [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
@@ -187,7 +189,7 @@ private:
 
     // -- Members
 
-    mutable std::unique_ptr<const area::BoundingBox> bbox_;
+    mutable std::unique_ptr<const BoundingBox> bbox_;
     mutable std::unique_ptr<const Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_type uid_;

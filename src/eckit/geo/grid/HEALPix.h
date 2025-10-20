@@ -28,7 +28,7 @@ public:
     // -- Constructors
 
     explicit HEALPix(const Spec&);
-    explicit HEALPix(size_t Nside, order_type = {});
+    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default());
 
     // -- Methods
 

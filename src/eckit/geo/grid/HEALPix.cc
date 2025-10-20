@@ -35,7 +35,7 @@ HEALPix::HEALPix(const Spec& spec) :
             spec.get_string("order", order::HEALPix::order_default())) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), healpix_(order) {}
+HEALPix::HEALPix(size_t Nside, order_type order) : Reduced(BoundingBox{}), Nside_(Nside), healpix_(order) {}
 
 
 Grid::iterator HEALPix::cbegin() const {

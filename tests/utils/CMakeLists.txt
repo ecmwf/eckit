@@ -49,12 +49,6 @@ ecbuild_add_test( TARGET      eckit_test_utils_optional
                   SOURCES     test_optional.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_utils_hashing
-                  CONDITION   eckit_HAVE_SSL
-                  INCLUDES    "${OPENSSL_INCLUDE_DIR}"
-                  SOURCES     test_hashing.cc
-                  LIBS        eckit )
-
 ecbuild_add_test( TARGET      eckit_test_utils_hash_performance
                   CONDITION   HAVE_EXTRA_TESTS
                   SOURCES     hash-performance.cc

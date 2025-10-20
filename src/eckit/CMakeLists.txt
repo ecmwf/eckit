@@ -732,15 +732,6 @@ if(eckit_HAVE_AEC)
     )
 endif()
 
-if(eckit_HAVE_SSL)
-    list( APPEND eckit_utils_srcs
-        utils/MD4.cc
-        utils/MD4.h
-        utils/SHA1.cc
-        utils/SHA1.h
-    )
-endif()
-
 if(eckit_HAVE_RSYNC)
     list( APPEND eckit_utils_srcs
         utils/Rsync.cc
@@ -937,7 +928,6 @@ ecbuild_add_library(
               "${LZ4_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
               "${RADOS_INCLUDE_DIRS}"
-              "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
 
           PRIVATE_LIBS
@@ -945,7 +935,6 @@ ecbuild_add_library(
               "${LIBRSYNC_LIBRARIES}"
               "${LZ4_LIBRARIES}"
               "${BZIP2_LIBRARIES}"
-              "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"

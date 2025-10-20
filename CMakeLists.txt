@@ -244,17 +244,6 @@ else()
                         REQUIRED_PACKAGES "LAPACK QUIET" )
 endif()
 
-### OpenSSL (for SHA1 and MD4)
-
-ecbuild_add_option( FEATURE SSL
-                    DEFAULT OFF # We only use deprecated functionality from OpenSSL
-                    DESCRIPTION "OpenSSL support"
-                    REQUIRED_PACKAGES OpenSSL )
-
-if( OPENSSL_FOUND )
-  ecbuild_info("OpenSSL version ${OPENSSL_VERSION} -- libs [${OPENSSL_LIBRARIES}] incs [${OPENSSL_INCLUDE_DIR}]")
-endif()
-
 #### Curl
 
 ecbuild_add_option( FEATURE CURL

@@ -91,6 +91,7 @@ public:
     void set(const std::string& name, const char* value) { set(name, std::string{value}); }
     void set(const std::string& name, const Value&);
     void set(const std::string& name, Custom*);
+    void set(const std::string& name, const Spec&);
 
     // -- Overridden methods
 

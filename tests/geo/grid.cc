@@ -11,8 +11,11 @@
 
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -20,10 +23,40 @@
 namespace eckit::geo::test {
 
 
-CASE("GridFactory::build") {
+CASE("Grid from grid_spec") {
+    SECTION("GridSpec canonical") {
+        struct {
+            const char* grid;
+            const char* canonical;
+            size_t size;
+        } tests[]{
+            {"{grid: [10, 10]}", R"({"grid":[10,10]})", 684},          //
+            {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},          //
+            {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},        //
+            {"{grid: o8}", R"({"grid":"O8"})", 544},                   //
+            {"{grid: h2_ring}", R"({"grid":"H2"})", 48},               //
+            {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},  //
+        };
+
+
+        for (const auto& test : tests) {
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
+
+            EXPECT(grid->size() == test.size);
+            EXPECT(grid->spec_str() == test.canonical);
+
+            static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
+
+            EXPECT(grid->boundingBox().spec_str() == bbox_spec_str);
+        }
+    }
+}
+
+
+CASE("Grid from name") {
     SECTION("GridFactory::build_from_name") {
         struct {
-            std::string name;
+            const char* name;
             size_t size;
         } tests[]{{"O2", 88}, {"f2", 32}, {"h2", 48}};
 
@@ -37,9 +70,11 @@ CASE("GridFactory::build") {
             EXPECT_EQUAL(test.size, b->size());
         }
     }
+}
 
 
-    SECTION("Grid::build_from_increments (global)") {
+CASE("Grid from increments") {
+    SECTION("global") {
         std::unique_ptr<const Grid> global(GridFactory::build(spec::Custom({
             {"type", "regular_ll"},
             {"grid", std::vector<double>{1, 1}},
@@ -49,7 +84,7 @@ CASE("GridFactory::build") {
     }
 
 
-    SECTION("Grid::build_from_increments (non-global)") {
+    SECTION("non-global") {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({
             {"type", "regular_ll"},
             {"grid", std::vector<double>{1, 1}},

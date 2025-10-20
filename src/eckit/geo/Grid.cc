@@ -180,12 +180,12 @@ Grid* Grid::make_grid_reordered(const order_type&) const {
 
 
 const Area& Grid::area() const {
-    if (!area_) {
-        area_ = std::make_unique<area::BoundingBox>();
-        ASSERT(area_);
+    if (!bbox_) {
+        bbox_.reset(calculate_bbox());
+        ASSERT(bbox_);
     }
 
-    return *area_;
+    return *bbox_;
 }
 
 
@@ -225,14 +225,9 @@ area::BoundingBox* Grid::calculate_bbox() const {
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    if (area_) {
-        auto area = std::make_unique<spec::Custom>();
-        ASSERT(area);
-
-        area_->fill_spec(*area);
-        if (!area->empty()) {
-            custom.set("area", area.release());
-        }
+    static const auto& area_default_str = area::BoundingBox::bounding_box_default().spec().str();
+    if (const auto& area_spec = area().spec(); area_spec.str() != area_default_str) {
+        custom.set("area", area_spec);
     }
 
     if (projection_) {

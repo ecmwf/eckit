@@ -181,14 +181,12 @@ protected:
 
     void reset_uid(uid_type = {});
 
-    void area(Area* ptr) { area_.reset(ptr); }
     void projection(Projection* ptr) { projection_.reset(ptr); }
 
 private:
 
     // -- Members
 
-    mutable std::unique_ptr<Area> area_;
     mutable std::unique_ptr<const area::BoundingBox> bbox_;
     mutable std::unique_ptr<const Projection> projection_;
     mutable std::unique_ptr<spec::Custom> spec_;

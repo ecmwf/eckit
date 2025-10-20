@@ -344,6 +344,17 @@ void Custom::set(const std::string& name, Custom* value) {
 }
 
 
+void Custom::set(const std::string& name, const Spec& value) {
+    try {
+        const auto& custom = dynamic_cast<const Custom&>(value);
+        return set(name, new Custom{custom.map_});
+    }
+    catch (const std::bad_cast& e) {
+        throw exception::SpecError("Custom::set(const Spec&): Spec must be spec::Custom", Here());
+    }
+}
+
+
 bool Custom::has_custom(const std::string& name) const {
     auto it = map_.find(name);
     return it != map_.cend() && std::holds_alternative<custom_ptr>(it->second);

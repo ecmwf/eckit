@@ -109,8 +109,6 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
     if (auto o = order(); o != order::Scan::order_default()) {
         custom.set("order", o);
     }
-
-    boundingBox().fill_spec(custom);
 }
 
 

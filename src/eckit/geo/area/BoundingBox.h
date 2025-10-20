@@ -98,6 +98,8 @@ public:
 
     // -- Class methods
 
+    static const BoundingBox& bounding_box_default();
+
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_global_prime();
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_global_antiprime();
 
@@ -116,10 +118,6 @@ public:
     const value_type& south = operator[](2);
     const value_type& east  = operator[](3);
 };
-
-
-extern const PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST;
-extern const BoundingBox BOUNDING_BOX_DEFAULT;
 
 
 }  // namespace eckit::geo::area

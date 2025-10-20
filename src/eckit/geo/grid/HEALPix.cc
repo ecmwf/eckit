@@ -19,9 +19,7 @@
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"
-#include "eckit/geo/projection/None.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 

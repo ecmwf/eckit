@@ -13,6 +13,7 @@
 #pragma once
 
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/util.h"
 
 
 namespace eckit::geo::order {
@@ -45,19 +46,15 @@ public:
 
     const order_type& order() const { return order_; }
     renumber_type reorder(const order_type& to, size_t ni, size_t nj) const;
+    renumber_type reorder(const order_type& to, const pl_type&) const;
 
     bool is_scan_i_positive() const;
     bool is_scan_j_positive() const;
     bool is_scan_alternating() const;
 
-    // -- Class members
-
-    static const order_type IPOS_JPOS;
-    static const order_type IPOS_JNEG;
-
     // -- Class methods
 
-    static const order_type& order_default() { return IPOS_JNEG; }
+    static const order_type& order_default();
 
 private:
 

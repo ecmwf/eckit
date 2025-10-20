@@ -16,6 +16,7 @@
 
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/util.h"
 
 
@@ -44,6 +45,9 @@ public:
     size_t nx(size_t j) const override;
     size_t ny() const override;
 
+    const order_type& order() const override { return scan_.order(); }
+    renumber_type reorder(const order_type& to) const override { return scan_.reorder(to, pl_); }
+
     const std::vector<double>& latitudes() const override;
     std::vector<double> longitudes(size_t j) const override;
 
@@ -55,6 +59,7 @@ private:
 
     mutable std::unique_ptr<Range> x_;
     const std::unique_ptr<Range> y_;
+    order::Scan scan_;
 
     // -- Overridden methods
 

@@ -29,8 +29,8 @@ public:
 
     ~TCPClient();
 
-    virtual TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0);
-    virtual TCPSocket& connect(const net::Endpoint& endpoint, int retries = 5, int timeout = 0);
+    virtual TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0, int retryDelay = 5);
+    virtual TCPSocket& connect(const net::Endpoint& endpoint, int retries = 5, int timeout = 0, int retryDelay = 5);
 
 protected:  // methods
 

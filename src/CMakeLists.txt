@@ -8,10 +8,6 @@
 
 ### sources
 
-if( HAVE_EXPERIMENTAL )
-  add_subdirectory( experimental )
-endif()
-
 add_subdirectory( eckit  )
 
 add_subdirectory( tools )

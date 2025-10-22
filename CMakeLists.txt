@@ -25,10 +25,6 @@ ecbuild_add_option( FEATURE BUILD_TOOLS
                     DEFAULT ON
                     DESCRIPTION "Build the command line tools" )
 
-ecbuild_add_option( FEATURE EXPERIMENTAL
-                    DEFAULT OFF
-                    DESCRIPTION "Experimental features that havent graduated to production ready code" )
-
 ### thread library ( preferably pthreads ) --- Must be called before FindCUDA!
 
 if( ${CMAKE_VERSION} VERSION_LESS 3.14 )
@@ -112,7 +108,7 @@ ecbuild_add_option( FEATURE RADOS
 ### Armadillo
 
 ecbuild_add_option( FEATURE ARMADILLO
-                    CONDITION HAVE_EXPERIMENTAL
+                    DEFAULT OFF
                     DESCRIPTION "Armadillo linear algebra library"
                     REQUIRED_PACKAGES Armadillo )
 
@@ -274,7 +270,7 @@ ecbuild_add_option( FEATURE HIP
 ### ViennaCL
 
 ecbuild_add_option( FEATURE VIENNACL
-                    CONDITION HAVE_EXPERIMENTAL
+                    DEFAULT OFF
                     DESCRIPTION "ViennaCL OpenCL linear algebra operations"
                     REQUIRED_PACKAGES ViennaCL )
 

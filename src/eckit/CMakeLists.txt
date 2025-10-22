@@ -777,10 +777,6 @@ list( APPEND eckit_memory_srcs
     memory/Zero.h
 )
 
-list( APPEND eckit_compat_srcs
-    compat/Inited.h
-    compat/StrStream.h
-)
 
 list( APPEND eckit_maths_srcs
     maths/Functions.cc

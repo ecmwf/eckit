@@ -29,10 +29,6 @@ ecbuild_add_option( FEATURE EXPERIMENTAL
                     DEFAULT OFF
                     DESCRIPTION "Experimental features that havent graduated to production ready code" )
 
-ecbuild_add_option( FEATURE SANDBOX
-                    DEFAULT OFF
-                    DESCRIPTION "Sandbox playground for prototyping code that may never see the light of day" )
-
 ### thread library ( preferably pthreads ) --- Must be called before FindCUDA!
 
 if( ${CMAKE_VERSION} VERSION_LESS 3.14 )

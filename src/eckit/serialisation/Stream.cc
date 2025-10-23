@@ -630,13 +630,8 @@ Stream& Stream::operator>>(double& x) {
 Stream& Stream::operator>>(std::string& s) {
     readTag(tag_string);
     const long length = getLong();
-
-    const long sz = eckit::round(length + 1, 8);  // some padding to avoid zero-length buffer
-    char buf[sz];
-    getBytes(buf, length);
-
     s.resize(length);
-    s.assign(buf, length);
+    getBytes(s.data(), length);
 
     T("r std::string", s);
     return *this;
@@ -653,11 +648,8 @@ bool Stream::next(std::string& s) {
     }
 
     long length = getLong();
-    char buf[length];
-    getBytes(buf, length);
-
     s.resize(length);
-    s.assign(buf, length);
+    getBytes(s.data(), length);
 
     T("r std::string", s);
 

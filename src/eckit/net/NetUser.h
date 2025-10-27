@@ -23,14 +23,17 @@ namespace net {
 
 class NetUser : public Thread {
 public:
+
     NetUser(net::TCPSocket&);
 
     ~NetUser();
 
 protected:
+
     TCPSocket protocol_;
 
 private:
+
     virtual void serve(Stream&, std::istream&, std::ostream&) = 0;
 
     void run() override;

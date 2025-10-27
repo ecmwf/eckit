@@ -31,6 +31,7 @@ class Stream;
 
 class RadosAttributes {
 public:
+
     template <class T>
     void set(const std::string& name, T value) {
         attrs_[name] = Translator<T, std::string>()(value);
@@ -72,6 +73,7 @@ public:
     const std::map<std::string, std::string>& attrs() const { return attrs_; }
 
 private:
+
     std::map<std::string, std::string> attrs_;
 
     void print(std::ostream&) const;

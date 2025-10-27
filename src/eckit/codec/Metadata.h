@@ -39,6 +39,7 @@ size_t uncompressed_size(const Metadata& m);
 
 class Metadata : public LocalConfiguration {
 public:
+
     using LocalConfiguration::LocalConfiguration;
 
     Metadata() = default;

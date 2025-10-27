@@ -31,6 +31,7 @@ class Message;
 
 class Splitter {
 public:  // methods
+
     Splitter(eckit::PeekHandle&);
 
     virtual ~Splitter();
@@ -38,9 +39,11 @@ public:  // methods
     virtual Message next() = 0;
 
 protected:
+
     eckit::PeekHandle& handle_;
 
 private:  // methods
+
     virtual void print(std::ostream&) const = 0;
 
     friend std::ostream& operator<<(std::ostream& s, const Splitter& p) {
@@ -54,6 +57,7 @@ private:  // methods
 class SplitterBuilderBase {
 
 public:
+
     SplitterBuilderBase();
     virtual ~SplitterBuilderBase();
 
@@ -65,6 +69,7 @@ public:
 
 class SplitterFactory {
 public:
+
     static SplitterFactory& instance();
 
     Splitter* lookup(eckit::PeekHandle&);
@@ -73,6 +78,7 @@ public:
     void deregister(const SplitterBuilderBase*);
 
 private:
+
     SplitterFactory()  = default;
     ~SplitterFactory() = default;
 

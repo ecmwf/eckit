@@ -24,6 +24,7 @@ namespace expression::function {
 
 class FunctionIntegerExpression : public FunctionExpression {
 public:
+
     static void registerIntegerFunctions();
 
     FunctionIntegerExpression(const std::string&, const expression::Expressions&);
@@ -36,6 +37,7 @@ public:
     static int arity() { return 1; }
 
 private:
+
     // No copy allowed
     FunctionIntegerExpression(const FunctionIntegerExpression&);
     FunctionIntegerExpression& operator=(const FunctionIntegerExpression&);

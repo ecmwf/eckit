@@ -21,6 +21,7 @@ namespace eckit::codec {
 
 class Base64 {
 public:
+
     static std::string encode(const void* data, size_t len);
     static std::string decode(const void* data, size_t len);
 

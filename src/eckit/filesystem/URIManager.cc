@@ -27,6 +27,7 @@ typedef std::map<std::string, URIManager*> URIManagerMap;
 ///
 class URIManagerRegistry {
 public:  // methods
+
     /// Builds the registry on demand, needed for correct static initialization
     /// because factories can be initialized first
     static URIManagerRegistry& instance() {
@@ -99,6 +100,7 @@ public:  // methods
     }
 
 private:  // members
+
     URIManagerMap map_;
     mutable Mutex mutex_;
 };
@@ -106,8 +108,7 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-URIManager::URIManager(const std::string& name) :
-    name_(name) {
+URIManager::URIManager(const std::string& name) : name_(name) {
     URIManagerRegistry::instance().enregister(name, this);
 }
 
@@ -158,8 +159,8 @@ class LocalFilePartManager : public URIManager {
     PathName path(const URI& uri) const override { return PathName("local", uri.name()); }
 
 public:
-    LocalFilePartManager(const std::string& name) :
-        URIManager(name) {}
+
+    LocalFilePartManager(const std::string& name) : URIManager(name) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -202,8 +203,8 @@ class HttpURIManager : public URIManager {
     }
 
 public:
-    HttpURIManager(const std::string& name) :
-        URIManager(name) {}
+
+    HttpURIManager(const std::string& name) : URIManager(name) {}
 };
 
 //----------------------------------------------------------------------------------------------------------------------

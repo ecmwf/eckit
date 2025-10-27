@@ -35,6 +35,7 @@ namespace eckit {
 template <class T>
 class Recycler {
 public:
+
     // -- Exceptions
     // None
 
@@ -81,6 +82,7 @@ public:
 
 
 protected:
+
     // -- Members
     // None
 
@@ -98,6 +100,7 @@ protected:
     // None
 
 private:
+
     // No copy allowed
 
     Recycler(const Recycler<T>&);
@@ -133,8 +136,7 @@ private:
 //-----------------------------------------------------------------------------
 
 template <class T>
-Recycler<T>::Recycler(const PathName& path) :
-    path_(path), fd_(-1) {
+Recycler<T>::Recycler(const PathName& path) : path_(path), fd_(-1) {
     path_.dirName().mkdir();
     fd_ = ::open(path_.localPath(), O_RDWR | O_CREAT, 0777);
     if (fd_ < 0) {

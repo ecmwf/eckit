@@ -23,8 +23,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SharedHandle::SharedHandle(DataHandle& handle) :
-    handle_(handle) {}
+SharedHandle::SharedHandle(DataHandle& handle) : handle_(handle) {}
 
 SharedHandle::~SharedHandle() {}
 

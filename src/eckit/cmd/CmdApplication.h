@@ -23,13 +23,16 @@ namespace eckit {
 
 class CmdApplication : public Prompter {
 public:
+
     CmdApplication();
     virtual ~CmdApplication();
 
 protected:
+
     void execute();
 
 private:
+
     std::string prompt() const override;
     virtual std::string name() const;
 

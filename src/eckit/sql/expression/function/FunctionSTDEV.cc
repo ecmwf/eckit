@@ -21,11 +21,9 @@ static FunctionBuilder<FunctionSTDEV> stdevFunctionBuilder("stdev");
 static FunctionBuilder<FunctionSTDEV> stddevFunctionBuilder("stddev");
 static FunctionBuilder<FunctionSTDEV> stdevpFunctionBuilder("stdevp");
 
-FunctionSTDEV::FunctionSTDEV(const std::string& name, const expression::Expressions& args) :
-    FunctionVAR(name, args) {}
+FunctionSTDEV::FunctionSTDEV(const std::string& name, const expression::Expressions& args) : FunctionVAR(name, args) {}
 
-FunctionSTDEV::FunctionSTDEV(const FunctionSTDEV& other) :
-    FunctionVAR(static_cast<const FunctionVAR&>(other)) {}
+FunctionSTDEV::FunctionSTDEV(const FunctionSTDEV& other) : FunctionVAR(static_cast<const FunctionVAR&>(other)) {}
 
 FunctionSTDEV::~FunctionSTDEV() {}
 

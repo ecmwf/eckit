@@ -26,6 +26,7 @@ namespace eckit {
 class BoolContent : public Content {
 
 protected:
+
     // -- Constructor
 
     BoolContent(bool);
@@ -99,6 +100,7 @@ protected:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 private:
+
     BoolContent(const BoolContent&);
     BoolContent& operator=(const BoolContent&);
 

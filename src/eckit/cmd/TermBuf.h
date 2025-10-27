@@ -28,6 +28,7 @@ namespace eckit {
 
 class TermBuf : public std::streambuf {
 public:
+
     // -- Contructors
 
     TermBuf(std::ostream&);
@@ -45,6 +46,7 @@ public:
     void clearEOS();
 
 private:
+
     // No copy allowed
 
     TermBuf(const TermBuf&);

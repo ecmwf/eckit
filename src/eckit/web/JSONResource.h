@@ -29,11 +29,13 @@ class Value;
 
 class JSONResource : public HttpResource {
 public:
+
     JSONResource(const std::string&);
 
     ~JSONResource() override;
 
 private:
+
     void GET(std::ostream&, Url&) override;
     void POST(std::ostream&, Url&) override;
     virtual void json(eckit::JSON&, const eckit::Value&) = 0;

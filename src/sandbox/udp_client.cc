@@ -16,8 +16,8 @@ namespace eckit {
 
 class TelemetryClient : public eckit::Tool {
 public:
-    TelemetryClient(int argc, char** argv) :
-        Tool(argc, argv, "TELEMETRY_HOME") {}
+
+    TelemetryClient(int argc, char** argv) : Tool(argc, argv, "TELEMETRY_HOME") {}
 
     ~TelemetryClient() {}
 

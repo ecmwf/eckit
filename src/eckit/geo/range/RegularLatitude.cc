@@ -12,32 +12,34 @@
 
 #include "eckit/geo/range/RegularLatitude.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
 
 
-RegularLatitude::RegularLatitude(double _inc, double _a, double _b, double _ref, double _eps) :
-    Regular(_inc, _a, _b, _ref, _eps) {}
+RegularLatitude::RegularLatitude(double _inc, double _a, double _b, double _ref) :
+    Regular(_inc, _a, _b, _ref, PointLonLat::EPS) {}
 
 
-RegularLatitude::RegularLatitude(size_t n, double _a, double _b, double _eps) : Regular(n, _a, _b, false, _eps) {
-    ASSERT(-90. <= a() && a() <= 90.);
-    ASSERT(-90. <= b() && b() <= 90.);
+RegularLatitude::RegularLatitude(size_t n, double _a, double _b) : Regular(n, _a, _b, false, PointLonLat::EPS) {
+    ASSERT(SOUTH_POLE.lat <= a() && a() <= NORTH_POLE.lat);
+    ASSERT(SOUTH_POLE.lat <= b() && b() <= NORTH_POLE.lat);
 }
 
 
 Range* RegularLatitude::make_range_cropped(double crop_a, double crop_b) const {
-    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b)
-           || (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
+    ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
+           (types::is_approximately_equal(a(), b(), PointLonLat::EPS) &&
+            types::is_approximately_equal(crop_a, crop_b, PointLonLat::EPS)));
 
-    if (types::is_approximately_equal(crop_a, crop_b, eps())) {
+    if (types::is_approximately_equal(crop_a, crop_b, PointLonLat::EPS)) {
         NOTIMP;  // FIXME
     }
-    else if (a() < b()) {
+
+    if (a() < b()) {
         ASSERT(a() <= crop_a && crop_b <= b());  // FIXME do better
 
         const auto inc(increment());
@@ -51,10 +53,7 @@ Range* RegularLatitude::make_range_cropped(double crop_a, double crop_b) const {
         const auto n = static_cast<size_t>(nf.integralPart() + 1);
         ASSERT(0 < n && n <= size());
 
-        return new RegularLatitude(n, _a, _b, eps());
-    }
-    else {
-        NOTIMP;  // FIXME
+        return new RegularLatitude(n, _a, _b);
     }
 
     NOTIMP;

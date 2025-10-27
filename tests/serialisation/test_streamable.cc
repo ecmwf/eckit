@@ -34,11 +34,10 @@ template <typename T>
 class TestItem : public Streamable {
 
 public:
-    TestItem(const T& s) :
-        payload_(s) {}
 
-    TestItem(Stream& s) :
-        Streamable(s), payload_() { s >> payload_; }
+    TestItem(const T& s) : payload_(s) {}
+
+    TestItem(Stream& s) : Streamable(s), payload_() { s >> payload_; }
 
     // From Streamble
     virtual void encode(eckit::Stream& s) const {
@@ -53,9 +52,11 @@ public:
     T payload_;
 
 protected:
+
     virtual void print(std::ostream& s) const { s << "TestItem " << payload_; }
 
 private:
+
     // -- Class members
     static eckit::ClassSpec classSpec_;
 

@@ -39,9 +39,11 @@ class Stream;
 
 class Offset {
 public:  // types
+
     typedef long long value_t;
 
 public:
+
     friend std::ostream& operator<<(std::ostream& s, const Offset& x);
 
     friend Stream& operator<<(Stream& s, const Offset& x);
@@ -49,10 +51,8 @@ public:
     friend Stream& operator>>(Stream& s, Offset& x);
 
     // Offset(fpos_t); <- To implement
-    Offset(value_t l = 0) :
-        value_(l) {}
-    Offset(const Offset& other) :
-        value_(other.value_) {}
+    Offset(value_t l = 0) : value_(l) {}
+    Offset(const Offset& other) : value_(other.value_) {}
 
 #include "eckit/io/Offset.b"
 
@@ -88,6 +88,7 @@ public:
     void load(DumpLoad&);
 
 private:
+
     // -- Members
 
     value_t value_;

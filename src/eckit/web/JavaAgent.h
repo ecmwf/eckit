@@ -25,8 +25,8 @@ namespace eckit {
 
 class JavaAgent : public eckit::Streamable {
 public:
-    enum
-    {
+
+    enum {
         none,
         user,
         oper,
@@ -62,17 +62,21 @@ public:
     static void serve(eckit::Stream&, std::istream&, std::ostream&);
 
 protected:  // members
+
     eckit::Stream& stream_;
     std::string user_;
 
 protected:  // methods
+
     virtual void print(std::ostream&) const = 0;
 
 private:  // members
+
     static eckit::ClassSpec classSpec_;
     static eckit::Reanimator<JavaAgent> reanimator_;
 
 private:  // methods
+
     friend std::ostream& operator<<(std::ostream& s, const JavaAgent& p) {
         p.print(s);
         return s;

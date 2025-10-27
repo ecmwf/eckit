@@ -13,15 +13,16 @@
 #pragma once
 
 #include <cstddef>
+#include <iterator>
 
 #include "eckit/geo/Point.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/memory/Builder.h"
+#include "eckit/memory/Factory.h"
 
 
 namespace eckit::geo {
 class Grid;
-namespace spec {
-class Custom;
-}
 }  // namespace eckit::geo
 
 
@@ -30,14 +31,22 @@ namespace eckit::geo {
 
 class Iterator {
 public:
+
     // -- Types
 
-    using difference_type = std::ptrdiff_t;
+    using builder_t = BuilderT1<Iterator>;
+    using ARG1      = const Spec&;
+
+    using iterator_category = std::input_iterator_tag;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = Point;
+    using pointer           = value_type*;
+    using reference         = value_type&;
 
     // -- Constructors
 
-    Iterator(const Iterator&) = delete;
-    Iterator(Iterator&&)      = delete;
+    Iterator(const Iterator&) = default;
+    Iterator(Iterator&&)      = default;
 
     // -- Destructor
 
@@ -45,8 +54,8 @@ public:
 
     // -- Operators
 
-    void operator=(const Iterator&) = delete;
-    void operator=(Iterator&&)      = delete;
+    Iterator& operator=(const Iterator&) = default;
+    Iterator& operator=(Iterator&&)      = default;
 
     virtual bool operator==(const Iterator&) const = 0;
     bool operator!=(const Iterator& other) const { return !operator==(other); }
@@ -58,26 +67,50 @@ public:
     virtual bool operator-=(difference_type diff) { return operator+=(-diff); }
 
     virtual explicit operator bool() const = 0;
-    virtual Point operator*() const        = 0;
+    virtual value_type operator*() const   = 0;
 
     // -- Methods
 
     virtual size_t index() const = 0;
 
-    [[nodiscard]] spec::Custom* spec() const;
+    // -- Class methods
+
+    static std::string className() { return "iterator"; }
 
 protected:
+
     // -- Constructors
 
     Iterator() = default;
 
-    // -- Methods
-
-    virtual void fill_spec(spec::Custom&) const = 0;
+private:
 
     // -- Friends
 
     friend class Grid;
+};
+
+
+using IteratorFactoryType = Factory<Iterator>;
+
+
+template <typename T>
+using IteratorRegisterType = ConcreteBuilderT1<Iterator, T>;
+
+
+struct IteratorFactory {
+    [[nodiscard]] static Iterator* build(const Spec& spec) { return instance().build_(spec); }
+    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+
+    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
+
+private:
+
+    static IteratorFactory& instance();
+
+    [[nodiscard]] Iterator* build_(const Spec&) const;
+    [[nodiscard]] Spec* make_spec_(const Spec&) const;
+    std::ostream& list_(std::ostream&) const;
 };
 
 

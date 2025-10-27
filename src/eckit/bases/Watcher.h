@@ -22,6 +22,7 @@ namespace eckit {
 
 class Watcher {
 public:
+
     // -- Methods
     virtual ~Watcher() {}
 

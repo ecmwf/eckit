@@ -1,0 +1,10 @@
+---
+
+area_names:
+  - globe-prime-meridian:
+      type: bounding_box
+      bounding_box: [90., 0., -90., 360.]
+
+  - globe-antimeridian:
+      type: bounding_box
+      bounding_box: [90., -180., -90., 180.]

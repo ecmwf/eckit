@@ -22,8 +22,7 @@ static FunctionBuilder<FunctionAND> andFunctionBuilder("and");
 FunctionAND::FunctionAND(const std::string& name, const expression::Expressions& args) :
     FunctionExpression(name, args) {}
 
-FunctionAND::FunctionAND(const FunctionAND& other) :
-    FunctionExpression(other.name_, other.args_) {}
+FunctionAND::FunctionAND(const FunctionAND& other) : FunctionExpression(other.name_, other.args_) {}
 
 std::shared_ptr<SQLExpression> FunctionAND::clone() const {
     return std::make_shared<FunctionAND>(*this);

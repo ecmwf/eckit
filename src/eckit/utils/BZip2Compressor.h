@@ -22,6 +22,7 @@ class Buffer;
 class BZip2Compressor : public eckit::Compressor {
 
 public:  // methods
+
     BZip2Compressor();
 
     ~BZip2Compressor() override;

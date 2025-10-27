@@ -12,33 +12,32 @@
 
 #include "eckit/geo/range/Regular.h"
 
-#include <cmath>
+#include <algorithm>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
 
 
-Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) : Range(2, _a, _b, eps), periodic_(false) {
+Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) :
+    Range(2, _a, _b, eps), increment_(_inc), periodic_(false) {
     ASSERT(0. <= _inc);
 
-    Fraction inc(_inc);
-    if (inc == 0 || types::is_approximately_equal(_a, _b)) {
+    if (increment_ == 0 || types::is_approximately_equal(_a, _b)) {
         b(_a);
         resize(1);
         return;
     }
 
     bool up    = _a < _b;
-    auto shift = (Fraction(_ref) / inc).decimalPart() * inc;
-    auto __a   = shift + adjust(Fraction(_a) - shift, inc, up);
-    auto __b   = shift + adjust(Fraction(_b) - shift, inc, !up);
-    auto n     = static_cast<size_t>((Fraction::abs(__b - __a) / inc).integralPart() + 1);
+    auto shift = (Fraction(_ref) / increment_).decimalPart() * increment_;
+    auto __a   = shift + adjust(Fraction(_a) - shift, increment_, up);
+    auto __b   = shift + adjust(Fraction(_b) - shift, increment_, !up);
+    auto n     = static_cast<size_t>((Fraction::abs(__b - __a) / increment_).integralPart() + 1);
 
     a(__a);
     b(__b);
@@ -46,9 +45,25 @@ Regular::Regular(double _inc, double _a, double _b, double _ref, double eps) : R
 }
 
 
+Regular::Regular(size_t n, double a, double b, bool periodic, double eps) :
+    Range(n, a, b, eps),  //
+    increment_(types::is_approximately_equal(a, b)
+                   ? 0.
+                   : (b - a) / static_cast<double>(std::max<size_t>(1, periodic ? n : n - 1))),
+    periodic_(periodic) {}
+
+
+Regular::Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps) :
+    Range(n, a, b, eps),  //
+    increment_(types::is_approximately_equal(a, b)
+                   ? 0.
+                   : (b - a) / static_cast<double>(std::max<size_t>(1, periodic ? n : n - 1))),
+    values_(values),
+    periodic_(periodic) {}
+
+
 Fraction Regular::increment() const {
-    ASSERT(1 < size());
-    return Fraction(std::abs(b() - a()) / static_cast<double>(periodic() ? size() : (size() - 1)));
+    return increment_;
 }
 
 

@@ -10,8 +10,10 @@
  */
 
 
-#include "eckit/geo/PointLonLatR.h"
+#include <vector>
+
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointLonLatR.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
@@ -29,8 +31,8 @@ CASE("PointLonLatR normalise_angle_to_*") {
 
 
     SECTION("normalise_angle_to_minimum") {
-        for (const auto& test : {
-                 test_t{1., 0., 1.},
+        for (const auto& test : std::vector<test_t>{
+                 {1., 0., 1.},
                  {1. + 42. * PointLonLatR::FULL_ANGLE, 0., 1.},
                  {1. - 42. * PointLonLatR::FULL_ANGLE, 0., 1.},
                  {1., 3. * PointLonLatR::FULL_ANGLE, 3. * PointLonLatR::FULL_ANGLE + 1.},
@@ -43,8 +45,8 @@ CASE("PointLonLatR normalise_angle_to_*") {
 
 
     SECTION("normalise_angle_to_maximum") {
-        for (const auto& test : {
-                 test_t{1., 0., 1. - PointLonLatR::FULL_ANGLE},
+        for (const auto& test : std::vector<test_t>{
+                 {1., 0., 1. - PointLonLatR::FULL_ANGLE},
                  {1., 3. * PointLonLatR::FULL_ANGLE, 2. * PointLonLatR::FULL_ANGLE + 1.},
                  {-1., 3. * PointLonLatR::FULL_ANGLE, 3. * PointLonLatR::FULL_ANGLE - 1.},
              }) {
@@ -120,6 +122,16 @@ CASE("PointLonLatR conversion to/from PointLonLat") {
 
     PointLonLatR s{10. * util::DEGREE_TO_RADIAN, 42. * PointLonLatR::FULL_ANGLE};
     EXPECT(points_equal(s, PointLonLatR::make_from_lonlat(10. - 42. * PointLonLat::FULL_ANGLE, 0.)));
+}
+
+
+CASE("PointLonLatR pole") {
+    for (const auto& p : {PointLonLatR(0., PointLonLatR::RIGHT_ANGLE), PointLonLatR(0., -PointLonLatR::RIGHT_ANGLE)}) {
+        EXPECT(p.pole());
+
+        PointLonLatR q{p.lonr, p.latr + 1.};
+        EXPECT(!q.pole());
+    }
 }
 
 

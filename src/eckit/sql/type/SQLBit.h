@@ -20,6 +20,7 @@ namespace eckit::sql::type {
 
 class SQLBit : public SQLType {
 public:
+
     SQLBit(const std::string&, unsigned long, unsigned long);
     ~SQLBit();
 
@@ -27,6 +28,7 @@ public:
     unsigned long shift() const { return shift_; }
 
 private:
+
     // No copy allowed
     SQLBit(const SQLBit&);
     SQLBit& operator=(const SQLBit&);

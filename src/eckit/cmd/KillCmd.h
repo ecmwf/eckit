@@ -25,6 +25,7 @@ namespace eckit {
 
 class KillCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     KillCmd();
@@ -34,6 +35,7 @@ public:
     ~KillCmd();
 
 private:
+
     // No copy allowed
 
     KillCmd(const KillCmd&);

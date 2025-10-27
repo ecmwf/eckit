@@ -16,8 +16,7 @@ namespace eckit::sql::type {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SQLDouble::SQLDouble(const std::string& name) :
-    SQLType(name) {}
+SQLDouble::SQLDouble(const std::string& name) : SQLType(name) {}
 
 SQLDouble::~SQLDouble() {}
 

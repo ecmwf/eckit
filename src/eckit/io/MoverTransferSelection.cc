@@ -10,8 +10,8 @@
 
 
 #include "eckit/io/MoverTransferSelection.h"
-#include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/cluster/ClusterNodes.h"
 
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
@@ -19,12 +19,11 @@
 #include "eckit/runtime/Metrics.h"
 
 
-
 namespace eckit {
 
 
 MoverTransferSelection::MoverTransferSelection() {}
-MoverTransferSelection::~MoverTransferSelection(){}
+MoverTransferSelection::~MoverTransferSelection() {}
 
 
 void MoverTransferSelection::updateCost(const std::string& name, const eckit::Length& length) {
@@ -44,7 +43,7 @@ void MoverTransferSelection::selectedMover(NodeInfo& result, bool& metrics) {
 
     metrics = false;
 
-    if (preferredMover_.length() ) {
+    if (preferredMover_.length()) {
         if (ClusterNodes::available("mover", preferredMover_)) {
             NodeInfo preferred = ClusterNodes::lookUp("mover", preferredMover_);
             if (preferred.supportsAttributes(moverAttributes_)) {
@@ -52,14 +51,11 @@ void MoverTransferSelection::selectedMover(NodeInfo& result, bool& metrics) {
                 result = preferred;
                 return;
             }
-            Log::warning() << "Preferred mover "
-                           << preferredMover_
-                           << " does not support mover attributes: "
-                           << moverAttributes_ << std::endl;
+            Log::warning() << "Preferred mover " << preferredMover_
+                           << " does not support mover attributes: " << moverAttributes_ << std::endl;
         }
         else {
-            Log::warning() << "Preferred mover " << preferredMover_
-                           << " is not available" << std::endl;
+            Log::warning() << "Preferred mover " << preferredMover_ << " is not available" << std::endl;
         }
     }
 
@@ -69,8 +65,8 @@ void MoverTransferSelection::selectedMover(NodeInfo& result, bool& metrics) {
     for (const auto& c : cost_) {
         if (ClusterNodes::available("mover", c.first) &&
             ClusterNodes::lookUp("mover", c.first).supportsAttributes(moverAttributes_)) {
-                cost.insert(c);
-            }
+            cost.insert(c);
+        }
     }
 
     if (cost.empty()) {
@@ -88,8 +84,8 @@ void MoverTransferSelection::selectedMover(NodeInfo& result, bool& metrics) {
     Length best = 0;
 
     for (const auto& c : cost) {
-        if(c.second >= best) {
-            best = c.second;
+        if (c.second >= best) {
+            best  = c.second;
             which = c.first;
         }
     }
@@ -98,7 +94,7 @@ void MoverTransferSelection::selectedMover(NodeInfo& result, bool& metrics) {
 
 
     metrics = true;
-    result = ClusterNodes::lookUp("mover", which);
+    result  = ClusterNodes::lookUp("mover", which);
 }
 
 NodeInfo MoverTransferSelection::selectedMover() {

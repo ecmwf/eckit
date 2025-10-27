@@ -18,6 +18,7 @@ namespace eckit {
 
 class OnlyMovable {
 protected:
+
     OnlyMovable() {}
     ~OnlyMovable() {}
 

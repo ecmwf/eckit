@@ -25,6 +25,7 @@ namespace eckit {
 
 class ProgressTimer : public Timer {
 public:
+
     /// @param name of the timer, used for output
     /// @param limit counter maximum value
     /// @param unit counter unit (singular)
@@ -46,6 +47,7 @@ public:
     operator bool() const;
 
 private:  // members
+
     const size_t limit_;
     const std::string unit_;
 

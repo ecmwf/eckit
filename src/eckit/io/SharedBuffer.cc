@@ -17,8 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SharedBuffer::SharedBuffer(size_t size) :
-    buffer_(new CountedBuffer(size)) {
+SharedBuffer::SharedBuffer(size_t size) : buffer_(new CountedBuffer(size)) {
     ASSERT(buffer_);
     buffer_->attach();
 }

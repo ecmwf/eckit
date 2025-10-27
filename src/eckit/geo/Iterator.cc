@@ -12,19 +12,72 @@
 
 #include "eckit/geo/Iterator.h"
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/spec/Layered.h"
+#include "eckit/geo/util/mutex.h"
 
 
 namespace eckit::geo {
 
 
-spec::Custom* Iterator::spec() const {
-    auto* custom = new spec::Custom;
-    ASSERT(custom != nullptr);
+namespace {
 
-    fill_spec(*custom);
-    return custom;
+
+util::recursive_mutex MUTEX;
+
+
+class lock_type {
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
+
+
+IteratorFactory& IteratorFactory::instance() {
+    static IteratorFactory INSTANCE;
+    return INSTANCE;
+}
+
+
+Iterator* IteratorFactory::build_(const Spec& spec) const {
+    lock_type lock;
+
+    std::unique_ptr<Spec> cfg(make_spec_(spec));
+
+    if (std::string type; cfg->get("type", type)) {
+        return IteratorFactoryType::instance().get(type).create(*cfg);
+    }
+
+    list(Log::error() << "Iterator: cannot build iterator without 'type', choices are: ");
+    throw exception::SpecError("Iterator: cannot build iterator without 'type'", Here());
+}
+
+
+Spec* IteratorFactory::make_spec_(const Spec& spec) const {
+    lock_type lock;
+
+    auto* cfg = new spec::Layered(spec);
+    ASSERT(cfg != nullptr);
+
+
+    // hardcoded, interpreted options (contributing to spec)
+
+    auto back = std::make_unique<spec::Custom>();
+    ASSERT(back);
+
+    back->set("type", cfg->has("pl") ? "reduced" : "regular");
+
+    return cfg;
+}
+
+
+std::ostream& IteratorFactory::list_(std::ostream& out) const {
+    lock_type lock;
+
+    out << IteratorFactoryType::instance() << std::endl;
+
+    return out;
 }
 
 

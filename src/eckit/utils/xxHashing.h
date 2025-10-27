@@ -23,6 +23,7 @@ namespace eckit {
 class xxHash : public Hash {
 
 public:  // types
+
     xxHash();
 
     explicit xxHash(const char*);
@@ -47,6 +48,7 @@ public:  // types
     }
 
 private:  // members
+
     struct Context;
     std::unique_ptr<Context> ctx_;
 };

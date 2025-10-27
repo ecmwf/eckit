@@ -21,8 +21,7 @@ namespace sparse {
 
 struct LinearAlgebraCUDA final : public LinearAlgebraSparse {
     LinearAlgebraCUDA() {}
-    LinearAlgebraCUDA(const std::string& name) :
-        LinearAlgebraSparse(name) {}
+    LinearAlgebraCUDA(const std::string& name) : LinearAlgebraSparse(name) {}
 
     void spmv(const SparseMatrix&, const Vector&, Vector&) const override;
     void spmm(const SparseMatrix&, const Matrix&, Matrix&) const override;

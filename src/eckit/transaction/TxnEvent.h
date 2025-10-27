@@ -26,6 +26,7 @@ typedef unsigned long long TxnID;
 
 class TxnEvent : public Streamable {
 public:
+
     // -- Contructors
 
     TxnEvent();
@@ -53,11 +54,13 @@ public:
     static const ClassSpec& classSpec() { return classSpec_; }
 
 protected:
+
     // -- Methods
 
     virtual void print(std::ostream&) const;
 
 private:
+
     // No copy allowed
 
     TxnEvent(const TxnEvent&);

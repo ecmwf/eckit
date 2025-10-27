@@ -49,6 +49,7 @@ struct ParseFrame {
 
 class SQLParser {
 public:
+
     static int line();
 
     //    static void parseString(SQLSession&, const std::string&, eckit::DataHandle*, SQLOutputConfig, bool
@@ -60,6 +61,7 @@ public:
     static std::stack<ParseFrame> frames_;
 
 private:
+
     static void parseStringInternal(SQLSession&, const std::string&);
 
     static std::string cleanUpSQLText(const std::string&);

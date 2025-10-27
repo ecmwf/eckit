@@ -12,7 +12,7 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/spec/Custom.h"
 
@@ -20,11 +20,8 @@
 namespace eckit::geo::grid {
 
 
-Unstructured::Unstructured(std::vector<Point>&& points) : Grid(area::BoundingBox{}), points_(points) {}
-
-
 Grid::iterator Unstructured::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, points_)};
+    return iterator{new geo::iterator::Unstructured(*this, 0, container_)};
 }
 
 
@@ -33,10 +30,39 @@ Grid::iterator Unstructured::cend() const {
 }
 
 
-Spec* Unstructured::spec(const std::string& name) {
-    return SpecByUID::instance().get(name).spec();
+Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
+    Unstructured(new container::PointsLonLatReference{longitudes, latitudes}) {}
+
+
+Unstructured::Unstructured(const std::vector<Point>& points) : Unstructured(new container::PointsReference{points}) {}
+
+
+Unstructured::Unstructured(std::vector<Point>&& points) :
+    Unstructured(new container::PointsInstance{std::move(points)}) {}
+
+
+Unstructured::Unstructured(container::PointsContainer* container) :
+    Grid(area::BoundingBox::make_global_prime().release(), nullptr), container_{container} {}
+
+
+size_t Unstructured::size() const {
+    return container_->size();
 }
 
+
+std::vector<Point> Unstructured::to_points() const {
+    return container_->to_points();
+}
+
+
+std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlons() const {
+    return container_->to_latlons();
+}
+
+
+Spec* Unstructured::spec(const std::string& name) {
+    return GridSpecByUID::instance().get(name).spec();
+}
 
 void Unstructured::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);

@@ -25,6 +25,7 @@ class SerialStatus : public StatusContent {
     SerialStatus();
 
 private:  // methods
+
     friend class Serial;
 
     int source() const override { return source_; }
@@ -34,6 +35,7 @@ private:  // methods
     void print(std::ostream&) const override;
 
 private:  // members
+
     int source_;
     int tag_;
     int error_;

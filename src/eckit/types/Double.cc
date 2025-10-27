@@ -20,11 +20,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Double::Double(double d) :
-    value_(d) {}
+Double::Double(double d) : value_(d) {}
 
-Double::Double(const std::string& s) :
-    value_(Translator<std::string, double>()(s)) {}
+Double::Double(const std::string& s) : value_(Translator<std::string, double>()(s)) {}
 
 void Double::dump(DumpLoad& a) const {
     a.dump(value_);

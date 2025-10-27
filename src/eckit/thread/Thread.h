@@ -27,6 +27,7 @@ namespace eckit {
 
 class Thread : private NonCopyable {
 public:
+
     friend class ThreadControler;
 
     Thread(bool autodel = true);
@@ -36,16 +37,20 @@ public:
     void stop();
 
 protected:  // members
+
     Mutex mutex_;
 
 protected:  // methods
+
     bool stopped();
 
 private:  // members
+
     bool stop_;
     bool autodel_;
 
 private:  // methods
+
     virtual void run() = 0;
 };
 

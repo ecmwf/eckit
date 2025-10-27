@@ -29,8 +29,8 @@ class Test : public Application {
     virtual void run();
 
 public:
-    Test(int argc, char** argv) :
-        Application(argc, argv, "HOME") {}
+
+    Test(int argc, char** argv) : Application(argc, argv, "HOME") {}
 };
 
 const size_t SIZE = 1024;
@@ -41,6 +41,7 @@ const char* EMPTY = "/eckit-shmem-ipc-empty";
 
 class NamedSemaphore {
 public:
+
     NamedSemaphore(const std::string& name, int value, bool create = true, bool unlink = false, int mode = 0664);
     ~NamedSemaphore();
 
@@ -48,6 +49,7 @@ public:
     void post();
 
 private:
+
     std::string name_;
     bool unlink_;
     sem_t* semaphore_ = SEM_FAILED;

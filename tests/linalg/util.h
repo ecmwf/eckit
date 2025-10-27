@@ -121,7 +121,8 @@ bool equal_array(T* v, T* r, size_t s) {
 
 template <typename T>
 bool equal_dense_matrix(const T& a, const T& b) {
-    return a.size() == b.size() && testing::make_view(a.data(), a.data() + a.size()) == testing::make_view(b.data(), b.data() + b.size());
+    return a.size() == b.size() &&
+           testing::make_view(a.data(), a.data() + a.size()) == testing::make_view(b.data(), b.data() + b.size());
 }
 
 template <typename T>
@@ -129,8 +130,10 @@ bool equal_dense_matrix(const T& v, const T& r, size_t s) {
     return is_approximately_equal(testing::make_view(v.data(), s), testing::make_view(r.data(), s), 0.1);
 }
 
-bool equal_sparse_matrix(const linalg::SparseMatrix& A, const linalg::Index* outer, const linalg::Index* inner, const linalg::Scalar* data) {
-    return equal_array(A.outer(), outer, A.rows() + 1) && equal_array(A.inner(), inner, A.nonZeros()) && equal_array(A.data(), data, A.nonZeros());
+bool equal_sparse_matrix(const linalg::SparseMatrix& A, const linalg::Index* outer, const linalg::Index* inner,
+                         const linalg::Scalar* data) {
+    return equal_array(A.outer(), outer, A.rows() + 1) && equal_array(A.inner(), inner, A.nonZeros()) &&
+           equal_array(A.data(), data, A.nonZeros());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

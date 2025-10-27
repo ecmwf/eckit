@@ -36,6 +36,7 @@ typedef std::vector<Ordinal> OrdinalList;
 typedef std::vector<std::string> StringList;
 typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringDict;
+typedef std::vector<std::pair<std::string, std::string>> OrderedStringDict;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ class output_list {
     void flush();
 
 public:
+
     void push_back(const T&);
     output_list(std::ostream&);
     ~output_list();
@@ -76,8 +78,8 @@ class output_list_iterator : public output_iterator {
     output_list<T>* list_;
 
 public:
-    output_list_iterator(output_list<T>* l) :
-        list_(l) {}
+
+    output_list_iterator(output_list<T>* l) : list_(l) {}
     ~output_list_iterator() {}
 
     output_list_iterator<T>& operator=(const T& v) {
@@ -108,7 +110,7 @@ struct VectorPrintSelector<double> {
     typedef VectorPrintSimple selector;
 };
 template <typename K, typename V>
-struct VectorPrintSelector<std::pair<K, V> > {
+struct VectorPrintSelector<std::pair<K, V>> {
     typedef VectorPrintSimple selector;
 };
 

@@ -24,6 +24,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionAND : public FunctionExpression {
 public:
+
     FunctionAND(const std::string&, const expression::Expressions&);
     FunctionAND(const FunctionAND&);
     ~FunctionAND();
@@ -34,6 +35,7 @@ public:
     static const char* help() { return ""; }
 
 private:
+
     // No copy allowed
     FunctionAND& operator=(const FunctionAND&);
 

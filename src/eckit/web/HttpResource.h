@@ -28,6 +28,7 @@ class HttpStream;
 
 class HttpResource : public HtmlObject, public eckit::NonCopyable {
 public:  // methods
+
     HttpResource(const std::string&);
 
     ~HttpResource() override;
@@ -40,9 +41,11 @@ public:  // methods
     const std::string& resourceUrl() const;
 
 protected:  // methods
+
     void print(std::ostream&) const override;
 
 protected:  // members
+
     const std::string resourceUrl_;
 };
 

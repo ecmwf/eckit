@@ -28,13 +28,16 @@ class ReaderIterator;
 template <typename T = odb::SelectIterator>
 class SQLIteratorOutput : public SQLOutput {
 public:
+
     SQLIteratorOutput(T&);
     ~SQLIteratorOutput() override;
 
 protected:
+
     void print(std::ostream&) const override;
 
 private:
+
     // No copy allowed
     SQLIteratorOutput(const SQLIteratorOutput&);
     SQLIteratorOutput& operator=(const SQLIteratorOutput&);

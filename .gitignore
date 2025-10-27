@@ -10,4 +10,5 @@ doc/latex
 .vscode
 .idea
 build/
+tests/geo/eckit_geo_cache
 *.ccls-cache

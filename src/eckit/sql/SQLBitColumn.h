@@ -20,10 +20,12 @@ namespace eckit::sql {
 
 class SQLBitColumn : public SQLColumn {
 public:
+
     SQLBitColumn(const SQLColumn&, const std::string&);
     ~SQLBitColumn();
 
 private:
+
     // No copy allowed
     SQLBitColumn(const SQLBitColumn&);
     SQLBitColumn& operator=(const SQLBitColumn&);

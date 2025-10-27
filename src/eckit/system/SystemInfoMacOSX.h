@@ -26,6 +26,7 @@ namespace eckit::system {
 class SystemInfoMacOSX : public SystemInfo {
 
 public:  // methods
+
     ~SystemInfoMacOSX() override;
 
     eckit::LocalPathName executablePath() const override;
@@ -38,7 +39,8 @@ public:  // methods
     std::string dynamicLibraryName(const std::string& name) const override;
 
 protected:  // methods
-private:    // members
+
+private:  // members
 };
 
 //----------------------------------------------------------------------------------------------------------------------

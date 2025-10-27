@@ -16,15 +16,9 @@ namespace eckit::distributed {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-TransportStatistics::TransportStatistics():
-    sendCount_(0),
-    receiveCount_(0),
-    sendSize_(0),
-    receiveSize_(0)
-{
-}
+TransportStatistics::TransportStatistics() : sendCount_(0), receiveCount_(0), sendSize_(0), receiveSize_(0) {}
 
-TransportStatistics::TransportStatistics(eckit::Stream &s) {
+TransportStatistics::TransportStatistics(eckit::Stream& s) {
 
     s >> sendCount_;
     s >> receiveCount_;
@@ -36,7 +30,7 @@ TransportStatistics::TransportStatistics(eckit::Stream &s) {
     s >> shutdownTiming_;
 }
 
-void TransportStatistics::encode(eckit::Stream &s) const {
+void TransportStatistics::encode(eckit::Stream& s) const {
 
     s << sendCount_;
     s << receiveCount_;
@@ -48,7 +42,7 @@ void TransportStatistics::encode(eckit::Stream &s) const {
     s << shutdownTiming_;
 }
 
-TransportStatistics &TransportStatistics::operator+=(const TransportStatistics &other) {
+TransportStatistics& TransportStatistics::operator+=(const TransportStatistics& other) {
 
     sendCount_ += other.sendCount_;
     receiveCount_ += other.receiveCount_;
@@ -66,7 +60,7 @@ inline static void divide(size_t& x, size_t n) {
     x = (x + 0.5) / n;
 }
 
-TransportStatistics &TransportStatistics::operator/=(size_t n) {
+TransportStatistics& TransportStatistics::operator/=(size_t n) {
 
     divide(sendCount_, n);
     divide(receiveCount_, n);
@@ -80,7 +74,7 @@ TransportStatistics &TransportStatistics::operator/=(size_t n) {
     return *this;
 }
 
-void TransportStatistics::report(std::ostream &out, const char *indent) const {
+void TransportStatistics::report(std::ostream& out, const char* indent) const {
     reportCount(out, "Transport: messages sent", sendCount_, indent);
     reportBytes(out, "Transport: byte sent", sendSize_, indent);
     reportTime(out, "Transport: time in send", sendTiming_, indent);
@@ -97,7 +91,6 @@ void TransportStatistics::report(std::ostream &out, const char *indent) const {
 
     reportTime(out, "Transport: barrier", barrierTiming_, indent);
     reportTime(out, "Transport: shutdown", shutdownTiming_, indent);
-
 }
 
 void TransportStatistics::csvHeader(std::ostream& out) const {
@@ -105,18 +98,12 @@ void TransportStatistics::csvHeader(std::ostream& out) const {
 }
 
 void TransportStatistics::csvRow(std::ostream& out) const {
-    out << sendCount_ << ","
-        << sendSize_ << ","
-        << sendTiming_ << ","
-        << receiveCount_ << ","
-        << receiveSize_ << ","
-        << receiveTiming_ << ","
-        << barrierTiming_ << ","
-        << shutdownTiming_;
+    out << sendCount_ << "," << sendSize_ << "," << sendTiming_ << "," << receiveCount_ << "," << receiveSize_ << ","
+        << receiveTiming_ << "," << barrierTiming_ << "," << shutdownTiming_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed

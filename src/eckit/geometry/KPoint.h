@@ -24,14 +24,12 @@ namespace eckit::geometry {
 
 //------------------------------------------------------------------------------------------------------
 
-enum XYZCOORDS
-{
+enum XYZCOORDS {
     XX = 0,
     YY = 1,
     ZZ = 2
 };
-enum LLCOORDS
-{
+enum LLCOORDS {
     LON = XX,
     LAT = YY
 };
@@ -41,9 +39,11 @@ enum LLCOORDS
 template <int SIZE = 2>
 class KPoint {
 protected:
+
     double x_[SIZE] = {0};
 
 public:
+
     static const size_t DIMS = SIZE;
 
     double x(size_t axis) const { return x_[axis]; }

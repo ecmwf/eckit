@@ -11,11 +11,12 @@
 
 
 #include <utility>
+#include <vector>
 
 #include "eckit/geo/Point.h"
-#include "eckit/geo/Point2.h"
-#include "eckit/geo/Point3.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/testing/Test.h"
 
 
@@ -31,16 +32,17 @@ CASE("Point comparison") {
         EXPECT(points_equal(a1, a2));
     }
 
-    Point2 p2{1., 2.};
-    Point3 p3{1., 2., 3.};
+    PointXY p2{1., 2.};
+    PointXYZ p3{1., 2., 3.};
     PointLonLat pll{4., 5.};
 
-    for (const auto& [a, b] : {std::pair<Point, Point>{p2, p2}, {p3, p3}, {pll, pll}}) {
-        EXPECT(points_equal(a, b));
+    for (const auto& ab : std::vector<std::pair<Point, Point>>{{p2, p2}, {p3, p3}, {pll, pll}}) {
+        EXPECT(points_equal(ab.first, ab.second));
     }
 
-    for (const auto& [a, b] : {std::pair<Point, Point>{p2, p3}, {p2, pll}, {p3, p2}, {p3, pll}, {pll, p2}, {pll, p3}}) {
-        EXPECT_THROWS_AS(points_equal(a, b), AssertionFailed);
+    for (const auto& ab :
+         std::vector<std::pair<Point, Point>>{{p2, p3}, {p2, pll}, {p3, p2}, {p3, pll}, {pll, p2}, {pll, p3}}) {
+        EXPECT_THROWS_AS(points_equal(ab.first, ab.second), AssertionFailed);
     }
 }
 

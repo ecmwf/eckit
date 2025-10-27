@@ -31,11 +31,13 @@ class Value;
 
 class Prompter {
 public:
+
     virtual std::string prompt() const = 0;
 };
 
 class CmdParser {
 public:
+
     // -- Methods
 
     static void parse(std::istream&, std::ostream&, const Prompter& prompter);
@@ -88,6 +90,7 @@ public:
     static void run(void (*)(eckit::CmdResource*, eckit::CmdArg&, std::istream&, std::ostream&));
 
 private:
+
     // No copy allowed
 
     CmdParser(const CmdParser&);

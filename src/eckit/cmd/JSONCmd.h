@@ -25,6 +25,7 @@ namespace eckit {
 
 class JSONCmd : public CmdResource {
 public:
+
     // -- Contructors
 
     JSONCmd();
@@ -34,6 +35,7 @@ public:
     ~JSONCmd();
 
 private:
+
     // No copy allowed
 
     JSONCmd(const JSONCmd&);

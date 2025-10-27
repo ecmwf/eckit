@@ -17,7 +17,7 @@
 #include <limits>
 #include <sstream>
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -38,6 +38,23 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, va
 
     auto diff = a - maximum;
     return -FULL_ANGLE < diff && diff <= 0. ? a : (modulus(diff) + maximum);
+}
+
+
+bool PointLonLat::pole(value_type eps) const {
+    const auto p = make(lon, lat);
+    return types::is_approximately_equal(p.lat, RIGHT_ANGLE, eps) ||
+           types::is_approximately_equal(p.lat, -RIGHT_ANGLE, eps);
+}
+
+
+bool PointLonLat::north_pole(value_type eps) const {
+    return types::is_approximately_equal(make(lon, lat).lat, RIGHT_ANGLE, eps);
+}
+
+
+bool PointLonLat::south_pole(value_type eps) const {
+    return types::is_approximately_equal(make(lon, lat).lat, -RIGHT_ANGLE, eps);
 }
 
 
@@ -66,8 +83,8 @@ PointLonLat PointLonLat::make(value_type lon, value_type lat, value_type lon_min
 }
 
 
-PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, value_type lonr_minimum) {
-    return make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr, util::RADIAN_TO_DEGREE * lonr_minimum);
+PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, value_type lon_minimum) {
+    return make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr, lon_minimum);
 }
 
 

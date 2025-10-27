@@ -36,6 +36,7 @@ constexpr bool have_parallel() {
 
 class Environment {
 public:
+
     static std::string_view getDefaultCommType() {
         // Force a given communicator (only required if e.g. running serial applications with MPI)
         if (const char* forcedComm = ::getenv("ECKIT_MPI_FORCE")) {
@@ -48,7 +49,8 @@ public:
                 ",ALPS_APP_PE"            // Cray aprun
                 ",PMI_SIZE"               // Intel MPI
                 ",SLURM_STEP_NUM_TASKS";  // slurm srun
-            std::string eckitMPIDetectionVars = eckit::LibResource<std::string, LibEcKit>("$ECKIT_MPI_DETECTION_VARS;eckitMPIDetectionVars", defaultMPIDetectionVars);
+            std::string eckitMPIDetectionVars = eckit::LibResource<std::string, LibEcKit>(
+                "$ECKIT_MPI_DETECTION_VARS;eckitMPIDetectionVars", defaultMPIDetectionVars);
             std::vector<std::string> envVars;
             Tokenizer{','}(eckitMPIDetectionVars, envVars);
             for (const auto& env : envVars) {
@@ -125,6 +127,7 @@ public:
             delete itr->second;
         }
         communicators.clear();
+        default_ = nullptr;
     }
 
     Comm& getComm(std::string_view name = {}) {
@@ -163,7 +166,7 @@ public:
             throw SeriousBug("Communicator with name " + std::string{name} + " already exists", Here());
         }
 
-        Comm* pComm         = CommFactory::build(name, getDefaultCommType(), comm);
+        Comm* pComm = CommFactory::build(name, getDefaultCommType(), comm);
         communicators.emplace(name, pComm);
     }
 
@@ -187,9 +190,7 @@ public:
 
             // refuse to delete the default communicator
             if (default_ == comm) {
-                throw SeriousBug("Trying to delete the default Communicator with name "
-                                     + std::string{name},
-                                 Here());
+                throw SeriousBug("Trying to delete the default Communicator with name " + std::string{name}, Here());
             }
 
             comm->free();
@@ -203,17 +204,11 @@ public:
     }
 
 
-    Environment() :
-        default_(nullptr) {}
+    Environment() = default;
 
-    ~Environment() {
-        AutoLock<Mutex> lock(mutex_);
+    ~Environment() { finaliseAllComms(); }
 
-        finaliseAllComms();
-        default_ = nullptr;
-    }
-
-    Comm* default_;
+    Comm* default_{nullptr};
 
     std::map<std::string, Comm*, std::less<>> communicators;
 
@@ -224,6 +219,7 @@ public:
 
 class CommFactories {
 public:
+
     void registFactory(std::string_view builder, CommFactory* f) {
         AutoLock<Mutex> lock(mutex_);
         ASSERT(factories.find(builder) == factories.end());
@@ -259,14 +255,14 @@ public:
     }
 
 private:
+
     CommFactories() {}
 
     std::map<std::string, CommFactory*, std::less<>> factories;
     mutable eckit::Mutex mutex_;
 };
 
-CommFactory::CommFactory(std::string_view builder) :
-    builder_(builder) {
+CommFactory::CommFactory(std::string_view builder) : builder_(builder) {
     CommFactories::instance().registFactory(builder, this);
 }
 
@@ -284,8 +280,7 @@ Comm* CommFactory::build(std::string_view name, std::string_view builder, int co
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Comm::Comm(std::string_view name) :
-    name_(name) {}
+Comm::Comm(std::string_view name) : name_(name) {}
 
 Comm::~Comm() {}
 

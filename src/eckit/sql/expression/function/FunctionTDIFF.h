@@ -23,6 +23,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionTDIFF : public FunctionIntegerExpression {
 public:
+
     FunctionTDIFF(const std::string&, const expression::Expressions&);
     FunctionTDIFF(const FunctionTDIFF&);
     ~FunctionTDIFF();
@@ -32,6 +33,7 @@ public:
     static int arity() { return 4; }
 
 private:
+
     // No copy allowed
     FunctionTDIFF& operator=(const FunctionTDIFF&);
 

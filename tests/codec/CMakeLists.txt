@@ -25,7 +25,7 @@ ecbuild_add_executable(
     NOINSTALL
 )
 
-foreach( algorithm none bzip2 aec lz4 snappy )
+function( add_codec_test algorithm )
     string( TOUPPER ${algorithm} feature )
     if( eckit_HAVE_${feature} OR algorithm MATCHES "none" )
         ecbuild_add_test(
@@ -35,5 +35,10 @@ foreach( algorithm none bzip2 aec lz4 snappy )
             ENVIRONMENT ECKIT_CODEC_COMPRESSION=${algorithm}
         )
     endif()
-endforeach()
+endfunction()
 
+add_codec_test(none)
+add_codec_test(aec)
+add_codec_test(bzip2)
+add_codec_test(lz4)
+add_codec_test(snappy)

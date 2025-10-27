@@ -23,7 +23,7 @@
 namespace eckit::option {
 class Option;
 class CmdArgs;
-}
+}  // namespace eckit::option
 
 namespace eckit::distributed {
 
@@ -32,17 +32,17 @@ class Message;
 //----------------------------------------------------------------------------------------------------------------------
 
 class NoTransport : public Transport {
-public: // methods
+public:  // methods
 
-    NoTransport(const eckit::option::CmdArgs &args);
+    NoTransport(const eckit::option::CmdArgs& args);
     virtual ~NoTransport() override;
 
-protected: // methods
+protected:  // methods
 
 
-    virtual void sendMessageToNextWorker(const Message &message) override;
-    virtual void getNextWorkMessage(Message &message) override;
-    virtual void sendStatisticsToProducer(const Message &message) override;
+    virtual void sendMessageToNextWorker(const Message& message) override;
+    virtual void getNextWorkMessage(Message& message) override;
+    virtual void sendStatisticsToProducer(const Message& message) override;
     virtual void sendShutDownMessage(const Actor&) override;
 
     virtual bool producer() const override;
@@ -52,19 +52,17 @@ protected: // methods
     virtual void synchronise() override;
     virtual bool writer() const override;
 
-    virtual void sendToWriter(size_t writer, const Message &message) override;
-    virtual void getNextWriteMessage(Message &message) override;
+    virtual void sendToWriter(size_t writer, const Message& message) override;
+    virtual void getNextWriteMessage(Message& message) override;
 
     void print(std::ostream& out) const override;
 
 
-protected: // members
-
-
+protected:  // members
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-} // namespace eckit
+}  // namespace eckit::distributed
 
 #endif

@@ -20,6 +20,7 @@ namespace eckit::sql::expression::function {
 
 class FunctionNULL : public FunctionExpression {
 public:
+
     FunctionNULL(const std::string&, const expression::Expressions&);
     FunctionNULL(const FunctionNULL&);
     ~FunctionNULL();
@@ -29,6 +30,7 @@ public:
     static int arity() { return 1; }
 
 private:
+
     // No copy allowed
     const eckit::sql::type::SQLType* type() const override;
     FunctionNULL& operator=(const FunctionNULL&);

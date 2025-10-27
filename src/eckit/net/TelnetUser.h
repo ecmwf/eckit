@@ -17,11 +17,13 @@ namespace eckit::net {
 
 class TelnetUser : public NetUser {
 public:
+
     explicit TelnetUser(net::TCPSocket&);
     ~TelnetUser() override;
     static void terminate(TelnetUser& other) { other.stop(); }
 
 private:
+
     void serve(Stream&, std::istream&, std::ostream&) override;
     std::string from_;
 };

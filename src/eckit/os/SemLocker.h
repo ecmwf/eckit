@@ -33,6 +33,7 @@ class SemLocker : private NonCopyable {
     eckit::PathName path_;
 
 public:
+
     SemLocker(int sem, const eckit::PathName& path, int maxWaitLock = 60);
 
     ~SemLocker();

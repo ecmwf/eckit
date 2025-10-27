@@ -1,0 +1,18 @@
+---
+
+grid_names:
+    - LAEA-EFAS-5km:
+        type: lambert_azimuthal_equal_area
+        proj: +proj=laea +lat_0=52 +lon_0=10 +ellps=GRS80 +units=m +no_defs
+        figure: grs80
+        first_lonlat: [-35.034024, 66.982143]
+        grid: [5000., 5000.]
+        shape: [1000, 950]
+
+    - SMUFF-OPERA-2km:
+        type: lambert_azimuthal_equal_area
+        proj: +proj=laea +lat_0=55 +lon_0=10 +ellps=WGS84 +units=m +no_defs
+        figure: wgs84
+        first_lonlat: [-39.535385563614, 67.035186732680]
+        grid: [2000., 2000.]
+        shape: [1900, 2200]

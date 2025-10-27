@@ -24,11 +24,13 @@ namespace eckit::net {
 
 class NetMask {
 public:  // methods
+
     explicit NetMask(const std::string&);
 
     bool contains(const IPAddress&) const;
 
 private:  // methods
+
     IPAddress network_;
     size_t bits_;
 

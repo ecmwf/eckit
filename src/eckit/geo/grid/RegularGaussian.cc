@@ -12,8 +12,8 @@
 
 #include "eckit/geo/grid/RegularGaussian.h"
 
-#include <memory>
-
+#include "eckit/geo/projection/EquidistantCylindrical.h"
+#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/RegularLongitude.h"
 #include "eckit/geo/spec/Custom.h"
@@ -24,26 +24,17 @@ namespace eckit::geo::grid {
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"),
-                    *std::unique_ptr<area::BoundingBox>(area::BoundingBox::make_from_spec(spec)),
-                    projection::Rotation::make_from_spec(spec)) {}
+    RegularGaussian(spec.get_unsigned("N"), area::BoundingBox(spec),
+                    spec.has("projection") ? Projection::make_from_spec(spec)
+                                           : new projection::Reverse<projection::EquidistantCylindrical>) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, const area::BoundingBox& bbox, projection::Rotation* rotation) :
+RegularGaussian::RegularGaussian(size_t N, area::BoundingBox bbox, Projection* proj) :
     Regular({range::RegularLongitude(4 * N, 0., 360.).make_range_cropped(bbox.west, bbox.east),
              range::GaussianLatitude(N, false).make_range_cropped(bbox.north, bbox.south)},
-            rotation),
+            bbox, proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
     N_(N) {
-    ASSERT(size() > 0);
-}
-
-
-Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
-    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularGaussian(N_, cropped);
-    }
-
-    throw UserError("RegularGaussian: cannot crop grid (empty intersection)", Here());
+    ASSERT(!empty());
 }
 
 
@@ -62,7 +53,34 @@ void RegularGaussian::fill_spec(spec::Custom& custom) const {
 }
 
 
-static const GridRegisterName<RegularGaussian> GRIDNAME("[fF][1-9][0-9]*");
+const std::string& RegularGaussian::type() const {
+    static const std::string type{"regular-gg"};
+    return type;
+}
+
+
+Point RegularGaussian::first_point() const {
+    ASSERT(!empty());
+    return PointLonLat{x().values().front(), y().values().front()};
+}
+
+
+Point RegularGaussian::last_point() const {
+    ASSERT(!empty());
+    return PointLonLat{x().values().back(), y().values().back()};
+}
+
+
+Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
+    if (auto cropped(boundingBox()); crop.intersects(cropped)) {
+        return new RegularGaussian(N_, cropped);
+    }
+
+    throw UserError("RegularGaussian: cannot crop grid (empty intersection)", Here());
+}
+
+
+static const GridRegisterName<RegularGaussian> GRIDNAME("f[1-9][0-9]*");
 
 static const GridRegisterType<RegularGaussian> GRIDTYPE1("regular_gg");
 static const GridRegisterType<RegularGaussian> GRIDTYPE2("rotated_gg");

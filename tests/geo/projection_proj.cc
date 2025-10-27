@@ -18,11 +18,6 @@
 #include "eckit/testing/Test.h"
 
 
-namespace eckit::geo::util {
-area::BoundingBox bounding_box(Point2, Point2, Projection&);
-}
-
-
 namespace eckit::geo::test {
 
 
@@ -33,25 +28,25 @@ CASE("projection: proj") {
     constexpr double eps = 1e-6;
 
 
-    if (ProjectionFactory::instance().exists("proj")) {
+    if (ProjectionFactoryType::instance().exists("proj")) {
         PointLonLat a{12., 55.};
 
         struct {
             const Point b;
             const std::string target;
         } tests_proj[] = {
-            {Point2{691875.632137542, 6098907.825129169}, "+proj=utm +zone=32 +datum=WGS84"},
-            {Point2{691875.632137542, 6098907.825129169}, "EPSG:32632"},
+            {PointXY{691875.632137542, 6098907.825129169}, "+proj=utm +zone=32 +datum=WGS84"},
+            {PointXY{691875.632137542, 6098907.825129169}, "EPSG:32632"},
             {a, "EPSG:4326"},
             {a, "EPSG:4979"},
-            {Point3{3586469.6567764, 762327.65877826, 5201383.5232023}, "EPSG:4978"},
-            {Point3{3574529.7050235, 759789.74368715, 5219005.2599833}, "+proj=cart +R=6371229."},
-            {Point3{3574399.5431832, 759762.07693392, 5218815.216709}, "+proj=cart +ellps=sphere"},
+            {PointXYZ{3586469.6567764, 762327.65877826, 5201383.5232023}, "EPSG:4978"},
+            {PointXYZ{3574529.7050235, 759789.74368715, 5219005.2599833}, "+proj=cart +R=6371229."},
+            {PointXYZ{3574399.5431832, 759762.07693392, 5218815.216709}, "+proj=cart +ellps=sphere"},
             {a, "+proj=latlon +ellps=sphere"},
         };
 
         for (const auto& test : tests_proj) {
-            P projection(ProjectionFactory::instance().get("proj").create(
+            P projection(ProjectionFactoryType::instance().get("proj").create(
                 spec::Custom{{{"source", "EPSG:4326"}, {"target", test.target}}}));
 
 #if 0
@@ -65,7 +60,7 @@ CASE("projection: proj") {
             EXPECT(points_equal(b, test.b, eps));
             EXPECT(points_equal(c, a, eps));
 
-            P reverse(ProjectionFactory::instance().get("proj").create(
+            P reverse(ProjectionFactoryType::instance().get("proj").create(
                 spec::Custom({{"source", test.target}, {"target", "EPSG:4326"}})));
 
             auto d = reverse->fwd(test.b);
@@ -75,16 +70,16 @@ CASE("projection: proj") {
             EXPECT(points_equal(e, test.b, eps));
         }
 
-        P polar_stereographic_north(ProjectionFactory::instance().get("proj").create(
+        P polar_stereographic_north(ProjectionFactoryType::instance().get("proj").create(
             spec::Custom{{{"source", "EPSG:4326"}, {"target", "+proj=stere +lat_0=90. +lon_0=-30. +R=6371229."}}}));
 
-        P polar_stereographic_south(ProjectionFactory::instance().get("proj").create(
+        P polar_stereographic_south(ProjectionFactoryType::instance().get("proj").create(
             spec::Custom{{{"source", "EPSG:4326"}, {"target", "+proj=stere +lat_0=-90. +lon_0=-30. +R=6371229."}}}));
 
         struct {
             const P& projection;
-            const Point2 min;
-            const Point2 max;
+            const PointXY min;
+            const PointXY max;
             const bool periodic;
             const bool contains_north_pole;
             const bool contains_south_pole;
@@ -104,15 +99,16 @@ CASE("projection: proj") {
         };
 
         for (const auto& test : tests_bbox) {
-            auto bbox = util::bounding_box(test.min, test.max, *test.projection);
+            auto bbox = area::BoundingBox::make_from_projection(test.min, test.max, *test.projection);
+            ASSERT(bbox);
 
-            EXPECT_EQUAL(test.periodic, bbox.periodic());
-            EXPECT_EQUAL(test.contains_north_pole, bbox.contains(NORTH_POLE));
-            EXPECT_EQUAL(test.contains_south_pole, bbox.contains(SOUTH_POLE));
+            EXPECT_EQUAL(test.periodic, bbox->periodic());
+            EXPECT_EQUAL(test.contains_north_pole, bbox->contains(NORTH_POLE));
+            EXPECT_EQUAL(test.contains_south_pole, bbox->contains(SOUTH_POLE));
 
             auto global = test.periodic && test.contains_north_pole && test.contains_south_pole;
 
-            EXPECT(global == bbox.global());
+            EXPECT(global == bbox->global());
         }
     }
 }

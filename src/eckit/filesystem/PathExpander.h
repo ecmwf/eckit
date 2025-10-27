@@ -27,9 +27,11 @@ namespace eckit {
 
 class PathExpander : private eckit::NonCopyable {
 public:  // methods
+
     static std::string expand(const std::string& path);
 
 protected:  // methods
+
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const = 0;
 
     PathExpander(const std::string&);
@@ -39,6 +41,7 @@ protected:  // methods
     virtual void print(std::ostream&) const;
 
 private:  // members
+
     std::string name_;
 
     friend std::ostream& operator<<(std::ostream& s, const PathExpander& p);

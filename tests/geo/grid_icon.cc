@@ -61,7 +61,7 @@ CASE("spec") {
     EXPECT(spec->get_string("name") == GRID);
     EXPECT(spec->get_string("icon_number_of_grid_used") == "55");
     EXPECT(spec->get_string("icon_type") == "hrz_regional");
-    EXPECT(spec->get_string("icon_arrangement") == "T");
+    EXPECT(spec->get_string("icon_arrangement") == "C");
     EXPECT(spec->get_string("icon_uid") == UID);
     EXPECT(spec->get_long_vector("shape") == SHAPE);
 

@@ -150,8 +150,7 @@ Spec* ICON::spec(const std::string& name) {
 
 Arrangement ICON::arrangement_from_string(const std::string& str) {
     return str == "C"   ? Arrangement::ICON_C
-           : str == "T" ? Arrangement::ICON_T
-           : str == "N" ? Arrangement::ICON_N
+           : str == "V" ? Arrangement::ICON_V
            : str == "E" ? Arrangement::ICON_E
                         : throw SeriousBug("ICON: unsupported arrangement '" + str + "'");
 }
@@ -159,8 +158,7 @@ Arrangement ICON::arrangement_from_string(const std::string& str) {
 
 std::string ICON::arrangement_to_string(Arrangement a) {
     return a == Arrangement::ICON_C   ? "C"
-           : a == Arrangement::ICON_T ? "T"
-           : a == Arrangement::ICON_N ? "N"
+           : a == Arrangement::ICON_V ? "V"
            : a == Arrangement::ICON_E
                ? "E"
                : throw SeriousBug("ICON: unsupported arrangement '" + std::to_string(a) + "'", Here());

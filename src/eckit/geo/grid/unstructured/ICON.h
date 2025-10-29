@@ -57,6 +57,7 @@ public:
 
     std::string name() const { return name_; }
     std::string arrangement() const;
+    const Spec& catalog() const;
 
     // -- Overridden methods
 
@@ -80,6 +81,7 @@ private:
     std::string name_;
     Arrangement arrangement_;
     const ICONRecord& record_;
+    mutable std::unique_ptr<const Spec> catalog_;
 
     // -- Overridden methods
 

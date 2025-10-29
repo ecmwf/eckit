@@ -1,10 +1,10 @@
 ---
 
 grid_names:
-  - ICON_01_R02B05: &ICON_01_R02B05
+  - icon-grid-0001-r02b05-r: &icon_grid_0001_r02b05_r
     description: "Reduced radiation grid (global, R02B05). 80 km resolution."
     type: ICON
-    name: ICON_01_R02B05
+    name: icon-grid-0001-r02b05-r
     file: "icon_grid_0001_R02B05_R.nc"
     shape: [81920]
     icon_number_of_grid_used: 1
@@ -13,10 +13,10 @@ grid_names:
     icon_uid: "eee9e7881dd111b2aedbc760324270de"
     url: grid/icon/ICON_01_R02B05.icon.ek
 
-  - ICON_02_R02B06: &ICON_02_R02B06
+  - icon-grid-0002-r02b06-g: &icon_grid_0002_r02b06_g
     description: "Global R02B06 grid. 40 km resolution."
     type: ICON
-    name: ICON_02_R02B06
+    name: icon-grid-0002-r02b06-g
     file: "icon_extpar_0002_R02B06_G.g2"
     shape: [327680]
     icon_number_of_grid_used: 2
@@ -25,10 +25,10 @@ grid_names:
     icon_uid: "fc9f45081dd111b2aedbc760324270de"
     url: grid/icon/ICON_02_R02B06.icon.ek
 
-  - ICON_03_R02B06: &ICON_03_R02B06
+  - icon-grid-0003-r02b06-r: &icon_grid_0003_r02b06_r
     description: "Reduced radiation grid (global, R02B06). 40 km resolution."
     type: ICON
-    name: ICON_03_R02B06
+    name: icon-grid-0003-r02b06-r
     file: "icon_grid_0003_R02B06_R.nc"
     shape: [327680]
     icon_number_of_grid_used: 3
@@ -37,10 +37,10 @@ grid_names:
     icon_uid: "5454c1381dd211b28653972efa5f77ae"
     url: grid/icon/ICON_03_R02B06.icon.ek
 
-  - ICON_04_R02B07: &ICON_04_R02B07
+  - icon-grid-0004-r02b07-g: &icon_grid_0004_r02b07_g
     description: "Global R02B07 grid. 20 km resolution."
     type: ICON
-    name: ICON_04_R02B07
+    name: icon-grid-0004-r02b07-g
     file: "icon_extpar_0004_R02B07_G.g2"
     shape: [1310720]
     icon_number_of_grid_used: 4
@@ -49,10 +49,10 @@ grid_names:
     icon_uid: "8bb13be81dd211b2bdd32f117dd15b92"
     url: grid/icon/ICON_04_R02B07.icon.ek
 
-  - ICON_05_R03B06: &ICON_05_R03B06
+  - icon-grid-0005-r03b06-r: &icon_grid_0005_r03b06_r
     description: "Reduced radiation grid (global, R03B06)."
     type: ICON
-    name: ICON_05_R03B06
+    name: icon-grid-0005-r03b06-r
     file: "icon_grid_0005_R03B06_R.nc"
     shape: [737280]
     icon_number_of_grid_used: 5
@@ -61,10 +61,10 @@ grid_names:
     icon_uid: "dbf728c41dd211b2aa487ff9d2535f37"
     url: grid/icon/ICON_05_R03B06.icon.ek
 
-  - ICON_06_R03B07: &ICON_06_R03B07
+  - icon-grid-0006-r03b07-g: &icon_grid_0006_r03b07_g
     description: "Global R03B07 grid."
     type: ICON
-    name: ICON_06_R03B07
+    name: icon-grid-0006-r03b07-g
     file: "icon_extpar_0006_R03B07_G.g2"
     shape: [2949120]
     icon_number_of_grid_used: 6
@@ -73,10 +73,10 @@ grid_names:
     icon_uid: "5a2cfeee1dd311b291c0b7d12a12800c"
     url: grid/icon/ICON_06_R03B07.icon.ek
 
-  - ICON_07_R02B04: &ICON_07_R02B04
+  - icon-grid-0007-r02b04-r: &icon_grid_0007_r02b04_r
     description: "Reduced radiation grid (global, R02B04). 160 km resolution."
     type: ICON
-    name: ICON_07_R02B04
+    name: icon-grid-0007-r02b04-r
     file: "icon_grid_0007_R02B04_R.nc"
     shape: [20480]
     icon_number_of_grid_used: 7
@@ -85,10 +85,10 @@ grid_names:
     icon_uid: "0af76ee01dce11b28d71ada98b503cdc"
     url: grid/icon/ICON_07_R02B04.icon.ek
 
-  - ICON_08_R02B05: &ICON_08_R02B05
+  - icon-grid-0008-r02b05-g: &icon_grid_0008_r02b05_g
     description: "Global R02B05 grid. 80 km resolution."
     type: ICON
-    name: ICON_08_R02B05
+    name: icon-grid-0008-r02b05-g
     file: "icon_extpar_0008_R02B05_G.g2"
     shape: [81920]
     icon_number_of_grid_used: 8
@@ -97,10 +97,10 @@ grid_names:
     icon_uid: "0df795de1dce11b28c3f4f045d5627af"
     url: grid/icon/ICON_08_R02B05.icon.ek
 
-  - ICON_09_R02B03: &ICON_09_R02B03
+  - icon-grid-0009-r02b03-r: &icon_grid_0009_r02b03_r
     description: "Reduced radiation grid (global, R02B03). 320 km resolution."
     type: ICON
-    name: ICON_09_R02B03
+    name: icon-grid-0009-r02b03-r
     file: "icon_grid_0009_R02B03_R.nc"
     shape: [5120]
     icon_number_of_grid_used: 9
@@ -109,10 +109,10 @@ grid_names:
     icon_uid: "65dadcba1dcf11b2880c0f1645f3d1dc"
     url: grid/icon/ICON_09_R02B03.icon.ek
 
-  - ICON_10_R02B04: &ICON_10_R02B04
+  - icon-grid-0010-r02b04-g: &icon_grid_0010_r02b04_g
     description: "Global R02B04 grid. 160 km resolution."
     type: ICON
-    name: ICON_10_R02B04
+    name: icon-grid-0010-r02b04-g
     file: "icon_extpar_0010_R02B04_G.g2"
     shape: [20480]
     icon_number_of_grid_used: 10
@@ -121,10 +121,10 @@ grid_names:
     icon_uid: "66a341d21dcf11b2880c0f1645f3d1dc"
     url: grid/icon/ICON_10_R02B04.icon.ek
 
-  - ICON_11_R02B03: &ICON_11_R02B03
+  - icon-grid-0011-r02b03-r: &icon_grid_0011_r02b03_r
     description: "Reduced radiation grid (global, R02B03). 320 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_11_R02B03
+    name: icon-grid-0011-r02b03-r
     file: "icon_grid_0011_R02B03_R.nc"
     icon_number_of_grid_used: 11
     icon_type: hrz_radiation
@@ -133,10 +133,10 @@ grid_names:
     icon_uid: "95b2202a1dce11b28af295fabaab0373"
     url: grid/icon/ICON_11_R02B03.icon.ek
 
-  - ICON_12_R02B04: &ICON_12_R02B04
+  - icon-grid-0012-r02b04-g: &icon_grid_0012_r02b04_g
     description: "Global R02B04 grid. 160 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_12_R02B04
+    name: icon-grid-0012-r02b04-g
     file: "icon_extpar_0012_R02B04_G_20131001.g2"
     shape: [20480]
     icon_number_of_grid_used: 12
@@ -145,10 +145,10 @@ grid_names:
     icon_uid: "968657501dce11b29969d72c2fa229cf"
     url: grid/icon/ICON_12_R02B04.icon.ek
 
-  - ICON_13_R02B04: &ICON_13_R02B04
+  - icon-grid-0013-r02b04-r: &icon_grid_0013_r02b04_r
     description: "Reduced radiation grid (global, R02B04). 160 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_13_R02B04
+    name: icon-grid-0013-r02b04-r
     file: "icon_grid_0013_R02B04_R.nc"
     shape: [20480]
     icon_number_of_grid_used: 13
@@ -157,10 +157,10 @@ grid_names:
     icon_uid: "af122aca1dd211b2a7f8c7bf6bc21eba"
     url: grid/icon/ICON_13_R02B04.icon.ek
 
-  - ICON_14_R02B05: &ICON_14_R02B05
+  - icon-grid-0014-r02b05-g: &icon_grid_0014_r02b05_g
     description: "Global R02B05 grid. 80 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_14_R02B05
+    name: icon-grid-0014-r02b05-g
     file: "icon_extpar_0014_R02B05_G_20131001.g2"
     shape: [81920]
     icon_number_of_grid_used: 14
@@ -169,10 +169,10 @@ grid_names:
     icon_uid: "b203754a1dd211b284a9193e147d086f"
     url: grid/icon/ICON_14_R02B05.icon.ek
 
-  - ICON_15_R02B05: &ICON_15_R02B05
+  - icon-grid-0015-r02b05-r: &icon_grid_0015_r02b05_r
     description: "Reduced radiation grid (global, R02B05). 80 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_15_R02B05
+    name: icon-grid-0015-r02b05-r
     file: "icon_grid_0015_R02B05_R.nc"
     shape: [81920]
     icon_number_of_grid_used: 15
@@ -181,10 +181,10 @@ grid_names:
     icon_uid: "5f89b5121dd311b29399f117ec0ad4d5"
     url: grid/icon/ICON_15_R02B05.icon.ek
 
-  - ICON_16_R02B06: &ICON_16_R02B06
+  - icon-grid-0016-r02b06-g: &icon_grid_0016_r02b06_g
     description: "Global R02B06 grid. 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_16_R02B06
+    name: icon-grid-0016-r02b06-g
     file: "icon_extpar_0016_R02B06_G_20131001.g2"
     shape: [327680]
     icon_number_of_grid_used: 16
@@ -193,10 +193,10 @@ grid_names:
     icon_uid: "6bd687a01dd311b29399f117ec0ad4d5"
     url: grid/icon/ICON_16_R02B06.icon.ek
 
-  - ICON_17_R02B06: &ICON_17_R02B06
+  - icon-grid-0017-r02b06-r: &icon_grid_0017_r02b06_r
     description: "Reduced radiation grid (global, R02B06). 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_17_R02B06
+    name: icon-grid-0017-r02b06-r
     file: "icon_grid_0017_R02B06_R.nc"
     shape: [327680]
     icon_number_of_grid_used: 17
@@ -205,10 +205,10 @@ grid_names:
     icon_uid: "604969921dd411b2a9d1b5e674a856dd"
     url: grid/icon/ICON_17_R02B06.icon.ek
 
-  - ICON_18_R02B07: &ICON_18_R02B07
+  - icon-grid-0018-r02b07-g: &icon_grid_0018_r02b07_g
     description: "Global R02B07 grid. 20 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_18_R02B07
+    name: icon-grid-0018-r02b07-g
     file: "icon_extpar_0018_R02B07_G_20131001.g2"
     shape: [1310720]
     icon_number_of_grid_used: 18
@@ -217,10 +217,10 @@ grid_names:
     icon_uid: "8f2497641dd411b2a9d1b5e674a856dd"
     url: grid/icon/ICON_18_R02B07.icon.ek
 
-  - ICON_19_R03B05: &ICON_19_R03B05
+  - icon-grid-0019-r03b05-r: &icon_grid_0019_r03b05_r
     description: "Reduced radiation grid (global, R03B05). 53 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_19_R03B05
+    name: icon-grid-0019-r03b05-r
     file: "icon_grid_0019_R03B05_R.nc"
     shape: [184320]
     icon_number_of_grid_used: 19
@@ -229,10 +229,10 @@ grid_names:
     icon_uid: "1c01cfa21dd611b281fc65db9ac7d8f6"
     url: grid/icon/ICON_19_R03B05.icon.ek
 
-  - ICON_20_R03B06: &ICON_20_R03B06
+  - icon-grid-0020-r03b06-g: &icon_grid_0020_r03b06_g
     description: "Global R03B06 grid. 26 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_20_R03B06
+    name: icon-grid-0020-r03b06-g
     file: "icon_extpar_0020_R03B06_G_20131001.g2"
     shape: [737280]
     icon_number_of_grid_used: 20
@@ -241,10 +241,10 @@ grid_names:
     icon_uid: "365801d21dd611b2b98a6b5c1380b5e3"
     url: grid/icon/ICON_20_R03B06.icon.ek
 
-  - ICON_21_R03B06: &ICON_21_R03B06
+  - icon-grid-0021-r03b06-r: &icon_grid_0021_r03b06_r
     description: "Reduced radiation grid (global, R03B06). 26 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_21_R03B06
+    name: icon-grid-0021-r03b06-r
     file: "icon_grid_0021_R03B06_R.nc"
     shape: [737280]
     icon_number_of_grid_used: 21
@@ -253,10 +253,10 @@ grid_names:
     icon_uid: "eb8c0fa81dd611b2837c051661b31a74"
     url: grid/icon/ICON_21_R03B06.icon.ek
 
-  - ICON_22_R03B07: &ICON_22_R03B07
+  - icon-grid-0022-r03b07-g: &icon_grid_0022_r03b07_g
     description: "Global R03B07 grid. 13 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_22_R03B07
+    name: icon-grid-0022-r03b07-g
     file: "icon_extpar_0022_R03B07_G_20131001.g2"
     shape: [2949120]
     icon_number_of_grid_used: 22
@@ -265,10 +265,10 @@ grid_names:
     icon_uid: "eb8c0fa91dd611b2837c051661b31a74"
     url: grid/icon/ICON_22_R03B07.icon.ek
 
-  - ICON_23_R02B05: &ICON_23_R02B05
+  - icon-grid-0023-r02b05-r: &icon_grid_0023_r02b05_r
     description: "Reduced radiation grid (global, R02B05). 80 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_23_R02B05
+    name: icon-grid-0023-r02b05-r
     file: "icon_grid_0023_R02B05_R.nc"
     shape: [81920]
     icon_number_of_grid_used: 23
@@ -277,10 +277,10 @@ grid_names:
     icon_uid: "9b0b038e18c411e49318776f158edd08"
     url: grid/icon/ICON_23_R02B05.icon.ek
 
-  - ICON_24_R02B06: &ICON_24_R02B06
+  - icon-grid-0024-r02b06-g: &icon_grid_0024_r02b06_g
     description: "Global R02B06 grid. 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_24_R02B06
+    name: icon-grid-0024-r02b06-g
     file: "icon_extpar_0024_R02B06_G_20140731.g2"
     shape: [327680]
     icon_number_of_grid_used: 24
@@ -289,10 +289,10 @@ grid_names:
     icon_uid: "9b0b03ca18c411e49318776f158edd08"
     url: grid/icon/ICON_24_R02B06.icon.ek
 
-  - ICON_25_R03B06: &ICON_25_R03B06
+  - icon-grid-0025-r03b06-r: &icon_grid_0025_r03b06_r
     description: "Reduced radiation grid (global, R03B06). 26 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_25_R03B06
+    name: icon-grid-0025-r03b06-r
     file: "icon_grid_0025_R03B06_R.nc"
     shape: [737280]
     icon_number_of_grid_used: 25
@@ -301,10 +301,10 @@ grid_names:
     icon_uid: "a27b8daa18c411e4820ab5b098c6a5c0"
     url: grid/icon/ICON_25_R03B06.icon.ek
 
-  - ICON_26_R03B07: &ICON_26_R03B07
+  - icon-grid-0026-r03b07-g: &icon_grid_0026_r03b07_g
     description: "Global R03B07 grid. 13 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_26_R03B07
+    name: icon-grid-0026-r03b07-g
     file: "icon_extpar_0026_R03B07_G_20140731.g2"
     shape: [2949120]
     icon_number_of_grid_used: 26
@@ -313,10 +313,10 @@ grid_names:
     icon_uid: "a27b8de618c411e4820ab5b098c6a5c0"
     url: grid/icon/ICON_26_R03B07.icon.ek
 
-  - ICON_27_R03B08: &ICON_27_R03B08
+  - icon-grid-0027-r03b08-n02: &icon_grid_0027_r03b08_n02
     description: "Regional R03B08 grid (Europe). 6.5 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_27_R03B08
+    name: icon-grid-0027-r03b08-n02
     file: "icon_extpar_0027_R03B08_N02_20150224.g2"
     shape: [659156]
     icon_number_of_grid_used: 27
@@ -325,10 +325,10 @@ grid_names:
     icon_uid: "ec13b8bcb82d11e4b13f4d55411d42e6"
     url: grid/icon/ICON_27_R03B08.icon.ek
 
-  - ICON_28_R02B07: &ICON_28_R02B07
+  - icon-grid-0028-r02b07-n02: &icon_grid_0028_r02b07_n02
     description: "Regional R02B07 grid (Europe). 20 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_28_R02B07
+    name: icon-grid-0028-r02b07-n02
     file: "icon_extpar_0028_R02B07_N02_20150521.g2"
     shape: [75948]
     icon_number_of_grid_used: 28
@@ -337,10 +337,10 @@ grid_names:
     icon_uid: "982dcc6efe2e11e491280b03674e713a"
     url: grid/icon/ICON_28_R02B07.icon.ek
 
-  - ICON_29_R02B04: &ICON_29_R02B04
+  - icon-grid-0029-r02b04-r: &icon_grid_0029_r02b04_r
     description: "Reduced radiation grid (global, R02B04). 160 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_29_R02B04
+    name: icon-grid-0029-r02b04-r
     file: "icon_grid_0029_R02B04_R.nc"
     shape: [20480]
     icon_number_of_grid_used: 29
@@ -349,10 +349,10 @@ grid_names:
     icon_uid: "a668ea8efe2e11e49a47e3e5371a87a7"
     url: grid/icon/ICON_29_R02B04.icon.ek
 
-  - ICON_30_R02B05: &ICON_30_R02B05
+  - icon-grid-0030-r02b05-g: &icon_grid_0030_r02b05_g
     description: "Global R02B05 grid. 80 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_30_R02B05
+    name: icon-grid-0030-r02b05-g
     file: "icon_extpar_0030_R02B05_G_20150521.g2"
     shape: [81920]
     icon_number_of_grid_used: 30
@@ -361,10 +361,10 @@ grid_names:
     icon_uid: "a668eac0fe2e11e49a47e3e5371a87a7"
     url: grid/icon/ICON_30_R02B05.icon.ek
 
-  - ICON_31_R02B06: &ICON_31_R02B06
+  - icon-grid-0031-r02b06-n02: &icon_grid_0031_r02b06_n02
     description: "Regional R02B06 grid (Europe). 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_31_R02B06
+    name: icon-grid-0031-r02b06-n02
     file: "icon_extpar_0031_R02B06_N02_20150521.g2"
     shape: [19744]
     icon_number_of_grid_used: 31
@@ -373,10 +373,10 @@ grid_names:
     icon_uid: "a668eacafe2e11e49a47e3e5371a87a7"
     url: grid/icon/ICON_31_R02B06.icon.ek
 
-  - ICON_32_R03B04: &ICON_32_R03B04
+  - icon-grid-0032-r03b04-r: &icon_grid_0032_r03b04_r
     description: "Reduced radiation grid (global, R03B04). 106 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_32_R03B04
+    name: icon-grid-0032-r03b04-r
     file: "icon_grid_0032_R03B04_R.nc"
     shape: [46080]
     icon_number_of_grid_used: 32
@@ -385,10 +385,10 @@ grid_names:
     icon_uid: "ad7af7d6fe2e11e49f0c8fef8cf63522"
     url: grid/icon/ICON_32_R03B04.icon.ek
 
-  - ICON_33_R03B05: &ICON_33_R03B05
+  - icon-grid-0033-r03b05-g: &icon_grid_0033_r03b05_g
     description: "Global R03B05 grid. 53 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_33_R03B05
+    name: icon-grid-0033-r03b05-g
     file: "icon_extpar_0033_R03B05_G_20150521.g2"
     shape: [184320]
     icon_number_of_grid_used: 33
@@ -397,10 +397,10 @@ grid_names:
     icon_uid: "ad7af808fe2e11e49f0c8fef8cf63522"
     url: grid/icon/ICON_33_R03B05.icon.ek
 
-  - ICON_34_R03B06: &ICON_34_R03B06
+  - icon-grid-0034-r03b06-n02: &icon_grid_0034_r03b06_n02
     description: "Regional R03B06 grid (Europe). 26.5 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_34_R03B06
+    name: icon-grid-0034-r03b06-n02
     file: "icon_extpar_0034_R03B06_N02_20150521.g2"
     shape: [42800]
     icon_number_of_grid_used: 34
@@ -409,10 +409,10 @@ grid_names:
     icon_uid: "ad7af812fe2e11e49f0c8fef8cf63522"
     url: grid/icon/ICON_34_R03B06.icon.ek
 
-  - ICON_35_R03B05: &ICON_35_R03B05
+  - icon-grid-0035-r03b05-r: &icon_grid_0035_r03b05_r
     description: "Reduced radiation grid (global, R03B05). 53 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_35_R03B05
+    name: icon-grid-0035-r03b05-r
     file: "icon_grid_0035_R03B05_R.nc"
     shape: [184320]
     icon_number_of_grid_used: 35
@@ -421,10 +421,10 @@ grid_names:
     icon_uid: "ae487ce2fe2e11e4af85e50a2a56a360"
     url: grid/icon/ICON_35_R03B05.icon.ek
 
-  - ICON_36_R03B06: &ICON_36_R03B06
+  - icon-grid-0036-r03b06-g: &icon_grid_0036_r03b06_g
     description: "Global R03B06 grid. 26.5 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_36_R03B06
+    name: icon-grid-0036-r03b06-g
     file: "icon_extpar_0036_R03B06_G_20150521.g2"
     shape: [737280]
     icon_number_of_grid_used: 36
@@ -433,10 +433,10 @@ grid_names:
     icon_uid: "ae487d14fe2e11e4af85e50a2a56a360"
     url: grid/icon/ICON_36_R03B06.icon.ek
 
-  - ICON_37_R03B07: &ICON_37_R03B07
+  - icon-grid-0037-r03b07-n02: &icon_grid_0037_r03b07_n02
     description: "Regional R03B07 grid (Europe). 13 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_37_R03B07
+    name: icon-grid-0037-r03b07-n02
     file: "icon_extpar_0037_R03B07_N02_20150521.g2"
     shape: [164984]
     icon_number_of_grid_used: 37
@@ -445,10 +445,10 @@ grid_names:
     icon_uid: "ae487d28fe2e11e4af85e50a2a56a360"
     url: grid/icon/ICON_37_R03B07.icon.ek
 
-  - ICON_38_R02B06: &ICON_38_R02B06
+  - icon-grid-0038-r02b06-r: &icon_grid_0038_r02b06_r
     description: "Reduced radiation grid (global, R02B06). 40 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_38_R02B06
+    name: icon-grid-0038-r02b06-r
     file: "icon_grid_0038_R02B06_R.nc"
     shape: [327680]
     icon_number_of_grid_used: 38
@@ -457,10 +457,10 @@ grid_names:
     icon_uid: "49c34088248d11e58105c12d5e3b00a4"
     url: grid/icon/ICON_38_R02B06.icon.ek
 
-  - ICON_39_R02B07: &ICON_39_R02B07
+  - icon-grid-0039-r02b07-g: &icon_grid_0039_r02b07_g
     description: "Global R02B07 grid. 20.0 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_39_R02B07
+    name: icon-grid-0039-r02b07-g
     file: "icon_extpar_0039_R02B07_G_20150521.g2"
     shape: [1310720]
     icon_number_of_grid_used: 39
@@ -469,10 +469,10 @@ grid_names:
     icon_uid: "49c340e2248d11e58105c12d5e3b00a4"
     url: grid/icon/ICON_39_R02B07.icon.ek
 
-  - ICON_40_R02B08: &ICON_40_R02B08
+  - icon-grid-0040-r02b08-n02: &icon_grid_0040_r02b08_n02
     description: "Regional R02B08 grid (Europe). 10 km resolution. Grid rotated by 36 degrees around z-axis."
     type: ICON
-    name: ICON_40_R02B08
+    name: icon-grid-0040-r02b08-n02
     file: "icon_extpar_0040_R02B08_N02_20150521.g2"
     shape: [293084]
     icon_number_of_grid_used: 40
@@ -481,10 +481,10 @@ grid_names:
     icon_uid: "49c340f6248d11e58105c12d5e3b00a4"
     url: grid/icon/ICON_40_R02B08.icon.ek
 
-  - ICON_41_R02B09: &ICON_41_R02B09
+  - icon-grid-0041-r02b09-lr: &icon_grid_0041_r02b09_lr
     description: "Radiation grid (Germany): COSMO-DE area with 5 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_41_R02B09
+    name: icon-grid-0041-r02b09-lr
     file: "icon_grid_0041_R02B09_LR.nc"
     shape: [63380]
     icon_number_of_grid_used: 41
@@ -493,10 +493,10 @@ grid_names:
     icon_uid: "0acedc87c1db8404c23ec6ac675a27c0"
     url: grid/icon/ICON_41_R02B09.icon.ek
 
-  - ICON_42_R02B10: &ICON_42_R02B10
+  - icon-grid-0042-r02b10-l: &icon_grid_0042_r02b10_l
     description: "Limited area grid (Germany): COSMO-DE area with 2.5 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_42_R02B10
+    name: icon-grid-0042-r02b10-l
     file: "icon_extpar_0042_R02B10_L_20180209_tiles.g2"
     shape: [253520]
     icon_number_of_grid_used: 42
@@ -505,10 +505,10 @@ grid_names:
     icon_uid: "d378d127082af71232e62a2093c92ba0"
     url: grid/icon/ICON_42_R02B10.icon.ek
 
-  - ICON_43_R19B06: &ICON_43_R19B06
+  - icon-grid-0043-r19b06-lr: &icon_grid_0043_r19b06_lr
     description: "Radiation grid (Germany): COSMO-D2 area with 4 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_43_R19B06
+    name: icon-grid-0043-r19b06-lr
     file: "icon_grid_0043_R19B06_LR.nc"
     shape: [134541]
     icon_number_of_grid_used: 43
@@ -517,10 +517,10 @@ grid_names:
     icon_uid: "ac1190a0a846e31092a72a2bf62329c0"
     url: grid/icon/ICON_43_R19B06.icon.ek
 
-  - ICON_44_R19B07: &ICON_44_R19B07
+  - icon-grid-0044-r19b07-l: &icon_grid_0044_r19b07_l
     description: "Limited area grid (Germany): COSMO-D2 area with 2 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_44_R19B07
+    name: icon-grid-0044-r19b07-l
     file: "icon_extpar_0044_R19B07_L_20180209_tiles.g2"
     shape: [538164]
     icon_number_of_grid_used: 44
@@ -529,10 +529,10 @@ grid_names:
     icon_uid: "66f27a809bfa6f1056df19bf03052ce0"
     url: grid/icon/ICON_44_R19B07.icon.ek
 
-  - ICON_45_R19B08: &ICON_45_R19B08
+  - icon-grid-0045-r19b08-ln02: &icon_grid_0045_r19b08_ln02
     description: "Limited area grid (COSMO-D2 nest, Germany) with 1 km resolution, generated by G. Zaengl, 2018-02-01. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_45_R19B08
+    name: icon-grid-0045-r19b08-ln02
     file: "icon_extpar_0045_R19B08_LN02_20180209_tiles.g2"
     shape: [716980]
     icon_number_of_grid_used: 45
@@ -541,10 +541,10 @@ grid_names:
     icon_uid: "b258b3391435078ecc92d51b8a3f2ac0"
     url: grid/icon/ICON_45_R19B08.icon.ek
 
-  - ICON_46_R19B06: &ICON_46_R19B06
+  - icon-grid-0046-r19b06-lr: &icon_grid_0046_r19b06_lr
     description: "Radiation grid (Germany): Enhanced COSMO-D2 area with 4 km resolution, generated by Ch. Koziar, 2020-05-27. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_46_R19B06
+    name: icon-grid-0046-r19b06-lr
     file: "icon_grid_0046_R19B06_LR.nc"
     shape: [135510]
     icon_number_of_grid_used: 46
@@ -553,10 +553,10 @@ grid_names:
     icon_uid: "626ae68aa5831aac904c6189b37a29a0"
     url: grid/icon/ICON_46_R19B06.icon.ek
 
-  - ICON_47_R19B07: &ICON_47_R19B07
+  - icon-grid-0047-r19b07-l: &icon_grid_0047_r19b07_l
     description: "Limited area grid (Germany): Enhanced COSMO-D2 area with 2 km resolution, generated by Ch. Koziar, 2020-05-27. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_47_R19B07
+    name: icon-grid-0047-r19b07-l
     file: "icon_extpar_0047_R19B07_L_20200527_tiles.g2"
     shape: [542040]
     icon_number_of_grid_used: 47
@@ -565,10 +565,10 @@ grid_names:
     icon_uid: "c6b12daa91ad64045b26c1b6452a2a20"
     url: grid/icon/ICON_47_R19B07.icon.ek
 
-  - ICON_48_R03B07: &ICON_48_R03B07
+  - icon-grid-0048-r03b07-lr: &icon_grid_0048_r03b07_lr
     description: "Radiation grid (Europe): Pollen forecast area with 13 km resolution, generated by J. Foerstner, 2020-11-12. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_48_R03B07
+    name: icon-grid-0048-r03b07-lr
     file: "icon_grid_0048_R03B07_LR.nc"
     shape: [63057]
     icon_number_of_grid_used: 48
@@ -577,10 +577,10 @@ grid_names:
     icon_uid: "1df96f04856f9d265fc94d29354c27a0"
     url: grid/icon/ICON_48_R03B07.icon.ek
 
-  - ICON_49_R03B08: &ICON_49_R03B08
+  - icon-grid-0049-r03b08-l: &icon_grid_0049_r03b08_l
     description: "Limited area grid (Europe): Pollen forecast area with 6.5 km resolution, generated by J. Foerstner, 2020-11-12. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_49_R03B08
+    name: icon-grid-0049-r03b08-l
     file: "icon_extpar_0049_R03B08_L_20201112_tiles.g2"
     shape: [252228]
     icon_number_of_grid_used: 49
@@ -589,10 +589,10 @@ grid_names:
     icon_uid: "027b27853ea2c4b96436708a777b2bc0"
     url: grid/icon/ICON_49_R03B08.icon.ek
 
-  - ICON_50_R02B07: &ICON_50_R02B07
+  - icon-grid-0050-r02b07-n02: &icon_grid_0050_r02b07_n02
     description: "Regional R02B07 grid (Europe, North Atlantic and North Africa), generated by J. Foerstner, 2021-10-26. Bigger nest for prognostic aerosol forecasts with ICON-ART. 20 km resolution. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_50_R02B07
+    name: icon-grid-0050-r02b07-n02
     file: "icon_extpar_0050_R02B07_N02_20211026_tiles.g2"
     shape: [254588]
     icon_number_of_grid_used: 50
@@ -601,10 +601,10 @@ grid_names:
     icon_uid: "5eb8f1385d72f207a6d7211bb8a92ee0"
     url: grid/icon/ICON_50_R02B07.icon.ek
 
-  - ICON_51_R03B07: &ICON_51_R03B07
+  - icon-grid-0051-r03b07-n02: &icon_grid_0051_r03b07_n02
     description: "Regional R03B07 grid (Europe, North Atlantic and North Africa), generated by J. Foerstner, 2022-02-28. Bigger nest for prognostic aerosol forecasts with ICON-ART. 13 km resolution. Generated with DWD ICON Tools grid generator (similar to old grid generator grids rotated by 36 degrees)."
     type: ICON
-    name: ICON_51_R03B07
+    name: icon-grid-0051-r03b07-n02
     file: "icon_extpar_0051_R03B07_N02_20220301_tiles.g2"
     shape: [571088]
     icon_number_of_grid_used: 51
@@ -613,10 +613,10 @@ grid_names:
     icon_uid: "117ff92c2607ab02bc28333ae4a92c20"
     url: grid/icon/ICON_51_R03B07.icon.ek
 
-  - ICON_52_R03B07: &ICON_52_R03B07
+  - icon-grid-0052-r03b07-lr: &icon_grid_0052_r03b07_lr
     description: "Radiation grid (Europe): Passive tracer forecast area (ITMS) with 13 km resolution, generated by B. Mamtimin, 2022-06-24. Generated with DWD ICON Tools grid generator."
     type: ICON
-    name: ICON_52_R03B07
+    name: icon-grid-0052-r03b07-lr
     file: "icon_grid_0052_R03B07_LR.nc"
     shape: [123718]
     icon_number_of_grid_used: 52
@@ -625,10 +625,10 @@ grid_names:
     icon_uid: "bcaee9844be64faa724a751445d02820"
     url: grid/icon/ICON_52_R03B07.icon.ek
 
-  - ICON_53_R03B08: &ICON_53_R03B08
+  - icon-grid-0053-r03b08-l: &icon_grid_0053_r03b08_l
     description: "Limited area grid (Europe): Passive tracer forecast area (ITMS) with 6.5 km resolution, generated by B. Mamtimin, 2022-06-24. Generated with DWD ICON Tools grid generator."
     type: ICON
-    name: ICON_53_R03B08
+    name: icon-grid-0053-r03b08-l
     file: "icon_extpar_0053_R03B08_L_20231113_tiles.g2"
     shape: [494872]
     icon_number_of_grid_used: 53
@@ -637,10 +637,10 @@ grid_names:
     icon_uid: "262ffaffe4c2b5b5ff4094b0015e2b40"
     url: grid/icon/ICON_53_R03B08.icon.ek
 
-  - ICON_54_R02B04: &ICON_54_R02B04
+  - icon-grid-0054-r02b04-g: &icon_grid_0054_r02b04_g
     description: "Global R02B04 grid. 160 km resolution. Use case: ICON training idealized JW test. Generated by D. Reinert 2023-03-10 with DWD ICON Tools grid generator."
     type: ICON
-    name: ICON_54_R02B04
+    name: icon-grid-0054-r02b04-g
     file: "icon_grid_0054_R02B04_G.nc"
     shape: [20480]
     icon_number_of_grid_used: 54
@@ -649,10 +649,10 @@ grid_names:
     icon_uid: "87397f993e6f913d00fc361367e725a0"
     url: grid/icon/ICON_54_R02B04.icon.ek
 
-  - ICON_55_R02B05: &ICON_55_R02B05
+  - icon-grid-0055-r02b05-n: &icon_grid_0055_r02b05_n
     description: "Regional R02B05 grid. 80 km resolution. Use case: ICON training idealized JW test. Generated by D. Reinert 2023-03-10 with DWD ICON Tools grid generator."
     type: ICON
-    name: ICON_55_R02B05
+    name: icon-grid-0055-r02b05-n
     file: "icon_grid_0055_R02B05_N.nc"
     shape: [2656]
     icon_number_of_grid_used: 55
@@ -661,10 +661,10 @@ grid_names:
     icon_uid: "e234e01a8556e9a84bcb42361d2f24e0"
     url: grid/icon/ICON_55_R02B05.icon.ek
 
-  - ICON_56_R02B05: &ICON_56_R02B05
+  - icon-grid-0056-r02b05-n: &icon_grid_0056_r02b05_n
     description: "Regional R02B05 grid. 80 km resolution. Use case: ICON training idealized JW test. Generated by D. Reinert 2023-03-10 with DWD ICON Tools grid generator."
     type: ICON
-    name: ICON_56_R02B05
+    name: icon-grid-0056-r02b05-n
     file: "icon_grid_0056_R02B05_N.nc"
     shape: [2628]
     icon_number_of_grid_used: 56
@@ -674,59 +674,59 @@ grid_names:
     url: grid/icon/ICON_56_R02B05.icon.ek
 
 grid_uids:
-  - "eee9e7881dd111b2aedbc760324270de": *ICON_01_R02B05
-  - "fc9f45081dd111b2aedbc760324270de": *ICON_02_R02B06
-  - "5454c1381dd211b28653972efa5f77ae": *ICON_03_R02B06
-  - "8bb13be81dd211b2bdd32f117dd15b92": *ICON_04_R02B07
-  - "dbf728c41dd211b2aa487ff9d2535f37": *ICON_05_R03B06
-  - "5a2cfeee1dd311b291c0b7d12a12800c": *ICON_06_R03B07
-  - "0af76ee01dce11b28d71ada98b503cdc": *ICON_07_R02B04
-  - "0df795de1dce11b28c3f4f045d5627af": *ICON_08_R02B05
-  - "65dadcba1dcf11b2880c0f1645f3d1dc": *ICON_09_R02B03
-  - "66a341d21dcf11b2880c0f1645f3d1dc": *ICON_10_R02B04
-  - "95b2202a1dce11b28af295fabaab0373": *ICON_11_R02B03
-  - "968657501dce11b29969d72c2fa229cf": *ICON_12_R02B04
-  - "af122aca1dd211b2a7f8c7bf6bc21eba": *ICON_13_R02B04
-  - "b203754a1dd211b284a9193e147d086f": *ICON_14_R02B05
-  - "5f89b5121dd311b29399f117ec0ad4d5": *ICON_15_R02B05
-  - "6bd687a01dd311b29399f117ec0ad4d5": *ICON_16_R02B06
-  - "604969921dd411b2a9d1b5e674a856dd": *ICON_17_R02B06
-  - "8f2497641dd411b2a9d1b5e674a856dd": *ICON_18_R02B07
-  - "1c01cfa21dd611b281fc65db9ac7d8f6": *ICON_19_R03B05
-  - "365801d21dd611b2b98a6b5c1380b5e3": *ICON_20_R03B06
-  - "eb8c0fa81dd611b2837c051661b31a74": *ICON_21_R03B06
-  - "eb8c0fa91dd611b2837c051661b31a74": *ICON_22_R03B07
-  - "9b0b038e18c411e49318776f158edd08": *ICON_23_R02B05
-  - "9b0b03ca18c411e49318776f158edd08": *ICON_24_R02B06
-  - "a27b8daa18c411e4820ab5b098c6a5c0": *ICON_25_R03B06
-  - "a27b8de618c411e4820ab5b098c6a5c0": *ICON_26_R03B07
-  - "ec13b8bcb82d11e4b13f4d55411d42e6": *ICON_27_R03B08
-  - "982dcc6efe2e11e491280b03674e713a": *ICON_28_R02B07
-  - "a668ea8efe2e11e49a47e3e5371a87a7": *ICON_29_R02B04
-  - "a668eac0fe2e11e49a47e3e5371a87a7": *ICON_30_R02B05
-  - "a668eacafe2e11e49a47e3e5371a87a7": *ICON_31_R02B06
-  - "ad7af7d6fe2e11e49f0c8fef8cf63522": *ICON_32_R03B04
-  - "ad7af808fe2e11e49f0c8fef8cf63522": *ICON_33_R03B05
-  - "ad7af812fe2e11e49f0c8fef8cf63522": *ICON_34_R03B06
-  - "ae487ce2fe2e11e4af85e50a2a56a360": *ICON_35_R03B05
-  - "ae487d14fe2e11e4af85e50a2a56a360": *ICON_36_R03B06
-  - "ae487d28fe2e11e4af85e50a2a56a360": *ICON_37_R03B07
-  - "49c34088248d11e58105c12d5e3b00a4": *ICON_38_R02B06
-  - "49c340e2248d11e58105c12d5e3b00a4": *ICON_39_R02B07
-  - "49c340f6248d11e58105c12d5e3b00a4": *ICON_40_R02B08
-  - "0acedc87c1db8404c23ec6ac675a27c0": *ICON_41_R02B09
-  - "d378d127082af71232e62a2093c92ba0": *ICON_42_R02B10
-  - "ac1190a0a846e31092a72a2bf62329c0": *ICON_43_R19B06
-  - "66f27a809bfa6f1056df19bf03052ce0": *ICON_44_R19B07
-  - "b258b3391435078ecc92d51b8a3f2ac0": *ICON_45_R19B08
-  - "626ae68aa5831aac904c6189b37a29a0": *ICON_46_R19B06
-  - "c6b12daa91ad64045b26c1b6452a2a20": *ICON_47_R19B07
-  - "1df96f04856f9d265fc94d29354c27a0": *ICON_48_R03B07
-  - "027b27853ea2c4b96436708a777b2bc0": *ICON_49_R03B08
-  - "5eb8f1385d72f207a6d7211bb8a92ee0": *ICON_50_R02B07
-  - "117ff92c2607ab02bc28333ae4a92c20": *ICON_51_R03B07
-  - "bcaee9844be64faa724a751445d02820": *ICON_52_R03B07
-  - "262ffaffe4c2b5b5ff4094b0015e2b40": *ICON_53_R03B08
-  - "87397f993e6f913d00fc361367e725a0": *ICON_54_R02B04
-  - "e234e01a8556e9a84bcb42361d2f24e0": *ICON_55_R02B05
-  - "a280b295c78e22bb7e4ac9bc1ac92540": *ICON_56_R02B05
+  - "eee9e7881dd111b2aedbc760324270de": *icon_grid_0001_r02b05_r
+  - "fc9f45081dd111b2aedbc760324270de": *icon_grid_0002_r02b06_g
+  - "5454c1381dd211b28653972efa5f77ae": *icon_grid_0003_r02b06_r
+  - "8bb13be81dd211b2bdd32f117dd15b92": *icon_grid_0004_r02b07_g
+  - "dbf728c41dd211b2aa487ff9d2535f37": *icon_grid_0005_r03b06_r
+  - "5a2cfeee1dd311b291c0b7d12a12800c": *icon_grid_0006_r03b07_g
+  - "0af76ee01dce11b28d71ada98b503cdc": *icon_grid_0007_r02b04_r
+  - "0df795de1dce11b28c3f4f045d5627af": *icon_grid_0008_r02b05_g
+  - "65dadcba1dcf11b2880c0f1645f3d1dc": *icon_grid_0009_r02b03_r
+  - "66a341d21dcf11b2880c0f1645f3d1dc": *icon_grid_0010_r02b04_g
+  - "95b2202a1dce11b28af295fabaab0373": *icon_grid_0011_r02b03_r
+  - "968657501dce11b29969d72c2fa229cf": *icon_grid_0012_r02b04_g
+  - "af122aca1dd211b2a7f8c7bf6bc21eba": *icon_grid_0013_r02b04_r
+  - "b203754a1dd211b284a9193e147d086f": *icon_grid_0014_r02b05_g
+  - "5f89b5121dd311b29399f117ec0ad4d5": *icon_grid_0015_r02b05_r
+  - "6bd687a01dd311b29399f117ec0ad4d5": *icon_grid_0016_r02b06_g
+  - "604969921dd411b2a9d1b5e674a856dd": *icon_grid_0017_r02b06_r
+  - "8f2497641dd411b2a9d1b5e674a856dd": *icon_grid_0018_r02b07_g
+  - "1c01cfa21dd611b281fc65db9ac7d8f6": *icon_grid_0019_r03b05_r
+  - "365801d21dd611b2b98a6b5c1380b5e3": *icon_grid_0020_r03b06_g
+  - "eb8c0fa81dd611b2837c051661b31a74": *icon_grid_0021_r03b06_r
+  - "eb8c0fa91dd611b2837c051661b31a74": *icon_grid_0022_r03b07_g
+  - "9b0b038e18c411e49318776f158edd08": *icon_grid_0023_r02b05_r
+  - "9b0b03ca18c411e49318776f158edd08": *icon_grid_0024_r02b06_g
+  - "a27b8daa18c411e4820ab5b098c6a5c0": *icon_grid_0025_r03b06_r
+  - "a27b8de618c411e4820ab5b098c6a5c0": *icon_grid_0026_r03b07_g
+  - "ec13b8bcb82d11e4b13f4d55411d42e6": *icon_grid_0027_r03b08_n02
+  - "982dcc6efe2e11e491280b03674e713a": *icon_grid_0028_r02b07_n02
+  - "a668ea8efe2e11e49a47e3e5371a87a7": *icon_grid_0029_r02b04_r
+  - "a668eac0fe2e11e49a47e3e5371a87a7": *icon_grid_0030_r02b05_g
+  - "a668eacafe2e11e49a47e3e5371a87a7": *icon_grid_0031_r02b06_n02
+  - "ad7af7d6fe2e11e49f0c8fef8cf63522": *icon_grid_0032_r03b04_r
+  - "ad7af808fe2e11e49f0c8fef8cf63522": *icon_grid_0033_r03b05_g
+  - "ad7af812fe2e11e49f0c8fef8cf63522": *icon_grid_0034_r03b06_n02
+  - "ae487ce2fe2e11e4af85e50a2a56a360": *icon_grid_0035_r03b05_r
+  - "ae487d14fe2e11e4af85e50a2a56a360": *icon_grid_0036_r03b06_g
+  - "ae487d28fe2e11e4af85e50a2a56a360": *icon_grid_0037_r03b07_n02
+  - "49c34088248d11e58105c12d5e3b00a4": *icon_grid_0038_r02b06_r
+  - "49c340e2248d11e58105c12d5e3b00a4": *icon_grid_0039_r02b07_g
+  - "49c340f6248d11e58105c12d5e3b00a4": *icon_grid_0040_r02b08_n02
+  - "0acedc87c1db8404c23ec6ac675a27c0": *icon_grid_0041_r02b09_lr
+  - "d378d127082af71232e62a2093c92ba0": *icon_grid_0042_r02b10_l
+  - "ac1190a0a846e31092a72a2bf62329c0": *icon_grid_0043_r19b06_lr
+  - "66f27a809bfa6f1056df19bf03052ce0": *icon_grid_0044_r19b07_l
+  - "b258b3391435078ecc92d51b8a3f2ac0": *icon_grid_0045_r19b08_ln02
+  - "626ae68aa5831aac904c6189b37a29a0": *icon_grid_0046_r19b06_lr
+  - "c6b12daa91ad64045b26c1b6452a2a20": *icon_grid_0047_r19b07_l
+  - "1df96f04856f9d265fc94d29354c27a0": *icon_grid_0048_r03b07_lr
+  - "027b27853ea2c4b96436708a777b2bc0": *icon_grid_0049_r03b08_l
+  - "5eb8f1385d72f207a6d7211bb8a92ee0": *icon_grid_0050_r02b07_n02
+  - "117ff92c2607ab02bc28333ae4a92c20": *icon_grid_0051_r03b07_n02
+  - "bcaee9844be64faa724a751445d02820": *icon_grid_0052_r03b07_lr
+  - "262ffaffe4c2b5b5ff4094b0015e2b40": *icon_grid_0053_r03b08_l
+  - "87397f993e6f913d00fc361367e725a0": *icon_grid_0054_r02b04_g
+  - "e234e01a8556e9a84bcb42361d2f24e0": *icon_grid_0055_r02b05_n
+  - "a280b295c78e22bb7e4ac9bc1ac92540": *icon_grid_0056_r02b05_n

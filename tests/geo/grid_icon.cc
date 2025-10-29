@@ -24,8 +24,8 @@
 namespace eckit::geo::test {
 
 
-static const std::string GRID   = "ICON_55_R02B05";
-static const Grid::uid_type UID = "e234e01a8556e9a84bcb42361d2f24e0";
+static const std::string GRID = "icon-grid-0055-r02b05-n";
+static const Grid::uid_t UID  = "e234e01a8556e9a84bcb42361d2f24e0";
 static const std::vector<long> SHAPE{2656};
 
 

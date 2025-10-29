@@ -138,7 +138,7 @@ CASE("gridSpec") {
 #if eckit_HAVE_GEO_GRID_ICON
     SECTION("gridSpec (ICON)") {
         std::vector<test_type> tests{
-            {R"({"grid":"ICON_55_R02B05"})", {2656}},
+            {R"({"grid":"icon-grid-0055-r02b05-n"})", {2656}},
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));

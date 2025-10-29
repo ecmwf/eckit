@@ -80,18 +80,14 @@ std::string LibEcKitGeo::cacheDir() {
 
 
 std::string LibEcKitGeo::url(const std::string& url_path) {
-    struct URLPrefix : std::string {
-        URLPrefix() :
-            std::string(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-url-prefix;$ECKIT_GEO_SHARE_URL_PREFIX",
-                                                              eckit_GEO_SHARE_URL_PREFIX)) {
-            if (!empty() && back() != '/') {
-                operator+=('/');
-            }
-        }
-    } static const url_prefix;
     static const std::regex has_scheme(R"(^[a-zA-Z][a-zA-Z0-9+\-.]*://)");
 
-    return std::regex_search(url_path, has_scheme) ? url_path : url_prefix + url_path;
+    static const std::string url_prefix(LibResource<std::string, LibEcKitGeo>(
+        "eckit-geo-share-url-prefix;$ECKIT_GEO_SHARE_URL_PREFIX", eckit_GEO_SHARE_URL_PREFIX));
+    auto sep =
+        !url_prefix.empty() && url_prefix.back() != '/' && !url_path.empty() && url_path.front() != '/' ? "/" : "";
+
+    return std::regex_search(url_path, has_scheme) ? url_path : url_prefix + sep + url_path;
 }
 
 

@@ -56,7 +56,7 @@ const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
     static cache::MemoryCacheT<PathName, FESOM::FESOMRecord> cache;
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
-    auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
+    auto url  = LibEcKitGeo::url(spec.get_string("url"));
     auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
     ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
 
@@ -159,7 +159,7 @@ Grid::uid_t FESOM::calculate_uid() const {
         auto [lat, lon] = FESOM(spec->get_string("name"), Arrangement::FESOM_N).to_latlons();
 
         // get element indices (0-based) from fesom_arrangement: C (this one)
-        auto url  = spec->get_string("url_prefix", "") + spec->get_string("url_connectivity");
+        auto url  = LibEcKitGeo::url(spec->get_string("url_connectivity"));
         auto path = download.to_cached_path(url, spec->get_string("name", ""), ".ek");
         ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
 

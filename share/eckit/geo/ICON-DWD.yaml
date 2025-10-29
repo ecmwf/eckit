@@ -1,7 +1,5 @@
 ---
 
-url_prefix: &url_prefix https://sites.ecmwf.int/repository/eckit/geo/
-
 grid_names:
   - ICON_01_R02B05: &ICON_01_R02B05
     description: "Reduced radiation grid (global, R02B05). 80 km resolution."
@@ -13,7 +11,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "eee9e7881dd111b2aedbc760324270de"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_01_R02B05.icon.ek
 
   - ICON_02_R02B06: &ICON_02_R02B06
@@ -26,7 +23,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "fc9f45081dd111b2aedbc760324270de"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_02_R02B06.icon.ek
 
   - ICON_03_R02B06: &ICON_03_R02B06
@@ -39,7 +35,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "5454c1381dd211b28653972efa5f77ae"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_03_R02B06.icon.ek
 
   - ICON_04_R02B07: &ICON_04_R02B07
@@ -52,7 +47,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "8bb13be81dd211b2bdd32f117dd15b92"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_04_R02B07.icon.ek
 
   - ICON_05_R03B06: &ICON_05_R03B06
@@ -65,7 +59,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "dbf728c41dd211b2aa487ff9d2535f37"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_05_R03B06.icon.ek
 
   - ICON_06_R03B07: &ICON_06_R03B07
@@ -78,7 +71,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "5a2cfeee1dd311b291c0b7d12a12800c"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_06_R03B07.icon.ek
 
   - ICON_07_R02B04: &ICON_07_R02B04
@@ -91,7 +83,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "0af76ee01dce11b28d71ada98b503cdc"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_07_R02B04.icon.ek
 
   - ICON_08_R02B05: &ICON_08_R02B05
@@ -104,7 +95,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "0df795de1dce11b28c3f4f045d5627af"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_08_R02B05.icon.ek
 
   - ICON_09_R02B03: &ICON_09_R02B03
@@ -117,7 +107,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "65dadcba1dcf11b2880c0f1645f3d1dc"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_09_R02B03.icon.ek
 
   - ICON_10_R02B04: &ICON_10_R02B04
@@ -130,7 +119,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "66a341d21dcf11b2880c0f1645f3d1dc"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_10_R02B04.icon.ek
 
   - ICON_11_R02B03: &ICON_11_R02B03
@@ -143,7 +131,6 @@ grid_names:
     icon_arrangement: C
     shape: [5120]
     icon_uid: "95b2202a1dce11b28af295fabaab0373"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_11_R02B03.icon.ek
 
   - ICON_12_R02B04: &ICON_12_R02B04
@@ -156,7 +143,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "968657501dce11b29969d72c2fa229cf"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_12_R02B04.icon.ek
 
   - ICON_13_R02B04: &ICON_13_R02B04
@@ -169,7 +155,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "af122aca1dd211b2a7f8c7bf6bc21eba"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_13_R02B04.icon.ek
 
   - ICON_14_R02B05: &ICON_14_R02B05
@@ -182,7 +167,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "b203754a1dd211b284a9193e147d086f"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_14_R02B05.icon.ek
 
   - ICON_15_R02B05: &ICON_15_R02B05
@@ -195,7 +179,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "5f89b5121dd311b29399f117ec0ad4d5"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_15_R02B05.icon.ek
 
   - ICON_16_R02B06: &ICON_16_R02B06
@@ -208,7 +191,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "6bd687a01dd311b29399f117ec0ad4d5"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_16_R02B06.icon.ek
 
   - ICON_17_R02B06: &ICON_17_R02B06
@@ -221,7 +203,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "604969921dd411b2a9d1b5e674a856dd"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_17_R02B06.icon.ek
 
   - ICON_18_R02B07: &ICON_18_R02B07
@@ -234,7 +215,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "8f2497641dd411b2a9d1b5e674a856dd"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_18_R02B07.icon.ek
 
   - ICON_19_R03B05: &ICON_19_R03B05
@@ -247,7 +227,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "1c01cfa21dd611b281fc65db9ac7d8f6"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_19_R03B05.icon.ek
 
   - ICON_20_R03B06: &ICON_20_R03B06
@@ -260,7 +239,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "365801d21dd611b2b98a6b5c1380b5e3"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_20_R03B06.icon.ek
 
   - ICON_21_R03B06: &ICON_21_R03B06
@@ -273,7 +251,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "eb8c0fa81dd611b2837c051661b31a74"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_21_R03B06.icon.ek
 
   - ICON_22_R03B07: &ICON_22_R03B07
@@ -286,7 +263,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "eb8c0fa91dd611b2837c051661b31a74"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_22_R03B07.icon.ek
 
   - ICON_23_R02B05: &ICON_23_R02B05
@@ -299,7 +275,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "9b0b038e18c411e49318776f158edd08"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_23_R02B05.icon.ek
 
   - ICON_24_R02B06: &ICON_24_R02B06
@@ -312,7 +287,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "9b0b03ca18c411e49318776f158edd08"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_24_R02B06.icon.ek
 
   - ICON_25_R03B06: &ICON_25_R03B06
@@ -325,7 +299,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "a27b8daa18c411e4820ab5b098c6a5c0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_25_R03B06.icon.ek
 
   - ICON_26_R03B07: &ICON_26_R03B07
@@ -338,7 +311,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "a27b8de618c411e4820ab5b098c6a5c0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_26_R03B07.icon.ek
 
   - ICON_27_R03B08: &ICON_27_R03B08
@@ -351,7 +323,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "ec13b8bcb82d11e4b13f4d55411d42e6"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_27_R03B08.icon.ek
 
   - ICON_28_R02B07: &ICON_28_R02B07
@@ -364,7 +335,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "982dcc6efe2e11e491280b03674e713a"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_28_R02B07.icon.ek
 
   - ICON_29_R02B04: &ICON_29_R02B04
@@ -377,7 +347,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "a668ea8efe2e11e49a47e3e5371a87a7"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_29_R02B04.icon.ek
 
   - ICON_30_R02B05: &ICON_30_R02B05
@@ -390,7 +359,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "a668eac0fe2e11e49a47e3e5371a87a7"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_30_R02B05.icon.ek
 
   - ICON_31_R02B06: &ICON_31_R02B06
@@ -403,7 +371,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "a668eacafe2e11e49a47e3e5371a87a7"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_31_R02B06.icon.ek
 
   - ICON_32_R03B04: &ICON_32_R03B04
@@ -416,7 +383,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "ad7af7d6fe2e11e49f0c8fef8cf63522"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_32_R03B04.icon.ek
 
   - ICON_33_R03B05: &ICON_33_R03B05
@@ -429,7 +395,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "ad7af808fe2e11e49f0c8fef8cf63522"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_33_R03B05.icon.ek
 
   - ICON_34_R03B06: &ICON_34_R03B06
@@ -442,7 +407,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "ad7af812fe2e11e49f0c8fef8cf63522"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_34_R03B06.icon.ek
 
   - ICON_35_R03B05: &ICON_35_R03B05
@@ -455,7 +419,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "ae487ce2fe2e11e4af85e50a2a56a360"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_35_R03B05.icon.ek
 
   - ICON_36_R03B06: &ICON_36_R03B06
@@ -468,7 +431,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "ae487d14fe2e11e4af85e50a2a56a360"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_36_R03B06.icon.ek
 
   - ICON_37_R03B07: &ICON_37_R03B07
@@ -481,7 +443,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "ae487d28fe2e11e4af85e50a2a56a360"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_37_R03B07.icon.ek
 
   - ICON_38_R02B06: &ICON_38_R02B06
@@ -494,7 +455,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "49c34088248d11e58105c12d5e3b00a4"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_38_R02B06.icon.ek
 
   - ICON_39_R02B07: &ICON_39_R02B07
@@ -507,7 +467,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "49c340e2248d11e58105c12d5e3b00a4"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_39_R02B07.icon.ek
 
   - ICON_40_R02B08: &ICON_40_R02B08
@@ -520,7 +479,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "49c340f6248d11e58105c12d5e3b00a4"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_40_R02B08.icon.ek
 
   - ICON_41_R02B09: &ICON_41_R02B09
@@ -533,7 +491,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "0acedc87c1db8404c23ec6ac675a27c0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_41_R02B09.icon.ek
 
   - ICON_42_R02B10: &ICON_42_R02B10
@@ -546,7 +503,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "d378d127082af71232e62a2093c92ba0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_42_R02B10.icon.ek
 
   - ICON_43_R19B06: &ICON_43_R19B06
@@ -559,7 +515,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "ac1190a0a846e31092a72a2bf62329c0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_43_R19B06.icon.ek
 
   - ICON_44_R19B07: &ICON_44_R19B07
@@ -572,7 +527,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "66f27a809bfa6f1056df19bf03052ce0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_44_R19B07.icon.ek
 
   - ICON_45_R19B08: &ICON_45_R19B08
@@ -585,7 +539,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "b258b3391435078ecc92d51b8a3f2ac0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_45_R19B08.icon.ek
 
   - ICON_46_R19B06: &ICON_46_R19B06
@@ -598,7 +551,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "626ae68aa5831aac904c6189b37a29a0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_46_R19B06.icon.ek
 
   - ICON_47_R19B07: &ICON_47_R19B07
@@ -611,7 +563,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "c6b12daa91ad64045b26c1b6452a2a20"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_47_R19B07.icon.ek
 
   - ICON_48_R03B07: &ICON_48_R03B07
@@ -624,7 +575,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "1df96f04856f9d265fc94d29354c27a0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_48_R03B07.icon.ek
 
   - ICON_49_R03B08: &ICON_49_R03B08
@@ -637,7 +587,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "027b27853ea2c4b96436708a777b2bc0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_49_R03B08.icon.ek
 
   - ICON_50_R02B07: &ICON_50_R02B07
@@ -650,7 +599,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "5eb8f1385d72f207a6d7211bb8a92ee0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_50_R02B07.icon.ek
 
   - ICON_51_R03B07: &ICON_51_R03B07
@@ -663,7 +611,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "117ff92c2607ab02bc28333ae4a92c20"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_51_R03B07.icon.ek
 
   - ICON_52_R03B07: &ICON_52_R03B07
@@ -676,7 +623,6 @@ grid_names:
     icon_type: hrz_radiation
     icon_arrangement: C
     icon_uid: "bcaee9844be64faa724a751445d02820"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_52_R03B07.icon.ek
 
   - ICON_53_R03B08: &ICON_53_R03B08
@@ -689,7 +635,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "262ffaffe4c2b5b5ff4094b0015e2b40"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_53_R03B08.icon.ek
 
   - ICON_54_R02B04: &ICON_54_R02B04
@@ -702,7 +647,6 @@ grid_names:
     icon_type: hrz_global
     icon_arrangement: C
     icon_uid: "87397f993e6f913d00fc361367e725a0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_54_R02B04.icon.ek
 
   - ICON_55_R02B05: &ICON_55_R02B05
@@ -715,7 +659,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "e234e01a8556e9a84bcb42361d2f24e0"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_55_R02B05.icon.ek
 
   - ICON_56_R02B05: &ICON_56_R02B05
@@ -728,7 +671,6 @@ grid_names:
     icon_type: hrz_regional
     icon_arrangement: C
     icon_uid: "a280b295c78e22bb7e4ac9bc1ac92540"
-    url_prefix: *url_prefix
     url: grid/icon/ICON_56_R02B05.icon.ek
 
 grid_uids:

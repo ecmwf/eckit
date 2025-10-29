@@ -12,6 +12,8 @@
 
 #include "eckit/geo/LibEcKitGeo.h"
 
+#include <regex>
+
 #include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"
 #include "eckit/filesystem/PathName.h"
@@ -74,6 +76,22 @@ std::string LibEcKitGeo::cacheDir() {
         LibResource<std::string, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH),
         true};
     return path;
+}
+
+
+std::string LibEcKitGeo::url(const std::string& url_path) {
+    struct URLPrefix : std::string {
+        URLPrefix() :
+            std::string(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-url-prefix;$ECKIT_GEO_SHARE_URL_PREFIX",
+                                                              eckit_GEO_SHARE_URL_PREFIX)) {
+            if (!empty() && back() != '/') {
+                operator+=('/');
+            }
+        }
+    } static const url_prefix;
+    static const std::regex has_scheme(R"(^[a-zA-Z][a-zA-Z0-9+\-.]*://)");
+
+    return std::regex_search(url_path, has_scheme) ? url_path : url_prefix + url_path;
 }
 
 

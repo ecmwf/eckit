@@ -1,7 +1,5 @@
 ---
 
-url_prefix: &url_prefix https://sites.ecmwf.int/repository/eckit/geo/
-
 grid_names:
   - ICON-CH1-V1: &ICON_CH1_V1
     type: ICON
@@ -9,7 +7,6 @@ grid_names:
     shape: [1147980]
     icon_arrangement: C
     icon_uid: "17643da2574959b644d254a3cd6e2bc0"
-    url_prefix: *url_prefix
     url: grid/icon-ch/icon-ch1-c.ek
 
   - ICON-CH2-V2: &ICON_CH2_V2
@@ -18,7 +15,6 @@ grid_names:
     shape: [283876]
     icon_arrangement: C
     icon_uid: "bbbd5a09855499243c7a4aa4c8762920"
-    url_prefix: *url_prefix
     url: grid/icon-ch/icon-ch2-c.ek
 
   - ICON-CH1: *ICON_CH1_V1

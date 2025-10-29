@@ -54,7 +54,7 @@ const ORCA::ORCARecord& orca_record(const Spec& spec) {
     static cache::MemoryCacheT<PathName, ORCA::ORCARecord> cache;
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
 
-    auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
+    auto url  = LibEcKitGeo::url(spec.get_string("url"));
     auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
     ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
 

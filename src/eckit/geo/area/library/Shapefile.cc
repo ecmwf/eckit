@@ -235,7 +235,7 @@ public:
     void add_library(const std::string& lib, const Value& value) {
         std::unique_ptr<spec::Custom> spec(spec::Custom::make_from_value(value));
 
-        emplace(lib, ShapefileURL{spec->get_string("url_prefix", "") + spec->get_string("url")});
+        emplace(lib, ShapefileURL{LibEcKitGeo::url(spec->get_string("url"))});
     }
 };
 #endif

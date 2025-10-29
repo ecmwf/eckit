@@ -32,6 +32,8 @@ constexpr bool eckit_HAVE_GEO_BITREPRODUCIBLE         = _to_bool(@eckit_HAVE_GEO
 constexpr bool eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT = _to_bool(@eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT@);
 
 constexpr const char* eckit_GEO_CACHE_PATH       = "@eckit_GEO_CACHE_PATH@";
+constexpr const char* eckit_GEO_SHARE_URL_PREFIX = "@eckit_GEO_SHARE_URL_PREFIX@";
+
 constexpr const char* eckit_GEO_SHARE_AREA       = "@eckit_GEO_SHARE_AREA@";
 constexpr const char* eckit_GEO_SHARE_GRID       = "@eckit_GEO_SHARE_GRID@";
 constexpr const char* eckit_GEO_SHARE_PROJECTION = "@eckit_GEO_SHARE_PROJECTION@";

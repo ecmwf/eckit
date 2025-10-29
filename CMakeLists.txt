@@ -145,7 +145,7 @@ ecbuild_add_option( FEATURE LZ4
                     REQUIRED_PACKAGES LZ4 )
 
 ecbuild_add_option( FEATURE AEC
-                    DESCRIPTION "AEC support for compression" 
+                    DESCRIPTION "AEC support for compression"
                     REQUIRED_PACKAGES "NAME libaec VERSION 1.0.6")
 
 ecbuild_add_option( FEATURE ZIP
@@ -221,7 +221,8 @@ if( eckit_HAVE_GEO_AREA_SHAPEFILE )
     endif()
 endif()
 
-set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" )
+set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" CACHE PATH "eckit::geo cache path default" )
+set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
 
 ### LAPACK
 

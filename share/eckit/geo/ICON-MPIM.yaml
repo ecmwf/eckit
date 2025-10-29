@@ -1,7 +1,5 @@
 ---
 
-url_prefix: &url_prefix https://sites.ecmwf.int/repository/eckit/geo/
-
 grid_names:
   - ICON_O_16: &ICON_O_16
     description: "Ocean global R02B09 grid. 5 km resolution. Grid rotated by 37 degrees around z-axis and symmetrical to the equator. Grid includes ocean cells only."
@@ -13,7 +11,6 @@ grid_names:
     icon_type: hrz_global_ocean_only
     icon_arrangement: C
     icon_uid: "375cb0cc637e11e89d6f8f41a9b9ff4b"
-    url_prefix: *url_prefix
     url: grid/icon-mpim/ICON_O_16.icon.ek
 
   - ICON_O_20: &ICON_O_20
@@ -26,7 +23,6 @@ grid_names:
     icon_type: hrz_global_ocean_only
     icon_arrangement: C
     icon_uid: "e96d69e2ab5811e89e299566f2744a3c"
-    url_prefix: *url_prefix
     url: grid/icon-mpim/ICON_O_20.icon.ek
 
   - ICON_O_24: &ICON_O_24
@@ -39,7 +35,6 @@ grid_names:
     icon_type: hrz_global_ocean_only
     icon_arrangement: C
     icon_uid: "28f3a5e2de9c11e88555cbf786e364f5"
-    url_prefix: *url_prefix
     url: grid/icon-mpim/ICON_O_24.icon.ek
 
   - ICON_O_36: &ICON_O_36
@@ -52,7 +47,6 @@ grid_names:
     icon_type: hrz_global_ocean_only
     icon_arrangement: C
     icon_uid: "5bd948e8ac1a11eaa6b1d317264fdca9"
-    url_prefix: *url_prefix
     url: grid/icon-mpim/ICON_O_36.icon.ek
 
   - ICON_O_38: &ICON_O_38
@@ -65,7 +59,6 @@ grid_names:
     icon_type: hrz_global_ocean_only
     icon_arrangement: C
     icon_uid: "9b323b62670411eb85afdd9149101e1a"
-    url_prefix: *url_prefix
     url: grid/icon-mpim/ICON_O_38.icon.ek
 
   - ICON_O_40: &ICON_O_40
@@ -78,7 +71,6 @@ grid_names:
     icon_type: hrz_global_ocean_only
     icon_arrangement: C
     icon_uid: "99c03a3c657811eb8e42f565c1ad0089"
-    url_prefix: *url_prefix
     url: grid/icon-mpim/ICON_O_40.icon.ek
 
   - ICON_O_46: &ICON_O_46
@@ -91,7 +83,6 @@ grid_names:
     icon_type: hrz_global_ocean_only
     icon_arrangement: C
     icon_uid: "f4ed57f6b2ea11e9ae92c52a3fa37d96"
-    url_prefix: *url_prefix
     url: grid/icon-mpim/ICON_O_46.icon.ek
 
 grid_uids:

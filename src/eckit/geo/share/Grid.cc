@@ -17,6 +17,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/value/Value.h"
 
@@ -35,6 +36,7 @@ Grid::Grid(const std::vector<PathName>& paths) : spec_(new spec::Custom) {
 
     for (const auto& path : paths) {
         if (path.exists()) {
+            Log::debug<LibEcKitGeo>() << "eckit::geo::share::Grid::load('" << path.realName() << "')" << std::endl;
             load(path);
         }
     }

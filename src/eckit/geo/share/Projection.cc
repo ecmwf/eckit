@@ -17,6 +17,7 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/spec/Custom.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/value/Value.h"
 
@@ -35,6 +36,8 @@ Projection::Projection(const std::vector<PathName>& paths) : spec_(new spec::Cus
 
     for (const auto& path : paths) {
         if (path.exists()) {
+            Log::debug<LibEcKitGeo>() << "eckit::geo::share::Projection::load('" << path.realName() << "')"
+                                      << std::endl;
             load(path);
         }
     }

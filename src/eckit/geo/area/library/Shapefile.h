@@ -41,7 +41,7 @@ public:
 
     explicit Shapefile(const Spec&);
     explicit Shapefile(const PathName&);
-    explicit Shapefile(const PathName& shp, const PathName& dbf, const std::string& name_field = "");
+    explicit Shapefile(const PathName& shp, const PathName& dbf, const std::string& name = "");
 
     Shapefile(const Shapefile&) = delete;
     Shapefile(Shapefile&&)      = delete;

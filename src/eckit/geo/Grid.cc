@@ -20,6 +20,7 @@
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/share/Grid.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -56,6 +57,25 @@ Grid::Grid(const Spec& spec) :
 Grid::Grid(Projection* proj) :
     projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
     bbox_.reset(area::BoundingBox::make_global_prime().release());
+}
+
+
+const Spec& Grid::catalog() const {
+    if (!catalog_) {
+        if (GridSpecByUID::instance().exists(uid())) {
+            catalog_.reset(GridSpecByUID::instance().get(uid()).spec());
+        }
+        else if (std::string grid(spec().get_string("grid")); GridSpecByName::instance().matches(grid)) {
+            catalog_.reset(GridSpecByName::instance().match(grid).spec(grid));
+        }
+        else {
+            static const spec::Custom empty;
+            catalog_.reset(&empty);
+        }
+    }
+
+    ASSERT(catalog_);
+    return *catalog_;
 }
 
 

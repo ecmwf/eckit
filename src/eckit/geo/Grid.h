@@ -128,6 +128,7 @@ public:
 
     [[nodiscard]] NextIterator* make_next_iterator() const { return new NextIterator{cbegin(), cend()}; }
 
+    [[nodiscard]] const Spec& catalog() const;
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
@@ -192,6 +193,7 @@ private:
     mutable std::unique_ptr<Area> area_;
     mutable std::unique_ptr<const area::BoundingBox> bbox_;
     mutable std::unique_ptr<const Projection> projection_;
+    mutable std::unique_ptr<const Spec> catalog_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_t uid_;
 

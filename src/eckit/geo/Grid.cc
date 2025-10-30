@@ -19,6 +19,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/projection/None.h"
 #include "eckit/geo/share/Grid.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -53,6 +54,25 @@ Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 Grid::Grid(const area::BoundingBox* bbox, const Projection* projection) :
     bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime().release() : bbox), projection_(projection) {}
+
+
+const Spec& Grid::catalog() const {
+    if (!catalog_) {
+        if (GridSpecByUID::instance().exists(uid())) {
+            catalog_.reset(GridSpecByUID::instance().get(uid()).spec());
+        }
+        else if (std::string grid(spec().get_string("grid")); GridSpecByName::instance().matches(grid)) {
+            catalog_.reset(GridSpecByName::instance().match(grid).spec(grid));
+        }
+        else {
+            static const spec::Custom empty;
+            catalog_.reset(&empty);
+        }
+    }
+
+    ASSERT(catalog_);
+    return *catalog_;
+}
 
 
 const Spec& Grid::spec() const {

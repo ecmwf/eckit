@@ -96,16 +96,6 @@ std::string ICON::arrangement() const {
 }
 
 
-const Spec& ICON::catalog() const {
-    if (!catalog_) {
-        catalog_.reset(GridSpecByUID::instance().get(uid()).spec());
-        ASSERT(catalog_);
-    }
-
-    return *catalog_;
-}
-
-
 ICON::ICONRecord::bytes_t ICON::ICONRecord::footprint() const {
     return sizeof(longitudes_.front()) * longitudes_.size() + sizeof(latitudes_.front()) * latitudes_.size();
 }

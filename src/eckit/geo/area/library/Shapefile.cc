@@ -25,6 +25,7 @@
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
+#include "eckit/log/Log.h"
 
 
 namespace eckit::geo::area::library {
@@ -91,6 +92,9 @@ Shapefile::Shapefile(const PathName& file) : Shapefile(file, "") {}
 
 Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string& name) :
     shpPath_(path_shp(shp)), dbfPath_(path_dbf(dbf, shpPath_)), nEntities_(0) {
+    Log::debug<LibEcKitGeo>() << "eckit::geo::area::library::Shapefile(shp='" << shpPath_.realName() << "',dbf='"
+                              << dbfPath_.realName() << "',name='" << name << "')" << std::endl;
+
     if ((shp_ = SHPOpen(shpPath_.localPath(), "rb")) == nullptr) {
         throw CantOpenFile(shpPath_ + " (as .shp)", Here());
     }

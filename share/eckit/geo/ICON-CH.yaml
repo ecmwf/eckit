@@ -7,6 +7,7 @@ grid_names:
     shape: [1147980]
     bounding_box: [50.6, -0.9, 41.9, 17.8]
     icon_number_of_grid_used: 1
+    icon_number_of_grid_in_reference: 1
     icon_arrangement: C
     icon_uid: "17643da2574959b644d254a3cd6e2bc0"
     url: grid/icon-ch/icon-ch1-c.ek
@@ -17,6 +18,7 @@ grid_names:
     shape: [283876]
     bounding_box: [50.6, -0.9, 41.9, 17.8]
     icon_number_of_grid_used: 2
+    icon_number_of_grid_in_reference: 1
     icon_arrangement: C
     icon_uid: "bbbd5a09855499243c7a4aa4c8762920"
     url: grid/icon-ch/icon-ch2-c.ek

@@ -7,13 +7,11 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
+#pragma once
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date   Feb 12
-
-#ifndef eckit_types_FixedString_h
-#define eckit_types_FixedString_h
 
 #include <cstring>
 
@@ -22,6 +20,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/Zero.h"
+#include "eckit/deprecated.h"
 
 namespace eckit {
 
@@ -47,13 +46,24 @@ public:
     /// @note that constructing FixedStrings initialised from another FixedString of a different SIZE actually
     ///       routes through the const std::string& constructor, via the provided implicit cast to std::string below.
 
-    FixedString();
+    FixedString() = default;
+
+    FixedString(const FixedString&) = default;
+
+    FixedString& operator=(const FixedString&) = default;
+   
+    DEPRECATED("Use FixedString<N>::from(std::string_view) instead.")
     FixedString(const std::string&);
-    FixedString(const FixedString&);
+
+    DEPRECATED("Use FixedString<N>::from(std::string_view) instead.")
     FixedString(const char*);
 
-    FixedString& operator=(const FixedString&);
+    static FixedString from(std::string_view value);
+
+    DEPRECATED("Use obj.assignFrom(std::string_view) instead.")
     FixedString& operator=(const std::string&);
+
+    FixedString& assignFrom(std::string_view value);
 
     bool operator<(const FixedString& other) const { return ::memcmp(data_, other.data_, SIZE) < 0; }
 
@@ -73,11 +83,17 @@ public:
 
     bool empty() const { return length() == 0; }
 
+    DEPRECATED("Use asStringView instead.")
     std::string asString() const;
 
+    DEPRECATED("Will be removed without replacement.")
     operator std::string() const;
 
+    std::string_view asStringView() const;
+
+    DEPRECATED("Will be removed without replacement.")
     char* data() { return data_; }
+
     const char* data() const { return data_; }
 
     /// The number of bytes in the managed array (always equal to SIZE).
@@ -87,7 +103,7 @@ public:
 
 private:
 
-    char data_[SIZE];
+    char data_[SIZE] = {};
 
     void print(std::ostream& s) const;
 
@@ -96,13 +112,10 @@ private:
         return s;
     }
 };
+// TODO(kkratz): Do not forget to enforce enforce trivial copy so that zeroing is guaranteed to be safe
+// static_assert(std::is_trivially_copyable_v<FixedString<1>>, "FixedString must remain trivially copyable!");
 
 //-----------------------------------------------------------------------------
-
-template <int SIZE>
-FixedString<SIZE>::FixedString() {
-    zero(data_);
-}
 
 template <int SIZE>
 FixedString<SIZE>::FixedString(const std::string& s) {
@@ -112,23 +125,18 @@ FixedString<SIZE>::FixedString(const std::string& s) {
 }
 
 template <int SIZE>
-FixedString<SIZE>::FixedString(const FixedString& other) {
-    ::memcpy(data_, other.data_, SIZE);
-}
-
-template <int SIZE>
 FixedString<SIZE>::FixedString(const char* s) {
     ASSERT(sizeof(char) == 1 && s && strlen(s) <= SIZE);
     zero(data_);
     ::memcpy(data_, s, strlen(s));
 }
 
-template <int SIZE>
-FixedString<SIZE>& FixedString<SIZE>::operator=(const FixedString& s) {
-    if (this != &s) {
-        ::memcpy(data_, s.data_, SIZE);
-    }
-    return *this;
+template<int SIZE>
+FixedString<SIZE> FixedString<SIZE>::from(std::string_view value)
+{
+    ASSERT(value.size() <= SIZE && sizeof(value[0] == 1));
+    FixedString<SIZE> val{};
+    ::memcpy(val.data_, value.data(), value.size());
 }
 
 template <int SIZE>
@@ -138,6 +146,18 @@ FixedString<SIZE>& FixedString<SIZE>::operator=(const std::string& s) {
     ::memcpy(data_, s.c_str(), s.length());
     if (s.length() < SIZE) {
         ::memset(data_ + s.length(), 0, SIZE - s.length());
+    }
+
+    return *this;
+}
+
+template <int SIZE>
+FixedString<SIZE>& FixedString<SIZE>::assignFrom(std::string_view sv) {
+    ASSERT(sv.length() <= SIZE && sizeof(sv[0]) == 1);
+
+    ::memcpy(data_, sv.data(), sv.length());
+    if (sv.length() < SIZE) {
+        ::memset(data_ + sv.length(), 0, SIZE - sv.length());
     }
 
     return *this;
@@ -166,5 +186,3 @@ FixedString<SIZE>::operator std::string() const {
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

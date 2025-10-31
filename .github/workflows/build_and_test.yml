@@ -1,0 +1,64 @@
+name: Build and Test Eckit
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - "master"
+      - "develop"
+    tags-ignore:
+      - "**"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        runner: 
+          - [self-hosted, platform-builder-debian-11]
+          - [self-hosted, platform-builder-ubuntu-22.04]
+          - [self-hosted, platform-builder-rocky-8.6]
+          - [self-hosted, platform-builder-fedora-37]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - name: Get ecbuild
+        uses: actions/checkout@v5
+        with:
+          repository: ecmwf/ecbuild
+          ref: develop
+          path: ecbuild
+      - name: Get cxx-dependencies
+        uses: actions/checkout@v5
+        with:
+          repository: ecmwf/cxx-dependencies
+          ref: master
+          path: cxx-dependencies-src
+          token: ${{ secrets.GH_REPO_READ_TOKEN }}
+          submodules: recursive
+      - name: Install dependencies
+        run: |
+          mkdir cxx-dependencies-build
+          BUILD_PATH=cxx-dependencies-build INSTALL_PREFIX=dependencies cxx-dependencies-src/build.sh
+      - name: Get eckit
+        uses: actions/checkout@v5
+        with:
+          repository: ecmwf/eckit
+          ref: develop
+          path: eckit-src
+      - name: Install eckit
+        run: |
+          mkdir eckit-build
+          cmake \
+            -B eckit-build \
+            -S eckit-src \
+            -GNinja \
+            -DCMAKE_INSTALL_PREFIX=dependencies \
+            -DCMAKE_PREFIX_PATH=dependencies \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          cmake --build eckit-build -j -t install
+  build-mars-client-bundle:
+    uses: ozaq/test-bundle/.github/workflows/build.yml@demo/ci
+    secrets:
+      GH_REPO_READ_TOKEN: ${{ secrets.GH_REPO_READ_TOKEN }}
+    with:
+      ref: ${{ github.ref }}

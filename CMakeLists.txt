@@ -370,7 +370,6 @@ include(cmake/compiler_warnings.cmake) # optionally handle compiler specific war
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 add_subdirectory( src )
-add_subdirectory( bamboo )
 add_subdirectory( doc )
 add_subdirectory( share )
 

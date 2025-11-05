@@ -10,12 +10,10 @@
 
 #include <cmath>
 
+#include "eckit/maths/FloatingPointExceptions.h"
 #include "eckit/types/FloatCompare.h"
 
 #include "eckit/testing/Test.h"
-
-using namespace eckit;
-using namespace eckit::testing;
 
 namespace eckit::test {
 
@@ -24,15 +22,15 @@ namespace eckit::test {
 namespace {
 
 bool is_equal(double a, double b, double epsilon, int maxUlps) {
-    return eckit::types::is_approximately_equal(a, b, epsilon, maxUlps);
+    return types::is_approximately_equal(a, b, epsilon, maxUlps);
 }
 
 bool is_equal(double a, double b, double epsilon) {
-    return eckit::types::is_approximately_equal(a, b, epsilon);
+    return types::is_approximately_equal(a, b, epsilon);
 }
 
 bool is_equal(double a, double b) {
-    return eckit::types::is_approximately_equal(a, b, 0.00001);
+    return types::is_approximately_equal(a, b, 0.00001);
 }
 
 const double dEps = std::numeric_limits<double>::epsilon();
@@ -91,9 +89,13 @@ CASE("test_large_numbers_of_opposite_sign") {
     EXPECT(!is_equal(-1000000.0, 1000001.0));
     EXPECT(!is_equal(-1000001.0, 1000000.0));
 
-    // Overflow occurs here in eckit::types::is_approximately_equal
+    // Overflow can occur here (as in CRAY) in eckit::types::is_approximately_equal
+    maths::FloatingPointExceptions::disable_floating_point_exceptions();
+
     EXPECT(!is_equal(-dMax, dMax));
     EXPECT(!is_equal(-dMax, dMax, dEps));
+
+    maths::FloatingPointExceptions::enable_floating_point_exceptions();
 }
 
 CASE("test_ulp_around_one") {
@@ -326,16 +328,6 @@ CASE("test_comparisons_ulps") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if defined(_CRAYC)
-#include <fenv.h>
-#else
-static int fedisableexcept(int excepts) {
-    return 0;
-}
-static int FE_ALL_EXCEPT = 0;
-#endif
-
 int main(int argc, char** argv) {
-    fedisableexcept(FE_ALL_EXCEPT);
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

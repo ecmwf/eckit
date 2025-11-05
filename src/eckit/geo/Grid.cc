@@ -264,6 +264,12 @@ void Grid::fill_spec(spec::Custom& custom) const {
 }
 
 
+ShareEckitGeoGridInit::ShareEckitGeoGridInit() {
+    // ensure load of supporting files
+    share::Grid::instance();
+}
+
+
 const Grid* GridFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
@@ -271,6 +277,8 @@ const Grid* GridFactory::make_from_string(const std::string& str) {
 
 
 GridFactory& GridFactory::instance() {
+    share::Grid::instance();
+
     static GridFactory INSTANCE;
     return INSTANCE;
 }
@@ -282,7 +290,7 @@ const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
     std::unique_ptr<Spec> cfg(make_spec_(spec));
 
     if (std::string type; cfg->get("type", type)) {
-        return GridFactoryType::instance().get(type).create(*cfg);
+        return Factory<Grid>::instance().get(type).create(*cfg);
     }
 
     list(Log::error() << "Grid: cannot build grid without 'type', choices are: ");
@@ -292,7 +300,6 @@ const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
 
 Spec* GridFactory::make_spec_(const Spec& spec) const {
     lock_type lock;
-    share::Grid::instance();
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
@@ -344,11 +351,10 @@ bool Grid::NextIterator::next(Point& point) {
 
 std::ostream& GridFactory::list_(std::ostream& out) const {
     lock_type lock;
-    share::Grid::instance();
 
     out << GridSpecByUID::instance() << std::endl;
     out << GridSpecByName::instance() << std::endl;
-    out << GridFactoryType::instance() << std::endl;
+    out << Factory<Grid>::instance() << std::endl;
 
     return out;
 }

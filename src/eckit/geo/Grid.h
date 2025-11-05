@@ -203,9 +203,15 @@ private:
 };
 
 
-using GridFactoryType = Factory<Grid>;
-using GridSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
-using GridSpecByUID   = spec::GeneratorT<spec::SpecGeneratorT0>;
+struct ShareEckitGeoGridInit {
+private:
+
+    ShareEckitGeoGridInit();
+};
+
+
+struct GridSpecByName : spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>, private ShareEckitGeoGridInit {};
+struct GridSpecByUID : spec::GeneratorT<spec::SpecGeneratorT0>, private ShareEckitGeoGridInit {};
 
 
 template <typename T>

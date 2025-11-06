@@ -187,7 +187,6 @@ CASE("test_comparisons_involving_infinity") {
     Log::info() << "test_comparisons_involving_infinity" << std::endl;
 
     if (std::numeric_limits<double>::has_infinity) {
-
         EXPECT(is_equal(dInf, dInf));
         EXPECT(is_equal(-dInf, -dInf));
         EXPECT(!is_equal(dInf, dMax));
@@ -233,6 +232,8 @@ CASE("test_comparisons_involving_nan") {
     EXPECT(!is_equal(qNaN, -dMin));
     EXPECT(!is_equal(-dMin, qNaN));
 
+    maths::FloatingPointExceptions::disable_floating_point_exceptions();
+
     EXPECT(!is_equal(sNaN, sNaN));
     EXPECT(!is_equal(sNaN, 0.0));
     EXPECT(!is_equal(-0.0, sNaN));
@@ -248,6 +249,8 @@ CASE("test_comparisons_involving_nan") {
     EXPECT(!is_equal(dMin, sNaN));
     EXPECT(!is_equal(sNaN, -dMin));
     EXPECT(!is_equal(-dMin, sNaN));
+
+    maths::FloatingPointExceptions::enable_floating_point_exceptions();
 }
 
 CASE("test_comparisons_opposite_side_of_zero") {

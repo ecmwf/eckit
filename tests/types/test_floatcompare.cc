@@ -9,6 +9,7 @@
  */
 
 #include <cmath>
+#include <limits>
 
 #include "eckit/maths/FloatingPointExceptions.h"
 #include "eckit/types/FloatCompare.h"
@@ -332,5 +333,6 @@ CASE("test_comparisons_ulps") {
 //----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+    eckit::maths::FloatingPointExceptions::enable_floating_point_exceptions();
     return eckit::testing::run_tests(argc, argv);
 }

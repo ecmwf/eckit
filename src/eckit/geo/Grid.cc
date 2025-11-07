@@ -51,7 +51,7 @@ class lock_type {
 
 
 Grid::Grid(const Spec& spec) :
-    bbox_(area::BoundingBox::make_from_spec(spec)), projection_(ProjectionFactory::build(spec)) {}
+    bbox_(area::BoundingBox::make_from_spec(spec)), projection_(ProjectionFactory::build(spec.spec("projection"))) {}
 
 
 Grid::Grid(Projection* proj) :
@@ -335,6 +335,20 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
 
     if (std::vector<double> grid; cfg->get("grid", grid) && grid.size() == 2) {
         back->set("type", "regular_ll");
+    }
+
+    if (static const std::string projection{"projection"}; !cfg->has(projection)) {
+        auto ptr = std::make_unique<spec::Custom>();
+
+        if (static const std::string rotation{"rotation"}; cfg->has(rotation)) {
+            ptr->set("type", rotation);
+            ptr->set(rotation, cfg->get_double_vector(rotation));
+        }
+        else {
+            ptr->set("type", "none");
+        }
+
+        back->set(projection, ptr.release());
     }
 
     if (!back->empty()) {

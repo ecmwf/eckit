@@ -126,6 +126,10 @@ private:
     // -- Methods
 
     void set(const std::string& name, const custom_ptr&);
+
+    // -- Overridden methods
+
+    const Spec& spec(const std::string& name) const override;
 };
 
 

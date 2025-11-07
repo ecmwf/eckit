@@ -16,7 +16,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/share/Projection.h"
@@ -87,9 +86,11 @@ std::string Projection::proj_str() const {
 
 
 Projection* Projection::make_from_spec(const Spec& spec) {
-    return ProjectionFactoryType::instance()
-        .get(spec.get_string(LibEcKitGeo::proj() ? "proj" : "projection"))
-        .create(spec);
+    if (std::string type; spec.get("type", type)) {
+        return ProjectionFactoryType::instance().get(type).create(spec);
+    }
+
+    throw exception::SpecError("Projection: cannot build grid without 'type'", Here());
 }
 
 

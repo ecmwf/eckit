@@ -40,7 +40,7 @@ size_t check_N(size_t N) {
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
     RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec),
-                    spec.has("projection") ? Projection::make_from_spec(spec)
+                    spec.has("projection") ? Projection::make_from_spec(spec.spec("projection"))
                                            : new projection::Reverse<projection::EquidistantCylindrical>) {}
 
 

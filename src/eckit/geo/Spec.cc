@@ -136,6 +136,11 @@ std::string Spec::str() const {
 }
 
 
+const Spec& Spec::spec(const std::string& name) const {
+    throw exception::SpecError(name, Here());
+}
+
+
 void Spec::print(std::ostream& out) const {
     JSON j(out);
     json(j);

@@ -87,4 +87,21 @@ void Layered::json(JSON&) const {
 }
 
 
+const Spec& Layered::spec(const std::string& name) const {
+    for (const auto& spec : front_) {
+        if (spec->has(name)) {
+            return spec->spec(name);
+        }
+    }
+
+    for (const auto& spec : back_) {
+        if (spec->has(name)) {
+            return spec->spec(name);
+        }
+    }
+
+    return Spec::spec(name);
+}
+
+
 }  // namespace eckit::geo::spec

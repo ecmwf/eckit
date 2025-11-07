@@ -91,6 +91,7 @@ private:
 
     void print(std::ostream&) const override;
     void json(JSON&) const override;
+    const Spec& spec(const std::string& name) const override;
 };
 
 

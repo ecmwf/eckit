@@ -68,7 +68,7 @@ RegularLL::RegularLL(const Spec& spec) :
 
             return {0, 0};
         }(),
-        spec.has("projection") ? Projection::make_from_spec(spec)
+        spec.has("projection") ? Projection::make_from_spec(spec.spec("projection"))
                                : new projection::Reverse<projection::EquidistantCylindrical>) {
     ASSERT(!empty());
 }

@@ -380,6 +380,18 @@ void Custom::set(const std::string& name, const custom_ptr& value) {
     map_[name] = value;
 }
 
+const Spec& Custom::spec(const std::string& name) const {
+    if (auto it = map_.find(name); it != map_.cend()) {
+        ASSERT(std::holds_alternative<custom_ptr>(it->second));
+        const auto& value = std::get<custom_ptr>(it->second);
+
+        ASSERT(value);
+        return *value;
+    }
+
+    throw exception::SpecError("Custom::spec('" + name + "'): not found", Here());
+}
+
 
 bool Custom::has(const std::string& name) const {
     return map_.find(name) != map_.cend();

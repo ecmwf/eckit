@@ -147,11 +147,8 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
 
 
 void HEALPix::fill_spec(spec::Custom& custom) const {
-    custom.set("grid", "H" + std::to_string(Nside_));
-
-    if (order() != order::HEALPix::order_default()) {
-        custom.set("order", order());
-    }
+    auto suffix = order() != order::HEALPix::order_default() ? order().substr(0, 1) : "";
+    custom.set("grid", "H" + std::to_string(Nside_) + suffix);
 }
 
 

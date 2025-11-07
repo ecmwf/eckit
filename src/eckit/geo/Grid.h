@@ -131,7 +131,7 @@ public:
 
     [[nodiscard]] const Spec& catalog() const;
     [[nodiscard]] const Spec& spec() const;
-    std::string spec_str() const { return spec().str(); }
+    std::string spec_str() const;
 
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;

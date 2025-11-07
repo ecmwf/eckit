@@ -92,6 +92,21 @@ const Spec& Grid::spec() const {
 }
 
 
+std::string Grid::spec_str() const {
+    const auto& s = spec();
+    ASSERT(spec_);
+
+    // return only the grid name if that's the only entry in the spec
+    if (const auto& container = spec_->container(); container.size() == 1 && container.begin()->first == "grid") {
+        if (const auto& v = container.begin()->second; std::holds_alternative<std::string>(v)) {
+            return std::get<std::string>(v);
+        }
+    }
+
+    return s.str();
+}
+
+
 bool Grid::empty() const {
     return size() == 0;
 }

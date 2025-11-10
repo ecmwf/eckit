@@ -71,14 +71,6 @@ ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox) :
     ReducedGaussian(N, util::reduced_octahedral_pl(N), bbox) {}
 
 
-// ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const BoundingBox& bbox) :
-//     N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
-//     ASSERT(N_ * 2 == pl_.size());
-//     ASSERT(0 < N_ && Nj_ <= 2 * N_);
-//     ASSERT(y_);
-// }
-
-
 Grid::iterator ReducedGaussian::cbegin() const {
     return iterator{new geo::iterator::Reduced(*this, 0)};
 }

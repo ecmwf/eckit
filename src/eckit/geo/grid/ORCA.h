@@ -15,10 +15,11 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 
 #include "eckit/geo/Arrangement.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/container/PointsContainer.h"
-#include "eckit/geo/grid/Regular.h"
 
 
 namespace eckit {
@@ -29,7 +30,7 @@ class PathName;
 namespace eckit::geo::grid {
 
 
-class ORCA final : public Regular {
+class ORCA final : public Grid {
 public:
 
     // -- Types
@@ -66,8 +67,8 @@ public:
 
     // -- Methods
 
-    size_t nx() const override { return record_.nj(); }
-    size_t ny() const override { return record_.ni(); }
+    size_t nx() const { return record_.nj(); }
+    size_t ny() const { return record_.ni(); }
 
     std::string name() const { return name_; }
     std::string arrangement() const;
@@ -80,7 +81,11 @@ public:
     iterator cend() const override;
 
     uid_type calculate_uid() const override;
+
     const std::string& type() const override;
+    std::vector<size_t> shape() const override { return {record_.ni(), record_.nj()}; }
+
+    size_t size() const override { return record_.ni() * record_.nj(); };
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }  // FIXME: not sure this is semanticaly correct

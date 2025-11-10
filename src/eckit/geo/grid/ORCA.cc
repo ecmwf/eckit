@@ -75,7 +75,7 @@ const ORCA::ORCARecord& orca_record(const Spec& spec) {
 
 
 ORCA::ORCA(const Spec& spec) :
-    Regular(spec),
+    Grid(spec),
     name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
     record_(orca_record(spec)),
@@ -285,8 +285,11 @@ std::string ORCA::arrangement_to_string(Arrangement a) {
 
 
 void ORCA::fill_spec(spec::Custom& custom) const {
-    custom.set("grid", name_ + "_" + arrangement_to_string(arrangement_));
-    if (auto _uid = uid(); !GridSpecByUID::instance().exists(_uid)) {
+    auto grid = name_ + "_" + arrangement_to_string(arrangement_);
+    custom.set("grid", grid);
+
+    if (auto _uid = uid(); !GridSpecByName::instance().exists(grid) ||
+                           GridSpecByName::instance().match(grid).spec(grid)->get_string("orca_uid") != _uid) {
         custom.set("uid", _uid);
     }
 }

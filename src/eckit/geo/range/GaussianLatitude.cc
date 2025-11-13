@@ -28,10 +28,26 @@ static util::recursive_mutex MUTEX;
 
 
 GaussianLatitude::GaussianLatitude(size_t N, bool increasing) :
-    Range(2 * N, increasing ? -90. : 90., increasing ? 90. : -90.), N_(N) {}
+    LatitudeRange(2 * N, increasing ? -90. : 90., increasing ? 90. : -90.), N_(N) {}
 
 
-Range* GaussianLatitude::make_cropped_range(double crop_a, double crop_b) const {
+bool GaussianLatitude::includesNorthPole() const {
+    const auto increasing = a() < b();
+    const auto& lats(util::gaussian_latitudes(N_, increasing));
+    return increasing ? types::is_approximately_equal(b(), lats.back())
+                      : types::is_approximately_equal(a(), lats.front());
+}
+
+
+bool GaussianLatitude::includesSouthPole() const {
+    const auto increasing = a() < b();
+    const auto& lats(util::gaussian_latitudes(N_, increasing));
+    return !increasing ? types::is_approximately_equal(b(), lats.back())
+                       : types::is_approximately_equal(a(), lats.front());
+}
+
+
+GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
            (types::is_approximately_equal(a(), b()) && types::is_approximately_equal(crop_a, crop_b)));
 

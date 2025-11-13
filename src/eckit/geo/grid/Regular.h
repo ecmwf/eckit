@@ -32,32 +32,32 @@ public:
 
     // -- Methods
 
-    virtual double dx() const;
-    virtual double dy() const;
+    virtual double dx() const = 0;
+    virtual double dy() const = 0;
 
-    virtual size_t nx() const { return x_->size(); }
-    virtual size_t ny() const { return y_->size(); }
+    virtual size_t nx() const = 0;
+    virtual size_t ny() const = 0;
 
-    const Range& x() const;
-    const Range& y() const;
+    virtual const Range& x() const = 0;
+    virtual const Range& y() const = 0;
 
     // -- Overridden methods
 
-    iterator cbegin() const override;
-    iterator cend() const override;
+    iterator cbegin() const final;
+    iterator cend() const final;
 
     size_t size() const final { return nx() * ny(); }
-    std::vector<size_t> shape() const override { return {ny(), nx()}; }
+    std::vector<size_t> shape() const final { return {ny(), nx()}; }
 
-    const order_type& order() const override;
-    renumber_type reorder(const order_type& to) const override;
+    const order_type& order() const final;
+    renumber_type reorder(const order_type& to) const final;
 
 protected:
 
     // -- Constructors
 
     explicit Regular(const Spec&);
-    explicit Regular(Range* x, Range* y, const Projection* = nullptr);
+    explicit Regular(const Projection* = nullptr);
 
     // -- Overridden methods
 
@@ -71,8 +71,6 @@ private:
 
     // -- Members
 
-    const std::unique_ptr<Range> x_;
-    const std::unique_ptr<Range> y_;
     order::Scan order_;
 
     // -- Friends

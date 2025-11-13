@@ -12,7 +12,9 @@
 
 #pragma once
 
+#include "eckit/geo/area/BoundingBoxXY.h"
 #include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/range/Regular.h"
 
 
 namespace eckit::geo::grid {
@@ -35,18 +37,12 @@ public:
         const value_type& dy = array::operator[](1);
     };
 
+    using BoundingBoxXY = area::BoundingBoxXY;
+
     // -- Constructors
 
-    RegularXY(Range* x, Range* y, const BoundingBox* bbox, const Projection* proj) : Regular(x, y) {}
     explicit RegularXY(const Spec&);
-
-    // -- Methods
-
-    double dlon() const { return dx(); }
-    double dlat() const { return dy(); }
-
-    size_t nlon() const { return nx(); }
-    size_t nlat() const { return ny(); }
+    explicit RegularXY(const Increments&, BoundingBoxXY);
 
     // -- Overridden methods
 
@@ -55,23 +51,35 @@ public:
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
 
+    double dx() const override { return x_.increment(); }
+    double dy() const override { return y_.increment(); }
+
+    size_t nx() const override { return x_.size(); }
+    size_t ny() const override { return y_.size(); }
+
+    const Range& x() const override { return x_; }
+    const Range& y() const override { return y_; }
+
+
     // -- Class methods
 
     static Increments make_increments_from_spec(const Spec&);
     static PointLonLat make_first_point_from_spec(const Spec&);
 
-protected:
+private:
 
-    // -- Methods
+    // -- Overriden methods
 
     void fill_spec(spec::Custom&) const override;
 
-private:
-
     // -- Members
 
-    PointLonLat first_lonlat;
-    PointXY first_xy;
+    const range::Regular x_;
+    const range::Regular y_;
+
+    // -- Friends
+
+    friend class geo::iterator::Regular;
 };
 
 

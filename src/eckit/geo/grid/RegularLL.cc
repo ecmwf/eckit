@@ -16,12 +16,12 @@
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
-#include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -54,38 +54,34 @@ RegularLL::Increments RegularLL::make_increments_from_spec(const Spec& spec) {
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(
-        make_increments_from_spec(spec), BoundingBox{spec},
-        [&spec]() -> PointLonLat {
-            std::vector<PointLonLat::value_type> v(2);
-            if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
-                return {v[0], v[1]};
-            }
+    RegularLL(make_increments_from_spec(spec), BoundingBox{spec}, [&spec]() -> PointLonLat {
+        std::vector<PointLonLat::value_type> v(2);
+        if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
+            return {v[0], v[1]};
+        }
 
-            if (spec.get("reference_lonlat", v) && v.size() == 2) {
-                return {v[0], v[1]};
-            }
+        if (spec.get("reference_lonlat", v) && v.size() == 2) {
+            return {v[0], v[1]};
+        }
 
-            return {0, 0};
-        }(),
-        spec.has("projection") ? Projection::make_from_spec(spec.spec("projection"))
-                               : new projection::Reverse<projection::EquidistantCylindrical>) {
+        return {0, 0};
+    }()) {
     ASSERT(!empty());
 }
 
 
-RegularLL::RegularLL(const Increments& inc, Projection* proj) : RegularLL(inc, BoundingBox{}, {0, 0}, proj) {}
+RegularLL::RegularLL(const Increments& inc) : RegularLL(inc, BoundingBox{}, {0, 0}) {}
 
 
-RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, Projection* proj) :
-    Regular(range::Regular::make_longitude_range(inc.dlon, bbox.west, bbox.east, ref.lon),
-            range::Regular::make_latitude_range(-inc.dlat, bbox.north, bbox.south, ref.lat)) {
+RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref) :
+    x_(*range::RegularLongitudeRange(inc.dlon, bbox.west, bbox.east, ref.lon).make_cropped_range(bbox.west, bbox.east)),
+    y_(*range::RegularLatitudeRange(-inc.dlat, bbox.north, bbox.south, ref.lat)
+            .make_cropped_range(bbox.north, bbox.south)) {
     ASSERT(!empty());
 
-    order(order_type{std::string{x().increment() < 0 ? "i-" : "i+"} +  //
-                     std::string{y().increment() < 0 ? "j-" : "j+"}});
+    order(std::string{x().increment() < 0 ? "i-" : "i+"} +  //
+          std::string{y().increment() < 0 ? "j-" : "j+"});
 
-    std::cout << std::endl;
     // TODO reference to modify bounding box
 }
 
@@ -102,12 +98,15 @@ Spec* RegularLL::spec(const std::string& name) {
 
 
 void RegularLL::fill_spec(spec::Custom& custom) const {
-    Regular::fill_spec(custom);
-
     custom.set("grid", std::vector<double>{std::abs(dlon()), std::abs(dlat())});
 
     if (auto o = order(); o != order::Scan::order_default()) {
         custom.set("order", o);
+    }
+
+    if (auto bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {
+        auto [n, w, s, e] = bbox.deconstruct();
+        custom.set("area", std::vector<double>{n, w, s, e});
     }
 }
 
@@ -160,11 +159,11 @@ Grid* RegularLL::make_grid_cropped(const Area& crop) const {
 
 Grid::BoundingBox* RegularLL::calculate_bbox() const {
     // FIXME depends on ordering
-    auto n = std::max(y().a(), y().b());
-    auto s = std::min(y().a(), y().b());
+    auto n = y_.includesNorthPole() ? PointLonLat::RIGHT_ANGLE : y_.max();
+    auto s = y_.includesSouthPole() ? -PointLonLat::RIGHT_ANGLE : y_.min();
 
-    auto w = x().a();
-    auto e = x().periodic() ? w + PointLonLat::FULL_ANGLE : x().b();
+    auto w = x_.a();
+    auto e = x_.periodic() ? w + PointLonLat::FULL_ANGLE : x_.b();
 
     return new BoundingBox{n, w, s, e};
 }

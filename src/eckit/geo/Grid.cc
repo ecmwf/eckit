@@ -50,8 +50,7 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(const Spec& spec) :
-    bbox_(area::BoundingBox::make_from_spec(spec)), projection_(ProjectionFactory::build(spec.spec("projection"))) {}
+Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
 Grid::Grid(Projection* proj) :
@@ -96,12 +95,14 @@ std::string Grid::spec_str() const {
     const auto& s = spec();
     ASSERT(spec_);
 
+#if 0
     // return only the grid name if that's the only entry in the spec
     if (const auto& container = spec_->container(); container.size() == 1 && container.begin()->first == "grid") {
         if (const auto& v = container.begin()->second; std::holds_alternative<std::string>(v)) {
             return std::get<std::string>(v);
         }
     }
+#endif
 
     return s.str();
 }

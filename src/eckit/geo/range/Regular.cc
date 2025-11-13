@@ -41,18 +41,9 @@ size_t N(Fraction inc, Fraction a, Fraction b) {
 }
 
 
-}  // namespace
-
-
-Regular::Regular(Fraction inc, Fraction a, Fraction b, bool periodic) :
-    Range(N(inc, a, b), a, b), increment_(inc), a_(a), b_(b), periodic_(periodic) {
-    ASSERT(size() >= 1);
-}
-
-
-Regular* Regular::make_xy_range(double inc, double a, double b, double ref) {
+Regular make_regular_range(double inc, double a, double b, double ref) {
     if (types::is_approximately_equal(inc, 0.) || types::is_approximately_lesser_or_equal((b - a) * inc, 0.)) {
-        return new Regular({}, Fraction{a}, Fraction{a}, false);
+        return Regular{Fraction{}, Fraction{a}, Fraction{a}};
     }
 
     const Fraction incf{inc};
@@ -66,44 +57,35 @@ Regular* Regular::make_xy_range(double inc, double a, double b, double ref) {
     auto num = N(incf, af, bf);
     ASSERT(num > 0);
 
-    return new Regular(incf, af, num == 1 ? af : bf, false);
+    return Regular{incf, af, num == 1 ? af : bf};
 }
 
 
-Regular* Regular::make_latitude_range(double inc, double a, double b, double ref) {
-    ASSERT(SOUTH_POLE.lat <= a && a <= NORTH_POLE.lat);
-    ASSERT(SOUTH_POLE.lat <= b && b <= NORTH_POLE.lat);
+}  // namespace
 
-    return make_xy_range(inc, a, b, ref);
+
+Regular::Regular(double inc, double a, double b, double ref) : Regular{make_regular_range(inc, a, b, ref)} {}
+
+
+Regular::Regular(Fraction inc, Fraction a, Fraction b) : Range(N(inc, a, b), a, b), increment_(inc), a_(a), b_(b) {
+    ASSERT(size() >= 1);
 }
 
 
-Regular* Regular::make_longitude_range(double inc, double a, double b, double ref) {
-    std::unique_ptr<Regular> r(make_xy_range(inc, a, b, ref));
-    ASSERT(r);
-
-    if (const static Fraction PERIOD(360, 1); Fraction::abs(r->b_ - r->a_ + r->increment()) >= PERIOD) {
-        auto period = adjust(PERIOD, r->increment(), a < b) - r->increment();
-        return new Regular(r->increment(), r->a_, r->a_ + period, true);
-    }
-
-    return r.release();
+Regular* Regular::make_xy_range(double inc, double a, double b, double ref) {
+    return new Regular{make_regular_range(inc, a, b, ref)};
 }
 
 
-Range* Regular::make_cropped_range(double crop_a, double crop_b) const {
+Regular* Regular::make_cropped_range(double crop_a, double crop_b) const {
     const bool up = a() <= b();
     ASSERT(up ? crop_a <= crop_b : crop_a > crop_b);
 
-    if (periodic()) {
-        return make_longitude_range(increment(), crop_a, crop_b, a());
-    }
+    Regular other(increment(), crop_a, crop_b, a());
+    auto _min = std::max(min(), other.min());
+    auto _max = std::min(max(), other.max());
 
-    std::unique_ptr<Regular> other(make_xy_range(increment(), crop_a, crop_b, a()));
-    auto _min = std::max(min(), other->min());
-    auto _max = std::min(max(), other->max());
-
-    return make_xy_range(increment(), up ? _min : _max, up ? _max : _min, a());
+    return new Regular{increment(), up ? _min : _max, up ? _max : _min, a()};
 }
 
 
@@ -112,6 +94,63 @@ const std::vector<double>& Regular::values() const {
     util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
     return util::linspace(a(), b(), size());
+}
+
+
+RegularLatitudeRange::RegularLatitudeRange(Regular&& regular) :
+    LatitudeRange(regular.size(), regular.a(), regular.b()), regular_(regular) {
+    ASSERT(SOUTH_POLE.lat <= min() && min() <= max() && max() <= NORTH_POLE.lat);
+}
+
+
+RegularLatitudeRange::RegularLatitudeRange(double inc, double a, double b, double ref) :
+    RegularLatitudeRange(Regular(inc, a, b, ref)) {}
+
+
+bool RegularLatitudeRange::includesNorthPole() const {
+    return types::is_approximately_greater_or_equal<double>(max() + Fraction::abs(increment()), NORTH_POLE.lat);
+}
+
+
+bool RegularLatitudeRange::includesSouthPole() const {
+    return types::is_approximately_lesser_or_equal<double>(min() - Fraction::abs(increment()), SOUTH_POLE.lat);
+}
+
+
+RegularLatitudeRange* RegularLatitudeRange::make_cropped_range(double crop_a, double crop_b) const {
+    std::unique_ptr<Regular> cropped(regular_.make_cropped_range(crop_a, crop_b));
+    return new RegularLatitudeRange(std::move(*cropped));
+}
+
+
+RegularLongitudeRange::RegularLongitudeRange(Regular&& regular) :
+    LongitudeRange(regular.size(), regular.a(), regular.b()), regular_(regular), periodic_(false) {
+    if (const static Fraction PERIOD(360, 1);
+        Fraction::abs(regular_.bf() - regular_.af() + regular_.increment()) >= PERIOD) {
+        auto af  = regular_.af();
+        auto bf  = af + adjust(PERIOD, regular_.increment(), regular_.af() < regular_.bf()) - regular_.increment();
+        auto n   = N(regular_.increment(), af, bf);
+        regular_ = Regular{regular_.increment(), af, bf};
+
+        resize(n);
+        a(af);
+        b(bf);
+        periodic_ = true;
+    }
+}
+
+
+RegularLongitudeRange::RegularLongitudeRange(double inc, double a, double b, double ref) :
+    RegularLongitudeRange(Regular(inc, a, b, ref)) {}
+
+
+RegularLongitudeRange* RegularLongitudeRange::make_cropped_range(double crop_a, double crop_b) const {
+    if (periodic()) {
+        return new RegularLongitudeRange(increment(), crop_a, crop_b, a());
+    }
+
+    std::unique_ptr<Regular> cropped(regular_.make_cropped_range(crop_a, crop_b));
+    return new RegularLongitudeRange(std::move(*cropped));
 }
 
 

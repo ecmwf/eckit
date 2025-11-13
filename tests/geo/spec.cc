@@ -29,45 +29,43 @@ namespace eckit::geo::test {
 CASE("user -> type") {
     using v = std::vector<double>;
 
-    static const spec::Custom::container_type BAD;
+    static const std::string BAD;
     ASSERT(BAD.empty());
 
-    static std::pair<spec::Custom::container_type, spec::Custom::container_type> tests[]{
-        {{{"N", 2}}, {{"N", 2}, {"type", "reduced_gg"}}},
-        {{{"area", v{90, -180, -90, 180}}, {"grid", v{2, 2}}}, {{"type", "regular_ll"}}},
+    static std::pair<spec::Custom::container_type, std::string> tests[]{
+        {{{"N", 2}}, "reduced_gg"},
+        {{{"area", v{90, -180, -90, 180}}, {"grid", v{2, 2}}}, "regular_ll"},
         {{{"area", v{90, -180, -90, 180}}}, BAD},
         {{{"grid", "B48"}}, BAD},
-        {{{"grid", "F48"}}, {{"type", "regular_gg"}}},
-        {{{"grid", "N48"}}, {{"type", "reduced_gg"}}},
-        {{{"grid", "O48"}}, {{"type", "reduced_gg"}}},
+        {{{"grid", "F48"}}, "regular_gg"},
+        {{{"grid", "N48"}}, "reduced_gg"},
+        {{{"grid", "O48"}}, "reduced_gg"},
         {{{"grid", 48}}, BAD},
-        {{{"grid", v{2, 2}}}, {{"grid", v{2, 2}}, {"type", "regular_ll"}}},
-        {{{"type", "latlon"}, {"grid", v{2, 2}}}, BAD},
-        {{{"type", "reduced_gg"}, {"grid", "48"}}, BAD},
-        {{{"type", "reduced_gg"}, {"grid", "F048"}}, BAD},
-        {{{"type", "reduced_gg"}, {"grid", "N"}}, BAD},
-        {{{"type", "reduced_gg"}, {"grid", "N048"}}, BAD},
-        {{{"type", "reduced_gg"}, {"grid", "N48"}}, {{"type", "reduced_gg"}}},
-        {{{"type", "reduced_gg"}, {"grid", "O048"}}, BAD},
-        {{{"type", "reduced_gg"}, {"grid", "O48"}}, {{"type", "reduced_gg"}}},
-        {{{"type", "reduced_gg"}, {"grid", 48}}, BAD},
-        {{{"type", "reduced_gg"}}, BAD},
-        {{{"type", "reduced_latlon"}, {"grid", 2}}, BAD},
-        {{{"type", "reduced_ll"}, {"grid", 12}}, BAD},
+        {{{"grid", v{2, 2}}}, "regular_ll"},
+        {{{"grid", v{2, 2}}}, "regular_ll"},
+        {{{"grid", "48"}}, BAD},
+        {{{"grid", "F048"}}, BAD},
+        {{{"grid", "N"}}, BAD},
+        {{{"grid", "N048"}}, BAD},
+        {{{"grid", "N48"}}, "reduced_gg"},
+        {{{"grid", "O048"}}, BAD},
+        {{{"grid", "O48"}}, "reduced_gg"},
+        {{{"type", "reduced_gg"}}, ""},
+        {{{"grid", 2}}, ""},
+        {{{"grid", 12}}, ""},
         {{{"type", "regular_gg"}, {"grid", "48"}}, BAD},
         {{{"type", "regular_gg"}, {"grid", "F048"}}, BAD},
-        {{{"type", "regular_gg"}, {"grid", "F48"}}, {{"type", "regular_gg"}}},
-        {{{"type", "regular_gg"}, {"grid", "N48"}}, BAD},
-        {{{"type", "regular_gg"}, {"grid", "O48"}}, BAD},
+        {{{"type", "regular_gg"}, {"grid", "F48"}}, "regular_gg"},
+        {{{"type", "regular_gg"}, {"grid", "N48"}}, "reduced_gg"},
+        {{{"type", "regular_gg"}, {"grid", "O48"}}, "reduced_gg"},
         {{{"type", "regular_gg"}, {"grid", "a"}}, BAD},
         {{{"type", "regular_gg"}, {"grid", 48}}, BAD},
         {{{"type", "regular_ll"}, {"area", v{90, -180, -90, 180}}}, BAD},
         {{{"type", "regular_ll"}, {"grid", "F48"}}, BAD},
         {{{"type", "regular_ll"}, {"grid", "a"}}, BAD},
-        {{{"type", "regular_ll"}, {"grid", 48}}, BAD},
         {{{"type", "regular_ll"}, {"grid", std::vector<std::string>{"a", "b"}}}, BAD},
         {{{"type", "regular_ll"}, {"grid", v{1, 2, 3}}}, BAD},
-        {{{"type", "regular_ll"}, {"grid", v{1, 2}}}, {{"type", "regular_ll"}}},
+        {{{"type", "regular_ll"}, {"grid", v{1, 2}}}, "regular_ll"},
         {{{"type", "regular_ll"}, {"grid", v{1}}}, BAD},
 
         {{{"type", "mercator"},
@@ -76,14 +74,13 @@ CASE("user -> type") {
           {"shape", std::vector<size_t>{56, 44}},
           {"lad", 14.0},
           {"orientation", 0.0}},
-         {}},
+         BAD},
     };
 
     for (const auto& [user, ref] : tests) {
         spec::Custom userspec(user);
-        spec::Custom refspec(ref);
 
-        Log::info() << userspec << " -> " << refspec << std::endl;
+        Log::info() << userspec << " -> type: " << ref << std::endl;
 
         try {
             std::unique_ptr<const Spec> spec(GridFactory::make_spec(userspec));
@@ -93,10 +90,10 @@ CASE("user -> type") {
             EXPECT(grid);
         }
         catch (const exception::SpecError& e) {
-            EXPECT(refspec.empty() /*BAD*/);
+            EXPECT(ref == BAD);
         }
         catch (const BadParameter& e) {
-            EXPECT(refspec.empty() /*BAD*/);
+            EXPECT(ref == BAD);
         }
     }
 }
@@ -150,7 +147,7 @@ CASE("grid: HEALPix") {
 
     std::unique_ptr<const Grid> h2n(GridFactory::build(spec::Custom({{"grid", "H2"}, {"order", "nested"}})));
 
-    EXPECT(h2n->spec_str() == R"({"grid":"H2","order":"nested"})");
+    EXPECT(h2n->spec_str() == R"({"grid":"H2n"})");
 }
 
 

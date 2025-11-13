@@ -11,6 +11,7 @@
 
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/range/GaussianLatitude.h"
@@ -26,12 +27,10 @@ namespace eckit::geo::test {
 
 
 CASE("range::Regular::make_xy_range") {
-
     SECTION("make_xy_range") {
         std::unique_ptr<Range> range(range::Regular::make_xy_range(1., -1., 2., -1.));
 
         EXPECT(range->size() == 4);
-        EXPECT(!range->periodic());
 
         EXPECT_APPROX(range->a(), -1.);
         EXPECT_APPROX(range->b(), 2.);
@@ -48,7 +47,6 @@ CASE("range::Regular::make_xy_range") {
 
 
 CASE("range::Regular::make_longitude_range") {
-
     SECTION("make_longitude_range") {
         struct test {
             double inc;
@@ -66,11 +64,11 @@ CASE("range::Regular::make_longitude_range") {
                  {90., -180., 180., 0., true, {-180, -90, 0, 90}},
                  {45., -180., 180., 0., true, {-180, -135, -90, -45, 0, 45, 90, 135}},
              }) {
-            std::unique_ptr<Range> range(range::Regular::make_longitude_range(test.inc, test.a, test.b, test.ref));
-            EXPECT(range->periodic() == test.periodic);
-            EXPECT(range->size() == test.values.size());
+            range::RegularLongitudeRange range(test.inc, test.a, test.b, test.ref);
+            EXPECT(range.periodic() == test.periodic);
+            EXPECT(range.size() == test.values.size());
 
-            const auto& values = range->values();
+            const auto& values = range.values();
             EXPECT(values.size() == test.values.size());
 
             for (auto a = test.values.begin(), b = values.begin(); a != test.values.end() && b != values.end();
@@ -95,58 +93,58 @@ CASE("range::Regular::make_longitude_range") {
                  {1., 0.5, 359.5, 0.5},
                  {1., 0., 360., 0.5},
              }) {
-            std::unique_ptr<Range> range(range::Regular::make_longitude_range(test.inc, test.a, test.b, test.ref));
-            EXPECT(range->periodic());
-            EXPECT(range->size() == 360);
+            range::RegularLongitudeRange range(test.inc, test.a, test.b, test.ref);
+            EXPECT(range.periodic());
+            EXPECT(range.size() == 360);
         }
     }
 
 
     SECTION("degenerate") {
-        std::unique_ptr<Range> range1(range::Regular::make_longitude_range(1., 1., 1.));
+        range::RegularLongitudeRange range1(1., 1., 1.);
 
-        EXPECT(range1->size() == 1);
-        EXPECT(range1->values().front() == 1.);
+        EXPECT(range1.size() == 1);
+        EXPECT(range1.values().front() == 1.);
 
-        std::unique_ptr<Range> range2(range::Regular::make_longitude_range(2., 2., 2.));
+        range::RegularLongitudeRange range2(2., 2., 2.);
 
-        EXPECT(range2->size() == 1);
-        EXPECT(range2->values().front() == 2.);
+        EXPECT(range2.size() == 1);
+        EXPECT(range2.values().front() == 2.);
 
-        std::unique_ptr<Range> range3(range::Regular::make_longitude_range(0., 2., 2.));
+        range::RegularLongitudeRange range3(0., 2., 2.);
 
-        EXPECT(range3->size() == 1);
-        EXPECT(range3->values().front() == 2.);
+        EXPECT(range3.size() == 1);
+        EXPECT(range3.values().front() == 2.);
 
-        std::unique_ptr<Range> range4(range::Regular::make_longitude_range(0., 2., 2., 1.));
+        range::RegularLongitudeRange range4(0., 2., 2., 1.);
 
-        EXPECT(range4->size() == 1);
-        EXPECT(range4->values().front() == 2.);
+        EXPECT(range4.size() == 1);
+        EXPECT(range4.values().front() == 2.);
     }
 
 
     SECTION("range [0, 360], cropped") {
-        std::unique_ptr<Range> range(range::Regular::make_longitude_range(10., 0., 360.));
+        range::RegularLongitudeRange range(10., 0., 360.);
 
-        EXPECT(range->size() == 36);
-        EXPECT(range->a() == 0.);
-        EXPECT(range->b() == 360. - 10.);
-        EXPECT(range->periodic());
+        EXPECT(range.size() == 36);
+        EXPECT(range.a() == 0.);
+        EXPECT(range.b() == 360. - 10.);
+        EXPECT(range.periodic());
 
-        const std::unique_ptr<Range> cropped1(range->make_cropped_range(-180., 180.));
+        const std::unique_ptr<range::RegularLongitudeRange> cropped1(range.make_cropped_range(-180., 180.));
 
         EXPECT(cropped1->size() == 36);
         EXPECT(cropped1->a() == -180.);
         EXPECT(cropped1->b() == 180. - 10.);
         EXPECT(cropped1->periodic());
 
-        const std::unique_ptr<Range> cropped2(range->make_cropped_range(-180., 170.));
+        const std::unique_ptr<range::RegularLongitudeRange> cropped2(range.make_cropped_range(-180., 170.));
 
         EXPECT(cropped2->size() == 36);
         EXPECT(cropped2->b() == 170.);
         EXPECT(cropped2->periodic());
 
-        const std::unique_ptr<Range> cropped3(range->make_cropped_range(-180., 160.));
+        const std::unique_ptr<range::RegularLongitudeRange> cropped3(range.make_cropped_range(-180., 160.));
 
         EXPECT(cropped3->size() == 36 - 1);
         EXPECT(cropped3->b() == 160.);
@@ -155,33 +153,33 @@ CASE("range::Regular::make_longitude_range") {
 
 
     SECTION("range [0, 180], cropped") {
-        std::unique_ptr<Range> range(range::Regular::make_longitude_range(10., 0., 180.));
+        range::RegularLongitudeRange range(10., 0., 180.);
 
-        EXPECT(range->size() == 19);
-        EXPECT_NOT(range->periodic());
+        EXPECT(range.size() == 19);
+        EXPECT_NOT(range.periodic());
 
-        const std::unique_ptr<Range> cropped1(range->make_cropped_range(1., 179.));
+        const std::unique_ptr<range::RegularLongitudeRange> cropped1(range.make_cropped_range(1., 179.));
 
         EXPECT(cropped1->size() == 19 - 2);
         EXPECT(cropped1->a() == 10.);
         EXPECT(cropped1->b() == 170.);
         EXPECT_NOT(cropped1->periodic());
 
-        const std::unique_ptr<Range> cropped2(range->make_cropped_range(1., 170.));
+        const std::unique_ptr<range::RegularLongitudeRange> cropped2(range.make_cropped_range(1., 170.));
 
         EXPECT(cropped2->size() == 19 - 2);
         EXPECT(cropped2->a() == 10.);
         EXPECT(cropped2->b() == 170.);
         EXPECT_NOT(cropped2->periodic());
 
-        const std::unique_ptr<Range> cropped3(range->make_cropped_range(-180., 180.));
+        const std::unique_ptr<range::RegularLongitudeRange> cropped3(range.make_cropped_range(-180., 180.));
 
         EXPECT(cropped3->size() == 19);
         EXPECT(cropped3->a() == 0.);
         EXPECT(cropped3->b() == 180.);
         EXPECT_NOT(cropped3->periodic());
 
-        const std::unique_ptr<Range> cropped4(range->make_cropped_range(-190., 170.));
+        const std::unique_ptr<range::RegularLongitudeRange> cropped4(range.make_cropped_range(-190., 170.));
 
         EXPECT(cropped4->size() == 19 - 1);
         EXPECT(cropped4->a() == 0.);
@@ -193,17 +191,17 @@ CASE("range::Regular::make_longitude_range") {
 
 CASE("range::Regular::make_latitude_range") {
     SECTION("simple") {
-        const std::unique_ptr<Range> range1(range::Regular::make_latitude_range(1., -90., 90., 0.5));
+        range::RegularLatitudeRange range1(1., -90., 90., 0.5);
 
-        EXPECT(range1->size() == 180);
-        EXPECT(range1->a() == -89.5);
-        EXPECT(range1->b() == 89.5);
+        EXPECT(range1.size() == 180);
+        EXPECT(range1.a() == -89.5);
+        EXPECT(range1.b() == 89.5);
 
-        const std::unique_ptr<Range> range2(range::Regular::make_latitude_range(-1., 90., -90., 0.5));
+        range::RegularLatitudeRange range2(-1., 90., -90., 0.5);
 
-        EXPECT(range2->size() == 180);
-        EXPECT(range2->a() == 89.5);
-        EXPECT(range2->b() == -89.5);
+        EXPECT(range2.size() == 180);
+        EXPECT(range2.a() == 89.5);
+        EXPECT(range2.b() == -89.5);
     }
 }
 
@@ -245,6 +243,17 @@ CASE("range::Gaussian") {
 
         EXPECT_APPROX(cropped6->values()[0], ref[0]);
         EXPECT_APPROX(cropped6->values()[1], ref[1]);
+
+        auto crop_includes_poles = [&global](double north, double south) {
+            std::unique_ptr<range::GaussianLatitude> cropped(
+                dynamic_cast<range::GaussianLatitude*>(global.make_cropped_range(north, south)));
+            ASSERT(cropped);
+            return std::make_pair(cropped->includesNorthPole(), cropped->includesSouthPole());
+        };
+
+        EXPECT(crop_includes_poles(70., -60.) == std::make_pair(true, true));
+        EXPECT(crop_includes_poles(60., -50.) == std::make_pair(true, false));
+        EXPECT(crop_includes_poles(50., -50.) == std::make_pair(false, false));
     }
 
 
@@ -283,6 +292,22 @@ CASE("range::Gaussian") {
 
         EXPECT_APPROX(cropped6->values()[0], rev[2]);
         EXPECT_APPROX(cropped6->values()[1], rev[3]);
+
+        auto crop_includes_poles = [&global](double north, double south) {
+            std::unique_ptr<range::GaussianLatitude> cropped(
+                dynamic_cast<range::GaussianLatitude*>(global.make_cropped_range(south, north)));
+            ASSERT(cropped);
+            return std::make_pair(cropped->includesNorthPole(), cropped->includesSouthPole());
+        };
+
+        EXPECT(crop_includes_poles(70., -60.) == std::make_pair(true, true));
+        EXPECT(crop_includes_poles(60., -50.) == std::make_pair(true, false));
+        EXPECT(crop_includes_poles(50., -50.) == std::make_pair(false, false));
+    }
+
+
+    SECTION("?") {
+        auto global = range::GaussianLatitude(2, false);
     }
 }
 
@@ -323,13 +348,13 @@ CASE("range::Regular") {
              {0.1, 1801, 3600},    //
              {0.05, 3601, 7200},   //
          }) {
-        std::unique_ptr<Range> lat(range::Regular::make_latitude_range(t.inc, -90., 90., 0.));
-        EXPECT_APPROX(lat->increment(), t.inc);
-        EXPECT_EQUAL(lat->size(), t.nlat);
+        range::RegularLatitudeRange lat(t.inc, -90., 90., 0.);
+        EXPECT_APPROX(lat.increment(), t.inc);
+        EXPECT_EQUAL(lat.size(), t.nlat);
 
-        std::unique_ptr<Range> lon(range::Regular::make_longitude_range(t.inc, 0., 360., 0.));
-        EXPECT_APPROX(lon->increment(), t.inc);
-        EXPECT_EQUAL(lon->size(), t.nlon);
+        range::RegularLongitudeRange lon(t.inc, 0., 360., 0.);
+        EXPECT_APPROX(lon.increment(), t.inc);
+        EXPECT_EQUAL(lon.size(), t.nlon);
     }
 }
 

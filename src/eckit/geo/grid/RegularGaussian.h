@@ -13,6 +13,8 @@
 #pragma once
 
 #include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/range/GaussianLatitude.h"
+#include "eckit/geo/range/Regular.h"
 
 
 namespace eckit::geo::grid {
@@ -24,7 +26,7 @@ public:
     // -- Constructors
 
     explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N, BoundingBox = {}, Projection* = nullptr);
+    explicit RegularGaussian(size_t N, BoundingBox = {});
 
     // -- Methods
 
@@ -39,6 +41,15 @@ public:
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 
+    double dx() const override { return x_.increment(); }
+    double dy() const override { return y_.increment(); }
+
+    size_t nx() const override { return x_.size(); }
+    size_t ny() const override { return y_.size(); }
+
+    const Range& x() const override { return x_; }
+    const Range& y() const override { return y_; }
+
     // -- Class members
 
     [[nodiscard]] static Spec* spec(const std::string& name);
@@ -48,6 +59,8 @@ private:
     // -- Members
 
     const size_t N_;
+    const range::RegularLongitudeRange x_;
+    const range::GaussianLatitude y_;
 
     // -- Overridden methods
 

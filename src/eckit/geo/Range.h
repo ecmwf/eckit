@@ -50,7 +50,6 @@ public:
     double min() const { return a_ < b_ ? a_ : b_; }
     double max() const { return a_ < b_ ? b_ : a_; }
 
-    virtual bool periodic() const { return false; }
     virtual Fraction increment() const                = 0;
     virtual const std::vector<double>& values() const = 0;
 
@@ -75,6 +74,27 @@ private:
     size_t n_;
     double a_;
     double b_;
+};
+
+
+class LatitudeRange : public Range {
+public:
+
+    using Range::Range;
+    using Range::operator=;
+
+    virtual bool includesNorthPole() const = 0;
+    virtual bool includesSouthPole() const = 0;
+};
+
+
+class LongitudeRange : public Range {
+public:
+
+    using Range::Range;
+    using Range::operator=;
+
+    virtual bool periodic() const = 0;
 };
 
 

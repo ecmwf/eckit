@@ -19,35 +19,113 @@
 namespace eckit::geo::range {
 
 
-class Regular final : public Range {
+class Regular : public Range {
 public:
+
+    // -- Constructors
+
+    explicit Regular(double inc, double a, double b, double ref = 0);
+    explicit Regular(Fraction inc, Fraction a, Fraction b);
+
+    Regular(const Regular&) = default;
+    Regular(Regular&&)      = default;
+
+    // -- Operators
+
+    Regular& operator=(const Regular&) = default;
+    Regular& operator=(Regular&&)      = default;
 
     // -- Methods
 
     [[nodiscard]] static Regular* make_xy_range(double inc, double a, double b, double ref = 0);
-    [[nodiscard]] static Regular* make_latitude_range(double inc, double a, double b, double ref = 0);
-    [[nodiscard]] static Regular* make_longitude_range(double inc, double a, double b, double ref = 0);
-
-    [[nodiscard]] Range* make_cropped_range(double crop_a, double crop_b) const override;
 
     // -- Overridden methods
 
-    bool periodic() const override { return periodic_; }
+    [[nodiscard]] Regular* make_cropped_range(double crop_a, double crop_b) const override;
+
     Fraction increment() const override { return increment_; }
     const std::vector<double>& values() const override;
+
+    // -- Methods
+
+    Fraction af() const { return a_; }
+    Fraction bf() const { return b_; }
+
+    void af(Fraction value) {
+        Range::a(value);
+        a_ = Fraction{a()};
+    }
+
+    void bf(Fraction value) {
+        Range::b(value);
+        b_ = Fraction{b()};
+    }
+
+private:
+
+    // -- Members
+
+    Fraction increment_;
+    Fraction a_;
+    Fraction b_;
+};
+
+
+class RegularLatitudeRange : public LatitudeRange {
+public:
+
+    // -- Constructors
+
+    RegularLatitudeRange(double inc, double a, double b, double ref = 0);
+
+    // -- Overridden methods
+
+    bool includesNorthPole() const override;
+    bool includesSouthPole() const override;
+
+    Fraction increment() const override { return regular_.increment(); }
+    const std::vector<double>& values() const override { return regular_.values(); }
+
+    [[nodiscard]] RegularLatitudeRange* make_cropped_range(double crop_a, double crop_b) const override;
 
 private:
 
     // -- Constructors
 
-    Regular(Fraction inc, Fraction a, Fraction b, bool periodic);
+    explicit RegularLatitudeRange(Regular&&);
 
     // -- Members
 
-    const Fraction increment_;
-    const Fraction a_;
-    const Fraction b_;
-    const bool periodic_;
+    Regular regular_;
+};
+
+
+class RegularLongitudeRange : public LongitudeRange {
+public:
+
+    // -- Constructors
+
+    RegularLongitudeRange(double inc, double a, double b, double ref = 0);
+
+    // -- Overridden methods
+
+    bool periodic() const override { return periodic_; }
+
+    Fraction increment() const override { return regular_.increment(); }
+    const std::vector<double>& values() const override { return regular_.values(); }
+
+    [[nodiscard]] RegularLongitudeRange* make_cropped_range(double crop_a, double crop_b) const override;
+
+private:
+
+    // -- Constructors
+
+    explicit RegularLongitudeRange(Regular&&);
+
+    // -- Members
+
+    Regular regular_;
+    bool periodic_;
 };
 
 

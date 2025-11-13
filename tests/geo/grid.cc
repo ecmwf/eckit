@@ -30,12 +30,12 @@ CASE("Grid from grid_spec") {
             const char* canonical;
             size_t size;
         } tests[]{
-            {"{grid: [10, 10]}", R"({"grid":[10,10]})", 684},          //
-            {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},          //
-            {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},        //
-            {"{grid: o8}", R"({"grid":"O8"})", 544},                   //
-            {"{grid: h2_ring}", R"({"grid":"H2"})", 48},               //
-            {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},  //
+            {"{grid: [10, 10]}", R"({"grid":[10,10]})", 684},    //
+            {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},    //
+            {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},  //
+            {"{grid: o8}", R"({"grid":"O8"})", 544},             //
+            {"{grid: h2_ring}", R"({"grid":"H2"})", 48},         //
+            {"{grid: h2n}", R"({"grid":"H2n"})", 48},            //
         };
 
 

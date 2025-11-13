@@ -94,13 +94,17 @@ const Spec& Layered::spec(const std::string& name) const {
         }
     }
 
+    if (has(name)) {
+        return Spec::spec(name);
+    }
+
     for (const auto& spec : back_) {
         if (spec->has(name)) {
             return spec->spec(name);
         }
     }
 
-    return Spec::spec(name);
+    throw exception::SpecError("Layered::spec(" + name + ")", Here());
 }
 
 

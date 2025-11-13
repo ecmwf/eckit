@@ -52,28 +52,11 @@ Grid::renumber_type Regular::reorder(const order_type& to) const {
 }
 
 
-const Range& Regular::x() const {
-    ASSERT(x_ && x_->size() > 0);
-    return *x_;
-}
-
-
-const Range& Regular::y() const {
-    ASSERT(y_ && y_->size() > 0);
-    return *y_;
-}
-
-
 Regular::Regular(const Spec& spec) : Grid(spec), order_(spec) {
-    ASSERT(x_ && x_->size() > 0);
-    ASSERT(y_ && y_->size() > 0);
 }
 
 
-Regular::Regular(Range* x, Range* y, const Projection* projection) : x_(x), y_(y) {
-    ASSERT(x_ && x_->size() > 0);
-    ASSERT(y_ && y_->size() > 0);
-}
+Regular::Regular(const Projection*) {}
 
 
 void Regular::fill_spec(spec::Custom& custom) const {

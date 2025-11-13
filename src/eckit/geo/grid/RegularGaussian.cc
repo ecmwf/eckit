@@ -12,11 +12,7 @@
 
 #include "eckit/geo/grid/RegularGaussian.h"
 
-#include <memory>
-
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/spec/Custom.h"
@@ -38,19 +34,14 @@ size_t check_N(size_t N) {
 }  // namespace
 
 
-RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec),
-                    spec.has("projection") ? Projection::make_from_spec(spec.spec("projection"))
-                                           : new projection::Reverse<projection::EquidistantCylindrical>) {}
+RegularGaussian::RegularGaussian(const Spec& spec) : RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, Projection* proj) :
-    Regular(std::unique_ptr<Range>(
-                range::Regular::make_longitude_range(360. / static_cast<double>(check_N(4 * N)), 0., 360.))
-                ->make_cropped_range(bbox.west, bbox.east),
-            range::GaussianLatitude(N, false).make_cropped_range(bbox.north, bbox.south),
-            proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj),
-    N_(N) {
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox) :
+    N_(N),
+    x_(*range::RegularLongitudeRange(360. / static_cast<double>(check_N(4 * N)), 0., 360.)
+            .make_cropped_range(bbox.west, bbox.east)),
+    y_(*range::GaussianLatitude(N, false).make_cropped_range(bbox.north, bbox.south)) {
     ASSERT(!empty());
 }
 

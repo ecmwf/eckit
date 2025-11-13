@@ -13,6 +13,7 @@
 #pragma once
 
 #include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/range/Regular.h"
 
 
 namespace eckit::geo::grid {
@@ -38,8 +39,8 @@ public:
     // -- Constructors
 
     explicit RegularLL(const Spec&);
-    explicit RegularLL(const Increments&, Projection* = nullptr);
-    explicit RegularLL(const Increments&, BoundingBox, PointLonLat ref = {}, Projection* = nullptr);
+    explicit RegularLL(const Increments&);
+    explicit RegularLL(const Increments&, BoundingBox, PointLonLat ref = {});
 
     // -- Methods
 
@@ -49,7 +50,7 @@ public:
     double dlat() const { return dy(); }
 
     size_t nlon() const { return nx(); }
-    size_t nlat() const { return ny(); }
+    size_t nlat() const { return nx(); }
 
     // -- Overridden methods
 
@@ -62,6 +63,16 @@ public:
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
+    double dx() const override { return x_.increment(); }
+    double dy() const override { return y_.increment(); }
+
+    size_t nx() const override { return x_.size(); }
+    size_t ny() const override { return y_.size(); }
+
+    const Range& x() const override { return x_; }
+    const Range& y() const override { return y_; }
+
+
     // -- Class methods
 
     static Increments make_increments_from_spec(const Spec&);
@@ -71,6 +82,15 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
+
+    // -- Members
+
+    const range::RegularLongitudeRange x_;
+    const range::RegularLatitudeRange y_;
+
+    // -- Friends
+
+    friend class geo::iterator::Regular;
 };
 
 

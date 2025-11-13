@@ -63,8 +63,8 @@ private:
     size_t j_;
     size_t Nj_;
 
-    mutable std::vector<std::unique_ptr<Range>> x_;
-    std::unique_ptr<Range> y_;
+    mutable std::vector<std::unique_ptr<Range>> longitude_;
+    std::unique_ptr<Range> latitude_;
     order::Scan scan_;
 
     // -- Overridden methods

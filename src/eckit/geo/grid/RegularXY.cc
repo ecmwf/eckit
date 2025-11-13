@@ -89,11 +89,17 @@ PointLonLat RegularXY::make_first_point_from_spec(const Spec& spec) {
 }
 
 
-RegularXY::RegularXY(const Spec& spec) : Regular(make_x_range(spec), make_y_range(spec)) {}
+RegularXY::RegularXY(const Spec& spec) : RegularXY(make_increments_from_spec(spec), BoundingBoxXY(spec)) {}
+
+
+RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox) :
+    x_(inc.dx, bbox.min_x, bbox.max_x), y_(inc.dy, bbox.min_y, bbox.max_y) {
+    ASSERT(!empty());
+}
 
 
 const std::string& RegularXY::type() const {
-    return projection().type();
+    NOTIMP;
 }
 
 
@@ -114,7 +120,7 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
 
     custom.set("grid", std::vector<double>{dx(), dy()});
     custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
-    custom.set("first_lonlat", std::vector<double>{first_lonlat.lon, first_lonlat.lat});
+    // custom.set("first_lonlat", std::vector<double>{first_lonlat.lon, first_lonlat.lat});
 }
 
 

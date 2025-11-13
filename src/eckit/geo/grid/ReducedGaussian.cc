@@ -35,17 +35,16 @@ size_t check_N(size_t N) {
 
 
 Range* make_x_range(size_t Ni, const area::BoundingBox& bbox) {
-    std::unique_ptr<Range> global(
-        range::Regular::make_longitude_range(360. / static_cast<double>(check_N(Ni)), 0., 360.));
-    return global->make_cropped_range(bbox.west, bbox.east);
+    range::RegularLongitudeRange global(360. / static_cast<double>(check_N(Ni)), 0., 360.);
+    return global.make_cropped_range(bbox.west, bbox.east);
 }
 
 
 Range* make_y_range(size_t N, const area::BoundingBox& bbox) {
     check_N(N);
 
-    std::unique_ptr<Range> global(new range::GaussianLatitude(N, false));
-    return global->make_cropped_range(bbox.north, bbox.south);
+    range::GaussianLatitude global(N, false);
+    return global.make_cropped_range(bbox.north, bbox.south);
 }
 
 
@@ -60,15 +59,23 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox) :
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const BoundingBox& bbox) :
-    Reduced(bbox), N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
+    Reduced(bbox), N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), longitude_(Nj_), latitude_(make_y_range(N, bbox)) {
     ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
-    ASSERT(y_);
+    ASSERT(latitude_);
 }
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox) :
     ReducedGaussian(N, util::reduced_octahedral_pl(N), bbox) {}
+
+
+// ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const BoundingBox& bbox) :
+//     N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), x_(Nj_), y_(make_y_range(N, bbox)) {
+//     ASSERT(N_ * 2 == pl_.size());
+//     ASSERT(0 < N_ && Nj_ <= 2 * N_);
+//     ASSERT(y_);
+// }
 
 
 Grid::iterator ReducedGaussian::cbegin() const {
@@ -87,33 +94,33 @@ size_t ReducedGaussian::size() const {
 
 
 size_t ReducedGaussian::nx(size_t j) const {
-    if (!x_.at(j_ + j)) {
+    if (!longitude_.at(j_ + j)) {
         const auto& bbox = boundingBox();
         auto Ni   = pl_.at(j_ + j);
         ASSERT(Ni >= 0);
 
-        x_[j].reset(make_x_range(static_cast<size_t>(Ni), bbox));
-        ASSERT(x_[j]);
+        longitude_[j].reset(make_x_range(static_cast<size_t>(Ni), bbox));
+        ASSERT(longitude_[j]);
     }
 
-    return x_[j]->size();
+    return longitude_[j]->size();
 }
 
 
 size_t ReducedGaussian::ny() const {
-    return y_->size();
+    return latitude_->size();
 }
 
 
 const std::vector<double>& ReducedGaussian::latitudes() const {
-    return y_->values();
+    return latitude_->values();
 }
 
 
 std::vector<double> ReducedGaussian::longitudes(size_t j) const {
     if (nx(j) > 0) {
-        ASSERT(x_[j]);
-        return x_[j]->values();
+        ASSERT(longitude_[j]);
+        return longitude_[j]->values();
     }
 
     return {};

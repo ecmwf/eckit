@@ -18,7 +18,7 @@
 namespace eckit::geo::range {
 
 
-class GaussianLatitude final : public Range {
+class GaussianLatitude final : public LatitudeRange {
 public:
 
     // -- Constructors
@@ -29,9 +29,12 @@ public:
 
     size_t N() const { return N_; }
 
+    bool includesNorthPole() const override;
+    bool includesSouthPole() const override;
+
     // -- Overridden methods
 
-    [[nodiscard]] Range* make_cropped_range(double crop_a, double crop_b) const override;
+    [[nodiscard]] GaussianLatitude* make_cropped_range(double crop_a, double crop_b) const override;
 
     Fraction increment() const override;
     const std::vector<double>& values() const override;
@@ -41,7 +44,7 @@ private:
     // -- Constructors
 
     GaussianLatitude(size_t N, std::vector<double>&& values) :
-        Range(values.size(), values.front(), values.back()), N_(N), values_(values) {}
+        LatitudeRange(values.size(), values.front(), values.back()), N_(N), values_(values) {}
 
     // -- Members
 

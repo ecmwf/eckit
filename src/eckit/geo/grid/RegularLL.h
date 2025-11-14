@@ -50,7 +50,7 @@ public:
     double dlat() const { return dy(); }
 
     size_t nlon() const { return nx(); }
-    size_t nlat() const { return nx(); }
+    size_t nlat() const { return ny(); }
 
     // -- Overridden methods
 

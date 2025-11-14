@@ -64,7 +64,6 @@ public:
     // -- Class methods
 
     static Increments make_increments_from_spec(const Spec&);
-    static PointLonLat make_first_point_from_spec(const Spec&);
 
 private:
 

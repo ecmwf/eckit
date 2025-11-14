@@ -30,6 +30,11 @@ Grid::iterator Unstructured::cend() const {
 }
 
 
+Unstructured::Unstructured(const Spec& spec) :
+    Unstructured(new container::PointsLonLatInstance{spec.get_double_vector("longitudes"),
+                                                     spec.get_double_vector("latitudes")}) {}
+
+
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
     Unstructured(new container::PointsLonLatReference{longitudes, latitudes}) {}
 

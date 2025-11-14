@@ -54,20 +54,10 @@ RegularLL::Increments RegularLL::make_increments_from_spec(const Spec& spec) {
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(make_increments_from_spec(spec), BoundingBox{spec}, [&spec]() -> PointLonLat {
-        std::vector<PointLonLat::value_type> v(2);
-        if (spec.get("reference_lon", v[0]) && spec.get("reference_lat", v[1])) {
-            return {v[0], v[1]};
-        }
-
-        if (spec.get("reference_lonlat", v) && v.size() == 2) {
-            return {v[0], v[1]};
-        }
-
-        return {0, 0};
-    }()) {
-    ASSERT(!empty());
-}
+    RegularLL(make_increments_from_spec(spec), BoundingBox{spec}, [&spec]() {
+        area::BoundingBox bbox{spec};
+        return PointLonLat::make_from_spec(spec, "reference", {bbox.west, bbox.south});
+    }()) {}
 
 
 RegularLL::RegularLL(const Increments& inc) : RegularLL(inc, BoundingBox{}, {0, 0}) {}
@@ -102,6 +92,12 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 
     if (auto o = order(); o != order::Scan::order_default()) {
         custom.set("order", o);
+    }
+
+    auto shift = [](Fraction inc, Fraction f) { return (f / inc).decimalPart() * inc; };
+    if (PointLonLat reference{shift(x_.af(), x_.increment()), shift(y_.af(), y_.increment())};
+        !points_equal(reference, PointLonLat{})) {
+        custom.set("reference", std::vector<double>{reference.lon, reference.lat});
     }
 
     if (auto bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {
@@ -158,10 +154,8 @@ Grid* RegularLL::make_grid_cropped(const Area& crop) const {
 
 
 Grid::BoundingBox* RegularLL::calculate_bbox() const {
-    // FIXME depends on ordering
     auto n = y_.includesNorthPole() ? PointLonLat::RIGHT_ANGLE : y_.max();
     auto s = y_.includesSouthPole() ? -PointLonLat::RIGHT_ANGLE : y_.min();
-
     auto w = x_.a();
     auto e = x_.periodic() ? w + PointLonLat::FULL_ANGLE : x_.b();
 

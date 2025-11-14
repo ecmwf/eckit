@@ -69,17 +69,17 @@ const ICON::ICONRecord& icon_record(const Spec& spec) {
 }  // namespace
 
 
-ICON::ICON(const Spec& spec) :
-    Unstructured(spec),
-    name_(spec.get_string("name")),
-    arrangement_(arrangement_from_string(spec.get_string("icon_arrangement"))),
-    record_(icon_record(spec)) {
-    resetContainer(new container::PointsLonLatReference{record_.longitudes_, record_.latitudes_});
-    ASSERT(container());
+ICON::ICON(const ICONRecord& record, const uid_type& uid, const std::string& arrangement, const std::string& name) :
+    Unstructured(new container::PointsLonLatReference{record.longitudes_, record.latitudes_}),
+    name_(name),
+    arrangement_(arrangement_from_string(arrangement)),
+    record_(record) {}
 
-    if (spec.has("icon_uid")) {
-        reset_uid(spec.get_string("icon_uid"));
-    }
+
+ICON::ICON(const Spec& spec) :
+    ICON(icon_record(spec), spec.get_string("icon_uid"), spec.get_string("icon_arrangement"), spec.get_string("name")) {
+    ASSERT(container());
+    reset_uid(spec.get_string("icon_uid"));
 }
 
 

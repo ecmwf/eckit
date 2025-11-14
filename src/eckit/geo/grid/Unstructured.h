@@ -32,7 +32,7 @@ public:
 
     // -- Constructors
 
-    explicit Unstructured(const Spec& spec) : Grid(spec) {}
+    explicit Unstructured(const Spec&);
 
     explicit Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
     explicit Unstructured(const std::vector<Point>&);

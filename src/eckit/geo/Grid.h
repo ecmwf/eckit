@@ -131,7 +131,7 @@ public:
 
     [[nodiscard]] const Spec& catalog() const;
     [[nodiscard]] const Spec& spec() const;
-    std::string spec_str() const;
+    std::string spec_str() const { return spec().str(); }
 
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;
@@ -175,7 +175,6 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(const Spec&);
     explicit Grid(Projection* = nullptr);
 
     // -- Methods
@@ -185,6 +184,7 @@ protected:
     void reset_uid(uid_type = {});
 
     void projection(Projection* ptr) { projection_.reset(ptr); }
+    void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
 
 private:
 

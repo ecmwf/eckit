@@ -31,7 +31,7 @@ static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
 static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
 
 
-SphericalHarmonics::SphericalHarmonics(const Spec& spec) : Grid(spec), truncation_(spec.get_unsigned("truncation")) {}
+SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {}
 
 
 SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {}

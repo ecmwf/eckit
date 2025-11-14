@@ -75,7 +75,6 @@ const ORCA::ORCARecord& orca_record(const Spec& spec) {
 
 
 ORCA::ORCA(const Spec& spec) :
-    Grid(spec),
     name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
     record_(orca_record(spec)),

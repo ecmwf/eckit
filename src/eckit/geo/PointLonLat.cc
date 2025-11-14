@@ -16,8 +16,10 @@
 #include <cmath>
 #include <limits>
 #include <sstream>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/geo/util.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -85,6 +87,28 @@ PointLonLat PointLonLat::make(value_type lon, value_type lat, value_type lon_min
 
 PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, value_type lon_minimum) {
     return make(util::RADIAN_TO_DEGREE * lonr, util::RADIAN_TO_DEGREE * latr, lon_minimum);
+}
+
+
+PointLonLat PointLonLat::make_from_spec(const Spec& spec, const std::string& name) {
+    static const PointLonLat dfault;
+    if (spec.has(name + "_lonlat") || (spec.has(name + "_lon") && spec.has(name + "_lat"))) {
+        return make_from_spec(spec, name, dfault);
+    }
+
+    throw exception::SpecError(
+        "PointLonLat::make_from_spec: missing '" + name + "_lonlat' or '" + name + "_lon'/'" + name + "_lat'", Here());
+}
+
+
+PointLonLat PointLonLat::make_from_spec(const Spec& spec, const std::string& name, const PointLonLat& dfault) {
+    if (std::vector<value_type> v{dfault.lon, dfault.lat};
+        (spec.get(name + "_lonlat", v) && v.size() == 2) ||
+        (spec.get(name + "_lon", v[0]) && spec.get(name + "_lat", v[1]))) {
+        return {v[0], v[1]};
+    }
+
+    return dfault;
 }
 
 

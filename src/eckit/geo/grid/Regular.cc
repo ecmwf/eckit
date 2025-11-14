@@ -52,8 +52,7 @@ Grid::renumber_type Regular::reorder(const order_type& to) const {
 }
 
 
-Regular::Regular(const Spec& spec) : Grid(spec), order_(spec) {
-}
+Regular::Regular(const Spec& spec) : order_(spec) {}
 
 
 Regular::Regular(const Projection*) {}

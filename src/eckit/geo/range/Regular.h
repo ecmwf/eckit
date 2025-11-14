@@ -84,6 +84,9 @@ public:
     bool includesSouthPole() const override;
 
     Fraction increment() const override { return regular_.increment(); }
+    Fraction af() const { return regular_.af(); }
+    Fraction bf() const { return regular_.bf(); }
+
     const std::vector<double>& values() const override { return regular_.values(); }
 
     [[nodiscard]] RegularLatitudeRange* make_cropped_range(double crop_a, double crop_b) const override;
@@ -112,6 +115,9 @@ public:
     bool periodic() const override { return periodic_; }
 
     Fraction increment() const override { return regular_.increment(); }
+    Fraction af() const { return regular_.af(); }
+    Fraction bf() const { return regular_.bf(); }
+
     const std::vector<double>& values() const override { return regular_.values(); }
 
     [[nodiscard]] RegularLongitudeRange* make_cropped_range(double crop_a, double crop_b) const override;

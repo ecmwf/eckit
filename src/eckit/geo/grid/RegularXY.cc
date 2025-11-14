@@ -29,7 +29,7 @@ namespace {
 
 Range* make_x_range(const Spec& spec) {
     auto inc   = RegularXY::make_increments_from_spec(spec);
-    auto first = RegularXY::make_first_point_from_spec(spec);
+    auto first = PointLonLat::make_from_spec(spec, "first");
     Shape shape(spec);
 
     auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).X;
@@ -41,7 +41,7 @@ Range* make_x_range(const Spec& spec) {
 
 Range* make_y_range(const Spec& spec) {
     auto inc   = RegularXY::make_increments_from_spec(spec);
-    auto first = RegularXY::make_first_point_from_spec(spec);
+    auto first = PointLonLat::make_from_spec(spec, "first");
     Shape shape(spec);
 
     auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).Y;
@@ -73,20 +73,6 @@ RegularXY::Increments RegularXY::make_increments_from_spec(const Spec& spec) {
     throw exception::SpecError("'grid' = ['dx', 'dy'] expected", Here());
 }
 
-
-PointLonLat RegularXY::make_first_point_from_spec(const Spec& spec) {
-    std::vector<PointLonLat::value_type> v(2);
-
-    if (spec.get("first_lon", v[0]) && spec.get("first_lat", v[1])) {
-        return {v[0], v[1]};
-    }
-
-    if (spec.get("first_lonlat", v) && v.size() == 2) {
-        return {v[0], v[1]};
-    }
-
-    throw exception::SpecError("['first_lonlat' = ['first_lon', 'first_lat'] expected", Here());
-}
 
 
 RegularXY::RegularXY(const Spec& spec) : RegularXY(make_increments_from_spec(spec), BoundingBoxXY(spec)) {}

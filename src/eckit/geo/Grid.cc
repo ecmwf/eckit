@@ -50,13 +50,8 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
-
-
 Grid::Grid(Projection* proj) :
-    projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {
-    bbox_.reset(area::BoundingBox::make_global_prime().release());
-}
+    projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {}
 
 
 const Spec& Grid::catalog() const {
@@ -88,23 +83,6 @@ const Spec& Grid::spec() const {
     }
 
     return *spec_;
-}
-
-
-std::string Grid::spec_str() const {
-    const auto& s = spec();
-    ASSERT(spec_);
-
-#if 0
-    // return only the grid name if that's the only entry in the spec
-    if (const auto& container = spec_->container(); container.size() == 1 && container.begin()->first == "grid") {
-        if (const auto& v = container.begin()->second; std::holds_alternative<std::string>(v)) {
-            return std::get<std::string>(v);
-        }
-    }
-#endif
-
-    return s.str();
 }
 
 

@@ -696,6 +696,7 @@ list( APPEND eckit_utils_srcs
     utils/Regex.h
     utils/RendezvousHash.cc
     utils/RendezvousHash.h
+    utils/SafeCasts.h
     utils/StringTools.cc
     utils/StringTools.h
     utils/Tokenizer.cc

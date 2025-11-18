@@ -60,8 +60,9 @@ public:
 
     // -- Overridden methods
 
-    uid_type calculate_uid() const override;
     const std::string& type() const override;
+    uid_type calculate_uid() const override;
+    BoundingBox* calculate_bbox() const override;
 
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;

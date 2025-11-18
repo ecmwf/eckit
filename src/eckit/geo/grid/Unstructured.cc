@@ -54,6 +54,11 @@ size_t Unstructured::size() const {
 }
 
 
+Grid::BoundingBox* Unstructured::calculate_bbox() const {
+    return new BoundingBox;
+}
+
+
 std::vector<Point> Unstructured::to_points() const {
     return container_->to_points();
 }

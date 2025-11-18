@@ -50,6 +50,8 @@ public:
     size_t size() const override;
     std::vector<size_t> shape() const override { return {size()}; }
 
+    BoundingBox* calculate_bbox() const override;
+
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }

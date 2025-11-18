@@ -258,12 +258,6 @@ void Grid::fill_spec(spec::Custom& custom) const {
 }
 
 
-ShareEckitGeoGridInit::ShareEckitGeoGridInit() {
-    // ensure load of supporting files
-    share::Grid::instance();
-}
-
-
 const Grid* GridFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
@@ -318,6 +312,7 @@ Spec* GridFactory::make_spec_(const Spec& spec) const {
 
     if (static const std::string projection{"projection"}; !cfg->has(projection)) {
         auto ptr = std::make_unique<spec::Custom>();
+        ASSERT(ptr);
 
         if (static const std::string rotation{"rotation"}; cfg->has(rotation)) {
             ptr->set("type", rotation);
@@ -365,6 +360,18 @@ std::ostream& GridFactory::list_(std::ostream& out) const {
     out << Factory<Grid>::instance() << std::endl;
 
     return out;
+}
+
+
+GridSpecByName::generator_t& GridSpecByName::instance() {
+    share::Grid::instance();  // ensure load of supporting files
+    return generator_t::instance();
+}
+
+
+GridSpecByUID::generator_t& GridSpecByUID::instance() {
+    share::Grid::instance();  // ensure load of supporting files
+    return generator_t::instance();
 }
 
 

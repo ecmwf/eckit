@@ -138,11 +138,6 @@ void ICON::ICONRecord::check(const Spec& spec) const {
 }
 
 
-Grid::uid_type ICON::calculate_uid() const {
-    NOTIMP;
-}
-
-
 Spec* ICON::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }
@@ -177,6 +172,23 @@ void ICON::fill_spec(spec::Custom& custom) const {
 const std::string& ICON::type() const {
     static const std::string type{"icon"};
     return type;
+}
+
+
+Grid::uid_type ICON::calculate_uid() const {
+    NOTIMP;
+}
+
+
+Grid::BoundingBox* ICON::calculate_bbox() const {
+    if (const std::string BOUNDING_BOX = "bounding_box"; catalog().has(BOUNDING_BOX)) {
+        const auto bbox = catalog().get_double_vector(BOUNDING_BOX);
+        ASSERT(bbox.size() == 4);
+
+        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
+    }
+
+    return Unstructured::calculate_bbox();
 }
 
 

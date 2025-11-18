@@ -203,15 +203,26 @@ private:
 };
 
 
-struct ShareEckitGeoGridInit {
-private:
+struct GridSpecByName {
+    using key_t                = std::string;
+    using generator_t          = spec::GeneratorT<spec::SpecGeneratorT1<const key_t&>>;
+    using concrete_generator_t = generator_t::generator_t;
 
-    ShareEckitGeoGridInit();
+    static generator_t& instance();
+    static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
 };
 
 
-struct GridSpecByName : spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>, private ShareEckitGeoGridInit {};
-struct GridSpecByUID : spec::GeneratorT<spec::SpecGeneratorT0>, private ShareEckitGeoGridInit {};
+struct GridSpecByUID {
+    using key_t                = Grid::uid_type;
+    using generator_t          = spec::GeneratorT<spec::SpecGeneratorT0>;
+    using concrete_generator_t = generator_t::generator_t;
+
+    static generator_t& instance();
+    static void regist(const key_t& key, concrete_generator_t* gen) { generator_t::instance().regist(key, gen); }
+    static void unregist(const key_t& key) { generator_t::instance().unregist(key); }
+};
 
 
 template <typename T>

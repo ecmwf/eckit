@@ -147,6 +147,12 @@ public:
         }
     }
 
+    void setZero() {
+        ASSERT(size() > 0);
+        ASSERT(data_);
+        ::memset(data_, 0, size() * sizeof(Scalar));
+    }
+
     Matrix& operator=(const Matrix& other) {
         resize(other.nr_, other.nc_);
         std::memcpy(data_, other.data(), sizeof(Scalar) * nr_ * nc_);
@@ -462,6 +468,13 @@ public:
         return m;
     }
 
+    // Matrix Scalar divide
+    Matrix operator/(const Scalar& s) const {
+        ASSERT(s != 0.0);
+        Matrix m(*this);
+        m /= s;
+        return m;
+    }
 
 private:
 

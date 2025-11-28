@@ -19,7 +19,7 @@
 #include <tuple>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/grid/HEALPix.h"
+#include "eckit/geo/grid/reduced/HEALPix.h"
 
 
 namespace eckit::geo::order {
@@ -103,7 +103,7 @@ struct Renumber {
 
     Renumber(int Nside) :
         Nside_(Nside),
-        Npix_(static_cast<int>(grid::HEALPix::size_from_nside(Nside_))),
+        Npix_(static_cast<int>(grid::reduced::HEALPix::size_from_nside(Nside_))),
         Ncap_((Nside_ * (Nside_ - 1)) << 1),
         k_(static_cast<int>(std::log2(Nside_))) {
         ASSERT(is_power_of_2(Nside_));
@@ -225,7 +225,7 @@ HEALPix::HEALPix(const Spec& spec) : HEALPix(spec.get_string("order", order_defa
 HEALPix::renumber_type HEALPix::reorder(const order_type& to, size_t Nside) const {
     ASSERT(to == NESTED || to == RING);
 
-    auto size = static_cast<int>(grid::HEALPix::size_from_nside(Nside));
+    auto size = static_cast<int>(grid::reduced::HEALPix::size_from_nside(Nside));
     renumber_type ren(size);
 
     if (order_ == to) {

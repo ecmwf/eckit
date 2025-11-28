@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/RegularXY.h"
+#include "eckit/geo/grid/regular/RegularXY.h"
 
 #include <memory>
 
@@ -21,7 +21,7 @@
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::regular {
 
 
 namespace {
@@ -113,4 +113,4 @@ static const GridRegisterType<RegularXY> GRID1("lambert");
 static const GridRegisterType<RegularXY> GRID2("lambert_lam");
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::regular

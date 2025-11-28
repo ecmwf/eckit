@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/grid/RegularGaussian.h"
+#include "eckit/geo/grid/regular/RegularGaussian.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
@@ -22,7 +22,7 @@
 namespace eckit::geo::test {
 
 
-using RegularGaussian = grid::RegularGaussian;
+using grid::regular::RegularGaussian;
 
 
 CASE("sizes") {

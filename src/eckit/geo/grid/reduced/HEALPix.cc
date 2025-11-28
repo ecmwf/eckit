@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/HEALPix.h"
+#include "eckit/geo/grid/reduced/HEALPix.h"
 
 #include <algorithm>
 #include <cctype>
@@ -24,7 +24,7 @@
 #include "eckit/geo/util.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::reduced {
 
 
 static const std::string HEALPIX_PATTERN = "h([rn][1-9][0-9]*|[1-9][0-9]*(|r|_ring|n|_nested))";
@@ -163,4 +163,4 @@ static const GridRegisterType<HEALPix> GRIDTYPE2("healpix");
 static const GridRegisterName<HEALPix> GRIDNAME(HEALPIX_PATTERN);
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::reduced

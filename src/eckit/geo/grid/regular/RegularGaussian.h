@@ -17,7 +17,7 @@
 #include "eckit/geo/range/Regular.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::regular {
 
 
 class RegularGaussian final : public Regular {
@@ -71,4 +71,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::regular

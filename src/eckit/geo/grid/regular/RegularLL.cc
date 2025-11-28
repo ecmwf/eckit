@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/RegularLL.h"
+#include "eckit/geo/grid/regular/RegularLL.h"
 
 #include <algorithm>
 #include <memory>
@@ -26,7 +26,7 @@
 #include "eckit/utils/Translator.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::regular {
 
 
 #define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)(e[-+][0-9]+)?"
@@ -163,4 +163,4 @@ static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
 static const GridRegisterType<RegularLL> GRIDTYPE2("rotated_ll");
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::regular

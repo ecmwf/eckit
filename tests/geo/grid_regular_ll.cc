@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "eckit/geo/grid/RegularLL.h"
+#include "eckit/geo/grid/regular/RegularLL.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -20,7 +20,7 @@
 namespace eckit::geo::test {
 
 
-using grid::RegularLL;
+using grid::regular::RegularLL;
 
 
 CASE("global") {

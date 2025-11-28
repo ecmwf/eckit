@@ -21,7 +21,7 @@
 #include "eckit/geo/util.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::reduced {
 
 
 class ReducedGaussian : public Reduced {
@@ -76,4 +76,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::reduced

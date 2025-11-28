@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "eckit/geo/grid/HEALPix.h"
+#include "eckit/geo/grid/reduced/HEALPix.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -69,7 +69,7 @@ CASE("sizes") {
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "h" + std::to_string(test.N)}})));
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"type", "HEALPix"}, {"Nside", test.N}})));
-        grid::HEALPix grid3(test.N);
+        grid::reduced::HEALPix grid3(test.N);
 
         EXPECT(grid1->size() == test.size);
         EXPECT(grid2->size() == test.size);
@@ -79,12 +79,12 @@ CASE("sizes") {
 
 
 CASE("points") {
-    std::unique_ptr<const Grid> ring(new grid::HEALPix(2));
+    std::unique_ptr<const Grid> ring(new grid::reduced::HEALPix(2));
 
     EXPECT(ring->order() == order::HEALPix::RING);
 
 
-    std::unique_ptr<const Grid> nested(new grid::HEALPix(2, order::HEALPix::NESTED));
+    std::unique_ptr<const Grid> nested(new grid::reduced::HEALPix(2, order::HEALPix::NESTED));
 
     EXPECT(nested->order() == order::HEALPix::NESTED);
 
@@ -190,7 +190,7 @@ CASE("points") {
 CASE("equals") {
     std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "h2"}})));
     std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("{type: HEALPix, Nside: 2}"));
-    std::unique_ptr<const Grid> grid3(new grid::HEALPix(2));
+    std::unique_ptr<const Grid> grid3(new grid::reduced::HEALPix(2));
 
     EXPECT(*grid1 == *grid2);
     EXPECT(*grid2 == *grid3);
@@ -200,7 +200,7 @@ CASE("equals") {
 
     std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "h2"}, {"order", "nested"}})));
     std::unique_ptr<const Grid> grid5(GridFactory::make_from_string("{type: HEALPix, Nside: 2, order: nested}"));
-    std::unique_ptr<const Grid> grid6(new grid::HEALPix(2, order::HEALPix::NESTED));
+    std::unique_ptr<const Grid> grid6(new grid::reduced::HEALPix(2, order::HEALPix::NESTED));
 
     EXPECT(*grid4 != *grid1);
 

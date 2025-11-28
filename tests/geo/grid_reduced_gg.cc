@@ -12,7 +12,7 @@
 
 #include <memory>
 
-#include "eckit/geo/grid/ReducedGaussian.h"
+#include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/testing/Test.h"
@@ -21,7 +21,7 @@
 namespace eckit::geo::test {
 
 
-using ReducedGaussian = grid::ReducedGaussian;
+using grid::reduced::ReducedGaussian;
 
 
 #if 0

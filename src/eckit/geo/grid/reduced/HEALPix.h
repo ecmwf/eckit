@@ -19,7 +19,7 @@
 #include "eckit/geo/order/HEALPix.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::reduced {
 
 
 class HEALPix final : public Reduced {
@@ -85,4 +85,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::reduced

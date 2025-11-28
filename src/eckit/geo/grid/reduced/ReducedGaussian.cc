@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/ReducedGaussian.h"
+#include "eckit/geo/grid/reduced/ReducedGaussian.h"
 
 #include <memory>
 
@@ -22,7 +22,7 @@
 #include "eckit/utils/Translator.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::reduced {
 
 
 namespace {
@@ -188,4 +188,4 @@ static const GridRegisterType<ReducedGaussian> GRIDTYPE1("reduced_gg");
 static const GridRegisterType<ReducedGaussian> GRIDTYPE2("reduced_rotated_gg");
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::reduced

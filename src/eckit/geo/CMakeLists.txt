@@ -68,24 +68,24 @@ list(APPEND eckit_geo_srcs
     figure/SphereT.h
     figure/UnitSphere.cc
     figure/UnitSphere.h
-    grid/HEALPix.cc
-    grid/HEALPix.h
     grid/Reduced.cc
     grid/Reduced.h
-    grid/ReducedGaussian.cc
-    grid/ReducedGaussian.h
     grid/Regular.cc
     grid/Regular.h
-    grid/RegularGaussian.cc
-    grid/RegularGaussian.h
-    grid/RegularLL.cc
-    grid/RegularLL.h
-    grid/RegularXY.cc
-    grid/RegularXY.h
     grid/SphericalHarmonics.cc
     grid/SphericalHarmonics.h
     grid/Unstructured.cc
     grid/Unstructured.h
+    grid/reduced/HEALPix.cc
+    grid/reduced/HEALPix.h
+    grid/reduced/ReducedGaussian.cc
+    grid/reduced/ReducedGaussian.h
+    grid/regular/RegularGaussian.cc
+    grid/regular/RegularGaussian.h
+    grid/regular/RegularLL.cc
+    grid/regular/RegularLL.h
+    grid/regular/RegularXY.cc
+    grid/regular/RegularXY.h
     grid/unstructured/UnstructuredGeneric.cc
     grid/unstructured/UnstructuredGeneric.h
     iterator/Reduced.cc

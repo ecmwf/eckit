@@ -17,7 +17,7 @@
 #include "eckit/geo/range/Regular.h"
 
 
-namespace eckit::geo::grid {
+namespace eckit::geo::grid::regular {
 
 
 class RegularXY : public Regular {
@@ -82,4 +82,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::grid
+}  // namespace eckit::geo::grid::regular

@@ -18,7 +18,6 @@
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
@@ -28,7 +27,7 @@ static util::recursive_mutex MUTEX;
 
 
 GaussianLatitude::GaussianLatitude(size_t N, bool increasing) :
-    LatitudeRange(2 * N, increasing ? -90. : 90., increasing ? 90. : -90.), N_(N) {}
+    GaussianLatitude(N, std::vector<double>(util::gaussian_latitudes(N, increasing))) {}
 
 
 bool GaussianLatitude::includesNorthPole() const {
@@ -65,11 +64,6 @@ GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double cro
     }
 
     return new GaussianLatitude(N_, std::move(v));
-}
-
-
-Fraction GaussianLatitude::increment() const {
-    NOTIMP;
 }
 
 

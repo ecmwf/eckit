@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include "eckit/geo/Range.h"
 #include "eckit/types/Fraction.h"
 
@@ -22,116 +24,95 @@ namespace eckit::geo::range {
 class Regular : public Range {
 public:
 
-    // -- Constructors
+    // -- Types
 
-    explicit Regular(double inc, double a, double b, double ref = 0);
-    explicit Regular(Fraction inc, Fraction a, Fraction b);
+    struct Implementation {
+        Implementation(Fraction inc, Fraction a, Fraction b, Fraction ref);
 
-    Regular(const Regular&) = default;
-    Regular(Regular&&)      = default;
+        Implementation(const Implementation&) = default;
+        Implementation(Implementation&&)      = default;
 
-    // -- Operators
+        virtual ~Implementation() = default;
 
-    Regular& operator=(const Regular&) = default;
-    Regular& operator=(Regular&&)      = default;
+        Implementation& operator=(const Implementation&) = default;
+        Implementation& operator=(Implementation&&)      = default;
+
+        virtual Regular* make_cropped_range(double, double) const;
+        virtual bool periodic() const;
+        virtual bool includesNorthPole() const;
+        virtual bool includesSouthPole() const;
+
+        Fraction min() const;
+        Fraction max() const;
+
+        Fraction inc_;
+        Fraction shift_;
+        Fraction a_;
+        Fraction b_;
+        size_t size_ = 0;
+    };
+
+    // -- Overridden methods
+
+    [[nodiscard]] const std::vector<double>& values() const override;
+
+    [[nodiscard]] Regular* make_cropped_range(double crop_a, double crop_b) const override {
+        return impl_->make_cropped_range(crop_a, crop_b);
+    }
+
+    size_t size() const override { return impl_->size_; }
+    double a() const override { return impl_->a_; }
+    double b() const override { return impl_->b_; }
+
+    Fraction increment() const override { return impl_->inc_; }
+    bool periodic() const override { return impl_->periodic(); }
+    bool includesNorthPole() const override { return impl_->includesNorthPole(); }
+    bool includesSouthPole() const override { return impl_->includesSouthPole(); }
 
     // -- Methods
 
-    [[nodiscard]] static Regular* make_xy_range(double inc, double a, double b, double ref = 0);
+    Fraction shift() const { return impl_->shift_; }
+    Fraction af() const { return impl_->a_; }
+    Fraction bf() const { return impl_->b_; }
 
-    // -- Overridden methods
+protected:
 
-    [[nodiscard]] Regular* make_cropped_range(double crop_a, double crop_b) const override;
+    // -- Constructors
 
-    Fraction increment() const override { return increment_; }
-    const std::vector<double>& values() const override;
-
-    // -- Methods
-
-    Fraction af() const { return a_; }
-    Fraction bf() const { return b_; }
-
-    void af(Fraction value) {
-        Range::a(value);
-        a_ = Fraction{a()};
-    }
-
-    void bf(Fraction value) {
-        Range::b(value);
-        b_ = Fraction{b()};
-    }
+    explicit Regular(Implementation*);
 
 private:
 
     // -- Members
 
-    Fraction increment_;
-    Fraction a_;
-    Fraction b_;
+    std::shared_ptr<Implementation> impl_;
 };
 
 
-class RegularLatitudeRange : public LatitudeRange {
-public:
+struct RegularLatitude : Regular {
+    explicit RegularLatitude(Fraction inc, Fraction a, Fraction b, Fraction ref = {});
+    explicit RegularLatitude(double inc, double a, double b, double ref = 0) :
+        RegularLatitude(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
 
-    // -- Constructors
-
-    RegularLatitudeRange(double inc, double a, double b, double ref = 0);
-
-    // -- Overridden methods
-
-    bool includesNorthPole() const override;
-    bool includesSouthPole() const override;
-
-    Fraction increment() const override { return regular_.increment(); }
-    Fraction af() const { return regular_.af(); }
-    Fraction bf() const { return regular_.bf(); }
-
-    const std::vector<double>& values() const override { return regular_.values(); }
-
-    [[nodiscard]] RegularLatitudeRange* make_cropped_range(double crop_a, double crop_b) const override;
-
-private:
-
-    // -- Constructors
-
-    explicit RegularLatitudeRange(Regular&&);
-
-    // -- Members
-
-    Regular regular_;
+    [[nodiscard]] RegularLatitude* make_cropped_range(double crop_a, double crop_b) const override;
 };
 
 
-class RegularLongitudeRange : public LongitudeRange {
-public:
+struct RegularLongitude : Regular {
+    explicit RegularLongitude(Fraction inc, Fraction a, Fraction b, Fraction ref = {});
+    explicit RegularLongitude(double inc, double a, double b, double ref = 0) :
+        RegularLongitude(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
 
-    // -- Constructors
+    [[nodiscard]] RegularLongitude* make_cropped_range(double crop_a, double crop_b) const override;
+};
 
-    RegularLongitudeRange(double inc, double a, double b, double ref = 0);
 
-    // -- Overridden methods
+struct RegularXY : Regular {
+    explicit RegularXY(Fraction inc, Fraction a, Fraction b, Fraction ref = {});
+    explicit RegularXY(double inc, double a, double b, double ref = 0) :
+        RegularXY(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
 
-    bool periodic() const override { return periodic_; }
-
-    Fraction increment() const override { return regular_.increment(); }
-    Fraction af() const { return regular_.af(); }
-    Fraction bf() const { return regular_.bf(); }
-
-    const std::vector<double>& values() const override { return regular_.values(); }
-
-    [[nodiscard]] RegularLongitudeRange* make_cropped_range(double crop_a, double crop_b) const override;
-
-private:
-
-    // -- Constructors
-
-    explicit RegularLongitudeRange(Regular&&);
-
-    // -- Members
-
-    Regular regular_;
-    bool periodic_;
+    [[nodiscard]] RegularXY* make_cropped_range(double crop_a, double crop_b) const override;
 };
 
 

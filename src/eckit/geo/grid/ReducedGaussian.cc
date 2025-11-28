@@ -35,7 +35,7 @@ size_t check_N(size_t N) {
 
 
 Range* make_x_range(size_t Ni, const area::BoundingBox& bbox) {
-    range::RegularLongitudeRange global(360. / static_cast<double>(check_N(Ni)), 0., 360.);
+    range::RegularLongitude global(360. / static_cast<double>(check_N(Ni)), 0., 360.);
     return global.make_cropped_range(bbox.west, bbox.east);
 }
 
@@ -96,7 +96,7 @@ size_t ReducedGaussian::size() const {
 size_t ReducedGaussian::nx(size_t j) const {
     if (!longitude_.at(j_ + j)) {
         const auto& bbox = boundingBox();
-        auto Ni   = pl_.at(j_ + j);
+        auto Ni          = pl_.at(j_ + j);
         ASSERT(Ni >= 0);
 
         longitude_[j].reset(make_x_range(static_cast<size_t>(Ni), bbox));

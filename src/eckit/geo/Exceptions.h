@@ -69,6 +69,13 @@ public:
 };
 
 
+class RangeError : public geo::Exception {
+public:
+
+    explicit RangeError(const std::string&, const CodeLocation&);
+};
+
+
 class SpecError : public geo::Exception {
 public:
 

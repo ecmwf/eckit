@@ -21,7 +21,7 @@
 
 namespace eckit::geo::iterator {
 class Unstructured;
-}  // namespace eckit::geo::iterator
+}
 
 
 namespace eckit::geo::grid {
@@ -69,10 +69,6 @@ protected:
     // -- Constructors
 
     explicit Unstructured(container::PointsContainer*);
-
-    // -- Methods
-
-    void resetContainer(container::PointsContainer* container) { container_.reset(container); }
 
 private:
 

@@ -75,6 +75,10 @@ public:
 
 private:
 
+    // -- Constructors
+
+    FESOM(const FESOMRecord&, const uid_type&, const std::string& arrangement, const std::string& name);
+
     // -- Members
 
     std::string name_;

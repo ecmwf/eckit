@@ -36,12 +36,16 @@ ProjectionError::ProjectionError(const std::string& what, const CodeLocation& lo
     Exception("ProjectionError: [" + what + "]", location) {}
 
 
-SpecError::SpecError(const std::string& what, const CodeLocation& location) :
-    Exception("SpecError: [" + what + "]", location) {}
+RangeError::RangeError(const std::string& what, const CodeLocation& location) :
+    Exception("RangeError: [" + what + "]", location) {}
 
 
 SearchError::SearchError(const std::string& what, const CodeLocation& location) :
     Exception("SearchError: [" + what + "]", location) {}
+
+
+SpecError::SpecError(const std::string& what, const CodeLocation& location) :
+    Exception("SpecError: [" + what + "]", location) {}
 
 
 }  // namespace eckit::geo::exception

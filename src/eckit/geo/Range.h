@@ -15,10 +15,7 @@
 #include <cstddef>
 #include <vector>
 
-
-namespace eckit {
-class Fraction;
-}
+#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo {
@@ -28,6 +25,8 @@ class Range {
 public:
 
     // -- Constructors
+
+    Range() = default;
 
     Range(const Range&) = default;
     Range(Range&&)      = default;
@@ -43,58 +42,20 @@ public:
 
     // -- Methods
 
-    size_t size() const { return n_; }
-    double a() const { return a_; }
-    double b() const { return b_; }
-
-    double min() const { return a_ < b_ ? a_ : b_; }
-    double max() const { return a_ < b_ ? b_ : a_; }
-
-    virtual Fraction increment() const                = 0;
-    virtual const std::vector<double>& values() const = 0;
+    double min() const;
+    double max() const;
 
     [[nodiscard]] virtual Range* make_cropped_range(double crop_a, double crop_b) const = 0;
+    [[nodiscard]] virtual const std::vector<double>& values() const                     = 0;
 
-protected:
+    virtual size_t size() const = 0;
+    virtual double a() const    = 0;
+    virtual double b() const    = 0;
 
-    // -- Constructors
-
-    explicit Range(size_t n, double a, double b);
-
-    // --Methods
-
-    void resize(size_t n);
-    void a(double value) { a_ = value; }
-    void b(double value) { b_ = value; }
-
-private:
-
-    // -- Members
-
-    size_t n_;
-    double a_;
-    double b_;
-};
-
-
-class LatitudeRange : public Range {
-public:
-
-    using Range::Range;
-    using Range::operator=;
-
-    virtual bool includesNorthPole() const = 0;
-    virtual bool includesSouthPole() const = 0;
-};
-
-
-class LongitudeRange : public Range {
-public:
-
-    using Range::Range;
-    using Range::operator=;
-
-    virtual bool periodic() const = 0;
+    virtual Fraction increment() const;
+    virtual bool periodic() const;
+    virtual bool includesNorthPole() const;
+    virtual bool includesSouthPole() const;
 };
 
 

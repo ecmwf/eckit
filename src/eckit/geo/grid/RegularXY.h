@@ -73,8 +73,8 @@ private:
 
     // -- Members
 
-    const range::Regular x_;
-    const range::Regular y_;
+    const range::RegularXY x_;
+    const range::RegularXY y_;
 
     // -- Friends
 

@@ -45,6 +45,7 @@ public:
     // -- Methods
 
     [[nodiscard]] static Spec* spec(const std::string& name);
+    [[nodiscard]] PointLonLat reference() const { return {x_.shift(), y_.shift()}; }
 
     double dlon() const { return dx(); }
     double dlat() const { return dy(); }
@@ -62,7 +63,6 @@ public:
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
-
     double dx() const override { return x_.increment(); }
     double dy() const override { return y_.increment(); }
 
@@ -85,8 +85,8 @@ private:
 
     // -- Members
 
-    const range::RegularLongitudeRange x_;
-    const range::RegularLatitudeRange y_;
+    const range::RegularLongitude x_;
+    const range::RegularLatitude y_;
 
     // -- Friends
 

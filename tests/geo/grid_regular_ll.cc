@@ -20,11 +20,10 @@
 namespace eckit::geo::test {
 
 
-using RegularLL = grid::RegularLL;
+using grid::RegularLL;
 
 
 CASE("global") {
-#if 0
     SECTION("1") {
         std::unique_ptr<Grid> grid(new RegularLL(spec::Custom{{{"grid", std::vector<double>{90, 90}}}}));
 
@@ -47,10 +46,8 @@ CASE("global") {
             EXPECT(points_equal(p, *q++));
         }
     }
-#endif
 
 
-#if 0
     SECTION("2") {
         RegularLL a(spec::Custom{{{"grid", std::vector<double>{1, 1}}}});
 
@@ -60,28 +57,47 @@ CASE("global") {
         RegularLL b(spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
 
         EXPECT(b.size() == 5 * 10);
-        EXPECT(b.spec_str() == R"({"area":[10,1,1,9],"grid":[2,1]})");
+        EXPECT(b.spec_str() == R"({"area":[10,2,1,10],"grid":[2,1]})");
 
         RegularLL c({1., 1.}, {89.5, 0.5, -89.5, 359.5}, {0.5, 0.5});
 
         EXPECT(c.nlon() == 360);
         EXPECT(c.nlat() == 180);
         EXPECT(c.size() == 360 * 180);
+        EXPECT(c.spec_str() == R"({"area":[90,0.5,-90,360.5],"grid":[1,1],"reference":[0.5,0.5]})");
 
-        EXPECT(c.spec_str() == R"({"area":[89.5,0.5,-89.5,359.5],"grid":[1,1]})");
-
-        RegularLL d({1., 1.}, {90., 0., -90, 370.}, {0.5, 0.5});
+        RegularLL d({1., 1.}, {90., 0.5, -90, 360.5}, {0.5, 0.5});
 
         EXPECT(d.nlon() == 360);
         EXPECT(d.nlat() == 180);
         EXPECT(d.size() == 360 * 180);
     }
-#endif
+
+
+    SECTION("3") {
+        for (const double d : {
+                 0.35,
+                 0.7,
+                 0.8,
+                 1.4,
+                 1.6,
+             }) {
+            const auto spec_ref = RegularLL({d, d}).spec_str();
+
+            std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom{{{"grid", std::vector<double>{d, d}}}}));
+
+            EXPECT(spec_ref == grid1->spec_str());
+
+            std::unique_ptr<const Grid> grid2(
+                GridFactory::make_from_string(std::to_string(d) + "/" + std::to_string(d)));
+
+            EXPECT(spec_ref == grid2->spec_str());
+        }
+    }
 }
 
 
 CASE("non-global") {
-#if 1
     SECTION("origin at (0, 0) (non-shifted)") {
         /*
          *  1
@@ -112,10 +128,8 @@ CASE("non-global") {
         }
         EXPECT(i == grid.size());
     }
-#endif
 
 
-#if 0
     SECTION("origin at (-1, -1) (shifted)") {
         /*
          *  1  .  .  .  .
@@ -148,7 +162,6 @@ CASE("non-global") {
         }
         EXPECT(i == grid.size());
     }
-#endif
 }
 
 

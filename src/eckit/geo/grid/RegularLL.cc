@@ -13,6 +13,7 @@
 #include "eckit/geo/grid/RegularLL.h"
 
 #include <algorithm>
+#include <memory>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -54,19 +55,14 @@ RegularLL::Increments RegularLL::make_increments_from_spec(const Spec& spec) {
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(make_increments_from_spec(spec), BoundingBox{spec}, [&spec]() {
-        area::BoundingBox bbox{spec};
-        return PointLonLat::make_from_spec(spec, "reference", {bbox.west, bbox.south});
-    }()) {}
+    RegularLL(make_increments_from_spec(spec), BoundingBox{spec}, PointLonLat::make_from_spec(spec, "reference", {})) {}
 
 
 RegularLL::RegularLL(const Increments& inc) : RegularLL(inc, BoundingBox{}, {0, 0}) {}
 
 
 RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref) :
-    x_(*range::RegularLongitudeRange(inc.dlon, bbox.west, bbox.east, ref.lon).make_cropped_range(bbox.west, bbox.east)),
-    y_(*range::RegularLatitudeRange(-inc.dlat, bbox.north, bbox.south, ref.lat)
-            .make_cropped_range(bbox.north, bbox.south)) {
+    x_{inc.dlon, bbox.west, bbox.east, ref.lon}, y_{-inc.dlat, bbox.north, bbox.south, ref.lat} {
     ASSERT(!empty());
 
     order(std::string{x().increment() < 0 ? "i-" : "i+"} +  //
@@ -94,10 +90,8 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
         custom.set("order", o);
     }
 
-    auto shift = [](Fraction inc, Fraction f) { return (f / inc).decimalPart() * inc; };
-    if (PointLonLat reference{shift(x_.af(), x_.increment()), shift(y_.af(), y_.increment())};
-        !points_equal(reference, PointLonLat{})) {
-        custom.set("reference", std::vector<double>{reference.lon, reference.lat});
+    if (auto ref{reference()}; !points_equal(ref, PointLonLat{})) {
+        custom.set("reference", std::vector<double>{ref.lon, ref.lat});
     }
 
     if (auto bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {

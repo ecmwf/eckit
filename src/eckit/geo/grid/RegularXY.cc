@@ -35,7 +35,7 @@ Range* make_x_range(const Spec& spec) {
     auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).X;
     auto b = a + (shape.nx > 1 ? inc.dx * static_cast<double>(shape.nx - 1) : 0);
 
-    return range::Regular::make_xy_range(inc.dx, a, b, a);
+    return new range::RegularXY(inc.dx, a, b, a);
 }
 
 
@@ -47,7 +47,7 @@ Range* make_y_range(const Spec& spec) {
     auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).Y;
     auto b = a + (shape.ny > 1 ? inc.dy * static_cast<double>(shape.ny - 1) : 0);
 
-    return range::Regular::make_xy_range(inc.dy, a, b, a);
+    return new range::RegularXY(inc.dy, a, b, a);
 }
 
 
@@ -72,7 +72,6 @@ RegularXY::Increments RegularXY::make_increments_from_spec(const Spec& spec) {
 
     throw exception::SpecError("'grid' = ['dx', 'dy'] expected", Here());
 }
-
 
 
 RegularXY::RegularXY(const Spec& spec) : RegularXY(make_increments_from_spec(spec), BoundingBoxXY(spec)) {}

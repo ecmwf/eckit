@@ -12,7 +12,10 @@
 
 #include "eckit/geo/grid/RegularGaussian.h"
 
+#include <memory>
+
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/spec/Custom.h"
@@ -39,7 +42,7 @@ RegularGaussian::RegularGaussian(const Spec& spec) : RegularGaussian(spec.get_un
 
 RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox) :
     N_(N),
-    x_(*range::RegularLongitudeRange(360. / static_cast<double>(check_N(4 * N)), 0., 360.)
+    x_(*range::RegularLongitude(360. / static_cast<double>(check_N(4 * N)), 0., 360.)
             .make_cropped_range(bbox.west, bbox.east)),
     y_(*range::GaussianLatitude(N, false).make_cropped_range(bbox.north, bbox.south)) {
     ASSERT(!empty());
@@ -76,6 +79,14 @@ Point RegularGaussian::first_point() const {
 Point RegularGaussian::last_point() const {
     ASSERT(!empty());
     return PointLonLat{x().values().back(), y().values().back()};
+}
+
+
+Grid::BoundingBox* RegularGaussian::calculate_bbox() const {
+    return new BoundingBox{y_.includesNorthPole() ? PointLonLat::RIGHT_ANGLE : y_.max(),   //
+                           x_.min(),                                                       //
+                           y_.includesSouthPole() ? -PointLonLat::RIGHT_ANGLE : y_.min(),  //
+                           x_.periodic() ? x_.min() + PointLonLat::FULL_ANGLE : x_.max()};
 }
 
 

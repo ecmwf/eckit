@@ -75,17 +75,18 @@ const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
 }  // namespace
 
 
-FESOM::FESOM(const Spec& spec) :
-    Unstructured(spec),
-    name_(spec.get_string("name")),
-    arrangement_(arrangement_from_string(spec.get_string("fesom_arrangement"))),
-    record_(fesom_record(spec)) {
-    resetContainer(new container::PointsLonLatReference{record_.longitudes_, record_.latitudes_});
-    ASSERT(container());
+FESOM::FESOM(const FESOMRecord& record, const uid_type& uid, const std::string& arrangement, const std::string& name) :
+    Unstructured(new container::PointsLonLatReference{record.longitudes_, record.latitudes_}),
+    name_(name),
+    arrangement_(arrangement_from_string(arrangement)),
+    record_(record) {}
 
-    if (spec.has("fesom_uid")) {
-        reset_uid(spec.get_string("fesom_uid"));
-    }
+
+FESOM::FESOM(const Spec& spec) :
+    FESOM(fesom_record(spec), spec.get_string("fesom_uid"), spec.get_string("fesom_arrangement"),
+          spec.get_string("name")) {
+    ASSERT(container());
+    reset_uid(spec.get_string("fesom_uid"));
 }
 
 

@@ -39,6 +39,9 @@ public:
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
 
+
+    [[nodiscard]] BoundingBox* calculate_bbox() const override;
+
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 
     double dx() const override { return x_.increment(); }
@@ -59,7 +62,7 @@ private:
     // -- Members
 
     const size_t N_;
-    const range::RegularLongitudeRange x_;
+    const range::RegularLongitude x_;
     const range::GaussianLatitude y_;
 
     // -- Overridden methods

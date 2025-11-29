@@ -23,9 +23,9 @@
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/polygon/Polygon.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::area::library {
@@ -81,7 +81,7 @@ PathName path_dbf(const PathName& file, const PathName& shp) {
 }  // namespace
 
 
-Shapefile::Shapefile(const Spec& spec) :
+Shapefile::Shapefile(const spec::Spec& spec) :
     Shapefile(path_shp(spec.get_string(spec.has("shp") ? "shp" : "file")),
               spec.has("dbf") ? spec.get_string("dbf") : "",
               spec.has("name_field") ? spec.get_string("name_field") : "") {}

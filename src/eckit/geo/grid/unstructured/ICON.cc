@@ -20,12 +20,12 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/Spec.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/container/PointsContainer.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::grid::unstructured {
@@ -42,7 +42,7 @@ class lock_type {
 };
 
 
-const ICON::ICONRecord& icon_record(const Spec& spec) {
+const ICON::ICONRecord& icon_record(const spec::Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
@@ -138,7 +138,7 @@ void ICON::ICONRecord::check(const Spec& spec) const {
 }
 
 
-Spec* ICON::spec(const std::string& name) {
+Grid::Spec* ICON::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }
 

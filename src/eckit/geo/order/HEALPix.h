@@ -25,6 +25,7 @@ public:
 
     using order_type    = Grid::order_type;
     using renumber_type = Grid::renumber_type;
+    using Spec          = spec::Spec;
 
     // -- Constructors
 

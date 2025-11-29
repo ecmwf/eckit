@@ -9,18 +9,15 @@
  */
 
 
-#include "eckit/geo/Spec.h"
+#include "eckit/spec/Spec.h"
 
 #include <sstream>
 
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXY.h"
-#include "eckit/geo/PointXYZ.h"
 #include "eckit/log/JSON.h"
+#include "eckit/spec/Exceptions.h"
 
 
-namespace eckit::geo {
+namespace eckit::spec {
 
 
 template <typename T>
@@ -147,4 +144,4 @@ void Spec::print(std::ostream& out) const {
 }
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::spec

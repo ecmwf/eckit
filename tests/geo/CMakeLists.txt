@@ -12,6 +12,7 @@ foreach(_test
         grid_regular_ll
         grid_reorder
         grid_to_points
+        gridspec
         integration
         iterator
         kdtree
@@ -29,9 +30,6 @@ foreach(_test
         projection_rotation
         range
         search
-        spec
-        spec_custom
-        spec_layered
         util )
     ecbuild_add_test(
         TARGET      eckit_test_geo_${_test}

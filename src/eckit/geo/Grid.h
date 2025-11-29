@@ -23,10 +23,10 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Generator.h"
 
 
 namespace eckit {
@@ -52,6 +52,7 @@ public:
     using BoundingBox = area::BoundingBox;
 
     using builder_t = BuilderT1<Grid>;
+    using Spec      = spec::Spec;
     using ARG1      = const Spec&;
 
     struct Iterator final : std::shared_ptr<geo::Iterator> {
@@ -129,7 +130,7 @@ public:
 
     [[nodiscard]] NextIterator* make_next_iterator() const { return new NextIterator{cbegin(), cend()}; }
 
-    [[nodiscard]] const Spec& catalog() const;
+    [[nodiscard]] const spec::Spec& catalog() const;
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
@@ -237,12 +238,12 @@ using GridRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
 
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
-    [[nodiscard]] static const Grid* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+    [[nodiscard]] static const Grid* build(const Grid::Spec& spec) { return instance().make_from_spec_(spec); }
 
     // This is 'const' as Grid should always be immutable
     [[nodiscard]] static const Grid* make_from_string(const std::string&);
 
-    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+    [[nodiscard]] static Grid::Spec* make_spec(const Grid::Spec& spec) { return instance().make_spec_(spec); }
     static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
 private:
@@ -250,9 +251,9 @@ private:
     static GridFactory& instance();
 
     // This is 'const' as Grid should always be immutable
-    [[nodiscard]] const Grid* make_from_spec_(const Spec&) const;
+    [[nodiscard]] const Grid* make_from_spec_(const Grid::Spec&) const;
 
-    [[nodiscard]] Spec* make_spec_(const Spec&) const;
+    [[nodiscard]] Grid::Spec* make_spec_(const Grid::Spec&) const;
     std::ostream& list_(std::ostream&) const;
 };
 

@@ -17,8 +17,8 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 

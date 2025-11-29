@@ -10,23 +10,19 @@
  */
 
 
-#include "eckit/geo/area/None.h"
+#pragma once
 
-#include "eckit/spec/Custom.h"
-
-
-namespace eckit::geo {
+#include "eckit/exception/Exceptions.h"
 
 
-const std::string& None::type() const {
-    static const std::string type{"none"};
-    return type;
-}
+namespace eckit::spec::exception {
 
 
-void None::fill_spec(spec::Custom& custom) const {
-    custom.set("type", type());
-}
+class SpecError : public Exception {
+public:
+
+    explicit SpecError(const std::string&, const CodeLocation&);
+};
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::spec::exception

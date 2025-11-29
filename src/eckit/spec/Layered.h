@@ -15,10 +15,10 @@
 #include <memory>
 #include <unordered_set>
 
-#include "eckit/geo/Spec.h"
+#include "eckit/spec/Spec.h"
 
 
-namespace eckit::geo::spec {
+namespace eckit::spec {
 
 
 class Layered final : public Spec {
@@ -95,4 +95,4 @@ private:
 };
 
 
-}  // namespace eckit::geo::spec
+}  // namespace eckit::spec

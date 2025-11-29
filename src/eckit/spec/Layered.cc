@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/geo/spec/Layered.h"
+#include "eckit/spec/Layered.h"
 
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Exceptions.h"
 #include "eckit/value/Value.h"
 
 
-namespace eckit::geo::spec {
+namespace eckit::spec {
 
 
 static const Custom EMPTY;
@@ -108,4 +108,4 @@ const Spec& Layered::spec(const std::string& name) const {
 }
 
 
-}  // namespace eckit::geo::spec
+}  // namespace eckit::spec

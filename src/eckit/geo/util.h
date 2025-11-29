@@ -24,7 +24,7 @@ namespace eckit::geo {
 
 
 using difference_type = std::make_signed_t<size_t>;
-using pl_type         = std::vector<long>;
+using pl_type         = std::vector<long>;  // sync with eckit::spec::Custom number_type
 
 
 namespace util {

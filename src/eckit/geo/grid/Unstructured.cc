@@ -14,7 +14,7 @@
 
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Unstructured.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::grid {
@@ -69,7 +69,7 @@ std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlons() 
 }
 
 
-Spec* Unstructured::spec(const std::string& name) {
+Grid::Spec* Unstructured::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }
 

@@ -12,8 +12,9 @@
 
 #include <memory>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 

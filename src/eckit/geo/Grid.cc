@@ -20,11 +20,11 @@
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/share/Grid.h"
-#include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -54,7 +54,7 @@ Grid::Grid(Projection* proj) :
     projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {}
 
 
-const Spec& Grid::catalog() const {
+const spec::Spec& Grid::catalog() const {
     if (!catalog_) {
         if (GridSpecByUID::instance().exists(uid())) {
             catalog_.reset(GridSpecByUID::instance().get(uid()).spec());
@@ -73,7 +73,7 @@ const Spec& Grid::catalog() const {
 }
 
 
-const Spec& Grid::spec() const {
+const Grid::Spec& Grid::spec() const {
     if (!spec_) {
         spec_ = std::make_unique<spec::Custom>();
         ASSERT(spec_);
@@ -259,7 +259,7 @@ void Grid::fill_spec(spec::Custom& custom) const {
 
 
 const Grid* GridFactory::make_from_string(const std::string& str) {
-    std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+    std::unique_ptr<Grid::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
 }
 
@@ -272,10 +272,10 @@ GridFactory& GridFactory::instance() {
 }
 
 
-const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
+const Grid* GridFactory::make_from_spec_(const Grid::Spec& spec) const {
     lock_type lock;
 
-    std::unique_ptr<Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Grid::Spec> cfg(make_spec_(spec));
 
     if (std::string type; cfg->get("type", type)) {
         return Factory<Grid>::instance().get(type).create(*cfg);
@@ -286,7 +286,7 @@ const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
 }
 
 
-Spec* GridFactory::make_spec_(const Spec& spec) const {
+Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
     lock_type lock;
 
     auto* cfg = new spec::Layered(spec);

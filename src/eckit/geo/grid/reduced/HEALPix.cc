@@ -20,8 +20,8 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Unstructured.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::grid::reduced {
@@ -62,7 +62,7 @@ size_t HEALPix::ny() const {
 }
 
 
-Spec* HEALPix::spec(const std::string& name) {
+Grid::Spec* HEALPix::spec(const std::string& name) {
     static const std::regex rex("[1-9][0-9]*");
 
     std::smatch match;

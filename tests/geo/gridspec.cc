@@ -17,9 +17,9 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -83,7 +83,7 @@ CASE("user -> type") {
         Log::info() << userspec << " -> type: " << ref << std::endl;
 
         try {
-            std::unique_ptr<const Spec> spec(GridFactory::make_spec(userspec));
+            std::unique_ptr<const Grid::Spec> spec(GridFactory::make_spec(userspec));
             EXPECT(spec);
 
             std::unique_ptr<const Grid> grid(GridFactory::build(*spec));

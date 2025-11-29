@@ -20,12 +20,12 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/Spec.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/container/PointsContainer.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -49,7 +49,7 @@ class lock_type {
 };
 
 
-const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
+const FESOM::FESOMRecord& fesom_record(const spec::Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
@@ -187,7 +187,7 @@ Grid::uid_type FESOM::calculate_uid() const {
 }
 
 
-Spec* FESOM::spec(const std::string& name) {
+Grid::Spec* FESOM::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }
 

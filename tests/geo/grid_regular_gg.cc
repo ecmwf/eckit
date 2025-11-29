@@ -14,8 +14,8 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/regular/RegularGaussian.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 

@@ -16,9 +16,9 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/value/Value.h"
 
 
@@ -49,7 +49,7 @@ void Grid::load(const PathName& path) {
 
     struct SpecByUIDGenerator final : GridSpecByUID::concrete_generator_t {
         explicit SpecByUIDGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
-        Spec* spec() const override { return new spec::Custom(spec_->container()); }
+        spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
 
     private:
@@ -59,7 +59,7 @@ void Grid::load(const PathName& path) {
 
     struct SpecByNameGenerator final : GridSpecByName::concrete_generator_t {
         explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
-        Spec* spec(GridSpecByName::concrete_generator_t::arg1_t) const override {
+        spec::Spec* spec(GridSpecByName::concrete_generator_t::arg1_t) const override {
             return new spec::Custom(spec_->container());
         }
         bool match(const spec::Custom& other) const override { return other == *spec_; }

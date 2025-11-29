@@ -14,10 +14,11 @@
 
 #include <memory>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/Shape.h"
 #include "eckit/geo/range/Regular.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -27,7 +28,7 @@ namespace eckit::geo::grid::regular {
 namespace {
 
 
-Range* make_x_range(const Spec& spec) {
+Range* make_x_range(const spec::Spec& spec) {
     auto inc   = RegularXY::make_increments_from_spec(spec);
     auto first = PointLonLat::make_from_spec(spec, "first");
     Shape shape(spec);
@@ -39,7 +40,7 @@ Range* make_x_range(const Spec& spec) {
 }
 
 
-Range* make_y_range(const Spec& spec) {
+Range* make_y_range(const spec::Spec& spec) {
     auto inc   = RegularXY::make_increments_from_spec(spec);
     auto first = PointLonLat::make_from_spec(spec, "first");
     Shape shape(spec);

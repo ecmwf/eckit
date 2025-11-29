@@ -16,16 +16,13 @@
 #include <type_traits>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
 
-namespace eckit::geo::test {
-
-
-using spec::Custom;
+namespace eckit::spec::test {
 
 
 template <typename T>
@@ -377,7 +374,7 @@ CASE("Spec <- Custom") {
 }
 
 
-}  // namespace eckit::geo::test
+}  // namespace eckit::spec::test
 
 
 int main(int argc, char** argv) {

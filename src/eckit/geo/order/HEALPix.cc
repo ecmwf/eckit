@@ -20,6 +20,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::order {

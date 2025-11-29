@@ -18,15 +18,10 @@
 
 namespace eckit {
 class JSON;
-namespace geo {
-class PointLonLat;
-class PointXY;
-class PointXYZ;
-}  // namespace geo
-}  // namespace eckit
+}
 
 
-namespace eckit::geo {
+namespace eckit::spec {
 
 
 class Spec : public Parametrisation {
@@ -82,4 +77,4 @@ private:
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::spec

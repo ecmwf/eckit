@@ -18,7 +18,7 @@
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -162,7 +162,7 @@ Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
 
 
 struct ReducedGaussianClassical {
-    static Spec* spec(const std::string& name) {
+    static Grid::Spec* spec(const std::string& name) {
         ASSERT(name.size() > 1 && (name[0] == 'n' || name[0] == 'N'));
 
         auto N = Translator<std::string, size_t>{}(name.substr(1));
@@ -172,7 +172,7 @@ struct ReducedGaussianClassical {
 
 
 struct ReducedGaussianOctahedral {
-    static Spec* spec(const std::string& name) {
+    static Grid::Spec* spec(const std::string& name) {
         ASSERT(name.size() > 1 && (name[0] == 'o' || name[0] == 'O'));
 
         auto N = Translator<std::string, size_t>{}(name.substr(1));

@@ -9,20 +9,19 @@
  */
 
 
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 
 #include <algorithm>
 #include <cctype>
 #include <sstream>
 
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/util.h"
 #include "eckit/log/JSON.h"
+#include "eckit/spec/Exceptions.h"
 #include "eckit/value/Content.h"  // for ValueList, ValueMap
 #include "eckit/value/Value.h"
 
 
-namespace eckit::geo::spec {
+namespace eckit::spec {
 
 
 namespace {
@@ -321,7 +320,7 @@ void Custom::set(const std::string& name, const std::vector<std::string>& value)
 
 
 void Custom::set(const std::string& name, const Value& value) {
-    using number_type = pl_type::value_type;
+    using number_type = long;
 
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
 
@@ -546,4 +545,4 @@ std::string to_string(const Custom::value_type& value) {
 }
 
 
-}  // namespace eckit::geo::spec
+}  // namespace eckit::spec

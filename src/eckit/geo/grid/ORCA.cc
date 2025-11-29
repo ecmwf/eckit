@@ -18,12 +18,12 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/Spec.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/iterator/Unstructured.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
 
@@ -47,7 +47,7 @@ class lock_type {
 };
 
 
-const ORCA::ORCARecord& orca_record(const Spec& spec) {
+const ORCA::ORCARecord& orca_record(const spec::Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
@@ -257,7 +257,7 @@ Grid::renumber_type ORCA::reorder(const order_type& to) const {
 }
 
 
-Spec* ORCA::spec_from_uid(const uid_type& uid) {
+Grid::Spec* ORCA::spec_from_uid(const uid_type& uid) {
     return GridSpecByUID::instance().get(uid).spec();
 }
 

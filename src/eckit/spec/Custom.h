@@ -16,7 +16,7 @@
 #include <memory>
 #include <variant>
 
-#include "eckit/geo/Spec.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit {
@@ -24,7 +24,7 @@ class Value;
 }
 
 
-namespace eckit::geo::spec {
+namespace eckit::spec {
 
 
 class Custom final : public Spec {
@@ -139,4 +139,4 @@ JSON& operator<<(JSON&, const Custom::custom_ptr&);
 std::string to_string(const Custom::value_type&);
 
 
-}  // namespace eckit::geo::spec
+}  // namespace eckit::spec

@@ -12,40 +12,31 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
+#include "eckit/system/Library.h"
 
 
 namespace eckit {
-namespace spec {
-class Spec;
-}
-class PathName;
-}  // namespace eckit
 
 
-namespace eckit::geo::share {
-
-
-class Grid final {
+class LibEcKitSpec final : public system::Library {
 public:
 
-    static const Grid& instance();
+    // -- Methods
+
+    static LibEcKitSpec& instance();
 
 private:
 
     // -- Constructors
 
-    explicit Grid(const std::vector<PathName>&);
+    LibEcKitSpec();
 
-    // -- Members
+    // -- Overridden methods
 
-    std::unique_ptr<spec::Spec> spec_;
-
-    // -- Methods
-
-    void load(const PathName&);
+    [[nodiscard]] const void* addr() const override;
+    std::string version() const override;
+    std::string gitsha1(unsigned int count) const override;
 };
 
 
-}  // namespace eckit::geo::share
+}  // namespace eckit

@@ -34,8 +34,6 @@ list(APPEND eckit_geo_srcs
     Search.h
     Shape.cc
     Shape.h
-    Spec.cc
-    Spec.h
     Trace.cc
     Trace.h
     area/BoundingBox.cc
@@ -147,11 +145,6 @@ list(APPEND eckit_geo_srcs
     share/Grid.h
     share/Projection.cc
     share/Projection.h
-    spec/Custom.cc
-    spec/Custom.h
-    spec/Generator.h
-    spec/Layered.cc
-    spec/Layered.h
     util.cc
     util.h
     util/arange.cc
@@ -173,7 +166,7 @@ set(eckit_geo_include_dirs
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
 )
 
-set(eckit_geo_libs eckit_maths)
+set(eckit_geo_libs eckit_maths eckit_spec)
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/grid.yaml")
 set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")

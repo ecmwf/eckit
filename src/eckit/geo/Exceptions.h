@@ -13,6 +13,7 @@
 #pragma once
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/spec/Exceptions.h"
 
 
 namespace eckit::geo {
@@ -31,7 +32,8 @@ public:
 namespace eckit::geo::exception {
 
 
-using SeriousBug = SeriousBug;
+using SeriousBug = ::eckit::SeriousBug;
+using SpecError  = ::eckit::spec::exception::SpecError;
 
 
 class AreaError : public geo::Exception {
@@ -73,13 +75,6 @@ class RangeError : public geo::Exception {
 public:
 
     explicit RangeError(const std::string&, const CodeLocation&);
-};
-
-
-class SpecError : public geo::Exception {
-public:
-
-    explicit SpecError(const std::string&, const CodeLocation&);
 };
 
 

@@ -20,7 +20,7 @@
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/Regular.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
@@ -72,7 +72,7 @@ RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref) :
 }
 
 
-Spec* RegularLL::spec(const std::string& name) {
+Grid::Spec* RegularLL::spec(const std::string& name) {
     std::smatch match;
     std::regex_match(name, match, std::regex(REGULAR_LL_PATTERN));
     ASSERT(match.size() == 9);

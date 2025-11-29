@@ -19,8 +19,8 @@
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Spec.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -90,7 +90,7 @@ PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, val
 }
 
 
-PointLonLat PointLonLat::make_from_spec(const Spec& spec, const std::string& name) {
+PointLonLat PointLonLat::make_from_spec(const spec::Spec& spec, const std::string& name) {
     static const PointLonLat dfault;
     if (spec.has(name + "_lonlat") || (spec.has(name + "_lon") && spec.has(name + "_lat"))) {
         return make_from_spec(spec, name, dfault);
@@ -101,7 +101,7 @@ PointLonLat PointLonLat::make_from_spec(const Spec& spec, const std::string& nam
 }
 
 
-PointLonLat PointLonLat::make_from_spec(const Spec& spec, const std::string& name, const PointLonLat& dfault) {
+PointLonLat PointLonLat::make_from_spec(const spec::Spec& spec, const std::string& name, const PointLonLat& dfault) {
     if (std::vector<value_type> v{dfault.lon, dfault.lat};
         (spec.get(name + "_lonlat", v) && v.size() == 2) ||
         (spec.get(name + "_lon", v[0]) && spec.get(name + "_lat", v[1]))) {

@@ -24,11 +24,7 @@
 
 namespace eckit::geo {
 class Area;
-class Spec;
-namespace spec {
-class Custom;
 }
-}  // namespace eckit::geo
 
 
 namespace eckit::geo::area::library {
@@ -49,7 +45,7 @@ public:
 
     // -- Constructors
 
-    explicit GeoJSON(const Spec&);
+    explicit GeoJSON(const spec::Spec&);
     explicit GeoJSON(const PathName&, const std::string& name = "");
 
     // -- Overridden methods
@@ -80,7 +76,7 @@ private:
 
     // -- Overridden methods
 
-    void fill_spec(spec::Custom&) const override;
+    void fill_spec(eckit::spec::Custom&) const override;
 };
 
 

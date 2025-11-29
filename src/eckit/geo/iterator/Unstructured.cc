@@ -23,7 +23,8 @@ namespace eckit::geo::iterator {
 
 
 struct Instance {
-    explicit Instance(const Spec& spec) : grid(dynamic_cast<const grid::Unstructured*>(GridFactory::build(spec))) {
+    explicit Instance(const Iterator::Spec& spec) :
+        grid(dynamic_cast<const grid::Unstructured*>(GridFactory::build(spec))) {
         ASSERT(grid);
     }
 
@@ -32,7 +33,7 @@ struct Instance {
 
 
 struct UnstructuredInstance : Instance, Unstructured {
-    explicit UnstructuredInstance(const Spec& spec) : Instance(spec), Unstructured(*grid) {}
+    explicit UnstructuredInstance(const Iterator::Spec& spec) : Instance(spec), Unstructured(*grid) {}
 };
 
 

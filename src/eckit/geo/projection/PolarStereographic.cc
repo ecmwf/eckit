@@ -15,7 +15,7 @@
 #include <cmath>
 
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 

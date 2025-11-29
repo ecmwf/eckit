@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 

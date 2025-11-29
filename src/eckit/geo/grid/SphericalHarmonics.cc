@@ -16,7 +16,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
 #include "eckit/utils/Translator.h"
 
@@ -37,7 +37,7 @@ SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_
 SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {}
 
 
-Spec* SphericalHarmonics::spec(const std::string& name) {
+Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
     std::smatch match;
     std::regex_match(name, match, std::regex(PATTERN));
     ASSERT(match.size() == 2);

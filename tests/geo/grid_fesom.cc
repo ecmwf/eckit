@@ -18,7 +18,7 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/unstructured/FESOM.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -58,7 +58,7 @@ CASE("caching") {
 
 
 CASE("spec") {
-    std::unique_ptr<Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID_N}})));
+    std::unique_ptr<spec::Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID_N}})));
 
     EXPECT(spec->get_string("type") == "FESOM");
     EXPECT(spec->get_string("fesom_arrangement") == "N");

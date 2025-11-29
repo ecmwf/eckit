@@ -14,7 +14,7 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/order/HEALPix.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -32,7 +32,7 @@ namespace eckit::geo::test {
 
 CASE("HEALPix") {
     SECTION("HEALPix::reorder") {
-        std::unique_ptr<Spec> spec(new spec::Custom({{"grid", "H2"}}));
+        std::unique_ptr<spec::Spec> spec(new spec::Custom({{"grid", "H2"}}));
         std::unique_ptr<const Grid> ring(GridFactory::build(*spec));
 
         static const Grid::renumber_type expected_ren_ring_to_nested{

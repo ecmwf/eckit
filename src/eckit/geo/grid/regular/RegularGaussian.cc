@@ -18,7 +18,7 @@
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -49,7 +49,7 @@ RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox) :
 }
 
 
-Spec* RegularGaussian::spec(const std::string& name) {
+Grid::Spec* RegularGaussian::spec(const std::string& name) {
     ASSERT(name.size() > 1 && (name[0] == 'f' || name[0] == 'F'));
 
     auto N = Translator<std::string, size_t>{}(name.substr(1));

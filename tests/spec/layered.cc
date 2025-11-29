@@ -10,13 +10,13 @@
  */
 
 
+#include "eckit/spec/Layered.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/spec/Layered.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
-namespace eckit::geo::test {
+namespace eckit::spec::test {
 
 
 CASE("Spec <- Layered") {
@@ -45,7 +45,7 @@ CASE("Spec <- Layered") {
 }
 
 
-}  // namespace eckit::geo::test
+}  // namespace eckit::spec::test
 
 
 int main(int argc, char** argv) {

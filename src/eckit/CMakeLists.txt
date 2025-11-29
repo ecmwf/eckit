@@ -984,6 +984,10 @@ if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
 endif()
 
+if( eckit_HAVE_ECKIT_SPEC )
+    add_subdirectory( spec )
+endif()
+
 if( eckit_HAVE_ECKIT_GEO )
     add_subdirectory( geo )
 endif()

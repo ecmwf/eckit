@@ -21,7 +21,7 @@
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/figure/SphereT.h"
 #include "eckit/geo/figure/UnitSphere.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 

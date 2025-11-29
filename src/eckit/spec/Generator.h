@@ -20,19 +20,18 @@
 #include <regex>
 #include <string>
 
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/util/mutex.h"
+#include "eckit/spec/Exceptions.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
 
 
-namespace eckit::geo {
-class Spec;
-namespace spec {
+namespace eckit::spec {
 class Custom;
-}
-}  // namespace eckit::geo
+class Spec;
+}  // namespace eckit::spec
 
 
-namespace eckit::geo::spec {
+namespace eckit::spec {
 
 //------------------------------------------------------------------------------------------------------
 
@@ -120,8 +119,8 @@ private:
 //------------------------------------------------------------------------------------------------------
 
 struct lock_type {
-    explicit lock_type(util::recursive_mutex& mutex) : lock_guard_{mutex} {}
-    util::lock_guard<util::recursive_mutex> lock_guard_;
+    explicit lock_type(Mutex& mutex) : lock_guard_{mutex} {}
+    AutoLock<Mutex> lock_guard_;
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -404,4 +403,4 @@ private:
 
 //------------------------------------------------------------------------------------------------------
 
-}  // namespace eckit::geo::spec
+}  // namespace eckit::spec

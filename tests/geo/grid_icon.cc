@@ -17,7 +17,7 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/unstructured/ICON.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -55,7 +55,7 @@ CASE("caching") {
 
 
 CASE("spec") {
-    std::unique_ptr<Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID}})));
+    std::unique_ptr<spec::Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID}})));
 
     EXPECT(spec->get_string("type") == "ICON");
     EXPECT(spec->get_string("name") == GRID);

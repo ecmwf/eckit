@@ -24,11 +24,7 @@
 
 namespace eckit::geo {
 class Area;
-class Spec;
-namespace spec {
-class Custom;
 }
-}  // namespace eckit::geo
 
 
 namespace eckit::geo::area::library {
@@ -39,7 +35,7 @@ public:
 
     // -- Constructors
 
-    explicit Shapefile(const Spec&);
+    explicit Shapefile(const spec::Spec&);
     explicit Shapefile(const PathName&);
     explicit Shapefile(const PathName& shp, const PathName& dbf, const std::string& name = "");
 

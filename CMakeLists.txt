@@ -165,6 +165,12 @@ ecbuild_add_option( FEATURE ECKIT_CODEC
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
 
+### eckit::spec
+
+ecbuild_add_option( FEATURE ECKIT_SPEC
+                    DEFAULT ON
+                    DESCRIPTION "eckit::spec metadata library" )
+
 ### eckit::maths
 
 ecbuild_add_option( FEATURE CONVEX_HULL

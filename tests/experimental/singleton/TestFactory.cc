@@ -21,7 +21,7 @@
 
 struct TestFactory::PImpl {
 
-    typedef std::map<std::string, TestBuilder*> Store;
+    using Store = std::map<std::string, TestBuilder*>;
     Store register_;
 
     ~PImpl() {

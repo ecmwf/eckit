@@ -41,7 +41,7 @@ private:  // methods
     SQLOutput& output_;
     std::pair<expression::Expressions, std::vector<bool>> by_;
 
-    typedef std::map<expression::OrderByExpressions, std::queue<Expressions>> SortedResults;
+    using SortedResults = std::map<expression::OrderByExpressions, std::queue<Expressions>>;
 
     SortedResults sortedResults_;
     std::vector<size_t> byIndices_;

@@ -32,7 +32,7 @@ void SQLMATCHSubquerySession::statement(odb::sql::SQLStatement* sql) {
 }
 
 SQLStatement* SQLMATCHSubquerySession::statement() {
-    typedef odb::sql::SQLStatement* P;
+    using P = odb::sql::SQLStatement*;
     if (gotSelectAST()) {
         gotSelectAST(false);
         statement_ = P(selectFactory().create(*this, selectAST()));

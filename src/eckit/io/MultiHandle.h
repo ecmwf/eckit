@@ -26,7 +26,7 @@ namespace eckit {
 class MultiHandle : public DataHandle {
 public:
 
-    typedef std::vector<DataHandle*> HandleList;
+    using HandleList = std::vector<DataHandle*>;
 
     // -- Contructors
 

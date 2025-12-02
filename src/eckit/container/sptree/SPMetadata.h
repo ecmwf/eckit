@@ -17,7 +17,7 @@ namespace eckit {
 template <class Traits>
 struct SPMetadata {
 
-    typedef typename Traits::Point Point;
+    using Point = typename Traits::Point;
 
     Point offset_;
     Point scale_;

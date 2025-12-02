@@ -33,8 +33,8 @@ public:
 
 private:
 
-    typedef std::map<char, Grid, std::less<char> > CharGridTable;
-    typedef std::map<Grid, char, std::less<Grid> > GridCharTable;
+    using CharGridTable = std::map<char, Grid, std::less<char> >;
+    using GridCharTable = std::map<Grid, char, std::less<Grid> >;
 
     static CharGridTable charGridTable_;
     static GridCharTable gridCharTable_;

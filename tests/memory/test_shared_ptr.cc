@@ -54,7 +54,7 @@ int UDT_use_count;  // independent of pointer maintained counts
 class UDT : public OwnedNoLock {
 public:
 
-    typedef SharedPtr<UDT> ptype;
+    using ptype = SharedPtr<UDT>;
 
     UDT(long in) : value_(in) { ++UDT_use_count; }
     ~UDT() {

@@ -34,7 +34,7 @@ struct DatumUnit {
 //------------------------------------------------------------------------------------------------------
 
 /// Definition of a unit sphere
-typedef SphereT<DatumUnit> UnitSphere;
+using UnitSphere = SphereT<DatumUnit>;
 
 //------------------------------------------------------------------------------------------------------
 

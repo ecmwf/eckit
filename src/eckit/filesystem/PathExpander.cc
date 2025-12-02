@@ -25,7 +25,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef std::map<std::string, PathExpander*> PathExpanderMap;
+using PathExpanderMap = std::map<std::string, PathExpander*>;
 
 struct PathExpanderRegistry {
     eckit::Mutex mutex_;

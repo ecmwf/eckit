@@ -39,8 +39,8 @@ std::vector<std::string> SQLTable::columnNames() const {
 }
 
 FieldNames SQLTable::bitColumnNames(const std::string& name) const {
-    typedef std::map<std::string, FieldNames>::const_iterator I;
-    I i = bitColumnNames_.find(name);
+    using I = std::map<std::string, FieldNames>::const_iterator;
+    I i     = bitColumnNames_.find(name);
     if (i != bitColumnNames_.end()) {
         return (*i).second;
     }

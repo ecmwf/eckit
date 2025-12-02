@@ -22,8 +22,8 @@ namespace eckit::mpi {
 
 template <typename DATA_TYPE, typename Allocator = std::allocator<DATA_TYPE>>
 struct Buffer {
-    typedef DATA_TYPE value_type;
-    typedef typename std::vector<DATA_TYPE, Allocator>::iterator iterator;
+    using value_type = DATA_TYPE;
+    using iterator   = typename std::vector<DATA_TYPE, Allocator>::iterator;
 
     int cnt;
 

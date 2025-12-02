@@ -31,8 +31,8 @@ class Properties {
 
 public:  // types
 
-    typedef Value property_t;
-    typedef std::string key_t;
+    using property_t = Value;
+    using key_t      = std::string;
 
 public:  // methods
 
@@ -79,7 +79,7 @@ protected:
 
 private:  // types
 
-    typedef std::map<key_t, property_t> PropertyMap;
+    using PropertyMap = std::map<key_t, property_t>;
 
 private:  // members
 

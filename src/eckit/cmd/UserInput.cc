@@ -98,17 +98,17 @@ static void enterRaw() {
     }
 }
 
-typedef struct entry {
+struct entry {
     struct entry* next;
     struct entry* prev;
     char* line;
     char* edit;
     int len;
-} entry;
+};
 
 static entry* history = NULL;
 
-typedef struct context {
+struct context {
     const char* prompt;
     char* clipboard;
     entry* curr;
@@ -118,7 +118,7 @@ typedef struct context {
     bool eof;
     bool tab;
     UserInput::completion_proc completion;
-} context;
+};
 
 static bool processCode(int c, context* s);
 

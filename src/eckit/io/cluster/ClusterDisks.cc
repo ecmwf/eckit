@@ -142,8 +142,8 @@ class DiskArray : private eckit::NonCopyable {
 
 public:
 
-    typedef ClusterDisk* iterator;
-    typedef const ClusterDisk* const_iterator;
+    using iterator       = ClusterDisk*;
+    using const_iterator = const ClusterDisk*;
 
     virtual ~DiskArray() {}
 

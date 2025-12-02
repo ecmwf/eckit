@@ -30,9 +30,9 @@ class DEPRECATED("Use C++11 std::unique_ptr instead") ScopedPtr : private NonCop
 
 public:  // types
 
-    typedef T element_type;
-    typedef T* pointer_type;
-    typedef T& reference_type;
+    using element_type   = T;
+    using pointer_type   = T*;
+    using reference_type = T&;
 
 public:  // methods
 

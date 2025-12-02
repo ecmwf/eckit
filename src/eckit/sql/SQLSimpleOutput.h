@@ -61,7 +61,7 @@ private:  // members
     std::ostream& out_;
     unsigned long long count_;
     std::vector<size_t> columnWidths_;
-    typedef std::ios_base& (*manipulator)(std::ios_base&);
+    using manipulator = std::ios_base& (*)(std::ios_base&);
     std::vector<manipulator> columnAlignments_;
     size_t currentColumn_;
 

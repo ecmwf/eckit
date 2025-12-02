@@ -25,7 +25,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef std::map<std::string, FileSpace*> Map;
+using Map = std::map<std::string, FileSpace*>;
 
 static StaticMutex local_mutex;
 static Map space;

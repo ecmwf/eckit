@@ -27,8 +27,8 @@ float abs(float x) {
 // Used for accessing the integer representation of floating-point numbers
 // (aliasing through unions works on most platforms).
 union Double {
-    typedef double float_t;
-    typedef int64_t int_t;
+    using float_t = double;
+    using int_t   = int64_t;
 
     float_t f_;
     int_t i_;
@@ -39,8 +39,8 @@ union Double {
 // Used for accessing the integer representation of floating-point numbers
 // (aliasing through unions works on most platforms).
 union Float {
-    typedef float float_t;
-    typedef int32_t int_t;
+    using float_t = float;
+    using int_t   = int32_t;
 
     float_t f_;
     int_t i_;

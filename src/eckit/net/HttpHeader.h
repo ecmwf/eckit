@@ -102,7 +102,7 @@ private:  // members
         bool operator()(const std::string&, const std::string&) const;
     };
 
-    typedef std::map<std::string, std::string, HttpHeader::compare> Map;
+    using Map = std::map<std::string, std::string, HttpHeader::compare>;
 
     Map header_;
     eckit::MemoryHandle content_;

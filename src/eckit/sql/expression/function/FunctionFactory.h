@@ -131,7 +131,7 @@ public:
 	FunctionFactory(); // : FunctionFactoryBase("FunctionFactory", -1) {}
     ~FunctionFactory() override {}
 
-    typedef std::vector<std::pair<std::pair<std::string, int>, std::string> > FunctionInfo;
+    using FunctionInfo = std::vector<std::pair<std::pair<std::string, int>, std::string>>;
 
 	FunctionInfo& functionsInfo();
 

@@ -21,7 +21,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef std::map<std::string, URIManager*> URIManagerMap;
+using URIManagerMap = std::map<std::string, URIManager*>;
 
 /// Registry for all URI managers
 ///

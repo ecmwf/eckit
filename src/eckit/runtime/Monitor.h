@@ -35,8 +35,8 @@ public:  // types
 
     public:
 
-        typedef TaskInfo* iterator;
-        typedef const TaskInfo* const_iterator;
+        using iterator       = TaskInfo*;
+        using const_iterator = const TaskInfo*;
 
         virtual ~TaskArray();
 

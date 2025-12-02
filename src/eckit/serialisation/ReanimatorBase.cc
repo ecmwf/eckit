@@ -34,7 +34,7 @@ public:
 
 // Should protected with a mutex...
 
-typedef std::map<std::string, ReanimatorBase*, std::less<std::string> > Map;
+using Map = std::map<std::string, ReanimatorBase*, std::less<std::string>>;
 
 // This trick garanty than a std::map is created
 

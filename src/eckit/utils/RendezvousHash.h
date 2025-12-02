@@ -33,15 +33,15 @@ class RendezvousHash : private eckit::NonCopyable {
 
 public:  // types
 
-    typedef std::string Node;
+    using Node = std::string;
 
-    typedef std::map<std::string, std::string> Key;
+    using Key = std::map<std::string, std::string>;
 
-    typedef std::string (*hash_func_ptr)(const std::string&);
+    using hash_func_ptr = std::string (*)(const std::string&);
 
 private:  // types
 
-    typedef std::vector<Node>::iterator iterator;
+    using iterator = std::vector<Node>::iterator;
 
 public:  // methods
 

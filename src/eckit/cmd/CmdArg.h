@@ -91,7 +91,7 @@ private:
 
     // -- Members
 
-    typedef std::map<std::string, eckit::Value, std::less<std::string> > CmdMap;
+    using CmdMap = std::map<std::string, eckit::Value, std::less<std::string>>;
 
     CmdMap args_;
 

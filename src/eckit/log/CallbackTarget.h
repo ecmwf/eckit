@@ -26,7 +26,7 @@ namespace eckit {
 class CallbackTarget : public LineBasedTarget {
 public:
 
-    typedef void (*callback_t)(void* ctxt, const char* msg);
+    using callback_t = void (*)(void* ctxt, const char* msg);
 
     CallbackTarget(callback_t callback, void* context = 0);
 

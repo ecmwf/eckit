@@ -42,7 +42,7 @@ class SQLSelect : public SQLStatement {
 
 public:
 
-    typedef std::pair<const double*, bool> ValueLookup;
+    using ValueLookup = std::pair<const double*, bool>;
 
     SQLSelect(const Expressions& columns, const std::vector<std::reference_wrapper<const SQLTable>>& tables,
               std::shared_ptr<expression::SQLExpression> where, SQLOutput& out,
@@ -102,7 +102,7 @@ private:
     std::vector<std::unique_ptr<SQLOutput>> ownedOutputs_;
     SQLOutput& output_;
 
-    typedef std::map<expression::OrderByExpressions, expression::Expressions> AggregatedResults;
+    using AggregatedResults = std::map<expression::OrderByExpressions, expression::Expressions>;
 
     AggregatedResults aggregatedResults_;
     AggregatedResults::iterator aggregatedResultsIterator_;
@@ -113,7 +113,7 @@ private:
 
     std::set<const SQLTable*> allTables_;
 
-    typedef std::map<const SQLTable*, SelectOneTable> TableMap;
+    using TableMap = std::map<const SQLTable*, SelectOneTable>;
     TableMap tablesToFetch_;
 
     unsigned long long count_;

@@ -22,7 +22,7 @@ namespace eckit {
 
 class CmdResource : private eckit::NonCopyable {
 
-    typedef void (*Proc)(CmdResource*, CmdArg&, std::istream&, std::ostream&);
+    using Proc = void (*)(CmdResource*, CmdArg&, std::istream&, std::ostream&);
 
 public:
 
@@ -64,7 +64,7 @@ protected:  // methods
 
 private:  // members
 
-    typedef std::map<std::string, CmdResource*, std::less<std::string> > Map;
+    using Map = std::map<std::string, CmdResource*, std::less<std::string>>;
 
     static Map* resources_;
 

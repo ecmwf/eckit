@@ -19,8 +19,8 @@ template <class Traits>
 class SPValue {
 public:
 
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
 
     Point point_;
     Payload payload_;

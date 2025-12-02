@@ -25,7 +25,7 @@ namespace eckit {
 class UserInput {
 public:
 
-    typedef bool (*completion_proc)(const char*, int pos, char* insert, int insertmax);
+    using completion_proc = bool (*)(const char*, int pos, char* insert, int insertmax);
 
     static const char* getUserInput(const char* prompt, completion_proc callback = 0);
 

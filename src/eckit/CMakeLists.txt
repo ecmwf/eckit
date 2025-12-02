@@ -844,6 +844,8 @@ list( APPEND eckit_transaction_srcs
 
 list( APPEND eckit_testing_srcs
     testing/Test.h
+    testing/Filesystem.cc
+    testing/Filesystem.h
 )
 
 list( APPEND eckit_dirs

@@ -14,8 +14,6 @@
 #ifndef eckit_ClusterNode_h
 #define eckit_ClusterNode_h
 
-#include "eckit/memory/NonCopyable.h"
-
 #include <set>
 #include <string>
 
@@ -26,10 +24,15 @@ namespace eckit {
 class Stream;
 class NodeInfo;
 
-class ClusterNode : private eckit::NonCopyable {
+class ClusterNode {
 public:
 
     ClusterNode();
+
+    ClusterNode(const ClusterNode&)            = delete;
+    ClusterNode& operator=(const ClusterNode&) = delete;
+    ClusterNode(ClusterNode&&)                 = delete;
+    ClusterNode& operator=(ClusterNode&&)      = delete;
 
     virtual ~ClusterNode();
 

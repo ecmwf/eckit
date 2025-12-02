@@ -17,7 +17,6 @@
 #include <functional>
 #include <memory>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/value/Value.h"
 
 //====================================================================
@@ -77,10 +76,16 @@ public:
 };
 
 template <class T>
-class Expression : private eckit::NonCopyable {
+class Expression {
     virtual void print(std::ostream&) const = 0;
 
 public:
+
+    Expression()                             = default;
+    Expression(const Expression&)            = delete;
+    Expression& operator=(const Expression&) = delete;
+    Expression(Expression&&)                 = delete;
+    Expression& operator=(Expression&&)      = delete;
 
     virtual eckit::Value eval(T&) const = 0;
     virtual ~Expression() {}

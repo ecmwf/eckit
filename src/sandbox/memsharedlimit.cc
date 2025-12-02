@@ -48,9 +48,14 @@ public:  // types
 
     using parts_t = unsigned short;
 
-    struct Token : private eckit::NonCopyable {
+    struct Token {
 
         Token(MemorySharedLimit& limit, parts_t parts) : limit_(limit), parts_(parts) {}
+
+        Token(const Token&)            = delete;
+        Token& operator=(const Token&) = delete;
+        Token(Token&&)                 = delete;
+        Token& operator=(Token&&)      = delete;
 
         ~Token() { limit_.release(parts_); }
 

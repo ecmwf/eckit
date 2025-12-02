@@ -63,13 +63,18 @@ std::string report_type_to_name(Report::Type t) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Reporter : public NonCopyable {
+class Reporter {
 public:
 
     static Reporter& instance();
     static int version() { return 1; }
 
     Reporter();
+
+    Reporter(const Reporter&)            = delete;
+    Reporter& operator=(const Reporter&) = delete;
+    Reporter(Reporter&&)                 = delete;
+    Reporter& operator=(Reporter&&)      = delete;
 
     ~Reporter() = default;
 

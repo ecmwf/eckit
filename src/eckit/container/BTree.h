@@ -22,7 +22,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/PooledFileDescriptor.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/memory/Padded.h"
 #include "eckit/os/Stat.h"
 #include "eckit/thread/AutoLock.h"
@@ -63,7 +62,7 @@ public:
 /// @invariant L implements locking policy
 ///
 template <class K, class V, int S, class L = BTreeNoLock>
-class BTree : private NonCopyable {
+class BTree {
 public:
 
     using key_type    = K;
@@ -73,6 +72,11 @@ public:
     // -- Contructors
 
     BTree(const PathName&, bool readOnly = false, off_t offset = 0);
+
+    BTree(const BTree&)            = delete;
+    BTree& operator=(const BTree&) = delete;
+    BTree(BTree&&)                 = delete;
+    BTree& operator=(BTree&&)      = delete;
 
     // -- Destructor
 

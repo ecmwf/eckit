@@ -18,13 +18,11 @@
 #include <cstddef>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 /// Simple class to implement memory buffers
 
-class Buffer : private NonCopyable {
+class Buffer {
 public:  // methods
 
     /// Creates a buffer with 'size' many bytes.
@@ -41,6 +39,12 @@ public:  // methods
     /// @param src to copy bytes from
     /// @param size of data
     Buffer(const void* src, size_t size);
+
+    /// Copy constructor (deleted).
+    Buffer(const Buffer&) = delete;
+
+    /// Copy assignment (deleted).
+    Buffer& operator=(const Buffer&) = delete;
 
     /// Move constructor. Note that rhs is not guaranteed to be valid!
     Buffer(Buffer&& rhs) noexcept;

@@ -19,7 +19,6 @@
 #include <memory>
 
 #include "eckit/io/PeekHandle.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/message/Message.h"
 
 
@@ -34,13 +33,18 @@ namespace eckit::message {
 class Message;
 class Splitter;
 
-class Reader : public eckit::NonCopyable {
+class Reader {
 public:
 
     Reader(eckit::DataHandle*, bool opened = false);
     Reader(eckit::DataHandle&, bool opened = false);
 
     Reader(const eckit::PathName&);
+
+    Reader(const Reader&)            = delete;
+    Reader& operator=(const Reader&) = delete;
+    Reader(Reader&&)                 = delete;
+    Reader& operator=(Reader&&)      = delete;
 
     ~Reader();
 

@@ -13,20 +13,23 @@
 
 #include <pthread.h>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-class Once : private NonCopyable {
+class Once {
 public:
 
     // -- Contructors
 
     Once();
+
+    Once(const Once&)            = delete;
+    Once& operator=(const Once&) = delete;
+    Once(Once&&)                 = delete;
+    Once& operator=(Once&&)      = delete;
 
     // -- Destructor
 

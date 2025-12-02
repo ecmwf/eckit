@@ -22,7 +22,6 @@
 #include <vector>
 
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit::option {
 
@@ -31,7 +30,7 @@ namespace eckit::option {
 class Option;
 
 
-class CmdArgs : public LocalConfiguration, private NonCopyable {
+class CmdArgs : public LocalConfiguration {
 
 public:  // types
 
@@ -49,6 +48,11 @@ public:  // methods
 
     CmdArgs(std::function<void(const std::string&)> usage, std::vector<Option*>& options, int args_count = -1,
             int minimum_args = 0, bool throw_on_error = false);
+
+    CmdArgs(const CmdArgs&)            = delete;
+    CmdArgs& operator=(const CmdArgs&) = delete;
+    CmdArgs(CmdArgs&&)                 = delete;
+    CmdArgs& operator=(CmdArgs&&)      = delete;
 
     ~CmdArgs();
 

@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -31,10 +30,15 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Library : private eckit::NonCopyable {
+class Library {
 public:  // methods
 
     Library(const std::string& name);
+
+    Library(const Library&)            = delete;
+    Library& operator=(const Library&) = delete;
+    Library(Library&&)                 = delete;
+    Library& operator=(Library&&)      = delete;
 
     virtual ~Library();
 

@@ -70,7 +70,7 @@ inline Scalar det(Scalar m[16]);
 }  // namespace detail
 
 template <typename Scalar, typename Index = std::ptrdiff_t>
-class Matrix : private eckit::NonCopyable {
+class Matrix {
 
 protected:
 

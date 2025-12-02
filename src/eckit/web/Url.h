@@ -43,11 +43,16 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Url : private eckit::NonCopyable {
+class Url {
 public:
 
     Url(std::istream&);
     Url(const std::string&);
+
+    Url(const Url&)            = delete;
+    Url& operator=(const Url&) = delete;
+    Url(Url&&)                 = delete;
+    Url& operator=(Url&&)      = delete;
 
     ~Url();
 

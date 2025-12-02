@@ -23,11 +23,10 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit::option {
 
-class Option : private eckit::NonCopyable {
+class Option {
 public:
 
     using args_t = std::vector<std::string>;
@@ -35,6 +34,12 @@ public:
 public:  // methods
 
     Option(const std::string& name, const std::string& description);
+
+    Option(const Option&)            = delete;
+    Option& operator=(const Option&) = delete;
+    Option(Option&&)                 = delete;
+    Option& operator=(Option&&)      = delete;
+
     virtual ~Option() = default;
 
     [[nodiscard]] const std::string& name() const { return name_; };

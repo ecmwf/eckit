@@ -17,19 +17,23 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 
 namespace eckit {
 
 
-class EtcTable : private NonCopyable {
+class EtcTable {
 public:
 
-    // -- Contructors
+    // -- Constructors
 
     EtcTable(const std::string&, int = 0, const std::string& = "etc");
+
+    EtcTable(const EtcTable&)            = delete;
+    EtcTable& operator=(const EtcTable&) = delete;
+    EtcTable(EtcTable&&)                 = delete;
+    EtcTable& operator=(EtcTable&&)      = delete;
 
     // -- Destructor
 

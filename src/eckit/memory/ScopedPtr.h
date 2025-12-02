@@ -14,7 +14,6 @@
 #include "eckit/deprecated.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -26,7 +25,7 @@ namespace eckit {
 /// However due to lack of C++11 support, it does not support move semantics.
 
 template <typename T>
-class DEPRECATED("Use C++11 std::unique_ptr instead") ScopedPtr : private NonCopyable {
+class DEPRECATED("Use C++11 std::unique_ptr instead") ScopedPtr {
 
 public:  // types
 
@@ -39,6 +38,11 @@ public:  // methods
     /// Constructor
     /// @throws nothing
     explicit ScopedPtr(pointer_type ptr = nullptr) : ptr_(ptr) {}
+
+    ScopedPtr(const ScopedPtr&)            = delete;
+    ScopedPtr& operator=(const ScopedPtr&) = delete;
+    ScopedPtr(ScopedPtr&&)                 = delete;
+    ScopedPtr& operator=(ScopedPtr&&)      = delete;
 
     /// Destructor
     /// @throws nothing

@@ -71,8 +71,8 @@ bool get_t_v(const std::vector<From>& from, std::vector<std::string>& to) {
 }
 
 
-template <typename T>
-bool get_t_s_integral(const Custom::container_type& map, const std::string& name, T& value) {
+template <typename To>
+bool get_t_s_integral(const Custom::container_type& map, const std::string& name, To& value) {
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
         return std::holds_alternative<int>(v)         ? get_t_s(std::get<int>(v), value)
@@ -85,8 +85,8 @@ bool get_t_s_integral(const Custom::container_type& map, const std::string& name
 }
 
 
-template <typename T>
-bool get_t_s_real(const Custom::container_type& map, const std::string& name, T& value) {
+template <typename To>
+bool get_t_s_real(const Custom::container_type& map, const std::string& name, To& value) {
     if (get_t_s_integral(map, name, value)) {
         return true;
     }
@@ -101,8 +101,8 @@ bool get_t_s_real(const Custom::container_type& map, const std::string& name, T&
 }
 
 
-template <typename T>
-bool get_t_v_integral(const Custom::container_type& map, const std::string& name, T& value) {
+template <typename To>
+bool get_t_v_integral(const Custom::container_type& map, const std::string& name, To& value) {
     if (auto it = map.find(name); it != map.cend()) {
         const auto& v = it->second;
         return std::holds_alternative<std::vector<int>>(v)         ? get_t_v(std::get<std::vector<int>>(v), value)
@@ -115,8 +115,8 @@ bool get_t_v_integral(const Custom::container_type& map, const std::string& name
 }
 
 
-template <typename T>
-bool get_t_v_real(const Custom::container_type& map, const std::string& name, T& value) {
+template <typename To>
+bool get_t_v_real(const Custom::container_type& map, const std::string& name, To& value) {
     if (get_t_v_integral(map, name, value)) {
         return true;
     }

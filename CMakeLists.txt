@@ -11,7 +11,7 @@
 
 cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
-find_package( ecbuild 3.11 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
+find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
 
 project( eckit LANGUAGES CXX )
 
@@ -145,8 +145,8 @@ ecbuild_add_option( FEATURE LZ4
                     REQUIRED_PACKAGES LZ4 )
 
 ecbuild_add_option( FEATURE AEC
-                    DESCRIPTION "AEC support for compression"
-                    REQUIRED_PACKAGES AEC )
+                    DESCRIPTION "AEC support for compression" 
+                    REQUIRED_PACKAGES "NAME libaec VERSION 1.0.6")
 
 ecbuild_add_option( FEATURE ZIP
                     DESCRIPTION "ZIP support for compression"
@@ -370,7 +370,6 @@ include(cmake/compiler_warnings.cmake) # optionally handle compiler specific war
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 add_subdirectory( src )
-add_subdirectory( bamboo )
 add_subdirectory( doc )
 add_subdirectory( share )
 

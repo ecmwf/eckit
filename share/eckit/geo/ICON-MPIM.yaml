@@ -1,6 +1,6 @@
 ---
 
-url_prefix: &url_prefix https://get.ecmwf.int/repository/eckit/geo/grid/icon-mpim/
+url_prefix: &url_prefix https://sites.ecmwf.int/repository/eckit/geo/grid/icon-mpim/
 
 grid_names:
   - ICON_O_16: &ICON_O_16

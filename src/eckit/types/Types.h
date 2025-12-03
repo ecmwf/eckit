@@ -36,6 +36,7 @@ typedef std::vector<Ordinal> OrdinalList;
 typedef std::vector<std::string> StringList;
 typedef std::set<std::string> StringSet;
 typedef std::map<std::string, std::string> StringDict;
+typedef std::vector<std::pair<std::string, std::string>> OrderedStringDict;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -109,7 +110,7 @@ struct VectorPrintSelector<double> {
     typedef VectorPrintSimple selector;
 };
 template <typename K, typename V>
-struct VectorPrintSelector<std::pair<K, V> > {
+struct VectorPrintSelector<std::pair<K, V>> {
     typedef VectorPrintSimple selector;
 };
 
@@ -122,8 +123,8 @@ inline std::ostream& __print_list(std::ostream& s, const T& t, VectorPrintContra
     return s;
 }
 
-template <typename T>
-inline std::ostream& __print_list(std::ostream& s, const std::vector<T>& t, VectorPrintSimple) {
+template <typename T, typename A>
+inline std::ostream& __print_list(std::ostream& s, const std::vector<T, A>& t, VectorPrintSimple) {
 
     s << '[';
     for (Ordinal i = 0; i < t.size(); i++) {
@@ -187,8 +188,8 @@ namespace std {
 //      specializations for any standard library template" if the "declaration
 //      depends on user-defined types".
 
-template <class T>
-inline std::ostream& operator<<(std::ostream& s, const std::vector<T>& v) {
+template <class T, class A>
+inline std::ostream& operator<<(std::ostream& s, const std::vector<T, A>& v) {
     return eckit::__print_list(s, v, typename eckit::VectorPrintSelector<T>::selector());
 }
 
@@ -217,16 +218,16 @@ namespace eckit {
 class Stream;  // forward
 
 /// Operators to send vectors in streams
-template <class T>
-Stream& operator<<(Stream&, const std::vector<T>&);
-template <class T>
-Stream& operator>>(Stream&, std::vector<T>&);
+template <class T, class A>
+Stream& operator<<(Stream&, const std::vector<T, A>&);
+template <class T, class A>
+Stream& operator>>(Stream&, std::vector<T, A>&);
 
 /// Operators to send sets in streams
-template <class T>
-Stream& operator<<(Stream&, const std::vector<T>&);
-template <class T>
-Stream& operator>>(Stream&, std::vector<T>&);
+template <class T, class A>
+Stream& operator<<(Stream&, const std::vector<T, A>&);
+template <class T, class A>
+Stream& operator>>(Stream&, std::vector<T, A>&);
 
 /// Operators to send maps in streams
 /// Note: the value type V must have a constructor from Stream&

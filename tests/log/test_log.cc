@@ -12,7 +12,9 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
+#include "eckit/log/Seconds.h"
 #include "eckit/runtime/Tool.h"
+#include "eckit/types/DateTime.h"
 
 #include "eckit/testing/Test.h"
 
@@ -94,6 +96,45 @@ CASE("test_bytes") {
     EXPECT("99Y" == b.shorten());
 }
 //----------------------------------------------------------------------------------------------------------------------
+
+CASE("test_seconds") {
+    {
+        double time = 4.0 + (1.0 / 3.0);
+        eckit::Seconds s{time * 3600.};
+        EXPECT_EQUAL("4 hours 20 minutes", std::string(s));
+        eckit::Seconds sc{time * 3600., true};
+        EXPECT_EQUAL("4h20m0s", std::string(sc));
+    }
+    {
+        eckit::Seconds s{10.4};
+        EXPECT_EQUAL("10 seconds", std::string(s));
+        eckit::Seconds sc{10.4, true};
+        EXPECT_EQUAL("10s", std::string(sc));
+    }
+}
+
+CASE("test_datetime") {
+    double time = 4.0 + (1.0 / 3.0);
+    {
+        eckit::DateTime dt(Date(2016, 3, 31), Time(0, 0, 0));
+        EXPECT_EQUAL("2016-03-31T00:00:00Z", dt.iso(true));
+
+        dt = dt + eckit::Second{time * 3600.};
+        EXPECT_EQUAL("2016-03-31T04:20:00Z", dt.iso(true));
+    }
+    {
+        eckit::DateTime dt(Date(2016, 3, 31), Time(12, 0, 0, true));
+        dt = dt + eckit::Second{12 * 3600.};
+        EXPECT_EQUAL("2016-04-01T00:00:00Z", dt.iso(true));
+    }
+    {
+        eckit::DateTime dt{Date{2016, 3, 31}, Second{10.4}};
+        EXPECT_EQUAL("2016-03-31T00:00:10Z", dt.iso(true));
+
+        dt = dt + eckit::Second{0.4};
+        EXPECT_EQUAL("2016-03-31T00:00:11Z", dt.iso(true));
+    }
+}
 
 }  // namespace eckit::test
 

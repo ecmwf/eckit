@@ -99,7 +99,9 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
 
     // no html response (eg. http standard response codes) in arbitrarily small files
     if (!html) {
-        if (length < Length{10240}) {
+        constexpr long long HTML_MAX_SIZE(32748);
+
+        if (length < Length{HTML_MAX_SIZE}) {
             ASSERT(tmp.exists());
             std::string contents{std::istreambuf_iterator<char>(std::ifstream(tmp.asString()).rdbuf()), {}};
 

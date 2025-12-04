@@ -52,7 +52,7 @@ private:
 static int xindex = std::ios::xalloc();
 
 
-typedef std::vector<char> VC;
+using VC = std::vector<char>;
 
 class back_encoder_iterator {
     VC& container;

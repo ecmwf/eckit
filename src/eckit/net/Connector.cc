@@ -125,7 +125,7 @@ void Connector::print(std::ostream& os) const {
 
 class ConnectorCache {
 
-    typedef std::multimap<std::pair<std::string, int>, Connector*> Cache;
+    using Cache = std::multimap<std::pair<std::string, int>, Connector*>;
     Cache cache_;
 
 public:
@@ -172,7 +172,7 @@ public:
 
 class NodeInfoCache {
 
-    typedef std::map<std::pair<std::string, std::string>, NodeInfo> Cache;
+    using Cache = std::map<std::pair<std::string, std::string>, NodeInfo>;
     Cache cache_;
 
 public:

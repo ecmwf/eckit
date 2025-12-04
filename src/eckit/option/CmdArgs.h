@@ -35,7 +35,7 @@ class CmdArgs : public LocalConfiguration, private NonCopyable {
 
 public:  // types
 
-    typedef void (*usage_proc)(const std::string& name);
+    using usage_proc = void (*)(const std::string& name);
 
 public:  // methods
 

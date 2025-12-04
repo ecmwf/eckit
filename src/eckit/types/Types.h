@@ -29,14 +29,14 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef unsigned long Ordinal;  ///< for counting
+using Ordinal = unsigned long;  ///< for counting
 
-typedef std::vector<Ordinal> OrdinalList;
+using OrdinalList = std::vector<Ordinal>;
 
-typedef std::vector<std::string> StringList;
-typedef std::set<std::string> StringSet;
-typedef std::map<std::string, std::string> StringDict;
-typedef std::vector<std::pair<std::string, std::string>> OrderedStringDict;
+using StringList        = std::vector<std::string>;
+using StringSet         = std::set<std::string>;
+using StringDict        = std::map<std::string, std::string>;
+using OrderedStringDict = std::vector<std::pair<std::string, std::string>>;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -65,11 +65,11 @@ public:
 };
 
 struct output_iterator {
-    typedef std::output_iterator_tag iterator_category;
-    typedef void value_type;
-    typedef void difference_type;
-    typedef void pointer;
-    typedef void reference;
+    using iterator_category = std::output_iterator_tag;
+    using value_type        = void;
+    using difference_type   = void;
+    using pointer           = void;
+    using reference         = void;
 };
 
 template <class T>
@@ -98,20 +98,20 @@ class VectorPrintContracted {};
 
 template <typename T>
 struct VectorPrintSelector {
-    typedef VectorPrintContracted selector;
+    using selector = VectorPrintContracted;
 };
 
 template <>
 struct VectorPrintSelector<std::string> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 template <>
 struct VectorPrintSelector<double> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 template <typename K, typename V>
 struct VectorPrintSelector<std::pair<K, V>> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 
 

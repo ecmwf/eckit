@@ -538,7 +538,7 @@ void fromValue(std::map<K, V>& v, const Value& value) {
 
 template <>
 struct VectorPrintSelector<Value> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 
 }  // namespace eckit

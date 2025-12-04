@@ -25,8 +25,8 @@ namespace eckit::test {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct TestTreeTrait {
-    typedef Point2 Point;
-    typedef double Payload;
+    using Point   = Point2;
+    using Payload = double;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -37,13 +37,13 @@ template <typename TreeTrait>
 class PointInBoxInteriorFinder {
 public:
 
-    typedef eckit::KDTreeX<TreeTrait> KDTree;
-    typedef typename KDTree::Point Point;
+    using KDTree = eckit::KDTreeX<TreeTrait>;
+    using Point  = typename KDTree::Point;
 
 private:
 
-    typedef typename KDTree::Alloc Alloc;
-    typedef typename KDTree::Node Node;
+    using Alloc = typename KDTree::Alloc;
+    using Node  = typename KDTree::Node;
 
 public:
 
@@ -125,10 +125,10 @@ bool isAnyPointInBoxInterior(const eckit::KDTreeX<TreeTraits>& tree,
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_eckit_container_kdtree_constructor") {
-    typedef KDTreeMemory<TestTreeTrait> Tree;
+    using Tree = KDTreeMemory<TestTreeTrait>;
 
     Tree kd;
-    typedef Tree::PointType Point;
+    using Point = Tree::PointType;
 
     std::vector<Tree::Value> points;
 
@@ -220,10 +220,10 @@ CASE("test_eckit_container_kdtree_constructor") {
 }
 
 CASE("test_eckit_container_kdtree_insert") {
-    typedef KDTreeMemory<TestTreeTrait> Tree;
+    using Tree = KDTreeMemory<TestTreeTrait>;
 
     Tree kd;
-    typedef Tree::PointType Point;
+    using Point = Tree::PointType;
 
     std::vector<Tree::Value> points;
 

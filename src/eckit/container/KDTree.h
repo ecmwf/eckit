@@ -21,16 +21,16 @@
 namespace eckit {
 
 template <class Traits>
-class KDTreeX : public SPTree<Traits, KDNode<Traits> > {
+class KDTreeX : public SPTree<Traits, KDNode<Traits>> {
 public:
 
-    typedef KDNode<Traits> Node;
-    typedef SPTree<Traits, Node> SPTreeType;  // cannot redefine as SPTree since some compilers in-class redefinitions
-    typedef typename Traits::Alloc Alloc;
+    using Node       = KDNode<Traits>;
+    using SPTreeType = SPTree<Traits, Node>;  // cannot redefine as SPTree since some compilers in-class redefinitions
+    using Alloc      = typename Traits::Alloc;
 
-    typedef typename SPTreeType::Value Value;
-    typedef typename SPTreeType::Point Point;
-    typedef typename SPTreeType::Payload Payload;
+    using Value   = typename SPTreeType::Value;
+    using Point   = typename SPTreeType::Point;
+    using Payload = typename SPTreeType::Payload;
 
 public:
 
@@ -68,15 +68,15 @@ public:
 
 
 template <class Traits>
-class KDTreeMemory : public KDTreeX<TT<Traits, KDMemory> > {
+class KDTreeMemory : public KDTreeX<TT<Traits, KDMemory>> {
     KDMemory alloc_;
 
 public:
 
-    typedef KDTreeX<TT<Traits, KDMemory> > KDTree;
-    typedef typename KDTree::Value Value;
-    typedef typename KDTree::Point Point;
-    typedef typename KDTree::Payload Payload;
+    using KDTree  = KDTreeX<TT<Traits, KDMemory>>;
+    using Value   = typename KDTree::Value;
+    using Point   = typename KDTree::Point;
+    using Payload = typename KDTree::Payload;
 
 public:
 
@@ -84,16 +84,16 @@ public:
 };
 
 template <class Traits>
-class KDTreeMapped : public KDTreeX<TT<Traits, KDMapped> > {
+class KDTreeMapped : public KDTreeX<TT<Traits, KDMapped>> {
     KDMapped alloc_;
 
 public:
 
-    typedef KDTreeX<TT<Traits, KDMapped> > KDTree;
-    typedef typename KDTree::Value Value;
-    typedef typename KDTree::Point Point;
-    typedef typename KDTree::Payload Payload;
-    typedef typename KDTree::Node Node;
+    using KDTree  = KDTreeX<TT<Traits, KDMapped>>;
+    using Value   = typename KDTree::Value;
+    using Point   = typename KDTree::Point;
+    using Payload = typename KDTree::Payload;
+    using Node    = typename KDTree::Node;
 
 public:
 

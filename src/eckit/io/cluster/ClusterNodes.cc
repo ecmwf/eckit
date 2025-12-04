@@ -235,7 +235,7 @@ inline unsigned long version(ClusterNodeEntry*) {
     return 1;
 }
 
-typedef MappedArray<ClusterNodeEntry> NodeArray;
+using NodeArray             = MappedArray<ClusterNodeEntry>;
 static NodeArray* nodeArray = 0;
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;

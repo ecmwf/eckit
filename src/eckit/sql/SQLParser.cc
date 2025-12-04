@@ -35,7 +35,7 @@ using namespace eckit;
 
 namespace SQLYacc {
 
-typedef void* eckit_sql_scan_t;
+using eckit_sql_scan_t = void*;
 
 void eckit_sql_error(eckit_sql_scan_t, eckit::sql::SQLSession*, const char* msg);
 

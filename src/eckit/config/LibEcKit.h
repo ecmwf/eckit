@@ -20,7 +20,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef void (*abort_handler_t)();
+using abort_handler_t = void (*)();
 
 class LibEcKit : public eckit::system::Library {
 

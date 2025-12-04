@@ -32,7 +32,7 @@ class BloomFilter : private NonCopyable {
 
 public:  // types
 
-    typedef unsigned long long data_type;
+    using data_type = unsigned long long;
 
 public:  // methods
 

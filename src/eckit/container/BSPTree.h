@@ -23,7 +23,7 @@ template <class Traits, class Partition>
 class BSPTreeX : public SPTree<Traits, BSPNode<Traits, Partition> > {
 public:
 
-    typedef typename Traits::Alloc Alloc;
+    using Alloc = typename Traits::Alloc;
 
 private:
 

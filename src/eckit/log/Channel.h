@@ -23,7 +23,7 @@ namespace eckit {
 class ChannelBuffer;
 class LogTarget;
 
-typedef void (*channel_callback_t)(void* data, const char* msg);
+using channel_callback_t = void (*)(void* data, const char* msg);
 
 //----------------------------------------------------------------------------------------------------------------------
 

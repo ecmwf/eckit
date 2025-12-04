@@ -71,8 +71,8 @@ template <class T, class ALLOC = NewDealloc<T> >
 class DEPRECATED("Use C++11 std::shared_ptr instead") SharedPtr {
 public:  // types
 
-    typedef T element_type;
-    typedef T* pointer_type;
+    using element_type = T;
+    using pointer_type = T*;
 
 public:  // methods
 

@@ -38,8 +38,8 @@ template <class T>
 class SharedMemArray : private NonCopyable {
 public:  // types
 
-    typedef T* iterator;
-    typedef const T* const_iterator;
+    using iterator       = T*;
+    using const_iterator = const T*;
 
 public:  // methods
 

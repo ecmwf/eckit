@@ -22,7 +22,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-typedef unsigned long long TxnID;
+using TxnID = unsigned long long;
 
 class TxnEvent : public Streamable {
 public:

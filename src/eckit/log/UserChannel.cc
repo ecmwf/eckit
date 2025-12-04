@@ -24,7 +24,7 @@ namespace eckit {
 class UserBuffer : public std::streambuf {
 public:
 
-    typedef UserChannel::MsgType MsgType;
+    using MsgType = UserChannel::MsgType;
 
     UserBuffer(std::size_t size = 1024) :
         std::streambuf(), buffer_(size + 1), msgType_(UserChannel::NONE), user_(nullptr) {

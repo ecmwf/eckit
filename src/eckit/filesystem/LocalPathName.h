@@ -290,7 +290,7 @@ private:
 
 template <>
 struct VectorPrintSelector<LocalPathName> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

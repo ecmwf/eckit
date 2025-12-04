@@ -66,9 +66,9 @@ template <class K, class V, int S, class L = BTreeNoLock>
 class BTree : private NonCopyable {
 public:
 
-    typedef K key_type;
-    typedef V value_type;
-    typedef std::pair<K, V> result_type;
+    using key_type    = K;
+    using value_type  = V;
+    using result_type = std::pair<K, V>;
 
     // -- Contructors
 
@@ -242,7 +242,7 @@ private:
         _PageInfo(Page* page = 0) : page_(page), count_(0), last_(time(nullptr)), dirty_(false) {}
     };
 
-    typedef std::map<unsigned long, _PageInfo> Cache;
+    using Cache = std::map<unsigned long, _PageInfo>;
     Cache cache_;
 
     void lockRange(off_t start, off_t len, int cmd, int type);

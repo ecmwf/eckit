@@ -64,7 +64,7 @@ static std::string path_from_libhandle(const std::string& libname, void* handle)
 ///
 class LibraryRegistry {
 
-    typedef std::map<std::string, Library*> LibraryMap;
+    using LibraryMap = std::map<std::string, Library*>;
 
 public:  // methods
 

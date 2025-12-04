@@ -42,8 +42,8 @@ public:  // methods
 
 protected:  // members
 
-    typedef Params::value_t (Derived::*parametrizer_t)(const Params::key_t&) const;
-    typedef std::map<std::string, parametrizer_t> store_t;
+    using parametrizer_t = Params::value_t (Derived::*)(const Params::key_t&) const;
+    using store_t        = std::map<std::string, parametrizer_t>;
 
     store_t dispatch_;
 };

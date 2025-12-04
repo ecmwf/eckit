@@ -588,7 +588,7 @@ void eckit::mpi::Comm::broadcast(Iter first, Iter last, size_t root) const {
 
 template <class CIter, class Iter>
 void eckit::mpi::Comm::gather(CIter first, CIter last, Iter rfirst, Iter rlast, size_t root) const {
-    typedef typename std::iterator_traits<CIter>::difference_type diff_t;
+    using diff_t = typename std::iterator_traits<CIter>::difference_type;
 
     const size_t commsize = size();
     ECKIT_MPI_ASSERT(commsize > 0);

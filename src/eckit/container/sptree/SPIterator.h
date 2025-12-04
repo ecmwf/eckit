@@ -18,15 +18,15 @@ namespace eckit {
 template <class Traits, class NodeType>
 class SPIterator {
 
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
 
-    typedef SPValue<Traits> Value;
+    using Value = SPValue<Traits>;
 
-    typedef typename Alloc::Ptr Ptr;
-    typedef typename Alloc::Ptr ID;
-    typedef NodeType Node;
+    using Ptr  = typename Alloc::Ptr;
+    using ID   = typename Alloc::Ptr;
+    using Node = NodeType;
 
     Alloc& alloc_;
     Ptr ptr_;

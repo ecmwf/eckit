@@ -38,8 +38,8 @@ class TxnArray : private eckit::NonCopyable {
 
 public:
 
-    typedef TxnID* iterator;
-    typedef const TxnID* const_iterator;
+    using iterator       = TxnID*;
+    using const_iterator = const TxnID*;
 
     virtual ~TxnArray() {}
 

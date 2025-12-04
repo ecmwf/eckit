@@ -46,7 +46,7 @@ class MemorySharedLimit {
 
 public:  // types
 
-    typedef unsigned short parts_t;
+    using parts_t = unsigned short;
 
     struct Token : private eckit::NonCopyable {
 

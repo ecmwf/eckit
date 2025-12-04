@@ -54,7 +54,7 @@ public:
 
     // Formating functions (used by SQLSimpleOutput)
     virtual size_t width() const;
-    typedef std::ios_base& (*manipulator)(std::ios_base&);
+    using manipulator = std::ios_base& (*)(std::ios_base&);
     virtual manipulator format() const;
 
     static const SQLType& lookup(const std::string&, size_t sizeDoubles = 1);

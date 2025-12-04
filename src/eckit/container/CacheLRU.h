@@ -31,8 +31,8 @@ class CacheLRU : private NonCopyable {
 
 public:  // types
 
-    typedef K key_type;
-    typedef V value_type;
+    using key_type   = K;
+    using value_type = V;
 
     struct Entry {
 
@@ -47,13 +47,13 @@ public:  // types
         }
     };
 
-    typedef Entry entry_type;
+    using entry_type = Entry;
 
-    typedef std::list<entry_type> storage_type;
-    typedef typename storage_type::iterator storage_iterator;
-    typedef std::map<key_type, storage_iterator> map_type;
+    using storage_type     = std::list<entry_type>;
+    using storage_iterator = typename storage_type::iterator;
+    using map_type         = std::map<key_type, storage_iterator>;
 
-    typedef void (*purge_handler_type)(key_type&, value_type&);
+    using purge_handler_type = void (*)(key_type&, value_type&);
 
 public:  // methods
 

@@ -31,14 +31,14 @@ namespace eckit::test {
 //----------------------------------------------------------------------------------------------------------------------
 
 struct FooLock : public OwnedLock {
-    typedef SharedPtr<FooLock> ptype;
+    using ptype = SharedPtr<FooLock>;
 
     FooLock(int in) : i(in) {}
     int i;
 };
 
 struct FooNoLock : public OwnedNoLock {
-    typedef SharedPtr<FooNoLock> ptype;
+    using ptype = SharedPtr<FooNoLock>;
 
     FooNoLock(int in) : i(in) {}
     int i;

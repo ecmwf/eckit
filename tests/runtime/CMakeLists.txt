@@ -13,3 +13,8 @@ ecbuild_add_test( TARGET  eckit_test_runtime_context
                   SOURCES test_context.cc
                   LIBS    eckit
 )
+
+ecbuild_add_test( TARGET  eckit_test_runtime_taskinfo
+                  SOURCES test_taskinfo.cc
+                  LIBS    eckit
+)

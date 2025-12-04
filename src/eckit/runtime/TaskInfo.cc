@@ -29,108 +29,106 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 TaskInfo::TaskInfo() {
-    ASSERT(busy_ == false);
+    ASSERT(info.busy_ == false);
 
-    eckit::zero(*this);
-
-    pid_    = getpid();
-    thread_ = pthread_self();
-    pos_    = 0;
-    start_  = ::time(nullptr);
+    info.pid_    = getpid();
+    info.thread_ = pthread_self();
+    info.pos_    = 0;
+    info.start_  = ::time(nullptr);
     if (Main::ready()) {
-        ::strncpy(name_, Main::instance().displayName().c_str(), sizeof(name_) - 1);
-        ::strncpy(kind_, Main::instance().name().c_str(), sizeof(kind_) - 1);
-        ::strncpy(application_, Main::instance().name().c_str(), sizeof(application_) - 1);
-        ::strcpy(status_, "Starting");
+        ::strncpy(info.name_, Main::instance().displayName().c_str(), sizeof(info.name_) - 1);
+        ::strncpy(info.kind_, Main::instance().name().c_str(), sizeof(info.kind_) - 1);
+        ::strncpy(info.application_, Main::instance().name().c_str(), sizeof(info.application_) - 1);
+        ::strcpy(info.status_, "Starting");
     }
-    show_ = true;
+    info.show_ = true;
     start(0, 0);
-    busy_      = true;
-    stoppable_ = true;
-    parent_    = -1;
-    state_     = ' ';
+    info.busy_      = true;
+    info.stoppable_ = true;
+    info.parent_    = -1;
+    info.state_     = ' ';
 }
 
 
 TaskInfo::~TaskInfo() {
-    busy_ = false;
+    info.busy_ = false;
 }
 
 void TaskInfo::kind(const std::string& s) {
     touch();
-    strncpy(kind_, s.c_str(), sizeof(kind_) - 1);
+    strncpy(info.kind_, s.c_str(), sizeof(info.kind_) - 1);
 }
 
 void TaskInfo::name(const std::string& s) {
     touch();
-    strncpy(name_, s.c_str(), sizeof(name_) - 1);
+    strncpy(info.name_, s.c_str(), sizeof(info.name_) - 1);
 }
 
 void TaskInfo::status(const std::string& s) {
     touch();
-    strncpy(status_, s.c_str(), sizeof(status_) - 1);
+    strncpy(info.status_, s.c_str(), sizeof(info.status_) - 1);
 }
 
 void TaskInfo::message(const std::string& s) {
     touch();
-    zero(message_);
-    strncpy(message_, s.c_str(), sizeof(message_) - 1);
+    zero(info.message_);
+    strncpy(info.message_, s.c_str(), sizeof(info.message_) - 1);
 }
 
 void TaskInfo::progressName(const std::string& s) {
     touch();
-    strncpy(progress_.name_, s.c_str(), sizeof(progress_.name_) - 1);
+    strncpy(info.progress_.name_, s.c_str(), sizeof(info.progress_.name_) - 1);
 }
 
 void TaskInfo::out(char* from, char* to) {
     touch();
     for (char* p = from; p != to; p++) {
-        buffer_[(pos_++) % size_] = *p;
+        info.buffer_[(info.pos_++) % info.size_] = *p;
     }
 }
 
 unsigned long TaskInfo::text(char* buf, unsigned long max, unsigned long& pos) const {
-    unsigned long len = pos_ - pos;
-    if (len > size_) {
-        len = size_;
+    unsigned long len = info.pos_ - pos;
+    if (len > info.size_) {
+        len = info.size_;
     }
     if (len > max) {
         len = max;
     }
 
-    unsigned long p = pos_ - len + size_;
+    unsigned long p = info.pos_ - len + info.size_;
     unsigned long n = len;
 
     while (n-- > 0) {
-        *buf++ = buffer_[(p++) % size_];
+        *buf++ = info.buffer_[(p++) % info.size_];
     }
 
-    pos = pos_;
+    pos = info.pos_;
 
     return len;
 }
 
 bool TaskInfo::busy(bool check) {
-    if (!busy_) {
+    if (!info.busy_) {
         return false;
     }
 
     time_t now = ::time(nullptr);
 
     // After 2 minutes, force the check
-    if ((now - check_) > 120) {
+    if ((now - info.check_) > 120) {
         check = true;
     }
 
-    check_ = now;
+    info.check_ = now;
 
     if (!check) {
-        return busy_;
+        return info.busy_;
     }
 
     // Check first
 
-    if (!ProcessControler::isRunning(pid_)) {
+    if (!ProcessControler::isRunning(info.pid_)) {
         this->TaskInfo::~TaskInfo();
         return false;
     }
@@ -139,12 +137,12 @@ bool TaskInfo::busy(bool check) {
 }
 
 void TaskInfo::start(unsigned long long min, unsigned long long max) {
-    progress_.rate_ = progress_.speed_ = 0;
-    progress_.min_                     = min;
-    progress_.max_                     = max;
-    progress_.val_                     = min;
-    ::gettimeofday(&progress_.start_, nullptr);
-    ::gettimeofday(&progress_.last_, nullptr);
+    info.progress_.rate_ = info.progress_.speed_ = 0;
+    info.progress_.min_                          = min;
+    info.progress_.max_                          = max;
+    info.progress_.val_                          = min;
+    ::gettimeofday(&info.progress_.start_, nullptr);
+    ::gettimeofday(&info.progress_.last_, nullptr);
 
     touch();
 }
@@ -153,23 +151,23 @@ void TaskInfo::progress(unsigned long long val) {
     ::timeval now;
     ::gettimeofday(&now, nullptr);
 
-    ::timeval diff = now - progress_.last_;
+    ::timeval diff = now - info.progress_.last_;
 
     double elapsed = (static_cast<double>(diff.tv_sec) + (static_cast<double>(diff.tv_usec) / 1000000.));
     if (elapsed > 0) {
-        progress_.rate_ = (val - progress_.val_) / elapsed;
+        info.progress_.rate_ = (val - info.progress_.val_) / elapsed;
     }
 
-    diff = now - progress_.start_;
+    diff = now - info.progress_.start_;
 
     elapsed = (static_cast<double>(diff.tv_sec) + (static_cast<double>(diff.tv_usec) / 1000000.));
     if (elapsed > 0) {
-        progress_.speed_ = (val - progress_.min_) / elapsed;
+        info.progress_.speed_ = (val - info.progress_.min_) / elapsed;
     }
 
-    progress_.val_ = val;
+    info.progress_.val_ = val;
 
-    ::gettimeofday(&progress_.last_, nullptr);
+    ::gettimeofday(&info.progress_.last_, nullptr);
     touch();
 }
 
@@ -181,30 +179,30 @@ void TaskInfo::touch() {
     checkAbort();
 
     // FIXME: potential race condition (reported by Clang ThreadSanitizer)
-    check_ = last_ = ::time(nullptr);
-    busy_          = true;
+    info.check_ = info.last_ = ::time(nullptr);
+    info.busy_               = true;
 
     SignalHandler::checkInterrupt();
 
-    if (stop_ && stoppable_) {
-        stopped_ = true;
-        stop_    = false;
+    if (info.stop_ && info.stoppable_) {
+        info.stopped_ = true;
+        info.stop_    = false;
         exit(1);
     }
 }
 
 void TaskInfo::checkAbort() {
-    if (abort_) {
-        abort_ = false;
+    if (info.abort_) {
+        info.abort_ = false;
         throw Abort("ThreadControler aborted by request");
     }
 }
 
 void TaskInfo::parent(long p) {
-    parent_ = p;
-    depth_  = 0;
+    info.parent_ = p;
+    info.depth_  = 0;
     if (p >= 0) {
-        depth_ = Monitor::instance().task(static_cast<unsigned long>(p)).depth() + 1;
+        info.depth_ = Monitor::instance().task(static_cast<unsigned long>(p)).depth() + 1;
     }
 }
 
@@ -218,14 +216,14 @@ void TaskInfo::json(JSON& json) const {
     json.startObject();
 
     json << "id" << n;
-    json << "busy" << busy_;
+    json << "busy" << info.busy_;
     // json << "thread" << thread_;
-    json << "pid" << pid_;
-    json << "start" << start_;
-    json << "last" << last_;
-    json << "check" << check_;
-    json << "show" << show_;
-    json << "late" << late_;
+    json << "pid" << info.pid_;
+    json << "start" << info.start_;
+    json << "last" << info.last_;
+    json << "check" << info.check_;
+    json << "show" << info.show_;
+    json << "late" << info.late_;
 
 
     // Logging
@@ -233,46 +231,46 @@ void TaskInfo::json(JSON& json) const {
     // char           buffer_[size_];
     // unsigned long  pos_;
 
-    char buffer[size_ + 1] = {};
+    char buffer[Info::size_ + 1] = {};
 
     unsigned long pos{0};
     text(buffer, sizeof(buffer), pos);
 
     json << "log" << buffer;
 
-    json << "name" << name_;
-    json << "kind" << kind_;
-    json << "application" << application_;
+    json << "name" << info.name_;
+    json << "kind" << info.kind_;
+    json << "application" << info.application_;
 
     json << "progress";
     json.startObject();
 
-    json << "min" << progress_.min_;
-    json << "max" << progress_.max_;
-    json << "val" << progress_.val_;
-    json << "name" << progress_.name_;
-    json << "rate" << progress_.rate_;
-    json << "speed" << progress_.speed_;
+    json << "min" << info.progress_.min_;
+    json << "max" << info.progress_.max_;
+    json << "val" << info.progress_.val_;
+    json << "name" << info.progress_.name_;
+    json << "rate" << info.progress_.rate_;
+    json << "speed" << info.progress_.speed_;
 
     json.endObject();
 
-    json << "taskID" << taskID_;
+    json << "taskID" << info.taskID_;
 
-    json << "stop" << stop_;
-    json << "abort" << abort_;
-    json << "stoppable" << stoppable_;
-    json << "stopped" << stopped_;
-    json << "canceled" << canceled_;
-    json << "exception" << exception_;
-    json << "cancelMsg" << cancelMsg_;
-    json << "config" << config_;
+    json << "stop" << info.stop_;
+    json << "abort" << info.abort_;
+    json << "stoppable" << info.stoppable_;
+    json << "stopped" << info.stopped_;
+    json << "canceled" << info.canceled_;
+    json << "exception" << info.exception_;
+    json << "cancelMsg" << info.cancelMsg_;
+    json << "config" << info.config_;
     // json << "resource" << resource_;
-    json << "parent" << parent_;
-    json << "depth" << depth_;
-    json << "state" << state_;
-    json << "port" << port_;
-    json << "host" << host_;
-    json << "message" << message_;
+    json << "parent" << info.parent_;
+    json << "depth" << info.depth_;
+    json << "state" << info.state_;
+    json << "port" << info.port_;
+    json << "host" << info.host_;
+    json << "message" << info.message_;
 
     json.endObject();
 }

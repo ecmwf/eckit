@@ -25,6 +25,7 @@ ecbuild_add_executable( TARGET      eckit_codec_list
 
 foreach( _name
         eckit-area-list
+        eckit-gaussian-latitudes
         eckit-grid
         eckit-grid-list
         eckit-grid-nearest

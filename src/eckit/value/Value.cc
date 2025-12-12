@@ -36,7 +36,8 @@ public:
     Nil() { attach(); }  // the only instance of Nil (below) *will* be leaked at_exit()
 };
 
-static Nil* nil = 0;  // must be a pointer, so we control when is created to respect order of destruction at_exit()
+static Nil* nil = nullptr;
+// must be a pointer, so we control when is created to respect order of destruction at_exit()
 
 static Nil* nill() {
     if (!nil) {

@@ -60,7 +60,7 @@ Group::Group() : content_(new NullGroupContent()) {
     content_->attach();
 }
 
-Group::Group(int group) : content_(0) {
+Group::Group(int group) : content_{nullptr} {
     *this = eckit::mpi::comm().group(group);
 }
 

@@ -27,7 +27,13 @@ namespace eckit {
 
 
 KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size_t metadataSize) :
-    path_(path), header_(itemCount, itemSize, metadataSize), size_(0), base_(0), root_(0), addr_(0), fd_(-1) {
+    path_(path),
+    header_(itemCount, itemSize, metadataSize),
+    size_(0),
+    base_{nullptr},
+    root_(0),
+    addr_{nullptr},
+    fd_(-1) {
 
     int oflags = O_RDWR | O_CREAT;
     int mflags = PROT_READ | PROT_WRITE;
@@ -76,7 +82,7 @@ KDMapped::KDMapped(const PathName& path, size_t itemCount, size_t itemSize, size
         SYSCALL(::write(fd_, &c, 1));
     }
 
-    addr_ = MMap::mmap(0, size_, mflags, MAP_SHARED, fd_, 0);
+    addr_ = MMap::mmap(nullptr, size_, mflags, MAP_SHARED, fd_, 0);
     if (addr_ == MAP_FAILED) {
         Log::error() << "open(" << path << ')' << Log::syserr << std::endl;
         throw FailedSystemCall("mmap");
@@ -104,7 +110,7 @@ KDMapped::KDMapped(const KDMapped& other) :
     root_(other.root_),
     addr_(other.addr_),
     fd_(other.fd_) {
-    const_cast<KDMapped&>(other).addr_ = 0;
+    const_cast<KDMapped&>(other).addr_ = nullptr;
     const_cast<KDMapped&>(other).fd_   = -1;
 }
 
@@ -120,7 +126,7 @@ KDMapped& KDMapped::operator=(const KDMapped& other) {
     header_ = other.header_;
     base_   = other.base_;
 
-    const_cast<KDMapped&>(other).addr_ = 0;
+    const_cast<KDMapped&>(other).addr_ = nullptr;
     const_cast<KDMapped&>(other).fd_   = -1;
 
     return *this;

@@ -34,7 +34,7 @@ Connector::Connector(const std::string& host, int port, const std::string& node)
     node_(node),
     port_(port),
     locked_(false),
-    last_(::time(0)),
+    last_(::time(nullptr)),
     memoize_(false),
     sent_(false),
     life_(0),
@@ -61,7 +61,7 @@ TCPSocket& Connector::socket() {
 
     static int connectorTimeout = Resource<int>("connectorTimeout", 0);
     if (connectorTimeout != 0) {
-        time_t now = ::time(0);
+        time_t now = ::time(nullptr);
         if (now - last_ > connectorTimeout) {
             Log::info() << "Connector::socket() opened for " << Seconds(now - last_) << " seconds, reopening connection"
                         << std::endl;
@@ -276,7 +276,7 @@ std::string Connector::name() const {
 template <class T, class F>
 long Connector::socketIo(F proc, T buf, long len, const char* msg, time_t& last) {
     TCPSocket& s = socket();
-    last         = ::time(0);
+    last         = ::time(nullptr);
     long l       = (s.*proc)(buf, len);
     if (l != len) {
         reset();
@@ -315,7 +315,7 @@ long Connector::read(void* buf, long len) {
             bool useCache                                  = false;
             if (j != cache_.end()) {
                 //               cout << "MEMOIZE IN CACHE " << (*j).first << std::endl;
-                if ((::time(0) - (*j).second.updated()) > long(life_)) {
+                if ((::time(nullptr) - (*j).second.updated()) > long(life_)) {
                     // cout << "  CACHE IS STALE" << (*j).first << std::endl;
                 }
                 else {
@@ -328,7 +328,7 @@ long Connector::read(void* buf, long len) {
             }
 
             if (!useCache) {
-                cached_.buffer_ = 0;
+                cached_.buffer_ = nullptr;
                 try {
                     ASSERT((size_t)socketIo(&TCPSocket::write, out_.buffer(), out_.count(), "written", last_) ==
                            out_.count());
@@ -387,7 +387,7 @@ void Connector::memoize(bool on, unsigned long life) {
         ASSERT(out_.count() == 0);
         sent_ = false;
 
-        cached_.buffer_ = 0;
+        cached_.buffer_ = nullptr;
 
         if (cache_.size() > 10000) {
             // Log::info() << "Clear memoize cache" << std::endl;

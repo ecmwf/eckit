@@ -93,7 +93,7 @@ bool SQLExpressionEvaluated::isNumber() const {
 }
 
 std::shared_ptr<SQLExpression> SQLExpressionEvaluated::simplify(bool&) {
-    return 0;
+    return nullptr;
 }
 
 std::shared_ptr<SQLExpression> SQLExpressionEvaluated::clone() const {

@@ -20,7 +20,7 @@ namespace eckit::linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Vector::Vector() : array_(0), length_(0), own_(false) {}
+Vector::Vector() : array_{nullptr}, length_(0), own_(false) {}
 
 
 Vector::Vector(Size length) : array_(new Scalar[length]), length_(length), own_(true) {}
@@ -31,7 +31,7 @@ Vector::Vector(const Scalar array[], Size length) : array_(const_cast<Scalar*>(a
 }
 
 
-Vector::Vector(Stream& stream) : array_(0), length_(0), own_(false) {
+Vector::Vector(Stream& stream) : array_{nullptr}, length_(0), own_(false) {
     Size length;
     stream >> length;
     resize(length);

@@ -236,7 +236,7 @@ inline unsigned long version(ClusterNodeEntry*) {
 }
 
 using NodeArray             = MappedArray<ClusterNodeEntry>;
-static NodeArray* nodeArray = 0;
+static NodeArray* nodeArray = nullptr;
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::set<std::string> offsiteNodes_;

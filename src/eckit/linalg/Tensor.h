@@ -81,11 +81,11 @@ public:  // methods
 
     /// Default constructor (empty tensor)
     Tensor(Layout layout = Layout::ColMajor) :
-        array_(0), size_(0), shape_(0), strides_(0), layout_(layout), own_(false) {}
+        array_{nullptr}, size_(0), shape_(0), strides_(0), layout_(layout), own_(false) {}
 
     /// Construct tensor with given rows and columns (allocates memory, not initialised)
     Tensor(const std::vector<Size>& shape, Layout layout = Layout::ColMajor) :
-        array_(nullptr), shape_(shape), strides_(strides(layout, shape)), layout_(layout), own_(true) {
+        array_{nullptr}, shape_(shape), strides_(strides(layout, shape)), layout_(layout), own_(true) {
 
         size_ = flatSize(shape_);
         ASSERT(size() > 0);
@@ -104,7 +104,7 @@ public:  // methods
     }
 
     /// Constructor from Stream
-    Tensor(Stream& s) : array_(0), size_(0), shape_(0), own_(true) {
+    Tensor(Stream& s) : array_{nullptr}, size_(0), shape_(0), own_(true) {
         Size shape_size;
 
         // layout

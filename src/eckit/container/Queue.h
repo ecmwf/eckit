@@ -42,7 +42,7 @@ class Queue {
 
 public:  // public
 
-    Queue(size_t max) : max_(max), interrupt_(nullptr), closed_(false) { ASSERT(max > 0); }
+    Queue(size_t max) : max_(max), interrupt_{nullptr}, closed_(false) { ASSERT(max > 0); }
 
     Queue(const Queue&)            = delete;
     Queue& operator=(const Queue&) = delete;

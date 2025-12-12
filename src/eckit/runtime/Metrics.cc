@@ -179,7 +179,7 @@ void MetricsCollector::add(Value& top, const std::vector<std::string>& path, siz
 
 void MetricsCollector::print(std::ostream& s) const {
     JSON json(s);
-    time_t now = ::time(0);
+    time_t now = ::time(nullptr);
 
     Value top = Value::makeOrderedMap();
 

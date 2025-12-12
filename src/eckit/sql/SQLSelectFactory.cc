@@ -39,7 +39,7 @@ SQLSelectFactory::SQLSelectFactory(SQLSession& session) :
 */
 
 std::string SQLSelectFactory::index(const std::string& columnName, const SQLExpression* index) {
-    if (index == 0) {
+    if (index == nullptr) {
         return columnName;
     }
 
@@ -105,7 +105,7 @@ SQLSelect* SQLSelectFactory::create(bool distinct, const Expressions& select_lis
         L << "SQLSelectFactory::create: where = " << *where << std::endl;
     }
 
-    SQLSelect* r(0);
+    SQLSelect* r = nullptr;
 
     // Which tables are we selecting from?
 
@@ -157,7 +157,7 @@ SQLSelect* SQLSelectFactory::create(bool distinct, const Expressions& select_lis
                     << std::endl;
     }
 
-    SQLOutput* outputEndpoint = 0;
+    SQLOutput* outputEndpoint = nullptr;
     std::vector<std::unique_ptr<SQLOutput>> newOutputs;
 
     if (!into.empty()) {

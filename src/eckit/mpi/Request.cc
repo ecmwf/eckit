@@ -34,7 +34,7 @@ Request::Request() : content_(new NullRequestContent()) {
     content_->attach();
 }
 
-Request::Request(int request) : content_(0) {
+Request::Request(int request) : content_{nullptr} {
     *this = eckit::mpi::comm().request(request);
 }
 

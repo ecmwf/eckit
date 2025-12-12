@@ -84,9 +84,9 @@ Incomplete* check_incomplete(ScopedPtr<Incomplete>& incomplete) {
 CASE("test_scoped_ptr_empty_constructor") {
     ScopedPtr<long> sp;
 
-    EXPECT(sp.get() == ScopedPtr<long>::pointer_type(0));
+    EXPECT(sp.get() == ScopedPtr<long>::pointer_type(nullptr));
 
-    EXPECT(sp.release() == ScopedPtr<long>::pointer_type(0));
+    EXPECT(sp.release() == ScopedPtr<long>::pointer_type(nullptr));
 
     EXPECT(!sp);
 
@@ -111,7 +111,7 @@ CASE("test_scoped_ptr") {
 
         sp.reset();
 
-        EXPECT(sp.get() == ScopedPtr<long>::pointer_type(0));
+        EXPECT(sp.get() == ScopedPtr<long>::pointer_type(nullptr));
     }
 
     //   std::cout << "test ScopedPtr with a user defined type\n";
@@ -125,7 +125,7 @@ CASE("test_scoped_ptr") {
         EXPECT(udt_sp->value() == 333222111);
 
         udt_sp.reset();
-        EXPECT(udt_sp.get() == ScopedPtr<UDT>::pointer_type(0));
+        EXPECT(udt_sp.get() == ScopedPtr<UDT>::pointer_type(nullptr));
     }
 }
 

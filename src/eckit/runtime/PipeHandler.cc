@@ -125,7 +125,7 @@ void PipeHandler<Request>::handle(const std::vector<Request*>& v) {
         Log::error() << "** Exception is ignored" << std::endl;
     }
 
-    last_ = ::time(0);
+    last_ = ::time(nullptr);
     busy_ = false;
     Log::status() << "-" << std::endl;
 }

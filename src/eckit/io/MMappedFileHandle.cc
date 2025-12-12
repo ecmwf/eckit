@@ -40,11 +40,11 @@ void MMappedFileHandle::encode(Stream& s) const {
     s << path_;
 }
 
-MMappedFileHandle::MMappedFileHandle(Stream& s) : DataHandle(s), mmap_(nullptr), fd_(-1) {
+MMappedFileHandle::MMappedFileHandle(Stream& s) : DataHandle(s), mmap_{nullptr}, fd_(-1) {
     s >> path_;
 }
 
-MMappedFileHandle::MMappedFileHandle(const std::string& path) : path_(path), mmap_(nullptr), fd_(-1) {}
+MMappedFileHandle::MMappedFileHandle(const std::string& path) : path_(path), mmap_{nullptr}, fd_(-1) {}
 
 MMappedFileHandle::~MMappedFileHandle() {}
 
@@ -58,7 +58,7 @@ Length MMappedFileHandle::openForRead() {
 
     SYSCALL2(fd_ = ::open(path_.c_str(), O_RDONLY), path_);
 
-    mmap_ = MMap::mmap(0, length_, PROT_READ, MAP_SHARED, fd_, 0);
+    mmap_ = MMap::mmap(nullptr, length_, PROT_READ, MAP_SHARED, fd_, 0);
     if (mmap_ == MAP_FAILED) {
         Log::error() << "MMappedFileHandle path=" << path_ << " size=" << length_
                      << " fails to mmap(0,length,PROT_READ,MAP_SHARED,fd_,0)" << Log::syserr << std::endl;
@@ -96,7 +96,7 @@ void MMappedFileHandle::flush() {
 void MMappedFileHandle::close() {
     if (handle_.get()) {
         handle_->close();
-        handle_.reset(0);
+        handle_.reset(nullptr);
     }
     if (mmap_) {
         SYSCALL2(MMap::munmap(mmap_, length_), path_);

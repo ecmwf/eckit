@@ -21,10 +21,10 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-BufferCache::BufferCache(size_t size) : count_(0), buffer_(size), updated_(::time(0)) {}
+BufferCache::BufferCache(size_t size) : count_(0), buffer_(size), updated_(::time(nullptr)) {}
 
 BufferCache::BufferCache(const BufferCache& other) :
-    count_(other.count_), buffer_(other.buffer_.size()), updated_(::time(0)) {
+    count_(other.count_), buffer_(other.buffer_.size()), updated_(::time(nullptr)) {
     ::memcpy((char*)buffer_, (const char*)other.buffer_, count_);
 }
 
@@ -35,7 +35,7 @@ BufferCache& BufferCache::operator=(const BufferCache& other) {
         count_ = other.count_;
         buffer_.resize(other.buffer_.size());
         ::memcpy((char*)buffer_, (const char*)other.buffer_, count_);
-        updated_ = ::time(0);
+        updated_ = ::time(nullptr);
     }
     return *this;
 }

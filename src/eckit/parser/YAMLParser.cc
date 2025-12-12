@@ -65,8 +65,8 @@ class YAMLItemLock {
 
 public:
 
-    YAMLItemLock(const YAMLItem* item) : item_(0) { set(item); }
-    ~YAMLItemLock() { set(0); }
+    YAMLItemLock(const YAMLItem* item) : item_{nullptr} { set(item); }
+    ~YAMLItemLock() { set(nullptr); }
 
     void set(const YAMLItem* item) {
         if (item != item_) {
@@ -376,7 +376,7 @@ struct YAMLItemEndDocument : public YAMLItem {
 };
 
 
-YAMLParser::YAMLParser(std::istream& in) : ObjectParser(in, true, true), last_(0) {
+YAMLParser::YAMLParser(std::istream& in) : ObjectParser(in, true, true), last_{nullptr} {
     stop_.push_back(0);
     comma_.push_back(0);
     colon_.push_back(0);
@@ -722,7 +722,7 @@ void YAMLParser::loadItem() {
 
     size_t indent = pos_;
 
-    YAMLItem* item = 0;
+    YAMLItem* item = nullptr;
     std::string key;
     size_t cnt = 0;
     bool isKey = false;

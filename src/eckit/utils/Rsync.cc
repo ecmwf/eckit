@@ -149,13 +149,13 @@ static void runStreamedJob(rs_job_t* job, DataHandle* input, size_t ibuf_size, D
 class Signature {
 public:
 
-    Signature(const PathName& path, rs_stats_t* stats = nullptr) : signature_(nullptr) {
+    Signature(const PathName& path, rs_stats_t* stats = nullptr) : signature_{nullptr} {
         AutoStdFile file(path);
         RSCALL(rs_loadsig_file(file, &signature_, stats));
         RSCALL(rs_build_hash_table(signature_));
     }
 
-    Signature(DataHandle& input) : signature_(nullptr) {
+    Signature(DataHandle& input) : signature_{nullptr} {
         rs_job_t* job = rs_loadsig_begin(&signature_);
         runStreamedJob(job, &input, 1024 * 16, nullptr, 0);
         RSCALL(rs_build_hash_table(signature_));

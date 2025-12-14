@@ -341,17 +341,6 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
 }
 
 
-bool Grid::NextIterator::next(Point& point) {
-    if (current_ != end_) {
-        point = *current_;
-        ++current_;
-        return true;
-    }
-
-    return false;
-}
-
-
 std::ostream& GridFactory::list_(std::ostream& out) const {
     lock_type lock;
 

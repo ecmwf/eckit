@@ -107,7 +107,7 @@ struct Renumber {
         Npix_(static_cast<int>(grid::reduced::HEALPix::size_from_nside(Nside_))),
         Ncap_((Nside_ * (Nside_ - 1)) << 1),
         k_(static_cast<int>(std::log2(Nside_))) {
-        ASSERT(is_power_of_2(Nside_));
+        ASSERT_MSG(is_power_of_2(Nside_), "Nside must be a power of 2");
         ASSERT(0 <= k_);
     }
 
@@ -130,6 +130,10 @@ struct Renumber {
             ASSERT(f < 12 && i < Nside_ && j < Nside_);
             return CodecFijNest::fij_to_nest(f, i, j, k_);
         };
+
+        if (Nside_ == 1) {
+            return r;
+        }
 
         if (r < Ncap_) {
             // North polar cap

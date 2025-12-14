@@ -22,6 +22,7 @@
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::grid::reduced {
@@ -32,7 +33,16 @@ static const std::string HEALPIX_PATTERN = "h([rn][1-9][0-9]*|[1-9][0-9]*(|r|_ri
 
 HEALPix::HEALPix(const Spec& spec) :
     HEALPix(util::convert_long_to_size_t(spec.get_long("Nside")),
-            spec.get_string("order", order::HEALPix::order_default())) {}
+            spec.get_string("order", order::HEALPix::order_default())) {
+    if (Nside_ == 0) {
+        throw exception::GridError("HEALPix: Nside must be greater than zero", Here());
+    }
+
+    // NOTE: this is format-specific and should be moved from here
+    if (double west = 45.; spec.get("west", west) && !types::is_approximately_equal(west, 45., PointLonLat::EPS)) {
+        throw exception::GridError("HEALPix: west offset should be 45 degrees", Here());
+    }
+}
 
 
 HEALPix::HEALPix(size_t Nside, order_type order) : Reduced(BoundingBox{}), Nside_(Nside), healpix_(order) {}
@@ -147,8 +157,10 @@ std::vector<double> HEALPix::longitudes(size_t j) const {
 
 
 void HEALPix::fill_spec(spec::Custom& custom) const {
-    auto suffix = order() != order::HEALPix::order_default() ? order().substr(0, 1) : "";
-    custom.set("grid", "H" + std::to_string(Nside_) + suffix);
+    custom.set("grid", "H" + std::to_string(Nside_));
+    if (const auto o = order(); o != order::HEALPix::order_default()) {
+        custom.set("order", o);
+    }
 }
 
 

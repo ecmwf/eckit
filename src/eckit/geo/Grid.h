@@ -81,29 +81,6 @@ public:
 
     using iterator = Iterator;
 
-    class NextIterator final {
-    public:
-
-        NextIterator(const NextIterator&) = delete;
-        NextIterator(NextIterator&&)      = delete;
-
-        void operator=(const NextIterator&) = delete;
-        void operator=(NextIterator&&)      = delete;
-
-        bool next(Point&);
-        bool has_next() const { return current_ != end_; }
-        size_t index() const { return current_.index(); }
-
-    private:
-
-        NextIterator(Iterator&& current, Iterator&& end) : current_(std::move(current)), end_(std::move(end)) {}
-
-        Iterator current_;
-        Iterator end_;
-
-        friend class Grid;
-    };
-
     // -- Constructors
 
     Grid(const Grid&) = delete;
@@ -125,10 +102,6 @@ public:
 
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
-
-    NextIterator next_iterator() const { return {cbegin(), cend()}; }
-
-    [[nodiscard]] NextIterator* make_next_iterator() const { return new NextIterator{cbegin(), cend()}; }
 
     [[nodiscard]] const spec::Spec& catalog() const;
     [[nodiscard]] const Spec& spec() const;

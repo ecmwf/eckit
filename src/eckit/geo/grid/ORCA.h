@@ -87,6 +87,8 @@ public:
 
     size_t size() const override { return record_.ni() * record_.nj(); };
 
+    BoundingBox* calculate_bbox() const override;
+
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }  // FIXME: not sure this is semanticaly correct
     bool isPeriodicWestEast() const override { return true; }

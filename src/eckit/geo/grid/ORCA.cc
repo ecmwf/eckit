@@ -300,6 +300,11 @@ const std::string& ORCA::type() const {
 }
 
 
+Grid::BoundingBox* ORCA::calculate_bbox() const {
+    return new BoundingBox;
+}
+
+
 static const GridRegisterType<ORCA> GRIDTYPE("ORCA");
 
 

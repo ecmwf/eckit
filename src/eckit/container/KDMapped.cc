@@ -116,6 +116,10 @@ KDMapped::KDMapped(const KDMapped& other) :
 
 // Warning, takes ownership of maps
 KDMapped& KDMapped::operator=(const KDMapped& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     path_  = other.path_;
     count_ = other.count_;
     size_  = other.size_;

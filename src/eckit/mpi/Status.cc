@@ -34,6 +34,10 @@ Status::Status(const Status& s) : content_(s.content_) {
 }
 
 Status& Status::operator=(const Status& s) {
+    if (this == &s) {
+        return *this;
+    }
+
     content_->detach();
     content_ = s.content_;
     content_->attach();

@@ -77,6 +77,10 @@ Group::Group(const Group& s) : content_(s.content_) {
 }
 
 Group& Group::operator=(const Group& s) {
+    if (this == &s) {
+        return *this;
+    }
+
     if (content_) {
         content_->detach();
     }

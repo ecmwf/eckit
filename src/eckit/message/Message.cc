@@ -54,6 +54,10 @@ Message::Message(const Message& other) : content_(other.content_) {
 }
 
 Message& Message::operator=(const Message& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     if (content_ != other.content_) {
         content_->detach();
         content_ = other.content_;

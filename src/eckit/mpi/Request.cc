@@ -51,6 +51,10 @@ Request::Request(const Request& s) : content_(s.content_) {
 }
 
 Request& Request::operator=(const Request& s) {
+    if (this == &s) {
+        return *this;
+    }
+
     if (content_) {
         content_->detach();
     }

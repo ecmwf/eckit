@@ -34,7 +34,8 @@ range::RegularLongitude* make_lon_range(size_t Ni, const area::BoundingBox& bbox
     ASSERT(2 <= Ni);
     ASSERT(west < east);
 
-    return new range::RegularLongitude((east - west) / static_cast<double>(Ni), west, east, east);
+    return new range::RegularLongitude((east - west) / static_cast<double>(bbox.periodic() ? Ni : Ni - 1), west, east,
+                                       west);
 }
 
 

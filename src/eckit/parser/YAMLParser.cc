@@ -723,9 +723,8 @@ void YAMLParser::loadItem() {
     size_t indent = pos_;
 
     YAMLItem* item = nullptr;
-    std::string key;
-    size_t cnt = 0;
-    bool isKey = false;
+    size_t cnt     = 0;
+    bool isKey     = false;
     Value v;
 
 

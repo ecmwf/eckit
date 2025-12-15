@@ -12,6 +12,7 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/spec/Custom.h"
@@ -69,9 +70,14 @@ std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlons() 
 }
 
 
-Grid::Spec* Unstructured::spec(const std::string& name) {
-    return GridSpecByUID::instance().get(name).spec();
+Grid::Spec* Unstructured::spec(const std::string& uid) {
+    if (!GridSpecByUID::instance().exists(uid)) {
+        throw exception::GridUnkownError("Unstructured: unknown grid type '" + uid + "'", Here());
+    }
+
+    return GridSpecByUID::instance().get(uid).spec();
 }
+
 
 void Unstructured::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);

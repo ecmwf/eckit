@@ -61,7 +61,7 @@ public:
 
     // -- Class methods
 
-    [[nodiscard]] static Spec* spec(const std::string& name);
+    [[nodiscard]] static Spec* spec(const std::string& uid);
     [[nodiscard]] static Unstructured* make_from_latlon(const std::vector<double>&, const std::vector<double>&);
 
 protected:

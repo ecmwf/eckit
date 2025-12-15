@@ -148,7 +148,6 @@ list(APPEND eckit_geo_srcs
     util.cc
     util.h
     util/arange.cc
-    util/conversions.cc
     util/gaussian_latitudes.cc
     util/gaussian_quadrature_weights.cc
     util/hash_vector.cc

@@ -49,9 +49,6 @@ template <>
 pl_type pl_convert(const pl_type&);
 
 
-size_t convert_long_to_size_t(long);
-
-
 std::vector<double> arange(double start, double stop, double step);
 
 

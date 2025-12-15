@@ -57,6 +57,13 @@ public:
 };
 
 
+class GridUnknownError : public geo::Exception {
+public:
+
+    explicit GridUnknownError(const std::string&, const CodeLocation&);
+};
+
+
 class OrderError : public geo::Exception {
 public:
 

@@ -72,7 +72,7 @@ std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlons() 
 
 Grid::Spec* Unstructured::spec(const std::string& uid) {
     if (!GridSpecByUID::instance().exists(uid)) {
-        throw exception::GridUnkownError("Unstructured: unknown grid type '" + uid + "'", Here());
+        throw exception::GridUnknownError("Unstructured: unknown grid type '" + uid + "'", Here());
     }
 
     return GridSpecByUID::instance().get(uid).spec();

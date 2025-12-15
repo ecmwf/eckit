@@ -78,6 +78,8 @@ list(APPEND eckit_geo_srcs
     grid/reduced/HEALPix.h
     grid/reduced/ReducedGaussian.cc
     grid/reduced/ReducedGaussian.h
+    grid/reduced/ReducedLonLat.cc
+    grid/reduced/ReducedLonLat.h
     grid/regular/RegularGaussian.cc
     grid/regular/RegularGaussian.h
     grid/regular/RegularLL.cc

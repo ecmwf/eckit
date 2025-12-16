@@ -12,6 +12,7 @@
 
 #include "eckit/geo/grid/reduced/ReducedLonLat.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
@@ -30,6 +31,10 @@ namespace {
 range::RegularLongitude* make_lon_range(size_t Ni, const area::BoundingBox& bbox) {
     const auto west = bbox.west;
     const auto east = bbox.periodic() ? west + PointLonLat::FULL_ANGLE : bbox.east;
+
+    if (Ni == 0) {
+        return range::RegularLongitude::make_empty_range(west, east);
+    }
 
     ASSERT(2 <= Ni);
     ASSERT(west < east);
@@ -56,8 +61,23 @@ range::RegularLatitude* make_lat_range(size_t Nj, const area::BoundingBox& bbox)
 ReducedLonLat::ReducedLonLat(const Spec& spec) : ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}) {}
 
 
-ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox) :
-    Reduced(bbox), pl_(pl), longitude_(pl.size()), latitude_(make_lat_range(pl.size(), bbox)) {
+ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox) : pl_(pl), longitude_(pl.size()) {
+    if (pl_.empty()) {
+        throw exception::GridError("ReducedLonLat: 'pl' must not be empty", Here());
+    }
+
+    auto pl_periodic = [&]() {
+        auto max_pl = *std::max_element(pl.begin(), pl.end());
+        ASSERT(max_pl >= 2);
+
+        auto inc = PointLonLat::FULL_ANGLE / static_cast<double>(max_pl - 1);
+        return range::RegularLongitude(inc, bbox.west, bbox.east, bbox.west).periodic();
+    };
+
+    boundingBox(new BoundingBox{bbox.north, bbox.west, bbox.south,
+                                bbox.periodic() || pl_periodic() ? bbox.west + PointLonLat::FULL_ANGLE : bbox.east});
+
+    latitude_.reset(make_lat_range(pl.size(), bbox));
     ASSERT(latitude_);
 }
 
@@ -124,7 +144,7 @@ const std::string& ReducedLonLat::type() const {
 }
 
 
-static const GridRegisterType<ReducedLonLat> GRIDTYPE1("reduced_ll");
+static const GridRegisterType<ReducedLonLat> GRIDTYPE("reduced_ll");
 
 
 }  // namespace eckit::geo::grid::reduced

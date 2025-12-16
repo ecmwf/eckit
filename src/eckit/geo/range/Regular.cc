@@ -81,12 +81,18 @@ struct RegularLongitude final : Regular::Implementation {
             return new range::RegularLongitude(inc_, crop_a, crop_b, a_);
         }
 
-        if (Fraction a(crop_a), b(crop_b); Fraction::abs(b - a + inc_) >= PERIOD) {
-            crop_b = crop_a + PERIOD;
-        }
-
         std::unique_ptr<Regular> x{Implementation::make_cropped_range(crop_a, crop_b)};
-        return new range::RegularLongitude(x->increment(), x->af(), x->bf(), x->af());
+
+        return size_ == 0 ? range::RegularLongitude::make_empty_range(x->af(), x->bf())
+                          : new range::RegularLongitude(x->increment(), x->af(), x->bf(), x->af());
+    }
+
+    static RegularLongitude* make_empty(Fraction a, Fraction b) {
+        auto* impl(new RegularLongitude(b - a, a, b, a));
+        ASSERT(impl != nullptr);
+
+        impl->size_ = 0;
+        return impl;
     }
 
     bool periodic() const override { return periodic_; }
@@ -188,6 +194,11 @@ RegularLatitude* RegularLatitude::make_cropped_range(double crop_a, double crop_
 RegularLongitude::RegularLongitude(Fraction inc, Fraction _a, Fraction _b, Fraction ref) :
     Regular(new detail::RegularLongitude(inc, _a, _b, ref)) {
     ASSERT(types::is_approximately_equal(a(), b()) ? size() == 1 : size() > 1);
+}
+
+
+RegularLongitude* RegularLongitude::make_empty_range(Fraction a, Fraction b) {
+    return new RegularLongitude(detail::RegularLongitude::make_empty(a, b));
 }
 
 

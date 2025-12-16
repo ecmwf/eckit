@@ -104,7 +104,16 @@ struct RegularLongitude : Regular {
     explicit RegularLongitude(double inc, double a, double b, double ref = 0) :
         RegularLongitude(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
 
+    [[nodiscard]] static RegularLongitude* make_empty_range(Fraction a, Fraction b);
+    [[nodiscard]] static RegularLongitude* make_empty_range(double a, double b) {
+        return make_empty_range(Fraction{a}, Fraction{b});
+    }
+
     [[nodiscard]] RegularLongitude* make_cropped_range(double crop_a, double crop_b) const override;
+
+private:
+
+    explicit RegularLongitude(Implementation* impl) : Regular(impl) {}
 };
 
 

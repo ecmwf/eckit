@@ -138,6 +138,10 @@ bool Value::shared() const {
 }
 
 Value& Value::operator=(const Value& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     Content* current = content_;
 
     content_ = other.content_;

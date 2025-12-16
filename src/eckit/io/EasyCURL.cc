@@ -812,6 +812,10 @@ EasyCURLResponse::EasyCURLResponse(const EasyCURLResponse& other) : imp_(other.i
 }
 
 EasyCURLResponse& EasyCURLResponse::operator=(const eckit::EasyCURLResponse& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     if (imp_ != other.imp_) {
         imp_->detach();
         imp_ = other.imp_;

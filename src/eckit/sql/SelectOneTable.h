@@ -27,7 +27,7 @@ class SQLColumn;
 class SQLTableIterator;
 
 struct SelectOneTable {
-    SelectOneTable(const SQLTable* table = 0);
+    SelectOneTable(const SQLTable* table = nullptr);
     ~SelectOneTable();
 
     const SQLTable* table_;

@@ -23,7 +23,7 @@ namespace eckit::sql::expression::function {
 static FunctionBuilder<FunctionROWNUMBER> rownumberFunctionBuilder("rownumber");
 
 FunctionROWNUMBER::FunctionROWNUMBER(const std::string& name, const expression::Expressions& args) :
-    FunctionIntegerExpression(name, args), count_(0) {}
+    FunctionIntegerExpression(name, args), count_{nullptr} {}
 
 
 FunctionROWNUMBER::FunctionROWNUMBER(const FunctionROWNUMBER& other) :
@@ -54,7 +54,7 @@ bool FunctionROWNUMBER::isConstant() const {
 }
 
 std::shared_ptr<SQLExpression> FunctionROWNUMBER::simplify(bool&) {
-    return 0;
+    return nullptr;
 }
 
 void FunctionROWNUMBER::partialResult() { /*NOTIMP;*/ }

@@ -133,7 +133,7 @@ MultiSocket& MultiSocket::connect(const std::string& host, int port, int retries
     SYSCALL(::gethostname(hostname, sizeof(hostname) - 1));
 
     md5.add(std::string(hostname));
-    md5.add(::time(0));
+    md5.add(::time(nullptr));
     md5.add(::getpid());
     md5.add(reinterpret_cast<long long>(this));
 

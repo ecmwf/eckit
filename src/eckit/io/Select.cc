@@ -116,7 +116,7 @@ bool Select::ready(long sec) {
             set_         = files_;
             fd_set excep = files_;
 
-            switch (::select(size, &set_, 0, &excep, &timeout)) {
+            switch (::select(size, &set_, nullptr, &excep, &timeout)) {
                 case -1:
                     if (errno != EINTR) {
                         throw FailedSystemCall("select");

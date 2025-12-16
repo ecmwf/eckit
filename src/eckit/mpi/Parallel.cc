@@ -268,7 +268,7 @@ void Parallel::initialize() {
     if (!initialized()) {
 
         int argc(0);
-        char** argv(0);
+        char** argv = nullptr;
 
         if (eckit::Main::ready()) {
             argc = eckit::Main::instance().argc();

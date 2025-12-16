@@ -105,7 +105,7 @@ T& ThreadSingleton<T, A>::instance() {
 template <typename T, typename A>
 void ThreadSingleton<T, A>::cleanUp(void* data) {
     delete (T*)data;
-    ::pthread_setspecific(key_, 0);
+    ::pthread_setspecific(key_, nullptr);
 }
 
 template <typename T, typename A>

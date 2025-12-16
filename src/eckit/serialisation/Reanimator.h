@@ -84,7 +84,7 @@ public:
     virtual ~ReanimatorBase();
     const ClassSpec& spec() const { return spec_; }
 
-    static Streamable* reanimate(Stream&, const ClassSpec* = 0);
+    static Streamable* reanimate(Stream&, const ClassSpec* = nullptr);
 };
 
 

@@ -25,7 +25,7 @@ namespace eckit {
 class TimeStampTarget : public WrapperTarget {
 public:
 
-    TimeStampTarget(const char* tag = "", LogTarget* target = 0);
+    TimeStampTarget(const char* tag = "", LogTarget* target = nullptr);
 
     ~TimeStampTarget() override;
 

@@ -27,7 +27,7 @@ public:
 
     using completion_proc = bool (*)(const char*, int pos, char* insert, int insertmax);
 
-    static const char* getUserInput(const char* prompt, completion_proc callback = 0);
+    static const char* getUserInput(const char* prompt, completion_proc callback = nullptr);
 
     static void saveHistory(const char* path, int max = 0);
     static void loadHistory(const char* path);

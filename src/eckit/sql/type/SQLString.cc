@@ -33,7 +33,7 @@ void SQLString::output(SQLOutput& o, double d, bool missing) const {
 
 void SQLString::output(SQLOutput& o, const double* d, bool missing) const {
     if (missing) {
-        o.outputString(0, 0, missing);
+        o.outputString(nullptr, 0, missing);
     }
     else {
         const char* c(reinterpret_cast<const char*>(d));

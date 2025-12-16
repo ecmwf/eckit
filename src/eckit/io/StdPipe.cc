@@ -16,10 +16,10 @@
 
 namespace eckit {
 
-StdPipe::StdPipe(const std::string& name, const std::string& mode) : file_(0) {
+StdPipe::StdPipe(const std::string& name, const std::string& mode) : file_{nullptr} {
     file_ = ::popen(name.c_str(), mode.c_str());
 
-    if (file_ == 0) {
+    if (file_ == nullptr) {
         throw CantOpenFile(name);
     }
 }
@@ -34,7 +34,7 @@ void StdPipe::close() noexcept(false) {
             throw FailedSystemCall("pclose");
         }
     }
-    file_ = 0;
+    file_ = nullptr;
 }
 
 }  // namespace eckit

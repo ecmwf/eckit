@@ -427,7 +427,7 @@ static void call(const char* what, CURLMcode code) {
 }
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
-static CURLM* multi        = 0;
+static CURLM* multi        = nullptr;
 
 static void init() {
     _(curl_global_init(CURL_GLOBAL_DEFAULT));
@@ -445,7 +445,7 @@ public:
     CURL* curl_;
     curl_slist* chunks_;
 
-    CURLHandle() : curl_(nullptr), chunks_(nullptr) {
+    CURLHandle() : curl_{nullptr}, chunks_{nullptr} {
         pthread_once(&once, init);
         curl_ = curl_easy_init();
         ASSERT(curl_);
@@ -506,7 +506,7 @@ bool EasyCURLResponseImp::redirect(std::string& location) {
     for (auto c : http_codes) {
         if (c.code_ == code_) {
             if (c.redirect_) {
-                char* url = NULL;
+                char* url = nullptr;
                 _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
                 ASSERT(url);
                 location = url;
@@ -634,7 +634,7 @@ public:
 
         if (maxfd == -1) {
             timeout = {0, 100 * 1000};
-            select(0, NULL, NULL, NULL, &timeout);
+            select(0, nullptr, nullptr, nullptr, &timeout);
         }
         else {
             SYSCALL(::select(maxfd + 1, &fdr, &fdw, &fdx, &timeout));

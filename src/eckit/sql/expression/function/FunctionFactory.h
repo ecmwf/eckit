@@ -97,7 +97,7 @@ class FunctionBuilder : public FunctionBuilderBase {
 
 public:  // methods
 
-    FunctionBuilder(const std::string& name, const char* help = 0) :
+    FunctionBuilder(const std::string& name, const char* help = nullptr) :
         FunctionBuilderBase(name, FunctionType::arity(), help ? help : FunctionType::help()) {}
 
     ~FunctionBuilder() override {}

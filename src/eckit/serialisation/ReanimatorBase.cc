@@ -63,7 +63,7 @@ NotSubClass::NotSubClass(const std::string& found, const std::string& clss) :
 
 Streamable* ReanimatorBase::reanimate(Stream& s, const ClassSpec* c) {
     if (!s.next()) {
-        return 0;
+        return nullptr;
     }
 
     std::string name;
@@ -81,11 +81,11 @@ Streamable* ReanimatorBase::reanimate(Stream& s, const ClassSpec* c) {
 
     if (c) {
         const ClassSpec* a = &r->spec_;
-        while (a != 0 && a != c) {
+        while (a != nullptr && a != c) {
             a = a->superClass_;
         }
 
-        if (a == 0) {
+        if (a == nullptr) {
             throw NotSubClass(name, c->name_);
         }
     }

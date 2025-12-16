@@ -54,8 +54,8 @@ private:  // methods
     void setFile(const std::string& path, size_t bufferSize = 4 * 1024);
     void addFile(const std::string& path, size_t bufferSize = 4 * 1024);
 
-    void setCallback(channel_callback_t cb, void* data = 0);
-    void addCallback(channel_callback_t cb, void* data = 0);
+    void setCallback(channel_callback_t cb, void* data = nullptr);
+    void addCallback(channel_callback_t cb, void* data = nullptr);
 
 protected:  // methods
 

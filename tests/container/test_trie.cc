@@ -33,87 +33,87 @@ CASE("test_trie_insertion") {
 
     EXPECT(!tr.empty());
 
-    EXPECT(tr.find("a-test-string") != 0);
+    EXPECT(tr.find("a-test-string") != nullptr);
     EXPECT(*tr.find("a-test-string") == 1234);
 
-    EXPECT(tr.find("b-test-string") == 0);
-    EXPECT(tr.find("a-test-strinh") == 0);
-    EXPECT(tr.find("a-test-str") == 0);
-    EXPECT(tr.find("a-test-stringy") == 0);
+    EXPECT(tr.find("b-test-string") == nullptr);
+    EXPECT(tr.find("a-test-strinh") == nullptr);
+    EXPECT(tr.find("a-test-str") == nullptr);
+    EXPECT(tr.find("a-test-stringy") == nullptr);
 
     // Test something that branches off with a lower character value
 
     tr.insert("a-different-string", 4321);
 
-    EXPECT(tr.find("a-test-string") != 0);
+    EXPECT(tr.find("a-test-string") != nullptr);
     EXPECT(*tr.find("a-test-string") == 1234);
 
-    EXPECT(tr.find("a-different-string") != 0);
+    EXPECT(tr.find("a-different-string") != nullptr);
     EXPECT(*tr.find("a-different-string") == 4321);
 
     // Test something that branches off with a higher charachter value
 
     tr.insert("a-x-string", 666);
 
-    EXPECT(tr.find("a-test-string") != 0);
+    EXPECT(tr.find("a-test-string") != nullptr);
     EXPECT(*tr.find("a-test-string") == 1234);
 
-    EXPECT(tr.find("a-different-string") != 0);
+    EXPECT(tr.find("a-different-string") != nullptr);
     EXPECT(*tr.find("a-different-string") == 4321);
 
-    EXPECT(tr.find("a-x-string") != 0);
+    EXPECT(tr.find("a-x-string") != nullptr);
     EXPECT(*tr.find("a-x-string") == 666);
 
     // Test inserting a substring of an existing string
 
-    EXPECT(tr.find("a-x") == 0);
+    EXPECT(tr.find("a-x") == nullptr);
 
     tr.insert("a-x", 999);
 
-    EXPECT(tr.find("a-x-string") != 0);
+    EXPECT(tr.find("a-x-string") != nullptr);
     EXPECT(*tr.find("a-x-string") == 666);
 
-    EXPECT(tr.find("a-x") != 0);
+    EXPECT(tr.find("a-x") != nullptr);
     EXPECT(*tr.find("a-x") == 999);
 
     // Test weird characters
 
     tr.insert("a-#$@!%^&*", 9876);
 
-    EXPECT(tr.find("a-x-string") != 0);
+    EXPECT(tr.find("a-x-string") != nullptr);
     EXPECT(*tr.find("a-x-string") == 666);
 
-    EXPECT(tr.find("a-#$@!%^&*") != 0);
+    EXPECT(tr.find("a-#$@!%^&*") != nullptr);
     EXPECT(*tr.find("a-#$@!%^&*") == 9876);
 
     // Test with strings such that an existing entry is a substring.
 
     tr.insert("a-test-string-extended", 5678);
 
-    EXPECT(tr.find("a-test-string") != 0);
+    EXPECT(tr.find("a-test-string") != nullptr);
     EXPECT(*tr.find("a-test-string") == 1234);
 
-    EXPECT(tr.find("a-test-string-extended") != 0);
+    EXPECT(tr.find("a-test-string-extended") != nullptr);
     EXPECT(*tr.find("a-test-string-extended") == 5678);
 
     // Test insert change first character
 
     tr.insert("b-test-string", 3141);
 
-    EXPECT(tr.find("a-test-string") != 0);
+    EXPECT(tr.find("a-test-string") != nullptr);
     EXPECT(*tr.find("a-test-string") == 1234);
 
-    EXPECT(tr.find("b-test-string") != 0);
+    EXPECT(tr.find("b-test-string") != nullptr);
     EXPECT(*tr.find("b-test-string") == 3141);
 
     // Test insert change last character
 
     tr.insert("a-test-strinh", 1413);
 
-    EXPECT(tr.find("a-test-string") != 0);
+    EXPECT(tr.find("a-test-string") != nullptr);
     EXPECT(*tr.find("a-test-string") == 1234);
 
-    EXPECT(tr.find("a-test-strinh") != 0);
+    EXPECT(tr.find("a-test-strinh") != nullptr);
     EXPECT(*tr.find("a-test-strinh") == 1413);
 }
 

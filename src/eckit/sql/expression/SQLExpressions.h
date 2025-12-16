@@ -33,7 +33,7 @@ class Expressions : public SQLExpression, public ExpressionsVector {
 public:
 
     Expressions() : ExpressionsVector() {}
-    Expressions(size_t i) : ExpressionsVector(i, 0) {}
+    Expressions(size_t i) : ExpressionsVector(i, nullptr) {}
 
     Expressions(const Expressions&)            = default;
     Expressions& operator=(const Expressions&) = default;

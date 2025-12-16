@@ -48,7 +48,7 @@ UDPServer::UDPServer(int port) : port_(port), socketfd_(0) {
     Translator<int, std::string> toStr;
 
     int err = 0;
-    if ((err = ::getaddrinfo(NULL, toStr(port_).c_str(), &hints, &servinfo)) != 0) {
+    if ((err = ::getaddrinfo(nullptr, toStr(port_).c_str(), &hints, &servinfo)) != 0) {
         std::ostringstream msg;
         msg << "getaddrinfo failed in UDPServer with "
             << " port=" << port << " --  " << ::gai_strerror(err);
@@ -56,7 +56,7 @@ UDPServer::UDPServer(int port) : port_(port), socketfd_(0) {
     }
 
     // loop through all the addrinfo results and make a socket and then bind()
-    for (addr = servinfo; addr != NULL; addr = addr->ai_next) {
+    for (addr = servinfo; addr != nullptr; addr = addr->ai_next) {
         if ((socketfd_ = ::socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol)) == -1) {
             continue;
         }
@@ -70,7 +70,7 @@ UDPServer::UDPServer(int port) : port_(port), socketfd_(0) {
         break;
     }
 
-    if (addr == NULL) {
+    if (addr == nullptr) {
         std::ostringstream msg;
         msg << "UDPServer failed to create a socket";
         throw FailedSystemCall(msg.str(), Here());

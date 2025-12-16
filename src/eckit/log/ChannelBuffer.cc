@@ -23,7 +23,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-ChannelBuffer::ChannelBuffer(std::size_t size) : std::streambuf(), target_(0), buffer_(size) {
+ChannelBuffer::ChannelBuffer(std::size_t size) : std::streambuf(), target_{nullptr}, buffer_(size) {
     ASSERT(size);
     setp(buffer_.data(), buffer_.data() + buffer_.size());
 }
@@ -33,7 +33,7 @@ ChannelBuffer::~ChannelBuffer() {
 }
 
 bool ChannelBuffer::active() const {
-    return target_ != 0;
+    return target_ != nullptr;
 }
 
 
@@ -61,7 +61,7 @@ void ChannelBuffer::reset() {
     sync();
     if (target_) {
         target_->detach();
-        target_ = 0;
+        target_ = nullptr;
     }
 }
 
@@ -87,7 +87,7 @@ void ChannelBuffer::indent(const char* space) {
 void ChannelBuffer::unindent() {
     if (target_) {
         IndentTarget* indent = dynamic_cast<IndentTarget*>(target_);
-        if (indent == 0) {
+        if (indent == nullptr) {
             throw SeriousBug("Attempt to unindent a Channel that is not indented");
         }
         setTarget(indent->target_);

@@ -28,7 +28,7 @@ static void closeDataHandle(PathName&, DataHandle*& handle) {
     if (handle) {
         handle->close();
         delete handle;
-        handle = 0;
+        handle = nullptr;
     }
 }
 

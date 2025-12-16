@@ -103,7 +103,7 @@ Length DataHandle::saveInto(DataHandle& other, TransferWatcher& watcher) {
 
     Buffer buffer(bufsize);
 
-    watcher.watch(0, 0);
+    watcher.watch(nullptr, 0);
 
     Length estimate = openForRead();
     AutoClose closer1(*this);

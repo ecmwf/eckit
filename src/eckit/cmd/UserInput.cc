@@ -106,7 +106,7 @@ struct entry {
     int len;
 };
 
-static entry* history = NULL;
+static entry* history = nullptr;
 
 struct context {
     const char* prompt;
@@ -502,7 +502,7 @@ static bool processCode(int c, context* s) {
 }
 
 void UserInput::printHistory(int max) {
-    entry* last = NULL;
+    entry* last = nullptr;
     entry* e;
 
     if (max == 0) {
@@ -523,7 +523,7 @@ void UserInput::printHistory(int max) {
 
 void UserInput::saveHistory(const char* path, int max) {
 
-    entry* last = NULL;
+    entry* last = nullptr;
     entry* e;
 
     FILE* f = ::fopen(path, "w");
@@ -596,7 +596,7 @@ void UserInput::loadHistory(const char* path) {
 
 static void cleanup_history() {
     entry* h = history;
-    entry* n = NULL;
+    entry* n = nullptr;
 
     char* prev = strdup("");
 
@@ -604,7 +604,7 @@ static void cleanup_history() {
         n = h->prev;
         if (h->edit) {
             free(h->edit);
-            h->edit = NULL;
+            h->edit = nullptr;
         }
 
         if (strlen(h->line) == 0 /*|| strcmp(h->line, prev) == 0*/) {
@@ -679,12 +679,12 @@ const char* UserInput::getUserInput(const char* prompt, completion_proc completi
 
     if (strlen(history->line) == 0) {
         cleanup_history();
-        return s.eof ? NULL : "";
+        return s.eof ? nullptr : "";
     }
 
     cleanup_history();
 
-    return s.eof ? NULL : (history ? history->line : "");
+    return s.eof ? nullptr : (history ? history->line : "");
 }
 
 }  // namespace eckit

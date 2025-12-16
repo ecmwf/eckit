@@ -44,13 +44,13 @@ void FileHandle::encode(Stream& s) const {
     s << overwrite_;
 }
 
-FileHandle::FileHandle(Stream& s) : DataHandle(s), overwrite_(false), file_(nullptr), read_(false) {
+FileHandle::FileHandle(Stream& s) : DataHandle(s), overwrite_(false), file_{nullptr}, read_(false) {
     s >> name_;
     s >> overwrite_;
 }
 
 FileHandle::FileHandle(const std::string& name, bool overwrite) :
-    name_(name), overwrite_(overwrite), file_(nullptr), read_(false) {}
+    name_(name), overwrite_(overwrite), file_{nullptr}, read_(false) {}
 
 FileHandle::~FileHandle() {}
 
@@ -66,7 +66,7 @@ void FileHandle::open(const char* mode) {
     // this class is used with large buffers anyway
 
     if (!(::strcmp(mode, "r") == 0)) {
-        setbuf(file_, 0);
+        setbuf(file_, nullptr);
     }
     else {
         static long bufSize =

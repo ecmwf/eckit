@@ -33,7 +33,7 @@ class Channel : public std::ostream, private NonCopyable {
 
 public:  // methods
 
-    Channel(LogTarget* = 0);
+    Channel(LogTarget* = nullptr);
 
     ~Channel() override;
 
@@ -49,8 +49,8 @@ public:  // methods
     void setFile(const std::string& path);
     void addFile(const std::string& path);
 
-    void setCallback(channel_callback_t cb, void* data = 0);
-    void addCallback(channel_callback_t cb, void* data = 0);
+    void setCallback(channel_callback_t cb, void* data = nullptr);
+    void addCallback(channel_callback_t cb, void* data = nullptr);
 
     void setTarget(LogTarget*);
     void addTarget(LogTarget*);

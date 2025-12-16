@@ -28,7 +28,7 @@ public:
 
     using callback_t = void (*)(void* ctxt, const char* msg);
 
-    CallbackTarget(callback_t callback, void* context = 0);
+    CallbackTarget(callback_t callback, void* context = nullptr);
 
     ~CallbackTarget() override;
 

@@ -68,7 +68,7 @@ MemoryHandle::MemoryHandle(void* address, size_t size) :
 
 
 MemoryHandle::MemoryHandle(size_t size, bool grow) :
-    address_(nullptr),
+    address_{nullptr},
     size_(0),
     capacity_(size),
     opened_(false),

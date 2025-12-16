@@ -42,7 +42,7 @@ public:  // types
 
     struct Entry {
         Entry(const V& v) : v_(v), expired_(false), hits_(0) {
-            gettimeofday(&age_, 0);
+            gettimeofday(&age_, nullptr);
             last_ = age_;
         }
 
@@ -50,12 +50,12 @@ public:  // types
             v_       = v;
             expired_ = false;
             hits_    = 0;
-            gettimeofday(&age_, 0);
+            gettimeofday(&age_, nullptr);
             last_ = age_;
         }
 
         V& access() {
-            gettimeofday(&last_, 0);
+            gettimeofday(&last_, nullptr);
             ++hits_;
             return v_;
         }

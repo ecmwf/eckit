@@ -61,7 +61,7 @@ TeeHandle::~TeeHandle() {
 }
 
 void TeeHandle::operator+=(DataHandle* dh) {
-    ASSERT(dh != 0);
+    ASSERT(dh != nullptr);
     datahandles_.push_back(dh);
 }
 

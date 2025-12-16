@@ -34,8 +34,6 @@ CASE("Test MPI Communicator group") {
     // Get default communicator
     Comm& all = eckit::mpi::comm();
 
-    std::string start = all.name();
-
     // Check sizes and ranks
     EXPECT(all.size() == 4);
     EXPECT(all.rank() < 4);

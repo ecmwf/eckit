@@ -79,16 +79,16 @@ CASE("gridSpec") {
 
     SECTION("HEALPix") {
         std::vector<test_type> tests{
-            {R"({"grid":"H2n"})", {48}},          {R"({"grid":"H2"})", {48}},
-            {R"({"grid":"H4n"})", {192}},         {R"({"grid":"H4"})", {192}},
-            {R"({"grid":"H8n"})", {768}},         {R"({"grid":"H8"})", {768}},
-            {R"({"grid":"H16n"})", {3072}},       {R"({"grid":"H16"})", {3072}},
-            {R"({"grid":"H32n"})", {12288}},      {R"({"grid":"H32"})", {12288}},
-            {R"({"grid":"H64n"})", {49152}},      {R"({"grid":"H64"})", {49152}},
-            {R"({"grid":"H128n"})", {196608}},    {R"({"grid":"H128"})", {196608}},
-            {R"({"grid":"H256n"})", {786432}},    {R"({"grid":"H256"})", {786432}},
-            {R"({"grid":"H512n"})", {3145728}},   {R"({"grid":"H512"})", {3145728}},
-            {R"({"grid":"H1024n"})", {12582912}}, {R"({"grid":"H1024"})", {12582912}},
+            {R"({"grid":"H2","order":"nested"})", {48}},          {R"({"grid":"H2"})", {48}},
+            {R"({"grid":"H4","order":"nested"})", {192}},         {R"({"grid":"H4"})", {192}},
+            {R"({"grid":"H8","order":"nested"})", {768}},         {R"({"grid":"H8"})", {768}},
+            {R"({"grid":"H16","order":"nested"})", {3072}},       {R"({"grid":"H16"})", {3072}},
+            {R"({"grid":"H32","order":"nested"})", {12288}},      {R"({"grid":"H32"})", {12288}},
+            {R"({"grid":"H64","order":"nested"})", {49152}},      {R"({"grid":"H64"})", {49152}},
+            {R"({"grid":"H128","order":"nested"})", {196608}},    {R"({"grid":"H128"})", {196608}},
+            {R"({"grid":"H256","order":"nested"})", {786432}},    {R"({"grid":"H256"})", {786432}},
+            {R"({"grid":"H512","order":"nested"})", {3145728}},   {R"({"grid":"H512"})", {3145728}},
+            {R"({"grid":"H1024","order":"nested"})", {12582912}}, {R"({"grid":"H1024"})", {12582912}},
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));

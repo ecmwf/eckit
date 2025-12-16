@@ -59,9 +59,13 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox) :
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const BoundingBox& bbox) :
-    Reduced(bbox), N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), longitude_(Nj_), latitude_(make_y_range(N, bbox)) {
+    N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), longitude_(Nj_) {
     ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
+
+    boundingBox(new BoundingBox{bbox});
+
+    latitude_.reset(make_y_range(N, bbox));
     ASSERT(latitude_);
 }
 

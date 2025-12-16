@@ -34,9 +34,6 @@ Point Reduced::last_point() const {
 }
 
 
-Reduced::Reduced(const BoundingBox& bbox) : bbox_(bbox) {}
-
-
 const std::vector<size_t>& Reduced::nxacc() const {
     if (nxacc_.empty()) {
         nxacc_.resize(1 + ny());

@@ -40,7 +40,7 @@ CASE("gridspec") {
     std::unique_ptr<const Grid> grid2(GridFactory::build(spec2));
 
     EXPECT_EQUAL(grid2->size(), 48);
-    EXPECT_EQUAL(grid2->spec_str(), R"({"grid":"H2n"})");
+    EXPECT_EQUAL(grid2->spec_str(), R"({"grid":"H2","order":"nested"})");
 
     spec::Custom spec3({{"grid", "h2"}, {"order", "ring"}});
     std::unique_ptr<const Grid> grid3(GridFactory::build(spec3));

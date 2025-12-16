@@ -44,10 +44,6 @@ public:
 
 protected:
 
-    // -- Constructors
-
-    explicit Reduced(const BoundingBox&);
-
     // -- Methods
 
     const std::vector<size_t>& nxacc() const;
@@ -55,16 +51,11 @@ protected:
     virtual size_t nx(size_t) const = 0;
     virtual size_t ny() const       = 0;
 
-    // -- Overridden methods
-
-    [[nodiscard]] BoundingBox* calculate_bbox() const override { return new BoundingBox(bbox_); }
-
 private:
 
     // -- Members
 
     mutable std::vector<size_t> nxacc_;
-    const BoundingBox bbox_;
 
     // -- Friends
 

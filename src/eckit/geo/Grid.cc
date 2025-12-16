@@ -334,6 +334,10 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
     }
 
     if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
+        if (!GridSpecByUID::instance().exists(uid)) {
+            throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
+        }
+
         cfg->push_front(GridSpecByUID::instance().get(uid).spec());
     }
 

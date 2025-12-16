@@ -179,6 +179,7 @@ const typename GeneratorT<C>::generator_t& GeneratorT<C>::get(const key_t& k) co
     if (auto it = store_.find(k); it != store_.end()) {
         return *(it->second);
     }
+
     throw BadParameter("Generator unknown: '" + k + "'", Here());
 }
 

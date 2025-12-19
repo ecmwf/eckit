@@ -177,8 +177,8 @@ struct ReducedGaussianOctahedral {
 };
 
 
-static const GridRegisterName<ReducedGaussianClassical> GRIDNAME1("n[1-9][0-9]*");
-static const GridRegisterName<ReducedGaussianOctahedral> GRIDNAME2("o[1-9][0-9]*");
+static const auto GRIDNAME1 = GridRegisterName<ReducedGaussianClassical>("n[1-9][0-9]*");
+static const auto GRIDNAME2 = GridRegisterName<ReducedGaussianOctahedral>("o[1-9][0-9]*");
 
 static const GridRegisterType<ReducedGaussian> GRIDTYPE1("reduced_gg");
 static const GridRegisterType<ReducedGaussian> GRIDTYPE2("reduced_rotated_gg");

@@ -206,7 +206,10 @@ template <typename T>
 using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
 
 template <typename T>
-using GridRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
+bool GridRegisterName(const std::string& name_or_pattern) {
+    new eckit::spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
+    return true;
+};
 
 
 struct GridFactory {

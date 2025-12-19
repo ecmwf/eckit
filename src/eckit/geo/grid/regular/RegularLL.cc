@@ -157,7 +157,7 @@ Grid::BoundingBox* RegularLL::calculate_bbox() const {
 }
 
 
-static const GridRegisterName<RegularLL> GRIDNAME(REGULAR_LL_PATTERN);
+static const auto GRIDNAME = GridRegisterName<RegularLL>(REGULAR_LL_PATTERN);
 
 static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
 static const GridRegisterType<RegularLL> GRIDTYPE2("rotated_ll");

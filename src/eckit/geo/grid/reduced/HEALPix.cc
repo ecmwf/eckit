@@ -173,7 +173,7 @@ const std::string& HEALPix::type() const {
 
 static const GridRegisterType<HEALPix> GRIDTYPE1("HEALPix");
 static const GridRegisterType<HEALPix> GRIDTYPE2("healpix");
-static const GridRegisterName<HEALPix> GRIDNAME(HEALPIX_PATTERN);
+static const auto GRIDNAME = GridRegisterName<HEALPix>(HEALPIX_PATTERN);
 
 
 }  // namespace eckit::geo::grid::reduced

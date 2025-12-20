@@ -219,7 +219,7 @@ void GeneratorT<C>::print(std::ostream& os) const {
     }
 
     for (const auto& i : store_) {
-        os << "    " << std::setw(key_width) << std::left << i.first << "  --  " << i.second << std::endl;
+        os << "    " << std::setw(key_width) << std::left << i.first << "  --  " << i.second.get() << std::endl;
     }
 }
 

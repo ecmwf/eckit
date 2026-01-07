@@ -96,10 +96,6 @@ private:
 
     GeneratorT() = default;
 
-    // -- Destructor
-
-    ~GeneratorT() = default;
-
     // -- Members
 
     mutable Mutex mutex_;

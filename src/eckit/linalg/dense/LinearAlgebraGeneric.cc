@@ -39,7 +39,9 @@ Scalar LinearAlgebraGeneric::dot(const Vector& x, const Vector& y) const {
     Scalar sum = 0.;
 
 #if eckit_HAVE_OMP
+#ifndef AOCC
 #pragma omp parallel for reduction(+ : sum)
+#endif
 #endif
     for (Size i = 0; i < Ni; ++i) {
         const auto p = x[i] * y[i];
@@ -58,7 +60,9 @@ void LinearAlgebraGeneric::gemv(const Matrix& A, const Vector& x, Vector& y) con
     ASSERT(x.rows() == Nj);
 
 #if eckit_HAVE_OMP
+#ifndef AOCC
 #pragma omp parallel for
+#endif
 #endif
     for (Size i = 0; i < Ni; ++i) {
         Scalar sum = 0.;
@@ -82,7 +86,9 @@ void LinearAlgebraGeneric::gemm(const Matrix& A, const Matrix& B, Matrix& C) con
     ASSERT(B.rows() == Nk);
 
 #if eckit_HAVE_OMP
+#ifndef AOCC
 #pragma omp parallel for collapse(2)
+#endif
 #endif
     for (Size j = 0; j < Nj; ++j) {
         for (Size i = 0; i < Ni; ++i) {

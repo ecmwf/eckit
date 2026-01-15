@@ -51,7 +51,9 @@ void LinearAlgebraGeneric::spmv(const SparseMatrix& A, const Vector& x, Vector& 
     ASSERT(outer[0] == 0);  // expect indices to be 0-based
 
 #if eckit_HAVE_OMP
+#ifndef AOCC
 #pragma omp parallel for
+#endif
 #endif
     for (Size i = 0; i < Ni; ++i) {
         Scalar sum = 0.;
@@ -87,13 +89,17 @@ void LinearAlgebraGeneric::spmm(const SparseMatrix& A, const Matrix& B, Matrix& 
     std::vector<Scalar> sum;
 
 #if eckit_HAVE_OMP
+#ifndef AOCC
 #pragma omp parallel
+#endif
 #endif
     {
         std::vector<Scalar> sum(Nk);
 
 #if eckit_HAVE_OMP
+#ifndef AOCC
 #pragma omp for
+#endif
 #endif
         for (Size i = 0; i < Ni; ++i) {
             sum.assign(Nk, 0);
@@ -133,7 +139,9 @@ void LinearAlgebraGeneric::dsptd(const Vector& x, const SparseMatrix& A, const V
     ASSERT(outer[0] == 0);  // expect indices to be 0-based
 
 #if eckit_HAVE_OMP
+#ifndef AOCC
 #pragma omp parallel for
+#endif
 #endif
     for (Size i = 0; i < Ni; ++i) {
         for (auto k = outer[i]; k < outer[i + 1]; ++k) {

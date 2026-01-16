@@ -219,7 +219,7 @@ void FESOM::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& FESOM::type() const {
-    static const std::string type{"fesom"};
+    static const std::string type{"FESOM"};
     return type;
 }
 

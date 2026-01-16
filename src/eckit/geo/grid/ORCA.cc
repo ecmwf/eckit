@@ -295,7 +295,7 @@ void ORCA::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& ORCA::type() const {
-    static const std::string type{"orca"};
+    static const std::string type{"ORCA"};
     return type;
 }
 

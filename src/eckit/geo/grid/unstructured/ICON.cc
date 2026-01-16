@@ -170,7 +170,7 @@ void ICON::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& ICON::type() const {
-    static const std::string type{"icon"};
+    static const std::string type{"ICON"};
     return type;
 }
 

@@ -29,8 +29,8 @@
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -338,10 +338,6 @@ private:
 }  // namespace
 
 
-const PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST = -PointLonLat::FLAT_ANGLE;
-const BoundingBox BOUNDING_BOX_DEFAULT;
-
-
 static inline bool is_approximately_equal(BoundingBox::value_type a, BoundingBox::value_type b) {
     return types::is_approximately_equal(a, b, PointLonLat::EPS);
 }
@@ -360,18 +356,12 @@ std::unique_ptr<BoundingBox> BoundingBox::make_global_antiprime() {
 
 
 void BoundingBox::fill_spec(spec::Custom& custom) const {
-    if (!bounding_box_equal(*this, BOUNDING_BOX_DEFAULT)) {
-        // custom.set("type", type());
-        custom.set("north", north);
-        custom.set("west", west);
-        custom.set("south", south);
-        custom.set("east", east);
-    }
+    custom.set("area", std::vector<double>{north, west, south, east});
 }
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
-    auto [n, w, s, e] = BOUNDING_BOX_DEFAULT.deconstruct();
+    auto [n, w, s, e] = bounding_box_default().deconstruct();
 
     if (std::vector<double> area{n, w, s, e}; spec.get("area", area) || spec.get("bounding_box", area)) {
         ASSERT_MSG(area.size() == 4, "BoundingBox: 'area'/'bounding_box' expected list of size 4");
@@ -426,7 +416,7 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_area(value_type n, value_typ
     }
 
     // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[
-    const auto min  = BOUNDING_BOX_NORMALISE_WEST;
+    const auto min  = -PointLonLat::FLAT_ANGLE;
     const auto same = is_approximately_equal(w, e);
 
     w = is_approximately_equal(w, min) || is_approximately_equal(w, min + PointLonLat::FULL_ANGLE)
@@ -444,9 +434,14 @@ BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*make_from_spec(spec)) 
 
 
 BoundingBox::BoundingBox(value_type n, value_type w, value_type s, value_type e) : array{n, w, s, e} {
+    auto is_approx_ge = [](value_type a, value_type b) { return is_approximately_equal(a, b) || a > b; };
+
     // normalise east in [west, west + 2 pi[
     auto a        = PointLonLat::normalise_angle_to_minimum(e, w);
-    operator[](3) = is_approximately_equal(w, e) ? w : is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
+    operator[](3) = is_approximately_equal(w, e)                   ? w
+                    : is_approximately_equal(w, a)                 ? w + PointLonLat::FULL_ANGLE
+                    : is_approx_ge(e - w, PointLonLat::FULL_ANGLE) ? w + PointLonLat::FULL_ANGLE
+                                                                   : a;
 
     ASSERT(south <= north);
     ASSERT(west <= east);
@@ -484,6 +479,12 @@ bool BoundingBox::contains(const Point& p) const {
     }
 
     return false;
+}
+
+
+const BoundingBox& BoundingBox::bounding_box_default() {
+    static const BoundingBox bbox;
+    return bbox;
 }
 
 

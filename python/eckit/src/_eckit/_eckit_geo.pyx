@@ -8,10 +8,11 @@
 # does it submit to any jurisdiction.
 
 
-cimport eckit
 cimport eckit_geo
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
+
+cimport eckit
 
 eckit.eckit_main_initialise()
 
@@ -100,6 +101,10 @@ cdef class Grid:
     @property
     def type(self) -> str:
         return self._grid.type().decode()
+
+    @property
+    def uid(self) -> str:
+        return self._grid.uid().decode()
 
     @property
     def shape(self) -> tuple:

@@ -16,7 +16,7 @@
 #include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"  // to test Reverse
 #include "eckit/geo/projection/Reverse.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 

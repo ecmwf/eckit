@@ -12,14 +12,12 @@
 
 #include "eckit/geo/range/GaussianLatitude.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::range {
@@ -28,42 +26,44 @@ namespace eckit::geo::range {
 static util::recursive_mutex MUTEX;
 
 
-GaussianLatitude::GaussianLatitude(size_t N, bool increasing, double eps) :
-    Range(2 * N, increasing ? -90. : 90., increasing ? 90. : -90., eps), N_(N) {}
+GaussianLatitude::GaussianLatitude(size_t N, bool increasing) :
+    GaussianLatitude(N, std::vector<double>(util::gaussian_latitudes(N, increasing))) {}
 
 
-Range* GaussianLatitude::make_range_flipped() const {
-    std::vector<double> flipped(size());
-    const auto& v = values();
-    std::reverse_copy(v.begin(), v.end(), flipped.begin());
-
-    return new GaussianLatitude(N_, std::move(flipped), eps());
+bool GaussianLatitude::includesNorthPole() const {
+    const auto increasing = a() < b();
+    const auto& lats(util::gaussian_latitudes(N_, increasing));
+    return increasing ? types::is_approximately_equal(b(), lats.back())
+                      : types::is_approximately_equal(a(), lats.front());
 }
 
 
-Range* GaussianLatitude::make_range_cropped(double crop_a, double crop_b) const {
+bool GaussianLatitude::includesSouthPole() const {
+    const auto increasing = a() < b();
+    const auto& lats(util::gaussian_latitudes(N_, increasing));
+    return !increasing ? types::is_approximately_equal(b(), lats.back())
+                       : types::is_approximately_equal(a(), lats.front());
+}
+
+
+GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double crop_b) const {
     ASSERT((a() < b() && crop_a <= crop_b) || (a() > b() && crop_a >= crop_b) ||
-           (types::is_approximately_equal(a(), b(), eps()) && types::is_approximately_equal(crop_a, crop_b, eps())));
+           (types::is_approximately_equal(a(), b()) && types::is_approximately_equal(crop_a, crop_b)));
 
     auto v = values();
 
     if ((a() < b()) && (a() < crop_a || crop_b < b())) {
-        auto [from, to] = util::monotonic_crop(v, crop_a, crop_b, eps());
+        auto [from, to] = util::monotonic_crop(v, crop_a, crop_b);
         v.erase(v.begin() + to, v.end());
         v.erase(v.begin(), v.begin() + from);
     }
     else if ((b() < a()) && (b() < crop_b || crop_a < a())) {
-        auto [from, to] = util::monotonic_crop(v, crop_b, crop_a, eps());
+        auto [from, to] = util::monotonic_crop(v, crop_b, crop_a);
         v.erase(v.begin() + to, v.end());
         v.erase(v.begin(), v.begin() + from);
     }
 
-    return new GaussianLatitude(N_, std::move(v), eps());
-}
-
-
-Fraction GaussianLatitude::increment() const {
-    NOTIMP;
+    return new GaussianLatitude(N_, std::move(v));
 }
 
 

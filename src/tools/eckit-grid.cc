@@ -17,7 +17,7 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
@@ -63,7 +63,7 @@ private:
         }
 
         std::unique_ptr<const geo::Grid> grid([](const std::string& str) -> const geo::Grid* {
-            std::unique_ptr<geo::Spec> spec(geo::spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+            std::unique_ptr<spec::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
             return geo::GridFactory::build(*spec);
         }(spec));
 

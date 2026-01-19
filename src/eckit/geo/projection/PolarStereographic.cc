@@ -15,7 +15,7 @@
 #include <cmath>
 
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -23,13 +23,12 @@ namespace eckit::geo::projection {
 
 
 PolarStereographic::PolarStereographic(const Spec& spec) :
-    PolarStereographic({spec.get_double("lon_0"), spec.get_double("lat_0")},
-                       {spec.get_double("first_lon"), spec.get_double("first_lat")}) {}
+    PolarStereographic(PointLonLat::make_from_spec(spec, "centre"), PointLonLat::make_from_spec(spec, "first")) {}
 
 
 PolarStereographic::PolarStereographic(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
     Projection(figure_ptr),
-    centre_(centre.lon, centre.lat),
+    centre_(centre),
     centre_r_(PointLonLatR::make_from_lonlat(centre.lon, centre.lat)),
     first_(first),
     first_r_(PointLonLatR::make_from_lonlat(first.lon, first.lat)),

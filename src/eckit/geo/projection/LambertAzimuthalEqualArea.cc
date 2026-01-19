@@ -15,7 +15,7 @@
 #include <cmath>
 
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
@@ -25,12 +25,13 @@ static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_1("laea");
 static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_2("lambert_azimuthal_equal_area");
 
 
-LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) : LambertAzimuthalEqualArea({}, {}) {
-    // NOTIMP;
+LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
+    LambertAzimuthalEqualArea(PointLonLat::make_from_spec(spec, "centre"), PointLonLat::make_from_spec(spec, "first")) {
 }
 
 
-LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first) :
+LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
+    Projection(figure_ptr),
     centre_(centre),
     centre_r_(PointLonLatR::make_from_lonlat(centre.lon, centre.lat)),
     first_(first),

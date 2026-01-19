@@ -20,12 +20,12 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/Spec.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/container/PointsContainer.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -49,14 +49,14 @@ class lock_type {
 };
 
 
-const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
+const FESOM::FESOMRecord& fesom_record(const spec::Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
     static cache::MemoryCacheT<PathName, FESOM::FESOMRecord> cache;
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
-    auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
+    auto url  = LibEcKitGeo::url(spec.get_string("url"));
     auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
     ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
 
@@ -75,21 +75,22 @@ const FESOM::FESOMRecord& fesom_record(const Spec& spec) {
 }  // namespace
 
 
-FESOM::FESOM(const Spec& spec) :
-    Unstructured(spec),
-    name_(spec.get_string("name")),
-    arrangement_(arrangement_from_string(spec.get_string("fesom_arrangement"))),
-    record_(fesom_record(spec)) {
-    resetContainer(new container::PointsLonLatReference{record_.longitudes_, record_.latitudes_});
-    ASSERT(container());
+FESOM::FESOM(const FESOMRecord& record, const uid_type& uid, const std::string& arrangement, const std::string& name) :
+    Unstructured(new container::PointsLonLatReference{record.longitudes_, record.latitudes_}),
+    name_(name),
+    arrangement_(arrangement_from_string(arrangement)),
+    record_(record) {}
 
-    if (spec.has("fesom_uid")) {
-        reset_uid(spec.get_string("fesom_uid"));
-    }
+
+FESOM::FESOM(const Spec& spec) :
+    FESOM(fesom_record(spec), spec.get_string("fesom_uid"), spec.get_string("fesom_arrangement"),
+          spec.get_string("name")) {
+    ASSERT(container());
+    reset_uid(spec.get_string("fesom_uid"));
 }
 
 
-FESOM::FESOM(uid_t uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+FESOM::FESOM(uid_type uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
 FESOM::FESOM(const std::string& name, Arrangement a) :
@@ -135,7 +136,7 @@ void FESOM::FESOMRecord::read(const PathName& p) {
 }
 
 
-Grid::uid_t FESOM::calculate_uid() const {
+Grid::uid_type FESOM::calculate_uid() const {
     if (arrangement_ == Arrangement::FESOM_N) {
         MD5 hash;
         util::hash_vector_double(hash, record_.latitudes_);
@@ -159,7 +160,7 @@ Grid::uid_t FESOM::calculate_uid() const {
         auto [lat, lon] = FESOM(spec->get_string("name"), Arrangement::FESOM_N).to_latlons();
 
         // get element indices (0-based) from fesom_arrangement: C (this one)
-        auto url  = spec->get_string("url_prefix", "") + spec->get_string("url_connectivity");
+        auto url  = LibEcKitGeo::url(spec->get_string("url_connectivity"));
         auto path = download.to_cached_path(url, spec->get_string("name", ""), ".ek");
         ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
 
@@ -186,7 +187,7 @@ Grid::uid_t FESOM::calculate_uid() const {
 }
 
 
-Spec* FESOM::spec(const std::string& name) {
+Grid::Spec* FESOM::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }
 
@@ -207,15 +208,18 @@ std::string FESOM::arrangement_to_string(Arrangement a) {
 
 
 void FESOM::fill_spec(spec::Custom& custom) const {
-    custom.set("grid", name_ + "_" + arrangement_to_string(arrangement_));
-    if (auto _uid = uid(); !GridSpecByUID::instance().exists(_uid)) {
+    auto grid = name_ + "_" + arrangement_to_string(arrangement_);
+    custom.set("grid", grid);
+
+    if (auto _uid = uid(); !GridSpecByName::instance().exists(grid) ||
+                           GridSpecByName::instance().match(grid).spec(grid)->get_string("fesom_uid") != _uid) {
         custom.set("uid", _uid);
     }
 }
 
 
 const std::string& FESOM::type() const {
-    static const std::string type{"fesom"};
+    static const std::string type{"FESOM"};
     return type;
 }
 

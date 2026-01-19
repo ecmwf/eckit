@@ -15,7 +15,7 @@
 #include <regex>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/area/None.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
 #include "eckit/utils/Translator.h"
@@ -25,7 +25,7 @@ namespace eckit::geo::grid {
 
 
 static const std::string NOT_SUPPORTED{"SphericalHarmonics does not support gridded functionality"};
-static const std::string PATTERN{"[tT][1-9][0-9]*"};
+static const std::string PATTERN{"[tT]([1-9][0-9]*)"};
 
 static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
 static const auto GRIDNAME = GridRegisterName<SphericalHarmonics>(PATTERN);
@@ -71,6 +71,12 @@ std::vector<size_t> SphericalHarmonics::shape() const {
 
 bool SphericalHarmonics::empty() const {
     return size() == 0;
+}
+
+
+const Area& SphericalHarmonics::area() const {
+    static const geo::area::None NONE;
+    return NONE;
 }
 
 

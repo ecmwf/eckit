@@ -45,6 +45,8 @@ public:
 
     [[nodiscard]] uid_type calculate_uid() const override;
 
+    const Area& area() const override;
+
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }

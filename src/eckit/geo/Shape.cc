@@ -13,13 +13,13 @@
 #include "eckit/geo/Shape.h"
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/spec/Spec.h"
+#include "eckit/geo/Spec.h"
 
 
 namespace eckit::geo {
 
 
-Shape Shape::make_from_spec(const spec::Spec& spec) {
+Shape Shape::make_from_spec(const Spec& spec) {
     if (std::vector<value_type> shape; spec.get("shape", shape) && shape.size() == 2) {
         return {shape[0], shape[1]};
     }

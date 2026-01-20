@@ -16,9 +16,8 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/log/Log.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/parser/YAMLParser.h"
-#include "eckit/spec/Custom.h"
 #include "eckit/value/Value.h"
 
 
@@ -36,7 +35,6 @@ Grid::Grid(const std::vector<PathName>& paths) : spec_(new spec::Custom) {
 
     for (const auto& path : paths) {
         if (path.exists()) {
-            Log::debug<LibEcKitGeo>() << "eckit::geo::share::Grid::load('" << path.realName() << "')" << std::endl;
             load(path);
         }
     }
@@ -47,9 +45,9 @@ void Grid::load(const PathName& path) {
     auto* custom = dynamic_cast<spec::Custom*>(spec_.get());
     ASSERT(custom != nullptr);
 
-    struct SpecByUIDGenerator final : GridSpecByUID::concrete_generator_t {
+    struct SpecByUIDGenerator final : GridSpecByUID::generator_t {
         explicit SpecByUIDGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
-        spec::Spec* spec() const override { return new spec::Custom(spec_->container()); }
+        Spec* spec() const override { return new spec::Custom(spec_->container()); }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
 
     private:
@@ -57,11 +55,9 @@ void Grid::load(const PathName& path) {
         std::unique_ptr<spec::Custom> spec_;
     };
 
-    struct SpecByNameGenerator final : GridSpecByName::concrete_generator_t {
+    struct SpecByNameGenerator final : GridSpecByName::generator_t {
         explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
-        spec::Spec* spec(GridSpecByName::concrete_generator_t::arg1_t) const override {
-            return new spec::Custom(spec_->container());
-        }
+        Spec* spec(GridSpecByName::generator_t::arg1_t) const override { return new spec::Custom(spec_->container()); }
         bool match(const spec::Custom& other) const override { return other == *spec_; }
 
     private:
@@ -78,8 +74,9 @@ void Grid::load(const PathName& path) {
             if (key == "grid_uids") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
                     ASSERT(m.size() == 1);
-                    GridSpecByUID::regist(m.begin()->first.as<std::string>(),
-                                          new SpecByUIDGenerator(spec::Custom::make_from_value(m.begin()->second)));
+                    GridSpecByUID::instance().regist(
+                        m.begin()->first.as<std::string>(),
+                        new SpecByUIDGenerator(spec::Custom::make_from_value(m.begin()->second)));
                 }
                 continue;
             }
@@ -87,8 +84,9 @@ void Grid::load(const PathName& path) {
             if (key == "grid_names") {
                 for (ValueMap m : kv.second.as<ValueList>()) {
                     ASSERT(m.size() == 1);
-                    GridSpecByName::regist(m.begin()->first.as<std::string>(),
-                                           new SpecByNameGenerator(spec::Custom::make_from_value(m.begin()->second)));
+                    GridSpecByName::instance().regist(
+                        m.begin()->first.as<std::string>(),
+                        new SpecByNameGenerator(spec::Custom::make_from_value(m.begin()->second)));
                 }
                 continue;
             }

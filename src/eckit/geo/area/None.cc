@@ -12,10 +12,10 @@
 
 #include "eckit/geo/area/None.h"
 
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/spec/Custom.h"
 
 
-namespace eckit::geo::area {
+namespace eckit::geo {
 
 
 const std::string& None::type() const {
@@ -29,4 +29,4 @@ void None::fill_spec(spec::Custom& custom) const {
 }
 
 
-}  // namespace eckit::geo::area
+}  // namespace eckit::geo

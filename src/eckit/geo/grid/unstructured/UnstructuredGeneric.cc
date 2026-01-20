@@ -18,7 +18,7 @@
 namespace eckit::geo::grid::unstructured {
 
 
-Grid::uid_type UnstructuredGeneric::calculate_uid() const {
+Grid::uid_t UnstructuredGeneric::calculate_uid() const {
     MD5 hash;
     hash.add(type());
     container()->hash(hash);
@@ -29,7 +29,7 @@ Grid::uid_type UnstructuredGeneric::calculate_uid() const {
 }
 
 
-Grid::Spec* UnstructuredGeneric::spec(const std::string& name) {
+Spec* UnstructuredGeneric::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }
 

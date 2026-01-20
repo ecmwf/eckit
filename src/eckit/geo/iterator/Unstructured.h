@@ -17,9 +17,12 @@
 #include "eckit/geo/Iterator.h"
 
 
-namespace eckit::geo::container {
+namespace eckit::geo {
+class Projection;
+namespace container {
 class PointsContainer;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::iterator {
@@ -36,6 +39,8 @@ public:
 private:
 
     // -- Members
+
+    const Projection& projection_;
 
     std::shared_ptr<container::PointsContainer> container_;
     size_t index_;

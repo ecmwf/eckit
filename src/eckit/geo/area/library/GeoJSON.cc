@@ -15,9 +15,9 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/area/Polygon.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/JSONParser.h"
-#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::area::library {
@@ -99,7 +99,7 @@ void build_polygons(const Value& j, std::vector<GeoJSON::Polygons>& all) {
 }  // namespace
 
 
-GeoJSON::GeoJSON(const spec::Spec& spec) : GeoJSON(PathName(spec.get_string("file")), spec.get_string("name", "")) {}
+GeoJSON::GeoJSON(const Spec& spec) : GeoJSON(PathName(spec.get_string("file")), spec.get_string("name", "")) {}
 
 
 GeoJSON::GeoJSON(const PathName& file, const std::string& name) : GeoJSON(JSONParser::decodeFile(file), file, name) {}
@@ -122,7 +122,7 @@ GeoJSON::GeoJSON(const Value& json, const std::string& file, const std::string& 
 }
 
 
-void GeoJSON::fill_spec(eckit::spec::Custom& custom) const {
+void GeoJSON::fill_spec(spec::Custom& custom) const {
     custom.set("type", "geojson");
     custom.set("file", file_.asString());
     if (!name_.empty()) {

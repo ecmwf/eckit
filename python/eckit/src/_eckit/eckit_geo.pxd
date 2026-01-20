@@ -32,7 +32,6 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         pair[vector[double], vector[double]] to_latlons() const
         string spec_str() const
         string type() const
-        string uid() const
         vector[size_t] shape() const
         size_t size() const
         const BoundingBox& boundingBox() const

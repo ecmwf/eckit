@@ -12,45 +12,66 @@
 
 #pragma once
 
-#include "eckit/geo/Grid.h"
+#include "eckit/geo/Order.h"
 
 
 namespace eckit::geo::order {
 
 
-class HEALPix {
+class HEALPix final : public Order {
 public:
-
-    // -- Types
-
-    using order_type    = Grid::order_type;
-    using renumber_type = Grid::renumber_type;
-    using Spec          = spec::Spec;
 
     // -- Constructors
 
-    explicit HEALPix(const order_type& = order_default());
+    explicit HEALPix(const value_type& = order_default(), size_t = 12);
     explicit HEALPix(const Spec&);
 
     // -- Methods
 
-    const order_type& order() const { return order_; }
-    renumber_type reorder(const order_type& to, size_t Nside) const;
+    int nside() const { return Nside_; }
+
+    int ring_to_nest(int r) const;
+    int nest_to_ring(int n) const;
+
+    // -- Overriden methods
+
+    const std::string& type() const override { return static_type(); }
+    size_t size() const override { return static_cast<size_t>(12 * Nside_ * Nside_); }
+
+    const value_type& order() const override { return order_; }
+    Reordering reorder(const value_type& to) const override;
 
     // -- Class members
 
-    static const order_type RING;
-    static const order_type NESTED;
+    static const value_type ring;
+    static const value_type nested;
 
     // -- Class methods
 
-    static const order_type& order_default() { return RING; }
+    static const Order::value_type& order_default() { return ring; }
 
 private:
 
     // -- Members
 
-    order_type order_;
+    value_type order_;
+
+    const int Nside_;  // up to 2^13
+    const int Npix_;
+    const int Ncap_;
+    const int k_;
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
+
+    // -- Class members
+
+    static const value_type DEFAULT;
+
+    // -- Class methods
+
+    static const std::string& static_type();
 };
 
 

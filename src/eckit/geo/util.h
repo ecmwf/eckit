@@ -24,7 +24,7 @@ namespace eckit::geo {
 
 
 using difference_type = std::make_signed_t<size_t>;
-using pl_type         = std::vector<long>;  // sync with eckit::spec::Custom number_type
+using pl_type         = std::vector<long>;
 
 
 namespace util {
@@ -49,6 +49,9 @@ template <>
 pl_type pl_convert(const pl_type&);
 
 
+size_t convert_long_to_size_t(long);
+
+
 std::vector<double> arange(double start, double stop, double step);
 
 
@@ -58,13 +61,11 @@ const std::vector<double>& gaussian_latitudes(size_t N, bool increasing);
 const std::vector<double>& gaussian_quadrature_weights(size_t N);
 
 
-const std::vector<double>& linspace(double start, double stop, size_t num);
+std::vector<double> linspace(double start, double stop, size_t num, bool endpoint);
 
 
-std::pair<difference_type, difference_type> monotonic_crop(const std::vector<double>&, double min, double max);
-
-
-std::vector<double> reverse(const std::vector<double>&);
+std::pair<difference_type, difference_type> monotonic_crop(const std::vector<double>&, double min, double max,
+                                                           double eps);
 
 
 bool reduced_classical_pl_known(size_t N);

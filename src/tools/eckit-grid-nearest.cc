@@ -16,7 +16,7 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
@@ -60,7 +60,7 @@ private:
 
         for (const auto& arg : args) {
             std::unique_ptr<const geo::Grid> grid(
-                geo::GridFactory::build(spec::Custom({{uid ? "uid" : "name", std::string(arg)}})));
+                geo::GridFactory::build(geo::spec::Custom({{uid ? "uid" : "name", std::string(arg)}})));
 
             std::vector<geo::Search::PointValueType> closest;
             geo::Search search(*grid);

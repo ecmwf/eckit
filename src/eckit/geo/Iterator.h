@@ -16,14 +16,14 @@
 #include <iterator>
 
 #include "eckit/geo/Point.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
-#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo {
 class Grid;
-}
+}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -35,7 +35,6 @@ public:
     // -- Types
 
     using builder_t = BuilderT1<Iterator>;
-    using Spec      = spec::Spec;
     using ARG1      = const Spec&;
 
     using iterator_category = std::input_iterator_tag;
@@ -100,8 +99,8 @@ using IteratorRegisterType = ConcreteBuilderT1<Iterator, T>;
 
 
 struct IteratorFactory {
-    [[nodiscard]] static Iterator* build(const Iterator::Spec& spec) { return instance().build_(spec); }
-    [[nodiscard]] static Iterator::Spec* make_spec(const Iterator::Spec& spec) { return instance().make_spec_(spec); }
+    [[nodiscard]] static Iterator* build(const Spec& spec) { return instance().build_(spec); }
+    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
 
     static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
@@ -109,8 +108,8 @@ private:
 
     static IteratorFactory& instance();
 
-    [[nodiscard]] Iterator* build_(const Iterator::Spec&) const;
-    [[nodiscard]] Iterator::Spec* make_spec_(const Iterator::Spec&) const;
+    [[nodiscard]] Iterator* build_(const Spec&) const;
+    [[nodiscard]] Spec* make_spec_(const Spec&) const;
     std::ostream& list_(std::ostream&) const;
 };
 

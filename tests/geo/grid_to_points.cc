@@ -13,7 +13,7 @@
 #include <memory>
 #include <vector>
 
-#include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/geo/grid/HEALPix.h"
 #include "eckit/testing/Test.h"
 
 
@@ -22,7 +22,7 @@ namespace eckit::geo::test {
 
 CASE("HEALPix") {
     SECTION("HEALPix::to_points") {
-        std::unique_ptr<const Grid> grid(new grid::reduced::HEALPix(2, order::HEALPix::RING));
+        std::unique_ptr<const Grid> grid(new grid::HEALPix(2, order::HEALPix::ring));
 
         static const std::vector<PointLonLat> expected_points_ring{
             {45, 66.443535691},

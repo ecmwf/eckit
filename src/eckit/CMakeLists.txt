@@ -72,10 +72,10 @@ configure_file( eckit_config.h.in   eckit_config.h  )
 configure_file( eckit_version.h.in  eckit_version.h )
 
 install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h
-        ${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h
-    DESTINATION
-        ${INSTALL_INCLUDE_DIR}/eckit )
+			${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h
+			${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h
+		DESTINATION
+			${INSTALL_INCLUDE_DIR}/eckit )
 
 configure_file( eckit_version.cc.in  eckit_version.cc )
 
@@ -696,7 +696,6 @@ list( APPEND eckit_utils_srcs
     utils/Regex.h
     utils/RendezvousHash.cc
     utils/RendezvousHash.h
-    utils/SafeCasts.h
     utils/StringTools.cc
     utils/StringTools.h
     utils/Tokenizer.cc
@@ -983,10 +982,6 @@ add_subdirectory( web )
 
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
-endif()
-
-if( eckit_HAVE_ECKIT_SPEC )
-    add_subdirectory( spec )
 endif()
 
 if( eckit_HAVE_ECKIT_GEO )

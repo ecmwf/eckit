@@ -13,8 +13,8 @@
 #include "eckit/geo/Iterator.h"
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/spec/Layered.h"
 
 
 namespace eckit::geo {
@@ -40,10 +40,10 @@ IteratorFactory& IteratorFactory::instance() {
 }
 
 
-Iterator* IteratorFactory::build_(const Iterator::Spec& spec) const {
+Iterator* IteratorFactory::build_(const Spec& spec) const {
     lock_type lock;
 
-    std::unique_ptr<Iterator::Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Spec> cfg(make_spec_(spec));
 
     if (std::string type; cfg->get("type", type)) {
         return IteratorFactoryType::instance().get(type).create(*cfg);
@@ -54,7 +54,7 @@ Iterator* IteratorFactory::build_(const Iterator::Spec& spec) const {
 }
 
 
-Iterator::Spec* IteratorFactory::make_spec_(const Iterator::Spec& spec) const {
+Spec* IteratorFactory::make_spec_(const Spec& spec) const {
     lock_type lock;
 
     auto* cfg = new spec::Layered(spec);

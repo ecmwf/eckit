@@ -16,7 +16,7 @@
 
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 

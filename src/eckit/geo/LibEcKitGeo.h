@@ -39,8 +39,6 @@ public:
     static bool caching();
     static std::string cacheDir();
 
-    static std::string url(const std::string& url_path);
-
     static bool proj();
 
 private:

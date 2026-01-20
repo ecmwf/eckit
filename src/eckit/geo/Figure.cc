@@ -18,9 +18,9 @@
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
-#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -120,12 +120,12 @@ FigureFactory& FigureFactory::instance() {
 
 
 Figure* FigureFactory::make_from_string(const std::string& str) {
-    std::unique_ptr<Figure::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+    std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
 }
 
 
-Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
+Figure* FigureFactory::make_from_spec_(const Spec& spec) const {
     lock_type lock;
 
     if (std::string figure; spec.get("figure", figure)) {

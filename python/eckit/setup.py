@@ -8,21 +8,23 @@
 # does it submit to any jurisdiction.
 
 
-import sys
-import warnings
+import importlib.metadata
 from os import getenv
 from pathlib import Path
 from typing import Any
+import sys
 
 from Cython.Build import cythonize
 from setuptools import Extension
 from setuptools import setup
+import warnings
+
 
 source_dir = getenv("ECKIT_SOURCE_DIR", str(Path(getenv("HOME"), "git", "eckit")))
 binary_dir = getenv("ECKIT_BUILD_DIR", str(Path(getenv("HOME"), "build", "eckit")))
 library_dirs = getenv("ECKIT_LIB_DIR", str(Path(binary_dir, "lib"))).split(":")
 
-include_dirs_default = ":".join( str(p) for p in (Path(source_dir, "src"), Path(binary_dir, "src"), Path(source_dir, "eckit", "src"), Path(binary_dir, "eckit", "src")) if p.exists())
+include_dirs_default = str(Path(source_dir, "src")) + ":" + str(Path(binary_dir, "src"))
 include_dirs = getenv("ECKIT_INCLUDE_DIRS", include_dirs_default).split(":")
 
 extra_compile_args = ["-std=c++17"]

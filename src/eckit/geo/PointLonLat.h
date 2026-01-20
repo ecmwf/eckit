@@ -14,17 +14,11 @@
 
 #include <array>
 #include <ostream>
-#include <string>
 
 
-namespace eckit {
-namespace geo {
+namespace eckit::geo {
 class PointLonLatR;
 }
-namespace spec {
-class Spec;
-}
-}  // namespace eckit
 
 
 namespace eckit::geo {
@@ -94,10 +88,6 @@ public:
                                           value_type eps = EPS);
 
     [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr, value_type lon_minimum = 0.);
-
-    [[nodiscard]] static PointLonLat make_from_spec(const eckit::spec::Spec&, const std::string& name);
-    [[nodiscard]] static PointLonLat make_from_spec(const eckit::spec::Spec&, const std::string& name,
-                                                    const PointLonLat& dfault);
 
     PointLonLat antipode() const { return make(lon, lat + FLAT_ANGLE); }
 

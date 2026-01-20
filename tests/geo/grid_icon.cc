@@ -17,15 +17,15 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/unstructured/ICON.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-static const std::string GRID   = "icon-grid-0055-r02b05-n";
-static const Grid::uid_type UID = "e234e01a8556e9a84bcb42361d2f24e0";
+static const std::string GRID = "ICON_55_R02B05";
+static const Grid::uid_t UID  = "e234e01a8556e9a84bcb42361d2f24e0";
 static const std::vector<long> SHAPE{2656};
 
 
@@ -55,13 +55,13 @@ CASE("caching") {
 
 
 CASE("spec") {
-    std::unique_ptr<spec::Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID}})));
+    std::unique_ptr<Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID}})));
 
     EXPECT(spec->get_string("type") == "ICON");
     EXPECT(spec->get_string("name") == GRID);
     EXPECT(spec->get_string("icon_number_of_grid_used") == "55");
     EXPECT(spec->get_string("icon_type") == "hrz_regional");
-    EXPECT(spec->get_string("icon_arrangement") == "C");
+    EXPECT(spec->get_string("icon_arrangement") == "T");
     EXPECT(spec->get_string("icon_uid") == UID);
     EXPECT(spec->get_long_vector("shape") == SHAPE);
 

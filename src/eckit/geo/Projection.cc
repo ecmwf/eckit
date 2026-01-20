@@ -16,13 +16,14 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/share/Projection.h"
+#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
-#include "eckit/spec/Custom.h"
-#include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
 
 #if eckit_HAVE_PROJ
@@ -58,7 +59,7 @@ const Figure& Projection::figure() const {
 }
 
 
-const Projection::Spec& Projection::spec() const {
+const Spec& Projection::spec() const {
     if (!spec_) {
         spec_ = std::make_shared<spec::Custom>();
         ASSERT(spec_);
@@ -86,11 +87,9 @@ std::string Projection::proj_str() const {
 
 
 Projection* Projection::make_from_spec(const Spec& spec) {
-    if (std::string type; spec.get("type", type)) {
-        return ProjectionFactoryType::instance().get(type).create(spec);
-    }
-
-    throw exception::SpecError("Projection: cannot build grid without 'type'", Here());
+    return ProjectionFactoryType::instance()
+        .get(spec.get_string(LibEcKitGeo::proj() ? "proj" : "projection"))
+        .create(spec);
 }
 
 
@@ -108,7 +107,7 @@ void Projection::fill_spec(spec::Custom& custom) const {
 
 
 const Projection* ProjectionFactory::make_from_string(const std::string& str) {
-    std::unique_ptr<Projection::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+    std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
 }
 
@@ -119,10 +118,10 @@ ProjectionFactory& ProjectionFactory::instance() {
 }
 
 
-const Projection* ProjectionFactory::make_from_spec_(const Projection::Spec& spec) const {
+const Projection* ProjectionFactory::make_from_spec_(const Spec& spec) const {
     lock_type lock;
 
-    std::unique_ptr<Projection::Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Spec> cfg(make_spec_(spec));
 
     if (std::string type; cfg->get("type", type)) {
         return ProjectionFactoryType::instance().get(type).create(*cfg);
@@ -133,7 +132,7 @@ const Projection* ProjectionFactory::make_from_spec_(const Projection::Spec& spe
 }
 
 
-Projection::Spec* ProjectionFactory::make_spec_(const Projection::Spec& spec) const {
+Spec* ProjectionFactory::make_spec_(const Spec& spec) const {
     lock_type lock;
     share::Projection::instance();
 

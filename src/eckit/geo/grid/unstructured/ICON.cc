@@ -20,12 +20,12 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/container/PointsContainer.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/spec/Custom.h"
-#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::grid::unstructured {
@@ -42,14 +42,14 @@ class lock_type {
 };
 
 
-const ICON::ICONRecord& icon_record(const spec::Spec& spec) {
+const ICON::ICONRecord& icon_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
     static cache::MemoryCacheT<PathName, ICON::ICONRecord> cache;
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/icon");
 
-    auto url  = LibEcKitGeo::url(spec.get_string("url"));
+    auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
     auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
     ASSERT_MSG(path.exists(), "ICON: file '" + path + "' not found");
 
@@ -69,21 +69,21 @@ const ICON::ICONRecord& icon_record(const spec::Spec& spec) {
 }  // namespace
 
 
-ICON::ICON(const ICONRecord& record, const uid_type& uid, const std::string& arrangement, const std::string& name) :
-    Unstructured(new container::PointsLonLatReference{record.longitudes_, record.latitudes_}),
-    name_(name),
-    arrangement_(arrangement_from_string(arrangement)),
-    record_(record) {}
-
-
 ICON::ICON(const Spec& spec) :
-    ICON(icon_record(spec), spec.get_string("icon_uid"), spec.get_string("icon_arrangement"), spec.get_string("name")) {
+    Unstructured(spec),
+    name_(spec.get_string("name")),
+    arrangement_(arrangement_from_string(spec.get_string("icon_arrangement"))),
+    record_(icon_record(spec)) {
+    resetContainer(new container::PointsLonLatReference{record_.longitudes_, record_.latitudes_});
     ASSERT(container());
-    reset_uid(spec.get_string("icon_uid"));
+
+    if (spec.has("icon_uid")) {
+        reset_uid(spec.get_string("icon_uid"));
+    }
 }
 
 
-ICON::ICON(uid_type uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+ICON::ICON(uid_t uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
 ICON::ICON(const std::string& name, Arrangement a) :
@@ -138,14 +138,20 @@ void ICON::ICONRecord::check(const Spec& spec) const {
 }
 
 
-Grid::Spec* ICON::spec(const std::string& name) {
+Grid::uid_t ICON::calculate_uid() const {
+    NOTIMP;
+}
+
+
+Spec* ICON::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }
 
 
 Arrangement ICON::arrangement_from_string(const std::string& str) {
     return str == "C"   ? Arrangement::ICON_C
-           : str == "V" ? Arrangement::ICON_V
+           : str == "T" ? Arrangement::ICON_T
+           : str == "N" ? Arrangement::ICON_N
            : str == "E" ? Arrangement::ICON_E
                         : throw SeriousBug("ICON: unsupported arrangement '" + str + "'");
 }
@@ -153,7 +159,8 @@ Arrangement ICON::arrangement_from_string(const std::string& str) {
 
 std::string ICON::arrangement_to_string(Arrangement a) {
     return a == Arrangement::ICON_C   ? "C"
-           : a == Arrangement::ICON_V ? "V"
+           : a == Arrangement::ICON_T ? "T"
+           : a == Arrangement::ICON_N ? "N"
            : a == Arrangement::ICON_E
                ? "E"
                : throw SeriousBug("ICON: unsupported arrangement '" + std::to_string(a) + "'", Here());
@@ -170,25 +177,8 @@ void ICON::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& ICON::type() const {
-    static const std::string type{"ICON"};
+    static const std::string type{"icon"};
     return type;
-}
-
-
-Grid::uid_type ICON::calculate_uid() const {
-    NOTIMP;
-}
-
-
-Grid::BoundingBox* ICON::calculate_bbox() const {
-    if (const std::string BOUNDING_BOX = "bounding_box"; catalog().has(BOUNDING_BOX)) {
-        const auto bbox = catalog().get_double_vector(BOUNDING_BOX);
-        ASSERT(bbox.size() == 4);
-
-        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
-    }
-
-    return Unstructured::calculate_bbox();
 }
 
 

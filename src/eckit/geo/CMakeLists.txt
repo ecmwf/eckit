@@ -12,10 +12,14 @@ list(APPEND eckit_geo_srcs
     GreatCircle.h
     Grid.cc
     Grid.h
+    Increments.cc
+    Increments.h
     Iterator.cc
     Iterator.h
     LibEcKitGeo.cc
     LibEcKitGeo.h
+    Order.cc
+    Order.h
     Point.cc
     Point.h
     PointLonLat.cc
@@ -34,6 +38,8 @@ list(APPEND eckit_geo_srcs
     Search.h
     Shape.cc
     Shape.h
+    Spec.cc
+    Spec.h
     Trace.cc
     Trace.h
     area/BoundingBox.cc
@@ -66,26 +72,26 @@ list(APPEND eckit_geo_srcs
     figure/SphereT.h
     figure/UnitSphere.cc
     figure/UnitSphere.h
+    grid/HEALPix.cc
+    grid/HEALPix.h
     grid/Reduced.cc
     grid/Reduced.h
+    grid/ReducedGaussian.cc
+    grid/ReducedGaussian.h
+    grid/ReducedLL.cc
+    grid/ReducedLL.h
     grid/Regular.cc
     grid/Regular.h
+    grid/RegularGaussian.cc
+    grid/RegularGaussian.h
+    grid/RegularLL.cc
+    grid/RegularLL.h
+    grid/RegularXY.cc
+    grid/RegularXY.h
     grid/SphericalHarmonics.cc
     grid/SphericalHarmonics.h
     grid/Unstructured.cc
     grid/Unstructured.h
-    grid/reduced/HEALPix.cc
-    grid/reduced/HEALPix.h
-    grid/reduced/ReducedGaussian.cc
-    grid/reduced/ReducedGaussian.h
-    grid/reduced/ReducedLonLat.cc
-    grid/reduced/ReducedLonLat.h
-    grid/regular/RegularGaussian.cc
-    grid/regular/RegularGaussian.h
-    grid/regular/RegularLL.cc
-    grid/regular/RegularLL.h
-    grid/regular/RegularXY.cc
-    grid/regular/RegularXY.h
     grid/unstructured/UnstructuredGeneric.cc
     grid/unstructured/UnstructuredGeneric.h
     iterator/Reduced.cc
@@ -131,6 +137,12 @@ list(APPEND eckit_geo_srcs
     range/GaussianLatitude.h
     range/Regular.cc
     range/Regular.h
+    range/RegularCartesian.cc
+    range/RegularCartesian.h
+    range/RegularLatitude.cc
+    range/RegularLatitude.h
+    range/RegularLongitude.cc
+    range/RegularLongitude.h
     search/Tree.cc
     search/Tree.h
     search/TreeMapped.cc
@@ -147,9 +159,15 @@ list(APPEND eckit_geo_srcs
     share/Grid.h
     share/Projection.cc
     share/Projection.h
+    spec/Custom.cc
+    spec/Custom.h
+    spec/Generator.h
+    spec/Layered.cc
+    spec/Layered.h
     util.cc
     util.h
     util/arange.cc
+    util/conversions.cc
     util/gaussian_latitudes.cc
     util/gaussian_quadrature_weights.cc
     util/hash_vector.cc
@@ -158,7 +176,6 @@ list(APPEND eckit_geo_srcs
     util/mutex.h
     util/reduced_classical_pl.cc
     util/reduced_octahedral_pl.cc
-    util/reverse.cc
     util/sincos.h
 )
 
@@ -167,7 +184,7 @@ set(eckit_geo_include_dirs
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
 )
 
-set(eckit_geo_libs eckit_maths eckit_spec)
+set(eckit_geo_libs eckit_maths)
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/grid.yaml")
 set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")
@@ -177,24 +194,25 @@ if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_libs PROJ::proj)
 endif()
 
-if(ECKIT_GEO_CODEC_GRIDS)
-    list(APPEND eckit_geo_srcs
-        grid/unstructured/FESOM.cc
-        grid/unstructured/FESOM.h
-        grid/unstructured/ICON.cc
-        grid/unstructured/ICON.h
-        grid/ORCA.cc grid/ORCA.h
-    )
-
-    list(APPEND eckit_GEO_SHARE_GRID
-        "~eckit/share/eckit/geo/FESOM.yaml"
-        "~eckit/share/eckit/geo/ICON-CH.yaml"
-        "~eckit/share/eckit/geo/ICON-DWD.yaml"
-        "~eckit/share/eckit/geo/ICON-MPIM.yaml"
-        "~eckit/share/eckit/geo/ORCA.yaml"
-    )
-
+if(eckit_HAVE_GEO_GRID_FESOM)
+    list(APPEND eckit_geo_srcs grid/unstructured/FESOM.cc grid/unstructured/FESOM.h)
+    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
     list(APPEND eckit_geo_libs eckit_codec)
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/FESOM.yaml")
+endif()
+
+if(eckit_HAVE_GEO_GRID_ICON)
+    list(APPEND eckit_geo_srcs grid/unstructured/ICON.cc grid/unstructured/ICON.h)
+    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
+    list(APPEND eckit_geo_libs eckit_codec)
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ICON-CH.yaml" "~eckit/share/eckit/geo/ICON-DWD.yaml" "~eckit/share/eckit/geo/ICON-MPIM.yaml")
+endif()
+
+if(eckit_HAVE_GEO_GRID_ORCA)
+    list(APPEND eckit_geo_srcs grid/ORCA.cc grid/ORCA.h)
+    list(REMOVE_ITEM eckit_geo_libs eckit_codec)
+    list(APPEND eckit_geo_libs eckit_codec)
+    list(APPEND eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/ORCA.yaml")
 endif()
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)

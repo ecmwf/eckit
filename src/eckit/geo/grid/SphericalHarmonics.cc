@@ -15,8 +15,9 @@
 #include <regex>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/area/None.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/utils/MD5.h"
 #include "eckit/utils/Translator.h"
 
@@ -25,19 +26,20 @@ namespace eckit::geo::grid {
 
 
 static const std::string NOT_SUPPORTED{"SphericalHarmonics does not support gridded functionality"};
-static const std::string PATTERN{"[tT]([1-9][0-9]*)"};
+static const std::string PATTERN{"[tT][1-9][0-9]*"};
 
 static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
-static const auto GRIDNAME = GridRegisterName<SphericalHarmonics>(PATTERN);
+static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
 
 
-SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {}
+SphericalHarmonics::SphericalHarmonics(const Spec& spec) : Grid(spec), truncation_(spec.get_unsigned("truncation")) {}
 
 
-SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {}
+SphericalHarmonics::SphericalHarmonics(size_t T) :
+    Grid(new area::BoundingBox, ProjectionFactoryType::instance().get("none").create(spec::Custom{})), truncation_(T) {}
 
 
-Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
+Spec* SphericalHarmonics::spec(const std::string& name) {
     std::smatch match;
     std::regex_match(name, match, std::regex(PATTERN));
     ASSERT(match.size() == 2);
@@ -74,19 +76,13 @@ bool SphericalHarmonics::empty() const {
 }
 
 
-const Area& SphericalHarmonics::area() const {
-    static const geo::area::None NONE;
-    return NONE;
-}
-
-
-[[nodiscard]] Grid::uid_type SphericalHarmonics::calculate_uid() const {
+[[nodiscard]] Grid::uid_t SphericalHarmonics::calculate_uid() const {
     return (MD5{} << type() << truncation()).digest();
 }
 
 
-[[nodiscard]] Grid::BoundingBox* SphericalHarmonics::calculate_bbox() const {
-    return new BoundingBox;
+[[nodiscard]] area::BoundingBox* SphericalHarmonics::calculate_bbox() const {
+    return new area::BoundingBox;
 }
 
 

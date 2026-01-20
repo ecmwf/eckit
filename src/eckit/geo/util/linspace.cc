@@ -13,37 +13,22 @@
 #include <algorithm>
 #include <vector>
 
-#include "eckit/geo/cache/MemoryCache.h"
-#include "eckit/types/FloatCompare.h"
-#include "eckit/utils/MD5.h"
-
 
 namespace eckit::geo::util {
 
 
-const std::vector<double>& linspace(double start, double stop, size_t num) {
-    const auto key = (eckit::MD5{} << start << stop << num).digest();
-
-    static cache::MemoryCacheT<decltype(key), std::vector<double>> cache;
-    if (cache.contains(key)) {
-        return cache[key];
-    }
-
+std::vector<double> linspace(double start, double stop, size_t num, bool endpoint) {
     if (num == 0) {
-        return (cache[key] = {});
+        return {};
     }
 
-    if (num == 1 || types::is_approximately_equal(start, stop)) {
-        return (cache[key] = {start});
-    }
-
-    const auto step = (stop - start) / static_cast<double>(num - 1);
+    const auto step = num > 1 ? (stop - start) / static_cast<double>(endpoint ? (num - 1) : num) : 0;
 
     std::vector<double> l(num);
     std::generate_n(l.begin(), num,
                     [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
 
-    return (cache[key] = std::move(l));
+    return l;
 }
 
 

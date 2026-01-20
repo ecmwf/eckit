@@ -1,5 +1,7 @@
 ---
 
+url_prefix: &url_prefix https://sites.ecmwf.int/repository/eckit/geo/grid/fesom/
+
 grid_names:
   - pi_C: &pi_C
     type: FESOM
@@ -7,8 +9,9 @@ grid_names:
     fesom_arrangement: C
     shape: 5839
     fesom_uid: "e548b74fa53eef5ab412c6061330f043"
-    url_connectivity: grid/fesom/pi.fesom-conn.ek
-    url: grid/fesom/pi_C.fesom.ek
+    url_prefix: *url_prefix
+    url_connectivity: pi.fesom-conn.ek
+    url: pi_C.fesom.ek
 
   - pi_N: &pi_N
     type: FESOM
@@ -16,8 +19,9 @@ grid_names:
     fesom_arrangement: N
     shape: 3140
     fesom_uid: "bdc49d97a27e389fb86decd08a185c2f"
-    url_connectivity: grid/fesom/pi.fesom-conn.ek
-    url: grid/fesom/pi_N.fesom.ek
+    url_prefix: *url_prefix
+    url_connectivity: pi.fesom-conn.ek
+    url: pi_N.fesom.ek
 
   - CORE2_C: &CORE2_C
     type: FESOM
@@ -25,8 +29,9 @@ grid_names:
     fesom_arrangement: C
     shape: 244659
     fesom_uid: "9930995170a9d054187b13962a648880"
-    url_connectivity: grid/fesom/CORE2.fesom-conn.ek
-    url: grid/fesom/CORE2_C.fesom.ek
+    url_prefix: *url_prefix
+    url_connectivity: CORE2.fesom-conn.ek
+    url: CORE2_C.fesom.ek
 
   - CORE2_N: &CORE2_N
     type: FESOM
@@ -34,8 +39,9 @@ grid_names:
     fesom_arrangement: N
     shape: 126858
     fesom_uid: "1d03f0efefdc1a3a8798ad53ee983140"
-    url_connectivity: grid/fesom/CORE2.fesom-conn.ek
-    url: grid/fesom/CORE2_N.fesom.ek
+    url_prefix: *url_prefix
+    url_connectivity: CORE2.fesom-conn.ek
+    url: CORE2_N.fesom.ek
 
   - DART_C: &DART_C
     type: FESOM
@@ -43,8 +49,9 @@ grid_names:
     fesom_arrangement: C
     shape: 6262485
     fesom_uid: "de015703cf0c3b339a9f0f6ec080e4f6"
-    url_connectivity: grid/fesom/DART.fesom-conn.ek
-    url: grid/fesom/DART_C.fesom.ek
+    url_prefix: *url_prefix
+    url_connectivity: DART.fesom-conn.ek
+    url: DART_C.fesom.ek
 
   - DART_N: &DART_N
     type: FESOM
@@ -52,8 +59,9 @@ grid_names:
     fesom_arrangement: N
     shape: 3160340
     fesom_uid: "35e958b1dfd9054bb86f283d75ccd7b4"
-    url_connectivity: grid/fesom/DART.fesom-conn.ek
-    url: grid/fesom/DART_N.fesom.ek
+    url_prefix: *url_prefix
+    url_connectivity: DART.fesom-conn.ek
+    url: DART_N.fesom.ek
 
   - NG5_C: &NG5_C
     type: FESOM
@@ -61,8 +69,9 @@ grid_names:
     fesom_arrangement: C
     shape: 14741520
     fesom_uid: "9b6c413e35230d72a4ab69242d0d0617"
-    url_connectivity: grid/fesom/NG5.fesom-conn.ek
-    url: grid/fesom/NG5_C.fesom.ek
+    url_prefix: *url_prefix
+    url_connectivity: NG5.fesom-conn.ek
+    url: NG5_C.fesom.ek
 
   - NG5_N: &NG5_N
     type: FESOM
@@ -70,8 +79,9 @@ grid_names:
     fesom_arrangement: N
     shape: 7402886
     fesom_uid: "7a33ecaebe22e7d5ca4abbd819a43240"
-    url_connectivity: grid/fesom/NG5.fesom-conn.ek
-    url: grid/fesom/NG5_N.fesom.ek
+    url_prefix: *url_prefix
+    url_connectivity: NG5.fesom-conn.ek
+    url: NG5_N.fesom.ek
 
 grid_uids:
   - "e548b74fa53eef5ab412c6061330f043": *pi_C

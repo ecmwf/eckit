@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/Range.h"
 
 
@@ -23,7 +24,7 @@ public:
 
     // -- Constructors
 
-    explicit GaussianLatitude(size_t N, bool increasing);
+    explicit GaussianLatitude(size_t N, bool increasing, double eps = PointLonLat::EPS);
 
     // -- Methods
 
@@ -31,26 +32,23 @@ public:
 
     // -- Overridden methods
 
-    [[nodiscard]] GaussianLatitude* make_cropped_range(double crop_a, double crop_b) const override;
-    [[nodiscard]] const std::vector<double>& values() const override;
+    [[nodiscard]] Range* make_range_flipped() const override;
+    [[nodiscard]] Range* make_range_cropped(double crop_a, double crop_b) const override;
 
-    size_t size() const override { return values_.size(); }
-    double a() const override { return values_.front(); }
-    double b() const override { return values_.back(); }
-
-    bool includesNorthPole() const override;
-    bool includesSouthPole() const override;
+    Fraction increment() const override;
+    const std::vector<double>& values() const override;
 
 private:
 
     // -- Constructors
 
-    GaussianLatitude(size_t N, std::vector<double>&& values) : N_(N), values_(values) {}
+    GaussianLatitude(size_t N, std::vector<double>&& values, double _eps) :
+        Range(values.size(), values.front(), values.back(), _eps), N_(N), values_(values) {}
 
     // -- Members
 
     const size_t N_;
-    const std::vector<double> values_;
+    std::vector<double> values_;
 };
 
 

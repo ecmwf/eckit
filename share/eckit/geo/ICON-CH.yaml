@@ -1,31 +1,26 @@
 ---
 
+url_prefix: &url_prefix https://sites.ecmwf.int/repository/eckit/geo/grid/icon-ch/
+
 grid_names:
-  - ICON-CH1-V1: &ICON_CH1_V1
+  - ICON_CH1_EPS: &ICON_CH1_EPS
     type: ICON
-    name: ICON-CH1
+    name: ICON_CH1_EPS
     shape: [1147980]
-    bounding_box: [50.6, -0.9, 41.9, 17.8]
-    icon_number_of_grid_used: 1
-    icon_number_of_grid_in_reference: 1
-    icon_arrangement: C
+    icon_arrangement: T
     icon_uid: "17643da2574959b644d254a3cd6e2bc0"
-    url: grid/icon-ch/icon-ch1-c.ek
+    url_prefix: *url_prefix
+    url: ICON_CH1_EPS.icon.ek
 
-  - ICON-CH2-V1: &ICON_CH2_V1
+  - ICON_CH2_EPS: &ICON_CH2_EPS
     type: ICON
-    name: ICON-CH2
+    name: ICON_CH2_EPS
     shape: [283876]
-    bounding_box: [50.6, -0.9, 41.9, 17.8]
-    icon_number_of_grid_used: 2
-    icon_number_of_grid_in_reference: 1
-    icon_arrangement: C
+    icon_arrangement: T
     icon_uid: "bbbd5a09855499243c7a4aa4c8762920"
-    url: grid/icon-ch/icon-ch2-c.ek
-
-  - ICON-CH1: *ICON_CH1_V1
-  - ICON-CH2: *ICON_CH2_V1
+    url_prefix: *url_prefix
+    url: ICON_CH2_EPS.icon.ek
 
 grid_uids:
-  - "17643da2574959b644d254a3cd6e2bc0": *ICON_CH1_V1
-  - "bbbd5a09855499243c7a4aa4c8762920": *ICON_CH2_V1
+  - "17643da2574959b644d254a3cd6e2bc0": *ICON_CH1_EPS
+  - "bbbd5a09855499243c7a4aa4c8762920": *ICON_CH2_EPS

@@ -13,7 +13,7 @@
 #pragma once
 
 #include "eckit/geo/Point.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo::projection {

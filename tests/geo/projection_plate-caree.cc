@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "eckit/geo/Projection.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 

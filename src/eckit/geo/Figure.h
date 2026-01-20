@@ -21,18 +21,16 @@
 #include "eckit/memory/Factory.h"
 
 
-namespace eckit {
-namespace geo {
+namespace eckit::geo {
 namespace area {
 class BoundingBox;
 }
 class Projection;
-}  // namespace geo
 namespace spec {
 class Custom;
+}
 class Spec;
-}  // namespace spec
-}  // namespace eckit
+}  // namespace eckit::geo
 
 
 namespace eckit::geo {
@@ -47,7 +45,6 @@ public:
     // -- Types
 
     using builder_t = BuilderT0<Figure>;
-    using Spec      = spec::Spec;
 
     // -- Constructors
 
@@ -104,14 +101,14 @@ private:
 
 
 struct FigureFactory {
-    [[nodiscard]] static Figure* build(const Figure::Spec& spec) { return instance().make_from_spec_(spec); }
+    [[nodiscard]] static Figure* build(const Spec& spec) { return instance().make_from_spec_(spec); }
     [[nodiscard]] static Figure* make_from_string(const std::string&);
 
 private:
 
     static FigureFactory& instance();
 
-    [[nodiscard]] Figure* make_from_spec_(const Figure::Spec&) const;
+    [[nodiscard]] Figure* make_from_spec_(const Spec&) const;
 };
 
 

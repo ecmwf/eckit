@@ -46,9 +46,9 @@ constexpr double EPS = 1e-9;
 
 
 CASE("eckit::geo::util::linspace") {
-    EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 1), std::vector<double>{1.}, EPS));
-    EXPECT(is_approximately_equal_vector(util::linspace(1, 1, 2), std::vector<double>{1.}, EPS));
-    EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 2), std::vector<double>{1., 2.}, EPS));
+    EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 1, false), std::vector<double>{1.}, EPS));
+    EXPECT(is_approximately_equal_vector(util::linspace(1, 1, 2, true), std::vector<double>{1., 1.}, EPS));
+    EXPECT(is_approximately_equal_vector(util::linspace(1, 2, 2, true), std::vector<double>{1., 2.}, EPS));
 }
 
 
@@ -130,7 +130,7 @@ CASE("eckit::geo::util::monotonic_crop") {
     };
 
     for (const auto& test : tests) {
-        auto [from, to] = util::monotonic_crop(test.values, test.min, test.max);
+        auto [from, to] = util::monotonic_crop(test.values, test.min, test.max, 0.);
 
         EXPECT(from == test.expected.first);
         EXPECT(to == test.expected.second);

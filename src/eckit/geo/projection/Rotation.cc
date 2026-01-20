@@ -15,9 +15,9 @@
 #include <cmath>
 
 #include "eckit/geo/figure/UnitSphere.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
-#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 

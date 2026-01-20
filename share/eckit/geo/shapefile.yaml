@@ -1,296 +1,369 @@
 ---
 
-url_prefix: https://gisco-services.ec.europa.eu/distribution/v2/
+url_prefix: &url_prefix https://gisco-services.ec.europa.eu/distribution/v2/
 
 area_libraries:
   coas-rg-01m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_01M_2016_4326.shp.zip
+    url: coas/shp/COAS_RG_01M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   coas-rg-03m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_03M_2016_4326.shp.zip
+    url: coas/shp/COAS_RG_03M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   coas-rg-10m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_10M_2016_4326.shp.zip
+    url: coas/shp/COAS_RG_10M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   coas-rg-20m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_20M_2016_4326.shp.zip
+    url: coas/shp/COAS_RG_20M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   coas-rg-60m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/coas/shp/COAS_RG_60M_2016_4326.shp.zip
+    url: coas/shp/COAS_RG_60M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-01m-2003:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2003_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2003_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-01m-2006:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2006_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-01m-2010:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2010_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-01m-2013:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2013_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-01m-2016:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2016_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-01m-2021:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2021_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2021_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-01m-2024:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_01M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_01M_2024_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-03m-2003:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2003_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2003_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-03m-2006:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2006_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-03m-2010:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2010_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-03m-2013:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2013_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-03m-2016:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2016_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-03m-2021:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2021_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2021_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-03m-2024:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_03M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_03M_2024_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-10m-2003:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2003_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2003_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-10m-2006:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2006_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-10m-2010:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2010_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-10m-2013:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2013_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-10m-2016:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2016_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-10m-2021:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2021_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2021_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-10m-2024:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_10M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_10M_2024_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-20m-2003:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2003_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2003_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-20m-2006:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2006_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-20m-2010:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2010_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-20m-2013:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2013_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-20m-2016:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2016_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-20m-2021:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2021_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2021_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-20m-2024:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_20M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_20M_2024_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-60m-2006:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2006_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2006_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-60m-2010:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2010_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2010_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-60m-2013:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2013_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2013_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-60m-2016:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2016_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2016_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-60m-2021:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2021_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2021_4326.shp.zip
+    url_prefix: *url_prefix
 
   nuts-rg-60m-2024:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/shp/NUTS_RG_60M_2024_4326.shp.zip
+    url: nuts/shp/NUTS_RG_60M_2024_4326.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2003-01m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2003-01m.shp.zip
+    url: nuts/download/ref-nuts-2003-01m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2003-03m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2003-03m.shp.zip
+    url: nuts/download/ref-nuts-2003-03m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2003-10m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2003-10m.shp.zip
+    url: nuts/download/ref-nuts-2003-10m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2003-20m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2003-20m.shp.zip
+    url: nuts/download/ref-nuts-2003-20m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2006-01m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-01m.shp.zip
+    url: nuts/download/ref-nuts-2006-01m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2006-03m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-03m.shp.zip
+    url: nuts/download/ref-nuts-2006-03m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2006-10m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-10m.shp.zip
+    url: nuts/download/ref-nuts-2006-10m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2006-20m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-20m.shp.zip
+    url: nuts/download/ref-nuts-2006-20m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2006-60m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2006-60m.shp.zip
+    url: nuts/download/ref-nuts-2006-60m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2010-01m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-01m.shp.zip
+    url: nuts/download/ref-nuts-2010-01m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2010-03m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-03m.shp.zip
+    url: nuts/download/ref-nuts-2010-03m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2010-10m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-10m.shp.zip
+    url: nuts/download/ref-nuts-2010-10m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2010-20m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-20m.shp.zip
+    url: nuts/download/ref-nuts-2010-20m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2010-60m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2010-60m.shp.zip
+    url: nuts/download/ref-nuts-2010-60m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2013-01m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-01m.shp.zip
+    url: nuts/download/ref-nuts-2013-01m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2013-03m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-03m.shp.zip
+    url: nuts/download/ref-nuts-2013-03m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2013-10m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-10m.shp.zip
+    url: nuts/download/ref-nuts-2013-10m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2013-20m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-20m.shp.zip
+    url: nuts/download/ref-nuts-2013-20m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2013-60m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2013-60m.shp.zip
+    url: nuts/download/ref-nuts-2013-60m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2016-01m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-01m.shp.zip
+    url: nuts/download/ref-nuts-2016-01m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2016-03m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-03m.shp.zip
+    url: nuts/download/ref-nuts-2016-03m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2016-10m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-10m.shp.zip
+    url: nuts/download/ref-nuts-2016-10m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2016-20m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-20m.shp.zip
+    url: nuts/download/ref-nuts-2016-20m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2016-60m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2016-60m.shp.zip
+    url: nuts/download/ref-nuts-2016-60m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2021-01m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-01m.shp.zip
+    url: nuts/download/ref-nuts-2021-01m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2021-03m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-03m.shp.zip
+    url: nuts/download/ref-nuts-2021-03m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2021-10m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-10m.shp.zip
+    url: nuts/download/ref-nuts-2021-10m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2021-20m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-20m.shp.zip
+    url: nuts/download/ref-nuts-2021-20m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2021-60m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2021-60m.shp.zip
+    url: nuts/download/ref-nuts-2021-60m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2024-01m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-01m.shp.zip
+    url: nuts/download/ref-nuts-2024-01m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2024-03m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-03m.shp.zip
+    url: nuts/download/ref-nuts-2024-03m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2024-10m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-10m.shp.zip
+    url: nuts/download/ref-nuts-2024-10m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2024-20m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-20m.shp.zip
+    url: nuts/download/ref-nuts-2024-20m.shp.zip
+    url_prefix: *url_prefix
 
   ref-nuts-2024-60m:
     type: shapefile
-    url: https://gisco-services.ec.europa.eu/distribution/v2/nuts/download/ref-nuts-2024-60m.shp.zip
+    url: nuts/download/ref-nuts-2024-60m.shp.zip
+    url_prefix: *url_prefix

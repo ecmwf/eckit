@@ -17,9 +17,9 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointXYZ.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/util.h"
-#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 

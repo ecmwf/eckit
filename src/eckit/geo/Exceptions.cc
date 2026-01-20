@@ -28,10 +28,6 @@ GridError::GridError(const std::string& what, const CodeLocation& location) :
     Exception("GridError: [" + what + "]", location) {}
 
 
-GridUnknownError::GridUnknownError(const std::string& what, const CodeLocation& location) :
-    Exception("GridUnknownError: [" + what + "]", location) {}
-
-
 OrderError::OrderError(const std::string& what, const CodeLocation& location) :
     Exception("OrderError: [" + what + "]", location) {}
 
@@ -40,8 +36,8 @@ ProjectionError::ProjectionError(const std::string& what, const CodeLocation& lo
     Exception("ProjectionError: [" + what + "]", location) {}
 
 
-RangeError::RangeError(const std::string& what, const CodeLocation& location) :
-    Exception("RangeError: [" + what + "]", location) {}
+SpecError::SpecError(const std::string& what, const CodeLocation& location) :
+    Exception("SpecError: [" + what + "]", location) {}
 
 
 SearchError::SearchError(const std::string& what, const CodeLocation& location) :

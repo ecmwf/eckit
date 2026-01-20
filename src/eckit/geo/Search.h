@@ -15,7 +15,7 @@
 #include <memory>
 
 #include "eckit/geo/search/Tree.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/spec/Custom.h"
 
 
 namespace eckit::geo {
@@ -37,7 +37,7 @@ public:
 
     // -- Constructors
 
-    explicit Search(const Grid&, const spec::Spec& = spec::Custom{});
+    explicit Search(const Grid&, const Spec& = spec::Custom{});
 
     Search(const Search&) = delete;
     Search(Search&&)      = delete;

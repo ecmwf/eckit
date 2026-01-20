@@ -24,7 +24,7 @@ public:
     // -- Constructors
 
     explicit PolarStereographic(const Spec&);
-    PolarStereographic(PointLonLat centre, PointLonLat first, Figure* = nullptr);
+    PolarStereographic(PointLonLat centre, PointLonLat first = {0, 0}, Figure* = nullptr);
 
     // -- Methods
 

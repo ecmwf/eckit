@@ -17,14 +17,12 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
+#include "eckit/geo/projection/None.h"
 #include "eckit/geo/share/Grid.h"
+#include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
-#include "eckit/spec/Custom.h"
-#include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -50,30 +48,14 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(Projection* proj) :
-    projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {}
+Grid::Grid(const Spec& spec) : bbox_(area::BoundingBox::make_from_spec(spec)) {}
 
 
-const spec::Spec& Grid::catalog() const {
-    if (!catalog_) {
-        if (GridSpecByUID::instance().exists(uid())) {
-            catalog_.reset(GridSpecByUID::instance().get(uid()).spec());
-        }
-        else if (std::string grid(spec().get_string("grid")); GridSpecByName::instance().matches(grid)) {
-            catalog_.reset(GridSpecByName::instance().match(grid).spec(grid));
-        }
-        else {
-            static const spec::Custom empty;
-            catalog_.reset(&empty);
-        }
-    }
-
-    ASSERT(catalog_);
-    return *catalog_;
-}
+Grid::Grid(const area::BoundingBox* bbox, const Projection* projection) :
+    bbox_(bbox == nullptr ? area::BoundingBox::make_global_prime().release() : bbox), projection_(projection) {}
 
 
-const Grid::Spec& Grid::spec() const {
+const Spec& Grid::spec() const {
     if (!spec_) {
         spec_ = std::make_unique<spec::Custom>();
         ASSERT(spec_);
@@ -102,7 +84,7 @@ bool Grid::is_uid(const std::string& str) {
 }
 
 
-Grid::uid_type Grid::uid() const {
+Grid::uid_t Grid::uid() const {
     if (uid_.empty()) {
         const_cast<Grid*>(this)->reset_uid(calculate_uid());
     }
@@ -111,7 +93,7 @@ Grid::uid_type Grid::uid() const {
 }
 
 
-Grid::uid_type Grid::calculate_uid() const {
+Grid::uid_t Grid::calculate_uid() const {
     auto id = MD5{spec_str()}.digest();
     std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
 
@@ -120,7 +102,7 @@ Grid::uid_type Grid::calculate_uid() const {
 }
 
 
-void Grid::reset_uid(uid_type id) {
+void Grid::reset_uid(uid_t id) {
     if (id.empty()) {
         uid_.clear();
         return;
@@ -165,8 +147,8 @@ std::vector<Point> Grid::to_points() const {
 }
 
 
-std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
-    std::pair<std::vector<double>, std::vector<double>> ll;
+std::pair<std::vector<double>, std::vector<double> > Grid::to_latlons() const {
+    std::pair<std::vector<double>, std::vector<double> > ll;
     ll.first.reserve(size());
     ll.second.reserve(size());
 
@@ -185,7 +167,7 @@ const Grid::order_type& Grid::order() const {
 }
 
 
-Grid::renumber_type Grid::reorder(const order_type&) const {
+Reordering Grid::reorder(const order_type&) const {
     NOTIMP;
 }
 
@@ -196,23 +178,23 @@ Grid* Grid::make_grid_reordered(const order_type&) const {
 
 
 const Area& Grid::area() const {
-    if (!bbox_) {
-        bbox_.reset(calculate_bbox());
-        ASSERT(bbox_);
+    if (!area_) {
+        area_ = std::make_unique<area::BoundingBox>();
+        ASSERT(area_);
     }
 
-    return *bbox_;
+    return *area_;
 }
 
 
-Grid::renumber_type Grid::crop(const Area&) const {
+Reordering Grid::crop(const Area&) const {
     NOTIMP;
 }
 
 
 const Projection& Grid::projection() const {
     if (!projection_) {
-        projection_ = std::make_unique<projection::Reverse<projection::EquidistantCylindrical>>();
+        projection_ = std::make_unique<projection::None>();
         ASSERT(projection_);
     }
 
@@ -225,7 +207,7 @@ Grid* Grid::make_grid_cropped(const Area&) const {
 }
 
 
-const Grid::BoundingBox& Grid::boundingBox() const {
+const area::BoundingBox& Grid::boundingBox() const {
     if (!bbox_) {
         bbox_.reset(calculate_bbox());
         ASSERT(bbox_);
@@ -235,15 +217,20 @@ const Grid::BoundingBox& Grid::boundingBox() const {
 }
 
 
-Grid::BoundingBox* Grid::calculate_bbox() const {
+area::BoundingBox* Grid::calculate_bbox() const {
     NOTIMP;
 }
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    static const auto& area_default_str = BoundingBox::bounding_box_default().spec().str();
-    if (const auto& area_spec = area().spec(); area_spec.str() != area_default_str) {
-        custom.set("area", area_spec);
+    if (area_) {
+        auto area = std::make_unique<spec::Custom>();
+        ASSERT(area);
+
+        area_->fill_spec(*area);
+        if (!area->empty()) {
+            custom.set("area", area.release());
+        }
     }
 
     if (projection_) {
@@ -259,26 +246,24 @@ void Grid::fill_spec(spec::Custom& custom) const {
 
 
 const Grid* GridFactory::make_from_string(const std::string& str) {
-    std::unique_ptr<Grid::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+    std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
 }
 
 
 GridFactory& GridFactory::instance() {
-    share::Grid::instance();
-
     static GridFactory INSTANCE;
     return INSTANCE;
 }
 
 
-const Grid* GridFactory::make_from_spec_(const Grid::Spec& spec) const {
+const Grid* GridFactory::make_from_spec_(const Spec& spec) const {
     lock_type lock;
 
-    std::unique_ptr<Grid::Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Spec> cfg(make_spec_(spec));
 
     if (std::string type; cfg->get("type", type)) {
-        return Factory<Grid>::instance().get(type).create(*cfg);
+        return GridFactoryType::instance().get(type).create(*cfg);
     }
 
     list(Log::error() << "Grid: cannot build grid without 'type', choices are: ");
@@ -286,8 +271,9 @@ const Grid* GridFactory::make_from_spec_(const Grid::Spec& spec) const {
 }
 
 
-Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
+Spec* GridFactory::make_spec_(const Spec& spec) const {
     lock_type lock;
+    share::Grid::instance();
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
@@ -310,21 +296,6 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
         back->set("type", "regular_ll");
     }
 
-    if (static const std::string projection{"projection"}; !cfg->has(projection)) {
-        auto ptr = std::make_unique<spec::Custom>();
-        ASSERT(ptr);
-
-        if (static const std::string rotation{"rotation"}; cfg->has(rotation)) {
-            ptr->set("type", rotation);
-            ptr->set(rotation, cfg->get_double_vector(rotation));
-        }
-        else {
-            ptr->set("type", "none");
-        }
-
-        back->set(projection, ptr.release());
-    }
-
     if (!back->empty()) {
         cfg->push_back(back.release());
     }
@@ -334,10 +305,6 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
     }
 
     if (std::string uid; cfg->get("uid", uid) || (cfg->get("grid", uid) && Grid::is_uid(uid))) {
-        if (!GridSpecByUID::instance().exists(uid)) {
-            throw exception::GridUnknownError("Grid: unknown grid uid '" + uid + "'", Here());
-        }
-
         cfg->push_front(GridSpecByUID::instance().get(uid).spec());
     }
 
@@ -345,26 +312,26 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
 }
 
 
+bool Grid::NextIterator::next(Point& point) {
+    if (current_ != end_) {
+        point = *current_;
+        ++current_;
+        return true;
+    }
+
+    return false;
+}
+
+
 std::ostream& GridFactory::list_(std::ostream& out) const {
     lock_type lock;
+    share::Grid::instance();
 
     out << GridSpecByUID::instance() << std::endl;
     out << GridSpecByName::instance() << std::endl;
-    out << Factory<Grid>::instance() << std::endl;
+    out << GridFactoryType::instance() << std::endl;
 
     return out;
-}
-
-
-GridSpecByName::generator_t& GridSpecByName::instance() {
-    share::Grid::instance();  // ensure load of supporting files
-    return generator_t::instance();
-}
-
-
-GridSpecByUID::generator_t& GridSpecByUID::instance() {
-    share::Grid::instance();  // ensure load of supporting files
-    return generator_t::instance();
 }
 
 

@@ -26,7 +26,7 @@
 namespace eckit::geo {
 
 
-static std::string extract_loader(const spec::Spec& spec) {
+static std::string extract_loader(const Spec& spec) {
     static const std::string default_loader =
         spec.get_bool("caching", LibEcKitGeo::caching())
             ? std::string{LibResource<std::string, LibEcKitGeo>("$ECKIT_GEO_SEARCH_LOADER;ecKitGeoSearchLoader",
@@ -37,7 +37,7 @@ static std::string extract_loader(const spec::Spec& spec) {
 }
 
 
-Search::Search(const Grid& r, const spec::Spec& spec) {
+Search::Search(const Grid& r, const Spec& spec) {
     ResourceUsage usage("Search: build tree");
 
     tree_.reset(search::TreeFactory::build(extract_loader(spec), r));

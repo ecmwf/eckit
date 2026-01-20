@@ -15,7 +15,7 @@
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/AlbersEqualArea.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 

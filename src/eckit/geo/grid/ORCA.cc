@@ -18,12 +18,12 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Spec.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/spec/Custom.h"
-#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
 
@@ -47,14 +47,14 @@ class lock_type {
 };
 
 
-const ORCA::ORCARecord& orca_record(const spec::Spec& spec) {
+const ORCA::ORCARecord& orca_record(const Spec& spec) {
     // control concurrent reads/writes
     lock_type lock;
 
     static cache::MemoryCacheT<PathName, ORCA::ORCARecord> cache;
     static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
 
-    auto url  = LibEcKitGeo::url(spec.get_string("url"));
+    auto url  = spec.get_string("url_prefix", "") + spec.get_string("url");
     auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
     ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
 
@@ -75,6 +75,7 @@ const ORCA::ORCARecord& orca_record(const spec::Spec& spec) {
 
 
 ORCA::ORCA(const Spec& spec) :
+    Regular(spec),
     name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
     record_(orca_record(spec)),
@@ -87,7 +88,7 @@ ORCA::ORCA(const Spec& spec) :
 }
 
 
-ORCA::ORCA(uid_type uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+ORCA::ORCA(uid_t uid) : ORCA(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
 ORCA::ORCA(const std::string& name, Arrangement a) :
@@ -100,7 +101,7 @@ std::string ORCA::arrangement() const {
 }
 
 
-Grid::uid_type ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
+Grid::uid_t ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
     MD5 hash;
     hash.add(arrangement_to_string(arrangement));
 
@@ -214,7 +215,7 @@ Grid::iterator ORCA::cend() const {
 }
 
 
-Grid::uid_type ORCA::calculate_uid() const {
+Grid::uid_t ORCA::calculate_uid() const {
     return record_.calculate_uid(arrangement_);
 }
 
@@ -252,12 +253,12 @@ const Grid::order_type& ORCA::order() const {
 }
 
 
-Grid::renumber_type ORCA::reorder(const order_type& to) const {
+Reordering ORCA::reorder(const order_type& to) const {
     NOTIMP;
 }
 
 
-Grid::Spec* ORCA::spec_from_uid(const uid_type& uid) {
+Spec* ORCA::spec_from_uid(const uid_t& uid) {
     return GridSpecByUID::instance().get(uid).spec();
 }
 
@@ -284,24 +285,16 @@ std::string ORCA::arrangement_to_string(Arrangement a) {
 
 
 void ORCA::fill_spec(spec::Custom& custom) const {
-    auto grid = name_ + "_" + arrangement_to_string(arrangement_);
-    custom.set("grid", grid);
-
-    if (auto _uid = uid(); !GridSpecByName::instance().exists(grid) ||
-                           GridSpecByName::instance().match(grid).spec(grid)->get_string("orca_uid") != _uid) {
+    custom.set("grid", name_ + "_" + arrangement_to_string(arrangement_));
+    if (auto _uid = uid(); !GridSpecByUID::instance().exists(_uid)) {
         custom.set("uid", _uid);
     }
 }
 
 
 const std::string& ORCA::type() const {
-    static const std::string type{"ORCA"};
+    static const std::string type{"orca"};
     return type;
-}
-
-
-Grid::BoundingBox* ORCA::calculate_bbox() const {
-    return new BoundingBox;
 }
 
 

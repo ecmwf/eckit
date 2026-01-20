@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <string>
+
 
 namespace eckit::geo {
 
@@ -23,7 +25,8 @@ enum Arrangement {
     FESOM_N,
 
     ICON_C,
-    ICON_V,
+    ICON_T,
+    ICON_N,
     ICON_E,
 
     ORCA_F,

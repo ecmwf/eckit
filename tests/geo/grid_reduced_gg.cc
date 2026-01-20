@@ -12,19 +12,18 @@
 
 #include <memory>
 
-#include "eckit/geo/grid/reduced/ReducedGaussian.h"
+#include "eckit/geo/grid/ReducedGaussian.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
-#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-using grid::reduced::ReducedGaussian;
+using ReducedGaussian = grid::ReducedGaussian;
 
 
-#if 0
 CASE("gridspec") {
     // different ways to instantiate the same grid (O2)
     for (const auto& spec : {
@@ -46,10 +45,8 @@ CASE("gridspec") {
         EXPECT_EQUAL(n2, n1 / 2);
     }
 }
-#endif
 
 
-#if 0
 CASE("sizes") {
     struct test_t {
         explicit test_t(size_t N) : N(N), size(4 * N * (N + 9)) {}
@@ -67,10 +64,8 @@ CASE("sizes") {
         EXPECT(grid3.size() == test.size);
     }
 }
-#endif
 
 
-#if 0
 CASE("points") {
     ReducedGaussian grid(1);
 
@@ -106,10 +101,8 @@ CASE("points") {
     }
     EXPECT(i == grid.size());
 }
-#endif
 
 
-#if 1
 CASE("crop") {
     spec::Custom a({{"grid", "o2"}});
     std::unique_ptr<const Grid> grid1(GridFactory::build(a));
@@ -130,15 +123,12 @@ CASE("crop") {
     EXPECT_EQUAL(n3, n1);
 
     EXPECT(grid3->boundingBox().periodic());
-    std::cout << grid3->boundingBox().spec() << std::endl;
 
     // (exclude Greenwhich meridian)
     std::unique_ptr<const Grid> grid4(grid3->make_grid_cropped(area::BoundingBox(90., -180., 0., -1.e-6)));
 
     auto n4 = grid4->size();
-    std::cout << "n4=" << n4 << std::endl;
 
-#if 0
     EXPECT_EQUAL(n4, n3 / 4);
 
     const std::vector<PointLonLat> ref{
@@ -168,12 +158,9 @@ CASE("crop") {
         EXPECT(points_equal(ref[i++], it));
     }
     EXPECT_EQUAL(i, n4);
-#endif
 }
-#endif
 
 
-#if 0
 CASE("equals") {
     std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "o3"}})));
     std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("N: 3"));
@@ -185,7 +172,6 @@ CASE("equals") {
     EXPECT(*grid3 == *grid4);
     EXPECT(*grid4 == *grid1);
 }
-#endif
 
 
 }  // namespace eckit::geo::test

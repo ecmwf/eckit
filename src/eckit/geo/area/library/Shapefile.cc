@@ -23,9 +23,8 @@
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/polygon/Polygon.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
-#include "eckit/log/Log.h"
-#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::area::library {
@@ -81,7 +80,7 @@ PathName path_dbf(const PathName& file, const PathName& shp) {
 }  // namespace
 
 
-Shapefile::Shapefile(const spec::Spec& spec) :
+Shapefile::Shapefile(const Spec& spec) :
     Shapefile(path_shp(spec.get_string(spec.has("shp") ? "shp" : "file")),
               spec.has("dbf") ? spec.get_string("dbf") : "",
               spec.has("name_field") ? spec.get_string("name_field") : "") {}
@@ -92,9 +91,6 @@ Shapefile::Shapefile(const PathName& file) : Shapefile(file, "") {}
 
 Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string& name) :
     shpPath_(path_shp(shp)), dbfPath_(path_dbf(dbf, shpPath_)), nEntities_(0) {
-    Log::debug<LibEcKitGeo>() << "eckit::geo::area::library::Shapefile(shp='" << shpPath_.realName() << "',dbf='"
-                              << dbfPath_.realName() << "',name='" << name << "')" << std::endl;
-
     if ((shp_ = SHPOpen(shpPath_.localPath(), "rb")) == nullptr) {
         throw CantOpenFile(shpPath_ + " (as .shp)", Here());
     }
@@ -239,7 +235,7 @@ public:
     void add_library(const std::string& lib, const Value& value) {
         std::unique_ptr<spec::Custom> spec(spec::Custom::make_from_value(value));
 
-        emplace(lib, ShapefileURL{LibEcKitGeo::url(spec->get_string("url"))});
+        emplace(lib, ShapefileURL{spec->get_string("url_prefix", "") + spec->get_string("url")});
     }
 };
 #endif

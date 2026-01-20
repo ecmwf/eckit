@@ -13,42 +13,25 @@
 #include "eckit/geo/Range.h"
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo {
 
 
-double Range::min() const {
-    auto _a = a();
-    auto _b = b();
-    return _a < _b ? _a : _b;
+Range::Range(size_t n, double _a, double _b, double _eps) : n_(n), a_(_a), b_(_b), eps_(_eps) {
+    ASSERT(0 < n);
+    ASSERT(0. <= eps_);
+    if (types::is_approximately_equal(_a, _b)) {
+        n_ = 1;
+        b(_a);
+    }
 }
 
 
-double Range::max() const {
-    auto _a = a();
-    auto _b = b();
-    return _a < _b ? _b : _a;
-}
-
-
-Fraction Range::increment() const {
-    throw exception::GridError("Range::increment not implemented", Here());
-}
-
-
-bool Range::periodic() const {
-    throw exception::GridError("Range::periodic not implemented", Here());
-}
-
-
-bool Range::includesNorthPole() const {
-    throw exception::GridError("Range::includesNorthPole not implemented", Here());
-}
-
-
-bool Range::includesSouthPole() const {
-    throw exception::GridError("Range::includesSouthPole not implemented", Here());
+void Range::resize(size_t n) {
+    ASSERT(0 < n);
+    n_ = n;
 }
 
 

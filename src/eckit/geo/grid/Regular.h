@@ -13,15 +13,19 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/order/Scan.h"
 
 
-namespace eckit::geo::iterator {
+namespace eckit::geo {
+class Increments;
+namespace iterator {
 class Regular;
-}  // namespace eckit::geo::iterator
+}
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::grid {
@@ -32,46 +36,50 @@ public:
 
     // -- Methods
 
-    virtual double dx() const = 0;
-    virtual double dy() const = 0;
+    virtual double dx() const;
+    virtual double dy() const;
 
-    virtual size_t nx() const = 0;
-    virtual size_t ny() const = 0;
+    virtual size_t nx() const { return x_->size(); }
+    virtual size_t ny() const { return y_->size(); }
 
-    virtual const Range& x() const = 0;
-    virtual const Range& y() const = 0;
+    const Range& x() const;
+    const Range& y() const;
 
     // -- Overridden methods
 
-    iterator cbegin() const final;
-    iterator cend() const final;
+    iterator cbegin() const override;
+    iterator cend() const override;
 
     size_t size() const final { return nx() * ny(); }
-    std::vector<size_t> shape() const final { return {ny(), nx()}; }
+    std::vector<size_t> shape() const override { return {ny(), nx()}; }
 
-    const order_type& order() const final;
-    renumber_type reorder(const order_type& to) const final;
+    const order_type& order() const override { return scan_.order(); }
+    Reordering reorder(const order_type& to) const override { return scan_.reorder(to); }
 
 protected:
+
+    // -- Types
+
+    struct Ranges : std::pair<Range*, Range*> {
+        Ranges(Range*, Range*);
+    };
 
     // -- Constructors
 
     explicit Regular(const Spec&);
-    explicit Regular(const Projection* = nullptr);
+    explicit Regular(Ranges, area::BoundingBox, const Projection* = nullptr);
 
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
 
-    // -- Methods
-
-    void order(const order_type& to);
-
 private:
 
     // -- Members
 
-    order::Scan order_;
+    std::unique_ptr<Range> x_;
+    std::unique_ptr<Range> y_;
+    order::Scan scan_;
 
     // -- Friends
 

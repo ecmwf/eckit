@@ -21,7 +21,7 @@
 
 namespace eckit::geo::iterator {
 class Unstructured;
-}
+}  // namespace eckit::geo::iterator
 
 
 namespace eckit::geo::grid {
@@ -32,7 +32,7 @@ public:
 
     // -- Constructors
 
-    explicit Unstructured(const Spec&);
+    explicit Unstructured(const Spec& spec) : Grid(spec) {}
 
     explicit Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
     explicit Unstructured(const std::vector<Point>&);
@@ -50,8 +50,6 @@ public:
     size_t size() const override;
     std::vector<size_t> shape() const override { return {size()}; }
 
-    BoundingBox* calculate_bbox() const override;
-
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }
@@ -61,7 +59,7 @@ public:
 
     // -- Class methods
 
-    [[nodiscard]] static Spec* spec(const std::string& uid);
+    [[nodiscard]] static Spec* spec(const std::string& name);
     [[nodiscard]] static Unstructured* make_from_latlon(const std::vector<double>&, const std::vector<double>&);
 
 protected:
@@ -69,6 +67,10 @@ protected:
     // -- Constructors
 
     explicit Unstructured(container::PointsContainer*);
+
+    // -- Methods
+
+    void resetContainer(container::PointsContainer* container) { container_.reset(container); }
 
 private:
 

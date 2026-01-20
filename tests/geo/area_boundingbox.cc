@@ -22,8 +22,8 @@ namespace eckit::geo::test {
 
 
 CASE("AreaFactory::make_from_string") {
-    const area::BoundingBox expected_area;
-    const std::string expected_spec = expected_area.spec_str();
+    const std::string expected_spec = "{}";
+    const std::unique_ptr<Area> expected_area(new area::BoundingBox);
 
     for (const auto& spec : std::vector<std::string>{
              "{}",
@@ -34,7 +34,7 @@ CASE("AreaFactory::make_from_string") {
         std::unique_ptr<const Area> area(geo::AreaFactory::make_from_string(spec));
 
         EXPECT(expected_spec == area->spec_str());
-        EXPECT(expected_area == *area);
+        EXPECT(*expected_area == *area);
     }
 }
 

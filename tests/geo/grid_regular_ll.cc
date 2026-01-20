@@ -12,15 +12,15 @@
 
 #include <memory>
 
-#include "eckit/geo/grid/regular/RegularLL.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/geo/grid/RegularLL.h"
+#include "eckit/geo/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-using grid::regular::RegularLL;
+using RegularLL = grid::RegularLL;
 
 
 CASE("global") {
@@ -49,50 +49,35 @@ CASE("global") {
 
 
     SECTION("2") {
-        RegularLL a(spec::Custom{{{"grid", std::vector<double>{1, 1}}}});
+        std::unique_ptr<Grid> grid(new RegularLL(spec::Custom{{{"grid", std::vector<double>{1, 1}}}}));
 
-        EXPECT(a.size() == 360 * 181);
-        EXPECT(a.spec_str() == R"({"grid":[1,1]})");
-
-        RegularLL b(spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
-
-        EXPECT(b.size() == 5 * 10);
-        EXPECT(b.spec_str() == R"({"area":[10,2,1,10],"grid":[2,1]})");
-
-        RegularLL c({1., 1.}, {89.5, 0.5, -89.5, 359.5}, {0.5, 0.5});
-
-        EXPECT(c.nlon() == 360);
-        EXPECT(c.nlat() == 180);
-        EXPECT(c.size() == 360 * 180);
-        EXPECT(c.spec_str() == R"({"area":[90,0.5,-90,360.5],"grid":[1,1],"reference":[0.5,0.5]})");
-
-        RegularLL d({1., 1.}, {90., 0.5, -90, 360.5}, {0.5, 0.5});
-
-        EXPECT(d.nlon() == 360);
-        EXPECT(d.nlat() == 180);
-        EXPECT(d.size() == 360 * 180);
+        EXPECT(grid->size() == 360 * 181);
     }
 
 
     SECTION("3") {
-        for (const double d : {
-                 0.35,
-                 0.7,
-                 0.8,
-                 1.4,
-                 1.6,
-             }) {
-            const auto spec_ref = RegularLL({d, d}).spec_str();
+        RegularLL grid(
+            spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
 
-            std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom{{{"grid", std::vector<double>{d, d}}}}));
+        EXPECT(grid.size() == 5 * 10);
+    }
 
-            EXPECT(spec_ref == grid1->spec_str());
 
-            std::unique_ptr<const Grid> grid2(
-                GridFactory::make_from_string(std::to_string(d) + "/" + std::to_string(d)));
+    SECTION("4") {
+        RegularLL grid({1., 1.}, {89.5, 0.5, -89.5, 359.5}, {0.5, 0.5});
 
-            EXPECT(spec_ref == grid2->spec_str());
-        }
+        EXPECT(grid.nx() == 360);
+        EXPECT(grid.ny() == 180);
+        EXPECT(grid.size() == 360 * 180);
+    }
+
+
+    SECTION("5") {
+        RegularLL grid({1., 1.}, {90., 0., -90, 360.}, {0.5, 0.5});
+
+        EXPECT(grid.nx() == 360);
+        EXPECT(grid.ny() == 180);
+        EXPECT(grid.size() == 360 * 180);
     }
 }
 

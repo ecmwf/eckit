@@ -888,9 +888,7 @@ void EasyCURL::sslVerifyHost(bool on) {
 }
 
 void EasyCURL::useSSL(bool use) {
-    if (!use) {
-        _(curl_easy_setopt(ch_->curl_, CURLOPT_USE_SSL, CURLUSESSL_NONE));
-    }
+    _(curl_easy_setopt(ch_->curl_, CURLOPT_USE_SSL, use ? CURLUSESSL_ALL : CURLUSESSL_NONE));
 }
 
 void EasyCURL::failOnError(bool on) {

@@ -123,17 +123,17 @@ CASE("s3 backends") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("create s3 bucket in non-existing region") {
-    EXPECT_NO_THROW(s3::cleanup(testBuckets));
-
-    // this test requires an S3 endpoint that sets it's region
-    // a MinIO instance with empty region will not throw an exception
-
-    auto cfgTmp   = s3::TEST_CONFIG;
-    cfgTmp.region = "non-existing-region-random";
-
-    EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket({"test-bucket-1"}));
-}
+// CASE("create s3 bucket in non-existing region") {
+//     EXPECT_NO_THROW(s3::cleanup(testBuckets));
+// 
+//     // this test requires an S3 endpoint that sets it's region
+//     // a MinIO instance with empty region will not throw an exception
+// 
+//     auto cfgTmp   = s3::TEST_CONFIG;
+//     cfgTmp.region = "non-existing-region-random";
+// 
+//     EXPECT_THROWS(S3Client::makeUnique(cfgTmp)->createBucket({"test-bucket-1"}));
+// }
 
 //----------------------------------------------------------------------------------------------------------------------
 

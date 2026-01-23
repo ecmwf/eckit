@@ -12,6 +12,9 @@
 
 #pragma once
 
+#include <cstddef>
+#include <memory>
+
 #include "eckit/geo/Range.h"
 #include "eckit/types/Fraction.h"
 
@@ -22,60 +25,104 @@ namespace eckit::geo::range {
 class Regular : public Range {
 public:
 
-    // -- Methods
+    // -- Types
 
-    Fraction increment() const override;
+    struct Implementation {
+        Implementation(Fraction inc, Fraction a, Fraction b, Fraction ref);
+
+        Implementation(const Implementation&) = default;
+        Implementation(Implementation&&)      = default;
+
+        virtual ~Implementation() = default;
+
+        Implementation& operator=(const Implementation&) = default;
+        Implementation& operator=(Implementation&&)      = default;
+
+        virtual Regular* make_cropped_range(double, double) const;
+        virtual bool periodic() const;
+        virtual bool includesNorthPole() const;
+        virtual bool includesSouthPole() const;
+
+        Fraction min() const;
+        Fraction max() const;
+
+        Fraction inc_;
+        Fraction shift_;
+        Fraction a_;
+        Fraction b_;
+        size_t size_ = 0;
+    };
 
     // -- Overridden methods
 
-    const std::vector<double>& values() const override;
+    [[nodiscard]] const std::vector<double>& values() const override;
+
+    [[nodiscard]] Regular* make_cropped_range(double crop_a, double crop_b) const override {
+        return impl_->make_cropped_range(crop_a, crop_b);
+    }
+
+    size_t size() const override { return impl_->size_; }
+    double a() const override { return impl_->a_; }
+    double b() const override { return impl_->b_; }
+
+    Fraction increment() const override { return impl_->inc_; }
+    bool periodic() const override { return impl_->periodic(); }
+    bool includesNorthPole() const override { return impl_->includesNorthPole(); }
+    bool includesSouthPole() const override { return impl_->includesSouthPole(); }
+
+    // -- Methods
+
+    Fraction shift() const { return impl_->shift_; }
+    Fraction af() const { return impl_->a_; }
+    Fraction bf() const { return impl_->b_; }
 
 protected:
 
     // -- Constructors
 
-    /**
-     * @brief Regular
-     * @param inc regular increment
-     * @param a range start
-     * @param b range end
-     * @param ref User-defined coordinate reachable with (multiples of) integer increment; Can be defined out of the [a,
-     * b] range. Support both "shifted" and "non-shifted" ranges, for the same definition of [a, b] range and increment
-     * @param eps tolerace to check range start/end against
-     */
-    Regular(double inc, double a, double b, double ref, double eps);
-
-    Regular(size_t n, double a, double b, bool periodic, double eps);
-
-    Regular(size_t n, double a, double b, std::vector<double>&& values, bool periodic, double eps);
-
-    Regular(const Regular&) = default;
-    Regular(Regular&&)      = default;
-
-    // -- Destructor
-
-    ~Regular() override = default;
-
-    // -- Operators
-
-    Regular& operator=(Regular&&)      = default;
-    Regular& operator=(const Regular&) = default;
-
-    // -- Methods
-
-    static Fraction adjust(const Fraction& target, const Fraction& inc, bool up);
-    void increment(Fraction);
-
-    void setPeriodic(bool p) { periodic_ = p; }
-    bool getPeriodic() const { return periodic_; }
+    explicit Regular(Implementation*);
 
 private:
 
     // -- Members
 
-    Fraction increment_;
-    std::vector<double> values_;
-    bool periodic_;
+    std::shared_ptr<Implementation> impl_;
+};
+
+
+struct RegularLatitude : Regular {
+    explicit RegularLatitude(Fraction inc, Fraction a, Fraction b, Fraction ref = {});
+    explicit RegularLatitude(double inc, double a, double b, double ref = 0) :
+        RegularLatitude(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
+
+    [[nodiscard]] RegularLatitude* make_cropped_range(double crop_a, double crop_b) const override;
+};
+
+
+struct RegularLongitude : Regular {
+    explicit RegularLongitude(Fraction inc, Fraction a, Fraction b, Fraction ref = {});
+    explicit RegularLongitude(double inc, double a, double b, double ref = 0) :
+        RegularLongitude(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
+
+    [[nodiscard]] static RegularLongitude* make_empty_range(Fraction a, Fraction b);
+    [[nodiscard]] static RegularLongitude* make_empty_range(double a, double b) {
+        return make_empty_range(Fraction{a}, Fraction{b});
+    }
+
+    [[nodiscard]] RegularLongitude* make_cropped_range(double crop_a, double crop_b) const override;
+
+private:
+
+    explicit RegularLongitude(Implementation* impl) : Regular(impl) {}
+};
+
+
+struct RegularXY : Regular {
+    explicit RegularXY(Fraction inc, Fraction a, Fraction b, Fraction ref = {});
+    explicit RegularXY(double inc, double a, double b, double ref = 0) :
+        RegularXY(Fraction{inc}, Fraction{a}, Fraction{b}, Fraction{ref}) {}
+
+    [[nodiscard]] RegularXY* make_cropped_range(double crop_a, double crop_b) const override;
 };
 
 

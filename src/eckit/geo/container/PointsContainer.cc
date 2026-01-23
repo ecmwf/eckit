@@ -23,28 +23,66 @@ void hash_vector_double(MD5&, const std::vector<double>&);
 namespace eckit::geo::container {
 
 
-std::pair<std::vector<double>, std::vector<double>> PointsContainer::to_latlons(const std::vector<Point>& points) {
+std::pair<std::vector<double>, std::vector<double>> PointsContainer::points_to_latlons(
+    const std::vector<Point>& points) {
     std::pair<std::vector<double>, std::vector<double>> ll;
     ll.first.reserve(points.size());
     ll.second.reserve(points.size());
 
     for (const auto& p : points) {
         auto q = std::get<PointLonLat>(p);
-        ll.first.emplace_back(q.lat);
-        ll.second.emplace_back(q.lon);
+        ll.first.emplace_back(q.lat());
+        ll.second.emplace_back(q.lon());
     }
 
     return ll;
 }
 
 
+std::vector<Point> PointsContainer::latlons_to_points(const std::vector<double>& latitudes,
+                                                      const std::vector<double>& longitudes) {
+    ASSERT(longitudes.size() == latitudes.size());
+
+    std::vector<Point> points;
+    points.reserve(longitudes.size());
+
+    for (size_t i = 0; i < longitudes.size(); ++i) {
+        points.emplace_back(PointLonLat{longitudes[i], latitudes[i]});
+    }
+
+    return points;
+}
+
+
 std::pair<std::vector<double>, std::vector<double>> PointsInstance::to_latlons() const {
-    return PointsContainer::to_latlons(points_);
+    return PointsContainer::points_to_latlons(points_);
 }
 
 
 void PointsInstance::hash(MD5&) const {
     NOTIMP;
+}
+
+
+PointsLonLatInstance::PointsLonLatInstance(std::vector<double>&& longitudes, std::vector<double>&& latitudes) :
+    longitudes(longitudes), latitudes(latitudes) {
+    ASSERT(longitudes.size() == latitudes.size());
+}
+
+
+std::vector<Point> PointsLonLatInstance::to_points() const {
+    return latlons_to_points(latitudes, longitudes);
+}
+
+
+std::pair<std::vector<double>, std::vector<double>> PointsLonLatInstance::to_latlons() const {
+    return {latitudes, longitudes};
+}
+
+
+void PointsLonLatInstance::hash(MD5& hash) const {
+    util::hash_vector_double(hash, latitudes);
+    util::hash_vector_double(hash, longitudes);
 }
 
 
@@ -56,14 +94,7 @@ PointsLonLatReference::PointsLonLatReference(const std::vector<double>& longitud
 
 
 std::vector<Point> PointsLonLatReference::to_points() const {
-    std::vector<Point> points;
-    points.reserve(longitudes.size());
-
-    for (size_t i = 0; i < size(); ++i) {
-        points.emplace_back(PointLonLat{longitudes[i], latitudes[i]});
-    }
-
-    return points;
+    return latlons_to_points(latitudes, longitudes);
 }
 
 
@@ -79,7 +110,7 @@ void PointsLonLatReference::hash(MD5& hash) const {
 
 
 std::pair<std::vector<double>, std::vector<double>> PointsReference::to_latlons() const {
-    return PointsContainer::to_latlons(points_);
+    return PointsContainer::points_to_latlons(points_);
 }
 
 

@@ -17,7 +17,7 @@
 
 
 namespace eckit {
-namespace geo {
+namespace spec {
 class Spec;
 }
 class PathName;
@@ -40,7 +40,7 @@ private:
 
     // -- Members
 
-    std::unique_ptr<Spec> spec_;
+    std::unique_ptr<spec::Spec> spec_;
 
     // -- Methods
 

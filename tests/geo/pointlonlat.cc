@@ -84,7 +84,7 @@ CASE("PointLonLat antipode") {
     PointLonLat s(1., -90.);
     auto t = s.antipode();
 
-    EXPECT_EQUAL(t.lon, 0.);
+    EXPECT_EQUAL(t.lon(), 0.);
     EXPECT(points_equal(t, {2., 90.}));
     EXPECT(points_equal(t.antipode(), s));
 }
@@ -213,11 +213,11 @@ CASE("PointLonLat normalisation") {
     }
 
     PointLonLat p(1, 90.);
-    EXPECT_EQUAL(p.lon, 1.);
-    EXPECT_EQUAL(p.lat, 90.);
+    EXPECT_EQUAL(p.lon(), 1.);
+    EXPECT_EQUAL(p.lat(), 90.);
 
-    auto p2 = PointLonLat::make(p.lon, p.lat);
-    EXPECT_EQUAL(p2.lon, 0.);
+    auto p2 = PointLonLat::make(p.lon(), p.lat());
+    EXPECT_EQUAL(p2.lon(), 0.);
     EXPECT(points_equal(p, p2));
 
     auto p3 = PointLonLat(50., 90.);
@@ -277,16 +277,16 @@ CASE("PointLonLat canonicalise on sphere") {
     const auto p4 = PointLonLat::make(108., -328.);
 
     // Check each of these is correctly shifted back to original point:
-    const PointLonLat q2 = PointLonLat::make(p2.lon, p2.lat);
-    const PointLonLat q3 = PointLonLat::make(p3.lon, p3.lat);
-    const PointLonLat q4 = PointLonLat::make(p4.lon, p4.lat);
+    const PointLonLat q2 = PointLonLat::make(p2.lon(), p2.lat());
+    const PointLonLat q3 = PointLonLat::make(p3.lon(), p3.lat());
+    const PointLonLat q4 = PointLonLat::make(p4.lon(), p4.lat());
 
-    EXPECT(p1.lon == q2.lon);
-    EXPECT(p1.lat == q2.lat);
-    EXPECT(p1.lon == q3.lon);
-    EXPECT(p1.lat == q3.lat);
-    EXPECT(p1.lon == q4.lon);
-    EXPECT(p1.lat == q4.lat);
+    EXPECT(p1.lon() == q2.lon());
+    EXPECT(p1.lat() == q2.lat());
+    EXPECT(p1.lon() == q3.lon());
+    EXPECT(p1.lat() == q3.lat());
+    EXPECT(p1.lon() == q4.lon());
+    EXPECT(p1.lat() == q4.lat());
 
     // Check with longitude offset
     EXPECT(points_equal(PointLonLat::make(1., -90.), PointLonLat(0., -90.)));
@@ -305,7 +305,7 @@ CASE("PointLonLat pole") {
     for (const auto& p : {PointLonLat(0., 90.), PointLonLat(0., -90.)}) {
         EXPECT(p.pole());
 
-        PointLonLat q{p.lon, p.lat + 1.};
+        PointLonLat q{p.lon(), p.lat() + 1.};
         EXPECT(!q.pole());
     }
 }

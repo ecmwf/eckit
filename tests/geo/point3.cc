@@ -23,16 +23,16 @@ namespace eckit::geo::test {
 CASE("PointXYZ initialisation") {
     PointXYZ z;
 
-    EXPECT(z.X == 0.);
-    EXPECT(z.Y == 0.);
-    EXPECT(z.Z == 0.);
+    EXPECT(z.X() == 0.);
+    EXPECT(z.Y() == 0.);
+    EXPECT(z.Z() == 0.);
 
     PointXYZ p = {1., 2., 3.};
     PointXYZ s(p);
 
-    EXPECT(s.X == 1.);
-    EXPECT(s.Y == 2.);
-    EXPECT(s.Z == 3.);
+    EXPECT(s.X() == 1.);
+    EXPECT(s.Y() == 2.);
+    EXPECT(s.Z() == 3.);
 }
 
 
@@ -42,9 +42,9 @@ CASE("PointXYZ addition") {
 
     PointXYZ r = p1 + p2;
 
-    EXPECT(r.X == 2.);
-    EXPECT(r.Y == 4.);
-    EXPECT(r.Z == 6.);
+    EXPECT(r.X() == 2.);
+    EXPECT(r.Y() == 4.);
+    EXPECT(r.Z() == 6.);
 }
 
 
@@ -54,9 +54,9 @@ CASE("PointXYZ subtraction") {
 
     PointXYZ r = p1 - p2;
 
-    EXPECT(r.X == 1.);
-    EXPECT(r.Y == 3.);
-    EXPECT(r.Z == 4.);
+    EXPECT(r.X() == 1.);
+    EXPECT(r.Y() == 3.);
+    EXPECT(r.Z() == 4.);
 }
 
 
@@ -65,9 +65,9 @@ CASE("PointXYZ scaling") {
 
     PointXYZ r = p1 * 42.;
 
-    EXPECT(r.X == 42.);
-    EXPECT(r.Y == 84.);
-    EXPECT(r.Z == 126.);
+    EXPECT(r.X() == 42.);
+    EXPECT(r.Y() == 84.);
+    EXPECT(r.Z() == 126.);
 }
 
 

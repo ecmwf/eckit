@@ -32,7 +32,7 @@ public:
 
     // -- Constructors
 
-    explicit Polygon(const Spec&);
+    explicit Polygon(const Area::Spec&);
 
     Polygon(const Polygon& other) : Area(other), container_type(other) {}
     Polygon(Polygon&& other) : Area(other), container_type(other) {}
@@ -70,7 +70,7 @@ public:
 
     // -- Class methods
 
-    [[nodiscard]] static Polygon* make_from_spec(const Spec&);
+    [[nodiscard]] static Polygon* make_from_spec(const Area::Spec&);
 
 private:
 

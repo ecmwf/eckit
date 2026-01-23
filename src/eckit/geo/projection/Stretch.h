@@ -28,8 +28,8 @@ public:
 
     // -- Methods
 
-    inline PointLonLat fwd(const PointLonLat& p) const { return PointLonLat::make(p.lon, stretch(p.lat, 1. / c_)); }
-    inline PointLonLat inv(const PointLonLat& p) const { return PointLonLat::make(p.lon, stretch(p.lat, c_)); }
+    inline PointLonLat fwd(const PointLonLat& p) const { return PointLonLat::make(p.lon(), stretch(p.lat(), 1. / c_)); }
+    inline PointLonLat inv(const PointLonLat& p) const { return PointLonLat::make(p.lon(), stretch(p.lat(), c_)); }
 
     // -- Overridden methods
 

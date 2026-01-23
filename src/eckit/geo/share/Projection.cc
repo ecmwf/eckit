@@ -16,8 +16,9 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/value/Value.h"
 
 
@@ -35,6 +36,8 @@ Projection::Projection(const std::vector<PathName>& paths) : spec_(new spec::Cus
 
     for (const auto& path : paths) {
         if (path.exists()) {
+            Log::debug<LibEcKitGeo>() << "eckit::geo::share::Projection::load('" << path.realName() << "')"
+                                      << std::endl;
             load(path);
         }
     }
@@ -47,7 +50,7 @@ void Projection::load(const PathName& path) {
 
     struct SpecByNameGenerator final : ProjectionSpecByName::generator_t {
         explicit SpecByNameGenerator(spec::Custom* spec) : spec_(spec) { ASSERT(spec_); }
-        Spec* spec(ProjectionSpecByName::generator_t::arg1_t) const override {
+        geo::Projection::Spec* spec(ProjectionSpecByName::generator_t::arg1_t) const override {
             return new spec::Custom(spec_->container());
         }
         bool match(const spec::Custom& other) const override { return other == *spec_; }

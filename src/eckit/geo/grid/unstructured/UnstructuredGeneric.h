@@ -32,7 +32,7 @@ public:
 
     // -- Overridden methods
 
-    uid_t calculate_uid() const override;
+    uid_type calculate_uid() const override;
     const std::string& type() const override;
 
     // -- Class methods

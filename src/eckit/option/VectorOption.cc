@@ -33,7 +33,7 @@ VectorOption<T>::VectorOption(const std::string& name, const std::string& descri
 template <class T>
 VectorOption<T>::VectorOption(const std::string& name, const std::string& description, size_t size,
                               const std::vector<T>& default_value, const char* separator) :
-    base_t(Option(name, description, default_value)), size_(size), separator_(separator) {}
+    base_t(name, description, default_value), size_(size), separator_(separator) {}
 
 
 template <class T>

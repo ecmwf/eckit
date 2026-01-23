@@ -688,7 +688,6 @@ list( APPEND eckit_utils_srcs
     utils/Literals.h
     utils/MD5.cc
     utils/MD5.h
-    utils/Optional.h
     utils/Overloaded.h
     utils/RLE.cc
     utils/RLE.h

@@ -1023,18 +1023,10 @@ CASE("test_eckit_option_cmdargs_value_with_equals") {
 #endif
 CASE("test_eckit_option__allows_to_set_default_value_for_options") {
     options_t options;
-    {
-        auto o = (new SimpleOption<std::string>("arg1", ""))->defaultValue("default string");
-        options.push_back(o);
-    }
-    {
-        auto o = (new VectorOption<std::string>("arg2", "", 0))->defaultValue("q/w/e/r/t/y");
-        options.push_back(o);
-    }
-    {
-        auto o = (new VectorOption<long>("arg3", "", 0))->defaultValue("1/2/3/4");
-        options.push_back(o);
-    }
+    options.push_back(new SimpleOption<std::string>("arg1", "", "default string"));
+    options.push_back(
+        new VectorOption<std::string>("arg2", "", 0, std::vector<std::string>{"q", "w", "e", "r", "t", "y"}));
+    options.push_back(new VectorOption<long>("arg3", "", 0, std::vector<long>{1, 2, 3, 4}));
 
     std::vector<const char*> input = {"exe"};
     Main::initialise(input.size(), const_cast<char**>(&input[0]));

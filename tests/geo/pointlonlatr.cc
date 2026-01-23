@@ -59,18 +59,18 @@ CASE("PointLonLatR normalise_angle_to_*") {
 
 CASE("PointLonLatR normalisation") {
     PointLonLatR p(1, PointLonLatR::RIGHT_ANGLE);
-    auto p2 = PointLonLatR::make(p.lonr, p.latr);
+    auto p2 = PointLonLatR::make(p.lonr(), p.latr());
     auto p3 = PointLonLatR(1. + 42. * PointLonLatR::FULL_ANGLE, PointLonLatR::RIGHT_ANGLE);
 
-    EXPECT_EQUAL(p2.lonr, 0.);
+    EXPECT_EQUAL(p2.lonr(), 0.);
     EXPECT(points_equal(p, p2));
     EXPECT(points_equal(p, p3));
 
-    PointLonLatR q(1., SOUTH_POLE_R.latr);
+    PointLonLatR q(1., SOUTH_POLE_R.latr());
     auto q2 = q.antipode();
     auto q3 = q2.antipode();
 
-    EXPECT_EQUAL(q2.lonr, 0.);
+    EXPECT_EQUAL(q2.lonr(), 0.);
     EXPECT(points_equal(q2, p));
     EXPECT(points_equal(q3, q));
 }
@@ -84,11 +84,11 @@ CASE("PointLonLatR comparison") {
     PointLonLatR a2{-PointLonLatR::FLAT_ANGLE, 0.};
     EXPECT(points_equal(a1, a2));
 
-    EXPECT(points_equal(SOUTH_POLE_R, {1., SOUTH_POLE_R.latr + PointLonLatR::FULL_ANGLE}));
+    EXPECT(points_equal(SOUTH_POLE_R, {1., SOUTH_POLE_R.latr() + PointLonLatR::FULL_ANGLE}));
 
     PointLonLatR c1{300., -30.};
-    PointLonLatR c2{c1.lonr - PointLonLatR::FULL_ANGLE - PointLonLatR::EPS / 10.,
-                    c1.latr + PointLonLatR::FULL_ANGLE + PointLonLatR::EPS / 10.};
+    PointLonLatR c2{c1.lonr() - PointLonLatR::FULL_ANGLE - PointLonLatR::EPS / 10.,
+                    c1.latr() + PointLonLatR::FULL_ANGLE + PointLonLatR::EPS / 10.};
     EXPECT(points_equal(c1, c2));
 
     EXPECT(points_equal(NORTH_POLE_R, {-42, PointLonLatR::RIGHT_ANGLE}));
@@ -117,8 +117,8 @@ CASE("PointLonLatR conversion to/from PointLonLat") {
     PointLonLatR q{0., PointLonLatR::RIGHT_ANGLE};
     EXPECT(points_equal(q, PointLonLatR::make_from_lonlat(1., PointLonLat::RIGHT_ANGLE)));
 
-    PointLonLatR r{42. * PointLonLatR::FULL_ANGLE, SOUTH_POLE_R.latr};
-    EXPECT(points_equal(r, PointLonLatR::make_from_lonlat(0., SOUTH_POLE.lat - 42. * PointLonLat::FULL_ANGLE)));
+    PointLonLatR r{42. * PointLonLatR::FULL_ANGLE, SOUTH_POLE_R.latr()};
+    EXPECT(points_equal(r, PointLonLatR::make_from_lonlat(0., SOUTH_POLE.lat() - 42. * PointLonLat::FULL_ANGLE)));
 
     PointLonLatR s{10. * util::DEGREE_TO_RADIAN, 42. * PointLonLatR::FULL_ANGLE};
     EXPECT(points_equal(s, PointLonLatR::make_from_lonlat(10. - 42. * PointLonLat::FULL_ANGLE, 0.)));
@@ -129,7 +129,7 @@ CASE("PointLonLatR pole") {
     for (const auto& p : {PointLonLatR(0., PointLonLatR::RIGHT_ANGLE), PointLonLatR(0., -PointLonLatR::RIGHT_ANGLE)}) {
         EXPECT(p.pole());
 
-        PointLonLatR q{p.lonr, p.latr + 1.};
+        PointLonLatR q{p.lonr(), p.latr() + 1.};
         EXPECT(!q.pole());
     }
 }

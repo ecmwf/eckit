@@ -29,8 +29,8 @@
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -45,14 +45,14 @@ namespace {
 
 PointLonLat longitude_in_range(double reference, const PointLonLat& p) {
     // keep longitude difference (to reference) range below +-180 degree
-    auto lon = p.lon;
+    auto lon = p.lon();
     while (lon > reference + 180.) {
         lon -= 360.;
     }
     while (lon <= reference - 180.) {
         lon += 360.;
     }
-    return {lon, p.lat};
+    return {lon, p.lat()};
 }
 
 
@@ -61,12 +61,12 @@ struct BoundLonLat {
 
     explicit operator BoundingBox() const {
         // MIR-661 account for "excessive" bounds
-        auto max_lon = std::min(max_.lon, min_.lon + PointLonLat::FULL_ANGLE);
-        return {max_.lat, min_.lon, min_.lat, max_lon};
+        auto max_lon = std::min(max_.lon(), min_.lon() + PointLonLat::FULL_ANGLE);
+        return {max_.lat(), min_.lon(), min_.lat(), max_lon};
     }
 
     void extend(PointLonLat p, PointLonLat eps) {
-        ASSERT(0. <= eps.lon && 0. <= eps.lat);
+        ASSERT(0. <= eps.lon() && 0. <= eps.lat());
 
         auto sub = p - eps;
         auto add = p + eps;
@@ -74,25 +74,25 @@ struct BoundLonLat {
         max_     = first_ ? add : PointLonLat::componentsMax(max_, add);
         first_   = false;
 
-        min_ = {min_.lon, std::max(min_.lat, -90.)};
-        max_ = {std::min(max_.lon, min_.lon + 360.), std::min(max_.lat, 90.)};
-        ASSERT(min_.lon <= max_.lon && min_.lat <= max_.lat);
+        min_ = {min_.lon(), std::max(min_.lat(), -90.)};
+        max_ = {std::min(max_.lon(), min_.lon() + 360.), std::min(max_.lat(), 90.)};
+        ASSERT(min_.lon() <= max_.lon() && min_.lat() <= max_.lat());
 
-        includesSouthPole(types::is_approximately_equal(min_.lat, -90.));
-        includesNorthPole(types::is_approximately_equal(max_.lat, 90.));
-        crossesDateLine(types::is_approximately_equal(max_.lon - min_.lon, 360.));
+        includesSouthPole(types::is_approximately_equal(min_.lat(), -90.));
+        includesNorthPole(types::is_approximately_equal(max_.lat(), 90.));
+        crossesDateLine(types::is_approximately_equal(max_.lon() - min_.lon(), 360.));
     }
 
     bool crossesDateLine(bool yes) {
         if ((crossesDateLine_ = crossesDateLine_ || yes)) {
-            max_ = {min_.lon + 360., max_.lat};
+            max_ = {min_.lon() + 360., max_.lat()};
         }
         return crossesDateLine_;
     }
 
     bool includesNorthPole(bool yes) {
         if ((includesNorthPole_ = includesNorthPole_ || yes)) {
-            max_ = {max_.lon, 90.};
+            max_ = {max_.lon(), 90.};
         }
         crossesDateLine(includesNorthPole_);
         return includesNorthPole_;
@@ -100,7 +100,7 @@ struct BoundLonLat {
 
     bool includesSouthPole(bool yes) {
         if ((includesSouthPole_ = includesSouthPole_ || yes)) {
-            min_ = {min_.lon, -90.};
+            min_ = {min_.lon(), -90.};
         }
         crossesDateLine(includesSouthPole_);
         return includesSouthPole_;
@@ -217,9 +217,9 @@ private:
     // 0. setup
 
     // use central longitude as absolute reference (keep points within +-180 longitude range)
-    const PointXY centre_xy{(min.X + max.X) / 2., (min.Y + max.Y) / 2.};
+    const PointXY centre_xy{(min.X() + max.X()) / 2., (min.Y() + max.Y()) / 2.};
     const auto centre_ll  = std::get<PointLonLat>(projection.inv(centre_xy));  // asserts fwd(PointLonLat) -> PointXY
-    const auto centre_lon = centre_ll.lon;
+    const auto centre_lon = centre_ll.lon();
 
     const std::string derivative_type = "central";
     const double h_ll                 = precision_ll;
@@ -232,14 +232,14 @@ private:
     struct : public std::pair<PointXY, PointXY> {
         using pair::pair;
         bool contains(const PointXY& P) const {
-            return (first.X < P.X && P.X < second.X) && (first.Y < P.Y && P.Y < second.Y);
+            return (first.X() < P.X() && P.X() < second.X()) && (first.Y() < P.Y() && P.Y() < second.Y());
         }
     } rect(min, max);
 
-    const std::pair<PointXY, PointXY> segments[] = {{{min.X, max.Y}, {max.X, max.Y}},
-                                                    {{max.X, max.Y}, {max.X, min.Y}},
-                                                    {{max.X, min.Y}, {min.X, min.Y}},
-                                                    {{min.X, min.Y}, {min.X, max.Y}}};
+    const std::pair<PointXY, PointXY> segments[] = {{{min.X(), max.Y()}, {max.X(), max.Y()}},
+                                                    {{max.X(), max.Y()}, {max.X(), min.Y()}},
+                                                    {{max.X(), min.Y()}, {min.X(), min.Y()}},
+                                                    {{min.X(), min.Y()}, {min.X(), max.Y()}}};
 
     BoundLonLat bounds(centre_ll, centre_ll);
     for (const auto& [A, dummy] : segments) {
@@ -264,15 +264,15 @@ private:
             std::unique_ptr<const Derivate> derivate(
                 DerivateFactory::build(derivative_type, projection, A, B, h, centre_lon));
 
-            double dAdy = derivate->d(A).lat;
-            double dBdy = derivate->d(B).lat;
+            double dAdy = derivate->d(A).lat();
+            double dBdy = derivate->d(B).lat();
 
             if (!is_strictly_greater(dAdy * dBdy, 0.)) {
                 PointLonLat H{0, h_ll};
 
                 for (size_t cnt = 0; cnt < Niter; ++cnt) {
                     PointXY M   = PointXY::middle(A, B);
-                    double dMdy = derivate->d(M).lat;
+                    double dMdy = derivate->d(M).lat();
                     if (is_strictly_greater(dAdy * dMdy, 0.)) {
                         A    = M;
                         dAdy = dMdy;
@@ -300,15 +300,15 @@ private:
             std::unique_ptr<const Derivate> derivate(
                 DerivateFactory::build(derivative_type, projection, A, B, h, centre_lon));
 
-            double dAdx = derivate->d(A).lon;
-            double dBdx = derivate->d(B).lon;
+            double dAdx = derivate->d(A).lon();
+            double dBdx = derivate->d(B).lon();
 
             if (!is_strictly_greater(dAdx * dBdx, 0.)) {
                 PointLonLat H{h_ll, 0};
 
                 for (size_t cnt = 0; cnt < Niter; ++cnt) {
                     PointXY M   = PointXY::middle(A, B);
-                    double dMdx = derivate->d(M).lon;
+                    double dMdx = derivate->d(M).lon();
 
                     if (is_strictly_greater(dAdx * dMdx, 0.)) {
                         A    = M;
@@ -338,10 +338,6 @@ private:
 }  // namespace
 
 
-const PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST = -PointLonLat::FLAT_ANGLE;
-const BoundingBox BOUNDING_BOX_DEFAULT;
-
-
 static inline bool is_approximately_equal(BoundingBox::value_type a, BoundingBox::value_type b) {
     return types::is_approximately_equal(a, b, PointLonLat::EPS);
 }
@@ -360,18 +356,12 @@ std::unique_ptr<BoundingBox> BoundingBox::make_global_antiprime() {
 
 
 void BoundingBox::fill_spec(spec::Custom& custom) const {
-    if (!bounding_box_equal(*this, BOUNDING_BOX_DEFAULT)) {
-        // custom.set("type", type());
-        custom.set("north", north);
-        custom.set("west", west);
-        custom.set("south", south);
-        custom.set("east", east);
-    }
+    custom.set("area", std::vector<double>{north(), west(), south(), east()});
 }
 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
-    auto [n, w, s, e] = BOUNDING_BOX_DEFAULT.deconstruct();
+    auto [n, w, s, e] = bounding_box_default().deconstruct();
 
     if (std::vector<double> area{n, w, s, e}; spec.get("area", area) || spec.get("bounding_box", area)) {
         ASSERT_MSG(area.size() == 4, "BoundingBox: 'area'/'bounding_box' expected list of size 4");
@@ -406,9 +396,9 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, 
     projection::Composer projection{new projection::Reverse<projection::Rotation>(rotation.spec()),
                                     new projection::EquidistantCylindrical};
 
-    auto after = make_from_projection(PointXY{min.lon, min.lat}, PointXY{max.lon, max.lat}, projection);
+    auto after = make_from_projection(PointXY{min.lon(), min.lat()}, PointXY{max.lon(), max.lat()}, projection);
     if (after->periodic()) {
-        return std::make_unique<BoundingBox>(after->north, 0, after->south, PointLonLat::FULL_ANGLE);
+        return std::make_unique<BoundingBox>(after->north(), 0, after->south(), PointLonLat::FULL_ANGLE);
     }
 
     return after;
@@ -417,16 +407,16 @@ std::unique_ptr<BoundingBox> BoundingBox::make_from_projection(PointLonLat min, 
 
 std::unique_ptr<BoundingBox> BoundingBox::make_from_area(value_type n, value_type w, value_type s, value_type e) {
     // set latitudes inside usual range (not a normalisation like PointLonLat::make)
-    if (n > NORTH_POLE.lat || is_approximately_equal(n, NORTH_POLE.lat)) {
-        n = NORTH_POLE.lat;
+    if (n > NORTH_POLE.lat() || is_approximately_equal(n, NORTH_POLE.lat())) {
+        n = NORTH_POLE.lat();
     }
 
-    if (s < SOUTH_POLE.lat || is_approximately_equal(s, SOUTH_POLE.lat)) {
-        s = SOUTH_POLE.lat;
+    if (s < SOUTH_POLE.lat() || is_approximately_equal(s, SOUTH_POLE.lat())) {
+        s = SOUTH_POLE.lat();
     }
 
     // normalise west in [min, min + 2 pi[, east in [west, west + 2 pi[
-    const auto min  = BOUNDING_BOX_NORMALISE_WEST;
+    const auto min  = -PointLonLat::FLAT_ANGLE;
     const auto same = is_approximately_equal(w, e);
 
     w = is_approximately_equal(w, min) || is_approximately_equal(w, min + PointLonLat::FULL_ANGLE)
@@ -444,12 +434,17 @@ BoundingBox::BoundingBox(const Spec& spec) : BoundingBox(*make_from_spec(spec)) 
 
 
 BoundingBox::BoundingBox(value_type n, value_type w, value_type s, value_type e) : array{n, w, s, e} {
+    auto is_approx_ge = [](value_type a, value_type b) { return is_approximately_equal(a, b) || a > b; };
+
     // normalise east in [west, west + 2 pi[
     auto a        = PointLonLat::normalise_angle_to_minimum(e, w);
-    operator[](3) = is_approximately_equal(w, e) ? w : is_approximately_equal(w, a) ? (w + PointLonLat::FULL_ANGLE) : a;
+    operator[](3) = is_approximately_equal(w, e)                   ? w
+                    : is_approximately_equal(w, a)                 ? w + PointLonLat::FULL_ANGLE
+                    : is_approx_ge(e - w, PointLonLat::FULL_ANGLE) ? w + PointLonLat::FULL_ANGLE
+                                                                   : a;
 
-    ASSERT(south <= north);
-    ASSERT(west <= east);
+    ASSERT(south() <= north());
+    ASSERT(west() <= east());
 }
 
 
@@ -462,7 +457,7 @@ bool BoundingBox::global() const {
 
 
 bool BoundingBox::periodic() const {
-    return west != east && is_approximately_equal(west, PointLonLat::normalise_angle_to_minimum(east, west));
+    return west() != east() && is_approximately_equal(west(), PointLonLat::normalise_angle_to_minimum(east(), west()));
 }
 
 
@@ -470,41 +465,48 @@ bool BoundingBox::contains(const Point& p) const {
     const auto& q = std::get<PointLonLat>(p);
 
     // NOTE: latitudes < -90 or > 90 are not considered
-    if (is_approximately_equal(q.lat, NORTH_POLE.lat)) {
-        return is_approximately_equal(q.lat, north);
+    if (is_approximately_equal(q.lat(), NORTH_POLE.lat())) {
+        return is_approximately_equal(q.lat(), north());
     }
 
-    if (is_approximately_equal(q.lat, SOUTH_POLE.lat)) {
-        return is_approximately_equal(q.lat, south);
+    if (is_approximately_equal(q.lat(), SOUTH_POLE.lat())) {
+        return is_approximately_equal(q.lat(), south());
     }
 
-    if ((south < q.lat && q.lat < north) || is_approximately_equal(q.lat, north) ||
-        is_approximately_equal(q.lat, south)) {
-        return PointLonLat::normalise_angle_to_minimum(q.lon, west) <= east;
+    if ((south() < q.lat() && q.lat() < north()) || is_approximately_equal(q.lat(), north()) ||
+        is_approximately_equal(q.lat(), south())) {
+        return PointLonLat::normalise_angle_to_minimum(q.lon(), west()) <= east();
     }
 
     return false;
 }
 
 
+const BoundingBox& BoundingBox::bounding_box_default() {
+    static const BoundingBox bbox;
+    return bbox;
+}
+
+
 bool BoundingBox::contains(const BoundingBox& other) const {
     if (other.empty()) {
-        return contains(PointLonLat{other.south, other.west});
+        return contains(PointLonLat{other.south(), other.west()});
     }
 
     // check for West/East range (if non-periodic), then other's corners
-    if (east - west < other.east - other.west || east < PointLonLat::normalise_angle_to_minimum(other.east, west)) {
+    if (east() - west() < other.east() - other.west() ||
+        east() < PointLonLat::normalise_angle_to_minimum(other.east(), west())) {
         return false;
     }
 
-    return contains(PointLonLat{other.north, other.west}) && contains(PointLonLat{other.north, other.east}) &&
-           contains(PointLonLat{other.south, other.west}) && contains(PointLonLat{other.south, other.east});
+    return contains(PointLonLat{other.north(), other.west()}) && contains(PointLonLat{other.north(), other.east()}) &&
+           contains(PointLonLat{other.south(), other.west()}) && contains(PointLonLat{other.south(), other.east()});
 }
 
 
 bool BoundingBox::intersects(BoundingBox& other) const {
-    auto n = std::min(north, other.north);
-    auto s = std::max(south, other.south);
+    auto n = std::min(north(), other.north());
+    auto s = std::max(south(), other.south());
 
     bool intersectsSN = s <= n;
     if (!intersectsSN) {
@@ -512,24 +514,24 @@ bool BoundingBox::intersects(BoundingBox& other) const {
     }
 
     if (periodic() && other.periodic()) {
-        other = {n, other.west, s, other.east};
+        other = {n, other.west(), s, other.east()};
         return intersectsSN;
     }
 
-    auto w = std::min(west, other.west);
+    auto w = std::min(west(), other.west());
     auto e = w;
 
     auto intersect = [](const BoundingBox& a, const BoundingBox& b, value_type& w, value_type& e) {
         bool p = a.periodic();
         if (p || b.periodic()) {
-            w = (p ? b : a).west;
-            e = (p ? b : a).east;
+            w = (p ? b : a).west();
+            e = (p ? b : a).east();
             return true;
         }
 
-        auto ref = PointLonLat::normalise_angle_to_minimum(b.west, a.west);
-        auto w_  = std::max(a.west, ref);
-        auto e_  = std::min(a.east, PointLonLat::normalise_angle_to_minimum(b.east, ref));
+        auto ref = PointLonLat::normalise_angle_to_minimum(b.west(), a.west());
+        auto w_  = std::max(a.west(), ref);
+        auto e_  = std::min(a.east(), PointLonLat::normalise_angle_to_minimum(b.east(), ref));
 
         if (w_ <= e_) {
             w = w_;
@@ -540,8 +542,8 @@ bool BoundingBox::intersects(BoundingBox& other) const {
         return false;
     };
 
-    bool intersectsWE = west <= other.west ? intersect(*this, other, w, e) || intersect(other, *this, w, e)
-                                           : intersect(other, *this, w, e) || intersect(*this, other, w, e);
+    bool intersectsWE = west() <= other.west() ? intersect(*this, other, w, e) || intersect(other, *this, w, e)
+                                               : intersect(other, *this, w, e) || intersect(*this, other, w, e);
 
     ASSERT_MSG(w <= e, "BoundingBox::intersects: longitude range");
     other = {n, w, s, e};
@@ -551,7 +553,7 @@ bool BoundingBox::intersects(BoundingBox& other) const {
 
 
 bool BoundingBox::empty() const {
-    return is_approximately_equal(north, south) || is_approximately_equal(west, east);
+    return is_approximately_equal(north(), south()) || is_approximately_equal(west(), east());
 }
 
 
@@ -567,14 +569,14 @@ const std::string& BoundingBox::type() const {
 
 
 bool bounding_box_equal(const BoundingBox& a, const BoundingBox& b) {
-    const auto c = BoundingBox::make_from_area(a.north, a.west, a.south, a.east);
+    const auto c = BoundingBox::make_from_area(a.north(), a.west(), a.south(), a.east());
     ASSERT(c);
 
-    const auto d = BoundingBox::make_from_area(b.north, b.west, b.south, b.east);
+    const auto d = BoundingBox::make_from_area(b.north(), b.west(), b.south(), b.east());
     ASSERT(c);
 
-    return is_approximately_equal(c->north, d->north) && is_approximately_equal(c->south, d->south) &&
-           is_approximately_equal(c->west, d->west) && is_approximately_equal(c->east, d->east);
+    return is_approximately_equal(c->north(), d->north()) && is_approximately_equal(c->south(), d->south()) &&
+           is_approximately_equal(c->west(), d->west()) && is_approximately_equal(c->east(), d->east());
 }
 
 

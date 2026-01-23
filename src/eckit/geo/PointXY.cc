@@ -29,7 +29,7 @@ PointXY::value_type PointXY::norm() const {
 
 PointXY PointXY::normalize() const {
     const auto l = norm();
-    return types::is_approximately_equal(l, 0., EPS) ? ZERO : PointXY{X / l, Y / l};
+    return types::is_approximately_equal(l, 0., EPS) ? ZERO : PointXY{X() / l, Y() / l};
 }
 
 
@@ -49,12 +49,12 @@ PointXY::value_type PointXY::distance(const PointXY& p) const {
 
 
 PointXY::value_type PointXY::distance2(const PointXY& p) const {
-    return (X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y);
+    return (X() - p.X()) * (X() - p.X()) + (Y() - p.Y()) * (Y() - p.Y());
 }
 
 
 bool points_equal(const PointXY& a, const PointXY& b, PointXY::value_type eps) {
-    return types::is_approximately_equal(a.X, b.X, eps) && types::is_approximately_equal(a.Y, b.Y, eps);
+    return types::is_approximately_equal(a.X(), b.X(), eps) && types::is_approximately_equal(a.Y(), b.Y(), eps);
 }
 
 

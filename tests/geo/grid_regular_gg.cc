@@ -13,16 +13,16 @@
 #include <memory>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/grid/RegularGaussian.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/grid/regular/RegularGaussian.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-using RegularGaussian = grid::RegularGaussian;
+using grid::regular::RegularGaussian;
 
 
 CASE("sizes") {
@@ -48,7 +48,7 @@ CASE("points") {
     RegularGaussian grid(1);
 
     const std::vector<PointLonLat> ref{
-        {0., 35.264389683},  {90., 35.264389683},  {180., 35.264389683},  {270., 35.264389683},
+        {0., 35.264389683},  {90., 35.264389683},  {180., 35.264389683},  {270., 35.264389683},  //
         {0., -35.264389683}, {90., -35.264389683}, {180., -35.264389683}, {270., -35.264389683},
     };
 
@@ -96,7 +96,7 @@ CASE("crop") {
 
     EXPECT(bbox3.periodic());
 
-    bbox3 = {bbox3.north, bbox3.west, bbox3.south, 0.};
+    bbox3 = {bbox3.north(), bbox3.west(), bbox3.south(), 0.};
 
     EXPECT_NOT(bbox3.periodic());
 

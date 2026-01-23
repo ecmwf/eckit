@@ -12,57 +12,61 @@
 
 #pragma once
 
-#include "eckit/geo/Order.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/util.h"
+
+
+namespace eckit::spec {
+class Spec;
+}
 
 
 namespace eckit::geo::order {
 
 
-class Scan final : public Order {
+class Scan {
 public:
+
+    // -- Types
+
+    using order_type    = Grid::order_type;
+    using renumber_type = Grid::renumber_type;
+    using Spec          = spec::Spec;
 
     // -- Constructors
 
-    explicit Scan(const value_type& = order_default());
+    explicit Scan(const order_type& = order_default());
     explicit Scan(const Spec&);
 
-    // -- Overriden methods
+    Scan(const Scan&) = default;
+    Scan(Scan&&)      = default;
 
-    const std::string& type() const override { return static_type(); }
-    const value_type& order() const override { return order_; }
+    // -- Operators
 
-    Reordering reorder(const value_type& to) const override;
-    size_t size() const override;
+    Scan& operator=(const Scan&) = default;
+    Scan& operator=(Scan&&)      = default;
 
     // -- Methods
 
-    bool is_scan_i_positively(const value_type&);
-    bool is_scan_j_positively(const value_type&);
-    bool is_scan_alternating(const value_type&);
+    void order(const order_type& to) { operator=(Scan{to}); }
+
+    const order_type& order() const { return order_; }
+    renumber_type reorder(const order_type& to, size_t ni, size_t nj) const;
+    renumber_type reorder(const order_type& to, const pl_type&) const;
+
+    bool is_scan_i_positive() const;
+    bool is_scan_j_positive() const;
+    bool is_scan_alternating() const;
 
     // -- Class methods
 
-    static const Order::value_type& order_default();
-    static Order::value_type order_from_arguments(bool i_pos, bool j_pos, bool ij, bool alt);
+    static const order_type& order_default();
 
 private:
 
     // -- Members
 
-    value_type order_;
-
-    // -- Overriden methods
-
-    void fill_spec(spec::Custom&) const override;
-
-    // -- Class members
-
-    static const value_type DEFAULT;
-
-    // -- Class methods
-
-    static const std::string& static_type();
+    order_type order_;
 };
 
 

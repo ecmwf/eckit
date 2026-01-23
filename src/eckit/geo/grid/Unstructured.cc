@@ -12,9 +12,10 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Unstructured.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::grid {
@@ -30,6 +31,11 @@ Grid::iterator Unstructured::cend() const {
 }
 
 
+Unstructured::Unstructured(const Spec& spec) :
+    Unstructured(new container::PointsLonLatInstance{spec.get_double_vector("longitudes"),
+                                                     spec.get_double_vector("latitudes")}) {}
+
+
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
     Unstructured(new container::PointsLonLatReference{longitudes, latitudes}) {}
 
@@ -41,12 +47,16 @@ Unstructured::Unstructured(std::vector<Point>&& points) :
     Unstructured(new container::PointsInstance{std::move(points)}) {}
 
 
-Unstructured::Unstructured(container::PointsContainer* container) :
-    Grid(area::BoundingBox::make_global_prime().release(), nullptr), container_{container} {}
+Unstructured::Unstructured(container::PointsContainer* container) : container_{container} {}
 
 
 size_t Unstructured::size() const {
     return container_->size();
+}
+
+
+Grid::BoundingBox* Unstructured::calculate_bbox() const {
+    return new BoundingBox;
 }
 
 
@@ -60,9 +70,14 @@ std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlons() 
 }
 
 
-Spec* Unstructured::spec(const std::string& name) {
-    return GridSpecByUID::instance().get(name).spec();
+Grid::Spec* Unstructured::spec(const std::string& uid) {
+    if (!GridSpecByUID::instance().exists(uid)) {
+        throw exception::GridUnknownError("Unstructured: unknown grid uid '" + uid + "'", Here());
+    }
+
+    return GridSpecByUID::instance().get(uid).spec();
 }
+
 
 void Unstructured::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);

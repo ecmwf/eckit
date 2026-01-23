@@ -145,7 +145,7 @@ ecbuild_add_option( FEATURE LZ4
                     REQUIRED_PACKAGES LZ4 )
 
 ecbuild_add_option( FEATURE AEC
-                    DESCRIPTION "AEC support for compression" 
+                    DESCRIPTION "AEC support for compression"
                     REQUIRED_PACKAGES "NAME libaec VERSION 1.0.6")
 
 ecbuild_add_option( FEATURE ZIP
@@ -164,6 +164,12 @@ ecbuild_add_option( FEATURE ECKIT_CODEC
                     DESCRIPTION "eckit::codec encoding/decoding library" )
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
+
+### eckit::spec
+
+ecbuild_add_option( FEATURE ECKIT_SPEC
+                    DEFAULT ON
+                    DESCRIPTION "eckit::spec metadata library" )
 
 ### eckit::maths
 
@@ -189,21 +195,6 @@ ecbuild_add_option( FEATURE ECKIT_GEO
                     DEFAULT ON
                     DESCRIPTION "eckit::geo geometry library" )
 
-ecbuild_add_option( FEATURE GEO_GRID_FESOM
-                    DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
-                    DESCRIPTION "eckit::geo geometry library support for FESOM grids" )
-
-ecbuild_add_option( FEATURE GEO_GRID_ICON
-                    DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
-                    DESCRIPTION "eckit::geo geometry library support for ICON grids" )
-
-ecbuild_add_option( FEATURE GEO_GRID_ORCA
-                    DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
-                    DESCRIPTION "eckit::geo geometry library support for ORCA grids" )
-
 ecbuild_add_option( FEATURE GEO_CACHING
                     DEFAULT OFF
                     CONDITION eckit_HAVE_ECKIT_GEO
@@ -225,13 +216,20 @@ ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
                     REQUIRED_PACKAGES shapelib
                     DESCRIPTION "eckit::geo geometry library support for shapefiles" )
 
+set( ECKIT_GEO_CODEC_GRIDS OFF )
+if( eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4 )
+    set( ECKIT_GEO_CODEC_GRIDS ON )
+endif()
+
 if( eckit_HAVE_GEO_AREA_SHAPEFILE )
     if( NOT TARGET shapelib::shp OR NOT TARGET libzip::zip )
         message( FATAL_ERROR "eckit::geo geometry library support for shapefiles requires the shapelib::shp and libzip::zip libraries" )
     endif()
 endif()
 
-set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" )
+# (keep paths as strings to avoid normalisation/expansion)
+set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" CACHE STRING "eckit::geo cache path default" )
+set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
 
 ### LAPACK
 

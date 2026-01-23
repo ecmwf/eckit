@@ -32,14 +32,14 @@ static bool is_pole(const double lat) {
 
 
 GreatCircle::GreatCircle(const PointLonLat& Alonlat, const PointLonLat& Blonlat) : A_(Alonlat), B_(Blonlat) {
-    const bool Apole       = is_pole(A_.lat);
-    const bool Bpole       = is_pole(B_.lat);
-    const double lon12_deg = PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -PointLonLat::FLAT_ANGLE);
+    const bool Apole       = is_pole(A_.lat());
+    const bool Bpole       = is_pole(B_.lat());
+    const double lon12_deg = PointLonLat::normalise_angle_to_minimum(A_.lon() - B_.lon(), -PointLonLat::FLAT_ANGLE);
 
     const bool lon_same     = Apole || Bpole || is_approximately_equal(lon12_deg, 0.);
     const bool lon_opposite = Apole || Bpole || is_approximately_equal(std::abs(lon12_deg), 180.);
-    const bool lat_same     = is_approximately_equal(A_.lat, B_.lat);
-    const bool lat_opposite = is_approximately_equal(A_.lat, -B_.lat);
+    const bool lat_same     = is_approximately_equal(A_.lat(), B_.lat());
+    const bool lat_opposite = is_approximately_equal(A_.lat(), -B_.lat());
 
     if ((lat_same && lon_same) || (lat_opposite && lon_opposite)) {
         std::ostringstream oss;
@@ -57,12 +57,12 @@ std::vector<double> GreatCircle::latitude(double lon) const {
         return {};
     }
 
-    const double lat1     = util::DEGREE_TO_RADIAN * A_.lat;
-    const double lat2     = util::DEGREE_TO_RADIAN * B_.lat;
-    const double lambda1p = util::DEGREE_TO_RADIAN * (lon - A_.lon);
-    const double lambda2p = util::DEGREE_TO_RADIAN * (lon - B_.lon);
+    const double lat1     = util::DEGREE_TO_RADIAN * A_.lat();
+    const double lat2     = util::DEGREE_TO_RADIAN * B_.lat();
+    const double lambda1p = util::DEGREE_TO_RADIAN * (lon - A_.lon());
+    const double lambda2p = util::DEGREE_TO_RADIAN * (lon - B_.lon());
     const double lambda =
-        util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon - A_.lon, -PointLonLat::FLAT_ANGLE);
+        util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(B_.lon() - A_.lon(), -PointLonLat::FLAT_ANGLE);
 
     double lat =
         std::atan((std::tan(lat2) * std::sin(lambda1p) - std::tan(lat1) * std::sin(lambda2p)) / (std::sin(lambda)));
@@ -72,7 +72,7 @@ std::vector<double> GreatCircle::latitude(double lon) const {
 
 std::vector<double> GreatCircle::longitude(double lat) const {
     if (crossesPoles()) {
-        const double lon = is_pole(A_.lat) ? B_.lon : A_.lon;
+        const double lon = is_pole(A_.lat()) ? B_.lon() : A_.lon();
         if (is_pole(lat)) {
             return {lon};
         }
@@ -81,10 +81,10 @@ std::vector<double> GreatCircle::longitude(double lat) const {
     }
 
     const double lon12 =
-        util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(A_.lon - B_.lon, -PointLonLat::FLAT_ANGLE);
-    const double lon1 = util::DEGREE_TO_RADIAN * A_.lon;
-    const double lat1 = util::DEGREE_TO_RADIAN * A_.lat;
-    const double lat2 = util::DEGREE_TO_RADIAN * B_.lat;
+        util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(A_.lon() - B_.lon(), -PointLonLat::FLAT_ANGLE);
+    const double lon1 = util::DEGREE_TO_RADIAN * A_.lon();
+    const double lat1 = util::DEGREE_TO_RADIAN * A_.lat();
+    const double lat2 = util::DEGREE_TO_RADIAN * B_.lat();
     const double lat3 = util::DEGREE_TO_RADIAN * lat;
 
     const double X = std::sin(lat1) * std::cos(lat2) * std::sin(lon12);
@@ -120,9 +120,9 @@ bool GreatCircle::crossesPoles() const {
 
 
 std::pair<double, double> GreatCircle::course() const {
-    const util::sincos_t dl(util::DEGREE_TO_RADIAN * (B_.lon - A_.lon));
-    const util::sincos_t scA(util::DEGREE_TO_RADIAN * A_.lat);
-    const util::sincos_t scB(util::DEGREE_TO_RADIAN * B_.lat);
+    const util::sincos_t dl(util::DEGREE_TO_RADIAN * (B_.lon() - A_.lon()));
+    const util::sincos_t scA(util::DEGREE_TO_RADIAN * A_.lat());
+    const util::sincos_t scB(util::DEGREE_TO_RADIAN * B_.lat());
 
     return {util::RADIAN_TO_DEGREE * std::atan2(scB.cos * dl.sin, scA.cos * scB.sin - scA.sin * scB.cos * dl.cos),
             util::RADIAN_TO_DEGREE * std::atan2(scA.cos * dl.sin, -scB.cos * scA.sin + scB.sin * scA.cos * dl.cos)};

@@ -30,12 +30,12 @@ inline bool is_zero(double val) {
 
 
 inline double cross_product_analog(const PointXY& A, const PointXY& B, const PointXY& C) {
-    return (A.X - C.X) * (B.Y - C.Y) - (A.Y - C.Y) * (B.X - C.X);
+    return (A.X() - C.X()) * (B.Y() - C.Y()) - (A.Y() - C.Y()) * (B.X() - C.X());
 }
 
 
 inline double cross(const PointXY& P, const PointXY& Q) {
-    return P.X * Q.Y - P.Y * Q.X;
+    return P.X() * Q.Y() - P.Y() * Q.X();
 }
 
 
@@ -95,10 +95,10 @@ bool PolygonXY::contains(const PointXY& P) const {
     int wn = 0;
     for (int i = 0, n = static_cast<int>(size()), prev = 0; i < n; ++i) {
         const auto& [A, B] = edge(i);
-        if (const auto dir = on_direction(A.Y, P.Y, B.Y); dir != 0) {
+        if (const auto dir = on_direction(A.Y(), P.Y(), B.Y()); dir != 0) {
             const auto side = on_side(P, A, B);
 
-            if (side == 0 && on_direction(A.X, P.X, B.X) != 0) {
+            if (side == 0 && on_direction(A.X(), P.X(), B.X()) != 0) {
                 return true;
             }
 

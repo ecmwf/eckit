@@ -20,9 +20,9 @@
 #include "eckit/geo/GreatCircle.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointXYZ.h"
-#include "eckit/geo/Spec.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -56,12 +56,12 @@ double Sphere::centralAngle(const PointLonLat& P1, const PointLonLat& P2) {
      * }
      */
 
-    const auto Q1 = PointLonLat::make(P1.lon, P1.lat, -180.);
-    const auto Q2 = PointLonLat::make(P2.lon, P2.lat, -180.);
+    const auto Q1 = PointLonLat::make(P1.lon(), P1.lat(), -180.);
+    const auto Q2 = PointLonLat::make(P2.lon(), P2.lat(), -180.);
 
-    const auto phi1   = util::DEGREE_TO_RADIAN * Q1.lat;
-    const auto phi2   = util::DEGREE_TO_RADIAN * Q2.lat;
-    const auto lambda = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(Q1.lon - Q2.lon, -180.);
+    const auto phi1   = util::DEGREE_TO_RADIAN * Q1.lat();
+    const auto phi2   = util::DEGREE_TO_RADIAN * Q2.lat();
+    const auto lambda = util::DEGREE_TO_RADIAN * PointLonLat::normalise_angle_to_minimum(Q1.lon() - Q2.lon(), -180.);
 
     const auto cp1 = std::cos(phi1);
     const auto sp1 = std::sin(phi1);
@@ -121,11 +121,11 @@ double Sphere::area(double radius, const area::BoundingBox& bbox) {
     ASSERT(radius > 0.);
 
     // Set longitude and latitude fractions
-    auto lonf = bbox.periodic() ? 1. : (bbox.east - bbox.west) / PointLonLat::FULL_ANGLE;
+    auto lonf = bbox.periodic() ? 1. : (bbox.east() - bbox.west()) / PointLonLat::FULL_ANGLE;
     ASSERT(0. <= lonf && lonf <= 1.);
 
-    auto sn   = std::sin(util::DEGREE_TO_RADIAN * bbox.north);
-    auto ss   = std::sin(util::DEGREE_TO_RADIAN * bbox.south);
+    auto sn   = std::sin(util::DEGREE_TO_RADIAN * bbox.north());
+    auto ss   = std::sin(util::DEGREE_TO_RADIAN * bbox.south());
     auto latf = 0.5 * (sn - ss);
 
     // Calculate area
@@ -165,14 +165,14 @@ PointXYZ Sphere::convertSphericalToCartesian(double radius, const PointLonLat& P
      * These conditionings combined project accurately to sphere poles and quadrants.
      */
 
-    const auto Q      = PointLonLat::make(P.lon, P.lat, -180.);
-    const auto lambda = util::DEGREE_TO_RADIAN * Q.lon;
-    const auto phi    = util::DEGREE_TO_RADIAN * Q.lat;
+    const auto Q      = PointLonLat::make(P.lon(), P.lat(), -180.);
+    const auto lambda = util::DEGREE_TO_RADIAN * Q.lon();
+    const auto phi    = util::DEGREE_TO_RADIAN * Q.lat();
 
     const auto sp = std::sin(phi);
     const auto cp = std::sqrt(1. - sp * sp);
-    const auto sl = std::abs(Q.lon) < 180. ? std::sin(lambda) : 0.;
-    const auto cl = std::abs(Q.lon) > 90. ? std::cos(lambda) : std::sqrt(1. - sl * sl);
+    const auto sl = std::abs(Q.lon()) < 180. ? std::sin(lambda) : 0.;
+    const auto cl = std::abs(Q.lon()) > 90. ? std::cos(lambda) : std::sqrt(1. - sl * sl);
 
     return {(radius + height) * cp * cl, (radius + height) * cp * sl, (radius + height) * sp};
 }

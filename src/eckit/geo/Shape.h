@@ -16,7 +16,7 @@
 #include <ostream>
 
 
-namespace eckit::geo {
+namespace eckit::spec {
 class Spec;
 }
 
@@ -33,7 +33,7 @@ public:
 
     // -- Constructors
 
-    explicit Shape(const Spec& spec) : Shape(make_from_spec(spec)) {}
+    explicit Shape(const spec::Spec& spec) : Shape(make_from_spec(spec)) {}
 
     Shape(value_type nx, value_type ny);
 
@@ -74,7 +74,7 @@ public:
 
     // -- Class methods
 
-    static Shape make_from_spec(const Spec&);
+    static Shape make_from_spec(const spec::Spec&);
 
 private:
 

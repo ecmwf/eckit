@@ -16,7 +16,7 @@
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -38,8 +38,8 @@ BoundingBoxXY::BoundingBoxXY(value_type min_x, value_type min_y, value_type max_
 
 bool BoundingBoxXY::contains(const Point& p) const {
     const auto& q = std::get<PointXY>(p);
-    return types::is_approximately_equal(min_x, q.X) && types::is_approximately_equal(q.X, max_x) &&
-           types::is_approximately_equal(min_y, q.Y) && types::is_approximately_equal(q.Y, max_y);
+    return types::is_approximately_equal(min_x, q.X()) && types::is_approximately_equal(q.X(), max_x) &&
+           types::is_approximately_equal(min_y, q.Y()) && types::is_approximately_equal(q.Y(), max_y);
 }
 
 

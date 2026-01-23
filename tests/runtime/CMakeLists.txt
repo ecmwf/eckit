@@ -18,3 +18,8 @@ ecbuild_add_test( TARGET  eckit_test_runtime_taskinfo
                   SOURCES test_taskinfo.cc
                   LIBS    eckit
 )
+
+ecbuild_add_test( TARGET  eckit_test_runtime_metrics
+                  SOURCES test_metrics.cc
+                  LIBS    eckit
+)

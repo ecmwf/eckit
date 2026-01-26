@@ -356,7 +356,9 @@ std::unique_ptr<BoundingBox> BoundingBox::make_global_antiprime() {
 
 
 void BoundingBox::fill_spec(spec::Custom& custom) const {
-    custom.set("area", std::vector<double>{north(), west(), south(), east()});
+    if (operator!=(bounding_box_default())) {
+        custom.set("area", std::vector<double>{north(), west(), south(), east()});
+    }
 }
 
 

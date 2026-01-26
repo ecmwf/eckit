@@ -241,10 +241,7 @@ Grid::BoundingBox* Grid::calculate_bbox() const {
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    static const auto& area_default_str = BoundingBox::bounding_box_default().spec().str();
-    if (const auto& area_spec = area().spec(); area_spec.str() != area_default_str) {
-        custom.set("area", area_spec);
-    }
+    area().fill_spec(custom);
 
     if (projection_) {
         auto projection = std::make_unique<spec::Custom>();

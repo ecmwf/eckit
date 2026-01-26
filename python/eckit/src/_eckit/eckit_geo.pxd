@@ -21,10 +21,10 @@ cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":
 
 cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
     cdef cppclass BoundingBox(Area):
-        const double& north
-        const double& west
-        const double& south
-        const double& east
+        double north() const
+        double west() const
+        double south() const
+        double east() const
 
 
 cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":

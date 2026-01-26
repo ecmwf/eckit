@@ -83,10 +83,10 @@ cdef class Grid:
 
     def bounding_box(self) -> tuple:
         cdef const eckit_geo.BoundingBox* bbox = &self._grid.boundingBox()
-        cdef double north = bbox.north
-        cdef double west = bbox.west
-        cdef double south = bbox.south
-        cdef double east = bbox.east
+        cdef double north = bbox.north()
+        cdef double west = bbox.west()
+        cdef double south = bbox.south()
+        cdef double east = bbox.east()
         return north, west, south, east
 
     @property

@@ -87,6 +87,24 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class MetricsGroup {
+public:
+
+    MetricsGroup(const std::string& prefix);
+    ~MetricsGroup();
+};
+
+/// add MetricsGroupItem to separate items inside a MetricsGroup
+/// MetricsGroupItem is not required before the first item or after the last one
+/// MetricsGroupItem is idempotent (no effect if called multiple times in succession)
+class MetricsGroupItem {
+public:
+
+    MetricsGroupItem();
+    ~MetricsGroupItem();
+};
+//----------------------------------------------------------------------------------------------------------------------
+
 class MetricsPrefix {
 public:
 

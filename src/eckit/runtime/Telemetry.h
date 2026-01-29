@@ -17,8 +17,6 @@
 #include <functional>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 class JSON;
@@ -52,8 +50,10 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class Telemetry : public NonCopyable {
+class Telemetry {
 public:
+
+    Telemetry() = delete;
 
     static std::string report(Report::Type);
     static std::string report(Report::Type, const Report&);

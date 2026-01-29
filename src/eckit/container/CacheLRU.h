@@ -20,14 +20,13 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/CodeLocation.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename K, typename V>
-class CacheLRU : private NonCopyable {
+class CacheLRU {
 
 public:  // types
 
@@ -58,6 +57,11 @@ public:  // types
 public:  // methods
 
     CacheLRU(size_t capacity, purge_handler_type purge = 0);
+
+    CacheLRU(const CacheLRU&)            = delete;
+    CacheLRU& operator=(const CacheLRU&) = delete;
+    CacheLRU(CacheLRU&&)                 = delete;
+    CacheLRU& operator=(CacheLRU&&)      = delete;
 
     ~CacheLRU();
 

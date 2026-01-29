@@ -17,14 +17,15 @@
 #define eckit_FileSpaceStrategies_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FileSpaceStrategies : private NonCopyable {
+class FileSpaceStrategies {
 public:
+
+    FileSpaceStrategies() = delete;
 
     static const PathName& selectFileSystem(const std::vector<PathName>& fileSystems, const std::string& s);
 

@@ -14,7 +14,6 @@
 #include <map>
 
 #include "eckit/log/Channel.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -23,10 +22,15 @@ namespace eckit {
 class LogStream;
 class PathName;
 
-class Main : private NonCopyable {
+class Main {
 protected:
 
     Main(int argc, char** argv, const char* homeenv = nullptr);
+
+    Main(const Main&)            = delete;
+    Main& operator=(const Main&) = delete;
+    Main(Main&&)                 = delete;
+    Main& operator=(Main&&)      = delete;
 
     virtual ~Main();
 

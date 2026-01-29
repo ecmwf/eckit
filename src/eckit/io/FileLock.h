@@ -17,7 +17,6 @@
 #define eckit_io_FileLock_h
 
 #include "eckit/io/FileLocker.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -25,13 +24,18 @@ class PathName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FileLock : public NonCopyable {
+class FileLock {
 
 public:
 
     /// Constructor
     /// creates the lock file if needed
     FileLock(const PathName& lockFile);
+
+    FileLock(const FileLock&)            = delete;
+    FileLock& operator=(const FileLock&) = delete;
+    FileLock(FileLock&&)                 = delete;
+    FileLock& operator=(FileLock&&)      = delete;
 
     ~FileLock();
 

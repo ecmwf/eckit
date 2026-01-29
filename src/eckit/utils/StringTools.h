@@ -19,16 +19,16 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class StringTools : private NonCopyable {
+class StringTools {
 public:
+
+    StringTools() = delete;
 
     static std::string substitute(const std::string&, const std::map<std::string, std::string>&);
 
@@ -63,10 +63,6 @@ public:
 
     static bool isQuoted(const std::string& value);
     static std::string unQuote(const std::string& value);
-
-private:
-
-    StringTools();  // Non instantiable
 };
 
 //----------------------------------------------------------------------------------------------------------------------

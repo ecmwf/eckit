@@ -18,7 +18,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/MemoryHandle.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -55,12 +54,17 @@ public:
 };
 
 
-class HttpHeader : private eckit::NonCopyable {
+class HttpHeader {
 
 public:  // methods
 
     HttpHeader();
     HttpHeader(net::TCPSocket&);
+
+    HttpHeader(const HttpHeader&)            = delete;
+    HttpHeader& operator=(const HttpHeader&) = delete;
+    HttpHeader(HttpHeader&&)                 = delete;
+    HttpHeader& operator=(HttpHeader&&)      = delete;
 
     ~HttpHeader();
 

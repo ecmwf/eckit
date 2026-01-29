@@ -15,7 +15,6 @@
 #define eckit_os_Semaphore_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 
@@ -23,11 +22,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Semaphore : private NonCopyable {
+class Semaphore {
 
 public:  // methods
 
     Semaphore(const PathName& name, int count = 1);
+
+    Semaphore(const Semaphore&)            = delete;
+    Semaphore& operator=(const Semaphore&) = delete;
+    Semaphore(Semaphore&&)                 = delete;
+    Semaphore& operator=(Semaphore&&)      = delete;
 
     ~Semaphore();
 

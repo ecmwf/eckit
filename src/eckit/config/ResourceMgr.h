@@ -18,7 +18,6 @@
 #include <map>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -50,7 +49,7 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class ResourceMgr : private eckit::NonCopyable {
+class ResourceMgr {
 
 public:  // class methods
 
@@ -63,6 +62,11 @@ public:  // class methods
 private:
 
     ResourceMgr();
+
+    ResourceMgr(const ResourceMgr&)            = delete;
+    ResourceMgr& operator=(const ResourceMgr&) = delete;
+    ResourceMgr(ResourceMgr&&)                 = delete;
+    ResourceMgr& operator=(ResourceMgr&&)      = delete;
 
     bool doLookUp(const std::string&, const std::string&, const std::string&, std::string&);
 

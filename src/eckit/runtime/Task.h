@@ -14,16 +14,19 @@
 #ifndef eckit_Task_h
 #define eckit_Task_h
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Task : private NonCopyable {
+class Task {
 public:
 
     Task();
+
+    Task(const Task&)            = delete;
+    Task& operator=(const Task&) = delete;
+    Task(Task&&)                 = delete;
+    Task& operator=(Task&&)      = delete;
 
     virtual ~Task();
 

@@ -16,8 +16,6 @@
 
 #include <pthread.h>
 
-#include "eckit/memory/NonCopyable.h"
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -27,12 +25,17 @@ namespace eckit {
 // A mutex and a condition variable
 // for Producer/Consumer architectures
 
-class MutexCond : private NonCopyable {
+class MutexCond {
 public:
 
     // -- Contructors
 
     MutexCond(char tag = ' ');
+
+    MutexCond(const MutexCond&)            = delete;
+    MutexCond& operator=(const MutexCond&) = delete;
+    MutexCond(MutexCond&&)                 = delete;
+    MutexCond& operator=(MutexCond&&)      = delete;
 
     // -- Destructor
 

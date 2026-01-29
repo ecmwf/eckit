@@ -22,10 +22,19 @@ static PathNameBuilder<LocalPathName> localBuilder("local");
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class PathNameFactoryImpl : private eckit::NonCopyable {
+class PathNameFactoryImpl {
 public:  // methods
 
     static PathNameFactoryImpl& instance();
+
+    PathNameFactoryImpl() = default;
+
+    PathNameFactoryImpl(const PathNameFactoryImpl&)            = delete;
+    PathNameFactoryImpl& operator=(const PathNameFactoryImpl&) = delete;
+    PathNameFactoryImpl(PathNameFactoryImpl&&)                 = delete;
+    PathNameFactoryImpl& operator=(PathNameFactoryImpl&&)      = delete;
+
+    ~PathNameFactoryImpl() = default;
 
     void enregister(const std::string& name, const PathNameBuilderBase* builder);
     void deregister(const PathNameBuilderBase* builder);

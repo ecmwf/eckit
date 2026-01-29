@@ -138,12 +138,19 @@ inline unsigned long version(ClusterDisk*) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class DiskArray : private eckit::NonCopyable {
+class DiskArray {
 
 public:
 
     using iterator       = ClusterDisk*;
     using const_iterator = const ClusterDisk*;
+
+    DiskArray() = default;
+
+    DiskArray(const DiskArray&)            = delete;
+    DiskArray& operator=(const DiskArray&) = delete;
+    DiskArray(DiskArray&&)                 = delete;
+    DiskArray& operator=(DiskArray&&)      = delete;
 
     virtual ~DiskArray() {}
 

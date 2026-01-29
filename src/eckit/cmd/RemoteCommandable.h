@@ -25,12 +25,17 @@ namespace eckit {
 
 /// A RemoteCommand-able object
 
-class RemoteCommandable : private eckit::NonCopyable {
+class RemoteCommandable {
 public:
 
     // -- Contructors
 
     RemoteCommandable(int port = 0);
+
+    RemoteCommandable(const RemoteCommandable&)            = delete;
+    RemoteCommandable& operator=(const RemoteCommandable&) = delete;
+    RemoteCommandable(RemoteCommandable&&)                 = delete;
+    RemoteCommandable& operator=(RemoteCommandable&&)      = delete;
 
     // -- Destructor
 

@@ -20,7 +20,6 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/SharedBuffer.h"
-#include "eckit/memory/NonCopyable.h"
 
 #include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"
@@ -82,12 +81,19 @@ struct is_std_vector<std::vector<T, A> > : std::true_type {};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Comm : private eckit::NonCopyable {
+class Comm {
     friend class Environment;
 
 public:  // class methods
 
     static Comm& comm(std::string_view name = {});
+
+    Comm() = default;
+
+    Comm(const Comm&)            = delete;
+    Comm& operator=(const Comm&) = delete;
+    Comm(Comm&&)                 = delete;
+    Comm& operator=(Comm&&)      = delete;
 
 public:  // methods
 

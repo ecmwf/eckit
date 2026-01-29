@@ -15,7 +15,6 @@
 #define eckit_MapAllocator_h
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/types/Types.h"
 
 
@@ -31,10 +30,15 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class MapAllocator : private eckit::NonCopyable {
+class MapAllocator {
 public:
 
     MapAllocator(size_t);
+
+    MapAllocator(const MapAllocator&)            = delete;
+    MapAllocator& operator=(const MapAllocator&) = delete;
+    MapAllocator(MapAllocator&&)                 = delete;
+    MapAllocator& operator=(MapAllocator&&)      = delete;
 
     ~MapAllocator();
 

@@ -15,16 +15,19 @@
 
 #include "eckit/log/BigNum.h"
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 
-class Plural : private eckit::NonCopyable {
+class Plural {
 
 public:  // methods
 
     Plural(int count, const std::string& s) : s_(s), count_(count) {}
+
+    Plural(const Plural&)            = delete;
+    Plural& operator=(const Plural&) = delete;
+    Plural(Plural&&)                 = delete;
+    Plural& operator=(Plural&&)      = delete;
 
     ~Plural() {}
 

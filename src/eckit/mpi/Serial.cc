@@ -34,13 +34,18 @@ namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SerialRequestPool : private NonCopyable {
+class SerialRequestPool {
 public:
 
     static SerialRequestPool& instance() {
         static SerialRequestPool request_pool;
         return request_pool;
     }
+
+    SerialRequestPool(const SerialRequestPool&)            = delete;
+    SerialRequestPool& operator=(const SerialRequestPool&) = delete;
+    SerialRequestPool(SerialRequestPool&&)                 = delete;
+    SerialRequestPool& operator=(SerialRequestPool&&)      = delete;
 
     Request createSendRequest(const void* buffer, size_t count, Data::Code type, int tag) {
         Request r = registerRequest(new SendRequest(buffer, count, type, tag));

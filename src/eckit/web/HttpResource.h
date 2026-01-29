@@ -15,7 +15,6 @@
 
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/web/HtmlObject.h"
 
 
@@ -26,10 +25,15 @@ namespace eckit {
 class Stream;
 class HttpStream;
 
-class HttpResource : public HtmlObject, public eckit::NonCopyable {
+class HttpResource : public HtmlObject {
 public:  // methods
 
     HttpResource(const std::string&);
+
+    HttpResource(const HttpResource&)            = delete;
+    HttpResource& operator=(const HttpResource&) = delete;
+    HttpResource(HttpResource&&)                 = delete;
+    HttpResource& operator=(HttpResource&&)      = delete;
 
     ~HttpResource() override;
 

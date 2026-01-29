@@ -19,7 +19,6 @@
 
 #include <pthread.h>
 
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -27,11 +26,16 @@ namespace eckit {
 
 /// Class meant to be used only for static mutexes protecting local resources inside a single compilation unit
 
-class StaticMutex : private NonCopyable {
+class StaticMutex {
 
 public:  // methods
 
     StaticMutex();
+
+    StaticMutex(const StaticMutex&)            = delete;
+    StaticMutex& operator=(const StaticMutex&) = delete;
+    StaticMutex(StaticMutex&&)                 = delete;
+    StaticMutex& operator=(StaticMutex&&)      = delete;
 
     ~StaticMutex();
 

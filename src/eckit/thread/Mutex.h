@@ -17,8 +17,6 @@
 
 #include <pthread.h>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -27,10 +25,15 @@ namespace eckit {
 /// In addition to std::reentrant_mutex this checks valida construction before usage
 /// and add an optional tag, both of which can be useful when debugging,
 /// especially when dealing with construction before main() execution (eg self-registration classes)
-class Mutex : private NonCopyable {
+class Mutex {
 public:  // methods
 
     Mutex(char tag = ' ');
+
+    Mutex(const Mutex&)            = delete;
+    Mutex& operator=(const Mutex&) = delete;
+    Mutex(Mutex&&)                 = delete;
+    Mutex& operator=(Mutex&&)      = delete;
 
     ~Mutex();
 

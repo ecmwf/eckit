@@ -16,8 +16,6 @@
 
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -26,7 +24,7 @@ class SQLOutput;
 
 namespace type {
 
-class SQLType : private eckit::NonCopyable {
+class SQLType {
 public:
 
     enum {
@@ -39,6 +37,11 @@ public:
     };
 
     SQLType(const std::string&);
+
+    SQLType(const SQLType&)            = delete;
+    SQLType& operator=(const SQLType&) = delete;
+    SQLType(SQLType&&)                 = delete;
+    SQLType& operator=(SQLType&&)      = delete;
 
     virtual ~SQLType();
 

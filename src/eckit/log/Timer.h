@@ -18,13 +18,12 @@
 #include <ctime>
 
 #include "eckit/log/Log.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Timer : private NonCopyable {
+class Timer {
 public:
 
     explicit Timer();
@@ -36,6 +35,11 @@ public:
     /// @param name of the timer, used for output
     /// @param o output stream to use  for output
     explicit Timer(const char* name, std::ostream& o = Log::info());
+
+    Timer(const Timer&)            = delete;
+    Timer& operator=(const Timer&) = delete;
+    Timer(Timer&&)                 = delete;
+    Timer& operator=(Timer&&)      = delete;
 
     ~Timer();
 

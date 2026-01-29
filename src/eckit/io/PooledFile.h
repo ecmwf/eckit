@@ -17,17 +17,21 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 class PoolFileEntry;
 
-class PooledFile : private NonCopyable {
+class PooledFile {
 public:
 
     PooledFile(const PathName& name);
+
+    PooledFile(const PooledFile&)            = delete;
+    PooledFile& operator=(const PooledFile&) = delete;
+    PooledFile(PooledFile&&)                 = delete;
+    PooledFile& operator=(PooledFile&&)      = delete;
 
     /// @pre must have been closed
     ~PooledFile();

@@ -16,9 +16,7 @@
 #define eckit_Monitor_h
 
 #include "eckit/eckit.h"
-
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
@@ -27,16 +25,23 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Monitor : private NonCopyable {
+class Monitor {
 
 public:  // types
 
-    class TaskArray : private eckit::NonCopyable {
+    class TaskArray {
 
     public:
 
         using iterator       = TaskInfo*;
         using const_iterator = const TaskInfo*;
+
+        TaskArray() = default;
+
+        TaskArray(const TaskArray&)            = delete;
+        TaskArray& operator=(const TaskArray&) = delete;
+        TaskArray(TaskArray&&)                 = delete;
+        TaskArray& operator=(TaskArray&&)      = delete;
 
         virtual ~TaskArray();
 
@@ -58,6 +63,11 @@ public:  // types
 public:  // methods
 
     static Monitor& instance();
+
+    Monitor(const Monitor&)            = delete;
+    Monitor& operator=(const Monitor&) = delete;
+    Monitor(Monitor&&)                 = delete;
+    Monitor& operator=(Monitor&&)      = delete;
 
     static bool active();
     static void active(bool a);

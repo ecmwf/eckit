@@ -30,15 +30,15 @@ class DEPRECATED("Use C++11 std::unique_ptr instead") ScopedPtr : private NonCop
 
 public:  // types
 
-    typedef T element_type;
-    typedef T* pointer_type;
-    typedef T& reference_type;
+    using element_type   = T;
+    using pointer_type   = T*;
+    using reference_type = T&;
 
 public:  // methods
 
     /// Constructor
     /// @throws nothing
-    explicit ScopedPtr(pointer_type ptr = 0) : ptr_(ptr) {}
+    explicit ScopedPtr(pointer_type ptr = nullptr) : ptr_(ptr) {}
 
     /// Destructor
     /// @throws nothing
@@ -46,7 +46,7 @@ public:  // methods
 
     /// Resets the pointee
     /// @throws nothing
-    void reset(pointer_type ptr = 0) {
+    void reset(pointer_type ptr = nullptr) {
         destroy();
         ptr_ = ptr;
     }
@@ -55,7 +55,7 @@ public:  // methods
     /// @throws nothing
     pointer_type release() {
         pointer_type r = ptr_;
-        ptr_           = 0;
+        ptr_           = nullptr;
         return r;
     }
 
@@ -88,7 +88,7 @@ public:  // methods
 
     /// @returns true if pointer is not null
     /// @throws nothing
-    operator bool() const { return (ptr_ != 0); }
+    operator bool() const { return (ptr_ != nullptr); }
 
     /// Swaps the pointee with another ScopedPtr
     /// @throws nothing
@@ -102,7 +102,7 @@ protected:  // methods
 
     void destroy() {
         delete ptr_;
-        ptr_ = 0;
+        ptr_ = nullptr;
     }
 
 private:  // members

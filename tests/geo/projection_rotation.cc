@@ -16,7 +16,7 @@
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/Rotation.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -65,7 +65,7 @@ CASE("rotation (2)") {
 
 CASE("rotation (3)") {
     const PointLonLat sp(182., -46.7);
-    projection::Rotation rot({sp.lon, sp.lat}, 0.);
+    projection::Rotation rot({sp.lon(), sp.lat()}, 0.);
 
     ASSERT(points_equal(sp.antipode(), PointLonLat{2., 46.7}));
 
@@ -206,10 +206,10 @@ CASE("rotation (4)") {
         {non_rotated, p[1], p[1]},
         {non_rotated, p[2], p[2]},
         {non_rotated, p[3], p[3]},
-        {rotation_angle, p[0], {p[0].lon - 180., p[0].lat}},
-        {rotation_angle, p[1], {p[1].lon - 180., p[1].lat}},
-        {rotation_angle, p[2], {p[2].lon - 180., p[2].lat}},
-        {rotation_angle, p[3], {p[3].lon - 180., p[3].lat}},
+        {rotation_angle, p[0], {p[0].lon() - 180., p[0].lat()}},
+        {rotation_angle, p[1], {p[1].lon() - 180., p[1].lat()}},
+        {rotation_angle, p[2], {p[2].lon() - 180., p[2].lat()}},
+        {rotation_angle, p[3], {p[3].lon() - 180., p[3].lat()}},
         {rotation_matrix, p[0], {-176., 40.}},
         {rotation_matrix, p[1], {-176., -50.}},
         {rotation_matrix, p[2], {113.657357, 15.762700}},
@@ -313,8 +313,8 @@ CASE("make_from_projection (1)") {
     auto bbox = area::BoundingBox::make_from_projection(PointLonLat{0., 0.}, PointLonLat{2., 1.}, rotation);
     ASSERT(bbox);
 
-    EXPECT(points_equal(PointLonLat{bbox->west, bbox->north}, {-171.37056, 80.000001}, EPS));
-    EXPECT(points_equal(PointLonLat{bbox->east, bbox->south}, {-160., 78.821318}, EPS));
+    EXPECT(points_equal(PointLonLat{bbox->west(), bbox->north()}, {-171.37056, 80.000001}, EPS));
+    EXPECT(points_equal(PointLonLat{bbox->east(), bbox->south()}, {-160., 78.821318}, EPS));
 }
 
 
@@ -326,7 +326,7 @@ CASE("make_from_projection (2)") {
     auto bbox = area::BoundingBox::make_from_projection(min, max, rotation);
     ASSERT(bbox);
 
-    EXPECT(points_equal(PointLonLat{0, bbox->north}, NORTH_POLE));
+    EXPECT(points_equal(PointLonLat{0, bbox->north()}, NORTH_POLE));
     EXPECT(bbox->periodic());
 }
 

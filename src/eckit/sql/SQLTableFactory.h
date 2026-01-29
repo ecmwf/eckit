@@ -38,8 +38,8 @@ class SQLDatabase;
 class SQLTableFactory {
 
     // n.b. we currently have no use for a name, but we may well in the future.
-    // typedef std::map<std::string, const SQLTableFactoryBase*> factory_map;
-    typedef std::vector<const SQLTableFactoryBase*> factory_map;
+    // using factory_map = std::map<std::string, const SQLTableFactoryBase*>;
+    using factory_map = std::vector<const SQLTableFactoryBase*>;
 
 private:  // methods
 

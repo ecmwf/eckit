@@ -45,7 +45,7 @@ public:
 
     // Constructors
 
-    SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config = 0,
+    SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config = nullptr,
                const std::string& csvDelimiter = ",");
     SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter = ",");
     SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter);

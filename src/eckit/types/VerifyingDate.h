@@ -26,7 +26,7 @@ public:
 
     // -- Contructors
 
-    VerifyingDate(time_t = ::time(0));
+    VerifyingDate(time_t = ::time(nullptr));
     VerifyingDate(const Date&, const Time&);
     VerifyingDate(const std::string&);
     VerifyingDate(const DateTime&);

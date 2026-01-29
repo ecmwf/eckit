@@ -344,10 +344,10 @@ CASE("Polygon") {
         EXPECT_THROWS_AS(poly.contains({lonmid, 91.}), BadValue);
 
         auto A = PointLonLat::make(lonmid + 360., latmid, lonmin);
-        EXPECT(poly.contains({A.lon, A.lat}));
+        EXPECT(poly.contains({A.lon(), A.lat()}));
 
         auto B = PointLonLat::make(lonmid, 180. - latmid, lonmin);
-        EXPECT(poly.contains({B.lon, B.lat}));
+        EXPECT(poly.contains({B.lon(), B.lat()}));
     }
 
 

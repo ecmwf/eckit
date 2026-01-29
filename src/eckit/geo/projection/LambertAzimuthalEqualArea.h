@@ -25,7 +25,7 @@ public:
     // -- Constructors
 
     explicit LambertAzimuthalEqualArea(const Spec&);
-    LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first);
+    LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first, Figure* = nullptr);
 
     // -- Methods
 

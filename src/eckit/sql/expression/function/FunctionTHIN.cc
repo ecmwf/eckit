@@ -23,7 +23,7 @@ namespace eckit::sql::expression::function {
 static FunctionBuilder<FunctionTHIN> thinFunctionBuilder("thin");
 
 FunctionTHIN::FunctionTHIN(const std::string& name, const expression::Expressions& args) :
-    FunctionIntegerExpression(name, args), count_(0) {}
+    FunctionIntegerExpression(name, args), count_{nullptr} {}
 
 FunctionTHIN::FunctionTHIN(const FunctionTHIN& other) :
     FunctionIntegerExpression(other.name_, other.args_), count_(other.count_) {}
@@ -62,7 +62,7 @@ bool FunctionTHIN::isConstant() const {
 }
 
 std::shared_ptr<SQLExpression> FunctionTHIN::simplify(bool&) {
-    return 0;
+    return nullptr;
 }
 
 }  // namespace eckit::sql::expression::function

@@ -6,16 +6,8 @@ if(eckit_HAVE_GEO_AREA_SHAPEFILE)
     list(APPEND _files "shapefile.yaml")
 endif()
 
-if(eckit_HAVE_GEO_GRID_FESOM)
-    list(APPEND _files "FESOM.yaml")
-endif()
-
-if(eckit_HAVE_GEO_GRID_ICON)
-    list(APPEND _files "ICON-CH.yaml" "ICON-DWD.yaml" "ICON-MPIM.yaml")
-endif()
-
-if(eckit_HAVE_GEO_GRID_ORCA)
-    list(APPEND _files "ORCA.yaml")
+if(ECKIT_GEO_CODEC_GRIDS)
+    list(APPEND _files "FESOM.yaml" "ICON-CH.yaml" "ICON-DWD.yaml" "ICON-MPIM.yaml" "ORCA.yaml")
 endif()
 
 set(_destination "share/eckit/geo")

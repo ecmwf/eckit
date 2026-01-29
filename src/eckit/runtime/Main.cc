@@ -90,8 +90,8 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         }
     }
 
-    ::srand(::getpid() + ::time(0));
-    ::srandom(::getpid() + ::time(0));
+    ::srand(::getpid() + ::time(nullptr));
+    ::srandom(::getpid() + ::time(nullptr));
 
     const char* home = homeenv ? ::getenv(homeenv) : nullptr;
 

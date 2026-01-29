@@ -36,7 +36,7 @@ template <class PAYLOAD>
 class Pipe : private NonCopyable {
 public:
 
-    typedef void (*Proc)(Pipe<PAYLOAD>&);
+    using Proc = void (*)(Pipe<PAYLOAD>&);
 
     // -- Contructors
 
@@ -104,7 +104,7 @@ class Pipe;
 template <class PAYLOAD>
 class PipeTask : public Thread {
 
-    typedef typename Pipe<PAYLOAD>::Proc Proc;
+    using Proc = typename Pipe<PAYLOAD>::Proc;
 
     Pipe<PAYLOAD>& owner_;
     Proc& consumer_;

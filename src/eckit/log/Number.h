@@ -25,7 +25,7 @@ namespace eckit::log {
 class Number {
 public:
 
-    typedef long long W;
+    using W = long long;
 
     static void printBinary(std::ostream&, W);
     static std::string printBinary(W);

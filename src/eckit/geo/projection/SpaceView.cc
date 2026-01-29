@@ -13,7 +13,7 @@
 #include "eckit/geo/projection/SpaceView.h"
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::projection {

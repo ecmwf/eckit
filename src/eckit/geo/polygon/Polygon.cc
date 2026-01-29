@@ -31,12 +31,12 @@ inline bool is_zero(double val) {
 
 
 inline double cross_product_analog(const PointLonLat& A, const PointLonLat& B, const PointLonLat& C) {
-    return (A.lon - C.lon) * (B.lat - C.lat) - (A.lat - C.lat) * (B.lon - C.lon);
+    return (A.lon() - C.lon()) * (B.lat() - C.lat()) - (A.lat() - C.lat()) * (B.lon() - C.lon());
 }
 
 
 inline double cross(const PointLonLat& P, const PointLonLat& Q) {
-    return P.lon * Q.lat - P.lat * Q.lon;
+    return P.lon() * Q.lat() - P.lat() * Q.lon();
 }
 
 
@@ -129,14 +129,14 @@ bool Polygon::contains(const PointLonLat& P) const {
         return false;
     }
 
-    auto min_lon = front().lon;
+    auto min_lon = front().lon();
     auto max_lon = min_lon;
     std::for_each(begin(), end(), [&](const auto& P) {
-        min_lon = std::min(P.lon, min_lon);
-        max_lon = std::max(P.lon, max_lon);
+        min_lon = std::min(P.lon(), min_lon);
+        max_lon = std::max(P.lon(), max_lon);
     });
 
-    auto Q = PointLonLat::make(P.lon, P.lat, min_lon);
+    auto Q = PointLonLat::make(P.lon(), P.lat(), min_lon);
 
     do {
         int wn   = 0;
@@ -148,10 +148,10 @@ bool Polygon::contains(const PointLonLat& P) const {
         // - intersecting "down" on backward crossing & P below edge
         for (int i = 0, n = static_cast<int>(size()); i < n; ++i) {
             const auto& [A, B] = edge(i);
-            if (const auto dir = on_direction(A.lat, Q.lat, B.lat); dir != 0) {
+            if (const auto dir = on_direction(A.lat(), Q.lat(), B.lat()); dir != 0) {
                 const auto side = on_side(Q, A, B);
 
-                if (side == 0 && on_direction(A.lon, Q.lon, B.lon) != 0) {
+                if (side == 0 && on_direction(A.lon(), Q.lon(), B.lon()) != 0) {
                     return true;
                 }
 
@@ -167,8 +167,8 @@ bool Polygon::contains(const PointLonLat& P) const {
             return true;
         }
 
-        Q = {Q.lon + 360., Q.lat};
-    } while (Q.lon <= max_lon);
+        Q = {Q.lon() + 360., Q.lat()};
+    } while (Q.lon() <= max_lon);
 
     return false;
 }
@@ -182,7 +182,7 @@ PointLonLat Polygon::centroid() const {
         auto ai = cross(ei.first, ei.second);
         auto Ci = (ei.first + ei.second) * ai;
 
-        C = {C.lon + Ci.lon, C.lat + Ci.lat};
+        C = {C.lon() + Ci.lon(), C.lat() + Ci.lat()};
         a += ai;
     }
 

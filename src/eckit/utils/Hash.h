@@ -30,7 +30,7 @@ class Hash : private eckit::NonCopyable {
 
 public:  // types
 
-    typedef std::string digest_t;
+    using digest_t = std::string;
 
 public:  // methods
 

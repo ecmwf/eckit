@@ -41,10 +41,10 @@ CASE("Mercator: spec_str, proj_str") {
             EXPECT(points_equal(b, projection.inv(projection.fwd(b)), eps));
 
             PointXY c = projection.fwd(NORTH_POLE);
-            EXPECT(c.Y > std::numeric_limits<double>::max());
+            EXPECT(c.Y() > std::numeric_limits<double>::max());
 
             PointXY d = projection.fwd(SOUTH_POLE);
-            EXPECT(d.Y < std::numeric_limits<double>::lowest());
+            EXPECT(d.Y() < std::numeric_limits<double>::lowest());
         }
     }
 

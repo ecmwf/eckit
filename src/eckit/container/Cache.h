@@ -42,7 +42,7 @@ public:  // types
 
     struct Entry {
         Entry(const V& v) : v_(v), expired_(false), hits_(0) {
-            gettimeofday(&age_, 0);
+            gettimeofday(&age_, nullptr);
             last_ = age_;
         }
 
@@ -50,12 +50,12 @@ public:  // types
             v_       = v;
             expired_ = false;
             hits_    = 0;
-            gettimeofday(&age_, 0);
+            gettimeofday(&age_, nullptr);
             last_ = age_;
         }
 
         V& access() {
-            gettimeofday(&last_, 0);
+            gettimeofday(&last_, nullptr);
             ++hits_;
             return v_;
         }
@@ -67,11 +67,11 @@ public:  // types
         struct ::timeval last_;
     };
 
-    typedef K key_type;
-    typedef V value_type;
-    typedef Entry entry_type;
+    using key_type   = K;
+    using value_type = V;
+    using entry_type = Entry;
 
-    typedef std::map<key_type, entry_type> store_type;
+    using store_type = std::map<key_type, entry_type>;
 
     class Policy {
         /// Expires the Least Recently Used (LRU) entries
@@ -212,7 +212,7 @@ void Cache<K, V>::expire(typename store_type::iterator i) {
 template <typename K, typename V>
 void Cache<K, V>::purge() {
     // collect all expired
-    typedef typename store_type::iterator siterator;
+    using siterator = typename store_type::iterator;
     std::vector<siterator> expired;
     for (siterator i = storage_.begin(); i != storage_.end(); ++i) {
         if (i->second.expired_) {
@@ -246,7 +246,7 @@ size_t Cache<K, V>::size() const {
 
 template <typename K, typename V>
 void Cache<K, V>::print(std::ostream& out) const {
-    typedef typename store_type::const_iterator siterator;
+    using siterator = typename store_type::const_iterator;
     for (siterator i = storage_.begin(); i != storage_.end(); ++i) {
         out << i->second.v_ << std::endl;
     }

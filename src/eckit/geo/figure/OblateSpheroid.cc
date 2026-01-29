@@ -17,9 +17,9 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointXYZ.h"
-#include "eckit/geo/Spec.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -81,9 +81,9 @@ double OblateSpheroid::_area(double a, double b, const area::BoundingBox& bbox) 
         return (sin_phi / denom + (0.5 / e) * std::log((1. + e * sin_phi) / (1. - e * sin_phi)));
     };
 
-    const auto phi1 = util::DEGREE_TO_RADIAN * bbox.south;
-    const auto phi2 = util::DEGREE_TO_RADIAN * bbox.north;
-    const auto dlam = util::DEGREE_TO_RADIAN * (bbox.east - bbox.west);
+    const auto phi1 = util::DEGREE_TO_RADIAN * bbox.south();
+    const auto phi2 = util::DEGREE_TO_RADIAN * bbox.north();
+    const auto dlam = util::DEGREE_TO_RADIAN * (bbox.east() - bbox.west());
 
     const auto e = eccentricity(a, b);
     const auto A = dlam * a * b * (f(phi2, e) - f(phi1, e));
@@ -98,14 +98,14 @@ PointXYZ OblateSpheroid::convertSphericalToCartesian(double a, double b, const P
     // See https://en.wikipedia.org/wiki/Reference_ellipsoid#Coordinates
     // numerical conditioning for both ϕ (poles) and λ (Greenwich/Date Line)
 
-    const auto Q      = PointLonLat::make(P.lon, P.lat, -180.);
-    const auto lambda = util::DEGREE_TO_RADIAN * Q.lon;
-    const auto phi    = util::DEGREE_TO_RADIAN * Q.lat;
+    const auto Q      = PointLonLat::make(P.lon(), P.lat(), -180.);
+    const auto lambda = util::DEGREE_TO_RADIAN * Q.lon();
+    const auto phi    = util::DEGREE_TO_RADIAN * Q.lat();
 
     const auto sp = std::sin(phi);
     const auto cp = std::sqrt(1. - sp * sp);
-    const auto sl = std::abs(Q.lon) < 180. ? std::sin(lambda) : 0.;
-    const auto cl = std::abs(Q.lon) > 90. ? std::cos(lambda) : std::sqrt(1. - sl * sl);
+    const auto sl = std::abs(Q.lon()) < 180. ? std::sin(lambda) : 0.;
+    const auto cl = std::abs(Q.lon()) > 90. ? std::cos(lambda) : std::sqrt(1. - sl * sl);
 
     const auto N_phi = a * a / std::sqrt(a * a * cp * cp + b * b * sp * sp);
 

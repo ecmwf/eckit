@@ -31,7 +31,7 @@ public:
 
     // Contructors
 
-    DateTime(time_t = ::time(0));
+    DateTime(time_t = ::time(nullptr));
     DateTime(const Date&, const Time&);
     DateTime(const std::string&);
     DateTime(double);

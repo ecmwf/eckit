@@ -60,7 +60,7 @@ void MutexCond::wait() {
 bool MutexCond::wait(int sec) {
     ASSERT(inited_);
     //	AutoState x(':');
-    timespec timeout = {::time(0) + sec, 0};
+    timespec timeout = {::time(nullptr) + sec, 0};
     int n            = pthread_cond_timedwait(&cond_, &mutex_, &timeout);
     if (n && n != ETIMEDOUT) {
         THRCALL(n);

@@ -81,7 +81,7 @@ private:  // methods
 
 private:  // members
 
-    typedef std::map<ResourceQualifier, std::string> ResMap;
+    using ResMap = std::map<ResourceQualifier, std::string>;
 
     ResMap resmap_;
 

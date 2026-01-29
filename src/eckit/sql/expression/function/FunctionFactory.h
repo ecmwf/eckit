@@ -97,7 +97,7 @@ class FunctionBuilder : public FunctionBuilderBase {
 
 public:  // methods
 
-    FunctionBuilder(const std::string& name, const char* help = 0) :
+    FunctionBuilder(const std::string& name, const char* help = nullptr) :
         FunctionBuilderBase(name, FunctionType::arity(), help ? help : FunctionType::help()) {}
 
     ~FunctionBuilder() override {}
@@ -131,7 +131,7 @@ public:
 	FunctionFactory(); // : FunctionFactoryBase("FunctionFactory", -1) {}
     ~FunctionFactory() override {}
 
-    typedef std::vector<std::pair<std::pair<std::string, int>, std::string> > FunctionInfo;
+    using FunctionInfo = std::vector<std::pair<std::pair<std::string, int>, std::string>>;
 
 	FunctionInfo& functionsInfo();
 

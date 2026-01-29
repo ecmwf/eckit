@@ -29,18 +29,18 @@ template <typename V>
 class DenseSet {
 public:  // types
 
-    typedef V value_type;  ///< value type
+    using value_type = V;  ///< value type
 
 private:  // types
 
-    typedef std::vector<value_type> store_t;
+    using store_t = std::vector<value_type>;
 
 public:  // methods
 
-    typedef typename store_t::const_reference const_reference;
+    using const_reference = typename store_t::const_reference;
 
-    typedef typename store_t::const_iterator iterator;
-    typedef typename store_t::const_iterator const_iterator;
+    using iterator       = typename store_t::const_iterator;
+    using const_iterator = typename store_t::const_iterator;
 
     DenseSet(size_t s = 0) : sorted_(true) {
         if (s > 0) {

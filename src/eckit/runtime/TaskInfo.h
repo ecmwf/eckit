@@ -28,75 +28,73 @@ class JSON;
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// @warning This class is written to disk! Any change must ensure binary compatibility.
 struct Info {
-protected:
+    bool busy_{};
+    pthread_t thread_{};
+    pid_t pid_{};
 
-    bool busy_;
-    pthread_t thread_;
-    pid_t pid_;
+    time_t start_{};
+    time_t last_{};
+    time_t check_{};
 
-    time_t start_;
-    time_t last_;
-    time_t check_;
+    bool show_{};
 
-    bool show_;
-
-    unsigned long late_;
+    unsigned long late_{};
 
     // Logging
-    enum {
-        size_ = 10240
-    };
-    char buffer_[size_];
-    unsigned long pos_;
+    static constexpr int size_{10240};
+    char buffer_[size_]{};
+    unsigned long pos_{};
 
-    char name_[80];
-    char kind_[80];
-    char status_[256];
-    char application_[80];
+    char name_[80]{};
+    char kind_[80]{};
+    char status_[256]{};
+    char application_[80]{};
 
     // Progress
 
     struct Progress {
-        unsigned long long min_;
-        unsigned long long max_;
-        unsigned long long val_;
-        char name_[80];
-        double rate_;
-        double speed_;
-        ::timeval start_;
-        ::timeval last_;
+        unsigned long long min_{};
+        unsigned long long max_{};
+        unsigned long long val_{};
+        char name_[80]{};
+        double rate_{};
+        double speed_{};
+        ::timeval start_{};
+        ::timeval last_{};
     };
 
-    Progress progress_;
+    Progress progress_{};
 
-    TaskID taskID_;
+    TaskID taskID_{};
 
-    bool stop_;
-    bool abort_;
-    bool stoppable_;
-    bool stopped_;
-    bool canceled_;
-    bool exception_;
-    char cancelMsg_[80];
+    bool stop_{};
+    bool abort_{};
+    bool stoppable_{};
+    bool stopped_{};
+    bool canceled_{};
+    bool exception_{};
+    char cancelMsg_[80]{};
 
-    int config_;
-    char resource_;
+    int config_{};
+    char resource_{};
 
-    long parent_;
-    long depth_;
+    long parent_{};
+    long depth_{};
 
-    char state_;
+    char state_{};
 
-    int port_;
-    char host_[80];
+    int port_{};
+    char host_[80]{};
 
-    char message_[80];
+    char message_[80]{};
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TaskInfo : public Padded<Info, 4096>, public NonCopyable {
+/// @warning This class is written to disk! Any change must ensure binary compatibility.
+class TaskInfo : public NonCopyable {
 public:
 
     TaskInfo();
@@ -104,32 +102,32 @@ public:
 
     void out(char*, char*);
     bool busy(bool = false);
-    const char* name() const { return name_; }
-    const char* kind() const { return kind_; }
-    const char* status() const { return status_; }
-    const char* message() const { return message_; }
-    const char* application() const { return application_; }
-    pid_t pid() const { return pid_; }
-    time_t last() const { return last_; }
-    time_t start() const { return start_; }
+    const char* name() const { return info.name_; }
+    const char* kind() const { return info.kind_; }
+    const char* status() const { return info.status_; }
+    const char* message() const { return info.message_; }
+    const char* application() const { return info.application_; }
+    pid_t pid() const { return info.pid_; }
+    time_t last() const { return info.last_; }
+    time_t start() const { return info.start_; }
 
-    unsigned long late() const { return late_; }
+    unsigned long late() const { return info.late_; }
     void late(unsigned long n) {
         touch();
-        late_ = n;
+        info.late_ = n;
     }
 
-    const TaskID& taskID() { return taskID_; }
-    void taskID(const TaskID& n) { taskID_ = n; }
+    const TaskID& taskID() { return info.taskID_; }
+    void taskID(const TaskID& n) { info.taskID_ = n; }
 
-    void stop() { stop_ = true; }
-    bool stopped() const { return stopped_; }
-    void abort() { abort_ = true; }
+    void stop() { info.stop_ = true; }
+    bool stopped() const { return info.stopped_; }
+    void abort() { info.abort_ = true; }
     void checkAbort();
     void kill(int);
 
-    bool exception() const { return exception_; }
-    void exception(bool on) { exception_ = on; }
+    bool exception() const { return info.exception_; }
+    void exception(bool on) { info.exception_ = on; }
 
     // ---------------------------------------------------------
     // Progress
@@ -138,15 +136,15 @@ public:
     void progress(unsigned long long);
     void done();
 
-    unsigned long long max() const { return progress_.max_; }
-    unsigned long long min() const { return progress_.min_; }
-    unsigned long long val() const { return progress_.val_; }
-    double rate() const { return progress_.rate_; }
-    double speed() const { return progress_.speed_; }
-    const char* progressName() const { return progress_.name_; }
+    unsigned long long max() const { return info.progress_.max_; }
+    unsigned long long min() const { return info.progress_.min_; }
+    unsigned long long val() const { return info.progress_.val_; }
+    double rate() const { return info.progress_.rate_; }
+    double speed() const { return info.progress_.speed_; }
+    const char* progressName() const { return info.progress_.name_; }
 
-    const ::timeval& progressStart() const { return progress_.start_; }
-    const ::timeval& progressLast() const { return progress_.last_; }
+    const ::timeval& progressStart() const { return info.progress_.start_; }
+    const ::timeval& progressLast() const { return info.progress_.last_; }
 
     // ---------------------------------------------------------
 
@@ -159,19 +157,19 @@ public:
     /// @todo FIXME potential race condition (reported by Clang ThreadSanitizer)
     void show(bool s) {
         touch();
-        show_ = s;
+        info.show_ = s;
     }
-    bool show() const { return show_; }
+    bool show() const { return info.show_; }
 
     void stoppable(bool s) {
-        stoppable_ = s;
+        info.stoppable_ = s;
         touch();
     }
-    bool stoppable() const { return stoppable_; }
-    bool stopTriggered() const { return stop_; }
+    bool stoppable() const { return info.stoppable_; }
+    bool stopTriggered() const { return info.stop_; }
     void setStopped() {
-        stopped_ = true;
-        stop_    = false;
+        info.stopped_ = true;
+        info.stop_    = false;
     }
 
     void touch();
@@ -182,28 +180,28 @@ public:
 
 
     void parent(long p);
-    long parent() const { return parent_; }
-    long depth() const { return depth_; }
+    long parent() const { return info.parent_; }
+    long depth() const { return info.depth_; }
 
     void state(char c) {
         touch();
-        state_ = c;
+        info.state_ = c;
     }
-    char state() const { return state_; }
+    char state() const { return info.state_; }
 
     void port(int p) {
         touch();
-        port_ = p;
+        info.port_ = p;
     }
-    int port() const { return port_; }
+    int port() const { return info.port_; }
 
     void host(const std::string& h) {
         touch();
-        strncpy(host_, h.c_str(), sizeof(host_));
-        host_[sizeof(host_) - 1] = '\0';
+        strncpy(info.host_, h.c_str(), sizeof(info.host_));
+        info.host_[sizeof(info.host_) - 1] = '\0';
     }
 
-    std::string host() const { return host_; }
+    std::string host() const { return info.host_; }
 
 private:  // methods
 
@@ -219,6 +217,8 @@ private:  // methods
         p.json(s);
         return s;
     }
+
+    Padded<Info, 4096> info{};
 };
 
 // Used by MappedArray

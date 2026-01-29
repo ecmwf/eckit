@@ -55,7 +55,7 @@ static struct {
     },
     {
         0,
-        0,
+        nullptr,
         0,
     },
 };

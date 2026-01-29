@@ -88,17 +88,17 @@ private:  // members
     mutable digest_t digest_;  ///< cached digest
 
     /* POINTER defines a generic pointer type */
-    typedef unsigned char* POINTER;
+    using POINTER = unsigned char*;
 
     /* UINT4 defines a four byte word */
-    typedef uint32_t UINT4;
+    using UINT4 = uint32_t;
 
     /* MD5 context. */
-    typedef struct {
+    struct MD5_CTX {
         UINT4 state[4];           /* state (ABCD) */
         UINT4 count[2];           /* number of bits, modulo 2^64 (lsb first) */
         unsigned char buffer[64]; /* input buffer */
-    } MD5_CTX;
+    };
 
     mutable MD5_CTX s_;
 

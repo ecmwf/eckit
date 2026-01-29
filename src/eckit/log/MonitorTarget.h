@@ -26,7 +26,7 @@ namespace eckit {
 class MonitorTarget : public WrapperTarget {
 public:
 
-    MonitorTarget(LogTarget* target = 0);
+    MonitorTarget(LogTarget* target = nullptr);
 
     ~MonitorTarget() override;
 

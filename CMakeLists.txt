@@ -9,7 +9,7 @@
 ########################################################################################################################
 
 
-cmake_minimum_required( VERSION 3.12 FATAL_ERROR )
+cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
 
@@ -146,7 +146,7 @@ ecbuild_add_option( FEATURE LZ4
 
 ecbuild_add_option( FEATURE AEC
                     DESCRIPTION "AEC support for compression"
-                    REQUIRED_PACKAGES AEC )
+                    REQUIRED_PACKAGES "NAME libaec VERSION 1.0.6")
 
 ecbuild_add_option( FEATURE ZIP
                     DESCRIPTION "ZIP support for compression"
@@ -164,6 +164,12 @@ ecbuild_add_option( FEATURE ECKIT_CODEC
                     DESCRIPTION "eckit::codec encoding/decoding library" )
 
 set( eckit_CODEC_STATIC_ASSERT ON CACHE BOOL "eckit::codec static assertions" )
+
+### eckit::spec
+
+ecbuild_add_option( FEATURE ECKIT_SPEC
+                    DEFAULT ON
+                    DESCRIPTION "eckit::spec metadata library" )
 
 ### eckit::maths
 
@@ -189,21 +195,6 @@ ecbuild_add_option( FEATURE ECKIT_GEO
                     DEFAULT ON
                     DESCRIPTION "eckit::geo geometry library" )
 
-ecbuild_add_option( FEATURE GEO_GRID_FESOM
-                    DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
-                    DESCRIPTION "eckit::geo geometry library support for FESOM grids" )
-
-ecbuild_add_option( FEATURE GEO_GRID_ICON
-                    DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
-                    DESCRIPTION "eckit::geo geometry library support for ICON grids" )
-
-ecbuild_add_option( FEATURE GEO_GRID_ORCA
-                    DEFAULT ON
-                    CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4
-                    DESCRIPTION "eckit::geo geometry library support for ORCA grids" )
-
 ecbuild_add_option( FEATURE GEO_CACHING
                     DEFAULT OFF
                     CONDITION eckit_HAVE_ECKIT_GEO
@@ -225,13 +216,20 @@ ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
                     REQUIRED_PACKAGES shapelib
                     DESCRIPTION "eckit::geo geometry library support for shapefiles" )
 
+set( ECKIT_GEO_CODEC_GRIDS OFF )
+if( eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4 )
+    set( ECKIT_GEO_CODEC_GRIDS ON )
+endif()
+
 if( eckit_HAVE_GEO_AREA_SHAPEFILE )
     if( NOT TARGET shapelib::shp OR NOT TARGET libzip::zip )
         message( FATAL_ERROR "eckit::geo geometry library support for shapefiles requires the shapelib::shp and libzip::zip libraries" )
     endif()
 endif()
 
-set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" )
+# (keep paths as strings to avoid normalisation/expansion)
+set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" CACHE STRING "eckit::geo cache path default" )
+set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
 
 ### LAPACK
 
@@ -339,6 +337,12 @@ ecbuild_add_option( FEATURE PROJ
                     DESCRIPTION "support PROJ-based projections"
                     REQUIRED_PACKAGES "PROJ 9.1.1" )
 
+ecbuild_add_option(
+    FEATURE DOCS
+    DEFAULT OFF
+    DESCRIPTION "Enable documentation generation"
+)
+
 ### c math library, needed when including "math.h"
 
 find_package( CMath )
@@ -370,8 +374,9 @@ include(cmake/compiler_warnings.cmake) # optionally handle compiler specific war
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 add_subdirectory( src )
-add_subdirectory( bamboo )
-add_subdirectory( doc )
+if(eckit_HAVE_DOCS)
+    add_subdirectory(docs)
+endif()
 add_subdirectory( share )
 
 if( eckit_HAVE_TESTS )

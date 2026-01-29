@@ -44,7 +44,7 @@ public:
     virtual std::vector<double> missingValues() const    = 0;
 };
 
-typedef std::vector<std::string> ColumnNames;
+using ColumnNames = std::vector<std::string>;
 
 class SQLTable : private eckit::NonCopyable {
 public:

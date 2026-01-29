@@ -33,11 +33,11 @@ void PipeHandle::encode(Stream& s) const {
     s << name_;
 }
 
-PipeHandle::PipeHandle(Stream& s) : DataHandle(s), file_(nullptr), read_(false) {
+PipeHandle::PipeHandle(Stream& s) : DataHandle(s), file_{nullptr}, read_(false) {
     s >> name_;
 }
 
-PipeHandle::PipeHandle(const std::string& name) : name_(name), file_(0), read_(false) {}
+PipeHandle::PipeHandle(const std::string& name) : name_(name), file_{nullptr}, read_(false) {}
 
 PipeHandle::~PipeHandle() {}
 
@@ -71,7 +71,7 @@ long PipeHandle::write(const void* buffer, long length) {
 }
 
 void PipeHandle::close() {
-    if (file_ == 0) {
+    if (file_ == nullptr) {
         return;
     }
 

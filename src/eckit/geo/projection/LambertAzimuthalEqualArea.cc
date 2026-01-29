@@ -15,7 +15,7 @@
 #include <cmath>
 
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
@@ -25,19 +25,20 @@ static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_1("laea");
 static ProjectionRegisterType<LambertAzimuthalEqualArea> PROJECTION_2("lambert_azimuthal_equal_area");
 
 
-LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) : LambertAzimuthalEqualArea({}, {}) {
-    // NOTIMP;
+LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(const Spec& spec) :
+    LambertAzimuthalEqualArea(PointLonLat::make_from_spec(spec, "centre"), PointLonLat::make_from_spec(spec, "first")) {
 }
 
 
-LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first) :
+LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLonLat first, Figure* figure_ptr) :
+    Projection(figure_ptr),
     centre_(centre),
-    centre_r_(PointLonLatR::make_from_lonlat(centre.lon, centre.lat)),
+    centre_r_(PointLonLatR::make_from_lonlat(centre.lon(), centre.lat())),
     first_(first),
-    first_r_(PointLonLatR::make_from_lonlat(first.lon, first.lat)),
-    phi0_(centre_r_.latr),
-    phi_(first_r_.latr),
-    dlam_(first_r_.lonr - centre_r_.lonr) {}
+    first_r_(PointLonLatR::make_from_lonlat(first.lon(), first.lat())),
+    phi0_(centre_r_.latr()),
+    phi_(first_r_.latr()),
+    dlam_(first_r_.lonr() - centre_r_.lonr()) {}
 
 
 PointXY LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
@@ -51,12 +52,12 @@ PointXY LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
 
 
 PointLonLat LambertAzimuthalEqualArea::inv(const PointXY& p) const {
-    auto rho = std::sqrt(p.X * p.X + p.Y * p.Y);
+    auto rho = std::sqrt(p.X() * p.X() + p.Y() * p.Y());
     const util::sincos_t c(2. * std::asin(rho / (2. * figure().R())));
 
     return PointLonLat::make_from_lonlatr(
-        centre_r_.lonr + std::atan2(p.X * c.sin, rho * phi0_.cos * c.cos - p.Y * phi0_.sin * c.sin),
-        std::asin(c.cos * phi0_.sin + p.Y * c.sin * phi0_.cos / rho), centre_.lon - PointLonLat::FLAT_ANGLE);
+        centre_r_.lonr() + std::atan2(p.X() * c.sin, rho * phi0_.cos * c.cos - p.Y() * phi0_.sin * c.sin),
+        std::asin(c.cos * phi0_.sin + p.Y() * c.sin * phi0_.cos / rho), centre_.lon() - PointLonLat::FLAT_ANGLE);
 }
 
 
@@ -70,8 +71,8 @@ void LambertAzimuthalEqualArea::fill_spec(spec::Custom& custom) const {
     Projection::fill_spec(custom);
 
     custom.set("type", type());
-    custom.set("centre_lonlat", std::vector<double>{centre_.lon, centre_.lat});
-    custom.set("first_lonlat", std::vector<double>{first_.lon, first_.lat});
+    custom.set("centre_lonlat", std::vector<double>{centre_.lon(), centre_.lat()});
+    custom.set("first_lonlat", std::vector<double>{first_.lon(), first_.lat()});
 }
 
 

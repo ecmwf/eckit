@@ -68,8 +68,8 @@ template <class Traits>
 class Dispatcher : public Configurable {
 public:
 
-    typedef typename Traits::Request Request;
-    typedef typename Traits::Handler Handler;
+    using Request = typename Traits::Request;
+    using Handler = typename Traits::Handler;
 
     // -- Contructors
 
@@ -177,8 +177,8 @@ template <class Traits>
 class DispatchTask : public Thread, public Monitorable {
 public:
 
-    typedef typename Traits::Handler Handler;
-    typedef typename Traits::Request Request;
+    using Handler = typename Traits::Handler;
+    using Request = typename Traits::Request;
 
     // -- Contructors
 
@@ -214,7 +214,7 @@ private:
 
     // No copy
 
-    typedef class DispatchTask<Traits> DT;
+    using DT = DispatchTask<Traits>;
     DispatchTask(const DT&);
     void operator=(const DT&);
 };
@@ -350,7 +350,7 @@ Dispatcher<Traits>::Dispatcher(const std::string& name, int numberOfThreads) :
     grow_(numberOfThreads_ == 0),
     running_(0) {
     // For some reason xlC require that
-    typedef class DispatchInfo<Traits> DI;
+    using DI = DispatchInfo<Traits>;
 
     ThreadControler c(new DI(*this));
     c.start();
@@ -511,7 +511,7 @@ void Dispatcher<Traits>::dequeue(DequeuePicker<Request>& p) {
 template <class Traits>
 void Dispatcher<Traits>::changeThreadCount(int delta) {
     // We do not take a lock, to avoid dead-locks
-    typedef class DispatchTask<Traits> DT;
+    using DT = DispatchTask<Traits>;
 
     // Increase number of threads by starting some more
     if (delta > 0) {

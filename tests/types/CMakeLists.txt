@@ -8,11 +8,11 @@ ecbuild_add_test( TARGET      eckit_test_types_cache
 
 ecbuild_add_test( TARGET      eckit_test_types_doublecompare
                   SOURCES     test_doublecompare.cc
-                  LIBS        eckit )
+                  LIBS        eckit_maths )
 
 ecbuild_add_test( TARGET      eckit_test_types_floatcompare
                   SOURCES     test_floatcompare.cc
-                  LIBS        eckit )
+                  LIBS        eckit_maths )
 
 ecbuild_add_test( TARGET      eckit_test_types_time
                   SOURCES     test_time.cc

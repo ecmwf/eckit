@@ -16,8 +16,8 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -64,13 +64,13 @@ AlbersEqualArea::AlbersEqualArea(double lon_0, double lat_0, double lat_1, doubl
     n_(calculate_n(lat_1, lat_2)),
     R_(figure().R()),
     C_(calculate_C(lat_1, n_)),
-    rho0_(calculate_rho(R_, n_, C_, centre_r_.latr)) {}
+    rho0_(calculate_rho(R_, n_, C_, centre_r_.latr())) {}
 
 
 PointXY AlbersEqualArea::fwd(const PointLonLat& p) const {
-    auto pr     = PointLonLatR::make_from_lonlat(p.lon, p.lat);
-    auto rho    = calculate_rho(R_, n_, C_, pr.latr);
-    auto thetar = n_ * (pr.lonr - centre_r_.lonr);
+    auto pr     = PointLonLatR::make_from_lonlat(p.lon(), p.lat());
+    auto rho    = calculate_rho(R_, n_, C_, pr.latr());
+    auto thetar = n_ * (pr.lonr() - centre_r_.lonr());
 
     return PointXY{rho * std::sin(thetar), rho0_ - rho * std::cos(thetar)} + falseXY();
 }
@@ -79,12 +79,12 @@ PointXY AlbersEqualArea::fwd(const PointLonLat& p) const {
 PointLonLat AlbersEqualArea::inv(const PointXY& p) const {
     auto q = p - falseXY();
 
-    auto rho    = std::sqrt(q.X * q.X + (rho0_ - q.Y) * (rho0_ - q.Y));
-    auto thetar = std::atan2(q.X, rho0_ - q.Y);
+    auto rho    = std::sqrt(q.X() * q.X() + (rho0_ - q.Y()) * (rho0_ - q.Y()));
+    auto thetar = std::atan2(q.X(), rho0_ - q.Y());
 
-    return PointLonLat::make_from_lonlatr(centre_r_.lonr + thetar / n_,
+    return PointLonLat::make_from_lonlatr(centre_r_.lonr() + thetar / n_,
                                           std::asin((C_ - (rho * rho * n_ * n_) / (R_ * R_)) / (2. * n_)),
-                                          centre_.lon - PointLonLat::FLAT_ANGLE);
+                                          centre_.lon() - PointLonLat::FLAT_ANGLE);
 }
 
 
@@ -98,8 +98,8 @@ void AlbersEqualArea::fill_spec(spec::Custom& custom) const {
     Projection::fill_spec(custom);
 
     custom.set("type", type());
-    custom.set("lon_0", centre_.lon);
-    custom.set("lat_0", centre_.lat);
+    custom.set("lon_0", centre_.lon());
+    custom.set("lat_0", centre_.lat());
     custom.set("lat_1", lat_1_);
     custom.set("lat_2", lat_2_);
 }

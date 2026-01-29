@@ -44,7 +44,7 @@ Timer::~Timer() {
 
 void Timer::start() {
     if (!running()) {
-        ::gettimeofday(&timeStart_, 0);
+        ::gettimeofday(&timeStart_, nullptr);
         timeStop_ = timeStart_;
 
         cpuStart_ = ::clock();
@@ -97,7 +97,7 @@ void Timer::reset(const std::string& message) {
 
 void Timer::takeTime() {
     cpuStop_ = ::clock();
-    ::gettimeofday(&timeStop_, 0);
+    ::gettimeofday(&timeStop_, nullptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -1,173 +1,170 @@
 list( APPEND eckit_sql_lib_srcs
-
-#SQLMATCHSubquerySession.h
-#SQLMATCHSubquerySession.cc
-#SQLMATCHSubquerySessionOutput.h
-#SQLMATCHSubquerySessionOutput.cc
-Environment.cc
-Environment.h
-SQLBitColumn.cc
-SQLBitColumn.h
-SQLColumn.cc
-SQLColumn.h
-SQLDatabase.cc
-SQLDatabase.h
-SQLDistinctOutput.cc
-SQLDistinctOutput.h
-SQLOrderOutput.cc
-SQLOrderOutput.h
-SQLOutput.cc
-SQLOutput.h
-SQLOutputConfig.cc
-SQLOutputConfig.h
-SQLParser.cc
-SQLParser.h
-SelectOneTable.cc
-SelectOneTable.h
-SQLSelect.cc
-SQLSelect.h
-SQLSelectFactory.cc
-SQLSelectFactory.h
-SQLSession.cc
-SQLSession.h
-SQLSimpleOutput.cc
-SQLSimpleOutput.h
-SQLStatement.cc
-SQLStatement.h
-SQLTable.cc
-SQLTable.h
-SQLTableFactory.cc
-SQLTableFactory.h
-SQLTypedefs.h
-
-SchemaAnalyzer.cc
-SchemaAnalyzer.h
-SchemaComponents.cc
-SchemaComponents.h
-
-expression/BitColumnExpression.cc
-expression/BitColumnExpression.h
-expression/ColumnExpression.cc
-expression/ColumnExpression.h
-expression/ConstantExpression.cc
-expression/ConstantExpression.h
-expression/NumberExpression.cc
-expression/NumberExpression.h
-expression/ParameterExpression.cc
-expression/ParameterExpression.h
-expression/StringExpression.cc
-expression/StringExpression.h
-expression/SQLExpression.cc
-expression/SQLExpression.h
-expression/SQLExpressions.cc
-expression/SQLExpressions.h
-expression/ShiftedColumnExpression.cc
-expression/ShiftedColumnExpression.h
-expression/SQLExpressionEvaluated.cc
-expression/SQLExpressionEvaluated.h
-expression/OrderByExpressions.cc
-expression/OrderByExpressions.h
-
-expression/function/DoubleFunctions.cc
-expression/function/FunctionExpression.cc
-expression/function/FunctionExpression.h
-expression/function/FunctionAND.cc
-expression/function/FunctionAND.h
-expression/function/FunctionAVG.cc
-expression/function/FunctionAVG.h
-expression/function/FunctionCOUNT.cc
-expression/function/FunctionCOUNT.h
-expression/function/FunctionDOTP.cc
-expression/function/FunctionDOTP.h
-expression/function/FunctionEQ.cc
-expression/function/FunctionEQ.h
-expression/function/FunctionRLIKE.cc
-expression/function/FunctionRLIKE.h
-#expression/function/FunctionMATCH.h
-#expression/function/FunctionMATCH.cc
-expression/function/FunctionFactory.cc
-expression/function/FunctionFactory.h
-expression/function/FunctionIN.cc
-expression/function/FunctionIN.h
-expression/function/FunctionIntegerExpression.cc
-expression/function/FunctionIntegerExpression.h
-expression/function/FunctionJOIN.cc
-expression/function/FunctionJOIN.h
-expression/function/FunctionJULIAN.cc
-expression/function/FunctionJULIAN.h
-expression/function/FunctionJULIAN_SECONDS.cc
-expression/function/FunctionJULIAN_SECONDS.h
-expression/function/FunctionMAX.cc
-expression/function/FunctionMAX.h
-expression/function/FunctionMIN.cc
-expression/function/FunctionMIN.h
-expression/function/FunctionFIRST.cc
-expression/function/FunctionFIRST.h
-expression/function/FunctionLAST.cc
-expression/function/FunctionLAST.h
-expression/function/FunctionNORM.cc
-expression/function/FunctionNORM.h
-expression/function/FunctionNE.cc
-expression/function/FunctionNE.h
-expression/function/FunctionNOT_IN.cc
-expression/function/FunctionNOT_IN.h
-expression/function/FunctionNOT_NULL.cc
-expression/function/FunctionNOT_NULL.h
-expression/function/FunctionNULL.cc
-expression/function/FunctionNULL.h
-expression/function/FunctionNVL.cc
-expression/function/FunctionNVL.h
-expression/function/FunctionOR.cc
-expression/function/FunctionOR.h
-expression/function/FunctionRMS.cc
-expression/function/FunctionRMS.h
-expression/function/FunctionROWNUMBER.cc
-expression/function/FunctionROWNUMBER.h
-expression/function/FunctionSTDEV.cc
-expression/function/FunctionSTDEV.h
-expression/function/FunctionSUM.cc
-expression/function/FunctionSUM.h
-expression/function/FunctionTDIFF.cc
-expression/function/FunctionTDIFF.h
-expression/function/FunctionTHIN.cc
-expression/function/FunctionTHIN.h
-expression/function/FunctionTIMESTAMP.cc
-expression/function/FunctionTIMESTAMP.h
-expression/function/FunctionVAR.cc
-expression/function/FunctionVAR.h
-
-type/SQLBit.cc
-type/SQLBit.h
-type/SQLBitfield.cc
-type/SQLBitfield.h
-type/SQLDouble.cc
-type/SQLDouble.h
-type/SQLInt.cc
-type/SQLInt.h
-type/SQLReal.cc
-type/SQLReal.h
-type/SQLString.cc
-type/SQLString.h
-type/SQLType.cc
-type/SQLType.h
+    Environment.cc
+    Environment.h
+    SQLBitColumn.cc
+    SQLBitColumn.h
+    SQLColumn.cc
+    SQLColumn.h
+    SQLDatabase.cc
+    SQLDatabase.h
+    SQLDistinctOutput.cc
+    SQLDistinctOutput.h
+    SQLOrderOutput.cc
+    SQLOrderOutput.h
+    SQLOutput.cc
+    SQLOutput.h
+    SQLOutputConfig.cc
+    SQLOutputConfig.h
+    SQLParser.cc
+    SQLParser.h
+    SQLSelect.cc
+    SQLSelect.h
+    SQLSelectFactory.cc
+    SQLSelectFactory.h
+    SQLSession.cc
+    SQLSession.h
+    SQLSimpleOutput.cc
+    SQLSimpleOutput.h
+    SQLStatement.cc
+    SQLStatement.h
+    SQLTable.cc
+    SQLTable.h
+    SQLTableFactory.cc
+    SQLTableFactory.h
+    SQLTypedefs.h
+    SchemaAnalyzer.cc
+    SchemaAnalyzer.h
+    SchemaComponents.cc
+    SchemaComponents.h
+    SelectOneTable.cc
+    SelectOneTable.h
+    expression/BitColumnExpression.cc
+    expression/BitColumnExpression.h
+    expression/ColumnExpression.cc
+    expression/ColumnExpression.h
+    expression/ConstantExpression.cc
+    expression/ConstantExpression.h
+    expression/NumberExpression.cc
+    expression/NumberExpression.h
+    expression/OrderByExpressions.cc
+    expression/OrderByExpressions.h
+    expression/ParameterExpression.cc
+    expression/ParameterExpression.h
+    expression/SQLExpression.cc
+    expression/SQLExpression.h
+    expression/SQLExpressionEvaluated.cc
+    expression/SQLExpressionEvaluated.h
+    expression/SQLExpressions.cc
+    expression/SQLExpressions.h
+    expression/ShiftedColumnExpression.cc
+    expression/ShiftedColumnExpression.h
+    expression/StringExpression.cc
+    expression/StringExpression.h
+    expression/function/DoubleFunctions.cc
+    expression/function/FunctionAND.cc
+    expression/function/FunctionAND.h
+    expression/function/FunctionAVG.cc
+    expression/function/FunctionAVG.h
+    expression/function/FunctionCOUNT.cc
+    expression/function/FunctionCOUNT.h
+    expression/function/FunctionDOTP.cc
+    expression/function/FunctionDOTP.h
+    expression/function/FunctionEQ.cc
+    expression/function/FunctionEQ.h
+    expression/function/FunctionExpression.cc
+    expression/function/FunctionExpression.h
+    expression/function/FunctionFIRST.cc
+    expression/function/FunctionFIRST.h
+    expression/function/FunctionFactory.cc
+    expression/function/FunctionFactory.h
+    expression/function/FunctionIN.cc
+    expression/function/FunctionIN.h
+    expression/function/FunctionIntegerExpression.cc
+    expression/function/FunctionIntegerExpression.h
+    expression/function/FunctionJOIN.cc
+    expression/function/FunctionJOIN.h
+    expression/function/FunctionJULIAN.cc
+    expression/function/FunctionJULIAN.h
+    expression/function/FunctionJULIAN_SECONDS.cc
+    expression/function/FunctionJULIAN_SECONDS.h
+    expression/function/FunctionLAST.cc
+    expression/function/FunctionLAST.h
+    expression/function/FunctionMAX.cc
+    expression/function/FunctionMAX.h
+    expression/function/FunctionMIN.cc
+    expression/function/FunctionMIN.h
+    expression/function/FunctionNE.cc
+    expression/function/FunctionNE.h
+    expression/function/FunctionNORM.cc
+    expression/function/FunctionNORM.h
+    expression/function/FunctionNOT_IN.cc
+    expression/function/FunctionNOT_IN.h
+    expression/function/FunctionNOT_NULL.cc
+    expression/function/FunctionNOT_NULL.h
+    expression/function/FunctionNULL.cc
+    expression/function/FunctionNULL.h
+    expression/function/FunctionNVL.cc
+    expression/function/FunctionNVL.h
+    expression/function/FunctionOR.cc
+    expression/function/FunctionOR.h
+    expression/function/FunctionRLIKE.cc
+    expression/function/FunctionRLIKE.h
+    expression/function/FunctionRMS.cc
+    expression/function/FunctionRMS.h
+    expression/function/FunctionROWNUMBER.cc
+    expression/function/FunctionROWNUMBER.h
+    expression/function/FunctionSTDEV.cc
+    expression/function/FunctionSTDEV.h
+    expression/function/FunctionSUM.cc
+    expression/function/FunctionSUM.h
+    expression/function/FunctionTDIFF.cc
+    expression/function/FunctionTDIFF.h
+    expression/function/FunctionTHIN.cc
+    expression/function/FunctionTHIN.h
+    expression/function/FunctionTIMESTAMP.cc
+    expression/function/FunctionTIMESTAMP.h
+    expression/function/FunctionVAR.cc
+    expression/function/FunctionVAR.h
+    type/SQLBit.cc
+    type/SQLBit.h
+    type/SQLBitfield.cc
+    type/SQLBitfield.h
+    type/SQLDouble.cc
+    type/SQLDouble.h
+    type/SQLInt.cc
+    type/SQLInt.h
+    type/SQLReal.cc
+    type/SQLReal.h
+    type/SQLString.cc
+    type/SQLString.h
+    type/SQLType.cc
+    type/SQLType.h
 )
 
+ecbuild_generate_yy(
+    YYPREFIX eckit_sql_
+    YACC sqly
+    LEX sqll
+    FLEX_FLAGS "-d"
+    DEPENDANT SQLParser.cc
+)
 
-ecbuild_generate_yy( YYPREFIX           eckit_sql_
-                     YACC               sqly
-                     LEX                sqll
-                     FLEX_FLAGS         "-d"
-                     DEPENDANT          SQLParser.cc )
-
-if( NOT ENABLE_WARNINGS )
-    # Warnings present in autogenerated files based on sqly and sqll
-    list( APPEND suppress_warnings
-      $<$<CXX_COMPILER_ID:GNU>:-Wno-unused-function>
-      $<$<CXX_COMPILER_ID:GNU>:-Wno-sign-compare>
-      $<$<CXX_COMPILER_ID:Clang>:-Wno-deprecated-register>
+# Supress warnings emited from YACC/LEX generated code
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    list(APPEND suppress_warnings
+        -Wno-unused-function
     )
-    set_source_files_properties( SQLParser.cc PROPERTIES COMPILE_OPTIONS "${suppress_warnings}" )
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    list(APPEND suppress_warnings
+        -Wno-unused-function
+        -Wno-unused-but-set-variable
+    )
 endif()
+set_source_files_properties(
+    SQLParser.cc
+    PROPERTIES
+        COMPILE_OPTIONS "${suppress_warnings}"
+)
 
 ecbuild_add_library( TARGET              eckit_sql TYPE SHARED
                      INSTALL_HEADERS     ALL

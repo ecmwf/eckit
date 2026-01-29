@@ -16,12 +16,12 @@
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/option/VectorOption.h"
+#include "eckit/spec/Custom.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -53,14 +53,14 @@ private:
         geo::projection::LonLatToXYZ to_xyz;
 
         auto nearest = to_xyz.fwd(geo::PointLonLat{point[0], point[1]});
-        geo::Search::PointType nearest_point{nearest.X, nearest.Y, nearest.Z};
+        geo::Search::PointType nearest_point{nearest.X(), nearest.Y(), nearest.Z()};
 
         auto& out = Log::info();
         out.precision(args.getInt("precision", 16));
 
         for (const auto& arg : args) {
             std::unique_ptr<const geo::Grid> grid(
-                geo::GridFactory::build(geo::spec::Custom({{uid ? "uid" : "name", std::string(arg)}})));
+                geo::GridFactory::build(spec::Custom({{uid ? "uid" : "name", std::string(arg)}})));
 
             std::vector<geo::Search::PointValueType> closest;
             geo::Search search(*grid);

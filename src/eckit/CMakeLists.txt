@@ -72,10 +72,10 @@ configure_file( eckit_config.h.in   eckit_config.h  )
 configure_file( eckit_version.h.in  eckit_version.h )
 
 install(FILES
-			${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h
-			${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h
-		DESTINATION
-			${INSTALL_INCLUDE_DIR}/eckit )
+        ${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h
+        ${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h
+    DESTINATION
+        ${INSTALL_INCLUDE_DIR}/eckit )
 
 configure_file( eckit_version.cc.in  eckit_version.cc )
 
@@ -696,6 +696,7 @@ list( APPEND eckit_utils_srcs
     utils/Regex.h
     utils/RendezvousHash.cc
     utils/RendezvousHash.h
+    utils/SafeCasts.h
     utils/StringTools.cc
     utils/StringTools.h
     utils/Tokenizer.cc
@@ -844,6 +845,8 @@ list( APPEND eckit_transaction_srcs
 
 list( APPEND eckit_testing_srcs
     testing/Test.h
+    testing/Filesystem.cc
+    testing/Filesystem.h
 )
 
 list( APPEND eckit_dirs
@@ -936,7 +939,6 @@ ecbuild_add_library(
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
-              "${AEC_INCLUDE_DIRS}"
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
@@ -946,11 +948,11 @@ ecbuild_add_library(
               "${LIBRSYNC_LIBRARIES}"
               "${LZ4_LIBRARIES}"
               "${BZIP2_LIBRARIES}"
-              "${AEC_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+              $<${HAVE_AEC}:libaec::aec>
 
           PUBLIC_LIBS
               ${CMATH_LIBRARIES}
@@ -981,6 +983,10 @@ add_subdirectory( web )
 
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
+endif()
+
+if( eckit_HAVE_ECKIT_SPEC )
+    add_subdirectory( spec )
 endif()
 
 if( eckit_HAVE_ECKIT_GEO )

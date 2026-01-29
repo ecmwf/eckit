@@ -17,12 +17,15 @@
 #include <string>
 
 
-namespace eckit::geo {
+namespace eckit {
+namespace geo {
 class Area;
+}
 namespace spec {
 class Custom;
-}
-}  // namespace eckit::geo
+class Spec;
+}  // namespace spec
+}  // namespace eckit
 
 
 namespace eckit::geo::area {

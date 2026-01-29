@@ -256,6 +256,10 @@ Arg operator+(const Arg& a1, const Arg& a2) {
 }
 
 Arg& Arg::operator=(const Arg& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     content_.reset(other.content_->clone());
     return *this;
 }

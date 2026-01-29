@@ -28,7 +28,7 @@ CASE("Point comparison") {
     EXPECT(points_equal(r, r.antipode().antipode()));
 
     for (Point a1 : {PointLonLat{-180., 0.}, PointLonLat{180., 10.}, PointLonLat{0., 90.}, PointLonLat{1., -90.}}) {
-        auto a2 = PointLonLat::make(std::get<PointLonLat>(a1).lon + 720., std::get<PointLonLat>(a1).lat);
+        auto a2 = PointLonLat::make(std::get<PointLonLat>(a1).lon() + 720., std::get<PointLonLat>(a1).lat());
         EXPECT(points_equal(a1, a2));
     }
 

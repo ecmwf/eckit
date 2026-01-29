@@ -36,9 +36,9 @@ PointLonLatR::value_type PointLonLatR::normalise_angle_to_maximum(value_type a, 
 
 
 bool PointLonLatR::pole(value_type eps) const {
-    const auto p = make(lonr, latr);
-    return types::is_approximately_equal(p.latr, RIGHT_ANGLE, eps) ||
-           types::is_approximately_equal(p.latr, -RIGHT_ANGLE, eps);
+    const auto p = make(lonr(), latr());
+    return types::is_approximately_equal(p.latr(), RIGHT_ANGLE, eps) ||
+           types::is_approximately_equal(p.latr(), -RIGHT_ANGLE, eps);
 }
 
 PointLonLatR PointLonLatR::make(value_type lonr, value_type latr, value_type lonr_minimum, value_type eps) {
@@ -62,9 +62,10 @@ PointLonLatR PointLonLatR::make_from_lonlat(value_type lon, value_type lat, valu
 
 
 bool points_equal(const PointLonLatR& a, const PointLonLatR& b, PointLonLatR::value_type eps) {
-    const auto c = PointLonLatR::make(a.lonr, a.latr, 0., eps);
-    const auto d = PointLonLatR::make(b.lonr, b.latr, 0., eps);
-    return types::is_approximately_equal(c.lonr, d.lonr, eps) && types::is_approximately_equal(c.latr, d.latr, eps);
+    const auto c = PointLonLatR::make(a.lonr(), a.latr(), 0., eps);
+    const auto d = PointLonLatR::make(b.lonr(), b.latr(), 0., eps);
+    return types::is_approximately_equal(c.lonr(), d.lonr(), eps) &&
+           types::is_approximately_equal(c.latr(), d.latr(), eps);
 }
 
 

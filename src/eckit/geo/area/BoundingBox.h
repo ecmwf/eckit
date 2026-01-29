@@ -76,7 +76,7 @@ public:
 
     // -- Methods
 
-    container_type deconstruct() const { return {north, west, south, east}; }
+    container_type deconstruct() const { return {north(), west(), south(), east()}; }
 
     bool global() const;
     bool periodic() const;
@@ -98,6 +98,8 @@ public:
 
     // -- Class methods
 
+    static const BoundingBox& bounding_box_default();
+
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_global_prime();
     [[nodiscard]] static std::unique_ptr<BoundingBox> make_global_antiprime();
 
@@ -111,15 +113,11 @@ public:
 
     // -- Members
 
-    const value_type& north = operator[](0);
-    const value_type& west  = operator[](1);
-    const value_type& south = operator[](2);
-    const value_type& east  = operator[](3);
+    value_type north() const { return operator[](0); }
+    value_type west() const { return operator[](1); }
+    value_type south() const { return operator[](2); }
+    value_type east() const { return operator[](3); }
 };
-
-
-extern const PointLonLat::value_type BOUNDING_BOX_NORMALISE_WEST;
-extern const BoundingBox BOUNDING_BOX_DEFAULT;
 
 
 }  // namespace eckit::geo::area

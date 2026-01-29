@@ -21,7 +21,7 @@
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/figure/SphereT.h"
 #include "eckit/geo/figure/UnitSphere.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -187,9 +187,9 @@ CASE("Unit Sphere") {
         auto q = s1._convertSphericalToCartesian(PointLonLat::make(180., 80.), 0.);
 
         // sin(x) and sin(pi-x) are not bitwise identical
-        EXPECT(types::is_approximately_equal(p.X, q.X));
-        EXPECT(types::is_approximately_equal(p.Y, q.Y));
-        EXPECT(types::is_approximately_equal(p.Z, q.Z));
+        EXPECT(types::is_approximately_equal(p.X(), q.X()));
+        EXPECT(types::is_approximately_equal(p.Y(), q.Y()));
+        EXPECT(types::is_approximately_equal(p.Z(), q.Z()));
     }
 
 
@@ -201,9 +201,9 @@ CASE("Unit Sphere") {
         auto q = s1._convertSphericalToCartesian(PointLonLat::make(15., -70.), 0.);
 
         // sin(x) and sin(pi-x) are not bitwise identical
-        EXPECT(types::is_approximately_equal(p.X, q.X));
-        EXPECT(types::is_approximately_equal(p.Y, q.Y));
-        EXPECT(types::is_approximately_equal(p.Z, q.Z));
+        EXPECT(types::is_approximately_equal(p.X(), q.X()));
+        EXPECT(types::is_approximately_equal(p.Y(), q.Y()));
+        EXPECT(types::is_approximately_equal(p.Z(), q.Z()));
     }
 
 
@@ -215,9 +215,9 @@ CASE("Unit Sphere") {
         auto q = s1._convertSphericalToCartesian(PointLonLat::make(225., -60.), 0.);
 
         // sin(x) and sin(pi-x) are not bitwise identical
-        EXPECT(types::is_approximately_equal(p.X, q.X));
-        EXPECT(types::is_approximately_equal(p.Y, q.Y));
-        EXPECT(types::is_approximately_equal(p.Z, q.Z));
+        EXPECT(types::is_approximately_equal(p.X(), q.X()));
+        EXPECT(types::is_approximately_equal(p.Y(), q.Y()));
+        EXPECT(types::is_approximately_equal(p.Z(), q.Z()));
     }
 }
 
@@ -247,7 +247,7 @@ CASE("Two-unit Sphere") {
         auto global_2 = s2.area();
         EXPECT(4. * global_1 == global_2);
 
-        area::BoundingBox bbox({P2.lat, P1.lon, P1.lat, P2.lon});
+        area::BoundingBox bbox({P2.lat(), P1.lon(), P1.lat(), P2.lon()});
 
         auto local_1 = s1._area(bbox);
         auto local_2 = s2._area(bbox);

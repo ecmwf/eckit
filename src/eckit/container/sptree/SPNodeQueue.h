@@ -35,15 +35,15 @@ template <class Traits, class NodeType>
 class SPNodeQueue {
 public:
 
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
 
-    typedef typename Alloc::Ptr ID;
+    using ID = typename Alloc::Ptr;
 
-    typedef NodeType Node;
-    typedef SPNodeInfo<Traits, NodeType> NodeInfo;
-    typedef typename NodeInfo::NodeList NodeList;
+    using Node     = NodeType;
+    using NodeInfo = SPNodeInfo<Traits, NodeType>;
+    using NodeList = typename NodeInfo::NodeList;
 
 private:
 

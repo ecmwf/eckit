@@ -67,8 +67,8 @@ public:
 
     // -- Members
 
-    const value_type& lonr = container_type::operator[](0);
-    const value_type& latr = container_type::operator[](1);
+    value_type lonr() const { return container_type::operator[](0); }
+    value_type latr() const { return container_type::operator[](1); }
 
     // -- Methods
 
@@ -86,7 +86,7 @@ public:
 
     [[nodiscard]] static PointLonLatR make_from_lonlat(value_type lon, value_type lat, value_type lonr_minimum = 0.);
 
-    PointLonLatR antipode() const { return make(lonr, latr + FLAT_ANGLE); }
+    PointLonLatR antipode() const { return make(lonr(), latr() + FLAT_ANGLE); }
 
     // -- Class members
 
@@ -100,7 +100,7 @@ public:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const PointLonLatR& p) {
-        return out << '{' << p.lonr << ", " << p.latr << '}';
+        return out << '{' << p.lonr() << ", " << p.latr() << '}';
     }
 };
 

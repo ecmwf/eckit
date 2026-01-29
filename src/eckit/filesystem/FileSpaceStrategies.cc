@@ -157,7 +157,7 @@ const PathName& FileSpaceStrategies::leastUsedPercent(const std::vector<PathName
     return fileSystems[best];
 }
 
-typedef void (*compute_probability_t)(Candidate&);
+using compute_probability_t = void (*)(Candidate&);
 
 static void computePercent(Candidate& c) {
     c.probability_ = double(c.percent());

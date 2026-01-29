@@ -24,22 +24,22 @@ template <class Traits, class NodeType>
 class SPNode {
 public:
 
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
 
-    typedef SPNodeInfo<Traits, NodeType> NodeInfo;
-    typedef typename NodeInfo::NodeList NodeList;
-    typedef SPValue<Traits> Value;
-    typedef SPNodeQueue<Traits, NodeType> NodeQueue;
+    using NodeInfo  = SPNodeInfo<Traits, NodeType>;
+    using NodeList  = typename NodeInfo::NodeList;
+    using Value     = SPValue<Traits>;
+    using NodeQueue = SPNodeQueue<Traits, NodeType>;
 
-    typedef NodeType Node;
+    using Node = NodeType;
 
 protected:
 
     Value value_;
 
-    typedef typename Alloc::Ptr Ptr;
+    using Ptr = typename Alloc::Ptr;
     Ptr left_;
     Ptr right_;
     Ptr next_;  // For fast transversal

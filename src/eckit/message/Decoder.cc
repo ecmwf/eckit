@@ -23,8 +23,8 @@ namespace eckit::message {
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace {
-eckit::Mutex* local_mutex              = 0;
-std::vector<MessageDecoder*>* decoders = 0;
+eckit::Mutex* local_mutex              = nullptr;
+std::vector<MessageDecoder*>* decoders = nullptr;
 pthread_once_t once                    = PTHREAD_ONCE_INIT;
 void init() {
     local_mutex = new eckit::Mutex();

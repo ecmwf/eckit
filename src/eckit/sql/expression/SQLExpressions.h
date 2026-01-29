@@ -27,13 +27,13 @@ namespace eckit::sql::expression {
 
 // n.b. shared pointer not unique_ptr.
 //      needs to be copyable to be used by YACC
-typedef std::vector<std::shared_ptr<SQLExpression>> ExpressionsVector;
+using ExpressionsVector = std::vector<std::shared_ptr<SQLExpression>>;
 
 class Expressions : public SQLExpression, public ExpressionsVector {
 public:
 
     Expressions() : ExpressionsVector() {}
-    Expressions(size_t i) : ExpressionsVector(i, 0) {}
+    Expressions(size_t i) : ExpressionsVector(i, nullptr) {}
 
     Expressions(const Expressions&)            = default;
     Expressions& operator=(const Expressions&) = default;
@@ -82,9 +82,7 @@ public:
     //////////////////////////////////////////////////////////////////////////////////////
 };
 
-typedef std::vector<Expressions> VectorOfExpressions;
-// class VectorOfExpressions : public vector<Expressions> { public: ~VectorOfExpressions() { for (size_t i=0; i <
-// size(); ++i) ; } };
+using VectorOfExpressions = std::vector<Expressions>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

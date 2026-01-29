@@ -18,7 +18,7 @@ namespace eckit::geometry {
 //------------------------------------------------------------------------------------------------------
 
 class Point2 : public eckit::geometry::KPoint<2> {
-    typedef KPoint<2> BasePoint;
+    using BasePoint = KPoint<2>;
 
 public:
 

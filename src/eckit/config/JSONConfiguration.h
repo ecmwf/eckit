@@ -21,7 +21,7 @@
 
 namespace eckit {
 
-typedef YAMLConfiguration JSONConfiguration;
+using JSONConfiguration = YAMLConfiguration;
 
 }  // namespace eckit
 #endif

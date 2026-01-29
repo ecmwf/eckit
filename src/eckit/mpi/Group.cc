@@ -60,7 +60,7 @@ Group::Group() : content_(new NullGroupContent()) {
     content_->attach();
 }
 
-Group::Group(int group) : content_(0) {
+Group::Group(int group) : content_{nullptr} {
     *this = eckit::mpi::comm().group(group);
 }
 
@@ -77,6 +77,10 @@ Group::Group(const Group& s) : content_(s.content_) {
 }
 
 Group& Group::operator=(const Group& s) {
+    if (this == &s) {
+        return *this;
+    }
+
     if (content_) {
         content_->detach();
     }

@@ -18,10 +18,10 @@
 
 namespace eckit::sql {
 
-typedef std::vector<std::string> FieldNames;
-typedef std::vector<int32_t> Sizes;
-typedef std::pair<FieldNames, Sizes> BitfieldDef;
-typedef std::map<std::string, BitfieldDef> BitfieldDefs;
+using FieldNames   = std::vector<std::string>;
+using Sizes        = std::vector<int32_t>;
+using BitfieldDef  = std::pair<FieldNames, Sizes>;
+using BitfieldDefs = std::map<std::string, BitfieldDef>;
 
 }  // namespace eckit::sql
 

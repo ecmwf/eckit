@@ -100,7 +100,7 @@ ThreadPool::~ThreadPool() {
 void ThreadPool::waitForThreads() {
 
     for (size_t i = 0; i < count_; i++) {
-        push(0);
+        push(nullptr);
     }
 
 
@@ -207,7 +207,7 @@ void ThreadPool::wait() {
 void ThreadPool::resize(size_t size) {
 
     while (count_ > size) {
-        push(0);
+        push(nullptr);
         count_--;
     }
 

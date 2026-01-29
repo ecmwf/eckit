@@ -29,13 +29,13 @@ class SPValue;
 template <class Traits, class NodeType>
 struct SPNodeInfo {
 
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
-    typedef SPValue<Traits> Value;
-    typedef typename Alloc::Ptr ID;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
+    using Value   = SPValue<Traits>;
+    using ID      = typename Alloc::Ptr;
 
-    typedef NodeType Node;
+    using Node = NodeType;
 
     const Node* node_;
     ID id_;
@@ -51,7 +51,7 @@ public:
 
     bool operator<(const SPNodeInfo& other) const { return distance_ < other.distance_; }
 
-    typedef std::vector<SPNodeInfo> NodeList;
+    using NodeList = std::vector<SPNodeInfo>;
 
     const Point& point() const { return node_->point(); }
     const Payload& payload() const { return node_->payload(); }

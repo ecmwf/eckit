@@ -17,7 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-SignalHandler* SignalHandler::current_ = 0;
+SignalHandler* SignalHandler::current_ = nullptr;
 
 SignalHandler::SignalHandler(void (*handler)(int), SignalHandler::Signal sig) : signal_(sig), next_(current_) {
     //	Log::info() << "Installing signal handler " << signal_ << std::endl;

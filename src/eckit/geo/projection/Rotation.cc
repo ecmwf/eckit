@@ -15,9 +15,9 @@
 #include <cmath>
 
 #include "eckit/geo/figure/UnitSphere.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -35,7 +35,7 @@ Rotation::Rotation(const Spec& spec) :
                 return {r[0], r[1]};
             }
 
-            if (auto lon = SOUTH_POLE.lon, lat = SOUTH_POLE.lat;
+            if (auto lon = SOUTH_POLE.lon(), lat = SOUTH_POLE.lat();
                 spec.get("south_pole_lon", lon) && spec.get("south_pole_lat", lat)) {
                 return {lon, lat};
             }
@@ -59,7 +59,7 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
 
     struct RotationAngle final : Implementation {
         explicit RotationAngle(double angle) : angle_(angle) {}
-        PointLonLat operator()(const PointLonLat& p) const override { return {p.lon + angle_, p.lat}; }
+        PointLonLat operator()(const PointLonLat& p) const override { return {p.lon() + angle_, p.lat()}; }
         const double angle_;
     };
 
@@ -73,15 +73,15 @@ Rotation::Rotation(const PointLonLat& south_pole, double angle) :
     };
 
     const auto alpha = util::DEGREE_TO_RADIAN * angle;
-    const auto theta = util::DEGREE_TO_RADIAN * -(south_pole_.lat + 90.);
-    const auto phi   = util::DEGREE_TO_RADIAN * -south_pole_.lon;
+    const auto theta = util::DEGREE_TO_RADIAN * -(south_pole_.lat() + 90.);
+    const auto phi   = util::DEGREE_TO_RADIAN * -south_pole_.lon();
 
     const auto ca = std::cos(alpha);
     const auto ct = std::cos(theta);
     const auto cp = std::cos(phi);
 
     if (types::is_approximately_equal(ct, 1., PointLonLat::EPS * util::DEGREE_TO_RADIAN)) {
-        angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_.lon, -PointLonLat::FLAT_ANGLE);
+        angle_   = PointLonLat::normalise_angle_to_minimum(angle_ - south_pole_.lon(), -PointLonLat::FLAT_ANGLE);
         rotated_ = !types::is_approximately_equal(angle_, 0., PointLonLat::EPS);
 
         fwd_.reset(rotated_ ? static_cast<Implementation*>(new RotationAngle(-angle)) : new NonRotated);
@@ -130,8 +130,8 @@ Rotation* Rotation::make_from_spec(const Spec& spec) {
     double angle = 0.;
     spec.get("rotation_angle", angle);
 
-    auto lon = SOUTH_POLE.lon;
-    auto lat = SOUTH_POLE.lat;
+    auto lon = SOUTH_POLE.lon();
+    auto lat = SOUTH_POLE.lat();
     if (std::vector<double> r{lon, lat}; spec.get("rotation", r)) {
         ASSERT_MSG(r.size() == 2, "Rotation: expected 'rotation' as a list of size 2");
         lon = r[0];
@@ -156,8 +156,8 @@ void Rotation::fill_spec(spec::Custom& custom) const {
     bool projection = false;
 
     if (!points_equal(SOUTH_POLE, south_pole_)) {
-        custom.set("south_pole_lon", south_pole_.lon);
-        custom.set("south_pole_lat", south_pole_.lat);
+        custom.set("south_pole_lon", south_pole_.lon());
+        custom.set("south_pole_lat", south_pole_.lat());
         projection = true;
     }
 

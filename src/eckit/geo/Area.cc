@@ -16,9 +16,9 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/share/Area.h"
-#include "eckit/geo/spec/Layered.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Layered.h"
 
 
 namespace eckit::geo {
@@ -38,7 +38,7 @@ class lock_type {
 }  // namespace
 
 
-const Spec& Area::spec() const {
+const Area::Spec& Area::spec() const {
     if (!spec_) {
         spec_ = std::make_shared<spec::Custom>();
         ASSERT(spec_);
@@ -72,7 +72,7 @@ double Area::area() const {
 
 
 const Area* AreaFactory::make_from_string(const std::string& str) {
-    std::unique_ptr<Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+    std::unique_ptr<Area::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
 }
 
@@ -83,10 +83,10 @@ AreaFactory& AreaFactory::instance() {
 }
 
 
-const Area* AreaFactory::make_from_spec_(const Spec& spec) const {
+const Area* AreaFactory::make_from_spec_(const spec::Spec& spec) const {
     lock_type lock;
 
-    std::unique_ptr<Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Area::Spec> cfg(make_spec_(spec));
 
     if (std::string type; cfg->get("type", type)) {
         return AreaFactoryType::instance().get(type).create(*cfg);
@@ -97,7 +97,7 @@ const Area* AreaFactory::make_from_spec_(const Spec& spec) const {
 }
 
 
-Spec* AreaFactory::make_spec_(const Spec& spec) const {
+Area::Spec* AreaFactory::make_spec_(const Area::Spec& spec) const {
     lock_type lock;
     share::Area::instance();
 
@@ -113,7 +113,7 @@ Spec* AreaFactory::make_spec_(const Spec& spec) const {
 }
 
 
-void AreaFactory::add_library_(const std::string& lib, Spec* spec) {
+void AreaFactory::add_library_(const std::string& lib, Area::Spec* spec) {
     lock_type lock;
     share::Area::instance();
 

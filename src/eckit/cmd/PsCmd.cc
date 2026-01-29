@@ -77,7 +77,7 @@ void PsCmd::display(std::ostream& out, TaskInfo& info, long tasknb, const std::s
     }
 
     // Idle column
-    long age = ::time(0) - info.last();
+    long age = ::time(nullptr) - info.last();
 
     long s = age % 60;
     age /= 60;

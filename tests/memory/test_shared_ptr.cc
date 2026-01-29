@@ -54,7 +54,7 @@ int UDT_use_count;  // independent of pointer maintained counts
 class UDT : public OwnedNoLock {
 public:
 
-    typedef SharedPtr<UDT> ptype;
+    using ptype = SharedPtr<UDT>;
 
     UDT(long in) : value_(in) { ++UDT_use_count; }
     ~UDT() {
@@ -153,22 +153,22 @@ CASE("test_intrusive_shared_ptr") {
     {
         //      std::cout << "test SharedPtr swap\n";
         eckit::SharedPtr<UDT> sup1(new UDT(0));
-        EXPECT(sup1.get() != 0);
+        EXPECT(sup1.get() != nullptr);
         EXPECT(sup1.use_count() == 1);
         EXPECT(sup1.unique());
 
         eckit::SharedPtr<UDT> sup2;
         EXPECT(sup2.use_count() == 0);
-        EXPECT(sup2.get() == 0);
+        EXPECT(sup2.get() == nullptr);
 
         sup1.swap(sup2);
 
-        EXPECT(sup2.get() != 0);
+        EXPECT(sup2.get() != nullptr);
         EXPECT(sup2.use_count() == 1);
         EXPECT(sup2.unique());
 
         EXPECT(sup1.use_count() == 0);
-        EXPECT(sup1.get() == 0);
+        EXPECT(sup1.get() == nullptr);
     }
 
     EXPECT(UDT_use_count == 0);

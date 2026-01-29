@@ -15,10 +15,11 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 
 #include "eckit/geo/Arrangement.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/container/PointsContainer.h"
-#include "eckit/geo/grid/Regular.h"
 
 
 namespace eckit {
@@ -29,7 +30,7 @@ class PathName;
 namespace eckit::geo::grid {
 
 
-class ORCA final : public Regular {
+class ORCA final : public Grid {
 public:
 
     // -- Types
@@ -40,7 +41,7 @@ public:
         void read(const PathName&);
         void check(const Spec&) const;
         size_t write(const PathName&, const std::string& compression = "none");
-        uid_t calculate_uid(Arrangement) const;
+        uid_type calculate_uid(Arrangement) const;
 
         using bytes_t = decltype(sizeof(int));
         bytes_t footprint() const;
@@ -60,14 +61,14 @@ public:
     // -- Constructors
 
     explicit ORCA(const Spec&);
-    explicit ORCA(uid_t);
+    explicit ORCA(uid_type);
 
     ORCA(const std::string& name, Arrangement);
 
     // -- Methods
 
-    size_t nx() const override { return record_.nj(); }
-    size_t ny() const override { return record_.ni(); }
+    size_t nx() const { return record_.nj(); }
+    size_t ny() const { return record_.ni(); }
 
     std::string name() const { return name_; }
     std::string arrangement() const;
@@ -79,8 +80,14 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
-    uid_t calculate_uid() const override;
+    uid_type calculate_uid() const override;
+
     const std::string& type() const override;
+    std::vector<size_t> shape() const override { return {record_.ni(), record_.nj()}; }
+
+    size_t size() const override { return record_.ni() * record_.nj(); };
+
+    BoundingBox* calculate_bbox() const override;
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }  // FIXME: not sure this is semanticaly correct
@@ -92,7 +99,7 @@ public:
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     const order_type& order() const override;
-    Reordering reorder(const order_type& to) const override;
+    renumber_type reorder(const order_type& to) const override;
 
     // -- Class methods
 

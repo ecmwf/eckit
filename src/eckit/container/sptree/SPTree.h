@@ -23,29 +23,29 @@ template <class Traits, class NodeType>
 class SPTree {
 public:
 
-    typedef typename Traits::Point Point;
-    typedef typename Traits::Payload Payload;
-    typedef typename Traits::Alloc Alloc;
+    using Point   = typename Traits::Point;
+    using Payload = typename Traits::Payload;
+    using Alloc   = typename Traits::Alloc;
 
-    typedef typename Alloc::Ptr Ptr;
-    typedef typename Alloc::Ptr ID;
+    using Ptr = typename Alloc::Ptr;
+    using ID  = typename Alloc::Ptr;
 
-    typedef NodeType Node;
-    typedef SPMetadata<Traits> Metadata;
+    using Node     = NodeType;
+    using Metadata = SPMetadata<Traits>;
 
-    typedef Point PointType;
-    typedef Payload PayloadType;
-    typedef typename Node::NodeList NodeList;
-    typedef SPNodeInfo<Traits, NodeType> NodeInfo;
-    typedef typename Node::Value Value;
+    using PointType   = Point;
+    using PayloadType = Payload;
+    using NodeList    = typename Node::NodeList;
+    using NodeInfo    = SPNodeInfo<Traits, NodeType>;
+    using Value       = typename Node::Value;
 
     Alloc& alloc_;
     Ptr root_;
     Metadata meta_;
 
-    typedef SPIterator<Traits, NodeType> iterator;
+    using iterator = SPIterator<Traits, NodeType>;
 
-    typedef std::pair<Point, Payload> value_type;
+    using value_type = std::pair<Point, Payload>;
 
 public:
 

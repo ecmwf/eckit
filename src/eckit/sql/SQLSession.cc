@@ -45,12 +45,12 @@ SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutput
 }
 
 SQLSession::SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter) :
-    SQLSession(0, std::move(config), csvDelimiter) {}
+    SQLSession(nullptr, std::move(config), csvDelimiter) {}
 
 SQLSession::SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter) :
-    SQLSession(std::move(out), 0, csvDelimiter) {}
+    SQLSession(std::move(out), nullptr, csvDelimiter) {}
 
-SQLSession::SQLSession(const std::string& csvDelimiter) : SQLSession(0, 0, csvDelimiter) {}
+SQLSession::SQLSession(const std::string& csvDelimiter) : SQLSession(nullptr, nullptr, csvDelimiter) {}
 
 SQLSession::~SQLSession() {}
 

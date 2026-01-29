@@ -18,19 +18,19 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/unstructured/FESOM.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-static const std::string GRID_N = "pi_N";
-static const Grid::uid_t UID_N  = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
-static const size_t SHAPE_N     = 3140;
+static const std::string GRID_N   = "pi_N";
+static const Grid::uid_type UID_N = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
+static const size_t SHAPE_N       = 3140;
 
-static const std::string GRID_C = "pi_C";
-static const Grid::uid_t UID_C  = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
+static const std::string GRID_C   = "pi_C";
+static const Grid::uid_type UID_C = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
 
 
 CASE("caching") {
@@ -58,7 +58,7 @@ CASE("caching") {
 
 
 CASE("spec") {
-    std::unique_ptr<Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID_N}})));
+    std::unique_ptr<spec::Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID_N}})));
 
     EXPECT(spec->get_string("type") == "FESOM");
     EXPECT(spec->get_string("fesom_arrangement") == "N");

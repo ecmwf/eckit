@@ -87,7 +87,11 @@ setup(
                 ["eckit_geo"],
             ),
         ],
-        compiler_directives={"language_level": 3, "c_string_encoding": "default"},
+        compiler_directives={
+            "language_level": 3,
+            "c_string_type": "unicode",  # accept Python str
+            "c_string_encoding": "utf8",
+        },
     ),
     **kwargs_set,
 )

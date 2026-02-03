@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
-# Python>=3.6
-# PyYAML>=6.0.1
-# Requests>=2.31.0
+# Requirements:
+#   Python >= 3.6
+#   PyYAML >= 6.0.1
+#   Requests >= 2.31.0
+#
+# Install dependencies with pip:
+#   pip install pyyaml requests
 
 
 import argparse
@@ -17,15 +21,15 @@ import yaml
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 
+# TODO: configuration options control the cache path, available grids, but they're not considered here
 CONFIG_PATH = (
-    Path(os.path.abspath(__file__)).parents[2]
-    / "share"
-    / "atlas"
-    / "grids"
-    / "orca"
-    / "grids.yaml"
+    Path(os.path.abspath(__file__)).parents[2] / "eckit" / "share" / "eckit" / "geo" / "ORCA.yaml"
 )
-CACHE_PATH = Path(os.getenv("ATLAS_CACHE_PATH", Path("/") / "tmp" / "cache"))
+CACHE_PATH = Path(
+    os.getenv(
+        "ECKIT_GEO_CACHE_PATH", Path.home() / ".local" / "share" / "eckit" / "geo"
+    )
+)
 CHUNK_SIZE = 32768
 
 
@@ -79,13 +83,49 @@ def execute(args):
     with open(args.config, "r") as file:
         config = yaml.safe_load(file)
 
+    # Build lookup dict from grid_names
+    # Each entry is a flat dict where the grid name key has None value (due to YAML anchor)
+    # and the rest of the keys are grid properties
+    grids_by_name = {}
+    for entry in config.get("grid_names", []):
+        if isinstance(entry, dict):
+            # Find the grid name (key with None value, which is the anchor)
+            grid_name = None
+            for key, value in entry.items():
+                if value is None:
+                    grid_name = key
+                    break
+            if grid_name:
+                # The grid info is all the other keys in the entry
+                grid_info = {k: v for k, v in entry.items() if k != grid_name}
+                grids_by_name[grid_name] = grid_info
+
+    # Handle --list-grids
+    if args.list_grids:
+        print("Known grid names:")
+        for name in sorted(grids_by_name.keys()):
+            grid = grids_by_name[name]
+            uid = grid.get("orca_uid", "")
+            print(f"  {name}" + (f" (uid: {uid})" if uid else ""))
+        return
+
+    # Determine which grids to process
+    if args.grid == ["all"]:
+        grids_to_process = list(grids_by_name.values())
+    else:
+        grids_to_process = []
+        for key in args.grid:
+            grid = grids_by_name.get(key)
+            if not grid:
+                logging.error(f"Grid '{key}' is not a known grid name")
+                continue
+            grids_to_process.append(grid)
+
     urls = set()
-    for grid in config.keys() if args.grid == ["all"] else args.grid:
-        if grid not in config:
-            logging.error(f"Grid {grid} is not a known grid")
-            continue
-        if "data" in config[grid] and is_url(config[grid]["data"]):
-            urls.add(config[grid]["data"])
+    for grid in grids_to_process:
+        url = grid.get("url")
+        if url and is_url(url):
+            urls.add(url)
 
     for url in sorted(urls):
         path = path_from_url(url, args.cache_path)
@@ -99,6 +139,11 @@ def execute(args):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description="Create binary grid data files")
+    p.add_argument(
+        "--list-grids",
+        action="store_true",
+        help="List all known grid names and UIDs, then exit."
+    )
     p.add_argument(
         "--config",
         default=CONFIG_PATH,

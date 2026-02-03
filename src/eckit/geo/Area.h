@@ -60,7 +60,8 @@ public:
     [[nodiscard]] const Spec& spec() const;
     std::string spec_str() const { return spec().str(); }
 
-    virtual const std::string& type() const = 0;
+    virtual void fill_spec(spec::Custom&) const = 0;
+    virtual const std::string& type() const     = 0;
 
     virtual bool intersects(area::BoundingBox&) const;
     virtual bool contains(const Point&) const;
@@ -70,15 +71,13 @@ public:
 
     static std::string className() { return "area"; }
 
+    static const Area& area_default();
+
 private:
 
     // -- Members
 
     mutable std::shared_ptr<spec::Custom> spec_;
-
-    // -- Methods
-
-    virtual void fill_spec(spec::Custom&) const = 0;
 
     // -- Friends
 

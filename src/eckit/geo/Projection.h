@@ -74,6 +74,8 @@ public:
 
     static std::string className() { return "projection"; }
 
+    static const Projection& projection_default();
+
     [[nodiscard]] static Projection* make_from_spec(const Spec&);
 
 protected:

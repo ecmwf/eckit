@@ -70,6 +70,8 @@ public:
 
     static std::string className() { return "area"; }
 
+    static const Area& area_default();
+
 private:
 
     // -- Members

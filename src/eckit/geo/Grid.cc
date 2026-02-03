@@ -241,16 +241,14 @@ Grid::BoundingBox* Grid::calculate_bbox() const {
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    area().fill_spec(custom);
+    static const auto& area_default = Area::area_default();
+    if (const auto& spec = area().spec(); spec != area_default.spec()) {
+        custom.set("area", spec);
+    }
 
-    if (projection_) {
-        auto projection = std::make_unique<spec::Custom>();
-        ASSERT(projection);
-
-        projection_->fill_spec(*projection);
-        if (!projection->empty()) {
-            custom.set("projection", projection.release());
-        }
+    static const auto& proj_default = Projection::projection_default();
+    if (const auto& spec = projection().spec(); spec != proj_default.spec()) {
+        custom.set("proj", spec);
     }
 }
 
@@ -262,7 +260,7 @@ const Grid* GridFactory::make_from_string(const std::string& str) {
 
 
 GridFactory& GridFactory::instance() {
-    share::Grid::instance();
+    share::Grid::instance();  // ensure load of supporting files
 
     static GridFactory INSTANCE;
     return INSTANCE;

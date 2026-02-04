@@ -139,7 +139,7 @@ private:  // members
     size_t stackIndex_{0};
 
     time_t created_;
-    ValueMap metrics_;
+    Value metrics_;
 
 private:  // methods
 
@@ -151,8 +151,6 @@ private:  // methods
         m.print(s);
         return s;
     }
-
-    void dump() const;
 };
 
 static MetricsCollector* current_ = nullptr;
@@ -216,25 +214,6 @@ void MetricsCollector::push(const std::string& name) {
     stack_.emplace_back(name);
 }
 
-void MetricsCollector::dump() const {
-    std::cout << "Stack - " << stack_.size() << ":" << std::endl;
-    for (const auto& s : stack_) {
-        std::cout << "  " << (s.group() ? "G " : "  ") << strLen(8, s.name) << strLen(12, s.groupFullName)
-                  << "  keys=" << s.groupKeys.size() << " values=";
-        ValueList ll = s.groupValues;
-        for (const auto& v : ll) {
-            std::cout << v << " ";
-        }
-        std::cout << " last" << s.groupNextValue;
-        std::cout << std::endl;
-    }
-
-    std::cout << "Metrics - " << metrics_.size() << ":" << std::endl;
-    for (const auto& [k, v] : metrics_) {
-        std::cout << "  key=" << k << " value=" << v << std::endl;
-    }
-}
-
 void MetricsCollector::item() {
     if (!stack_.empty() && stackIndex_ > 0) {
         auto& ss = stack_[stackIndex_ - 1];
@@ -267,13 +246,12 @@ void MetricsCollector::pop() {
             newss.groupNextValue  = cleanPaths(top);
         }
         else {  // top level group - update metrics
-            auto it = metrics_.find(ss.groupFullName);
-            if (it == metrics_.end()) {
-                it = metrics_.emplace(ss.groupFullName, Value::makeList()).first;
+            if (!metrics_.contains(ss.groupFullName)) {
+                metrics_[ss.groupFullName] = Value::makeList();
             }
             ValueList ll = ss.groupValues;
             for (const auto& v : ll) {
-                it->second.append(v);
+                metrics_[ss.groupFullName].append(v);
             }
         }
     }
@@ -284,9 +262,8 @@ void MetricsCollector::pushGroup(const std::string& name) {
     std::string groupFullName = full(name);
     if (stackIndex_ == 0) {
         // First group - if missing, create a placeholder in metrics
-        auto it = metrics_.find(groupFullName);
-        if (it == metrics_.end()) {
-            metrics_.emplace(groupFullName, Value::makeList());
+        if (!metrics_.contains(groupFullName)) {
+            metrics_[groupFullName] = Value::makeList();
         }
         keys_.insert(groupFullName);
     }

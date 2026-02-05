@@ -777,7 +777,6 @@ list( APPEND eckit_memory_srcs
     memory/OnlyMovable.h
     memory/Owned.h
     memory/Padded.h
-    memory/ScopedPtr.h
     memory/SharedPtr.cc
     memory/SharedPtr.h
     memory/Shmget.cc

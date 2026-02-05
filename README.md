@@ -1,4 +1,4 @@
-eckit
+EcKit
 =====
 
 [![Latest Tag](https://img.shields.io/github/v/tag/ecmwf/eckit?label=latest&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/tags)
@@ -6,6 +6,10 @@ eckit
 [![CI](https://img.shields.io/github/actions/workflow/status/ecmwf/eckit/ci.yml?branch=develop&label=ci%20(develop)&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/ecmwf/eckit/branch/develop/graph/badge.svg)](https://codecov.io/gh/ecmwf/eckit)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecmwf/eckit/blob/develop/LICENSE)
+[![Static Badge](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity/graduated_badge.svg)](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity#graduated)
+
+> \[!IMPORTANT\]
+> This software is **Graduated** and subject to ECMWF's guidelines on [Software Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity).
 
 Project home: https://software.ecmwf.int/wiki/display/ECKIT
 

@@ -52,8 +52,8 @@ public:
 
     SQLSession(const SQLSession&)            = delete;
     SQLSession& operator=(const SQLSession&) = delete;
-    SQLSession(SQLSession&&)                 = default;
-    SQLSession& operator=(SQLSession&&)      = default;
+    SQLSession(SQLSession&&)                 = delete;
+    SQLSession& operator=(SQLSession&&)      = delete;
 
     virtual ~SQLSession();
 

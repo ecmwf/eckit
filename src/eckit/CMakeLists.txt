@@ -526,7 +526,6 @@ list( APPEND eckit_types_srcs
 list( APPEND eckit_parser_srcs
     parser/CSVParser.cc
     parser/CSVParser.h
-    parser/JSON.h
     parser/JSONParser.cc
     parser/JSONParser.h
     parser/ObjectParser.cc

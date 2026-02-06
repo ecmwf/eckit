@@ -64,6 +64,8 @@ public:
     // -- Methods
 
     const container_type& container() const { return map_; }
+    void set(const container_type& container) { map_ = container; }
+
     bool empty() const { return map_.empty(); }
     void clear() { map_.clear(); }
 

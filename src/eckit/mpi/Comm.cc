@@ -179,7 +179,7 @@ public:
         communicators.emplace(name, comm);
     }
 
-    void deleteComm(std::string_view name) {
+    void unregisterComm(std::string_view name, bool free_comm = false) {
         AutoLock<Mutex> lock(mutex_);
 
         auto itr = communicators.find(name);
@@ -188,21 +188,29 @@ public:
 
             Comm* comm = itr->second;
 
-            // refuse to delete the default communicator
+            // refuse to unregister the default communicator, world communicator and self communicator
             if (default_ == comm) {
-                throw SeriousBug("Trying to delete the default Communicator with name " + std::string{name}, Here());
+                throw SeriousBug("Trying to unregister the default Communicator with name " + std::string{name},
+                                 Here());
             }
-
-            comm->free();
-            delete comm;
-
+            if (name == "world") {
+                throw SeriousBug("Trying to unregister the 'world' Communicator", Here());
+            }
+            if (name == "self") {
+                throw SeriousBug("Trying to unregister the 'self' Communicator", Here());
+            }
+            if (free_comm) {
+                comm->free();
+            }
             communicators.erase(itr);
+            delete comm;
         }
         else {
             throw SeriousBug("Communicator with name " + std::string{name} + " does not exist", Here());
         }
     }
 
+    void deleteComm(std::string_view name) { unregisterComm(name, true); }
 
     Environment() = default;
 
@@ -303,6 +311,10 @@ void addComm(std::string_view name, Comm* comm) {
 
 void deleteComm(std::string_view name) {
     Environment::instance().deleteComm(name);
+}
+
+void unregisterComm(std::string_view name) {
+    Environment::instance().unregisterComm(name);
 }
 
 bool hasComm(std::string_view name) {

@@ -49,9 +49,16 @@ void addComm(std::string_view name, int comm);
 /// Register an existing communicator
 void addComm(std::string_view name, Comm* comm);
 
-/// Unregister and delete specific comm
+/// Unregister a communicator and call free() on the comm.
 /// @pre Comm is registered in the environment
+/// @note Cannot unregister 'world', 'self' or default communicators
 void deleteComm(std::string_view name);
+
+/// Unregister a communicator without calling free() on the comm, e.g. if the registered comm is wrapping an MPI
+/// communicator managed by an external library
+/// @pre Comm is registered in the environment
+/// @note Cannot unregister 'world', 'self' or default communicators
+void unregisterComm(std::string_view name);
 
 /// Check if a communicator is registered
 bool hasComm(std::string_view name);

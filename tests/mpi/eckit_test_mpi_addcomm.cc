@@ -34,6 +34,8 @@ char** argv;
 CASE("Setup MPI environment") {
     MPI_Init(&argc, &argv);
     eckit::mpi::comm();  // Force MPI environment to be setup with defaults
+    std::cout << "MPI environment setup with default communicator: " << eckit::mpi::comm().name() << std::endl;
+    std::cout << "rank: " << eckit::mpi::comm().rank() << " size: " << eckit::mpi::comm().size() << std::endl;
 }
 
 CASE("Test MPI addComm") {

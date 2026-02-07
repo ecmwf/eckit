@@ -179,7 +179,11 @@ public:
         communicators.emplace(name, comm);
     }
 
-    void unregisterComm(std::string_view name, bool free_comm = false) {
+    enum class FreeComm {
+        yes,
+        no
+    };
+    void unregisterComm(std::string_view name, FreeComm free_comm) {
         AutoLock<Mutex> lock(mutex_);
 
         auto itr = communicators.find(name);
@@ -199,7 +203,7 @@ public:
             if (name == "self") {
                 throw SeriousBug("Trying to unregister the 'self' Communicator", Here());
             }
-            if (free_comm) {
+            if (free_comm == FreeComm::yes) {
                 comm->free();
             }
             communicators.erase(itr);
@@ -209,8 +213,6 @@ public:
             throw SeriousBug("Communicator with name " + std::string{name} + " does not exist", Here());
         }
     }
-
-    void deleteComm(std::string_view name) { unregisterComm(name, true); }
 
     Environment() = default;
 
@@ -310,11 +312,11 @@ void addComm(std::string_view name, Comm* comm) {
 }
 
 void deleteComm(std::string_view name) {
-    Environment::instance().deleteComm(name);
+    Environment::instance().unregisterComm(name, Environment::FreeComm::yes);
 }
 
 void unregisterComm(std::string_view name) {
-    Environment::instance().unregisterComm(name);
+    Environment::instance().unregisterComm(name, Environment::FreeComm::no);
 }
 
 bool hasComm(std::string_view name) {

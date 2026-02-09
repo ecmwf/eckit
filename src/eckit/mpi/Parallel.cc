@@ -693,6 +693,12 @@ Comm& Parallel::split(int color, const std::string& name) const {
 }
 
 void Parallel::free() {
+    if (comm_ == MPI_COMM_WORLD) {
+        throw SeriousBug("Cannot free MPI_COMM_WORLD communicator");
+    }
+    if (comm_ == MPI_COMM_SELF) {
+        throw SeriousBug("Cannot free MPI_COMM_SELF communicator");
+    }
     MPI_CALL(MPI_Comm_free(&comm_));
     rank_ = 0;
     size_ = 0;

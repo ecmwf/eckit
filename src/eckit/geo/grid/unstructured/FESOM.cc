@@ -21,7 +21,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Download.h"
-#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/cache/Record.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Custom.h"
@@ -38,10 +38,7 @@ void hash_vector_size_t(MD5&, const std::vector<size_t>&);
 namespace eckit::geo::grid::unstructured {
 
 
-namespace {
-
-
-util::recursive_mutex MUTEX;
+static util::recursive_mutex MUTEX;
 
 
 class lock_type {
@@ -49,30 +46,10 @@ class lock_type {
 };
 
 
-const FESOM::FESOMRecord& fesom_record(const spec::Spec& spec) {
-    // control concurrent reads/writes
-    lock_type lock;
-
-    static cache::MemoryCacheT<PathName, FESOM::FESOMRecord> cache;
-    static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
-
-    auto url  = LibEcKitGeo::url(spec.get_string("url"));
-    auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
-    ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
-
-    if (cache.contains(path)) {
-        return cache[path];
-    }
-
-    // read and check uid
-    auto& record = cache[path];
-    record.read(path);
-
-    return record;
+static const FESOM::FESOMRecord& fesom_record(const spec::Spec& spec) {
+    static cache::Record<FESOM::FESOMRecord> cache(LibEcKitGeo::cacheDir() + "/grid/fesom");
+    return cache.get(spec);
 }
-
-
-}  // namespace
 
 
 FESOM::FESOM(const FESOMRecord& record, const uid_type& uid, const std::string& arrangement, const std::string& name) :
@@ -133,6 +110,11 @@ void FESOM::FESOMRecord::read(const PathName& p) {
     }
 
     throw SeriousBug("FESOM: unsupported version", Here());
+}
+
+
+void FESOM::FESOMRecord::check(const Spec&) const {
+    // FIXME check
 }
 
 

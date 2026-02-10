@@ -54,6 +54,8 @@ list(APPEND eckit_geo_srcs
     cache/Download.h
     cache/MemoryCache.cc
     cache/MemoryCache.h
+    cache/Record.cc
+    cache/Record.h
     container/PointsContainer.cc
     container/PointsContainer.h
     figure/Earth.cc

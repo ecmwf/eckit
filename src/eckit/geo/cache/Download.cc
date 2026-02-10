@@ -20,9 +20,11 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/io/FileLock.h"
 #include "eckit/io/Length.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Timer.h"
+#include "eckit/os/AutoUmask.h"
 #include "eckit/utils/MD5.h"
 
 #if eckit_HAVE_CURL
@@ -38,6 +40,37 @@ static util::recursive_mutex MUTEX;
 
 class lock_type {
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+class file_lock_type {
+    struct flock_type {
+        explicit flock_type(const PathName& path) :
+            lock_path_([](const auto& path) {
+                AutoUmask umask(0);
+                PathName lock(path + ".lock");
+                lock.touch();
+                return lock;
+            }(path)),
+            lock_(lock_path_) {}
+
+        void lock() { lock_.lock(); }
+
+        void unlock() {
+            lock_.unlock();
+            lock_path_.unlink(false);
+        }
+
+        PathName lock_path_;
+        FileLock lock_;
+    };
+
+    flock_type flock_;
+    util::lock_guard<flock_type> lock_guard_;
+
+public:
+
+    explicit file_lock_type(const PathName& path) : flock_(path), lock_guard_(flock_) {}
 };
 
 
@@ -75,6 +108,8 @@ Download::info_type Download::to_path(const url_type& url, const PathName& path,
     Timer timer;
 
 #if eckit_HAVE_CURL  // for eckit::URLHandle
+    file_lock_type flock(path);
+
     auto tmp = path + ".part";
     auto dir = path.dirName();
 

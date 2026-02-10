@@ -113,17 +113,6 @@ ecbuild_add_option( FEATURE RADOS
                     DESCRIPTION "Ceph/Rados storage support"
                     REQUIRED_PACKAGES Rados )
 
-### Armadillo
-
-ecbuild_add_option( FEATURE ARMADILLO
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Armadillo linear algebra library"
-                    REQUIRED_PACKAGES Armadillo )
-
-set_package_properties( Armadillo PROPERTIES
-                        DESCRIPTION "C++ linear algebra"
-                      )
-
 ### MKL
 
 ecbuild_add_option( FEATURE MKL

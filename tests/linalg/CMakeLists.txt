@@ -41,13 +41,6 @@ ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_generic
                   COMMAND   eckit_test_linalg_mixed_backend
                   ARGS      --log_level=message -linearAlgebraBackend generic )
 
-ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_armadillo
-                  COMMAND   eckit_test_linalg_mixed_backend
-                  CONDITION eckit_HAVE_ARMADILLO
-                  ARGS      --log_level=message -linearAlgebraBackend armadillo )
-
-# This test seems to have a system call exit with 1 even though tests pass.
-# Ignore system errors, see also http://stackoverflow.com/a/20360334/396967
 ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_cuda
                   COMMAND   eckit_test_linalg_mixed_backend
                   CONDITION eckit_HAVE_CUDA
@@ -83,11 +76,6 @@ ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_openmp
 ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_generic
                   COMMAND   eckit_test_linalg_dense_backend
                   ARGS      --log_level=message -linearAlgebraDenseBackend generic )
-
-ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_armadillo
-                  COMMAND   eckit_test_linalg_dense_backend
-                  CONDITION eckit_HAVE_ARMADILLO
-                  ARGS      --log_level=message -linearAlgebraDenseBackend armadillo )
 
 # This test seems to have a system call exit with 1 even though tests pass.
 # Ignore system errors, see also http://stackoverflow.com/a/20360334/396967

@@ -266,17 +266,6 @@ ecbuild_add_option( FEATURE HIP
                     DESCRIPTION "HIP GPU linear algebra operations"
                     REQUIRED_PACKAGES hip hipsparse )
 
-### LibRsync
-
-ecbuild_add_option( FEATURE RSYNC
-                    DEFAULT OFF
-                    DESCRIPTION "librsync implementation of the rsync algorithm"
-                    REQUIRED_PACKAGES LibRsync )
-if( HAVE_RSYNC )
-  set( LIBRSYNC_LIBRARIES rsync )
-endif()
-
-
 ### Performance tests
 
 ecbuild_add_option( FEATURE EXTRA_TESTS

@@ -740,13 +740,6 @@ if(eckit_HAVE_SSL)
     )
 endif()
 
-if(eckit_HAVE_RSYNC)
-    list( APPEND eckit_utils_srcs
-        utils/Rsync.cc
-        utils/Rsync.h
-    )
-endif()
-
 if(eckit_HAVE_XXHASH)
     list( APPEND eckit_utils_srcs
         utils/xxHashing.cc
@@ -938,7 +931,6 @@ ecbuild_add_library(
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
-              "${LIBRSYNC_LIBRARIES}"
               "${LZ4_LIBRARIES}"
               "${BZIP2_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"

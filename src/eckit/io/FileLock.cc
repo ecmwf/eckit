@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/io/FileLock.h"
+
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -15,8 +17,6 @@
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/io/FileLock.h"
 #include "eckit/os/AutoUmask.h"
 
 namespace eckit {
@@ -32,11 +32,13 @@ static int openLock(const PathName& lockFile) {
 }
 
 
-FileLock::FileLock(const PathName& lockFile) : fd_(openLock(lockFile)), locker_(fd_) {}
+FileLock::FileLock(const PathName& lockFile) : lockFile_(lockFile), fd_(openLock(lockFile_)), locker_(fd_) {}
+
 
 FileLock::~FileLock() {
     ::close(fd_);
 }
+
 
 void FileLock::lock() {
     locker_.lockExclusive();
@@ -45,6 +47,7 @@ void FileLock::lock() {
 
 void FileLock::unlock() {
     locker_.unlock();
+    lockFile_.unlink(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

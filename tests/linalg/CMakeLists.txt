@@ -61,11 +61,6 @@ ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_mkl
                   CONDITION eckit_HAVE_MKL
                   ARGS      --log_level=message -linearAlgebraBackend mkl )
 
-ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_viennacl
-                  COMMAND   eckit_test_linalg_mixed_backend
-                  CONDITION eckit_HAVE_VIENNACL
-                  ARGS      --log_level=message -linearAlgebraBackend viennacl )
-
 ecbuild_add_test( TARGET    eckit_test_linalg_mixed_backend_openmp
                   COMMAND   eckit_test_linalg_mixed_backend
                   CONDITION eckit_HAVE_OMP
@@ -99,11 +94,6 @@ ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_mkl
                   CONDITION eckit_HAVE_MKL
                   ARGS      --log_level=message -linearAlgebraDenseBackend mkl )
 
-ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_viennacl
-                  COMMAND   eckit_test_linalg_dense_backend
-                  CONDITION eckit_HAVE_VIENNACL
-                  ARGS      --log_level=message -linearAlgebraDenseBackend viennacl )
-
 ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_openmp
                   COMMAND   eckit_test_linalg_dense_backend
                   CONDITION eckit_HAVE_OMP
@@ -136,11 +126,6 @@ ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_mkl
                   COMMAND   eckit_test_linalg_sparse_backend
                   CONDITION eckit_HAVE_MKL
                   ARGS      --log_level=message -linearAlgebraSparseBackend mkl )
-
-ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_viennacl
-                  COMMAND   eckit_test_linalg_sparse_backend
-                  CONDITION eckit_HAVE_VIENNACL
-                  ARGS      --log_level=message -linearAlgebraSparseBackend viennacl )
 
 ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_openmp
                   COMMAND   eckit_test_linalg_sparse_backend

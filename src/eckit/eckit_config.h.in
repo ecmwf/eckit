@@ -56,7 +56,6 @@
 #cmakedefine01 eckit_HAVE_MPI
 #cmakedefine01 eckit_HAVE_OMP
 #cmakedefine01 eckit_HAVE_SSL
-#cmakedefine01 eckit_HAVE_VIENNACL
 #cmakedefine01 eckit_HAVE_ZIP
 
 // Have we built certain libraries

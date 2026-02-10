@@ -266,18 +266,6 @@ ecbuild_add_option( FEATURE HIP
                     DESCRIPTION "HIP GPU linear algebra operations"
                     REQUIRED_PACKAGES hip hipsparse )
 
-### ViennaCL
-
-ecbuild_add_option( FEATURE VIENNACL
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "ViennaCL OpenCL linear algebra operations"
-                    REQUIRED_PACKAGES ViennaCL )
-
-set_package_properties( ViennaCL PROPERTIES
-                        DESCRIPTION "linear algebra library for computations on many-core architectures"
-                        TYPE RECOMMENDED
-                        PURPOSE "Dense and sparse matrix operations on OpenCL devices" )
-
 ### LibRsync
 
 ecbuild_add_option( FEATURE RSYNC

@@ -24,9 +24,6 @@ CASE("list") {
 
     auto dense_backends = {
         "generic",
-#if eckit_HAVE_ARMADILLO
-        "armadillo",
-#endif
 #if eckit_HAVE_CUDA
         "cuda",
 #endif

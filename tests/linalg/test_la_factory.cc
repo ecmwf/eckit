@@ -36,9 +36,6 @@ CASE("list") {
 #if eckit_HAVE_MKL
         "mkl",
 #endif
-#if eckit_HAVE_VIENNACL
-        "viennacl",
-#endif
 #if eckit_HAVE_OMP
         "openmp",
 #endif
@@ -56,9 +53,6 @@ CASE("list") {
 #if eckit_HAVE_MKL
         "mkl",
 #endif
-#endif
-#if eckit_HAVE_VIENNACL
-        "viennacl",
 #endif
 #if eckit_HAVE_OMP
         "openmp",

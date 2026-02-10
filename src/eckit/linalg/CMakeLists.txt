@@ -75,15 +75,6 @@ if( eckit_HAVE_MKL )
     list( APPEND eckit_la_plibs "${MKL_LIBRARIES}" )
 endif()
 
-if( eckit_HAVE_VIENNACL )
-    list( APPEND eckit_la_srcs
-          dense/LinearAlgebraViennaCL.cc
-          dense/LinearAlgebraViennaCL.h
-          sparse/LinearAlgebraViennaCL.cc
-          sparse/LinearAlgebraViennaCL.h )
-    list( APPEND eckit_la_pincludes "${VIENNACL_INCLUDE_DIRS}" )
-endif()
-
 if( eckit_HAVE_OMP )
     list( APPEND eckit_la_plibs OpenMP::OpenMP_CXX )
 endif()

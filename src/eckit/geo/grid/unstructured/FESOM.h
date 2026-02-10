@@ -36,6 +36,7 @@ public:
         explicit FESOMRecord() = default;
 
         void read(const PathName&);
+        void check(const Spec&) const;
 
         using bytes_t = decltype(sizeof(int));
         bytes_t footprint() const;

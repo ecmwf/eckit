@@ -16,11 +16,10 @@
 #ifndef eckit_io_FileLock_h
 #define eckit_io_FileLock_h
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/FileLocker.h"
 
 namespace eckit {
-
-class PathName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -30,7 +29,7 @@ public:
 
     /// Constructor
     /// creates the lock file if needed
-    FileLock(const PathName& lockFile);
+    explicit FileLock(const PathName& lockFile, bool unlink_at_destruction = false);
 
     FileLock(const FileLock&)            = delete;
     FileLock& operator=(const FileLock&) = delete;
@@ -44,8 +43,8 @@ public:
 
 private:
 
+    const PathName lockFile_;
     int fd_;
-
     FileLocker locker_;
 };
 

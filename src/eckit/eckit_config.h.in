@@ -52,7 +52,6 @@
 #cmakedefine01 eckit_HAVE_CUDA
 #cmakedefine01 eckit_HAVE_CURL
 #cmakedefine01 eckit_HAVE_EIGEN
-#cmakedefine01 eckit_HAVE_JEMALLOC
 #cmakedefine01 eckit_HAVE_LAPACK
 #cmakedefine01 eckit_HAVE_MKL
 #cmakedefine01 eckit_HAVE_MPI

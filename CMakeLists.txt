@@ -263,13 +263,6 @@ if(HAVE_CURL)
   ecbuild_info("Curl version ${CURL_VERSION_STRING} -- libs [${CURL_LIBRARIES}] incs [${CURL_INCLUDE_DIRS}]")
 endif()
 
-#### Jemalloc
-
-ecbuild_add_option( FEATURE JEMALLOC
-                    DEFAULT OFF
-                    DESCRIPTION "Link against jemalloc memory allocator"
-                    REQUIRED_PACKAGES Jemalloc )
-
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA

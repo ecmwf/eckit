@@ -1,73 +1,79 @@
-EcKit
-=====
+# EcKit
+
+<div align="center">
 
 [![Latest Tag](https://img.shields.io/github/v/tag/ecmwf/eckit?label=latest&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/tags)
 [![CI](https://img.shields.io/github/actions/workflow/status/ecmwf/eckit/ci.yml?branch=master&label=ci%20(master)&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/actions/workflows/ci.yml)
 [![CI](https://img.shields.io/github/actions/workflow/status/ecmwf/eckit/ci.yml?branch=develop&label=ci%20(develop)&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/actions/workflows/ci.yml)
+
 [![codecov](https://codecov.io/gh/ecmwf/eckit/branch/develop/graph/badge.svg)](https://codecov.io/gh/ecmwf/eckit)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecmwf/eckit/blob/develop/LICENSE)
-[![Static Badge](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity/graduated_badge.svg)](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity#graduated)
+[![Project Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity/graduated_badge.svg)](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity#graduated)
 
-> \[!IMPORTANT\]
-> This software is **Graduated** and subject to ECMWF's guidelines on [Software Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity).
+</div>
 
-Project home: https://software.ecmwf.int/wiki/display/ECKIT
+> [!IMPORTANT]
+> This software is **Graduated** and subject to ECMWF's guidelines on
+> [Software Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity).
 
+## Overview
 
-ecKit is a cross-platform C++ toolkit that supports development of tools and
+EcKit is a cross-platform C++ toolkit that supports development of tools and
 applications at ECMWF. It is based on code developed over the last 20 years
 within the MARS software and was re-factored out to be reused by other
-applications. It provides a an abstraction layer on top of the operating
-system, so it is easier to port code to new architectures. It is developed
-taking into account the robustness requirements of running production systems
-at ECMWF. The main focus is UNIX/POSIX systems, and it has been thoroughly
-tested on AIX, Linux and Mac OSX. Historically, the code base pre-dates and in
-some way can be seen as a leaner substitute for some 'Boost' libraries.
+applications. It provides an abstraction layer on top of the operating system,
+so it is easier to port code to new architectures. It is developed taking into
+account the robustness requirements of running production systems at ECMWF. The
+main focus is UNIX/POSIX systems, and it has been thoroughly tested on Linux
+and Mac OSX. Historically, the code base pre-dates and in some way can be seen
+as a leaner substitute for some 'Boost' libraries.
+
+## Features
 
 It features facilities to easily handle, in a cross-platform way:
-* multi-threading
-* json and yaml parsing
-* object serialization and persistence
-* object serialization supporting compression, to and from file and network
-* configuration of user options and resources
-* file-system abstraction
-* regular expressions
-* socket networking
-* http protocol
-* type-to-type conversions
-* asynchronous IO
-* asynchronous processing
-* exception handling and stack dumping
-* MPI object-oriented wrapper
-* linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
-* advanced container classes
-* space partition trees
-* file-mapped arrays
 
+- multi-threading
+- json and yaml parsing
+- object serialization and persistence
+- object serialization supporting compression, to and from file and network
+- configuration of user options and resources
+- file-system abstraction
+- regular expressions
+- socket networking
+- http protocol
+- type-to-type conversions
+- asynchronous IO
+- asynchronous processing
+- exception handling and stack dumping
+- MPI object-oriented wrapper
+- linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
+- advanced container classes
+- space partition trees
+- file-mapped arrays
 
-Requirements
-------------
+## Requirements
 
-Tested compilers include:
+### Tested Compilers
 
-- GCC 4.9.1, 5.3.0, 6.3.0, 7.2.0
-- Intel 15.0.2, 16.0.3, 17, 18
-- CCE 8.4.5, 8.5.8, 8.6.2
-- Apple LLVM 9.1.0 (clang-902.0.39.1)
+| Compiler | Versions |
+|----------|----------|
+| GCC      | 8.5.0, 11.4.0, 11.5.0, 12.3.1, 14.2.0 |
+| Intel    | 2021.4, 2025.0 |
+| Clang    | 18.1.8 |
+| NVIDIA   | 24.11 |
 
-Required dependencies:
+### Required Dependencies
 
-- CMake --- For use and installation see http://www.cmake.org/
-- ecbuild --- ECMWF library of CMake macros
-- Perl5 --- For some code generation
+- C++17 compatible compiler
+- CMake 3.18 or higher - For use and installation see <http://www.cmake.org/>
+- ecbuild 3.7 or higher - ECMWF library of CMake macros
+- Perl5 - For some code generation
 
+## Installation
 
-Installation
-------------
+EcKit employs an out-of-source build/install based on CMake.
 
-Eckit employs an out-of-source build/install based on CMake.
-
-Make sure ecbuild is installed and the ecbuild executable script is found ( `which ecbuild` ).
+Make sure ecbuild is installed and the ecbuild executable script is found (`which ecbuild`).
 
 Now proceed with installation as follows:
 

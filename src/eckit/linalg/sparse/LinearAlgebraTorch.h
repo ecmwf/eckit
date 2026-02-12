@@ -16,7 +16,7 @@
 namespace eckit::linalg::sparse {
 
 struct LinearAlgebraTorch final : public LinearAlgebraSparse {
-    LinearAlgebraTorch() {}
+    LinearAlgebraTorch() = default;
     LinearAlgebraTorch(const std::string& name) : LinearAlgebraSparse(name) {}
 
     void spmv(const SparseMatrix&, const Vector&, Vector&) const override;

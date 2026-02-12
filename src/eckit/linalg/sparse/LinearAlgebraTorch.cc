@@ -13,6 +13,7 @@
 
 #include <cstring>
 #include <ostream>
+#include <type_traits>
 
 #include "torch/torch.h"
 
@@ -36,28 +37,47 @@ static const LinearAlgebraTorch __la_torch("torch");
 namespace {
 
 
-torch::TensorOptions make_options(torch::ScalarType _dtype) {
+torch::DeviceType get_device() {
     static const auto _device = [](const std::string& dev) {
-        return dev == "cpu"      ? torch::DeviceType::CPU
-               : dev == "cuda"   ? torch::DeviceType::CUDA
-               : dev == "hip"    ? torch::DeviceType::HIP
-               : dev == "fpga"   ? torch::DeviceType::FPGA
-               : dev == "maia"   ? torch::DeviceType::MAIA
-               : dev == "xla"    ? torch::DeviceType::XLA
-               : dev == "mps"    ? torch::DeviceType::MPS
-               : dev == "meta"   ? torch::DeviceType::Meta
-               : dev == "vulkan" ? torch::DeviceType::Vulkan
-               : dev == "metal"  ? torch::DeviceType::Metal
-               : dev == "xpu"    ? torch::DeviceType::XPU
-               : dev == "hpu"    ? torch::DeviceType::HPU
-               : dev == "ve"     ? torch::DeviceType::VE
-               : dev == "lazy"   ? torch::DeviceType::Lazy
-               : dev == "ipu"    ? torch::DeviceType::IPU
-               : dev == "mtia"   ? torch::DeviceType::MTIA
-                                 : NOTIMP;
+        auto device = dev == "cpu"      ? torch::DeviceType::CPU
+                      : dev == "cuda"   ? torch::DeviceType::CUDA
+                      : dev == "hip"    ? torch::DeviceType::HIP
+                      : dev == "fpga"   ? torch::DeviceType::FPGA
+                      : dev == "maia"   ? torch::DeviceType::MAIA
+                      : dev == "xla"    ? torch::DeviceType::XLA
+                      : dev == "mps"    ? torch::DeviceType::MPS
+                      : dev == "meta"   ? torch::DeviceType::Meta
+                      : dev == "vulkan" ? torch::DeviceType::Vulkan
+                      : dev == "metal"  ? torch::DeviceType::Metal
+                      : dev == "xpu"    ? torch::DeviceType::XPU
+                      : dev == "hpu"    ? torch::DeviceType::HPU
+                      : dev == "ve"     ? torch::DeviceType::VE
+                      : dev == "lazy"   ? torch::DeviceType::Lazy
+                      : dev == "ipu"    ? torch::DeviceType::IPU
+                      : dev == "mtia"   ? torch::DeviceType::MTIA
+                                        : NOTIMP;
+        return device == torch::DeviceType::MPS ? torch::DeviceType::CPU : device;
     }(eckit::Resource<std::string>("$ECKIT_LINALG_TORCH_DEVICE;eckitLinalgTorchDevice;-eckitLinalgTorchDevice", "cpu"));
 
-    return torch::TensorOptions().dtype(_dtype).device(_device);
+    // Note: MPS doesn't currently support sparse tensors, revert to CPU
+    static const auto _safe_device = _device == torch::DeviceType::MPS ? torch::DeviceType::CPU : _device;
+
+    return _safe_device;
+}
+
+
+torch::Tensor make_sparse_csr(const SparseMatrix& A) {
+    auto dev = get_device();
+    auto Ni  = static_cast<int64_t>(A.rows());
+    auto Nj  = static_cast<int64_t>(A.cols());
+    auto Nz  = static_cast<int64_t>(A.nonZeros());
+
+    auto ia = torch::from_blob(A.outer(), {Ni + 1}, torch::kInt32).to(dev, torch::kInt64);
+    auto ja = torch::from_blob(A.inner(), {Nz}, torch::kInt32).to(dev, torch::kInt64);
+    auto a  = torch::from_blob(const_cast<double*>(A.data()), {Nz}, torch::kFloat64).to(dev);
+
+    return torch::sparse_csr_tensor(
+        ia, ja, a, {Ni, Nj}, torch::TensorOptions().dtype(torch::kFloat64).device(dev).layout(torch::kSparseCsr));
 }
 
 
@@ -65,25 +85,15 @@ torch::TensorOptions make_options(torch::ScalarType _dtype) {
 
 
 void LinearAlgebraTorch::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    const auto options_int   = make_options(torch::kInt32);
-    const auto options_float = make_options(torch::kFloat64);
-
-    const auto Ni = static_cast<int32_t>(A.rows());
-    const auto Nj = static_cast<int32_t>(A.cols());
-    const auto Nz = static_cast<int32_t>(A.nonZeros());
+    auto Ni = static_cast<int64_t>(A.rows());
+    auto Nj = static_cast<int64_t>(A.cols());
     ASSERT(Ni == y.rows());
     ASSERT(Nj == x.rows());
 
-    // torch tensors
-    const auto ia = torch::from_blob(const_cast<int32_t*>(A.outer()), Ni + 1, options_int);
-    const auto ja = torch::from_blob(const_cast<int32_t*>(A.inner()), Nz, options_int);
-    const auto a  = torch::from_blob(const_cast<double*>(A.data()), Nz, options_float);
-
-    const auto A_tensor = torch::sparse_csr_tensor(ia, ja, a, {Ni, Nj}, options_float.layout(torch::kSparseCsr));
-
     // multiplication
-    const auto x_tensor = torch::from_blob(const_cast<double*>(x.data()), Nj, options_float);
-    const auto y_tensor = torch::matmul(A_tensor, x_tensor);
+    auto A_tensor = make_sparse_csr(A);
+    auto x_tensor = torch::from_blob(const_cast<double*>(x.data()), {Nj}, torch::kFloat64).to(get_device());
+    auto y_tensor = torch::matmul(A_tensor, x_tensor).to(torch::kCPU).contiguous();
 
     // assignment
     std::memcpy(y.data(), y_tensor.data_ptr<double>(), Ni * sizeof(double));
@@ -91,29 +101,20 @@ void LinearAlgebraTorch::spmv(const SparseMatrix& A, const Vector& x, Vector& y)
 
 
 void LinearAlgebraTorch::spmm(const SparseMatrix& A, const Matrix& X, Matrix& Y) const {
-    const auto options_int   = make_options(torch::kInt32);
-    const auto options_float = make_options(torch::kFloat64);
+    auto transpose = [](const auto& tensor) { return tensor.transpose(0, 1).contiguous(); };
 
-    const auto Ni = static_cast<int32_t>(A.rows());
-    const auto Nj = static_cast<int32_t>(A.cols());
-    const auto Nk = static_cast<int32_t>(X.cols());
-    const auto Nz = static_cast<int32_t>(A.nonZeros());
+    auto Ni = static_cast<int64_t>(A.rows());
+    auto Nj = static_cast<int64_t>(A.cols());
+    auto Nk = static_cast<int64_t>(X.cols());
     ASSERT(Ni == Y.rows());
     ASSERT(Nj == X.rows());
     ASSERT(Nk == Y.cols());
 
-    // torch tensors
-    const auto ia = torch::from_blob(const_cast<int32_t*>(A.outer()), Ni + 1, options_int);
-    const auto ja = torch::from_blob(const_cast<int32_t*>(A.inner()), Nz, options_int);
-    const auto a  = torch::from_blob(const_cast<double*>(A.data()), Nz, options_float);
-
-    const auto A_tensor = torch::sparse_csr_tensor(ia, ja, a, {Ni, Nj}, options_float.layout(torch::kSparseCsr));
-
     // multiplication and conversion from column-major to row-major (and back)
-    auto t = [](auto&& tensor) { return tensor.transpose(0, 1).contiguous(); };
-
-    const auto X_tensor = t(torch::from_blob(const_cast<double*>(X.data()), {Nk, Nj}, options_float));
-    const auto Y_tensor = t(torch::matmul(A_tensor, X_tensor));
+    auto A_tensor = make_sparse_csr(A);
+    auto X_tensor =
+        transpose(torch::from_blob(const_cast<double*>(X.data()), {Nk, Nj}, torch::kFloat64).to(get_device()));
+    auto Y_tensor = transpose(torch::matmul(A_tensor, X_tensor)).to(torch::kCPU).contiguous();
 
     // assignment
     std::memcpy(Y.data(), Y_tensor.data_ptr<double>(), Y.size() * sizeof(double));

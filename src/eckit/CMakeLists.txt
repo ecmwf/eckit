@@ -740,13 +740,6 @@ if(eckit_HAVE_SSL)
     )
 endif()
 
-if(eckit_HAVE_RSYNC)
-    list( APPEND eckit_utils_srcs
-        utils/Rsync.cc
-        utils/Rsync.h
-    )
-endif()
-
 if(eckit_HAVE_XXHASH)
     list( APPEND eckit_utils_srcs
         utils/xxHashing.cc
@@ -820,10 +813,6 @@ elseif( EC_OS_NAME STREQUAL "macosx" )
     list( APPEND eckit_system_srcs system/SystemInfoMacOSX.h system/SystemInfoMacOSX.cc )
 else()
     ecbuild_warn("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
-endif()
-
-if(HAVE_JEMALLOC)
-    list(APPEND ECKIT_SYSTEM_EXTRA_LIBS ${JEMALLOC_LIBRARIES})
 endif()
 
 list( APPEND eckit_bases_srcs
@@ -942,7 +931,6 @@ ecbuild_add_library(
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
-              "${LIBRSYNC_LIBRARIES}"
               "${LZ4_LIBRARIES}"
               "${BZIP2_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"

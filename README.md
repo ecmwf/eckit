@@ -39,7 +39,7 @@ It features facilities to easily handle, in a cross-platform way:
 * asynchronous processing
 * exception handling and stack dumping
 * MPI object-oriented wrapper
-* linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
+* linear algebra abstraction with multiple backends (BLAS, MKL, Eigen3)
 * advanced container classes
 * space partition trees
 * file-mapped arrays

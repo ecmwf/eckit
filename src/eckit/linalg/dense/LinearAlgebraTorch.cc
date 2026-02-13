@@ -9,21 +9,19 @@
  */
 
 
-#include "eckit/linalg/sparse/LinearAlgebraTorch.h"
+#include "eckit/linalg/dense/LinearAlgebraTorch.h"
 
 #include <cstring>
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
-#include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
-#include "eckit/linalg/sparse/LinearAlgebraGeneric.h"
 
 #include "eckit/linalg/detail/Torch.h"
 
 
-namespace eckit::linalg::sparse {
+namespace eckit::linalg::dense {
 
 
 static const LinearAlgebraTorch LA_TORCH_CPU_1("torch");
@@ -38,36 +36,40 @@ static const LinearAlgebraTorch LA_TORCH_META("torch-meta");
 
 using detail::get_torch_device;
 using detail::make_torch_dense_tensor;
-using detail::make_torch_sparse_csr;
 using detail::torch_tensor_transpose;
 
 
-void LinearAlgebraTorch::spmv(const SparseMatrix& A, const Vector& x, Vector& y) const {
-    auto Ni = static_cast<int64_t>(A.rows());
-    auto Nj = static_cast<int64_t>(A.cols());
-    ASSERT(Ni == y.rows());
-    ASSERT(Nj == x.rows());
+Scalar LinearAlgebraTorch::dot(const Vector& x, const Vector& y) const {
+    ASSERT(x.size() == y.size());
+
+    auto x_tensor = make_torch_dense_tensor(x, get_torch_device(name()));
+    auto y_tensor = make_torch_dense_tensor(y, get_torch_device(name()));
+
+    return torch::dot(x_tensor, y_tensor).to(torch::kCPU).item<Scalar>();
+}
+
+
+void LinearAlgebraTorch::gemv(const Matrix& A, const Vector& x, Vector& y) const {
+    ASSERT(A.cols() == x.rows());
+    ASSERT(A.rows() == y.rows());
 
     // multiplication
-    auto A_tensor = make_torch_sparse_csr(A, get_torch_device(name()));
+    auto A_tensor = make_torch_dense_tensor(A, get_torch_device(name()));
     auto x_tensor = make_torch_dense_tensor(x, get_torch_device(name()));
     auto y_tensor = torch::matmul(A_tensor, x_tensor).to(torch::kCPU).contiguous();
 
     // assignment
-    std::memcpy(y.data(), y_tensor.data_ptr<Scalar>(), Ni * sizeof(Scalar));
+    std::memcpy(y.data(), y_tensor.data_ptr<Scalar>(), y.rows() * sizeof(Scalar));
 }
 
 
-void LinearAlgebraTorch::spmm(const SparseMatrix& A, const Matrix& X, Matrix& Y) const {
-    auto Ni = static_cast<int64_t>(A.rows());
-    auto Nj = static_cast<int64_t>(A.cols());
-    auto Nk = static_cast<int64_t>(X.cols());
-    ASSERT(Ni == Y.rows());
-    ASSERT(Nj == X.rows());
-    ASSERT(Nk == Y.cols());
+void LinearAlgebraTorch::gemm(const Matrix& A, const Matrix& X, Matrix& Y) const {
+    ASSERT(A.cols() == X.rows());
+    ASSERT(A.rows() == Y.rows());
+    ASSERT(X.cols() == Y.cols());
 
     // multiplication and conversion from column-major to row-major (and back)
-    auto A_tensor = make_torch_sparse_csr(A, get_torch_device(name()));
+    auto A_tensor = make_torch_dense_tensor(A, get_torch_device(name()));
     auto X_tensor = make_torch_dense_tensor(X, get_torch_device(name()));
     auto Y_tensor = torch_tensor_transpose(torch::matmul(A_tensor, X_tensor)).to(torch::kCPU).contiguous();
 
@@ -76,15 +78,9 @@ void LinearAlgebraTorch::spmm(const SparseMatrix& A, const Matrix& X, Matrix& Y)
 }
 
 
-void LinearAlgebraTorch::dsptd(const Vector& x, const SparseMatrix& A, const Vector& y, SparseMatrix& B) const {
-    static const sparse::LinearAlgebraGeneric generic;
-    generic.dsptd(x, A, y, B);
-}
-
-
 void LinearAlgebraTorch::print(std::ostream& out) const {
     out << "LinearAlgebraTorch[]";
 }
 
 
-}  // namespace eckit::linalg::sparse
+}  // namespace eckit::linalg::dense

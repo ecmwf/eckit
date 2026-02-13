@@ -319,7 +319,8 @@ void CacheManagerFileSemaphoreLock::unlock() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CacheManagerFileFlock::CacheManagerFileFlock(const std::string& path) : lock_(lockFile(path)) {}
+CacheManagerFileFlock::CacheManagerFileFlock(const std::string& path) :
+    lock_(lockFile(path), true /*unlink lock at destruction*/) {}
 
 void CacheManagerFileFlock::lock() {
     lock_.lock();

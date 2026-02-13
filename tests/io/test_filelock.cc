@@ -24,19 +24,33 @@ CASE("test_eckit_io_filelock") {
         path.unlink();
     }
 
-    ASSERT(!path.exists());
-
     {
-        FileLock file(path);
-        AutoLock<FileLock> lock(file);
+        ASSERT(!path.exists());
+
+        {
+            FileLock file(path);
+            AutoLock<FileLock> lock(file);
+
+            EXPECT(path.exists());
+        }
 
         EXPECT(path.exists());
+
+        path.unlink(true);
     }
 
-    auto path_exists = path.exists();
-    path.unlink(true);
+    {
+        ASSERT(!path.exists());
 
-    EXPECT(!path_exists);
+        {
+            FileLock file(path, true);
+            AutoLock<FileLock> lock(file);
+
+            EXPECT(path.exists());
+        }
+
+        EXPECT(!path.exists());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

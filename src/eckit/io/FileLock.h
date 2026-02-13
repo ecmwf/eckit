@@ -29,7 +29,7 @@ public:
 
     /// Constructor
     /// creates the lock file if needed
-    FileLock(const PathName& lockFile);
+    explicit FileLock(const PathName& lockFile, bool unlink_at_destruction = false);
 
     FileLock(const FileLock&)            = delete;
     FileLock& operator=(const FileLock&) = delete;

@@ -85,6 +85,10 @@ endif()
 
 if( eckit_HAVE_TORCH )
     list( APPEND eckit_la_srcs
+          dense/LinearAlgebraTorch.cc
+          dense/LinearAlgebraTorch.h
+          detail/Torch.cc
+          detail/Torch.h
           sparse/LinearAlgebraTorch.cc
           sparse/LinearAlgebraTorch.h )
     list( APPEND eckit_la_pincludes torch )

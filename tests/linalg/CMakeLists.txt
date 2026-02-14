@@ -114,7 +114,7 @@ ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_mkl
 ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_torch
                   COMMAND   eckit_test_linalg_dense_backend
                   CONDITION eckit_HAVE_TORCH
-                  ARGS      --log_level=message -linearAlgebraSparseBackend torch )
+                  ARGS      --log_level=message -linearAlgebraDenseBackend torch )
 
 ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_viennacl
                   COMMAND   eckit_test_linalg_dense_backend

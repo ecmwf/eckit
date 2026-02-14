@@ -111,6 +111,11 @@ ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_mkl
                   CONDITION eckit_HAVE_MKL
                   ARGS      --log_level=message -linearAlgebraDenseBackend mkl )
 
+ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_torch
+                  COMMAND   eckit_test_linalg_dense_backend
+                  CONDITION eckit_HAVE_TORCH
+                  ARGS      --log_level=message -linearAlgebraDenseBackend torch )
+
 ecbuild_add_test( TARGET    eckit_test_linalg_dense_backend_viennacl
                   COMMAND   eckit_test_linalg_dense_backend
                   CONDITION eckit_HAVE_VIENNACL
@@ -158,6 +163,11 @@ ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_openmp
                   COMMAND   eckit_test_linalg_sparse_backend
                   CONDITION eckit_HAVE_OMP
                   ARGS      --log_level=message -linearAlgebraSparseBackend openmp )
+
+ecbuild_add_test( TARGET    eckit_test_linalg_sparse_backend_torch
+                  COMMAND   eckit_test_linalg_sparse_backend
+                  CONDITION eckit_HAVE_TORCH
+                  ARGS      --log_level=message -linearAlgebraSparseBackend torch )
 
 #
 

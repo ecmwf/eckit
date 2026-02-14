@@ -17,8 +17,6 @@
 
 #include <list>
 
-#include "eckit/deprecated.h"
-
 #include "eckit/types/Date.h"
 #include "eckit/types/DateTime.h"
 #include "eckit/value/Content.h"
@@ -472,18 +470,6 @@ Value toValue(const std::map<K, V>& l) {
         r[toValue((*j).first)] = toValue((*j).second);
     }
     return Value::makeMap(r);
-}
-
-template <typename T>
-DEPRECATED("Use toValue() instead")
-Value makeVectorValue(const std::vector<T>& v) {
-    return toValue(v);
-}
-
-template <typename T>
-DEPRECATED("Use toValue instead")
-Value makeVectorValue(const std::list<T>& v) {
-    return toValue(v);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

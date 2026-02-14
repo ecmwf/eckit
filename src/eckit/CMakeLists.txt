@@ -770,8 +770,6 @@ list( APPEND eckit_memory_srcs
     memory/OnlyMovable.h
     memory/Owned.h
     memory/Padded.h
-    memory/SharedPtr.cc
-    memory/SharedPtr.h
     memory/Shmget.cc
     memory/Shmget.h
     memory/Zero.h

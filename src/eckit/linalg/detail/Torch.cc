@@ -14,6 +14,7 @@
 #include <map>
 #include <type_traits>
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
@@ -39,7 +40,15 @@ torch::DeviceType get_torch_device(const std::string& name) {
         };
 
         const auto sep = name.find_first_of('-');
-        return sep != std::string::npos ? types.at(name.substr(sep + 1)) : torch::DeviceType::CPU;
+        if (sep == std::string::npos) {
+            return torch::DeviceType::CPU;
+        }
+
+        if (auto it = types.find(name.substr(sep + 1)); it != types.end()) {
+            return it->second;
+        }
+
+        throw eckit::UserError("Unknown torch device: " + name);
     }();
 
     return device;

@@ -48,6 +48,13 @@ void LinearAlgebraTorch::spmv(const SparseMatrix& A, const Vector& x, Vector& y)
     ASSERT(Ni == y.rows());
     ASSERT(Nj == x.rows());
 
+    // Note: This implementation copies data to GPU memory for each operation and immediately
+    // copies the result back to CPU. This data transfer overhead can be significant and may
+    // negate the performance benefits of GPU computation for small matrices or frequent operations.
+    // GPU acceleration is most beneficial for large matrices where computation time dominates
+    // transfer overhead. For optimal performance, consider keeping data on GPU across multiple
+    // operations rather than transferring for each call.
+
     // multiplication
     auto A_tensor = make_torch_sparse_csr(A, get_torch_device(name()));
     auto x_tensor = make_torch_dense_tensor(x, get_torch_device(name()));
@@ -65,6 +72,13 @@ void LinearAlgebraTorch::spmm(const SparseMatrix& A, const Matrix& X, Matrix& Y)
     ASSERT(Ni == Y.rows());
     ASSERT(Nj == X.rows());
     ASSERT(Nk == Y.cols());
+
+    // Note: This implementation copies data to GPU memory for each operation and immediately
+    // copies the result back to CPU. This data transfer overhead can be significant and may
+    // negate the performance benefits of GPU computation for small matrices or frequent operations.
+    // GPU acceleration is most beneficial for large matrices where computation time dominates
+    // transfer overhead. For optimal performance, consider keeping data on GPU across multiple
+    // operations rather than transferring for each call.
 
     // multiplication and conversion from column-major to row-major (and back)
     auto A_tensor = make_torch_sparse_csr(A, get_torch_device(name()));

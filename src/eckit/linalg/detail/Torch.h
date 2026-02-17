@@ -10,6 +10,7 @@
 
 
 #pragma once
+
 #include <string>
 
 #include "eckit/linalg/types.h"

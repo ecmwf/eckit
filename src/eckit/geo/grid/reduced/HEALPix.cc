@@ -93,6 +93,15 @@ size_t HEALPix::size_from_nside(size_t Nside) {
 }
 
 
+size_t HEALPix::nside_from_size(size_t size) {
+    if (auto Nside = static_cast<size_t>(std::sqrt(size / 12)); size == size_from_nside(Nside)) {
+        return Nside;
+    }
+
+    throw exception::GridError("HEALPix: invalid size: " + std::to_string(size), Here());
+}
+
+
 size_t HEALPix::size() const {
     return size_from_nside(Nside_);
 }

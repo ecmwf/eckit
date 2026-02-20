@@ -11,6 +11,11 @@
 # TODO we duplicate information -- pyproject.toml's `name` and `packages` are derivable from $NAME and must stay consistent
 
 NAME="eckit"
-CMAKE_PARAMS="-DENABLE_MPI=0  -DENABLE_ECKIT_GEO=1 -DENABLE_BUILD_TOOLS=OFF -DENABLE_AEC=0 -DENABLE_EIGEN=0 -DENABLE_LZ4=1"
+if [ "$(uname)" != "Darwin" ] ; then
+    PROJ_EXTRA="-DPROJ_DIR=/tmp/proj/target/lib64/cmake/proj"
+else
+    PROJ_EXTRA="" # brew install is autodiscovered fine
+fi
+CMAKE_PARAMS="-DENABLE_MPI=0  -DENABLE_ECKIT_GEO=1 -DENABLE_BUILD_TOOLS=OFF -DENABLE_AEC=0 -DENABLE_EIGEN=0 -DENABLE_LZ4=1 -DENABLE_PROJ=1 $PROJ_EXTRA"
 PYPROJECT_DIR="python/eckitlib"
 DEPENDENCIES='[]'

@@ -526,7 +526,6 @@ list( APPEND eckit_types_srcs
 list( APPEND eckit_parser_srcs
     parser/CSVParser.cc
     parser/CSVParser.h
-    parser/JSON.h
     parser/JSONParser.cc
     parser/JSONParser.h
     parser/ObjectParser.cc
@@ -688,7 +687,6 @@ list( APPEND eckit_utils_srcs
     utils/Literals.h
     utils/MD5.cc
     utils/MD5.h
-    utils/Optional.h
     utils/Overloaded.h
     utils/RLE.cc
     utils/RLE.h
@@ -742,13 +740,6 @@ if(eckit_HAVE_SSL)
     )
 endif()
 
-if(eckit_HAVE_RSYNC)
-    list( APPEND eckit_utils_srcs
-        utils/Rsync.cc
-        utils/Rsync.h
-    )
-endif()
-
 if(eckit_HAVE_XXHASH)
     list( APPEND eckit_utils_srcs
         utils/xxHashing.cc
@@ -779,9 +770,6 @@ list( APPEND eckit_memory_srcs
     memory/OnlyMovable.h
     memory/Owned.h
     memory/Padded.h
-    memory/ScopedPtr.h
-    memory/SharedPtr.cc
-    memory/SharedPtr.h
     memory/Shmget.cc
     memory/Shmget.h
     memory/Zero.h
@@ -823,10 +811,6 @@ elseif( EC_OS_NAME STREQUAL "macosx" )
     list( APPEND eckit_system_srcs system/SystemInfoMacOSX.h system/SystemInfoMacOSX.cc )
 else()
     ecbuild_warn("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
-endif()
-
-if(HAVE_JEMALLOC)
-    list(APPEND ECKIT_SYSTEM_EXTRA_LIBS ${JEMALLOC_LIBRARIES})
 endif()
 
 list( APPEND eckit_bases_srcs
@@ -945,7 +929,6 @@ ecbuild_add_library(
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
-              "${LIBRSYNC_LIBRARIES}"
               "${LZ4_LIBRARIES}"
               "${BZIP2_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"

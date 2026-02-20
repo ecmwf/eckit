@@ -19,21 +19,18 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class StringTools : private NonCopyable {
+class StringTools {
 public:
 
-    static std::string substitute(const std::string&, const std::map<std::string, std::string>&);
+    StringTools() = delete;
 
-    /// @deprecated Use extract variables
-    static std::vector<std::string> substituteVariables(const std::string&);
+    static std::string substitute(const std::string&, const std::map<std::string, std::string>&);
 
     static std::vector<std::string> listVariables(const std::string&);
 
@@ -63,10 +60,6 @@ public:
 
     static bool isQuoted(const std::string& value);
     static std::string unQuote(const std::string& value);
-
-private:
-
-    StringTools();  // Non instantiable
 };
 
 //----------------------------------------------------------------------------------------------------------------------

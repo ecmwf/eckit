@@ -1,3 +1,13 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
 #include "eckit/runtime/Metrics.h"
 
 #include <ctime>
@@ -14,7 +24,6 @@
 
 #include "eckit/utils/Tokenizer.h"
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/value/Value.h"
 
 namespace eckit {
@@ -102,10 +111,16 @@ struct MetricsPrefixInfo {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class MetricsCollector : private eckit::NonCopyable {
+class MetricsCollector {
 public:  // methods
 
     MetricsCollector();
+
+    MetricsCollector(const MetricsCollector&)            = delete;
+    MetricsCollector& operator=(const MetricsCollector&) = delete;
+    MetricsCollector(MetricsCollector&&)                 = delete;
+    MetricsCollector& operator=(MetricsCollector&&)      = delete;
+
     ~MetricsCollector();
 
     void set(const std::string& name, const Value& value, bool overrideOk);

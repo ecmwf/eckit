@@ -20,7 +20,6 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/SharedBuffer.h"
-#include "eckit/memory/NonCopyable.h"
 
 #include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"
@@ -50,9 +49,19 @@ void addComm(std::string_view name, int comm);
 /// Register an existing communicator
 void addComm(std::string_view name, Comm* comm);
 
-/// Unregister and delete specific comm
+/// Unregister a communicator and call free() on the comm.
 /// @pre Comm is registered in the environment
+/// @note Cannot unregister 'world', 'self' or default communicators
+/// @throws SeriousBug if trying to unregister 'world', 'self' or default communicators,
+///         or any communicator aliasing MPI_COMM_WORLD or MPI_COMM_SELF with the parallel backend.
 void deleteComm(std::string_view name);
+
+/// Unregister a communicator without calling free() on the comm, e.g. if the registered comm is wrapping an MPI
+/// communicator managed by an external library
+/// @pre Comm is registered in the environment
+/// @note Cannot unregister 'world', 'self' or default communicators
+/// @throws SeriousBug if trying to unregister 'world', 'self' or default communicators
+void unregisterComm(std::string_view name);
 
 /// Check if a communicator is registered
 bool hasComm(std::string_view name);
@@ -82,12 +91,19 @@ struct is_std_vector<std::vector<T, A> > : std::true_type {};
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Comm : private eckit::NonCopyable {
+class Comm {
     friend class Environment;
 
 public:  // class methods
 
     static Comm& comm(std::string_view name = {});
+
+    Comm() = default;
+
+    Comm(const Comm&)            = delete;
+    Comm& operator=(const Comm&) = delete;
+    Comm(Comm&&)                 = delete;
+    Comm& operator=(Comm&&)      = delete;
 
 public:  // methods
 

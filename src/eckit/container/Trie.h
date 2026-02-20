@@ -17,8 +17,6 @@
 #ifndef eckit_containers_Trie_H
 #define eckit_containers_Trie_H
 
-#include "eckit/memory/NonCopyable.h"
-
 #include <ostream>
 #include <vector>
 
@@ -28,11 +26,17 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-class Trie : private NonCopyable {
+class Trie {
 
 public:  // methods
 
     Trie();
+
+    Trie(const Trie&)            = delete;
+    Trie& operator=(const Trie&) = delete;
+    Trie(Trie&&)                 = delete;
+    Trie& operator=(Trie&&)      = delete;
+
     ~Trie();
 
     bool empty() const { return kids_.empty() && !set_; }

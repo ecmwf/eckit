@@ -18,7 +18,6 @@
 #include <cstdio>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
@@ -28,10 +27,15 @@ class PathName;
 /// Wrapper around a stdio FILE*
 /// Use this for class members
 
-class StdFile : private NonCopyable {
+class StdFile {
 public:
 
     StdFile(const PathName& name, const std::string& mode = "r");
+
+    StdFile(const StdFile&)            = delete;
+    StdFile& operator=(const StdFile&) = delete;
+    StdFile(StdFile&&)                 = delete;
+    StdFile& operator=(StdFile&&)      = delete;
 
     /// @pre must have been closed
     ~StdFile();

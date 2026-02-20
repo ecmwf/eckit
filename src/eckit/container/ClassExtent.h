@@ -17,22 +17,25 @@
 #include <map>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
 template <class T>
-class ClassExtent : private NonCopyable {
+class ClassExtent {
 public:
 
     // -- Contructors
 
     ClassExtent(T*);
+
+    ClassExtent(const ClassExtent&)            = delete;
+    ClassExtent& operator=(const ClassExtent&) = delete;
+    ClassExtent(ClassExtent&&)                 = delete;
+    ClassExtent& operator=(ClassExtent&&)      = delete;
 
     // -- Destructor
 

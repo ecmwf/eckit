@@ -17,8 +17,6 @@
 
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit::distributed {
 
@@ -27,7 +25,7 @@ class Message;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Actor : private eckit::NonCopyable {
+class Actor {
 public:
 
     enum MessageTags {
@@ -44,6 +42,12 @@ public:
 public:  // methods
 
     Actor(Transport& transport);
+
+    Actor(const Actor&)            = delete;
+    Actor& operator=(const Actor&) = delete;
+    Actor(Actor&&)                 = delete;
+    Actor& operator=(Actor&&)      = delete;
+
     virtual ~Actor();
 
     virtual void run()      = 0;

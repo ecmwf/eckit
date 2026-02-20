@@ -23,8 +23,6 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/memory/NonCopyable.h"
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -36,7 +34,7 @@ namespace eckit {
 /// @todo implement the expire() and the different policies
 
 template <typename K, typename V>
-class Cache : private NonCopyable {
+class Cache {
 
 public:  // types
 
@@ -88,6 +86,11 @@ public:  // types
 public:  // methods
 
     Cache();
+
+    Cache(const Cache&)            = delete;
+    Cache& operator=(const Cache&) = delete;
+    Cache(Cache&&)                 = delete;
+    Cache& operator=(Cache&&)      = delete;
 
     ~Cache();
 

@@ -17,8 +17,6 @@
 
 #include <sys/select.h>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
@@ -29,7 +27,7 @@ class TCPSocket;
 };
 
 /// Wraps calls to select
-class Select : private NonCopyable {
+class Select {
 
 public:
 
@@ -38,6 +36,11 @@ public:
     Select();
     explicit Select(int);
     explicit Select(net::TCPSocket&);
+
+    Select(const Select&)            = delete;
+    Select& operator=(const Select&) = delete;
+    Select(Select&&)                 = delete;
+    Select& operator=(Select&&)      = delete;
 
     // -- Destructor
 

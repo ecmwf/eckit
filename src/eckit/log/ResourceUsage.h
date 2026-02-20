@@ -19,7 +19,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/system/MemoryInfo.h"
 
 
@@ -27,7 +26,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class ResourceUsage : private NonCopyable {
+class ResourceUsage {
 public:
 
     explicit ResourceUsage();
@@ -39,6 +38,11 @@ public:
     /// @param name of the timer, used for output
     /// @param o output stream to use  for output
     explicit ResourceUsage(const char* name, std::ostream& o = Log::info());
+
+    ResourceUsage(const ResourceUsage&)            = delete;
+    ResourceUsage& operator=(const ResourceUsage&) = delete;
+    ResourceUsage(ResourceUsage&&)                 = delete;
+    ResourceUsage& operator=(ResourceUsage&&)      = delete;
 
     ~ResourceUsage();
 

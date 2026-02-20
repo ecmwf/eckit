@@ -17,7 +17,6 @@
 
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
@@ -28,11 +27,16 @@ namespace eckit {
 class Configurable;
 class Url;
 
-class ResourceBase : private NonCopyable {
+class ResourceBase {
 
 public:  // methods
 
     ResourceBase(Configurable* owner, const std::string& str);
+
+    ResourceBase(const ResourceBase&)            = delete;
+    ResourceBase& operator=(const ResourceBase&) = delete;
+    ResourceBase(ResourceBase&&)                 = delete;
+    ResourceBase& operator=(ResourceBase&&)      = delete;
 
     virtual ~ResourceBase();
 

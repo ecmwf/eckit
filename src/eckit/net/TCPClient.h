@@ -21,11 +21,16 @@ namespace eckit::net {
 
 class Endpoint;
 
-class TCPClient : public TCPSocket, private eckit::NonCopyable {
+class TCPClient : public TCPSocket {
 public:
 
     TCPClient(const SocketOptions& options = SocketOptions::none());
     TCPClient(int port, const SocketOptions& options = SocketOptions::none());
+
+    TCPClient(TCPClient&)             = delete;
+    TCPClient& operator=(TCPClient&)  = delete;
+    TCPClient(TCPClient&&)            = delete;
+    TCPClient& operator=(TCPClient&&) = delete;
 
     ~TCPClient();
 

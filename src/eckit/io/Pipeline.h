@@ -17,7 +17,6 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/TransferWatcher.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 //-----------------------------------------------------------------------------
@@ -26,12 +25,17 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Pipeline : private NonCopyable {
+class Pipeline {
 public:
 
     // -- Contructors
 
     Pipeline(TransferWatcher& = TransferWatcher::dummy());
+
+    Pipeline(const Pipeline&)            = delete;
+    Pipeline& operator=(const Pipeline&) = delete;
+    Pipeline(Pipeline&&)                 = delete;
+    Pipeline& operator=(Pipeline&&)      = delete;
 
     // -- Destructor
 

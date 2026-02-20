@@ -34,12 +34,18 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class TxnArray : private eckit::NonCopyable {
+class TxnArray {
 
 public:
 
     using iterator       = TxnID*;
     using const_iterator = const TxnID*;
+
+    TxnArray()                           = default;
+    TxnArray(const TxnArray&)            = delete;
+    TxnArray& operator=(const TxnArray&) = delete;
+    TxnArray(TxnArray&&)                 = delete;
+    TxnArray& operator=(TxnArray&&)      = delete;
 
     virtual ~TxnArray() {}
 

@@ -18,10 +18,8 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/cache/Download.h"
-#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/cache/Record.h"
 #include "eckit/geo/iterator/Unstructured.h"
-#include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
@@ -36,42 +34,10 @@ void hash_vector_double(MD5&, const std::vector<double>&);
 namespace eckit::geo::grid {
 
 
-namespace {
-
-
-util::recursive_mutex MUTEX;
-
-
-class lock_type {
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
-
-
-const ORCA::ORCARecord& orca_record(const spec::Spec& spec) {
-    // control concurrent reads/writes
-    lock_type lock;
-
-    static cache::MemoryCacheT<PathName, ORCA::ORCARecord> cache;
-    static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/orca");
-
-    auto url  = LibEcKitGeo::url(spec.get_string("url"));
-    auto path = download.to_cached_path(url, spec.get_string("uid", ""), ".ek");
-    ASSERT_MSG(path.exists(), "ORCA: file '" + path + "' not found");
-
-    if (cache.contains(path)) {
-        return cache[path];
-    }
-
-    // read and check against metadata (if present)
-    auto& record = cache[path];
-    record.read(path);
-    record.check(spec);
-
-    return record;
+static const ORCA::ORCARecord& orca_record(const spec::Spec& spec) {
+    static cache::Record<ORCA::ORCARecord> cache(LibEcKitGeo::cacheDir() + "/grid/orca");
+    return cache.get(spec);
 }
-
-
-}  // namespace
 
 
 ORCA::ORCA(const Spec& spec) :

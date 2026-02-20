@@ -64,6 +64,7 @@ public:
 
     const Figure& figure() const;
 
+    virtual void fill_spec(spec::Custom&) const;
     virtual const std::string& type() const = 0;
 
     [[nodiscard]] const Spec& spec() const;
@@ -74,13 +75,9 @@ public:
 
     static std::string className() { return "projection"; }
 
+    static const Projection& projection_default();
+
     [[nodiscard]] static Projection* make_from_spec(const Spec&);
-
-protected:
-
-    // -- Methods
-
-    virtual void fill_spec(spec::Custom&) const;
 
 private:
 

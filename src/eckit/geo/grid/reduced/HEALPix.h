@@ -63,6 +63,7 @@ public:
     // -- Class methods
 
     static size_t size_from_nside(size_t);
+    static size_t nside_from_size(size_t);
 
 private:
 

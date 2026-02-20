@@ -18,6 +18,7 @@
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Earth.h"
+#include "eckit/geo/projection/None.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
@@ -82,6 +83,12 @@ std::string Projection::proj_str() const {
 #else
     NOTIMP;
 #endif
+}
+
+
+const Projection& Projection::projection_default() {
+    static const projection::None proj;
+    return proj;
 }
 
 

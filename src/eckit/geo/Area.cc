@@ -15,6 +15,7 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/share/Area.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
@@ -71,6 +72,11 @@ double Area::area() const {
 }
 
 
+const Area& Area::area_default() {
+    return area::BoundingBox::bounding_box_default();
+}
+
+
 const Area* AreaFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Area::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
     return instance().make_from_spec_(*spec);
@@ -107,7 +113,22 @@ Area::Spec* AreaFactory::make_spec_(const Area::Spec& spec) const {
 
     // hardcoded, interpreted options (contributing to areaspec)
 
+    auto back = std::make_unique<spec::Custom>();
+    ASSERT(back);
+
     cfg->push_back(new spec::Custom{{"type", "bounding_box"}});
+
+    // if (cfg->has("north") || cfg->has("east") || cfg->has("south") || cfg->has("west")) {
+    //     // back->set("type", "reduced_gg");
+    // }
+
+    // if (std::vector<double> area; cfg->get("area", area) && area.size() == 4) {
+    //     back->set("type", "regular_ll");
+    // }
+
+    if (!back->empty()) {
+        cfg->push_back(back.release());
+    }
 
     return cfg;
 }

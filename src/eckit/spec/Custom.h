@@ -64,6 +64,12 @@ public:
     // -- Methods
 
     const container_type& container() const { return map_; }
+
+    void set(const Custom& from) { map_.insert(from.map_.begin(), from.map_.end()); }
+    void set(const container_type& container) { map_ = container; }
+    void set(container_type&& container) { map_.swap(container); }
+
+    bool only(const std::string& name) const { return map_.size() == 1 && has(name); }
     bool empty() const { return map_.empty(); }
     void clear() { map_.clear(); }
 

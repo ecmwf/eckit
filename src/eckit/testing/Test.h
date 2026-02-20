@@ -56,24 +56,26 @@ class SetEnv {
 public:
 
     SetEnv(const char* key, const char* val) : key_(key), value_(val) {
-        oldValue_ = ::getenv(key_);
-        ::setenv(key_, value_, true);
+        if (const char* p = ::getenv(key_.c_str())) {
+            oldValue_ = std::string(p);
+        }
+        ::setenv(key_.c_str(), value_.c_str(), true);
     }
 
     ~SetEnv() {
-        if (not oldValue_) {
-            ::unsetenv(key_);
+        if (!oldValue_) {
+            ::unsetenv(key_.c_str());
         }
         else {
-            ::setenv(key_, oldValue_, true);
+            ::setenv(key_.c_str(), oldValue_->c_str(), true);
         }
     }
 
 private:
 
-    const char* key_;
-    const char* value_;
-    const char* oldValue_;
+    std::string key_;
+    std::string value_;
+    std::optional<std::string> oldValue_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

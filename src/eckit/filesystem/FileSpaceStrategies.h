@@ -35,6 +35,7 @@ public:
     static const PathName& pureRandom(const std::vector<PathName>& fileSystems);
     static const PathName& weightedRandom(const std::vector<PathName>& fileSystems);
     static const PathName& weightedRandomPercent(const std::vector<PathName>& fileSystems);
+    static const PathName& binnedLeastUsed(const std::vector<PathName>& fileSystems);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

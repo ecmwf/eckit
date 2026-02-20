@@ -10,6 +10,7 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -77,6 +78,10 @@ const PathName& FileSpaceStrategies::selectFileSystem(const std::vector<PathName
 
     if (s == "leastUsedPercent") {
         return FileSpaceStrategies::leastUsedPercent(fileSystems);
+    }
+
+    if (s == "binnedLeastUsed") {
+        return FileSpaceStrategies::binnedLeastUsed(fileSystems);
     }
 
     return FileSpaceStrategies::leastUsed(fileSystems);
@@ -367,6 +372,30 @@ const PathName& FileSpaceStrategies::weightedRandomPercent(const std::vector<Pat
     attenuateProbabilities(candidates);
 
     return chooseByProbability("weightedRandomPercent", candidates);
+}
+
+const PathName& FileSpaceStrategies::binnedLeastUsed(const std::vector<PathName>& fileSystems) {
+    std::vector<Candidate> candidates = findCandidates(fileSystems, &computeNull);
+
+    if (candidates.empty()) {
+        return leastUsed(fileSystems);
+    }
+
+    static Resource<long> numBins("binnedLeastUsedNumBins", 20);
+    ASSERT(numBins > 0);
+
+    auto [minIt, maxIt] = std::minmax_element(candidates.begin(), candidates.end(),
+        [](const Candidate& a, const Candidate& b) { return a.available() < b.available(); });
+
+    size_t maxAvail = maxIt->available();
+    size_t minAvail = minIt->available();
+    size_t threshold = maxAvail - ((maxAvail - minAvail) / static_cast<size_t>(numBins));
+
+    for (auto& c : candidates) {
+        c.probability_ = (c.available() >= threshold) ? 1.0 : 0.0;
+    }
+
+    return chooseByProbability("binnedLeastUsed", candidates);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "eckit/filesystem/FileSpaceStrategies.h"
-#include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/TmpDir.h"
 #include "eckit/testing/Test.h"
@@ -65,6 +64,7 @@ CASE("All strategies return a valid path from the input set") {
     EXPECT(fixture.contains(FileSpaceStrategies::pureRandom(fs)));
     EXPECT(fixture.contains(FileSpaceStrategies::weightedRandom(fs)));
     EXPECT(fixture.contains(FileSpaceStrategies::weightedRandomPercent(fs)));
+    EXPECT(fixture.contains(FileSpaceStrategies::binnedLeastUsed(fs)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -77,7 +77,7 @@ CASE("selectFileSystem dispatches to the named strategy") {
     std::vector<std::string> strategies = {
         "roundRobin", "weightedRandom", "pureRandom",
         "weightedRandomPercent", "leastUsedPercent",
-        "leastUsed" /* default / fallback */
+        "binnedLeastUsed", "leastUsed" /* default / fallback */
     };
 
     for (const auto& s : strategies) {
@@ -100,6 +100,7 @@ CASE("Single filesystem always returned") {
     EXPECT(FileSpaceStrategies::pureRandom(fs) == fs[0]);
     EXPECT(FileSpaceStrategies::weightedRandom(fs) == fs[0]);
     EXPECT(FileSpaceStrategies::weightedRandomPercent(fs) == fs[0]);
+    EXPECT(FileSpaceStrategies::binnedLeastUsed(fs) == fs[0]);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -113,6 +114,7 @@ CASE("Empty filesystem vector triggers assertion") {
     EXPECT_THROWS_AS(FileSpaceStrategies::pureRandom(empty), AssertionFailed);
     EXPECT_THROWS_AS(FileSpaceStrategies::weightedRandom(empty), AssertionFailed);
     EXPECT_THROWS_AS(FileSpaceStrategies::weightedRandomPercent(empty), AssertionFailed);
+    EXPECT_THROWS_AS(FileSpaceStrategies::binnedLeastUsed(empty), AssertionFailed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -217,6 +219,34 @@ CASE("Non-existent paths are skipped, valid ones still chosen") {
     EXPECT(fixture.contains(FileSpaceStrategies::pureRandom(mixed)));
     EXPECT(fixture.contains(FileSpaceStrategies::weightedRandom(mixed)));
     EXPECT(fixture.contains(FileSpaceStrategies::weightedRandomPercent(mixed)));
+    EXPECT(fixture.contains(FileSpaceStrategies::binnedLeastUsed(mixed)));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("binnedLeastUsed returns valid paths over many iterations") {
+    TestFileSystems fixture(3);
+    const auto& fs = fixture.paths();
+    std::set<PathName> returned;
+
+    for (int i = 0; i < 50; ++i) {
+        auto&& r = FileSpaceStrategies::binnedLeastUsed(fs);
+        EXPECT(fixture.contains(r));
+        returned.emplace(r);
+    }
+
+    // All directories are on the same device, so all have equal available space
+    // and all land in the top bin — all should be chosen eventually
+    EXPECT(returned.size() == 3);
+}
+
+CASE("binnedLeastUsed is deterministic with single candidate") {
+    TestFileSystems fixture(1);
+    const auto& fs = fixture.paths();
+
+    for (int i = 0; i < 10; ++i) {
+        EXPECT(FileSpaceStrategies::binnedLeastUsed(fs) == fs[0]);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -228,6 +258,7 @@ CASE("Strategies work with many filesystem paths") {
     EXPECT(fixture.contains(FileSpaceStrategies::leastUsed(fs)));
     EXPECT(fixture.contains(FileSpaceStrategies::roundRobin(fs)));
     EXPECT(fixture.contains(FileSpaceStrategies::weightedRandom(fs)));
+    EXPECT(fixture.contains(FileSpaceStrategies::binnedLeastUsed(fs)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

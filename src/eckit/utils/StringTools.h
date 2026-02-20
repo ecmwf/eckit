@@ -32,9 +32,6 @@ public:
 
     static std::string substitute(const std::string&, const std::map<std::string, std::string>&);
 
-    /// @deprecated Use extract variables
-    static std::vector<std::string> substituteVariables(const std::string&);
-
     static std::vector<std::string> listVariables(const std::string&);
 
     static std::string upper(const std::string&);

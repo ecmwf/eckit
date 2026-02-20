@@ -24,9 +24,6 @@ CASE("list") {
 
     auto dense_backends = {
         "generic",
-#if eckit_HAVE_ARMADILLO
-        "armadillo",
-#endif
 #if eckit_HAVE_CUDA
         "cuda",
 #endif
@@ -38,9 +35,6 @@ CASE("list") {
 #endif
 #if eckit_HAVE_MKL
         "mkl",
-#endif
-#if eckit_HAVE_VIENNACL
-        "viennacl",
 #endif
 #if eckit_HAVE_OMP
         "openmp",
@@ -59,9 +53,6 @@ CASE("list") {
 #if eckit_HAVE_MKL
         "mkl",
 #endif
-#endif
-#if eckit_HAVE_VIENNACL
-        "viennacl",
 #endif
 #if eckit_HAVE_OMP
         "openmp",

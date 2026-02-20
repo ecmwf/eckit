@@ -14,8 +14,6 @@
 #include <iosfwd>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
@@ -24,11 +22,16 @@ class Buffer;
 namespace net {
 
 
-class UDPServer : private NonCopyable {
+class UDPServer {
 
 public:  // methods
 
     explicit UDPServer(int port);
+
+    UDPServer(const UDPServer&)            = delete;
+    UDPServer& operator=(const UDPServer&) = delete;
+    UDPServer(UDPServer&&)                 = delete;
+    UDPServer& operator=(UDPServer&&)      = delete;
 
     ~UDPServer();
 

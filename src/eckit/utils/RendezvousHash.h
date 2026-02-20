@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -29,7 +28,7 @@ namespace eckit {
 ///
 /// @todo Make node a template parameter? Must be a serializable object
 
-class RendezvousHash : private eckit::NonCopyable {
+class RendezvousHash {
 
 public:  // types
 
@@ -50,6 +49,11 @@ public:  // methods
     RendezvousHash(const hash_func_ptr hash = &md5);
 
     RendezvousHash(const std::vector<Node>& nodes, const hash_func_ptr hash = &md5);
+
+    RendezvousHash(const RendezvousHash&)            = delete;
+    RendezvousHash& operator=(const RendezvousHash&) = delete;
+    RendezvousHash(RendezvousHash&&)                 = delete;
+    RendezvousHash& operator=(RendezvousHash&&)      = delete;
 
     ~RendezvousHash();
 

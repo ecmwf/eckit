@@ -93,11 +93,16 @@ struct Info {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @warning This class is written to disk! Any change must ensure binary compatibility.
-class TaskInfo : public NonCopyable {
+class TaskInfo {
 public:
 
     TaskInfo();
+
+    TaskInfo(const TaskInfo&)            = delete;
+    TaskInfo& operator=(const TaskInfo&) = delete;
+    TaskInfo(TaskInfo&&)                 = delete;
+    TaskInfo& operator=(TaskInfo&&)      = delete;
+
     ~TaskInfo();
 
     void out(char*, char*);

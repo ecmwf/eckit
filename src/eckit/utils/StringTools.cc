@@ -77,10 +77,6 @@ std::string StringTools::substitute(const std::string& s, const std::map<std::st
     return result;
 }
 
-std::vector<std::string> StringTools::substituteVariables(const std::string& s) {
-    return listVariables(s);
-}
-
 std::vector<std::string> StringTools::listVariables(const std::string& s) {
     std::vector<std::string> result;
     size_t len = s.length();
@@ -92,7 +88,7 @@ std::vector<std::string> StringTools::listVariables(const std::string& s) {
             case '{':
                 if (var) {
                     std::ostringstream os;
-                    os << "StringTools::substituteVariables: unexpected { found in " << s << " at position " << i;
+                    os << "StringTools::listVariables: unexpected { found in " << s << " at position " << i;
                     throw UserError(os.str());
                 }
                 var  = true;
@@ -102,7 +98,7 @@ std::vector<std::string> StringTools::listVariables(const std::string& s) {
             case '}':
                 if (!var) {
                     std::ostringstream os;
-                    os << "StringTools::substituteVariables: unexpected } found in " << s << " at position " << i;
+                    os << "StringTools::listVariables: unexpected } found in " << s << " at position " << i;
                     throw UserError(os.str());
                 }
                 var = false;
@@ -118,7 +114,7 @@ std::vector<std::string> StringTools::listVariables(const std::string& s) {
     }
     if (var) {
         std::ostringstream os;
-        os << "StringTools::substituteVariables: missing } in " << s;
+        os << "StringTools::listVariables: missing } in " << s;
         throw UserError(os.str());
     }
     return result;

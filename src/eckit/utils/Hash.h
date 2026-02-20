@@ -19,14 +19,13 @@
 #include <map>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Hash : private eckit::NonCopyable {
+class Hash {
 
 public:  // types
 
@@ -35,6 +34,11 @@ public:  // types
 public:  // methods
 
     Hash();
+
+    Hash(const Hash&)            = delete;
+    Hash& operator=(const Hash&) = delete;
+    Hash(Hash&&)                 = delete;
+    Hash& operator=(Hash&&)      = delete;
 
     virtual ~Hash();
 

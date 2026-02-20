@@ -19,7 +19,6 @@
 #include <string>
 
 #include "eckit/distributed/TransportStatistics.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit::option {
@@ -34,10 +33,16 @@ class Message;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Transport : private eckit::NonCopyable {
+class Transport {
 public:  // methods
 
     Transport(const eckit::option::CmdArgs& args);
+
+    Transport(const Transport&)            = delete;
+    Transport& operator=(const Transport&) = delete;
+    Transport(Transport&&)                 = delete;
+    Transport& operator=(Transport&&)      = delete;
+
     virtual ~Transport();
 
     virtual void sendMessageToNextWorker(const Message& message)  = 0;

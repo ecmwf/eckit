@@ -14,8 +14,6 @@
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
 #include "eckit/log/TraceTimer.h"
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
@@ -25,7 +23,7 @@ namespace eckit {
 // environment. AutoLocks are exception safe.
 
 template <class T>
-class AutoLock : private NonCopyable {
+class AutoLock {
 
 public:
 
@@ -34,6 +32,11 @@ public:
     AutoLock(T& resource) : resource_(resource) { resource_.lock(); }
 
     AutoLock(T* resource) : resource_(*resource) { resource_.lock(); }
+
+    AutoLock(const AutoLock&)            = delete;
+    AutoLock& operator=(const AutoLock&) = delete;
+    AutoLock(AutoLock&&)                 = delete;
+    AutoLock& operator=(AutoLock&&)      = delete;
 
     // -- Destructor
 
@@ -47,13 +50,16 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-class AutoSharedLock : private NonCopyable {
+class AutoSharedLock {
 public:
 
     // -- Contructors
 
     AutoSharedLock(T& resource) : resource_(resource) { resource_.lockShared(); }
     AutoSharedLock(T* resource) : resource_(*resource) { resource_.lockShared(); }
+
+    AutoSharedLock(const AutoSharedLock&)            = delete;
+    AutoSharedLock& operator=(const AutoSharedLock&) = delete;
 
     // -- Destructor
 
@@ -67,7 +73,7 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T>
-class TimedAutoLock : private NonCopyable {
+class TimedAutoLock {
 public:
 
     // -- Constructors
@@ -76,6 +82,9 @@ public:
         resource_.lock();
         timer_.report(message + " (acquire)");
     }
+
+    TimedAutoLock(const TimedAutoLock&)            = delete;
+    TimedAutoLock& operator=(const TimedAutoLock&) = delete;
 
     // -- Destructor
 
@@ -90,7 +99,7 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 template <class T, class U>
-class TraceAutoLock : private NonCopyable {
+class TraceAutoLock {
 public:
 
     // -- Constructors
@@ -99,6 +108,9 @@ public:
         resource_.lock();
         timer_.report(message + " (acquire)");
     }
+
+    TraceAutoLock(const TraceAutoLock&)            = delete;
+    TraceAutoLock& operator=(const TraceAutoLock&) = delete;
 
     // -- Destructor
 

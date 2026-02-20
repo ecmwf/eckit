@@ -20,15 +20,19 @@
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 
-class BasePathName : protected NonCopyable {
+class BasePathName {
 public:
 
     BasePathName() {}
+
+    BasePathName(const BasePathName&)            = delete;
+    BasePathName& operator=(const BasePathName&) = delete;
+    BasePathName(BasePathName&&)                 = delete;
+    BasePathName& operator=(BasePathName&&)      = delete;
 
     virtual ~BasePathName();
 

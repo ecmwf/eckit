@@ -210,9 +210,6 @@ public:
     explicit NotImplemented(const CodeLocation& loc) : NotImplemented({}, loc) {}
 };
 
-/// For compatibility
-using MethodNotYetImplemented [[deprecated("Use eckit::NotImplemented directly")]] = NotImplemented;
-
 class FunctionalityNotSupported : public NotImplemented {
 public:
 

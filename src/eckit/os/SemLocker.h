@@ -16,14 +16,13 @@
 #define eckit_os_SemLocker_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SemLocker : private NonCopyable {
+class SemLocker {
 
     static const int SLEEP = 1;
 
@@ -35,6 +34,11 @@ class SemLocker : private NonCopyable {
 public:
 
     SemLocker(int sem, const eckit::PathName& path, int maxWaitLock = 60);
+
+    SemLocker(const SemLocker&)            = delete;
+    SemLocker& operator=(const SemLocker&) = delete;
+    SemLocker(SemLocker&&)                 = delete;
+    SemLocker& operator=(SemLocker&&)      = delete;
 
     ~SemLocker();
 };

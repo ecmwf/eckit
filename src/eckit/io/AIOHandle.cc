@@ -34,11 +34,17 @@ namespace eckit {
 
 #if eckit_HAVE_AIO
 
-struct AIOBuffer : private eckit::NonCopyable {
+struct AIOBuffer {
 
 public:  // methods
 
     explicit AIOBuffer() { eckit::zero(aio_); }
+
+    AIOBuffer(const AIOBuffer&)            = delete;
+    AIOBuffer& operator=(const AIOBuffer&) = delete;
+    AIOBuffer(AIOBuffer&&)                 = delete;
+    AIOBuffer& operator=(AIOBuffer&&)      = delete;
+
     ~AIOBuffer() { delete buff_; }
 
     void resize(size_t sz) {
@@ -249,7 +255,12 @@ void AIOHandle::flush() {
 
 #else  // NO eckit_HAVE_AIO
 
-struct AIOBuffer : private eckit::NonCopyable {};
+struct AIOBuffer {
+    AIOBuffer()                            = default;
+    AIOBuffer(const AIOBuffer&)            = delete;
+    AIOBuffer& operator=(const AIOBuffer&) = delete;
+    ~AIOBuffer()                           = default;
+};
 
 AIOHandle::AIOHandle(const PathName& path, size_t count, size_t size, bool fsync) {
     NOTIMP;

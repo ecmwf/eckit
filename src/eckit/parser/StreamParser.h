@@ -18,13 +18,12 @@
 #include <set>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StreamParser : private NonCopyable {
+class StreamParser {
 
 public:  // types
 
@@ -37,6 +36,12 @@ public:  // types
 public:  // methods
 
     StreamParser(std::istream& in, bool comments = false, const char* comment = "#");
+
+    StreamParser(const StreamParser&)            = delete;
+    StreamParser& operator=(const StreamParser&) = delete;
+    StreamParser(StreamParser&&)                 = delete;
+    StreamParser& operator=(StreamParser&&)      = delete;
+
     virtual ~StreamParser() = default;
 
     char peek(bool spaces = false);

@@ -16,17 +16,21 @@
 #define eckit_TmpFile_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TmpFile : public PathName, private NonCopyable {
+class TmpFile : public PathName {
 public:
 
     TmpFile(bool verbose = true);
+
+    TmpFile(const TmpFile&)            = delete;
+    TmpFile& operator=(const TmpFile&) = delete;
+    TmpFile(TmpFile&& rhs)             = delete;
+    TmpFile& operator=(TmpFile&& rhs)  = delete;
 
     ~TmpFile();
 

@@ -15,7 +15,6 @@
 #ifndef eckit_Thread_h
 #define eckit_Thread_h
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 
@@ -25,12 +24,17 @@ namespace eckit {
 
 // This should be a Task
 
-class Thread : private NonCopyable {
+class Thread {
 public:
 
     friend class ThreadControler;
 
     Thread(bool autodel = true);
+
+    Thread(const Thread&)            = delete;
+    Thread& operator=(const Thread&) = delete;
+    Thread(Thread&&)                 = delete;
+    Thread& operator=(Thread&&)      = delete;
 
     virtual ~Thread();
 

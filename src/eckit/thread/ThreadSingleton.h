@@ -17,7 +17,6 @@
 #include <pthread.h>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
@@ -39,11 +38,16 @@ struct NewAlloc1 {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename T, typename A = NewAlloc0<T> >
-class ThreadSingleton : private NonCopyable {
+class ThreadSingleton {
 public:
 
     ThreadSingleton();
     ThreadSingleton(const A& alloc);
+
+    ThreadSingleton(const ThreadSingleton&)            = delete;
+    ThreadSingleton& operator=(const ThreadSingleton&) = delete;
+    ThreadSingleton(ThreadSingleton&&)                 = delete;
+    ThreadSingleton& operator=(ThreadSingleton&&)      = delete;
 
     ~ThreadSingleton();
 

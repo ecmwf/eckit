@@ -20,7 +20,6 @@
 #include <vector>
 
 #include "eckit/log/Channel.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -29,12 +28,17 @@ namespace eckit {
 class LogTarget;
 
 /// Stream buffer to be usedby Channel
-class ChannelBuffer : public std::streambuf, private NonCopyable {
+class ChannelBuffer : public std::streambuf {
 
 private:  // methods
 
     /// constructor, taking ownership of stream
     ChannelBuffer(std::size_t size = 1024);
+
+    ChannelBuffer(const ChannelBuffer&)            = delete;
+    ChannelBuffer& operator=(const ChannelBuffer&) = delete;
+    ChannelBuffer(ChannelBuffer&&)                 = delete;
+    ChannelBuffer& operator=(ChannelBuffer&&)      = delete;
 
     ~ChannelBuffer() override;
 

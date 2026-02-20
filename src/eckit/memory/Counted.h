@@ -16,7 +16,6 @@
 #ifndef eckit_Counted_h
 #define eckit_Counted_h
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 
@@ -50,7 +49,7 @@ public:
 /// Subclass from this class if you want reference counting object.
 /// @note Remember to use 'virtual' inheritance in case of multiple inheritance
 
-class Counted : private NonCopyable, private memory::detail::ThreadedLock {
+class Counted : private memory::detail::ThreadedLock {
 public:  // methods
 
     void attach() const {
@@ -79,6 +78,11 @@ public:  // methods
 public:
 
     Counted() : count_(0) {}
+
+    Counted(const Counted&)            = delete;
+    Counted& operator=(const Counted&) = delete;
+    Counted(Counted&&)                 = delete;
+    Counted& operator=(Counted&&)      = delete;
 
     virtual ~Counted();
 

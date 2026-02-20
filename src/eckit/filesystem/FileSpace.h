@@ -17,13 +17,12 @@
 #define eckit_FileSpace_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FileSpace : private NonCopyable {
+class FileSpace {
 
 public:  // methods
 
@@ -45,6 +44,11 @@ public:  // methods
 private:  // methods
 
     FileSpace(const std::string&);
+
+    FileSpace(const FileSpace&)            = delete;
+    FileSpace& operator=(const FileSpace&) = delete;
+    FileSpace(FileSpace&&)                 = delete;
+    FileSpace& operator=(FileSpace&&)      = delete;
 
     ~FileSpace();
 

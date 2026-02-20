@@ -27,7 +27,8 @@ CASE("test backend") {
     auto A = M(2, 2, 1., -2., -4., 2.);
     SparseMatrix S(2, 4, {{0, 0, 2.}, {1, 2, 3.}});
 
-    Log::info() << LinearAlgebra::backend() << std::endl;
+    Log::info() << "LinearAlgebra[dense=" << linalg::LinearAlgebraDense::backend()
+                << ",sparse=" << linalg::LinearAlgebraSparse::backend() << "]" << std::endl;
 
     SECTION("dot") {
         auto a = V(3, 1., 2., 4.);

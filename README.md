@@ -32,46 +32,26 @@ as a leaner substitute for some 'Boost' libraries.
 
 It features facilities to easily handle, in a cross-platform way:
 
-- multi-threading
-- json and yaml parsing
-- object serialization and persistence
-- object serialization supporting compression, to and from file and network
-- configuration of user options and resources
-- file-system abstraction
-- regular expressions
-- socket networking
-- http protocol
-- type-to-type conversions
-- asynchronous IO
-- asynchronous processing
-- exception handling and stack dumping
-- MPI object-oriented wrapper
-- linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
-- advanced container classes
-- space partition trees
-- file-mapped arrays
+* multi-threading
+* json and yaml parsing
+* object serialization and persistence
+* object serialization supporting compression, to and from file and network
+* configuration of user options and resources
+* file-system abstraction
+* regular expressions
+* socket networking
+* http protocol
+* type-to-type conversions
+* asynchronous IO
+* asynchronous processing
+* exception handling and stack dumping
+* MPI object-oriented wrapper
+* linear algebra abstraction with multiple backends (BLAS, MKL, Eigen3)
+* advanced container classes
+* space partition trees
+* file-mapped arrays
 
 ## Requirements
-
-### Tested Compilers
-
-| Compiler | Versions |
-|----------|----------|
-| GCC      | 8.5.0, 11.4.0, 11.5.0, 12.3.1, 14.2.0 |
-| Intel    | 2021.4, 2025.0 |
-| Clang    | 18.1.8 |
-| NVIDIA   | 24.11 |
-
-### Required Dependencies
-
-- C++17 compatible compiler
-- CMake 3.18 or higher - For use and installation see <http://www.cmake.org/>
-- ecbuild 3.7 or higher - ECMWF library of CMake macros
-- Perl5 - For some code generation
-
-## Installation
-
-EcKit employs an out-of-source build/install based on CMake.
 
 Make sure ecbuild is installed and the ecbuild executable script is found (`which ecbuild`).
 

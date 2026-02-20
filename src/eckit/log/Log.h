@@ -131,9 +131,6 @@ public:
     }
 };
 
-DEPRECATED("Use eckit::format() instead")
-std::ostream& setformat(std::ostream& s, int f);
-
 inline LogFormatSetter setformat(int format) {
     return LogFormatSetter(format);
 }

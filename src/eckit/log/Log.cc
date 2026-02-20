@@ -22,7 +22,6 @@
 #include "eckit/log/StatusTarget.h"
 #include "eckit/log/UserChannel.h"
 #include "eckit/runtime/Main.h"
-#include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
@@ -250,7 +249,7 @@ void Log::setStream(std::ostream& out) {
     }
     std::vector<std::string> libs = eckit::system::LibraryManager::list();
     for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        system::Library::lookup(*libname).debugChannel().setStream(out);
+        system::LibraryManager::lookup(*libname).debugChannel().setStream(out);
     }
 }
 void Log::addStream(std::ostream& out) {
@@ -262,7 +261,7 @@ void Log::addStream(std::ostream& out) {
     }
     std::vector<std::string> libs = eckit::system::LibraryManager::list();
     for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        system::Library::lookup(*libname).debugChannel().addStream(out);
+        system::LibraryManager::lookup(*libname).debugChannel().addStream(out);
     }
 }
 
@@ -278,7 +277,7 @@ void Log::setFile(const std::string& path) {
     }
     std::vector<std::string> libs = eckit::system::LibraryManager::list();
     for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        system::Library::lookup(*libname).debugChannel().setTarget(file);
+        system::LibraryManager::lookup(*libname).debugChannel().setTarget(file);
     }
 }
 
@@ -293,7 +292,7 @@ void Log::addFile(const std::string& path) {
     }
     std::vector<std::string> libs = eckit::system::LibraryManager::list();
     for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        system::Library::lookup(*libname).debugChannel().addTarget(file);
+        system::LibraryManager::lookup(*libname).debugChannel().addTarget(file);
     }
 }
 
@@ -307,8 +306,8 @@ void Log::setCallback(channel_callback_t cb, void* data) {
 
     std::vector<std::string> libs = eckit::system::LibraryManager::list();
     for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        if (system::Library::lookup(*libname).debugChannel()) {
-            system::Library::lookup(*libname).debugChannel().setCallback(cb, data);
+        if (system::LibraryManager::lookup(*libname).debugChannel()) {
+            system::LibraryManager::lookup(*libname).debugChannel().setCallback(cb, data);
         }
     }
 }
@@ -322,7 +321,7 @@ void Log::addCallback(channel_callback_t cb, void* data) {
     }
     std::vector<std::string> libs = eckit::system::LibraryManager::list();
     for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        system::Library::lookup(*libname).debugChannel().addCallback(cb, data);
+        system::LibraryManager::lookup(*libname).debugChannel().addCallback(cb, data);
     }
 }
 
@@ -333,7 +332,7 @@ void Log::flush() {
     debug().flush();
     std::vector<std::string> libs = eckit::system::LibraryManager::list();
     for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        system::Library::lookup(*libname).debugChannel().flush();
+        system::LibraryManager::lookup(*libname).debugChannel().flush();
     }
 }
 
@@ -344,7 +343,7 @@ void Log::reset() {
     debug().reset();
     std::vector<std::string> libs = eckit::system::LibraryManager::list();
     for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        system::Library::lookup(*libname).debugChannel().reset();
+        system::LibraryManager::lookup(*libname).debugChannel().reset();
     }
 }
 
@@ -355,7 +354,7 @@ void Log::print(std::ostream& os) {
     os << "Log::debug() " << debug() << std::endl;
     std::vector<std::string> libs = eckit::system::LibraryManager::list();
     for (std::vector<std::string>::iterator libname = libs.begin(); libname != libs.end(); ++libname) {
-        os << *libname << ".debug() " << system::Library::lookup(*libname).debugChannel() << std::endl;
+        os << *libname << ".debug() " << system::LibraryManager::lookup(*libname).debugChannel() << std::endl;
     }
 }
 
@@ -380,11 +379,6 @@ int format(std::ostream& s) {
 
 void format(std::ostream& s, int f) {
     s.iword(xindex) = f;
-}
-
-std::ostream& setformat(std::ostream& s, int f) {
-    format(s, f);
-    return s;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

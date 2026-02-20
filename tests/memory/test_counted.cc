@@ -8,17 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#define ECKIT_NO_DEPRECATION_WARNINGS
-
-#include <cmath>
-
-#include "eckit/eckit.h"
-
-#include "eckit/log/Log.h"
 #include "eckit/memory/Counted.h"
-#include "eckit/memory/Owned.h"
-#include "eckit/memory/SharedPtr.h"
-#include "eckit/runtime/Tool.h"
 
 #include "eckit/testing/Test.h"
 
@@ -30,221 +20,78 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct FooLock : public OwnedLock {
-    using ptype = SharedPtr<FooLock>;
+struct TestCounted : public Counted {
+    TestCounted(int val, bool& destroyed) : i(val), destroyed_(destroyed) { destroyed_ = false; }
 
-    FooLock(int in) : i(in) {}
+    ~TestCounted() override { destroyed_ = true; }
+
     int i;
+    bool& destroyed_;
 };
-
-struct FooNoLock : public OwnedNoLock {
-    using ptype = SharedPtr<FooNoLock>;
-
-    FooNoLock(int in) : i(in) {}
-    int i;
-};
-
-template <typename F>
-void TestDefault() {
-
-    typename F::ptype p;
-    EXPECT(!p);
-    EXPECT(p.get() == nullptr);
-
-    p.reset(new F(10));
-
-    EXPECT(p);
-    EXPECT(p.unique());
-
-    p.release();
-
-    EXPECT(!p);
-    EXPECT(p.owners() == 0);
-}
-
-template <typename F>
-void TestCopy() {
-
-    typename F::ptype p1;
-    typename F::ptype p2;
-    typename F::ptype p3;
-
-    EXPECT(!p1);
-    EXPECT(p1.owners() == 0);
-
-    p1.reset(new F(10));
-
-    EXPECT(p1->i == 10);
-
-    p1->i = 20;
-
-    EXPECT(p1 != p2);
-    EXPECT(p1 != p3);
-    EXPECT(p2 == p3);
-
-    EXPECT(p1);
-    EXPECT(!p2);
-    EXPECT(!p3);
-
-    EXPECT(p1.owners() == 1);
-    EXPECT(p2.owners() == 0);
-    EXPECT(p3.owners() == 0);
-
-    p2.reset(p1);
-
-    EXPECT(p1->i == 20);
-    EXPECT(p2->i == 20);
-
-    p1->i = 30;
-
-    EXPECT(p1->i == 30);
-    EXPECT(p2->i == 30);
-
-    EXPECT(p1 == p2);
-    EXPECT(p1 != p3);
-    EXPECT(p2 != p3);
-
-    EXPECT(p1);
-    EXPECT(p2);
-    EXPECT(!p3);
-
-    EXPECT(p1.owners() == 2);
-    EXPECT(p2.owners() == 2);
-    EXPECT(p3.owners() == 0);
-
-    p3 = p1;
-
-    p1->i = 40;
-
-    EXPECT(p1->i == 40);
-    EXPECT(p2->i == 40);
-    EXPECT(p3->i == 40);
-
-    EXPECT(p1 == p2);
-    EXPECT(p1 == p3);
-    EXPECT(p2 == p3);
-
-    EXPECT(p1);
-    EXPECT(p2);
-    EXPECT(p3);
-
-    EXPECT(p1.owners() == 3);
-    EXPECT(p2.owners() == 3);
-    EXPECT(p3.owners() == 3);
-
-    p1.release();
-
-    EXPECT(!p1);
-    EXPECT(p2);
-    EXPECT(p3);
-
-    EXPECT(p1.owners() == 0);
-    EXPECT(p2.owners() == 2);
-    EXPECT(p3.owners() == 2);
-
-    p2.release();
-
-    EXPECT(!p1);
-    EXPECT(!p2);
-    EXPECT(p3);
-
-    EXPECT(p1.owners() == 0);
-    EXPECT(p2.owners() == 0);
-    EXPECT(p3.owners() == 1);
-
-    p3.release();
-
-    EXPECT(!p1);
-    EXPECT(!p2);
-    EXPECT(!p3);
-
-    EXPECT(p1.owners() == 0);
-    EXPECT(p2.owners() == 0);
-    EXPECT(p3.owners() == 0);
-}
-
-template <typename F>
-void TestRelease() {
-    typename F::ptype p;
-
-    EXPECT(!p);
-
-    p.release();
-
-    EXPECT(!p);
-
-    p.reset(new F(10));
-
-    EXPECT(p);
-
-    p.release();
-
-    EXPECT(!p);
-}
-
-template <typename F>
-void TestSwap() {
-    typename F::ptype p1(new F(10));
-    typename F::ptype p2(new F(5));
-
-    EXPECT(p1);
-    EXPECT(p2);
-
-    EXPECT(p1.unique());
-    EXPECT(p2.unique());
-
-
-    EXPECT(p1->i == 10);
-    EXPECT(p2->i == 5);
-
-    p1.swap(p2);
-
-    EXPECT(p1->i == 5);
-    EXPECT(p2->i == 10);
-
-    EXPECT(p1.unique());
-    EXPECT(p2.unique());
-
-    EXPECT(p1);
-    EXPECT(p2);
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("test_default") {
-    SECTION("Type FooLock") {
-        TestDefault<FooLock>();
-    }
-    SECTION("Type FooNoLock") {
-        TestDefault<FooNoLock>();
-    }
+CASE("test_count_starts_at_zero") {
+    bool destroyed = false;
+    auto* obj      = new TestCounted(42, destroyed);
+
+    EXPECT(obj->count() == 0);
+
+    // Must attach before detach to trigger cleanup
+    obj->attach();
+    obj->detach();
+    EXPECT(destroyed);
 }
 
-CASE("test_copy") {
-    SECTION("Type FooLock") {
-        TestCopy<FooLock>();
-    }
-    SECTION("Type FooNoLock") {
-        TestCopy<FooNoLock>();
-    }
+CASE("test_attach_detach") {
+    bool destroyed = false;
+    auto* obj      = new TestCounted(10, destroyed);
+
+    obj->attach();
+    EXPECT(obj->count() == 1);
+    EXPECT(!destroyed);
+
+    obj->detach();  // count reaches 0, triggers delete
+    EXPECT(destroyed);
 }
 
-CASE("test_release") {
-    SECTION("Type FooLock") {
-        TestRelease<FooLock>();
-    }
-    SECTION("Type FooNoLock") {
-        TestRelease<FooNoLock>();
-    }
+CASE("test_multiple_attach") {
+    bool destroyed = false;
+    auto* obj      = new TestCounted(20, destroyed);
+
+    obj->attach();
+    EXPECT(obj->count() == 1);
+
+    obj->attach();
+    EXPECT(obj->count() == 2);
+
+    obj->attach();
+    EXPECT(obj->count() == 3);
+
+    obj->detach();
+    EXPECT(obj->count() == 2);
+    EXPECT(!destroyed);
+
+    obj->detach();
+    EXPECT(obj->count() == 1);
+    EXPECT(!destroyed);
+
+    obj->detach();  // count reaches 0, triggers delete
+    EXPECT(destroyed);
 }
 
-CASE("test_swap") {
-    SECTION("Type FooLock") {
-        TestSwap<FooLock>();
-    }
-    SECTION("Type FooNoLock") {
-        TestSwap<FooNoLock>();
-    }
+CASE("test_data_access") {
+    bool destroyed = false;
+    auto* obj      = new TestCounted(99, destroyed);
+
+    obj->attach();
+    EXPECT(obj->i == 99);
+
+    obj->i = 42;
+    EXPECT(obj->i == 42);
+
+    obj->detach();
+    EXPECT(destroyed);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

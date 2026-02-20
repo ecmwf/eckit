@@ -113,17 +113,6 @@ ecbuild_add_option( FEATURE RADOS
                     DESCRIPTION "Ceph/Rados storage support"
                     REQUIRED_PACKAGES Rados )
 
-### Armadillo
-
-ecbuild_add_option( FEATURE ARMADILLO
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "Armadillo linear algebra library"
-                    REQUIRED_PACKAGES Armadillo )
-
-set_package_properties( Armadillo PROPERTIES
-                        DESCRIPTION "C++ linear algebra"
-                      )
-
 ### MKL
 
 ecbuild_add_option( FEATURE MKL
@@ -146,7 +135,7 @@ ecbuild_add_option( FEATURE LZ4
 
 ecbuild_add_option( FEATURE AEC
                     DESCRIPTION "AEC support for compression"
-                    REQUIRED_PACKAGES "NAME libaec VERSION 1.0.6")
+                    REQUIRED_PACKAGES "NAME libaec VERSION 1.1.4")
 
 ecbuild_add_option( FEATURE ZIP
                     DESCRIPTION "ZIP support for compression"
@@ -263,13 +252,6 @@ if(HAVE_CURL)
   ecbuild_info("Curl version ${CURL_VERSION_STRING} -- libs [${CURL_LIBRARIES}] incs [${CURL_INCLUDE_DIRS}]")
 endif()
 
-#### Jemalloc
-
-ecbuild_add_option( FEATURE JEMALLOC
-                    DEFAULT OFF
-                    DESCRIPTION "Link against jemalloc memory allocator"
-                    REQUIRED_PACKAGES Jemalloc )
-
 #### CUDA
 
 ecbuild_add_option( FEATURE CUDA
@@ -283,29 +265,6 @@ ecbuild_add_option( FEATURE HIP
                     DEFAULT OFF
                     DESCRIPTION "HIP GPU linear algebra operations"
                     REQUIRED_PACKAGES hip hipsparse )
-
-### ViennaCL
-
-ecbuild_add_option( FEATURE VIENNACL
-                    CONDITION HAVE_EXPERIMENTAL
-                    DESCRIPTION "ViennaCL OpenCL linear algebra operations"
-                    REQUIRED_PACKAGES ViennaCL )
-
-set_package_properties( ViennaCL PROPERTIES
-                        DESCRIPTION "linear algebra library for computations on many-core architectures"
-                        TYPE RECOMMENDED
-                        PURPOSE "Dense and sparse matrix operations on OpenCL devices" )
-
-### LibRsync
-
-ecbuild_add_option( FEATURE RSYNC
-                    DEFAULT OFF
-                    DESCRIPTION "librsync implementation of the rsync algorithm"
-                    REQUIRED_PACKAGES LibRsync )
-if( HAVE_RSYNC )
-  set( LIBRSYNC_LIBRARIES rsync )
-endif()
-
 
 ### Performance tests
 

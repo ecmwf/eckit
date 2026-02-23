@@ -1,0 +1,1 @@
+/home/runner/work/eckit/.codeql-scratch/dbs/cpp/working/autobuild/bin/cc CMakeFiles/main.dir/main.c.o -o bin/main  -Wl,-rpath,"\$ORIGIN/../lib" lib/libdso2.so -Wl,-rpath-link,/home/runner/work/eckit/eckit/_codeql_build_dir/ecbuild_tmp/check_linker/lib

@@ -1,0 +1,15 @@
+base8: 0o32413
+base10: 13579
+base16: 0x350b
+base_8: 0o60_150
+base_10: 24_680
+base_16: 0x6_068
+zerobase10: 013579
+plus-base10: +13579
+minus-base10: -13579
+str-base8: "0o32413"
+str-base10: "13579"
+str-base16: "0x350b"
+zero: 0
+minus-zero: -0
+plus-zero: +0

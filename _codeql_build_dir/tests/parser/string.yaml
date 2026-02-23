@@ -1,0 +1,25 @@
+---
+test1: '#fff'
+test2: '#aaa'
+
+test3: starts here
+   and continues here
+  and more
+
+test4:
+  - starts here
+       and continues here
+          and more
+test5:
+  test6: starts here
+    and continues here
+    and more
+
+test6: 'Quotes in ''strings'' are special'
+
+bool1: on
+bool2: off
+bool3: true
+bool4: false
+bool5: yes
+bool6: no

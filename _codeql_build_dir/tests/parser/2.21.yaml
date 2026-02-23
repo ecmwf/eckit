@@ -1,0 +1,13 @@
+tilde-null: ~
+lower-null: null
+cap-null-: Null
+upper-null-: NULL
+lower-true: true
+cap-true: True
+upper-true: TRUE
+y-true: yes
+lower-false: false
+cap-false: False
+upper-false: FALSE
+n-false: no
+string: '12345'

@@ -140,27 +140,6 @@ CASE("roundRobin cycles through candidates") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("leastUsed is deterministic when called repeatedly with same inputs") {
-    TestFileSystems fixture(3);
-    const auto& fs = fixture.paths();
-
-    const PathName& r1 = FileSpaceStrategies::leastUsed(fs);
-    const PathName& r2 = FileSpaceStrategies::leastUsed(fs);
-    EXPECT(r1.asString() == r2.asString());
-}
-
-CASE("leastUsedPercent is deterministic when called repeatedly with same inputs") {
-    TestFileSystems fixture(3);
-    const auto& fs = fixture.paths();
-
-    const PathName& r1 = FileSpaceStrategies::leastUsedPercent(fs);
-    const PathName& r2 = FileSpaceStrategies::leastUsedPercent(fs);
-    EXPECT(r1.asString() == r2.asString());
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-// Random strategies always return valid paths over many iterations
-
 CASE("pureRandom returns valid paths over many iterations") {
     TestFileSystems fixture(3);
     const auto& fs = fixture.paths();

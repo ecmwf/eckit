@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <string>
+#include <iosfwd>
 
 #include "eckit/linalg/types.h"
 
@@ -21,11 +21,31 @@
 namespace eckit::linalg::detail {
 
 
-torch::DeviceType get_torch_device(const std::string&);
-torch::Tensor torch_tensor_transpose(const torch::Tensor&);
-torch::Tensor make_torch_dense_tensor(const Matrix&, torch::DeviceType);
-torch::Tensor make_torch_dense_tensor(const Vector&, torch::DeviceType);
-torch::Tensor make_torch_sparse_csr(const SparseMatrix&, torch::DeviceType);
+/**
+ * @brief Torch tensor creation and device management for linear algebra backends.
+ *
+ * Copies data host to/from device per operation. Transfer overhead may outweigh accelerator device gains for
+ * small/frequent operations; best suited for large matrices where compute dominates.
+ */
+class Torch {
+protected:
+
+    explicit Torch(torch::DeviceType device, torch::ScalarType scalar) : device_(device), scalar_(scalar) {}
+
+    torch::Tensor tensor_transpose(const torch::Tensor&) const;
+    torch::Tensor tensor_to_host(const torch::Tensor&) const;
+
+    torch::Tensor make_dense_tensor(const Matrix&) const;
+    torch::Tensor make_dense_tensor(const Vector&) const;
+    torch::Tensor make_sparse_csr_tensor(const SparseMatrix&) const;
+
+    void print(std::ostream&) const;
+
+private:
+
+    const torch::DeviceType device_;
+    const torch::ScalarType scalar_;
+};
 
 
 }  // namespace eckit::linalg::detail

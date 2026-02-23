@@ -47,6 +47,27 @@ Tests tests = {{CASE("CASE with no EXPECT passes"){
 
                }},
 
+               {CASE("SetEnv restores environment values"){
+                   const char* key = "ECKIT_TESTING_SETENV";
+                   const char* initial = ::getenv(key);
+                   std::string initialValue = initial ? initial : "";
+
+                   {
+                       SetEnv env(key, "test-value");
+                       const char* updated = ::getenv(key);
+                       EXPECT(updated != nullptr);
+                       EXPECT(std::string(updated) == "test-value");
+                   }
+
+                   const char* restored = ::getenv(key);
+                   if (initial) {
+                       EXPECT(std::string(restored) == initialValue);
+                   }
+                   else {
+                       EXPECT(restored == nullptr);
+                   }
+               }},
+
                {CASE("EXPECT macros are defined correctly"){EXPECT(true);
 EXPECT_NOT(false);
 EXPECT_EQUAL(1, 1);

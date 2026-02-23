@@ -18,6 +18,7 @@
 #include <cstdlib>  // for setenv
 
 #include <functional>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <string>
@@ -52,6 +53,11 @@ enum InitEckitMain {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// RAII helper to temporarily override an environment variable.
+///
+/// Restores the original value (if any) on destruction.
+/// @warning Not thread-safe. Uses setenv/unsetenv/getenv which operate on the
+///          process-wide environment without synchronization.
 class SetEnv {
 public:
 
@@ -59,15 +65,19 @@ public:
         if (const char* p = ::getenv(key_.c_str())) {
             oldValue_ = std::string(p);
         }
-        ::setenv(key_.c_str(), value_.c_str(), true);
+        SYSCALL(::setenv(key_.c_str(), value_.c_str(), true));
     }
 
     ~SetEnv() {
         if (!oldValue_) {
-            ::unsetenv(key_.c_str());
+            if (::unsetenv(key_.c_str()) != 0) {
+                Log::error() << "unsetenv(" << key_ << ')' << Log::syserr << std::endl;
+            }
         }
         else {
-            ::setenv(key_.c_str(), oldValue_->c_str(), true);
+            if (::setenv(key_.c_str(), oldValue_->c_str(), true) != 0) {
+                Log::error() << "setenv(" << key_ << ')' << Log::syserr << std::endl;
+            }
         }
     }
 

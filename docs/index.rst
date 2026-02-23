@@ -1,5 +1,5 @@
-Welcome to EcKits’s Documentation!
-==================================
+Welcome to EcKit’s Documentation!
+=================================
 
 
 .. index:: Contents

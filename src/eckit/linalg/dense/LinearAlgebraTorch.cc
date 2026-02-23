@@ -38,7 +38,7 @@ Scalar LinearAlgebraTorch::dot(const Vector& x, const Vector& y) const {
     auto x_tensor = make_dense_tensor(x);
     auto y_tensor = make_dense_tensor(y);
 
-    return torch::dot(x_tensor, y_tensor).to(torch::DeviceType::CPU, torch::kFloat64).item<Scalar>();
+    return tensor_to_host(torch::dot(x_tensor, y_tensor)).item<Scalar>();
 }
 
 

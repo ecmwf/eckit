@@ -13,3 +13,5 @@ build/
 tests/geo/eckit_geo_cache
 _build
 *.ccls-cache
+_codeql_build_dir/
+_codeql_detected_source_root

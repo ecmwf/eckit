@@ -15,9 +15,11 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
+#include <cstdio>   // for perror
 #include <cstdlib>  // for setenv
 
 #include <functional>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <string>
@@ -52,6 +54,14 @@ enum InitEckitMain {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// @brief RAII helper that temporarily sets an environment variable and restores it on destruction.
+///
+/// On construction, saves the current value of the environment variable (if any),
+/// then sets it to the specified value. On destruction, restores the original value
+/// or removes the variable if it was not previously set.
+///
+/// @warning This class uses `setenv()`, `unsetenv()`, and `getenv()`, which are
+/// not thread-safe per POSIX. Do not use `SetEnv` concurrently from multiple threads.
 class SetEnv {
 public:
 
@@ -59,15 +69,19 @@ public:
         if (const char* p = ::getenv(key_.c_str())) {
             oldValue_ = std::string(p);
         }
-        ::setenv(key_.c_str(), value_.c_str(), true);
+        SYSCALL(::setenv(key_.c_str(), value_.c_str(), true));
     }
 
     ~SetEnv() {
         if (!oldValue_) {
-            ::unsetenv(key_.c_str());
+            if (::unsetenv(key_.c_str()) != 0) {
+                std::perror(("SetEnv: failed to unsetenv(\"" + key_ + "\")").c_str());
+            }
         }
         else {
-            ::setenv(key_.c_str(), oldValue_->c_str(), true);
+            if (::setenv(key_.c_str(), oldValue_->c_str(), true) != 0) {
+                std::perror(("SetEnv: failed to setenv(\"" + key_ + "\")").c_str());
+            }
         }
     }
 

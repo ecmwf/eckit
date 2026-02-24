@@ -9,13 +9,12 @@
  */
 
 #include <cmath>
+#include <limits>
 
+#include "eckit/maths/FloatingPointExceptions.h"
 #include "eckit/types/FloatCompare.h"
 
 #include "eckit/testing/Test.h"
-
-using namespace eckit;
-using namespace eckit::testing;
 
 namespace eckit::test {
 
@@ -24,15 +23,15 @@ namespace eckit::test {
 namespace {
 
 bool is_equal(double a, double b, double epsilon, int maxUlps) {
-    return eckit::types::is_approximately_equal(a, b, epsilon, maxUlps);
+    return types::is_approximately_equal(a, b, epsilon, maxUlps);
 }
 
 bool is_equal(double a, double b, double epsilon) {
-    return eckit::types::is_approximately_equal(a, b, epsilon);
+    return types::is_approximately_equal(a, b, epsilon);
 }
 
 bool is_equal(double a, double b) {
-    return eckit::types::is_approximately_equal(a, b, 0.00001);
+    return types::is_approximately_equal(a, b, 0.00001);
 }
 
 const double dEps = std::numeric_limits<double>::epsilon();
@@ -91,9 +90,13 @@ CASE("test_large_numbers_of_opposite_sign") {
     EXPECT(!is_equal(-1000000.0, 1000001.0));
     EXPECT(!is_equal(-1000001.0, 1000000.0));
 
-    // Overflow occurs here in eckit::types::is_approximately_equal
+    // Overflow can occur here (as in CRAY) in eckit::types::is_approximately_equal
+    maths::FloatingPointExceptions::disable_floating_point_exceptions();
+
     EXPECT(!is_equal(-dMax, dMax));
     EXPECT(!is_equal(-dMax, dMax, dEps));
+
+    maths::FloatingPointExceptions::enable_floating_point_exceptions();
 }
 
 CASE("test_ulp_around_one") {
@@ -185,7 +188,6 @@ CASE("test_comparisons_involving_infinity") {
     Log::info() << "test_comparisons_involving_infinity" << std::endl;
 
     if (std::numeric_limits<double>::has_infinity) {
-
         EXPECT(is_equal(dInf, dInf));
         EXPECT(is_equal(-dInf, -dInf));
         EXPECT(!is_equal(dInf, dMax));
@@ -231,6 +233,8 @@ CASE("test_comparisons_involving_nan") {
     EXPECT(!is_equal(qNaN, -dMin));
     EXPECT(!is_equal(-dMin, qNaN));
 
+    maths::FloatingPointExceptions::disable_floating_point_exceptions();
+
     EXPECT(!is_equal(sNaN, sNaN));
     EXPECT(!is_equal(sNaN, 0.0));
     EXPECT(!is_equal(-0.0, sNaN));
@@ -246,6 +250,8 @@ CASE("test_comparisons_involving_nan") {
     EXPECT(!is_equal(dMin, sNaN));
     EXPECT(!is_equal(sNaN, -dMin));
     EXPECT(!is_equal(-dMin, sNaN));
+
+    maths::FloatingPointExceptions::enable_floating_point_exceptions();
 }
 
 CASE("test_comparisons_opposite_side_of_zero") {
@@ -326,16 +332,7 @@ CASE("test_comparisons_ulps") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-#if defined(_CRAYC)
-#include <fenv.h>
-#else
-static int fedisableexcept(int excepts) {
-    return 0;
-}
-static int FE_ALL_EXCEPT = 0;
-#endif
-
 int main(int argc, char** argv) {
-    fedisableexcept(FE_ALL_EXCEPT);
-    return run_tests(argc, argv);
+    eckit::maths::FloatingPointExceptions::enable_floating_point_exceptions();
+    return eckit::testing::run_tests(argc, argv);
 }

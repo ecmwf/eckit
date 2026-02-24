@@ -37,7 +37,7 @@ public:
     KDMapped(const KDMapped& other);
     KDMapped& operator=(const KDMapped& other);
 
-    typedef size_t Ptr;
+    using Ptr = size_t;
 
     template <class Node>
     Node* base(const Node*) {

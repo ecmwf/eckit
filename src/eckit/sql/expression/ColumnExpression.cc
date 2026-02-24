@@ -24,8 +24,8 @@ namespace eckit::sql::expression {
 //----------------------------------------------------------------------------------------------------------------------
 
 ColumnExpression::ColumnExpression(const std::string& name, const SQLTable* table, int begin, int end) :
-    type_(0),
-    value_(0),
+    type_{nullptr},
+    value_{nullptr},
     columnName_(name),
     table_(table),
     tableReference_(),
@@ -34,10 +34,10 @@ ColumnExpression::ColumnExpression(const std::string& name, const SQLTable* tabl
     nominalShift_(0) {}
 
 ColumnExpression::ColumnExpression(const std::string& name, const std::string& tableReference, int begin, int end) :
-    type_(0),
-    value_(0),
+    type_{nullptr},
+    value_{nullptr},
     columnName_(name),
-    table_(0),
+    table_{nullptr},
     tableReference_(tableReference),
     beginIndex_(begin),
     endIndex_(end),
@@ -132,8 +132,8 @@ void ColumnExpression::updateType(SQLSelect& sql) {
 }
 
 void ColumnExpression::cleanup(SQLSelect& sql) {
-    value_ = 0;
-    type_  = 0;
+    value_ = nullptr;
+    type_  = nullptr;
 }
 
 

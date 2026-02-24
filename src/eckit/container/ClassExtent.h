@@ -17,22 +17,25 @@
 #include <map>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
 template <class T>
-class ClassExtent : private NonCopyable {
+class ClassExtent {
 public:
 
     // -- Contructors
 
     ClassExtent(T*);
+
+    ClassExtent(const ClassExtent&)            = delete;
+    ClassExtent& operator=(const ClassExtent&) = delete;
+    ClassExtent(ClassExtent&&)                 = delete;
+    ClassExtent& operator=(ClassExtent&&)      = delete;
 
     // -- Destructor
 
@@ -68,7 +71,7 @@ public:  // methods
 private:  // members
 
     struct Extent {
-        typedef std::map<ClassExtent<T>*, T*, std::less<ClassExtent<T>*> > Map;
+        using Map = std::map<ClassExtent<T>*, T*, std::less<ClassExtent<T>*>>;
         Mutex mutex_;
         Map map_;
         bool inited_;
@@ -123,7 +126,7 @@ void ClassExtent<T>::callAll(void (T::*proc)()) {
     // Make a copy to cater for object that are deleted during the loop
     typename ClassExtent<T>::Extent::Map map = extent_.map_;
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
-    typedef typename ClassExtent<T>::Extent::Map map_type;
+    using map_type = typename ClassExtent<T>::Extent::Map;
     typename map_type::iterator i;
     for (i = map.begin(); i != map.end(); ++i) {
         ((*i).second->*proc)();
@@ -136,7 +139,7 @@ void ClassExtent<T>::callAll(void (T::*proc)() const) {
     AutoLock<Mutex> lock(extent_.mutex_);
 
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
-    typedef typename ClassExtent<T>::Extent::Map map_type;
+    using map_type = typename ClassExtent<T>::Extent::Map;
     typename map_type::iterator i;
     for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i) {
         ((*i).second->*proc)();
@@ -152,7 +155,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P), P arg) {
     // Make a copy to cater for object that are deleted during the loop
     typename ClassExtent<T>::Extent::Map map = extent_.map_;
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
-    typedef typename ClassExtent<T>::Extent::Map map_type;
+    using map_type = typename ClassExtent<T>::Extent::Map;
     typename map_type::iterator i;
     for (i = map.begin(); i != map.end(); ++i) {
         ((*i).second->*proc)(arg);
@@ -166,7 +169,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P) const, P arg) {
     AutoLock<Mutex> lock(extent_.mutex_);
 
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
-    typedef typename ClassExtent<T>::Extent::Map map_type;
+    using map_type = typename ClassExtent<T>::Extent::Map;
     typename map_type::iterator i;
     for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i) {
         ((*i).second->*proc)(arg);
@@ -182,7 +185,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P1, P2), P1 arg1, P2 arg2) {
     // Make a copy to cater for object that are deleted during the loop
     typename ClassExtent<T>::Extent::Map map = extent_.map_;
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
-    typedef typename ClassExtent<T>::Extent::Map map_type;
+    using map_type = typename ClassExtent<T>::Extent::Map;
     typename map_type::iterator i;
     for (i = map.begin(); i != map.end(); ++i) {
         ((*i).second->*proc)(arg1, arg2);
@@ -196,7 +199,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P&), P& arg) {
     AutoLock<Mutex> lock(extent_.mutex_);
 
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
-    typedef typename ClassExtent<T>::Extent::Map map_type;
+    using map_type = typename ClassExtent<T>::Extent::Map;
     typename map_type::iterator i;
     for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i) {
         ((*i).second->*proc)(arg);
@@ -210,7 +213,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P&) const, P& arg) {
     AutoLock<Mutex> lock(extent_.mutex_);
 
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
-    typedef typename ClassExtent<T>::Extent::Map map_type;
+    using map_type = typename ClassExtent<T>::Extent::Map;
     typename map_type::iterator i;
     for (i = extent_.map_.begin(); i != extent_.map_.end(); ++i) {
         ((*i).second->*proc)(arg);
@@ -226,7 +229,7 @@ void ClassExtent<T>::callAll(void (T::*proc)(P1&, P2&), P1& arg1, P2& arg2) {
     // Make a copy to cater for object that are deleted during the loop
     typename ClassExtent<T>::Extent::Map map = extent_.map_;
     // for(ClassExtent<T>::Extent::Map::iterator i = extent_.map_.begin();
-    typedef typename ClassExtent<T>::Extent::Map map_type;
+    using map_type = typename ClassExtent<T>::Extent::Map;
     typename map_type::iterator i;
     for (i = map.begin(); i != map.end(); ++i) {
         ((*i).second->*proc)(arg1, arg2);

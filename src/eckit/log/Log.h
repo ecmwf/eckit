@@ -22,7 +22,7 @@
 
 namespace eckit {
 
-typedef void (*channel_callback_t)(void* data, const char* msg);
+using channel_callback_t = void (*)(void* data, const char* msg);
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -130,9 +130,6 @@ public:
         return s;
     }
 };
-
-DEPRECATED("Use eckit::format() instead")
-std::ostream& setformat(std::ostream& s, int f);
 
 inline LogFormatSetter setformat(int format) {
     return LogFormatSetter(format);

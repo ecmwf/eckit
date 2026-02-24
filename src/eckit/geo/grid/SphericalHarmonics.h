@@ -43,13 +43,15 @@ public:
     bool empty() const override;
     size_t size() const override { return number_of_complex_coefficients(truncation_); }
 
-    [[nodiscard]] uid_t calculate_uid() const override;
+    [[nodiscard]] uid_type calculate_uid() const override;
+
+    const Area& area() const override;
 
     bool includesNorthPole() const override { return true; }
     bool includesSouthPole() const override { return true; }
     bool isPeriodicWestEast() const override { return true; }
 
-    [[nodiscard]] area::BoundingBox* calculate_bbox() const override;
+    [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
     void fill_spec(spec::Custom&) const override;
 

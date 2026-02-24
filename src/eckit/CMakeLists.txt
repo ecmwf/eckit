@@ -72,10 +72,10 @@ configure_file( eckit_config.h.in   eckit_config.h  )
 configure_file( eckit_version.h.in  eckit_version.h )
 
 install(FILES
-			${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h
-			${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h
-		DESTINATION
-			${INSTALL_INCLUDE_DIR}/eckit )
+        ${CMAKE_CURRENT_BINARY_DIR}/eckit_config.h
+        ${CMAKE_CURRENT_BINARY_DIR}/eckit_version.h
+    DESTINATION
+        ${INSTALL_INCLUDE_DIR}/eckit )
 
 configure_file( eckit_version.cc.in  eckit_version.cc )
 
@@ -561,7 +561,6 @@ list( APPEND eckit_types_srcs
 list( APPEND eckit_parser_srcs
     parser/CSVParser.cc
     parser/CSVParser.h
-    parser/JSON.h
     parser/JSONParser.cc
     parser/JSONParser.h
     parser/ObjectParser.cc
@@ -723,7 +722,6 @@ list( APPEND eckit_utils_srcs
     utils/Literals.h
     utils/MD5.cc
     utils/MD5.h
-    utils/Optional.h
     utils/Overloaded.h
     utils/RLE.cc
     utils/RLE.h
@@ -731,6 +729,7 @@ list( APPEND eckit_utils_srcs
     utils/Regex.h
     utils/RendezvousHash.cc
     utils/RendezvousHash.h
+    utils/SafeCasts.h
     utils/StringTools.cc
     utils/StringTools.h
     utils/Tokenizer.cc
@@ -776,13 +775,6 @@ if(eckit_HAVE_SSL)
     )
 endif()
 
-if(eckit_HAVE_RSYNC)
-    list( APPEND eckit_utils_srcs
-        utils/Rsync.cc
-        utils/Rsync.h
-    )
-endif()
-
 if(eckit_HAVE_XXHASH)
     list( APPEND eckit_utils_srcs
         utils/xxHashing.cc
@@ -813,9 +805,6 @@ list( APPEND eckit_memory_srcs
     memory/OnlyMovable.h
     memory/Owned.h
     memory/Padded.h
-    memory/ScopedPtr.h
-    memory/SharedPtr.cc
-    memory/SharedPtr.h
     memory/Shmget.cc
     memory/Shmget.h
     memory/Zero.h
@@ -859,10 +848,6 @@ else()
     ecbuild_warn("eckit does not support SystemInfo for OS '${EC_OS_NAME}'")
 endif()
 
-if(HAVE_JEMALLOC)
-    list(APPEND ECKIT_SYSTEM_EXTRA_LIBS ${JEMALLOC_LIBRARIES})
-endif()
-
 list( APPEND eckit_bases_srcs
     bases/Loader.cc
     bases/Loader.h
@@ -879,6 +864,8 @@ list( APPEND eckit_transaction_srcs
 
 list( APPEND eckit_testing_srcs
     testing/Test.h
+    testing/Filesystem.cc
+    testing/Filesystem.h
 )
 
 list( APPEND eckit_dirs
@@ -971,22 +958,20 @@ ecbuild_add_library(
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
-              "${AEC_INCLUDE_DIRS}"
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
-              "${LIBRSYNC_LIBRARIES}"
               "${LZ4_LIBRARIES}"
               "${BZIP2_LIBRARIES}"
-              "${AEC_LIBRARIES}"
               "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
               $<${HAVE_OPENFAM}:OpenFAM::openfam>
+              $<${HAVE_AEC}:libaec::aec>
 
           PUBLIC_LIBS
               ${CMATH_LIBRARIES}
@@ -1017,6 +1002,10 @@ add_subdirectory( web )
 
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
+endif()
+
+if( eckit_HAVE_ECKIT_SPEC )
+    add_subdirectory( spec )
 endif()
 
 if( eckit_HAVE_ECKIT_GEO )

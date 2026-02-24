@@ -61,7 +61,7 @@ private:
 
     // -- Members
 
-    typedef std::set<ResourceBase*> Set;
+    using Set = std::set<ResourceBase*>;
     Mutex mutex_;
     Set resources_;
 

@@ -35,8 +35,8 @@ struct EventNotFound : public Exception {
     EventNotFound(const std::string& s) : Exception(s + ": Event not found") {}
 };
 
-typedef std::stack<CmdParser*, std::vector<CmdParser*> > ParserStack;
-typedef std::stack<CmdArg, std::vector<CmdArg> > CmdArgStack;
+using ParserStack = std::stack<CmdParser*, std::vector<CmdParser*>>;
+using CmdArgStack = std::stack<CmdArg, std::vector<CmdArg>>;
 
 static std::ostream* out_ = &std::cout;
 
@@ -49,7 +49,7 @@ static std::list<int> buffer_;
 static bool prompt_  = true;
 static bool console_ = false;
 
-typedef std::map<char, bool, std::less<char> > FlagMap;
+using FlagMap = std::map<char, bool, std::less<char>>;
 static FlagMap flags_;
 
 // Alias are shared for every parser
@@ -57,7 +57,7 @@ static CmdArg theAlias_;
 static CmdArg environment_;
 
 // The history
-typedef std::vector<std::string> History;
+using History = std::vector<std::string>;
 static History history_;
 
 // For Lex

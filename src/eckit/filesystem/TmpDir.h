@@ -15,19 +15,22 @@
 #define eckit_TmpDir_h
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class TmpDir : public PathName, private NonCopyable {
+class TmpDir : public PathName {
 public:
 
     TmpDir(const char* base = nullptr);
 
+    TmpDir(const TmpDir&)            = delete;
+    TmpDir& operator=(const TmpDir&) = delete;
+
     TmpDir(TmpDir&& rhs);
+    TmpDir& operator=(TmpDir&& rhs) = delete;
 
     ~TmpDir() noexcept(false);
 };

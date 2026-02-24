@@ -28,7 +28,7 @@ static void closeDataHandle(PathName&, DataHandle*& handle) {
     if (handle) {
         handle->close();
         delete handle;
-        handle = 0;
+        handle = nullptr;
     }
 }
 
@@ -74,7 +74,7 @@ DataHandle* FilePool::checkout(const PathName& path) {
 void FilePool::checkin(DataHandle* handle) {
     AutoLock<MutexCond> lock(cond_);
 
-    typedef std::map<PathName, DataHandle*>::iterator iterator_type;
+    using iterator_type = std::map<PathName, DataHandle*>::iterator;
     for (iterator_type itr = inUse_.begin(); itr != inUse_.end(); ++itr) {
         if (itr->second == handle) {
             cache_.insert(itr->first, itr->second);

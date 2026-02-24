@@ -26,7 +26,7 @@
 namespace eckit::geo {
 
 
-static std::string extract_loader(const Spec& spec) {
+static std::string extract_loader(const spec::Spec& spec) {
     static const std::string default_loader =
         spec.get_bool("caching", LibEcKitGeo::caching())
             ? std::string{LibResource<std::string, LibEcKitGeo>("$ECKIT_GEO_SEARCH_LOADER;ecKitGeoSearchLoader",
@@ -37,7 +37,7 @@ static std::string extract_loader(const Spec& spec) {
 }
 
 
-Search::Search(const Grid& r, const Spec& spec) {
+Search::Search(const Grid& r, const spec::Spec& spec) {
     ResourceUsage usage("Search: build tree");
 
     tree_.reset(search::TreeFactory::build(extract_loader(spec), r));
@@ -88,7 +88,7 @@ void Search::build(const Grid& r) {
 
         for (const auto& p : r) {
             auto q = to_xyz.fwd(std::get<PointLonLat>(p));
-            points.emplace_back(Search::PointType{q.X, q.Y, q.Z}, index++);
+            points.emplace_back(Search::PointType{q.X(), q.Y(), q.Z()}, index++);
         }
 
         tree_->build(points);
@@ -97,7 +97,7 @@ void Search::build(const Grid& r) {
 
     for (const auto& p : r) {
         auto q = to_xyz.fwd(std::get<PointLonLat>(p));
-        tree_->insert({Search::PointType{q.X, q.Y, q.Z}, index++});
+        tree_->insert({Search::PointType{q.X(), q.Y(), q.Z()}, index++});
     }
 }
 

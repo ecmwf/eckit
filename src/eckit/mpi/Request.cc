@@ -34,7 +34,7 @@ Request::Request() : content_(new NullRequestContent()) {
     content_->attach();
 }
 
-Request::Request(int request) : content_(0) {
+Request::Request(int request) : content_{nullptr} {
     *this = eckit::mpi::comm().request(request);
 }
 
@@ -51,6 +51,10 @@ Request::Request(const Request& s) : content_(s.content_) {
 }
 
 Request& Request::operator=(const Request& s) {
+    if (this == &s) {
+        return *this;
+    }
+
     if (content_) {
         content_->detach();
     }

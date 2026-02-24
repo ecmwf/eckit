@@ -314,7 +314,7 @@ static void catch_alarm(int) {
 // This should be in the TCPClient.cc, but I want to reuse the Mutex
 // to lock any call to NIS with the same one
 
-TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, int timeout) {
+TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, int timeout, int retryDelay) {
     std::string host = hostName(remote);
 
     in_addr_t addr;
@@ -411,7 +411,7 @@ TCPSocket& TCPClient::connect(const std::string& remote, int port, int retries, 
                             throw TooManyRetries(tries);
                         }
                     }
-                    ::sleep(5);
+                    ::sleep(retryDelay);
                     break;
 
                 case EINPROGRESS:

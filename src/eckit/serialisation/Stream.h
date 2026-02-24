@@ -17,9 +17,7 @@
 #include <map>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
-
 
 namespace eckit {
 
@@ -32,8 +30,13 @@ template <class T>
 class IOBuffer;
 class Buffer;
 
-class Stream : private NonCopyable {
+class Stream {
 public:
+
+    Stream(const Stream&)            = delete;
+    Stream& operator=(const Stream&) = delete;
+    Stream(Stream&&)                 = delete;
+    Stream& operator=(Stream&&)      = delete;
 
     virtual ~Stream();
 

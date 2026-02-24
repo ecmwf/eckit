@@ -45,8 +45,8 @@ void SharedInt::newLimit(short val, unsigned short n) {
         if (v < 0) {
             throw FailedSystemCall("semctl GETVAL");
         }
-        short delta = val - v;
-        typedef unsigned short int U;
+        short delta         = val - v;
+        using U             = unsigned short int;
         struct sembuf set[] = {{
                                    U(2 * n),
                                    delta,

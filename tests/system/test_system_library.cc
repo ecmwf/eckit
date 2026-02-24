@@ -87,8 +87,6 @@ CASE("test_eckit_system_library") {
 
     std::vector<std::string> libs = LibraryManager::list();
 
-    std::string libpath;
-
     for (std::vector<std::string>::const_iterator libname = libs.begin(); libname != libs.end(); ++libname) {
 
         EXPECT_NO_THROW(LibraryManager::lookup(*libname));

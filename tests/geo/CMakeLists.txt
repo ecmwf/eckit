@@ -8,11 +8,12 @@ foreach(_test
         grid
         grid_healpix
         grid_reduced_gg
+        grid_reduced_ll
         grid_regular_gg
         grid_regular_ll
         grid_reorder
         grid_to_points
-        increments
+        gridspec
         integration
         iterator
         kdtree
@@ -30,9 +31,6 @@ foreach(_test
         projection_rotation
         range
         search
-        spec
-        spec_custom
-        spec_layered
         util )
     ecbuild_add_test(
         TARGET      eckit_test_geo_${_test}
@@ -71,12 +69,8 @@ function(ecbuild_add_test_geo_grid _grid)
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
 endfunction()
 
-if(eckit_HAVE_GEO_GRID_FESOM)
+if(ECKIT_GEO_CODEC_GRIDS)
     ecbuild_add_test_geo_grid(fesom)
-endif()
-if(eckit_HAVE_GEO_GRID_ICON)
     ecbuild_add_test_geo_grid(icon)
-endif()
-if(eckit_HAVE_GEO_GRID_ORCA)
     ecbuild_add_test_geo_grid(orca)
 endif()

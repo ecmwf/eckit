@@ -43,11 +43,16 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Url : private eckit::NonCopyable {
+class Url {
 public:
 
     Url(std::istream&);
     Url(const std::string&);
+
+    Url(const Url&)            = delete;
+    Url& operator=(const Url&) = delete;
+    Url(Url&&)                 = delete;
+    Url& operator=(Url&&)      = delete;
 
     ~Url();
 
@@ -119,7 +124,7 @@ private:  // methods
 
 private:  // members
 
-    typedef std::map<std::string, std::string> dict_t;
+    using dict_t = std::map<std::string, std::string>;
 
     std::unique_ptr<DataHandle> handle_;
     std::string type_;

@@ -45,10 +45,6 @@ ecbuild_add_test( TARGET      eckit_test_utils_compressor
                   SOURCES     test_compressor.cc
                   LIBS        eckit )
 
-ecbuild_add_test( TARGET      eckit_test_utils_optional
-                  SOURCES     test_optional.cc
-                  LIBS        eckit )
-
 ecbuild_add_test( TARGET      eckit_test_utils_hashing
                   CONDITION   eckit_HAVE_SSL
                   INCLUDES    "${OPENSSL_INCLUDE_DIR}"
@@ -65,11 +61,6 @@ ecbuild_add_test( TARGET      eckit_test_utils_compression_performance
                   TEST_DEPENDS get_eckit_test_data
                   SOURCES     compression-performance.cc
                   LIBS        eckit )
-
-ecbuild_add_test( TARGET      eckit_test_rsync
-                  CONDITION   HAVE_RSYNC
-                  SOURCES     test_rsync.cc
-                  LIBS        eckit rsync )
 
 ecbuild_add_test( TARGET      eckit_test_regex
                   SOURCES     test_regex.cc

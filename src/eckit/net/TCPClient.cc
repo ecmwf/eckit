@@ -34,8 +34,8 @@ void TCPClient::print(std::ostream& s) const {
 }
 
 /// @note TCPClient::connect(host, port, retries, timeout) is found in TCPSocket.cc
-TCPSocket& TCPClient::connect(const net::Endpoint& endpoint, int retries, int timeout) {
-    return connect(endpoint.hostname(), endpoint.port(), retries, timeout);
+TCPSocket& TCPClient::connect(const net::Endpoint& endpoint, int retries, int timeout, int retryDelay) {
+    return connect(endpoint.hostname(), endpoint.port(), retries, timeout, retryDelay);
 }
 
 }  // namespace eckit::net

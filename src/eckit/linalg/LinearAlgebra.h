@@ -14,7 +14,6 @@
 #include <ostream>
 #include <string>
 
-#include "eckit/deprecated.h"
 #include "eckit/linalg/LinearAlgebraDense.h"
 #include "eckit/linalg/LinearAlgebraSparse.h"
 #include "eckit/linalg/types.h"
@@ -28,19 +27,8 @@ public:
 
     // - Static methods
 
-    /// Get the currently selected backend (instance)
-    static const LinearAlgebra& backend();
-
-    /// Select specific backend by name (re-setting default)
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::backend() instead")
-    static void backend(const std::string& name);
-
     /// List all available backends
     static std::ostream& list(std::ostream&);
-
-    /// Get specific backend by name
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::getBackend() instead")
-    static const LinearAlgebra& getBackend(const std::string& name);
 
     /// Check if a backend is available
     static bool hasBackend(const std::string& name);
@@ -62,10 +50,6 @@ public:
 
     /// Check if a LinearAlgebraSparse backend is available
     static bool hasSparseBackend(const std::string& name);
-
-    /// Return active backend name
-    DEPRECATED("Use LinearAlgebraDense/LinearAlgebraSparse::name() instead")
-    static std::string name();
 
     /// Compute the inner product of vectors x and y
     static Scalar dot(const Vector& x, const Vector& y) { return LinearAlgebraDense::backend().dot(x, y); }

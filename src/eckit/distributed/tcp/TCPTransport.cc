@@ -271,7 +271,7 @@ void TCPTransport::sendStatisticsToProducer(const Message& message) {
 }
 
 bool TCPTransport::producer() const {
-    return accept_ != 0;
+    return accept_ != nullptr;
 }
 
 void TCPTransport::accept() {

@@ -16,15 +16,13 @@
 #include <dirent.h>
 #include <sys/types.h>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 class LocalPathName;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class StdDir : private NonCopyable {
+class StdDir {
 
 private:  // members
 
@@ -35,6 +33,11 @@ public:  // methods
 
     StdDir(const char* d);
     StdDir(const eckit::LocalPathName& p);
+
+    StdDir(const StdDir&)            = delete;
+    StdDir& operator=(const StdDir&) = delete;
+    StdDir(StdDir&&)                 = delete;
+    StdDir& operator=(StdDir&&)      = delete;
 
     ~StdDir(); /* noexcept(false) */
 

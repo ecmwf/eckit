@@ -30,9 +30,9 @@ namespace eckit {
 class HyperCube {
 public:  // types
 
-    typedef std::vector<Ordinal> Dimensions;
-    typedef std::vector<Ordinal> Coordinates;
-    typedef std::vector<Ordinal> Remapping;
+    using Dimensions  = std::vector<Ordinal>;
+    using Coordinates = std::vector<Ordinal>;
+    using Remapping   = std::vector<Ordinal>;
 
 public:  // methods
 

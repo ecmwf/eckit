@@ -14,7 +14,6 @@
 #ifndef eckit_Streamable_h
 #define eckit_Streamable_h
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/serialisation/Reanimator.h"
 #include "eckit/serialisation/Stream.h"
 
@@ -22,7 +21,7 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-class Streamable : private NonCopyable {
+class Streamable {
 public:
 
     friend Stream& operator<<(Stream&, const Streamable&);
@@ -30,7 +29,13 @@ public:
     // -- Contructors
 
     Streamable() {}
+
     Streamable(Stream&);
+
+    Streamable(const Stream&)            = delete;
+    Streamable& operator=(const Stream&) = delete;
+    Streamable(Stream&&)                 = delete;
+    Streamable& operator=(Stream&&)      = delete;
 
     // -- Destructor
 

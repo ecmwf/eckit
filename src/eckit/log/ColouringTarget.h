@@ -29,7 +29,7 @@ namespace eckit {
 class ColouringTarget : public WrapperTarget {
 public:
 
-    typedef std::ostream& (*colourproc)(std::ostream&);
+    using colourproc = std::ostream& (*)(std::ostream&);
 
     ColouringTarget(LogTarget* target, colourproc begin, colourproc end = &Colour::reset);
 

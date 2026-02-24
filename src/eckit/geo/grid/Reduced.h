@@ -13,6 +13,7 @@
 #pragma once
 
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/area/BoundingBox.h"
 
 
 namespace eckit::geo::iterator {
@@ -42,10 +43,6 @@ public:
     virtual std::vector<double> longitudes(size_t) const = 0;
 
 protected:
-
-    // -- Constructors
-
-    explicit Reduced(area::BoundingBox* bbox = nullptr, Projection* projection = nullptr) : Grid(bbox, projection) {}
 
     // -- Methods
 

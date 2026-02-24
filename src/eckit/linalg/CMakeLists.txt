@@ -32,14 +32,6 @@ list( APPEND eckit_la_srcs
       sparse/LinearAlgebraGeneric.h
       types.h )
 
-if( eckit_HAVE_ARMADILLO )
-    list( APPEND eckit_la_srcs
-          dense/LinearAlgebraArmadillo.cc
-          dense/LinearAlgebraArmadillo.h )
-    list( APPEND eckit_la_pincludes "${ARMADILLO_INCLUDE_DIRS}" )
-    list( APPEND eckit_la_plibs "${ARMADILLO_LIBRARIES}" )
-endif()
-
 if( eckit_HAVE_CUDA )
     list( APPEND eckit_la_srcs
           dense/LinearAlgebraCUDA.cc
@@ -81,15 +73,6 @@ if( eckit_HAVE_MKL )
           sparse/LinearAlgebraMKL.h )
     list( APPEND eckit_la_pincludes "${MKL_INCLUDE_DIRS}" )
     list( APPEND eckit_la_plibs "${MKL_LIBRARIES}" )
-endif()
-
-if( eckit_HAVE_VIENNACL )
-    list( APPEND eckit_la_srcs
-          dense/LinearAlgebraViennaCL.cc
-          dense/LinearAlgebraViennaCL.h
-          sparse/LinearAlgebraViennaCL.cc
-          sparse/LinearAlgebraViennaCL.h )
-    list( APPEND eckit_la_pincludes "${VIENNACL_INCLUDE_DIRS}" )
 endif()
 
 if( eckit_HAVE_OMP )

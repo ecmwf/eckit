@@ -53,7 +53,7 @@ std::shared_ptr<SQLExpression> FunctionOR::simplify(bool& changed) {
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 }  // namespace eckit::sql::expression::function

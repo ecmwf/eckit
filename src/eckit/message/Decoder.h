@@ -15,10 +15,10 @@
 #define eckit_message_Decoder_h
 
 #include <iosfwd>
+#include <optional>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/utils/EnumBitmask.h"
-#include "eckit/utils/Optional.h"
 
 namespace eckit::message {
 
@@ -35,7 +35,7 @@ enum class ValueRepresentation : unsigned {
 
 struct GetMetadataOptions {
     ValueRepresentation valueRepresentation{ValueRepresentation::String};
-    eckit::Optional<std::string>
+    std::optional<std::string>
         nameSpace{};  // Possible namespaces:
                       //  ls, statistics, parameter, time, geography, vertical, mars
                       //  (https://confluence.ecmwf.int/display/UDOC/What+are+namespaces+-+ecCodes+GRIB+FAQ)

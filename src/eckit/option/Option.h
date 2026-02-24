@@ -23,11 +23,10 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit::option {
 
-class Option : private eckit::NonCopyable {
+class Option {
 public:
 
     using args_t = std::vector<std::string>;
@@ -35,6 +34,12 @@ public:
 public:  // methods
 
     Option(const std::string& name, const std::string& description);
+
+    Option(const Option&)            = delete;
+    Option& operator=(const Option&) = delete;
+    Option(Option&&)                 = delete;
+    Option& operator=(Option&&)      = delete;
+
     virtual ~Option() = default;
 
     [[nodiscard]] const std::string& name() const { return name_; };
@@ -84,18 +89,11 @@ public:
 
     BaseOption(const std::string& name, const std::string& description) :
         Option(name, description), default_value_{std::nullopt} {};
-    BaseOption(const std::string& name, const std::string& description, const T& default_value) :
-        Option(name, description), default_value_{std::make_optional(default_value)} {};
+    BaseOption(const std::string& name, const std::string& description, T default_value) :
+        Option(name, description), default_value_{std::make_optional(std::move(default_value))} {};
     BaseOption(const std::string& name, const std::string& description, std::optional<T> default_value) :
         Option(name, description), default_value_{std::move(default_value)} {};
     ~BaseOption() override = default;
-
-    [[deprecated("Specify the default value(s) when calling the ctor")]]
-    Option* defaultValue(const std::string& value) {
-        T translated   = translate(value);
-        default_value_ = std::make_optional(translated);
-        return this;
-    }
 
     void setDefault(Configured& parametrisation) const final {
         if (default_value_) {

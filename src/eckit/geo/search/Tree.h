@@ -40,7 +40,7 @@ public:
         Point(value_type x, value_type y, value_type z) : array{x, y, z} {}
         using array::array;
 
-        explicit Point(const PointXYZ& p) : Point{p.X, p.Y, p.Z} {}
+        explicit Point(const PointXYZ& p) : Point{p.X(), p.Y(), p.Z()} {}
 
         value_type x(size_t axis) const { return operator[](axis); }
 

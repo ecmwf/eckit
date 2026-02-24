@@ -14,11 +14,17 @@
 
 #include <array>
 #include <ostream>
+#include <string>
 
 
-namespace eckit::geo {
+namespace eckit {
+namespace geo {
 class PointLonLatR;
 }
+namespace spec {
+class Spec;
+}
+}  // namespace eckit
 
 
 namespace eckit::geo {
@@ -66,8 +72,8 @@ public:
 
     // -- Members
 
-    const value_type& lon = container_type::operator[](0);
-    const value_type& lat = container_type::operator[](1);
+    value_type lon() const { return container_type::operator[](0); }
+    value_type lat() const { return container_type::operator[](1); }
 
     // -- Methods
 
@@ -89,7 +95,11 @@ public:
 
     [[nodiscard]] static PointLonLat make_from_lonlatr(value_type lonr, value_type latr, value_type lon_minimum = 0.);
 
-    PointLonLat antipode() const { return make(lon, lat + FLAT_ANGLE); }
+    [[nodiscard]] static PointLonLat make_from_spec(const eckit::spec::Spec&, const std::string& name);
+    [[nodiscard]] static PointLonLat make_from_spec(const eckit::spec::Spec&, const std::string& name,
+                                                    const PointLonLat& dfault);
+
+    PointLonLat antipode() const { return make(lon(), lat() + FLAT_ANGLE); }
 
     // -- Class members
 
@@ -108,12 +118,16 @@ public:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const PointLonLat& p) {
-        return out << '{' << p.lon << ", " << p.lat << '}';
+        return out << '{' << p.lon() << ", " << p.lat() << '}';
     }
 
-    friend PointLonLat operator-(const PointLonLat& p, const PointLonLat& q) { return {p.lon - q.lon, p.lat - q.lat}; }
-    friend PointLonLat operator+(const PointLonLat& p, const PointLonLat& q) { return {p.lon + q.lon, p.lat + q.lat}; }
-    friend PointLonLat operator*(const PointLonLat& p, value_type d) { return {p.lon * d, p.lat * d}; }
+    friend PointLonLat operator-(const PointLonLat& p, const PointLonLat& q) {
+        return {p.lon() - q.lon(), p.lat() - q.lat()};
+    }
+    friend PointLonLat operator+(const PointLonLat& p, const PointLonLat& q) {
+        return {p.lon() + q.lon(), p.lat() + q.lat()};
+    }
+    friend PointLonLat operator*(const PointLonLat& p, value_type d) { return {p.lon() * d, p.lat() * d}; }
 
     friend bool operator<(const PointLonLat& p, const PointLonLat& q) {
         return static_cast<const container_type&>(p) < static_cast<const container_type&>(q);

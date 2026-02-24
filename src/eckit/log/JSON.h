@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "eckit/eckit.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -34,7 +33,7 @@ class DateTime;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class JSON : private NonCopyable {
+class JSON {
 
 public:
 
@@ -82,6 +81,11 @@ public:  // methods
 
     JSON(std::ostream&, bool null = true);
     JSON(std::ostream&, Formatting);
+
+    JSON(const JSON&)            = delete;
+    JSON& operator=(const JSON&) = delete;
+    JSON(JSON&&)                 = delete;
+    JSON& operator=(JSON&&)      = delete;
 
     ~JSON();
 

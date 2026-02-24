@@ -60,9 +60,9 @@ public:
 
     // -- Members
 
-    const value_type& X = container_type::operator[](0);
-    const value_type& Y = container_type::operator[](1);
-    const value_type& Z = container_type::operator[](2);
+    value_type X() const { return container_type::operator[](0); }
+    value_type Y() const { return container_type::operator[](1); }
+    value_type Z() const { return container_type::operator[](2); }
 
     // -- Methods
 
@@ -88,21 +88,29 @@ public:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const PointXYZ& p) {
-        return out << '{' << p.X << ", " << p.Y << ", " << p.Z << '}';
+        return out << '{' << p.X() << ", " << p.Y() << ", " << p.Z() << '}';
     }
 
-    friend PointXYZ operator-(const PointXYZ& p) { return {-p.X, -p.Y, -p.Z}; }
-    friend PointXYZ operator-(const PointXYZ& p, const PointXYZ& q) { return {p.X - q.X, p.Y - q.Y, p.Z - q.Z}; }
-    friend PointXYZ operator+(const PointXYZ& p, const PointXYZ& q) { return {p.X + q.X, p.Y + q.Y, p.Z + q.Z}; }
-    friend PointXYZ operator*(const PointXYZ& p, value_type d) { return {p.X * d, p.Y * d, p.Z * d}; }
+    friend PointXYZ operator-(const PointXYZ& p) { return {-p.X(), -p.Y(), -p.Z()}; }
+    friend PointXYZ operator-(const PointXYZ& p, const PointXYZ& q) {
+        return {p.X() - q.X(), p.Y() - q.Y(), p.Z() - q.Z()};
+    }
+    friend PointXYZ operator+(const PointXYZ& p, const PointXYZ& q) {
+        return {p.X() + q.X(), p.Y() + q.Y(), p.Z() + q.Z()};
+    }
+    friend PointXYZ operator*(const PointXYZ& p, value_type d) { return {p.X() * d, p.Y() * d, p.Z() * d}; }
 
-    friend bool operator==(const PointXYZ& p, const PointXYZ& q) { return p.X == q.X && p.Y == q.Y && p.Z == q.Z; }
+    friend bool operator==(const PointXYZ& p, const PointXYZ& q) {
+        return p.X() == q.X() && p.Y() == q.Y() && p.Z() == q.Z();
+    }
     friend bool operator!=(const PointXYZ& p, const PointXYZ& q) { return !operator==(p, q); }
 
-    friend value_type dot(const PointXYZ& p, const PointXYZ& q) { return p.X * q.X + p.Y * q.Y + p.Z * q.Z; }
+    friend value_type dot(const PointXYZ& p, const PointXYZ& q) {
+        return p.X() * q.X() + p.Y() * q.Y() + p.Z() * q.Z();
+    }
 
     friend PointXYZ cross(const PointXYZ& p, const PointXYZ& q) {
-        return {p.Y * q.Z - p.Z * q.Y, p.Z * q.X - p.X * q.Z, p.X * q.Y - p.Y * q.X};
+        return {p.Y() * q.Z() - p.Z() * q.Y(), p.Z() * q.X() - p.X() * q.Z(), p.X() * q.Y() - p.Y() * q.X()};
     }
 };
 

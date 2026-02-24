@@ -197,22 +197,6 @@ void Library::print(std::ostream& out) const {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::vector<std::string> Library::list() {
-    return LibraryManager::list();
-}
-
-void Library::list(std::ostream& out) {
-    return LibraryManager::list(out);
-}
-
-bool Library::exists(const std::string& name) {
-    return LibraryManager::exists(name);
-}
-
-const Library& Library::lookup(const std::string& name) {
-    return LibraryManager::lookup(name);
-}
-
 const void* Library::addr() const {
     return this;
 }

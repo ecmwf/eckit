@@ -1,0 +1,7 @@
+sphinx
+pydata_sphinx_theme
+sphinx-copybutton
+sphinx-tabs
+sphinxcontrib-mermaid
+breathe
+six

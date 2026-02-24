@@ -24,7 +24,7 @@ class Value;
 class EasyCURLResponseImp;
 class CURLHandle;
 
-typedef std::map<std::string, std::string> EasyCURLHeaders;
+using EasyCURLHeaders = std::map<std::string, std::string>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

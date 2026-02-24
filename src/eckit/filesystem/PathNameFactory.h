@@ -15,7 +15,6 @@
 #define eckit_filesystem_PathNameFactory_h
 
 #include "eckit/filesystem/BasePathNameT.h"
-#include "eckit/memory/NonCopyable.h"
 
 #include <map>
 #include <string>

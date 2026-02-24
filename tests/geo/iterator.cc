@@ -24,6 +24,7 @@ namespace eckit::geo::test {
 CASE("iterator") {
     auto test = [](const std::string& gridspec, size_t expected_size) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(gridspec));
+        ASSERT(grid);
         EXPECT(grid->size() == expected_size);
 
         // test Grid::to_points
@@ -46,7 +47,7 @@ CASE("iterator") {
         // test NextIterator
         decltype(points) next_points;
         Point point = PointLonLat{};
-        for (auto iter(grid->next_iterator()); iter.next(point);) {
+        for (auto point : *grid) {
             next_points.emplace_back(point);
         }
 

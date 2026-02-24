@@ -49,7 +49,7 @@ public:
     // -- Constructors
 
     explicit ICON(const Spec&);
-    explicit ICON(uid_t);
+    explicit ICON(uid_type);
 
     ICON(const std::string& name, Arrangement);
 
@@ -60,8 +60,9 @@ public:
 
     // -- Overridden methods
 
-    uid_t calculate_uid() const override;
     const std::string& type() const override;
+    uid_type calculate_uid() const override;
+    BoundingBox* calculate_bbox() const override;
 
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
@@ -74,6 +75,10 @@ public:
     [[nodiscard]] static std::string arrangement_to_string(Arrangement);
 
 private:
+
+    // -- Constructors
+
+    ICON(const ICONRecord&, const uid_type&, const std::string& arrangement, const std::string& name);
 
     // -- Members
 

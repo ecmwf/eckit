@@ -18,19 +18,23 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/TransferWatcher.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 
 namespace eckit {
 
 
-class DblBuffer : private NonCopyable {
+class DblBuffer {
 public:
 
     // -- Contructors
 
     DblBuffer(long count = 5, long size = 1024 * 1024, TransferWatcher& = TransferWatcher::dummy());
+
+    DblBuffer(const DblBuffer&)            = delete;
+    DblBuffer& operator=(const DblBuffer&) = delete;
+    DblBuffer(DblBuffer&&)                 = delete;
+    DblBuffer& operator=(DblBuffer&&)      = delete;
 
     // -- Destructor
 

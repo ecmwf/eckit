@@ -16,7 +16,6 @@
 
 #include "eckit/config/Configuration.h"
 #include "eckit/io/SharedBuffer.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -25,7 +24,7 @@ class Stream;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class YAMLConfiguration : public Configuration, private eckit::NonCopyable {
+class YAMLConfiguration : public Configuration {
 
 public:
 
@@ -34,6 +33,11 @@ public:
     YAMLConfiguration(Stream&, char separator = '.');
     YAMLConfiguration(const std::string&, char separator = '.');
     YAMLConfiguration(const SharedBuffer&, char separator = '.');
+
+    YAMLConfiguration(const YAMLConfiguration&)            = delete;
+    YAMLConfiguration& operator=(const YAMLConfiguration&) = delete;
+    YAMLConfiguration(YAMLConfiguration&&)                 = delete;
+    YAMLConfiguration& operator=(YAMLConfiguration&&)      = delete;
 
     ~YAMLConfiguration() override;
 

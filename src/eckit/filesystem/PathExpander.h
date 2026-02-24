@@ -15,17 +15,15 @@
 #define eckit_PathExpander_h
 
 #include <iosfwd>
-#include <map>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/types/Types.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class PathExpander : private eckit::NonCopyable {
+class PathExpander {
 public:  // methods
 
     static std::string expand(const std::string& path);
@@ -35,6 +33,11 @@ protected:  // methods
     virtual void expand(const std::string& var, const std::string& path, eckit::StringDict& vars) const = 0;
 
     PathExpander(const std::string&);
+
+    PathExpander(const PathExpander&)            = delete;
+    PathExpander& operator=(const PathExpander&) = delete;
+    PathExpander(PathExpander&&)                 = delete;
+    PathExpander& operator=(PathExpander&&)      = delete;
 
     virtual ~PathExpander();
 

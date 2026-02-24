@@ -16,8 +16,8 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -61,19 +61,19 @@ LambertConformalConic::LambertConformalConic(double lat_1, double lon_0, double 
 
 
 PointXY LambertConformalConic::fwd(const PointLonLat& p) const {
-    auto q = PointLonLatR::make_from_lonlat(p.lon, p.lat);
+    auto q = PointLonLatR::make_from_lonlat(p.lon(), p.lat());
 
-    auto rho  = figure().R() * f_ * std::pow(std::tan(M_PI_4 + q.latr / 2.), -n_);
+    auto rho  = figure().R() * f_ * std::pow(std::tan(M_PI_4 + q.latr() / 2.), -n_);
     auto rho0 = figure().R() * rho0_bare_;  // scaled
-    auto dlam = q.lonr - lon_0_ * util::DEGREE_TO_RADIAN;
+    auto dlam = q.lonr() - lon_0_ * util::DEGREE_TO_RADIAN;
 
     return {rho * std::sin(n_ * dlam), rho0 - rho * std::cos(n_ * dlam)};
 }
 
 
 PointLonLat LambertConformalConic::inv(const PointXY& p) const {
-    auto x = p.X / figure().R();
-    auto y = rho0_bare_ - p.Y / figure().R();
+    auto x = p.X() / figure().R();
+    auto y = rho0_bare_ - p.Y() / figure().R();
 
     if (auto rho = std::hypot(x, y); !types::is_approximately_equal(rho, 0.)) {
         if (n_ < 0.) {

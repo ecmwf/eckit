@@ -19,7 +19,6 @@
 #include <memory>
 
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
 
@@ -44,12 +43,18 @@ public:
     virtual std::vector<double> missingValues() const    = 0;
 };
 
-typedef std::vector<std::string> ColumnNames;
+using ColumnNames = std::vector<std::string>;
 
-class SQLTable : private eckit::NonCopyable {
+class SQLTable {
 public:
 
     SQLTable(SQLDatabase&, const std::string&, const std::string&);
+
+    SQLTable(const SQLTable&)            = delete;
+    SQLTable& operator=(const SQLTable&) = delete;
+    SQLTable(SQLTable&&)                 = delete;
+    SQLTable& operator=(SQLTable&&)      = delete;
+
     virtual ~SQLTable();
 
     void loadIOMAP(std::istream&);

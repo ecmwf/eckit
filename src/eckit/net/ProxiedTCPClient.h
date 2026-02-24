@@ -29,7 +29,8 @@ public:
     ~ProxiedTCPClient() override;
 
     using net::TCPClient::connect;
-    net::TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0) override;
+    net::TCPSocket& connect(const std::string& host, int port, int retries = 5, int timeout = 0,
+                            int retryDelay = 5) override;
 
 private:
 

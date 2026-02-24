@@ -14,8 +14,8 @@
 
 #include <cmath>
 
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -38,8 +38,8 @@ EquidistantCylindrical::EquidistantCylindrical(double lat_ts, double lat_0) :
     struct General final : Implementation {
         explicit General(double cos_lat_ts, double lat_0) :
             cos_lat_ts_(cos_lat_ts), inv_cos_lat_ts_(1. / cos_lat_ts_), lat_0_(lat_0) {}
-        PointXY fwd(const PointLonLat& p) const override { return {p.lon * cos_lat_ts_, p.lat - lat_0_}; }
-        PointLonLat inv(const PointXY& q) const override { return {q.X * inv_cos_lat_ts_, q.Y + lat_0_}; }
+        PointXY fwd(const PointLonLat& p) const override { return {p.lon() * cos_lat_ts_, p.lat() - lat_0_}; }
+        PointLonLat inv(const PointXY& q) const override { return {q.X() * inv_cos_lat_ts_, q.Y() + lat_0_}; }
         const double cos_lat_ts_;
         const double inv_cos_lat_ts_;
         const double lat_0_;
@@ -47,8 +47,8 @@ EquidistantCylindrical::EquidistantCylindrical(double lat_ts, double lat_0) :
 
     struct Specific final : Implementation {
         explicit Specific(double lat_0) : lat_0_(lat_0) {}
-        PointXY fwd(const PointLonLat& p) const override { return {p.lon, p.lat - lat_0_}; }
-        PointLonLat inv(const PointXY& q) const override { return {q.X, q.Y + lat_0_}; }
+        PointXY fwd(const PointLonLat& p) const override { return {p.lon(), p.lat() - lat_0_}; }
+        PointLonLat inv(const PointXY& q) const override { return {q.X(), q.Y() + lat_0_}; }
         const double lat_0_;
     };
 

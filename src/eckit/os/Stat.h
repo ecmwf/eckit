@@ -25,7 +25,7 @@ namespace eckit {
 struct Stat {
     /// prefer using stat if supports 64 bit
 
-    typedef struct stat Struct;
+    using Struct = struct stat;
 
     static int stat(const char* path, Struct* s) { return ::stat(path, s); }
     static int lstat(const char* path, Struct* s) { return ::lstat(path, s); }

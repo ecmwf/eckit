@@ -18,8 +18,6 @@
 #include <map>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
@@ -27,7 +25,7 @@ namespace eckit {
 
 class DataHandle;
 
-class Exporter : private NonCopyable {
+class Exporter {
 
     class Datatype {
         char type_;
@@ -66,6 +64,11 @@ public:
     // -- Contructors
 
     Exporter(DataHandle&);
+
+    Exporter(const Exporter&)            = delete;
+    Exporter& operator=(const Exporter&) = delete;
+    Exporter(Exporter&&)                 = delete;
+    Exporter& operator=(Exporter&&)      = delete;
 
     // -- Destructor
 

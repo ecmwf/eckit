@@ -16,15 +16,15 @@
 #include <string>
 
 #include "eckit/geo/Point.h"
-#include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Generator.h"
 
 
 namespace eckit::geo {
 class Figure;
-}  // namespace eckit::geo
+}
 
 
 namespace eckit::geo {
@@ -36,6 +36,7 @@ public:
     // -- Types
 
     using builder_t = BuilderT1<Projection>;
+    using Spec      = spec::Spec;
     using ARG1      = const Spec&;
 
     // -- Constructors
@@ -111,12 +112,16 @@ using ProjectionRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::strin
 
 struct ProjectionFactory {
     // This is 'const' as Projection should always be immutable
-    [[nodiscard]] static const Projection* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+    [[nodiscard]] static const Projection* build(const Projection::Spec& spec) {
+        return instance().make_from_spec_(spec);
+    }
 
     // This is 'const' as Projection should always be immutable
     [[nodiscard]] static const Projection* make_from_string(const std::string&);
 
-    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+    [[nodiscard]] static Projection::Spec* make_spec(const Projection::Spec& spec) {
+        return instance().make_spec_(spec);
+    }
     static std::ostream& list(std::ostream& out) { return instance().list_(out); }
     static bool has_type(const std::string& type) { return ProjectionFactoryType::instance().exists(type); }
 
@@ -125,9 +130,9 @@ private:
     static ProjectionFactory& instance();
 
     // This is 'const' as Projection should always be immutable
-    [[nodiscard]] const Projection* make_from_spec_(const Spec&) const;
+    [[nodiscard]] const Projection* make_from_spec_(const Projection::Spec&) const;
 
-    [[nodiscard]] Spec* make_spec_(const Spec&) const;
+    [[nodiscard]] Projection::Spec* make_spec_(const Projection::Spec&) const;
     std::ostream& list_(std::ostream&) const;
 };
 

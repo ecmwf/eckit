@@ -34,12 +34,18 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 
-class TxnArray : private eckit::NonCopyable {
+class TxnArray {
 
 public:
 
-    typedef TxnID* iterator;
-    typedef const TxnID* const_iterator;
+    using iterator       = TxnID*;
+    using const_iterator = const TxnID*;
+
+    TxnArray()                           = default;
+    TxnArray(const TxnArray&)            = delete;
+    TxnArray& operator=(const TxnArray&) = delete;
+    TxnArray(TxnArray&&)                 = delete;
+    TxnArray& operator=(TxnArray&&)      = delete;
 
     virtual ~TxnArray() {}
 
@@ -203,7 +209,7 @@ public:
 
 template <class T>
 RecoverThread<T>::RecoverThread(const PathName& path, TxnArray& nextID, TxnRecoverer<T>& client, long age) :
-    nextID_(nextID), client_(client), age_(age), now_(::time(0)) {
+    nextID_(nextID), client_(client), age_(age), now_(::time(nullptr)) {
     AutoLock<TxnArray> lock(nextID_);
     PathName::match(path + "/[0-9]*", result_);
 

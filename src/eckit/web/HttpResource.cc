@@ -29,7 +29,7 @@ namespace eckit {
 ///
 class HttpResourceRegistry {
 
-    typedef std::map<std::string, HttpResource*> HttpResourceMap;
+    using HttpResourceMap = std::map<std::string, HttpResource*>;
 
 public:  // methods
 

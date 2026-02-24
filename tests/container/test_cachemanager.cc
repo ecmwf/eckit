@@ -14,6 +14,7 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
+#include "eckit/testing/Filesystem.h"
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
@@ -92,34 +93,11 @@ private:
 
 }  // namespace caching
 
-namespace {
-
-void deldir(eckit::PathName& p) {
-    if (!p.exists()) {
-        return;
-    }
-
-    std::vector<eckit::PathName> files;
-    std::vector<eckit::PathName> dirs;
-    p.children(files, dirs);
-
-    for (auto& f : files) {
-        f.unlink();
-    }
-    for (auto& d : dirs) {
-        deldir(d);
-    }
-
-    p.rmdir();
-}
-
-}  // namespace
-
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_cachemanager") {
     PathName dir = caching::CacheTraits::name();
-    deldir(dir);
+    testing::deldir(dir);
     EXPECT(!dir.exists());
 
     using value_t     = caching::CacheTraits::value_type;

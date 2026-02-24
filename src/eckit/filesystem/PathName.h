@@ -271,7 +271,7 @@ private:
 
 template <>
 struct VectorPrintSelector<PathName> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 
 }  // namespace eckit

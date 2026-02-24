@@ -621,7 +621,7 @@ void LocalPathName::match(const LocalPathName& root, std::vector<LocalPathName>&
 
     StdDir d(dir);
 
-    if (d == 0) {
+    if (d == nullptr) {
         Log::error() << "opendir(" << dir << ")" << Log::syserr << std::endl;
         throw FailedSystemCall(std::string("opendir(") + std::string(dir) + ")");
     }
@@ -673,7 +673,7 @@ LocalPathName LocalPathName::relativePath(const LocalPathName& other) const {
     }
 
     std::string result;
-    const char* p = 0;
+    const char* p = nullptr;
 
     for (std::vector<std::string>::const_iterator r = j; r != s2.end(); ++r) {
         if (p) {
@@ -702,7 +702,7 @@ LocalPathName LocalPathName::relativePath(const LocalPathName& other) const {
 void LocalPathName::children(std::vector<LocalPathName>& files, std::vector<LocalPathName>& dirs) const {
     StdDir d(*this);
 
-    if (d == 0) {
+    if (d == nullptr) {
         Log::error() << "opendir(" << *this << ")" << Log::syserr << std::endl;
         throw FailedSystemCall("opendir");
     }

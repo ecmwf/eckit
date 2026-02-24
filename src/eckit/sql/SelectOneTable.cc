@@ -18,7 +18,13 @@ namespace eckit::sql {
 static bool nullBool = false;
 
 SelectOneTable::SelectOneTable(const SQLTable* table) :
-    table_(table), offset_(0, nullBool), length_(0, nullBool), column_(0), table1_(0), table2_(0), order_(0) {}
+    table_(table),
+    offset_(0, nullBool),
+    length_(0, nullBool),
+    column_{nullptr},
+    table1_{nullptr},
+    table2_{nullptr},
+    order_(0) {}
 
 SelectOneTable::~SelectOneTable() {}
 

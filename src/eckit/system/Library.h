@@ -17,9 +17,7 @@
 #include <iosfwd>
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -31,10 +29,15 @@ namespace system {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Library : private eckit::NonCopyable {
+class Library {
 public:  // methods
 
     Library(const std::string& name);
+
+    Library(const Library&)            = delete;
+    Library& operator=(const Library&) = delete;
+    Library(Library&&)                 = delete;
+    Library& operator=(Library&&)      = delete;
 
     virtual ~Library();
 
@@ -63,15 +66,6 @@ public:  // methods
     virtual const Configuration& configuration() const;
 
 public:  // methods
-
-    /// @deprecated Use LibraryManager instead
-    static std::vector<std::string> list();
-    /// @deprecated Use LibraryManager instead
-    static void list(std::ostream& s);
-    /// @deprecated Use LibraryManager instead
-    static bool exists(const std::string& name);
-    /// @deprecated Use LibraryManager instead
-    static const Library& lookup(const std::string& name);
 
     void lock() { mutex_.lock(); }
     void unlock() { mutex_.unlock(); }

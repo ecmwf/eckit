@@ -17,21 +17,21 @@ namespace eckit {
 
 
 template <class Traits>
-class KDNode : public SPNode<Traits, KDNode<Traits> > {
+class KDNode : public SPNode<Traits, KDNode<Traits>> {
 public:
 
-    typedef SPNode<Traits, KDNode<Traits> >
-        SPNodeType;  // cannot redefine as SPNode since some compilers in-class redefinitions
+    using SPNodeType = SPNode<Traits, KDNode<Traits>>;
+    // cannot redefine as SPNode since some compilers in-class redefinitions
 
-    typedef typename SPNodeType::Value Value;
-    typedef typename SPNodeType::Alloc Alloc;
-    typedef typename SPNodeType::Point Point;
-    typedef typename SPNodeType::NodeList NodeList;
-    typedef typename SPNodeType::NodeQueue NodeQueue;
-    typedef typename SPNodeType::NodeInfo NodeInfo;
+    using Value     = typename SPNodeType::Value;
+    using Alloc     = typename SPNodeType::Alloc;
+    using Point     = typename SPNodeType::Point;
+    using NodeList  = typename SPNodeType::NodeList;
+    using NodeQueue = typename SPNodeType::NodeQueue;
+    using NodeInfo  = typename SPNodeType::NodeInfo;
 
 
-    typedef KDNode<Traits> Node;
+    using Node = KDNode<Traits>;
 
 private:
 

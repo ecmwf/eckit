@@ -70,7 +70,7 @@ inline Scalar det(Scalar m[16]);
 }  // namespace detail
 
 template <typename Scalar, typename Index = std::ptrdiff_t>
-class Matrix : private eckit::NonCopyable {
+class Matrix {
 
 protected:
 
@@ -145,6 +145,12 @@ public:
                 nc_   = nc;
             }
         }
+    }
+
+    void setZero() {
+        ASSERT(size() > 0);
+        ASSERT(data_);
+        ::memset(data_, 0, size() * sizeof(Scalar));
     }
 
     Matrix& operator=(const Matrix& other) {
@@ -462,6 +468,13 @@ public:
         return m;
     }
 
+    // Matrix Scalar divide
+    Matrix operator/(const Scalar& s) const {
+        ASSERT(s != 0.0);
+        Matrix m(*this);
+        m /= s;
+        return m;
+    }
 
 private:
 

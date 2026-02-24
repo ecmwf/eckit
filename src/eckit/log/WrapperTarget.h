@@ -26,7 +26,7 @@ class WrapperTarget : public LogTarget {
 
 protected:  // methods
 
-    WrapperTarget(LogTarget* target = 0);
+    WrapperTarget(LogTarget* target = nullptr);
 
     ~WrapperTarget() override;
 

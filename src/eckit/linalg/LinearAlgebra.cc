@@ -21,33 +21,6 @@ namespace eckit::linalg {
 
 //-----------------------------------------------------------------------------
 
-///@note __backend supports the deprecated functionality, to remove
-static const struct LinearAlgebraInstance : public LinearAlgebra {
-    LinearAlgebraInstance() = default;
-} __backend;
-
-
-//-----------------------------------------------------------------------------
-
-
-const LinearAlgebra& LinearAlgebra::backend() {
-    return __backend;
-}
-
-
-void LinearAlgebra::backend(const std::string& name) {
-    ASSERT(LinearAlgebraDense::hasBackend(name) || LinearAlgebraSparse::hasBackend(name));
-
-    if (LinearAlgebraDense::hasBackend(name)) {
-        LinearAlgebraDense::backend(name);
-    }
-
-    if (LinearAlgebraSparse::hasBackend(name)) {
-        LinearAlgebraSparse::backend(name);
-    }
-}
-
-
 std::ostream& LinearAlgebra::list(std::ostream& out) {
     const auto* delimiter = ", ";
     const auto* sep       = "";
@@ -64,12 +37,6 @@ std::ostream& LinearAlgebra::list(std::ostream& out) {
     }
 
     return out;
-}
-
-
-const LinearAlgebra& LinearAlgebra::getBackend(const std::string& name) {
-    backend(name);
-    return __backend;
 }
 
 
@@ -105,13 +72,6 @@ bool LinearAlgebra::hasDenseBackend(const std::string& name) {
 
 bool LinearAlgebra::hasSparseBackend(const std::string& name) {
     return LinearAlgebraSparse::hasBackend(name);
-}
-
-
-std::string LinearAlgebra::name() {
-    const auto dense  = LinearAlgebraDense::name();
-    const auto sparse = LinearAlgebraSparse::name();
-    return dense == sparse ? dense : (dense + "/" + sparse);
 }
 
 

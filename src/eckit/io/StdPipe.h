@@ -19,16 +19,20 @@
 #include <string>
 
 #include "eckit/io/AutoCloser.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
 /// Simple wrapper for pipes
 
-class StdPipe : private NonCopyable {
+class StdPipe {
 public:
 
     StdPipe(const std::string& name, const std::string& mode = "r");
+
+    StdPipe(const StdPipe&)            = delete;
+    StdPipe& operator=(const StdPipe&) = delete;
+    StdPipe(StdPipe&&)                 = delete;
+    StdPipe& operator=(StdPipe&&)      = delete;
 
     /// @pre must have been closed
     ~StdPipe();

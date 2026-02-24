@@ -113,7 +113,7 @@ private:
 
 template <>
 struct VectorPrintSelector<LocalConfiguration> {
-    typedef VectorPrintSimple selector;
+    using selector = VectorPrintSimple;
 };
 
 }  // namespace eckit

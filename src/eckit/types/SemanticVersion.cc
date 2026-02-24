@@ -28,7 +28,7 @@ SemanticVersion::SemanticVersion(unsigned long major, unsigned long minor, unsig
 
 static unsigned long s2int(const std::string& s) {
     if (s.size() == std::count_if(s.begin(), s.end(), [](unsigned char c) { return std::isdigit(c); })) {
-        unsigned long r = ::strtoul(s.data(), NULL, 0);
+        unsigned long r = ::strtoul(s.data(), nullptr, 0);
         if (r != ULONG_MAX) {
             return r;
         }

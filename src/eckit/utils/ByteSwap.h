@@ -54,19 +54,19 @@ struct ByteSwap {};
 
 template <>
 struct ByteSwap<8> {
-    typedef uint64_t inter_t;
+    using inter_t = uint64_t;
     static void bitswap(uint64_t& i) { i = eckit::bitswap64(i); }
 };
 
 template <>
 struct ByteSwap<4> {
-    typedef uint32_t inter_t;
+    using inter_t = uint32_t;
     static void bitswap(uint32_t& i) { i = eckit::bitswap32(i); }
 };
 
 template <>
 struct ByteSwap<2> {
-    typedef uint16_t inter_t;
+    using inter_t = uint16_t;
     static void bitswap(uint16_t& i) { i = eckit::bitswap16(i); }
 };
 

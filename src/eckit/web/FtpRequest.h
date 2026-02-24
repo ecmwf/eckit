@@ -16,8 +16,6 @@
 
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 //-----------------------------------------------------------------------------
 
 class Retrieve;
@@ -27,12 +25,17 @@ namespace eckit {
 class Length;
 class PathName;
 
-class FtpRequest : private eckit::NonCopyable {
+class FtpRequest {
 public:
 
     // -- Contructors
 
-    FtpRequest() {}
+    FtpRequest() = default;
+
+    FtpRequest(const FtpRequest&)            = delete;
+    FtpRequest& operator=(const FtpRequest&) = delete;
+    FtpRequest(FtpRequest&&)                 = delete;
+    FtpRequest& operator=(FtpRequest&&)      = delete;
 
     // -- Destructor
 

@@ -17,18 +17,21 @@
 
 #include <iosfwd>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
 /// Class used to print large numbers
 
-class BigNum : private eckit::NonCopyable {
+class BigNum {
 
 public:
 
     BigNum(long long v) : value_(v) {}
+
+    BigNum(const BigNum&)            = delete;
+    BigNum& operator=(const BigNum&) = delete;
+    BigNum(BigNum&&)                 = delete;
+    BigNum& operator=(BigNum&&)      = delete;
 
 private:
 

@@ -25,7 +25,7 @@ using namespace eckit::testing;
 
 namespace eckit_test {  // Not eckit namespace on purpose to test downstream usage of macros
 
-typedef std::vector<Test> Tests;
+using Tests = std::vector<Test>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

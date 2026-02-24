@@ -32,7 +32,7 @@ CASE("Expand a CWD") {
 
     char* e = ::getenv("CURRENT_TEST_DIR");
 
-    EXPECT(e != NULL);
+    EXPECT(e != nullptr);
 
     std::string r = std::string(e) + std::string("/tmp/foo");
 
@@ -60,7 +60,7 @@ CASE("Expand an environment variable") {
 
 static std::string write_file() {  // write file contents
     char* e = ::getenv("CURRENT_TEST_DIR");
-    ASSERT(e != NULL);
+    ASSERT(e != nullptr);
 
     PathName foo(e);
     foo /= "foo";

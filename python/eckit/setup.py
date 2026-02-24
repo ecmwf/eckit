@@ -8,23 +8,30 @@
 # does it submit to any jurisdiction.
 
 
-import importlib.metadata
+import sys
+import warnings
 from os import getenv
 from pathlib import Path
 from typing import Any
-import sys
 
 from Cython.Build import cythonize
 from setuptools import Extension
 from setuptools import setup
-import warnings
-
 
 source_dir = getenv("ECKIT_SOURCE_DIR", str(Path(getenv("HOME"), "git", "eckit")))
 binary_dir = getenv("ECKIT_BUILD_DIR", str(Path(getenv("HOME"), "build", "eckit")))
 library_dirs = getenv("ECKIT_LIB_DIR", str(Path(binary_dir, "lib"))).split(":")
 
-include_dirs_default = str(Path(source_dir, "src")) + ":" + str(Path(binary_dir, "src"))
+include_dirs_default = ":".join(
+    str(p)
+    for p in (
+        Path(source_dir, "src"),
+        Path(binary_dir, "src"),
+        Path(source_dir, "eckit", "src"),
+        Path(binary_dir, "eckit", "src"),
+    )
+    if p.exists()
+)
 include_dirs = getenv("ECKIT_INCLUDE_DIRS", include_dirs_default).split(":")
 
 extra_compile_args = ["-std=c++17"]
@@ -43,6 +50,7 @@ def _ext(name: str, sources: list, libraries: list) -> Extension:
         extra_link_args=extra_compile_args,
     )
 
+
 kwargs_set: dict[str, Any] = {}
 try:
     from setup_utils import ext_kwargs as wheel_ext_kwargs
@@ -53,7 +61,7 @@ except ImportError:
 
 version: str
 try:
-    with open("../../VERSION", 'r') as f:
+    with open("../../VERSION", "r") as f:
         version = f.readlines()[0].strip()
 except Exception:
     warnings.warn("failed to read VERSION, falling back to 0.0.0")
@@ -62,6 +70,7 @@ except Exception:
 install_requires = ["findlibs", "pyyaml"]
 try:
     import eckitlib
+
     install_requires.append(f"eckitlib=={eckitlib.__version__}")
 except ImportError:
     warnings.warn("failed to import eckitlib, not listing as a dependency")
@@ -89,7 +98,11 @@ setup(
                 ["eckit_geo"],
             ),
         ],
-        compiler_directives={"language_level": 3, "c_string_encoding": "default"},
+        compiler_directives={
+            "language_level": 3,
+            "c_string_type": "unicode",  # accept Python str
+            "c_string_encoding": "utf8",
+        },
     ),
     **kwargs_set,
 )

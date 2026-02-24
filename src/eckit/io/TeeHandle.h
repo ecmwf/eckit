@@ -25,7 +25,7 @@ namespace eckit {
 class TeeHandle : public DataHandle {
 public:
 
-    typedef std::vector<DataHandle*> HandleList;
+    using HandleList = std::vector<DataHandle*>;
 
     // -- Contructors
 

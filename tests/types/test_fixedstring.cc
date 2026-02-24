@@ -136,7 +136,7 @@ CASE("test_eckit_types_fixedstring_constructor_char") {
     // Construct with a null pointer
 
     struct fs5_allocate {
-        void operator()() { FixedString<8> fs5(0); }
+        void operator()() { FixedString<8> fs5(nullptr); }
     };
     EXPECT_THROWS_AS(fs5_allocate()(), AssertionFailed);
 }

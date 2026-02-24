@@ -78,7 +78,7 @@ void JavaAgent::serve(eckit::Stream& s, std::istream& in, std::ostream& out) {
 
 template <>
 Streamable* eckit::Reanimator<JavaAgent>::ressucitate(eckit::Stream& s) const {
-    return 0;
+    return nullptr;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

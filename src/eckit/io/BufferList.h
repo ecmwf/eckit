@@ -18,7 +18,6 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/Length.h"
-#include "eckit/memory/OnlyMovable.h"
 
 namespace eckit {
 
@@ -26,9 +25,18 @@ namespace eckit {
 
 /// A class to aggregate buffers into a single object that can be read as a whole
 
-class BufferList : public OnlyMovable {
+class BufferList {
 
 public:  // methods
+
+    BufferList() = default;
+
+    BufferList(const BufferList&)            = delete;
+    BufferList& operator=(const BufferList&) = delete;
+    BufferList(BufferList&&)                 = default;
+    BufferList& operator=(BufferList&&)      = default;
+
+    ~BufferList() = default;
 
     void append(Buffer&& buf);
 

@@ -24,8 +24,8 @@ namespace eckit::distributed {
 namespace {
 
 
-static eckit::Mutex* local_mutex                   = 0;
-static std::map<std::string, TransportFactory*>* m = 0;
+static eckit::Mutex* local_mutex                   = nullptr;
+static std::map<std::string, TransportFactory*>* m = nullptr;
 
 static pthread_once_t once = PTHREAD_ONCE_INIT;
 

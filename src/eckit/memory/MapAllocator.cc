@@ -28,8 +28,8 @@ static size_t whole_page(size_t size) {
 
 MapAllocatorTooSmall::MapAllocatorTooSmall(size_t, size_t) : Exception("MapAllocator too small") {}
 
-MapAllocator::MapAllocator(size_t length) : fd_(-1), length_(whole_page(length)), count_(0), more_(0) {
-    addr_ = MMap::mmap(0, length_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd_, 0);
+MapAllocator::MapAllocator(size_t length) : fd_(-1), length_(whole_page(length)), count_(0), more_{nullptr} {
+    addr_ = MMap::mmap(nullptr, length_, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, fd_, 0);
 
     if (addr_ == MAP_FAILED) {
         throw FailedSystemCall("mmap", Here());
@@ -100,9 +100,9 @@ void MapAllocator::deallocate(void* addr) {
     else {
         ASSERT(more_);
         more_->deallocate(addr);
-        if (more_->count_ == 0 && more_->more_ == 0) {
+        if (more_->count_ == 0 && more_->more_ == nullptr) {
             delete more_;
-            more_ = 0;
+            more_ = nullptr;
         }
     }
 }

@@ -63,7 +63,8 @@ public:
 
     std::string str() const;
 
-    virtual void json(JSON&) const = 0;
+    virtual bool only(const std::string& name) const { return false; }
+    virtual void json(JSON& name) const = 0;
     virtual const Spec& spec(const std::string& name) const;
 
 private:

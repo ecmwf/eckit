@@ -10,6 +10,8 @@
 
 #include "eckit/spec/Layered.h"
 
+#include <algorithm>
+
 #include "eckit/log/JSON.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Exceptions.h"
@@ -79,6 +81,14 @@ void Layered::print(std::ostream& out) const {
     j.endList();
 
     j.endObject();
+}
+
+
+bool Layered::only(const std::string& name) const {
+    auto count_only = [&](const auto& c) { return c->only(name); };
+    return 1 == (spec_.only(name) ? 1 : 0) +                                   //
+                    std::count_if(front_.begin(), front_.end(), count_only) +  //
+                    std::count_if(back_.begin(), back_.end(), count_only);
 }
 
 

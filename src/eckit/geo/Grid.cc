@@ -241,31 +241,25 @@ Grid::BoundingBox* Grid::calculate_bbox() const {
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    spec::Custom area_spec;
-    area().fill_spec(area_spec);
+    auto custom_set_if_different = [&custom](const std::string& name, const auto& obj, const std::string& default_str) {
+        spec::Custom spec;
+        obj.fill_spec(spec);
 
-    if (static const std::string key("area"), default_str(Area::area_default().spec().str());
-        default_str != area_spec.str()) {
-        if (area_spec.only(key)) {
-            custom.set(area_spec);
+        if (default_str != spec.str()) {
+            if (spec.only(name)) {
+                custom.set(spec);
+            }
+            else {
+                custom.set(name, spec);
+            }
         }
-        else {
-            custom.set(key, area_spec);
-        }
-    }
+    };
 
-    spec::Custom proj_spec;
-    projection().fill_spec(proj_spec);
+    static const auto area_default = Area::area_default().spec().str();
+    static const auto proj_default = Projection::projection_default().spec().str();
 
-    if (static const std::string key("projection"), default_str(Projection::projection_default().spec().str());
-        default_str != proj_spec.str()) {
-        if (proj_spec.only(key)) {
-            custom.set(proj_spec);
-        }
-        else {
-            custom.set(key, proj_spec);
-        }
-    }
+    custom_set_if_different("area", area(), area_default);
+    custom_set_if_different("projection", projection(), proj_default);
 }
 
 

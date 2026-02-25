@@ -69,11 +69,9 @@ public:
     void set(const container_type& container) { map_ = container; }
     void set(container_type&& container) { map_.swap(container); }
 
-    bool only(const std::string& name) const { return map_.size() == 1 && has(name); }
+    size_t erase(const std::string& name) { return map_.erase(name); }
     bool empty() const { return map_.empty(); }
     void clear() { map_.clear(); }
-
-    void json(JSON&) const override;
 
     bool has_custom(const std::string& name) const;
     const custom_ptr& custom(const std::string& name) const;
@@ -119,6 +117,10 @@ public:
     bool get(const std::string& name, std::vector<double>&) const override;
     bool get(const std::string& name, std::vector<std::string>&) const override;
 
+    bool only(const std::string& name) const override { return map_.size() == 1 && has(name); }
+    void json(JSON& name) const override;
+    const Spec& spec(const std::string& name) const override;
+
     // -- Class methods
 
     [[nodiscard]] static Custom* make_from_value(const Value&);
@@ -132,10 +134,6 @@ private:
     // -- Methods
 
     void set(const std::string& name, const custom_ptr&);
-
-    // -- Overridden methods
-
-    const Spec& spec(const std::string& name) const override;
 };
 
 

@@ -10,11 +10,19 @@
  */
 
 
-#include <memory>
-
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Area.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/area/Library.h"
 #include "eckit/geo/area/library/GeoJSON.h"
 #include "eckit/geo/eckit_geo_config.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+
+#include <initializer_list>
+#include <iostream>
+#include <memory>
+#include <string>
 
 #if eckit_HAVE_GEO_AREA_SHAPEFILE
 #include "eckit/geo/area/library/Shapefile.h"

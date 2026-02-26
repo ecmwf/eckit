@@ -16,8 +16,6 @@
 #include <iosfwd>
 #include <streambuf>
 
-#include "eckit/eckit.h"
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {

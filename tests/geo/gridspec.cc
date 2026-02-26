@@ -10,17 +10,24 @@
  */
 
 
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/util.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <map>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <variant>
+#include <vector>
 
 
 namespace eckit::geo::test {

@@ -12,9 +12,13 @@
 // Baudouin Raoult - ECMWF May 2020
 
 #pragma once
-#include <deque>
-
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/HandleHolder.h"
+
+#include <cstddef>
+#include <deque>
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 

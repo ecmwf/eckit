@@ -13,10 +13,11 @@
 /// @note This file is named HashxxHash and not simply xxHash not to clash with the included header xxhash.h
 ///       for case insensitive file systems
 
-#include <memory>
-
-#include "eckit/eckit.h"
 #include "eckit/utils/Hash.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
 
 namespace eckit {
 
@@ -50,6 +51,7 @@ public:  // types
 private:  // members
 
     struct Context;
+
     std::unique_ptr<Context> ctx_;
 };
 

@@ -14,12 +14,13 @@
 /// @date   May 2016
 
 #pragma once
-#include <string>
-
+#include "eckit/distributed/Actor.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
 
-#include "eckit/distributed/Actor.h"
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 namespace eckit::distributed {
 

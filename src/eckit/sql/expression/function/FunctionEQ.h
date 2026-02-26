@@ -12,7 +12,12 @@
 // Baudouin Raoult - ECMWF Dec 03
 
 #pragma once
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
+
+#include <cstddef>
+#include <string>
 
 namespace eckit::sql::expression::function {
 

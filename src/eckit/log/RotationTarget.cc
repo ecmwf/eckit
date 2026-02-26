@@ -8,23 +8,27 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <fstream>
-
 #include "eckit/log/RotationTarget.h"
 
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
+#include "eckit/types/Time.h"
+
+#include <ctime>
+#include <fstream>
+#include <map>
+#include <sstream>
+#include <utility>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class RotationOutputStream;
 
 static StaticMutex local_mutex;
 

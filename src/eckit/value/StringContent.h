@@ -14,14 +14,18 @@
 /// @date   Jun 97
 
 #pragma once
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/value/Content.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Hash;
 
 class StringContent : public Content {
 

@@ -12,15 +12,17 @@
 
 #include "eckit/codec/Session.h"
 
+#include "eckit/codec/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/log/CodeLocation.h"
+
 #include <atomic>
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <sstream>
-
-#include "eckit/codec/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
+#include <vector>
 
 namespace eckit::codec {
 

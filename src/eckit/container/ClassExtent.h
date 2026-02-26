@@ -12,11 +12,11 @@
 // Baudouin Raoult - ECMWF Jul 96
 
 #pragma once
-#include <map>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+
+#include <map>
 
 namespace eckit {
 

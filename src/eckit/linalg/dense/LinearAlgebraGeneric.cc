@@ -11,13 +11,12 @@
 
 #include "eckit/linalg/dense/LinearAlgebraGeneric.h"
 
-#include <ostream>
-#include <vector>
-
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
+
+#include <ostream>
 
 namespace eckit::linalg::dense {
 

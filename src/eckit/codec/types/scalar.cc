@@ -22,15 +22,15 @@
 
 #include "eckit/codec/types/scalar.h"
 
-#include <cstdint>
-#include <string>
-
 #include "eckit/codec/Data.h"
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/detail/Base64.h"
 #include "eckit/codec/detail/DataType.h"
+#include "eckit/codec/detail/Endian.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/ByteSwap.h"
+
+#include <string>
 
 namespace eckit::codec {
 

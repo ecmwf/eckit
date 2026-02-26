@@ -8,14 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <unistd.h>
 #include <cstdint>
 #include <cstring>
-
+#include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 namespace eckit {
 

@@ -11,16 +11,18 @@
 #include "KDMapped.h"
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/memory/MMap.h"
 #include "eckit/os/Stat.h"
 
-
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include <cstdio>
 #include <cstring>  // for memcpy
-
-#include "eckit/memory/MMap.h"
+#include <fcntl.h>
+#include <ostream>
+#include <string>
+#include <sys/mman.h>
+#include <unistd.h>
 
 
 namespace eckit {

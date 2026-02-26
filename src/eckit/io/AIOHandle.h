@@ -10,8 +10,13 @@
 
 #pragma once
 #include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
+#include <sys/types.h>
+#include <vector>
 
 namespace eckit {
 

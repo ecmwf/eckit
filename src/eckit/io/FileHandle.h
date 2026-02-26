@@ -13,10 +13,16 @@
 /// @date   May 1996
 
 #pragma once
-#include <memory>
-
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <cstdio>
+#include <iosfwd>
+#include <memory>
+#include <string>
 
 namespace eckit {
 

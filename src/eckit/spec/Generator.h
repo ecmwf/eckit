@@ -12,6 +12,10 @@
 
 #pragma once
 
+#include "eckit/spec/Exceptions.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
+
 #include <algorithm>
 #include <iomanip>
 #include <ios>
@@ -20,10 +24,6 @@
 #include <ostream>
 #include <regex>
 #include <string>
-
-#include "eckit/spec/Exceptions.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 
 
 namespace eckit::spec {

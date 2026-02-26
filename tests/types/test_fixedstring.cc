@@ -8,9 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/FixedString.h"
 
-#include "eckit/testing/Test.h"
+#include <string>
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wself-assign-overloaded"

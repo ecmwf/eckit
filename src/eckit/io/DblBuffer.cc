@@ -10,9 +10,12 @@
 
 
 #include "eckit/io/DblBuffer.h"
-#include "eckit/io/AutoCloser.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Progress.h"
 #include "eckit/log/Timer.h"
@@ -22,7 +25,9 @@
 #include "eckit/thread/MutexCond.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eckit/value/Value.h"
+
+#include <exception>
+#include <sstream>
 
 
 namespace eckit {

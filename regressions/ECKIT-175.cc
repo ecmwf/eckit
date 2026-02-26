@@ -28,13 +28,14 @@ Note:
 
 */
 
-#include <cstdlib>
-#include <iostream>
-#include <map>
-
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Tool.h"
+
+#include <cstdlib>
+#include <iostream>
+#include <string>
 
 using namespace eckit;
 

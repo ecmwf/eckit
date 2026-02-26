@@ -10,11 +10,17 @@
  */
 
 
-#include <memory>
-
+#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+
+#include <memory>
+#include <string>
+#include <variant>
 
 
 namespace eckit::geo::test {

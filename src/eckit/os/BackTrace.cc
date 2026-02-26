@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
+#include "eckit/eckit_config.h"
+
+#include <cstdlib>
 #include <cstring>
 #include <sstream>
-
-#include "eckit/eckit.h"
 
 #if eckit_HAVE_EXECINFO_BACKTRACE || defined(__FreeBSD__)
 #include <execinfo.h>  // for backtrace
@@ -22,7 +22,6 @@
 #include <cxxabi.h>
 #endif
 
-#include "eckit/exception/Exceptions.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/types/Types.h"
 

@@ -10,6 +10,7 @@
 
 
 #include "eckit/container/BloomFilter.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/MD5.h"
 

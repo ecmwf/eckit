@@ -10,7 +10,7 @@
 
 #include "Exceptions.h"
 
-#include "eckit/codec/detail/demangle.h"
+#include <sstream>
 
 namespace eckit::codec {
 

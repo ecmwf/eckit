@@ -9,9 +9,9 @@
  */
 
 #pragma once
-#include "BSPHyperPlane.h"
-
 #include "eckit/container/sptree/SPNode.h"
+
+#include "BSPHyperPlane.h"
 
 namespace eckit {
 

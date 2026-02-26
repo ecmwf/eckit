@@ -13,7 +13,11 @@
 
 #pragma once
 #include "eckit/runtime/TaskID.h"
-#include "eckit/types/Types.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <iosfwd>
+#include <set>
+#include <string>
 
 
 namespace eckit {

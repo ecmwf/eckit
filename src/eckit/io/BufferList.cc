@@ -11,10 +11,10 @@
 
 #include "eckit/io/BufferList.h"
 
+#include "eckit/io/Offset.h"
+
 #include <numeric>
 #include <utility>
-
-#include "eckit/io/Offset.h"
 
 namespace eckit {
 

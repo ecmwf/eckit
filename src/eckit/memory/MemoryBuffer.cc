@@ -8,10 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
+#include "eckit/memory/MemoryBuffer.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/MemoryBuffer.h"
+
+#include <cstring>
+#include <utility>
 
 namespace eckit {
 

@@ -12,6 +12,10 @@
 #pragma once
 
 #include "eckit/linalg/LinearAlgebraDense.h"
+#include "eckit/linalg/types.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit::linalg::dense {
 

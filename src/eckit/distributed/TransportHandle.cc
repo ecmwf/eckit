@@ -10,11 +10,16 @@
 
 #include "TransportHandle.h"
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/maths/Functions.h"
-
+#include "eckit/distributed/Actor.h"
 #include "eckit/distributed/Message.h"
 #include "eckit/distributed/Transport.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/maths/Functions.h"
+
+#include <ostream>
 
 namespace eckit::distributed {
 

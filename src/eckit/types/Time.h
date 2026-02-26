@@ -14,15 +14,15 @@
 /// @date   Oct 96
 
 #pragma once
-#include <cstdint>
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/persist/Bless.h"
+#include "eckit/persist/DumpLoad.h"
+
+#include <cstdint>
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
-class DumpLoad;
-class Bless;
 class Hash;
 
 using Second = double;
@@ -46,7 +46,6 @@ public:  // methods
     Time(int seconds, bool extended = false);
     Time(const std::string& time, bool extended = false);
 
-#include "eckit/types/Time.b"
 
     Time(const Time&);
     Time& operator=(const Time&);

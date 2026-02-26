@@ -8,24 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <cassert>
-#include <cerrno>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-
-#include <iostream>
-#include <limits>
-
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/testing/Test.h"
+
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <fcntl.h>
+#include <iostream>
+#include <string>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define TOTAL_SIZE (SIZE_2G + SIZE_1M)  // 2Gb + 1Mb file
 // #define TOTAL_SIZE  2*SIZE_2G // 4Gb file

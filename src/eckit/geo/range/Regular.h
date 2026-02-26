@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <cstddef>
-#include <memory>
-
 #include "eckit/geo/Range.h"
 #include "eckit/types/Fraction.h"
+
+#include <cstddef>
+#include <memory>
 
 
 namespace eckit::geo::range {

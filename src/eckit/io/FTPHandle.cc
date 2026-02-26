@@ -8,12 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <arpa/inet.h>
-
 #include "eckit/io/FTPHandle.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/IPAddress.h"
 #include "eckit/net/TCPServer.h"
+
+#include <arpa/inet.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -12,6 +12,8 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Thread.h"
 
+#include <iosfwd>
+
 
 namespace eckit {
 

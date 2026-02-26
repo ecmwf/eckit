@@ -13,10 +13,11 @@
 /// @date   Dec 2019
 
 #pragma once
+#include "eckit/net/IPAddress.h"
+
+#include <cstddef>
 #include <iosfwd>
 #include <string>
-
-#include "eckit/net/IPAddress.h"
 
 namespace eckit::net {
 

@@ -12,8 +12,10 @@
 // Baudouin Raoult - ECMWF Oct 96
 
 #pragma once
-#include "eckit/persist/Bless.h"
 
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -21,14 +23,12 @@ namespace eckit {
 
 class Url;
 class JavaAgent;
-class Bless;
 
 class HtmlObject {
 public:
 
     HtmlObject();
 
-#include "eckit/web/HtmlObject.b"
 
     virtual ~HtmlObject();
 

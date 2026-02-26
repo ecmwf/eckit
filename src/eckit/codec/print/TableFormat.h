@@ -12,16 +12,14 @@
 
 #pragma once
 
-#include <cstdint>
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/Record.h"
+#include "eckit/config/Parametrisation.h"
+
 #include <iosfwd>
 #include <map>
 #include <memory>
 #include <string>
-
-#include "eckit/codec/Metadata.h"
-#include "eckit/codec/Record.h"
-#include "eckit/codec/RecordItemReader.h"
-#include "eckit/codec/Session.h"
 
 namespace eckit::codec {
 

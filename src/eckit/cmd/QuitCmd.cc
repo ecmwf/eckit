@@ -9,8 +9,12 @@
  */
 
 #include "eckit/cmd/QuitCmd.h"
+
+#include "eckit/cmd/Arg.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/runtime/Main.h"
+
+#include <ostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

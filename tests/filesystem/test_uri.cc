@@ -8,13 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/net/Endpoint.h"
 #include "eckit/serialisation/ResizableMemoryStream.h"
 #include "eckit/testing/Test.h"
-#include "eckit/types/Types.h"
+
+#include <string>
 
 using namespace std;
 using namespace eckit;

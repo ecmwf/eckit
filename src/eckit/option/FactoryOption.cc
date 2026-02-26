@@ -14,11 +14,12 @@
 
 #pragma once
 
-#include <iostream>
+#include "eckit/option/FactoryOption.h"
 
 #include "eckit/config/Configured.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/option/FactoryOption.h"
+
+#include <iostream>
 
 namespace eckit::option {
 

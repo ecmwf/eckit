@@ -14,6 +14,8 @@
 #pragma once
 #include "eckit/net/TCPSocket.h"
 
+#include <streambuf>
+
 
 namespace eckit {
 

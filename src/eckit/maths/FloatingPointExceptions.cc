@@ -10,18 +10,19 @@
 
 #include "eckit/maths/FloatingPointExceptions.h"
 
-#include <cfenv>
-#include <csignal>
-#include <map>
-#include <utility>
-#include <vector>
-
-#include <unistd.h>
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/utils/Translator.h"
+
+#include <cfenv>
+#include <csignal>
+#include <cstdlib>
+#include <map>
+#include <unistd.h>
+#include <utility>
+#include <vector>
 
 #define ECKIT_SUPPORT_STDC_FENV_ACCESS_ON 1
 

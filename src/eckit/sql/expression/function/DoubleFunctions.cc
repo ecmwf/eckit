@@ -9,11 +9,15 @@
  */
 
 
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
-#include <cfloat>
 #include <climits>
 #include <cmath>
+#include <memory>
+#include <string>
 
 namespace eckit::sql::expression::function {
 

@@ -11,7 +11,12 @@
 
 #include "eckit/net/ProxiedTCPClient.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/net/HttpHeader.h"
+#include "eckit/net/TCPSocket.h"
+
+#include <iostream>
+#include <sstream>
 
 
 namespace eckit {

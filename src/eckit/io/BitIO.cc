@@ -8,11 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <bitset>
+#include "eckit/io/BitIO.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/BitIO.h"
 #include "eckit/io/DataHandle.h"
+
+#include <algorithm>
+#include <sstream>
+#include <string>
 
 
 namespace eckit {

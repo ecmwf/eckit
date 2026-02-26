@@ -14,6 +14,9 @@
 #pragma once
 #include "eckit/web/HtmlResource.h"
 
+#include <iosfwd>
+#include <string>
+
 
 //-----------------------------------------------------------------------------
 

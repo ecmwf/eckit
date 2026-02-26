@@ -12,6 +12,14 @@
 
 #include "eckit/geo/search/TreeMemory.h"
 
+#include "eckit/container/KDMemory.h"
+#include "eckit/container/sptree/SPNodeInfo.h"
+#include "eckit/container/sptree/SPValue.h"
+
+#include <ostream>
+#include <string>
+#include <vector>
+
 
 namespace eckit::geo::search {
 

@@ -8,11 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
-
 #include "eckit/config/Resource.h"
+#include "eckit/eckit_ecbuild_config.h"
+#include "eckit/eckit_version.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
+
+#include <ostream>
+#include <string>
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -8,20 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/eckit_config.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
 #include "eckit/system/Plugin.h"
 #include "eckit/system/ResourceUsage.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/testing/Test.h"
+
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

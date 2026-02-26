@@ -13,6 +13,12 @@
 
 #pragma once
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <ostream>
 
 //-----------------------------------------------------------------------------
 

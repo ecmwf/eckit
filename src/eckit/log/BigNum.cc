@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/BigNum.h"
+
 #include <iomanip>
 #include <iostream>
-
-#include "eckit/log/BigNum.h"
 
 namespace eckit {
 

@@ -13,15 +13,9 @@
 /// @date   June 2019
 
 #pragma once
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include <iosfwd>
 #include <string>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
-#include "eckit/utils/Tokenizer.h"
+#include <sys/types.h>
 
 namespace eckit {
 

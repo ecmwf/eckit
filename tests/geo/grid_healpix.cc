@@ -10,12 +10,21 @@
  */
 
 
-#include <memory>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/geo/order/HEALPix.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <initializer_list>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::test {

@@ -10,13 +10,20 @@
 
 
 #include "eckit/net/NetService.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/io/Select.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/NetUser.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/thread/ThreadControler.h"
+
+#include <exception>
+#include <memory>
+#include <sstream>
 
 namespace eckit::net {
 

@@ -15,6 +15,10 @@
 
 #include "eckit/utils/Hash.h"
 
+#include <cstdint>
+#include <cstring>
+#include <string>
+
 namespace eckit {
 
 class MD5 : public Hash {

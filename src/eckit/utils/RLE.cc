@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/Log.h"
+#include "eckit/serialisation/Stream.h"
+
 #include <cstddef>
 #include <iterator>
 #include <optional>
 #include <vector>
-
-#include "eckit/log/Log.h"
-#include "eckit/serialisation/Stream.h"
 
 
 namespace eckit {

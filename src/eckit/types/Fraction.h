@@ -12,6 +12,7 @@
 // Baudouin Raoult - ECMWF Mar 16
 
 #pragma once
+#include <cstddef>
 #include <iosfwd>
 #include <string>
 

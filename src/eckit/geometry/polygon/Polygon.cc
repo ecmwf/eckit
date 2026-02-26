@@ -8,9 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-
 #include "eckit/geometry/polygon/Polygon.h"
+
+#include "eckit/geometry/KPoint.h"
+
+#include <iostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

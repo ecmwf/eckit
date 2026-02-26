@@ -9,15 +9,15 @@
  */
 
 #include "eckit/net/IPAddress.h"
+
 #include "eckit/exception/Exceptions.h"
 
 #include <arpa/inet.h>
+#include <cstring>
 #include <netdb.h>
 #include <netinet/in.h>
-#include <sys/socket.h>
+#include <sstream>
 #include <unistd.h>
-#include <cstring>
-#include <ostream>
 
 namespace eckit::net {
 

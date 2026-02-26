@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-
-#include "eckit/log/Log.h"
-#include "eckit/log/ResourceUsage.h"
-#include "eckit/log/TimeStamp.h"
-
 #include "eckit/distributed/Consumer.h"
+
 #include "eckit/distributed/Message.h"
 #include "eckit/distributed/Transport.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+
+#include <ostream>
 
 using eckit::Log;
 

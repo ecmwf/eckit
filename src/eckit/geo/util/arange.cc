@@ -10,10 +10,11 @@
  */
 
 
-#include <algorithm>
-#include <vector>
-
 #include "eckit/types/FloatCompare.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <vector>
 
 
 namespace eckit::geo::util {

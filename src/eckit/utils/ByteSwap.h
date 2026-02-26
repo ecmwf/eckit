@@ -12,13 +12,13 @@
 /// @date October 2020
 
 #pragma once
+#include "eckit/eckit.h"
+
 #include <algorithm>
 #include <bitset>
 #include <cstdint>
 #include <string>
 #include <vector>
-
-#include "eckit/eckit.h"
 
 namespace eckit {
 

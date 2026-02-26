@@ -11,6 +11,9 @@
 
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
 namespace eckit::sql::expression::function {
 
 //----------------------------------------------------------------------------------------------------------------------

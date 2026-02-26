@@ -10,9 +10,17 @@
 
 
 #include "eckit/value/ListContent.h"
-#include "eckit/log/JSON.h"
 
-#include "eckit/utils/Hash.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/JSON.h"
+#include "eckit/types/Date.h"
+#include "eckit/types/DateTime.h"
+#include "eckit/types/Time.h"
+
+#include <algorithm>
+#include <iterator>
+#include <ostream>
+#include <vector>
 
 
 namespace eckit {

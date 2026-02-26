@@ -12,9 +12,10 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include "eckit/codec/detail/DataType.h"
+
+#include <cstdint>
+#include <type_traits>
 
 namespace eckit::codec {
 

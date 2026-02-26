@@ -12,11 +12,15 @@
 
 #pragma once
 
-#include <memory>
-
+#include "eckit/geo/Point.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/HEALPix.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::grid::reduced {

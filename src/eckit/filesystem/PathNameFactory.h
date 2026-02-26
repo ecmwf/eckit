@@ -12,18 +12,14 @@
 /// @date March 2020
 
 #pragma once
+#include "eckit/filesystem/BasePathName.h"
 #include "eckit/filesystem/BasePathNameT.h"
 
-#include <map>
 #include <string>
-#include <vector>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class PathNameBuilderBase;
-class BasePathName;
 
 class PathNameFactory {
 public:  // methods

@@ -12,11 +12,11 @@
 // Baudouin Raoult - ECMWF Aug 18
 
 #pragma once
-#include <fstream>
-#include <iostream>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <fstream>
+#include <iostream>
 
 //-----------------------------------------------------------------------------
 

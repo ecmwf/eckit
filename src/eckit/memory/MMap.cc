@@ -8,16 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/mman.h>
-#include <unistd.h>
-
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/BigNum.h"
-#include "eckit/log/Bytes.h"
 #include "eckit/memory/MMap.h"
+
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
+
+#include <algorithm>
+#include <sys/mman.h>
 
 namespace eckit {
 

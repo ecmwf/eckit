@@ -21,13 +21,14 @@
  */
 
 #pragma once
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/SavedStatus.h"
+
 #include <cerrno>
+#include <exception>
 #include <iostream>
 #include <sstream>
-
-#include "eckit/log/CodeLocation.h"
-#include "eckit/log/Log.h"
-#include "eckit/log/SavedStatus.h"
+#include <string>
 
 namespace eckit {
 

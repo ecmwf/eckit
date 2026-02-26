@@ -12,8 +12,10 @@
 // Baudouin Raoult - ECMWF Sep 96
 
 #pragma once
-#include "eckit/persist/Bless.h"
 #include "eckit/types/Date.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -29,7 +31,6 @@ public:
     ClimateDate(const std::string& s);
     ClimateDate(long, long, long);
 
-#include "eckit/types/ClimateDate.b"
 
     // -- Destructor
 

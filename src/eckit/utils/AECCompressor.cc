@@ -11,8 +11,13 @@
 #include "eckit/utils/AECCompressor.h"
 
 #include <cstring>
+#include <sstream>
+#include <string>
+#include <utility>
 
 extern "C" {  // libaec.h has c linkage
+#include "eckit/log/CodeLocation.h"
+
 #include "libaec.h"
 }
 

@@ -12,20 +12,34 @@
 
 #include "eckit/geo/grid/ORCA.h"
 
-#include <memory>
-
+#include "eckit/codec/ReadRequest.h"
+#include "eckit/codec/RecordReader.h"
+#include "eckit/codec/RecordWriter.h"
 #include "eckit/codec/codec.h"
+#include "eckit/codec/detail/demangle.h"
+#include "eckit/codec/detail/sfinae.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
+#include "eckit/codec/types/array/ArrayReference.h"
+#include "eckit/codec/types/array/adaptors/StdArrayAdaptor.h"
+#include "eckit/codec/types/array/adaptors/StdVectorAdaptor.h"
+#include "eckit/codec/types/scalar.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Generator.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
+
+#include <memory>
+#include <utility>
 
 
 namespace eckit::geo::util {

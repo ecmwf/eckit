@@ -14,6 +14,11 @@
 
 #pragma once
 #include "eckit/sql/SQLOutput.h"
+#include "eckit/sql/SQLOutputConfig.h"
+
+#include <cstddef>
+#include <ios>
+#include <vector>
 
 namespace eckit::sql {
 

@@ -8,10 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-
-#include "eckit/log/JSON.h"
 #include "eckit/value/OrderedMapContent.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/JSON.h"
+
+#include <algorithm>
+#include <map>
+#include <ostream>
+#include <utility>
+#include <vector>
 
 namespace eckit {
 

@@ -12,15 +12,14 @@
 
 #pragma once
 
-#include <memory>
-
 #include "eckit/geo/search/Tree.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 
-
-namespace eckit::geo {
-class Grid;
-}
+#include <cstddef>
+#include <iosfwd>
+#include <memory>
+#include <vector>
 
 
 namespace eckit::geo {

@@ -12,10 +12,13 @@
 /// @date May 96
 
 #pragma once
+#include "eckit/thread/Mutex.h"
+
+#include <cstddef>
+#include <exception>
+#include <iosfwd>
 #include <map>
 #include <string>
-
-#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 

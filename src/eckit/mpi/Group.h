@@ -9,12 +9,13 @@
  */
 
 #pragma once
+#include "eckit/memory/Counted.h"
+
 #include <array>
+#include <cstddef>
 #include <iosfwd>
 #include <unordered_map>
 #include <vector>
-
-#include "eckit/memory/Counted.h"
 
 namespace eckit::mpi {
 

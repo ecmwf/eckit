@@ -9,16 +9,15 @@
  */
 
 #pragma once
-#include <map>
 
-#include "eckit/log/Channel.h"
+
+#include "eckit/log/LogTarget.h"
+
+#include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class LogStream;
-class PathName;
 
 class Main {
 protected:

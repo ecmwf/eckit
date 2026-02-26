@@ -16,11 +16,10 @@
 #pragma once
 
 #include "eckit/distributed/Transport.h"
-
-#include <list>
-
 #include "eckit/mpi/Comm.h"
 #include "eckit/thread/Mutex.h"
+
+#include <list>
 
 
 namespace eckit::option {

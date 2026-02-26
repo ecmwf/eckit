@@ -15,11 +15,17 @@
 /// @date   May 1996
 
 #pragma once
-#include <memory>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
+
+#include <iosfwd>
+#include <memory>
+#include <string>
 
 namespace eckit {
 

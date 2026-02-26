@@ -12,20 +12,25 @@
 
 #include "eckit/geo/Grid.h"
 
-#include <algorithm>
-#include <cctype>
-#include <ostream>
-
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
+#include "eckit/memory/Factory.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
+
+#include <algorithm>
+#include <cctype>
+#include <ostream>
+#include <variant>
 
 
 namespace eckit::geo {

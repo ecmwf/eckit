@@ -17,14 +17,14 @@
 
 #pragma once
 
-#include <iomanip>
-#include <map>
-#include <vector>
-
 #include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+
+#include <iomanip>
+#include <map>
+#include <vector>
 
 
 namespace eckit {

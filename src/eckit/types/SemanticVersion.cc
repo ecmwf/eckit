@@ -10,14 +10,16 @@
 
 #include "eckit/types/SemanticVersion.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/utils/Tokenizer.h"
+
 #include <algorithm>
 #include <cctype>
 #include <climits>
 #include <cstdlib>
+#include <sstream>
 #include <vector>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 

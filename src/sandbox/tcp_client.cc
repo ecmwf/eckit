@@ -8,9 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <sstream>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
@@ -20,6 +17,9 @@
 #include "eckit/net/TCPStream.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/runtime/Tool.h"
+
+#include <sstream>
+#include <unistd.h>
 
 
 using namespace eckit;

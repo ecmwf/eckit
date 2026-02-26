@@ -13,7 +13,11 @@
 /// @date Jan 97
 
 #pragma once
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/serialisation/Streamable.h"
+
+#include <iosfwd>
 
 
 namespace eckit {

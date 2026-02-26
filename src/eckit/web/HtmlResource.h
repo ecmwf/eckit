@@ -12,9 +12,9 @@
 /// @author Tiago Quintino
 
 #pragma once
-#include <string>
-
 #include "eckit/web/HttpResource.h"
+
+#include <string>
 
 
 namespace eckit {

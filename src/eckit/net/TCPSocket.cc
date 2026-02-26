@@ -13,34 +13,45 @@
 #pragma diag_suppress 550
 #endif
 
-#include <sys/types.h>  // FreeBSD: must appear before netinet/ip.h
-
-#include <arpa/inet.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <netinet/ip.h>
-#include <netinet/tcp.h>
-#include <setjmp.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <csignal>
-
-#include <cstring>
+#include "eckit/net/TCPSocket.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Select.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
+#include "eckit/log/SavedStatus.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/memory/Zero.h"
 #include "eckit/net/IPAddress.h"
 #include "eckit/net/TCPClient.h"
-#include "eckit/net/TCPSocket.h"
 #include "eckit/os/AutoAlarm.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
+
+#include <algorithm>
+#include <arpa/inet.h>
+#include <cctype>
+#include <cerrno>
+#include <csetjmp>
+#include <csignal>
+#include <cstdint>
+#include <cstring>
+#include <fcntl.h>
+#include <iostream>
+#include <map>
+#include <netdb.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <sstream>
+#include <sys/ioctl.h>
+#include <sys/select.h>
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <unistd.h>
+#include <utility>
 
 namespace eckit::net {
 

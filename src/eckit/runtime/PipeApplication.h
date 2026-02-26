@@ -16,11 +16,12 @@
 #pragma once
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Application.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <string>
 
 
 namespace eckit {
-
-class Stream;
 
 //----------------------------------------------------------------------------------------------------------------------
 

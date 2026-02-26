@@ -10,14 +10,47 @@
  */
 
 
+#include "eckit/codec/Data.h"
+#include "eckit/codec/FileStream.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/ReadRequest.h"
+#include "eckit/codec/Record.h"
+#include "eckit/codec/RecordItemReader.h"
+#include "eckit/codec/RecordPrinter.h"
+#include "eckit/codec/RecordReader.h"
+#include "eckit/codec/RecordWriter.h"
+#include "eckit/codec/Session.h"
+#include "eckit/codec/Stream.h"
+#include "eckit/codec/codec.h"
+#include "eckit/codec/detail/DataInfo.h"
+#include "eckit/codec/detail/DataType.h"
+#include "eckit/codec/detail/Defaults.h"
+#include "eckit/codec/detail/Link.h"
+#include "eckit/codec/detail/Type.h"
+#include "eckit/codec/detail/demangle.h"
+#include "eckit/codec/detail/sfinae.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
+#include "eckit/codec/types/array/ArrayReference.h"
+#include "eckit/codec/types/array/adaptors/StdVectorAdaptor.h"
+#include "eckit/codec/types/scalar.h"
+#include "eckit/codec/types/string.h"
+#include "eckit/config/Configuration.h"
+#include "eckit/config/LocalConfiguration.h"
+#include "eckit/config/Resource.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/MemoryHandle.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/testing/Test.h"
+
 #include <cstring>
 #include <fstream>
+#include <functional>
+#include <initializer_list>
+#include <sstream>
+#include <string>
 #include <vector>
-
-#include "eckit/codec/codec.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/io/MemoryHandle.h"
-#include "eckit/testing/Test.h"
 
 namespace eckit::test {
 

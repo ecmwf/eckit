@@ -8,12 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include "eckit/io/FDataSync.h"
 #include "eckit/io/PooledFileDescriptor.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/FDataSync.h"
+
+#include <cstdio>
+#include <fcntl.h>
+#include <unistd.h>
 
 namespace eckit {
 

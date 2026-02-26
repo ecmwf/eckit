@@ -12,12 +12,14 @@
 
 #pragma once
 
-#include <array>
-#include <ostream>
-#include <vector>
-
 #include "eckit/container/sptree/SPValue.h"
 #include "eckit/geo/PointXYZ.h"
+
+#include <array>
+#include <cstddef>
+#include <ostream>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo {

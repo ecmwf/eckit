@@ -12,9 +12,9 @@
 /// @date Feb 2002
 
 #pragma once
-#include "sys/types.h"  // for off_t
 
-#include "eckit/eckit.h"
+
+#include <sys/types.h>
 
 namespace eckit {
 

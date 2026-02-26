@@ -15,6 +15,8 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/Types.h"
 
+#include <cstddef>
+
 
 namespace eckit {
 

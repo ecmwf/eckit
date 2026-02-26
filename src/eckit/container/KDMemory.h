@@ -9,12 +9,11 @@
  */
 
 #pragma once
+#include "eckit/container/StatCollector.h"
 #include "eckit/eckit.h"
 
 #include <cmath>
 #include <limits>
-
-#include "eckit/container/StatCollector.h"
 
 //------------------------------------------------------------------------------------------------------
 

@@ -13,6 +13,9 @@
 
 #pragma once
 #include "eckit/types/DateTime.h"
+#include "eckit/types/Time.h"
+
+#include <iosfwd>
 
 
 //-----------------------------------------------------------------------------

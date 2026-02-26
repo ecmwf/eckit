@@ -11,14 +11,15 @@
 
 #include "eckit/linalg/sparse/LinearAlgebraGeneric.h"
 
-#include <ostream>
-#include <vector>
-
-#include "eckit/eckit.h"
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Vector.h"
+#include "eckit/linalg/types.h"
+
+#include <ostream>
+#include <vector>
 
 namespace eckit::linalg::sparse {
 

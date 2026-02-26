@@ -10,6 +10,14 @@
 
 #pragma once
 #include "eckit/mpi/Comm.h"
+#include "eckit/mpi/DataType.h"
+#include "eckit/mpi/Operation.h"
+#include "eckit/mpi/Status.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
+#include <string_view>
 
 namespace eckit::mpi {
 

@@ -5,11 +5,14 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#include <iomanip>
-
 #include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+
+#include <string>
+#include <tuple>
+#include <vector>
 
 
 namespace eckit::test {

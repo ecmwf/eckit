@@ -9,12 +9,22 @@
  */
 
 #include "eckit/io/MoverTransfer.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/MoverTransferSelection.h"
+#include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/Progress.h"
 #include "eckit/net/Connector.h"
 #include "eckit/runtime/Metrics.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/thread/AutoLock.h"
+
+#include <ostream>
+#include <string>
 
 
 namespace eckit {

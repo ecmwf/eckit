@@ -11,11 +11,15 @@
 /// @author Baudouin Raoult
 
 #pragma once
-#include <map>
-#include <memory>
-
+#include "eckit/io/DataHandle.h"
 #include "eckit/net/HttpHeader.h"
 #include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace eckit {
 

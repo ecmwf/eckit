@@ -12,12 +12,12 @@
 /// @date   Jun 2020
 
 #pragma once
+#include <cstddef>
 #include <iosfwd>
 #include <mutex>
 #include <vector>
 
 namespace eckit {
-class DataHandle;
 class PeekHandle;
 
 namespace message {

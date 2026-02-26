@@ -13,19 +13,18 @@
 /// @author Tiago Quintino
 
 #pragma once
+#include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/log/JSON.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <ctime>
 #include <iosfwd>
 #include <string>
 #include <vector>
 
-#include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/log/JSON.h"
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class NodeInfo;
-class JSON;
 
 class ClusterDisks {
 public:

@@ -12,10 +12,10 @@
 /// @date   June 2017
 
 #pragma once
-#include <memory>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
+
+#include <memory>
 
 namespace eckit {
 

@@ -10,6 +10,8 @@
 
 #include "eckit/net/TCPStream.h"
 
+#include <sstream>
+
 namespace eckit::net {
 
 TCPStream::TCPStream(net::TCPSocket& socket) : socket_(socket) {}

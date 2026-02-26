@@ -13,8 +13,10 @@
 /// @date   May 2019
 
 #pragma once
+#include <cstddef>
 #include <iosfwd>
 #include <string>
+#include <string_view>
 
 namespace eckit {
 

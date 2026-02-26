@@ -8,10 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
+#include "eckit/io/FileDescHandle.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/FileDescHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+
+#include <cstdio>
+#include <ostream>
+#include <sys/types.h>
+#include <unistd.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -14,7 +14,6 @@
 #pragma once
 
 #include <dirent.h>
-#include <sys/types.h>
 
 namespace eckit {
 

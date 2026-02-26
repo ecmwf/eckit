@@ -14,10 +14,16 @@
 /// @date Jun 2011
 
 #pragma once
-#include "eckit/eckit.h"
-
+#include "eckit/filesystem/FileSystemSize.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+
+#include <ctime>
+#include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace eckit {
 

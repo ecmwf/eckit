@@ -10,9 +10,12 @@
 
 
 #include "eckit/value/MapContent.h"
+
 #include "eckit/log/JSON.h"
 
-#include "eckit/utils/Hash.h"
+#include <map>
+#include <ostream>
+#include <utility>
 
 
 namespace eckit {

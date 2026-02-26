@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/runtime/Application.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/ThreadPool.h"
+
+#include <unistd.h>
 
 using namespace eckit;
 

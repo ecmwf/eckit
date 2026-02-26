@@ -12,10 +12,10 @@
 /// @date   May 2019
 
 #pragma once
-#include <sys/types.h>
+#include <cstddef>
 #include <iosfwd>
 #include <string>
-#include <thread>
+#include <sys/types.h>
 
 namespace eckit {
 

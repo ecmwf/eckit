@@ -13,23 +13,16 @@
 // Piotr Kuchta - ECMWF Mar 2012
 
 #pragma once
-#include <stack>
-
-#include "SQLOutputConfig.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 
-namespace eckit {
-class PathName;
-}
-namespace eckit {
-class DataHandle;
-}
+#include <stack>
+#include <string>
 
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SQLDatabase;
 class SQLSession;
 
 class SyntaxError : public eckit::Exception {

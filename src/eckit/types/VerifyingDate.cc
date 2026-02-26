@@ -10,6 +10,10 @@
 
 #include "eckit/types/VerifyingDate.h"
 
+#include "eckit/exception/Exceptions.h"
+
+#include <ostream>
+
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {

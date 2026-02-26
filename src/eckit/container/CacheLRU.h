@@ -12,12 +12,12 @@
 /// @date   Dec 2015
 
 #pragma once
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
 #include <iosfwd>
 #include <list>
 #include <map>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/CodeLocation.h"
 
 namespace eckit {
 

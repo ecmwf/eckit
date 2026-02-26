@@ -12,11 +12,13 @@
 
 #pragma once
 
-#include <memory>
-
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/order/Scan.h"
+
+#include <cstddef>
+#include <vector>
 
 
 namespace eckit::geo::iterator {

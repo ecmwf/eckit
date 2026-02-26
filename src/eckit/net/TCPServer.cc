@@ -8,16 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/net/TCPServer.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Select.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/thread/AutoLock.h"
+
+#include <arpa/inet.h>
+#include <cerrno>
 #include <fcntl.h>
+#include <netinet/in.h>
+#include <ostream>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <csignal>
-
-#include "eckit/config/Resource.h"
-#include "eckit/io/Select.h"
-#include "eckit/log/Log.h"
-#include "eckit/net/TCPServer.h"
-#include "eckit/thread/AutoLock.h"
 
 namespace eckit::net {
 

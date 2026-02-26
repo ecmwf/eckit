@@ -9,8 +9,9 @@
  */
 
 #pragma once
-#include <complex>
 #include "eckit/mpi/DataType.h"
+
+#include <complex>
 
 namespace eckit::mpi {
 

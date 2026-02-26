@@ -11,6 +11,8 @@
 
 #include "eckit/io/SockBuf.h"
 
+#include <cstdio>
+
 
 namespace eckit {
 

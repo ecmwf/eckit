@@ -9,7 +9,11 @@
  */
 
 #include "eckit/log/MessageTarget.h"
+
 #include "eckit/runtime/Monitor.h"
+
+#include <ostream>
+#include <string>
 
 namespace eckit {
 

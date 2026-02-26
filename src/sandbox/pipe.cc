@@ -10,6 +10,7 @@
 
 
 #include "eckit/runtime/Pipe.h"
+
 #include "eckit/runtime/Application.h"
 #include "eckit/utils/Translator.h"
 

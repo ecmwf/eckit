@@ -8,10 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Log.h"
 #include "eckit/parser/CSVParser.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/value/Value.h"
+
+#include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

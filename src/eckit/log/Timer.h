@@ -12,10 +12,13 @@
 // Baudouin Raoult - ECMWF May 96
 
 #pragma once
-#include <sys/time.h>
-#include <ctime>
-
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
+
+#include <ctime>
+#include <ostream>
+#include <string>
+#include <sys/time.h>
 
 namespace eckit {
 

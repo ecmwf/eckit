@@ -14,11 +14,12 @@
 
 #pragma once
 
-#include <string>
-
 #include "eckit/config/Configuration.h"
 #include "eckit/config/ResourceBase.h"
+#include "eckit/utils/Translator.h"
 #include "eckit/value/Value.h"
+
+#include <string>
 
 namespace eckit {
 

@@ -14,26 +14,19 @@
 /// @date   May 2016
 
 #pragma once
+#include "eckit/distributed/Message.h"
+#include "eckit/distributed/Transport.h"
+#include "eckit/io/Select.h"
+#include "eckit/net/TCPServer.h"
+#include "eckit/option/CmdArgs.h"
+
+#include <cstddef>
+#include <exception>
+#include <iosfwd>
 #include <memory>
 #include <vector>
 
-#include "eckit/io/Select.h"
-#include "eckit/net/TCPServer.h"
-
-#include "eckit/distributed/Transport.h"
-
-namespace eckit {
-class Stream;
-}
-
-namespace eckit::option {
-class Option;
-class CmdArgs;
-}  // namespace eckit::option
-
 namespace eckit::distributed {
-
-class Message;
 
 //----------------------------------------------------------------------------------------------------------------------
 

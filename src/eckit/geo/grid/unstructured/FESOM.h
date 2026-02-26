@@ -12,11 +12,13 @@
 
 #pragma once
 
-#include <cstddef>
-#include <memory>
-
 #include "eckit/geo/Arrangement.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/grid/Unstructured.h"
+
+#include <cstddef>
+#include <string>
+#include <vector>
 
 
 namespace eckit {

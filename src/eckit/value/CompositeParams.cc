@@ -10,6 +10,10 @@
 
 #include "eckit/value/CompositeParams.h"
 
+#include "eckit/value/Value.h"
+
+#include <list>
+
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {

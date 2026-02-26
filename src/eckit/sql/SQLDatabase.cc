@@ -10,14 +10,17 @@
 
 #include "eckit/sql/SQLDatabase.h"
 
-#include <memory>
-#include <utility>
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/sql/expression/SQLExpression.h"
-#include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <utility>
 
 using namespace eckit;
 

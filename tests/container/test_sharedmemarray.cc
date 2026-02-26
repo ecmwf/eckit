@@ -8,19 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
-#include <cstdlib>
-
 #include "eckit/container/SharedMemArray.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/testing/Test.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/types/FixedString.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/Translator.h"
+
+#include <cstdlib>
+#include <string>
+#include <sys/mman.h>
 
 using namespace std;
 using namespace eckit;

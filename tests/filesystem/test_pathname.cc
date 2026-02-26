@@ -8,9 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-
 #include "eckit/testing/Test.h"
+
+#include <string>
 
 using namespace std;
 using namespace eckit;

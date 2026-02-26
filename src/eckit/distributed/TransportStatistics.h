@@ -14,17 +14,12 @@
 /// @date   April 2016
 
 #pragma once
-#include <iosfwd>
-
 #include "eckit/log/Statistics.h"
 
-namespace eckit {
-class Stream;
-}
+#include <cstddef>
+#include <iosfwd>
 
 namespace eckit::distributed {
-
-class TocHandler;
 
 //----------------------------------------------------------------------------------------------------------------------
 

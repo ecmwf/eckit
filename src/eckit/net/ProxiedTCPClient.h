@@ -16,6 +16,9 @@
 #include "eckit/net/Endpoint.h"
 #include "eckit/net/TCPClient.h"
 
+#include <iosfwd>
+#include <string>
+
 namespace eckit {
 
 

@@ -12,15 +12,14 @@
 /// @author Tiago Quintino
 
 #pragma once
+#include "eckit/serialisation/Stream.h"
+
 #include <set>
 #include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Stream;
-class NodeInfo;
 
 class ClusterNode {
 public:

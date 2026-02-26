@@ -9,15 +9,12 @@
  */
 
 #pragma once
-#include "eckit/eckit.h"
+#include "eckit/thread/Mutex.h"
 
-#include <cstdint>
-#include <cstdlib>
 #include <cstring>
+#include <iosfwd>
 #include <map>
 #include <string>
-
-#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 

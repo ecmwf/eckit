@@ -9,11 +9,16 @@
  */
 
 #include "eckit/web/CgiResource.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/AutoCloser.h"
 #include "eckit/io/StdPipe.h"
 #include "eckit/web/HttpStream.h"
 #include "eckit/web/Url.h"
+
+#include <cstdio>
+#include <sstream>
 
 
 namespace eckit {

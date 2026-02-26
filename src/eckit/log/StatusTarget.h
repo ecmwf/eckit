@@ -14,6 +14,8 @@
 #pragma once
 #include "eckit/log/LineBasedTarget.h"
 
+#include <iosfwd>
+
 
 namespace eckit {
 

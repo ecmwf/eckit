@@ -13,7 +13,10 @@
 #include "eckit/codec/FileStream.h"
 
 #include "eckit/codec/Session.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/FileHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/PooledHandle.h"
 
 namespace eckit::codec {

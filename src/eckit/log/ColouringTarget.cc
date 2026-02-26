@@ -8,10 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <ostream>
-#include <sstream>
-
 #include "eckit/log/ColouringTarget.h"
+
+#include <sstream>
 
 
 namespace eckit {

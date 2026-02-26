@@ -12,7 +12,10 @@
 /// @author Tiago Quintino
 
 #pragma once
+#include "eckit/io/DataHandle.h"
 #include "eckit/web/Url.h"
+
+#include <ostream>
 
 namespace eckit {
 

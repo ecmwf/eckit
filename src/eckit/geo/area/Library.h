@@ -23,7 +23,6 @@ class Area;
 }
 namespace spec {
 class Custom;
-class Spec;
 }  // namespace spec
 }  // namespace eckit
 

@@ -9,7 +9,9 @@
  */
 
 #include "eckit/sql/SQLMATCHSubquerySessionOutput.h"
+
 #include "eckit/exception/Exceptions.h"
+
 #include "odb_api/Expressions.h"
 #include "odb_api/FunctionMATCH.h"
 

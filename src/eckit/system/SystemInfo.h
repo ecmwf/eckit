@@ -13,10 +13,11 @@
 /// @date   May 2016
 
 #pragma once
-#include <iosfwd>
-
-#include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit::system {
 

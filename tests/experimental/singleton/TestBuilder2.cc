@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-
 #include "TestFactory.h"
+
+#include <iostream>
 
 class TestBuilder2 : public TestBuilder {
 public:

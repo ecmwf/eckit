@@ -11,20 +11,16 @@
 #ifndef BSPNode_CC
 #define BSPNode_CC
 
-#include <random>
 #include "eckit/eckit.h"
+#include "eckit/exception/Exceptions.h"
 
 #include <cstdio>
+#include <fcntl.h>
 #include <limits>
 #include <random>
-
-#include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
 
 
 namespace eckit {

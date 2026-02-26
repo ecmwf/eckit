@@ -12,11 +12,13 @@
 
 #include "eckit/geo/iterator/Unstructured.h"
 
-#include <memory>
-
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/grid/Unstructured.h"
+
+#include <memory>
+#include <variant>
 
 
 namespace eckit::geo::iterator {

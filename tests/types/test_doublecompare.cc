@@ -8,13 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-#include <limits>
-
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/maths/FloatingPointExceptions.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
-#include "eckit/testing/Test.h"
+#include <limits>
+#include <ostream>
+#include <string>
 
 namespace eckit::test {
 

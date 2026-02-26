@@ -1,8 +1,9 @@
 
 #pragma once
-#include <cassert>
-
 #include "eckit/geometry/KPoint.h"
+
+#include <cassert>
+#include <cstddef>
 
 //------------------------------------------------------------------------------------------------------
 

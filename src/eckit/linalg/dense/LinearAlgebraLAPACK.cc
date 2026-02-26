@@ -11,11 +11,11 @@
 
 #include "eckit/linalg/dense/LinearAlgebraLAPACK.h"
 
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
+
+#include <ostream>
 
 
 extern "C" {

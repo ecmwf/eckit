@@ -12,10 +12,12 @@
 /// @date   Oct 96
 
 #pragma once
-#include <numeric>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/Types.h"
+
+#include <functional>
+#include <numeric>
+#include <vector>
 
 
 namespace eckit {

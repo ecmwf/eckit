@@ -15,13 +15,15 @@
 #include "eckit/system/ResourceUsage.h"
 
 #include "eckit/eckit_ecbuild_config.h"
-#include "eckit/utils/StringTools.h"
-
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
+#include "eckit/utils/StringTools.h"
 
-#include "eckit/exception/Exceptions.h"
+#include <ostream>
+#include <string>
+#include <sys/resource.h>
+#include <sys/time.h>
 
 namespace eckit::system {
 

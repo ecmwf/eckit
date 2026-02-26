@@ -8,14 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
-
 #include "eckit/container/CacheManager.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-
 #include "eckit/testing/Filesystem.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
+
+#include <ostream>
+#include <string>
 
 namespace eckit::test {
 

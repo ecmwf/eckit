@@ -13,10 +13,10 @@
 /// @date   June 2019
 
 #pragma once
-#include <memory>
-
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/rados/RadosObject.h"
+
+#include <memory>
 
 namespace eckit {
 

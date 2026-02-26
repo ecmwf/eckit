@@ -8,18 +8,25 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fstream>
-#include <sstream>
+#include "eckit/filesystem/PathExpander.h"
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/filesystem/PathExpander.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/Zero.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/StringTools.h"
+
+#include <cstdlib>
+#include <fstream>
+#include <map>
+#include <sstream>
+#include <utility>
+#include <vector>
 
 namespace eckit {
 

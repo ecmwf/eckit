@@ -1,7 +1,3 @@
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Log.h"
@@ -11,6 +7,10 @@
 #include "eckit/runtime/Tool.h"
 #include "eckit/serialisation/ResizableMemoryStream.h"
 #include "eckit/types/Types.h"
+
+#include <memory>
+#include <string>
+#include <vector>
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -16,15 +16,10 @@
 #pragma once
 #include "eckit/distributed/Transport.h"
 
-
-namespace eckit::option {
-class Option;
-class CmdArgs;
-}  // namespace eckit::option
+#include <cstddef>
+#include <iosfwd>
 
 namespace eckit::distributed {
-
-class Message;
 
 //----------------------------------------------------------------------------------------------------------------------
 

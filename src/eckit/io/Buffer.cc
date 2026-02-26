@@ -10,10 +10,10 @@
 
 #include "eckit/io/Buffer.h"
 
+#include "eckit/exception/Exceptions.h"
+
 #include <algorithm>
 #include <cstring>
-
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 

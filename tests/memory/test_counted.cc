@@ -9,8 +9,9 @@
  */
 
 #include "eckit/memory/Counted.h"
-
 #include "eckit/testing/Test.h"
+
+#include <string>
 
 using namespace std;
 using namespace eckit;

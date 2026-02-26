@@ -11,10 +11,10 @@
 
 #pragma once
 
+#include "eckit/linalg/types.h"
+
 #include <iosfwd>
 #include <string>
-
-#include "eckit/linalg/types.h"
 
 namespace eckit::linalg {
 

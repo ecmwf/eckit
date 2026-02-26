@@ -8,13 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/ProducerConsumer.h"
-#include "eckit/runtime/Tool.h"
+#include "eckit/testing/Test.h"
 #include "eckit/utils/Translator.h"
 
-#include "eckit/testing/Test.h"
+#include <ostream>
+#include <string>
+#include <unistd.h>
 
 using namespace std;
 using namespace eckit;

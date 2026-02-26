@@ -11,12 +11,15 @@
 
 #pragma once
 
+#include "eckit/spec/Spec.h"
+
+#include <cstddef>
 #include <initializer_list>
 #include <map>
 #include <memory>
+#include <string>
 #include <variant>
-
-#include "eckit/spec/Spec.h"
+#include <vector>
 
 
 namespace eckit {

@@ -10,9 +10,15 @@
 
 
 #include "eckit/value/Content.h"
+
 #include "eckit/exception/Exceptions.h"
-#include "eckit/os/BackTrace.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/types/Date.h"
+#include "eckit/types/DateTime.h"
+#include "eckit/types/Time.h"
 #include "eckit/value/Value.h"
+
+#include <sstream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

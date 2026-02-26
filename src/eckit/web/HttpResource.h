@@ -11,16 +11,18 @@
 /// @author Baudouin Raoult
 
 #pragma once
-#include <string>
-
+#include "eckit/serialisation/Stream.h"
+#include "eckit/web/Html.h"
 #include "eckit/web/HtmlObject.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Stream;
 class HttpStream;
 
 class HttpResource : public HtmlObject {

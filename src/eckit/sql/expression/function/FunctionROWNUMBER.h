@@ -12,7 +12,11 @@
 /// Piotr Kuchta - (C) ECMWF July 2009
 
 #pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit::sql::expression::function {
 

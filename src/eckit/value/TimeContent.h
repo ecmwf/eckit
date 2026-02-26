@@ -14,13 +14,17 @@
 /// @date   Jun 1997
 
 #pragma once
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/types/Time.h"
 #include "eckit/value/Content.h"
-#include "eckit/value/Value.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
-
-class Hash;
 
 //----------------------------------------------------------------------------------------------------------------------
 

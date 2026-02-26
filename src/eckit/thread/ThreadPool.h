@@ -9,10 +9,11 @@
  */
 
 #pragma once
+#include "eckit/thread/MutexCond.h"
+
+#include <cstddef>
 #include <list>
 #include <string>
-
-#include "eckit/thread/MutexCond.h"
 
 
 namespace eckit {

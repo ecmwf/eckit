@@ -13,13 +13,13 @@
 /// @date   June 2019
 
 #pragma once
-#include <map>
-#include <memory>
-#include <string>
-
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/utils/Translator.h"
+
+#include <map>
+#include <memory>
+#include <string>
 
 
 namespace eckit {

@@ -8,14 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/types.h>
-#include <cstdio>
-#include <cstdlib>
-
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/serialisation/FileStream.h"
-
+#include "eckit/serialisation/Stream.h"
 #include "eckit/testing/Test.h"
+
+#include <ostream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

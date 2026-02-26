@@ -14,9 +14,9 @@
 /// @date   March 2017
 
 #pragma once
-#include <iosfwd>
-
 #include "eckit/system/SystemInfo.h"
+
+#include <iosfwd>
 
 namespace eckit {
 namespace system {

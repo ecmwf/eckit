@@ -8,9 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
-
 #include "eckit/io/MultiSocketHandle.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
+
+#include <sstream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

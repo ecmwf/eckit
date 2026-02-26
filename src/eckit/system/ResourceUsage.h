@@ -13,7 +13,7 @@
 /// @date   May 2016
 
 #pragma once
-#include <sys/resource.h>
+#include <bits/types/struct_rusage.h>
 #include <cstddef>
 #include <iosfwd>
 

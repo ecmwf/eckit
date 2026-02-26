@@ -9,12 +9,15 @@
  */
 
 
-#include <cstring>
+#include "eckit/io/MemoryHandle.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/MemoryHandle.h"
 #include "eckit/maths/Functions.h"
+
+#include <algorithm>
+#include <cstring>
+#include <ostream>
 
 namespace eckit {
 

@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-#include <iomanip>
-#include <memory>
+#include "eckit/transaction/TxnLog.h"
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
@@ -26,8 +24,11 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eckit/transaction/TxnLog.h"
 #include "eckit/utils/Translator.h"
+
+#include <algorithm>
+#include <iomanip>
+#include <memory>
 
 namespace eckit {
 

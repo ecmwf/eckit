@@ -13,12 +13,17 @@
 // @date Dec 03
 
 #pragma once
-#include <functional>
-#include <memory>
-
-#include "eckit/filesystem/PathName.h"
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
+
+#include <cstddef>
+#include <functional>
+#include <iosfwd>
+#include <map>
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
 namespace eckit::sql {
 

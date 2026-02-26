@@ -8,13 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/sem.h>
-#include <cerrno>
-#include <cstdio>
+#include "eckit/os/Semaphore.h"
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/os/Semaphore.h"
+
+#include <cerrno>
+#include <cstdio>
+#include <string>
+#include <sys/ipc.h>
+#include <sys/sem.h>
 
 namespace eckit {
 

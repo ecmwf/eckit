@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include <vector>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/maths/Qhull.h"
+
+#include <vector>
 
 
 namespace eckit::maths {

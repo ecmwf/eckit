@@ -8,15 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <numeric>
-
-#include "eckit/config/Resource.h"
-#include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Log.h"
-
-#include "eckit/io/PartFileHandle.h"
 #include "eckit/io/PartHandle.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/serialisation/Streamable.h"
+
+#include <algorithm>
+#include <numeric>
+#include <sstream>
+#include <string>
+#include <sys/types.h>
+#include <vector>
 
 
 namespace eckit {

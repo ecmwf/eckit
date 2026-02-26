@@ -15,6 +15,9 @@
 #include "eckit/container/KDTree.h"
 #include "eckit/geo/search/Tree.h"
 
+#include <cstddef>
+#include <iosfwd>
+
 
 namespace eckit::geo::search {
 

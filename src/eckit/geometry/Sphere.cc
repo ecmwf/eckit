@@ -10,16 +10,17 @@
 
 #include "eckit/geometry/Sphere.h"
 
-#include <algorithm>
-#include <cmath>
-#include <limits>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/GreatCircle.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <algorithm>
+#include <cmath>
+#include <limits>
+#include <vector>
 
 //----------------------------------------------------------------------------------------------------------------------
 

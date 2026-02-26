@@ -9,25 +9,24 @@
  */
 
 #pragma once
-#include <memory>
-#include <vector>
-
 #include "eckit/sql/SQLOutputConfig.h"
+#include "eckit/sql/SQLSelect.h"
+#include "eckit/sql/SQLStatement.h"
+#include "eckit/sql/SQLTable.h"
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpressions.h"
+
+#include <functional>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <vector>
 
 // Forward declarations
 
 namespace eckit {
-class DataHandle;
 namespace sql {
-class SQLDatabase;
 class SQLSession;
-class SQLTable;
-class SQLSelect;
-class SQLOutput;
-namespace expression {
-class Expressions;
-class SQLExpression;
-}  // namespace expression
 }  // namespace sql
 }  // namespace eckit
 

@@ -10,12 +10,15 @@
 
 #include "eckit/geometry/GreatCircle.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/KPoint.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/types/FloatCompare.h"
+
 #include <cmath>
 #include <limits>
 #include <sstream>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/types/FloatCompare.h"
+#include <string>
 
 //----------------------------------------------------------------------------------------------------------------------
 

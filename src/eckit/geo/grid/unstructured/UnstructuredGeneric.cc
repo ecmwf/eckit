@@ -12,7 +12,14 @@
 
 #include "eckit/geo/grid/unstructured/UnstructuredGeneric.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/container/PointsContainer.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Generator.h"
 #include "eckit/utils/MD5.h"
+
+#include <memory>
 
 
 namespace eckit::geo::grid::unstructured {

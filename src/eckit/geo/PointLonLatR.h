@@ -14,12 +14,8 @@
 
 #include <array>
 #include <cmath>
+#include <cstddef>
 #include <ostream>
-
-
-namespace eckit::geo {
-class PointLonLat;
-}
 
 
 namespace eckit::geo {

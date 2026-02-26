@@ -8,13 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <ostream>
-
 #include "Offset.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <cstddef>
+#include <map>
+#include <ostream>
+#include <utility>
 
 namespace eckit {
 

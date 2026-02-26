@@ -10,16 +10,24 @@
 
 // #include <dirent.h>
 // #include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <unistd.h>
+#include "eckit/io/MMappedFileHandle.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/MMappedFileHandle.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
 #include "eckit/io/MemoryHandle.h"
+#include "eckit/io/Offset.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/memory/MMap.h"
 #include "eckit/os/Stat.h"
 #include "eckit/utils/MD5.h"
+
+#include <fcntl.h>
+#include <ostream>
+#include <sys/mman.h>
+#include <unistd.h>
 
 
 namespace eckit {

@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <map>
-#include <string>
-
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/Record.h"
 #include "eckit/config/Configuration.h"
+
+#include <iosfwd>
+#include <map>
+#include <string>
 
 namespace eckit::codec {
 

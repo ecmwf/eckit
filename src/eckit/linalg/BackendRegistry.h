@@ -11,13 +11,13 @@
 
 #pragma once
 
-#include <cstdlib>
-#include <map>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+
+#include <cstdlib>
+#include <map>
 
 namespace eckit::linalg {
 

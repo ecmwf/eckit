@@ -15,6 +15,12 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPSocket.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <exception>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {

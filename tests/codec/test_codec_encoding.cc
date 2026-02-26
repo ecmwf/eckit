@@ -10,13 +10,40 @@
  */
 
 
-#include <bitset>
-#include <cstring>
-
 #include "eckit/codec/Data.h"
+#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/RecordItem.h"
 #include "eckit/codec/codec.h"
-
+#include "eckit/codec/detail/DataType.h"
+#include "eckit/codec/detail/Decoder.h"
+#include "eckit/codec/detail/Encoder.h"
+#include "eckit/codec/detail/Reference.h"
+#include "eckit/codec/detail/Type.h"
+#include "eckit/codec/detail/TypeTraits.h"
+#include "eckit/codec/detail/demangle.h"
+#include "eckit/codec/detail/sfinae.h"
+#include "eckit/codec/detail/tag.h"
+#include "eckit/codec/types/array/ArrayReference.h"
+#include "eckit/codec/types/array/adaptors/StdArrayAdaptor.h"
+#include "eckit/codec/types/array/adaptors/StdVectorAdaptor.h"
+#include "eckit/codec/types/scalar.h"
+#include "eckit/codec/types/string.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/testing/Test.h"
+
+#include <algorithm>
+#include <array>
+#include <bitset>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <iterator>
+#include <limits>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit::test {
 

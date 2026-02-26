@@ -15,6 +15,7 @@
 
 #pragma once
 #include "eckit/distributed/Actor.h"
+#include "eckit/distributed/Message.h"
 
 namespace eckit::distributed {
 

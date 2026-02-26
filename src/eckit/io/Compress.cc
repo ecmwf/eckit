@@ -9,12 +9,17 @@
  */
 
 
-#include <iomanip>
+#include "eckit/io/Compress.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/BitIO.h"
-#include "eckit/io/Compress.h"
 #include "eckit/io/DataHandle.h"
+
+#include <algorithm>
+#include <map>
+#include <set>
+#include <utility>
+#include <vector>
 
 // This code is written for readibility, not speed
 // See https://users.cs.cf.ac.uk/Dave.Marshall/Multimedia/node214.html

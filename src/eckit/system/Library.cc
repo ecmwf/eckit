@@ -12,26 +12,30 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#include <algorithm>
-#include <cctype>
-#include <map>
-
 #include "eckit/system/Library.h"
 
+#include "eckit/config/Configuration.h"
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/os/System.h"
 #include "eckit/system/LibraryManager.h"
-#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Translator.h"
+
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
+#include <map>
+#include <ostream>
+#include <utility>
 
 namespace eckit::system {
 

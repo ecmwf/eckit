@@ -10,12 +10,17 @@
  */
 
 
-#include <memory>
-
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
-#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <iostream>
+#include <memory>
+#include <string>
 
 
 namespace eckit::geo::test {

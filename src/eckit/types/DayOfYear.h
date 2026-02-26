@@ -14,6 +14,9 @@
 #pragma once
 #include "eckit/types/Date.h"
 
+#include <iosfwd>
+#include <string>
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -29,7 +32,6 @@ public:
     DayOfYear(long, long);
     DayOfYear(const std::string&);
 
-#include "eckit/types/DayOfYear.b"
 
     // -- Destructor
 

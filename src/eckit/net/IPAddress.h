@@ -13,9 +13,8 @@
 
 #pragma once
 #include <iosfwd>
-#include <string>
-
 #include <netinet/in.h>
+#include <string>
 
 namespace eckit::net {
 

@@ -9,8 +9,9 @@
  */
 
 #pragma once
-#include <vector>
 #include "eckit/geometry/Point2.h"
+
+#include <vector>
 
 //------------------------------------------------------------------------------------------------------
 

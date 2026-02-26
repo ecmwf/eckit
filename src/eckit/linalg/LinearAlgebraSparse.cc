@@ -11,10 +11,10 @@
 
 #include "eckit/linalg/LinearAlgebraSparse.h"
 
-#include "eckit/eckit.h"
+#include "eckit/eckit_config.h"
 #include "eckit/linalg/BackendRegistry.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
+
+#include <pthread.h>
 
 namespace eckit::linalg {
 

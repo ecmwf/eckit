@@ -16,6 +16,8 @@
 #pragma once
 #include "eckit/sql/expression/SQLExpressions.h"
 
+#include <vector>
+
 namespace eckit::sql::expression {
 
 /// @note This is fundamentally used only for the purpose of the SQLOrderOutput class

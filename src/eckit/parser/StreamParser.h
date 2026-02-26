@@ -13,9 +13,12 @@
 /// @date Sep 2012
 
 #pragma once
-#include <set>
-
 #include "eckit/exception/Exceptions.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <set>
+#include <string>
 
 namespace eckit {
 

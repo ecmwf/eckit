@@ -11,7 +11,12 @@
 #include "eckit/sql/SchemaAnalyzer.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/utils/StringTools.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+
+#include <ostream>
+#include <utility>
+#include <vector>
 
 using namespace eckit;
 

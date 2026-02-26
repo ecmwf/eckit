@@ -13,9 +13,11 @@
 /// @date   April 2016
 
 #pragma once
-#include <iosfwd>
-
 #include "eckit/log/Timer.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {

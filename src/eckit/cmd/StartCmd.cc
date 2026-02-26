@@ -8,13 +8,25 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <fstream>
-
 #include "eckit/cmd/StartCmd.h"
+
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/runtime/TaskInfo.h"
+#include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
+#include "eckit/value/Value.h"
+
+#include <cstddef>
+#include <fstream>
+#include <set>
+#include <sstream>
+#include <unistd.h>
+#include <vector>
 
 //----------------------------------------------------------------------------------------------------------------------
 

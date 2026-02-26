@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <map>
-#include <string>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/area/Library.h"
 
 #include "shapefil.h"
+
+#include <iosfwd>
+#include <map>
+#include <string>
 
 
 namespace eckit::geo {

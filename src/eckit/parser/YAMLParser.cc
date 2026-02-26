@@ -13,15 +13,21 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
-#include <algorithm>
-#include <fstream>
-
-#include "eckit/memory/Counted.h"
 #include "eckit/parser/YAMLParser.h"
-#include "eckit/types/Time.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/memory/Counted.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/utils/Translator.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
+
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
+#include <fstream>
+#include <sstream>
+#include <utility>
 
 namespace eckit {
 

@@ -10,6 +10,12 @@
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
+#include "eckit/sql/type/SQLType.h"
+
+#include <iostream>
+#include <memory>
+#include <vector>
+
 namespace eckit::sql::expression::function {
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -14,9 +14,10 @@
 #pragma once
 #include "eckit/sql/type/SQLType.h"
 
-namespace eckit::sql {
+#include <cstddef>
+#include <string>
 
-class SQLOutput;
+namespace eckit::sql {
 
 namespace type {
 

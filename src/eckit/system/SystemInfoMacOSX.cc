@@ -12,17 +12,17 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#include <mach-o/dyld.h>
-#include <mach/mach.h>
-#include <malloc/malloc.h>
-#include <sys/param.h>
-
 #include "eckit/system/SystemInfoMacOSX.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/memory/MemoryBuffer.h"
 #include "eckit/system/MemoryInfo.h"
+
+#include <mach-o/dyld.h>
+#include <mach/mach.h>
+#include <malloc/malloc.h>
+#include <sys/param.h>
 
 namespace eckit::system {
 

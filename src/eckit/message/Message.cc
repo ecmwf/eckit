@@ -11,13 +11,15 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
-#include <iostream>
+#include "eckit/message/Message.h"
 
 #include "eckit/io/Offset.h"
 #include "eckit/message/Decoder.h"
-#include "eckit/message/Message.h"
 #include "eckit/message/MessageContent.h"
 #include "eckit/types/Types.h"
+
+#include <iostream>
+#include <utility>
 
 namespace eckit::message {
 

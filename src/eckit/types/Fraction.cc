@@ -10,17 +10,19 @@
 
 #include "eckit/types/Fraction.h"
 
-#include <cmath>
-#include <limits>
-#include <numeric>
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/MD5.h"
 #include "eckit/utils/SafeCasts.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+
+#include <cmath>
+#include <initializer_list>
+#include <limits>
+#include <numeric>
+#include <ostream>
+#include <vector>
 
 //----------------------------------------------------------------------------------------------------------------------
 

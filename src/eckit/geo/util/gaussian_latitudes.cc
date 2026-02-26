@@ -10,15 +10,18 @@
  */
 
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/util.h"
+#include "eckit/log/CodeLocation.h"
+
 #include <cmath>
+#include <cstddef>
+#include <iterator>
 #include <limits>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/cache/MemoryCache.h"
-#include "eckit/geo/util.h"
 
 
 namespace eckit::geo::util {

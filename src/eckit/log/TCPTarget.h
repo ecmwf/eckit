@@ -14,11 +14,11 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <string>
-
 #include "eckit/log/LogTarget.h"
 #include "eckit/net/TCPSocket.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 

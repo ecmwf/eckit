@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <iosfwd>
-
 #include "eckit/option/Option.h"
+
+#include <iosfwd>
 
 namespace eckit::option {
 

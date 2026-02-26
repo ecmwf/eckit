@@ -12,18 +12,24 @@
 
 #include "eckit/geo/grid/regular/RegularLL.h"
 
-#include <algorithm>
-#include <memory>
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/iterator/Regular.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
+
+#include <cmath>
+#include <regex>
+#include <utility>
+#include <variant>
+#include <vector>
 
 
 namespace eckit::geo::grid::regular {

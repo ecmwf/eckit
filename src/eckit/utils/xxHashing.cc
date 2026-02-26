@@ -9,12 +9,9 @@
  */
 
 #include <cstring>
-#include <iostream>
 
 #define XXH_INLINE_ALL
 #include "eckit/contrib/xxhash/xxhash.h"
-
-#include "eckit/exception/Exceptions.h"
 #include "eckit/utils/xxHashing.h"
 
 namespace eckit {

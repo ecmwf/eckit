@@ -9,9 +9,9 @@
  */
 
 #pragma once
-#include <string>
-
 #include "eckit/filesystem/PathName.h"
+
+#include <string>
 
 namespace eckit::option {
 

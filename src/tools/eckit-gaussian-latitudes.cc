@@ -8,16 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstddef>
-#include <string>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/utils/Translator.h"
+
+#include <cstddef>
+#include <ostream>
+#include <string>
+#include <vector>
 
 //----------------------------------------------------------------------------------------------------------------------
 

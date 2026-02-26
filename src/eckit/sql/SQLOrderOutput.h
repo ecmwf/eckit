@@ -14,11 +14,17 @@
 /// @date Aug 2018
 
 #pragma once
-#include <queue>
-
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <iterator>
+#include <map>
+#include <queue>
+#include <utility>
+#include <vector>
 
 namespace eckit::sql {
 

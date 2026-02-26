@@ -16,6 +16,9 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/value/Params.h"
 
+#include <iosfwd>
+#include <string>
+
 //-----------------------------------------------------------------------------
 
 namespace eckit_test {

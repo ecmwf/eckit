@@ -8,15 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <map>
-
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/BigNum.h"
-#include "eckit/log/Bytes.h"
 #include "eckit/memory/Shmget.h"
+
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
+
+#include <algorithm>
+#include <map>
+#include <sys/shm.h>
 
 namespace eckit {
 

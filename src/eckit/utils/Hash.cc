@@ -8,15 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#include <map>
-
 #include "eckit/utils/Hash.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/StringTools.h"
+
+#include <map>
+#include <ostream>
+#include <utility>
 
 namespace eckit {
 

@@ -9,8 +9,16 @@
  */
 
 #include "eckit/sql/expression/function/FunctionTDIFF.h"
-#include "eckit/sql/SQLOutput.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/type/SQLType.h"
+#include "eckit/types/Date.h"
 #include "eckit/types/DateTime.h"
+#include "eckit/types/Time.h"
+
+#include <memory>
 
 namespace eckit::sql::expression::function {
 

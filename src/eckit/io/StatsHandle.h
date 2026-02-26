@@ -12,11 +12,13 @@
 // Baudouin Raoult - ECMWF Decembre 2013
 
 #pragma once
-#include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/HandleHolder.h"
 #include "eckit/log/Timer.h"
-#include "eckit/types/Types.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 

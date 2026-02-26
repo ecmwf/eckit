@@ -10,15 +10,16 @@
 
 #include "Statistics.h"
 
-#include <algorithm>
-#include <cmath>
-#include <cstring>
-#include <iomanip>
-
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <iomanip>
+#include <ostream>
 
 namespace eckit {
 

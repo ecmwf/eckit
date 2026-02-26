@@ -8,20 +8,33 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <sys/resource.h>
-#include <unistd.h>
+#include "eckit/runtime/PipeApplication.h"
 
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Select.h"
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/runtime/PipeApplication.h"
 #include "eckit/serialisation/PipeStream.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <bits/types/struct_rusage.h>
+#include <cstdio>
+#include <cstdlib>
+#include <ctime>
+#include <exception>
+#include <fcntl.h>
+#include <iostream>
+#include <sys/resource.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 
 namespace eckit {

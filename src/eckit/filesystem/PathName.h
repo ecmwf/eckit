@@ -20,8 +20,10 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 
-#include <map>
-#include <mutex>
+#include <iosfwd>
+#include <string>
+#include <sys/types.h>
+#include <vector>
 
 namespace eckit {
 
@@ -29,7 +31,6 @@ class BasePathName;
 class DataHandle;
 class FileMode;
 class Hash;
-class Length;
 class LocalPathName;
 
 // The class PathName represent a unix path name.

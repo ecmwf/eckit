@@ -13,17 +13,14 @@
 /// @date May 1996
 
 #pragma once
-#include <string>
+#include "eckit/config/Configurable.h"
 
-#include "eckit/utils/Tokenizer.h"
-#include "eckit/utils/Translator.h"
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Configurable;
-class Url;
 
 class ResourceBase {
 

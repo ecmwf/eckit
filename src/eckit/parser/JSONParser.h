@@ -12,7 +12,12 @@
 /// @date Jun 2012
 
 #pragma once
+#include "eckit/filesystem/PathName.h"
 #include "eckit/parser/ObjectParser.h"
+#include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 

@@ -14,6 +14,9 @@
 
 #include "eckit/geo/Range.h"
 
+#include <cstddef>
+#include <vector>
+
 
 namespace eckit::geo::range {
 

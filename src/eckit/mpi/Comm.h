@@ -9,16 +9,8 @@
  */
 
 #pragma once
-#include <cstddef>
-#include <iterator>
-#include <string>
-#include <string_view>
-#include <type_traits>
-#include <vector>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/SharedBuffer.h"
-
 #include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"
 #include "eckit/mpi/Group.h"
@@ -26,10 +18,19 @@
 #include "eckit/mpi/Request.h"
 #include "eckit/mpi/Status.h"
 
+#include <cstddef>
+#include <iosfwd>
+#include <iterator>
+#include <string>
+#include <string_view>
+#include <type_traits>
+#include <vector>
+
 namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+class Comm;
 class Environment;
 
 /// @returns the communicator registered with associated name, or default communicator when NULL is
@@ -535,6 +536,7 @@ public:
 #if defined(__clang_analyzer__)
 // By adding C assert, the analyzer can make assumptions on conditions, preventing false positive warnings
 #include <cassert>
+
 #define ECKIT_MPI_ASSERT(a)                                             \
     eckit::mpi::detail::Assert(!(a), #a, __FILE__, __LINE__, __func__); \
     assert(a)

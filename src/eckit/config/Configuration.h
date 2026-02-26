@@ -13,10 +13,15 @@
 /// @date   July 2015
 
 #pragma once
-#include <cstdint>
-#include <memory>
-#include <type_traits>
 #include "eckit/config/Parametrisation.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 
 namespace eckit {

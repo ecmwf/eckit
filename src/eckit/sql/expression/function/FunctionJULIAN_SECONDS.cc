@@ -9,8 +9,13 @@
  */
 
 #include "eckit/sql/expression/function/FunctionJULIAN_SECONDS.h"
+
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/type/SQLType.h"
 #include "eckit/types/Date.h"
+
+#include <memory>
 
 #define trunc(x) ((x) - fmod((x), 1))
 

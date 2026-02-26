@@ -12,24 +12,22 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <string>
-
 #include "eckit/codec/Stream.h"
-#include "eckit/codec/detail/Checksum.h"
 #include "eckit/codec/detail/DataInfo.h"
-#include "eckit/codec/detail/Endian.h"
 #include "eckit/codec/detail/Link.h"
 #include "eckit/codec/detail/RecordInfo.h"
 #include "eckit/codec/detail/Type.h"
+#include "eckit/config/Configuration.h"
 #include "eckit/config/LocalConfiguration.h"
-#include "eckit/value/Value.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit::codec {
 
 class Metadata;
-class Stream;
 
 //---------------------------------------------------------------------------------------------------------------------
 

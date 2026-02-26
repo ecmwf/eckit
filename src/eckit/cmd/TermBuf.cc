@@ -8,10 +8,10 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <iomanip>
-#include <iostream>
-
 #include "eckit/cmd/TermBuf.h"
+
+#include <cstdio>
+#include <iostream>
 
 extern "C" {
 int TermPutChar(int);

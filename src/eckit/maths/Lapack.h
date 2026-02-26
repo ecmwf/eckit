@@ -1,6 +1,5 @@
 
 #pragma once
-#include "eckit/eckit.h"
 
 namespace eckit::maths::lapack {
 

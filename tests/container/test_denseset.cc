@@ -8,11 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-
 #include "eckit/container/DenseSet.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/testing/Test.h"
+
+#include <initializer_list>
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

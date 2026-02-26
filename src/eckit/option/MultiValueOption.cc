@@ -10,11 +10,13 @@
 
 #include "eckit/option/MultiValueOption.h"
 
-#include <algorithm>
-#include <iostream>
-
 #include "eckit/config/Configured.h"
 #include "eckit/exception/Exceptions.h"
+
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <utility>
 
 namespace eckit::option {
 

@@ -14,6 +14,9 @@
 #pragma once
 #include "eckit/serialisation/Stream.h"
 
+#include <cstdio>
+#include <string>
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {

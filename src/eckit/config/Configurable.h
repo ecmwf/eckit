@@ -12,10 +12,12 @@
 // Baudouin Raoult - ECMWF May 96
 
 #pragma once
-#include <set>
-
 #include "eckit/container/ClassExtent.h"
 #include "eckit/thread/Mutex.h"
+
+#include <iosfwd>
+#include <set>
+#include <string>
 
 
 namespace eckit {

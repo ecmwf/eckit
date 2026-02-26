@@ -12,12 +12,14 @@
 
 #include "eckit/geo/projection/Stretch.h"
 
-#include <cmath>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <cmath>
 
 
 namespace eckit::geo::projection {

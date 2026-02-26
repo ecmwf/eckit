@@ -14,16 +14,17 @@
 /// @date   August 2016
 
 #pragma once
-#include <streambuf>
-#include <vector>
+#include "eckit/log/Log.h"
+#include "eckit/log/LogTarget.h"
 
-#include "eckit/log/Channel.h"
+#include <cstddef>
+#include <streambuf>
+#include <string>
+#include <vector>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class LogTarget;
 
 /// Stream buffer to be usedby Channel
 class ChannelBuffer : public std::streambuf {

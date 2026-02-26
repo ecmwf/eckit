@@ -9,6 +9,8 @@
  */
 
 #include "eckit/cmd/StatusCmd.h"
+
+#include "eckit/cmd/Arg.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitorable.h"
 

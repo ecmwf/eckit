@@ -15,23 +15,19 @@
 
 #include "eckit/io/EasyCURL.h"
 
-#include <unistd.h>
-#include <memory>
-
-#include <curl/curl.h>
-
-#include "eckit/log/Log.h"
-#include "eckit/utils/StringTools.h"
-#include "eckit/utils/Tokenizer.h"
-#include "eckit/utils/Translator.h"
-
 #include "eckit/io/BufferedHandle.h"
 #include "eckit/io/CircularBuffer.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/Timer.h"
 #include "eckit/parser/JSONParser.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
+#include "eckit/utils/Translator.h"
+
+#include <curl/curl.h>
+#include <memory>
+#include <unistd.h>
 
 
 namespace eckit {

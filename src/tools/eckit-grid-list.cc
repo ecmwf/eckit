@@ -10,8 +10,12 @@
 
 
 #include "eckit/geo/Grid.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/EckitTool.h"
+
+#include <ostream>
+#include <string>
 
 
 namespace eckit::tools {

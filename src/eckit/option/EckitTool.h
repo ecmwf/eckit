@@ -18,10 +18,12 @@
 #include "eckit/option/Option.h"
 #include "eckit/runtime/Tool.h"
 
+#include <string>
+#include <vector>
+
 namespace eckit {
 
 namespace option {
-class Option;
 class CmdArgs;
 }  // namespace option
 

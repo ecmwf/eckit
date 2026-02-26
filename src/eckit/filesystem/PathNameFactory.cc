@@ -11,10 +11,18 @@
 #include "eckit/filesystem/PathNameFactory.h"
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/filesystem/BasePathNameT.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <map>
+#include <sstream>
+#include <utility>
+#include <vector>
 
 namespace eckit {
 

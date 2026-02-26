@@ -8,20 +8,30 @@
  * does it submit to any jurisdiction.
  */
 
-#include <pthread.h>
-#include <csignal>
+#include "eckit/runtime/Monitor.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
 #include "eckit/container/SharedMemArray.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/os/BackTrace.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
-#include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
+
+#include <csignal>
+#include <cstdlib>
+#include <iostream>
+#include <new>
+#include <pthread.h>
+#include <sstream>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace eckit {
 

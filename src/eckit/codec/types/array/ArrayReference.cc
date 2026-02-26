@@ -12,7 +12,12 @@
 
 #include "eckit/codec/types/array/ArrayReference.h"
 
-#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/detail/DataType.h"
+#include "eckit/exception/Exceptions.h"
+
+#include <algorithm>
+#include <utility>
+#include <vector>
 
 namespace eckit::codec {
 

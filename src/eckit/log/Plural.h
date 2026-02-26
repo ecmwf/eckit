@@ -9,9 +9,9 @@
  */
 
 #pragma once
-#include <iostream>
-
 #include "eckit/log/BigNum.h"
+
+#include <iostream>
 
 namespace eckit {
 

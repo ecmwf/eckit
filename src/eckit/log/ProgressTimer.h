@@ -12,8 +12,13 @@
 // Baudouin Raoult - ECMWF May 96
 
 #pragma once
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Timer.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 

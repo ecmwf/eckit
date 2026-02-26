@@ -15,7 +15,11 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Generator.h"
+
+#include <utility>
 
 
 namespace eckit::geo::grid {

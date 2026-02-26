@@ -15,8 +15,11 @@
 #pragma once
 #include "eckit/utils/Literals.h"
 
+#include <cstdint>
 #include <iosfwd>
+#include <iterator>
 #include <string>
+#include <utility>
 
 
 namespace eckit {

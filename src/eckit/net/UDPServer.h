@@ -9,13 +9,16 @@
  */
 
 #pragma once
+
+#include "eckit/io/Buffer.h"
+
+#include <cstddef>
 #include <iosfwd>
 #include <string>
+#include <sys/socket.h>
 
 
 namespace eckit {
-
-class Buffer;
 
 namespace net {
 

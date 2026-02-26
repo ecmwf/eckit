@@ -12,22 +12,17 @@
 /// @date   Aug 2017
 
 #pragma once
-#include <iosfwd>
-#include <memory>
-
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/PeekHandle.h"
 #include "eckit/message/Message.h"
 
-
-namespace eckit {
-class DataHandle;
-class PathName;
-class Offset;
-};  // namespace eckit
+#include <iosfwd>
+#include <memory>
 
 namespace eckit::message {
 
-class Message;
 class Splitter;
 
 class Reader {

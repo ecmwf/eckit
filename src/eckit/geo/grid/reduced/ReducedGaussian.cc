@@ -12,10 +12,15 @@
 
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/Translator.h"
 

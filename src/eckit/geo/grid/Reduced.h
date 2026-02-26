@@ -13,7 +13,10 @@
 #pragma once
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/area/BoundingBox.h"
+#include "eckit/geo/Point.h"
+
+#include <cstddef>
+#include <vector>
 
 
 namespace eckit::geo::iterator {

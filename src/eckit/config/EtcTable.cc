@@ -8,13 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fstream>
-
 #include "eckit/config/EtcTable.h"
 
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <fstream>
 
 
 namespace eckit {

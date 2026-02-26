@@ -12,10 +12,10 @@
 /// @author Tiago Quintino
 
 #pragma once
-#include <iosfwd>
-#include <utility>
-
+#include "eckit/log/LogTarget.h"
 #include "eckit/log/WrapperTarget.h"
+
+#include <iosfwd>
 
 namespace eckit {
 

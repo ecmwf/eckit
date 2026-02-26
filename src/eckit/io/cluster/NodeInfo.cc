@@ -8,18 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#include <pwd.h>
-#include <unistd.h>
-
-#include <iomanip>
+#include "eckit/io/cluster/NodeInfo.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/thread/ThreadSingleton.h"
+
+#include <iomanip>
+#include <pwd.h>
+#include <sstream>
+#include <unistd.h>
+#include <utility>
 
 
 namespace eckit {

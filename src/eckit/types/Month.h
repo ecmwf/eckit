@@ -14,6 +14,9 @@
 #pragma once
 #include "eckit/types/Date.h"
 
+#include <iosfwd>
+#include <string>
+
 
 namespace eckit {
 
@@ -28,7 +31,6 @@ public:
     Month(long, long);
     Month(const std::string&);
 
-#include "eckit/types/Month.b"
 
     // -- Destructor
 

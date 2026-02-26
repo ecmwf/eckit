@@ -13,7 +13,9 @@
 /// @date Dec 2003
 
 #pragma once
-#include "eckit/sql/SQLOutputConfig.h"
+
+#include <cstddef>
+#include <iosfwd>
 
 namespace eckit::sql {
 

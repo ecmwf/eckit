@@ -13,13 +13,13 @@
 /// @date   June 2018
 
 #pragma once
+#include "eckit/exception/Exceptions.h"
+
 #include <condition_variable>
 #include <exception>
 #include <mutex>
 #include <queue>
 #include <thread>
-
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 

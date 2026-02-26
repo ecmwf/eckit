@@ -13,14 +13,13 @@
 /// @date   June 2019
 
 #pragma once
+#include "eckit/io/Length.h"
+
 #include <iostream>
 #include <map>
 #include <memory>
-#include <string>
-
 #include <rados/librados.h>
-
-#include "eckit/io/Length.h"
+#include <string>
 
 
 namespace eckit {

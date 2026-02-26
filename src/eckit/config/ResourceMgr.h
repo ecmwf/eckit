@@ -13,10 +13,10 @@
 /// @date   May 96
 
 #pragma once
+#include "eckit/thread/Mutex.h"
+
 #include <map>
 #include <string>
-
-#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 

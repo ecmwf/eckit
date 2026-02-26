@@ -13,11 +13,12 @@
 /// @author Tiago Quintino
 
 #pragma once
-#include "eckit/eckit.h"
-#include "eckit/filesystem/PathName.h"
+#include "eckit/runtime/TaskID.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
+
+#include <string>
 
 namespace eckit {
 

@@ -8,14 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-#include <limits>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
 #include "eckit/geometry/SphereT.h"
 #include "eckit/geometry/UnitSphere.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+
+#include <cmath>
+#include <string>
 
 namespace eckit::test {
 

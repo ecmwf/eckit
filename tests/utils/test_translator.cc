@@ -8,17 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
-
-#include "eckit/eckit.h"
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/utils/StringTools.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/testing/Test.h"
 #include "eckit/utils/Translator.h"
 
-#include "eckit/filesystem/PathName.h"
-
-#include "eckit/testing/Test.h"
+#include <cstddef>
+#include <iostream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

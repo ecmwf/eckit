@@ -16,10 +16,17 @@
 // Baudouin Raoult - ECMWF Dec 03
 
 #pragma once
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
+
+#include <iterator>
+#include <map>
 #include <memory>
 #include <mutex>
-
-#include "eckit/sql/expression/function/FunctionExpression.h"
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit::sql::expression::function {
 

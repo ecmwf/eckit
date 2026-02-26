@@ -11,15 +11,15 @@
 
 #include "eckit/maths/Qhull.h"
 
-#include <set>
-#include <sstream>
-
 #include "eckit/log/Log.h"
 #include "eckit/maths/ConvexHull.h"
 
 #include "libqhullcpp/Qhull.h"
 #include "libqhullcpp/QhullFacetList.h"
 #include "libqhullcpp/QhullVertexSet.h"
+
+#include <set>
+#include <sstream>
 
 
 namespace eckit::maths {

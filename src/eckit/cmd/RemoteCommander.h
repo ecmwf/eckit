@@ -15,6 +15,8 @@
 #pragma once
 #include "eckit/net/NetService.h"
 
+#include <string>
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {

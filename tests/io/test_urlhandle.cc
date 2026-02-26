@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-#include <string>
-
 #include "eckit/io/URLHandle.h"
 #include "eckit/testing/Test.h"
+
+#include <iostream>
+#include <string>
 
 namespace eckit::test {
 

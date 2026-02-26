@@ -10,12 +10,17 @@
  */
 
 
-#include <memory>
-#include <string>
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Area.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/testing/Test.h"
+
+#include <initializer_list>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 namespace eckit::geo::test {

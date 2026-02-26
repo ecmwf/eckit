@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-
 #include "eckit/io/Length.h"
+
 #include "eckit/persist/DumpLoad.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <iostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

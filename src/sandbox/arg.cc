@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-
 #include "eckit/cmd/Arg.h"
+
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Application.h"
+
+#include <iostream>
 
 using namespace eckit;
 

@@ -10,19 +10,32 @@
  */
 
 
-#include <iostream>
-#include <string>
-#include <vector>
-
+#include "eckit/codec/Record.h"
 #include "eckit/codec/RecordPrinter.h"
+#include "eckit/codec/Session.h"
+#include "eckit/codec/detail/Time.h"
+#include "eckit/codec/detail/Version.h"
 #include "eckit/codec/print/Bytes.h"
+#include "eckit/config/LocalConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
-#include "eckit/option/Separator.h"
+#include "eckit/option/Option.h"
 #include "eckit/option/SimpleOption.h"
-#include "eckit/option/VectorOption.h"
 #include "eckit/runtime/Tool.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <exception>
+#include <functional>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 //--------------------------------------------------------------------------------
 

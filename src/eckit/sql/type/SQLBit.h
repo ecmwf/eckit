@@ -14,6 +14,9 @@
 #pragma once
 #include "eckit/sql/type/SQLType.h"
 
+#include <cstddef>
+#include <string>
+
 namespace eckit::sql::type {
 
 class SQLBit : public SQLType {

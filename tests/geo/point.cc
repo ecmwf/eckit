@@ -10,14 +10,20 @@
  */
 
 
-#include <utility>
-#include <vector>
-
 #include "eckit/geo/Point.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointXY.h"
 #include "eckit/geo/PointXYZ.h"
 #include "eckit/testing/Test.h"
+
+#include <initializer_list>
+#include <iterator>
+#include <string>
+#include <utility>
+#include <variant>
+#include <vector>
 
 
 namespace eckit::geo::test {

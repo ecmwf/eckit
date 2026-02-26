@@ -12,12 +12,12 @@
 /// @date   Jan 2020
 
 #pragma once
+#include "eckit/log/JSON.h"
+
 #include <functional>
 #include <string>
 
 namespace eckit {
-
-class JSON;
 
 namespace runtime {
 

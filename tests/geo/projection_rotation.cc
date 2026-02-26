@@ -10,14 +10,24 @@
  */
 
 
-#include <memory>
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/Rotation.h"
+#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <initializer_list>
+#include <memory>
+#include <string>
+#include <variant>
+#include <vector>
 
 
 namespace eckit::geo::test {

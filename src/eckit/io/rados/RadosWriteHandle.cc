@@ -9,13 +9,14 @@
  */
 
 
-#include <map>
+#include "eckit/io/rados/RadosWriteHandle.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosWriteHandle.h"
+
+#include <map>
 
 
 namespace eckit {

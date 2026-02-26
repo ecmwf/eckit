@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <arpa/inet.h>
-
 #include "eckit/io/URLHandle.h"
 
 #include "eckit/io/EasyCURL.h"
+
+#include <arpa/inet.h>
 
 namespace eckit {
 

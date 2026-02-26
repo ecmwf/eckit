@@ -9,8 +9,14 @@
  */
 
 #include "eckit/cmd/CmdArg.h"
+
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/Value.h"
+
+#include <ostream>
+#include <utility>
 
 //----------------------------------------------------------------------------------------------------------------------
 

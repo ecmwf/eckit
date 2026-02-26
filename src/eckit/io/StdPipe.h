@@ -16,8 +16,6 @@
 #include <cstdio>
 #include <string>
 
-#include "eckit/io/AutoCloser.h"
-
 namespace eckit {
 
 /// Simple wrapper for pipes

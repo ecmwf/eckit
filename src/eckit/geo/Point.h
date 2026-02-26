@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <variant>
-
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointLonLatR.h"
 #include "eckit/geo/PointXY.h"
 #include "eckit/geo/PointXYZ.h"
+
+#include <iosfwd>
+#include <variant>
 
 
 namespace eckit::geo {

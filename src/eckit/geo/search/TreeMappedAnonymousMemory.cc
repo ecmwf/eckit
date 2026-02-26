@@ -12,6 +12,10 @@
 
 #include "eckit/geo/search/TreeMappedAnonymousMemory.h"
 
+#include "eckit/filesystem/PathName.h"
+
+#include <string>
+
 
 namespace eckit::geo::search {
 

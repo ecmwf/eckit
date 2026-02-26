@@ -12,21 +12,20 @@
 
 #pragma once
 
-#include <cstddef>
-#include <iterator>
-
 #include "eckit/geo/Point.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
-#include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <iterator>
+#include <string>
 
 
 namespace eckit::geo {
+
 class Grid;
-}
-
-
-namespace eckit::geo {
 
 
 class Iterator {

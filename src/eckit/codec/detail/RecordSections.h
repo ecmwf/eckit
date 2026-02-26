@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include <cstdint>
-#include <string>
-
 #include "eckit/codec/detail/Endian.h"
 #include "eckit/codec/detail/Time.h"
 #include "eckit/codec/detail/Version.h"
 #include "eckit/types/FixedString.h"
+
+#include <cstdint>
+#include <string>
 
 namespace eckit::codec {
 

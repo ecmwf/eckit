@@ -13,6 +13,9 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 
+#include <cstddef>
+#include <new>
+
 namespace eckit {
 
 struct KDMappedHeader {

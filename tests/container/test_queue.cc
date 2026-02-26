@@ -9,8 +9,17 @@
  */
 
 #include "eckit/container/Queue.h"
-#include "eckit/log/Log.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+
+#include <chrono>
+#include <cstddef>
+#include <iostream>
+#include <mutex>
+#include <string>
+#include <thread>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

@@ -9,23 +9,18 @@
  */
 
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <cstdio>
-#include <cstdlib>
-
-#include <iomanip>
-#include <memory>
-#include <string>
-
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/FileMode.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/filesystem/PathExpander.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/os/AutoUmask.h"
 #include "eckit/testing/Test.h"
+
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <string>
 
 using namespace std;
 using namespace eckit;

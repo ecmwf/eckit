@@ -8,14 +8,22 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-#include <iomanip>
-
 #include "eckit/cmd/PsCmd.h"
+
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/log/Colour.h"
 #include "eckit/log/JSON.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/runtime/TaskInfo.h"
+#include "eckit/types/Types.h"
 #include "eckit/utils/Translator.h"
+
+#include <algorithm>
+#include <ctime>
+#include <iomanip>
+#include <ostream>
+#include <vector>
 
 
 namespace eckit {

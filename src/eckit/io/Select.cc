@@ -13,11 +13,16 @@
 #pragma diag_suppress 550
 #endif
 
-#include <sys/ioctl.h>
-#include <unistd.h>
-
 #include "eckit/io/Select.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/net/TCPSocket.h"
+
+#include <cerrno>
+#include <string>
+#include <sys/ioctl.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 

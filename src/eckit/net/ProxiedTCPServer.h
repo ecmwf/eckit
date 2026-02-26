@@ -12,7 +12,11 @@
 /// @date   Aug 2017
 
 #pragma once
+#include "eckit/net/SocketOptions.h"
 #include "eckit/net/TCPServer.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {

@@ -13,6 +13,7 @@
 /// @date   Jul 97
 
 #pragma once
+#include "eckit/filesystem/PathName.h"
 #include "eckit/os/Semaphore.h"
 
 

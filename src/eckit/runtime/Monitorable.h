@@ -14,6 +14,8 @@
 #pragma once
 #include "eckit/container/ClassExtent.h"
 
+#include <iosfwd>
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {

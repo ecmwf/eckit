@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include <array>
-#include <type_traits>
-
 #include "eckit/codec/Data.h"
 #include "eckit/codec/Exceptions.h"
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/types/array/ArrayMetadata.h"
 #include "eckit/codec/types/array/ArrayReference.h"
+
+#include <array>
+#include <type_traits>
 
 namespace std {
 

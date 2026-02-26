@@ -14,6 +14,9 @@
 #pragma once
 #include "eckit/sql/SQLColumn.h"
 
+#include <iosfwd>
+#include <string>
+
 namespace eckit::sql {
 
 class SQLBitColumn : public SQLColumn {

@@ -13,7 +13,11 @@
 /// @date Dec 2003
 
 #pragma once
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit::sql::expression::function {
 

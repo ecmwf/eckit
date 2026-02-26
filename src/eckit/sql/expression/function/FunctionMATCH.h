@@ -12,12 +12,12 @@
 /// Piotr Kuchta - ECMWF October 2015
 
 #pragma once
-#include <set>
-#include <vector>
-
 #include "eckit/sql/SQLAST.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
 #include "eckit/sql/type/SQLType.h"
+
+#include <set>
+#include <vector>
 
 namespace eckit {
 namespace sql {

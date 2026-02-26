@@ -9,14 +9,16 @@
  */
 
 #pragma once
+
+#include "eckit/config/Configuration.h"
+
+#include <cstddef>
 #include <iosfwd>
+#include <netdb.h>
 #include <string>
 
 
 namespace eckit {
-
-class Buffer;
-class Configuration;
 
 namespace net {
 

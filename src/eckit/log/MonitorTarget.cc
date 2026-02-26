@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-
 #include "eckit/log/MonitorTarget.h"
+
 #include "eckit/runtime/Monitor.h"
+
+#include <iostream>
 
 
 namespace eckit {

@@ -12,12 +12,11 @@
 // Baudouin Raoult - (c) ECMWF Jun 23
 
 #pragma once
+#include "eckit/io/Length.h"
+
 #include <map>
 #include <set>
 #include <string>
-
-
-#include "eckit/io/Length.h"
 
 //-----------------------------------------------------------------------------
 

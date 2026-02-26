@@ -14,6 +14,8 @@
 #pragma once
 #include "eckit/io/DataHandle.h"
 
+#include <streambuf>
+
 
 //-----------------------------------------------------------------------------
 

@@ -13,8 +13,10 @@
 /// @date Dec 2017
 
 #pragma once
-#include <iosfwd>
 
+
+#include <cstddef>
+#include <sys/types.h>
 
 namespace eckit {
 

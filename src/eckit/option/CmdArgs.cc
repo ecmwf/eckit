@@ -16,13 +16,19 @@
 
 #include "eckit/option/CmdArgs.h"
 
-#include <iostream>
-#include <map>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/option/Option.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <cstdlib>
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <utility>
 
 namespace eckit::option {
 

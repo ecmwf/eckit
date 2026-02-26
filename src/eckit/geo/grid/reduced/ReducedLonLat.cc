@@ -12,14 +12,19 @@
 
 #include "eckit/geo/grid/reduced/ReducedLonLat.h"
 
-#include <algorithm>
-#include <memory>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/SafeCasts.h"
+
+#include <algorithm>
+#include <memory>
 
 
 namespace eckit::geo::grid::reduced {

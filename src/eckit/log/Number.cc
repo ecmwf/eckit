@@ -8,9 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
-
 #include "eckit/log/Number.h"
+
+#include <cstddef>
+#include <sstream>
 
 namespace eckit::log {
 

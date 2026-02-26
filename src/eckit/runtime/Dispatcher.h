@@ -12,10 +12,6 @@
 // Baudouin Raoult - ECMWF Jul 96
 
 #pragma once
-#include <unistd.h>
-#include <algorithm>
-#include <list>
-
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/log/JSON.h"
@@ -29,6 +25,10 @@
 #include "eckit/thread/MutexCond.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+
+#include <algorithm>
+#include <list>
+#include <unistd.h>
 
 //-----------------------------------------------------------------
 

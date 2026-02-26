@@ -8,14 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-#include <iostream>
-#include <string>
-
-#include "eckit/eckit.h"
 #include "eckit/io/CircularBuffer.h"
-
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <string>
 
 using namespace std;
 using namespace eckit;

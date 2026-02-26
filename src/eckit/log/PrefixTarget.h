@@ -14,11 +14,12 @@
 /// @date   August 2016
 
 #pragma once
+#include "eckit/log/LogTarget.h"
+#include "eckit/log/WrapperTarget.h"
+
+#include <cstddef>
 #include <iosfwd>
 #include <string>
-#include <utility>
-
-#include "eckit/log/WrapperTarget.h"
 
 namespace eckit {
 

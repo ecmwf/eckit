@@ -12,14 +12,13 @@
 
 #pragma once
 
+#include "eckit/spec/Spec.h"
+
 #include <memory>
 #include <vector>
 
 
 namespace eckit {
-namespace spec {
-class Spec;
-}
 class PathName;
 }  // namespace eckit
 

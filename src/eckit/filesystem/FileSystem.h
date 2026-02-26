@@ -13,7 +13,11 @@
 /// @date Nov 2001
 
 #pragma once
+#include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/PathName.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 

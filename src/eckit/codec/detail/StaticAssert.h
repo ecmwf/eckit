@@ -16,9 +16,9 @@
 
 #if eckit_CODEC_STATIC_ASSERT
 
-#include <cstdlib>
-
 #include "eckit/codec/detail/TypeTraits.h"
+
+#include <cstdlib>
 
 
 namespace eckit::codec {

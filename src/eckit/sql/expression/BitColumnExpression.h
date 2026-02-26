@@ -14,6 +14,9 @@
 
 #pragma once
 #include "eckit/sql/expression/ColumnExpression.h"
+#include "eckit/sql/expression/SQLExpression.h"
+
+#include <string>
 
 namespace eckit::sql::expression {
 

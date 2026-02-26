@@ -10,10 +10,11 @@
 
 #include "eckit/log/SysLogTCPTarget.h"
 
-#include <utility>
-
 #include "eckit/log/SysLog.h"
 #include "eckit/net/TCPSocket.h"
+
+#include <string>
+#include <utility>
 
 namespace eckit {
 

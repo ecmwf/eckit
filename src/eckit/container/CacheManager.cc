@@ -10,16 +10,19 @@
 
 #include "eckit/container/CacheManager.h"
 
-#include <unistd.h>
+#include "eckit/container/BTree.h"
+#include "eckit/io/Length.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/runtime/Main.h"
 
 #include <algorithm>
 #include <cstring>
 #include <deque>
+#include <exception>
 #include <fstream>
-
-#include "eckit/container/BTree.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/runtime/Main.h"
+#include <map>
+#include <unistd.h>
+#include <utility>
 
 namespace eckit {
 

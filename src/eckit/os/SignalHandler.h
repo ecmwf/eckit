@@ -9,12 +9,7 @@
  */
 
 #pragma once
-#include <setjmp.h>
 #include <csignal>
-
-#include "eckit/eckit.h"
-
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 

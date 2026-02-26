@@ -9,17 +9,17 @@
  */
 
 #pragma once
-#include <map>
-#include <string>
-
 #include "eckit/web/HtmlObject.h"
+
+#include <functional>
+#include <map>
+#include <ostream>
+#include <string>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Url;
 
 class Html {
 public:

@@ -12,25 +12,22 @@
 /// @author Metin Cakircali
 /// @date   Jun 2024
 
-#include <array>
-#include <iostream>
-#include <istream>
-#include <ostream>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <utility>
-
 #include "eckit/io/SockBuf.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/SysLog.h"
 #include "eckit/log/SysLogTCPTarget.h"
+#include "eckit/log/TCPTarget.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPServer.h"
-#include "eckit/net/TCPStream.h"
+#include "eckit/net/TCPSocket.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/testing/Test.h"
+
+#include <array>
+#include <istream>
+#include <string>
+#include <thread>
 
 using namespace eckit;
 

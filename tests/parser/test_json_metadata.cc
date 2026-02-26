@@ -8,13 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-
 #include "eckit/io/Buffer.h"
 #include "eckit/parser/JSONMetadata.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
-#include "eckit/testing/Test.h"
+#include <algorithm>
 
 using namespace std;
 using namespace eckit;

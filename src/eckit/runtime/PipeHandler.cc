@@ -8,15 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <csignal>
+#include "eckit/runtime/PipeHandler.h"
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/runtime/PipeHandler.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+
+#include <csignal>
 
 namespace eckit {
 

@@ -16,8 +16,6 @@
 #pragma once
 #include <iosfwd>
 
-#include "eckit/eckit.h"
-
 
 namespace eckit {
 

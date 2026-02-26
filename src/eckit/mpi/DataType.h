@@ -10,15 +10,10 @@
 
 #pragma once
 #include <cstddef>
-#include <vector>
-
-#include "eckit/mpi/DataType.h"
 
 namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Comm;
 
 class Data {
 

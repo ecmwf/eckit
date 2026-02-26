@@ -8,19 +8,28 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
+#include "eckit/io/cluster/ClusterNode.h"
 
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/cluster/ClusterDisks.h"
-#include "eckit/io/cluster/ClusterNode.h"
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/net/Port.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+
+#include <cstdlib>
+#include <exception>
+#include <ostream>
+#include <unistd.h>
+#include <vector>
 
 
 namespace eckit {

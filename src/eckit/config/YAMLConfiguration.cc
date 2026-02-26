@@ -11,13 +11,19 @@
 /// @author Baudouin Raoult
 /// @date Jul 2015
 
-#include <fstream>
+#include "eckit/config/YAMLConfiguration.h"
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/config/YAMLConfiguration.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/value/Value.h"
+
+#include <fstream>
+#include <memory>
+#include <sstream>
 
 namespace eckit {
 

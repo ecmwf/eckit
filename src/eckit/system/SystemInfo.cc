@@ -14,19 +14,17 @@
 
 #include "SystemInfo.h"
 
-#include <pwd.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <memory>
-
-#include "eckit/eckit.h"
-#include "eckit/utils/StringTools.h"
-
+#include "eckit/eckit_config.h"
+#include "eckit/eckit_ecbuild_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/memory/MMap.h"
-#include "eckit/memory/Shmget.h"
+#include "eckit/utils/StringTools.h"
+
+#include <memory>
+#include <ostream>
+#include <pthread.h>
+#include <pwd.h>
+#include <unistd.h>
 
 #if defined(__APPLE__) && defined(__MACH__)
 #include "eckit/system/SystemInfoMacOSX.h"

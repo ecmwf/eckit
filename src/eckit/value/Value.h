@@ -13,15 +13,26 @@
 /// @author Tiago Quintino
 
 #pragma once
-#include <list>
-
-#include "eckit/types/Date.h"
-#include "eckit/types/DateTime.h"
-#include "eckit/value/Content.h"
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/serialisation/Streamable.h"
+#include "eckit/types/Date.h"
+#include "eckit/types/DateTime.h"
+#include "eckit/types/Time.h"
+#include "eckit/types/Types.h"
+#include "eckit/value/Content.h"
+
+#include <cstddef>
+#include <iterator>
+#include <list>
+#include <map>
+#include <ostream>
+#include <set>
+#include <string>
+#include <vector>
 
 
 namespace eckit {
@@ -135,11 +146,6 @@ namespace eckit {
 ///     -- It should certainly at least return an empty list, not a nil value
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Hash;
-class Length;
-class PathName;
-class JSON;
 
 class Value {
 public:

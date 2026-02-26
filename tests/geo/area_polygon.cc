@@ -10,13 +10,18 @@
  */
 
 
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointXY.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/geo/polygon/PolygonXY.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+
+#include <cstddef>
+#include <initializer_list>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::test {

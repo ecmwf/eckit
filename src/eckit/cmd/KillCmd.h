@@ -15,6 +15,10 @@
 #pragma once
 #include "eckit/cmd/CmdResource.h"
 
+#include <iosfwd>
+#include <string>
+#include <sys/types.h>
+
 //-----------------------------------------------------------------------------
 
 namespace eckit {

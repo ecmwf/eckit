@@ -13,8 +13,11 @@
 
 #pragma once
 #include "eckit/parser/StreamParser.h"
-#include "eckit/types/Types.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 

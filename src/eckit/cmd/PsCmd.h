@@ -13,6 +13,10 @@
 
 #pragma once
 #include "eckit/cmd/CmdResource.h"
+#include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 

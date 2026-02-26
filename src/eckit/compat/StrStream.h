@@ -12,10 +12,10 @@
 // Baudouin Raoult - ECMWF Mar 97
 
 #pragma once
+#include "eckit/eckit.h"
+
 #include <iosfwd>
 #include <sstream>
-
-#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

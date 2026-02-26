@@ -14,11 +14,15 @@
 /// @date March 2016
 
 #pragma once
-#include <functional>
-#include <set>
-#include <vector>
-
+#include "eckit/config/Configured.h"
 #include "eckit/config/LocalConfiguration.h"
+
+#include <cstddef>
+#include <functional>
+#include <iosfwd>
+#include <set>
+#include <string>
+#include <vector>
 
 namespace eckit::option {
 

@@ -11,11 +11,11 @@
 
 #include "eckit/linalg/LinearAlgebra.h"
 
+#include "eckit/utils/StringTools.h"
+
 #include <set>
 #include <sstream>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/StringTools.h"
+#include <vector>
 
 namespace eckit::linalg {
 

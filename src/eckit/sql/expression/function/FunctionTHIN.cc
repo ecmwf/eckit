@@ -12,9 +12,15 @@
 /// (C) ECMWF July 2010
 
 #include "eckit/sql/expression/function/FunctionTHIN.h"
+
 #include "eckit/sql/SQLSelect.h"
-#include "eckit/sql/SQLTable.h"
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <memory>
+#include <ostream>
 
 namespace eckit::sql::expression::function {
 

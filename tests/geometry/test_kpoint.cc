@@ -8,8 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/geometry/KPoint.h"
 #include "eckit/geometry/Point3.h"
 #include "eckit/testing/Test.h"
+
+#include <string>
 
 using namespace std;
 using namespace eckit;

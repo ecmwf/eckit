@@ -15,6 +15,9 @@
 #include "eckit/config/Configuration.h"
 #include "eckit/io/SharedBuffer.h"
 
+#include <iosfwd>
+#include <string>
+
 namespace eckit {
 
 class PathName;

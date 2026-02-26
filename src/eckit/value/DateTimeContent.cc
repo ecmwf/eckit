@@ -10,8 +10,10 @@
 
 
 #include "eckit/value/DateTimeContent.h"
+
 #include "eckit/log/JSON.h"
-#include "eckit/value/NumberContent.h"
+
+#include <ostream>
 
 
 namespace eckit {

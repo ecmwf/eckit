@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <sstream>
-
 #include "eckit/config/Resource.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Timer.h"
 #include "eckit/net/MultiSocket.h"
 #include "eckit/runtime/Application.h"
+
+#include <sstream>
+#include <unistd.h>
 
 using namespace eckit;
 

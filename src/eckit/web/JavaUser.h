@@ -13,6 +13,9 @@
 
 #pragma once
 #include "eckit/net/NetUser.h"
+#include "eckit/net/TCPSocket.h"
+
+#include <iosfwd>
 
 //-----------------------------------------------------------------------------
 

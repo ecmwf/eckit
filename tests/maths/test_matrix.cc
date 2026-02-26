@@ -8,12 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <array>
-
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/maths/Matrix.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
-#include "eckit/testing/Test.h"
+#include <array>
+#include <ostream>
+#include <string>
+#include <tuple>
 
 using eckit::types::is_approximately_equal;
 

@@ -10,10 +10,12 @@
 
 
 #include "eckit/value/NilContent.h"
+
 #include "eckit/log/JSON.h"
+#include "eckit/utils/Hash.h"
 #include "eckit/value/Value.h"
 
-#include "eckit/utils/Hash.h"
+#include <ostream>
 
 
 namespace eckit {

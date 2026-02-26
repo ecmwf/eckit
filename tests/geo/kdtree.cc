@@ -10,11 +10,20 @@
  */
 
 
-#include <vector>
-
 #include "eckit/container/KDTree.h"
+
+#include "eckit/container/KDMemory.h"
+#include "eckit/container/kdtree/KDNode.h"
+#include "eckit/container/sptree/SPNodeInfo.h"
+#include "eckit/container/sptree/SPValue.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/PointXY.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::test {

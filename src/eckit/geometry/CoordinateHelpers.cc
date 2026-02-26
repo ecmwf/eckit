@@ -5,13 +5,16 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
+#include "eckit/geometry/CoordinateHelpers.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geometry/Point2.h"
+#include "eckit/log/CodeLocation.h"
+
 #include <cmath>
 #include <limits>
 #include <sstream>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/geometry/CoordinateHelpers.h"
-#include "eckit/geometry/Point2.h"
+#include <string>
 
 namespace eckit::geometry {
 

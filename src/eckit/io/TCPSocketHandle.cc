@@ -10,6 +10,13 @@
 
 #include "eckit/io/TCPSocketHandle.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <ostream>
+
 
 namespace eckit {
 

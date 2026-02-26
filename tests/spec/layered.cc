@@ -11,9 +11,12 @@
 
 
 #include "eckit/spec/Layered.h"
-#include "eckit/geo/Exceptions.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+
+#include <string>
 
 
 namespace eckit::spec::test {

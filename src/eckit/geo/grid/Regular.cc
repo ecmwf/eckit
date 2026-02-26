@@ -12,10 +12,8 @@
 
 #include "eckit/geo/grid/Regular.h"
 
-#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
-#include "eckit/spec/Custom.h"
 #include "eckit/types/Fraction.h"
 
 

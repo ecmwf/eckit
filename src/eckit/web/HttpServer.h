@@ -21,8 +21,6 @@ namespace eckit {
 //-----------------------------------------------------------------------------
 
 
-class Url;
-
 class HttpServer : public HtmlResource {
 public:
 

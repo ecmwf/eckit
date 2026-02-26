@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <cstdint>
-#include <string>
-
 #include "eckit/codec/detail/Checksum.h"
 #include "eckit/codec/detail/Endian.h"
+
+#include <cstdint>
+#include <string>
 
 namespace eckit::codec {
 

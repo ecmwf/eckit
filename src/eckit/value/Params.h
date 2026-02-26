@@ -13,11 +13,14 @@
 /// @date July 2014
 
 #pragma once
-#include <list>
-
-#include "eckit/config/Parametrisation.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <list>
+#include <map>
+#include <string>
+#include <utility>
 
 //----------------------------------------------------------------------------
 

@@ -13,6 +13,8 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLTable.h"
 
+#include <functional>
+
 using namespace eckit;
 
 namespace eckit::sql {

@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/LineBasedTarget.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/maths/Functions.h"
-
-#include "eckit/log/LineBasedTarget.h"
 
 namespace eckit {
 

@@ -10,8 +10,11 @@
 
 
 #include "eckit/utils/Regex.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
+
+#include <ostream>
 
 
 //----------------------------------------------------------------------------------------------------------------------

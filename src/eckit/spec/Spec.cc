@@ -11,10 +11,11 @@
 
 #include "eckit/spec/Spec.h"
 
-#include <sstream>
-
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/JSON.h"
 #include "eckit/spec/Exceptions.h"
+
+#include <sstream>
 
 
 namespace eckit::spec {

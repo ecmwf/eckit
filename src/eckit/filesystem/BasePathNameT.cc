@@ -10,6 +10,7 @@
 
 
 #include "eckit/filesystem/BasePathNameT.h"
+
 #include "eckit/filesystem/FileMode.h"
 
 #include <algorithm>

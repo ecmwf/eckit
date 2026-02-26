@@ -15,13 +15,15 @@
 #pragma once
 #include "eckit/runtime/Task.h"
 #include "eckit/thread/MutexCond.h"
+#include "eckit/thread/Thread.h"
+
+#include <cstddef>
+#include <pthread.h>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Thread;
 
 /// @note Don't subclass from ThreadControler but from Thread
 class ThreadControler : public Task {

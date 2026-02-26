@@ -16,6 +16,9 @@
 #include "eckit/net/TCPSocket.h"
 #include "eckit/serialisation/Stream.h"
 
+#include <netinet/in.h>
+#include <string>
+
 namespace eckit::net {
 
 class TCPServer;

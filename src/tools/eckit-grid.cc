@@ -9,14 +9,11 @@
  */
 
 
-#include <algorithm>
-#include <memory>
-#include <sstream>
-#include <string>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/area/BoundingBox.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
@@ -24,6 +21,15 @@
 #include "eckit/option/SimpleOption.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 namespace eckit {

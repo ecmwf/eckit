@@ -5,10 +5,10 @@ BUG ECKIT-166
 
 */
 
-#include <iostream>
-
 #include "eckit/mpi/Comm.h"
 #include "eckit/runtime/Main.h"
+
+#include <iostream>
 
 using namespace eckit;
 

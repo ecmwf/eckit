@@ -8,16 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <arpa/inet.h>
-
-#include <cmath>
-#include <vector>
-
-#include "eckit/log/Log.h"
+#include "eckit/eckit_config.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/ByteSwap.h"
 
-#include "eckit/testing/Test.h"
+#include <arpa/inet.h>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <iostream>
+#include <limits>
+#include <string>
+#include <vector>
 
 using namespace std;
 

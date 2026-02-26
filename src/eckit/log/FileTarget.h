@@ -11,11 +11,12 @@
 /// @author Tiago Quintino
 
 #pragma once
-#include <fstream>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/LogTarget.h"
+
+#include <cstddef>
+#include <fstream>
 
 namespace eckit {
 

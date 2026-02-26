@@ -13,20 +13,22 @@
 
 #pragma once
 
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/value/Value.h"
+
 #include <ctime>
+#include <exception>
+#include <iosfwd>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "eckit/value/Value.h"
-
 namespace eckit {
 
-class Stream;
 class MetricsCollector;
-class Offset;
-class Length;
 
 //----------------------------------------------------------------------------------------------------------------------
 

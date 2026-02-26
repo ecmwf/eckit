@@ -10,15 +10,24 @@
  */
 
 
-#include <vector>
+#include "eckit/geo/Search.h"
 
+#include "eckit/container/KDMemory.h"
 #include "eckit/container/KDTree.h"
+#include "eckit/container/sptree/SPValue.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointXY.h"
 #include "eckit/geo/PointXYZ.h"
-#include "eckit/geo/Search.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <variant>
+#include <vector>
 
 
 namespace eckit::geo::test {

@@ -9,16 +9,15 @@
  */
 
 #pragma once
-#include <memory>
-
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/SelectOneTable.h"
+
+#include <memory>
+#include <vector>
 
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class SQLTableIterator;
 
 struct Environment {
 

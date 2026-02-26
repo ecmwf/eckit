@@ -9,12 +9,20 @@
  */
 
 #include "eckit/filesystem/URIManager.h"
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+
+#include <map>
+#include <ostream>
+#include <utility>
+#include <vector>
 
 
 namespace eckit {

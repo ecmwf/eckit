@@ -10,20 +10,21 @@
 
 #include "eckit/sql/SQLSelect.h"
 
-#include <algorithm>
-
 #include "eckit/config/LibEcKit.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/BigNum.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLTable.h"
-#include "eckit/sql/expression/ColumnExpression.h"
-#include "eckit/sql/expression/ConstantExpression.h"
 #include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/expression/SQLExpressionEvaluated.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+
+#include <algorithm>
+#include <ostream>
 
 namespace eckit::sql {
 

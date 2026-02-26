@@ -11,16 +11,15 @@
 #ifndef KDNode_CC
 #define KDNode_CC
 
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include "KDNode.h"
 
 #include <algorithm>
 #include <cstdio>
+#include <fcntl.h>
 #include <limits>
-
-#include "KDNode.h"
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 namespace eckit {
 

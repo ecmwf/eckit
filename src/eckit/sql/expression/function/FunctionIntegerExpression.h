@@ -12,11 +12,12 @@
 // ECMWF July 2010
 
 #pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit::sql {
+#include <string>
 
-class SQLOutput;
+namespace eckit::sql {
 
 namespace expression::function {
 

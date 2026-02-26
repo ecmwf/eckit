@@ -8,16 +8,25 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <fstream>
-#include <iostream>
+#include "eckit/runtime/Application.h"
 
 #include "eckit/bases/Loader.h"
-#include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/TimeStampTarget.h"
 #include "eckit/os/Semaphore.h"
-#include "eckit/runtime/Application.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/runtime/TaskInfo.h"
+
+#include <cstdlib>
+#include <exception>
+#include <fstream>
+#include <iostream>
+#include <new>
+#include <unistd.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 

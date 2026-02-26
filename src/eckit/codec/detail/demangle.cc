@@ -14,6 +14,8 @@
 
 #include "eckit/eckit_config.h"
 
+#include <cstdlib>
+
 #if eckit_HAVE_CXXABI_H
 #include <cxxabi.h>
 #include <memory>

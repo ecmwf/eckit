@@ -11,11 +11,12 @@
 
 #pragma once
 
+#include "eckit/geo/PointXY.h"
+
 #include <iosfwd>
+#include <iterator>
 #include <utility>
 #include <vector>
-
-#include "eckit/geo/PointXY.h"
 
 
 namespace eckit::geo::polygon {

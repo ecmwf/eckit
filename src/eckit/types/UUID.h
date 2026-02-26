@@ -13,7 +13,9 @@
 
 #pragma once
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <iosfwd>
 #include <string>
 
 namespace eckit {

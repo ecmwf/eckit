@@ -14,6 +14,8 @@
 
 #include "eckit/geo/Area.h"
 
+#include <string>
+
 
 namespace eckit::geo::area {
 

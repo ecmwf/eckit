@@ -12,10 +12,13 @@
 
 #pragma once
 
-#include <deque>
-#include <vector>
-
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
+
+#include <deque>
+#include <initializer_list>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::projection {

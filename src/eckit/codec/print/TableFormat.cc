@@ -12,16 +12,31 @@
 
 #include "eckit/codec/print/TableFormat.h"
 
-#include <iomanip>
-
-#include "eckit/codec/Exceptions.h"
+#include "eckit/codec/Data.h"
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/Record.h"
+#include "eckit/codec/RecordItem.h"
 #include "eckit/codec/RecordItemReader.h"
 #include "eckit/codec/Session.h"
+#include "eckit/codec/detail/Checksum.h"
+#include "eckit/codec/detail/DataInfo.h"
+#include "eckit/codec/detail/DataType.h"
+#include "eckit/codec/detail/Endian.h"
+#include "eckit/codec/detail/Link.h"
+#include "eckit/codec/detail/RecordInfo.h"
+#include "eckit/codec/detail/Time.h"
+#include "eckit/codec/detail/Version.h"
 #include "eckit/codec/print/Bytes.h"
-#include "eckit/codec/types/array.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
 #include "eckit/codec/types/scalar.h"
+#include "eckit/exception/Exceptions.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <iomanip>
+#include <sstream>
+#include <vector>
 
 namespace eckit::codec {
 

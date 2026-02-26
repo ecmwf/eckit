@@ -10,14 +10,15 @@
 
 #include "eckit/net/NetMask.h"
 
-#include <arpa/inet.h>
-#include <ostream>
-
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/net/IPAddress.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <ostream>
+#include <vector>
 
 // Cray C++ compiler should not try to optimize this code
 #if _CRAYC

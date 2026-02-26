@@ -15,6 +15,8 @@
 #pragma once
 #include "eckit/filesystem/PathName.h"
 
+#include <string>
+
 namespace eckit::sql {
 
 class SQLOutput;

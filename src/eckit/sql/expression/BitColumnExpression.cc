@@ -10,16 +10,24 @@
 
 #include "eckit/sql/expression/BitColumnExpression.h"
 
-#include <memory>
-
-#include "eckit/filesystem/PathName.h"
-#include "eckit/os/BackTrace.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/sql/type/SQLBit.h"
+#include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <ostream>
+#include <utility>
+#include <vector>
 
 // Cray C++ compiler should not try to optimize this code
 #if _CRAYC

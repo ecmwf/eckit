@@ -13,13 +13,18 @@
 /// @author Tiago Quintino
 
 #pragma once
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Hash;
 
 class OrderedMapContent : public Content {
 

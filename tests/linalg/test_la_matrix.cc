@@ -8,7 +8,13 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "util.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/Vector.h"
+#include "eckit/runtime/Main.h"
+#include "eckit/testing/Test.h"
+
+#include <string>
+#include <vector>
 
 namespace eckit::test {
 

@@ -9,12 +9,18 @@
  */
 
 
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
-
+#include "eckit/types/Date.h"
+#include "eckit/types/DateTime.h"
+#include "eckit/types/Time.h"
 #include "eckit/value/Value.h"
 
-#include <algorithm>  // std::reverse
-#include <vector>     // std::vector
+#include <cstddef>
+#include <ostream>
+#include <string>
+#include <vector>  // std::vector
 
 using namespace eckit;
 using namespace eckit::testing;

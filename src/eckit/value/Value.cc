@@ -10,8 +10,10 @@
 
 
 #include "eckit/value/Value.h"
+
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
+#include "eckit/serialisation/Reanimator.h"
 #include "eckit/value/BoolContent.h"
 #include "eckit/value/DateContent.h"
 #include "eckit/value/DateTimeContent.h"

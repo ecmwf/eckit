@@ -12,8 +12,11 @@
 /// @date May 1996
 
 #pragma once
+
 #include "eckit/serialisation/Reanimator.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <string>
 
 namespace eckit {
 

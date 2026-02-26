@@ -9,13 +9,19 @@
  */
 
 #include "eckit/web/Url.h"
+
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/JSONParser.h"
-#include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/web/Html.h"
+
+#include <functional>
+#include <iostream>
+#include <sstream>
+#include <utility>
 
 
 namespace eckit {

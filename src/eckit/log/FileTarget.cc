@@ -9,8 +9,10 @@
  */
 
 #include "eckit/log/FileTarget.h"
-#include "eckit/config/Resource.h"
+
 #include "eckit/exception/Exceptions.h"
+
+#include <string>
 
 namespace eckit {
 

@@ -1,12 +1,13 @@
-#include <termios.h>
-#include <unistd.h>
+#include "eckit/cmd/UserInput.h"
+
+#include <cctype>
 #include <climits>
 #include <csignal>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-
-#include "eckit/cmd/UserInput.h"
+#include <termios.h>
+#include <unistd.h>
 
 
 namespace eckit {

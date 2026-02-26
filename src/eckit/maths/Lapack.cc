@@ -1,6 +1,7 @@
 #include "eckit/maths/Lapack.h"
+
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 
 namespace eckit::maths::lapack {
 

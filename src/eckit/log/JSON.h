@@ -13,15 +13,13 @@
 /// @date   Aug 2011
 
 #pragma once
-#include <sys/time.h>
 #include <ctime>
 #include <iosfwd>
 #include <map>
 #include <set>
 #include <string>
+#include <sys/time.h>
 #include <vector>
-
-#include "eckit/eckit.h"
 
 namespace eckit {
 

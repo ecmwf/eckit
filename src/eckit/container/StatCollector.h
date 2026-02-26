@@ -12,12 +12,12 @@
 // Baudouin Raoult - ECMWF Apr 97
 
 #pragma once
-#include <cstddef>
-#include <iostream>
-
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/BigNum.h"
+
+#include <cstddef>
+#include <iostream>
 
 
 //-----------------------------------------------------------------------------

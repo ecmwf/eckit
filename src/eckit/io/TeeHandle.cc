@@ -9,7 +9,14 @@
  */
 
 #include "eckit/io/TeeHandle.h"
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
+#include "eckit/log/Log.h"
+#include "eckit/serialisation/Streamable.h"
+
+#include <cstddef>
+#include <ostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

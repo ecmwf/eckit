@@ -14,9 +14,8 @@
 
 #pragma once
 #include <iostream>
+#include <string>
 #include <vector>
-
-#include "eckit/cmd/UserInput.h"
 
 namespace eckit {
 

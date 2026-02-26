@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/testing/Test.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 
-#include "eckit/testing/Test.h"
+#include <string>
 
 using namespace eckit;
 using namespace eckit::testing;

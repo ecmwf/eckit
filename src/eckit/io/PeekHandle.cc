@@ -8,12 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-#include <cstring>
+#include "eckit/io/PeekHandle.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/PeekHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <algorithm>
+#include <iterator>
+#include <sstream>
 
 namespace eckit {
 

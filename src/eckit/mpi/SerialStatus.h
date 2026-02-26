@@ -9,15 +9,14 @@
  */
 
 #pragma once
-#include <iosfwd>
-
 #include "eckit/mpi/Status.h"
+
+#include <cstddef>
+#include <iosfwd>
 
 namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Serial;
 
 class SerialStatus : public StatusContent {
     SerialStatus();

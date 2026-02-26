@@ -1,21 +1,16 @@
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/SysLog.h"
 #include "eckit/net/UDPClient.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/utils/Translator.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <ostream>
+#include <string>
 
 //----------------------------------------------------------------------------------------------------------------------
 

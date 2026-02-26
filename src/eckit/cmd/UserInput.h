@@ -13,8 +13,6 @@
 /// @date   Mar 2016
 
 #pragma once
-#include <string>
-#include <vector>
 
 namespace eckit {
 

@@ -12,9 +12,9 @@
 // Baudouin Raoult - ECMWF Jul 96
 
 #pragma once
-#include <sys/time.h>
-#include <ctime>
 #include <iosfwd>
+#include <string>
+#include <sys/time.h>
 
 //-----------------------------------------------------------------------------
 

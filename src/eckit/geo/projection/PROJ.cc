@@ -12,15 +12,14 @@
 
 #include "eckit/geo/projection/PROJ.h"
 
-#include <proj.h>
-
-#include <map>
-#include <set>
-#include <utility>
-
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/spec/Custom.h"
+
+#include <map>
+#include <proj.h>
+#include <set>
+#include <utility>
 
 
 namespace eckit::geo::projection {

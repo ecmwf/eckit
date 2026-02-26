@@ -10,9 +10,12 @@
 
 #include "eckit/sql/expression/SQLExpressionEvaluated.h"
 
-#include <cstring>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <cstring>
+#include <memory>
+#include <ostream>
 
 namespace eckit::sql::expression {
 

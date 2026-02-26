@@ -8,16 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iomanip>
-#include <iostream>
-#include <vector>
+#include "eckit/filesystem/URI.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/URI.h"
 #include "eckit/filesystem/URIManager.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/types/Types.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <cctype>
+#include <cstddef>
+#include <initializer_list>
+#include <iomanip>
+#include <sstream>
+#include <utility>
+#include <vector>
 
 
 namespace eckit {

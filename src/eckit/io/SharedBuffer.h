@@ -13,11 +13,12 @@
 /// @date   July 2017
 
 #pragma once
-#include <iosfwd>
-#include <string>
-
 #include "eckit/io/Buffer.h"
 #include "eckit/memory/Counted.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 

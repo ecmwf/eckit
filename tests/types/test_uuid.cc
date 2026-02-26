@@ -10,9 +10,10 @@
 
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/UUID.h"
 
-#include "eckit/testing/Test.h"
+#include <string>
 
 using namespace std;
 using namespace eckit;

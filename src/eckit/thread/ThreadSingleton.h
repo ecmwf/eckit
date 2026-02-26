@@ -12,9 +12,9 @@
 /// @author Baudouin Raoult
 
 #pragma once
-#include <pthread.h>
-
 #include "eckit/exception/Exceptions.h"
+
+#include <pthread.h>
 
 
 namespace eckit {

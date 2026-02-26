@@ -12,10 +12,6 @@
 // Baudouin Raoult - (c) ECMWF Feb 12
 
 #pragma once
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <cstring>
-
 #include "eckit/container/BTree.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
@@ -23,6 +19,10 @@
 #include "eckit/memory/Padded.h"
 #include "eckit/os/Stat.h"
 #include "eckit/thread/AutoLock.h"
+
+#include <cstring>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 namespace eckit {
 

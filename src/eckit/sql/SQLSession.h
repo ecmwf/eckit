@@ -13,29 +13,22 @@
 /// @date Dec 03
 
 #pragma once
-namespace eckit {
-class PathName;
-}
-namespace eckit {
-class DataHandle;
-}
+#include "eckit/sql/SQLSelectFactory.h"
 
 #include <memory>
-
-#include "eckit/sql/SQLSelectFactory.h"
+#include <ostream>
+#include <string>
+#include <vector>
 // #include "eckit/sql/SQLInsertFactory.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/sql/SQLDatabase.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
+#include "eckit/sql/SQLTable.h"
 
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class SQLOutput;
-class SQLDatabase;
-class SQLStatement;
-class SQLTable;
-class SQLOutputConfig;
 
 class SQLSession {
 public:

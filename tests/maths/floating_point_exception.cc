@@ -9,11 +9,11 @@
  */
 
 
-#include <iostream>
-#include <string>
-
 #include "eckit/maths/FloatingPointExceptions.h"
 #include "eckit/runtime/Main.h"
+
+#include <iostream>
+#include <string>
 
 
 int main(int argc, char** argv) {

@@ -16,10 +16,12 @@
 #include "eckit/types/Date.h"
 #include "eckit/types/Time.h"
 
+#include <ctime>
+#include <iosfwd>
+#include <string>
+
 
 namespace eckit {
-
-class Hash;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -34,7 +36,6 @@ public:
     DateTime(double);
     DateTime(const DateTime& other);
 
-#include "eckit/types/DateTime.b"
 
     ~DateTime() {}
 

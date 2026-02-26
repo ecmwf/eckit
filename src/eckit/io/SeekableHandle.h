@@ -12,10 +12,12 @@
 // Baudouin Raoult - ECMWF May 2020
 
 #pragma once
-#include <memory>
-
-#include "eckit/io/HandleHolder.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/PeekHandle.h"
+
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 

@@ -8,13 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
-#include <fstream>
+#include "eckit/web/AgentResource.h"
 
 #include "eckit/io/Buffer.h"
-#include "eckit/web/AgentResource.h"
+#include "eckit/net/HttpHeader.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/web/JavaAgent.h"
 #include "eckit/web/Url.h"
+
+#include <algorithm>
+#include <cstring>
+#include <fstream>
+#include <iostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

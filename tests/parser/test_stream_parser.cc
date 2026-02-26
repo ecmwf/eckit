@@ -10,8 +10,10 @@
 
 
 #include "eckit/parser/StreamParser.h"
-
 #include "eckit/testing/Test.h"
+
+#include <sstream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

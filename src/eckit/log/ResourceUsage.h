@@ -12,12 +12,12 @@
 // Baudouin Raoult - ECMWF Oct 16
 
 #pragma once
-#include <sys/resource.h>
-#include <sys/time.h>
-
-#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/system/MemoryInfo.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {

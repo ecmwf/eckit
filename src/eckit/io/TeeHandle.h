@@ -13,6 +13,13 @@
 
 #pragma once
 #include "eckit/io/DataHandle.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <iosfwd>
+#include <set>
+#include <string>
+#include <vector>
 
 //-----------------------------------------------------------------------------
 

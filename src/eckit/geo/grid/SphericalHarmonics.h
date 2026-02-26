@@ -14,6 +14,9 @@
 
 #include "eckit/geo/Grid.h"
 
+#include <cstddef>
+#include <string>
+
 
 namespace eckit::geo::grid {
 

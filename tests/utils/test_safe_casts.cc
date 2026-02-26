@@ -14,6 +14,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <string>
 
 using eckit::into_signed;
 using eckit::into_unsigned;

@@ -11,11 +11,7 @@
 // Baudouin Raoult - ECMWF Dec 2013
 
 #pragma once
-#include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/log/Timer.h"
-#include "eckit/types/Types.h"
 
 
 namespace eckit {

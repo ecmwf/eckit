@@ -16,6 +16,9 @@
 #pragma once
 #include "eckit/filesystem/PathName.h"
 
+#include <string>
+#include <vector>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

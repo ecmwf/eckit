@@ -14,18 +14,21 @@
 /// @date May 96
 
 #pragma once
-#include <cstdio>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/TransferWatcher.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/serialisation/Streamable.h"
+
+#include <cstdio>
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
 class MD5;
-class Metrics;
 class MoverTransferSelection;
 
 //----------------------------------------------------------------------------------------------------------------------

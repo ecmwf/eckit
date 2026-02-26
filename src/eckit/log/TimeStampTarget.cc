@@ -8,13 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iomanip>
-#include <iostream>
-
+#include "eckit/log/TimeStampTarget.h"
 
 #include "eckit/log/TimeStamp.h"
-#include "eckit/log/TimeStampTarget.h"
 #include "eckit/runtime/Monitor.h"
+
+#include <iomanip>
+#include <sstream>
+#include <string>
 
 
 namespace eckit {

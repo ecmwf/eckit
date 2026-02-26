@@ -8,10 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <set>
+#include "eckit/thread/StaticMutex.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/thread/StaticMutex.h"
+
+#include <cstdlib>
+#include <iostream>
+#include <iterator>
+#include <set>
 
 namespace eckit {
 

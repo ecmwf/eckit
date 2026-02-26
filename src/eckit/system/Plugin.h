@@ -10,9 +10,9 @@
 
 #pragma once
 
-#include <string>
-
 #include "eckit/system/Library.h"
+
+#include <string>
 
 namespace eckit::system {
 

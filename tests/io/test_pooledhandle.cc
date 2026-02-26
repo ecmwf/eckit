@@ -8,22 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
-
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
-#include "eckit/io/MemoryHandle.h"
-#include "eckit/io/MultiHandle.h"
-#include "eckit/io/PartFileHandle.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/PooledHandle.h"
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
 #include "eckit/testing/Test.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/StringTools.h"
+
+#include <cstring>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

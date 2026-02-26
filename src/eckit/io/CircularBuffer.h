@@ -13,10 +13,10 @@
 /// @date   June 2017
 
 #pragma once
-#include <limits>
-
-#include "eckit/eckit.h"
 #include "eckit/thread/Mutex.h"
+
+#include <cstddef>
+#include <limits>
 
 namespace eckit {
 

@@ -15,6 +15,8 @@
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/RecordItemReader.h"
 
+#include <utility>
+
 namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------

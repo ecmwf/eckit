@@ -9,9 +9,15 @@
  */
 
 #include "eckit/cmd/UpTimeCmd.h"
+
+#include "eckit/cmd/Arg.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/runtime/TaskInfo.h"
+
+#include <ctime>
+#include <ostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

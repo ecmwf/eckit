@@ -15,6 +15,8 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/thread/Mutex.h"
 
+#include <sys/types.h>
+
 
 namespace eckit {
 

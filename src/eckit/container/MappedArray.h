@@ -12,11 +12,11 @@
 // Baudouin Raoult - ECMWF Nov 96
 
 #pragma once
-#include <cstdint>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/os/Semaphore.h"
+
+#include <cstdint>
 
 
 namespace eckit {

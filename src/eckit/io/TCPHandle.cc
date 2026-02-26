@@ -9,8 +9,14 @@
  */
 
 #include "eckit/io/TCPHandle.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
 #include "eckit/io/MoverTransferSelection.h"
 #include "eckit/io/cluster/ClusterNodes.h"
+#include "eckit/io/cluster/NodeInfo.h"
+
+#include <sstream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

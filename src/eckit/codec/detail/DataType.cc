@@ -12,9 +12,10 @@
 
 #include "eckit/codec/detail/DataType.h"
 
-#include <sstream>
-
 #include "eckit/codec/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <sstream>
 
 //------------------------------------------------------------------------------------------------------
 

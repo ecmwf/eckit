@@ -12,6 +12,7 @@
 /// @date Sep 2012
 
 #pragma once
+#include "eckit/log/Channel.h"
 #include "eckit/runtime/Main.h"
 
 namespace eckit {

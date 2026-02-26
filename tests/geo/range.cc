@@ -10,14 +10,19 @@
  */
 
 
-#include <memory>
-#include <utility>
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/types/Fraction.h"
+
+#include <cstddef>
+#include <initializer_list>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 #define EXPECT_APPROX(a, b) EXPECT(::eckit::types::is_approximately_equal<double>((a), (b), 1e-3))

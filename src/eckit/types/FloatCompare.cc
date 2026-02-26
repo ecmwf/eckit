@@ -1,9 +1,8 @@
-#include <sys/types.h>
-#include <cmath>
-#include <limits>
-
-#include "eckit/exception/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <cmath>
+#include <cstdint>
+#include <limits>
 
 namespace eckit::types {
 

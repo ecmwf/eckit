@@ -9,10 +9,9 @@
  */
 
 
-#include "eckit/eckit.h"
-
 #include "eckit/os/System.h"
-#include "eckit/types/Types.h"
+
+#include "eckit/eckit_config.h"
 
 #if eckit_HAVE_DLADDR
 

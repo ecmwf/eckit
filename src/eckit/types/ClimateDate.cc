@@ -8,10 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iomanip>
+#include "eckit/types/ClimateDate.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/types/ClimateDate.h"
+
+#include <iomanip>
+#include <sstream>
 
 namespace eckit {
 

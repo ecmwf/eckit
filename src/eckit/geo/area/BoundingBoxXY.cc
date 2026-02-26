@@ -12,12 +12,16 @@
 
 #include "eckit/geo/area/BoundingBoxXY.h"
 
-#include <memory>
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/PointXY.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <memory>
+#include <variant>
+#include <vector>
 
 
 namespace eckit::geo::area {

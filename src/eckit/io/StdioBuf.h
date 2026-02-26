@@ -13,8 +13,7 @@
 
 #pragma once
 #include <cstdio>
-
-#include "eckit/eckit.h"
+#include <streambuf>
 
 
 //-----------------------------------------------------------------------------

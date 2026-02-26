@@ -13,18 +13,19 @@
 /// @date   Nov 96
 
 #pragma once
-#include <sys/time.h>
-#include <cstddef>
-#include <cstring>
-#include <type_traits>
 
+#include "eckit/log/JSON.h"
 #include "eckit/memory/Padded.h"
 #include "eckit/runtime/TaskID.h"
-#include "eckit/types/Types.h"
+
+#include <cstring>
+#include <iosfwd>
+#include <pthread.h>
+#include <string>
+#include <sys/time.h>
+#include <sys/types.h>
 
 namespace eckit {
-
-class JSON;
 
 //----------------------------------------------------------------------------------------------------------------------
 

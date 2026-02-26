@@ -12,16 +12,25 @@
 
 #include "eckit/geo/Figure.h"
 
-#include <memory>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
+#include "eckit/memory/Factory.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <map>
+#include <memory>
+#include <ostream>
+#include <utility>
 
 
 namespace eckit::geo {

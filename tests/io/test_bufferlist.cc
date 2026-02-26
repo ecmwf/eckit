@@ -1,10 +1,11 @@
 
+#include "eckit/io/Buffer.h"
 #include "eckit/io/BufferList.h"
 #include "eckit/io/Length.h"
 #include "eckit/testing/Test.h"
 
 #include <cstring>
-#include <iomanip>
+#include <string>
 #include <utility>
 
 namespace eckit::test {

@@ -14,10 +14,10 @@
 #pragma once
 #include "eckit/sql/expression/SQLExpressions.h"
 
+#include <iosfwd>
+
 namespace eckit::sql {
 // Forward declarations
-
-class SQLDatabase;
 
 class SQLStatement {
 public:

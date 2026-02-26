@@ -16,6 +16,8 @@
 #pragma once
 #include "eckit/thread/Mutex.h"
 
+#include <cstddef>
+
 
 namespace eckit {
 

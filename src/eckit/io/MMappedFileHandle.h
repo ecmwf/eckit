@@ -12,8 +12,14 @@
 /// @date   May 2020
 
 #pragma once
-#include <memory>
 #include "eckit/io/DataHandle.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <sys/types.h>
 
 
 namespace eckit {

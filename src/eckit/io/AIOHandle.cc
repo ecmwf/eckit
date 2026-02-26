@@ -8,21 +8,26 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
-
-#include <fcntl.h>
-#include <unistd.h>
-#include <climits>
-
-#include <algorithm>
-
-#include "eckit/exception/Exceptions.h"
 #include "eckit/io/AIOHandle.h"
-#include "eckit/log/Log.h"
+
+#include "eckit/eckit_config.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/memory/Zero.h"
 #include "eckit/os/Stat.h"
-#include "eckit/types/Types.h"
+
+#include <algorithm>
+#include <cerrno>
+#include <csignal>
+#include <cstdio>
+#include <cstring>
+#include <fcntl.h>
+#include <iterator>
+#include <sstream>
+#include <unistd.h>
 
 #if eckit_HAVE_AIO
 #include <aio.h>

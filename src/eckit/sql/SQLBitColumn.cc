@@ -9,9 +9,13 @@
  */
 
 #include "eckit/sql/SQLBitColumn.h"
-#include "eckit/eckit.h"
+
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/sql/type/SQLBitfield.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <ostream>
 
 using namespace eckit;
 

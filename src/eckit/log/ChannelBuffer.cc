@@ -8,16 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <ostream>
+#include "eckit/log/ChannelBuffer.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/log/CallbackTarget.h"
-#include "eckit/log/ChannelBuffer.h"
 #include "eckit/log/FileTarget.h"
 #include "eckit/log/IndentTarget.h"
 #include "eckit/log/LogTarget.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/TeeTarget.h"
+
+#include <algorithm>
+#include <ostream>
 
 namespace eckit {
 

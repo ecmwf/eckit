@@ -9,6 +9,8 @@
  */
 
 #include "eckit/cmd/EnvironmentCmd.h"
+
+#include "eckit/cmd/Arg.h"
 #include "eckit/cmd/CmdParser.h"
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -13,8 +13,9 @@
 /// @date Dec 2017
 
 #pragma once
-#include <sys/shm.h>  // for key_t
-#include <iosfwd>
+
+#include <cstddef>
+#include <sys/types.h>
 
 namespace eckit {
 

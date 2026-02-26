@@ -12,10 +12,10 @@
 // Baudouin Raoult - ECMWF Oct 96
 
 #pragma once
+#include "eckit/value/Value.h"
+
 #include <functional>
 #include <memory>
-
-#include "eckit/value/Value.h"
 
 //====================================================================
 

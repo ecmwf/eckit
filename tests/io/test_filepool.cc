@@ -8,19 +8,25 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-#include <cmath>
-#include <cstring>
-#include <thread>
-
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/FilePool.h"
-
+#include "eckit/io/Length.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
+
+#include <algorithm>
+#include <cstring>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <thread>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

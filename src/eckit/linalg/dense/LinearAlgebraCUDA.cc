@@ -11,12 +11,12 @@
 
 #include "eckit/linalg/dense/LinearAlgebraCUDA.h"
 
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
 #include "eckit/linalg/detail/CUDA.h"
+
+#include <ostream>
 
 
 namespace eckit {

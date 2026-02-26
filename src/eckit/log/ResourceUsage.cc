@@ -8,17 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Bytes.h"
 #include "eckit/log/ResourceUsage.h"
-#include "eckit/log/Seconds.h"
 
-#include "eckit/memory/MMap.h"
-#include "eckit/memory/Shmget.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"
+
+#include <iostream>
 
 namespace eckit {
 

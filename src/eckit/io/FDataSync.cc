@@ -10,11 +10,12 @@
 
 #include "FDataSync.h"
 
-#include <sys/errno.h>
-#include <unistd.h>
-
-#include "eckit/eckit.h"
+#include "eckit/eckit_config.h"
 #include "eckit/os/Stat.h"
+
+#include <cerrno>
+#include <sys/stat.h>
+#include <unistd.h>
 
 namespace eckit {
 

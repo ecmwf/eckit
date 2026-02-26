@@ -12,18 +12,20 @@
 // Baudouin Raoult - (c) ECMWF Jul 11
 
 #pragma once
-#include "eckit/eckit.h"
-
 #include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <set>
+#include <string>
+#include <vector>
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class Stream;
-class JSON;
 
 class ClusterNodes {
 public:

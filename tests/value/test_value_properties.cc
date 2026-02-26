@@ -8,16 +8,24 @@
  * does it submit to any jurisdiction.
  */
 
-#include <limits>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/Length.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/serialisation/FileStream.h"
-#include "eckit/types/Date.h"
-#include "eckit/value/Properties.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/Date.h"
+#include "eckit/types/Types.h"
+#include "eckit/value/Content.h"
+#include "eckit/value/Properties.h"
+#include "eckit/value/Value.h"
+
+#include <limits>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

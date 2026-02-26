@@ -11,9 +11,9 @@
 
 #include "eckit/geo/PointXY.h"
 
-#include <cmath>
-
 #include "eckit/types/FloatCompare.h"
+
+#include <cmath>
 
 
 namespace eckit::geo {

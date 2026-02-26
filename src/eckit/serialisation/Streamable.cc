@@ -11,6 +11,8 @@
 
 #include "eckit/serialisation/Streamable.h"
 
+#include "eckit/serialisation/Reanimator.h"
+
 
 //----------------------------------------------------------------------------------------------------------------------
 

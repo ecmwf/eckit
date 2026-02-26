@@ -13,11 +13,13 @@
 /// @date Nov 11
 
 #pragma once
-#include <memory>
-#include <vector>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/expression/SQLExpression.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <memory>
+#include <vector>
 
 namespace eckit::sql::expression {
 

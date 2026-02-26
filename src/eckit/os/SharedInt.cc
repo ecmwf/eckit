@@ -9,11 +9,13 @@
  */
 
 
-#include <sys/sem.h>
+#include "eckit/os/SharedInt.h"
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/os/SharedInt.h"
+
+#include <string>
+#include <sys/sem.h>
 
 
 namespace eckit {

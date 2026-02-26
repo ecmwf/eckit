@@ -15,12 +15,9 @@
 #include <iosfwd>
 #include <vector>
 
-#include "eckit/persist/Bless.h"
-
 namespace eckit {
 //-----------------------------------------------------------------------------
 
-class Bless;
 class DumpLoad;
 class Stream;
 
@@ -50,7 +47,6 @@ public:  // methods
     Length(long long l = 0) : value_(l) {}
     Length(const Length& other) : value_(other.value_) {}
 
-#include "eckit/io/Length.b"
 
 public:  // operators
 

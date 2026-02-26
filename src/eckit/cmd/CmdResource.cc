@@ -8,24 +8,31 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-
-#include <algorithm>
-#include <fstream>
-#include <iomanip>
+#include "eckit/cmd/CmdResource.h"
 
 #include "eckit/cmd/CmdArg.h"
 #include "eckit/cmd/CmdParser.h"
-#include "eckit/cmd/CmdResource.h"
 #include "eckit/cmd/TermBuf.h"
-
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/AutoCloser.h"
 #include "eckit/io/StdPipe.h"
 #include "eckit/io/StdioBuf.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/SignalHandler.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/utils/Tokenizer.h"
+#include "eckit/value/Value.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <exception>
+#include <fstream>
+#include <iomanip>
+#include <unistd.h>
+#include <utility>
 
 // TODO: remember to add a mutex
 

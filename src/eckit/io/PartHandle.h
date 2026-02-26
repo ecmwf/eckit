@@ -12,12 +12,15 @@
 // Baudouin Raoult - ECMWF May 96
 
 #pragma once
-#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/HandleHolder.h"
-
-#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
+
+#include <iosfwd>
 
 //-----------------------------------------------------------------------------
 

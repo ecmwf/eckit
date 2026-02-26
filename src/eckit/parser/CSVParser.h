@@ -13,8 +13,13 @@
 /// @date   Feb 2019
 
 #pragma once
+#include "eckit/filesystem/PathName.h"
 #include "eckit/parser/StreamParser.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 

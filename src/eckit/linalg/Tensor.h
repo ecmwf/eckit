@@ -14,18 +14,18 @@
 
 #pragma once
 
-#include <cstdarg>
-#include <cstddef>
-#include <cstring>
-#include <functional>
-#include <numeric>
-#include <vector>
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/linalg/types.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
+
+#include <cstring>
+#include <functional>
+#include <iterator>
+#include <numeric>
+#include <ostream>
+#include <utility>
+#include <vector>
 
 namespace eckit::linalg {
 

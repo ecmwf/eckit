@@ -14,10 +14,6 @@
 
 #include <string>
 
-namespace eckit {
-class PathName;
-}
-
 namespace eckit::codec {
 
 struct Link {

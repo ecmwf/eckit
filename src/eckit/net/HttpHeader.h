@@ -12,10 +12,13 @@
 /// @author Tiago Quintino
 
 #pragma once
-#include "eckit/eckit.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/MemoryHandle.h"
+
+#include <functional>
+#include <iosfwd>
+#include <map>
+#include <string>
 
 namespace eckit {
 

@@ -10,12 +10,13 @@
 
 #include "eckit/geometry/polygon/LonLatPolygon.h"
 
-#include <cmath>
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/CoordinateHelpers.h"
+#include "eckit/geometry/KPoint.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <cstddef>
+#include <ostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

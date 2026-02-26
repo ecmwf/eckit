@@ -9,7 +9,14 @@
  */
 
 #include "eckit/sql/SQLOrderOutput.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressionEvaluated.h"
+
+#include <memory>
+#include <ostream>
+#include <string>
 
 using namespace eckit::sql::expression;
 

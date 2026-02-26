@@ -1,16 +1,3 @@
-#include <semaphore.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <chrono>
-#include <cmath>  // for ::lround()
-#include <iostream>
-#include <limits>
-#include <memory>
-#include <thread>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
@@ -18,6 +5,18 @@
 #include "eckit/os/SharedInt.h"
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/runtime/Tool.h"
+
+#include <chrono>
+#include <cmath>  // for ::lround()
+#include <iostream>
+#include <limits>
+#include <memory>
+#include <semaphore.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <sys/types.h>
+#include <thread>
+#include <unistd.h>
 
 using namespace eckit;
 

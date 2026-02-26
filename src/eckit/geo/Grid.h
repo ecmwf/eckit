@@ -12,29 +12,24 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
+#include "eckit/spec/Spec.h"
 
-
-namespace eckit {
-class JSON;
-namespace geo {
-class Area;
-}
-}  // namespace eckit
+#include <cstddef>
+#include <iosfwd>
+#include <iterator>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 namespace eckit::geo {

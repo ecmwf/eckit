@@ -11,9 +11,9 @@
 #pragma once
 #include "eckit/utils/Compressor.h"
 
-namespace eckit {
+#include <cstddef>
 
-class Buffer;
+namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 

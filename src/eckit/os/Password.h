@@ -14,8 +14,6 @@
 #pragma once
 #include <string>
 
-#include "eckit/eckit.h"
-
 //-----------------------------------------------------------------------------
 
 namespace eckit {

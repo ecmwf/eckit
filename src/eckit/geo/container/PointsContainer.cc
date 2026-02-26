@@ -12,7 +12,9 @@
 
 #include "eckit/geo/container/PointsContainer.h"
 
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
+
+#include <variant>
 
 
 namespace eckit::geo::util {

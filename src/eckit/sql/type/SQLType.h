@@ -12,6 +12,8 @@
 // Baudouin Raoult - ECMWF Dec 03
 
 #pragma once
+#include <cstddef>
+#include <ios>
 #include <string>
 
 namespace eckit::sql {

@@ -10,11 +10,12 @@
  */
 
 
-#include <cmath>
-
 #include "eckit/geo/PointXY.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <cmath>
+#include <string>
 
 
 namespace eckit::geo::test {

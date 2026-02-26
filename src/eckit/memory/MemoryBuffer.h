@@ -13,9 +13,8 @@
 /// @date   July 1996
 
 #pragma once
+#include <cstddef>
 #include <string>
-
-#include "eckit/eckit.h"
 
 namespace eckit {
 

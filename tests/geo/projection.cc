@@ -10,14 +10,21 @@
  */
 
 
-#include <memory>
-
 #include "eckit/geo/Projection.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"  // to test Reverse
 #include "eckit/geo/projection/Reverse.h"
+#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+
+#include <memory>
+#include <string>
 
 
 namespace eckit::geo::test {

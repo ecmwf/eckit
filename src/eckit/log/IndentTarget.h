@@ -12,10 +12,11 @@
 /// @author Baudouin Raoult
 
 #pragma once
-#include <iosfwd>
-#include <utility>
-
+#include "eckit/log/LogTarget.h"
 #include "eckit/log/PrefixTarget.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 

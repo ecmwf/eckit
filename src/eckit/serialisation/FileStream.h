@@ -18,6 +18,9 @@
 #include "eckit/io/StdFile.h"
 #include "eckit/serialisation/Stream.h"
 
+#include <iosfwd>
+#include <string>
+
 
 namespace eckit {
 

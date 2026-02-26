@@ -13,12 +13,12 @@
 /// @date   June 2017
 
 #pragma once
-#include "eckit/eckit.h"
-
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -26,7 +26,6 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class URI;
-class DataHandle;
 
 class URIManager {
 public:

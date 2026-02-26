@@ -8,20 +8,26 @@
  * does it submit to any jurisdiction.
  */
 
-#include <memory>
-#include <string>
-
+#include "eckit/container/sptree/SPValue.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/Search.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/option/VectorOption.h"
 #include "eckit/spec/Custom.h"
+
+#include <cstddef>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <vector>
 
 //----------------------------------------------------------------------------------------------------------------------
 

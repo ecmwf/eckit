@@ -9,10 +9,15 @@
  */
 
 #include "eckit/value/Properties.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Params.h"
+
+#include <ostream>
+#include <utility>
 
 namespace eckit {
 

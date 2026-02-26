@@ -10,16 +10,22 @@
  */
 
 
+#include "eckit/spec/Custom.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Exceptions.h"
+#include "eckit/spec/Spec.h"
+#include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+
 #include <algorithm>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <type_traits>
-
-#include "eckit/geo/Exceptions.h"
-#include "eckit/parser/YAMLParser.h"
-#include "eckit/spec/Custom.h"
-#include "eckit/testing/Test.h"
-#include "eckit/types/FloatCompare.h"
+#include <utility>
+#include <vector>
 
 
 namespace eckit::spec::test {

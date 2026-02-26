@@ -18,6 +18,9 @@
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Task.h"
 
+#include <ctime>
+#include <string>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -13,15 +13,14 @@
 /// @date   Dec 1997
 
 #pragma once
-#include <string>
+#include "eckit/persist/DumpLoad.h"
 
-#include "eckit/persist/Bless.h"
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class DumpLoad;
 
 class Double {
 public:
@@ -29,7 +28,6 @@ public:
     Double(double = 0);
     Double(const std::string&);
 
-#include "eckit/types/Double.b"
 
     ~Double() {}
 

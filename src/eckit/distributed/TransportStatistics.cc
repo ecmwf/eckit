@@ -9,7 +9,10 @@
  */
 
 #include "eckit/distributed/TransportStatistics.h"
+
 #include "eckit/serialisation/Stream.h"
+
+#include <ostream>
 
 
 namespace eckit::distributed {

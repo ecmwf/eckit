@@ -13,10 +13,10 @@
 #include "eckit/mpi/DataType.h"
 #include "eckit/mpi/Request.h"
 
-namespace eckit::mpi {
+#include <cstddef>
+#include <iosfwd>
 
-class SerialRequestPool;
-class Serial;
+namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
 

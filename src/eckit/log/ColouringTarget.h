@@ -14,11 +14,12 @@
 /// @date   August 2016
 
 #pragma once
+#include "eckit/log/Colour.h"
+#include "eckit/log/LogTarget.h"
+#include "eckit/log/WrapperTarget.h"
+
 #include <iosfwd>
 #include <string>
-
-#include "eckit/log/Colour.h"
-#include "eckit/log/WrapperTarget.h"
 
 namespace eckit {
 

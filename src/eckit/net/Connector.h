@@ -13,11 +13,16 @@
 /// @date   Jun 2011
 
 #pragma once
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/BufferCache.h"
-#include "eckit/io/Length.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <ctime>
+#include <iosfwd>
+#include <map>
+#include <string>
 
 namespace eckit::net {
 

@@ -9,11 +9,13 @@
  */
 
 
-#include <algorithm>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/maths/Matrix3.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <algorithm>
+#include <string>
 
 
 namespace eckit::test {

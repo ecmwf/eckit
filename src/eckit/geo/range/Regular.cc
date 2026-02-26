@@ -12,13 +12,13 @@
 
 #include "eckit/geo/range/Regular.h"
 
-#include <algorithm>
-
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <algorithm>
 
 
 namespace eckit::geo::range {

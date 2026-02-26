@@ -16,12 +16,9 @@
 
 #include "eckit/log/SysLog.h"
 #include "eckit/log/TCPTarget.h"
+#include "eckit/net/TCPSocket.h"
 
 namespace eckit {
-
-namespace net {
-class TCPSocket;
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 

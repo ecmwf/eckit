@@ -12,6 +12,8 @@
 // Baudouin Raoult - ECMWF Jun 96
 
 #pragma once
+#include "eckit/runtime/TaskID.h"  // to be removed
+
 #include <array>
 #include <cstddef>
 #include <iostream>
@@ -20,8 +22,6 @@
 #include <set>
 #include <utility>
 #include <vector>
-
-#include "eckit/runtime/TaskID.h"  // to be removed
 
 namespace eckit {
 

@@ -17,6 +17,9 @@
 #pragma once
 #include "eckit/web/HttpResource.h"
 
+#include <iosfwd>
+#include <string>
+
 
 namespace eckit {
 

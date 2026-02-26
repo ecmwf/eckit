@@ -12,10 +12,15 @@
 
 #include "eckit/geo/iterator/Regular.h"
 
-#include <memory>
-
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/PointXY.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Regular.h"
+
+#include <memory>
+#include <string>
 
 
 namespace eckit::geo::iterator {

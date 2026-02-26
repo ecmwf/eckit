@@ -9,12 +9,12 @@
  */
 
 #pragma once
-#include <netinet/in.h>
-
-#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/net/SocketOptions.h"
-#include "eckit/utils/Hash.h"
+
+#include <iosfwd>
+#include <netinet/in.h>
+#include <string>
 
 namespace eckit::net {
 

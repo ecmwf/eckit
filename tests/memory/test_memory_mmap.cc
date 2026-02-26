@@ -8,24 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <cerrno>
+#include "eckit/log/Bytes.h"
+#include "eckit/memory/MMap.h"
+#include "eckit/testing/Test.h"
 
-#include <cassert>
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
-
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/memory/MMap.h"
-
-#include "eckit/testing/Test.h"
+#include <string>
+#include <sys/mman.h>
+#include <unistd.h>
 
 using namespace std;
 using namespace eckit;

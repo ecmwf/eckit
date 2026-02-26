@@ -8,12 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <csignal>
+#include "eckit/os/AutoAlarm.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/os/AutoAlarm.h"
+
+#include <csignal>
+#include <ostream>
+#include <string>
+#include <unistd.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 

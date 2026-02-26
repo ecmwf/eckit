@@ -19,11 +19,15 @@
 #include <codecvt>
 #endif /* eckit_HAVE_UNICODE */
 
-#include <locale>
-
 #include "eckit/parser/ObjectParser.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/Value.h"
+
+#include <cctype>
+#include <cstdint>
+#include <locale>
+#include <map>
+#include <sstream>
 
 namespace eckit {
 

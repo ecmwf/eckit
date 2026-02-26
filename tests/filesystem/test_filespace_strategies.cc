@@ -12,17 +12,25 @@
 /// PathNameFactory. No real filesystem state is accessed, so the tests
 /// are fully deterministic.
 
-#include <map>
-#include <set>
-#include <string>
-#include <vector>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/BasePathName.h"
 #include "eckit/filesystem/FileSpaceStrategies.h"
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathNameFactory.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/testing/Test.h"
+
+#include <ctime>
+#include <map>
+#include <ostream>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace eckit;
 using namespace eckit::testing;

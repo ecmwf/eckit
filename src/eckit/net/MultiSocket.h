@@ -9,16 +9,17 @@
  */
 
 #pragma once
+#include "eckit/io/Select.h"
+
+#include <cstddef>
+#include <iosfwd>
 #include <netinet/in.h>
 #include <string>
 #include <vector>
 
-#include "eckit/io/Select.h"
-
 namespace eckit::net {
 
 class TCPServer;
-class TCPSocket;
 
 class MultiSocket {
 public:

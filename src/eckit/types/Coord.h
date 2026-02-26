@@ -11,17 +11,16 @@
 // Claude  Gibert - ECMWF Dec 97
 
 #pragma once
+#include "eckit/persist/DumpLoad.h"
+#include "eckit/serialisation/Stream.h"
+
 #include <iosfwd>
 #include <vector>
-
-#include "eckit/serialisation/Stream.h"
 
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class DumpLoad;
 
 class Coord {
 public:

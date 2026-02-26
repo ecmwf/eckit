@@ -36,11 +36,11 @@
  * BLAS or LAPACK have been found.
  */
 
-#include <cmath>
-#include <cstring>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/maths/Lapack.h"
+
+#include <cmath>
+#include <cstring>
 
 #ifdef minor
 #undef minor

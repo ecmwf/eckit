@@ -12,17 +12,16 @@
 
 #pragma once
 
-#include <cstdint>
-#include <iosfwd>
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/detail/Link.h"
+#include "eckit/codec/detail/TypeTraits.h"
+#include "eckit/codec/detail/sfinae.h"
+
+#include <cstddef>
 #include <memory>
 #include <string>
-
-#include "eckit/codec/Data.h"
-#include "eckit/codec/RecordItem.h"
-#include "eckit/codec/detail/DataInfo.h"
-#include "eckit/codec/detail/Link.h"
-#include "eckit/codec/detail/Reference.h"
-#include "eckit/codec/detail/TypeTraits.h"
+#include <utility>
 
 namespace eckit::codec {
 

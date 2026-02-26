@@ -12,8 +12,8 @@
 // Baudouin Raoult - ECMWF Jan 98
 
 #pragma once
+#include <iosfwd>
 #include <regex.h>
-
 #include <string>
 #include <string_view>
 

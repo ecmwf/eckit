@@ -12,10 +12,10 @@
 /// @date   June 2017
 
 #pragma once
+#include "eckit/types/Types.h"
+
 #include <iosfwd>
 #include <string>
-
-#include "eckit/types/Types.h"
 
 namespace eckit {
 

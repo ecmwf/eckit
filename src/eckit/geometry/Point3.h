@@ -2,6 +2,9 @@
 #pragma once
 #include "eckit/geometry/KPoint.h"
 
+#include <cassert>
+#include <cstddef>
+
 //------------------------------------------------------------------------------------------------------
 
 namespace eckit::geometry {

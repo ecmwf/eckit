@@ -15,6 +15,11 @@
 
 #pragma once
 #include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace eckit::sql::expression {
 

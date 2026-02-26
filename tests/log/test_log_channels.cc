@@ -8,29 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cassert>
+#include "eckit/config/LibEcKit.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/LogTarget.h"
+#include "eckit/log/WrapperTarget.h"
+#include "eckit/os/BackTrace.h"
+#include "eckit/testing/Test.h"
+
 #include <csignal>
-#include <cstdlib>
+#include <cstdio>
 #include <fstream>
 #include <iostream>
+#include <iterator>
 #include <locale>
-#include <map>
 #include <sstream>
-#include <vector>
-
-#include "eckit/config/LibEcKit.h"
-#include "eckit/filesystem/LocalPathName.h"
-#include "eckit/os/BackTrace.h"
-#include "eckit/runtime/Tool.h"
-
-#include "eckit/log/CallbackTarget.h"
-#include "eckit/log/Channel.h"
-#include "eckit/log/ColouringTarget.h"
-#include "eckit/log/FileTarget.h"
-#include "eckit/log/OStreamTarget.h"
-#include "eckit/log/WrapperTarget.h"
-
-#include "eckit/testing/Test.h"
+#include <string>
 
 using namespace std;
 using namespace eckit;

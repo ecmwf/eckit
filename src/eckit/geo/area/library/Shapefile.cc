@@ -12,11 +12,6 @@
 
 #include "eckit/geo/area/library/Shapefile.h"
 
-#include <algorithm>
-#include <memory>
-#include <ostream>
-#include <vector>
-
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/area/Polygon.h"
@@ -26,6 +21,11 @@
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
+
+#include <algorithm>
+#include <memory>
+#include <ostream>
+#include <vector>
 
 
 namespace eckit::geo::area::library {

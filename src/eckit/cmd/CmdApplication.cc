@@ -12,16 +12,25 @@
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#include <unistd.h>
-#include <fstream>
-
 #include "eckit/cmd/CmdApplication.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/SockBuf.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/net/TCPServer.h"
+#include "eckit/net/TCPSocket.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/types/Types.h"
+
+#include <exception>
+#include <fstream>
+#include <iostream>
+#include <unistd.h>
+#include <vector>
 
 namespace eckit {
 

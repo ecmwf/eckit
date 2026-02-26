@@ -12,9 +12,9 @@
 /// @author Tiago Quintino
 
 #pragma once
-#include <iosfwd>
-
 #include "eckit/memory/Counted.h"
+
+#include <iosfwd>
 
 namespace eckit {
 

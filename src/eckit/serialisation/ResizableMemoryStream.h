@@ -12,11 +12,13 @@
 /// @date   Feb 2019
 
 #pragma once
+#include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
 
-namespace eckit {
+#include <cstddef>
+#include <string>
 
-class Buffer;
+namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 

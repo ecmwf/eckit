@@ -10,17 +10,23 @@
 
 #include "eckit/mpi/Comm.h"
 
-#include <algorithm>
-#include <map>
-
-#include "eckit/eckit_config.h"
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <algorithm>
+#include <cstdlib>
+#include <functional>
+#include <map>
+#include <ostream>
+#include <utility>
 
 namespace eckit::mpi {
 

@@ -10,10 +10,11 @@
 
 #include "eckit/spec/Layered.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/JSON.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Exceptions.h"
-#include "eckit/value/Value.h"
 
 
 namespace eckit::spec {

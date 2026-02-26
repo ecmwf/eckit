@@ -13,16 +13,12 @@
 /// @date   May 2015
 
 #pragma once
-#include <sys/stat.h>
-
-#include <memory>
-#include <string>
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathExpander.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/FileLock.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/AutoUmask.h"
 #include "eckit/os/Semaphore.h"
@@ -31,11 +27,17 @@
 #include "eckit/utils/MD5.h"
 #include "eckit/utils/Tokenizer.h"
 
+#include <ctime>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <sys/stat.h>
+#include <vector>
+
 namespace eckit {
 
 template <class K, class V, int S, class L>
 class BTree;
-
 class BTreeLock;
 
 //----------------------------------------------------------------------------------------------------------------------

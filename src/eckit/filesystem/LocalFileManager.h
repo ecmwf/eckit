@@ -14,6 +14,10 @@
 
 #pragma once
 #include "eckit/filesystem/URIManager.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+
+#include <string>
 
 namespace eckit {
 

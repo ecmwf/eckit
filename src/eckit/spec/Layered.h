@@ -11,11 +11,15 @@
 
 #pragma once
 
-#include <algorithm>
-#include <memory>
-#include <unordered_set>
-
 #include "eckit/spec/Spec.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <unordered_set>
+#include <vector>
 
 
 namespace eckit::spec {

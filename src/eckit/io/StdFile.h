@@ -13,14 +13,13 @@
 /// @date   June 96
 
 #pragma once
-#include <cstdio>
-
 #include "eckit/filesystem/PathName.h"
+
+#include <cstdio>
+#include <string>
 
 
 namespace eckit {
-
-class PathName;
 
 /// Wrapper around a stdio FILE*
 /// Use this for class members

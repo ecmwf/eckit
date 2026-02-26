@@ -15,6 +15,9 @@
 #pragma once
 #include "eckit/cmd/CmdParser.h"
 
+#include <iosfwd>
+#include <string>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

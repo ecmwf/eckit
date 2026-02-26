@@ -10,6 +10,7 @@
 
 
 #include "eckit/web/JavaService.h"
+
 #include "eckit/web/JavaUser.h"
 
 

@@ -15,6 +15,9 @@
 #pragma once
 #include "eckit/io/DataHandle.h"
 
+#include <iosfwd>
+#include <string>
+
 
 namespace eckit {
 

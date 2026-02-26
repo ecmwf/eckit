@@ -11,10 +11,11 @@
 #include "eckit/sql/SQLOutputConfig.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLSimpleOutput.h"
 
-#include "eckit/os/BackTrace.h"
+#include <iostream>
 
 namespace eckit::sql {
 

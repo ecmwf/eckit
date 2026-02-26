@@ -9,8 +9,11 @@
  */
 
 #include "eckit/exception/Exceptions.h"
-
+#include "eckit/log/CodeLocation.h"
 #include "eckit/testing/Test.h"
+
+#include <iostream>
+#include <string>
 
 namespace eckit::test {
 

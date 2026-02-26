@@ -12,11 +12,11 @@
 /// @date   Jun 2020
 
 #pragma once
+#include "eckit/io/Buffer.h"
+
 #include <iosfwd>
 #include <optional>
-
-#include "eckit/io/Buffer.h"
-#include "eckit/utils/EnumBitmask.h"
+#include <string>
 
 namespace eckit::message {
 

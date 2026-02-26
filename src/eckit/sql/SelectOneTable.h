@@ -13,16 +13,18 @@
 /// @date   Dec 2003
 
 #pragma once
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+
+#include <functional>
+#include <utility>
+#include <vector>
 
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SQLColumn;
-
-// Forward declarations
-class SQLTableIterator;
 
 struct SelectOneTable {
     SelectOneTable(const SQLTable* table = nullptr);

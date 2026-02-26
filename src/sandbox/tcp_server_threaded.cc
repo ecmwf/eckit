@@ -8,9 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <sstream>
-
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/io/TCPSocketHandle.h"
@@ -25,6 +22,9 @@
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+
+#include <sstream>
+#include <unistd.h>
 
 
 using namespace eckit;

@@ -9,10 +9,14 @@
  */
 
 #include "eckit/web/FileResource.h"
+
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/StdFile.h"
 #include "eckit/web/HttpStream.h"
 #include "eckit/web/Url.h"
+
+#include <cstdio>
+#include <ostream>
 
 
 namespace eckit {

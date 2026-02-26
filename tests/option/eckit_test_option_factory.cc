@@ -10,8 +10,13 @@
 
 
 #include "eckit/option/FactoryOption.h"
-
+#include "eckit/option/Option.h"
 #include "eckit/testing/Test.h"
+
+#include <map>
+#include <sstream>
+#include <string>
+#include <utility>
 
 using namespace std;
 using namespace eckit;

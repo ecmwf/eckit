@@ -12,7 +12,7 @@
 
 #include "eckit/codec/detail/Encoder.h"
 
-#include "eckit/codec/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit::codec {
 

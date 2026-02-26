@@ -10,12 +10,17 @@
 
 #include "eckit/distributed/Transport.h"
 
-#include <map>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+
+#include <map>
+#include <ostream>
+#include <pthread.h>
+#include <utility>
 
 
 namespace eckit::distributed {

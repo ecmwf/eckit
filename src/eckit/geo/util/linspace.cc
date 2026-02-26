@@ -10,12 +10,16 @@
  */
 
 
-#include <algorithm>
-#include <vector>
-
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <initializer_list>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 namespace eckit::geo::util {

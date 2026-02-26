@@ -13,9 +13,10 @@
 #include "eckit/codec/print/Bytes.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <iomanip>
-#include <iostream>
 #include <sstream>
+#include <utility>
 #include <vector>
 
 namespace eckit::codec {

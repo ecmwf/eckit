@@ -12,12 +12,11 @@
 // Baudouin Raoult - (c) ECMWF Jul 11
 
 #pragma once
-#include <cstdint>
+#include "eckit/io/Buffer.h"
+
 #include <cstring>
 #include <ctime>
 #include <iosfwd>
-
-#include "eckit/io/Buffer.h"
 
 
 namespace eckit {

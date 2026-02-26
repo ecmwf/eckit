@@ -13,9 +13,11 @@
 /// @date   June 2019
 
 #pragma once
-#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
+
+#include <cstddef>
+#include <iosfwd>
 
 
 namespace eckit {

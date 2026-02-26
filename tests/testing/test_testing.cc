@@ -9,12 +9,21 @@
  */
 
 #include <algorithm>
-
-#include "eckit/types/FloatCompare.h"
-#include "eckit/value/Value.h"
+#include <cstdlib>
+#include <exception>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 #define ECKIT_TESTING_SELF_REGISTER_CASES 0
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Colour.h"
+#include "eckit/log/Log.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
 
 // Disable warnings for old-style casts in these tests. They are intentional
 #ifdef __clang__

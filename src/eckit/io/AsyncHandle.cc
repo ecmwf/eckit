@@ -9,14 +9,20 @@
  */
 
 
-#include <cstring>
-
+#include "eckit/io/AsyncHandle.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/AsyncHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
+
+#include <cstring>
+#include <exception>
+#include <sstream>
 
 
 namespace eckit {

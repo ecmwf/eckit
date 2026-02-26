@@ -15,6 +15,8 @@
 #pragma once
 #include "eckit/exception/Exceptions.h"
 
+#include <string>
+
 namespace eckit {
 
 class BadTag : public eckit::Exception {

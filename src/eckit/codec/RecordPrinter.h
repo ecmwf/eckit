@@ -12,15 +12,18 @@
 
 #pragma once
 
-#include <cstdint>
-#include <iosfwd>
-#include <string>
-
 #include "eckit/codec/Record.h"
 #include "eckit/codec/Session.h"
 #include "eckit/codec/detail/NoConfig.h"
+#include "eckit/codec/detail/Time.h"
+#include "eckit/codec/detail/Version.h"
 #include "eckit/config/Configuration.h"
 #include "eckit/filesystem/PathName.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <iosfwd>
+#include <string>
 
 namespace eckit::codec {
 

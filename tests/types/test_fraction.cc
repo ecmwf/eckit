@@ -8,16 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-#include <limits>
-#include <utility>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
 
-#include "eckit/testing/Test.h"
+#include <cmath>
+#include <exception>
+#include <initializer_list>
+#include <limits>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit::test {
 

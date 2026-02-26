@@ -9,16 +9,19 @@
  */
 
 
-#include <numeric>
-
-#include "eckit/io/cluster/NodeInfo.h"
-#include "eckit/log/Log.h"
-
-#include "eckit/exception/Exceptions.h"
 #include "eckit/io/PartFileHandle.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/MoverTransferSelection.h"
 #include "eckit/io/PooledHandle.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+
+#include <algorithm>
+#include <numeric>
+#include <sstream>
+#include <sys/types.h>
+#include <vector>
 
 namespace eckit {
 

@@ -16,6 +16,8 @@
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/types/array/ArrayMetadata.h"
 
+#include <cstddef>
+
 namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------

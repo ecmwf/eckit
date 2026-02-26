@@ -13,7 +13,10 @@
 
 #pragma once
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Offset.h"
 #include "eckit/net/TCPSocket.h"
+
+#include <iosfwd>
 
 //-----------------------------------------------------------------------------
 

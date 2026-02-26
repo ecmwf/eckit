@@ -15,6 +15,10 @@
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
 
+#include <cstddef>
+#include <map>
+#include <string>
+
 namespace eckit::sql::type {
 
 class SQLBitfield : public SQLType {

@@ -9,11 +9,9 @@
  */
 
 #pragma once
-#include <bitset>
-
-#include "eckit/eckit.h"
 
 
+#include <cstddef>
 //-----------------------------------------------------------------------------
 
 namespace eckit {

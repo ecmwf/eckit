@@ -9,9 +9,11 @@
  */
 
 
-#include <iomanip>
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 #include "eckit/types/Time.h"
+
+#include <string>
 
 using namespace std;
 using namespace eckit;

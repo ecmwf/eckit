@@ -10,6 +10,7 @@
 
 
 #include "eckit/net/Telnetable.h"
+
 #include "eckit/net/Telnet.h"
 
 namespace eckit::net {

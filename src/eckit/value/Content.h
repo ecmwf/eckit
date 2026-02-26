@@ -12,12 +12,16 @@
 // Manuel Fuentes - ECMWF Jun 96
 
 #pragma once
+#include "eckit/memory/Counted.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/serialisation/Streamable.h"
+
+#include <cstddef>
+#include <iosfwd>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "eckit/memory/Counted.h"
-#include "eckit/serialisation/Streamable.h"
 
 
 namespace eckit {

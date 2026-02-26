@@ -13,14 +13,16 @@
 /// @date   Sep 96
 
 #pragma once
-#include "eckit/persist/Bless.h"
+
+#include "eckit/persist/DumpLoad.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
 //--------------------------------------------------------------------------------------------------
 
-class DumpLoad;
-class Bless;
 class Hash;
 
 class Date {
@@ -44,7 +46,6 @@ public:
     Date(const std::string&);
     Date(long, long);
 
-#include "eckit/types/Date.b"
 
     // -- Copy
 

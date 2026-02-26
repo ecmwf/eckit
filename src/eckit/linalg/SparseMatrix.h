@@ -15,13 +15,14 @@
 
 #pragma once
 
+#include "eckit/linalg/Triplet.h"
+#include "eckit/linalg/types.h"
+
+#include <cstddef>
 #include <iosfwd>
 #include <memory>
 #include <type_traits>
 #include <vector>
-
-#include "eckit/linalg/Triplet.h"
-#include "eckit/linalg/types.h"
 
 
 namespace eckit {

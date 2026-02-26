@@ -11,11 +11,11 @@
 #pragma once
 /// @author Tiago Quintino
 
+#include "eckit/exception/Exceptions.h"
+
 #include <algorithm>
 #include <deque>
 #include <utility>
-
-#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 

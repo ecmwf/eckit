@@ -12,8 +12,15 @@
 
 #pragma once
 
+#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/grid/Regular.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/types/Fraction.h"
+
+#include <array>
+#include <cstddef>
+#include <string>
 
 
 namespace eckit::geo::grid::regular {

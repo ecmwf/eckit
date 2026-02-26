@@ -12,12 +12,12 @@
 /// @author Tiago Quintino
 /// @author Olivier Iffrig
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/JSON.h"
+
 #include <algorithm>
 #include <utility>
 #include <vector>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/JSON.h"
 
 
 namespace eckit {

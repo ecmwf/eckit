@@ -10,7 +10,10 @@
 
 
 #include "eckit/os/SignalHandler.h"
-#include "eckit/log/Log.h"
+
+#include "eckit/exception/Exceptions.h"
+
+#include <string>
 
 
 namespace eckit {

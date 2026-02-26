@@ -10,8 +10,13 @@
 
 
 #include "eckit/net/NetUser.h"
+
 #include "eckit/io/SockBuf.h"
+#include "eckit/log/Log.h"
 #include "eckit/net/TCPStream.h"
+
+#include <istream>
+#include <string>
 
 namespace eckit::net {
 

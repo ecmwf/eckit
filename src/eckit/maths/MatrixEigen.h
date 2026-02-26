@@ -14,9 +14,8 @@
 #error Include "eckit/maths/Matrix.h" instead of "eckit/maths/MatrixEigen.h"
 #endif
 
-#include "eckit/maths/Eigen.h"
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/maths/Eigen.h"
 
 namespace eckit {
 

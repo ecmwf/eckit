@@ -12,17 +12,18 @@
 /// @date   Jun 2020
 
 #pragma once
-#include <iosfwd>
-#include <vector>
-
 #include "eckit/io/Buffer.h"
+#include "eckit/io/Offset.h"
 #include "eckit/message/Decoder.h"
 #include "eckit/types/Types.h"
 
+#include <cstddef>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 namespace eckit {
 class DataHandle;
-class Offset;
-class PathName;
 };  // namespace eckit
 
 namespace eckit {
@@ -34,7 +35,6 @@ class MarsRequest;
 namespace message {
 
 class MessageContent;
-class CodesContent;
 
 //----------------------------------------------------------------------------------------------------------------------
 

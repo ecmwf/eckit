@@ -16,6 +16,10 @@
 #pragma once
 #include "eckit/filesystem/PathName.h"
 
+#include <ctime>
+#include <string>
+#include <vector>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------

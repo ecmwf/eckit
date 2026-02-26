@@ -12,11 +12,15 @@
 
 #include "eckit/codec/FileStream.h"
 #include "eckit/codec/Session.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/codec/Stream.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/PooledHandle.h"
-
 #include "eckit/testing/Test.h"
+
+#include <memory>
+#include <string>
 
 
 namespace eckit::test {

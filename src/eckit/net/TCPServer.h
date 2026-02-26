@@ -13,8 +13,12 @@
 /// @date   Jun 96
 
 #pragma once
+#include "eckit/net/SocketOptions.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Mutex.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit::net {
 

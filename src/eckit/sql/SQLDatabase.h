@@ -14,12 +14,18 @@
 /// @date Dec 2003
 
 #pragma once
-#include <map>
-#include <memory>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/SchemaAnalyzer.h"
+
+#include <functional>
+#include <map>
+#include <memory>
+#include <ostream>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit::sql {
 
@@ -27,7 +33,6 @@ namespace eckit::sql {
 
 // Forward declarations
 
-class SQLStatement;
 namespace expression {
 class SQLExpression;
 }

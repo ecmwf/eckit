@@ -15,14 +15,14 @@
 
 #pragma once
 
+#include "eckit/distributed/TransportStatistics.h"
+
+#include <cstddef>
 #include <iosfwd>
 #include <string>
 
-#include "eckit/distributed/TransportStatistics.h"
-
 
 namespace eckit::option {
-class Option;
 class CmdArgs;
 }  // namespace eckit::option
 

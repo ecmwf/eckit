@@ -12,8 +12,15 @@
 
 #pragma once
 
+#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointLonLatR.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/util/sincos.h"
+
+#include <string>
+#include <variant>
 
 
 namespace eckit::geo::projection {

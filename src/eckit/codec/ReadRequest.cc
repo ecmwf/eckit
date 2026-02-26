@@ -12,11 +12,19 @@
 
 #include "eckit/codec/ReadRequest.h"
 
+#include "eckit/codec/Data.h"
 #include "eckit/codec/Exceptions.h"
+#include "eckit/codec/Metadata.h"
 #include "eckit/codec/RecordItemReader.h"
 #include "eckit/codec/detail/Checksum.h"
+#include "eckit/codec/detail/DataInfo.h"
 #include "eckit/codec/detail/Defaults.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
+
+#include <sstream>
+#include <utility>
 
 namespace eckit::codec {
 

@@ -12,10 +12,9 @@
 /// @author Tiago Quintino
 
 #pragma once
-#include <iosfwd>
-#include <utility>
-
 #include "eckit/log/LineBasedTarget.h"
+
+#include <iosfwd>
 
 namespace eckit {
 

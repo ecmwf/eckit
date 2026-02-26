@@ -13,14 +13,18 @@
 #include "eckit/geo/Search.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Iterator.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/Trace.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/log/ResourceUsage.h"
 #include "eckit/thread/AutoLock.h"
+
+#include <string>
+#include <variant>
 
 
 namespace eckit::geo {

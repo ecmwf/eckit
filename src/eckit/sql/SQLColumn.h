@@ -12,16 +12,18 @@
 // Baudouin Raoult - ECMWF Dec 03
 
 #pragma once
-namespace eckit {
-class PathName;
-}
-
 #include "eckit/sql/SQLIterator.h"
 #include "eckit/sql/SQLTypedefs.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace eckit::sql {
 
-class SQLBitColumn;
 class SQLTable;
 
 class SQLColumn : public SQLIterator {

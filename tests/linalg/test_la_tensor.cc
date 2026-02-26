@@ -8,12 +8,20 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <numeric>
-
-#include "eckit/config/Resource.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
+#include "eckit/linalg/Tensor.h"
+#include "eckit/linalg/types.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/testing/Test.h"
+
 #include "util.h"
+
+#include <cstddef>
+#include <string>
+#include <utility>
+#include <vector>
 
 using eckit::linalg::TensorDouble;
 using eckit::linalg::TensorFloat;

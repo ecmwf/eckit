@@ -9,7 +9,11 @@
  */
 
 #include "eckit/cmd/ExportCmd.h"
+
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/cmd/CmdParser.h"
+#include "eckit/value/Value.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -10,6 +10,7 @@
 
 
 #include "eckit/sql/type/SQLInt.h"
+
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/utils/Translator.h"
 

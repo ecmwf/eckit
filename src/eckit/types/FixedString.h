@@ -13,13 +13,12 @@
 /// @date   Feb 12
 
 #pragma once
-#include <cstring>
-
-#include <algorithm>
-#include <string>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/Zero.h"
+
+#include <algorithm>
+#include <cstring>
+#include <string>
 
 namespace eckit {
 

@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include <string>
-
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
+
+#include <string>
 
 
 namespace eckit {

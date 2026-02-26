@@ -11,10 +11,13 @@
 #include "eckit/message/Reader.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/io/BufferedHandle.h"
 #include "eckit/message/Message.h"
 #include "eckit/message/Splitter.h"
+
+#include <cstddef>
+#include <ostream>
+#include <string>
 
 namespace {
 

@@ -11,6 +11,8 @@
 #include "eckit/container/BloomFilter.h"
 #include "eckit/testing/Test.h"
 
+#include <string>
+
 using namespace std;
 using namespace eckit;
 using namespace eckit::testing;

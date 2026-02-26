@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-#include <cstring>
+#include "eckit/io/SeekableHandle.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/SeekableHandle.h"
+#include "eckit/io/Length.h"
+
+#include <ostream>
 
 namespace eckit {
 

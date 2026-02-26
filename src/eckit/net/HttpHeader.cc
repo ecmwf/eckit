@@ -10,10 +10,20 @@
 
 
 #include "eckit/net/HttpHeader.h"
+
+#include "eckit/io/Length.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <strings.h>
+#include <utility>
+#include <vector>
 
 
 namespace eckit {

@@ -9,9 +9,11 @@
  */
 
 #pragma once
-#include "eckit/eckit.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit::distributed {

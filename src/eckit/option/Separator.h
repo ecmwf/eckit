@@ -13,9 +13,11 @@
 /// @date Apr 2015
 
 #pragma once
-#include <iosfwd>
-
 #include "eckit/option/Option.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 namespace eckit::option {
 

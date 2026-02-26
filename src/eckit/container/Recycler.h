@@ -12,17 +12,16 @@
 // Baudouin Raoult - ECMWF Apr 97
 
 #pragma once
-#include <fcntl.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include "eckit/eckit.h"
-
 #include "eckit/container/Recycler.h"
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/types/Types.h"
+
+#include <fcntl.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 //-----------------------------------------------------------------------------
 

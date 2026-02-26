@@ -10,13 +10,14 @@
  */
 
 
+#include "eckit/exception/Exceptions.h"
+
 #include <algorithm>
+#include <cstddef>
 #include <iterator>
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-#include "eckit/geo/Exceptions.h"
 
 
 namespace eckit::geo::util {

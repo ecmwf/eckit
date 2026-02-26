@@ -12,12 +12,13 @@
 
 #include "eckit/codec/Data.h"
 
-#include <memory>
-
-#include "eckit/codec/Exceptions.h"
 #include "eckit/codec/Stream.h"
 #include "eckit/codec/detail/Checksum.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Compressor.h"
+
+#include <memory>
+#include <utility>
 
 namespace eckit::codec {
 

@@ -14,9 +14,12 @@
 /// @date May 1996
 
 #pragma once
-#include "eckit/deprecated.h"
 #include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/UserChannel.h"
+
+#include <ostream>
+#include <string>
 
 namespace eckit {
 

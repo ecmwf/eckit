@@ -12,9 +12,9 @@
 /// @date   June 2017
 
 #pragma once
-#include <map>
-
 #include "eckit/io/MemoryHandle.h"
+
+#include <map>
 
 namespace eckit {
 

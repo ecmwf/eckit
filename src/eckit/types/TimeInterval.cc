@@ -10,7 +10,11 @@
 
 
 #include "eckit/types/TimeInterval.h"
+
 #include "eckit/types/DateTime.h"
+
+#include <algorithm>
+#include <ostream>
 
 
 //----------------------------------------------------------------------------------------------------------------------

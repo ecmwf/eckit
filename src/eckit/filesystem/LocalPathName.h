@@ -19,15 +19,18 @@
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 
+#include <ctime>
+#include <ostream>
+#include <string>
+#include <vector>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Length;
 class DataHandle;
 class BasePathName;
 class PathName;
-
 struct FileSystemSize;
 
 /// LocalPathName represents a UNIX path

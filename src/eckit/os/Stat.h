@@ -9,11 +9,11 @@
  */
 
 #pragma once
+#include "eckit/eckit.h"
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include "eckit/eckit.h"
 
 namespace eckit {
 

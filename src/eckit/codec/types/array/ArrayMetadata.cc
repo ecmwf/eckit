@@ -12,11 +12,12 @@
 
 #include "eckit/codec/types/array/ArrayMetadata.h"
 
-#include <algorithm>
+#include "eckit/codec/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
 #include <functional>
 #include <numeric>
-
-#include "eckit/codec/Exceptions.h"
 
 namespace eckit::codec {
 

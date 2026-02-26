@@ -11,9 +11,9 @@
 
 #include "eckit/linalg/allocator/BufferAllocator.h"
 
-#include <ostream>
-
 #include "eckit/log/Bytes.h"
+
+#include <ostream>
 
 
 namespace eckit::linalg::allocator {

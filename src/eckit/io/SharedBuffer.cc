@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <ostream>
+#include "eckit/io/SharedBuffer.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/SharedBuffer.h"
+
+#include <ostream>
 
 namespace eckit {
 

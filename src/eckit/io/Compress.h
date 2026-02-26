@@ -9,11 +9,11 @@
  */
 
 #pragma once
+#include "eckit/io/BitIO.h"
+
 #include <cstddef>
 
 namespace eckit {
-
-class DataHandle;
 
 //-----------------------------------------------------------------------------
 

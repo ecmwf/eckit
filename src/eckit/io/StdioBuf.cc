@@ -9,8 +9,6 @@
  */
 
 
-#include <iomanip>
-
 #include "eckit/io/StdioBuf.h"
 
 

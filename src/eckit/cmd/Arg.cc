@@ -10,6 +10,7 @@
 
 #include "eckit/cmd/Arg.h"
 
+#include <cstddef>
 #include <iostream>
 
 namespace eckit {

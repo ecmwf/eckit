@@ -13,11 +13,15 @@
 
 #pragma once
 #include "eckit/container/CacheLRU.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/thread/MutexCond.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <map>
 
 namespace eckit {
 class DataHandle;
-class PathName;
 }  // namespace eckit
 
 namespace eckit {

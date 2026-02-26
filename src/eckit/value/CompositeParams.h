@@ -13,7 +13,10 @@
 /// @date March 2015
 
 #pragma once
+#include "eckit/serialisation/Stream.h"
 #include "eckit/value/Params.h"
+
+#include <iosfwd>
 
 //----------------------------------------------------------------------------
 

@@ -8,13 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <cerrno>
-
-#include <iostream>
+#include "eckit/log/Colour.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/log/Colour.h"
+
+#include <cerrno>
+#include <iostream>
+#include <string>
+#include <unistd.h>
 
 
 namespace eckit {

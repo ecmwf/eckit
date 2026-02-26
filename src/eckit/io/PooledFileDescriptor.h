@@ -12,10 +12,12 @@
 /// @date   Oct 2019
 
 #pragma once
-#include <memory>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/PooledFile.h"
+
+#include <cstddef>
+#include <memory>
+#include <sys/types.h>
 
 
 namespace eckit {

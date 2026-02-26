@@ -9,6 +9,7 @@
  */
 
 #include "eckit/io/rados/RadosReadHandle.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/MultiHandle.h"
 #include "eckit/io/rados/RadosAttributes.h"

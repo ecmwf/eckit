@@ -11,9 +11,9 @@
 
 #include "eckit/linalg/allocator/NonOwningAllocator.h"
 
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
+
+#include <ostream>
 
 
 namespace eckit::linalg::allocator {

@@ -12,8 +12,6 @@
 // Baudouin Raoult - ECMWF Jul 96
 
 #pragma once
-#include "eckit/eckit.h"
-
 #include "eckit/container/ClassExtent.h"
 
 //-----------------------------------------------------------------------------

@@ -12,12 +12,17 @@
 // Baudouin Raoult - ECMWF Dec 17
 
 #pragma once
-#include <deque>
-
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/HandleHolder.h"
 #include "eckit/thread/MutexCond.h"
 #include "eckit/thread/ThreadControler.h"
+
+#include <cstddef>
+#include <deque>
+#include <iosfwd>
+#include <string>
+#include <utility>
 
 
 namespace eckit {

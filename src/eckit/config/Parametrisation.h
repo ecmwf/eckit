@@ -13,6 +13,7 @@
 /// @date Apr 2015
 
 #pragma once
+#include <cstddef>
 #include <string>
 #include <vector>
 

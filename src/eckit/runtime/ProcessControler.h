@@ -16,6 +16,8 @@
 #include "eckit/container/ClassExtent.h"
 #include "eckit/runtime/Task.h"
 
+#include <sys/types.h>
+
 
 namespace eckit {
 

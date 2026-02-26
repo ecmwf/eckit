@@ -8,19 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/runtime/Application.h"
+
+#include <cstring>
 #include <fcntl.h>
 #include <semaphore.h>
+#include <string>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cstring>
-
-#include <string>
-
-#include "eckit/config/Resource.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/runtime/Application.h"
 
 
 using namespace eckit;

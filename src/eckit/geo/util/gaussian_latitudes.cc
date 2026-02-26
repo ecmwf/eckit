@@ -83,6 +83,14 @@ const std::vector<double>& gaussian_latitudes(size_t N, bool increasing) {
                 fp -= zzfn[i] * std::sin(i2 * x) * i2;
             }
 
+            // ECKIT-674
+            // The value of fp will never be zero, but a compiler optimization which applies vectorization may cause a
+            // divide-by-zero interrupt in an iteration past the convergence criteria.
+            // By guarding against a division by zero here, we disable that optimization.
+            if (fp == 0.) {
+                throw BadValue("Cannot divide by 'fp' equal to zero!", Here());
+            }
+
             auto dx = -f / fp;
             x += dx;
 

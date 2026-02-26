@@ -17,6 +17,7 @@
 #define eckit_Time_h
 
 #include <cstdint>
+#include <functional>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/persist/Bless.h"
@@ -124,5 +125,12 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
+
+template <>
+struct std::hash<eckit::Time> {
+    std::size_t operator()(const eckit::Time& t) const noexcept {
+        return std::hash<long>{}(t.hhmmss());
+    }
+};
 
 #endif

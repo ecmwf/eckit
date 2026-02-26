@@ -18,6 +18,7 @@
 
 #include "eckit/types/Date.h"
 #include "eckit/types/Time.h"
+#include "eckit/utils/HashCombine.h"
 
 
 namespace eckit {
@@ -97,5 +98,14 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
+
+template <>
+struct std::hash<eckit::DateTime> {
+    std::size_t operator()(const eckit::DateTime& dt) const noexcept {
+        std::size_t seed = std::hash<eckit::Date>{}(dt.date());
+        eckit::hash_combine(seed, std::hash<eckit::Time>{}(dt.time()));
+        return seed;
+    }
+};
 
 #endif

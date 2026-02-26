@@ -682,6 +682,7 @@ list( APPEND eckit_utils_srcs
     utils/EnumBitmask.h
     utils/Hash.cc
     utils/Hash.h
+    utils/HashCombine.h
     utils/HyperCube.cc
     utils/HyperCube.h
     utils/Literals.h

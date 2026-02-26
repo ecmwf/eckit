@@ -4,4 +4,3 @@ sphinx-copybutton
 sphinx-tabs
 sphinxcontrib-mermaid
 breathe
-six

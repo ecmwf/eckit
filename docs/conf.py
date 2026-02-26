@@ -58,7 +58,7 @@ extensions = [
     "breathe",
     "sphinx.ext.autosectionlabel",
     "sphinxcontrib.mermaid",
-    "sphinx.ext.viewcode",
+    "sphinx_copybutton",
 ]
 
 # Add any paths that contain templates here, relative to this directory.

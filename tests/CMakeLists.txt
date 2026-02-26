@@ -40,3 +40,5 @@ endif()
 if( eckit_HAVE_EXPERIMENTAL )
     add_subdirectory( experimental )
 endif()
+
+add_subdirectory( headers )

@@ -266,6 +266,12 @@ ecbuild_add_option( FEATURE HIP
                     DESCRIPTION "HIP GPU linear algebra operations"
                     REQUIRED_PACKAGES hip hipsparse )
 
+### Self-contained header compilation test
+
+ecbuild_add_option( FEATURE TEST_SELF_CONTAINED_HEADERS
+                    DEFAULT OFF
+                    DESCRIPTION "Test that each public header compiles standalone" )
+
 ### Performance tests
 
 ecbuild_add_option( FEATURE EXTRA_TESTS

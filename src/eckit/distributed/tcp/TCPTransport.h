@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_TCPTransport_H
-#define eckit_TCPTransport_H
-
+#pragma once
 #include <memory>
 #include <vector>
 
@@ -100,5 +98,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::distributed
-
-#endif

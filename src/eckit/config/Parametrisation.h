@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-#ifndef eckit_config_Parametrisation_H
-#define eckit_config_Parametrisation_H
-
+#pragma once
 #include <string>
 #include <vector>
 
@@ -52,5 +50,3 @@ public:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,9 +11,7 @@
 // File AgentResource.h
 // Baudouin Raoult - ECMWF Sep 97
 
-#ifndef AgentResource_H
-#define AgentResource_H
-
+#pragma once
 #include "eckit/web/HtmlResource.h"
 
 //-----------------------------------------------------------------------------
@@ -42,5 +40,3 @@ protected:  // overridden methods
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

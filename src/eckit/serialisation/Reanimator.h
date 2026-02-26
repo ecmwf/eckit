@@ -11,9 +11,7 @@
 // File Reanimator.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eckit_Reanimator_h
-#define eckit_Reanimator_h
-
+#pragma once
 #include "eckit/serialisation/Stream.h"
 
 
@@ -106,5 +104,3 @@ public:
 }  // namespace eckit
 
 #include "eckit/serialisation/Reanimator.cc"
-
-#endif

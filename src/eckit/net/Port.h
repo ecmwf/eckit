@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Jul 96
 
-#ifndef eckit_net_Port_h
-#define eckit_net_Port_h
-
+#pragma once
 #include <string>
 
 namespace eckit::net {
@@ -32,5 +30,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

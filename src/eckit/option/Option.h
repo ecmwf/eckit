@@ -12,10 +12,7 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
-#ifndef Option_H
-#define Option_H
-
+#pragma once
 #include <iosfwd>
 #include <optional>
 #include <string>
@@ -115,5 +112,3 @@ private:
 
 
 }  // namespace eckit::option
-
-#endif

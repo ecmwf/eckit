@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Dec 2017
 
-#ifndef eckit_memory_MMap_h
-#define eckit_memory_MMap_h
-
+#pragma once
 #include <iosfwd>
 
 
@@ -34,5 +32,3 @@ public:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

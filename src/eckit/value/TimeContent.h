@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   Jun 1997
 
-#ifndef eckit_TimeContent_h
-#define eckit_TimeContent_h
-
+#pragma once
 #include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
 
@@ -115,5 +113,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

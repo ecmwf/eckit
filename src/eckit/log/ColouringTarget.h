@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#ifndef eckit_log_ColouringTarget_h
-#define eckit_log_ColouringTarget_h
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -51,5 +49,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

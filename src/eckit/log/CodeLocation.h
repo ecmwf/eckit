@@ -10,9 +10,7 @@
 
 /// @author Tiago Quintino
 
-#ifndef eckit_log_CodeLocation_h
-#define eckit_log_CodeLocation_h
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -69,5 +67,3 @@ protected:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

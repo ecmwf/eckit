@@ -8,10 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_OnlyMovable_h
-#define eckit_OnlyMovable_h
-
-
+#pragma once
 namespace eckit {
 
 /// Inherit from this class to make a OnlyMovable class
@@ -34,5 +31,3 @@ protected:
 };
 
 }  // namespace eckit
-
-#endif

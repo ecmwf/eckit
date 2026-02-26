@@ -11,9 +11,7 @@
 // File io/PipeHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_filesystem_PipeHandle_h
-#define eckit_filesystem_PipeHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 
 //-----------------------------------------------------------------------------
@@ -94,5 +92,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

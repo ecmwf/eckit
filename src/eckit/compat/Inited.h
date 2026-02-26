@@ -8,10 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-
-#ifndef eckit_Inited_h
-#define eckit_Inited_h
-
+#pragma once
 #include "eckit/types/Types.h"
 
 namespace eckit {
@@ -57,5 +54,3 @@ inline Inited<Ordinal>& Inited<Ordinal>::operator-=(const Inited<Ordinal>& other
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

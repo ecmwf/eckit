@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KPoint_H
-#define KPoint_H
-
+#pragma once
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -281,5 +279,3 @@ const size_t KPoint<SIZE>::DIMS;
 //------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
-
-#endif

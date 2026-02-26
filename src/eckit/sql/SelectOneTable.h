@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// @date   Dec 2003
 
-#ifndef eckit_sql_SelectOneTable_H
-#define eckit_sql_SelectOneTable_H
-
+#pragma once
 #include "eckit/sql/expression/SQLExpressions.h"
 
 namespace eckit::sql {
@@ -65,5 +63,3 @@ using SortedTables = std::vector<SelectOneTable*>;
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

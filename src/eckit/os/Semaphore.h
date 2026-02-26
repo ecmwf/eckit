@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   May 1996
 
-#ifndef eckit_os_Semaphore_h
-#define eckit_os_Semaphore_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/thread/Mutex.h"
 
@@ -63,5 +61,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -7,9 +7,8 @@
  * granted to it by virtue of its status as an intergovernmental organisation nor
  * does it submit to any jurisdiction.
  */
-#ifndef eckit_mpi_SerialData_h
-#define eckit_mpi_SerialData_h
 
+#pragma once
 #include <complex>
 #include "eckit/mpi/DataType.h"
 
@@ -47,5 +46,3 @@ static size_t dataSize[Data::MAX_DATA_CODE] = {
 };
 
 }  // namespace eckit::mpi
-
-#endif

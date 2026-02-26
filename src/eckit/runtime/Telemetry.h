@@ -11,9 +11,7 @@
 /// @author Tiago Quintino
 /// @date   Jan 2020
 
-#ifndef eckit_runtime_Telemetry_h
-#define eckit_runtime_Telemetry_h
-
+#pragma once
 #include <functional>
 #include <string>
 
@@ -68,5 +66,3 @@ public:
 
 }  // namespace runtime
 }  // namespace eckit
-
-#endif

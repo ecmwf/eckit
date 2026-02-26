@@ -11,9 +11,7 @@
 // File io/TCPSocketHandle.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_filesystem_TCPSocketHandle_h
-#define eckit_filesystem_TCPSocketHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/net/TCPSocket.h"
 
@@ -98,5 +96,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

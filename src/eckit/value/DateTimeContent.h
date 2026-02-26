@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @author Manuel Fuentes
 
-#ifndef eckit_DateTimeContent_h
-#define eckit_DateTimeContent_h
-
+#pragma once
 #include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
 
@@ -112,5 +110,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

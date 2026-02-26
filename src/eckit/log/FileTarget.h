@@ -10,9 +10,7 @@
 
 /// @author Tiago Quintino
 
-#ifndef eckit_log_FileTarget_h
-#define eckit_log_FileTarget_h
-
+#pragma once
 #include <fstream>
 
 #include "eckit/filesystem/PathName.h"
@@ -46,5 +44,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

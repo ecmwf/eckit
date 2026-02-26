@@ -11,9 +11,7 @@
 // File ClimateDate.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eckit_ClimateDate_h
-#define eckit_ClimateDate_h
-
+#pragma once
 #include "eckit/persist/Bless.h"
 #include "eckit/types/Date.h"
 
@@ -87,6 +85,3 @@ private:
 //--------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

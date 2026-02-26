@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Buffer_h
-#define eckit_mpi_Buffer_h
-
+#pragma once
 #include <cstddef>
 #include <vector>
 
@@ -43,5 +41,3 @@ struct Buffer {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

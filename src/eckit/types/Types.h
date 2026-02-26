@@ -11,9 +11,7 @@
 // File Types.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eckit_Types_h
-#define eckit_Types_h
-
+#pragma once
 #include <array>
 #include <cstddef>
 #include <iostream>
@@ -241,5 +239,3 @@ Stream& operator>>(Stream&, std::map<K, V>&);
 }  // namespace eckit
 
 #include "eckit/types/Types.cc"
-
-#endif

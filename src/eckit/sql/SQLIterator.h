@@ -11,9 +11,7 @@
 // File SQLIterator
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLIterator_H
-#define SQLIterator_H
-
+#pragma once
 #include "eckit/sql/type/SQLType.h"
 
 #include <functional>
@@ -66,5 +64,3 @@ private:
 
 }  // namespace sql
 }  // namespace eckit
-
-#endif

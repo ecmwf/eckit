@@ -11,9 +11,7 @@
 /// \File FunctionRLIKE.h
 /// Piotr Kuchta - ECMWF Sep 2014
 
-#ifndef FunctionRLIKE_H
-#define FunctionRLIKE_H
-
+#pragma once
 #include <memory>
 
 #include "eckit/sql/expression/function/FunctionExpression.h"
@@ -54,5 +52,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

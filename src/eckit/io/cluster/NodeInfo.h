@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_io_NodeInfo_h
-#define eckit_io_NodeInfo_h
-
+#pragma once
 #include "eckit/runtime/TaskID.h"
 #include "eckit/types/Types.h"
 
@@ -99,5 +97,3 @@ inline unsigned long version(NodeInfo*) {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

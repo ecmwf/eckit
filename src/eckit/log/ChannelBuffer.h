@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#ifndef eckit_log_ChannelBuffer_h
-#define eckit_log_ChannelBuffer_h
-
+#pragma once
 #include <streambuf>
 #include <vector>
 
@@ -96,5 +94,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_system_ResourceUsage_H
-#define eckit_system_ResourceUsage_H
-
+#pragma once
 #include <sys/resource.h>
 #include <cstddef>
 #include <iosfwd>
@@ -51,5 +49,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::system
-
-#endif

@@ -11,9 +11,7 @@
 // File RLE.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eckit_RLE_h
-#define eckit_RLE_h
-
+#pragma once
 #include <chrono>
 #include <iosfwd>
 
@@ -68,5 +66,3 @@ Stream& RLEDIFFread(Stream&, OutputIterator, T*);
 }  // namespace eckit
 
 #include "eckit/utils/RLE.cc"
-
-#endif

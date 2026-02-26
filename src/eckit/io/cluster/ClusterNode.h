@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_ClusterNode_h
-#define eckit_ClusterNode_h
-
+#pragma once
 #include <set>
 #include <string>
 
@@ -47,5 +45,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

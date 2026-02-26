@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date May 96
 
-#ifndef eckit_Mutex_h
-#define eckit_Mutex_h
-
+#pragma once
 #include <pthread.h>
 
 namespace eckit {
@@ -52,5 +50,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

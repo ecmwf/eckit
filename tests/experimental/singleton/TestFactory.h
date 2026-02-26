@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef TestFactory_h
-#define TestFactory_h
-
+#pragma once
 #include <iostream>
 #include <memory>
 #include <string>
@@ -47,5 +45,3 @@ public:
         TestFactory::instance().regist(name, new T());
     }
 };
-
-#endif /* TestFactory_h */

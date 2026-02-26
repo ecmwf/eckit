@@ -8,9 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
-#ifndef eckit_cmd_CmdArg_H
-#define eckit_cmd_CmdArg_H
-
+#pragma once
 #include "eckit/config/Resource.h"
 #include "eckit/serialisation/Streamable.h"
 #include "eckit/value/Value.h"
@@ -115,5 +113,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

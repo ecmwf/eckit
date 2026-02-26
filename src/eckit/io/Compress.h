@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_Compress_h
-#define eckit_Compress_h
-
+#pragma once
 #include <cstddef>
 
 namespace eckit {
@@ -37,5 +35,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

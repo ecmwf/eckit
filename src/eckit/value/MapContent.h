@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_MapContent_h
-#define eckit_MapContent_h
-
+#pragma once
 #include "eckit/value/Value.h"
 
 namespace eckit {
@@ -116,5 +114,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

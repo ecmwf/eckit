@@ -13,9 +13,7 @@
 ///
 /// @date   May 96
 
-#ifndef eckit_serialisation_FileStream_h
-#define eckit_serialisation_FileStream_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/StdFile.h"
 #include "eckit/serialisation/Stream.h"
@@ -56,5 +54,3 @@ protected:  // methods
 };
 
 }  // namespace eckit
-
-#endif

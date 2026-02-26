@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_persist_Bless_h
-#define eckit_persist_Bless_h
-
+#pragma once
 #include "eckit/persist/Isa.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -159,5 +157,3 @@ void _export(eckit::Exporter& s, const char* name, const T& what) {
 }  // namespace eckit
 
 void* operator new(size_t, void* addr, eckit::Evolve&);
-
-#endif

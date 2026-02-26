@@ -11,9 +11,7 @@
 // File MoverTransfer.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eckit_MoverTransfer_h
-#define eckit_MoverTransfer_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 
@@ -110,5 +108,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   Aug 2011
 
-#ifndef eckit_EtcTable_h
-#define eckit_EtcTable_h
-
+#pragma once
 #include <string>
 #include <vector>
 
@@ -89,5 +87,3 @@ public:
 
 
 }  // namespace eckit
-
-#endif

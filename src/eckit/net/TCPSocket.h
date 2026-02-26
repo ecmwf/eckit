@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_net_TCPSocket_h
-#define eckit_net_TCPSocket_h
-
+#pragma once
 #include <netinet/in.h>
 
 #include "eckit/eckit.h"
@@ -149,5 +147,3 @@ private:  // methods
 std::ostream& operator<<(std::ostream&, in_addr);
 
 }  // namespace eckit::net
-
-#endif

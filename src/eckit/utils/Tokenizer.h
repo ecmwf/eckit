@@ -12,9 +12,7 @@
 /// @author Manuel Fuentes
 /// @author Tiago Quintino
 
-#ifndef eckit_Tokenizer_h
-#define eckit_Tokenizer_h
-
+#pragma once
 #include <set>
 #include <string>
 #include <vector>
@@ -94,5 +92,3 @@ inline std::vector<std::string> Tokenizer::split_at(const std::string& s, char s
 //---------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

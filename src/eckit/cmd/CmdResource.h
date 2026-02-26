@@ -8,9 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
-#ifndef eckit_cmd_CmdResource_H
-#define eckit_cmd_CmdResource_H
-
+#pragma once
 #include "eckit/cmd/Arg.h"
 #include "eckit/cmd/CmdArg.h"
 #include "eckit/eckit.h"
@@ -82,5 +80,3 @@ private:  // friends
 
 
 }  // namespace eckit
-
-#endif

@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_ThreadPool_h
-#define eckit_ThreadPool_h
-
+#pragma once
 #include <list>
 #include <string>
 
@@ -93,5 +91,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

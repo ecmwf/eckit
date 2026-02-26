@@ -10,9 +10,7 @@
 
 /// @author Baudouin Raoult
 
-#ifndef eckit_web_HttpResource_H
-#define eckit_web_HttpResource_H
-
+#pragma once
 #include <string>
 
 #include "eckit/web/HtmlObject.h"
@@ -56,5 +54,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

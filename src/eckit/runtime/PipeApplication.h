@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @author Florian Rathgeber
 
-#ifndef eckit_PipeApplication_h
-#define eckit_PipeApplication_h
-
+#pragma once
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Application.h"
 
@@ -57,5 +55,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,9 +12,7 @@
 // Baudouin Raoult - ECMWF Mar 98
 // Piotr Kuchta - ECMWF Mar 2012
 
-#ifndef eckit_sql_SQLParser_H
-#define eckit_sql_SQLParser_H
-
+#pragma once
 #include <stack>
 
 #include "SQLOutputConfig.h"
@@ -70,5 +68,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

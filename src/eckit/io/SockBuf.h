@@ -11,9 +11,7 @@
 // File SockBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eckit_SockBuf_h
-#define eckit_SockBuf_h
-
+#pragma once
 #include "eckit/net/TCPSocket.h"
 
 
@@ -56,5 +54,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

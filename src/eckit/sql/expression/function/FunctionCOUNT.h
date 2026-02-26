@@ -11,9 +11,7 @@
 // File FunctionCOUNT.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef FunctionCOUNT_H
-#define FunctionCOUNT_H
-
+#pragma once
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit::sql::expression::function {
@@ -53,5 +51,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

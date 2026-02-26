@@ -11,9 +11,7 @@
 // File Timer.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_Timer_h
-#define eckit_Timer_h
-
+#pragma once
 #include <sys/time.h>
 #include <ctime>
 
@@ -85,5 +83,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

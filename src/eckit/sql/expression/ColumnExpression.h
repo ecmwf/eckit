@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// @date Dec 2003
 
-#ifndef eckit_sql_ColumnExpression_H
-#define eckit_sql_ColumnExpression_H
-
+#pragma once
 #include "eckit/sql/expression/SQLExpression.h"
 
 namespace eckit::sql {
@@ -94,5 +92,3 @@ private:
 
 }  // namespace expression
 }  // namespace eckit::sql
-
-#endif

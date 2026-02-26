@@ -11,9 +11,7 @@
 // File Partio/FileHandle.h
 // Baudouin Raoult - ECMWF Decembre 2013
 
-#ifndef eckit_filesystem_StatsHandle_h
-#define eckit_filesystem_StatsHandle_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/HandleHolder.h"
@@ -115,5 +113,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

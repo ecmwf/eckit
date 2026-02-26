@@ -11,10 +11,7 @@
 /// @author Tiago Quintino
 /// @date Dec 2015
 
-
-#ifndef eckit_io_FilePool_h
-#define eckit_io_FilePool_h
-
+#pragma once
 #include "eckit/container/CacheLRU.h"
 #include "eckit/thread/MutexCond.h"
 
@@ -96,5 +93,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

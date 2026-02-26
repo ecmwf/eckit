@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Jul 1996
 
-#ifndef eckit_log_Bytes_h
-#define eckit_log_Bytes_h
-
+#pragma once
 #include "eckit/utils/Literals.h"
 
 #include <iosfwd>
@@ -106,6 +104,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

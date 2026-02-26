@@ -11,9 +11,7 @@
 /// @author Tiago Quintino
 /// @date   Dec 2018
 
-#ifndef eckit_io_FDataSync_h
-#define eckit_io_FDataSync_h
-
+#pragma once
 namespace eckit {
 
 /// An fsync that retries when interrupted by system
@@ -23,5 +21,3 @@ int fsync(int fd);
 int fdatasync(int fd);
 
 }  // namespace eckit
-
-#endif

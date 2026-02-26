@@ -11,9 +11,7 @@
 /// @file IndentTarget.h
 /// @author Baudouin Raoult
 
-#ifndef eckit_log_IndentTarget_h
-#define eckit_log_IndentTarget_h
-
+#pragma once
 #include <iosfwd>
 #include <utility>
 
@@ -36,5 +34,3 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

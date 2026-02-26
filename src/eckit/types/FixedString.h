@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Feb 12
 
-#ifndef eckit_types_FixedString_h
-#define eckit_types_FixedString_h
-
+#pragma once
 #include <cstring>
 
 #include <algorithm>
@@ -166,5 +164,3 @@ FixedString<SIZE>::operator std::string() const {
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

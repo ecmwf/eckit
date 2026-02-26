@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   June 2017
 
-#ifndef eckit_filesystem_URI_h
-#define eckit_filesystem_URI_h
-
+#pragma once
 #include <map>
 
 #include "eckit/eckit.h"
@@ -132,5 +130,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

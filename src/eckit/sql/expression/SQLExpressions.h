@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// @date Nov 11
 
-#ifndef eckit_api_Expressions_H
-#define eckit_api_Expressions_H
-
+#pragma once
 #include <memory>
 #include <vector>
 
@@ -87,5 +85,3 @@ using VectorOfExpressions = std::vector<Expressions>;
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql::expression
-
-#endif

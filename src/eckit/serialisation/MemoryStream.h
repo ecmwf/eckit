@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Apr 16
 
-#ifndef eckit_serialisation_MemoryStream_H
-#define eckit_serialisation_MemoryStream_H
-
+#pragma once
 #include "eckit/serialisation/Stream.h"
 
 namespace eckit {
@@ -52,6 +50,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

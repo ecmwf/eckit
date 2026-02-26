@@ -8,10 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef SPMetadata_H
-#define SPMetadata_H
-
-
+#pragma once
 namespace eckit {
 
 template <class Traits>
@@ -25,6 +22,3 @@ struct SPMetadata {
 
 
 }  // namespace eckit
-
-
-#endif

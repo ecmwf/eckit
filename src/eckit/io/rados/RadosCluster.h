@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosCluster_h
-#define eckit_io_rados_RadosCluster_h
-
+#pragma once
 #include <iostream>
 #include <map>
 #include <memory>
@@ -105,5 +103,3 @@ static inline int rados_call(int code, const char* msg, const char* file, int li
 
 
 }  // namespace eckit
-
-#endif

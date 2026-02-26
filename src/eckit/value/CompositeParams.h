@@ -12,9 +12,7 @@
 /// @author Florian Rathgeber
 /// @date March 2015
 
-#ifndef eckit_value_CompositeParams_H
-#define eckit_value_CompositeParams_H
-
+#pragma once
 #include "eckit/value/Params.h"
 
 //----------------------------------------------------------------------------
@@ -59,5 +57,3 @@ private:  // members
 //----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

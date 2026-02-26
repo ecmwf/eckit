@@ -11,9 +11,7 @@
 /// \file FunctionROWNUMBER.h
 /// Piotr Kuchta - (C) ECMWF July 2009
 
-#ifndef FunctionROWNUMBER_H
-#define FunctionROWNUMBER_H
-
+#pragma once
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
 namespace eckit::sql::expression::function {
@@ -57,5 +55,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   May 1996
 
-#ifndef eckit_io_FileHandle_h
-#define eckit_io_FileHandle_h
-
+#pragma once
 #include <memory>
 
 #include "eckit/io/Buffer.h"
@@ -98,5 +96,3 @@ private:  // methods
 };
 
 }  // namespace eckit
-
-#endif

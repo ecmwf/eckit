@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_RendezvousHash_H
-#define eckit_utils_RendezvousHash_H
-
+#pragma once
 #include <map>
 #include <string>
 #include <vector>
@@ -90,5 +88,3 @@ private:  // types
 
 
 }  // end namespace eckit
-
-#endif

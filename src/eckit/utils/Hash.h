@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_Hash_H
-#define eckit_utils_Hash_H
-
+#pragma once
 #include "eckit/eckit.h"
 
 #include <cstdint>
@@ -164,5 +162,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
-
-#endif

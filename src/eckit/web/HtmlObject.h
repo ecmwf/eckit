@@ -11,9 +11,7 @@
 // File HtmlObject.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef HtmlObject_H
-#define HtmlObject_H
-
+#pragma once
 #include "eckit/persist/Bless.h"
 
 
@@ -64,5 +62,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

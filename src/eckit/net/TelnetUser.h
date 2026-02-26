@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_net_TelnetUser_h
-#define eckit_net_TelnetUser_h
-
+#pragma once
 #include "eckit/net/NetUser.h"
 
 namespace eckit::net {
@@ -29,5 +27,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_filesystem_MemoryHandle_h
-#define eckit_filesystem_MemoryHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 
 namespace eckit {
@@ -84,6 +82,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

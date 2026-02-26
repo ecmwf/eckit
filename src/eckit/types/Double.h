@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Dec 1997
 
-#ifndef eckit_Double_h
-#define eckit_Double_h
-
+#pragma once
 #include <string>
 
 #include "eckit/persist/Bless.h"
@@ -72,5 +70,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

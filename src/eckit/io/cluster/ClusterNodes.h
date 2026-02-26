@@ -11,9 +11,7 @@
 // File ClusterNodes.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef eckit_ClusterNodes_h
-#define eckit_ClusterNodes_h
-
+#pragma once
 #include "eckit/eckit.h"
 
 #include "eckit/io/cluster/NodeInfo.h"
@@ -64,5 +62,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

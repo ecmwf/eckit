@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   May 96
 
-#ifndef eckit_runtime_ProcessControler_h
-#define eckit_runtime_ProcessControler_h
-
+#pragma once
 #include "eckit/container/ClassExtent.h"
 #include "eckit/runtime/Task.h"
 
@@ -85,5 +83,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

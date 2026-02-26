@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2017
 
-#ifndef eckit_filesystem_URIManager_h
-#define eckit_filesystem_URIManager_h
-
+#pragma once
 #include "eckit/eckit.h"
 
 
@@ -70,5 +68,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

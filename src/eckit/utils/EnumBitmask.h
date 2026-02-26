@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_EnumBitmasks_H
-#define eckit_utils_EnumBitmasks_H
-
+#pragma once
 namespace eckit {
 
 #include <type_traits>
@@ -45,5 +43,3 @@ namespace eckit {
 
 
 }  // end namespace eckit
-
-#endif

@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_web_Html_H
-#define eckit_web_Html_H
-
+#pragma once
 #include <map>
 #include <string>
 
@@ -368,6 +366,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

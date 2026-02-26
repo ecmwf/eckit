@@ -11,9 +11,7 @@
 // File Watcher.h
 // Baudouin Raoult - ECMWF Jun 98
 
-#ifndef eckit_Watcher_h
-#define eckit_Watcher_h
-
+#pragma once
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -36,5 +34,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

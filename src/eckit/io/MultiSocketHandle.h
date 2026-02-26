@@ -11,9 +11,7 @@
 // File io/MultiSocketHandle.h
 // Baudouin Raoult - ECMWF Apr 21
 
-#ifndef eckit_filesystem_MultiSocketHandle_h
-#define eckit_filesystem_MultiSocketHandle_h
-
+#pragma once
 #include <memory>
 
 #include "eckit/io/DataHandle.h"
@@ -82,5 +80,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

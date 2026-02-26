@@ -11,9 +11,7 @@
 /// @author Tiago Quintino
 /// @date   Feb 2018
 
-#ifndef eckit_log_SysLog_h
-#define eckit_log_SysLog_h
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -139,5 +137,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

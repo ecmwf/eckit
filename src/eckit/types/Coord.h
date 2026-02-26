@@ -10,9 +10,7 @@
 
 // Claude  Gibert - ECMWF Dec 97
 
-#ifndef eckit_Coord_h
-#define eckit_Coord_h
-
+#pragma once
 #include <iosfwd>
 #include <vector>
 
@@ -121,5 +119,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

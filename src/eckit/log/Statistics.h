@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @date   April 2016
 
-#ifndef eckit_Statistics_H
-#define eckit_Statistics_H
-
+#pragma once
 #include <iosfwd>
 
 #include "eckit/log/Timer.h"
@@ -90,5 +88,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

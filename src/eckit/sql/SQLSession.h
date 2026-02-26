@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// @date Dec 03
 
-#ifndef odb_sql_SQLSession_H
-#define odb_sql_SQLSession_H
-
+#pragma once
 namespace eckit {
 class PathName;
 }
@@ -121,5 +119,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

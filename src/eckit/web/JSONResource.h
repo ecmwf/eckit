@@ -14,9 +14,7 @@
 ///
 /// @date Jun 2012
 
-#ifndef eckit_web_JSONResource_H
-#define eckit_web_JSONResource_H
-
+#pragma once
 #include "eckit/web/HttpResource.h"
 
 
@@ -44,5 +42,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

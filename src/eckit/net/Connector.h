@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Jun 2011
 
-#ifndef eckit_net_Connector_h
-#define eckit_net_Connector_h
-
+#pragma once
 #include "eckit/io/BufferCache.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/cluster/NodeInfo.h"
@@ -155,5 +153,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::net
-
-#endif

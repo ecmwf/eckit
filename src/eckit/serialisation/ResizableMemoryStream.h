@@ -11,9 +11,7 @@
 /// @author Tiago Quintino
 /// @date   Feb 2019
 
-#ifndef eckit_serialisation_ResizableMemoryStream_H
-#define eckit_serialisation_ResizableMemoryStream_H
-
+#pragma once
 #include "eckit/serialisation/Stream.h"
 
 namespace eckit {
@@ -47,6 +45,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

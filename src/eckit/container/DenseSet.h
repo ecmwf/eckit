@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_DenseSet_h
-#define eckit_DenseSet_h
-
+#pragma once
 /// @author Tiago Quintino
 /// @author Olivier Iffrig
 
@@ -204,5 +202,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

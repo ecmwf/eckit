@@ -11,9 +11,7 @@
 /// @file CallbackTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_CallbackTarget_h
-#define eckit_log_CallbackTarget_h
-
+#pragma once
 #include <iosfwd>
 #include <utility>
 
@@ -47,5 +45,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

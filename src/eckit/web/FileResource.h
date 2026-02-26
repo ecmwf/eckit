@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   September 1997
 
-#ifndef eckit_web_FileResource_H
-#define eckit_web_FileResource_H
-
+#pragma once
 #include "eckit/web/HtmlResource.h"
 
 
@@ -37,6 +35,3 @@ protected:
 
 
 }  // namespace eckit
-
-
-#endif

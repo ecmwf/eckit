@@ -11,10 +11,7 @@
 /// @file MessageTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_MessageTarget_h
-#define eckit_log_MessageTarget_h
-
-
+#pragma once
 #include "eckit/log/LineBasedTarget.h"
 
 
@@ -37,5 +34,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

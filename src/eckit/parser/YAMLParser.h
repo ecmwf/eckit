@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date Jun 2012
 
-#ifndef eckit_YAMLParser_h
-#define eckit_YAMLParser_h
-
+#pragma once
 #include <deque>
 
 #include "eckit/parser/ObjectParser.h"
@@ -87,5 +85,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

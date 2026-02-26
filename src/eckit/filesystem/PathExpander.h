@@ -11,9 +11,7 @@
 /// @author Tiago Quintino
 /// @date   June 2017
 
-#ifndef eckit_PathExpander_h
-#define eckit_PathExpander_h
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -53,5 +51,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

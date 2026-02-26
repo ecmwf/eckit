@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Comm_h
-#define eckit_mpi_Comm_h
-
+#pragma once
 #include <cstddef>
 #include <iterator>
 #include <string>
@@ -1093,5 +1091,3 @@ void eckit::mpi::Comm::allToAll(const std::vector<std::vector<T, A1>, A3>& sendv
 //----------------------------------------------------------------------------------------------------------------------
 
 #undef ECKIT_MPI_ASSERT
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   May 2019
 
-#ifndef eckit_net_Endpoint_H
-#define eckit_net_Endpoint_H
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -82,5 +80,3 @@ struct std::hash<eckit::net::Endpoint> {
         return std::hash<std::string>{}(e);
     }
 };
-
-#endif

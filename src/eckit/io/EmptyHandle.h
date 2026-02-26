@@ -11,9 +11,7 @@
 // File io/EmptyHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eckit_filesystem_EmptyHandle_h
-#define eckit_filesystem_EmptyHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 
 //-----------------------------------------------------------------------------
@@ -73,5 +71,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

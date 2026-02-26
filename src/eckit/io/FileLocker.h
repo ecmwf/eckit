@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date Feb 2002
 
-#ifndef eckit_FileLocker_h
-#define eckit_FileLocker_h
-
+#pragma once
 #include "sys/types.h"  // for off_t
 
 #include "eckit/eckit.h"
@@ -110,5 +108,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

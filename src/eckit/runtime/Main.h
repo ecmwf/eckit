@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_Main_h
-#define eckit_Main_h
-
+#pragma once
 #include <map>
 
 #include "eckit/log/Channel.h"
@@ -106,5 +104,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_Main_h

@@ -12,10 +12,7 @@
 /// @author Tiago Quintino
 /// @date   July 2015
 
-
-#ifndef eckit_Configuration_H
-#define eckit_Configuration_H
-
+#pragma once
 #include <cstdint>
 #include <memory>
 #include <type_traits>
@@ -257,5 +254,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

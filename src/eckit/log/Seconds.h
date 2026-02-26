@@ -11,9 +11,7 @@
 // File Seconds.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_Seconds_h
-#define eckit_Seconds_h
-
+#pragma once
 #include <sys/time.h>
 #include <ctime>
 #include <iosfwd>
@@ -57,5 +55,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

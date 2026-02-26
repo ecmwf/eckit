@@ -13,10 +13,7 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_NoTransport_H
-#define eckit_NoTransport_H
-
-
+#pragma once
 #include "eckit/distributed/Transport.h"
 
 
@@ -64,5 +61,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::distributed
-
-#endif

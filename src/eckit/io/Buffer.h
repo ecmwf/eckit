@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   July 1996
 
-#ifndef eckit_io_Buffer_h
-#define eckit_io_Buffer_h
-
+#pragma once
 #include <cstddef>
 #include <string>
 
@@ -100,5 +98,3 @@ private:  // members
 };
 
 }  // namespace eckit
-
-#endif

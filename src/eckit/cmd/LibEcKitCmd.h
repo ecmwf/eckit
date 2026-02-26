@@ -11,9 +11,7 @@
 /// @author Simon Smart
 /// @date   May 2020
 
-#ifndef eckit_cmd_LibEcKitCmd_H
-#define eckit_cmd_LibEcKitCmd_H
-
+#pragma once
 #include "eckit/system/Library.h"
 
 namespace eckit {
@@ -39,5 +37,3 @@ protected:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

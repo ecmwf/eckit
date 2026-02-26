@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_filesystem_FileMode_h
-#define eckit_filesystem_FileMode_h
-
+#pragma once
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -74,5 +72,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

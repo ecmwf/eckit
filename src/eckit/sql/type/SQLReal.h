@@ -11,9 +11,7 @@
 // File SQLReal.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLReal_H
-#define SQLReal_H
-
+#pragma once
 #include "eckit/sql/type/SQLType.h"
 
 namespace eckit::sql {
@@ -107,5 +105,3 @@ private:
 
 }  // namespace type
 }  // namespace eckit::sql
-
-#endif

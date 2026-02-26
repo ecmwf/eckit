@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @author Manuel Fuentes
 
-#ifndef eckit_NilContent_h
-#define eckit_NilContent_h
-
+#pragma once
 #include "eckit/value/Content.h"
 
 
@@ -111,5 +109,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

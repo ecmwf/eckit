@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_ClusterDisks_h
-#define eckit_ClusterDisks_h
-
+#pragma once
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -53,5 +51,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

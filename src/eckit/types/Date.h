@@ -12,10 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Sep 96
 
-
-#ifndef eckit_Date_h
-#define eckit_Date_h
-
+#pragma once
 #include "eckit/persist/Bless.h"
 
 namespace eckit {
@@ -166,5 +163,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

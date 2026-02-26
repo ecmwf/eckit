@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef SPNodeQueue_H
-#define SPNodeQueue_H
-
+#pragma once
 #include <algorithm>
 #include <limits>
 #include <queue>
@@ -77,6 +75,3 @@ public:
 };
 
 }  // namespace eckit
-
-
-#endif

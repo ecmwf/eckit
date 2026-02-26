@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date May 2014
 
-#ifndef eckit_memory_Owned_h
-#define eckit_memory_Owned_h
-
+#pragma once
 #include "eckit/memory/Counted.h"
 
 
@@ -73,5 +71,3 @@ using Owned = OwnedNoLock;
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

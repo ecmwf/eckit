@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_net_UDPClient_h
-#define eckit_net_UDPClient_h
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -65,6 +63,3 @@ private:  // members
 
 }  // namespace net
 }  // namespace eckit
-
-
-#endif

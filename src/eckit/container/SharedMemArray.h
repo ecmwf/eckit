@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   December 2016
 
-#ifndef eckit_SharedMemArray_h
-#define eckit_SharedMemArray_h
-
+#pragma once
 #include <cstdint>
 
 #include "eckit/os/Semaphore.h"
@@ -95,5 +93,3 @@ private:  // members
 }  // namespace eckit
 
 #include "SharedMemArray.cc"
-
-#endif

@@ -13,9 +13,7 @@
 ///
 /// @date   Oct 2016
 
-#ifndef eckit_io_FileLock_h
-#define eckit_io_FileLock_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/FileLocker.h"
 
@@ -51,5 +49,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,9 +11,7 @@
 /// @author Simon Smart
 /// @date   Dec 2018
 
-#ifndef eckit_TmpDir_h
-#define eckit_TmpDir_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 
 
@@ -38,5 +36,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Nov 2001
 
-#ifndef eckit_FileSystem_h
-#define eckit_FileSystem_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 
 namespace eckit {
@@ -68,5 +66,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

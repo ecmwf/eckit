@@ -11,9 +11,7 @@
 // File JavaServer.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef JavaServer_H
-#define JavaServer_H
-
+#pragma once
 #include "eckit/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
@@ -49,6 +47,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

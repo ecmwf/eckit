@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @date   Mar 2016
 
-#ifndef eckit_cmd_UserInput_H
-#define eckit_cmd_UserInput_H
-
+#pragma once
 #include <string>
 #include <vector>
 
@@ -38,5 +36,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

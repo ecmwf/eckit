@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_ProducerConsumer_h
-#define eckit_ProducerConsumer_h
-
+#pragma once
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
@@ -251,5 +249,3 @@ void ProducerConsumerTask<PAYLOAD>::run() {
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

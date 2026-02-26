@@ -11,9 +11,7 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
-#ifndef eckit_Library_h
-#define eckit_Library_h
-
+#pragma once
 #include "eckit/runtime/Main.h"
 
 namespace eckit {
@@ -40,5 +38,3 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

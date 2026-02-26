@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_ParallelRequest_h
-#define eckit_mpi_ParallelRequest_h
-
+#pragma once
 #define OMPI_SKIP_MPICXX 1
 #define MPICH_SKIP_MPICXX 1
 
@@ -51,5 +49,3 @@ private:  // members
 
 }  // namespace mpi
 }  // namespace eckit
-
-#endif

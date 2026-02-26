@@ -11,10 +11,7 @@
 // File MoverTransferSelection.h
 // Baudouin Raoult - (c) ECMWF Jun 23
 
-
-#ifndef eckit_MoverTransferSelection_h
-#define eckit_MoverTransferSelection_h
-
+#pragma once
 #include <map>
 #include <set>
 #include <string>
@@ -110,5 +107,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

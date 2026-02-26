@@ -12,9 +12,7 @@
 /// @author Florian Rathgeber
 /// @date March 2015
 
-#ifndef eckit_value_ScopeParams_H
-#define eckit_value_ScopeParams_H
-
+#pragma once
 #include "eckit/value/Params.h"
 
 //----------------------------------------------------------------------------
@@ -49,5 +47,3 @@ private:  // members
 //----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

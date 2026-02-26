@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef BSPNode_H
-#define BSPNode_H
-
+#pragma once
 #include "BSPHyperPlane.h"
 
 #include "eckit/container/sptree/SPNode.h"
@@ -63,5 +61,3 @@ private:
 }  // namespace eckit
 
 #include "BSPNode.cc"
-
-#endif

@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_Pipe_h
-#define eckit_Pipe_h
-
+#pragma once
 #include "eckit/eckit.h"
 
 #include "eckit/exception/Exceptions.h"
@@ -260,5 +258,3 @@ PAYLOAD& Pipe<PAYLOAD>::receive() {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -13,9 +13,7 @@
 /// @author Florian Rathgeber
 /// @date Jun 2015
 
-#ifndef eckit_types_FloatCompare_h
-#define eckit_types_FloatCompare_h
-
+#pragma once
 #include <limits>
 
 namespace eckit::types {
@@ -105,5 +103,3 @@ extern template bool is_approximately_equal(double a, double b, double epsilon, 
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::types
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Jun 2014
 
-#ifndef eckit_Properties_h
-#define eckit_Properties_h
-
+#pragma once
 #include <map>
 #include <string>
 
@@ -113,5 +111,3 @@ protected:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Manuel Fuentes
 /// @date   Jul 1996
 
-#ifndef eckit_cmd_RemoteCommander_H
-#define eckit_cmd_RemoteCommander_H
-
+#pragma once
 #include "eckit/net/NetService.h"
 
 //-----------------------------------------------------------------------------
@@ -47,5 +45,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

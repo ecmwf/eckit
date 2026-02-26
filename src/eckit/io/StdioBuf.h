@@ -11,9 +11,7 @@
 // File StdioBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eckit_StdioBuf_h
-#define eckit_StdioBuf_h
-
+#pragma once
 #include <cstdio>
 
 #include "eckit/eckit.h"
@@ -63,5 +61,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

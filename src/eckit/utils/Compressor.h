@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_Compressor_H
-#define eckit_utils_Compressor_H
-
+#pragma once
 #include <map>
 #include <string>
 #include <vector>
@@ -134,5 +132,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
-
-#endif

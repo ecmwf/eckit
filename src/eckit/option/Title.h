@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_option_Title_H
-#define eckit_option_Title_H
-
+#pragma once
 #include <string>
 
 #include "eckit/filesystem/PathName.h"
@@ -61,5 +59,3 @@ inline const char* Title<eckit::PathName>::operator()() const {
 }  // namespace implementation_detail
 
 }  // namespace eckit::option
-
-#endif

@@ -8,9 +8,7 @@
  * nor does it submit to any jurisdiction.
  */
 
-#ifndef eckit_cmd_LockCmd_H
-#define eckit_cmd_LockCmd_H
-
+#pragma once
 #include "eckit/cmd/CmdResource.h"
 
 //-----------------------------------------------------------------------------
@@ -52,5 +50,3 @@ inline void destroy(LockCmd**) {}
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // LockCmd_H

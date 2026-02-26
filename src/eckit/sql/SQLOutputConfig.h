@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// ECMWF Jul 2010
 
-#ifndef eckit_sql_SQLOutputConfig_H
-#define eckit_sql_SQLOutputConfig_H
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 
 namespace eckit::sql {
@@ -132,5 +130,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

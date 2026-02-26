@@ -13,9 +13,7 @@
 /// @date Nov 2011
 /// @date Aug 2018
 
-#ifndef eckit_sql_SQLOrderOutput_H
-#define eckit_sql_SQLOrderOutput_H
-
+#pragma once
 #include <queue>
 
 #include "eckit/sql/SQLOutput.h"
@@ -72,5 +70,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

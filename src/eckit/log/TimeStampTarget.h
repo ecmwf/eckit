@@ -11,9 +11,7 @@
 /// @file TimeStampTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_TimeStampTarget_h
-#define eckit_log_TimeStampTarget_h
-
+#pragma once
 #include <utility>
 
 #include "eckit/log/WrapperTarget.h"
@@ -46,5 +44,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

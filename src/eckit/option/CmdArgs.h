@@ -13,10 +13,7 @@
 /// @author Simon Smart
 /// @date March 2016
 
-
-#ifndef eckit_option_CmdArgs_H
-#define eckit_option_CmdArgs_H
-
+#pragma once
 #include <functional>
 #include <set>
 #include <vector>
@@ -96,5 +93,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::option
-
-#endif  // eckit_option_CmdArgs_H

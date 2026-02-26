@@ -11,9 +11,7 @@
 /// @file MonitorTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_MonitorTarget_h
-#define eckit_log_MonitorTarget_h
-
+#pragma once
 #include <iosfwd>
 #include <utility>
 
@@ -43,5 +41,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#ifndef eckit_log_PrefixTarget_h
-#define eckit_log_PrefixTarget_h
-
+#pragma once
 #include <iosfwd>
 #include <string>
 #include <utility>
@@ -51,5 +49,3 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,6 +12,8 @@
 /// @author Metin Cakircali
 /// @date   May 2025
 
+#pragma once
+
 #include <iosfwd>
 #include <string>
 

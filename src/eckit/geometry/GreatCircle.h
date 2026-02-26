@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef GreatCircle_H
-#define GreatCircle_H
-
+#pragma once
 #include <vector>
 #include "eckit/geometry/Point2.h"
 
@@ -45,5 +43,3 @@ private:
 //------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
-
-#endif

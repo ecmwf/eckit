@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2017
 
-#ifndef eckit_CircularBuffer_h
-#define eckit_CircularBuffer_h
-
+#pragma once
 #include <limits>
 
 #include "eckit/eckit.h"
@@ -63,5 +61,3 @@ private:  // members
 
 
 }  // namespace eckit
-
-#endif

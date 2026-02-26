@@ -12,9 +12,7 @@
 /// @author Florian Rathgeber
 /// @date March 2015
 
-#ifndef eckit_value_DispatchParams_H
-#define eckit_value_DispatchParams_H
-
+#pragma once
 #include "eckit/value/Params.h"
 
 //----------------------------------------------------------------------------
@@ -72,5 +70,3 @@ void encode(const DispatchParams<Derived>&, Stream&) {
 //----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

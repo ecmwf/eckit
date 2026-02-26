@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   Nov 2011
 
-#ifndef eckit_Colour_h
-#define eckit_Colour_h
-
+#pragma once
 #include <iosfwd>
 
 #include "eckit/eckit.h"
@@ -61,5 +59,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

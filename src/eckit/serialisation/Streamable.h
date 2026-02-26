@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date May 1996
 
-#ifndef eckit_Streamable_h
-#define eckit_Streamable_h
-
+#pragma once
 #include "eckit/serialisation/Reanimator.h"
 #include "eckit/serialisation/Stream.h"
 
@@ -76,5 +74,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

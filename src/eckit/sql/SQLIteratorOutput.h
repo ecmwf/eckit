@@ -11,9 +11,7 @@
 /// \file SQLIteratorOutput.h
 /// Piotr Kuchta - ECMWF Feb 09
 
-#ifndef SQLIteratorOutput_H
-#define SQLIteratorOutput_H
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLOutput.h"
 
@@ -72,5 +70,3 @@ private:
 }  // namespace eckit
 
 #include "eckit/sql/SQLIteratorOutput.cc"
-
-#endif

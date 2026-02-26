@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef SPIterator_H
-#define SPIterator_H
-
+#pragma once
 #include "eckit/container/sptree/SPValue.h"
 
 namespace eckit {
@@ -66,6 +64,3 @@ public:
 };
 
 }  // namespace eckit
-
-
-#endif

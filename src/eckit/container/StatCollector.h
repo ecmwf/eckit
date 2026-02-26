@@ -11,9 +11,7 @@
 // File StatCollector.h
 // Baudouin Raoult - ECMWF Apr 97
 
-#ifndef eckit_StatCollector_h
-#define eckit_StatCollector_h
-
+#pragma once
 #include <cstddef>
 #include <iostream>
 
@@ -92,5 +90,3 @@ struct StatCollector {
 //-----------------------------------------------------------------------------
 //
 }  // namespace eckit
-
-#endif

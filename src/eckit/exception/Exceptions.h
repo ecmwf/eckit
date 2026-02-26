@@ -20,9 +20,7 @@
  * eckit::geo::exception::AreaError.
  */
 
-#ifndef eckit_Exceptions_h
-#define eckit_Exceptions_h
-
+#pragma once
 #include <cerrno>
 #include <iostream>
 #include <sstream>
@@ -367,5 +365,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

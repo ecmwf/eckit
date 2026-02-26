@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// @date Dec 2003
 
-#ifndef eckit_sql_BitColumnExpression_H
-#define eckit_sql_BitColumnExpression_H
-
+#pragma once
 #include "eckit/sql/expression/ColumnExpression.h"
 
 namespace eckit::sql::expression {
@@ -66,5 +64,3 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql::expression
-
-#endif

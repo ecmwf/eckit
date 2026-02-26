@@ -11,9 +11,7 @@
 /// @file SavedStatus.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_SavedStatus_h
-#define eckit_log_SavedStatus_h
-
+#pragma once
 #include <string>
 
 
@@ -34,5 +32,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

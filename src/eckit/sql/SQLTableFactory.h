@@ -11,9 +11,7 @@
 /// @author Simon Smart
 /// @date Aug 2018
 
-#ifndef eckit_sql_SQLTableFactory_H
-#define eckit_sql_SQLTableFactory_H
-
+#pragma once
 #include <mutex>
 #include <string>
 #include <vector>
@@ -80,5 +78,3 @@ public:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

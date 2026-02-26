@@ -11,9 +11,7 @@
 /// \file FunctionTHIN.h
 /// ECMWF July 2010
 
-#ifndef FunctionTHIN_H
-#define FunctionTHIN_H
-
+#pragma once
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
 namespace eckit::sql::expression::function {
@@ -56,5 +54,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

@@ -11,9 +11,7 @@
 // File io/BufferedHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eckit_filesystem_BufferedHandle_h
-#define eckit_filesystem_BufferedHandle_h
-
+#pragma once
 #include "eckit/io/Buffer.h"
 #include "eckit/io/HandleHolder.h"
 
@@ -83,6 +81,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Jan 97
 
-#ifndef eckit_TxnEvent_h
-#define eckit_TxnEvent_h
-
+#pragma once
 #include "eckit/serialisation/Streamable.h"
 
 
@@ -86,5 +84,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,10 +12,7 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
-#ifndef eckit_Configured_H
-#define eckit_Configured_H
-
+#pragma once
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -113,4 +110,3 @@ private:
 };
 
 }  // namespace eckit
-#endif

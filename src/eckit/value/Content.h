@@ -11,9 +11,7 @@
 // File Content.h
 // Manuel Fuentes - ECMWF Jun 96
 
-#ifndef eckit_Content_h
-#define eckit_Content_h
-
+#pragma once
 #include <map>
 #include <string>
 #include <vector>
@@ -266,5 +264,3 @@ Streamable* Reanimator<Content>::ressucitate(Stream& s) const
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_Content_h

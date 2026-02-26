@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef SPNodeInfo_H
-#define SPNodeInfo_H
-
+#pragma once
 #include <iostream>
 #include <vector>
 
@@ -67,6 +65,3 @@ public:
 
 
 }  // namespace eckit
-
-
-#endif

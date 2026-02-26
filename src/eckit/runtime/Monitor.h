@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_Monitor_h
-#define eckit_Monitor_h
-
+#pragma once
 #include "eckit/eckit.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/runtime/TaskInfo.h"
@@ -183,5 +181,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

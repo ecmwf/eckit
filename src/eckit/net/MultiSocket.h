@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_net_MultiSocket_h
-#define eckit_net_MultiSocket_h
-
+#pragma once
 #include <netinet/in.h>
 #include <string>
 #include <vector>
@@ -91,5 +89,3 @@ private:  // methods
 };
 
 }  // namespace eckit::net
-
-#endif

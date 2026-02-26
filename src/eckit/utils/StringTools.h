@@ -11,10 +11,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_StringTools_h
-#define eckit_StringTools_h
-
-
+#pragma once
 #include <map>
 #include <string>
 #include <vector>
@@ -85,5 +82,3 @@ std::string StringTools::join(const std::string& delimiter, const T& words) {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

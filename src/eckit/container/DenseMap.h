@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_DenseMap_h
-#define eckit_DenseMap_h
-
+#pragma once
 /// @author Tiago Quintino
 
 #include <algorithm>
@@ -190,5 +188,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

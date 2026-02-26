@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// @date   June 2018
 
-#ifndef eckit_container_Queue_h
-#define eckit_container_Queue_h
-
+#pragma once
 #include <condition_variable>
 #include <exception>
 #include <mutex>
@@ -165,5 +163,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_container_Queue_h

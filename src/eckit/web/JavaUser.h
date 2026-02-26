@@ -11,9 +11,7 @@
 // File JavaUser.h
 // Baudouin Raoult - ECMWF Apr 97
 
-#ifndef JavaUser_H
-#define JavaUser_H
-
+#pragma once
 #include "eckit/net/NetUser.h"
 
 //-----------------------------------------------------------------------------
@@ -38,5 +36,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

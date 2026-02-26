@@ -11,9 +11,7 @@
 // File Dispatcher.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_Dispatcher_h
-#define eckit_Dispatcher_h
-
+#pragma once
 #include <unistd.h>
 #include <algorithm>
 #include <list>
@@ -564,5 +562,3 @@ void DefaultHandler<Request>::json(JSON& s, const Request& r) {
 //-----------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

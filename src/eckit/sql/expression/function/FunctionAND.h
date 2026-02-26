@@ -13,9 +13,7 @@
 // @date December 2003
 // @date January 2019
 
-#ifndef FunctionAND_H
-#define FunctionAND_H
-
+#pragma once
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit::sql::expression::function {
@@ -53,5 +51,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql::expression::function
-
-#endif

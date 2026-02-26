@@ -11,9 +11,7 @@
 // File SQLExpression.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLExpression_H
-#define SQLExpression_H
-
+#pragma once
 #include <memory>
 #include <set>
 
@@ -117,5 +115,3 @@ private:
 // #include "eckit/sql/expression/SQLExpressions.h"
 
 using namespace eckit::sql::expression;
-
-#endif

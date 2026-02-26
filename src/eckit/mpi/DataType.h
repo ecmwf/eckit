@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_DataType_h
-#define eckit_mpi_DataType_h
-
+#pragma once
 #include <cstddef>
 #include <vector>
 
@@ -69,5 +67,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

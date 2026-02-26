@@ -13,9 +13,7 @@
 /// @author Simon Smart
 /// @date   March 2017
 
-#ifndef eckit_system_SystemInfoFreeBSD_H
-#define eckit_system_SystemInfoFreeBSD_H
-
+#pragma once
 #include <iosfwd>
 
 #include "eckit/system/SystemInfo.h"
@@ -46,5 +44,3 @@ private:  // members
 
 }  // namespace system
 }  // namespace eckit
-
-#endif

@@ -11,9 +11,7 @@
 /// @author Simon Smart
 /// @date   May 2019
 
-#ifndef eckit_runtime_SessionID_H
-#define eckit_runtime_SessionID_H
-
+#pragma once
 #include <sys/types.h>
 #include <iosfwd>
 #include <string>
@@ -65,5 +63,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_runtime_SessionID_H

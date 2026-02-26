@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
-#ifndef eckit_message_Splitter_h
-#define eckit_message_Splitter_h
-
+#pragma once
 #include <iosfwd>
 #include <mutex>
 #include <vector>
@@ -103,5 +101,3 @@ class SplitterBuilder : public SplitterBuilderBase {
 
 }  // namespace message
 }  // namespace eckit
-
-#endif

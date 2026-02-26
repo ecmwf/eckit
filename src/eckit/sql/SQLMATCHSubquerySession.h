@@ -11,9 +11,7 @@
 // File SQLMATCHSubquerySession.h
 // Piotr Kuchta - ECMWF Octover 2015
 
-#ifndef SQLMATCHSubquerySession_H
-#define SQLMATCHSubquerySession_H
-
+#pragma once
 #include "eckit/sql/SQLSession.h"
 
 namespace eckit {
@@ -63,5 +61,3 @@ private:
 
 }  // namespace sql
 }  // namespace eckit
-
-#endif

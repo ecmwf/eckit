@@ -13,9 +13,7 @@
 /// @date Nov 2011
 /// @date Aug 2018
 
-#ifndef eckit_sql_expression_OrderByExpressions_H
-#define eckit_sql_expression_OrderByExpressions_H
-
+#pragma once
 #include "eckit/sql/expression/SQLExpressions.h"
 
 namespace eckit::sql::expression {
@@ -46,5 +44,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql::expression
-
-#endif

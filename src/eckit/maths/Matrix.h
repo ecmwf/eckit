@@ -26,9 +26,10 @@
  * It is strongly advised to only use the subset in the
  * transitional classes, or implement as needed
  */
-#ifndef eckit_maths_Matrix_h
-#define eckit_maths_Matrix_h
 
+#pragma once
+
+#define eckit_maths_MATRIX_INCLUDED
 #include "eckit/eckit.h"
 
 namespace eckit::maths {
@@ -51,7 +52,5 @@ class Matrix;
 
 // Own implementation using Lapack if available
 #include "eckit/maths/MatrixLapack.h"
-
-#endif
 
 #endif

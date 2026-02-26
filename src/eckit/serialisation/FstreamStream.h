@@ -11,9 +11,7 @@
 // File FstreamStream.h
 // Baudouin Raoult - ECMWF Aug 18
 
-#ifndef eckit_FstreamStream_h
-#define eckit_FstreamStream_h
-
+#pragma once
 #include <fstream>
 #include <iostream>
 
@@ -71,5 +69,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

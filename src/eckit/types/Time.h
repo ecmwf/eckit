@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   Oct 96
 
-#ifndef eckit_Time_h
-#define eckit_Time_h
-
+#pragma once
 #include <cstdint>
 
 #include "eckit/exception/Exceptions.h"
@@ -124,5 +122,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

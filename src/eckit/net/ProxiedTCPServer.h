@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   Aug 2017
 
-#ifndef eckit_ProxiedTCPServer_h
-#define eckit_ProxiedTCPServer_h
-
+#pragma once
 #include "eckit/net/TCPServer.h"
 
 
@@ -38,5 +36,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_PooledFile_h
-#define eckit_io_PooledFile_h
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 
@@ -70,5 +68,3 @@ public:
 };
 
 }  // namespace eckit
-
-#endif

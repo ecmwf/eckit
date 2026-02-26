@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_PooledHandle_h
-#define eckit_io_PooledHandle_h
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
@@ -59,5 +57,3 @@ private:
 };
 
 }  // namespace eckit
-
-#endif

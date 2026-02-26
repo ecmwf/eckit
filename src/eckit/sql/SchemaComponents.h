@@ -11,9 +11,7 @@
 // @author Simon Smart
 // @date January 2019
 
-#ifndef eckit_sql_SchemaComponents_H
-#define eckit_sql_SchemaComponents_H
-
+#pragma once
 #include <string>
 #include <vector>
 
@@ -71,5 +69,3 @@ using TableDefs = std::vector<TableDef>;
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

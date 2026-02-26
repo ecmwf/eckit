@@ -11,9 +11,7 @@
 /// @file ThreadSingleton.h
 /// @author Baudouin Raoult
 
-#ifndef eckit_ThreadSingleton_h
-#define eckit_ThreadSingleton_h
-
+#pragma once
 #include <pthread.h>
 
 #include "eckit/exception/Exceptions.h"
@@ -120,5 +118,3 @@ void ThreadSingleton<T, A>::init() {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

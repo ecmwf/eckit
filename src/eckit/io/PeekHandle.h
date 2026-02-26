@@ -11,9 +11,7 @@
 // File io/PeekHandle.h
 // Baudouin Raoult - ECMWF May 2020
 
-#ifndef eckit_filesystem_PeekHandle_h
-#define eckit_filesystem_PeekHandle_h
-
+#pragma once
 #include <deque>
 
 #include "eckit/io/HandleHolder.h"
@@ -79,6 +77,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

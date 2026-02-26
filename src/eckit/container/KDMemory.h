@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KDMemory_H
-#define KDMemory_H
-
+#pragma once
 #include "eckit/eckit.h"
 
 #include <cmath>
@@ -84,5 +82,3 @@ struct TT : public T {
 //------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
-
-#endif

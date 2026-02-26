@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   Dec 2019
 
-#ifndef eckit_net_IPAddress_H
-#define eckit_net_IPAddress_H
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -56,5 +54,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

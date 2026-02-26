@@ -13,9 +13,7 @@
 ///
 /// @date Jun 2011
 
-#ifndef eckit_filesystem_BasePathName_h
-#define eckit_filesystem_BasePathName_h
-
+#pragma once
 #include "eckit/eckit.h"
 
 #include "eckit/io/DataHandle.h"
@@ -100,5 +98,3 @@ private:
 };
 
 }  // namespace eckit
-
-#endif

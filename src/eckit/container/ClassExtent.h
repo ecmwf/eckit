@@ -11,9 +11,7 @@
 // File ClassExtent.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_ClassExtent_h
-#define eckit_ClassExtent_h
-
+#pragma once
 #include <map>
 
 #include "eckit/exception/Exceptions.h"
@@ -247,5 +245,3 @@ ClassExtent<T>::Extent::~Extent() {
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

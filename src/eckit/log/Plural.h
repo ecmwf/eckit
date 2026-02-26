@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_Plural_h
-#define eckit_Plural_h
-
+#pragma once
 #include <iostream>
 
 #include "eckit/log/BigNum.h"
@@ -56,5 +54,3 @@ private:  // members
 
 
 }  // namespace eckit
-
-#endif

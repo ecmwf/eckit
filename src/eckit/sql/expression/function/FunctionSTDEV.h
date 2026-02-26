@@ -11,9 +11,7 @@
 // File FunctionSTDEV.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef FunctionSTDEV_H
-#define FunctionSTDEV_H
-
+#pragma once
 #include "eckit/sql/expression/function/FunctionVAR.h"
 
 namespace eckit::sql::expression::function {
@@ -42,5 +40,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

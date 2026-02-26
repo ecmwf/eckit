@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_SerialStatus_h
-#define eckit_mpi_SerialStatus_h
-
+#pragma once
 #include <iosfwd>
 
 #include "eckit/mpi/Status.h"
@@ -46,5 +44,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

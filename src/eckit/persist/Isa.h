@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_persist_Isa_h
-#define eckit_persist_Isa_h
-
+#pragma once
 #include <string>
 
 class TypeInfo;
@@ -67,5 +65,3 @@ void _describe(std::ostream& s, int depth, const std::string& name, const T& wha
 }
 
 }  // namespace eckit
-
-#endif

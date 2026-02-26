@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   July 2015
 
-#ifndef eckit_LocalConfiguration_H
-#define eckit_LocalConfiguration_H
-
+#pragma once
 #include <initializer_list>
 #include <type_traits>
 #include <vector>
@@ -117,5 +115,3 @@ struct VectorPrintSelector<LocalConfiguration> {
 };
 
 }  // namespace eckit
-
-#endif

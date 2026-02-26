@@ -13,10 +13,7 @@
 /// @author Tiago Quintino
 /// @date   May 1996
 
-
-#ifndef eckit_filesystem_PathName_h
-#define eckit_filesystem_PathName_h
-
+#pragma once
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
@@ -275,5 +272,3 @@ struct VectorPrintSelector<PathName> {
 };
 
 }  // namespace eckit
-
-#endif

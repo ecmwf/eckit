@@ -11,9 +11,7 @@
 /// \file SQLMATCHSubquerySessionOutput.h
 /// Piotr Kuchta - ECMWF Feb 09
 
-#ifndef SQLMATCHSubquerySessionOutput_H
-#define SQLMATCHSubquerySessionOutput_H
-
+#pragma once
 #include "eckit/sql/SQLOutput.h"
 
 class SelectIterator;
@@ -75,5 +73,3 @@ private:
 
 }  // namespace sql
 }  // namespace eckit
-
-#endif

@@ -11,9 +11,7 @@
 /// \file FunctionMATCH.h
 /// Piotr Kuchta - ECMWF October 2015
 
-#ifndef FunctionMATCH_H
-#define FunctionMATCH_H
-
+#pragma once
 #include <set>
 #include <vector>
 
@@ -58,5 +56,3 @@ private:
 }  // namespace expression
 }  // namespace sql
 }  // namespace eckit
-
-#endif

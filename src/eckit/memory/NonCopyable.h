@@ -8,10 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_NonCopyable_h
-#define eckit_NonCopyable_h
-
-
+#pragma once
 namespace eckit {
 
 /// Inherit from this class to make a NonCopyable class
@@ -29,5 +26,3 @@ private:  // No copy allowed
 };
 
 }  // namespace eckit
-
-#endif

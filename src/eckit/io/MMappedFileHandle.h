@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   May 2020
 
-#ifndef eckit_io_MMappedFileHandle_h
-#define eckit_io_MMappedFileHandle_h
-
+#pragma once
 #include <memory>
 #include "eckit/io/DataHandle.h"
 
@@ -90,5 +88,3 @@ private:  // methods
 };
 
 }  // namespace eckit
-
-#endif

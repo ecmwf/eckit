@@ -11,9 +11,7 @@
 // File Month.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eckit_Month_h
-#define eckit_Month_h
-
+#pragma once
 #include "eckit/types/Date.h"
 
 
@@ -107,5 +105,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

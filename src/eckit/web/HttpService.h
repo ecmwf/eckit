@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_web_HttpService_H
-#define eckit_web_HttpService_H
-
+#pragma once
 #include "eckit/net/NetService.h"
 
 
@@ -34,6 +32,3 @@ private:
 };
 
 }  // namespace eckit
-
-
-#endif

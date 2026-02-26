@@ -10,9 +10,5 @@
 
 /// @file cmdlib.h
 
-#ifndef eckit_cmd_cmdlib_h
-#define eckit_cmd_cmdlib_h
-
+#pragma once
 #include "eckit/eckit.h"
-
-#endif

@@ -10,9 +10,7 @@
 
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eckit_VerifyingDate_h
-#define eckit_VerifyingDate_h
-
+#pragma once
 #include "eckit/types/DateTime.h"
 
 //-----------------------------------------------------------------------------
@@ -84,5 +82,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

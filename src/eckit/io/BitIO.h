@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_BitIO_h
-#define eckit_BitIO_h
-
+#pragma once
 #include <bitset>
 
 #include "eckit/eckit.h"
@@ -78,5 +76,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

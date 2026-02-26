@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
-#ifndef metkit_data_Message_H
-#define metkit_data_Message_H
-
+#pragma once
 #include <iosfwd>
 #include <vector>
 
@@ -146,5 +144,3 @@ public:
 
 }  // namespace message
 }  // namespace eckit
-
-#endif

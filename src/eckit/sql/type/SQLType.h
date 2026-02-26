@@ -11,9 +11,7 @@
 // File SQLType.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef eckit_sql_SQLType_H
-#define eckit_sql_SQLType_H
-
+#pragma once
 #include <string>
 
 namespace eckit::sql {
@@ -92,5 +90,3 @@ public:
 
 }  // namespace type
 }  // namespace eckit::sql
-
-#endif

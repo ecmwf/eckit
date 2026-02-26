@@ -13,9 +13,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_FileSpace_h
-#define eckit_FileSpace_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 
 namespace eckit {
@@ -69,5 +67,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

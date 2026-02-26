@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// ECMWF Oct 11
 
-#ifndef eckit_sql_ConstantExpression_H
-#define eckit_sql_ConstantExpression_H
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/expression/SQLExpression.h"
 
@@ -98,5 +96,3 @@ protected:
 
 }  // namespace expression
 }  // namespace eckit::sql
-
-#endif

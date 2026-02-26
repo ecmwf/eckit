@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   April 2016
 
-#ifndef eckit_TransportStatistics_H
-#define eckit_TransportStatistics_H
-
+#pragma once
 #include <iosfwd>
 
 #include "eckit/log/Statistics.h"
@@ -69,5 +67,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::distributed
-
-#endif

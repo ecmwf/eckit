@@ -12,9 +12,7 @@
 /// @author Florian Rathgeber
 /// @date March 2015
 
-#ifndef eckit_test_AnyKeyParams_H
-#define eckit_test_AnyKeyParams_H
-
+#pragma once
 #include "eckit/serialisation/Stream.h"
 #include "eckit/value/Params.h"
 
@@ -43,5 +41,3 @@ void encode(const AnyKeyParams& p, eckit::Stream& s);
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit_test
-
-#endif

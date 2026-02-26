@@ -11,9 +11,7 @@
 // File Monitorable.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eckit_Monitorable_h
-#define eckit_Monitorable_h
-
+#pragma once
 #include "eckit/container/ClassExtent.h"
 
 //-----------------------------------------------------------------------------
@@ -60,5 +58,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

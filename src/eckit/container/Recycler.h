@@ -11,9 +11,7 @@
 // File Recycler.h
 // Baudouin Raoult - ECMWF Apr 97
 
-#ifndef eckit_Recycler_h
-#define eckit_Recycler_h
-
+#pragma once
 #include <fcntl.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -237,5 +235,3 @@ void Recycler<T>::push(const T& value) {
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

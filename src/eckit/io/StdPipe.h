@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 1996
 
-#ifndef eckit_io_StdPipe_h
-#define eckit_io_StdPipe_h
-
+#pragma once
 #include <cstdio>
 #include <string>
 
@@ -63,5 +61,3 @@ public:
 
 
 }  // namespace eckit
-
-#endif

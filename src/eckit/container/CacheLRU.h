@@ -11,9 +11,7 @@
 /// @author Tiago Quintino
 /// @date   Dec 2015
 
-#ifndef eckit_container_CacheLRU_h
-#define eckit_container_CacheLRU_h
-
+#pragma once
 #include <iosfwd>
 #include <list>
 #include <map>
@@ -134,5 +132,3 @@ private:  // members
 }  // namespace eckit
 
 #include "CacheLRU.cc"
-
-#endif

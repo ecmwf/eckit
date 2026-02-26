@@ -14,9 +14,7 @@
 /// @author Tiago Quintino
 /// @date   May 1996
 
-#ifndef eckit_filesystem_PartFileHandle_h
-#define eckit_filesystem_PartFileHandle_h
-
+#pragma once
 #include <memory>
 
 #include "eckit/filesystem/PathName.h"
@@ -102,5 +100,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

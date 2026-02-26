@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// @date Dec 2003
 
-#ifndef eckit_sql_SQLSelect_H
-#define eckit_sql_SQLSelect_H
-
+#pragma once
 #include <memory>
 
 #include "eckit/filesystem/PathName.h"
@@ -149,5 +147,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

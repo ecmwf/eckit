@@ -12,9 +12,7 @@
 /// @author Manuel Fuentes
 /// @date   Aug 1996
 
-#ifndef eckit_cmd_TermBuf_H
-#define eckit_cmd_TermBuf_H
-
+#pragma once
 #include <iosfwd>
 #include <streambuf>
 
@@ -66,5 +64,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

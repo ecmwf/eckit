@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Jul 96
 
-#ifndef eckit_log_TimeStamp_h
-#define eckit_log_TimeStamp_h
-
+#pragma once
 #include <ctime>
 
 #include <iosfwd>
@@ -44,5 +42,3 @@ private:  // members
 
 
 }  // namespace eckit
-
-#endif

@@ -11,9 +11,7 @@
 // File ResourceUsage.h
 // Baudouin Raoult - ECMWF Oct 16
 
-#ifndef eckit_ResourceUsage_h
-#define eckit_ResourceUsage_h
-
+#pragma once
 #include <sys/resource.h>
 #include <sys/time.h>
 
@@ -75,5 +73,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

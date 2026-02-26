@@ -11,9 +11,7 @@
 /// @author Simon Smart
 /// @date March 2020
 
-#ifndef eckit_filesystem_PathNameFactory_h
-#define eckit_filesystem_PathNameFactory_h
-
+#pragma once
 #include "eckit/filesystem/BasePathNameT.h"
 
 #include <map>
@@ -55,5 +53,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

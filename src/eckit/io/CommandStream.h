@@ -11,10 +11,7 @@
 // File CommandStream.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_CommandStream_h
-#define eckit_CommandStream_h
-
-
+#pragma once
 #include "eckit/serialisation/Stream.h"
 
 //-----------------------------------------------------------------------------
@@ -57,5 +54,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,9 +11,7 @@
 /// \file FunctionJULIAN_SECONDS.h
 /// ECMWF February 2014
 
-#ifndef FunctionJULIAN_SECONDS_H
-#define FunctionJULIAN_SECONDS_H
-
+#pragma once
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit::sql::expression::function {
@@ -46,5 +44,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_system_SystemInfo_H
-#define eckit_system_SystemInfo_H
-
+#pragma once
 #include <iosfwd>
 
 #include "eckit/filesystem/PathName.h"
@@ -85,5 +83,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::system
-
-#endif

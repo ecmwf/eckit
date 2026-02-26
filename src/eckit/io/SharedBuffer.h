@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   July 2017
 
-#ifndef eckit_io_SharedBuffer_h
-#define eckit_io_SharedBuffer_h
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -91,5 +89,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

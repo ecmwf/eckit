@@ -13,10 +13,7 @@
 /// @author Tiago Quintino
 /// @date   Jun 97
 
-
-#ifndef eckit_StringContent_h
-#define eckit_StringContent_h
-
+#pragma once
 #include "eckit/value/Content.h"
 
 
@@ -118,5 +115,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

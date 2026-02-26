@@ -11,9 +11,7 @@
 // File Configurable.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_Configurable_h
-#define eckit_Configurable_h
-
+#pragma once
 #include <set>
 
 #include "eckit/container/ClassExtent.h"
@@ -78,5 +76,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

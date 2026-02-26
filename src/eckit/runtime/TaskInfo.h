@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Nov 96
 
-#ifndef eckit_TaskInfo_h
-#define eckit_TaskInfo_h
-
+#pragma once
 #include <sys/time.h>
 #include <cstddef>
 #include <cstring>
@@ -249,5 +247,3 @@ inline unsigned long version(TaskInfo*) {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

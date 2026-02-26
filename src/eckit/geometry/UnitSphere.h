@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef UnitSphere_H
-#define UnitSphere_H
-
+#pragma once
 #include "eckit/geometry/SphereT.h"
 
 //------------------------------------------------------------------------------------------------------
@@ -39,5 +37,3 @@ using UnitSphere = SphereT<DatumUnit>;
 //------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
-
-#endif

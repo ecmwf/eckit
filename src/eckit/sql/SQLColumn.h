@@ -11,9 +11,7 @@
 // File SQLColumn.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLColumn_H
-#define SQLColumn_H
-
+#pragma once
 namespace eckit {
 class PathName;
 }
@@ -104,5 +102,3 @@ protected:
 };
 
 }  // namespace eckit::sql
-
-#endif

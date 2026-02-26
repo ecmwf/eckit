@@ -11,9 +11,7 @@
 // File FunctionLAST.h
 // Piotr Kuchta - ECMWF Nov 2016
 
-#ifndef eckit_sql_function_FunctionLAST_H
-#define eckit_sql_function_FunctionLAST_H
-
+#pragma once
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
 namespace eckit::sql::expression::function {
@@ -53,5 +51,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

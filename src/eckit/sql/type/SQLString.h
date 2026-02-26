@@ -11,9 +11,7 @@
 // File SQLString.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLString_H
-#define SQLString_H
-
+#pragma once
 #include "eckit/sql/type/SQLType.h"
 
 namespace eckit::sql {
@@ -52,5 +50,3 @@ private:
 
 }  // namespace type
 }  // namespace eckit::sql
-
-#endif

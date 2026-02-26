@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#pragma once
+
 #include <memory>
 
 #include "eckit/exception/Exceptions.h"

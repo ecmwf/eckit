@@ -8,6 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+#pragma once
+
+#ifndef eckit_maths_MATRIX_INCLUDED
+#error Include "eckit/maths/Matrix.h" instead of "eckit/maths/MatrixLapack.h"
+#endif
+
 /**
  * @file
  * @author Willem Deconinck
@@ -29,13 +35,6 @@
  * Where possible, BLAS and LAPACK implementations are used, in case
  * BLAS or LAPACK have been found.
  */
-
-#ifndef eckit_maths_Matrix_h
-#error Include "eckit/maths/Matrix.h" instead of "eckit/maths/MatrixLapack.h"
-#endif
-
-#ifndef eckit_maths_MatrixLapack_h
-#define eckit_maths_MatrixLapack_h
 
 #include <cmath>
 #include <cstring>
@@ -737,5 +736,3 @@ inline void invert(Scalar m[16], Scalar inv[16]) {
 }  // namespace maths
 
 }  // namespace eckit
-
-#endif

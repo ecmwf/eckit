@@ -14,9 +14,7 @@
 /// @author Tiago Quintino
 /// @date May 96
 
-#ifndef eckit_filesystem_MultiHandle_h
-#define eckit_filesystem_MultiHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 
 namespace eckit {
@@ -115,5 +113,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

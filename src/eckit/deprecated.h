@@ -12,9 +12,7 @@
 ///
 /// @date 21 Mar 2019
 
-#ifndef eckit_deprecated_h
-#define eckit_deprecated_h
-
+#pragma once
 #if !defined(DEPRECATED) && !defined(ECKIT_NO_DEPRECATION_WARNINGS)
 
 #if (__cplusplus >= 201402L)
@@ -30,5 +28,3 @@
 #else
 #define DEPRECATED(x) /* deprecated */
 #endif
-
-#endif /* eckit_deprecated_h */

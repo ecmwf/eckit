@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Serial_h
-#define eckit_mpi_Serial_h
-
+#pragma once
 #include "eckit/mpi/Comm.h"
 
 namespace eckit::mpi {
@@ -155,5 +153,3 @@ protected:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

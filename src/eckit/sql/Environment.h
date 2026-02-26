@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_sql_Environment_H
-#define eckit_sql_Environment_H
-
+#pragma once
 #include <memory>
 
 #include "eckit/sql/SQLTable.h"
@@ -39,5 +37,3 @@ struct Environment {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

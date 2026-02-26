@@ -12,6 +12,8 @@
 /// @author Metin Cakircali
 /// @date   July 2025
 
+#pragma once
+
 #include "eckit/log/SysLog.h"
 #include "eckit/log/TCPTarget.h"
 

@@ -11,9 +11,7 @@
 // File StringExpression.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef eckit_sql_StringExpression_H
-#define eckit_sql_StringExpression_H
-
+#pragma once
 #include "eckit/sql/expression/SQLExpression.h"
 
 namespace eckit::sql::expression {
@@ -58,5 +56,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql::expression
-
-#endif

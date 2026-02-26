@@ -11,9 +11,7 @@
 // File SQLBitfield.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLBitfield_H
-#define SQLBitfield_H
-
+#pragma once
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
 
@@ -59,5 +57,3 @@ private:
 };
 
 }  // namespace eckit::sql::type
-
-#endif

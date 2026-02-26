@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_Message_H
-#define eckit_Message_H
-
+#pragma once
 #include <string>
 
 #include "eckit/io/Buffer.h"
@@ -82,5 +80,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::distributed
-
-#endif

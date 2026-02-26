@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @date   Jan 1997
 
-#ifndef eckit_cmd_ExportCmd_H
-#define eckit_cmd_ExportCmd_H
-
+#pragma once
 #include "eckit/cmd/CmdResource.h"
 
 //-----------------------------------------------------------------------------
@@ -54,5 +52,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

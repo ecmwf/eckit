@@ -11,9 +11,7 @@
 // File BufferCache.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef eckit_BufferCache_h
-#define eckit_BufferCache_h
-
+#pragma once
 #include <cstdint>
 #include <cstring>
 #include <ctime>
@@ -123,5 +121,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

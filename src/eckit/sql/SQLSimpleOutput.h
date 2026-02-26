@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// @date Dec 2003
 
-#ifndef eckit_sql_SQLSimpleOutput_H
-#define eckit_sql_SQLSimpleOutput_H
-
+#pragma once
 #include "eckit/sql/SQLOutput.h"
 
 namespace eckit::sql {
@@ -71,5 +69,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

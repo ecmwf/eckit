@@ -11,10 +11,7 @@
 /// @author Baudouin Raoult
 /// @date Mar 97
 
-#ifndef eckit_Select_h
-#define eckit_Select_h
-
-
+#pragma once
 #include <sys/select.h>
 
 
@@ -71,5 +68,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

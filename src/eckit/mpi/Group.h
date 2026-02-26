@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Group_h
-#define eckit_mpi_Group_h
-
+#pragma once
 #include <array>
 #include <iosfwd>
 #include <unordered_map>
@@ -145,5 +143,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

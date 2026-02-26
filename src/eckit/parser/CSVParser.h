@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Feb 2019
 
-#ifndef eckit_CSVParser_h
-#define eckit_CSVParser_h
-
+#pragma once
 #include "eckit/parser/StreamParser.h"
 #include "eckit/value/Value.h"
 
@@ -47,5 +45,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

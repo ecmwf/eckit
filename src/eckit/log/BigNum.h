@@ -11,10 +11,7 @@
 // File BigNum.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eckit_BigNum_h
-#define eckit_BigNum_h
-
-
+#pragma once
 #include <iosfwd>
 
 
@@ -50,5 +47,3 @@ private:  // members
 };
 
 }  // namespace eckit
-
-#endif

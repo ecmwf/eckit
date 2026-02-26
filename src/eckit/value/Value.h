@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_Value_h
-#define eckit_Value_h
-
+#pragma once
 #include <list>
 
 #include "eckit/types/Date.h"
@@ -528,5 +526,3 @@ struct VectorPrintSelector<Value> {
 };
 
 }  // namespace eckit
-
-#endif

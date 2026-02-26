@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   June 2017
 
-#ifndef eckit_filesystem_URLHandle_h
-#define eckit_filesystem_URLHandle_h
-
+#pragma once
 #include <memory>
 
 #include "eckit/exception/Exceptions.h"
@@ -85,5 +83,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @date   Dec 2019
 
-#ifndef eckit_net_NetMask_H
-#define eckit_net_NetMask_H
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -43,5 +41,3 @@ private:  // methods
 };
 
 }  // namespace eckit::net
-
-#endif

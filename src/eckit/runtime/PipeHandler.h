@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Jun 96
 
-#ifndef eckit_PipeHandler_h
-#define eckit_PipeHandler_h
-
+#pragma once
 #include "eckit/container/ClassExtent.h"
 #include "eckit/runtime/Dispatcher.h"
 #include "eckit/runtime/ProcessControler.h"
@@ -68,5 +66,3 @@ private:  // members
 }  // namespace eckit
 
 #include "eckit/runtime/PipeHandler.cc"
-
-#endif

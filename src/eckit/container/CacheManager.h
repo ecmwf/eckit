@@ -12,9 +12,7 @@
 /// @author Baudouin Raoult
 /// @date   May 2015
 
-#ifndef eckit_container_CacheManager_h
-#define eckit_container_CacheManager_h
-
+#pragma once
 #include <sys/stat.h>
 
 #include <memory>
@@ -360,5 +358,3 @@ PathName CacheManager<Traits>::getOrCreate(const key_t& key, CacheContentCreator
 
 
 }  // namespace eckit
-
-#endif

@@ -11,9 +11,7 @@
 /// @author Olivier Iffrig
 /// @date   Oct 2019
 
-#ifndef eckit_io_PooledFileDescriptor_h
-#define eckit_io_PooledFileDescriptor_h
-
+#pragma once
 #include <memory>
 
 #include "eckit/filesystem/PathName.h"
@@ -51,5 +49,3 @@ private:
 };
 
 }  // namespace eckit
-
-#endif

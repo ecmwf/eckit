@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosAttributes_h
-#define eckit_io_rados_RadosAttributes_h
-
+#pragma once
 #include <map>
 #include <memory>
 #include <string>
@@ -87,5 +85,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

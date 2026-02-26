@@ -11,9 +11,7 @@
 // File DayOfYear.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eckit_DayOfYear_h
-#define eckit_DayOfYear_h
-
+#pragma once
 #include "eckit/types/Date.h"
 
 //-----------------------------------------------------------------------------
@@ -105,5 +103,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

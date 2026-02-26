@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
-#ifndef eckit_StreamParser_h
-#define eckit_StreamParser_h
-
+#pragma once
 #include <set>
 
 #include "eckit/exception/Exceptions.h"
@@ -73,5 +71,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

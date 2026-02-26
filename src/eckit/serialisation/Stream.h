@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date May 96
 
-#ifndef eckit_Stream_h
-#define eckit_Stream_h
-
+#pragma once
 #include <map>
 #include <string>
 
@@ -215,5 +213,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

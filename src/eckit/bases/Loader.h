@@ -11,9 +11,7 @@
 // File Loader.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_Loader_h
-#define eckit_Loader_h
-
+#pragma once
 #include "eckit/eckit.h"
 
 #include "eckit/container/ClassExtent.h"
@@ -41,5 +39,3 @@ private:  // methods
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

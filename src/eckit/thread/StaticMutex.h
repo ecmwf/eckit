@@ -13,10 +13,7 @@
 /// @author Tiago Quintino
 /// @date   Nov 2016
 
-
-#ifndef eckit_StaticMutex_h
-#define eckit_StaticMutex_h
-
+#pragma once
 #include <pthread.h>
 
 
@@ -55,5 +52,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

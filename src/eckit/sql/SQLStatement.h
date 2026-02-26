@@ -11,9 +11,7 @@
 // File SQLStatement.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLStatement_H
-#define SQLStatement_H
-
+#pragma once
 #include "eckit/sql/expression/SQLExpressions.h"
 
 namespace eckit::sql {
@@ -48,5 +46,3 @@ private:
 };
 
 }  // namespace eckit::sql
-
-#endif

@@ -11,9 +11,7 @@
 // File Length.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_Length_h
-#define eckit_Length_h
-
+#pragma once
 #include <iosfwd>
 #include <vector>
 
@@ -96,5 +94,3 @@ using LengthList = std::vector<Length>;
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

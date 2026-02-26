@@ -13,9 +13,7 @@
 ///
 /// @date May 96
 
-#ifndef eckit_io_DataHandle_h
-#define eckit_io_DataHandle_h
-
+#pragma once
 #include <cstdio>
 
 #include "eckit/filesystem/PathName.h"
@@ -196,5 +194,3 @@ Streamable* Reanimator<DataHandle>::ressucitate(Stream& s) const
 
 
 }  // namespace eckit
-
-#endif

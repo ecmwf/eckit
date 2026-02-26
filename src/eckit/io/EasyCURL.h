@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   June 2017
 
-#ifndef eckit_io_EasyCURL_h
-#define eckit_io_EasyCURL_h
-
+#pragma once
 #include <map>
 
 #include "eckit/io/MemoryHandle.h"
@@ -106,5 +104,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

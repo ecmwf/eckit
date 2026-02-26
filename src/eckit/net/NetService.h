@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   Jun 96
 
-#ifndef eckit_NetService_h
-#define eckit_NetService_h
-
+#pragma once
 #include "eckit/net/TCPServer.h"
 #include "eckit/thread/Thread.h"
 
@@ -55,5 +53,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

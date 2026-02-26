@@ -14,9 +14,7 @@
 /// date April 2009
 /// date January 2019
 
-#ifndef eckit_sql_SchemaAnalyzer_H
-#define eckit_sql_SchemaAnalyzer_H
-
+#pragma once
 #include <set>
 
 #include "eckit/sql/SQLTypedefs.h"
@@ -73,5 +71,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

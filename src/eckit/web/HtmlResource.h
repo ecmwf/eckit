@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_web_HtmlResource_H
-#define eckit_web_HtmlResource_H
-
+#pragma once
 #include <string>
 
 #include "eckit/web/HttpResource.h"
@@ -37,5 +35,3 @@ public:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

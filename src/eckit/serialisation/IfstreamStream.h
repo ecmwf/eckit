@@ -11,9 +11,7 @@
 // File IfstreamStream.h
 // Baudouin Raoult - ECMWF Aug 18
 
-#ifndef eckit_IfstreamStream_h
-#define eckit_IfstreamStream_h
-
+#pragma once
 #include <fstream>
 
 #include "eckit/exception/Exceptions.h"
@@ -65,5 +63,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

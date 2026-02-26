@@ -11,10 +11,7 @@
 // File Exporter.h
 // Baudouin Raoult - (c) ECMWF Oct 10
 
-#ifndef eckit_Exporter_h
-#define eckit_Exporter_h
-
-
+#pragma once
 #include <map>
 #include <vector>
 
@@ -208,5 +205,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

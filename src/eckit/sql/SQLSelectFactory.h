@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_sql_SQLSelectFactory_H
-#define eckit_sql_SQLSelectFactory_H
-
+#pragma once
 #include <memory>
 #include <vector>
 
@@ -84,5 +82,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

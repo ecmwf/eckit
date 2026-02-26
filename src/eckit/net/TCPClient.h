@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Jun 96
 
-#ifndef eckit_TCPClient_h
-#define eckit_TCPClient_h
-
+#pragma once
 #include "eckit/net/TCPSocket.h"
 
 namespace eckit::net {
@@ -55,5 +53,3 @@ private:  // methods
 };
 
 }  // namespace eckit::net
-
-#endif  // TCPClient_H

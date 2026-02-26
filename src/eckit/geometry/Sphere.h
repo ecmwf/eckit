@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef Sphere_H
-#define Sphere_H
-
+#pragma once
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit::geometry {
@@ -62,5 +60,3 @@ struct Sphere {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
-
-#endif

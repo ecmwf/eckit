@@ -15,9 +15,7 @@
 // File FunctionFactory.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef eckit_sql_expression_FunctionFactory_H
-#define eckit_sql_expression_FunctionFactory_H
-
+#pragma once
 #include <memory>
 #include <mutex>
 
@@ -158,5 +156,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql::expression::function
-
-#endif

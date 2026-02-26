@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date May 1996
 
-#ifndef eckit_config_ResourceBase_h
-#define eckit_config_ResourceBase_h
-
+#pragma once
 #include <string>
 
 #include "eckit/utils/Tokenizer.h"
@@ -71,5 +69,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

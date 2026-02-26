@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_SerialRequest_h
-#define eckit_mpi_SerialRequest_h
-
+#pragma once
 #include "eckit/io/Buffer.h"
 #include "eckit/mpi/DataType.h"
 #include "eckit/mpi/Request.h"
@@ -113,5 +111,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

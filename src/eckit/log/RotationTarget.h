@@ -11,9 +11,7 @@
 /// @file RotationTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_RotationTarget_h
-#define eckit_log_RotationTarget_h
-
+#pragma once
 #include <string>
 
 #include "eckit/log/LogTarget.h"
@@ -45,5 +43,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

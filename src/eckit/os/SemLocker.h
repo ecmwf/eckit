@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Dec 2016
 
-#ifndef eckit_os_SemLocker_h
-#define eckit_os_SemLocker_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 
 
@@ -47,5 +45,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

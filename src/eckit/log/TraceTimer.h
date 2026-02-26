@@ -11,9 +11,7 @@
 // File Timer.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_TraceTimer_h
-#define eckit_TraceTimer_h
-
+#pragma once
 #include "eckit/log/Log.h"
 #include "eckit/log/Timer.h"
 
@@ -35,5 +33,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,9 +11,7 @@
 // File Grid.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef eckit_Grid_h
-#define eckit_Grid_h
-
+#pragma once
 #include <string>
 #include <vector>
 
@@ -144,5 +142,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

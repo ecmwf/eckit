@@ -12,9 +12,7 @@
 /// @author Simon Smart
 // @date Dec 03
 
-#ifndef eckit_sql_SQLTable_H
-#define eckit_sql_SQLTable_H
-
+#pragma once
 #include <functional>
 #include <memory>
 
@@ -137,5 +135,3 @@ inline bool operator<(std::reference_wrapper<const SQLTable> lhs, std::reference
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

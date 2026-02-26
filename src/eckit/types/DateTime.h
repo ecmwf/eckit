@@ -12,10 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Sep 96
 
-#ifndef eckit_DateTime_h
-#define eckit_DateTime_h
-
-
+#pragma once
 #include "eckit/types/Date.h"
 #include "eckit/types/Time.h"
 
@@ -97,5 +94,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

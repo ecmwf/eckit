@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef HttpHeader_H
-#define HttpHeader_H
-
+#pragma once
 #include "eckit/eckit.h"
 
 #include "eckit/exception/Exceptions.h"
@@ -122,6 +120,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

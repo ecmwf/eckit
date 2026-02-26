@@ -11,9 +11,7 @@
 // File HandleStream.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef eckit_HandleStream_h
-#define eckit_HandleStream_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/serialisation/Stream.h"
 
@@ -58,5 +56,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

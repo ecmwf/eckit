@@ -11,9 +11,7 @@
 // File Offset.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_Offset_h
-#define eckit_Offset_h
-
+#pragma once
 #include <iosfwd>
 #include <vector>
 
@@ -114,5 +112,3 @@ void accumulate(const LengthList&, OffsetList&, const Offset& = 0);
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

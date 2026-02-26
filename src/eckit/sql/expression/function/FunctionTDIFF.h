@@ -11,9 +11,7 @@
 // File FunctionTDIFF.h
 // ECMWF July 2010
 
-#ifndef FunctionTDIFF_H
-#define FunctionTDIFF_H
-
+#pragma once
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
@@ -48,5 +46,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

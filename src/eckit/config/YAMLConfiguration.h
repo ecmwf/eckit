@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date JUl 2015
 
-#ifndef eckit_YAMLConfiguration_H
-#define eckit_YAMLConfiguration_H
-
+#pragma once
 #include "eckit/config/Configuration.h"
 #include "eckit/io/SharedBuffer.h"
 
@@ -51,5 +49,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

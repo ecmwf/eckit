@@ -11,9 +11,7 @@
 // File BTree.h
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#ifndef eckit_BTree_h
-#define eckit_BTree_h
-
+#pragma once
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <cstring>
@@ -286,5 +284,3 @@ private:
 }  // namespace eckit
 
 #include "BTree.cc"
-
-#endif

@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_MD5_H
-#define eckit_utils_MD5_H
-
+#pragma once
 #ifndef MD5_DIGEST_LENGTH
 #define MD5_DIGEST_LENGTH 16
 #endif
@@ -111,5 +109,3 @@ private:  // members
 };
 
 }  // end namespace eckit
-
-#endif

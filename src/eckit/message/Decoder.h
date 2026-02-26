@@ -11,9 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
-#ifndef eckit_message_Decoder_h
-#define eckit_message_Decoder_h
-
+#pragma once
 #include <iosfwd>
 #include <optional>
 
@@ -75,5 +73,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::message
-
-#endif

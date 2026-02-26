@@ -11,9 +11,7 @@
 // File MappedArray.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eckit_MappedArray_h
-#define eckit_MappedArray_h
-
+#pragma once
 #include <cstdint>
 
 #include "eckit/exception/Exceptions.h"
@@ -93,5 +91,3 @@ private:  // members
 }  // namespace eckit
 
 #include "MappedArray.cc"
-
-#endif

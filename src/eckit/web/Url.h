@@ -10,9 +10,7 @@
 
 /// @author Baudouin Raoult
 
-#ifndef eckit_web_Url_h
-#define eckit_web_Url_h
-
+#pragma once
 #include <map>
 #include <memory>
 
@@ -144,6 +142,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   May 96
 
-#ifndef eckit_ThreadControler_h
-#define eckit_ThreadControler_h
-
+#pragma once
 #include "eckit/runtime/Task.h"
 #include "eckit/thread/MutexCond.h"
 
@@ -63,5 +61,3 @@ private:  // methods
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

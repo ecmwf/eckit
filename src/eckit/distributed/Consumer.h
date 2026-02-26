@@ -13,9 +13,7 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_Consumer_H
-#define eckit_Consumer_H
-
+#pragma once
 #include "eckit/distributed/Actor.h"
 
 namespace eckit::distributed {
@@ -42,5 +40,3 @@ public:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::distributed
-
-#endif

@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_sql_SQLTypes_h
-#define eckit_sql_SQLTypes_h
-
+#pragma once
 #include <cstdint>
 #include <map>
 #include <string>
@@ -24,5 +22,3 @@ using BitfieldDef  = std::pair<FieldNames, Sizes>;
 using BitfieldDefs = std::map<std::string, BitfieldDef>;
 
 }  // namespace eckit::sql
-
-#endif

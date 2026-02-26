@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   July 2017
 
-#ifndef eckit_testing_Test_h
-#define eckit_testing_Test_h
-
+#pragma once
 #include <cerrno>
 #include <cstdlib>  // for setenv
 #include <cstring>  // for strerror
@@ -552,6 +550,3 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 
 //----------------------------------------------------------------------------------------------------------------------
-
-
-#endif  // eckit_testing_Test_h

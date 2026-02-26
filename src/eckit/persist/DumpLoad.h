@@ -11,9 +11,7 @@
 // File DumpLoad.h
 // Baudouin Raoult - ECMWF Sep 99
 
-#ifndef eckit_DumpLoad_h
-#define eckit_DumpLoad_h
-
+#pragma once
 #include <string>
 
 namespace eckit {
@@ -254,5 +252,3 @@ inline void dump(DumpLoad& a, unsigned char b) {
 //--------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

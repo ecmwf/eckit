@@ -13,9 +13,7 @@
 /// @author Simon Smart
 /// @date   June 2011
 
-#ifndef eckit_filesystem_BasePathNameT_h
-#define eckit_filesystem_BasePathNameT_h
-
+#pragma once
 #include "eckit/filesystem/BasePathName.h"
 
 namespace eckit {
@@ -111,5 +109,3 @@ private:
 }  // namespace eckit
 
 #include "eckit/filesystem/BasePathNameT.cc"
-
-#endif

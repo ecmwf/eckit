@@ -13,9 +13,7 @@
 /// @author Baudouin Raoult
 /// @date Dec 2003
 
-#ifndef eckit_sql_SQLDatabase_H
-#define eckit_sql_SQLDatabase_H
-
+#pragma once
 #include <map>
 #include <memory>
 
@@ -121,5 +119,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif  // eckit_sql_SQLDatabase_H

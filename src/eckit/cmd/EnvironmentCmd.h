@@ -12,9 +12,7 @@
 /// @author Manuel Fuentes
 /// @date   Jan 1997
 
-#ifndef eckit_cmd_EnvironmentCmd_H
-#define eckit_cmd_EnvironmentCmd_H
-
+#pragma once
 #include "eckit/cmd/CmdResource.h"
 
 //-----------------------------------------------------------------------------
@@ -53,5 +51,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 96
 
-#ifndef eckit_io_StdFile_h
-#define eckit_io_StdFile_h
-
+#pragma once
 #include <cstdio>
 
 #include "eckit/filesystem/PathName.h"
@@ -68,5 +66,3 @@ public:
 
 
 }  // namespace eckit
-
-#endif

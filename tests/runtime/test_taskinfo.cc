@@ -122,6 +122,64 @@ CASE("TaskInfo correctly initializes all members on placement new") {
     EXPECT(std::all_of(info.message_, info.message_ + sizeof(info.message_), [](auto v) { return v == 0x00; }));
 }
 
+CASE("Info struct binary compatibility") {
+    // The Info struct is persisted to disk via MappedArray and SharedMemArray.
+    // Processes read each other's monitor files by memory-mapping them and
+    // interpreting raw bytes as Info. If the struct layout changes (field sizes,
+    // offsets, or total size), existing files written by older binaries become
+    // unreadable or silently corrupt. These tests ensure that any layout-breaking
+    // change is caught immediately.
+
+    Info info{};
+
+    // Struct sizes
+    EXPECT_EQUAL(sizeof(Info), 11248u);
+    EXPECT_EQUAL(sizeof(Info::Progress), 152u);
+    EXPECT_EQUAL(sizeof(TaskInfo), 12288u);
+    EXPECT_EQUAL(sizeof(Padded<Info, 4096>), 12288u);
+
+    // Circular log buffer constant
+    EXPECT_EQUAL(Info::size_, 10240);
+
+    // Individual field sizes
+    EXPECT_EQUAL(sizeof(info.busy_), 1u);
+    EXPECT_EQUAL(sizeof(info.thread_), 8u);
+    EXPECT_EQUAL(sizeof(info.pid_), 4u);
+    EXPECT_EQUAL(sizeof(info.start_), 8u);
+    EXPECT_EQUAL(sizeof(info.last_), 8u);
+    EXPECT_EQUAL(sizeof(info.check_), 8u);
+    EXPECT_EQUAL(sizeof(info.show_), 1u);
+    EXPECT_EQUAL(sizeof(info.late_), 8u);
+    EXPECT_EQUAL(sizeof(info.buffer_), 10240u);
+    EXPECT_EQUAL(sizeof(info.pos_), 8u);
+    EXPECT_EQUAL(sizeof(info.name_), 80u);
+    EXPECT_EQUAL(sizeof(info.kind_), 80u);
+    EXPECT_EQUAL(sizeof(info.status_), 256u);
+    EXPECT_EQUAL(sizeof(info.application_), 80u);
+    EXPECT_EQUAL(sizeof(info.progress_), 152u);
+    EXPECT_EQUAL(sizeof(info.progress_.name_), 80u);
+    EXPECT_EQUAL(sizeof(info.taskID_), 8u);
+    EXPECT_EQUAL(sizeof(info.cancelMsg_), 80u);
+    EXPECT_EQUAL(sizeof(info.host_), 80u);
+    EXPECT_EQUAL(sizeof(info.message_), 80u);
+    EXPECT_EQUAL(sizeof(info.stop_), 1u);
+    EXPECT_EQUAL(sizeof(info.abort_), 1u);
+    EXPECT_EQUAL(sizeof(info.stoppable_), 1u);
+    EXPECT_EQUAL(sizeof(info.stopped_), 1u);
+    EXPECT_EQUAL(sizeof(info.canceled_), 1u);
+    EXPECT_EQUAL(sizeof(info.exception_), 1u);
+    EXPECT_EQUAL(sizeof(info.config_), 4u);
+    EXPECT_EQUAL(sizeof(info.resource_), 1u);
+    EXPECT_EQUAL(sizeof(info.parent_), 8u);
+    EXPECT_EQUAL(sizeof(info.depth_), 8u);
+    EXPECT_EQUAL(sizeof(info.state_), 1u);
+    EXPECT_EQUAL(sizeof(info.port_), 4u);
+
+    // Type traits
+    EXPECT(std::is_standard_layout_v<Info>);
+    EXPECT(std::is_trivially_copyable_v<Info>);
+}
+
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {

@@ -16,7 +16,9 @@
 #define eckit_TaskInfo_h
 
 #include <sys/time.h>
+#include <cstddef>
 #include <cstring>
+#include <type_traits>
 
 #include "eckit/memory/Padded.h"
 #include "eckit/runtime/TaskID.h"
@@ -28,7 +30,11 @@ class JSON;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @warning This class is written to disk! Any change must ensure binary compatibility.
+/// @warning This struct is memory-mapped to disk by MappedArray and SharedMemArray.
+///          Any change to its layout silently breaks binary compatibility with
+///          existing monitor files. All fields, sizes, and offsets must remain
+///          stable across releases. See memory layout and static_asserts in
+///          TaskInfo.cc.
 struct Info {
     bool busy_{};
     pthread_t thread_{};
@@ -90,6 +96,14 @@ struct Info {
 
     char message_[80]{};
 };
+
+// -- Binary compatibility guards --
+// The Info struct is persisted to disk via MappedArray/SharedMemArray.
+// These type-trait asserts document the API contract for consumers.
+// Size and offset asserts live in TaskInfo.cc (checked once per build).
+
+static_assert(std::is_standard_layout_v<Info>, "Info must be standard layout for memory-mapping");
+static_assert(std::is_trivially_copyable_v<Info>, "Info must be trivially copyable for memory-mapping");
 
 //----------------------------------------------------------------------------------------------------------------------
 

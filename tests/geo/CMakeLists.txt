@@ -4,6 +4,7 @@ foreach(_test
         cache
         figure
         figure_earth
+        gaussian
         great_circle
         grid
         grid_healpix

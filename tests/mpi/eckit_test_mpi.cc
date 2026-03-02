@@ -8,16 +8,30 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fstream>
-#include <numeric>
-
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/io/SharedBuffer.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
+#include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/Comm.h"
+#include "eckit/mpi/Operation.h"
+#include "eckit/mpi/Request.h"
+#include "eckit/mpi/Status.h"
+#include "eckit/runtime/Main.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Types.h"
 
-#include "eckit/testing/Test.h"
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <new>
+#include <numeric>
+#include <sstream>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 using namespace eckit;
 using namespace eckit::types;

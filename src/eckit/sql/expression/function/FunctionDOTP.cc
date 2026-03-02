@@ -10,7 +10,11 @@
 
 #include "eckit/sql/expression/function/FunctionDOTP.h"
 
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <memory>
 
 namespace eckit::sql::expression::function {
 

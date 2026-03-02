@@ -11,15 +11,13 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
-#ifndef eckit_message_Splitter_h
-#define eckit_message_Splitter_h
-
+#pragma once
+#include <cstddef>
 #include <iosfwd>
 #include <mutex>
 #include <vector>
 
 namespace eckit {
-class DataHandle;
 class PeekHandle;
 
 namespace message {
@@ -103,5 +101,3 @@ class SplitterBuilder : public SplitterBuilderBase {
 
 }  // namespace message
 }  // namespace eckit
-
-#endif

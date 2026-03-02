@@ -12,16 +12,14 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosAttributes_h
-#define eckit_io_rados_RadosAttributes_h
+#pragma once
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/utils/Translator.h"
 
 #include <map>
 #include <memory>
 #include <string>
-
-#include "eckit/io/Length.h"
-#include "eckit/io/Offset.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit {
@@ -87,5 +85,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

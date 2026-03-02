@@ -10,7 +10,11 @@
 
 
 #include "eckit/thread/MutexCond.h"
+
 #include "eckit/exception/Exceptions.h"
+
+#include <cerrno>
+#include <ctime>
 
 //----------------------------------------------------------------------------------------------------------------------
 

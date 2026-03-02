@@ -20,16 +20,15 @@
  * eckit::geo::exception::AreaError.
  */
 
-#ifndef eckit_Exceptions_h
-#define eckit_Exceptions_h
+#pragma once
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/SavedStatus.h"
 
 #include <cerrno>
+#include <exception>
 #include <iostream>
 #include <sstream>
-
-#include "eckit/log/CodeLocation.h"
-#include "eckit/log/Log.h"
-#include "eckit/log/SavedStatus.h"
+#include <string>
 
 namespace eckit {
 
@@ -367,5 +366,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

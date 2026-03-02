@@ -8,17 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
-#include "eckit/config/ResourceMgr.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Types.h"
+
+#include <cstdlib>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

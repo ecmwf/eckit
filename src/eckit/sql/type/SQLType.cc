@@ -10,18 +10,18 @@
 
 #include "eckit/sql/type/SQLType.h"
 
-#include <map>
-#include <memory>
-#include <mutex>
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
 #include "eckit/sql/type/SQLDouble.h"
 #include "eckit/sql/type/SQLInt.h"
 #include "eckit/sql/type/SQLReal.h"
 #include "eckit/sql/type/SQLString.h"
-#include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Translator.h"
+
+#include <map>
+#include <memory>
+#include <mutex>
+#include <ostream>
+#include <utility>
 
 using namespace eckit;
 

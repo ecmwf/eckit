@@ -12,10 +12,11 @@
 /// @author Manuel Fuentes
 /// @date   Jan 1997
 
-#ifndef TailCmd_H
-#define TailCmd_H
-
+#pragma once
 #include "eckit/cmd/CmdResource.h"
+
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -49,5 +50,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_AutoLock_h
-#define eckit_AutoLock_h
-
+#pragma once
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
 #include "eckit/log/TraceTimer.h"
@@ -125,5 +123,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

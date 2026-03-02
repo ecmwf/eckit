@@ -12,10 +12,10 @@
 /// @author Tiago Quintino
 /// @date   Dec 2018
 
-#ifndef eckit_serialisation_BadTag_h
-#define eckit_serialisation_BadTag_h
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
+
+#include <string>
 
 namespace eckit {
 
@@ -26,5 +26,3 @@ public:
 };
 
 }  // namespace eckit
-
-#endif

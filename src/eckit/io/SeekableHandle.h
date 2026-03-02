@@ -11,13 +11,13 @@
 // File io/SeekableHandle.h
 // Baudouin Raoult - ECMWF May 2020
 
-#ifndef eckit_filesystem_SeekableHandle_h
-#define eckit_filesystem_SeekableHandle_h
-
-#include <memory>
-
-#include "eckit/io/HandleHolder.h"
+#pragma once
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/PeekHandle.h"
+
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -76,6 +76,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

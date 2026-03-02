@@ -11,10 +11,11 @@
 
 #include "eckit/linalg/allocator/StandardContainerAllocator.h"
 
+#include "eckit/exception/Exceptions.h"
+
 #include <numeric>
 #include <ostream>
-
-#include "eckit/exception/Exceptions.h"
+#include <utility>
 
 
 namespace eckit::linalg::allocator {

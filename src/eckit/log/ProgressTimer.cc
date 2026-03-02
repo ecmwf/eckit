@@ -9,9 +9,12 @@
  */
 
 #include "eckit/log/ProgressTimer.h"
+
 #include "eckit/log/ETA.h"
 #include "eckit/log/Plural.h"
 #include "eckit/log/Seconds.h"
+
+#include <ostream>
 
 
 namespace eckit {

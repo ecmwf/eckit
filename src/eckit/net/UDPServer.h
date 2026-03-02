@@ -8,16 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_net_UDPServer_h
-#define eckit_net_UDPServer_h
+#pragma once
 
+#include "eckit/io/Buffer.h"
+
+#include <cstddef>
 #include <iosfwd>
 #include <string>
+#include <sys/socket.h>
 
 
 namespace eckit {
-
-class Buffer;
 
 namespace net {
 
@@ -59,6 +60,3 @@ private:  // members
 
 }  // namespace net
 }  // namespace eckit
-
-
-#endif

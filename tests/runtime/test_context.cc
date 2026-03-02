@@ -8,9 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-
 #include "eckit/testing/Test.h"
+
+#include <ostream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

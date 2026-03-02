@@ -10,6 +10,7 @@
 
 
 #include "eckit/container/Trie.h"
+
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {

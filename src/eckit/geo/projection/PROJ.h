@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <memory>
-
 #include "eckit/geo/Projection.h"
+
+#include <memory>
 
 
 namespace eckit::geo::projection {

@@ -8,12 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#include <list>
-
+#include "eckit/container/KDMemory.h"
 #include "eckit/container/KDTree.h"
+#include "eckit/container/kdtree/KDNode.h"
+#include "eckit/container/sptree/SPNodeInfo.h"
+#include "eckit/container/sptree/SPValue.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geometry/Point2.h"
-#include "eckit/os/Semaphore.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <list>
+#include <ostream>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

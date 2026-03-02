@@ -11,8 +11,9 @@
 /// @file UserChannel.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_UserChannel_h
-#define eckit_log_UserChannel_h
+#pragma once
+#include <ostream>
+#include <string>
 
 namespace eckit {
 
@@ -69,5 +70,3 @@ protected:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,11 +12,14 @@
 
 #pragma once
 
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/container/PointsContainer.h"
+
 #include <cstddef>
 #include <memory>
-
-#include "eckit/geo/Grid.h"
-#include "eckit/geo/container/PointsContainer.h"
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::iterator {

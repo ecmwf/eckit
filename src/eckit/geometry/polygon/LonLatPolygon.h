@@ -10,10 +10,10 @@
 
 #pragma once
 
+#include "eckit/geometry/Point2.h"
+
 #include <iosfwd>
 #include <vector>
-
-#include "eckit/geometry/Point2.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 

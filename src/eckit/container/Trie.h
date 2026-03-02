@@ -13,10 +13,7 @@
 /// @author Simon Smart
 /// @date March 2017
 
-
-#ifndef eckit_containers_Trie_H
-#define eckit_containers_Trie_H
-
+#pragma once
 #include <ostream>
 #include <vector>
 
@@ -80,5 +77,3 @@ private:  // friends
 
 
 #include "Trie.cc"
-
-#endif  // eckit_containers_Trie_H

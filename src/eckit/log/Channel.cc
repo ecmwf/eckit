@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
-
 #include "eckit/log/Channel.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/ChannelBuffer.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 

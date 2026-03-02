@@ -12,9 +12,7 @@
 /// @author Simon Smart
 /// @date Aug 2018
 
-#ifndef eckit_log_Number_H
-#define eckit_log_Number_H
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -37,5 +35,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::log
-
-#endif

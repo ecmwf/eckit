@@ -8,13 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/utils/StringTools.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/utils/Tokenizer.h"
+
 #include <algorithm>
 #include <cctype>
 #include <cstring>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/StringTools.h"
-#include "eckit/utils/Tokenizer.h"
+#include <sstream>
+#include <utility>
 
 
 namespace eckit {

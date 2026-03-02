@@ -12,9 +12,10 @@
 
 #pragma once
 
-#include <vector>
-
 #include "eckit/system/Library.h"
+
+#include <string>
+#include <vector>
 
 
 namespace eckit {

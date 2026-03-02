@@ -8,15 +8,22 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstddef>
-#include <cstring>
-#include <iterator>
+#include "eckit/web/HttpStream.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/thread/Mutex.h"
-#include "eckit/web/HttpStream.h"
+#include "eckit/net/HttpHeader.h"
+#include "eckit/types/Types.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdio>
+#include <cstring>
+#include <iterator>
+#include <vector>
 
 namespace eckit {
 

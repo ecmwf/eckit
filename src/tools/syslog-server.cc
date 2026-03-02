@@ -2,27 +2,18 @@
 ** syslog-server.c -- a datagram sockets "server" demo
 */
 
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
-#include "eckit/eckit.h"
-
 #include "eckit/config/Resource.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/Port.h"
 #include "eckit/net/UDPServer.h"
 #include "eckit/runtime/Application.h"
-#include "eckit/utils/Translator.h"
+
+#include <cstdio>
+#include <ostream>
+#include <string>
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -11,10 +11,11 @@
 // File FunctionTIMESTAMP.h
 // ECMWF July 2010
 
-#ifndef FunctionTIMESTAMP_H
-#define FunctionTIMESTAMP_H
-
+#pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
+
+#include <string>
 
 namespace eckit::sql::expression::function {
 
@@ -46,5 +47,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

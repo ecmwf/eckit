@@ -10,13 +10,18 @@
 
 
 #include "eckit/io/MoverTransferSelection.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/cluster/ClusterNodes.h"
-
+#include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-
 #include "eckit/runtime/Metrics.h"
+#include "eckit/types/Types.h"
+
+#include <ostream>
+#include <utility>
 
 
 namespace eckit {

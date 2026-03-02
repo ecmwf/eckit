@@ -8,15 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-
 #include "eckit/eckit_config.h"
-
-#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/YAMLParser.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/value/Content.h"
+#include "eckit/value/Value.h"
+
+#include <cmath>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

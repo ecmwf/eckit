@@ -11,13 +11,13 @@
 /// @author Baudouin Raoult
 /// @date   Oct 96
 
-#ifndef eckit_utils_HyperCube_h
-#define eckit_utils_HyperCube_h
-
-#include <numeric>
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/Types.h"
+
+#include <functional>
+#include <numeric>
+#include <vector>
 
 
 namespace eckit {
@@ -106,5 +106,3 @@ inline void HyperCube::combine(Remapping& map1, const Remapping& map2) {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

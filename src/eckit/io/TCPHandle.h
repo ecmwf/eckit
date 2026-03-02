@@ -11,11 +11,14 @@
 // File io/TCPHandle.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_filesystem_TCPHandle_h
-#define eckit_filesystem_TCPHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/net/TCPClient.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -79,5 +82,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
-
 #include "eckit/log/LogTarget.h"
+
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 

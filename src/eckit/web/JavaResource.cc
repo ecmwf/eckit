@@ -9,12 +9,15 @@
  */
 
 
-#include <fstream>
+#include "eckit/web/JavaResource.h"
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/log/Log.h"
+#include "eckit/net/HttpHeader.h"
 #include "eckit/web/HttpStream.h"
-#include "eckit/web/JavaResource.h"
 #include "eckit/web/Url.h"
+
+#include <fstream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

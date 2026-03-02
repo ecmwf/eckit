@@ -11,19 +11,19 @@
 // File Exporter.h
 // Baudouin Raoult - (c) ECMWF Oct 10
 
-#ifndef eckit_Exporter_h
-#define eckit_Exporter_h
+#pragma once
+#include "eckit/io/DataHandle.h"
 
-
+#include <cstddef>
+#include <iosfwd>
 #include <map>
+#include <string>
 #include <vector>
 
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class DataHandle;
 
 class Exporter {
 
@@ -208,5 +208,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

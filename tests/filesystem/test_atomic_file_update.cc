@@ -8,17 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fstream>
-#include <string>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/io/DataHandle.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/JSON.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/JSONParser.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/value/Value.h"
+
+#include <fstream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 using namespace eckit::testing;

@@ -12,14 +12,23 @@
 
 #include "eckit/geo/grid/regular/RegularXY.h"
 
-#include <memory>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/geo/Projection.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/Shape.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <memory>
+#include <variant>
+#include <vector>
 
 
 namespace eckit::geo::grid::regular {

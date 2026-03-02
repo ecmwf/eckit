@@ -12,15 +12,17 @@
 
 #include "eckit/geo/order/HEALPix.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/log/CodeLocation.h"
+
 #include <bitset>
 #include <cmath>
 #include <cstdint>
 #include <numeric>
 #include <tuple>
-
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/grid/reduced/HEALPix.h"
-#include "eckit/spec/Spec.h"
+#include <vector>
 
 
 namespace eckit::geo::order {

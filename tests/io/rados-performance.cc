@@ -8,14 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cassert>
-#include <cstdio>
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <locale>
-#include <memory>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
@@ -25,8 +17,15 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
-
 #include "eckit/testing/Test.h"
+
+#include <cassert>
+#include <cstdio>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <locale>
+#include <memory>
 
 using namespace std;
 using namespace eckit;

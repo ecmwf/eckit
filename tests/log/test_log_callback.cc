@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/os/BackTrace.h"
-#include "eckit/runtime/Main.h"
-
 #include "eckit/testing/Test.h"
+
+#include <iostream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

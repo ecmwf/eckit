@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_Once_h
-#define eckit_Once_h
-
+#pragma once
 #include <pthread.h>
 
 
@@ -98,5 +96,3 @@ void Once<T>::init() {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

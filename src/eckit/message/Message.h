@@ -11,20 +11,19 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
-#ifndef metkit_data_Message_H
-#define metkit_data_Message_H
-
-#include <iosfwd>
-#include <vector>
-
+#pragma once
 #include "eckit/io/Buffer.h"
+#include "eckit/io/Offset.h"
 #include "eckit/message/Decoder.h"
 #include "eckit/types/Types.h"
 
+#include <cstddef>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 namespace eckit {
 class DataHandle;
-class Offset;
-class PathName;
 };  // namespace eckit
 
 namespace eckit {
@@ -36,7 +35,6 @@ class MarsRequest;
 namespace message {
 
 class MessageContent;
-class CodesContent;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -146,5 +144,3 @@ public:
 
 }  // namespace message
 }  // namespace eckit
-
-#endif

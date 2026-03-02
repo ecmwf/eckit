@@ -10,12 +10,12 @@
 
 #pragma once
 
-#include <string>
-#include <type_traits>
-#include <typeinfo>
-
 #include "eckit/codec/detail/demangle.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <string>
+#include <type_traits>
 
 namespace eckit::codec {
 

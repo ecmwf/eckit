@@ -12,14 +12,13 @@
 /// @author Tiago Quintino
 /// @date Jun 2014
 
-#ifndef eckit_Properties_h
-#define eckit_Properties_h
+#pragma once
+#include "eckit/serialisation/Stream.h"
+#include "eckit/value/Value.h"
 
+#include <iosfwd>
 #include <map>
 #include <string>
-
-#include "eckit/value/Params.h"
-#include "eckit/value/Value.h"
 
 namespace eckit {
 
@@ -113,5 +112,3 @@ protected:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -9,25 +9,27 @@
  */
 
 
-#include <unistd.h>
-
-#include "eckit/log/Log.h"
-#include "eckit/log/Plural.h"
-#include "eckit/log/Seconds.h"
-#include "eckit/log/TimeStamp.h"
-#include "eckit/runtime/Main.h"
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/io/Select.h"
-#include "eckit/net/TCPClient.h"
-#include "eckit/net/TCPStream.h"
-#include "eckit/option/CmdArgs.h"
-#include "eckit/os/AutoAlarm.h"
+#include "eckit/distributed/tcp/TCPTransport.h"
 
 #include "eckit/distributed/Actor.h"
 #include "eckit/distributed/Message.h"
 #include "eckit/distributed/Transport.h"
-#include "eckit/distributed/tcp/TCPTransport.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Select.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/log/Plural.h"
+#include "eckit/log/TimeStamp.h"
+#include "eckit/net/TCPClient.h"
+#include "eckit/net/TCPSocket.h"
+#include "eckit/net/TCPStream.h"
+#include "eckit/option/CmdArgs.h"
+#include "eckit/runtime/Main.h"
+
+#include <sstream>
+#include <string>
+#include <unistd.h>
+#include <utility>
 
 using namespace eckit;
 using namespace eckit::net;

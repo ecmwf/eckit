@@ -8,15 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <csignal>
-
 #include "eckit/net/ProxiedTCPServer.h"
 
-#include "eckit/io/Select.h"
-#include "eckit/log/Log.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/net/TCPSocket.h"
+
+#include <ostream>
 
 
 namespace eckit {

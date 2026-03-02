@@ -9,13 +9,17 @@
  */
 
 
-#include <regex>
-
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
+
+#include <ostream>
+#include <regex>
+#include <string>
+#include <vector>
 
 
 namespace eckit::tools {

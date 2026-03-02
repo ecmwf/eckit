@@ -11,10 +11,13 @@
 // File JavaAgent.h
 // Baudouin Raoult - ECMWF Nov 97
 
-#ifndef JavaAgent_H
-#define JavaAgent_H
-
+#pragma once
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/serialisation/Streamable.h"
+
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -91,5 +94,3 @@ Streamable* Reanimator<JavaAgent>::ressucitate(Stream& s) const;
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

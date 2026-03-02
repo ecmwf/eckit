@@ -11,9 +11,8 @@
 // File Fraction.h
 // Baudouin Raoult - ECMWF Mar 16
 
-#ifndef eckit_Fraction_h
-#define eckit_Fraction_h
-
+#pragma once
+#include <cstddef>
 #include <iosfwd>
 #include <string>
 
@@ -293,5 +292,3 @@ bool operator>=(T n, const Fraction& f) {
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

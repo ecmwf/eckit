@@ -10,17 +10,17 @@
  */
 
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/maths/ConvexHull.h"
+#include "eckit/maths/ConvexHullN.h"
+#include "eckit/testing/Test.h"
+
 #include <algorithm>
 #include <array>
 #include <memory>
 #include <numeric>
 #include <set>
 #include <vector>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/maths/ConvexHull.h"
-#include "eckit/maths/ConvexHullN.h"
-#include "eckit/testing/Test.h"
 
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -14,6 +14,8 @@
 
 #include "eckit/system/Library.h"
 
+#include <string>
+
 
 namespace eckit {
 

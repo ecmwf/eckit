@@ -11,10 +11,11 @@
 // File CgiResource.h
 // Baudouin Raoult - ECMWF Sep 97
 
-#ifndef CgiResource_H
-#define CgiResource_H
-
+#pragma once
 #include "eckit/web/HtmlResource.h"
+
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -41,5 +42,3 @@ protected:  // overridden methods
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

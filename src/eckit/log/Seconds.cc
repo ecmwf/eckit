@@ -8,11 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-#include <iostream>
-#include <sstream>
-
 #include "eckit/log/Seconds.h"
+
+#include <cmath>
+#include <sstream>
 
 namespace eckit {
 

@@ -9,14 +9,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-
 #include "eckit/log/Channel.h"
 #include "eckit/log/ColouringTarget.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/runtime/Main.h"
-
 #include "eckit/testing/Test.h"
+
+#include <iostream>
 
 using namespace std;
 using namespace eckit;

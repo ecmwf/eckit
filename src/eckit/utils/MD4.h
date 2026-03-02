@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_MD4_H
-#define eckit_utils_MD4_H
-
+#pragma once
 #include "eckit/eckit.h"
 
 #if eckit_HAVE_SSL
@@ -60,5 +58,3 @@ private:  // members
 };
 
 }  // end namespace eckit
-
-#endif

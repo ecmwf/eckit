@@ -11,13 +11,15 @@
 /// \File FunctionRLIKE.h
 /// Piotr Kuchta - ECMWF Sep 2014
 
-#ifndef FunctionRLIKE_H
-#define FunctionRLIKE_H
-
-#include <memory>
-
+#pragma once
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
 #include "eckit/utils/Regex.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
 
 namespace eckit::sql::expression::function {
 
@@ -54,5 +56,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

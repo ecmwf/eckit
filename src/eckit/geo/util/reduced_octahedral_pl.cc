@@ -13,6 +13,10 @@
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util.h"
 
+#include <cstddef>
+#include <utility>
+#include <vector>
+
 
 namespace eckit::geo::util {
 

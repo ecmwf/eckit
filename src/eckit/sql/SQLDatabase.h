@@ -13,15 +13,19 @@
 /// @author Baudouin Raoult
 /// @date Dec 2003
 
-#ifndef eckit_sql_SQLDatabase_H
-#define eckit_sql_SQLDatabase_H
-
-#include <map>
-#include <memory>
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/SchemaAnalyzer.h"
+
+#include <functional>
+#include <map>
+#include <memory>
+#include <ostream>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit::sql {
 
@@ -29,7 +33,6 @@ namespace eckit::sql {
 
 // Forward declarations
 
-class SQLStatement;
 namespace expression {
 class SQLExpression;
 }
@@ -121,5 +124,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif  // eckit_sql_SQLDatabase_H

@@ -5,9 +5,7 @@
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
  */
 
-#ifndef CoordinateHelpers_H
-#define CoordinateHelpers_H
-
+#pragma once
 namespace eckit::geometry {
 
 class Point2;
@@ -43,5 +41,3 @@ void assert_latitude_range(double lat);
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
-
-#endif  // CoordinateHelpers_H

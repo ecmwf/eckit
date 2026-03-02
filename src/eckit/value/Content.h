@@ -11,15 +11,17 @@
 // File Content.h
 // Manuel Fuentes - ECMWF Jun 96
 
-#ifndef eckit_Content_h
-#define eckit_Content_h
+#pragma once
+#include "eckit/memory/Counted.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/serialisation/Streamable.h"
 
+#include <cstddef>
+#include <iosfwd>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "eckit/memory/Counted.h"
-#include "eckit/serialisation/Streamable.h"
 
 
 namespace eckit {
@@ -266,5 +268,3 @@ Streamable* Reanimator<Content>::ressucitate(Stream& s) const
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_Content_h

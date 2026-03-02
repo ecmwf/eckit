@@ -12,13 +12,14 @@
 /// @author Tiago Quintino
 /// @date Feb 97
 
-#ifndef eckit_DblBuffer_h
-#define eckit_DblBuffer_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/TransferWatcher.h"
 #include "eckit/thread/Mutex.h"
+
+#include <string>
 
 
 namespace eckit {
@@ -77,5 +78,3 @@ private:  // members
 
 
 }  // namespace eckit
-
-#endif

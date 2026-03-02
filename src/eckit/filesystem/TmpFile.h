@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Sep 2001
 
-#ifndef eckit_TmpFile_h
-#define eckit_TmpFile_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 
 
@@ -42,5 +40,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,11 +11,8 @@
 // File FileBase.h
 // Baudouin Raoult - ECMWF Jun 97
 
-#ifndef eckit_FileBase_h
-#define eckit_FileBase_h
-
+#pragma once
 #include "eckit/eckit.h"
-
 #include "eckit/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------
@@ -120,5 +117,3 @@ private:
 }  // namespace eckit
 
 #include "eckit/io/FileBase.cc"
-
-#endif

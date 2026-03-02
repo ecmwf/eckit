@@ -8,12 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstdlib>
+#include "eckit/utils/Translator.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
-#include "eckit/utils/Translator.h"
+
+#include <cctype>
+#include <cerrno>
+#include <cstdlib>
+#include <sstream>
+#include <wctype.h>
 
 namespace eckit {
 

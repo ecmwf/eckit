@@ -10,15 +10,20 @@
  */
 
 
-#include <memory>
-#include <string>
-#include <vector>
-
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/unstructured/ICON.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
+
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::test {

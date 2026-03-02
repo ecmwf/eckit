@@ -9,7 +9,6 @@
  */
 
 #include "eckit/maths/Eigen.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

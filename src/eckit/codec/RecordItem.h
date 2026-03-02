@@ -12,13 +12,14 @@
 
 #pragma once
 
-#include <cstdint>
-#include <memory>
-#include <string>
-
 #include "eckit/codec/Data.h"
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/detail/tag.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <string>
 
 namespace eckit::codec {
 

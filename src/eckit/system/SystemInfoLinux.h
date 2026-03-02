@@ -12,12 +12,11 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_system_SystemInfoLinux_H
-#define eckit_system_SystemInfoLinux_H
+#pragma once
+#include "eckit/system/SystemInfo.h"
 
 #include <iosfwd>
-
-#include "eckit/system/SystemInfo.h"
+#include <string>
 
 namespace eckit {
 namespace system {
@@ -48,5 +47,3 @@ private:  // members
 
 }  // namespace system
 }  // namespace eckit
-
-#endif

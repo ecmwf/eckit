@@ -8,22 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-#include <cstring>
-
-#include "eckit/eckit.h"
-
-#include "eckit/config/LibEcKit.h"
-#include "eckit/config/Resource.h"
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/DblBuffer.h"
-#include "eckit/io/MoverTransfer.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Progress.h"
-#include "eckit/log/Timer.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
+
+#include <cstdio>
+#include <cstring>
+#include <exception>
+#include <sstream>
+#include <string>
+#include <sys/types.h>
 
 namespace eckit {
 

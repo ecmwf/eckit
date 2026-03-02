@@ -12,10 +12,10 @@
 // @author Simon Smart
 // @date Dec 03
 
-#ifndef eckit_sql_NumberExpression_H
-#define eckit_sql_NumberExpression_H
-
+#pragma once
 #include "eckit/sql/expression/SQLExpression.h"
+
+#include <iosfwd>
 
 namespace eckit::sql::expression {
 
@@ -55,5 +55,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql::expression
-
-#endif

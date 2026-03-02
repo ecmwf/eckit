@@ -13,17 +13,16 @@
 #include "eckit/geo/cache/Download.h"
 
 #include "eckit/eckit_config.h"
-
-#include <fstream>
-#include <iterator>
-
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/io/Length.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Timer.h"
 #include "eckit/utils/MD5.h"
+
+#include <fstream>
 
 #if eckit_HAVE_CURL
 #include "eckit/io/URLHandle.h"

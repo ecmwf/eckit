@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Sep 2012
 
-#ifndef eckit_Tool_h
-#define eckit_Tool_h
-
+#pragma once
 #include "eckit/runtime/Main.h"
 
 namespace eckit {
@@ -48,5 +46,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

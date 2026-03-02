@@ -12,11 +12,14 @@
 /// @author Tiago Quintino
 /// @date   Feb 2019
 
-#ifndef eckit_CSVParser_h
-#define eckit_CSVParser_h
-
+#pragma once
+#include "eckit/filesystem/PathName.h"
 #include "eckit/parser/StreamParser.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -47,5 +50,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

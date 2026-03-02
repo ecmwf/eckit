@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Operation_h
-#define eckit_mpi_Operation_h
-
+#pragma once
 namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -38,5 +36,3 @@ Operation::Code minloc();
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

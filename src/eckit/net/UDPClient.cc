@@ -8,23 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <cerrno>
-#include <cstdlib>
-
-#include <cstring>
-#include <iostream>
+#include "eckit/net/UDPClient.h"
 
 #include "eckit/config/Configuration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
-#include "eckit/net/UDPClient.h"
 #include "eckit/utils/Translator.h"
+
+#include <cstring>
+#include <netdb.h>
+#include <sstream>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace eckit::net {
 

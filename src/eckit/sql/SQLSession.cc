@@ -8,23 +8,27 @@
  * does it submit to any jurisdiction.
  */
 
-#include <libgen.h>
-#include <cstring>
+#include "eckit/sql/SQLSession.h"
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/FileHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/Timer.h"
-#include "eckit/utils/StringTools.h"
-
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLParser.h"
-#include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/SQLTableFactory.h"
+#include "eckit/utils/StringTools.h"
+
+#include <cstring>
+#include <utility>
 
 using namespace eckit;
 

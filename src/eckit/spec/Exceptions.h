@@ -13,6 +13,9 @@
 #pragma once
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <string>
 
 
 namespace eckit::spec::exception {

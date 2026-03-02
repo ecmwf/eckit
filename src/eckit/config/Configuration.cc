@@ -13,11 +13,14 @@
 /// @date   July 2015
 
 #include "eckit/config/Configuration.h"
+
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/value/Value.h"
+
+#include <sstream>
 
 namespace eckit {
 

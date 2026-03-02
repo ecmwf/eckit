@@ -8,20 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_web_Html_H
-#define eckit_web_Html_H
-
-#include <map>
-#include <string>
-
+#pragma once
 #include "eckit/web/HtmlObject.h"
+
+#include <functional>
+#include <map>
+#include <ostream>
+#include <string>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Url;
 
 class Html {
 public:
@@ -368,6 +366,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

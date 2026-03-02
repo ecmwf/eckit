@@ -11,13 +11,11 @@
 /// @file MonitorTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_MonitorTarget_h
-#define eckit_log_MonitorTarget_h
+#pragma once
+#include "eckit/log/LogTarget.h"
+#include "eckit/log/WrapperTarget.h"
 
 #include <iosfwd>
-#include <utility>
-
-#include "eckit/log/WrapperTarget.h"
 
 namespace eckit {
 
@@ -43,5 +41,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

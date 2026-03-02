@@ -11,14 +11,12 @@
 // File MappedArray.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eckit_MappedArray_h
-#define eckit_MappedArray_h
-
-#include <cstdint>
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/os/Semaphore.h"
+
+#include <cstdint>
 
 
 namespace eckit {
@@ -93,5 +91,3 @@ private:  // members
 }  // namespace eckit
 
 #include "MappedArray.cc"
-
-#endif

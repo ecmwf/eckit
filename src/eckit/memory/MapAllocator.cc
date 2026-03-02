@@ -8,14 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/mman.h>
-#include <unistd.h>
-
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/memory/MapAllocator.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/memory/MMap.h"
+
+#include <algorithm>
+#include <string>
+#include <sys/mman.h>
+#include <unistd.h>
 
 namespace eckit {
 

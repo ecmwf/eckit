@@ -10,6 +10,12 @@
 
 #include "eckit/cmd/ManCmd.h"
 
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
+#include "eckit/value/Value.h"
+
+#include <ostream>
+
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {

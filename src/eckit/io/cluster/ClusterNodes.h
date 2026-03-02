@@ -11,21 +11,21 @@
 // File ClusterNodes.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef eckit_ClusterNodes_h
-#define eckit_ClusterNodes_h
-
-#include "eckit/eckit.h"
-
+#pragma once
 #include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <set>
+#include <string>
+#include <vector>
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class Stream;
-class JSON;
 
 class ClusterNodes {
 public:
@@ -64,5 +64,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

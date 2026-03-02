@@ -11,19 +11,19 @@
 // File SQLColumn.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLColumn_H
-#define SQLColumn_H
-
-namespace eckit {
-class PathName;
-}
-
+#pragma once
 #include "eckit/sql/SQLIterator.h"
 #include "eckit/sql/SQLTypedefs.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace eckit::sql {
 
-class SQLBitColumn;
 class SQLTable;
 
 class SQLColumn : public SQLIterator {
@@ -104,5 +104,3 @@ protected:
 };
 
 }  // namespace eckit::sql
-
-#endif

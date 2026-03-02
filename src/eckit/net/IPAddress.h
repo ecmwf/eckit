@@ -11,13 +11,10 @@
 /// @author Baudouin Raoult
 /// @date   Dec 2019
 
-#ifndef eckit_net_IPAddress_H
-#define eckit_net_IPAddress_H
-
+#pragma once
 #include <iosfwd>
-#include <string>
-
 #include <netinet/in.h>
+#include <string>
 
 namespace eckit::net {
 
@@ -56,5 +53,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

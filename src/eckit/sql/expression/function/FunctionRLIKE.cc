@@ -9,11 +9,13 @@
  */
 
 #include "eckit/sql/expression/function/FunctionRLIKE.h"
+
 #include "eckit/exception/Exceptions.h"
-#include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/Regex.h"
+
+#include <cctype>
 
 namespace eckit::sql::expression::function {
 

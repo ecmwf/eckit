@@ -8,17 +8,25 @@
  * does it submit to any jurisdiction.
  */
 
-#include <map>
+#include "eckit/web/HttpResource.h"
 
-#include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/JSON.h"
+#include "eckit/log/Log.h"
+#include "eckit/net/HttpHeader.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/types/Types.h"
 #include "eckit/web/Html.h"
-#include "eckit/web/HttpResource.h"
 #include "eckit/web/HttpStream.h"
 #include "eckit/web/Url.h"
+
+#include <map>
+#include <sstream>
+#include <utility>
+#include <vector>
 
 
 namespace eckit {

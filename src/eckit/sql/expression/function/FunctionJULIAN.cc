@@ -10,9 +10,12 @@
 
 #include "eckit/sql/expression/function/FunctionJULIAN.h"
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/type/SQLType.h"
 #include "eckit/types/Date.h"
+
+#include <memory>
 
 namespace eckit::sql::expression::function {
 

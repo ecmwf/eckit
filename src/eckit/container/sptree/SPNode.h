@@ -8,14 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef SPNode_H
-#define SPNode_H
-
-#include "eckit/eckit.h"
-
+#pragma once
 #include "eckit/container/sptree/SPNodeInfo.h"
 #include "eckit/container/sptree/SPNodeQueue.h"
 #include "eckit/container/sptree/SPValue.h"
+#include "eckit/eckit.h"
 
 namespace eckit {
 
@@ -112,5 +109,3 @@ public:
 }  // namespace eckit
 
 #include "SPNode.cc"
-
-#endif

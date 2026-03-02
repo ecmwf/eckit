@@ -13,10 +13,13 @@
 /// @date Nov 2011
 /// @date Aug 2018
 
-#ifndef eckit_sql_expressiono_SQLExpressionEvaluated_H
-#define eckit_sql_expressiono_SQLExpressionEvaluated_H
-
+#pragma once
 #include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace eckit::sql::expression {
 
@@ -65,5 +68,3 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql::expression
-
-#endif

@@ -10,11 +10,11 @@
 
 #include "eckit/linalg/Vector.h"
 
-#include <cstring>
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <cstring>
+#include <utility>
 
 namespace eckit::linalg {
 

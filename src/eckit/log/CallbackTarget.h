@@ -11,13 +11,10 @@
 /// @file CallbackTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_CallbackTarget_h
-#define eckit_log_CallbackTarget_h
+#pragma once
+#include "eckit/log/LineBasedTarget.h"
 
 #include <iosfwd>
-#include <utility>
-
-#include "eckit/log/LineBasedTarget.h"
 
 namespace eckit {
 
@@ -47,5 +44,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

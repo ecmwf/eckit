@@ -11,13 +11,14 @@
 /// @author Baudouin Raoult
 /// @date May 96
 
-#ifndef eckit_Stream_h
-#define eckit_Stream_h
+#pragma once
+#include "eckit/thread/Mutex.h"
 
+#include <cstddef>
+#include <exception>
+#include <iosfwd>
 #include <map>
 #include <string>
-
-#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -215,5 +216,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

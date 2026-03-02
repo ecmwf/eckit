@@ -11,10 +11,11 @@
 /// @author Manuel Fuentes
 /// @date   Jan 1997
 
-#ifndef eckit_cmd_AliasCmd_H
-#define eckit_cmd_AliasCmd_H
-
+#pragma once
 #include "eckit/cmd/CmdResource.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -52,5 +53,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -8,11 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-
 #include "eckit/container/DenseMap.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/testing/Test.h"
+
+#include <deque>
+#include <iterator>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

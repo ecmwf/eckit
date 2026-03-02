@@ -13,11 +13,14 @@
 /// @date Dec 2003
 /// @date Aug 2018
 
-#ifndef eckit_sql_SQLDistinctOutput_H
-#define eckit_sql_SQLDistinctOutput_H
-
-
+#pragma once
 #include "eckit/sql/SQLOutput.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <iosfwd>
+#include <set>
+#include <vector>
 
 namespace eckit::sql {
 
@@ -86,5 +89,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <complex>
-#include <utility>
-
 #include "eckit/mpi/DataType.h"
+
+#include <complex>
+#include <iterator>
+#include <utility>
 
 namespace eckit::mpi {
 

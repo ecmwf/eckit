@@ -8,12 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
+#include "eckit/io/CircularBuffer.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/CircularBuffer.h"
 #include "eckit/maths/Functions.h"
 #include "eckit/thread/AutoLock.h"
+
+#include <algorithm>
+#include <cstring>
+#include <sstream>
+#include <string>
 
 namespace eckit {
 

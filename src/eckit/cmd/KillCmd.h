@@ -12,10 +12,12 @@
 /// @author Baudouin Raoult
 /// @date   Jan 1997
 
-#ifndef eckit_cmd_KillCmd_H
-#define eckit_cmd_KillCmd_H
-
+#pragma once
 #include "eckit/cmd/CmdResource.h"
+
+#include <iosfwd>
+#include <string>
+#include <sys/types.h>
 
 //-----------------------------------------------------------------------------
 
@@ -58,5 +60,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

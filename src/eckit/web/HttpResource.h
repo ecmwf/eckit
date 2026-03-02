@@ -10,19 +10,19 @@
 
 /// @author Baudouin Raoult
 
-#ifndef eckit_web_HttpResource_H
-#define eckit_web_HttpResource_H
-
-#include <string>
-
+#pragma once
+#include "eckit/serialisation/Stream.h"
+#include "eckit/web/Html.h"
 #include "eckit/web/HtmlObject.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Stream;
 class HttpStream;
 
 class HttpResource : public HtmlObject {
@@ -56,5 +56,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

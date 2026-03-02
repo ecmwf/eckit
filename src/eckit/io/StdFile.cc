@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstdio>
+#include "eckit/io/StdFile.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/io/StdFile.h"
+
+#include <cstdio>
 
 namespace eckit {
 

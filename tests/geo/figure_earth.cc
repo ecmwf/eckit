@@ -10,15 +10,20 @@
  */
 
 
-#include <cmath>
-#include <memory>
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Figure.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <cmath>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::test {

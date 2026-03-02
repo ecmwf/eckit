@@ -13,12 +13,11 @@
 /// @author Tiago Quintino
 /// @date   Jun 1996
 
-#ifndef eckit_Translator_h
-#define eckit_Translator_h
-
+#pragma once
 #include <set>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace eckit {
@@ -243,5 +242,3 @@ inline constexpr bool IsTranslatable_v = IsTranslatable<From, To>::value;
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

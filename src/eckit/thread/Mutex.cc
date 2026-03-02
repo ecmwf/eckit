@@ -9,7 +9,12 @@
  */
 
 #include "eckit/thread/Mutex.h"
+
 #include "eckit/exception/Exceptions.h"
+
+#include <cerrno>
+#include <cstdlib>
+#include <iostream>
 
 namespace eckit {
 

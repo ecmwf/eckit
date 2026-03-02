@@ -11,12 +11,13 @@
 // File TCPStream.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_TCPStream_h
-#define eckit_TCPStream_h
-
+#pragma once
 #include "eckit/memory/Counted.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <netinet/in.h>
+#include <string>
 
 namespace eckit::net {
 
@@ -105,5 +106,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::net
-
-#endif

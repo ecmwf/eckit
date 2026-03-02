@@ -12,11 +12,9 @@
 /// @author Simon Smart
 /// ECMWF Dec 2012
 
-
-#ifndef eckit_sql_ShiftedColumnExpression_H
-#define eckit_sql_ShiftedColumnExpression_H
-
+#pragma once
 #include <list>
+#include <memory>
 #include <string>
 
 namespace eckit {
@@ -86,5 +84,3 @@ private:
 }  // namespace eckit
 
 #include "eckit/sql/expression/ShiftedColumnExpression.cc"
-
-#endif

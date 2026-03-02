@@ -12,12 +12,9 @@
 /// @author Tiago Quintino
 /// @date   July 1996
 
-#ifndef eckit_memory_MemoryBlock_h
-#define eckit_memory_MemoryBlock_h
-
+#pragma once
+#include <cstddef>
 #include <string>
-
-#include "eckit/eckit.h"
 
 namespace eckit {
 
@@ -72,5 +69,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -10,12 +10,15 @@
 
 #include "eckit/utils/LZ4Compressor.h"
 
-#include <limits>
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/log/CodeLocation.h"
 
 #include "lz4.h"  // header includes extern c linkage
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/io/Buffer.h"
+#include <limits>
+#include <sstream>
+#include <string>
 
 namespace eckit {
 

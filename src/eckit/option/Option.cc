@@ -15,8 +15,6 @@
 
 #include "eckit/option/Option.h"
 
-#include "eckit/exception/Exceptions.h"
-
 namespace eckit::option {
 
 Option::Option(const std::string& name, const std::string& description) : name_(name), description_(description) {}

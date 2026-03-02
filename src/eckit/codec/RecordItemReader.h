@@ -12,11 +12,14 @@
 
 #pragma once
 
-#include <string>
-
+#include "eckit/codec/Data.h"
+#include "eckit/codec/Metadata.h"
 #include "eckit/codec/Record.h"
 #include "eckit/codec/RecordItem.h"
 #include "eckit/codec/Stream.h"
+
+#include <cstddef>
+#include <string>
 
 namespace eckit::codec {
 

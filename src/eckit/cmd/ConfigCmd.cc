@@ -9,8 +9,12 @@
  */
 
 #include "eckit/cmd/ConfigCmd.h"
+
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/config/Configurable.h"
 #include "eckit/config/ResourceMgr.h"
+#include "eckit/value/Value.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 

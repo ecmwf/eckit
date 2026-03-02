@@ -12,7 +12,8 @@
 
 #include "eckit/geo/grid/Reduced.h"
 
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/PointLonLat.h"
 
 
 namespace eckit::geo::grid {

@@ -13,15 +13,14 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_Message_H
-#define eckit_Message_H
-
-#include <string>
-
+#pragma once
+#include "eckit/distributed/Actor.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
 
-#include "eckit/distributed/Actor.h"
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 namespace eckit::distributed {
 
@@ -82,5 +81,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::distributed
-
-#endif

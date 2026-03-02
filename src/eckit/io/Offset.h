@@ -11,23 +11,17 @@
 // File Offset.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_Offset_h
-#define eckit_Offset_h
+#pragma once
+#include "eckit/io/Length.h"
 
 #include <iosfwd>
 #include <vector>
-
-#include "eckit/io/Length.h"
-#include "eckit/persist/Bless.h"
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
 
 // Forwarded declarations
-
-class Bless;
-class Stream;
 
 // But because the compiler aligns long longs
 // on 64bits boundaries and longs on 32 bits boundaries,
@@ -54,7 +48,6 @@ public:
     Offset(value_t l = 0) : value_(l) {}
     Offset(const Offset& other) : value_(other.value_) {}
 
-#include "eckit/io/Offset.b"
 
     Offset& operator=(const Offset& other) {
         value_ = other.value_;
@@ -114,5 +107,3 @@ void accumulate(const LengthList&, OffsetList&, const Offset& = 0);
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

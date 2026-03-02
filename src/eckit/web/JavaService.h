@@ -11,10 +11,10 @@
 // File JavaService.h
 // Baudouin Raoult - ECMWF Apr 97
 
-#ifndef JavaService_H
-#define JavaService_H
-
+#pragma once
 #include "eckit/net/NetService.h"
+
+#include <string>
 
 
 namespace eckit {
@@ -35,6 +35,3 @@ private:
 
 
 }  // namespace eckit
-
-
-#endif

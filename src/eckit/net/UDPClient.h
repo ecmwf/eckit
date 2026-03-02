@@ -8,17 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_net_UDPClient_h
-#define eckit_net_UDPClient_h
+#pragma once
 
+#include "eckit/config/Configuration.h"
+
+#include <cstddef>
 #include <iosfwd>
+#include <netdb.h>
 #include <string>
 
 
 namespace eckit {
-
-class Buffer;
-class Configuration;
 
 namespace net {
 
@@ -65,6 +65,3 @@ private:  // members
 
 }  // namespace net
 }  // namespace eckit
-
-
-#endif

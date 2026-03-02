@@ -14,15 +14,16 @@
 
 #pragma once
 
-#include <iostream>
+#include "eckit/option/SimpleOption.h"
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/option/SimpleOption.h"
 #include "eckit/option/Title.h"
 #include "eckit/utils/Translator.h"
+
+#include <iostream>
 
 namespace eckit::option {
 

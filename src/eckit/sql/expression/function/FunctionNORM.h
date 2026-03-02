@@ -11,10 +11,11 @@
 // File FunctionNORM.h
 // ECMWF July 2010
 
-#ifndef FunctionNORM_H
-#define FunctionNORM_H
-
+#pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
+
+#include <string>
 
 namespace eckit::sql::expression::function {
 
@@ -52,5 +53,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

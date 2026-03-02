@@ -11,11 +11,11 @@
 // File FunctionTDIFF.h
 // ECMWF July 2010
 
-#ifndef FunctionTDIFF_H
-#define FunctionTDIFF_H
-
-#include "eckit/sql/expression/function/FunctionFactory.h"
+#pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionIntegerExpression.h"
+
+#include <string>
 
 namespace eckit::sql::expression::function {
 
@@ -48,5 +48,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

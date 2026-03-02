@@ -11,10 +11,13 @@
 /// @author Baudouin Raoult
 /// @date Jun 2012
 
-#ifndef eckit_JSONParser_h
-#define eckit_JSONParser_h
-
+#pragma once
+#include "eckit/filesystem/PathName.h"
 #include "eckit/parser/ObjectParser.h"
+#include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -39,5 +42,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

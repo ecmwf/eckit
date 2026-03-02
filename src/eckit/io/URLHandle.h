@@ -11,13 +11,11 @@
 /// @author Baudouin Raoult
 /// @date   June 2017
 
-#ifndef eckit_filesystem_URLHandle_h
-#define eckit_filesystem_URLHandle_h
-
-#include <memory>
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
+
+#include <memory>
 
 namespace eckit {
 
@@ -85,5 +83,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,13 +11,12 @@
 #define OMPI_SKIP_MPICXX 1
 #define MPICH_SKIP_MPICXX 1
 
-#include <mpi.h>
-#include <cstdlib>
-
 #include "eckit/mpi/Comm.h"
 #include "eckit/mpi/Parallel.h"
-
 #include "eckit/testing/Test.h"
+
+#include <cstdlib>
+#include <mpi.h>
 
 using namespace std;
 using namespace eckit;

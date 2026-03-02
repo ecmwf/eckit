@@ -11,15 +11,13 @@
 /// @author Tiago Quintino
 /// @date   Jan 2020
 
-#ifndef eckit_runtime_Telemetry_h
-#define eckit_runtime_Telemetry_h
+#pragma once
+#include "eckit/log/JSON.h"
 
 #include <functional>
 #include <string>
 
 namespace eckit {
-
-class JSON;
 
 namespace runtime {
 
@@ -68,5 +66,3 @@ public:
 
 }  // namespace runtime
 }  // namespace eckit
-
-#endif

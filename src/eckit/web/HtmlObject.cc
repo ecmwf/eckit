@@ -10,7 +10,11 @@
 
 
 #include "eckit/web/HtmlObject.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/web/Url.h"
+
+#include <sstream>
 
 
 namespace eckit {

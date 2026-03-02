@@ -12,13 +12,15 @@
 
 #include "eckit/geo/search/TreeMappedFile.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathExpander.h"
-#include "eckit/utils/Tokenizer.h"
-
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/log/Log.h"
+#include "eckit/utils/Tokenizer.h"
+
+#include <vector>
 
 
 namespace eckit::geo::search {

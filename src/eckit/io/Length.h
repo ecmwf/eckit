@@ -11,18 +11,13 @@
 // File Length.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_Length_h
-#define eckit_Length_h
-
+#pragma once
 #include <iosfwd>
 #include <vector>
-
-#include "eckit/persist/Bless.h"
 
 namespace eckit {
 //-----------------------------------------------------------------------------
 
-class Bless;
 class DumpLoad;
 class Stream;
 
@@ -52,7 +47,6 @@ public:  // methods
     Length(long long l = 0) : value_(l) {}
     Length(const Length& other) : value_(other.value_) {}
 
-#include "eckit/io/Length.b"
 
 public:  // operators
 
@@ -96,5 +90,3 @@ using LengthList = std::vector<Length>;
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

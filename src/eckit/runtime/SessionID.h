@@ -11,13 +11,11 @@
 /// @author Simon Smart
 /// @date   May 2019
 
-#ifndef eckit_runtime_SessionID_H
-#define eckit_runtime_SessionID_H
-
-#include <sys/types.h>
+#pragma once
+#include <cstddef>
 #include <iosfwd>
 #include <string>
-#include <thread>
+#include <sys/types.h>
 
 namespace eckit {
 
@@ -65,5 +63,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_runtime_SessionID_H

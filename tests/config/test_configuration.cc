@@ -8,14 +8,23 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fstream>
-
+#include "eckit/config/Configuration.h"
 #include "eckit/config/LocalConfiguration.h"
+#include "eckit/config/Parametrisation.h"
 #include "eckit/config/YAMLConfiguration.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/log/Colour.h"
 #include "eckit/testing/Test.h"
-#include "eckit/types/FloatCompare.h"
 #include "eckit/utils/Hash.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <fstream>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace eckit::test {
 

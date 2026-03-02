@@ -12,13 +12,9 @@
 /// @author Tiago Quintino
 /// @date   June 1996
 
-#ifndef eckit_io_StdPipe_h
-#define eckit_io_StdPipe_h
-
+#pragma once
 #include <cstdio>
 #include <string>
-
-#include "eckit/io/AutoCloser.h"
 
 namespace eckit {
 
@@ -63,5 +59,3 @@ public:
 
 
 }  // namespace eckit
-
-#endif

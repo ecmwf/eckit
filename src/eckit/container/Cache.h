@@ -11,17 +11,15 @@
 /// @author Tiago Quintino
 /// @date   Oct 2012
 
-#ifndef eckit_container_Cache_h
-#define eckit_container_Cache_h
+#pragma once
+#include "eckit/eckit.h"
 
-#include <sys/time.h>
 #include <cstdint>
-
 #include <iostream>
 #include <map>
+#include <sys/time.h>
 #include <utility>
-
-#include "eckit/eckit.h"
+#include <vector>
 
 //-----------------------------------------------------------------------------
 
@@ -281,5 +279,3 @@ bool Cache<K, V>::Policy::expireLRU(typename Cache<K, V>::store_type& c, const s
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

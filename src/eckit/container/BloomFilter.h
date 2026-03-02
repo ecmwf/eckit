@@ -13,10 +13,7 @@
 /// @author Simon Smart
 /// @date March 2017
 
-
-#ifndef eckit_containers_BloomFilter_H
-#define eckit_containers_BloomFilter_H
-
+#pragma once
 #include <ostream>
 #include <vector>
 
@@ -82,5 +79,3 @@ private:  // friends
 
 
 #include "BloomFilter.cc"
-
-#endif  // eckit_containers_BloomFilter_H

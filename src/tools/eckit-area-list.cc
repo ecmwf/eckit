@@ -9,12 +9,14 @@
  */
 
 
-#include <memory>
-
 #include "eckit/geo/Area.h"
 #include "eckit/geo/eckit_geo_config.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/EckitTool.h"
+
+#include <ostream>
+#include <string>
 
 #if eckit_HAVE_GEO_AREA_SHAPEFILE
 #include "eckit/filesystem/PathName.h"

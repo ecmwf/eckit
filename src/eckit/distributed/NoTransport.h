@@ -13,21 +13,13 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_NoTransport_H
-#define eckit_NoTransport_H
-
-
+#pragma once
 #include "eckit/distributed/Transport.h"
 
-
-namespace eckit::option {
-class Option;
-class CmdArgs;
-}  // namespace eckit::option
+#include <cstddef>
+#include <iosfwd>
 
 namespace eckit::distributed {
-
-class Message;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -64,5 +56,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::distributed
-
-#endif

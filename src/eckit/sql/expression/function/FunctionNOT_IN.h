@@ -11,10 +11,11 @@
 // File FunctionNOT_IN.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef FunctionNOT_IN_H
-#define FunctionNOT_IN_H
-
+#pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
+
+#include <string>
 
 namespace eckit::sql::expression::function {
 
@@ -47,5 +48,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

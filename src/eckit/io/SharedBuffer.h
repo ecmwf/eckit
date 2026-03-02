@@ -12,14 +12,13 @@
 /// @author Tiago Quintino
 /// @date   July 2017
 
-#ifndef eckit_io_SharedBuffer_h
-#define eckit_io_SharedBuffer_h
-
-#include <iosfwd>
-#include <string>
-
+#pragma once
 #include "eckit/io/Buffer.h"
 #include "eckit/memory/Counted.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -91,5 +90,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

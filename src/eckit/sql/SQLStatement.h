@@ -11,15 +11,13 @@
 // File SQLStatement.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLStatement_H
-#define SQLStatement_H
-
+#pragma once
 #include "eckit/sql/expression/SQLExpressions.h"
+
+#include <iosfwd>
 
 namespace eckit::sql {
 // Forward declarations
-
-class SQLDatabase;
 
 class SQLStatement {
 public:
@@ -48,5 +46,3 @@ private:
 };
 
 }  // namespace eckit::sql
-
-#endif

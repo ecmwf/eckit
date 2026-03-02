@@ -10,10 +10,12 @@
 
 #include "eckit/sql/type/SQLString.h"
 
-#include <cstring>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/sql/SQLOutput.h"
+
+#include <cstring>
+#include <ios>
 
 namespace eckit::sql::type {
 

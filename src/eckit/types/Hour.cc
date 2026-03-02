@@ -8,12 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iomanip>
+#include "eckit/types/Hour.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/types/Hour.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+
+#include <iomanip>
+#include <sstream>
+#include <vector>
 
 namespace eckit {
 

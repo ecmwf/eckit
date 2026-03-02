@@ -8,12 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
+#include "eckit/io/Base64.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/Base64.h"
 #include "eckit/io/BitIO.h"
 #include "eckit/io/DataHandle.h"
+
+#include <sstream>
+#include <string>
 
 // This code is written for readibility, not speed
 

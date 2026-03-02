@@ -12,14 +12,17 @@
 /// @author Tiago Quintino
 /// @date   Jun 2011
 
-#ifndef eckit_net_Connector_h
-#define eckit_net_Connector_h
-
+#pragma once
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/BufferCache.h"
-#include "eckit/io/Length.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/serialisation/Stream.h"
+
+#include <ctime>
+#include <iosfwd>
+#include <map>
+#include <string>
 
 namespace eckit::net {
 
@@ -155,5 +158,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::net
-
-#endif

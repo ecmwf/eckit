@@ -9,6 +9,8 @@
  */
 
 #include "eckit/cmd/JSONCmd.h"
+
+#include "eckit/cmd/Arg.h"
 #include "eckit/log/JSON.h"
 #include "eckit/runtime/Monitorable.h"
 

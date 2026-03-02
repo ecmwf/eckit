@@ -8,12 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
 
-#include "eckit/testing/Test.h"
+#include <cstddef>
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

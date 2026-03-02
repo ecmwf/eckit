@@ -8,19 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_sql_Environment_H
-#define eckit_sql_Environment_H
-
-#include <memory>
-
+#pragma once
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/SelectOneTable.h"
+
+#include <memory>
+#include <vector>
 
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class SQLTableIterator;
 
 struct Environment {
 
@@ -39,5 +36,3 @@ struct Environment {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

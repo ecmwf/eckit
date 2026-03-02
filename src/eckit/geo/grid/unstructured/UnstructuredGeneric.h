@@ -14,6 +14,8 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
+#include <string>
+
 
 namespace eckit::geo::grid::unstructured {
 

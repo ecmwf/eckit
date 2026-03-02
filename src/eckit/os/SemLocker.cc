@@ -8,14 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/sem.h>
-#include <unistd.h>
-#include <cerrno>
-#include <cstdio>
+#include "eckit/os/SemLocker.h"
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/os/SemLocker.h"
+
+#include <cerrno>
+#include <sstream>
+#include <string>
+#include <sys/sem.h>
+#include <unistd.h>
 
 
 namespace eckit {

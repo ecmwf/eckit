@@ -12,13 +12,16 @@
 
 #pragma once
 
-#include <vector>
-
 #include "eckit/geo/Iterator.h"
+#include "eckit/geo/Point.h"
+
+#include <cstddef>
+#include <vector>
 
 
 namespace eckit::geo {
 class Projection;
+
 namespace grid {
 class Regular;
 }

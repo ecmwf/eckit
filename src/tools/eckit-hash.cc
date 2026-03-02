@@ -8,21 +8,27 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fstream>
-#include <memory>
-#include <string>
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Plural.h"
 #include "eckit/option/CmdArgs.h"
+#include "eckit/option/Option.h"
 #include "eckit/option/SimpleOption.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/utils/Hash.h"
+
+#include <cstddef>
+#include <fstream>
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
 using eckit::DataHandle;
 using eckit::Hash;

@@ -8,10 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
+#include "eckit/filesystem/TmpFile.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/TmpFile.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <unistd.h>
 
 namespace eckit {
 

@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
+#include "eckit/types/Coord.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/persist/DumpLoad.h"
-#include "eckit/types/Coord.h"
+
+#include <iostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

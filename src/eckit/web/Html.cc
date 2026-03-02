@@ -8,16 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fstream>
+#include "eckit/web/Html.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/web/Html.h"
+#include "eckit/net/HttpHeader.h"
 #include "eckit/web/HtmlObject.h"
 #include "eckit/web/HtmlResource.h"
 #include "eckit/web/HttpStream.h"
 #include "eckit/web/Url.h"
+
+#include <cctype>
+#include <fstream>
+#include <utility>
 
 
 namespace eckit {

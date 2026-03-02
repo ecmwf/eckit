@@ -10,13 +10,13 @@
 
 #pragma once
 
-#include <cstdarg>
-
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/SparseMatrix.h"
 #include "eckit/linalg/Tensor.h"
 #include "eckit/linalg/Vector.h"
 #include "eckit/testing/Test.h"
+
+#include <cstdarg>
 
 namespace eckit::test {
 

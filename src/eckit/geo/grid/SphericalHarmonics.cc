@@ -12,13 +12,16 @@
 
 #include "eckit/geo/grid/SphericalHarmonics.h"
 
-#include <regex>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/area/None.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
 #include "eckit/utils/Translator.h"
+
+#include <regex>
+#include <vector>
 
 
 namespace eckit::geo::grid {

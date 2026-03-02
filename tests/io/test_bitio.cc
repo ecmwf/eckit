@@ -8,13 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
-
 #include "eckit/io/BitIO.h"
 #include "eckit/io/Buffer.h"
-
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/testing/Test.h"
+
+#include <cstring>
+#include <exception>
+#include <iostream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

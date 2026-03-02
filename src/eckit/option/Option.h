@@ -12,17 +12,16 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
+#pragma once
+#include "eckit/config/Configuration.h"
+#include "eckit/config/Configured.h"
 
-#ifndef Option_H
-#define Option_H
-
+#include <cstddef>
 #include <iosfwd>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
-
-#include "eckit/config/Configuration.h"
-#include "eckit/config/Configured.h"
 
 namespace eckit::option {
 
@@ -115,5 +114,3 @@ private:
 
 
 }  // namespace eckit::option
-
-#endif

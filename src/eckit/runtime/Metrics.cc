@@ -10,21 +10,25 @@
 
 #include "eckit/runtime/Metrics.h"
 
-#include <ctime>
-#include <set>
-#include <string>
-#include <vector>
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/JSON.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
-#include "eckit/types/Types.h"
-
 #include "eckit/utils/Tokenizer.h"
-
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
+
+#include <ctime>
+#include <initializer_list>
+#include <set>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit {
 

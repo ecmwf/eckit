@@ -12,9 +12,7 @@
 /// @author Manuel Fuentes
 /// @date   Jul 1996
 
-#ifndef eckit_cmd_RemoteCommandable_H
-#define eckit_cmd_RemoteCommandable_H
-
+#pragma once
 #include "eckit/thread/ThreadControler.h"
 
 //-----------------------------------------------------------------------------
@@ -51,5 +49,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

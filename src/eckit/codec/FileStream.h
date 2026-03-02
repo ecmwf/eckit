@@ -12,14 +12,10 @@
 
 #pragma once
 
-#include <string>
-
 #include "eckit/codec/Stream.h"
 #include "eckit/filesystem/PathName.h"
 
-namespace eckit {
-class DataHandle;
-}
+#include <string>
 
 namespace eckit::codec {
 

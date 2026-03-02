@@ -11,10 +11,11 @@
 // File SQLBitColumn.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLBitColumn_H
-#define SQLBitColumn_H
-
+#pragma once
 #include "eckit/sql/SQLColumn.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit::sql {
 
@@ -47,5 +48,3 @@ private:
 };
 
 }  // namespace eckit::sql
-
-#endif

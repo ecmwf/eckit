@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <ostream>
-
 #include "eckit/mpi/ParallelStatus.h"
+
+#include <ostream>
 
 namespace eckit {
 namespace mpi {

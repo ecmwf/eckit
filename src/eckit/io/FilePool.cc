@@ -13,12 +13,17 @@
 
 #include "eckit/io/FilePool.h"
 
-#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/MutexCond.h"
 #include "eckit/types/Types.h"
+
+#include <list>
+#include <ostream>
+#include <string>
+#include <utility>
 
 namespace eckit {
 

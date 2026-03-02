@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
+#include "TestFactory.h"
+
+#include "eckit/exception/Exceptions.h"
+
 #include <algorithm>
 #include <cassert>
 #include <exception>
 #include <iostream>
 #include <map>
-
-#include "eckit/exception/Exceptions.h"
-
-#include "TestFactory.h"
 
 
 struct TestFactory::PImpl {

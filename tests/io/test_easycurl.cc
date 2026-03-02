@@ -8,16 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/io/EasyCURL.h"
+#include "eckit/testing/Test.h"
+#include "eckit/value/Value.h"
+
 #include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <string>
 #include <thread>
-
-#include "eckit/io/EasyCURL.h"
-#include "eckit/value/Value.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

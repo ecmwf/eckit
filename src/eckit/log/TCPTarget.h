@@ -12,11 +12,13 @@
 /// @author Metin Cakircali
 /// @date   May 2025
 
-#include <iosfwd>
-#include <string>
+#pragma once
 
 #include "eckit/log/LogTarget.h"
 #include "eckit/net/TCPSocket.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 

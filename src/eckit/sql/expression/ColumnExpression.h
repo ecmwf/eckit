@@ -12,15 +12,17 @@
 /// @author Simon Smart
 /// @date Dec 2003
 
-#ifndef eckit_sql_ColumnExpression_H
-#define eckit_sql_ColumnExpression_H
-
+#pragma once
 #include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <iosfwd>
+#include <iterator>
+#include <string>
+#include <utility>
 
 namespace eckit::sql {
 
-class SQLOutput;
-class SQLTable;
 class SQLColumn;
 
 namespace expression {
@@ -94,5 +96,3 @@ private:
 
 }  // namespace expression
 }  // namespace eckit::sql
-
-#endif

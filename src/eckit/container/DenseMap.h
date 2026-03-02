@@ -8,16 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_DenseMap_h
-#define eckit_DenseMap_h
-
+#pragma once
 /// @author Tiago Quintino
+
+#include "eckit/exception/Exceptions.h"
 
 #include <algorithm>
 #include <deque>
 #include <utility>
-
-#include "eckit/exception/Exceptions.h"
 
 //-----------------------------------------------------------------------------
 
@@ -190,5 +188,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

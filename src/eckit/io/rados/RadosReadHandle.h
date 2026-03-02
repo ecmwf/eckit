@@ -12,13 +12,11 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosReadHandle_h
-#define eckit_io_rados_RadosReadHandle_h
-
-#include <memory>
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/rados/RadosObject.h"
+
+#include <memory>
 
 namespace eckit {
 
@@ -77,5 +75,3 @@ private:  // members
 };
 
 }  // namespace eckit
-
-#endif

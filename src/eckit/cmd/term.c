@@ -8,8 +8,6 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <curses.h>
-#include <stdio.h>
 #include <term.h>
 
 /* Term should a class, but curses.h is not C++ compatible */

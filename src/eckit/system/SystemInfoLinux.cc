@@ -12,22 +12,26 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#include <malloc.h>
-#include <sys/resource.h>
-#include <sys/time.h>
-#include <unistd.h>
-
-#include <algorithm>
-#include <climits>
-#include <cstdlib>
-#include <fstream>
-
 #include "eckit/system/SystemInfoLinux.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/memory/MemoryBuffer.h"
 #include "eckit/system/MemoryInfo.h"
+
+#include <algorithm>
+#include <bits/types/struct_rusage.h>
+#include <climits>
+#include <cstdlib>
+#include <fstream>
+#include <malloc.h>
+#include <map>
+#include <sstream>
+#include <sys/resource.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace eckit {
 namespace system {

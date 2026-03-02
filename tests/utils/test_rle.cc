@@ -8,18 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-#include <limits>
-#include <memory>
-#include <random>
-#include <set>
-#include <vector>
-
 #include "eckit/config/LibEcKit.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/Timer.h"
+#include "eckit/testing/Test.h"
 #include "eckit/utils/RLE.h"
 
-#include "eckit/testing/Test.h"
+#include <chrono>
+#include <cmath>
+#include <cstddef>
+#include <iostream>
+#include <iterator>
+#include <limits>
+#include <random>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

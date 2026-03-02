@@ -11,11 +11,13 @@
 /// @author Baudouin Raoult
 /// @date   Jun 96
 
-#ifndef eckit_NetService_h
-#define eckit_NetService_h
-
+#pragma once
+#include "eckit/net/SocketOptions.h"
 #include "eckit/net/TCPServer.h"
+#include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Thread.h"
+
+#include <string>
 
 namespace eckit::net {
 
@@ -55,5 +57,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

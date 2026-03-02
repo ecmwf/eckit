@@ -12,10 +12,12 @@
 /// @author Tiago Quintino
 /// @date   June 2017
 
-#ifndef eckit_filesystem_LocalFileManager_h
-#define eckit_filesystem_LocalFileManager_h
-
+#pragma once
 #include "eckit/filesystem/URIManager.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+
+#include <string>
 
 namespace eckit {
 
@@ -42,5 +44,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

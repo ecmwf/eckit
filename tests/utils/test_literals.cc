@@ -8,9 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/testing/Test.h"
 #include "eckit/utils/Literals.h"
 
-#include "eckit/testing/Test.h"
+#include <ostream>
+#include <string>
 
 using namespace eckit::literals;
 using namespace eckit::testing;

@@ -8,11 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <pwd.h>
-#include <cstring>
-
-#include "eckit/log/Log.h"
 #include "eckit/os/Password.h"
+
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+
+#include <cstring>
+#include <ostream>
+#include <pwd.h>
 
 
 namespace eckit {

@@ -8,12 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <sstream>
-
 #include "eckit/log/JSON.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/runtime/Application.h"
+
+#include <sstream>
+#include <unistd.h>
 
 
 using namespace eckit;

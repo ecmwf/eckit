@@ -10,13 +10,19 @@
  */
 
 
-#include <memory>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/regular/RegularGaussian.h"
-#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::test {

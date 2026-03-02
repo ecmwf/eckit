@@ -8,14 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_os_Stat_h
-#define eckit_os_Stat_h
+#pragma once
+#include "eckit/eckit.h"
 
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#include "eckit/eckit.h"
 
 namespace eckit {
 
@@ -39,5 +37,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

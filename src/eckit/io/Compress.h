@@ -8,14 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_Compress_h
-#define eckit_Compress_h
+#pragma once
+#include "eckit/io/BitIO.h"
 
 #include <cstddef>
 
 namespace eckit {
-
-class DataHandle;
 
 //-----------------------------------------------------------------------------
 
@@ -37,5 +35,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

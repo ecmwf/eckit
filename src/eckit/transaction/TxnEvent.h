@@ -12,10 +12,12 @@
 /// @author Tiago Quintino
 /// @date Jan 97
 
-#ifndef eckit_TxnEvent_h
-#define eckit_TxnEvent_h
-
+#pragma once
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/serialisation/Streamable.h"
+
+#include <iosfwd>
 
 
 namespace eckit {
@@ -86,5 +88,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,14 +11,13 @@
 // File FunctionIntegerExpression.h
 // ECMWF July 2010
 
-#ifndef FUNCTION_INTEGER_EXPRESSION_H
-#define FUNCTION_INTEGER_EXPRESSION_H
-
+#pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
 
-namespace eckit::sql {
+#include <string>
 
-class SQLOutput;
+namespace eckit::sql {
 
 namespace expression::function {
 
@@ -49,5 +48,3 @@ private:
 
 }  // namespace expression::function
 }  // namespace eckit::sql
-
-#endif

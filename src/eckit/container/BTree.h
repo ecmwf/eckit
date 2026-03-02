@@ -11,13 +11,7 @@
 // File BTree.h
 // Baudouin Raoult - (c) ECMWF Feb 12
 
-#ifndef eckit_BTree_h
-#define eckit_BTree_h
-
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <cstring>
-
+#pragma once
 #include "eckit/container/BTree.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
@@ -25,6 +19,10 @@
 #include "eckit/memory/Padded.h"
 #include "eckit/os/Stat.h"
 #include "eckit/thread/AutoLock.h"
+
+#include <cstring>
+#include <fcntl.h>
+#include <sys/stat.h>
 
 namespace eckit {
 
@@ -286,5 +284,3 @@ private:
 }  // namespace eckit
 
 #include "BTree.cc"
-
-#endif

@@ -12,18 +12,15 @@
 /// @author Tiago Quintino
 /// @date   Dec 1997
 
-#ifndef eckit_Double_h
-#define eckit_Double_h
+#pragma once
+#include "eckit/persist/DumpLoad.h"
 
+#include <iosfwd>
 #include <string>
-
-#include "eckit/persist/Bless.h"
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class DumpLoad;
 
 class Double {
 public:
@@ -31,7 +28,6 @@ public:
     Double(double = 0);
     Double(const std::string&);
 
-#include "eckit/types/Double.b"
 
     ~Double() {}
 
@@ -72,5 +68,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

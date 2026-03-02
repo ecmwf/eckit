@@ -12,13 +12,11 @@
 /// @author Tiago Quintino
 /// @date   May 96
 
-#ifndef eckit_config_ResourceMgr_H
-#define eckit_config_ResourceMgr_H
+#pragma once
+#include "eckit/thread/Mutex.h"
 
 #include <map>
 #include <string>
-
-#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -100,5 +98,3 @@ private:  // members
 
 
 }  // namespace eckit
-
-#endif

@@ -12,22 +12,29 @@
 /// @author Simon Smart
 /// @date Dec 2003
 
-#ifndef eckit_sql_SQLSelect_H
-#define eckit_sql_SQLSelect_H
-
-#include <memory>
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
-
-#include "eckit/sql/Environment.h"
 #include "eckit/sql/SQLOutput.h"
-#include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLStatement.h"
+#include "eckit/sql/SQLTable.h"
 #include "eckit/sql/SelectOneTable.h"
 #include "eckit/sql/expression/OrderByExpressions.h"
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <cstddef>
+#include <functional>
+#include <iosfwd>
+#include <iterator>
+#include <map>
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit::sql {
-class SQLTableIterator;
 namespace expression::function {
 class FunctionROWNUMBER;
 class FunctionTHIN;
@@ -149,5 +156,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

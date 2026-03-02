@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_net_SocketOptions_h
-#define eckit_net_SocketOptions_h
-
+#pragma once
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date   Jan 2020
@@ -137,5 +135,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

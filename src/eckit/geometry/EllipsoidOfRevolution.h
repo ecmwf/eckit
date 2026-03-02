@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef EllipsoidOfRevolution_H
-#define EllipsoidOfRevolution_H
-
+#pragma once
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit::geometry {
@@ -31,5 +29,3 @@ struct EllipsoidOfRevolution {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
-
-#endif

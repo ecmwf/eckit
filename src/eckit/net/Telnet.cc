@@ -10,8 +10,8 @@
 
 
 #include "eckit/net/Telnet.h"
+
 #include "eckit/net/TelnetUser.h"
-#include "eckit/runtime/Monitor.h"
 
 namespace eckit::net {
 

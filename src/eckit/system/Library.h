@@ -14,11 +14,11 @@
 
 #pragma once
 
+#include "eckit/thread/Mutex.h"
+
 #include <iosfwd>
 #include <memory>
 #include <string>
-
-#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 

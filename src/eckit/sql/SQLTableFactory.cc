@@ -10,9 +10,10 @@
 
 #include "eckit/sql/SQLTableFactory.h"
 
-#include <algorithm>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <algorithm>
 
 namespace eckit::sql {
 

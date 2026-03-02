@@ -11,18 +11,19 @@
 
 
 #include "eckit/eckit_config.h"
-
-#include <fstream>
-#include <vector>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/util.h"
+#include "eckit/testing/Test.h"
 #include "eckit/utils/StringTools.h"
 
-#include "eckit/testing/Test.h"
+#include <cstddef>
+#include <fstream>
+#include <initializer_list>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::test {

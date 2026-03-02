@@ -12,9 +12,10 @@
 
 #include "eckit/linalg/allocator/StandardAllocator.h"
 
-#include <ostream>
-
+#include "eckit/linalg/types.h"
 #include "eckit/log/Bytes.h"
+
+#include <ostream>
 
 
 namespace eckit::linalg::allocator {

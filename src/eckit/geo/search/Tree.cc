@@ -12,13 +12,17 @@
 
 #include "eckit/geo/search/Tree.h"
 
-#include <cmath>
-#include <map>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
+
+#include <cmath>
+#include <map>
+#include <sstream>
+#include <utility>
 
 
 namespace eckit::geo::search {

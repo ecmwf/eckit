@@ -12,10 +12,10 @@
 /// @author Simon Smart
 /// @date Dec 2003
 
-#ifndef eckit_sql_SQLOutput_H
-#define eckit_sql_SQLOutput_H
+#pragma once
 
-#include "eckit/sql/SQLOutputConfig.h"
+#include <cstddef>
+#include <iosfwd>
 
 namespace eckit::sql {
 
@@ -79,5 +79,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

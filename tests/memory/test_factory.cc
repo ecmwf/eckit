@@ -9,14 +9,14 @@
  */
 
 
-#include <memory>
-#include <string>
-
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
 #include "eckit/memory/Owned.h"
 #include "eckit/testing/Test.h"
 #include "eckit/value/Properties.h"
+
+#include <memory>
+#include <string>
 
 
 namespace eckit::test {

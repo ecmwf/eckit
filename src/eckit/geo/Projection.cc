@@ -12,18 +12,23 @@
 
 #include "eckit/geo/Projection.h"
 
-#include <ostream>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <ostream>
+#include <vector>
 
 #if eckit_HAVE_PROJ
 #include "eckit/geo/projection/PROJ.h"

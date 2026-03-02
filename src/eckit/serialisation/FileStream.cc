@@ -8,15 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <dirent.h>
-#include <unistd.h>
+#include "eckit/serialisation/FileStream.h"
 
-#include "eckit/eckit.h"
-
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/FDataSync.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/serialisation/FileStream.h"
+
+#include <cerrno>
+#include <cstdio>
+#include <dirent.h>
+#include <ostream>
+#include <unistd.h>
 
 namespace eckit {
 

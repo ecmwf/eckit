@@ -11,9 +11,7 @@
 /// @author Manuel Fuentes
 /// @date   Jan 1997
 
-#ifndef eckit_cmd_Arg_H
-#define eckit_cmd_Arg_H
-
+#pragma once
 #include <iosfwd>
 #include <memory>
 #include <string>
@@ -90,5 +88,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

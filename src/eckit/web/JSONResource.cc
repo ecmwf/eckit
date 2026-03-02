@@ -9,7 +9,9 @@
  */
 
 #include "eckit/web/JSONResource.h"
+
 #include "eckit/log/JSON.h"
+#include "eckit/net/HttpHeader.h"
 #include "eckit/web/Url.h"
 
 

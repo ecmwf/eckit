@@ -11,10 +11,10 @@
 // File HandleBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eckit_HandleBuf_h
-#define eckit_HandleBuf_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
+
+#include <streambuf>
 
 
 //-----------------------------------------------------------------------------
@@ -62,5 +62,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

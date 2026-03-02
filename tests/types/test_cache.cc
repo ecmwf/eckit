@@ -8,15 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-
-#include "eckit/config/Resource.h"
-#include "eckit/config/ResourceMgr.h"
 #include "eckit/container/Cache.h"
-#include "eckit/log/Log.h"
-#include "eckit/types/Types.h"
-
 #include "eckit/testing/Test.h"
+
+#include <iostream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

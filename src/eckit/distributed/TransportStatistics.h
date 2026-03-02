@@ -13,20 +13,13 @@
 /// @author Tiago Quintino
 /// @date   April 2016
 
-#ifndef eckit_TransportStatistics_H
-#define eckit_TransportStatistics_H
-
-#include <iosfwd>
-
+#pragma once
 #include "eckit/log/Statistics.h"
 
-namespace eckit {
-class Stream;
-}
+#include <cstddef>
+#include <iosfwd>
 
 namespace eckit::distributed {
-
-class TocHandler;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -69,5 +62,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::distributed
-
-#endif

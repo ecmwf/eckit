@@ -12,13 +12,13 @@
 
 #include "eckit/codec/Metadata.h"
 
-#include <limits>
-#include <ostream>
-#include <sstream>
-
 #include "eckit/codec/Exceptions.h"
-#include "eckit/codec/types/array/ArrayReference.h"
+#include "eckit/codec/types/array/ArrayMetadata.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
+
+#include <sstream>
+#include <utility>
 
 namespace eckit::codec {
 

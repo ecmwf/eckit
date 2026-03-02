@@ -8,16 +8,29 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <cstring>
-#include <iomanip>
-#include <stack>
-
 #include "eckit/cmd/CmdParser.h"
+
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/cmd/CmdResource.h"
-#include "eckit/filesystem/PathName.h"
+#include "eckit/cmd/UserInput.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/utils/Tokenizer.h"
+#include "eckit/value/Value.h"
+
+#include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <exception>
+#include <functional>
+#include <iomanip>
+#include <list>
+#include <map>
+#include <stack>
 
 #define YY_INPUT(buf, result, max_size)                  \
     {                                                    \
@@ -70,6 +83,7 @@ namespace CmdYacc {
 void eckit_cmd_error(const char* msg);
 
 #include "eckit/cmd/cmdsy.c"
+
 int eckit_cmd_wrap(void) {
     return 1;
 }

@@ -11,11 +11,14 @@
 // File ProgressTimer.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_ProgressTimer_h
-#define eckit_ProgressTimer_h
-
+#pragma once
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Timer.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -62,5 +65,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

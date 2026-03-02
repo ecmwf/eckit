@@ -8,14 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_MD5_H
-#define eckit_utils_MD5_H
-
+#pragma once
 #ifndef MD5_DIGEST_LENGTH
 #define MD5_DIGEST_LENGTH 16
 #endif
 
 #include "eckit/utils/Hash.h"
+
+#include <cstdint>
+#include <cstring>
+#include <string>
 
 namespace eckit {
 
@@ -111,5 +113,3 @@ private:  // members
 };
 
 }  // end namespace eckit
-
-#endif

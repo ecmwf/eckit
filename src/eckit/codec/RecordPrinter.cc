@@ -12,12 +12,16 @@
 
 #include "eckit/codec/RecordPrinter.h"
 
-#include <sstream>
-
 #include "eckit/codec/Exceptions.h"
 #include "eckit/codec/FileStream.h"
 #include "eckit/codec/print/JSONFormat.h"
 #include "eckit/codec/print/TableFormat.h"
+#include "eckit/config/LocalConfiguration.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <sstream>
+#include <vector>
 
 namespace eckit::codec {
 

@@ -10,10 +10,14 @@
 
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eckit_VerifyingDate_h
-#define eckit_VerifyingDate_h
-
+#pragma once
+#include "eckit/types/Date.h"
 #include "eckit/types/DateTime.h"
+#include "eckit/types/Time.h"
+
+#include <ctime>
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -31,7 +35,6 @@ public:
     VerifyingDate(const std::string&);
     VerifyingDate(const DateTime&);
 
-#include "eckit/types/VerifyingDate.b"
 
     // -- Destructor
 
@@ -84,5 +87,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

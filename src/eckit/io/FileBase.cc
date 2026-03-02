@@ -8,12 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <unistd.h>
+#include "eckit/exception/Exceptions.h"
 
 #include <cstring>
-
-#include "eckit/exception/Exceptions.h"
+#include <fcntl.h>
+#include <unistd.h>
 
 
 namespace eckit {

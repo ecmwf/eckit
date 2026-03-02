@@ -12,7 +12,6 @@
 #define MPICH_SKIP_MPICXX 1
 
 #include "eckit/mpi/Comm.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

@@ -12,14 +12,15 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#include <cstring>
-#include <iostream>
+#include "eckit/system/MemoryInfo.h"
 
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/memory/MMap.h"
 #include "eckit/memory/Shmget.h"
-#include "eckit/system/MemoryInfo.h"
+
+#include <cstring>
+#include <iostream>
 
 namespace eckit::system {
 

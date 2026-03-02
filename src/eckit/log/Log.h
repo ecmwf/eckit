@@ -13,12 +13,13 @@
 /// @author Tiago Quintino
 /// @date May 1996
 
-#ifndef eckit_log_Log_h
-#define eckit_log_Log_h
-
-#include "eckit/deprecated.h"
+#pragma once
 #include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/UserChannel.h"
+
+#include <ostream>
+#include <string>
 
 namespace eckit {
 
@@ -162,5 +163,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

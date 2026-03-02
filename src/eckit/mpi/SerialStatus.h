@@ -8,18 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_SerialStatus_h
-#define eckit_mpi_SerialStatus_h
-
-#include <iosfwd>
-
+#pragma once
 #include "eckit/mpi/Status.h"
+
+#include <cstddef>
+#include <iosfwd>
 
 namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Serial;
 
 class SerialStatus : public StatusContent {
     SerialStatus();
@@ -46,5 +43,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

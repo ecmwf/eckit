@@ -10,15 +10,16 @@
 
 #include "eckit/sql/type/SQLBitfield.h"
 
-#include <sstream>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLBit.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+
+#include <sstream>
+#include <utility>
+#include <vector>
 
 using namespace eckit;
 

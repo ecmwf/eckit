@@ -17,8 +17,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/filesystem/LocalPathName.h"
-
 namespace eckit::system {
 
 class Library;

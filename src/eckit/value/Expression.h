@@ -11,13 +11,11 @@
 // File Expression.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef Expression_H
-#define Expression_H
+#pragma once
+#include "eckit/value/Value.h"
 
 #include <functional>
 #include <memory>
-
-#include "eckit/value/Value.h"
 
 //====================================================================
 
@@ -206,5 +204,3 @@ eckit::Value ListExpression<T>::eval(T& t) const {
 
     return v;
 }
-
-#endif

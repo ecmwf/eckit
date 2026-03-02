@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/CodeLocation.h"
+
 #include <cstring>
 #include <sstream>
-
-#include "eckit/log/CodeLocation.h"
 
 
 namespace eckit {

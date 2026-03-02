@@ -8,12 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_io_AIOHandle_h
-#define eckit_io_AIOHandle_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
+#include <sys/types.h>
+#include <vector>
 
 namespace eckit {
 
@@ -68,5 +71,3 @@ private:  // members
 };
 
 }  // namespace eckit
-
-#endif

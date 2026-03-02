@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_SnappyCompressor_H
-#define eckit_utils_SnappyCompressor_H
-
+#pragma once
 #include "eckit/utils/Compressor.h"
 
 namespace eckit {
@@ -36,5 +34,3 @@ protected:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
-
-#endif

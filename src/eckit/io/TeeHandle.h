@@ -11,10 +11,15 @@
 // File io/TeeHandle.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef eckit_filesystem_TeeHandle_h
-#define eckit_filesystem_TeeHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <iosfwd>
+#include <set>
+#include <string>
+#include <vector>
 
 //-----------------------------------------------------------------------------
 
@@ -96,5 +101,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

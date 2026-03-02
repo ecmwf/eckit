@@ -10,14 +10,14 @@
 
 #include "eckit/filesystem/StdDir.h"
 
-#include <dirent.h>
-#include <unistd.h>
-
-#include "eckit/eckit.h"
-
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/os/Stat.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <cerrno>
+#include <dirent.h>
+#include <string>
 
 namespace eckit {
 

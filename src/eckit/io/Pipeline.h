@@ -11,13 +11,14 @@
 // File Pipeline.h
 // Baudouin Raoult - ECMWF Feb 97
 
-#ifndef eckit_Pipeline_h
-#define eckit_Pipeline_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/TransferWatcher.h"
 #include "eckit/thread/Mutex.h"
+
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -83,5 +84,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

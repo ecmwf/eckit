@@ -10,6 +10,15 @@
 
 #include "eckit/io/PooledFile.h"
 
+#include "eckit/config/LibEcKit.h"
+#include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+
 #include <cstdio>
 #include <map>
 #include <memory>
@@ -17,13 +26,6 @@
 #include <sstream>
 #include <string>
 #include <utility>
-
-#include "eckit/config/LibEcKit.h"
-#include "eckit/config/Resource.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
-#include "eckit/log/Bytes.h"
 
 namespace eckit {
 class PoolFileEntry;

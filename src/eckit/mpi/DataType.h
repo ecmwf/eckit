@@ -8,19 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_DataType_h
-#define eckit_mpi_DataType_h
-
+#pragma once
 #include <cstddef>
-#include <vector>
-
-#include "eckit/mpi/DataType.h"
 
 namespace eckit::mpi {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Comm;
 
 class Data {
 
@@ -69,5 +62,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

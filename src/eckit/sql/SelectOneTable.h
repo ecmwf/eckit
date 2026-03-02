@@ -12,19 +12,19 @@
 /// @author Simon Smart
 /// @date   Dec 2003
 
-#ifndef eckit_sql_SelectOneTable_H
-#define eckit_sql_SelectOneTable_H
-
+#pragma once
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+
+#include <functional>
+#include <utility>
+#include <vector>
 
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 class SQLColumn;
-
-// Forward declarations
-class SQLTableIterator;
 
 struct SelectOneTable {
     SelectOneTable(const SQLTable* table = nullptr);
@@ -65,5 +65,3 @@ using SortedTables = std::vector<SelectOneTable*>;
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

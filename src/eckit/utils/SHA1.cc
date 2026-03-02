@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
+#include "eckit/utils/SHA1.h"
 
 #include "eckit/exception/Exceptions.h"
 
-#include "eckit/utils/SHA1.h"
+#include <cstring>
 
 // Cray C++ compiler should not try to optimize this code
 #if _CRAYC

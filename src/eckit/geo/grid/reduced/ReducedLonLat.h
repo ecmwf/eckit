@@ -12,13 +12,15 @@
 
 #pragma once
 
-#include <memory>
-#include <vector>
-
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/util.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::grid::reduced {

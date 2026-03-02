@@ -12,12 +12,12 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AIOHandle.h"
 #include "eckit/io/AutoCloser.h"
-#include "eckit/io/FileHandle.h"
-#include "eckit/io/MemoryHandle.h"
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/testing/Test.h"
-#include "eckit/types/Types.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
 
 using namespace std;
 using namespace eckit;

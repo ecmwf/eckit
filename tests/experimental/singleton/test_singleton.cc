@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-
 #include "TestFactory.h"
+
+#include <iostream>
 
 int main(int argc, char** argv) {
     TestBuilder& b1 = TestFactory::instance().get("b1");

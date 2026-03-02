@@ -12,12 +12,10 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_system_SystemInfoMacOSX_H
-#define eckit_system_SystemInfoMacOSX_H
+#pragma once
+#include "eckit/system/SystemInfo.h"
 
 #include <iosfwd>
-
-#include "eckit/system/SystemInfo.h"
 
 namespace eckit::system {
 
@@ -46,5 +44,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::system
-
-#endif

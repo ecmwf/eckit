@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iomanip>
-#include <ostream>
+#include "eckit/types/DayOfYear.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/types/DayOfYear.h"
+
+#include <iomanip>
+#include <sstream>
 
 namespace eckit {
 

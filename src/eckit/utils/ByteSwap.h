@@ -11,16 +11,14 @@
 /// @author Tiago Quintino
 /// @date October 2020
 
-#ifndef eckit_utils_ByteSwap_H
-#define eckit_utils_ByteSwap_H
+#pragma once
+#include "eckit/eckit.h"
 
 #include <algorithm>
 #include <bitset>
 #include <cstdint>
 #include <string>
 #include <vector>
-
-#include "eckit/eckit.h"
 
 namespace eckit {
 
@@ -113,5 +111,3 @@ std::string bits_to_str(T v) {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
-
-#endif

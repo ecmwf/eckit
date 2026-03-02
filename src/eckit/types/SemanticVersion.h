@@ -14,6 +14,7 @@
 #pragma once
 
 #include <iosfwd>
+#include <ostream>
 #include <string>
 
 namespace eckit {

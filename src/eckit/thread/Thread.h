@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Jun 96
 
-#ifndef eckit_Thread_h
-#define eckit_Thread_h
-
+#pragma once
 #include "eckit/thread/Mutex.h"
 
 
@@ -62,5 +60,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

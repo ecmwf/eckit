@@ -8,9 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/geometry/KPoint.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+
+#include <cmath>
+#include <string>
 
 using namespace std;
 using namespace eckit;

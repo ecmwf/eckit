@@ -8,15 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include <limits>
+#include "eckit/value/DoubleContent.h"
 
 #include "eckit/log/JSON.h"
 #include "eckit/maths/Functions.h"
-#include "eckit/utils/Translator.h"
-#include "eckit/value/DoubleContent.h"
-#include "eckit/value/NumberContent.h"
-
 #include "eckit/utils/Hash.h"
+#include "eckit/utils/Translator.h"
+#include "eckit/value/NumberContent.h"
+#include "eckit/value/Value.h"
+
+#include <limits>
+#include <ostream>
 
 
 namespace eckit {

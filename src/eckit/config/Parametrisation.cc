@@ -13,6 +13,7 @@
 /// @date   Dec 2018
 
 #include "eckit/config/Parametrisation.h"
+
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {

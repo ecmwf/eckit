@@ -8,19 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_net_MultiSocket_h
-#define eckit_net_MultiSocket_h
+#pragma once
+#include "eckit/io/Select.h"
 
+#include <cstddef>
+#include <iosfwd>
 #include <netinet/in.h>
 #include <string>
 #include <vector>
 
-#include "eckit/io/Select.h"
-
 namespace eckit::net {
 
 class TCPServer;
-class TCPSocket;
 
 class MultiSocket {
 public:
@@ -91,5 +90,3 @@ private:  // methods
 };
 
 }  // namespace eckit::net
-
-#endif

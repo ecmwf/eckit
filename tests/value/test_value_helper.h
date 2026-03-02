@@ -8,11 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <memory>
+#pragma once
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/value/Value.h"
+
+#include <memory>
 
 // Disable warnings for old-style casts in these tests. They are intentional
 #ifdef __clang__

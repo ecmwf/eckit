@@ -8,9 +8,13 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-
 #include "eckit/cmd/SleepCmd.h"
+
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
+#include "eckit/value/Value.h"
+
+#include <unistd.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 

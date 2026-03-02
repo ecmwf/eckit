@@ -12,26 +12,25 @@
 
 #include "eckit/geo/area/BoundingBox.h"
 
-#include <algorithm>
-#include <cmath>
-#include <cstddef>
-#include <cstring>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/Earth.h"
-#include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/projection/Rotation.h"
-#include "eckit/geo/util.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <variant>
+#include <vector>
 
 
 namespace eckit::geo::area {

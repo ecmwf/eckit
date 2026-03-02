@@ -10,12 +10,12 @@
  */
 
 
-#include <memory>
-
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+
+#include <memory>
 
 
 namespace eckit::geo::test {

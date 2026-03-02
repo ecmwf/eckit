@@ -9,10 +9,12 @@
  */
 
 #include "eckit/sql/expression/function/FunctionNE.h"
-#include "eckit/sql/expression/ColumnExpression.h"
+
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/StringTools.h"
+
+#include <memory>
 
 namespace eckit::sql::expression::function {
 

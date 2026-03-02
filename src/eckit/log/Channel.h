@@ -11,10 +11,9 @@
 /// @file Channel.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_Channel_h
-#define eckit_log_Channel_h
-
+#pragma once
 #include <ostream>
+#include <string>
 
 namespace eckit {
 
@@ -91,5 +90,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,14 +12,13 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_Monitor_h
-#define eckit_Monitor_h
-
-#include "eckit/eckit.h"
-#include "eckit/filesystem/PathName.h"
+#pragma once
+#include "eckit/runtime/TaskID.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
+
+#include <string>
 
 namespace eckit {
 
@@ -183,5 +182,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

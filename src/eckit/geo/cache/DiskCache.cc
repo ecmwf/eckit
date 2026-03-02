@@ -14,6 +14,8 @@
 
 #include "eckit/geo/util/mutex.h"
 
+#include <vector>
+
 
 namespace eckit::geo::cache {
 

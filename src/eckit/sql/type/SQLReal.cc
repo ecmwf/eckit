@@ -9,6 +9,7 @@
  */
 
 #include "eckit/sql/type/SQLReal.h"
+
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/utils/Translator.h"
 

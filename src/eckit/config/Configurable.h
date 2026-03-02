@@ -11,13 +11,13 @@
 // File Configurable.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_Configurable_h
-#define eckit_Configurable_h
-
-#include <set>
-
+#pragma once
 #include "eckit/container/ClassExtent.h"
 #include "eckit/thread/Mutex.h"
+
+#include <iosfwd>
+#include <set>
+#include <string>
 
 
 namespace eckit {
@@ -78,5 +78,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

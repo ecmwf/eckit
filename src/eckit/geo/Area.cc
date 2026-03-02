@@ -12,13 +12,18 @@
 
 #include "eckit/geo/Area.h"
 
-#include <ostream>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/share/Area.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
+
+#include <ostream>
+#include <utility>
 
 
 namespace eckit::geo {

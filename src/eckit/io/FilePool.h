@@ -11,16 +11,17 @@
 /// @author Tiago Quintino
 /// @date Dec 2015
 
-
-#ifndef eckit_io_FilePool_h
-#define eckit_io_FilePool_h
-
+#pragma once
 #include "eckit/container/CacheLRU.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/thread/MutexCond.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <map>
 
 namespace eckit {
 class DataHandle;
-class PathName;
 }  // namespace eckit
 
 namespace eckit {
@@ -96,5 +97,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

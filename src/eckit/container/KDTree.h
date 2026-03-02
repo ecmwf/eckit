@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KDTree_H
-#define KDTree_H
-
+#pragma once
 #include "eckit/container/kdtree/KDNode.h"
 #include "eckit/container/sptree/SPTree.h"
 
@@ -102,6 +100,3 @@ public:
 };
 
 }  // namespace eckit
-
-
-#endif

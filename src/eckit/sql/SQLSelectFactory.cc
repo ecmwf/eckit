@@ -8,19 +8,26 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/types/Types.h"
-#include "eckit/utils/Translator.h"
+#include "eckit/sql/SQLSelectFactory.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLDistinctOutput.h"
 #include "eckit/sql/SQLOrderOutput.h"
-#include "eckit/sql/SQLOutputConfig.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLSelect.h"
-#include "eckit/sql/SQLSelectFactory.h"
 #include "eckit/sql/SQLSession.h"
 #include "eckit/sql/expression/BitColumnExpression.h"
+#include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/ShiftedColumnExpression.h"
-#include "eckit/sql/expression/function/FunctionExpression.h"
+#include "eckit/utils/Translator.h"
+
+#include <ostream>
+#include <utility>
 
 namespace eckit::sql {
 

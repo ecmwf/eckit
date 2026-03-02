@@ -12,10 +12,14 @@
 /// @author Baudouin Raoult
 /// @author Manuel Fuentes
 
-#ifndef eckit_NilContent_h
-#define eckit_NilContent_h
-
+#pragma once
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/value/Content.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -111,5 +115,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

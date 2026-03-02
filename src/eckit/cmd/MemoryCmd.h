@@ -12,10 +12,11 @@
 /// @author Manuel Fuentes
 /// @date   Sep 1998
 
-#ifndef eckit_cmd_MemoryCmd_H
-#define eckit_cmd_MemoryCmd_H
-
+#pragma once
 #include "eckit/cmd/CmdResource.h"
+
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -54,5 +55,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

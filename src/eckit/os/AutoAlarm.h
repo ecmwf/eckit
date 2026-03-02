@@ -11,9 +11,7 @@
 // File AutoAlarm.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_AutoAlarm_h
-#define eckit_AutoAlarm_h
-
+#pragma once
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -63,5 +61,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

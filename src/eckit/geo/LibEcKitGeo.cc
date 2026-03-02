@@ -12,13 +12,14 @@
 
 #include "eckit/geo/LibEcKitGeo.h"
 
-#include <regex>
-
 #include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/utils/StringTools.h"
+
+#include <algorithm>
+#include <regex>
 
 
 namespace eckit {

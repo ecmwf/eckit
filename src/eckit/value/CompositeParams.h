@@ -12,10 +12,11 @@
 /// @author Florian Rathgeber
 /// @date March 2015
 
-#ifndef eckit_value_CompositeParams_H
-#define eckit_value_CompositeParams_H
-
+#pragma once
+#include "eckit/serialisation/Stream.h"
 #include "eckit/value/Params.h"
+
+#include <iosfwd>
 
 //----------------------------------------------------------------------------
 
@@ -59,5 +60,3 @@ private:  // members
 //----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -8,10 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/log/Log.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
 
-#include "eckit/testing/Test.h"
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

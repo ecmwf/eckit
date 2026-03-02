@@ -13,6 +13,10 @@
 #pragma once
 
 #include "eckit/geo/Grid.h"
+#include "eckit/spec/Spec.h"
+
+#include <cstddef>
+#include <string>
 
 
 namespace eckit::geo::order {

@@ -12,11 +12,12 @@
 /// @author Tiago Quintino
 /// @date   Aug 2017
 
-#ifndef eckit_ProxiedTCPClient_h
-#define eckit_ProxiedTCPClient_h
-
+#pragma once
 #include "eckit/net/Endpoint.h"
 #include "eckit/net/TCPClient.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -41,5 +42,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

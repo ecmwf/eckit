@@ -12,13 +12,12 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_system_SystemInfo_H
-#define eckit_system_SystemInfo_H
+#pragma once
+#include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Log.h"
 
 #include <iosfwd>
-
-#include "eckit/filesystem/PathName.h"
-#include "eckit/log/Log.h"
+#include <string>
 
 namespace eckit::system {
 
@@ -85,5 +84,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::system
-
-#endif

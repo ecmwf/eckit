@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <array>
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointXYZ.h"
+
+#include <array>
+#include <ostream>
 
 
 namespace eckit::maths {

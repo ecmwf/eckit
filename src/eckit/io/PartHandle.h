@@ -11,15 +11,16 @@
 // File Partio/FileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_filesystem_PartHandle_h
-#define eckit_filesystem_PartHandle_h
-
-#include "eckit/io/Buffer.h"
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/HandleHolder.h"
-
-#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
+
+#include <iosfwd>
 
 //-----------------------------------------------------------------------------
 
@@ -96,5 +97,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

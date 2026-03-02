@@ -8,10 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <stack>
+#include "eckit/sql/SQLParser.h"
 
 #include "eckit/sql/SQLDatabase.h"
-#include "eckit/sql/SQLParser.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"
@@ -28,6 +27,8 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/StringTools.h"
+
+#include <stack>
 
 using namespace eckit;
 

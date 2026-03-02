@@ -11,27 +11,26 @@
 // File SQLExpression.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLExpression_H
-#define SQLExpression_H
-
-#include <memory>
-#include <set>
-
+#pragma once
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
+
+#include <functional>
+#include <iosfwd>
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
 namespace eckit::sql {
 // Forward declarations
 
 class SQLSelect;
 class SQLTable;
-class SQLOutput;
 
 namespace expression {
 
 class Expressions;
-class SQLExpression;
-class Dictionary;
 
 class SQLExpression : public std::enable_shared_from_this<SQLExpression> {
 public:
@@ -117,5 +116,3 @@ private:
 // #include "eckit/sql/expression/SQLExpressions.h"
 
 using namespace eckit::sql::expression;
-
-#endif

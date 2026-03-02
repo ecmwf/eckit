@@ -11,10 +11,15 @@
 // File io/PipeHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_filesystem_PipeHandle_h
-#define eckit_filesystem_PipeHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <cstdio>
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -94,5 +99,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

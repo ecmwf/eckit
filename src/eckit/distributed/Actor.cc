@@ -10,6 +10,7 @@
 
 
 #include "eckit/distributed/Actor.h"
+
 #include "eckit/distributed/Transport.h"
 
 namespace eckit::distributed {

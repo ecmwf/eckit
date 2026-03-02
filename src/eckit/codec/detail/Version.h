@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include "eckit/types/SemanticVersion.h"
+
+#include <cstdint>
 
 namespace eckit::codec {
 

@@ -11,13 +11,14 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef HttpHeader_H
-#define HttpHeader_H
-
-#include "eckit/eckit.h"
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/MemoryHandle.h"
+
+#include <functional>
+#include <iosfwd>
+#include <map>
+#include <string>
 
 namespace eckit {
 
@@ -122,6 +123,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

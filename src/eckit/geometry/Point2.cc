@@ -1,8 +1,9 @@
-#include <vector>
-
 #include "eckit/geometry/Point2.h"
+
 #include "eckit/types/FloatCompare.h"
 #include "eckit/value/Value.h"
+
+#include <vector>
 
 //----------------------------------------------------------------------------------------------------------------------
 

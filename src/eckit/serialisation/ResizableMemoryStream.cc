@@ -9,11 +9,13 @@
  */
 
 
-#include <cstring>
+#include "eckit/serialisation/ResizableMemoryStream.h"
 
 #include "eckit/io/Buffer.h"
 #include "eckit/maths/Functions.h"
-#include "eckit/serialisation/ResizableMemoryStream.h"
+
+#include <algorithm>
+#include <cstring>
 
 
 namespace eckit {

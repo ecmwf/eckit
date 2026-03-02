@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date Jan 97
 
-#ifndef eckit_TxnLog_h
-#define eckit_TxnLog_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/transaction/TxnEvent.h"
@@ -94,5 +92,3 @@ private:
 }  // namespace eckit
 
 #include "TxnLog.cc"
-
-#endif

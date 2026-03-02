@@ -8,16 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-
-#include <csignal>
-#include <cstdlib>
+#include "eckit/exception/Exceptions.h"
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/thread/ThreadSingleton.h"
+
+#include <csignal>
+#include <cstdlib>
+#include <sys/types.h>
+#include <unistd.h>
 
 namespace eckit {
 

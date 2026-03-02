@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_Compressor_H
-#define eckit_utils_Compressor_H
+#pragma once
+#include "eckit/thread/Mutex.h"
 
+#include <cstddef>
+#include <iosfwd>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -134,5 +134,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
-
-#endif

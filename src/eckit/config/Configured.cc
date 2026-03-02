@@ -15,8 +15,6 @@
 
 #include "eckit/config/Configured.h"
 
-#include "eckit/exception/Exceptions.h"
-
 namespace eckit {
 
 

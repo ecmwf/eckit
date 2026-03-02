@@ -12,9 +12,17 @@
 
 #include "eckit/geo/Iterator.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
+
+#include <memory>
+#include <ostream>
 
 
 namespace eckit::geo {

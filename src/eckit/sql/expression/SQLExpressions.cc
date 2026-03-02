@@ -9,7 +9,11 @@
  */
 
 #include "eckit/sql/expression/SQLExpressions.h"
+
 #include "eckit/sql/type/SQLType.h"
+
+#include <ostream>
+#include <string>
 
 namespace eckit::sql::expression {
 

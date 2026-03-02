@@ -12,17 +12,14 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosCluster_h
-#define eckit_io_rados_RadosCluster_h
+#pragma once
+#include "eckit/io/Length.h"
 
 #include <iostream>
 #include <map>
 #include <memory>
-#include <string>
-
 #include <rados/librados.h>
-
-#include "eckit/io/Length.h"
+#include <string>
 
 
 namespace eckit {
@@ -105,5 +102,3 @@ static inline int rados_call(int code, const char* msg, const char* file, int li
 
 
 }  // namespace eckit
-
-#endif

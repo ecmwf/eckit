@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string_view>
+#include "eckit/mpi/ParallelRequest.h"
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Parallel.h"
-#include "eckit/mpi/ParallelRequest.h"
+
+#include <string_view>
 
 namespace eckit {
 namespace mpi {

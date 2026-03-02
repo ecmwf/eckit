@@ -1,7 +1,7 @@
+#include "eckit/container/Queue.h"
+
 #include <chrono>
 #include <thread>
-
-#include "eckit/container/Queue.h"
 
 void mlog(const char* s, int e) {
     static std::mutex mutex;

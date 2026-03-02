@@ -8,24 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <cstring>
+#include "eckit/log/Log.h"
 
-#include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/FileTarget.h"
-#include "eckit/log/Log.h"
+#include "eckit/log/LogTarget.h"
 #include "eckit/log/MessageTarget.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/PrefixTarget.h"
 #include "eckit/log/StatusTarget.h"
 #include "eckit/log/UserChannel.h"
 #include "eckit/runtime/Main.h"
+#include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
-#include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Translator.h"
+
+#include <cerrno>
+#include <cstdlib>
+#include <cstring>
+#include <exception>
+#include <iostream>
+#include <vector>
 
 
 namespace eckit {

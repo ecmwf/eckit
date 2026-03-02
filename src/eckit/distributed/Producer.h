@@ -13,10 +13,9 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_Producer_H
-#define eckit_Producer_H
-
+#pragma once
 #include "eckit/distributed/Actor.h"
+#include "eckit/distributed/Message.h"
 
 namespace eckit::distributed {
 
@@ -36,5 +35,3 @@ public:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::distributed
-
-#endif

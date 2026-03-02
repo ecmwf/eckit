@@ -11,13 +11,13 @@
 
 #include "eckit/linalg/dense/LinearAlgebraMKL.h"
 
-#include "mkl.h"
-
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"
 #include "eckit/linalg/Vector.h"
+
+#include "mkl.h"
+
+#include <ostream>
 
 
 namespace eckit {

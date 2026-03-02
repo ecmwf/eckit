@@ -11,13 +11,17 @@
 /// @note This code is here to avoid linking it in if you don't need it
 
 #include "eckit/config/Configurable.h"
-#include "eckit/config/Resource.h"
+#include "eckit/config/ResourceBase.h"
 #include "eckit/config/ResourceMgr.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-
 #include "eckit/web/Html.h"
 #include "eckit/web/HtmlResource.h"
 #include "eckit/web/Url.h"
+
+#include <map>
+#include <ostream>
+#include <string>
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -13,13 +13,17 @@
 ///
 /// @date Jun 2011
 
-#ifndef eckit_filesystem_BasePathName_h
-#define eckit_filesystem_BasePathName_h
-
-#include "eckit/eckit.h"
-
+#pragma once
+#include "eckit/filesystem/FileSystemSize.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+
+#include <ctime>
+#include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace eckit {
 
@@ -100,5 +104,3 @@ private:
 };
 
 }  // namespace eckit
-
-#endif

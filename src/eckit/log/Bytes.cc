@@ -8,14 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-#include <limits>
-#include <utility>
+#include "eckit/log/Bytes.h"
 
 #include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Bytes.h"
 #include "eckit/log/Timer.h"
+
+#include <cmath>
+#include <cstddef>
+#include <limits>
+#include <sstream>
+#include <utility>
 
 namespace eckit {
 

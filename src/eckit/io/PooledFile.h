@@ -12,11 +12,14 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_PooledFile_h
-#define eckit_io_PooledFile_h
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <cstddef>
+#include <string>
+#include <sys/types.h>
 
 
 namespace eckit {
@@ -70,5 +73,3 @@ public:
 };
 
 }  // namespace eckit
-
-#endif

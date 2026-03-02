@@ -8,21 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
+#include "eckit/container/MappedArray.h"
 
+#include "eckit/eckit.h"
+#include "eckit/memory/MMap.h"
+#include "eckit/memory/Padded.h"
+#include "eckit/os/Stat.h"
+#include "eckit/thread/AutoLock.h"
+
+#include <cstdint>
+#include <cstring>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cstdint>
-#include <cstring>
-
-#include "eckit/container/MappedArray.h"
-#include "eckit/memory/MMap.h"
-#include "eckit/memory/Padded.h"
-#include "eckit/os/Stat.h"
-#include "eckit/thread/AutoLock.h"
 
 namespace eckit {
 

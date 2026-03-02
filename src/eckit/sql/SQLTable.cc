@@ -12,10 +12,15 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/sql/SQLBitColumn.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <ostream>
+#include <utility>
 
 namespace eckit::sql {
 

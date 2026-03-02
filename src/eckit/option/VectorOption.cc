@@ -15,13 +15,14 @@
 
 #pragma once
 
-#include <iostream>
+#include "eckit/option/VectorOption.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/option/Title.h"
-#include "eckit/option/VectorOption.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
+
+#include <iostream>
 
 namespace eckit::option {
 

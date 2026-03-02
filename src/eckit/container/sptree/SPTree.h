@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef SPTree_H
-#define SPTree_H
-
+#pragma once
 #include "eckit/container/sptree/SPIterator.h"
 #include "eckit/container/sptree/SPMetadata.h"
 #include "eckit/container/sptree/SPNode.h"
@@ -166,5 +164,3 @@ public:
 };
 
 }  // namespace eckit
-
-#endif

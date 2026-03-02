@@ -1,7 +1,9 @@
-#ifndef eckit_geometry_Point3_h
-#define eckit_geometry_Point3_h
 
+#pragma once
 #include "eckit/geometry/KPoint.h"
+
+#include <cassert>
+#include <cstddef>
 
 //------------------------------------------------------------------------------------------------------
 
@@ -56,5 +58,3 @@ bool points_equal(const Point3&, const Point3&);
 //------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::geometry
-
-#endif

@@ -11,15 +11,13 @@
 // File StatCollector.h
 // Baudouin Raoult - ECMWF Apr 97
 
-#ifndef eckit_StatCollector_h
-#define eckit_StatCollector_h
-
-#include <cstddef>
-#include <iostream>
-
+#pragma once
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/BigNum.h"
+
+#include <cstddef>
+#include <iostream>
 
 
 //-----------------------------------------------------------------------------
@@ -92,5 +90,3 @@ struct StatCollector {
 //-----------------------------------------------------------------------------
 //
 }  // namespace eckit
-
-#endif

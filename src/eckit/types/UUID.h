@@ -11,11 +11,11 @@
 /// @author Tiago Quintino
 /// @date Dec 2014
 
-#ifndef eckit_UUID_h
-#define eckit_UUID_h
-
+#pragma once
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
+#include <iosfwd>
 #include <string>
 
 namespace eckit {
@@ -100,5 +100,3 @@ inline bool operator>=(UUID const& lhs, UUID const& rhs) {
 //--------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

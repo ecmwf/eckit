@@ -11,12 +11,16 @@
 // File io/FTPHandle.h
 // Manuel Fuentes - ECMWF May 96
 
-#ifndef eckit_filesystem_FTPHandle_h
-#define eckit_filesystem_FTPHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPSocket.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <exception>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -88,5 +92,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

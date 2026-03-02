@@ -10,6 +10,9 @@
 
 #include "eckit/value/Params.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
 //----------------------------------------------------------------------------------------------------------------------
 
 namespace eckit {

@@ -13,18 +13,19 @@
 /// @author Tiago Quintino
 /// @date   Jun 97
 
-
-#ifndef eckit_StringContent_h
-#define eckit_StringContent_h
-
+#pragma once
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/value/Content.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Hash;
 
 class StringContent : public Content {
 
@@ -118,5 +119,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

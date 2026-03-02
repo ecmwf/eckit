@@ -12,10 +12,11 @@
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_cmd_CmdApplication_H
-#define eckit_cmd_CmdApplication_H
-
+#pragma once
 #include "eckit/cmd/CmdParser.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -45,5 +46,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

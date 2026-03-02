@@ -11,7 +11,10 @@
 #include "eckit/sql/expression/ParameterExpression.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/sql/SQLSession.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <ostream>
+#include <string>
 
 namespace eckit::sql::expression {
 

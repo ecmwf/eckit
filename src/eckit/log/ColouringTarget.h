@@ -13,14 +13,13 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#ifndef eckit_log_ColouringTarget_h
-#define eckit_log_ColouringTarget_h
+#pragma once
+#include "eckit/log/Colour.h"
+#include "eckit/log/LogTarget.h"
+#include "eckit/log/WrapperTarget.h"
 
 #include <iosfwd>
 #include <string>
-
-#include "eckit/log/Colour.h"
-#include "eckit/log/WrapperTarget.h"
 
 namespace eckit {
 
@@ -51,5 +50,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

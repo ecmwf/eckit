@@ -12,13 +12,17 @@
 /// @author Tiago Quintino
 /// @date   May 1996
 
-#ifndef eckit_io_FileHandle_h
-#define eckit_io_FileHandle_h
-
-#include <memory>
-
+#pragma once
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <cstdio>
+#include <iosfwd>
+#include <memory>
+#include <string>
 
 namespace eckit {
 
@@ -98,5 +102,3 @@ private:  // methods
 };
 
 }  // namespace eckit
-
-#endif

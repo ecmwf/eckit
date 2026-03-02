@@ -10,14 +10,22 @@
 
 #include "eckit/sql/expression/ColumnExpression.h"
 
-#include <cstring>
-#include <ostream>
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/utils/Translator.h"
+
+#include <cstring>
+#include <functional>
+#include <memory>
+#include <set>
+#include <sstream>
+#include <vector>
 
 namespace eckit::sql::expression {
 

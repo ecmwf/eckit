@@ -11,29 +11,20 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
-
-#ifndef eckit_message_MessageContent_H
-#define eckit_message_MessageContent_H
-
-#include <iosfwd>
-#include <vector>
-
+#pragma once
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/Offset.h"
 #include "eckit/memory/Counted.h"
 #include "eckit/types/Types.h"
 
+#include <cstddef>
+#include <iosfwd>
+#include <string>
+#include <vector>
+
 namespace eckit {
 
-class DataHandle;
-class Offset;
-class PathName;
-
-namespace mars {
-class MarsRequest;
-}
-
 namespace message {
-
-class MetadataGatherer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -93,6 +84,3 @@ private:
 
 }  // namespace message
 }  // namespace eckit
-
-
-#endif

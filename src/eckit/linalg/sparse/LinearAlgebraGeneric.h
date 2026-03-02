@@ -13,6 +13,9 @@
 
 #include "eckit/linalg/LinearAlgebraSparse.h"
 
+#include <iosfwd>
+#include <string>
+
 namespace eckit::linalg::sparse {
 
 struct LinearAlgebraGeneric final : public LinearAlgebraSparse {

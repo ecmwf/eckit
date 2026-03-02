@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include <string>
-
 #include "eckit/config/Resource.h"
+
+#include <string>
 
 namespace eckit::codec::defaults {
 

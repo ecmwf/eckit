@@ -11,13 +11,18 @@
  */
 
 
-#include <cmath>
-#include <limits>
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/GreatCircle.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+
+#include <cmath>
+#include <cstddef>
+#include <limits>
+#include <string>
+#include <utility>
+#include <vector>
 
 #define EXPECT_APPROX(a, b, eps) EXPECT(::eckit::types::is_approximately_equal((a), (b), (eps)))
 

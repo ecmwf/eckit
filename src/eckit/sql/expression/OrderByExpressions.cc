@@ -9,7 +9,15 @@
  */
 
 #include "eckit/sql/expression/OrderByExpressions.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/StringTools.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
 
 namespace eckit::sql::expression {
 

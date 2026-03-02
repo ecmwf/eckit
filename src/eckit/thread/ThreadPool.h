@@ -8,13 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_ThreadPool_h
-#define eckit_ThreadPool_h
+#pragma once
+#include "eckit/thread/MutexCond.h"
 
+#include <cstddef>
 #include <list>
 #include <string>
-
-#include "eckit/thread/MutexCond.h"
 
 
 namespace eckit {
@@ -93,5 +92,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

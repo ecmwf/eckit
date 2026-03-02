@@ -8,13 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-
-#include "eckit/types/Types.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
+#include "eckit/testing/Test.h"
 #include "eckit/utils/RendezvousHash.h"
 #include "eckit/utils/Translator.h"
 
-#include "eckit/testing/Test.h"
+#include <algorithm>
+#include <cstddef>
+#include <map>
+#include <ostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

@@ -12,13 +12,10 @@
 
 #pragma once
 
-#include <iosfwd>
-#include <string>
-
 #include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXYZ.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
+
+#include <string>
 
 
 namespace eckit {
@@ -26,11 +23,9 @@ namespace geo {
 namespace area {
 class BoundingBox;
 }
-class Projection;
 }  // namespace geo
 namespace spec {
 class Custom;
-class Spec;
 }  // namespace spec
 }  // namespace eckit
 

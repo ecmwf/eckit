@@ -8,14 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_RendezvousHash_H
-#define eckit_utils_RendezvousHash_H
+#pragma once
+#include "eckit/thread/Mutex.h"
 
+#include <cstddef>
 #include <map>
 #include <string>
 #include <vector>
-
-#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -90,5 +89,3 @@ private:  // types
 
 
 }  // end namespace eckit
-
-#endif

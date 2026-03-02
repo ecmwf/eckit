@@ -12,14 +12,14 @@
 
 #pragma once
 
+#include "eckit/codec/detail/Endian.h"
+#include "eckit/codec/detail/Time.h"
+#include "eckit/codec/detail/Version.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "eckit/codec/detail/Endian.h"
-#include "eckit/codec/detail/Time.h"
-#include "eckit/codec/detail/Version.h"
 
 namespace eckit::codec {
 

@@ -8,12 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#include <string>
-
 #include "eckit/container/CacheLRU.h"
 #include "eckit/exception/Exceptions.h"
-
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <list>
+#include <map>
+#include <ostream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

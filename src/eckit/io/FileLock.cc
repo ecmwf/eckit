@@ -10,12 +10,15 @@
 
 #include "eckit/io/FileLock.h"
 
-#include <fcntl.h>
-#include <unistd.h>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/os/AutoUmask.h"
+
+#include <fcntl.h>
+#include <ostream>
+#include <string>
+#include <unistd.h>
 
 namespace eckit {
 

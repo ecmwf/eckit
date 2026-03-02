@@ -10,6 +10,8 @@
 
 #include "eckit/serialisation/BadTag.h"
 
+#include <iostream>
+
 namespace eckit {
 
 BadTag::BadTag(const std::string& what) : Exception(what) {

@@ -8,16 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_maths_Matrix_h
+#pragma once
+
+#ifndef eckit_maths_MATRIX_INCLUDED
 #error Include "eckit/maths/Matrix.h" instead of "eckit/maths/MatrixEigen.h"
 #endif
 
-#ifndef eckit_maths_MatrixEigen_h
-#define eckit_maths_MatrixEigen_h
-
-#include "eckit/maths/Eigen.h"
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/maths/Eigen.h"
 
 namespace eckit {
 
@@ -146,5 +144,3 @@ public:
 }  // namespace maths
 
 }  // namespace eckit
-
-#endif

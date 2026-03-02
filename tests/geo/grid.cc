@@ -10,14 +10,16 @@
  */
 
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "eckit/geo/Grid.h"
+
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::test {

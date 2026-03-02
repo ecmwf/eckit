@@ -8,10 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
+#include "eckit/io/HandleBuf.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/HandleBuf.h"
+
+#include <cstdio>
+#include <sstream>
+#include <string>
 
 //----------------------------------------------------------------------------------------------------------------------
 

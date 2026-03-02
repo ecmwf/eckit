@@ -11,12 +11,8 @@
 // File Password.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef eckit_Password_h
-#define eckit_Password_h
-
+#pragma once
 #include <string>
-
-#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 
@@ -35,5 +31,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

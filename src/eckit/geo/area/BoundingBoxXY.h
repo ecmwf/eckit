@@ -12,10 +12,11 @@
 
 #pragma once
 
-#include <array>
-
 #include "eckit/geo/Area.h"
-#include "eckit/geo/PointXY.h"
+#include "eckit/geo/Point.h"
+
+#include <array>
+#include <string>
 
 
 namespace eckit::geo::area {

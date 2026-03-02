@@ -13,6 +13,8 @@
 #pragma once
 
 #include "eckit/geo/Figure.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 
 
 namespace eckit::geo::figure {

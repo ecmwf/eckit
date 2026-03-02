@@ -8,15 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_SignalHandler_h
-#define eckit_SignalHandler_h
-
-#include <setjmp.h>
+#pragma once
 #include <csignal>
-
-#include "eckit/eckit.h"
-
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 
@@ -67,5 +60,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

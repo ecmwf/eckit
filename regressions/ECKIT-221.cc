@@ -7,15 +7,17 @@ FEATURE ECKIT-221
 
 */
 
-#include <cstdlib>
-#include <iostream>
-#include <map>
-#include <memory>
-
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/SharedBuffer.h"
 #include "eckit/mpi/Comm.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/utils/Translator.h"
+
+#include <cstdlib>
+#include <iostream>
+#include <memory>
+#include <string>
 
 using namespace eckit;
 

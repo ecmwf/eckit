@@ -8,10 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-
-#include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/sql/expression/function/FunctionNORM.h"
+
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <cmath>
+#include <memory>
 
 namespace eckit::sql::expression::function {
 

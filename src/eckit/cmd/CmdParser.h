@@ -12,13 +12,10 @@
 /// @author Florian Rathgeber
 /// @date   June 2015
 
-#ifndef eckit_cmd_CmdParser_H
-#define eckit_cmd_CmdParser_H
-
+#pragma once
 #include <iostream>
+#include <string>
 #include <vector>
-
-#include "eckit/cmd/UserInput.h"
 
 namespace eckit {
 
@@ -100,5 +97,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -10,8 +10,10 @@
 
 
 #include "eckit/net/TCPClient.h"
-#include "eckit/config/Resource.h"
+
 #include "eckit/net/Endpoint.h"
+
+#include <ostream>
 
 namespace eckit::net {
 

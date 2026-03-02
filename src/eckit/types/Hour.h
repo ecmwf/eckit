@@ -11,10 +11,7 @@
 /// @author Baudouin Raoult
 /// @date   May 21
 
-
-#ifndef eckit_seconds_h
-#define eckit_seconds_h
-
+#pragma once
 #include <iosfwd>
 #include <string>
 
@@ -89,5 +86,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

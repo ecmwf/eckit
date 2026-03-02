@@ -10,14 +10,16 @@
  */
 
 
-#include <algorithm>
-#include <iostream>
-#include <utility>
-#include <vector>
-
 #include "eckit/geo/util.h"
+
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 template <typename T>

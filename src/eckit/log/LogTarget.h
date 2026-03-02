@@ -11,12 +11,10 @@
 /// @file LogTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_LogTarget_h
-#define eckit_log_LogTarget_h
+#pragma once
+#include "eckit/memory/Counted.h"
 
 #include <iosfwd>
-
-#include "eckit/memory/Counted.h"
 
 namespace eckit {
 
@@ -45,5 +43,3 @@ protected:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

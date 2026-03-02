@@ -10,12 +10,15 @@
  */
 
 
-#include <memory>
-
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/order/HEALPix.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <memory>
+#include <string>
 
 
 #define EXPECT_EQUAL_VECTOR(x, y)               \

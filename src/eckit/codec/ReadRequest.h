@@ -12,12 +12,13 @@
 
 #pragma once
 
-#include <cstdint>
+#include "eckit/codec/RecordItem.h"
+#include "eckit/codec/Stream.h"
+#include "eckit/codec/detail/Decoder.h"
+
+#include <cstddef>
 #include <memory>
 #include <string>
-
-#include "eckit/codec/RecordItem.h"
-#include "eckit/codec/detail/Decoder.h"
 
 namespace eckit::codec {
 

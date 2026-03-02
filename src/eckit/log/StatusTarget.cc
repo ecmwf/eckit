@@ -9,7 +9,11 @@
  */
 
 #include "eckit/log/StatusTarget.h"
+
 #include "eckit/runtime/Monitor.h"
+
+#include <ostream>
+#include <string>
 
 namespace eckit {
 

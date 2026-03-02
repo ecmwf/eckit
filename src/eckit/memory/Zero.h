@@ -12,10 +12,7 @@
 ///@author Tiago Quintino
 ///@date   Dec 2018
 
-#ifndef eckit_memory_Zero_h
-#define eckit_memory_Zero_h
-
-
+#pragma once
 #include <cstring>  // for memset
 
 
@@ -27,5 +24,3 @@ inline void zero(T& p) {
 }
 
 }  // namespace eckit
-
-#endif

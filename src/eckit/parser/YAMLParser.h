@@ -11,12 +11,17 @@
 /// @author Baudouin Raoult
 /// @date Jun 2012
 
-#ifndef eckit_YAMLParser_h
-#define eckit_YAMLParser_h
-
-#include <deque>
-
+#pragma once
+#include "eckit/filesystem/PathName.h"
 #include "eckit/parser/ObjectParser.h"
+#include "eckit/value/Value.h"
+
+#include <cstddef>
+#include <deque>
+#include <iosfwd>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace eckit {
 
@@ -87,5 +92,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

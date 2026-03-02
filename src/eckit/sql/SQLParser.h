@@ -12,26 +12,17 @@
 // Baudouin Raoult - ECMWF Mar 98
 // Piotr Kuchta - ECMWF Mar 2012
 
-#ifndef eckit_sql_SQLParser_H
-#define eckit_sql_SQLParser_H
+#pragma once
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 
 #include <stack>
-
-#include "SQLOutputConfig.h"
-#include "eckit/exception/Exceptions.h"
-
-namespace eckit {
-class PathName;
-}
-namespace eckit {
-class DataHandle;
-}
+#include <string>
 
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SQLDatabase;
 class SQLSession;
 
 class SyntaxError : public eckit::Exception {
@@ -70,5 +61,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

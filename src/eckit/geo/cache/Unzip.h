@@ -12,10 +12,10 @@
 
 #pragma once
 
+#include "eckit/geo/cache/DiskCache.h"
+
 #include <string>
 #include <vector>
-
-#include "eckit/geo/cache/DiskCache.h"
 
 
 namespace eckit::geo::cache {

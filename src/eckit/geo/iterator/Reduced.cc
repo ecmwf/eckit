@@ -12,12 +12,16 @@
 
 #include "eckit/geo/iterator/Reduced.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/PointXY.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/geo/grid/Reduced.h"
+
 #include <algorithm>
 #include <iterator>
 #include <memory>
-
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/grid/Reduced.h"
+#include <string>
 
 
 namespace eckit::geo::iterator {

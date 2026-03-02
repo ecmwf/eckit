@@ -8,10 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
-
-#include "eckit/log/OStreamTarget.h"
 #include "eckit/log/TeeTarget.h"
+
+#include <ostream>
 
 namespace eckit {
 

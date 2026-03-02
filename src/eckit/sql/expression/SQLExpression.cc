@@ -11,10 +11,12 @@
 #include "eckit/sql/expression/SQLExpression.h"
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Log.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/expression/NumberExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+
+#include <sstream>
 
 using namespace eckit;
 

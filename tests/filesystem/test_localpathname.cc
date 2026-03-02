@@ -8,12 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <memory>
-#include <string>
-
-#include "eckit/types/Types.h"
-
+#include "eckit/eckit_config.h"
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
@@ -21,9 +16,20 @@
 #include "eckit/filesystem/TmpFile.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
 #include "eckit/utils/Hash.h"
 
-#include "eckit/testing/Test.h"
+#include <cstdlib>
+#include <iostream>
+#include <memory>
+#include <set>
+#include <string>
+#include <unistd.h>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

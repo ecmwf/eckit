@@ -8,14 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_LZ4Compressor_H
-#define eckit_utils_LZ4Compressor_H
-
+#pragma once
 #include "eckit/utils/Compressor.h"
 
-namespace eckit {
+#include <cstddef>
 
-class Buffer;
+namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -36,5 +34,3 @@ protected:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
-
-#endif

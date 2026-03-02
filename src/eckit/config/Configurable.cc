@@ -10,7 +10,9 @@
 
 
 #include "eckit/config/Configurable.h"
-#include "eckit/config/Resource.h"
+
+#include "eckit/config/ResourceBase.h"
+#include "eckit/thread/AutoLock.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 

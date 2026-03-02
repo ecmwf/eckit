@@ -11,11 +11,11 @@
 // File HtmlObject.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef HtmlObject_H
-#define HtmlObject_H
+#pragma once
 
-#include "eckit/persist/Bless.h"
 
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -23,14 +23,12 @@ namespace eckit {
 
 class Url;
 class JavaAgent;
-class Bless;
 
 class HtmlObject {
 public:
 
     HtmlObject();
 
-#include "eckit/web/HtmlObject.b"
 
     virtual ~HtmlObject();
 
@@ -64,5 +62,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

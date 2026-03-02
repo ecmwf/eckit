@@ -8,11 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <cstring>
-#include <fstream>
-#include <sstream>
-
 #include "eckit/config/Resource.h"
 #include "eckit/io/MultiSocketHandle.h"
 #include "eckit/io/PartFileHandle.h"
@@ -20,6 +15,11 @@
 #include "eckit/log/Timer.h"
 #include "eckit/net/MultiSocket.h"
 #include "eckit/runtime/Application.h"
+
+#include <cstring>
+#include <fstream>
+#include <sstream>
+#include <unistd.h>
 
 
 using namespace eckit;

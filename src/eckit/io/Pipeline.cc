@@ -8,20 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
+#include "eckit/io/Pipeline.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/io/FileDescHandle.h"
-#include "eckit/io/Pipeline.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Log.h"
-#include "eckit/log/Progress.h"
-#include "eckit/log/Timer.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/MutexCond.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+
+#include <exception>
+#include <unistd.h>
 
 
 namespace eckit {

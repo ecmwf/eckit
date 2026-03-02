@@ -12,17 +12,17 @@
 /// @author Simon Smart
 /// ECMWF Oct 11
 
-#ifndef eckit_sql_ConstantExpression_H
-#define eckit_sql_ConstantExpression_H
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
+#include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <iosfwd>
+#include <memory>
+#include <string>
 
 namespace eckit::sql {
-
-class SQLSelect;
-class SQLTable;
-class SQLOutput;
 
 namespace expression {
 
@@ -98,5 +98,3 @@ protected:
 
 }  // namespace expression
 }  // namespace eckit::sql
-
-#endif

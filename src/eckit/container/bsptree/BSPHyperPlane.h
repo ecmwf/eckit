@@ -8,10 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef BSPHyperPlane_H
-#define BSPHyperPlane_H
-
-
+#pragma once
 namespace eckit {
 
 
@@ -36,6 +33,3 @@ public:
 
 
 }  // namespace eckit
-
-
-#endif

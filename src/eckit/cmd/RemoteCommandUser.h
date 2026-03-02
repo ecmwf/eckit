@@ -12,10 +12,12 @@
 /// @author Manuel Fuentes
 /// @date   Jul 1996
 
-#ifndef eckit_cmd_RemoteCommandUser_H
-#define eckit_cmd_RemoteCommandUser_H
-
+#pragma once
 #include "eckit/net/NetUser.h"
+#include "eckit/net/TCPSocket.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -36,5 +38,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

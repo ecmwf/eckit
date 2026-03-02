@@ -59,12 +59,17 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+IncludeBlocks: Regroup
 IncludeCategories:
-  - Regex: '^<.*\.h>'
+  # eckit headers
+  - Regex: '"eckit/.*"'
     Priority: 1
-  - Regex: "^<.*"
+    SortPriority: 0
+  # Other project headers (quoted)
+  - Regex: '".*"'
     Priority: 2
-  - Regex: ".*"
+  # System / third-party headers (angle brackets)
+  - Regex: '<.*>'
     Priority: 3
 IncludeIsMainRegex: "([-_](test|unittest))?$"
 IndentCaseLabels: true

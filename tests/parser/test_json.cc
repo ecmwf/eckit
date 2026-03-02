@@ -9,12 +9,20 @@
  */
 
 #include "eckit/eckit_config.h"
-
+#include "eckit/log/Channel.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/JSONParser.h"
-
+#include "eckit/parser/StreamParser.h"
 #include "eckit/testing/Test.h"
+#include "eckit/value/Content.h"
+#include "eckit/value/Value.h"
+
+#include <iostream>
+#include <map>
+#include <sstream>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

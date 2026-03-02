@@ -11,12 +11,10 @@
 // File ETA.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_ETA_h
-#define eckit_ETA_h
-
-#include <sys/time.h>
-
+#pragma once
 #include <iosfwd>
+#include <string>
+#include <sys/time.h>
 
 namespace eckit {
 
@@ -49,5 +47,3 @@ private:
 //--------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

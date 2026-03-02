@@ -12,11 +12,13 @@
 /// @author Tiago Quintino
 /// @date   Jun 96
 
-#ifndef eckit_TCPServer_h
-#define eckit_TCPServer_h
-
+#pragma once
+#include "eckit/net/SocketOptions.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Mutex.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit::net {
 
@@ -83,5 +85,3 @@ public:
 };
 
 }  // namespace eckit::net
-
-#endif

@@ -8,13 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/types/Types.h"
+#include "eckit/sql/expression/function/FunctionMATCH.h"
 
 #include "eckit/sql/SQLMATCHSubquerySession.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/expression/function/FunctionEQ.h"
-#include "eckit/sql/expression/function/FunctionMATCH.h"
+#include "eckit/types/Types.h"
 
 #include <algorithm>
 #include <vector>

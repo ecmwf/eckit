@@ -12,20 +12,22 @@
 
 #pragma once
 
-#include <array>
-#include <memory>
-
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/PointXY.h"
+
+#include <array>
+#include <memory>
+#include <string>
 
 
 namespace eckit::geo {
 namespace area {
-class BoundingBox;
 bool bounding_box_equal(const BoundingBox&, const BoundingBox&);
 }  // namespace area
 class Projection;
+
 namespace projection {
 class Rotation;
 }

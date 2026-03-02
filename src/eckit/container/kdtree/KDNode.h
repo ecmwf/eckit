@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KDNode_H
-#define KDNode_H
-
+#pragma once
 #include "eckit/container/sptree/SPNode.h"
 
 namespace eckit {
@@ -63,5 +61,3 @@ public:
 }  // namespace eckit
 
 #include "KDNode.cc"
-
-#endif

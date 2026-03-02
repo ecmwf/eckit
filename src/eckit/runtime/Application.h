@@ -14,11 +14,12 @@
 /// @author Tiago Quintino
 /// @author Florian Rathgeber
 
-#ifndef eckit_Application_h
-#define eckit_Application_h
-
+#pragma once
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Task.h"
+
+#include <ctime>
+#include <string>
 
 namespace eckit {
 
@@ -75,5 +76,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

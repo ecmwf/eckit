@@ -9,13 +9,22 @@
  */
 
 #include "eckit/web/HttpService.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/io/TCPSocketHandle.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
+#include "eckit/net/NetUser.h"
+#include "eckit/net/TCPSocket.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/web/HttpResource.h"
 #include "eckit/web/HttpStream.h"
 #include "eckit/web/HttpUser.h"
 #include "eckit/web/Url.h"
+
+#include <exception>
+#include <ostream>
 
 
 namespace eckit {

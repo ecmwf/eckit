@@ -12,15 +12,18 @@
 /// @author Simon Smart
 // @date Dec 03
 
-#ifndef eckit_sql_SQLTable_H
-#define eckit_sql_SQLTable_H
-
-#include <functional>
-#include <memory>
-
-#include "eckit/filesystem/PathName.h"
+#pragma once
 #include "eckit/sql/SQLTypedefs.h"
 #include "eckit/sql/type/SQLType.h"
+
+#include <cstddef>
+#include <functional>
+#include <iosfwd>
+#include <map>
+#include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
 namespace eckit::sql {
 
@@ -137,5 +140,3 @@ inline bool operator<(std::reference_wrapper<const SQLTable> lhs, std::reference
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

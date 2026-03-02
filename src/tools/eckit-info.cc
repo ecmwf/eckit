@@ -8,10 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-
-#include "eckit/config/LibEcKit.h"
 #include "eckit/eckit_version.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
@@ -19,6 +17,10 @@
 #include "eckit/option/SimpleOption.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
+
+#include <iostream>
+#include <string>
+#include <vector>
 
 using namespace eckit::system;
 

@@ -12,8 +12,9 @@
 #pragma once
 
 #include "eckit/linalg/SparseMatrix.h"
-
 #include "eckit/memory/MemoryBuffer.h"
+
+#include <iosfwd>
 
 
 namespace eckit::linalg::allocator {

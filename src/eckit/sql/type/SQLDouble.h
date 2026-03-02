@@ -11,14 +11,13 @@
 // File SQLDouble.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLDouble_H
-#define SQLDouble_H
-
+#pragma once
 #include "eckit/sql/type/SQLType.h"
 
-namespace eckit::sql {
+#include <cstddef>
+#include <string>
 
-class SQLOutput;
+namespace eckit::sql {
 
 namespace type {
 
@@ -49,5 +48,3 @@ private:
 
 }  // namespace type
 }  // namespace eckit::sql
-
-#endif

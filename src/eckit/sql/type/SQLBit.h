@@ -11,10 +11,11 @@
 // File SQLBit.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef SQLBit_H
-#define SQLBit_H
-
+#pragma once
 #include "eckit/sql/type/SQLType.h"
+
+#include <cstddef>
+#include <string>
 
 namespace eckit::sql::type {
 
@@ -50,5 +51,3 @@ private:
 };
 
 }  // namespace eckit::sql::type
-
-#endif

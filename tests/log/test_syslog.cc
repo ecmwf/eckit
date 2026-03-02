@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
-
 #include "eckit/log/SysLog.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/testing/Test.h"
+
+#include <string>
 
 using namespace std;
 using namespace eckit;

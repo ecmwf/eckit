@@ -9,12 +9,16 @@
  */
 
 #include "eckit/message/Splitter.h"
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/PeekHandle.h"
-#include "eckit/message/Message.h"
 
 #include <algorithm>
+#include <cctype>
 #include <iomanip>
+#include <sstream>
+#include <string>
 
 namespace eckit::message {
 

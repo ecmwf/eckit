@@ -12,10 +12,16 @@
 
 #pragma once
 
-#include <memory>
-
+#include "eckit/geo/Figure.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/Earth.h"
+
+#include <memory>
+#include <string>
+#include <variant>
 
 
 namespace eckit::geo::projection {

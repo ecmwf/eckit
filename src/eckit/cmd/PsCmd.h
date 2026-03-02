@@ -11,10 +11,12 @@
 /// @author Manuel Fuentes
 /// @date   Jan 1997
 
-#ifndef eckit_cmd_PsCmd_H
-#define eckit_cmd_PsCmd_H
-
+#pragma once
 #include "eckit/cmd/CmdResource.h"
+#include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -48,5 +50,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

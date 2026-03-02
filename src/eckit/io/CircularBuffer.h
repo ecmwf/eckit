@@ -12,13 +12,11 @@
 /// @author Tiago Quintino
 /// @date   June 2017
 
-#ifndef eckit_CircularBuffer_h
-#define eckit_CircularBuffer_h
-
-#include <limits>
-
-#include "eckit/eckit.h"
+#pragma once
 #include "eckit/thread/Mutex.h"
+
+#include <cstddef>
+#include <limits>
 
 namespace eckit {
 
@@ -63,5 +61,3 @@ private:  // members
 
 
 }  // namespace eckit
-
-#endif

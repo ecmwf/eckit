@@ -12,10 +12,10 @@
  * Place functions to allow for save type casting in this file
  */
 #pragma once
+#include "eckit/exception/Exceptions.h"
+
 #include <limits>
 #include <type_traits>
-
-#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 

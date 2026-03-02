@@ -12,11 +12,12 @@
 
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 
-#include <cmath>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <cmath>
 
 
 namespace eckit::geo::projection {

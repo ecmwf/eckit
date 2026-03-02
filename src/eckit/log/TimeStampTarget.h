@@ -11,12 +11,11 @@
 /// @file TimeStampTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_TimeStampTarget_h
-#define eckit_log_TimeStampTarget_h
-
-#include <utility>
-
+#pragma once
+#include "eckit/log/LogTarget.h"
 #include "eckit/log/WrapperTarget.h"
+
+#include <iosfwd>
 
 namespace eckit {
 
@@ -46,5 +45,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

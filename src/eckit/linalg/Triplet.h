@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <iosfwd>
-
 #include "eckit/linalg/types.h"
+
+#include <iosfwd>
 
 namespace eckit::linalg {
 

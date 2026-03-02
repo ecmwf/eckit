@@ -8,12 +8,19 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-
 #include "eckit/cmd/TailCmd.h"
+
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/config/Resource.h"
 #include "eckit/os/SignalHandler.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/runtime/TaskInfo.h"
+#include "eckit/value/Value.h"
+
+#include <ctime>
+#include <ostream>
+#include <unistd.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 

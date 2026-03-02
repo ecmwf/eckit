@@ -8,14 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include <csignal>
+#include "eckit/thread/ThreadControler.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
-#include "eckit/thread/ThreadControler.h"
+
+#include <bits/types/struct_sched_param.h>
+#include <csignal>
+#include <exception>
+#include <ostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

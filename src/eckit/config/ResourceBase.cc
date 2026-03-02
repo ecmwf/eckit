@@ -9,10 +9,15 @@
  */
 
 
+#include "eckit/config/ResourceBase.h"
+
 #include "eckit/config/Configurable.h"
-#include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
 #include "eckit/runtime/Main.h"
+
+#include <cstdlib>
+#include <ostream>
+#include <string>
 
 namespace eckit {
 

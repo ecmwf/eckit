@@ -11,10 +11,11 @@
 // File TimeInterval.h
 // Manuel Fuentes - ECMWF Oct 96
 
-#ifndef eckit_TimeInterval_h
-#define eckit_TimeInterval_h
-
+#pragma once
 #include "eckit/types/DateTime.h"
+#include "eckit/types/Time.h"
+
+#include <iosfwd>
 
 
 //-----------------------------------------------------------------------------
@@ -71,5 +72,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

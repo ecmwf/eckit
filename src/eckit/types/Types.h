@@ -11,8 +11,8 @@
 // File Types.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eckit_Types_h
-#define eckit_Types_h
+#pragma once
+#include "eckit/runtime/TaskID.h"  // to be removed
 
 #include <array>
 #include <cstddef>
@@ -22,8 +22,6 @@
 #include <set>
 #include <utility>
 #include <vector>
-
-#include "eckit/runtime/TaskID.h"  // to be removed
 
 namespace eckit {
 
@@ -241,5 +239,3 @@ Stream& operator>>(Stream&, std::map<K, V>&);
 }  // namespace eckit
 
 #include "eckit/types/Types.cc"
-
-#endif

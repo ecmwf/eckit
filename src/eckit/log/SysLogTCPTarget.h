@@ -12,14 +12,13 @@
 /// @author Metin Cakircali
 /// @date   July 2025
 
+#pragma once
+
 #include "eckit/log/SysLog.h"
 #include "eckit/log/TCPTarget.h"
+#include "eckit/net/TCPSocket.h"
 
 namespace eckit {
-
-namespace net {
-class TCPSocket;
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 

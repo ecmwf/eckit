@@ -8,13 +8,17 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_filesystem_MemoryHandle_h
-#define eckit_filesystem_MemoryHandle_h
-
+#pragma once
+#include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
-class Buffer;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -84,6 +88,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

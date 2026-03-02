@@ -12,11 +12,13 @@
 
 #pragma once
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/util/mutex.h"
+
 #include <map>
 #include <numeric>
-
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/util/mutex.h"
+#include <type_traits>
+#include <utility>
 
 
 namespace eckit::geo::cache {

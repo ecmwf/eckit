@@ -14,10 +14,11 @@
 
 #pragma once
 
-#include <list>
-
 #include "eckit/io/Buffer.h"
 #include "eckit/io/Length.h"
+
+#include <cstddef>
+#include <list>
 
 namespace eckit {
 

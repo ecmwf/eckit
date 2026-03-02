@@ -8,12 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-#include <vector>
+#include "eckit/log/UserChannel.h"
 
 #include "eckit/exception/Exceptions.h"
 
-#include "eckit/log/UserChannel.h"
+#include <algorithm>
+#include <cstddef>
+#include <vector>
 
 //----------------------------------------------------------------------------------------------------------------------
 

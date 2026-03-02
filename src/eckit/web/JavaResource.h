@@ -11,10 +11,11 @@
 // File JavaResource.h
 // Baudouin Raoult - ECMWF Sep 97
 
-#ifndef JavaResource_H
-#define JavaResource_H
-
+#pragma once
 #include "eckit/web/HtmlResource.h"
+
+#include <iosfwd>
+#include <string>
 
 
 //-----------------------------------------------------------------------------
@@ -109,6 +110,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-
-#include "eckit/eckit.h"
-#include "eckit/exception/Exceptions.h"
 #include "eckit/io/FileLocker.h"
+
+#include "eckit/exception/Exceptions.h"
+
+#include <cstdio>
+#include <fcntl.h>
 
 namespace eckit {
 

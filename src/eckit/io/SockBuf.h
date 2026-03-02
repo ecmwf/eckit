@@ -11,10 +11,10 @@
 // File SockBuf.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eckit_SockBuf_h
-#define eckit_SockBuf_h
-
+#pragma once
 #include "eckit/net/TCPSocket.h"
+
+#include <streambuf>
 
 
 namespace eckit {
@@ -56,5 +56,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

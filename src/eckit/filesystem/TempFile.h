@@ -11,10 +11,10 @@
 /// @author Baudouin Raoult
 /// @date   Nov 1996
 
-#ifndef eckit_TempFile_h
-#define eckit_TempFile_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
+
+#include <string>
 
 
 namespace eckit {
@@ -37,5 +37,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

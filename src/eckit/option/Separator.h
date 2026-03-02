@@ -12,13 +12,12 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
-#ifndef Separator_H
-#define Separator_H
-
-#include <iosfwd>
-
+#pragma once
 #include "eckit/option/Option.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 namespace eckit::option {
 
@@ -103,5 +102,3 @@ private:
 };
 
 }  // namespace eckit::option
-
-#endif

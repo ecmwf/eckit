@@ -9,11 +9,12 @@
  */
 
 
-#include <vector>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/maths/FloatingPointExceptions.h"
 #include "eckit/testing/Test.h"
+
+#include <string>
+#include <vector>
 
 
 namespace eckit::test {

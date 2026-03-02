@@ -10,9 +10,13 @@
 
 #pragma once
 
-#include <iosfwd>
-
 #include "eckit/option/Option.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <optional>
+#include <string>
+#include <vector>
 
 namespace eckit::option {
 

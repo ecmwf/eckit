@@ -10,13 +10,18 @@
 
 #include "eckit/sql/expression/StringExpression.h"
 
-#include <cstring>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/utils/Regex.h"
+
+#include <cstring>
+#include <functional>
+#include <memory>
+#include <ostream>
 
 
 //----------------------------------------------------------------------------------------------------------------------

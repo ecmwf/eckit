@@ -13,16 +13,15 @@
 /// @author Tiago Quintino
 /// @author Florian Rathgeber
 
-#ifndef eckit_PipeApplication_h
-#define eckit_PipeApplication_h
-
+#pragma once
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Application.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <string>
 
 
 namespace eckit {
-
-class Stream;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -57,5 +56,3 @@ protected:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

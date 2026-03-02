@@ -1,13 +1,14 @@
 
+#include "eckit/io/Buffer.h"
+#include "eckit/testing/Test.h"
+
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-
-#include <algorithm>
 #include <memory>
-
-#include "eckit/io/Buffer.h"
-#include "eckit/testing/Test.h"
+#include <string>
+#include <utility>
 
 
 // disable self-move warning here as we are testing it

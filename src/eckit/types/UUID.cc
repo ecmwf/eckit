@@ -8,13 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-#include <cctype>
-
+#include "eckit/types/UUID.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/Zero.h"
-#include "eckit/types/UUID.h"
+
+#include <algorithm>
+#include <cctype>
+#include <cstddef>
+#include <iterator>
+#include <sstream>
 
 namespace eckit {
 

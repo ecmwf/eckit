@@ -10,11 +10,15 @@
  */
 
 
-#include <limits>
-
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/projection/Mercator.h"
 #include "eckit/testing/Test.h"
+
+#include <initializer_list>
+#include <limits>
+#include <string>
 
 
 namespace eckit::geo::test {

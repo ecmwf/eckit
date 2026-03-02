@@ -11,18 +11,28 @@
 // File ClusterNodes.cc
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#include <algorithm>
+#include "eckit/io/cluster/ClusterNodes.h"
 
 #include "eckit/config/EtcTable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
-#include "eckit/io/cluster/ClusterNodes.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/cluster/NodeInfo.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/JSON.h"
+#include "eckit/log/Log.h"
 #include "eckit/memory/Zero.h"
 #include "eckit/net/IPAddress.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Clock.h"
+
+#include <algorithm>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <ostream>
+#include <pthread.h>
 
 namespace eckit {
 

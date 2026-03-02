@@ -12,14 +12,15 @@
 /// @author Florian Rathgeber
 /// @date July 2014
 
-#ifndef eckit_value_Params_H
-#define eckit_value_Params_H
-
-#include <list>
-
-#include "eckit/config/Parametrisation.h"
+#pragma once
 #include "eckit/serialisation/Stream.h"
 #include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <list>
+#include <map>
+#include <string>
+#include <utility>
 
 //----------------------------------------------------------------------------
 
@@ -175,5 +176,3 @@ Params::Concept* Params::Factory<T>::build(Stream& s) {
 //----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

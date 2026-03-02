@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef SPValue_H
-#define SPValue_H
-
+#pragma once
 #include <iostream>
 
 namespace eckit {
@@ -54,6 +52,3 @@ public:
 };
 
 }  // namespace eckit
-
-
-#endif

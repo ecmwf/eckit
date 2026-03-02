@@ -11,10 +11,11 @@
 // File DayOfYear.h
 // Baudouin Raoult - ECMWF Sep 96
 
-#ifndef eckit_DayOfYear_h
-#define eckit_DayOfYear_h
-
+#pragma once
 #include "eckit/types/Date.h"
+
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -31,7 +32,6 @@ public:
     DayOfYear(long, long);
     DayOfYear(const std::string&);
 
-#include "eckit/types/DayOfYear.b"
 
     // -- Destructor
 
@@ -105,5 +105,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

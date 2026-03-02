@@ -11,10 +11,12 @@
 // File FunctionIN.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef FunctionIN_H
-#define FunctionIN_H
-
+#pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
+
+#include <cstddef>
+#include <string>
 
 namespace eckit::sql::expression::function {
 
@@ -46,5 +48,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

@@ -11,9 +11,7 @@
 // File FtpRequest.h
 // Baudouin Raoult - ECMWF Feb 02
 
-#ifndef FtpRequest_H
-#define FtpRequest_H
-
+#pragma once
 #include <string>
 
 //-----------------------------------------------------------------------------
@@ -56,5 +54,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

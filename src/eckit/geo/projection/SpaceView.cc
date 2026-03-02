@@ -12,7 +12,7 @@
 
 #include "eckit/geo/projection/SpaceView.h"
 
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/spec/Custom.h"
 
 

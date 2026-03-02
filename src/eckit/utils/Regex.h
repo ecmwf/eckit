@@ -11,11 +11,9 @@
 // File Regex.h
 // Baudouin Raoult - ECMWF Jan 98
 
-#ifndef eckit_Regex_h
-#define eckit_Regex_h
-
+#pragma once
+#include <iosfwd>
 #include <regex.h>
-
 #include <string>
 #include <string_view>
 
@@ -71,5 +69,3 @@ private:  // methods
 
 
 }  // namespace eckit
-
-#endif

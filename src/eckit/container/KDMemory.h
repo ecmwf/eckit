@@ -8,15 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KDMemory_H
-#define KDMemory_H
-
+#pragma once
+#include "eckit/container/StatCollector.h"
 #include "eckit/eckit.h"
 
 #include <cmath>
 #include <limits>
-
-#include "eckit/container/StatCollector.h"
 
 //------------------------------------------------------------------------------------------------------
 
@@ -84,5 +81,3 @@ struct TT : public T {
 //------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
-
-#endif

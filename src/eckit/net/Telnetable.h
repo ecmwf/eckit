@@ -11,9 +11,7 @@
 // File Telnetable.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eckit_Telnetable_h
-#define eckit_Telnetable_h
-
+#pragma once
 #include "eckit/thread/ThreadControler.h"
 
 namespace eckit::net {
@@ -44,5 +42,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

@@ -10,11 +10,13 @@
 
 #include "Month.h"
 
-#include <iomanip>
-#include <vector>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <cstdlib>
+#include <iomanip>
+#include <sstream>
+#include <vector>
 
 namespace eckit {
 

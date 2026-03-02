@@ -9,7 +9,14 @@
  */
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/serialisation/Streamable.h"
+
+#include <functional>
+#include <map>
+#include <string>
+#include <utility>
 
 
 //----------------------------------------------------------------------------------------------------------------------

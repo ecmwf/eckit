@@ -8,12 +8,17 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <climits>
-
 #include "eckit/cmd/DirCmd.h"
+
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/value/Value.h"
+
+#include <climits>
+#include <ostream>
+#include <unistd.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 

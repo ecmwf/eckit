@@ -8,8 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutput.h"
@@ -17,9 +16,22 @@
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"
+#include "eckit/sql/SQLTable.h"
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/type/SQLBitfield.h"
+#include "eckit/sql/type/SQLType.h"
 #include "eckit/testing/Test.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <cstring>
+#include <functional>
+#include <initializer_list>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace eckit::testing;
 

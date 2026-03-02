@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
+#include "eckit/log/WrapperTarget.h"
 
 #include "eckit/log/OStreamTarget.h"
-#include "eckit/log/WrapperTarget.h"
+
+#include <iostream>
 
 namespace eckit {
 

@@ -8,12 +8,19 @@
  * nor does it submit to any jurisdiction.
  */
 
-#ifndef eckit_cmd_CmdArg_H
-#define eckit_cmd_CmdArg_H
-
+#pragma once
 #include "eckit/config/Resource.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/serialisation/Streamable.h"
 #include "eckit/value/Value.h"
+
+#include <cstddef>
+#include <functional>
+#include <iosfwd>
+#include <map>
+#include <string>
+#include <vector>
 
 //-----------------------------------------------------------------------------
 
@@ -115,5 +122,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

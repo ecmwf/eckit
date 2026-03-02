@@ -10,8 +10,11 @@
 
 #include "eckit/cmd/MemoryCmd.h"
 
+#include "eckit/cmd/Arg.h"
 #include "eckit/system/MemoryInfo.h"
 #include "eckit/system/SystemInfo.h"
+
+#include <ostream>
 
 namespace eckit {
 

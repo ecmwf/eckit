@@ -11,9 +11,12 @@
 
 #pragma once
 
-#include <ostream>
-
 #include "eckit/config/Parametrisation.h"
+
+#include <cstddef>
+#include <ostream>
+#include <string>
+#include <vector>
 
 
 namespace eckit {

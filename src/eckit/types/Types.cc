@@ -9,6 +9,7 @@
  */
 
 #include "eckit/types/Types.h"
+
 #include "eckit/serialisation/Stream.h"
 
 namespace eckit {

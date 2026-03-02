@@ -11,24 +11,28 @@
 
 #include "eckit/linalg/SparseMatrix.h"
 
+#include "eckit/config/LibEcKit.h"
+#include "eckit/eckit_config.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/AutoCloser.h"
+#include "eckit/io/MemoryHandle.h"
+#include "eckit/linalg/allocator/BufferAllocator.h"
+#include "eckit/linalg/allocator/StandardAllocator.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
+#include "eckit/memory/MemoryBuffer.h"
+#include "eckit/serialisation/FileStream.h"
+#include "eckit/serialisation/Stream.h"
+
 #include <algorithm>
 #include <cassert>
 #include <cstring>
 #include <limits>
 #include <ostream>
-
-#include "eckit/eckit.h"  // for endianness
-
-#include "eckit/config/LibEcKit.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/io/AutoCloser.h"
-#include "eckit/io/MemoryHandle.h"
-#include "eckit/linalg/allocator/BufferAllocator.h"
-#include "eckit/linalg/allocator/StandardAllocator.h"
-#include "eckit/log/Log.h"
-#include "eckit/memory/MemoryBuffer.h"
-#include "eckit/serialisation/FileStream.h"
-#include "eckit/serialisation/Stream.h"
+#include <string>
+#include <utility>
 
 namespace eckit::linalg {
 

@@ -12,18 +12,23 @@
 
 #include "eckit/geo/grid/reduced/HEALPix.h"
 
-#include <algorithm>
-#include <cctype>
-#include <cmath>
-#include <regex>
-#include <utility>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/util.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/SafeCasts.h"
+
+#include <algorithm>
+#include <cmath>
+#include <regex>
+#include <tuple>
+#include <utility>
+#include <variant>
 
 
 namespace eckit::geo::grid::reduced {

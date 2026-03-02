@@ -12,12 +12,12 @@
 
 #pragma once
 
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/detail/RecordSections.h"
+
 #include <map>
 #include <string>
 #include <vector>
-
-#include "eckit/codec/Metadata.h"
-#include "eckit/codec/detail/RecordSections.h"
 
 namespace eckit::codec {
 

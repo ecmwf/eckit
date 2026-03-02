@@ -12,19 +12,17 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-#include <vector>
-
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/area/Library.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/value/Value.h"
 
-
-namespace eckit::geo {
-class Area;
-}
+#include <cstddef>
+#include <iosfwd>
+#include <map>
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo::area::library {

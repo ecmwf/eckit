@@ -9,8 +9,8 @@
  */
 
 #include "eckit/cmd/RemoteCommander.h"
+
 #include "eckit/cmd/RemoteCommandUser.h"
-#include "eckit/config/Resource.h"
 #include "eckit/runtime/Monitor.h"
 
 

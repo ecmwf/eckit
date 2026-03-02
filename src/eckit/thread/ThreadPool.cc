@@ -12,10 +12,18 @@
 // Baudouin Raoult - (c) ECMWF Feb 12
 
 #include "eckit/thread/ThreadPool.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+
+#include <exception>
+#include <ostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -12,20 +12,15 @@
 /// @author Tiago Quintino
 /// @date May 1996
 
-#ifndef eckit_config_ResourceBase_h
-#define eckit_config_ResourceBase_h
+#pragma once
+#include "eckit/config/Configurable.h"
 
+#include <iosfwd>
 #include <string>
-
-#include "eckit/utils/Tokenizer.h"
-#include "eckit/utils/Translator.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Configurable;
-class Url;
 
 class ResourceBase {
 
@@ -71,5 +66,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

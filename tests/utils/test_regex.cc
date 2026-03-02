@@ -8,12 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/eckit.h"
-
-#include "eckit/exception/Exceptions.h"
+#include "eckit/testing/Test.h"
 #include "eckit/utils/Regex.h"
 
-#include "eckit/testing/Test.h"
+#include <string>
 
 using namespace std;
 using namespace eckit;

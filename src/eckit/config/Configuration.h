@@ -12,14 +12,16 @@
 /// @author Tiago Quintino
 /// @date   July 2015
 
-
-#ifndef eckit_Configuration_H
-#define eckit_Configuration_H
-
-#include <cstdint>
-#include <memory>
-#include <type_traits>
+#pragma once
 #include "eckit/config/Parametrisation.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 
 namespace eckit {
@@ -257,5 +259,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

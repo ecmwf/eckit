@@ -15,13 +15,18 @@
 // File FunctionFactory.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef eckit_sql_expression_FunctionFactory_H
-#define eckit_sql_expression_FunctionFactory_H
+#pragma once
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/expression/function/FunctionExpression.h"
 
+#include <iterator>
+#include <map>
 #include <memory>
 #include <mutex>
-
-#include "eckit/sql/expression/function/FunctionExpression.h"
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace eckit::sql::expression::function {
 
@@ -158,5 +163,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql::expression::function
-
-#endif

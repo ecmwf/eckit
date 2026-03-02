@@ -13,18 +13,17 @@
 /// @author Tiago Quintino
 /// @date   May 1996
 
-
-#ifndef eckit_filesystem_PathName_h
-#define eckit_filesystem_PathName_h
-
+#pragma once
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
 
-#include <map>
-#include <mutex>
+#include <iosfwd>
+#include <string>
+#include <sys/types.h>
+#include <vector>
 
 namespace eckit {
 
@@ -32,7 +31,6 @@ class BasePathName;
 class DataHandle;
 class FileMode;
 class Hash;
-class Length;
 class LocalPathName;
 
 // The class PathName represent a unix path name.
@@ -275,5 +273,3 @@ struct VectorPrintSelector<PathName> {
 };
 
 }  // namespace eckit
-
-#endif

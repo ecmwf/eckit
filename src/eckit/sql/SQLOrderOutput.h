@@ -13,14 +13,18 @@
 /// @date Nov 2011
 /// @date Aug 2018
 
-#ifndef eckit_sql_SQLOrderOutput_H
-#define eckit_sql_SQLOrderOutput_H
-
-#include <queue>
-
+#pragma once
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/expression/OrderByExpressions.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <iterator>
+#include <map>
+#include <queue>
+#include <utility>
+#include <vector>
 
 namespace eckit::sql {
 
@@ -72,5 +76,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

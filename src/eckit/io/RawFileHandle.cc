@@ -8,16 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include "eckit/eckit.h"
+#include "eckit/io/RawFileHandle.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/RawFileHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/os/Stat.h"
+
+#include <cstdio>
+#include <fcntl.h>
+#include <ostream>
+#include <sys/stat.h>
+#include <unistd.h>
 
 
 namespace eckit {

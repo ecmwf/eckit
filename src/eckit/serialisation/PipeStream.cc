@@ -8,13 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <fcntl.h>
-#include <unistd.h>
-#include <csignal>
+#include "eckit/serialisation/PipeStream.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/serialisation/PipeStream.h"
-#include "eckit/thread/Mutex.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+
+#include <csignal>
+#include <fcntl.h>
+#include <ostream>
+#include <unistd.h>
 
 //----------------------------------------------------------------------------------------------------------------------
 

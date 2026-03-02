@@ -10,6 +10,7 @@
 
 #include "Tokenizer.h"
 
+#include <cstdio>
 #include <iostream>
 #include <iterator>
 

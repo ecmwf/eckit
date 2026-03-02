@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_Clock_h
-#define eckit_utils_Clock_h
-
+#pragma once
 #include "time.h"
 
 namespace eckit {
@@ -23,5 +21,3 @@ public:
 };
 
 }  // namespace eckit
-
-#endif

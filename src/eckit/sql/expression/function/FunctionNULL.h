@@ -11,10 +11,11 @@
 // File FunctionNULL.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef FunctionNULL_H
-#define FunctionNULL_H
-
+#pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
+
+#include <string>
 
 namespace eckit::sql::expression::function {
 
@@ -44,5 +45,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

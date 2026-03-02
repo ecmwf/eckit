@@ -10,10 +10,12 @@
 
 #pragma once
 
-#include <deque>
-#include <iosfwd>
-
 #include "eckit/geometry/Point2.h"
+
+#include <cstddef>
+#include <deque>
+#include <initializer_list>
+#include <iosfwd>
 
 //------------------------------------------------------------------------------------------------------
 

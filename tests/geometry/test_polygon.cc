@@ -8,12 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <vector>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/polygon/LonLatPolygon.h"
 #include "eckit/geometry/polygon/Polygon.h"
 #include "eckit/testing/Test.h"
+
+#include <cstddef>
+#include <string>
+#include <vector>
 
 namespace eckit::test {
 

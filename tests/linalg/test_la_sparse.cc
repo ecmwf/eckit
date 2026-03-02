@@ -8,11 +8,24 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include "eckit/config/Resource.h"
-#include "util.h"
-
+#include "eckit/linalg/SparseMatrix.h"
+#include "eckit/linalg/Triplet.h"
+#include "eckit/linalg/Vector.h"
 #include "eckit/linalg/allocator/NonOwningAllocator.h"
 #include "eckit/linalg/allocator/StandardContainerAllocator.h"
+#include "eckit/linalg/types.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/runtime/Main.h"
+#include "eckit/testing/Test.h"
+
+#include "util.h"
+
+#include <cstddef>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace eckit::linalg;
 

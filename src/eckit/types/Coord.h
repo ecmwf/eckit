@@ -10,20 +10,17 @@
 
 // Claude  Gibert - ECMWF Dec 97
 
-#ifndef eckit_Coord_h
-#define eckit_Coord_h
+#pragma once
+#include "eckit/persist/DumpLoad.h"
+#include "eckit/serialisation/Stream.h"
 
 #include <iosfwd>
 #include <vector>
-
-#include "eckit/serialisation/Stream.h"
 
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class DumpLoad;
 
 class Coord {
 public:
@@ -121,5 +118,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

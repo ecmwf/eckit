@@ -13,16 +13,18 @@
 /// @author Tiago Quintino
 /// @date   Jun 1997
 
-#ifndef eckit_TimeContent_h
-#define eckit_TimeContent_h
-
+#pragma once
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/types/Time.h"
 #include "eckit/value/Content.h"
-#include "eckit/value/Value.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
-
-class Hash;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -115,5 +117,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

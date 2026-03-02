@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/file.h>
 #include <ostream>
+#include <sys/file.h>
 #ifdef __linux__
 #include <linux/errno.h>
 #ifndef ENOTSUPP

@@ -12,17 +12,14 @@
 /// @author Tiago Quintino
 /// @date   June 96
 
-#ifndef eckit_io_StdFile_h
-#define eckit_io_StdFile_h
+#pragma once
+#include "eckit/filesystem/PathName.h"
 
 #include <cstdio>
-
-#include "eckit/filesystem/PathName.h"
+#include <string>
 
 
 namespace eckit {
-
-class PathName;
 
 /// Wrapper around a stdio FILE*
 /// Use this for class members
@@ -68,5 +65,3 @@ public:
 
 
 }  // namespace eckit
-
-#endif

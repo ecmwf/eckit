@@ -11,15 +11,13 @@
 /// @author Tiago Quintino
 /// @date   Dec 2015
 
-#ifndef eckit_container_CacheLRU_h
-#define eckit_container_CacheLRU_h
+#pragma once
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 
 #include <iosfwd>
 #include <list>
 #include <map>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/CodeLocation.h"
 
 namespace eckit {
 
@@ -134,5 +132,3 @@ private:  // members
 }  // namespace eckit
 
 #include "CacheLRU.cc"
-
-#endif

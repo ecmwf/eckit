@@ -11,15 +11,18 @@
 // File io/AsyncHandle.h
 // Baudouin Raoult - ECMWF Dec 17
 
-#ifndef eckit_io_AsyncHandle_h
-#define eckit_io_AsyncHandle_h
-
-#include <deque>
-
+#pragma once
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/HandleHolder.h"
 #include "eckit/thread/MutexCond.h"
 #include "eckit/thread/ThreadControler.h"
+
+#include <cstddef>
+#include <deque>
+#include <iosfwd>
+#include <string>
+#include <utility>
 
 
 namespace eckit {
@@ -112,6 +115,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

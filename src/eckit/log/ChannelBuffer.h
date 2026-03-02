@@ -13,19 +13,18 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#ifndef eckit_log_ChannelBuffer_h
-#define eckit_log_ChannelBuffer_h
+#pragma once
+#include "eckit/log/Log.h"
+#include "eckit/log/LogTarget.h"
 
+#include <cstddef>
 #include <streambuf>
+#include <string>
 #include <vector>
-
-#include "eckit/log/Channel.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class LogTarget;
 
 /// Stream buffer to be usedby Channel
 class ChannelBuffer : public std::streambuf {
@@ -96,5 +95,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

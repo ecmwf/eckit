@@ -11,10 +11,11 @@
 // File FunctionFIRST.h
 // Piotr Kuchta - ECMWF Nov 2016
 
-#ifndef eckit_sql_function_FunctionFIRST_H
-#define eckit_sql_function_FunctionFIRST_H
-
+#pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
+
+#include <string>
 
 namespace eckit::sql::expression::function {
 
@@ -53,5 +54,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

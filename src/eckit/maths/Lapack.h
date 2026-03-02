@@ -1,7 +1,5 @@
-#ifndef eckit_maths_lapack_h
-#define eckit_maths_lapack_h
 
-#include "eckit/eckit.h"
+#pragma once
 
 namespace eckit::maths::lapack {
 
@@ -12,5 +10,3 @@ void getri(int* M, float* data, int* lda, int* ipiv, float* work, int* lwork, in
 void getri(int* M, double* data, int* lda, int* ipiv, double* work, int* lwork, int* info);
 
 }  // namespace eckit::maths::lapack
-
-#endif

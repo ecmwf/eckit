@@ -12,18 +12,10 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_filesystem_FileMode_h
-#define eckit_filesystem_FileMode_h
-
-#include <sys/stat.h>
-#include <sys/types.h>
-
+#pragma once
 #include <iosfwd>
 #include <string>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
-#include "eckit/utils/Tokenizer.h"
+#include <sys/types.h>
 
 namespace eckit {
 
@@ -74,5 +66,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

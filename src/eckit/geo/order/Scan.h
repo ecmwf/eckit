@@ -14,11 +14,10 @@
 
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Spec.h"
 
-
-namespace eckit::spec {
-class Spec;
-}
+#include <cstddef>
+#include <string>
 
 
 namespace eckit::geo::order {

@@ -8,10 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Serial_h
-#define eckit_mpi_Serial_h
-
+#pragma once
 #include "eckit/mpi/Comm.h"
+#include "eckit/mpi/DataType.h"
+#include "eckit/mpi/Operation.h"
+#include "eckit/mpi/Status.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
+#include <string_view>
 
 namespace eckit::mpi {
 
@@ -155,5 +161,3 @@ protected:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

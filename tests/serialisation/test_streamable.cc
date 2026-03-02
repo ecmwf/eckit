@@ -11,16 +11,21 @@
 /// @date Jan 2015
 /// @author Florian Rathgeber
 
-#include <sys/types.h>
-#include <cstdint>
-#include <limits>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/serialisation/Streamable.h"
-
 #include "eckit/testing/Test.h"
+
+#include <cstdint>
+#include <limits>
+#include <ostream>
+#include <string>
+#include <sys/types.h>
 
 using namespace std;
 using namespace eckit;

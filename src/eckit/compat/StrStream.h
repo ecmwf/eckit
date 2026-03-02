@@ -11,13 +11,11 @@
 // File StrStream.h
 // Baudouin Raoult - ECMWF Mar 97
 
-#ifndef eckit_StrStream_h
-#define eckit_StrStream_h
+#pragma once
+#include "eckit/eckit.h"
 
 #include <iosfwd>
 #include <sstream>
-
-#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 
@@ -37,5 +35,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

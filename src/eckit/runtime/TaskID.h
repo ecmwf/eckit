@@ -10,13 +10,9 @@
 
 /// @author Tiago Quintino
 
-#ifndef eckit_TaskID_h
-#define eckit_TaskID_h
-
+#pragma once
 namespace eckit {
 
 using TaskID = unsigned long long;
 
 }  // namespace eckit
-
-#endif

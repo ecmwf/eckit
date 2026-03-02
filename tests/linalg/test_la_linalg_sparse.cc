@@ -9,8 +9,23 @@
  */
 
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/LinearAlgebraSparse.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/SparseMatrix.h"
+#include "eckit/linalg/Triplet.h"
+#include "eckit/linalg/Vector.h"
+#include "eckit/linalg/types.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/runtime/Main.h"
+#include "eckit/testing/Test.h"
+
 #include "util.h"
+
+#include <ostream>
+#include <string>
+#include <vector>
 
 namespace eckit::test {
 

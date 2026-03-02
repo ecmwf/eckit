@@ -12,15 +12,17 @@
 
 #pragma once
 
-#include <map>
-#include <memory>
-#include <string>
-
 #include "eckit/geo/Point.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
+#include "eckit/spec/Spec.h"
+
+#include <iosfwd>
+#include <map>
+#include <memory>
+#include <string>
 
 
 namespace eckit::geo::area {

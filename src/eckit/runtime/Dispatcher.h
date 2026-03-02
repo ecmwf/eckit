@@ -11,13 +11,7 @@
 // File Dispatcher.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_Dispatcher_h
-#define eckit_Dispatcher_h
-
-#include <unistd.h>
-#include <algorithm>
-#include <list>
-
+#pragma once
 #include "eckit/config/Configurable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/log/JSON.h"
@@ -31,6 +25,10 @@
 #include "eckit/thread/MutexCond.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
+
+#include <algorithm>
+#include <list>
+#include <unistd.h>
 
 //-----------------------------------------------------------------
 
@@ -564,5 +562,3 @@ void DefaultHandler<Request>::json(JSON& s, const Request& r) {
 //-----------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

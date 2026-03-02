@@ -9,13 +9,14 @@
  */
 
 
-#include <ostream>
+#include "eckit/value/StringContent.h"
 
 #include "eckit/log/JSON.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Translator.h"
-#include "eckit/value/StringContent.h"
+
+#include <ostream>
 
 
 namespace eckit {

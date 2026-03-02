@@ -1,15 +1,14 @@
-#include <semaphore.h>
-#include <unistd.h>
-
-#include <chrono>
-#include <iostream>
-#include <limits>
-#include <thread>
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/os/SharedInt.h"
 #include "eckit/runtime/ProcessControler.h"
 #include "eckit/runtime/Tool.h"
+
+#include <chrono>
+#include <iostream>
+#include <limits>
+#include <semaphore.h>
+#include <thread>
+#include <unistd.h>
 
 using namespace eckit;
 

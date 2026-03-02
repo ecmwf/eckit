@@ -12,10 +12,11 @@
 /// @author Tiago Quintino
 /// @date   Dec 2013
 
-#ifndef eckit_filesystem_RawFileHandle_h
-#define eckit_filesystem_RawFileHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -57,5 +58,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

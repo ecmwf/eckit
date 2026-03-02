@@ -11,12 +11,12 @@
 
 #pragma once
 
-#include <ostream>
-#include <string>
-
 #include "eckit/linalg/LinearAlgebraDense.h"
 #include "eckit/linalg/LinearAlgebraSparse.h"
 #include "eckit/linalg/types.h"
+
+#include <ostream>
+#include <string>
 
 namespace eckit::linalg {
 

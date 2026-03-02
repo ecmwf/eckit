@@ -12,17 +12,14 @@
 
 #include "eckit/codec/detail/Time.h"
 
+#include "eckit/log/JSON.h"
+
 #include <chrono>
 #include <ctime>
 #include <iomanip>
-#include <ios>       // std::ios_base
-#include <iterator>  // std::ostreambuf_iterator
-#include <locale>    // std::use_facet, std::time_put
-#include <ostream>   // std::basic_ostream
+#include <ratio>
 #include <sstream>
 #include <string>
-
-#include "eckit/log/JSON.h"
 
 namespace eckit::codec {
 

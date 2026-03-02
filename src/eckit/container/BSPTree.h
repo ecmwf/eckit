@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef BSPTree_H
-#define BSPTree_H
-
+#pragma once
 #include "eckit/container/bsptree/BSPNode.h"
 #include "eckit/container/sptree/SPTree.h"
 
@@ -65,6 +63,3 @@ public:
 
 
 }  // namespace eckit
-
-
-#endif

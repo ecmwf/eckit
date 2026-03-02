@@ -11,12 +11,13 @@
 /// @author Baudouin Raoult
 /// @date Jun 2012
 
-#ifndef eckit_ObjectParser_h
-#define eckit_ObjectParser_h
-
+#pragma once
 #include "eckit/parser/StreamParser.h"
-#include "eckit/types/Types.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -61,5 +62,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

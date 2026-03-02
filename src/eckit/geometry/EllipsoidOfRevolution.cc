@@ -10,12 +10,12 @@
 
 #include "eckit/geometry/EllipsoidOfRevolution.h"
 
-#include <cmath>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/Point2.h"
 #include "eckit/geometry/Point3.h"
+
+#include <cmath>
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -12,9 +12,11 @@
 
 #pragma once
 
-#include <cstdint>
-
 #include "eckit/io/Buffer.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <string>
 
 namespace eckit::codec {
 

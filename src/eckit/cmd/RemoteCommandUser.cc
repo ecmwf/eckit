@@ -9,9 +9,14 @@
  */
 
 #include "eckit/cmd/RemoteCommandUser.h"
+
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/cmd/CmdResource.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/serialisation/Stream.h"
+
+#include <ostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

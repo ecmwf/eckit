@@ -12,12 +12,13 @@
 
 #include "eckit/geo/area/Polygon.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/spec/Custom.h"
+
 #include <algorithm>
 #include <memory>
 #include <numeric>
-
-#include "eckit/geo/Exceptions.h"
-#include "eckit/spec/Custom.h"
+#include <variant>
 
 
 namespace eckit::geo::area {

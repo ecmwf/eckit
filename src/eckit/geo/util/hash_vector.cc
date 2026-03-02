@@ -10,10 +10,11 @@
  */
 
 
-#include <vector>
-
 #include "eckit/eckit_config.h"
 #include "eckit/utils/MD5.h"
+
+#include <cstddef>
+#include <vector>
 
 #if eckit_LITTLE_ENDIAN
 #else

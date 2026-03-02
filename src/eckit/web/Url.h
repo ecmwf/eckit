@@ -10,14 +10,16 @@
 
 /// @author Baudouin Raoult
 
-#ifndef eckit_web_Url_h
-#define eckit_web_Url_h
-
-#include <map>
-#include <memory>
-
+#pragma once
+#include "eckit/io/DataHandle.h"
 #include "eckit/net/HttpHeader.h"
 #include "eckit/value/Value.h"
+
+#include <iosfwd>
+#include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace eckit {
 
@@ -144,6 +146,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

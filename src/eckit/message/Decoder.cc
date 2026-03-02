@@ -9,12 +9,16 @@
  */
 
 #include "eckit/message/Decoder.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/message/Message.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <pthread.h>
+#include <sstream>
 #include <string>
 #include <vector>
 

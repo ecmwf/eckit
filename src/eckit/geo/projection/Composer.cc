@@ -12,7 +12,10 @@
 
 #include "eckit/geo/projection/Composer.h"
 
+#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
+
+#include <iterator>
 
 
 namespace eckit::geo::projection {

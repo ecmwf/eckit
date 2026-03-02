@@ -8,16 +8,21 @@
  * does it submit to any jurisdiction.
  */
 
-#include <memory>
-#include <string>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/cluster/ClusterNodes.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
+#include "eckit/option/Option.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/runtime/Tool.h"
+
+#include <memory>
+#include <ostream>
+#include <string>
+#include <vector>
 
 using eckit::DataHandle;
 using eckit::Log;

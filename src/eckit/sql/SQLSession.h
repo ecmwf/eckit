@@ -12,32 +12,23 @@
 /// @author Simon Smart
 /// @date Dec 03
 
-#ifndef odb_sql_SQLSession_H
-#define odb_sql_SQLSession_H
-
-namespace eckit {
-class PathName;
-}
-namespace eckit {
-class DataHandle;
-}
+#pragma once
+#include "eckit/sql/SQLSelectFactory.h"
 
 #include <memory>
-
-#include "eckit/sql/SQLSelectFactory.h"
+#include <ostream>
+#include <string>
+#include <vector>
 // #include "eckit/sql/SQLInsertFactory.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/sql/SQLDatabase.h"
+#include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
+#include "eckit/sql/SQLTable.h"
 
 namespace eckit::sql {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class SQLOutput;
-class SQLDatabase;
-class SQLStatement;
-class SQLTable;
-class SQLOutputConfig;
 
 class SQLSession {
 public:
@@ -121,5 +112,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::sql
-
-#endif

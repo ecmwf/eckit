@@ -8,19 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_Main_h
-#define eckit_Main_h
+#pragma once
 
-#include <map>
 
-#include "eckit/log/Channel.h"
+#include "eckit/log/LogTarget.h"
+
+#include <string>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class LogStream;
-class PathName;
 
 class Main {
 protected:
@@ -106,5 +103,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif  // eckit_Main_h

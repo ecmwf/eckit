@@ -11,9 +11,7 @@
 // File TransferWatcher.h
 // Baudouin Raoult - ECMWF Jun 98
 
-#ifndef eckit_TransferWatcher_h
-#define eckit_TransferWatcher_h
-
+#pragma once
 //-----------------------------------------------------------------------------
 
 namespace eckit {
@@ -43,6 +41,3 @@ public:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

@@ -14,14 +14,18 @@
 /// @author Tiago Quintino
 /// @date   May 1996
 
-#ifndef eckit_filesystem_PartFileHandle_h
-#define eckit_filesystem_PartFileHandle_h
-
-#include <memory>
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
+
+#include <iosfwd>
+#include <memory>
+#include <string>
 
 namespace eckit {
 
@@ -102,5 +106,3 @@ private:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

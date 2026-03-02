@@ -9,10 +9,17 @@
  */
 
 
-#include "eckit/eckit.h"
+#include "eckit/eckit_config.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/LinearAlgebraDense.h"
 #include "eckit/linalg/LinearAlgebraSparse.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
+
+#include <initializer_list>
+#include <sstream>
+#include <string>
 
 namespace eckit::test {
 

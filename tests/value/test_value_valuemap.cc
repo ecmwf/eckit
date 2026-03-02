@@ -9,10 +9,23 @@
  */
 
 
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/Date.h"
+#include "eckit/types/DateTime.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/types/Time.h"
+#include "eckit/utils/Hash.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
+
 #include "test_value_helper.h"
+
+#include <map>
+#include <memory>
+#include <ostream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

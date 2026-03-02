@@ -11,11 +11,11 @@
 #define OMPI_SKIP_MPICXX 1
 #define MPICH_SKIP_MPICXX 1
 
+#include "eckit/mpi/Comm.h"
+#include "eckit/testing/Test.h"
+
 #include <algorithm>
 #include <vector>
-#include "eckit/mpi/Comm.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

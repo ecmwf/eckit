@@ -16,8 +16,15 @@
 #include "eckit/codec/FileStream.h"
 #include "eckit/codec/Record.h"
 #include "eckit/codec/Session.h"
+#include "eckit/codec/detail/DataInfo.h"
+#include "eckit/codec/detail/Link.h"
 #include "eckit/codec/detail/ParsedRecord.h"
 #include "eckit/codec/detail/RecordSections.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+
+#include <utility>
+#include <vector>
 
 namespace eckit::codec {
 

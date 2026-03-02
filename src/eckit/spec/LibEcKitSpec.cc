@@ -14,6 +14,8 @@
 
 #include "eckit/eckit_version.h"
 
+#include <algorithm>
+
 
 namespace eckit {
 

@@ -8,10 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/PrefixTarget.h"
+
 #include <cstring>
 #include <iostream>
-
-#include "eckit/log/PrefixTarget.h"
 
 namespace eckit {
 

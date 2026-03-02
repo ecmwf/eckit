@@ -12,10 +12,7 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
-#ifndef eckit_Functions_h
-#define eckit_Functions_h
-
-#include <cctype>
+#pragma once
 #include <cstdlib>
 
 namespace eckit {
@@ -34,5 +31,3 @@ int sign(T v) {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

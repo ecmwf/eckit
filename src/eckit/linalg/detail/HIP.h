@@ -10,6 +10,9 @@
 
 
 // There is a name clash because hip_runtime defines DEPRECATED, and eckit as well
+
+#pragma once
+
 #ifdef DEPRECATED
 #undef DEPRECATED
 #endif

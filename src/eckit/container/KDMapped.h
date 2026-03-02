@@ -8,12 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef KDMapped_H
-#define KDMapped_H
-
+#pragma once
 #include "eckit/container/StatCollector.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
+
+#include <cstddef>
+#include <new>
 
 namespace eckit {
 
@@ -125,6 +126,3 @@ private:
 };
 
 }  // namespace eckit
-
-
-#endif

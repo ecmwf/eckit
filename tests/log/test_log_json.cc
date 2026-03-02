@@ -8,13 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sstream>
-#include "eckit/config/LibEcKit.h"
 #include "eckit/log/JSON.h"
-#include "eckit/log/Log.h"
-#include "eckit/runtime/Tool.h"
-
 #include "eckit/testing/Test.h"
+
+#include <sstream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

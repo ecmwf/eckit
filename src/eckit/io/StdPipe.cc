@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstdio>
-#include <string>
+#include "eckit/io/StdPipe.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/StdPipe.h"
+
+#include <cstdio>
+#include <string>
 
 namespace eckit {
 

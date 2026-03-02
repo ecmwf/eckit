@@ -9,11 +9,18 @@
  */
 
 #include "eckit/sql/SQLSimpleOutput.h"
-#include "eckit/eckit.h"
+
 #include "eckit/log/Number.h"
 #include "eckit/sql/SQLSelect.h"
+#include "eckit/sql/expression/SQLExpression.h"
+#include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/type/SQLType.h"
 
+#include <algorithm>
 #include <limits>
+#include <memory>
+#include <sstream>
+#include <string>
 
 namespace eckit::sql {
 

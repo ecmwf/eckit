@@ -8,12 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
-#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
+#include "eckit/sql/type/SQLType.h"
 #include "eckit/utils/Translator.h"
+
+#include <cmath>
+#include <cstdlib>
+#include <memory>
 
 #define ftrunc(x) ((x) - fmod((x), 1))
 #define F90nint(x) (((x) > 0) ? (int)((x) + 0.5) : (int)((x) - 0.5))

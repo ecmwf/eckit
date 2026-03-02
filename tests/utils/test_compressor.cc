@@ -8,15 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
-#include <iostream>
-#include <memory>
-
 #include "eckit/io/Buffer.h"
+#include "eckit/testing/Test.h"
 #include "eckit/utils/Compressor.h"
 #include "eckit/utils/MD5.h"
 
-#include "eckit/testing/Test.h"
+#include <cstring>
+#include <memory>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

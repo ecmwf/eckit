@@ -11,12 +11,10 @@
 /// @author Baudouin Raoult
 /// @date   June 2017
 
-#ifndef eckit_io_EasyCURL_h
-#define eckit_io_EasyCURL_h
+#pragma once
+#include "eckit/io/MemoryHandle.h"
 
 #include <map>
-
-#include "eckit/io/MemoryHandle.h"
 
 namespace eckit {
 
@@ -106,5 +104,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

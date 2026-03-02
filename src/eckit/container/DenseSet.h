@@ -8,18 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_DenseSet_h
-#define eckit_DenseSet_h
-
+#pragma once
 /// @author Tiago Quintino
 /// @author Olivier Iffrig
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/JSON.h"
 
 #include <algorithm>
 #include <utility>
 #include <vector>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/JSON.h"
 
 
 namespace eckit {
@@ -204,5 +202,3 @@ private:  // members
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -10,14 +10,13 @@
 
 /// @author Tiago Quintino
 
-#ifndef eckit_log_FileTarget_h
-#define eckit_log_FileTarget_h
-
-#include <fstream>
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/LogTarget.h"
+
+#include <cstddef>
+#include <fstream>
 
 namespace eckit {
 
@@ -46,5 +45,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

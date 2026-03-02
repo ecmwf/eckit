@@ -9,9 +9,21 @@
  */
 
 #include "eckit/cmd/RemoteCmd.h"
+
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/runtime/TaskInfo.h"
+#include "eckit/value/Value.h"
+
+#include <algorithm>
+#include <exception>
+#include <iterator>
+#include <ostream>
 
 
 namespace eckit {

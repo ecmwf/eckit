@@ -12,11 +12,10 @@
 /// @author Tiago Quintino
 /// @date Dec 2017
 
-#ifndef eckit_memory_Shmget_h
-#define eckit_memory_Shmget_h
+#pragma once
 
-#include <sys/shm.h>  // for key_t
-#include <iosfwd>
+#include <cstddef>
+#include <sys/types.h>
 
 namespace eckit {
 
@@ -36,5 +35,3 @@ public:  // methods
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

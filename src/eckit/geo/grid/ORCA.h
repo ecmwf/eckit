@@ -12,14 +12,17 @@
 
 #pragma once
 
+#include "eckit/geo/Arrangement.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/container/PointsContainer.h"
+
 #include <array>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
-
-#include "eckit/geo/Arrangement.h"
-#include "eckit/geo/Grid.h"
-#include "eckit/geo/container/PointsContainer.h"
+#include <string>
+#include <vector>
 
 
 namespace eckit {

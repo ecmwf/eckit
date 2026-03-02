@@ -8,16 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#include <algorithm>
-#include <numeric>
-
 #include "eckit/utils/RendezvousHash.h"
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/MD5.h"
+
+#include <algorithm>
+#include <numeric>
+#include <sstream>
+#include <utility>
 
 namespace eckit {
 

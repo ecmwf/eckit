@@ -9,8 +9,15 @@
  */
 
 #include "eckit/sql/SQLDistinctOutput.h"
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLSelect.h"
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
+#include "eckit/sql/type/SQLType.h"
+
+#include <memory>
+#include <ostream>
 
 namespace eckit::sql {
 

@@ -15,6 +15,8 @@
 #include "eckit/codec/Data.h"
 #include "eckit/codec/Metadata.h"
 
+#include <cstddef>
+
 namespace eckit::codec {
 
 //---------------------------------------------------------------------------------------------------------------------

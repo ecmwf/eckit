@@ -8,17 +8,19 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
-
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"
-#include "eckit/filesystem/TmpFile.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/io/FileHandle.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Telemetry.h"
-#include "eckit/runtime/Tool.h"
 #include "eckit/testing/Test.h"
-#include "eckit/types/Types.h"
+
+#include <cstdlib>
+#include <iostream>
+#include <memory>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

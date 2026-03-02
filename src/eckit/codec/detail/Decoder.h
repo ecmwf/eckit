@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <memory>
-
 #include "eckit/codec/Data.h"
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/detail/TypeTraits.h"
+
+#include <memory>
 
 namespace eckit::codec {
 

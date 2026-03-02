@@ -13,10 +13,10 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_Counted_h
-#define eckit_Counted_h
-
+#pragma once
 #include "eckit/thread/Mutex.h"
+
+#include <cstddef>
 
 
 namespace eckit {
@@ -95,5 +95,3 @@ private:  // members
 
 
 }  // namespace eckit
-
-#endif

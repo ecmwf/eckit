@@ -13,10 +13,11 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_FileSpaceStrategies_h
-#define eckit_FileSpaceStrategies_h
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
+
+#include <string>
+#include <vector>
 
 namespace eckit {
 
@@ -85,5 +86,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

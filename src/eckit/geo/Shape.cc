@@ -12,8 +12,13 @@
 
 #include "eckit/geo/Shape.h"
 
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Spec.h"
+
+#include <string>
+#include <vector>
 
 
 namespace eckit::geo {

@@ -12,18 +12,18 @@
 /// @author Tiago Quintino
 /// @date   May 96
 
-#ifndef eckit_ThreadControler_h
-#define eckit_ThreadControler_h
-
+#pragma once
 #include "eckit/runtime/Task.h"
 #include "eckit/thread/MutexCond.h"
+#include "eckit/thread/Thread.h"
+
+#include <cstddef>
+#include <pthread.h>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Thread;
 
 /// @note Don't subclass from ThreadControler but from Thread
 class ThreadControler : public Task {
@@ -63,5 +63,3 @@ private:  // methods
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

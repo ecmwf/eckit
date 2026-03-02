@@ -8,12 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Request_h
-#define eckit_mpi_Request_h
+#pragma once
+#include "eckit/memory/Counted.h"
 
 #include <iosfwd>
-
-#include "eckit/memory/Counted.h"
 
 namespace eckit::mpi {
 
@@ -82,5 +80,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

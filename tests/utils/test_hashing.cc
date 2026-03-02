@@ -8,13 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/testing/Test.h"
+#include "eckit/utils/Hash.h"
+
 #include <cstring>
 #include <iostream>
 #include <memory>
-
-#include "eckit/utils/Hash.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

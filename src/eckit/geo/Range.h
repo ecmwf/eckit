@@ -12,10 +12,10 @@
 
 #pragma once
 
+#include "eckit/types/Fraction.h"
+
 #include <cstddef>
 #include <vector>
-
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo {

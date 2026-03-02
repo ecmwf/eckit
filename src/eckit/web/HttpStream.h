@@ -11,10 +11,11 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_web_HttpStream_H
-#define eckit_web_HttpStream_H
-
+#pragma once
+#include "eckit/io/DataHandle.h"
 #include "eckit/web/Url.h"
+
+#include <ostream>
 
 namespace eckit {
 
@@ -45,5 +46,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

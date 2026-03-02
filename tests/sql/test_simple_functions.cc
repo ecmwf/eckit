@@ -8,19 +8,33 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
-#include <iomanip>
-#include <set>
-
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/sql/SQLColumn.h"
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLParser.h"
 #include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"
+#include "eckit/sql/SQLTable.h"
+#include "eckit/sql/expression/SQLExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
+#include "eckit/sql/type/SQLType.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+#include "eckit/types/Types.h"
+
+#include <algorithm>
+#include <cstring>
+#include <functional>
+#include <memory>
+#include <ostream>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace eckit::testing;
 using namespace eckit::types;

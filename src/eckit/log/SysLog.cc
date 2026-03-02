@@ -10,15 +10,14 @@
 
 #include "eckit/log/SysLog.h"
 
-#include <unistd.h>
-
-#include <sstream>
-#include <string>
-#include <utility>
-
 #include "eckit/log/TimeStamp.h"
 #include "eckit/net/IPAddress.h"
 #include "eckit/runtime/Main.h"
+
+#include <sstream>
+#include <string>
+#include <unistd.h>
+#include <utility>
 
 namespace eckit {
 

@@ -11,10 +11,10 @@
 // File Telnet.h
 // Baudouin Raoult - ECMWF Oct 96
 
-#ifndef eckit_Telnet_h
-#define eckit_Telnet_h
-
+#pragma once
 #include "eckit/net/NetService.h"
+
+#include <string>
 
 namespace eckit::net {
 
@@ -45,5 +45,3 @@ private:
 };
 
 }  // namespace eckit::net
-
-#endif

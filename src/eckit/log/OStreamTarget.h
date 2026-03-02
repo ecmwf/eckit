@@ -11,11 +11,10 @@
 /// @file OStreamTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_OStreamTarget_h
-#define eckit_log_OStreamTarget_h
-
-
+#pragma once
 #include "eckit/log/LogTarget.h"
+
+#include <iosfwd>
 
 namespace eckit {
 
@@ -41,5 +40,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -13,9 +13,19 @@
 #include "eckit/codec/print/JSONFormat.h"
 
 #include "eckit/codec/Record.h"
+#include "eckit/codec/RecordItem.h"
 #include "eckit/codec/RecordItemReader.h"
 #include "eckit/codec/Session.h"
+#include "eckit/codec/detail/Checksum.h"
+#include "eckit/codec/detail/DataInfo.h"
+#include "eckit/codec/detail/Endian.h"
+#include "eckit/codec/detail/Link.h"
+#include "eckit/codec/detail/RecordInfo.h"
+#include "eckit/codec/detail/Time.h"
+#include "eckit/codec/detail/Version.h"
 #include "eckit/log/JSON.h"
+
+#include <vector>
 
 namespace eckit::codec {
 

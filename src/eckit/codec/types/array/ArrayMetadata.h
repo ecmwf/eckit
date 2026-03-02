@@ -12,12 +12,16 @@
 
 #pragma once
 
-#include <cstdint>
-#include <string>
-#include <type_traits>
-
 #include "eckit/codec/Metadata.h"
 #include "eckit/codec/detail/DataType.h"
+
+#include <array>
+#include <cstddef>
+#include <initializer_list>
+#include <string>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace eckit::codec {
 

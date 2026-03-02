@@ -11,13 +11,11 @@
 // File Partio/FileHandle.h
 // Baudouin Raoult - ECMWF May 96
 
-#ifndef eckit_filesystem_SharedHandle_h
-#define eckit_filesystem_SharedHandle_h
-
-#include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
+#pragma once
 #include "eckit/io/DataHandle.h"
-#include "eckit/types/Types.h"
+
+#include <iosfwd>
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -103,5 +101,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

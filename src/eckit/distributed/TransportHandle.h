@@ -8,13 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_TransportHandle_h
-#define eckit_TransportHandle_h
-
-
-#include "eckit/eckit.h"
-#include "eckit/io/Buffer.h"
+#pragma once
 #include "eckit/io/DataHandle.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit::distributed {
@@ -72,5 +71,3 @@ private:  // members
 
 
 }  // namespace eckit::distributed
-
-#endif

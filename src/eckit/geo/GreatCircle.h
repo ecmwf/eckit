@@ -11,10 +11,11 @@
 
 #pragma once
 
+#include "eckit/geo/PointLonLat.h"
+
+#include <iterator>
 #include <utility>
 #include <vector>
-
-#include "eckit/geo/PointLonLat.h"
 
 
 namespace eckit::geo {

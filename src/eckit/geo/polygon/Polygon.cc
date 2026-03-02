@@ -11,12 +11,13 @@
 
 #include "eckit/geo/polygon/Polygon.h"
 
-#include <algorithm>
-#include <ostream>
-
-#include "eckit/geo/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/PointXY.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <algorithm>
+#include <cmath>
+#include <ostream>
 
 
 namespace eckit::geo::polygon {

@@ -12,11 +12,19 @@
 
 #include "eckit/codec/RecordWriter.h"
 
+#include "eckit/codec/Data.h"
 #include "eckit/codec/Exceptions.h"
+#include "eckit/codec/Metadata.h"
 #include "eckit/codec/detail/Checksum.h"
 #include "eckit/codec/detail/Defaults.h"
 #include "eckit/codec/detail/Encoder.h"
 #include "eckit/codec/detail/RecordSections.h"
+#include "eckit/codec/detail/Time.h"
+#include "eckit/types/FixedString.h"
+
+#include <algorithm>
+#include <cstdint>
+#include <sstream>
 
 namespace eckit::codec {
 

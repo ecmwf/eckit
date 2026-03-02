@@ -8,11 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
-#include <sys/socket.h>
-#include <ostream>
+#include "eckit/net/SocketOptions.h"
 
 #include "eckit/config/Resource.h"
-#include "eckit/net/SocketOptions.h"
+
+#include <ostream>
+#include <sys/socket.h>
 
 namespace eckit::net {
 

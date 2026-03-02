@@ -11,20 +11,17 @@
 // File Grid.h
 // Baudouin Raoult - ECMWF Dec 97
 
-#ifndef eckit_Grid_h
-#define eckit_Grid_h
+#pragma once
+#include "eckit/exception/Exceptions.h"
+#include "eckit/persist/DumpLoad.h"
 
+#include <iosfwd>
 #include <string>
 #include <vector>
-
-#include "eckit/exception/Exceptions.h"
-#include "eckit/persist/Bless.h"
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class DumpLoad;
 
 class Grid {
 public:
@@ -49,7 +46,6 @@ public:
 
     Grid(const std::vector<double>&);
 
-#include "eckit/types/Grid.b"
 
     // -- Destructor
 
@@ -144,5 +140,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

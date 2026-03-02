@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date March 2014
 
-#ifndef eckit_maths_Eigen_h
-#define eckit_maths_Eigen_h
-
+#pragma once
 #include "eckit/eckit.h"
 
 //--------------------------------------------------------------------------------------------
@@ -44,5 +42,3 @@
 #endif
 
 //--------------------------------------------------------------------------------------------
-
-#endif

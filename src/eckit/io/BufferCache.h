@@ -11,15 +11,12 @@
 // File BufferCache.h
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-#ifndef eckit_BufferCache_h
-#define eckit_BufferCache_h
+#pragma once
+#include "eckit/io/Buffer.h"
 
-#include <cstdint>
 #include <cstring>
 #include <ctime>
 #include <iosfwd>
-
-#include "eckit/io/Buffer.h"
 
 
 namespace eckit {
@@ -123,5 +120,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

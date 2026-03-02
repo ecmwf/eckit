@@ -8,15 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/log/Log.h"
-#include "eckit/log/Seconds.h"
-#include "eckit/os/AutoAlarm.h"
-
-#include "eckit/distributed/Actor.h"
-#include "eckit/distributed/Message.h"
 #include "eckit/distributed/NoTransport.h"
+
 #include "eckit/distributed/Transport.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+
+#include <cstdlib>
+#include <ostream>
+#include <string>
 
 using eckit::Log;
 

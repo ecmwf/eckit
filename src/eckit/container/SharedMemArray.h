@@ -12,20 +12,16 @@
 /// @author Tiago Quintino
 /// @date   December 2016
 
-#ifndef eckit_SharedMemArray_h
-#define eckit_SharedMemArray_h
-
-#include <cstdint>
-
-#include "eckit/os/Semaphore.h"
-
-#include "eckit/memory/Padded.h"
-#include "eckit/thread/AutoLock.h"
-
+#pragma once
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/MMap.h"
+#include "eckit/memory/Padded.h"
+#include "eckit/os/Semaphore.h"
 #include "eckit/os/Stat.h"
+#include "eckit/thread/AutoLock.h"
+
+#include <cstdint>
 
 namespace eckit {
 
@@ -95,5 +91,3 @@ private:  // members
 }  // namespace eckit
 
 #include "SharedMemArray.cc"
-
-#endif

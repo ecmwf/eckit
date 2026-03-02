@@ -8,15 +8,18 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
-
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Log.h"
-#include "eckit/log/ResourceUsage.h"
-#include "eckit/maths/Functions.h"
+#include "eckit/distributed/Message.h"
 
 #include "eckit/distributed/Actor.h"
-#include "eckit/distributed/Message.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
+#include "eckit/maths/Functions.h"
+
+#include <algorithm>
+#include <cstring>
+#include <sstream>
 
 using eckit::Bytes;
 using eckit::Log;

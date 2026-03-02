@@ -11,9 +11,7 @@
 // File HttpServer.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef HttpServer_H
-#define HttpServer_H
-
+#pragma once
 #include "eckit/thread/ThreadControler.h"
 #include "eckit/web/HtmlResource.h"
 
@@ -22,8 +20,6 @@ namespace eckit {
 
 //-----------------------------------------------------------------------------
 
-
-class Url;
 
 class HttpServer : public HtmlResource {
 public:
@@ -51,6 +47,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-
-#endif

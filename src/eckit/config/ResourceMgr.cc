@@ -8,16 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>  // for strlen
-#include <fstream>
-
 #include "eckit/config/ResourceMgr.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
+
+#include <cctype>
+#include <cstdio>
+#include <cstring>  // for strlen
+#include <fstream>
+#include <utility>
 
 namespace eckit {
 

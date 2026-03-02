@@ -10,14 +10,8 @@
 
 // Baudouin Raoult - ECMWF Dec 2013
 
-#ifndef eckit_filesystem_HandleHolder_h
-#define eckit_filesystem_HandleHolder_h
-
-#include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
+#pragma once
 #include "eckit/io/DataHandle.h"
-#include "eckit/log/Timer.h"
-#include "eckit/types/Types.h"
 
 
 namespace eckit {
@@ -58,5 +52,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

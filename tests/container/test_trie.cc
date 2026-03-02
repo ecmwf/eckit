@@ -9,9 +9,12 @@
  */
 
 #include "eckit/container/Trie.h"
-#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <algorithm>
+#include <string>
+#include <vector>
 
 using namespace std;
 using namespace eckit;

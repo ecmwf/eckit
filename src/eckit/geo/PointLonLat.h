@@ -13,14 +13,12 @@
 #pragma once
 
 #include <array>
+#include <cstddef>
 #include <ostream>
 #include <string>
 
 
 namespace eckit {
-namespace geo {
-class PointLonLatR;
-}
 namespace spec {
 class Spec;
 }

@@ -12,13 +12,15 @@
 
 #include "eckit/geo/projection/Rotation.h"
 
-#include <cmath>
-
+#include "eckit/exception/Exceptions.h"
 #include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/util.h"
 #include "eckit/maths/Matrix3.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+
+#include <cmath>
+#include <vector>
 
 
 namespace eckit::geo::projection {

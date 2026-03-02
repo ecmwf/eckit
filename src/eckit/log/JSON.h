@@ -12,18 +12,14 @@
 /// @author Tiago Quintino
 /// @date   Aug 2011
 
-#ifndef eckit_log_JSON_h
-#define eckit_log_JSON_h
-
-#include <sys/time.h>
+#pragma once
 #include <ctime>
 #include <iosfwd>
 #include <map>
 #include <set>
 #include <string>
+#include <sys/time.h>
 #include <vector>
-
-#include "eckit/eckit.h"
 
 namespace eckit {
 
@@ -187,5 +183,3 @@ JSON& JSON::operator<<(const std::map<std::string, T>& m) {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

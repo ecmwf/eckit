@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#include <ostream>
-
 #include "eckit/transaction/TxnEvent.h"
+
+#include <ostream>
 
 namespace eckit {
 

@@ -12,10 +12,6 @@
 
 #pragma once
 
-#include <iomanip>
-#include <sstream>
-#include <string>
-
 #include "eckit/codec/Exceptions.h"
 #include "eckit/codec/FileStream.h"
 #include "eckit/codec/Record.h"
@@ -32,6 +28,10 @@
 #include "eckit/codec/types/array.h"
 #include "eckit/codec/types/scalar.h"
 #include "eckit/codec/types/string.h"
+
+#include <iomanip>
+#include <sstream>
+#include <string>
 
 
 namespace eckit::codec {

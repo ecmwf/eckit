@@ -12,12 +12,14 @@
 
 #include "eckit/geo/order/Scan.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/spec/Spec.h"
+
 #include <algorithm>
 #include <numeric>
 #include <vector>
-
-#include "eckit/geo/Exceptions.h"
-#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::order {

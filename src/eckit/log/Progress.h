@@ -11,9 +11,7 @@
 // File Progress.h
 // Baudouin Raoult - ECMWF Nov 96
 
-#ifndef eckit_Progress_h
-#define eckit_Progress_h
-
+#pragma once
 #include <string>
 
 
@@ -106,5 +104,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -12,11 +12,14 @@
 
 #include "eckit/codec/detail/Checksum.h"
 
-#include <string>
-
 #include "eckit/codec/detail/Defaults.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace eckit::codec {
 

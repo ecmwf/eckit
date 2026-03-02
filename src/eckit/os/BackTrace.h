@@ -8,9 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_os_BackTrace_h
-#define eckit_os_BackTrace_h
-
+#pragma once
 #include <string>
 
 namespace eckit {
@@ -26,5 +24,3 @@ public:
 //--------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

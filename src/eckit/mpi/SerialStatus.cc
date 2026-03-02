@@ -8,10 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#include <iostream>
+#include "eckit/mpi/SerialStatus.h"
 
 #include "eckit/mpi/Serial.h"
-#include "eckit/mpi/SerialStatus.h"
+
+#include <iostream>
 
 namespace eckit::mpi {
 

@@ -11,10 +11,10 @@
 // File PipeStream.h
 // Baudouin Raoult - ECMWF Jun 96
 
-#ifndef eckit_PipeStream_h
-#define eckit_PipeStream_h
-
+#pragma once
 #include "eckit/serialisation/Stream.h"
+
+#include <string>
 
 //-----------------------------------------------------------------------------
 
@@ -69,5 +69,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

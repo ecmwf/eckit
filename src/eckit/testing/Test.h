@@ -12,26 +12,23 @@
 /// @author Tiago Quintino
 /// @date   July 2017
 
-#ifndef eckit_testing_Test_h
-#define eckit_testing_Test_h
-
-#include <cerrno>
-#include <cstdlib>  // for setenv
-#include <cstring>  // for strerror
-
-#include <functional>
-#include <optional>
-#include <set>
-#include <sstream>
-#include <string>
-#include <vector>
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Colour.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/utils/Translator.h"
+
+#include <cerrno>
+#include <cstdlib>  // for setenv
+#include <cstring>  // for strerror
+#include <functional>
+#include <optional>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace eckit::testing {
 
@@ -552,6 +549,3 @@ int run_tests(int argc, char* argv[], bool initEckitMain = true) {
 
 
 //----------------------------------------------------------------------------------------------------------------------
-
-
-#endif  // eckit_testing_Test_h

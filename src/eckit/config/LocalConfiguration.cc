@@ -12,9 +12,14 @@
 /// @date Jul 2015
 
 #include "eckit/config/LocalConfiguration.h"
+
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Tokenizer.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
+
+#include <memory>
+#include <ostream>
 
 namespace eckit {
 

@@ -13,6 +13,9 @@
 #include "eckit/geo/Range.h"
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+
+#include <string>
 
 
 namespace eckit::geo {

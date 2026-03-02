@@ -11,11 +11,15 @@
 /// @author Baudouin Raoult
 /// @date   May 2020
 
-#ifndef eckit_io_MMappedFileHandle_h
-#define eckit_io_MMappedFileHandle_h
-
-#include <memory>
+#pragma once
 #include "eckit/io/DataHandle.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <iosfwd>
+#include <memory>
+#include <string>
+#include <sys/types.h>
 
 
 namespace eckit {
@@ -90,5 +94,3 @@ private:  // methods
 };
 
 }  // namespace eckit
-
-#endif

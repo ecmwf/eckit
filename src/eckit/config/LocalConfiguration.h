@@ -12,22 +12,22 @@
 /// @author Tiago Quintino
 /// @date   July 2015
 
-#ifndef eckit_LocalConfiguration_H
-#define eckit_LocalConfiguration_H
+#pragma once
+#include "eckit/config/Configuration.h"
+#include "eckit/config/Configured.h"
+#include "eckit/serialisation/Stream.h"
+#include "eckit/types/Types.h"
+#include "eckit/value/Value.h"
 
+#include <cstddef>
 #include <initializer_list>
+#include <iosfwd>
+#include <string>
 #include <type_traits>
 #include <vector>
 
-#include "eckit/config/Configuration.h"
-#include "eckit/config/Configured.h"
-#include "eckit/types/Types.h"
-
 
 namespace eckit {
-
-class PathName;
-class Stream;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -117,5 +117,3 @@ struct VectorPrintSelector<LocalConfiguration> {
 };
 
 }  // namespace eckit
-
-#endif

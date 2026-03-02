@@ -8,18 +8,24 @@
  * nor does it submit to any jurisdiction.
  */
 
+#include "eckit/config/Configuration.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/MultiValueOption.h"
+#include "eckit/option/Option.h"
 #include "eckit/option/Separator.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/option/VectorOption.h"
 #include "eckit/runtime/Main.h"
-
-#include "eckit/log/Log.h"
-#include "eckit/types/FloatCompare.h"
-#include "eckit/types/Types.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
+
+#include <cstddef>
+#include <ostream>
+#include <string>
+#include <vector>
 
 
 #ifdef __clang__

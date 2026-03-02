@@ -12,10 +12,11 @@
 
 #include "eckit/geo/projection/LambertAzimuthalEqualArea.h"
 
-#include <cmath>
-
 #include "eckit/geo/Figure.h"
 #include "eckit/spec/Custom.h"
+
+#include <cmath>
+#include <vector>
 
 
 namespace eckit::geo::projection {

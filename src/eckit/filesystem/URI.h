@@ -13,24 +13,22 @@
 /// @author Tiago Quintino
 /// @date   June 2017
 
-#ifndef eckit_filesystem_URI_h
-#define eckit_filesystem_URI_h
-
-#include <map>
-
-#include "eckit/eckit.h"
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/net/Endpoint.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <cstddef>
+#include <iosfwd>
+#include <map>
+#include <string>
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Stream;
-class DataHandle;
 
 class URI {
 
@@ -132,5 +130,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

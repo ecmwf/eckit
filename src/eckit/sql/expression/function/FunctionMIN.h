@@ -11,10 +11,11 @@
 // File FunctionMIN.h
 // Baudouin Raoult - ECMWF Dec 03
 
-#ifndef FunctionMIN_H
-#define FunctionMIN_H
-
+#pragma once
+#include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
+
+#include <string>
 
 namespace eckit::sql::expression::function {
 
@@ -53,5 +54,3 @@ private:
 };
 
 }  // namespace eckit::sql::expression::function
-
-#endif

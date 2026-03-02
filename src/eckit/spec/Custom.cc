@@ -11,14 +11,20 @@
 
 #include "eckit/spec/Custom.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/JSON.h"
+#include "eckit/spec/Exceptions.h"
+#include "eckit/types/Types.h"
+#include "eckit/value/Content.h"  // for ValueList, ValueMap
+#include "eckit/value/Value.h"
+
 #include <algorithm>
 #include <cctype>
 #include <sstream>
-
-#include "eckit/log/JSON.h"
-#include "eckit/spec/Exceptions.h"
-#include "eckit/value/Content.h"  // for ValueList, ValueMap
-#include "eckit/value/Value.h"
+#include <type_traits>
+#include <typeinfo>
+#include <utility>
 
 
 namespace eckit::spec {

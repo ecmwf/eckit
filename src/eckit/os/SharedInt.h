@@ -12,9 +12,8 @@
 /// @author Tiago Quintino
 /// @date   Jul 97
 
-#ifndef eckit_SharedInt_h
-#define eckit_SharedInt_h
-
+#pragma once
+#include "eckit/filesystem/PathName.h"
 #include "eckit/os/Semaphore.h"
 
 
@@ -45,5 +44,3 @@ private:
 };
 
 }  // namespace eckit
-
-#endif

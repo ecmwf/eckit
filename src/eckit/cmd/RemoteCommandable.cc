@@ -9,6 +9,7 @@
  */
 
 #include "eckit/cmd/RemoteCommandable.h"
+
 #include "eckit/cmd/RemoteCommander.h"
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -11,9 +11,7 @@
 // File HttpUser.h
 // Manuel Fuentes - ECMWF Jul 96
 
-#ifndef HttpUser_H
-#define HttpUser_H
-
+#pragma once
 #include "eckit/net/NetUser.h"
 
 //-----------------------------------------------------------------------------
@@ -36,5 +34,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,14 +11,12 @@
 // File ClassExtent.h
 // Baudouin Raoult - ECMWF Jul 96
 
-#ifndef eckit_ClassExtent_h
-#define eckit_ClassExtent_h
-
-#include <map>
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
+
+#include <map>
 
 namespace eckit {
 
@@ -247,5 +245,3 @@ ClassExtent<T>::Extent::~Extent() {
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

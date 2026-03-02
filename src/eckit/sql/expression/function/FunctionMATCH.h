@@ -11,15 +11,13 @@
 /// \file FunctionMATCH.h
 /// Piotr Kuchta - ECMWF October 2015
 
-#ifndef FunctionMATCH_H
-#define FunctionMATCH_H
-
-#include <set>
-#include <vector>
-
+#pragma once
 #include "eckit/sql/SQLAST.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
 #include "eckit/sql/type/SQLType.h"
+
+#include <set>
+#include <vector>
 
 namespace eckit {
 namespace sql {
@@ -58,5 +56,3 @@ private:
 }  // namespace expression
 }  // namespace sql
 }  // namespace eckit
-
-#endif

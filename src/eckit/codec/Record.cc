@@ -13,10 +13,27 @@
 #include "eckit/codec/Record.h"
 
 #include "eckit/codec/Exceptions.h"
+#include "eckit/codec/Metadata.h"
+#include "eckit/codec/Stream.h"
+#include "eckit/codec/detail/Checksum.h"
+#include "eckit/codec/detail/DataInfo.h"
+#include "eckit/codec/detail/Link.h"
 #include "eckit/codec/detail/ParsedRecord.h"
+#include "eckit/codec/detail/RecordInfo.h"
+#include "eckit/codec/detail/RecordSections.h"
+#include "eckit/codec/detail/Type.h"
 #include "eckit/codec/detail/Version.h"
+#include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/YAMLConfiguration.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/types/FixedString.h"
+
+#include <cstddef>
+#include <map>
+#include <sstream>
 
 namespace eckit::codec {
 

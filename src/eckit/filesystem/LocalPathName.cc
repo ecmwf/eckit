@@ -10,28 +10,18 @@
 
 #include "LocalPathName.h"
 
-#include <dirent.h>
-#include <pwd.h>
-#include <sys/stat.h>
-#include <sys/statvfs.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <utime.h>
-#include <climits>
-#include <cstdlib>
-
-#include <cstring>  // for strlen
-#include <deque>
-#include <fstream>
-#include <sstream>
-#include <vector>
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
+#include "eckit/eckit_config.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/BasePathName.h"
 #include "eckit/filesystem/BasePathNameT.h"
+#include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathNameFactory.h"
 #include "eckit/filesystem/StdDir.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/PartFileHandle.h"
@@ -39,19 +29,40 @@
 #include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/os/Stat.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
-#include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/thread/StaticMutex.h"
-#include "eckit/types/Types.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <algorithm>
+#include <cerrno>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>  // for strlen
+#include <deque>
+#include <dirent.h>
+#include <fstream>
+#include <iterator>
+#include <memory>
+#include <pthread.h>
+#include <pwd.h>
+#include <sstream>
+#include <sys/stat.h>
+#include <sys/statvfs.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <utility>
+#include <utime.h>
+#include <vector>
 
 namespace eckit {
 

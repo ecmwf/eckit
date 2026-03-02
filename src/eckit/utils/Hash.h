@@ -8,18 +8,13 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_utils_Hash_H
-#define eckit_utils_Hash_H
+#pragma once
+#include "eckit/thread/Mutex.h"
 
-#include "eckit/eckit.h"
-
-#include <cstdint>
-#include <cstdlib>
 #include <cstring>
+#include <iosfwd>
 #include <map>
 #include <string>
-
-#include "eckit/thread/Mutex.h"
 
 namespace eckit {
 
@@ -164,5 +159,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // end namespace eckit
-
-#endif

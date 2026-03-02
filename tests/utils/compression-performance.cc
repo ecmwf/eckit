@@ -8,6 +8,15 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/log/Bytes.h"
+#include "eckit/log/Seconds.h"
+#include "eckit/log/Timer.h"
+#include "eckit/testing/Test.h"
+#include "eckit/utils/Compressor.h"
+
 #include <cassert>
 #include <cstdio>
 #include <fstream>
@@ -15,17 +24,6 @@
 #include <iostream>
 #include <locale>
 #include <memory>
-
-#include "eckit/filesystem/PathName.h"
-#include "eckit/io/Buffer.h"
-#include "eckit/io/DataHandle.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Seconds.h"
-#include "eckit/log/Timer.h"
-
-#include "eckit/utils/Compressor.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

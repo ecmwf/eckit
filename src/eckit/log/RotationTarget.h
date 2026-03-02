@@ -11,12 +11,11 @@
 /// @file RotationTarget.h
 /// @author Tiago Quintino
 
-#ifndef eckit_log_RotationTarget_h
-#define eckit_log_RotationTarget_h
-
-#include <string>
-
+#pragma once
 #include "eckit/log/LogTarget.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -45,5 +44,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

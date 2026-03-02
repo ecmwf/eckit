@@ -9,11 +9,11 @@
  */
 
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosAttributes.h"
-#include "eckit/io/rados/RadosObject.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/rados/RadosAttributes.h"
+#include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 

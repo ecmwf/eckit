@@ -8,15 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_mpi_Group_h
-#define eckit_mpi_Group_h
+#pragma once
+#include "eckit/memory/Counted.h"
 
 #include <array>
+#include <cstddef>
 #include <iosfwd>
 #include <unordered_map>
 #include <vector>
-
-#include "eckit/memory/Counted.h"
 
 namespace eckit::mpi {
 
@@ -145,5 +144,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::mpi
-
-#endif

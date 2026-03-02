@@ -10,8 +10,17 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
+#include "eckit/linalg/Matrix.h"
+#include "eckit/linalg/SparseMatrix.h"
+#include "eckit/linalg/Triplet.h"
+#include "eckit/linalg/Vector.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/testing/Test.h"
+
 #include "util.h"
+
+#include <string>
+#include <vector>
 
 namespace eckit::test {
 

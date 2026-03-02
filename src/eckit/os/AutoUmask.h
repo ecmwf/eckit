@@ -12,9 +12,7 @@
 /// @author Tiago Quintino
 /// @date   Oct 2016
 
-#ifndef eckit_AutoUmask_h
-#define eckit_AutoUmask_h
-
+#pragma once
 #include <sys/stat.h>
 
 
@@ -32,5 +30,3 @@ public:
 
 
 }  // namespace eckit
-
-#endif

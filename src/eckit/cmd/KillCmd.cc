@@ -8,11 +8,18 @@
  * nor does it submit to any jurisdiction.
  */
 
-#include <unistd.h>
-#include <csignal>
-
 #include "eckit/cmd/KillCmd.h"
+
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
+#include "eckit/runtime/TaskInfo.h"
+#include "eckit/value/Value.h"
+
+#include <csignal>
+#include <ostream>
+#include <unistd.h>
 
 
 namespace eckit {

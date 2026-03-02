@@ -13,11 +13,10 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#ifndef eckit_log_TeeTarget_h
-#define eckit_log_TeeTarget_h
-
-
+#pragma once
 #include "eckit/log/LogTarget.h"
+
+#include <iosfwd>
 
 namespace eckit {
 
@@ -49,5 +48,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,8 +11,8 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_ClusterNode_h
-#define eckit_ClusterNode_h
+#pragma once
+#include "eckit/serialisation/Stream.h"
 
 #include <set>
 #include <string>
@@ -20,9 +20,6 @@
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class Stream;
-class NodeInfo;
 
 class ClusterNode {
 public:
@@ -47,5 +44,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

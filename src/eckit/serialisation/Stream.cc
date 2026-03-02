@@ -10,19 +10,19 @@
 
 #include "eckit/serialisation/Stream.h"
 
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <cstdint>
-
-#include <cassert>
-#include <cstring>
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-#include "eckit/maths/Functions.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/serialisation/BadTag.h"
+
+#include <arpa/inet.h>
+#include <cassert>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
+#include <sstream>
 
 namespace eckit {
 

@@ -12,12 +12,19 @@
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
+#include "eckit/exception/Exceptions.h"
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/log/CodeLocation.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/Translator.h"
+
+#include <vector>
 
 
 namespace eckit::geo::grid::regular {

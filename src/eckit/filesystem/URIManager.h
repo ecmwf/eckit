@@ -12,15 +12,13 @@
 /// @author Tiago Quintino
 /// @date   June 2017
 
-#ifndef eckit_filesystem_URIManager_h
-#define eckit_filesystem_URIManager_h
-
-#include "eckit/eckit.h"
-
-
+#pragma once
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -28,7 +26,6 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 class URI;
-class DataHandle;
 
 class URIManager {
 public:
@@ -70,5 +67,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -9,16 +9,21 @@
  */
 
 
-#include <memory>
-#include <sstream>
-#include <string>
-
 #include "eckit/geo/Grid.h"
+#include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/types/Types.h"
+#include "eckit/value/Value.h"
+
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <vector>
 
 
 namespace eckit {

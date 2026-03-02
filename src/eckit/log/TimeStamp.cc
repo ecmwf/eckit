@@ -8,14 +8,14 @@
  * does it submit to any jurisdiction.
  */
 
+#include "eckit/log/TimeStamp.h"
+
+#include "eckit/eckit_config.h"
+#include "eckit/utils/Clock.h"
+
 #include <cstdint>
 #include <iomanip>
 #include <sstream>
-
-#include "eckit/eckit.h"
-
-#include "eckit/log/TimeStamp.h"
-#include "eckit/utils/Clock.h"
 
 
 namespace eckit {

@@ -14,10 +14,16 @@
 /// @author Tiago Quintino
 /// @date May 96
 
-#ifndef eckit_filesystem_MultiHandle_h
-#define eckit_filesystem_MultiHandle_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/serialisation/Reanimator.h"
+#include "eckit/serialisation/Stream.h"
+
+#include <iosfwd>
+#include <set>
+#include <string>
+#include <vector>
 
 namespace eckit {
 
@@ -115,5 +121,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

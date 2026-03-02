@@ -11,10 +11,12 @@
 /// @author Baudouin Raoult
 /// @date   Aug 2017
 
-#ifndef eckit_ProxiedTCPServer_h
-#define eckit_ProxiedTCPServer_h
-
+#pragma once
+#include "eckit/net/SocketOptions.h"
 #include "eckit/net/TCPServer.h"
+
+#include <iosfwd>
+#include <string>
 
 
 namespace eckit {
@@ -38,5 +40,3 @@ private:
 
 
 }  // namespace eckit
-
-#endif

@@ -12,6 +12,10 @@
 
 #include "eckit/geo/figure/Earth.h"
 
+#include "eckit/geo/Figure.h"
+
+#include <string>
+
 
 namespace eckit::geo::figure {
 

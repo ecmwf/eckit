@@ -12,10 +12,12 @@
 /// @author Tiago Quintino
 /// @date Nov 2001
 
-#ifndef eckit_FileSystem_h
-#define eckit_FileSystem_h
-
+#pragma once
+#include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/PathName.h"
+
+#include <iosfwd>
+#include <string>
 
 namespace eckit {
 
@@ -68,5 +70,3 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

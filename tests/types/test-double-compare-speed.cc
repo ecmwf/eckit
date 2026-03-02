@@ -8,13 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstdlib>
-
 #include "eckit/log/BigNum.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/Timer.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
-#include "eckit/testing/Test.h"
+#include <cstdlib>
+#include <ostream>
+#include <string>
 
 using namespace std;
 using namespace eckit;

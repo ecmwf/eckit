@@ -11,10 +11,12 @@
 
 #pragma once
 
+#include "eckit/linalg/SparseMatrix.h"
+#include "eckit/linalg/types.h"
+
+#include <iosfwd>
 #include <map>
 #include <vector>
-
-#include "eckit/linalg/SparseMatrix.h"
 
 
 namespace eckit::linalg::allocator {

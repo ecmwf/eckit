@@ -11,13 +11,11 @@
 /// @author Tiago Quintino
 /// @date   June 2017
 
-#ifndef eckit_PathExpander_h
-#define eckit_PathExpander_h
+#pragma once
+#include "eckit/types/Types.h"
 
 #include <iosfwd>
 #include <string>
-
-#include "eckit/types/Types.h"
 
 namespace eckit {
 
@@ -53,5 +51,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

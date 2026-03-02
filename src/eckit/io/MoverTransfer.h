@@ -11,19 +11,16 @@
 // File MoverTransfer.h
 // Baudouin Raoult - (c) ECMWF Jun 11
 
-#ifndef eckit_MoverTransfer_h
-#define eckit_MoverTransfer_h
-
+#pragma once
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
+#include "eckit/io/TransferWatcher.h"
 
 //-----------------------------------------------------------------------------
 
 namespace eckit {
 
 //-----------------------------------------------------------------------------
-
-class TransferWatcher;
 
 class MoverTransfer {
 public:
@@ -110,5 +107,3 @@ private:
 //-----------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

@@ -11,11 +11,11 @@
 // File MapAllocator.h
 // MARS (Baudouin Raoult) - ECMWF Nov 01
 
-#ifndef eckit_MapAllocator_h
-#define eckit_MapAllocator_h
-
+#pragma once
 #include "eckit/exception/Exceptions.h"
 #include "eckit/types/Types.h"
+
+#include <cstddef>
 
 
 namespace eckit {
@@ -61,5 +61,3 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

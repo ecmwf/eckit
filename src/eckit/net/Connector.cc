@@ -10,12 +10,22 @@
 
 
 #include "eckit/net/Connector.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/io/cluster/ClusterNodes.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/CodeLocation.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/Seconds.h"
+#include "eckit/net/SocketOptions.h"
 #include "eckit/net/TCPClient.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/thread/ThreadSingleton.h"
+
+#include <cstring>
+#include <exception>
+#include <sstream>
+#include <utility>
 
 namespace eckit::net {
 

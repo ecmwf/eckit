@@ -10,10 +10,13 @@
 
 #include "eckit/web/JavaAgent.h"
 
-#include <memory>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/os/Password.h"
+
+#include <memory>
+#include <ostream>
 
 namespace eckit {
 

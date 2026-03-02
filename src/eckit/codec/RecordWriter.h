@@ -12,21 +12,27 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-#include <vector>
-
 #include "eckit/codec/FileStream.h"
 #include "eckit/codec/RecordItem.h"
 #include "eckit/codec/Stream.h"
+#include "eckit/codec/detail/DataInfo.h"
 #include "eckit/codec/detail/Defaults.h"
 #include "eckit/codec/detail/Encoder.h"
+#include "eckit/codec/detail/Link.h"
 #include "eckit/codec/detail/NoConfig.h"
 #include "eckit/codec/detail/Reference.h"
 #include "eckit/codec/detail/TypeTraits.h"
+#include "eckit/codec/detail/sfinae.h"
 #include "eckit/codec/types/array/ArrayReference.h"
-#include "eckit/codec/types/scalar.h"
 #include "eckit/codec/types/string.h"
+#include "eckit/config/Configuration.h"
+#include "eckit/filesystem/PathName.h"
+
+#include <cstddef>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 
 namespace eckit::codec {

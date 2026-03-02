@@ -8,11 +8,11 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef eckit_NetUser_h
-#define eckit_NetUser_h
-
+#pragma once
 #include "eckit/net/TCPSocket.h"
 #include "eckit/thread/Thread.h"
+
+#include <iosfwd>
 
 
 namespace eckit {
@@ -44,5 +44,3 @@ private:
 
 }  // namespace net
 }  // namespace eckit
-
-#endif

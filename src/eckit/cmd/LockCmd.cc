@@ -10,7 +10,12 @@
 
 #include "eckit/cmd/LockCmd.h"
 
+#include "eckit/cmd/Arg.h"
+#include "eckit/cmd/CmdArg.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/value/Value.h"
+
+#include <ostream>
 
 //----------------------------------------------------------------------------------------------------------------------
 

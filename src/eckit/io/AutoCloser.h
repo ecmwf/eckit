@@ -11,9 +11,7 @@
 /// @author Tiago Quintino
 /// @date   May 2018
 
-#ifndef eckit_io_AutoCloser_h
-#define eckit_io_AutoCloser_h
-
+#pragma once
 #include <utility>
 
 namespace eckit {
@@ -43,5 +41,3 @@ AutoCloser<T> closer(T& obj) {
 
 
 }  // namespace eckit
-
-#endif

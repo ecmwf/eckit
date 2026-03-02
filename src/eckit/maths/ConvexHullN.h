@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <algorithm>
-
 #include "eckit/maths/ConvexHull.h"
+
+#include <algorithm>
 
 
 namespace eckit::maths {

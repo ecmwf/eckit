@@ -8,13 +8,20 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cmath>
-#include <locale>
-
-#include "eckit/eckit.h"
-
 #include "eckit/types/DateTime.h"
+
+#include "eckit/eckit_config.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/Channel.h"
+#include "eckit/log/Log.h"
 #include "eckit/utils/Tokenizer.h"
+
+#include <cmath>
+#include <cstdlib>
+#include <iterator>
+#include <locale>
+#include <sstream>
+#include <vector>
 
 namespace eckit {
 

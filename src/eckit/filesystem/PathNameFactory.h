@@ -11,21 +11,15 @@
 /// @author Simon Smart
 /// @date March 2020
 
-#ifndef eckit_filesystem_PathNameFactory_h
-#define eckit_filesystem_PathNameFactory_h
-
+#pragma once
+#include "eckit/filesystem/BasePathName.h"
 #include "eckit/filesystem/BasePathNameT.h"
 
-#include <map>
 #include <string>
-#include <vector>
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-
-class PathNameBuilderBase;
-class BasePathName;
 
 class PathNameFactory {
 public:  // methods
@@ -55,5 +49,3 @@ public:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

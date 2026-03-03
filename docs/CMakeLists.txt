@@ -5,12 +5,12 @@ find_package(Sphinx REQUIRED)
 
 file(GLOB_RECURSE ECKIT_PUBLIC_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/../src/eckit/**/*.h)
 file(GLOB_RECURSE SPHINX_INPUT_FILES ${CMAKE_CURRENT_SOURCE_DIR}/*.rst)
-set(DOXYGEN_INDEX_FILE ${CMAKE_CURRENT_BINARY_DIR}/doxygen/html/index.html)
 set(SPHINX_INDEX_FILE ${CMAKE_CURRENT_BINARY_DIR}/sphinx/index.html)
+set(DOXYGEN_INDEX_FILE ${CMAKE_CURRENT_SOURCE_DIR}/_build/xml/index.xml)
 set(DOXYFILE ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
 
 add_custom_command(
-    DEPENDS 
+    DEPENDS
         ${ECKIT_PUBLIC_HEADERS}
         ${SPHINX_INPUT_FILES}
         conf.py
@@ -21,8 +21,8 @@ add_custom_command(
     OUTPUT ${SPHINX_INDEX_FILE} ${DOXYGEN_INDEX_FILE}
 )
 
-add_custom_target(eckit-doc ALL 
-    DEPENDS 
-        ${SPHINX_INDEX_FILE} 
+add_custom_target(eckit-doc ALL
+    DEPENDS
+        ${SPHINX_INDEX_FILE}
         ${DOXYGEN_INDEX_FILE}
 )

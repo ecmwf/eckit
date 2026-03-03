@@ -31,9 +31,6 @@
 #include "eckit/io/fam/FamList.h"
 #include "eckit/testing/Test.h"
 
-using namespace eckit;
-using namespace eckit::testing;
-
 namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -41,12 +38,15 @@ namespace eckit::test {
 
 namespace {
 
-fam::TestFam tester;
+using fam::TestFam;
+
+
+TestFam tester;
 
 constexpr const auto num_threads = 8;
 constexpr const auto list_size   = 200;
-const auto list_name             = fam::TestFam::makeRandomText("LIST");
-const auto list_data             = fam::TestFam::makeRandomText("DATA");
+const auto list_name             = TestFam::makeRandomText("LIST");
+const auto list_data             = TestFam::makeRandomText("DATA");
 
 std::vector<std::string> test_data;
 std::mutex test_mutex;
@@ -72,9 +72,11 @@ void populateList() {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamList: create an empty list and validate size, empty, front, back") {
-    auto list_region = tester.makeRandomRegion(1024);
 
-    const auto lst = FamList(list_region, list_name);
+    constexpr const auto region_size = 1024;
+
+    auto list_region = tester.makeRandomRegion(region_size);
+    const auto lst   = FamList(list_region, list_name);
 
     EXPECT(lst.empty());
 
@@ -126,5 +128,5 @@ CASE("FamList: validate size and values after creation") {
 //----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

@@ -42,6 +42,14 @@ foreach(_test
                     LIBS    eckit )
 endforeach()
 
+foreach( _test fam fam_list fam_map )
+  ecbuild_add_test( TARGET      eckit_test_${_test}
+                    SOURCES     test_${_test}.cc
+                    CONDITION   HAVE_OPENFAM
+                    LABELS      openfam
+                    LIBS        eckit )
+endforeach()
+
 ecbuild_add_test( TARGET      eckit_test_radoshandle
                   SOURCES     test_radoshandle.cc
                   CONDITION   HAVE_RADOS

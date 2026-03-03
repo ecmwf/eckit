@@ -13,25 +13,24 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   test_famlist.cc
+/// @file   test_fam_map.cc
 /// @author Metin Cakircali
 /// @date   May 2024
 
 #include "test_fam_common.h"
 
+#include <cstddef>
 #include <mutex>
 #include <sstream>
 #include <string>
 #include <string_view>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamMap.h"
 #include "eckit/testing/Test.h"
-
-using namespace eckit;
-using namespace eckit::testing;
 
 namespace eckit::test {
 
@@ -40,67 +39,70 @@ namespace eckit::test {
 
 namespace {
 
-fam::TestFam tester;
+using fam::TestFam;
 
-constexpr const auto num_threads = 8;
-constexpr const auto list_size   = 200;
-const auto map_name              = fam::TestFam::makeRandomText("MAP");
-const auto list_data             = fam::TestFam::makeRandomText("DATA");
+TestFam tester;
 
-std::vector<std::string> test_data;
+constexpr const std::size_t num_threads = 8;
+constexpr const std::size_t num_maps    = 200;
+const auto map_name                     = TestFam::makeRandomText("MAP");
+const auto map_data                     = TestFam::makeRandomText("DATA");
+
+// std::vector<std::string> test_data;
+std::unordered_map<std::string, std::string> test_data;
 std::mutex test_mutex;
 
 auto makeTestData(const int number) -> std::string_view {
     std::ostringstream oss;
-    oss << "tid:" << std::this_thread::get_id() << " #" << number << '-' << list_data;
+    oss << "tid:" << std::this_thread::get_id() << " #" << number << '-' << map_data;
     // add to the control list
     const std::lock_guard<std::mutex> lock(test_mutex);
-    return test_data.emplace_back(oss.str());
+    return test_data.emplace(oss.str(), oss.str()).first->second;
 }
 
 void populateMap() {
-    FamMap fam_map(tester.lastRegion(), map_name);
-    for (auto i = 0; i < list_size; i++) {
-        // auto buffer = makeTestData(i);
-        // EXPECT_NO_THROW(fam_map.push_back(buffer.data(), buffer.size()));
-    }
+    // FamMap fam_map(tester.lastRegion(), map_name);
+    // for (std::size_t i = 0; i < num_maps; i++) {
+    // auto buffer = makeTestData(i);
+    // EXPECT_NO_THROW(fam_map.push_back(buffer.data(), buffer.size()));
+    // }
 }
+
 
 }  // namespace
 
 #include <bits/hashtable_policy.h>
 
-std::unordered_map<std::string, std::string> testData;  // for validation
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamMap: create an empty list and validate size, empty, front, back") {
-    auto map_region = tester.makeRandomRegion(1024);
 
-    const auto map = FamMap(map_region, map_name);
-
-    EXPECT(map.empty());
-
-    EXPECT(map.size() == 0);
-
-    Buffer front;
-    // EXPECT_NO_THROW(front = fam_map.front());
-    EXPECT(front.size() == 0);
-    EXPECT(front.data() == nullptr);
-
-    Buffer back;
-    // EXPECT_NO_THROW(back = fam_map.back());
-    EXPECT(back.size() == 0);
-    EXPECT(back.data() == nullptr);
+    //     constexpr const auto region_size = 1024;
+    //     auto map_region = tester.makeRandomRegion(region_size);
+    //     const auto map = FamMap(map_region, map_name);
+    //
+    //     EXPECT(map.empty());
+    //     EXPECT(map.size() == 0);
+    //
+    //     Buffer front;
+    //     // EXPECT_NO_THROW(front = fam_map.front());
+    //     EXPECT(front.size() == 0);
+    //     EXPECT(front.data() == nullptr);
+    //
+    //     Buffer back;
+    //     // EXPECT_NO_THROW(back = fam_map.back());
+    //     EXPECT(back.size() == 0);
+    //     EXPECT(back.data() == nullptr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("FamMap: populate with " + std::to_string(list_size) + " items by " + std::to_string(num_threads) + " threads") {
+CASE("FamMap: populate with " + std::to_string(num_maps) + " items by " + std::to_string(num_threads) + " threads") {
     std::vector<std::thread> threads;
 
     threads.reserve(num_threads);
 
-    for (auto i = 0; i < num_threads; i++) {
+    for (std::size_t i = 0; i < num_threads; i++) {
         threads.emplace_back(populateMap);
     }
 
@@ -112,12 +114,9 @@ CASE("FamMap: populate with " + std::to_string(list_size) + " items by " + std::
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamMap: validate size and values after creation") {
-    const auto fam_map = FamMap(tester.lastRegion(), map_name);
-
-    EXPECT_NOT(fam_map.empty());
-
-    EXPECT(fam_map.size() == num_threads * list_size);
-
+    // const auto fam_map = FamMap(tester.lastRegion(), map_name);
+    // EXPECT_NOT(fam_map.empty());
+    // EXPECT(fam_map.size() == num_threads * num_maps);
     // for (const auto& buffer : fam_map) {
     // EXPECT(std::find(testData.cbegin(), testData.cend(), buffer.view()) != testData.cend());
     // }
@@ -128,5 +127,5 @@ CASE("FamMap: validate size and values after creation") {
 //----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

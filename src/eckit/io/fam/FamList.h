@@ -51,7 +51,6 @@ public:  // types
 
 public:  // methods
 
-
     FamList(const FamRegion& region, const Descriptor& desc);
 
     FamList(const FamRegion& region, const std::string& list_name);

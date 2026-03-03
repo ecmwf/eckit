@@ -34,10 +34,11 @@ class FamName {
 public:  // methods
 
     FamName(const net::Endpoint& endpoint, FamPath path);
+    FamName(const net::Endpoint& endpoint, const std::string& path) : FamName(endpoint, FamPath(path)) {}
 
-    FamName(const URI& uri);
+    explicit FamName(const URI& uri);
 
-    FamName(Stream& stream);
+    explicit FamName(Stream& stream);
 
     // rules
     FamName(const FamName&)            = default;

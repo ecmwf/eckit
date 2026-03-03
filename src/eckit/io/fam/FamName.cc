@@ -32,7 +32,7 @@ namespace eckit {
 
 FamName::FamName(const net::Endpoint& endpoint, FamPath path) : endpoint_{endpoint}, path_{std::move(path)} {}
 
-FamName::FamName(const URI& uri) : FamName(uri.endpoint(), uri) {}
+FamName::FamName(const URI& uri) : FamName(uri.endpoint(), FamPath(uri)) {}
 
 FamName::FamName(Stream& stream) : endpoint_{stream}, path_{stream} {}
 

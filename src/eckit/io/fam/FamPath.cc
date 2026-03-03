@@ -51,11 +51,7 @@ auto parsePath(const std::string& path) -> std::tuple<std::string, std::string> 
 /* ISO Object Identifier Namespace */
 const uuid_t ns_oid = {0x6b, 0xa7, 0xb8, 0x12, 0x9d, 0xad, 0x11, 0xd1, 0x80, 0xb4, 0x00, 0xc0, 0x4f, 0xd4, 0x30, 0xc8};
 
-}  // namespace
-
-//----------------------------------------------------------------------------------------------------------------------
-
-auto FamPath::generateUUID(const std::string& name) -> std::string {
+auto generateUuid(const std::string& name) -> std::string {
     std::string result = "00000000-0000-0000-0000-000000000000";
 
     uuid_t oid;
@@ -64,6 +60,8 @@ auto FamPath::generateUUID(const std::string& name) -> std::string {
 
     return result;
 }
+
+}  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -90,7 +88,7 @@ bool FamPath::operator==(const FamPath& other) const {
 }
 
 auto FamPath::generateUUID() const -> std::string {
-    return generateUUID(regionName + objectName);
+    return generateUuid(regionName + objectName);
 }
 
 void FamPath::encode(Stream& stream) const {

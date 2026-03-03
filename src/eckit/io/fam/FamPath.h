@@ -32,20 +32,18 @@ class Stream;
 struct FamPath {
     static constexpr const auto scheme = "fam";
 
-    static auto generateUUID(const std::string& name) -> std::string;
-
     FamPath() = default;
 
     FamPath(std::string region, std::string object);
 
-    FamPath(const std::string& path);
+    explicit FamPath(const std::string& path);
 
-    FamPath(const char* path);
+    explicit FamPath(const char* path);
 
     /// @todo explicit?
-    FamPath(const URI& uri);
+    explicit FamPath(const URI& uri);
 
-    FamPath(Stream& stream);
+    explicit FamPath(Stream& stream);
 
     bool operator==(const FamPath& other) const;
 

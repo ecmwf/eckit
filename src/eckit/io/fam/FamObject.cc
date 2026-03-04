@@ -15,12 +15,12 @@
 
 #include "eckit/io/fam/FamObject.h"
 
+#include "fam/fam.h"
+
 #include <cstdint>
 #include <memory>
 #include <ostream>
 #include <string>
-
-#include "fam/fam.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
@@ -103,7 +103,7 @@ void FamObject::get(void* buffer, const fam::size_t offset, const fam::size_t le
     session_->get(*object_, buffer, offset, length);
 }
 
-auto FamObject::buffer(const fam::size_t offset) const -> Buffer {
+auto FamObject::data(const fam::size_t offset) const -> value_type {
     Buffer buffer(size() - offset);
     get(buffer.data(), offset, buffer.size());
     return buffer;

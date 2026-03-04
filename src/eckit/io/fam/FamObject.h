@@ -34,6 +34,9 @@ class FamSessionDetail;
 //----------------------------------------------------------------------------------------------------------------------
 
 class FamObject {
+public:  // types
+
+    using value_type = Buffer;
 
 public:  // methods
 
@@ -95,7 +98,7 @@ public:  // methods
         put(&buffer, offset, sizeof(T));
     }
 
-    auto buffer(fam::size_t offset = 0) const -> Buffer;
+    auto data(fam::size_t offset = 0) const -> value_type;
 
     // atomic operations
 

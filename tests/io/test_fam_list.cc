@@ -29,6 +29,7 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamList.h"
+#include "eckit/io/fam/FamProperty.h"
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
@@ -73,7 +74,7 @@ void populateList() {
 
 CASE("FamList: create an empty list and validate size, empty, front, back") {
 
-    constexpr const auto region_size = 1024;
+    constexpr const eckit::fam::size_t region_size = 1024;
 
     auto list_region = tester.makeRandomRegion(region_size);
     const auto lst   = FamList(list_region, list_name);

@@ -76,7 +76,6 @@ void populateMap() {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamMap: create an empty list and validate size, empty, front, back") {
-
     //     constexpr const auto region_size = 1024;
     //     auto map_region = tester.makeRandomRegion(region_size);
     //     const auto map = FamMap(map_region, map_name);

@@ -22,6 +22,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
@@ -82,19 +83,19 @@ auto FamList::descriptor() const -> Descriptor {
 // iterators
 
 auto FamList::begin() const -> iterator {
-    return {region_.proxyObject(FamListNode::getNextOffset(head_))};
+    return region_.proxyObject(FamListNode::getNextOffset(head_));
 }
 
 auto FamList::cbegin() const -> const_iterator {
-    return {region_.proxyObject(FamListNode::getNextOffset(head_))};
+    return region_.proxyObject(FamListNode::getNextOffset(head_));
 }
 
 auto FamList::end() const -> iterator {
-    return {region_.proxyObject(tail_.offset())};
+    return region_.proxyObject(tail_.offset());
 }
 
 auto FamList::cend() const -> const_iterator {
-    return {region_.proxyObject(tail_.offset())};
+    return region_.proxyObject(tail_.offset());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

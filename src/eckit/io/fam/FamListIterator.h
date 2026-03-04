@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <iterator>
+
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamObject.h"
 
@@ -38,7 +40,7 @@ public:  // types
 
 public:  // methods
 
-    FamListIterator(const value_type& object);
+    FamListIterator(value_type object);
 
     // iterate forwards
     auto operator++() -> FamListIterator&;

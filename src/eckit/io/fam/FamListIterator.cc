@@ -15,6 +15,8 @@
 
 #include "eckit/io/fam/FamListIterator.h"
 
+#include <utility>
+
 #include "eckit/io/fam/detail/FamListNode.h"
 
 namespace eckit {
@@ -22,7 +24,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 // ITERATOR
 
-FamListIterator::FamListIterator(const value_type& object) : object_{object} {}
+FamListIterator::FamListIterator(value_type object) : object_{std::move(object)} {}
 
 auto FamListIterator::operator++() -> FamListIterator& {
     if (const auto next = FamListNode::getNext(object_); next.offset > 0) {

@@ -41,6 +41,14 @@ public:  // methods
 
     FamObject(FamSessionDetail& session, std::uint64_t region, std::uint64_t offset);
 
+    ~FamObject() = default;
+
+    // rules: move-only
+    FamObject(const FamObject&)            = delete;
+    FamObject& operator=(const FamObject&) = delete;
+    FamObject(FamObject&&)                 = default;
+    FamObject& operator=(FamObject&&)      = default;
+
     // operators
 
     bool operator==(const FamObject& other) const;

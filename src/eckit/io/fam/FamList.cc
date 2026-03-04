@@ -102,10 +102,12 @@ auto FamList::cend() const -> const_iterator {
 // accessors
 
 auto FamList::front() const -> Buffer {
+    ASSERT(!empty());
     return std::move(*begin());
 }
 
 auto FamList::back() const -> Buffer {
+    ASSERT(!empty());
     return std::move(*--end());
 }
 

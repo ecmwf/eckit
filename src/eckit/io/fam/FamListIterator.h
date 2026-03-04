@@ -68,13 +68,14 @@ private:  // members
 // CONST ITERATOR
 
 class FamListConstIterator : public FamListIterator {
-    using FamListIterator::FamListIterator;
+public:  // types
 
-    using value_type = FamListIterator::value_type;
-    using pointer    = const value_type*;
-    using reference  = const Buffer&;
+    using pointer   = const value_type*;
+    using reference = const Buffer&;
 
 public:  // methods
+
+    using FamListIterator::FamListIterator;
 
     auto operator->() -> pointer { return FamListIterator::operator->(); }
 

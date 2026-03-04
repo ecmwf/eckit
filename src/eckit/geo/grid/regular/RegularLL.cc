@@ -90,7 +90,8 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
         custom.set("order", o);
     }
 
-    if (auto ref{reference()}; !points_equal(ref, PointLonLat{})) {
+    if (const auto first = first_point(); !points_equal(first, PointLonLat{x_.a(), y_.a()})) {
+        const auto ref{reference()};
         custom.set("reference", std::vector<double>{ref.lon(), ref.lat()});
     }
 

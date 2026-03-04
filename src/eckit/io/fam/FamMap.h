@@ -75,11 +75,11 @@ public:  // types
 
 public:  // methods
 
-    FamMap(const FamRegion& region, const std::string& name);
+    FamMap(FamRegion region, const std::string& name);
 
-    // rules
-    FamMap(const FamMap&)            = default;
-    FamMap& operator=(const FamMap&) = default;
+    /// TODO: check the rules
+    FamMap(const FamMap&)            = delete;
+    FamMap& operator=(const FamMap&) = delete;
     FamMap(FamMap&&)                 = delete;
     FamMap& operator=(FamMap&&)      = delete;
 

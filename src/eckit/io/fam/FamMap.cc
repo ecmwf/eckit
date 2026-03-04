@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
@@ -28,11 +29,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamMap::FamMap(const FamRegion& region, const std::string& table_name) :
-    region_{region},
-    root_{initSentinel(table_name + "-map-root", sizeof(FamMapNode))},
-    table_{initSentinel(table_name + "-map-table", capacity * sizeof(FamMapNode))},
-    count_{initSentinel(table_name + "-map-count", sizeof(size_type))} {}
+FamMap::FamMap(FamRegion region, const std::string& name) :
+    region_{std::move(region)},
+    root_{initSentinel(name + "-map-root", sizeof(FamMapNode))},
+    table_{initSentinel(name + "-map-table", capacity * sizeof(FamMapNode))},
+    count_{initSentinel(name + "-map-count", sizeof(size_type))} {}
 
 auto FamMap::initSentinel(const std::string& object_name, const size_type object_size) const -> FamObject {
     try {

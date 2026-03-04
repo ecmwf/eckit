@@ -53,6 +53,7 @@ auto FamListIterator::operator->() -> pointer {
 auto FamListIterator::operator*() -> reference {
     if (invalid_) {
         FamListNode::getData(object_, data_);
+        invalid_ = false;
     }
     return data_;
 }

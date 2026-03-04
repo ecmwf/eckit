@@ -21,6 +21,7 @@
 
 #include <iosfwd>
 #include <string>
+#include <string_view>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamListIterator.h"
@@ -70,6 +71,7 @@ public:  // methods
 
     auto size() const -> size_type;
 
+    [[nodiscard]]
     auto empty() const -> bool;
 
     // iterators
@@ -94,7 +96,11 @@ public:  // methods
 
     void pushBack(const void* data, size_type length);
 
+    void pushBack(const std::string_view data) { pushBack(data.data(), data.size()); }
+
     void pushFront(const void* data, size_type length);
+
+    void pushFront(const std::string_view data) { pushFront(data.data(), data.size()); }
 
     void popFront();
 

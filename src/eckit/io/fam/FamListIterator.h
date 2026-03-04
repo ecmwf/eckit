@@ -59,8 +59,7 @@ public:  // methods
 private:  // members
 
     bool invalid_{true};
-    Buffer data_{0};
-
+    Buffer data_;
     value_type object_;
 };
 

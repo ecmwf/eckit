@@ -287,7 +287,7 @@ void FamSessionDetail::get(FamObjectDescriptor& object, void* buffer, const fam:
 
 template <typename T>
 auto FamSessionDetail::fetch(FamObjectDescriptor& /* object */, const fam::size_t /* offset */) -> T {
-    throw SeriousBug("This type is not specialized!");
+    throw SeriousBug("This type is not specialized!", Here());
 }
 
 template <>

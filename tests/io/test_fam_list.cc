@@ -64,7 +64,7 @@ void populateList() {
     FamList lst(tester.lastRegion(), list_name);
     for (auto i = 0; i < list_size; i++) {
         auto buffer = makeTestData(i);
-        EXPECT_NO_THROW(lst.pushBack(buffer.data(), buffer.size()));
+        lst.pushBack(buffer.data(), buffer.size());
     }
 }
 
@@ -77,21 +77,44 @@ CASE("FamList: create an empty list and validate size, empty, front, back") {
     constexpr const eckit::fam::size_t region_size = 1024;
 
     auto list_region = tester.makeRandomRegion(region_size);
-    const auto lst   = FamList(list_region, list_name);
+    const auto list  = FamList(list_region, list_name);
 
-    EXPECT(lst.empty());
+    // empty list should have size 0
+    EXPECT(list.empty());
+    EXPECT(list.size() == 0);
 
-    EXPECT(lst.size() == 0);
+    // front/back should throw as it's undefined behavior
+    EXPECT_THROWS({ auto front = list.front(); });
+    EXPECT_THROWS({ auto back = list.back(); });
+}
 
-    Buffer front;
-    EXPECT_NO_THROW(front = lst.front());
-    EXPECT(front.size() == 0);
-    EXPECT(front.data() == nullptr);
+CASE("FamList: populate a list and validate size, !empty, front, back") {
 
-    Buffer back;
-    EXPECT_NO_THROW(back = lst.back());
-    EXPECT(back.size() == 0);
-    EXPECT(back.data() == nullptr);
+    constexpr const eckit::fam::size_t region_size = 1024;
+
+    auto region = FamRegionName(fam::test_endpoint, "")
+                      .withRegion(TestFam::makeRandomText("LIST_REGION"))
+                      .create(region_size, 0640, true);
+    auto list = FamList(region, list_name);
+
+    // empty list should have size 0
+    EXPECT(list.empty());
+    EXPECT_EQUAL(list.size(), 0);
+
+    std::string front = "Front FAM List!";
+    EXPECT_NO_THROW(list.pushBack(front));
+    EXPECT_EQUAL(list.size(), 1);
+    EXPECT_EQUAL(list.front().view(), front);
+    EXPECT_EQUAL(list.back().view(), front);
+
+
+    std::string back = "Back FAM List!";
+    EXPECT_NO_THROW(list.pushBack(back));
+    EXPECT_EQUAL(list.size(), 2);
+    EXPECT_EQUAL(list.front().view(), front);
+    EXPECT_EQUAL(list.back().view(), back);
+
+    region.destroy();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -102,7 +125,7 @@ CASE("FamList: populate with " + std::to_string(list_size) + " items by " + std:
     threads.reserve(num_threads);
 
     for (auto i = 0; i < num_threads; i++) {
-        threads.emplace_back(populateList);
+        EXPECT_NO_THROW(threads.emplace_back(populateList));
     }
 
     for (auto&& thread : threads) {

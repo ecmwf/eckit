@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "eckit/io/fam/FamList.h"
+#include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
 
 namespace eckit {

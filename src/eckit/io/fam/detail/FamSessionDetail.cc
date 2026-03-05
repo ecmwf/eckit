@@ -132,6 +132,17 @@ FamSessionDetail::~FamSessionDetail() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+
+auto FamSessionDetail::config() -> FamConfig {
+    std::string cis_server = "CIS_SERVER";
+    std::string grpc_port  = "GRPC_PORT";
+
+    const auto* host = static_cast<const char*>(fam_.fam_get_option(cis_server.data()));
+    const auto* port = static_cast<const char*>(fam_.fam_get_option(grpc_port.data()));
+
+    return {{host, std::stoi(port)}, name_};
+}
+
 void FamSessionDetail::print(std::ostream& out) const {
     out << "FamSessionDetail[name=" << name_ << "]";
 }
@@ -143,16 +154,6 @@ std::ostream& operator<<(std::ostream& out, const FamSessionDetail& session) {
 
 //----------------------------------------------------------------------------------------------------------------------
 // REGION
-
-auto FamSessionDetail::config() -> FamConfig {
-    std::string cis_server = "CIS_SERVER";
-    std::string grpc_port  = "GRPC_PORT";
-
-    const auto* host = static_cast<const char*>(fam_.fam_get_option(cis_server.data()));
-    const auto* port = static_cast<const char*>(fam_.fam_get_option(grpc_port.data()));
-
-    return {{host, std::stoi(port)}, name_};
-}
 
 auto FamSessionDetail::lookupRegion(const std::string& region_name) -> FamRegion {
     ASSERT(isValidName(region_name));

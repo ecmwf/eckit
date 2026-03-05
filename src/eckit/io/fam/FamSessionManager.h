@@ -21,6 +21,7 @@
 
 #include <list>
 #include <memory>
+#include <mutex>
 #include <string>
 
 #include "eckit/io/fam/FamConfig.h"
@@ -28,10 +29,10 @@
 namespace eckit {
 
 class FamSessionDetail;
+class FamSessionManagerTestAccessor;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @brief Manages a list of FamSessionDetail.
 class FamSessionManager {
 public:  // types
 
@@ -46,15 +47,11 @@ public:  // methods
 
     static auto instance() -> FamSessionManager&;
 
-    auto get(const FamConfig& config) -> FamSession;
-
+    // Returns the session matching the given config
     auto getOrAdd(const FamConfig& config) -> FamSession;
 
-    void remove(const FamConfig& config);
-
+    // Removes the session with the given name
     void remove(const std::string& session_name);
-
-    void clear();
 
 private:  // methods
 
@@ -62,7 +59,16 @@ private:  // methods
 
     ~FamSessionManager() = default;
 
+    auto find(const FamConfig& config) -> FamSession;
+
+    // Removes null sessions or older than 30 minutes
+    void cleanup();
+
 private:  // members
+
+    friend class FamSessionManagerTestAccessor;
+
+    mutable std::recursive_mutex mutex_;
 
     std::list<FamSession> sessions_;
 };

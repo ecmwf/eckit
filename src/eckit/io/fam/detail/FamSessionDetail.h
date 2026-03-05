@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <cstdint>
 #include <iosfwd>
 #include <memory>
@@ -39,6 +40,10 @@ using FamDescriptorStatus = openfam::Fam_Descriptor_Status;
 // SESSION
 
 class FamSessionDetail : public std::enable_shared_from_this<FamSessionDetail> {
+public:  // types
+
+    using TimePoint = std::chrono::system_clock::time_point;
+
 public:  // methods
 
     explicit FamSessionDetail(const FamConfig& config);
@@ -53,6 +58,10 @@ public:  // methods
     auto name() const -> std::string { return name_; }
 
     auto config() -> FamConfig;
+
+    TimePoint lastAccess() const { return lastAccess_; }
+
+    void updateLastAccess(const TimePoint& when = std::chrono::system_clock::now()) { lastAccess_ = when; }
 
     //------------------------------------------------------------------------------------------------------------------
     // REGION
@@ -135,7 +144,9 @@ private:  // methods
 
 private:  // members
 
-    const std::string name_;
+    std::string name_;
+
+    TimePoint lastAccess_{std::chrono::system_clock::now()};
 
     openfam::fam fam_;
 };

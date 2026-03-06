@@ -16,6 +16,8 @@
 #ifndef eckit_Date_h
 #define eckit_Date_h
 
+#include <functional>
+
 #include "eckit/persist/Bless.h"
 
 namespace eckit {
@@ -166,5 +168,12 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
+
+template <>
+struct std::hash<eckit::Date> {
+    std::size_t operator()(const eckit::Date& d) const noexcept {
+        return std::hash<long>{}(d.julian());
+    }
+};
 
 #endif

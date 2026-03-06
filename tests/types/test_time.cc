@@ -10,7 +10,10 @@
 
 
 #include <iomanip>
+#include <unordered_set>
 #include "eckit/testing/Test.h"
+#include "eckit/types/Date.h"
+#include "eckit/types/DateTime.h"
 #include "eckit/types/Time.h"
 
 using namespace std;
@@ -165,6 +168,50 @@ CASE("Time with unit (__h__m__s)") {
     EXPECT(Time("0d3h10m20s") == Time("3h10m20s"));
     EXPECT(Time("0d3h10m20s") == Time("3h620s"));
     EXPECT(Time("2D3h", true) == Time("51h", true));
+}
+
+CASE("std::hash<Date>") {
+    std::unordered_set<Date> dates;
+    dates.insert(Date(2024, 3, 15));
+    dates.insert(Date(2024, 3, 15));  // duplicate
+    dates.insert(Date(2024, 3, 16));
+    EXPECT(dates.size() == 2);
+
+    EXPECT(std::hash<Date>{}(Date(2024, 3, 15))
+        == std::hash<Date>{}(Date(2024, 3, 15)));
+
+    EXPECT(std::hash<Date>{}(Date(2024, 3, 15))
+        != std::hash<Date>{}(Date(2024, 3, 16)));
+}
+
+CASE("std::hash<Time>") {
+    std::unordered_set<Time> times;
+    times.insert(Time(12, 30, 0));
+    times.insert(Time(12, 30, 0));  // duplicate
+    times.insert(Time(12, 30, 1));
+    EXPECT(times.size() == 2);
+
+    EXPECT(std::hash<Time>{}(Time(12, 30, 0))
+        == std::hash<Time>{}(Time(12, 30, 0)));
+
+    EXPECT(std::hash<Time>{}(Time(12, 30, 0))
+        != std::hash<Time>{}(Time(12, 30, 1)));
+}
+
+CASE("std::hash<DateTime>") {
+    std::unordered_set<DateTime> dts;
+    dts.insert(DateTime(Date(2024, 3, 15), Time(12, 0, 0)));
+    dts.insert(DateTime(Date(2024, 3, 15), Time(12, 0, 0)));  // duplicate
+    dts.insert(DateTime(Date(2024, 3, 15), Time(12, 0, 1)));
+    EXPECT(dts.size() == 2);
+
+    // Same date, different time
+    EXPECT(std::hash<DateTime>{}(DateTime(Date(2024, 3, 15), Time(12, 0, 0)))
+        != std::hash<DateTime>{}(DateTime(Date(2024, 3, 15), Time(12, 0, 1))));
+
+    // Different date, same time
+    EXPECT(std::hash<DateTime>{}(DateTime(Date(2024, 3, 15), Time(12, 0, 0)))
+        != std::hash<DateTime>{}(DateTime(Date(2024, 3, 16), Time(12, 0, 0))));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

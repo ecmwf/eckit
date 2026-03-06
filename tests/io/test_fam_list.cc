@@ -88,6 +88,25 @@ CASE("FamList: create an empty list and validate size, empty, front, back") {
     EXPECT_THROWS({ auto back = list.back(); });
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamList: pop on empty list throws") {
+
+    constexpr const eckit::fam::size_t region_size = 1024;
+
+    auto region =
+        FamRegionName(fam::test_endpoint, "").withRegion("RP" + fam::random_number()).create(region_size, 0640, true);
+    auto list = FamList(region, "LP" + fam::random_number());
+
+    EXPECT(list.empty());
+    EXPECT_EQUAL(list.size(), 0);
+
+    EXPECT_THROWS({ list.popFront(); });
+    EXPECT_THROWS({ list.popBack(); });
+
+    region.destroy();
+}
+
 CASE("FamList: populate a list and validate size, !empty, front, back") {
 
     constexpr const eckit::fam::size_t region_size = 1024;
@@ -113,6 +132,45 @@ CASE("FamList: populate a list and validate size, !empty, front, back") {
     EXPECT_EQUAL(list.size(), 2);
     EXPECT_EQUAL(list.front().view(), front);
     EXPECT_EQUAL(list.back().view(), back);
+
+    region.destroy();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamList: pop front/back updates size and values") {
+
+    constexpr const eckit::fam::size_t region_size = 1024;
+
+    auto region =
+        FamRegionName(fam::test_endpoint, "").withRegion("RP" + fam::random_number()).create(region_size, 0640, true);
+    auto list = FamList(region, "LP" + fam::random_number());
+
+    std::string first  = "first";
+    std::string second = "second";
+    std::string third  = "third";
+
+    EXPECT_NO_THROW(list.pushBack(first));
+    EXPECT_NO_THROW(list.pushBack(second));
+    EXPECT_NO_THROW(list.pushBack(third));
+
+    EXPECT_EQUAL(list.size(), 3);
+    EXPECT_EQUAL(list.front().view(), first);
+    EXPECT_EQUAL(list.back().view(), third);
+
+    EXPECT_NO_THROW(list.popFront());
+    EXPECT_EQUAL(list.size(), 2);
+    EXPECT_EQUAL(list.front().view(), second);
+    EXPECT_EQUAL(list.back().view(), third);
+
+    EXPECT_NO_THROW(list.popBack());
+    EXPECT_EQUAL(list.size(), 1);
+    EXPECT_EQUAL(list.front().view(), second);
+    EXPECT_EQUAL(list.back().view(), second);
+
+    EXPECT_NO_THROW(list.popBack());
+    EXPECT(list.empty());
+    EXPECT_EQUAL(list.size(), 0);
 
     region.destroy();
 }

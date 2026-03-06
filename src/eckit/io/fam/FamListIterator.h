@@ -40,7 +40,7 @@ public:  // types
 
 public:  // methods
 
-    FamListIterator(value_type object);
+    FamListIterator(value_type object);  // NOLINT(google-explicit-constructor)
 
     // iterate forwards
     FamListIterator& operator++();

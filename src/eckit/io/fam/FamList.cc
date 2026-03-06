@@ -163,11 +163,37 @@ void FamList::pushBack(const void* data, const size_type length) {
 }
 
 void FamList::popFront() {
-    NOTIMP;
+    ASSERT(!empty());
+
+    const auto first_offset = FamListNode::getNextOffset(head_);
+    auto first_object       = region_.proxyObject(first_offset);
+    const auto next_offset  = FamListNode::getNextOffset(first_object);
+
+    const auto old_offset = head_.swap(offsetof(FamListNode, next.offset), next_offset);
+    ASSERT(old_offset == first_offset);
+
+    auto next_object = region_.proxyObject(next_offset);
+    next_object.put(head_.descriptor(), offsetof(FamListNode, prev));
+
+    first_object.deallocate();
+    size_.subtract(0, 1UL);
 }
 
 void FamList::popBack() {
-    NOTIMP;
+    ASSERT(!empty());
+
+    const auto last_offset = FamListNode::getPrevOffset(tail_);
+    auto last_object       = region_.proxyObject(last_offset);
+    const auto prev_offset = FamListNode::getPrevOffset(last_object);
+
+    const auto old_offset = tail_.swap(offsetof(FamListNode, prev.offset), prev_offset);
+    ASSERT(old_offset == last_offset);
+
+    auto prev_object = region_.proxyObject(prev_offset);
+    prev_object.put(tail_.descriptor(), offsetof(FamListNode, next));
+
+    last_object.deallocate();
+    size_.subtract(0, 1UL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

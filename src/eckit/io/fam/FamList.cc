@@ -35,7 +35,7 @@ namespace eckit {
 
 namespace {
 
-auto initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) -> FamObject {
+FamObject initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) {
     try {
         return region.allocateObject(object_size, object_name);
     }
@@ -75,38 +75,38 @@ FamList::FamList(const FamRegion& region, const std::string& list_name) :
 
 FamList::FamList(const FamRegionName& name) : FamList(name.lookup(), name.path().objectName) {}
 
-auto FamList::descriptor() const -> Descriptor {
+FamList::Descriptor FamList::descriptor() const {
     return {region_.index(), head_.offset(), tail_.offset(), size_.offset()};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // iterators
 
-auto FamList::begin() const -> iterator {
+FamList::iterator FamList::begin() const {
     return region_.proxyObject(FamListNode::getNextOffset(head_));
 }
 
-auto FamList::cbegin() const -> const_iterator {
+FamList::const_iterator FamList::cbegin() const {
     return region_.proxyObject(FamListNode::getNextOffset(head_));
 }
 
-auto FamList::end() const -> iterator {
+FamList::iterator FamList::end() const {
     return region_.proxyObject(tail_.offset());
 }
 
-auto FamList::cend() const -> const_iterator {
+FamList::const_iterator FamList::cend() const {
     return region_.proxyObject(tail_.offset());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // accessors
 
-auto FamList::front() const -> Buffer {
+Buffer FamList::front() const {
     ASSERT(!empty());
     return std::move(*begin());
 }
 
-auto FamList::back() const -> Buffer {
+Buffer FamList::back() const {
     ASSERT(!empty());
     return std::move(*--end());
 }

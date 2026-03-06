@@ -34,11 +34,9 @@ struct FamNode {
     std::uint8_t version{1};  // 1 byte
     FamDescriptor next;
 
-    static auto getNext(const FamObject& object) -> FamDescriptor {
-        return object.get<FamDescriptor>(offsetof(FamNode, next));
-    }
+    static FamDescriptor getNext(const FamObject& object) { return object.get<FamDescriptor>(offsetof(FamNode, next)); }
 
-    static auto getNextOffset(const FamObject& object) -> std::uint64_t {
+    static std::uint64_t getNextOffset(const FamObject& object) {
         return object.get<std::uint64_t>(offsetof(FamNode, next.offset));
     }
 };

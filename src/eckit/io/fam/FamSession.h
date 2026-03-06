@@ -77,11 +77,11 @@ public:  // methods
     //------------------------------------------------------------------------------------------------------------------
     // REGION
 
-    auto lookupRegion(const std::string& region_name) -> FamRegion;
+    FamRegion lookupRegion(const std::string& region_name);
 
-    auto createRegion(fam::size_t region_size, fam::perm_t region_perm, const std::string& region_name) -> FamRegion;
+    FamRegion createRegion(fam::size_t region_size, fam::perm_t region_perm, const std::string& region_name);
 
-    auto createRegion(const FamProperty& property) -> FamRegion {
+    FamRegion createRegion(const FamProperty& property) {
         return createRegion(property.size, property.perm, property.name);
     }
 
@@ -91,22 +91,21 @@ public:  // methods
 
     void destroyRegion(const std::string& region_name);
 
-    auto ensureCreateRegion(fam::size_t region_size, fam::perm_t region_perm, const std::string& region_name)
-        -> FamRegion;
+    FamRegion ensureCreateRegion(fam::size_t region_size, fam::perm_t region_perm, const std::string& region_name);
 
-    auto stat(FamRegionDescriptor& region) -> FamProperty;
+    FamProperty stat(FamRegionDescriptor& region);
 
     //------------------------------------------------------------------------------------------------------------------
     // OBJECT
 
-    auto proxyObject(std::uint64_t region, std::uint64_t offset) -> FamObject;
+    FamObject proxyObject(std::uint64_t region, std::uint64_t offset);
 
-    auto lookupObject(const std::string& region_name, const std::string& object_name) -> FamObject;
+    FamObject lookupObject(const std::string& region_name, const std::string& object_name);
 
-    auto allocateObject(FamRegionDescriptor& region, fam::size_t object_size, fam::perm_t object_perm,
-                        const std::string& object_name = "") -> FamObject;
+    FamObject allocateObject(FamRegionDescriptor& region, fam::size_t object_size, fam::perm_t object_perm,
+                             const std::string& object_name = "");
 
-    auto allocateObject(FamRegionDescriptor& region, const FamProperty& property) -> FamObject {
+    FamObject allocateObject(FamRegionDescriptor& region, const FamProperty& property) {
         return allocateObject(region, property.size, property.perm, property.name);
     }
 
@@ -115,10 +114,10 @@ public:  // methods
     void deallocateObject(const std::string& region_name, const std::string& object_name);
 
     /// IMPORTANT: This method will deallocate any existing object with the same name
-    auto ensureAllocateObject(FamRegionDescriptor& region, fam::size_t object_size, fam::perm_t object_perm,
-                              const std::string& object_name) -> FamObject;
+    FamObject ensureAllocateObject(FamRegionDescriptor& region, fam::size_t object_size, fam::perm_t object_perm,
+                                   const std::string& object_name);
 
-    auto stat(FamObjectDescriptor& object) -> FamProperty;
+    FamProperty stat(FamObjectDescriptor& object);
 
     void put(FamObjectDescriptor& object, const void* buffer, fam::size_t offset, fam::size_t length);
 
@@ -128,7 +127,7 @@ public:  // methods
     // OBJECT - ATOMIC
 
     template <typename T>
-    auto fetch(FamObjectDescriptor& object, fam::size_t offset) -> T;
+    T fetch(FamObjectDescriptor& object, fam::size_t offset);
 
     template <typename T>
     void set(FamObjectDescriptor& object, fam::size_t offset, T value);
@@ -140,10 +139,10 @@ public:  // methods
     void subtract(FamObjectDescriptor& object, fam::size_t offset, T value);
 
     template <typename T>
-    auto swap(FamObjectDescriptor& object, fam::size_t offset, T value) -> T;
+    T swap(FamObjectDescriptor& object, fam::size_t offset, T value);
 
     template <typename T>
-    auto compareSwap(FamObjectDescriptor& object, fam::size_t offset, T old_value, T new_value) -> T;
+    T compareSwap(FamObjectDescriptor& object, fam::size_t offset, T old_value, T new_value);
 
     //------------------------------------------------------------------------------------------------------------------
 

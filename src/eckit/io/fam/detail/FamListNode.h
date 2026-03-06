@@ -36,15 +36,15 @@ struct FamListNode : public FamNode {
     FamDescriptor prev;
     fam::size_t length{0};
 
-    static auto getPrev(const FamObject& object) -> FamDescriptor {
+    static FamDescriptor getPrev(const FamObject& object) {
         return object.get<FamDescriptor>(offsetof(FamListNode, prev));
     }
 
-    static auto getPrevOffset(const FamObject& object) -> std::uint64_t {
+    static std::uint64_t getPrevOffset(const FamObject& object) {
         return object.get<std::uint64_t>(offsetof(FamListNode, prev.offset));
     }
 
-    static auto getLength(const FamObject& object) -> fam::size_t {
+    static fam::size_t getLength(const FamObject& object) {
         return object.get<fam::size_t>(offsetof(FamListNode, length));
     }
 

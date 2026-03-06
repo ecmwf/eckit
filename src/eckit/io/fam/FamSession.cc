@@ -14,6 +14,7 @@
  */
 
 #include "FamSession.h"
+
 #include <sys/types.h>  // mode_t
 
 #include <algorithm>
@@ -71,7 +72,7 @@ std::unique_ptr<openfam::fam> initializeFamSession(const std::string& name, cons
     return fam;
 }
 
-auto isValidName(std::string_view str) -> bool {
+bool isValidName(std::string_view str) {
     if (str.empty()) {
         return false;
     }

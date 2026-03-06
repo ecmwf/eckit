@@ -38,24 +38,24 @@ public:  // methods
 
     using FamName::FamName;
 
-    auto withObject(const std::string& object_name) -> FamObjectName&;
+    FamObjectName& withObject(const std::string& object_name);
 
     /// @brief Replaces [objectName] with UUID (e.g., 34bd2214-2a97-5a8a-802f-76ebefd84816)
-    auto withUUID() -> FamObjectName&;
+    FamObjectName& withUUID();
 
-    auto lookup() const -> FamObject;
+    FamObject lookup() const;
 
-    auto allocate(fam::size_t object_size, bool overwrite = false) const -> FamObject;
+    FamObject allocate(fam::size_t object_size, bool overwrite = false) const;
 
-    auto exists() const -> bool override;
+    bool exists() const override;
 
     // data handles
 
     [[nodiscard]]
-    auto dataHandle(bool overwrite = false) const -> DataHandle*;
+    DataHandle* dataHandle(bool overwrite = false) const;
 
     [[nodiscard]]
-    auto partHandle(const OffsetList& offsets, const LengthList& lengths) const -> DataHandle*;
+    DataHandle* partHandle(const OffsetList& offsets, const LengthList& lengths) const;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

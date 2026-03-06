@@ -135,7 +135,7 @@ public:  // methods
     std::string clusterName() const;
 
     /// Base name of the path
-    /// @param ext if false the extension is stripped
+    /// @param ext if false only the final extension is stripped
     /// @return the name part of the path
     LocalPathName baseName(bool ext = true) const;
 

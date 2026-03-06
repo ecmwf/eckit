@@ -18,7 +18,6 @@
 #include <memory>
 #include <string>
 
-#include "eckit/io/fam/FamConfig.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
 
 namespace eckit {
@@ -32,45 +31,46 @@ auto FamSessionManager::instance() -> FamSessionManager& {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamSessionManager::find(const FamConfig& config) -> FamSession {
-    for (auto& session : sessions_) {
-        if (session && session->config() == config) {
-            session->updateLastAccess();
-            return session;
-        }
-    }
-    return {};
-}
 
-auto FamSessionManager::getOrAdd(const FamConfig& config) -> FamSession {
+void FamSessionManager::remove(const std::string& name) {
     std::lock_guard lock(mutex_);
-
-    auto session = find(config);
-
-    if (!session) {
-        session = std::make_shared<FamSessionDetail>(config);
-        sessions_.emplace_back(session);
-    }
-
-    cleanup();
-
-    return session;
+    sessions_.remove_if([&name](const auto& session) { return session && session->name() == name; });
 }
-
-//----------------------------------------------------------------------------------------------------------------------
-
-void FamSessionManager::remove(const std::string& session_name) {
-    std::lock_guard lock(mutex_);
-    sessions_.remove_if([&session_name](const auto& entry) { return entry && entry->name() == session_name; });
-}
-
-//----------------------------------------------------------------------------------------------------------------------
 
 void FamSessionManager::cleanup() {
     // Assumes mutex is held by caller
     const auto expire_time = std::chrono::system_clock::now() - std::chrono::minutes(30);
     // Remove null sessions or last accessed more than 30 minutes ago
     sessions_.remove_if([expire_time](const auto& session) { return !session || session->lastAccess() < expire_time; });
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+auto FamSessionManager::find(const std::string& name) -> FamSession {
+    for (auto& session : sessions_) {
+        if (session && session->name() == name) {
+            return session;
+        }
+    }
+    return {};
+}
+
+auto FamSessionManager::getOrAdd(const std::string& name, const net::Endpoint& endpoint) -> FamSession {
+    std::lock_guard lock(mutex_);
+
+    auto session = find(name);
+
+    if (session) {
+        session->updateLastAccess();
+    }
+    else {
+        session = std::make_shared<FamSessionDetail>(name, endpoint);
+        sessions_.emplace_back(session);
+    }
+
+    cleanup();
+
+    return session;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

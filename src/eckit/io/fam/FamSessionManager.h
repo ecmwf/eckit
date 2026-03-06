@@ -24,12 +24,14 @@
 #include <mutex>
 #include <string>
 
-#include "eckit/io/fam/FamConfig.h"
-
 namespace eckit {
 
 class FamSessionDetail;
 class FamSessionManagerTestAccessor;
+
+namespace net {
+class Endpoint;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -48,10 +50,10 @@ public:  // methods
     static auto instance() -> FamSessionManager&;
 
     // Returns the session matching the given config
-    auto getOrAdd(const FamConfig& config) -> FamSession;
+    FamSession getOrAdd(const std::string& name, const net::Endpoint& endpoint);
 
     // Removes the session with the given name
-    void remove(const std::string& session_name);
+    void remove(const std::string& name);
 
 private:  // methods
 
@@ -59,7 +61,7 @@ private:  // methods
 
     ~FamSessionManager() = default;
 
-    auto find(const FamConfig& config) -> FamSession;
+    FamSession find(const std::string& name);
 
     // Removes null sessions or older than 30 minutes
     void cleanup();

@@ -25,16 +25,18 @@
 #include <memory>
 #include <string>
 
-#include "fam/fam.h"
+// #include "fam/fam.h"
 
-#include "eckit/io/fam/FamConfig.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
+#include "eckit/net/Endpoint.h"
+
+namespace openfam {
+class fam;
+}  // namespace openfam
 
 namespace eckit {
-
-using FamDescriptorStatus = openfam::Fam_Descriptor_Status;
 
 //----------------------------------------------------------------------------------------------------------------------
 // SESSION
@@ -46,8 +48,9 @@ public:  // types
 
 public:  // methods
 
-    explicit FamSessionDetail(const FamConfig& config);
+    FamSessionDetail(std::string name, const net::Endpoint& endpoint);
 
+    // rule of five
     FamSessionDetail(const FamSessionDetail&)            = delete;
     FamSessionDetail& operator=(const FamSessionDetail&) = delete;
     FamSessionDetail(FamSessionDetail&&)                 = delete;
@@ -55,11 +58,23 @@ public:  // methods
 
     ~FamSessionDetail();
 
-    auto name() const -> std::string { return name_; }
+    // Operations
 
-    auto config() -> FamConfig;
+    bool operator==(const FamSessionDetail& other) const {
+        return name_ == other.name_ && endpoint_ == other.endpoint_;
+    }
 
-    TimePoint lastAccess() const { return lastAccess_; }
+    bool operator!=(const FamSessionDetail& other) const { return !(*this == other); }
+
+    // Accessors
+
+    const std::string& name() const { return name_; }
+
+    const TimePoint& lastAccess() const { return lastAccess_; }
+
+    const net::Endpoint& endpoint() const { return endpoint_; }
+
+    // Modifiers
 
     void updateLastAccess(const TimePoint& when = std::chrono::system_clock::now()) { lastAccess_ = when; }
 
@@ -142,13 +157,18 @@ private:  // methods
 
     void print(std::ostream& out) const;
 
+    template <typename Func, typename... Args>
+    auto invokeFam(Func&& fn_ptr, Args&&... args);
+
 private:  // members
 
     std::string name_;
 
+    net::Endpoint endpoint_;
+
     TimePoint lastAccess_{std::chrono::system_clock::now()};
 
-    openfam::fam fam_;
+    std::unique_ptr<openfam::fam> fam_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -21,7 +21,6 @@
 
 #include <chrono>
 
-#include "eckit/io/fam/FamConfig.h"
 #include "eckit/io/fam/FamSessionManager.h"
 #include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/testing/Test.h"
@@ -33,41 +32,35 @@ namespace eckit {
 class FamSessionManagerTestAccessor {
 public:
 
-    static void set_last_access(FamSessionManager& manager, const FamConfig& config,
+    static void set_last_access(FamSessionManager& manager, const std::string& name,
                                 const std::chrono::system_clock::time_point& when) {
         std::lock_guard lock(manager.mutex_);
-        for (auto& entry : manager.sessions_) {
-            if (entry && entry->config() == config) {
-                entry->updateLastAccess(when);
-                return;
-            }
+        if (auto session = manager.find(name)) {
+            session->updateLastAccess(when);
         }
     }
 
-    static auto get_last_access(FamSessionManager& manager, const FamConfig& config)
-        -> std::chrono::system_clock::time_point {
+    static std::chrono::system_clock::time_point get_last_access(FamSessionManager& manager, const std::string& name) {
         std::lock_guard lock(manager.mutex_);
-        for (auto& entry : manager.sessions_) {
-            if (entry && entry->config() == config) {
-                return entry->lastAccess();
-            }
+        if (auto session = manager.find(name)) {
+            return session->lastAccess();
         }
-        return std::chrono::system_clock::time_point{};
+        return {};
     }
 
-    static void insert_null_entry(FamSessionManager& manager, const std::chrono::system_clock::time_point& when) {
+    static void insert_null_entry(FamSessionManager& manager) {
         std::lock_guard lock(manager.mutex_);
         manager.sessions_.push_back(nullptr);
     }
 
-    static auto size(FamSessionManager& manager) -> size_t {
+    static size_t size(FamSessionManager& manager) {
         std::lock_guard lock(manager.mutex_);
         return manager.sessions_.size();
     }
 
-    static auto find_session(FamSessionManager& manager, const FamConfig& config) -> FamSessionManager::FamSession {
+    static FamSessionManager::FamSession find_session(FamSessionManager& manager, const std::string& name) {
         std::lock_guard lock(manager.mutex_);
-        return manager.find(config);
+        return manager.find(name);
     }
 };
 
@@ -80,32 +73,30 @@ namespace eckit::test {
 CASE("FamSessionManager: cleanup and access time update") {
     auto& manager = FamSessionManager::instance();
 
-    FamConfig config{fam::test_endpoint, "ECKIT_TEST_FAM_SESSION_MANAGER"};
+    const std::string name{"ECKIT_TEST_FAM_SESSION_MANAGER"};
 
-    const auto session = manager.getOrAdd(config);
+    const auto session = manager.getOrAdd(name, fam::test_endpoint);
     EXPECT(session);
 
     const auto expired = std::chrono::system_clock::now() - std::chrono::minutes(31);
-    FamSessionManagerTestAccessor::set_last_access(manager, config, expired);
+    FamSessionManagerTestAccessor::set_last_access(manager, name, expired);
 
-    EXPECT(FamSessionManagerTestAccessor::find_session(manager, config));
+    EXPECT(FamSessionManagerTestAccessor::find_session(manager, name));
     EXPECT_EQUAL(FamSessionManagerTestAccessor::size(manager), 1);
 
-    FamSessionManagerTestAccessor::insert_null_entry(manager, expired);
+    FamSessionManagerTestAccessor::insert_null_entry(manager);
     EXPECT_EQUAL(FamSessionManagerTestAccessor::size(manager), 2);
 
-    const auto session2 = manager.getOrAdd(config);
+    const auto session2 = manager.getOrAdd(name, fam::test_endpoint);
     EXPECT(session2);
     EXPECT_EQUAL(FamSessionManagerTestAccessor::size(manager), 1);
 
-    const auto before = std::chrono::system_clock::now() - std::chrono::minutes(1);
-    FamSessionManagerTestAccessor::set_last_access(manager, config, before);
+    const auto atime = std::chrono::system_clock::now() - std::chrono::minutes(1);
+    FamSessionManagerTestAccessor::set_last_access(manager, name, atime);
 
-    const auto session3 = FamSessionManagerTestAccessor::find_session(manager, config);
+    const auto session3 = FamSessionManagerTestAccessor::find_session(manager, name);
     EXPECT(session3);
-
-    const auto after = FamSessionManagerTestAccessor::get_last_access(manager, config);
-    EXPECT(after > before);
+    EXPECT(session3->lastAccess() == atime);
 }
 
 }  // namespace eckit::test

@@ -35,7 +35,7 @@ namespace eckit {
 
 namespace {
 
-auto initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) -> FamObject {
+FamObject initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) {
     try {
         return region.allocateObject(object_size, object_name);
     }
@@ -101,12 +101,12 @@ auto FamList::cend() const -> const_iterator {
 //----------------------------------------------------------------------------------------------------------------------
 // accessors
 
-auto FamList::front() const -> Buffer {
+Buffer FamList::front() const {
     ASSERT(!empty());
     return std::move(*begin());
 }
 
-auto FamList::back() const -> Buffer {
+Buffer FamList::back() const {
     ASSERT(!empty());
     return std::move(*--end());
 }
@@ -177,7 +177,7 @@ auto FamList::size() const -> size_type {
     return size_.get<size_type>();
 }
 
-auto FamList::empty() const -> bool {
+bool FamList::empty() const {
     return (FamListNode::getNextOffset(head_) == tail_.offset());
 }
 

@@ -20,9 +20,10 @@
 #pragma once
 
 #include "FamNode.h"
-#include "eckit/io/fam/FamList.h"
 
 #include <memory>
+
+#include "eckit/io/fam/FamList.h"
 
 namespace eckit {
 
@@ -34,11 +35,11 @@ struct FamMapNode : public FamNode {
     //------------------------------------------------------------------------------------------------------------------
     // HELPERS (DO NOT add any virtual function here)
 
-    static auto getDescriptor(const FamObject& object) -> FamList::Descriptor {
+    static FamList::Descriptor getDescriptor(const FamObject& object) {
         return object.get<FamList::Descriptor>(offsetof(FamMapNode, desc));
     }
 
-    static auto getList(const FamRegion& region, const FamObject& object) -> std::unique_ptr<FamList> {
+    static std::unique_ptr<FamList> getList(const FamRegion& region, const FamObject& object) {
         return std::make_unique<FamList>(region, FamMapNode::getDescriptor(object));
     }
 };

@@ -27,7 +27,7 @@ namespace eckit {
 FamMapIterator::FamMapIterator(const FamRegion& region, const fam::index_t offset) :
     region_{region}, node_{region_.proxyObject(offset)} {}
 
-auto FamMapIterator::operator++() -> FamMapIterator& {
+FamMapIterator& FamMapIterator::operator++() {
     if (const auto next = FamMapNode::getNext(node_); next.region > 0) {
         node_.replaceWith(next);
         list_.reset();

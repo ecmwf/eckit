@@ -71,7 +71,7 @@ struct FamProperty {
 
     void print(std::ostream& out) const;
 
-    auto operator==(const FamProperty& other) const -> bool {
+    bool operator==(const FamProperty& other) const {
         return (size == other.size && perm == other.perm && name == other.name && uid == other.uid && gid == other.gid);
     }
 

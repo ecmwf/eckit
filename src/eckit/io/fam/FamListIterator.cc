@@ -26,7 +26,7 @@ namespace eckit {
 
 FamListIterator::FamListIterator(value_type object) : object_{std::move(object)} {}
 
-auto FamListIterator::operator++() -> FamListIterator& {
+FamListIterator& FamListIterator::operator++() {
     if (const auto next = FamListNode::getNext(object_); next.offset > 0) {
         invalid_ = true;
         object_.replaceWith(next);
@@ -34,7 +34,7 @@ auto FamListIterator::operator++() -> FamListIterator& {
     return *this;
 }
 
-auto FamListIterator::operator--() -> FamListIterator& {
+FamListIterator& FamListIterator::operator--() {
     if (const auto prev = FamListNode::getPrev(object_); prev.offset > 0) {
         invalid_ = true;
         object_.replaceWith(prev);
@@ -42,7 +42,7 @@ auto FamListIterator::operator--() -> FamListIterator& {
     return *this;
 }
 
-auto FamListIterator::operator==(const FamListIterator& other) const -> bool {
+bool FamListIterator::operator==(const FamListIterator& other) const {
     return other.object_ == object_;
 }
 

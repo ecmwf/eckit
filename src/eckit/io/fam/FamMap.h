@@ -87,42 +87,42 @@ public:  // methods
 
     // capacity
 
-    auto size() const -> size_type;
+    size_type size() const;
 
-    auto empty() const -> bool;
+    bool empty() const;
 
-    // auto maxSize() const noexcept -> size_type { return capacity; }
+    // size_type maxSize() const noexcept { return capacity; }
 
     // iterators
 
-    auto begin() const -> iterator;
+    iterator begin() const;
 
-    auto cbegin() const -> const_iterator;
+    const_iterator cbegin() const;
 
-    auto end() const -> iterator;
+    iterator end() const;
 
-    auto cend() const -> const_iterator;
+    const_iterator cend() const;
 
     // accessors
 
     // Returns reference to the element with specified key.
     // throws std::out_of_range if not found
-    auto at(const key_type& key) -> reference;
-    auto at(const key_type& key) const -> const_reference;
+    reference at(const key_type& key);
+    const_reference at(const key_type& key) const;
 
     // operator[] ?
 
     // size_type count( const Key& key ) const;
 
-    auto find(const key_type& key) -> iterator;
-    auto find(const key_type& key) const -> const_iterator;
+    iterator find(const key_type& key);
+    const_iterator find(const key_type& key) const;
 
-    auto contains(const key_type& key) const -> bool;
+    bool contains(const key_type& key) const;
 
     // modifiers
 
-    auto insert(const value_type& value) -> iterator;
-    auto insert(value_type&& value) -> iterator;
+    iterator insert(const value_type& value);
+    iterator insert(value_type&& value);
 
     size_type erase(const key_type& key);
 
@@ -130,7 +130,7 @@ public:  // methods
 
 private:  // methods
 
-    auto initSentinel(const std::string& name, size_type size) const -> FamObject;
+    FamObject initSentinel(const std::string& name, size_type size) const;
 
     void print(std::ostream& out) const;
 

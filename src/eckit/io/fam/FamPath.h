@@ -47,15 +47,15 @@ struct FamPath {
 
     bool operator==(const FamPath& other) const;
 
-    auto generateUUID() const -> std::string;
+    std::string generateUUID() const;
 
     void encode(Stream& stream) const;
 
-    auto asString() const -> std::string;
+    std::string asString() const;
 
-    friend auto operator<<(std::ostream& out, const FamPath& path) -> std::ostream&;
+    friend std::ostream& operator<<(std::ostream& out, const FamPath& path);
 
-    friend auto operator<<(Stream& stream, const FamPath& name) -> Stream&;
+    friend Stream& operator<<(Stream& stream, const FamPath& name);
 
     std::string regionName;
     std::string objectName;

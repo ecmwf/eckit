@@ -44,13 +44,13 @@ auto FamName::session() const -> FamSessionManager::Session {
     return FamSessionManager::instance().getOrAdd("EckitFAMSession", endpoint_);
 }
 
-auto FamName::asString() const -> std::string {
+std::string FamName::asString() const {
     std::ostringstream oss;
     oss << FamPath::scheme << "://" << endpoint_ << path_;
     return oss.str();
 }
 
-auto FamName::uri() const -> URI {
+URI FamName::uri() const {
     return {FamPath::scheme, endpoint_, path_.asString()};
 }
 
@@ -65,7 +65,7 @@ std::ostream& operator<<(std::ostream& out, const FamName& name) {
     return out;
 }
 
-auto operator<<(Stream& out, const FamName& name) -> Stream& {
+Stream& operator<<(Stream& out, const FamName& name) {
     out << name.endpoint_;
     out << name.path_;
     return out;

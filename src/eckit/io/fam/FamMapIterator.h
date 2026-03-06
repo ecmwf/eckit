@@ -43,15 +43,15 @@ public:  // methods
 
     FamMapIterator(const FamRegion& region, fam::index_t offset);
 
-    auto operator++() -> FamMapIterator&;
+    FamMapIterator& operator++();
 
-    auto operator==(const FamMapIterator& other) const -> bool { return other.node_ == node_; }
+    bool operator==(const FamMapIterator& other) const { return other.node_ == node_; }
 
-    auto operator!=(const FamMapIterator& other) const -> bool { return !operator==(other); }
+    bool operator!=(const FamMapIterator& other) const { return !operator==(other); }
 
-    auto operator->() -> pointer;
+    pointer operator->();
 
-    auto operator*() -> reference;
+    reference operator*();
 
 private:  // members
 
@@ -73,9 +73,9 @@ class FamMapConstIterator : public FamMapIterator {
 
 public:  // methods
 
-    auto operator->() -> pointer { return FamMapIterator::operator->(); }
+    pointer operator->() { return FamMapIterator::operator->(); }
 
-    auto operator*() -> reference { return FamMapIterator::operator*(); }
+    reference operator*() { return FamMapIterator::operator*(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

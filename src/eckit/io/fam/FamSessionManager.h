@@ -47,7 +47,7 @@ public:  // methods
     FamSessionManager(FamSessionManager&&)                 = delete;
     FamSessionManager& operator=(FamSessionManager&&)      = delete;
 
-    static auto instance() -> FamSessionManager&;
+    static FamSessionManager& instance();
 
     // Returns the session matching the given config
     Session getOrAdd(const std::string& name, const net::Endpoint& endpoint);

@@ -44,7 +44,7 @@ class FamRegionName;
 /// @brief Hash functor. Override this to make a specialized hasher
 template <typename T>
 struct FamHash {
-    auto operator()(const T& key) const noexcept -> std::size_t {
+    std::size_t operator()(const T& key) const noexcept {
         return std::hash<std::string>{}(key.asString());
         /// @note example for a 3-level key
         // const auto l1 = std::hash<std::string> {}(key.firstLevel);
@@ -102,7 +102,7 @@ public:  // methods
 
 private:  // methods
 
-    auto initSentinel(const std::string& name, fam::size_t size) const -> FamObject;
+    FamObject initSentinel(const std::string& name, fam::size_t size) const;
 
 private:  // members
 

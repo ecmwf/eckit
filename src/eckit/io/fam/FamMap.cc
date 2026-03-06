@@ -35,7 +35,7 @@ FamMap::FamMap(FamRegion region, const std::string& name) :
     table_{initSentinel(name + "-map-table", capacity * sizeof(FamMapNode))},
     count_{initSentinel(name + "-map-count", sizeof(size_type))} {}
 
-auto FamMap::initSentinel(const std::string& object_name, const size_type object_size) const -> FamObject {
+FamObject FamMap::initSentinel(const std::string& object_name, const size_type object_size) const {
     try {
         return region_.allocateObject(object_size, object_name);
     }
@@ -84,15 +84,15 @@ auto FamMap::find(const key_type& /* key */) const -> const_iterator {
     NOTIMP;
 }
 
-auto FamMap::contains(const key_type& /* key */) const -> bool {
+bool FamMap::contains(const key_type& /* key */) const {
     NOTIMP;
 }
 
-// auto FamMap::front() const -> Buffer {
+// Buffer FamMap::front() const {
 //     return std::move(*begin());
 // }
 //
-// auto FamMap::back() const -> Buffer {
+// Buffer FamMap::back() const {
 //     return std::move(*--end());
 // }
 
@@ -138,7 +138,7 @@ auto FamMap::size() const -> size_type {
     return count_.get<size_type>();
 }
 
-auto FamMap::empty() const -> bool {
+bool FamMap::empty() const {
     return size() == 0;
 }
 

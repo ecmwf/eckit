@@ -41,30 +41,30 @@ void FamRegion::destroy() const {
     session_->destroyRegion(*region_);
 }
 
-auto FamRegion::exists() const -> bool {
+bool FamRegion::exists() const {
     return (region_->get_desc_status() != openfam::Fam_Descriptor_Status::DESC_INVALID);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // PROPERTIES
 
-auto FamRegion::index() const -> fam::index_t {
+fam::index_t FamRegion::index() const {
     return region_->get_global_descriptor().regionId;
 }
 
-auto FamRegion::size() const -> fam::size_t {
+fam::size_t FamRegion::size() const {
     return region_->get_size();
 }
 
-auto FamRegion::permissions() const -> fam::perm_t {
+fam::perm_t FamRegion::permissions() const {
     return region_->get_perm();
 }
 
-auto FamRegion::name() const -> std::string {
+std::string FamRegion::name() const {
     return region_->get_name() ? region_->get_name() : "";
 }
 
-auto FamRegion::property() const -> FamProperty {
+FamProperty FamRegion::property() const {
     return {size(), permissions(), name()};
 }
 
@@ -79,16 +79,16 @@ void FamRegion::setObjectLevelPermissions() const {
 //----------------------------------------------------------------------------------------------------------------------
 // OBJECT factory methods
 
-auto FamRegion::proxyObject(const fam::index_t offset) const -> FamObject {
+FamObject FamRegion::proxyObject(const fam::index_t offset) const {
     return session_->proxyObject(index(), offset);
 }
 
-auto FamRegion::lookupObject(const std::string& object_name) const -> FamObject {
+FamObject FamRegion::lookupObject(const std::string& object_name) const {
     return session_->lookupObject(name(), object_name);
 }
 
-auto FamRegion::allocateObject(const fam::size_t object_size, const fam::perm_t object_perm,
-                               const std::string& object_name, const bool overwrite) const -> FamObject {
+FamObject FamRegion::allocateObject(const fam::size_t object_size, const fam::perm_t object_perm,
+                                    const std::string& object_name, const bool overwrite) const {
     if (overwrite) {
         return session_->ensureAllocateObject(*region_, object_size, object_perm, object_name);
     }

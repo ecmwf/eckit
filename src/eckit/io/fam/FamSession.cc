@@ -14,6 +14,7 @@
  */
 
 #include "FamSession.h"
+
 #include <sys/types.h>  // mode_t
 
 #include <algorithm>
@@ -71,7 +72,7 @@ std::unique_ptr<openfam::fam> initializeFamSession(const std::string& name, cons
     return fam;
 }
 
-auto isValidName(std::string_view str) -> bool {
+bool isValidName(std::string_view str) {
     if (str.empty()) {
         return false;
     }
@@ -156,7 +157,7 @@ auto FamSession::invokeFam(Func&& fn_ptr, Args&&... args) {
 //----------------------------------------------------------------------------------------------------------------------
 // REGION
 
-auto FamSession::lookupRegion(const std::string& region_name) -> FamRegion {
+FamRegion FamSession::lookupRegion(const std::string& region_name) {
     ASSERT(isValidName(region_name));
 
     auto* region = invokeFam(&openfam::fam::fam_lookup_region, region_name.c_str());
@@ -164,8 +165,8 @@ auto FamSession::lookupRegion(const std::string& region_name) -> FamRegion {
     return {*this, region};
 }
 
-auto FamSession::createRegion(const fam::size_t region_size, const fam::perm_t region_perm,
-                              const std::string& region_name) -> FamRegion {
+FamRegion FamSession::createRegion(const fam::size_t region_size, const fam::perm_t region_perm,
+                                   const std::string& region_name) {
     ASSERT(region_size > 0);
     ASSERT(isValidName(region_name));
 
@@ -188,8 +189,8 @@ void FamSession::destroyRegion(const std::string& region_name) {
     lookupRegion(region_name).destroy();
 }
 
-auto FamSession::ensureCreateRegion(const fam::size_t region_size, const fam::perm_t region_perm,
-                                    const std::string& region_name) -> FamRegion {
+FamRegion FamSession::ensureCreateRegion(const fam::size_t region_size, const fam::perm_t region_perm,
+                                         const std::string& region_name) {
     try {
         return createRegion(region_size, region_perm, region_name);
     }
@@ -199,7 +200,7 @@ auto FamSession::ensureCreateRegion(const fam::size_t region_size, const fam::pe
     }
 }
 
-auto FamSession::stat(FamRegionDescriptor& region) -> FamProperty {
+FamProperty FamSession::stat(FamRegionDescriptor& region) {
     Fam_Stat info;
 
     auto fn_ptr = static_cast<void (openfam::fam::*)(FamRegionDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
@@ -211,11 +212,11 @@ auto FamSession::stat(FamRegionDescriptor& region) -> FamProperty {
 //----------------------------------------------------------------------------------------------------------------------
 //  OBJECT
 
-auto FamSession::proxyObject(const std::uint64_t region, const std::uint64_t offset) -> FamObject {
+FamObject FamSession::proxyObject(const std::uint64_t region, const std::uint64_t offset) {
     return {*this, region, offset};
 }
 
-auto FamSession::lookupObject(const std::string& region_name, const std::string& object_name) -> FamObject {
+FamObject FamSession::lookupObject(const std::string& region_name, const std::string& object_name) {
     ASSERT(isValidName(region_name));
     ASSERT(isValidName(object_name));
 
@@ -224,8 +225,8 @@ auto FamSession::lookupObject(const std::string& region_name, const std::string&
     return {*this, object};
 }
 
-auto FamSession::allocateObject(FamRegionDescriptor& region, const fam::size_t object_size,
-                                const fam::perm_t object_perm, const std::string& object_name) -> FamObject {
+FamObject FamSession::allocateObject(FamRegionDescriptor& region, const fam::size_t object_size,
+                                     const fam::perm_t object_perm, const std::string& object_name) {
     ASSERT(object_size > 0);
 
     auto allocate =
@@ -245,8 +246,8 @@ void FamSession::deallocateObject(const std::string& region_name, const std::str
     lookupObject(region_name, object_name).deallocate();
 }
 
-auto FamSession::ensureAllocateObject(FamRegionDescriptor& region, const fam::size_t object_size,
-                                      const fam::perm_t object_perm, const std::string& object_name) -> FamObject {
+FamObject FamSession::ensureAllocateObject(FamRegionDescriptor& region, const fam::size_t object_size,
+                                           const fam::perm_t object_perm, const std::string& object_name) {
     try {
         return allocateObject(region, object_size, object_perm, object_name);
     }
@@ -256,7 +257,7 @@ auto FamSession::ensureAllocateObject(FamRegionDescriptor& region, const fam::si
     }
 }
 
-auto FamSession::stat(FamObjectDescriptor& object) -> FamProperty {
+FamProperty FamSession::stat(FamObjectDescriptor& object) {
     Fam_Stat info;
 
     auto fn_ptr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
@@ -285,42 +286,42 @@ void FamSession::get(FamObjectDescriptor& object, void* buffer, const fam::size_
 // OBJECT - ATOMIC
 
 template <typename T>
-auto FamSession::fetch(FamObjectDescriptor& /* object */, const fam::size_t /* offset */) -> T {
+T FamSession::fetch(FamObjectDescriptor& /* object */, const fam::size_t /* offset */) {
     throw SeriousBug("This type is not specialized!", Here());
 }
 
 template <>
-auto FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) -> int32_t {
+int32_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
     return invokeFam(&openfam::fam::fam_fetch_int32, &object, offset);
 }
 
 template <>
-auto FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) -> int64_t {
+int64_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
     return invokeFam(&openfam::fam::fam_fetch_int64, &object, offset);
 }
 
 template <>
-auto FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) -> openfam::int128_t {
+openfam::int128_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
     return invokeFam(&openfam::fam::fam_fetch_int128, &object, offset);
 }
 
 template <>
-auto FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) -> uint32_t {
+uint32_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
     return invokeFam(&openfam::fam::fam_fetch_uint32, &object, offset);
 }
 
 template <>
-auto FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) -> uint64_t {
+uint64_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
     return invokeFam(&openfam::fam::fam_fetch_uint64, &object, offset);
 }
 
 template <>
-auto FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) -> float {
+float FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
     return invokeFam(&openfam::fam::fam_fetch_float, &object, offset);
 }
 
 template <>
-auto FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) -> double {
+double FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
     return invokeFam(&openfam::fam::fam_fetch_double, &object, offset);
 }
 
@@ -343,14 +344,13 @@ void FamSession::subtract(FamObjectDescriptor& object, const fam::size_t offset,
 }
 
 template <typename T>
-auto FamSession::swap(FamObjectDescriptor& object, const fam::size_t offset, const T value) -> T {  // NOLINT
+T FamSession::swap(FamObjectDescriptor& object, const fam::size_t offset, const T value) {  // NOLINT
     auto fptr = static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_swap);
     return invokeFam(fptr, &object, offset, value);
 }
 
 template <typename T>
-auto FamSession::compareSwap(FamObjectDescriptor& object, const fam::size_t offset, const T old_value,
-                             const T new_value) -> T {
+T FamSession::compareSwap(FamObjectDescriptor& object, const fam::size_t offset, const T old_value, const T new_value) {
     auto fptr =
         static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T, T)>(&openfam::fam::fam_compare_swap);
     return invokeFam(fptr, &object, offset, old_value, new_value);
@@ -381,19 +381,17 @@ template void FamSession::subtract(FamObjectDescriptor&, const fam::size_t, cons
 template void FamSession::subtract(FamObjectDescriptor&, const fam::size_t, const float);
 template void FamSession::subtract(FamObjectDescriptor&, const fam::size_t, const double);
 
-template auto FamSession::swap(FamObjectDescriptor&, const fam::size_t, const int32_t) -> int32_t;
-template auto FamSession::swap(FamObjectDescriptor&, const fam::size_t, const int64_t) -> int64_t;
-template auto FamSession::swap(FamObjectDescriptor&, const fam::size_t, const uint32_t) -> uint32_t;
-template auto FamSession::swap(FamObjectDescriptor&, const fam::size_t, const uint64_t) -> uint64_t;
-template auto FamSession::swap(FamObjectDescriptor&, const fam::size_t, const float) -> float;
-template auto FamSession::swap(FamObjectDescriptor&, const fam::size_t, const double) -> double;
+template int32_t FamSession::swap(FamObjectDescriptor&, const fam::size_t, const int32_t);
+template int64_t FamSession::swap(FamObjectDescriptor&, const fam::size_t, const int64_t);
+template uint32_t FamSession::swap(FamObjectDescriptor&, const fam::size_t, const uint32_t);
+template uint64_t FamSession::swap(FamObjectDescriptor&, const fam::size_t, const uint64_t);
+template float FamSession::swap(FamObjectDescriptor&, const fam::size_t, const float);
+template double FamSession::swap(FamObjectDescriptor&, const fam::size_t, const double);
 
-template auto FamSession::compareSwap(FamObjectDescriptor&, const fam::size_t, const int32_t, const int32_t) -> int32_t;
-template auto FamSession::compareSwap(FamObjectDescriptor&, const fam::size_t, const int64_t, const int64_t) -> int64_t;
-template auto FamSession::compareSwap(FamObjectDescriptor&, const fam::size_t, const uint32_t, const uint32_t)
-    -> uint32_t;
-template auto FamSession::compareSwap(FamObjectDescriptor&, const fam::size_t, const uint64_t, const uint64_t)
-    -> uint64_t;
+template int32_t FamSession::compareSwap(FamObjectDescriptor&, const fam::size_t, const int32_t, const int32_t);
+template int64_t FamSession::compareSwap(FamObjectDescriptor&, const fam::size_t, const int64_t, const int64_t);
+template uint32_t FamSession::compareSwap(FamObjectDescriptor&, const fam::size_t, const uint32_t, const uint32_t);
+template uint64_t FamSession::compareSwap(FamObjectDescriptor&, const fam::size_t, const uint64_t, const uint64_t);
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -62,23 +62,23 @@ public:  // methods
 
     void deallocate() const;
 
-    auto exists() const -> bool;
+    bool exists() const;
 
     // properties
 
-    auto regionId() const -> fam::index_t;
+    fam::index_t regionId() const;
 
-    auto offset() const -> fam::index_t;
+    fam::index_t offset() const;
 
-    auto descriptor() const -> FamDescriptor { return {regionId(), offset()}; }
+    FamDescriptor descriptor() const { return {regionId(), offset()}; }
 
-    auto size() const -> fam::size_t;
+    fam::size_t size() const;
 
-    auto permissions() const -> fam::perm_t;
+    fam::perm_t permissions() const;
 
-    auto name() const -> std::string;
+    std::string name() const;
 
-    auto property() const -> FamProperty;
+    FamProperty property() const;
 
     // data access
 
@@ -87,7 +87,7 @@ public:  // methods
     void get(void* buffer, fam::size_t offset, fam::size_t length) const;
 
     template <typename T>
-    auto get(const fam::size_t offset = 0) const -> T {
+    T get(const fam::size_t offset = 0) const {
         auto buffer = T{0};
         get(&buffer, offset, sizeof(T));
         return buffer;
@@ -98,7 +98,7 @@ public:  // methods
         put(&buffer, offset, sizeof(T));
     }
 
-    auto data(fam::size_t offset = 0) const -> value_type;
+    value_type data(fam::size_t offset = 0) const;
 
     // atomic operations
 
@@ -106,7 +106,7 @@ public:  // methods
     void set(fam::size_t offset, T value) const;
 
     template <typename T>
-    auto fetch(fam::size_t offset) const -> T;
+    T fetch(fam::size_t offset) const;
 
     template <typename T>
     void add(fam::size_t offset, T value) const;
@@ -115,10 +115,10 @@ public:  // methods
     void subtract(fam::size_t offset, T value) const;
 
     template <typename T>
-    auto swap(fam::size_t offset, T value) const -> T;
+    T swap(fam::size_t offset, T value) const;
 
     template <typename T>
-    auto compareSwap(fam::size_t offset, T old_value, T new_value) const -> T;
+    T compareSwap(fam::size_t offset, T old_value, T new_value) const;
 
 private:  // methods
 

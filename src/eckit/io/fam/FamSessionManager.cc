@@ -24,7 +24,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamSessionManager::instance() -> FamSessionManager& {
+FamSessionManager& FamSessionManager::instance() {
     static FamSessionManager instance;
     return instance;
 }

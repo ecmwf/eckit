@@ -61,34 +61,34 @@ void FamObject::deallocate() const {
     session_->deallocateObject(*object_);
 }
 
-auto FamObject::exists() const -> bool {
+bool FamObject::exists() const {
     return (object_->get_desc_status() != openfam::Fam_Descriptor_Status::DESC_INVALID);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // PROPERTIES
 
-auto FamObject::regionId() const -> fam::index_t {
+fam::index_t FamObject::regionId() const {
     return object_->get_global_descriptor().regionId;
 }
 
-auto FamObject::offset() const -> fam::index_t {
+fam::index_t FamObject::offset() const {
     return object_->get_global_descriptor().offset;
 }
 
-auto FamObject::size() const -> fam::size_t {
+fam::size_t FamObject::size() const {
     return object_->get_size();
 }
 
-auto FamObject::permissions() const -> fam::perm_t {
+fam::perm_t FamObject::permissions() const {
     return object_->get_perm();
 }
 
-auto FamObject::name() const -> std::string {
+std::string FamObject::name() const {
     return object_->get_name() ? object_->get_name() : "";
 }
 
-auto FamObject::property() const -> FamProperty {
+FamProperty FamObject::property() const {
     return {size(), permissions(), name(), object_->get_uid(), object_->get_gid()};
 }
 
@@ -113,7 +113,7 @@ auto FamObject::data(const fam::size_t offset) const -> value_type {
 // ATOMIC
 
 template <typename T>
-auto FamObject::fetch(const fam::size_t offset) const -> T {
+T FamObject::fetch(const fam::size_t offset) const {
     return session_->fetch<T>(*object_, offset);
 }
 
@@ -133,12 +133,12 @@ void FamObject::subtract(const fam::size_t offset, const T value) const {
 }
 
 template <typename T>
-auto FamObject::swap(const fam::size_t offset, const T value) const -> T {  // NOLINT
+T FamObject::swap(const fam::size_t offset, const T value) const {  // NOLINT
     return session_->swap<T>(*object_, offset, value);
 }
 
 template <typename T>
-auto FamObject::compareSwap(const fam::size_t offset, const T old_value, const T new_value) const -> T {
+T FamObject::compareSwap(const fam::size_t offset, const T old_value, const T new_value) const {
     return session_->compareSwap<T>(*object_, offset, old_value, new_value);
 }
 
@@ -156,13 +156,13 @@ std::ostream& operator<<(std::ostream& out, const FamObject& object) {
 //----------------------------------------------------------------------------------------------------------------------
 // forward instantiations
 
-template auto FamObject::fetch(const fam::size_t) const -> int32_t;
-template auto FamObject::fetch(const fam::size_t) const -> int64_t;
-template auto FamObject::fetch(const fam::size_t) const -> openfam::int128_t;
-template auto FamObject::fetch(const fam::size_t) const -> uint32_t;
-template auto FamObject::fetch(const fam::size_t) const -> uint64_t;
-template auto FamObject::fetch(const fam::size_t) const -> float;
-template auto FamObject::fetch(const fam::size_t) const -> double;
+template int32_t FamObject::fetch(const fam::size_t) const;
+template int64_t FamObject::fetch(const fam::size_t) const;
+template openfam::int128_t FamObject::fetch(const fam::size_t) const;
+template uint32_t FamObject::fetch(const fam::size_t) const;
+template uint64_t FamObject::fetch(const fam::size_t) const;
+template float FamObject::fetch(const fam::size_t) const;
+template double FamObject::fetch(const fam::size_t) const;
 
 template void FamObject::set(const fam::size_t, const int32_t) const;
 template void FamObject::set(const fam::size_t, const int64_t) const;
@@ -186,17 +186,17 @@ template void FamObject::subtract(const fam::size_t, const uint64_t) const;
 template void FamObject::subtract(const fam::size_t, const float) const;
 template void FamObject::subtract(const fam::size_t, const double) const;
 
-template auto FamObject::swap(const fam::size_t, const int32_t) const -> int32_t;
-template auto FamObject::swap(const fam::size_t, const int64_t) const -> int64_t;
-template auto FamObject::swap(const fam::size_t, const uint32_t) const -> uint32_t;
-template auto FamObject::swap(const fam::size_t, const uint64_t) const -> uint64_t;
-template auto FamObject::swap(const fam::size_t, const float) const -> float;
-template auto FamObject::swap(const fam::size_t, const double) const -> double;
+template int32_t FamObject::swap(const fam::size_t, const int32_t) const;
+template int64_t FamObject::swap(const fam::size_t, const int64_t) const;
+template uint32_t FamObject::swap(const fam::size_t, const uint32_t) const;
+template uint64_t FamObject::swap(const fam::size_t, const uint64_t) const;
+template float FamObject::swap(const fam::size_t, const float) const;
+template double FamObject::swap(const fam::size_t, const double) const;
 
-template auto FamObject::compareSwap(const fam::size_t, const int32_t, const int32_t) const -> int32_t;
-template auto FamObject::compareSwap(const fam::size_t, const int64_t, const int64_t) const -> int64_t;
-template auto FamObject::compareSwap(const fam::size_t, const uint32_t, const uint32_t) const -> uint32_t;
-template auto FamObject::compareSwap(const fam::size_t, const uint64_t, const uint64_t) const -> uint64_t;
+template int32_t FamObject::compareSwap(const fam::size_t, const int32_t, const int32_t) const;
+template int64_t FamObject::compareSwap(const fam::size_t, const int64_t, const int64_t) const;
+template uint32_t FamObject::compareSwap(const fam::size_t, const uint32_t, const uint32_t) const;
+template uint64_t FamObject::compareSwap(const fam::size_t, const uint64_t, const uint64_t) const;
 
 //----------------------------------------------------------------------------------------------------------------------
 

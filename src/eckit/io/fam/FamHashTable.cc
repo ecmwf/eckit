@@ -33,7 +33,7 @@ FamHashTable::FamHashTable(const FamRegionName& region_name, const std::string& 
     begin_{initSentinel(table_name + "-hash-begin", sizeof(FamDescriptor))},
     count_{initSentinel(table_name + "-hash-count", sizeof(size_type))} {}
 
-auto FamHashTable::initSentinel(const std::string& name, const fam::size_t size) const -> FamObject {
+FamObject FamHashTable::initSentinel(const std::string& name, const fam::size_t size) const {
     try {
         return region_.allocateObject(size, name);
     }

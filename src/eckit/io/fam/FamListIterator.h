@@ -43,18 +43,18 @@ public:  // methods
     FamListIterator(value_type object);
 
     // iterate forwards
-    auto operator++() -> FamListIterator&;
+    FamListIterator& operator++();
 
     // iterate backwards
-    auto operator--() -> FamListIterator&;
+    FamListIterator& operator--();
 
-    auto operator==(const FamListIterator& other) const -> bool;
+    bool operator==(const FamListIterator& other) const;
 
-    auto operator!=(const FamListIterator& other) const -> bool { return !operator==(other); }
+    bool operator!=(const FamListIterator& other) const { return !operator==(other); }
 
-    auto operator->() -> pointer;
+    pointer operator->();
 
-    auto operator*() -> reference;
+    reference operator*();
 
 private:  // members
 
@@ -76,9 +76,9 @@ public:  // methods
 
     using FamListIterator::FamListIterator;
 
-    auto operator->() -> pointer { return FamListIterator::operator->(); }
+    pointer operator->() { return FamListIterator::operator->(); }
 
-    auto operator*() -> reference { return FamListIterator::operator*(); }
+    reference operator*() { return FamListIterator::operator*(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

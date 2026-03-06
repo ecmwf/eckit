@@ -65,30 +65,30 @@ public:  // methods
     // FamList& operator=(FamList&&)      = delete;
     // ~FamList() = default;
 
-    auto descriptor() const -> Descriptor;
+    Descriptor descriptor() const;
 
     // capacity
 
-    auto size() const -> size_type;
+    size_type size() const;
 
     [[nodiscard]]
-    auto empty() const -> bool;
+    bool empty() const;
 
     // iterators
 
-    auto begin() const -> iterator;
+    iterator begin() const;
 
-    auto cbegin() const -> const_iterator;
+    const_iterator cbegin() const;
 
-    auto end() const -> iterator;
+    iterator end() const;
 
-    auto cend() const -> const_iterator;
+    const_iterator cend() const;
 
     // accessors
 
-    auto front() const -> Buffer;
+    Buffer front() const;
 
-    auto back() const -> Buffer;
+    Buffer back() const;
 
     // modifiers
 
@@ -105,6 +105,9 @@ public:  // methods
     void popFront();
 
     void popBack();
+
+    // erase by iterator
+    iterator erase(const iterator& pos);
 
 private:  // methods
 

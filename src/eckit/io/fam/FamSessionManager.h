@@ -27,7 +27,6 @@
 namespace eckit {
 
 class FamSessionDetail;
-class FamSessionManagerTestAccessor;
 
 namespace net {
 class Endpoint;
@@ -38,6 +37,7 @@ class Endpoint;
 class FamSessionManager {
 public:  // types
 
+    class TestAccessor;
     using FamSession = std::shared_ptr<FamSessionDetail>;
 
 public:  // methods
@@ -68,7 +68,7 @@ private:  // methods
 
 private:  // members
 
-    friend class FamSessionManagerTestAccessor;
+    friend class TestAccessor;
 
     mutable std::recursive_mutex mutex_;
 

@@ -29,7 +29,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class FamSessionManagerTestAccessor {
+class FamSessionManager::TestAccessor {
 public:
 
     static void set_last_access(FamSessionManager& manager, const std::string& name,
@@ -79,22 +79,22 @@ CASE("FamSessionManager: cleanup and access time update") {
     EXPECT(session);
 
     const auto expired = std::chrono::system_clock::now() - std::chrono::minutes(31);
-    FamSessionManagerTestAccessor::set_last_access(manager, name, expired);
+    FamSessionManager::TestAccessor::set_last_access(manager, name, expired);
 
-    EXPECT(FamSessionManagerTestAccessor::find_session(manager, name));
-    EXPECT_EQUAL(FamSessionManagerTestAccessor::size(manager), 1);
+    EXPECT(FamSessionManager::TestAccessor::find_session(manager, name));
+    EXPECT_EQUAL(FamSessionManager::TestAccessor::size(manager), 1);
 
-    FamSessionManagerTestAccessor::insert_null_entry(manager);
-    EXPECT_EQUAL(FamSessionManagerTestAccessor::size(manager), 2);
+    FamSessionManager::TestAccessor::insert_null_entry(manager);
+    EXPECT_EQUAL(FamSessionManager::TestAccessor::size(manager), 2);
 
     const auto session2 = manager.getOrAdd(name, fam::test_endpoint);
     EXPECT(session2);
-    EXPECT_EQUAL(FamSessionManagerTestAccessor::size(manager), 1);
+    EXPECT_EQUAL(FamSessionManager::TestAccessor::size(manager), 1);
 
     const auto atime = std::chrono::system_clock::now() - std::chrono::minutes(1);
-    FamSessionManagerTestAccessor::set_last_access(manager, name, atime);
+    FamSessionManager::TestAccessor::set_last_access(manager, name, atime);
 
-    const auto session3 = FamSessionManagerTestAccessor::find_session(manager, name);
+    const auto session3 = FamSessionManager::TestAccessor::find_session(manager, name);
     EXPECT(session3);
     EXPECT(session3->lastAccess() == atime);
 }

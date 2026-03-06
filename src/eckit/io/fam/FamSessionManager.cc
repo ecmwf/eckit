@@ -46,7 +46,7 @@ void FamSessionManager::cleanup() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamSessionManager::find(const std::string& name) -> FamSession {
+auto FamSessionManager::find(const std::string& name) -> Session {
     for (auto& session : sessions_) {
         if (session && session->name() == name) {
             return session;
@@ -55,7 +55,7 @@ auto FamSessionManager::find(const std::string& name) -> FamSession {
     return {};
 }
 
-auto FamSessionManager::getOrAdd(const std::string& name, const net::Endpoint& endpoint) -> FamSession {
+auto FamSessionManager::getOrAdd(const std::string& name, const net::Endpoint& endpoint) -> Session {
     std::lock_guard lock(mutex_);
 
     auto session = find(name);

@@ -58,7 +58,7 @@ public:
         return manager.sessions_.size();
     }
 
-    static FamSessionManager::FamSession find_session(FamSessionManager& manager, const std::string& name) {
+    static FamSessionManager::Session find_session(FamSessionManager& manager, const std::string& name) {
         std::lock_guard lock(manager.mutex_);
         return manager.find(name);
     }

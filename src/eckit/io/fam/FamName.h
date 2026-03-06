@@ -63,7 +63,7 @@ public:  // methods
 
 protected:  // methods
 
-    auto session() const -> FamSessionManager::FamSession;
+    auto session() const -> FamSessionManager::Session;
 
     auto path() -> FamPath& { return path_; }
 

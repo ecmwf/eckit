@@ -38,7 +38,7 @@ class FamSessionManager {
 public:  // types
 
     class TestAccessor;
-    using FamSession = std::shared_ptr<FamSessionDetail>;
+    using Session = std::shared_ptr<FamSessionDetail>;
 
 public:  // methods
 
@@ -50,7 +50,7 @@ public:  // methods
     static auto instance() -> FamSessionManager&;
 
     // Returns the session matching the given config
-    FamSession getOrAdd(const std::string& name, const net::Endpoint& endpoint);
+    Session getOrAdd(const std::string& name, const net::Endpoint& endpoint);
 
     // Removes the session with the given name
     void remove(const std::string& name);
@@ -61,7 +61,7 @@ private:  // methods
 
     ~FamSessionManager() = default;
 
-    FamSession find(const std::string& name);
+    Session find(const std::string& name);
 
     // Removes null sessions or older than 30 minutes
     void cleanup();
@@ -72,7 +72,7 @@ private:  // members
 
     mutable std::recursive_mutex mutex_;
 
-    std::list<FamSession> sessions_;
+    std::list<Session> sessions_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

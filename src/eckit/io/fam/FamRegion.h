@@ -34,7 +34,7 @@ class FamRegion {
 
 public:  // methods
 
-    FamRegion(FamSessionDetail& session, FamRegionDescriptor* region);
+    FamRegion(FamSession& session, FamRegionDescriptor* region);
 
     void destroy() const;
 
@@ -80,7 +80,7 @@ private:  // methods
 
 private:  // members
 
-    std::shared_ptr<FamSessionDetail> session_;
+    std::shared_ptr<FamSession> session_;
     std::shared_ptr<FamRegionDescriptor> region_;
 };
 

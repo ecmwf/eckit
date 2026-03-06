@@ -24,13 +24,13 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
-#include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/io/fam/FamSession.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamRegion::FamRegion(FamSessionDetail& session, FamRegionDescriptor* region) :
+FamRegion::FamRegion(FamSession& session, FamRegionDescriptor* region) :
     session_{session.shared_from_this()}, region_{region} {
     ASSERT(region_);
 }

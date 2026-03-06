@@ -24,7 +24,7 @@
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamHandle.h"
 #include "eckit/io/fam/FamProperty.h"
-#include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/io/fam/FamSession.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {

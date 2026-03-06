@@ -17,7 +17,7 @@
 
 #include "detail/FamMapNode.h"
 
-// #include "detail/FamSessionDetail.h"
+// #include "detail/FamSession.h"
 // #include "eckit/exception/Exceptions.h"
 
 namespace eckit {

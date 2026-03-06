@@ -25,19 +25,19 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamProperty.h"
-#include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/io/fam/FamSession.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamObject::FamObject(FamSessionDetail& session, FamObjectDescriptor* object) :
+FamObject::FamObject(FamSession& session, FamObjectDescriptor* object) :
     session_{session.shared_from_this()}, object_{object} {
     ASSERT(session_);
     ASSERT(object_);
 }
 
-FamObject::FamObject(FamSessionDetail& session, const std::uint64_t region, const std::uint64_t offset) :
+FamObject::FamObject(FamSession& session, const std::uint64_t region, const std::uint64_t offset) :
     session_{session.shared_from_this()},
     object_{std::make_shared<FamObjectDescriptor>(Fam_Global_Descriptor{region, offset})} {
     ASSERT(session_);

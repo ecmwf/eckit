@@ -26,7 +26,7 @@
 
 namespace eckit {
 
-class FamSessionDetail;
+class FamSession;
 
 namespace net {
 class Endpoint;
@@ -38,7 +38,7 @@ class FamSessionManager {
 public:  // types
 
     class TestAccessor;
-    using Session = std::shared_ptr<FamSessionDetail>;
+    using Session = std::shared_ptr<FamSession>;
 
 public:  // methods
 

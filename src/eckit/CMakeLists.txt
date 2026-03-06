@@ -270,7 +270,6 @@ list(APPEND eckit_message_srcs
 
 if(HAVE_OPENFAM)
 list(APPEND eckit_io_srcs
-io/fam/detail/FamSessionDetail.cc
 io/fam/FamHandle.cc
 io/fam/FamHandle.h
 io/fam/FamList.cc
@@ -295,6 +294,8 @@ io/fam/FamRegion.cc
 io/fam/FamRegion.h
 io/fam/FamRegionName.cc
 io/fam/FamRegionName.h
+io/fam/FamSession.cc
+io/fam/FamSession.h
 io/fam/FamSessionManager.cc
 io/fam/FamSessionManager.h
 io/fam/FamURIManager.cc

@@ -29,7 +29,7 @@
 namespace eckit {
 
 class Buffer;
-class FamSessionDetail;
+class FamSession;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -40,9 +40,9 @@ public:  // types
 
 public:  // methods
 
-    FamObject(FamSessionDetail& session, FamObjectDescriptor* object);
+    FamObject(FamSession& session, FamObjectDescriptor* object);
 
-    FamObject(FamSessionDetail& session, std::uint64_t region, std::uint64_t offset);
+    FamObject(FamSession& session, std::uint64_t region, std::uint64_t offset);
 
     ~FamObject() = default;
 
@@ -128,7 +128,7 @@ private:  // methods
 
 private:  // members
 
-    std::shared_ptr<FamSessionDetail> session_;
+    std::shared_ptr<FamSession> session_;
     std::shared_ptr<FamObjectDescriptor> object_;
 };
 

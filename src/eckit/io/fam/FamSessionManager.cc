@@ -18,7 +18,7 @@
 #include <memory>
 #include <string>
 
-#include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/io/fam/FamSession.h"
 
 namespace eckit {
 
@@ -64,7 +64,7 @@ auto FamSessionManager::getOrAdd(const std::string& name, const net::Endpoint& e
         session->updateLastAccess();
     }
     else {
-        session = std::make_shared<FamSessionDetail>(name, endpoint);
+        session = std::make_shared<FamSession>(name, endpoint);
         sessions_.emplace_back(session);
     }
 

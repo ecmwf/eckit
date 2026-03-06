@@ -24,7 +24,7 @@
 #include "eckit/io/fam/FamPath.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
-#include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/io/fam/FamSession.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {

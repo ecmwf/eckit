@@ -21,8 +21,8 @@
 
 #include <chrono>
 
+#include "eckit/io/fam/FamSession.h"
 #include "eckit/io/fam/FamSessionManager.h"
-#include "eckit/io/fam/detail/FamSessionDetail.h"
 #include "eckit/testing/Test.h"
 
 namespace eckit {

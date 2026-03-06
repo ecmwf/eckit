@@ -13,7 +13,7 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   FamSessionDetail.h
+/// @file   FamSession.h
 /// @author Metin Cakircali
 /// @date   Mar 2024
 
@@ -39,30 +39,28 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 // SESSION
 
-class FamSessionDetail : public std::enable_shared_from_this<FamSessionDetail> {
+class FamSession : public std::enable_shared_from_this<FamSession> {
 public:  // types
 
     using TimePoint = std::chrono::system_clock::time_point;
 
 public:  // methods
 
-    FamSessionDetail(std::string name, const net::Endpoint& endpoint);
+    FamSession(std::string name, const net::Endpoint& endpoint);
 
     // rule of five
-    FamSessionDetail(const FamSessionDetail&)            = delete;
-    FamSessionDetail& operator=(const FamSessionDetail&) = delete;
-    FamSessionDetail(FamSessionDetail&&)                 = delete;
-    FamSessionDetail& operator=(FamSessionDetail&&)      = delete;
+    FamSession(const FamSession&)            = delete;
+    FamSession& operator=(const FamSession&) = delete;
+    FamSession(FamSession&&)                 = delete;
+    FamSession& operator=(FamSession&&)      = delete;
 
-    ~FamSessionDetail();
+    ~FamSession();
 
     // Operations
 
-    bool operator==(const FamSessionDetail& other) const {
-        return name_ == other.name_ && endpoint_ == other.endpoint_;
-    }
+    bool operator==(const FamSession& other) const { return name_ == other.name_ && endpoint_ == other.endpoint_; }
 
-    bool operator!=(const FamSessionDetail& other) const { return !(*this == other); }
+    bool operator!=(const FamSession& other) const { return !(*this == other); }
 
     // Accessors
 
@@ -151,7 +149,7 @@ public:  // methods
 
 private:  // methods
 
-    friend std::ostream& operator<<(std::ostream& out, const FamSessionDetail& session);
+    friend std::ostream& operator<<(std::ostream& out, const FamSession& session);
 
     void print(std::ostream& out) const;
 

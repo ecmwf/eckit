@@ -17,15 +17,12 @@
 
 #include "detail/FamMapNode.h"
 
-// #include "detail/FamSession.h"
-// #include "eckit/exception/Exceptions.h"
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamMapIterator::FamMapIterator(const FamRegion& region, const fam::index_t offset) :
-    region_{region}, node_{region_.proxyObject(offset)} {}
+FamMapIterator::FamMapIterator(FamRegion region, const fam::index_t offset) :
+    region_{std::move(region)}, node_{region_.proxyObject(offset)} {}
 
 FamMapIterator& FamMapIterator::operator++() {
     if (const auto next = FamMapNode::getNext(node_); next.region > 0) {

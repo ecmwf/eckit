@@ -41,7 +41,7 @@ public:  // types
 
 public:  // methods
 
-    FamMapIterator(const FamRegion& region, fam::index_t offset);
+    FamMapIterator(FamRegion region, fam::index_t offset);
 
     FamMapIterator& operator++();
 

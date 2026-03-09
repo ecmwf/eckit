@@ -21,7 +21,6 @@
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
@@ -50,16 +49,16 @@ FamObject initSentinel(const FamRegion& region, const std::string& object_name, 
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamList::FamList(const FamRegion& region, const Descriptor& desc) :
-    region_{region},
+FamList::FamList(FamRegion region, const Descriptor& desc) :
+    region_{std::move(region)},
     head_{region_.proxyObject(desc.head)},
     tail_{region_.proxyObject(desc.tail)},
     size_{region_.proxyObject(desc.size)} {
-    ASSERT(region.index() == desc.region);
+    ASSERT(region_.index() == desc.region);
 }
 
-FamList::FamList(const FamRegion& region, const std::string& list_name) :
-    region_{region},
+FamList::FamList(FamRegion region, const std::string& list_name) :
+    region_{std::move(region)},
     head_{initSentinel(region_, list_name + "-list-head", sizeof(FamListNode))},
     tail_{initSentinel(region_, list_name + "-list-tail", sizeof(FamListNode))},
     size_{initSentinel(region_, list_name + "-list-size", sizeof(size_type))} {
@@ -72,8 +71,6 @@ FamList::FamList(const FamRegion& region, const std::string& list_name) :
         tail_.put(head_.descriptor(), offsetof(FamListNode, prev));
     }
 }
-
-FamList::FamList(const FamRegionName& name) : FamList(name.lookup(), name.path().objectName) {}
 
 auto FamList::descriptor() const -> Descriptor {
     return {region_.index(), head_.offset(), tail_.offset(), size_.offset()};
@@ -101,12 +98,12 @@ auto FamList::cend() const -> const_iterator {
 //----------------------------------------------------------------------------------------------------------------------
 // accessors
 
-Buffer FamList::front() const {
+auto FamList::front() const -> value_type {
     ASSERT(!empty());
     return std::move(*begin());
 }
 
-Buffer FamList::back() const {
+auto FamList::back() const -> value_type {
     ASSERT(!empty());
     return std::move(*--end());
 }
@@ -194,6 +191,25 @@ void FamList::popBack() {
 
     last_object.deallocate();
     size_.subtract(0, 1UL);
+}
+
+auto FamList::erase(const_iterator pos) -> iterator {
+    const auto& object = pos.object();
+    ASSERT(object.offset() != tail_.offset());
+
+    const auto next_offset = FamListNode::getNextOffset(object);
+    const auto prev_offset = FamListNode::getPrevOffset(object);
+
+    auto next_object = region_.proxyObject(next_offset);
+    auto prev_object = region_.proxyObject(prev_offset);
+
+    prev_object.put(next_object.descriptor(), offsetof(FamListNode, next));
+    next_object.put(prev_object.descriptor(), offsetof(FamListNode, prev));
+
+    object.deallocate();
+    size_.subtract(0, 1UL);
+
+    return region_.proxyObject(next_offset);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

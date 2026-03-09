@@ -23,7 +23,6 @@
 #include <string>
 #include <string_view>
 
-#include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
@@ -42,6 +41,7 @@ public:  // types
     using size_type      = fam::size_t;
     using iterator       = FamListIterator;
     using const_iterator = FamListConstIterator;
+    using value_type     = FamListIterator::data_type;
 
     struct Descriptor {
         fam::index_t region{0};  // region ID
@@ -52,18 +52,9 @@ public:  // types
 
 public:  // methods
 
-    FamList(const FamRegion& region, const Descriptor& desc);
+    FamList(FamRegion region, const Descriptor& desc);
 
-    FamList(const FamRegion& region, const std::string& list_name);
-
-    explicit FamList(const FamRegionName& name);
-
-    // rules
-    // FamList(const FamList&)            = default;
-    // FamList& operator=(const FamList&) = default;
-    // FamList(FamList&&)                 = delete;
-    // FamList& operator=(FamList&&)      = delete;
-    // ~FamList() = default;
+    FamList(FamRegion region, const std::string& list_name);
 
     Descriptor descriptor() const;
 
@@ -86,13 +77,11 @@ public:  // methods
 
     // accessors
 
-    Buffer front() const;
+    value_type front() const;
 
-    Buffer back() const;
+    value_type back() const;
 
     // modifiers
-
-    // void clear() noexcept;
 
     void pushBack(const void* data, size_type length);
 
@@ -106,8 +95,7 @@ public:  // methods
 
     void popBack();
 
-    // erase by iterator
-    iterator erase(const iterator& pos);
+    iterator erase(const_iterator pos);
 
 private:  // methods
 

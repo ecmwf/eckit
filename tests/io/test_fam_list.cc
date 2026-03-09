@@ -61,10 +61,10 @@ auto makeTestData(const int number) -> std::string_view {
 }
 
 void populateList() {
-    FamList lst(tester.lastRegion(), list_name);
+    FamList list(tester.lastRegion(), list_name);
     for (auto i = 0; i < list_size; i++) {
         auto buffer = makeTestData(i);
-        lst.pushBack(buffer.data(), buffer.size());
+        list.pushBack(buffer.data(), buffer.size());
     }
 }
 
@@ -194,14 +194,15 @@ CASE("FamList: populate with " + std::to_string(list_size) + " items by " + std:
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamList: validate size and values after creation") {
-    const auto lst = FamList(tester.lastRegion(), list_name);
+    const auto list = FamList(tester.lastRegion(), list_name);
 
-    EXPECT_NOT(lst.empty());
+    EXPECT_NOT(list.empty());
 
-    EXPECT(lst.size() == num_threads * list_size);
+    EXPECT(list.size() == num_threads * list_size);
 
-    for (const auto& buffer : lst) {
-        EXPECT(std::find(test_data.cbegin(), test_data.cend(), buffer.view()) != test_data.cend());
+    for (const auto& item : list) {
+        // std::cout << "Validating item: " << item.view() << '\n';
+        EXPECT(std::find(test_data.cbegin(), test_data.cend(), item.view()) != test_data.cend());
     }
 }
 

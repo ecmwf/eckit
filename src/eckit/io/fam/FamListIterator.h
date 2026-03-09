@@ -20,6 +20,7 @@
 #pragma once
 
 #include <iterator>
+#include <optional>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamObject.h"
@@ -36,7 +37,8 @@ public:  // types
 
     using value_type = FamObject;
     using pointer    = value_type*;
-    using reference  = Buffer&;
+    using reference  = value_type&;
+    using data_type  = Buffer;
 
 public:  // methods
 
@@ -54,13 +56,17 @@ public:  // methods
 
     pointer operator->();
 
-    reference operator*();
+    data_type& operator*();
+
+    value_type& object() { return object_; }
+
+    const value_type& object() const { return object_; }
 
 private:  // members
 
-    bool invalid_{true};
-    Buffer data_;
     value_type object_;
+
+    std::optional<data_type> buffer_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -70,7 +76,7 @@ class FamListConstIterator : public FamListIterator {
 public:  // types
 
     using pointer   = const value_type*;
-    using reference = const Buffer&;
+    using reference = const data_type&;
 
 public:  // methods
 

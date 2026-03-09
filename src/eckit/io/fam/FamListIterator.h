@@ -16,6 +16,19 @@
 /// @file   FamListIterator.h
 /// @author Metin Cakircali
 /// @date   Mar 2024
+///
+/// @brief Concurrent-safe bidirectional iterator for FamList.
+///
+/// ## Thread Safety
+///
+/// Iterators are safe to use during concurrent insertions and deletions:
+///
+/// - **Marked Node Skipping**: When a node is logically deleted (marked), iterators
+///   transparently skip over it on `++` and `--` operations.
+/// - **Lock-Free Traversal**: Iteration does not require any synchronization.
+/// - **Consistency**: Each iterator snapshot sees a consistent view of the list
+///   at the moment the iterator was created, with logical deletions becoming visible
+///   as nodes are skipped.
 
 #pragma once
 
@@ -30,6 +43,10 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 // ITERATOR
 
+/// @brief Concurrent-safe forward and bidirectional iterator for FamList.
+///
+/// Advances through the list, automatically skipping marked (deleted) nodes.
+/// Safe to use while other threads insert/delete elements.
 class FamListIterator {
 public:  // types
 
@@ -42,24 +59,31 @@ public:  // types
 
 public:  // methods
 
+    /// Construct iterator wrapping a FAM object.
     FamListIterator(value_type object);  // NOLINT(google-explicit-constructor)
 
-    // iterate forwards
+    /// Advance to next node (skip marked nodes).
     FamListIterator& operator++();
 
-    // iterate backwards
+    /// Retreat to previous node (skip marked nodes).
     FamListIterator& operator--();
 
+    /// Compare iterators for equality.
     bool operator==(const FamListIterator& other) const;
 
+    /// Compare iterators for inequality.
     bool operator!=(const FamListIterator& other) const { return !operator==(other); }
 
+    /// Access the underlying FAM object (to read node metadata).
     pointer operator->();
 
+    /// Dereference to return data payload as Buffer.
     data_type& operator*();
 
+    /// Access underlying FAM object.
     value_type& object() { return object_; }
 
+    /// Access underlying FAM object (const).
     const value_type& object() const { return object_; }
 
 private:  // members
@@ -72,6 +96,7 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 // CONST ITERATOR
 
+/// @brief Const variant of FamListIterator.
 class FamListConstIterator : public FamListIterator {
 public:  // types
 

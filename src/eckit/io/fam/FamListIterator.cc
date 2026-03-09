@@ -28,17 +28,40 @@ namespace {}
 
 FamListIterator::FamListIterator(value_type object) : object_{std::move(object)} {}
 
+/// Advance to next node, skipping logically deleted (marked) nodes.
+/// This ensures iterators remain consistent even during concurrent deletions.
 FamListIterator& FamListIterator::operator++() {
     if (const auto next = FamListNode::getNext(object_); next.offset > 0) {
         object_.replaceWith(next);
+
+        // Skip over marked (deleted) nodes - iterate until we find an unmarked node
+        while (FamListNode::isMarked(object_)) {
+            if (const auto next_next = FamListNode::getNext(object_); next_next.offset > 0) {
+                object_.replaceWith(next_next);
+            }
+            else {
+                break;  // No more nodes
+            }
+        }
         buffer_.reset();
     }
     return *this;
 }
 
+/// Retreat to previous node, skipping logically deleted (marked) nodes.
 FamListIterator& FamListIterator::operator--() {
     if (const auto prev = FamListNode::getPrev(object_); prev.offset > 0) {
         object_.replaceWith(prev);
+
+        // Skip over marked (deleted) nodes - iterate until we find an unmarked node
+        while (FamListNode::isMarked(object_)) {
+            if (const auto prev_prev = FamListNode::getPrev(object_); prev_prev.offset > 0) {
+                object_.replaceWith(prev_prev);
+            }
+            else {
+                break;  // No more nodes
+            }
+        }
         buffer_.reset();
     }
     return *this;
@@ -52,6 +75,8 @@ auto FamListIterator::operator->() -> pointer {
     return &object_;
 }
 
+/// Dereference operator: returns data buffer.
+/// Safely skips marked nodes when dereferencing.
 auto FamListIterator::operator*() -> data_type& {
     if (!buffer_) {
         FamListNode::getData(object_, buffer_.emplace());

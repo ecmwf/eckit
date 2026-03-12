@@ -21,14 +21,13 @@
 
 #include <cstddef>
 #include <mutex>
-#include <sstream>
+#include <set>
 #include <string>
 #include <string_view>
 #include <thread>
-#include <unordered_map>
+#include <type_traits>
 #include <vector>
 
-#include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamMap.h"
 #include "eckit/testing/Test.h"
 
@@ -39,86 +38,285 @@ namespace eckit::test {
 
 namespace {
 
-using fam::TestFam;
+fam::TestFam tester;
 
-TestFam tester;
+constexpr std::size_t num_threads = 4;
+constexpr std::size_t num_entries = 50;
+const auto map_name               = "M" + fam::random_number();
 
-constexpr const std::size_t num_threads = 8;
-constexpr const std::size_t num_maps    = 200;
-const auto map_name                     = TestFam::makeRandomText("MAP");
-const auto map_data                     = TestFam::makeRandomText("DATA");
-
-// std::vector<std::string> test_data;
-std::unordered_map<std::string, std::string> test_data;
-std::mutex test_mutex;
-
-auto makeTestData(const int number) -> std::string_view {
-    std::ostringstream oss;
-    oss << "tid:" << std::this_thread::get_id() << " #" << number << '-' << map_data;
-    // add to the control list
-    const std::lock_guard<std::mutex> lock(test_mutex);
-    return test_data.emplace(oss.str(), oss.str()).first->second;
-}
-
-void populateMap() {
-    // FamMap fam_map(tester.lastRegion(), map_name);
-    // for (std::size_t i = 0; i < num_maps; i++) {
-    // auto buffer = makeTestData(i);
-    // EXPECT_NO_THROW(fam_map.push_back(buffer.data(), buffer.size()));
-    // }
-}
-
+static_assert(std::is_same_v<FamMap::iterator::value_type, FamMap::entry_type>,
+              "FamMap iterator value_type must be FamMapEntry");
 
 }  // namespace
 
-#include <bits/hashtable_policy.h>
-
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("FamMap: create an empty list and validate size, empty, front, back") {
-    //     constexpr const auto region_size = 1024;
-    //     auto map_region = tester.makeRandomRegion(region_size);
-    //     const auto map = FamMap(map_region, map_name);
-    //
-    //     EXPECT(map.empty());
-    //     EXPECT(map.size() == 0);
-    //
-    //     Buffer front;
-    //     // EXPECT_NO_THROW(front = fam_map.front());
-    //     EXPECT(front.size() == 0);
-    //     EXPECT(front.data() == nullptr);
-    //
-    //     Buffer back;
-    //     // EXPECT_NO_THROW(back = fam_map.back());
-    //     EXPECT(back.size() == 0);
-    //     EXPECT(back.data() == nullptr);
+CASE("FamMap: create empty map and validate size/empty") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap(map_name, region);
+
+    EXPECT(map.empty());
+    EXPECT_EQUAL(map.size(), 0);
+    EXPECT_EQUAL(map.bucketCount(), 1024);
+    EXPECT(map.begin() == map.end());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("FamMap: populate with " + std::to_string(num_maps) + " items by " + std::to_string(num_threads) + " threads") {
-    std::vector<std::thread> threads;
+CASE("FamMap: insert single entry and find iter") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
 
-    threads.reserve(num_threads);
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap("MS" + fam::random_number(), region);
 
-    for (std::size_t i = 0; i < num_threads; i++) {
-        threads.emplace_back(populateMap);
+    FamMap::key_type key("hello");
+    std::string value = "world";
+
+    auto [iter, inserted] = map.insert(key, std::string_view{value});
+
+    EXPECT(inserted);
+    EXPECT_EQUAL(map.size(), 1);
+    EXPECT_NOT(map.empty());
+
+    // find returns valid iterator
+    EXPECT(map.contains(key));
+    auto found = map.find(key);
+    EXPECT(found != map.end());
+
+    auto entry = *found;
+    EXPECT(entry.key == key);
+    EXPECT_EQUAL(entry.value.view(), value);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap: insert duplicate key returns false") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap("MD" + fam::random_number(), region);
+
+    FamMap::key_type key("duplicate");
+    std::string val1 = "first";
+    std::string val2 = "second";
+
+    auto [it1, success1] = map.insert(key, std::string_view{val1});
+    EXPECT(success1);
+    EXPECT_EQUAL(map.size(), 1);
+
+    auto [it2, success2] = map.insert(key, std::string_view{val2});
+    EXPECT_NOT(success2);
+    EXPECT_EQUAL(map.size(), 1);
+
+    // Value should be the original (first insertion wins)
+    auto entry = *map.find(key);
+    EXPECT_EQUAL(entry.value.view(), val1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap: find non-existent key returns end") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap("MM" + fam::random_number(), region);
+
+    FamMap::key_type key("ghost");
+
+    EXPECT_NOT(map.contains(key));
+    EXPECT(map.find(key) == map.end());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap: insert multiple entries and iterate") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap("MI" + fam::random_number(), region);
+
+    constexpr std::size_t count = 20;
+    std::set<std::string> expected_keys;
+
+    for (std::size_t i = 0; i < count; ++i) {
+        auto key_str = "key-" + std::to_string(i);
+        auto val_str = "val-" + std::to_string(i);
+        FamMap::key_type key(key_str);
+
+        auto [iter, success] = map.insert(key, std::string_view{val_str});
+        EXPECT(success);
+        expected_keys.insert(key_str);
     }
 
-    for (auto&& thread : threads) {
+    EXPECT_EQUAL(map.size(), count);
+
+    // Iterate and collect all keys
+    std::set<std::string> found_keys;
+    for (auto entry : map) {
+        found_keys.insert(entry.key.asString());
+
+        // Verify value matches
+        auto key_str      = entry.key.asString();
+        auto expected_val = "val-" + key_str.substr(4);  // strip "key-" prefix
+        EXPECT_EQUAL(entry.value.view(), expected_val);
+    }
+
+    EXPECT_EQUAL(found_keys.size(), count);
+    EXPECT(found_keys == expected_keys);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap: erase existing key") {
+    constexpr eckit::fam::size_t region_size = 2 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap("ME" + fam::random_number(), region);
+
+    FamMap::key_type key1("alpha");
+    FamMap::key_type key2("beta");
+    FamMap::key_type key3("gamma");
+
+    map.insert(key1, std::string_view{"a"});
+    map.insert(key2, std::string_view{"b"});
+    map.insert(key3, std::string_view{"c"});
+    EXPECT_EQUAL(map.size(), 3);
+
+    // Erase middle entry
+    auto erased = map.erase(key2);
+    EXPECT_EQUAL(erased, 1);
+    EXPECT_EQUAL(map.size(), 2);
+    EXPECT_NOT(map.contains(key2));
+
+    // Others still present
+    EXPECT(map.contains(key1));
+    EXPECT(map.contains(key3));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap: erase non-existent key returns 0") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap("MX" + fam::random_number(), region);
+
+    FamMap::key_type key("phantom");
+    EXPECT_EQUAL(map.erase(key), 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap: clear removes all entries") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap("MC" + fam::random_number(), region);
+
+    for (std::size_t i = 0; i < 10; ++i) {
+        FamMap::key_type key("clr-" + std::to_string(i));
+        map.insert(key, std::string_view{"data"});
+    }
+    EXPECT_EQUAL(map.size(), 10);
+
+    map.clear();
+    EXPECT(map.empty());
+    EXPECT_EQUAL(map.size(), 0);
+    EXPECT(map.begin() == map.end());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap: idempotent reopen preserves data") {
+    constexpr eckit::fam::size_t region_size = 2 * 1024 * 1024;
+
+    auto region          = tester.makeRandomRegion(region_size);
+    auto random_map_name = "MR" + fam::random_number();
+
+    FamMap::key_type key("persist");
+    std::string value = "survive";
+
+    // First open: insert data
+    {
+        auto map = FamMap(random_map_name, region);
+        map.insert(key, std::string_view{value});
+        EXPECT_EQUAL(map.size(), 1);
+    }
+
+    // Second open: data should still be there
+    {
+        auto map = FamMap(random_map_name, region);
+        EXPECT_EQUAL(map.size(), 1);
+        EXPECT(map.contains(key));
+        auto entry = *map.find(key);
+        EXPECT_EQUAL(entry.value.view(), value);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap: concurrent insert from " + std::to_string(num_threads) + " threads with " + std::to_string(num_entries) +
+     " entries each") {
+    constexpr eckit::fam::size_t region_size = 16 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto name   = "MK" + fam::random_number();
+
+    std::mutex data_mutex;
+    std::set<std::string> all_keys;
+
+    auto worker = [&](std::size_t thread_id) {
+        auto map = FamMap(name, region);  // idempotent reopen
+        for (std::size_t i = 0; i < num_entries; ++i) {
+            auto key_str = "t" + std::to_string(thread_id) + "-k" + std::to_string(i);
+            auto val_str = "v" + std::to_string(thread_id) + "-" + std::to_string(i);
+            FamMap::key_type key(key_str);
+
+            auto [iter, success] = map.insert(key, std::string_view{val_str});
+            EXPECT(success);
+
+            const std::lock_guard lock(data_mutex);
+            all_keys.insert(key_str);
+        }
+    };
+
+    std::vector<std::thread> threads;
+    threads.reserve(num_threads);
+    for (std::size_t t = 0; t < num_threads; ++t) {
+        threads.emplace_back(worker, t);
+    }
+    for (auto& thread : threads) {
         thread.join();
     }
+
+    // Verify all entries present
+    auto map = FamMap(name, region);
+    EXPECT_EQUAL(map.size(), num_threads * num_entries);
+
+    for (const auto& key_str : all_keys) {
+        FamMap::key_type key(key_str);
+        EXPECT(map.contains(key));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("FamMap: validate size and values after creation") {
-    // const auto fam_map = FamMap(tester.lastRegion(), map_name);
-    // EXPECT_NOT(fam_map.empty());
-    // EXPECT(fam_map.size() == num_threads * num_maps);
-    // for (const auto& buffer : fam_map) {
-    // EXPECT(std::find(testData.cbegin(), testData.cend(), buffer.view()) != testData.cend());
-    // }
+CASE("FamMap: insert with empty value") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap("MV" + fam::random_number(), region);
+
+    FamMap::key_type key("no-value");
+    auto [iter, success] = map.insert(key, nullptr, 0);
+    EXPECT(success);
+    EXPECT_EQUAL(map.size(), 1);
+
+    auto entry = *map.find(key);
+    EXPECT(entry.key == key);
+    EXPECT_EQUAL(entry.value.size(), 0);
 }
 
 }  // namespace eckit::test

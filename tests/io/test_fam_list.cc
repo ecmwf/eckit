@@ -46,8 +46,8 @@ TestFam tester;
 
 constexpr const auto num_threads = 8;
 constexpr const auto list_size   = 200;
-const auto list_name             = TestFam::makeRandomText("LIST");
-const auto list_data             = TestFam::makeRandomText("DATA");
+const auto list_name             = "L" + fam::random_number();
+const auto list_data             = "D" + fam::random_number();
 
 std::vector<std::string> test_data;
 std::mutex test_mutex;
@@ -111,9 +111,8 @@ CASE("FamList: populate a list and validate size, !empty, front, back") {
 
     constexpr const eckit::fam::size_t region_size = 1024;
 
-    auto region = FamRegionName(fam::test_endpoint, "")
-                      .withRegion(TestFam::makeRandomText("LIST_REGION"))
-                      .create(region_size, 0640, true);
+    auto region =
+        FamRegionName(fam::test_endpoint, "").withRegion("LR" + fam::random_number()).create(region_size, 0640, true);
     auto list = FamList(region, list_name);
 
     // empty list should have size 0

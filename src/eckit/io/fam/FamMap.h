@@ -22,15 +22,15 @@
 /// ## Overview
 ///
 /// FamMap is a hash-based key-value store residing entirely in Fabric-Attached Memory (FAM).
-/// It provides an `std::unordered_map`-like interface with fixed types (no templates), using
-/// `FixedString<32>` keys and variable-length `Buffer` values.
+/// It provides an `std::unordered_map`-like interface with fixed types, using `FixedString<KeySize>` keys and
+/// variable-length `Buffer` values.
 ///
 /// ## Architecture
 ///
-/// - **Hash table**: A flat FAM object holding `capacity` bucket slots. Each slot stores a
-///   `FamList::Descriptor` (40 bytes). An all-zero descriptor means the bucket is empty.
+/// - **Hash table**: A flat FAM object holding `bucket_count` (1024) bucket slots. Each slot stores a
+///   `FamList::Descriptor` (40 bytes). A zero `head` field means the bucket is empty.
 /// - **Buckets**: Each non-empty bucket is a `FamList` whose nodes store key-value entries as:
-///   `[key (32 bytes)] [value data (variable length)]`
+///   `[key (32/64/128 bytes)] [value data (variable length)]`
 /// - **Size counter**: An atomic FAM counter tracking total number of entries across all buckets.
 ///
 /// ## Concurrency
@@ -52,12 +52,12 @@
 ///
 /// Each FamList node's data payload holds:
 /// ```
-/// | key (32 bytes, FixedString<32>) | value_data (node.length - 32 bytes) |
+/// | key (32/64/128 bytes, FixedString<32/64/128>) | value_data (node.length - key_size bytes) |
 /// ```
 ///
 /// ## Iterator
 ///
-/// The iterator walks buckets 0..capacity-1, and within each non-empty bucket walks
+/// The iterator walks buckets 0..bucket_count-1, and within each non-empty bucket walks
 /// the FamList elements. Dereferencing returns a `FamMapEntry{key, value}` by value.
 /// Iterators are safe during concurrent modifications via FamList's marked-node skipping.
 
@@ -93,8 +93,10 @@ struct FamHash {
 
 /// @brief Concurrent-safe, FAM-resident unordered associative container.
 ///
-/// Hash table with FamList buckets. Fixed key type `FixedString<32>`, variable-length
+/// Hash table with FamList buckets. Fixed key type `FixedString<KeySize>`, variable-length
 /// `Buffer` values. Supports concurrent insert, find, erase, and iteration.
+/// Iterators are forward-only and safe during concurrent modifications.
+/// @tparam T Must be `FamMapEntry<KeySize>`, which defines key and value types and encoding.
 template <typename T>
 class FamMap {
     static_assert(IsFamMapEntry<T>::value, "FamMap only supports T = FamMapEntry<...>");
@@ -112,11 +114,13 @@ public:  // types
 
 public:  // constants
 
-    // static constexpr std::size_t key_size     = 32;
-    static constexpr auto key_size            = entry_type::key_size;
+    /// Key size in bytes (e.g. 32 for FixedString<32>).
+    static constexpr auto key_size = entry_type::key_size;
+
+    /// Number of buckets in the hash table. Chosen as a power of two for efficient modulo.
     static constexpr std::size_t bucket_count = 1024;
 
-    /// needed for preventing concurrent double-init
+    /// needed for preventing concurrent double-init of buckets, as sentinel value in bucket head during creation
     static constexpr fam::size_t creating = ~fam::size_t{0};
 
 public:  // methods
@@ -124,7 +128,7 @@ public:  // methods
     /// Construct or open a FamMap in the given region with the given name.
     FamMap(std::string name, FamRegion region);
 
-    /// rules: - non-copyable (FAM objects can't be meaningfully copied)
+    /// rules
     FamMap(const FamMap&)            = delete;
     FamMap& operator=(const FamMap&) = delete;
     FamMap(FamMap&&)                 = default;
@@ -143,9 +147,6 @@ public:  // methods
 
     /// Return the number of buckets.
     static constexpr std::size_t bucketCount() { return bucket_count; }
-
-    /// Return the bucket index for a given key.
-    static std::size_t bucketIndex(const key_type& key) { return hash_type{}(key) % bucketCount(); }
 
     // ---- iterators ----
 
@@ -191,12 +192,12 @@ private:  // methods
 
     friend class FamMapIterator<T>;
 
-    /// Idempotent sentinel allocation (allocate or lookup if already exists).
-    static FamObject initSentinel(const FamRegion& region, const std::string& name, fam::size_t size);
+    /// Return the bucket index for a given key.
+    static std::size_t bucketIndex(const key_type& key) { return hash_type{}(key) % bucketCount(); }
 
     /// Find the list iterator pointing to the entry with given key in a bucket.
-    /// Returns list.end() if not found.
-    static FamListIterator findInBucket(const FamList& list, const key_type& key);
+    /// Returns the bucket's end() if not found.
+    static FamListIterator findInBucket(const FamList& bucket, const key_type& key);
 
     /// Get the head offset of the bucket at the given index.
     fam::size_t getBucketHead(std::size_t index) const;

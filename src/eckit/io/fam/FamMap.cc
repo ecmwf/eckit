@@ -47,13 +47,7 @@ constexpr fam::size_t bucketHeadOffset(std::size_t index) {
     return bucketOffset(index) + offsetof(FamList::Descriptor, head);
 }
 
-}  // namespace
-
-//----------------------------------------------------------------------------------------------------------------------
-
-template <typename T>
-FamObject FamMap<T>::initSentinel(const FamRegion& region, const std::string& object_name,
-                                  const fam::size_t object_size) {
+FamObject initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) {
     try {
         return region.allocateObject(object_size, object_name);
     }
@@ -63,6 +57,10 @@ FamObject FamMap<T>::initSentinel(const FamRegion& region, const std::string& ob
         return object;
     }
 }
+
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
 FamMap<T>::FamMap(std::string name, FamRegion region) :
@@ -75,14 +73,14 @@ FamMap<T>::FamMap(std::string name, FamRegion region) :
 // Bucket management
 
 template <typename T>
-FamListIterator FamMap<T>::findInBucket(const FamList& list, const key_type& key) {
-    for (auto iter = list.begin(); iter != list.end(); ++iter) {
+FamListIterator FamMap<T>::findInBucket(const FamList& bucket, const key_type& key) {
+    for (auto iter = bucket.begin(); iter != bucket.end(); ++iter) {
         const auto& buffer = *iter;
         if (buffer.size() >= key_size && entry_type::decodeKey(buffer) == key) {
             return iter;
         }
     }
-    return list.end();
+    return bucket.end();
 }
 
 template <typename T>
@@ -122,11 +120,11 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
         auto desc              = bucket.descriptor();
 
         // Write remaining descriptor fields FIRST (tail, size, epoch)
-        const auto base_offset = static_cast<fam::size_t>(index * sizeof(FamList::Descriptor));
-        table_.put(desc.region, base_offset + offsetof(FamList::Descriptor, region));
-        table_.put(desc.tail, base_offset + offsetof(FamList::Descriptor, tail));
-        table_.put(desc.size, base_offset + offsetof(FamList::Descriptor, size));
-        table_.put(desc.epoch, base_offset + offsetof(FamList::Descriptor, epoch));
+        const auto offset = static_cast<fam::size_t>(index * sizeof(FamList::Descriptor));
+        table_.put(desc.region, offset + offsetof(FamList::Descriptor, region));
+        table_.put(desc.tail, offset + offsetof(FamList::Descriptor, tail));
+        table_.put(desc.size, offset + offsetof(FamList::Descriptor, size));
+        table_.put(desc.epoch, offset + offsetof(FamList::Descriptor, epoch));
 
         // Write head LAST to "publish" the bucket (transitions from CREATING → real offset)
         table_.put(desc.head, bucketHeadOffset(index));
@@ -225,17 +223,17 @@ auto FamMap<T>::insert(const key_type& key, const void* data, const size_type le
 template <typename T>
 auto FamMap<T>::erase(const key_type& key) -> size_type {
     const auto index = bucketIndex(key);
-    auto bucket_list = getBucket(index);
-    if (!bucket_list) {
+    auto bucket      = getBucket(index);
+    if (!bucket) {
         return 0;
     }
 
-    auto iter = findInBucket(*bucket_list, key);
-    if (iter == bucket_list->end()) {
+    auto iter = findInBucket(*bucket, key);
+    if (iter == bucket->end()) {
         return 0;
     }
 
-    bucket_list->erase(std::move(iter));
+    bucket->erase(std::move(iter));
     count_.subtract(0, 1UL);
     return 1;
 }

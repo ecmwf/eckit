@@ -27,6 +27,11 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 /// @brief Type returned by FamMap iterator dereference.
+///
+/// Encapsulates the key and value of a map entry.
+/// The buffer layout is: [key (KeySize bytes)] [value data (variable length)].
+/// This design allows the FamMap to store entries in FamList nodes without needing a separate structure in FAM for the
+/// entry, and keeps all data in FAM for efficient access by multiple processes/threads.
 template <int KeySize>
 struct FamMapEntry {
 
@@ -37,7 +42,7 @@ struct FamMapEntry {
     static constexpr auto key_size = static_cast<size_type>(KeySize);
 
     /// Encode a key-value pair into a flat buffer for storage in FamList nodes.
-    /// Layout: [key (32 bytes)] [value data (length bytes)]
+    /// Layout: [key (KeySize bytes)] [value data (length bytes)]
     static Buffer encode(const key_type& key, const void* data, size_type length) {
         Buffer payload(key_size + length);
         std::memcpy(payload.data(), key.data(), key_size);

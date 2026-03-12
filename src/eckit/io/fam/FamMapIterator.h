@@ -47,8 +47,8 @@ class FamMap;
 
 /// @brief Forward iterator for FamMap.
 ///
-/// Walks bucket 0..N and within each non-empty bucket walks the FamList entries.
-/// Dereference returns FamMapEntry{key, value} by value (data lives in FAM).
+/// Walks bucket 0..N and within each bucket walks the FamList entries.
+/// Dereference returns value_type (=FamMapEntry<KeySize>{key, value}) by value (data lives in FAM).
 template <typename T>
 class FamMapIterator {
 
@@ -56,9 +56,12 @@ class FamMapIterator {
 
 public:  // types
 
+    /// single-pass forward traversal only
     using iterator_category = std::forward_iterator_tag;
-    using value_type        = T;
-    using difference_type   = std::ptrdiff_t;
+    /// conventional default for single-pass iterators
+    using difference_type = std::ptrdiff_t;
+    /// value type returned by dereference operator (by value, not reference)
+    using value_type = T;
 
 public:  // methods
 
@@ -86,6 +89,7 @@ public:  // methods
     bool operator!=(const FamMapIterator& other) const { return !operator==(other); }
 
     /// Dereference: returns FamMapEntry{key, value} by value.
+    /// (pointer and reference are intentionally omitted here)
     value_type operator*();
 
 private:  // methods

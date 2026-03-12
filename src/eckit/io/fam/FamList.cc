@@ -275,7 +275,7 @@ void FamList::popBack() {
     }
 }
 
-auto FamList::erase(const_iterator pos) -> iterator {
+auto FamList::erase(iterator pos) -> iterator {
     const auto& object = pos.object();
     ASSERT(object.offset() != tail_.offset());
 

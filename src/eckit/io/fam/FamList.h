@@ -152,12 +152,16 @@ public:  // methods
     /// Insert data at front. Lock-free, multiple-writer safe.
     void pushFront(const void* data, size_type length);
 
-    void pushFront(const std::string_view data) { pushFront(data.data(), data.size()); }
+    void pushFront(std::string_view data) { pushFront(data.data(), data.size()); }
+
+    void pushFront(const Buffer& data) { pushFront(data.view()); }
 
     /// Insert data at back. Lock-free, multiple-writer safe.
     void pushBack(const void* data, size_type length);
 
-    void pushBack(const std::string_view data) { pushBack(data.data(), data.size()); }
+    void pushBack(std::string_view data) { pushBack(data.data(), data.size()); }
+
+    void pushBack(const Buffer& data) { pushBack(data.view()); }
 
     /// Remove first element. Wait-free (logical deletion).
     /// Precondition: !empty()
@@ -169,7 +173,7 @@ public:  // methods
 
     /// Remove element at position. Returns iterator to following element.
     /// Wait-free; skips marked nodes in linked list.
-    iterator erase(const_iterator pos);
+    iterator erase(iterator pos);
 
 private:  // methods
 

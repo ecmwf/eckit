@@ -42,6 +42,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+template <typename T>
 class FamMap;
 
 /// @brief Forward iterator for FamMap.
@@ -65,10 +66,10 @@ public:  // methods
     /// @param map     The owning FamMap.
     /// @param bucket  Bucket index (bucket_count for end).
     /// @param advance If true, advances to the first non-empty entry.
-    FamMapIterator(const FamMap& map, std::size_t bucket, bool advance);
+    FamMapIterator(const FamMap<T>& map, std::size_t bucket, bool advance);
 
     /// Construct iterator pointing to a specific entry in a specific bucket.
-    FamMapIterator(const FamMap& map, std::size_t bucket, FamListIterator iter, FamList list);
+    FamMapIterator(const FamMap<T>& map, std::size_t bucket, FamListIterator iter, FamList list);
 
     FamMapIterator(const FamMapIterator&)            = delete;
     FamMapIterator& operator=(const FamMapIterator&) = delete;
@@ -101,7 +102,7 @@ private:  // methods
 
 private:  // members
 
-    const FamMap* map_;
+    const FamMap<T>* map_;
     std::size_t bucket_;
     std::optional<FamList> list_;
     std::optional<FamListIterator> iter_;
@@ -109,11 +110,10 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @brief Const variant of FamMapIterator.
+/// @brief Const variant of FamMapIterator, for use in const contexts and range-based for loops.
+/// Otherwise identical to FamMapIterator, as it already returns entries by value.
 template <typename T>
-class FamMapConstIterator : public FamMapIterator<T> {
-    using FamMapIterator<T>::FamMapIterator;
-};
+using FamMapConstIterator = FamMapIterator<T>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

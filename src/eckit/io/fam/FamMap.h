@@ -95,28 +95,29 @@ struct FamHash {
 ///
 /// Hash table with FamList buckets. Fixed key type `FixedString<32>`, variable-length
 /// `Buffer` values. Supports concurrent insert, find, erase, and iteration.
-// template <typename T>
+template <typename T>
 class FamMap {
-    // static_assert(IsFamMapEntry<T>::value, "FamMap only supports T = FamMapEntry<...>");
-
-public:  // constants
-
-    static constexpr std::size_t key_size     = 32;
-    static constexpr std::size_t bucket_count = 1024;
-
-    /// needed for preventing concurrent double-init
-    static constexpr fam::size_t creating = ~fam::size_t{0};
+    static_assert(IsFamMapEntry<T>::value, "FamMap only supports T = FamMapEntry<...>");
 
 public:  // types
 
-    using entry_type = FamMapEntry<key_size>;
-    using key_type   = entry_type::key_type;
-    using value_type = entry_type::value_type;
+    using entry_type = T;
+    using key_type   = typename entry_type::key_type;
+    using value_type = typename entry_type::value_type;
     using hash_type  = FamHash<key_type>;
     using size_type  = fam::size_t;
 
     using iterator       = FamMapIterator<entry_type>;
     using const_iterator = FamMapConstIterator<entry_type>;
+
+public:  // constants
+
+    // static constexpr std::size_t key_size     = 32;
+    static constexpr auto key_size            = entry_type::key_size;
+    static constexpr std::size_t bucket_count = 1024;
+
+    /// needed for preventing concurrent double-init
+    static constexpr fam::size_t creating = ~fam::size_t{0};
 
 public:  // methods
 
@@ -188,10 +189,7 @@ public:  // methods
 
 private:  // methods
 
-    template <typename T>
-    friend class FamMapIterator;
-    template <typename T>
-    friend class FamMapConstIterator;
+    friend class FamMapIterator<T>;
 
     /// Idempotent sentinel allocation (allocate or lookup if already exists).
     static FamObject initSentinel(const FamRegion& region, const std::string& name, fam::size_t size);
@@ -214,7 +212,10 @@ private:  // methods
 
     void print(std::ostream& out) const;
 
-    friend std::ostream& operator<<(std::ostream& out, const FamMap& map);
+    friend std::ostream& operator<<(std::ostream& out, const FamMap<T>& map) {
+        map.print(out);
+        return out;
+    }
 
 private:  // members
 

@@ -26,7 +26,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-FamMapIterator<T>::FamMapIterator(const FamMap& map, const std::size_t bucket, const bool advance) :
+FamMapIterator<T>::FamMapIterator(const FamMap<T>& map, const std::size_t bucket, const bool advance) :
     map_{&map}, bucket_{bucket} {
     if (advance) {
         advanceToNextBucket();
@@ -34,14 +34,14 @@ FamMapIterator<T>::FamMapIterator(const FamMap& map, const std::size_t bucket, c
 }
 
 template <typename T>
-FamMapIterator<T>::FamMapIterator(const FamMap& map, const std::size_t bucket, FamListIterator iter, FamList list) :
+FamMapIterator<T>::FamMapIterator(const FamMap<T>& map, const std::size_t bucket, FamListIterator iter, FamList list) :
     map_{&map}, bucket_{bucket}, list_{std::move(list)}, iter_{std::move(iter)} {}
 
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
 bool FamMapIterator<T>::hasMoreBuckets() const {
-    return bucket_ < FamMap::bucket_count;
+    return bucket_ < FamMap<T>::bucket_count;
 }
 
 template <typename T>
@@ -92,15 +92,15 @@ FamMapIterator<T>& FamMapIterator<T>::operator++() {
 
 template <typename T>
 bool FamMapIterator<T>::operator==(const FamMapIterator& other) const {
-    // Same bucket and same position within bucket
+    // same bucket
     if (bucket_ != other.bucket_) {
         return false;
     }
-    // Neither has a list iterator — both are at the same (empty or past-end) position
+    // both are "empty or past-end position"
     if (!iter_.has_value() && !other.iter_.has_value()) {
         return true;
     }
-    // Both have list iterators — compare underlying FAM objects
+    // compare underlying FAM objects
     if (iter_.has_value() && other.iter_.has_value()) {
         return iter_->object() == other.iter_->object();
     }
@@ -117,10 +117,8 @@ T FamMapIterator<T>::operator*() {
 
 // Explicit instantiations
 template class FamMapIterator<FamMapEntry<32>>;
-template class FamMapConstIterator<FamMapEntry<32>>;
-
 template class FamMapIterator<FamMapEntry<64>>;
-template class FamMapConstIterator<FamMapEntry<64>>;
+template class FamMapIterator<FamMapEntry<128>>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

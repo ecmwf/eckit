@@ -37,17 +37,6 @@ namespace eckit {
 
 namespace {
 
-// /// Encode a key-value pair into a flat buffer for storage in FamList nodes.
-// /// Layout: [key (32 bytes)] [value data (length bytes)]
-// Buffer encodeEntry(const FamMap::key_type& key, const void* data, FamMap::size_type length) {
-//     Buffer payload(FamMap::key_size + length);
-//     std::memcpy(payload.data(), key.data(), FamMap::key_size);
-//     if (length > 0 && data != nullptr) {
-//         std::memcpy(static_cast<char*>(payload.data()) + FamMap::key_size, data, length);
-//     }
-//     return payload;
-// }
-
 /// Offset of the head field within a FamList::Descriptor.
 constexpr fam::size_t bucketOffset(std::size_t index) {
     return static_cast<fam::size_t>(index * sizeof(FamList::Descriptor));
@@ -62,7 +51,9 @@ constexpr fam::size_t bucketHeadOffset(std::size_t index) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamObject FamMap::initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) {
+template <typename T>
+FamObject FamMap<T>::initSentinel(const FamRegion& region, const std::string& object_name,
+                                  const fam::size_t object_size) {
     try {
         return region.allocateObject(object_size, object_name);
     }
@@ -73,7 +64,8 @@ FamObject FamMap::initSentinel(const FamRegion& region, const std::string& objec
     }
 }
 
-FamMap::FamMap(std::string name, FamRegion region) :
+template <typename T>
+FamMap<T>::FamMap(std::string name, FamRegion region) :
     name_{std::move(name)},
     region_{std::move(region)},
     table_{initSentinel(region_, name_ + "-map-table", bucket_count * sizeof(FamList::Descriptor))},
@@ -82,7 +74,8 @@ FamMap::FamMap(std::string name, FamRegion region) :
 //----------------------------------------------------------------------------------------------------------------------
 // Bucket management
 
-FamListIterator FamMap::findInBucket(const FamList& list, const key_type& key) {
+template <typename T>
+FamListIterator FamMap<T>::findInBucket(const FamList& list, const key_type& key) {
     for (auto iter = list.begin(); iter != list.end(); ++iter) {
         const auto& buffer = *iter;
         if (buffer.size() >= key_size && entry_type::decodeKey(buffer) == key) {
@@ -92,22 +85,26 @@ FamListIterator FamMap::findInBucket(const FamList& list, const key_type& key) {
     return list.end();
 }
 
-fam::size_t FamMap::getBucketHead(const std::size_t index) const {
+template <typename T>
+fam::size_t FamMap<T>::getBucketHead(const std::size_t index) const {
     return table_.get<fam::size_t>(bucketHeadOffset(index));
 }
 
-FamList::Descriptor FamMap::getBucketDescriptor(const std::size_t index) const {
+template <typename T>
+FamList::Descriptor FamMap<T>::getBucketDescriptor(const std::size_t index) const {
     return table_.get<FamList::Descriptor>(bucketOffset(index));
 }
 
-std::optional<FamList> FamMap::getBucket(const std::size_t index) const {
+template <typename T>
+std::optional<FamList> FamMap<T>::getBucket(const std::size_t index) const {
     if (const auto head = getBucketHead(index); head == 0 || head == creating) {
         return {};
     }
     return FamList{region_, getBucketDescriptor(index)};
 }
 
-FamList FamMap::getOrCreateBucket(const std::size_t index) {
+template <typename T>
+FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
     // bucket already exists
     if (auto bucket = getBucket(index)) {
         return std::move(*bucket);
@@ -150,26 +147,31 @@ FamList FamMap::getOrCreateBucket(const std::size_t index) {
 //----------------------------------------------------------------------------------------------------------------------
 // Iterators
 
-auto FamMap::begin() const -> iterator {
+template <typename T>
+auto FamMap<T>::begin() const -> iterator {
     return {*this, 0, true};
 }
 
-auto FamMap::cbegin() const -> const_iterator {
+template <typename T>
+auto FamMap<T>::cbegin() const -> const_iterator {
     return {*this, 0, true};
 }
 
-auto FamMap::end() const -> iterator {
+template <typename T>
+auto FamMap<T>::end() const -> iterator {
     return {*this, bucket_count, false};
 }
 
-auto FamMap::cend() const -> const_iterator {
+template <typename T>
+auto FamMap<T>::cend() const -> const_iterator {
     return {*this, bucket_count, false};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Lookup
 
-auto FamMap::find(const key_type& key) const -> iterator {
+template <typename T>
+auto FamMap<T>::find(const key_type& key) const -> iterator {
     const auto index = bucketIndex(key);
 
     auto bucket_list = getBucket(index);
@@ -185,7 +187,8 @@ auto FamMap::find(const key_type& key) const -> iterator {
     return {*this, index, std::move(iter), std::move(*bucket_list)};
 }
 
-bool FamMap::contains(const key_type& key) const {
+template <typename T>
+bool FamMap<T>::contains(const key_type& key) const {
     const auto bucket_list = getBucket(bucketIndex(key));
     if (bucket_list) {
         return findInBucket(*bucket_list, key) != bucket_list->end();
@@ -196,7 +199,8 @@ bool FamMap::contains(const key_type& key) const {
 //----------------------------------------------------------------------------------------------------------------------
 // Modifiers
 
-auto FamMap::insert(const key_type& key, const void* data, const size_type length) -> std::pair<iterator, bool> {
+template <typename T>
+auto FamMap<T>::insert(const key_type& key, const void* data, const size_type length) -> std::pair<iterator, bool> {
     const auto index = bucketIndex(key);
     auto bucket      = getOrCreateBucket(index);
 
@@ -218,7 +222,8 @@ auto FamMap::insert(const key_type& key, const void* data, const size_type lengt
     return {iterator{*this, index, std::move(new_it), std::move(bucket)}, true};
 }
 
-auto FamMap::erase(const key_type& key) -> size_type {
+template <typename T>
+auto FamMap<T>::erase(const key_type& key) -> size_type {
     const auto index = bucketIndex(key);
     auto bucket_list = getBucket(index);
     if (!bucket_list) {
@@ -235,7 +240,8 @@ auto FamMap::erase(const key_type& key) -> size_type {
     return 1;
 }
 
-void FamMap::clear() {
+template <typename T>
+void FamMap<T>::clear() {
     for (std::size_t i = 0; i < bucket_count; ++i) {
         auto bucket_list = getBucket(i);
         if (bucket_list) {
@@ -250,25 +256,30 @@ void FamMap::clear() {
 //----------------------------------------------------------------------------------------------------------------------
 // Capacity
 
-auto FamMap::size() const -> size_type {
+template <typename T>
+auto FamMap<T>::size() const -> size_type {
     return count_.get<size_type>();
 }
 
-bool FamMap::empty() const {
+template <typename T>
+bool FamMap<T>::empty() const {
     return size() == 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Output
 
-void FamMap::print(std::ostream& out) const {
-    out << "FamMap[name=" << name_ << ",buckets=" << bucket_count << ",size=" << size() << ",region=" << region_ << ']';
+template <typename T>
+void FamMap<T>::print(std::ostream& out) const {
+    out << "FamMap[name=" << name_ << ",key_size=" << key_size << ",size=" << size() << ",region=" << region_ << ']';
 }
 
-std::ostream& operator<<(std::ostream& out, const FamMap& map) {
-    map.print(out);
-    return out;
-}
+//----------------------------------------------------------------------------------------------------------------------
+
+// Explicit instantiations
+template class FamMap<FamMapEntry<32>>;
+template class FamMap<FamMapEntry<64>>;
+template class FamMap<FamMapEntry<128>>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -17,65 +17,102 @@
 /// @author Metin Cakircali
 /// @date   Jul 2024
 
+/// @brief Forward iterator for FamMap that walks all entries across all hash buckets.
+///
+/// ## Iteration Order
+///
+/// The iterator visits entries in bucket order (0 → bucket_count-1). Within each bucket,
+/// entries are visited in FamList insertion order. Empty buckets are skipped.
+///
+/// ## Thread Safety
+///
+/// Safe during concurrent insertions and deletions. Relies on FamList iterator's
+/// marked-node skipping to handle concurrent deletions transparently.
+
 #pragma once
 
-#include <memory>
+#include <cstddef>
+#include <iterator>
+#include <optional>
 
 #include "eckit/io/fam/FamList.h"
-#include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamMapEntry.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
-// ITERATOR
 
+class FamMap;
+
+/// @brief Forward iterator for FamMap.
+///
+/// Walks bucket 0..N and within each non-empty bucket walks the FamList entries.
+/// Dereference returns FamMapEntry{key, value} by value (data lives in FAM).
+template <typename T>
 class FamMapIterator {
+
+    static_assert(IsFamMapEntry<T>::value, "FamMapIterator only supports T = FamMapEntry<...>");
+
 public:  // types
 
     using iterator_category = std::forward_iterator_tag;
-
-    using value_type = FamList;
-    using pointer    = value_type*;
-    using reference  = value_type&;
+    using value_type        = T;
+    using difference_type   = std::ptrdiff_t;
 
 public:  // methods
 
-    FamMapIterator(FamRegion region, fam::index_t offset);
+    /// Construct begin/end iterator for the map.
+    /// @param map     The owning FamMap.
+    /// @param bucket  Bucket index (bucket_count for end).
+    /// @param advance If true, advances to the first non-empty entry.
+    FamMapIterator(const FamMap& map, std::size_t bucket, bool advance);
 
+    /// Construct iterator pointing to a specific entry in a specific bucket.
+    FamMapIterator(const FamMap& map, std::size_t bucket, FamListIterator iter, FamList list);
+
+    FamMapIterator(const FamMapIterator&)            = delete;
+    FamMapIterator& operator=(const FamMapIterator&) = delete;
+    FamMapIterator(FamMapIterator&&)                 = default;
+    FamMapIterator& operator=(FamMapIterator&&)      = default;
+
+    ~FamMapIterator() = default;
+
+    /// Advance to next entry. Crosses bucket boundaries.
     FamMapIterator& operator++();
 
-    bool operator==(const FamMapIterator& other) const { return other.node_ == node_; }
-
+    /// Compare iterators.
+    bool operator==(const FamMapIterator& other) const;
     bool operator!=(const FamMapIterator& other) const { return !operator==(other); }
 
-    pointer operator->();
+    /// Dereference: returns FamMapEntry{key, value} by value.
+    value_type operator*();
 
-    reference operator*();
+private:  // methods
+
+    /// Advance bucket_ to the next non-empty bucket and load it.
+    void advanceToNextBucket();
+
+    /// Load the bucket FamList at the bucket_ and position iter_ to its begin().
+    /// Returns false if bucket is empty.
+    bool loadBucket();
+
+    /// Check if there's more buckets.
+    bool hasMoreBuckets() const;
 
 private:  // members
 
-    FamRegion region_;
-    FamObject node_;
-
-    std::unique_ptr<value_type> list_;
+    const FamMap* map_;
+    std::size_t bucket_;
+    std::optional<FamList> list_;
+    std::optional<FamListIterator> iter_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
-// CONST ITERATOR
 
-class FamMapConstIterator : public FamMapIterator {
-    using FamMapIterator::FamMapIterator;
-
-    using value_type = FamMapIterator::value_type;
-    using pointer    = const value_type*;
-    using reference  = const value_type&;
-
-public:  // methods
-
-    pointer operator->() { return FamMapIterator::operator->(); }
-
-    reference operator*() { return FamMapIterator::operator*(); }
+/// @brief Const variant of FamMapIterator.
+template <typename T>
+class FamMapConstIterator : public FamMapIterator<T> {
+    using FamMapIterator<T>::FamMapIterator;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

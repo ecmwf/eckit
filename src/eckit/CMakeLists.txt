@@ -278,6 +278,7 @@ io/fam/FamListIterator.cc
 io/fam/FamListIterator.h
 io/fam/FamMap.cc
 io/fam/FamMap.h
+io/fam/FamMapEntry.h
 io/fam/FamMapIterator.cc
 io/fam/FamMapIterator.h
 io/fam/FamName.cc

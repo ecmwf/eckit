@@ -15,124 +15,240 @@
 
 #include "eckit/io/fam/FamMap.h"
 
-#include <iostream>
+#include <cstddef>
+#include <cstring>
+#include <ostream>
 #include <string>
+#include <thread>
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamList.h"
+#include "eckit/io/fam/FamMapIterator.h"
 #include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
-#include "eckit/io/fam/FamRegionName.h"
-#include "eckit/io/fam/detail/FamMapNode.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+// Helpers
 
-FamMap::FamMap(FamRegion region, const std::string& name) :
-    region_{std::move(region)},
-    root_{initSentinel(name + "-map-root", sizeof(FamMapNode))},
-    table_{initSentinel(name + "-map-table", capacity * sizeof(FamMapNode))},
-    count_{initSentinel(name + "-map-count", sizeof(size_type))} {}
+namespace {
 
-FamObject FamMap::initSentinel(const std::string& object_name, const size_type object_size) const {
+// /// Encode a key-value pair into a flat buffer for storage in FamList nodes.
+// /// Layout: [key (32 bytes)] [value data (length bytes)]
+// Buffer encodeEntry(const FamMap::key_type& key, const void* data, FamMap::size_type length) {
+//     Buffer payload(FamMap::key_size + length);
+//     std::memcpy(payload.data(), key.data(), FamMap::key_size);
+//     if (length > 0 && data != nullptr) {
+//         std::memcpy(static_cast<char*>(payload.data()) + FamMap::key_size, data, length);
+//     }
+//     return payload;
+// }
+
+/// Offset of the head field within a FamList::Descriptor.
+constexpr fam::size_t bucketOffset(std::size_t index) {
+    return static_cast<fam::size_t>(index * sizeof(FamList::Descriptor));
+}
+
+/// Offset of the head field within a FamList::Descriptor.
+constexpr fam::size_t bucketHeadOffset(std::size_t index) {
+    return bucketOffset(index) + offsetof(FamList::Descriptor, head);
+}
+
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
+FamObject FamMap::initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) {
     try {
-        return region_.allocateObject(object_size, object_name);
+        return region.allocateObject(object_size, object_name);
     }
     catch (const AlreadyExists&) {
-        auto object = region_.lookupObject(object_name);
+        auto object = region.lookupObject(object_name);
         ASSERT(object.size() == object_size);
         return object;
     }
 }
 
+FamMap::FamMap(std::string name, FamRegion region) :
+    name_{std::move(name)},
+    region_{std::move(region)},
+    table_{initSentinel(region_, name_ + "-map-table", bucket_count * sizeof(FamList::Descriptor))},
+    count_{initSentinel(region_, name_ + "-map-count", sizeof(size_type))} {}
+
 //----------------------------------------------------------------------------------------------------------------------
-// iterators
+// Bucket management
+
+FamListIterator FamMap::findInBucket(const FamList& list, const key_type& key) {
+    for (auto iter = list.begin(); iter != list.end(); ++iter) {
+        const auto& buffer = *iter;
+        if (buffer.size() >= key_size && entry_type::decodeKey(buffer) == key) {
+            return iter;
+        }
+    }
+    return list.end();
+}
+
+fam::size_t FamMap::getBucketHead(const std::size_t index) const {
+    return table_.get<fam::size_t>(bucketHeadOffset(index));
+}
+
+FamList::Descriptor FamMap::getBucketDescriptor(const std::size_t index) const {
+    return table_.get<FamList::Descriptor>(bucketOffset(index));
+}
+
+std::optional<FamList> FamMap::getBucket(const std::size_t index) const {
+    if (const auto head = getBucketHead(index); head == 0 || head == creating) {
+        return {};
+    }
+    return FamList{region_, getBucketDescriptor(index)};
+}
+
+FamList FamMap::getOrCreateBucket(const std::size_t index) {
+    // bucket already exists
+    if (auto bucket = getBucket(index)) {
+        return std::move(*bucket);
+    }
+
+    // Try to claim the bucket via CAS: 0 -> CREATING
+    const auto old_head = table_.compareSwap(bucketHeadOffset(index), fam::size_t{0}, creating);
+
+    if (old_head == 0) {
+        // We claimed the bucket. Create a new FamList bucket.
+        // Use short name to stay within OpenFAM dataitem name limits (~40 chars).
+        // Format: "{map_name}-b{index}"
+        const auto bucket_name = name_ + "-b" + std::to_string(index);
+        auto bucket            = FamList{region_, bucket_name};
+        auto desc              = bucket.descriptor();
+
+        // Write remaining descriptor fields FIRST (tail, size, epoch)
+        const auto base_offset = static_cast<fam::size_t>(index * sizeof(FamList::Descriptor));
+        table_.put(desc.region, base_offset + offsetof(FamList::Descriptor, region));
+        table_.put(desc.tail, base_offset + offsetof(FamList::Descriptor, tail));
+        table_.put(desc.size, base_offset + offsetof(FamList::Descriptor, size));
+        table_.put(desc.epoch, base_offset + offsetof(FamList::Descriptor, epoch));
+
+        // Write head LAST to "publish" the bucket (transitions from CREATING → real offset)
+        table_.put(desc.head, bucketHeadOffset(index));
+
+        return bucket;
+    }
+
+    // Another proc/thread is creating this bucket. Spin until head is valid.
+    auto head = old_head;
+    while (head == 0 || head == creating) {
+        std::this_thread::yield();
+        head = table_.get<fam::size_t>(bucketHeadOffset(index));
+    }
+
+    return {region_, getBucketDescriptor(index)};
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Iterators
 
 auto FamMap::begin() const -> iterator {
-    return {region_, FamMapNode::getNextOffset(root_)};
+    return {*this, 0, true};
 }
 
 auto FamMap::cbegin() const -> const_iterator {
-    return {region_, FamMapNode::getNextOffset(root_)};
+    return {*this, 0, true};
 }
 
 auto FamMap::end() const -> iterator {
-    return {region_, 0};
+    return {*this, bucket_count, false};
 }
 
 auto FamMap::cend() const -> const_iterator {
-    return {region_, 0};
+    return {*this, bucket_count, false};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// lookup
+// Lookup
 
-auto FamMap::at(const key_type& /* key */) -> reference {
-    NOTIMP;
+auto FamMap::find(const key_type& key) const -> iterator {
+    const auto index = bucketIndex(key);
+
+    auto bucket_list = getBucket(index);
+    if (!bucket_list) {
+        return end();
+    }
+
+    auto iter = findInBucket(*bucket_list, key);
+    if (iter == bucket_list->end()) {
+        return end();
+    }
+
+    return {*this, index, std::move(iter), std::move(*bucket_list)};
 }
 
-auto FamMap::at(const key_type& /* key */) const -> const_reference {
-    NOTIMP;
-}
-
-auto FamMap::find(const key_type& /* key */) -> iterator {
-    NOTIMP;
-}
-
-auto FamMap::find(const key_type& /* key */) const -> const_iterator {
-    NOTIMP;
-}
-
-bool FamMap::contains(const key_type& /* key */) const {
-    NOTIMP;
-}
-
-// Buffer FamMap::front() const {
-//     return std::move(*begin());
-// }
-//
-// Buffer FamMap::back() const {
-//     return std::move(*--end());
-// }
-
-//----------------------------------------------------------------------------------------------------------------------
-// modifiers
-
-auto FamMap::insert(const value_type& value) -> iterator {}
-
-// void FamMap::push_back(const void* data, const fam::size_t length) {
-//     // allocate an object
-//     auto newObject = region_.allocateObject(sizeof(FamNode) + length);
-//
-//     // set new object's next to tail
-//     newObject.put(tail_.descriptor(), offsetof(FamNode, next));
-//
-//     // set tail's prev to new object
-//     const auto prevOffset = tail_.swap(offsetof(FamNode, prev.offset), newObject.offset());
-//
-//     const auto oldObject = region_.proxyObject(prevOffset);
-//
-//     // set old object's next to new object
-//     oldObject.put(newObject.descriptor(), offsetof(FamNode, next));
-//
-//     // set new object's prev to old object
-//     newObject.put(oldObject.descriptor(), offsetof(FamNode, prev));
-//
-//     // finally the data
-//     newObject.put(length, offsetof(FamNode, length));
-//     newObject.put(data, sizeof(FamNode), length);
-//
-//     // increment size
-//     size_.add(0, 1UL);
-// }
-
-auto FamMap::insert(value_type&& /* value */) -> iterator {
-    NOTIMP;
+bool FamMap::contains(const key_type& key) const {
+    const auto bucket_list = getBucket(bucketIndex(key));
+    if (bucket_list) {
+        return findInBucket(*bucket_list, key) != bucket_list->end();
+    }
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// capacity
+// Modifiers
+
+auto FamMap::insert(const key_type& key, const void* data, const size_type length) -> std::pair<iterator, bool> {
+    const auto index = bucketIndex(key);
+    auto bucket      = getOrCreateBucket(index);
+
+    // Check if key already exists
+    auto iter = findInBucket(bucket, key);
+    if (iter != bucket.end()) {
+        return {iterator{*this, index, std::move(iter), std::move(bucket)}, false};
+    }
+
+    // Encode and insert into bucket list (lock-free via FamList::pushBack)
+    auto payload = entry_type::encode(key, data, length);
+    bucket.pushBack(payload);
+
+    // Atomically increment total count
+    count_.add(0, 1UL);
+
+    // Re-find the entry to return a valid iterator
+    auto new_it = findInBucket(bucket, key);
+    return {iterator{*this, index, std::move(new_it), std::move(bucket)}, true};
+}
+
+auto FamMap::erase(const key_type& key) -> size_type {
+    const auto index = bucketIndex(key);
+    auto bucket_list = getBucket(index);
+    if (!bucket_list) {
+        return 0;
+    }
+
+    auto iter = findInBucket(*bucket_list, key);
+    if (iter == bucket_list->end()) {
+        return 0;
+    }
+
+    bucket_list->erase(std::move(iter));
+    count_.subtract(0, 1UL);
+    return 1;
+}
+
+void FamMap::clear() {
+    for (std::size_t i = 0; i < bucket_count; ++i) {
+        auto bucket_list = getBucket(i);
+        if (bucket_list) {
+            while (!bucket_list->empty()) {
+                bucket_list->popFront();
+            }
+        }
+    }
+    count_.set(0, size_type{0});
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Capacity
 
 auto FamMap::size() const -> size_type {
     return count_.get<size_type>();
@@ -143,13 +259,14 @@ bool FamMap::empty() const {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+// Output
 
 void FamMap::print(std::ostream& out) const {
-    out << "FamMap[capacity=" << capacity << ",region=" << region_ << ",root=" << root_ << ",count=" << count_ << ']';
+    out << "FamMap[name=" << name_ << ",buckets=" << bucket_count << ",size=" << size() << ",region=" << region_ << ']';
 }
 
-std::ostream& operator<<(std::ostream& out, const FamMap& list) {
-    list.print(out);
+std::ostream& operator<<(std::ostream& out, const FamMap& map) {
+    map.print(out);
     return out;
 }
 

@@ -145,9 +145,6 @@ public:  // methods
     [[nodiscard]]
     bool empty() const;
 
-    /// Return the number of buckets.
-    static constexpr std::size_t bucketCount() { return bucket_count; }
-
     // ---- iterators ----
 
     /// Return iterator to the first entry (across all buckets).
@@ -193,7 +190,7 @@ private:  // methods
     friend class FamMapIterator<T>;
 
     /// Return the bucket index for a given key.
-    static std::size_t bucketIndex(const key_type& key) { return hash_type{}(key) % bucketCount(); }
+    static std::size_t bucketIndex(const key_type& key) { return hash_type{}(key) % bucket_count; }
 
     /// Find the list iterator pointing to the entry with given key in a bucket.
     /// Returns the bucket's end() if not found.

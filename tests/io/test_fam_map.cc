@@ -65,7 +65,6 @@ CASE("FamMap<32>: create empty map and validate size/empty") {
 
     EXPECT(map.empty());
     EXPECT_EQUAL(map.size(), 0);
-    EXPECT_EQUAL(map.bucketCount(), 1024);
     EXPECT(map.begin() == map.end());
 }
 
@@ -331,7 +330,6 @@ CASE("FamMap<64>: create empty map and validate size/empty") {
 
     EXPECT(map.empty());
     EXPECT_EQUAL(map.size(), 0);
-    EXPECT_EQUAL(map.bucketCount(), 1024);
     EXPECT_EQUAL(map.key_size, 64);
     EXPECT(map.begin() == map.end());
 }

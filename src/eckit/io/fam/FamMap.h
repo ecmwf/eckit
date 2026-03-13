@@ -225,4 +225,8 @@ private:  // members
 
 //----------------------------------------------------------------------------------------------------------------------
 
+using FamMap32  = FamMap<FamMapEntry<32>>;
+using FamMap64  = FamMap<FamMapEntry<64>>;
+using FamMap128 = FamMap<FamMapEntry<128>>;
+
 }  // namespace eckit

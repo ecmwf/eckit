@@ -40,7 +40,7 @@ FamName::~FamName() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamName::session() const -> FamSessionManager::Session {
+FamSessionManager::Session FamName::session() const {
     return FamSessionManager::instance().getOrAdd("EckitFAMSession", endpoint_);
 }
 

@@ -273,6 +273,13 @@ ecbuild_add_option( FEATURE HIP
                     DESCRIPTION "HIP GPU linear algebra operations"
                     REQUIRED_PACKAGES hip hipsparse )
 
+### Torch
+
+ecbuild_add_option( FEATURE TORCH
+                    DEFAULT OFF
+                    DESCRIPTION "Torch linear algebra operations"
+                    REQUIRED_PACKAGES Torch )
+
 ### Performance tests
 
 ecbuild_add_option( FEATURE EXTRA_TESTS

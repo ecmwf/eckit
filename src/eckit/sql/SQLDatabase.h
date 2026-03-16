@@ -34,8 +34,8 @@ namespace expression {
 class SQLExpression;
 }
 
-typedef std::map<std::string, std::set<std::string>> Links;
-typedef std::map<std::string, std::shared_ptr<expression::SQLExpression>> Variables;
+using Links     = std::map<std::string, std::set<std::string>>;
+using Variables = std::map<std::string, std::shared_ptr<expression::SQLExpression>>;
 
 
 //----------------------------------------------------------------------------------------------------------------------

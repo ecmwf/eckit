@@ -60,8 +60,8 @@ public:
 
     // -- Members
 
-    const value_type& X = container_type::operator[](0);
-    const value_type& Y = container_type::operator[](1);
+    value_type X() const { return container_type::operator[](0); }
+    value_type Y() const { return container_type::operator[](1); }
 
     // -- Methods
 
@@ -93,15 +93,15 @@ public:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& out, const PointXY& p) {
-        return out << '{' << p.X << ", " << p.Y << '}';
+        return out << '{' << p.X() << ", " << p.Y() << '}';
     }
 
-    friend PointXY operator-(const PointXY& p) { return {-p.X, -p.Y}; }
-    friend PointXY operator-(const PointXY& p, const PointXY& q) { return {p.X - q.X, p.Y - q.Y}; }
-    friend PointXY operator+(const PointXY& p, const PointXY& q) { return {p.X + q.X, p.Y + q.Y}; }
-    friend PointXY operator*(const PointXY& p, value_type d) { return {p.X * d, p.Y * d}; }
+    friend PointXY operator-(const PointXY& p) { return {-p.X(), -p.Y()}; }
+    friend PointXY operator-(const PointXY& p, const PointXY& q) { return {p.X() - q.X(), p.Y() - q.Y()}; }
+    friend PointXY operator+(const PointXY& p, const PointXY& q) { return {p.X() + q.X(), p.Y() + q.Y()}; }
+    friend PointXY operator*(const PointXY& p, value_type d) { return {p.X() * d, p.Y() * d}; }
 
-    friend bool operator==(const PointXY& p, const PointXY& q) { return p.X == q.X && p.Y == q.Y; }
+    friend bool operator==(const PointXY& p, const PointXY& q) { return p.X() == q.X() && p.Y() == q.Y(); }
     friend bool operator!=(const PointXY& p, const PointXY& q) { return !operator==(p, q); }
 };
 

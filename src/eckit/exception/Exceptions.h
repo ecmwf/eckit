@@ -39,26 +39,26 @@ void handle_panic(const char*, const CodeLocation& = {});
 void handle_panic_no_log(const char*, const CodeLocation& = {});
 void handle_assert(const std::string&, const CodeLocation& = {});
 
-/**
- * @brief Base class for all ECMWF exceptions.
- * All exception types shall inherit from this class, either directly or
- * indirectly.
- *
- * When inheriting from this class prefer your Exception type to be
- * constructible from a message and a code location, e.g.:
- * ```
- * class MyException : public Exception {
- * public:
- *     MyException(const std::string& msg, const CodeLocation& loc = {}) :
- *         Exception(msg, loc){}
- * }
- * ```
- */
+
+/// @brief Base class for all ECMWF exceptions.
+/// All exception types shall inherit from this class, either directly or
+/// indirectly.
+///
+/// When inheriting from this class prefer your Exception type to be
+/// constructible from a message and a code location, e.g.:
+/// ```
+/// class MyException : public Exception {
+/// public:
+///     MyException(const std::string& msg, const CodeLocation& loc = {}) :
+///         Exception(msg, loc){}
+/// }
+/// ```
 class Exception : public std::exception {
 public:
 
     /// Constructors
     explicit Exception(const std::string& what, const CodeLocation& = {});
+    explicit Exception(const std::string& what, const CodeLocation& loc, bool quiet);
     Exception();
 
     Exception(const Exception&) = default;
@@ -233,9 +233,6 @@ public:
     explicit NotImplemented(const std::string&, const CodeLocation&);
     explicit NotImplemented(const CodeLocation& loc) : NotImplemented({}, loc) {}
 };
-
-/// For compatibility
-using MethodNotYetImplemented [[deprecated("Use eckit::NotImplemented directly")]] = NotImplemented;
 
 class FunctionalityNotSupported : public NotImplemented {
 public:

@@ -23,7 +23,8 @@ namespace eckit::geo::iterator {
 
 
 struct Instance {
-    explicit Instance(const Spec& spec) : grid(dynamic_cast<const grid::Unstructured*>(GridFactory::build(spec))) {
+    explicit Instance(const Iterator::Spec& spec) :
+        grid(dynamic_cast<const grid::Unstructured*>(GridFactory::build(spec))) {
         ASSERT(grid);
     }
 
@@ -32,18 +33,17 @@ struct Instance {
 
 
 struct UnstructuredInstance : Instance, Unstructured {
-    explicit UnstructuredInstance(const Spec& spec) : Instance(spec), Unstructured(*grid) {}
+    explicit UnstructuredInstance(const Iterator::Spec& spec) : Instance(spec), Unstructured(*grid) {}
 };
 
 
 Unstructured::Unstructured(const Grid& grid, size_t index, std::shared_ptr<container::PointsContainer> container) :
-    projection_(grid.projection()), container_(container), index_(index), size_(container_->size()), uid_(grid.uid()) {
+    container_(container), index_(index), size_(container_->size()), uid_(grid.uid()) {
     ASSERT(container_->size() == grid.size());
 }
 
 
-Unstructured::Unstructured(const Grid& grid) :
-    projection_(grid.projection()), index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
+Unstructured::Unstructured(const Grid& grid) : index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
 
 
 bool Unstructured::operator==(const geo::Iterator& other) const {
@@ -80,7 +80,7 @@ Unstructured::operator bool() const {
 
 Point Unstructured::operator*() const {
     ASSERT(container_);
-    return projection_.fwd(container_->get(index_));
+    return container_->get(index_);
 }
 
 

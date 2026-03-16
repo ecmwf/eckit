@@ -32,7 +32,9 @@ protected:
 
     PointsContainer() = default;
 
-    static std::pair<std::vector<double>, std::vector<double>> to_latlons(const std::vector<Point>&);
+    static std::pair<std::vector<double>, std::vector<double>> points_to_latlons(const std::vector<Point>&);
+    static std::vector<Point> latlons_to_points(const std::vector<double>& latitudes,
+                                                const std::vector<double>& longitudes);
 
 public:
 
@@ -57,6 +59,24 @@ struct PointsInstance : PointsContainer {
 private:
 
     const std::vector<Point> points_;
+};
+
+
+struct PointsLonLatInstance : PointsContainer {
+    explicit PointsLonLatInstance(std::vector<double>&& longitudes, std::vector<double>&& latitudes);
+
+    Point get(size_t index) const override { return PointLonLat{longitudes.at(index), latitudes.at(index)}; }
+    size_t size() const override { return longitudes.size(); }
+
+    [[nodiscard]] std::vector<Point> to_points() const override;
+    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
+
+    void hash(MD5&) const override;
+
+private:
+
+    const std::vector<double> longitudes;
+    const std::vector<double> latitudes;
 };
 
 

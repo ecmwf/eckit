@@ -78,7 +78,7 @@ public:
 
 public:
 
-    PoolFileEntry(const std::string& name) : name_(name), file_(nullptr), count_(0) {}
+    PoolFileEntry(const std::string& name) : name_(name), file_{nullptr}, count_(0) {}
 
     void doClose() {
         if (file_) {

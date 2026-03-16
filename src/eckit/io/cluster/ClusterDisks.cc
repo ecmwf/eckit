@@ -44,7 +44,7 @@ class ClusterDisk {
 public:
 
     ClusterDisk(const std::string& node, const std::string& type, const std::string& path) :
-        active_(true), offLine_(false), lastSeen_(::time(0)) {
+        active_(true), offLine_(false), lastSeen_(::time(nullptr)) {
         zero(node_);
         strncpy(node_, node.c_str(), sizeof(node_) - 1);
         zero(type_);
@@ -126,7 +126,7 @@ public:
     }
 };
 std::ostream& operator<<(std::ostream& s, const ClusterDisk& d) {
-    s << "ClusterDisk[" << d.node_ << "," << d.type_ << "," << d.path_ << "," << (::time(0) - d.lastSeen_) << ","
+    s << "ClusterDisk[" << d.node_ << "," << d.type_ << "," << d.path_ << "," << (::time(nullptr) - d.lastSeen_) << ","
       << (d.offLine_ ? "off" : "on") << "-line"
       << "]";
     return s;
@@ -138,12 +138,19 @@ inline unsigned long version(ClusterDisk*) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class DiskArray : private eckit::NonCopyable {
+class DiskArray {
 
 public:
 
-    typedef ClusterDisk* iterator;
-    typedef const ClusterDisk* const_iterator;
+    using iterator       = ClusterDisk*;
+    using const_iterator = const ClusterDisk*;
+
+    DiskArray() = default;
+
+    DiskArray(const DiskArray&)            = delete;
+    DiskArray& operator=(const DiskArray&) = delete;
+    DiskArray(DiskArray&&)                 = delete;
+    DiskArray& operator=(DiskArray&&)      = delete;
 
     virtual ~DiskArray() {}
 
@@ -259,7 +266,7 @@ void ClusterDisks::cleanup() {
 
 void ClusterDisks::forget(const NodeInfo& info) {
     if (info.name() == "marsfs") {
-        time_t now = ::time(0);
+        time_t now = ::time(nullptr);
         pthread_once(&once, diskarray_init);
         AutoLock<DiskArray> lock(*clusterDisks);
 
@@ -275,7 +282,7 @@ void ClusterDisks::forget(const NodeInfo& info) {
 
 void ClusterDisks::offLine(const NodeInfo& info) {
     if (info.name() == "marsfs") {
-        time_t now = ::time(0);
+        time_t now = ::time(nullptr);
         pthread_once(&once, diskarray_init);
         AutoLock<DiskArray> lock(*clusterDisks);
 

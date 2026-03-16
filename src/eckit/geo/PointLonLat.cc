@@ -16,9 +16,11 @@
 #include <cmath>
 #include <limits>
 #include <sstream>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 
@@ -42,27 +44,27 @@ PointLonLat::value_type PointLonLat::normalise_angle_to_maximum(value_type a, va
 
 
 bool PointLonLat::pole(value_type eps) const {
-    const auto p = make(lon, lat);
-    return types::is_approximately_equal(p.lat, RIGHT_ANGLE, eps) ||
-           types::is_approximately_equal(p.lat, -RIGHT_ANGLE, eps);
+    const auto p = make(lon(), lat());
+    return types::is_approximately_equal(p.lat(), RIGHT_ANGLE, eps) ||
+           types::is_approximately_equal(p.lat(), -RIGHT_ANGLE, eps);
 }
 
 
 bool PointLonLat::north_pole(value_type eps) const {
-    return types::is_approximately_equal(make(lon, lat).lat, RIGHT_ANGLE, eps);
+    return types::is_approximately_equal(make(lon(), lat()).lat(), RIGHT_ANGLE, eps);
 }
 
 
 bool PointLonLat::south_pole(value_type eps) const {
-    return types::is_approximately_equal(make(lon, lat).lat, -RIGHT_ANGLE, eps);
+    return types::is_approximately_equal(make(lon(), lat()).lat(), -RIGHT_ANGLE, eps);
 }
 
 
 void PointLonLat::assert_latitude_range(const PointLonLat& P) {
-    if (!(-RIGHT_ANGLE <= P.lat && P.lat <= RIGHT_ANGLE)) {
+    if (!(-RIGHT_ANGLE <= P.lat() && P.lat() <= RIGHT_ANGLE)) {
         std::ostringstream oss;
         oss.precision(std::numeric_limits<value_type>::max_digits10);
-        oss << "Invalid latitude [degree] " << P.lat;
+        oss << "Invalid latitude [degree] " << P.lat();
         throw BadValue(oss.str(), Here());
     }
 }
@@ -88,20 +90,42 @@ PointLonLat PointLonLat::make_from_lonlatr(value_type lonr, value_type latr, val
 }
 
 
+PointLonLat PointLonLat::make_from_spec(const spec::Spec& spec, const std::string& name) {
+    static const PointLonLat dfault;
+    if (spec.has(name + "_lonlat") || (spec.has(name + "_lon") && spec.has(name + "_lat"))) {
+        return make_from_spec(spec, name, dfault);
+    }
+
+    throw exception::SpecError(
+        "PointLonLat::make_from_spec: missing '" + name + "_lonlat' or '" + name + "_lon'/'" + name + "_lat'", Here());
+}
+
+
+PointLonLat PointLonLat::make_from_spec(const spec::Spec& spec, const std::string& name, const PointLonLat& dfault) {
+    if (std::vector<value_type> v{dfault.lon(), dfault.lat()};
+        (spec.get(name + "_lonlat", v) && v.size() == 2) ||
+        (spec.get(name + "_lon", v[0]) && spec.get(name + "_lat", v[1]))) {
+        return {v[0], v[1]};
+    }
+
+    return dfault;
+}
+
+
 PointLonLat PointLonLat::componentsMin(const PointLonLat& p, const PointLonLat& q) {
-    return {std::min(p.lon, q.lon), std::min(p.lat, q.lat)};
+    return {std::min(p.lon(), q.lon()), std::min(p.lat(), q.lat())};
 }
 
 
 PointLonLat PointLonLat::componentsMax(const PointLonLat& p, const PointLonLat& q) {
-    return {std::max(p.lon, q.lon), std::max(p.lat, q.lat)};
+    return {std::max(p.lon(), q.lon()), std::max(p.lat(), q.lat())};
 }
 
 
 bool points_equal(const PointLonLat& a, const PointLonLat& b, PointLonLat::value_type eps) {
-    const auto c = PointLonLat::make(a.lon, a.lat, 0., eps);
-    const auto d = PointLonLat::make(b.lon, b.lat, 0., eps);
-    return types::is_approximately_equal(c.lon, d.lon, eps) && types::is_approximately_equal(c.lat, d.lat, eps);
+    const auto c = PointLonLat::make(a.lon(), a.lat(), 0., eps);
+    const auto d = PointLonLat::make(b.lon(), b.lat(), 0., eps);
+    return types::is_approximately_equal(c.lon(), d.lon(), eps) && types::is_approximately_equal(c.lat(), d.lat(), eps);
 }
 
 

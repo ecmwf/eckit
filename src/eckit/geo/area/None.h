@@ -15,7 +15,7 @@
 #include "eckit/geo/Area.h"
 
 
-namespace eckit::geo {
+namespace eckit::geo::area {
 
 
 class None final : public Area {
@@ -39,4 +39,4 @@ private:
 };
 
 
-}  // namespace eckit::geo
+}  // namespace eckit::geo::area

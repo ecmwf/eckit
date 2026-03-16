@@ -30,7 +30,7 @@ SessionID::SessionID() :
     hostname_(Main::hostname()),
     pid_(::getpid()),
     thread_(std::hash<std::thread::id>()(std::this_thread::get_id())),
-    time_(::time(0)) {}
+    time_(::time(nullptr)) {}
 
 SessionID::SessionID(Stream& s) {
     s >> hostname_;

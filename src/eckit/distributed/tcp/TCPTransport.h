@@ -69,10 +69,6 @@ protected:  // methods
 
 private:
 
-    // typedef bool (TCPTransport::*)(Connection&);
-
-    // void all(bool (TCPTransport ::* const)(Connection&));
-
     void disconnect() const;
     void disconnect(Connection&) const;
     void disconnect(std::exception& e, Connection&) const;

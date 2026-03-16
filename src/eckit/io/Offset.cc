@@ -24,7 +24,7 @@ void sort(OffsetList& offset, LengthList& length) {
     ASSERT(offset.size() == length.size());
     size_t i = 0;
 
-    typedef std::map<Offset, Length> OffsetLengthMap;
+    using OffsetLengthMap = std::map<Offset, Length>;
 
     OffsetLengthMap ol;
     for (i = 0; i < offset.size(); i++) {

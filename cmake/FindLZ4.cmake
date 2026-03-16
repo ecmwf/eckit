@@ -15,7 +15,7 @@
 #
 # The following paths will be searched with priority if set in CMake or env
 #
-#  LZ4_PATH          - prefix path of the Armadillo installation
+#  LZ4_PATH          - prefix path of the LZ4 installation
 #  LZ4_ROOT              - Set this variable to the root installation
 
 # Search with priority for LZ4_PATH if given as CMake or env var

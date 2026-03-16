@@ -78,7 +78,7 @@ UUID::operator std::string() const {
 }
 
 std::istream& operator>>(std::istream& is, UUID& u) {
-    typedef std::istream::char_type char_type;
+    using char_type = std::istream::char_type;
 
     const std::istream::sentry ok(is);
     if (ok) {

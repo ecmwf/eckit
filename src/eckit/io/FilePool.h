@@ -16,7 +16,6 @@
 #define eckit_io_FilePool_h
 
 #include "eckit/container/CacheLRU.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/MutexCond.h"
 
 namespace eckit {
@@ -37,11 +36,16 @@ namespace eckit {
 ///
 /// @note this class is thread-safe
 ///
-class FilePool : private eckit::NonCopyable {
+class FilePool {
 
 public:
 
     FilePool(size_t capacity);
+
+    FilePool(const FilePool&)            = delete;
+    FilePool& operator=(const FilePool&) = delete;
+    FilePool(FilePool&&)                 = delete;
+    FilePool& operator=(FilePool&&)      = delete;
 
     ~FilePool();
 

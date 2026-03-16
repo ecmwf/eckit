@@ -37,7 +37,7 @@ class Stream;
 class Length {
 public:  // types
 
-    typedef long long value_t;
+    using value_t = long long;
 
 public:  // methods
 
@@ -86,7 +86,7 @@ private:  // members
     friend class Offset;
 };
 
-typedef std::vector<Length> LengthList;
+using LengthList = std::vector<Length>;
 
 
 #ifdef _AIX

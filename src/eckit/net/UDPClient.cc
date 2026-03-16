@@ -29,12 +29,12 @@
 namespace eckit::net {
 
 UDPClient::UDPClient(const Configuration& cfg) :
-    hostname_(cfg.getString("host")), port_(cfg.getInt("port")), socketfd_(0), servinfo_(nullptr), addr_(nullptr) {
+    hostname_(cfg.getString("host")), port_(cfg.getInt("port")), socketfd_(0), servinfo_{nullptr}, addr_{nullptr} {
     init();
 }
 
 UDPClient::UDPClient(const std::string& hostname, int port) :
-    hostname_(hostname), port_(port), socketfd_(0), servinfo_(nullptr), addr_(nullptr) {
+    hostname_(hostname), port_(port), socketfd_(0), servinfo_{nullptr}, addr_{nullptr} {
     init();
 }
 
@@ -56,14 +56,14 @@ void UDPClient::init() {
     }
 
     // loop through all the addrinfo results and make a socket
-    for (addr_ = servinfo_; addr_ != NULL; addr_ = addr_->ai_next) {
+    for (addr_ = servinfo_; addr_ != nullptr; addr_ = addr_->ai_next) {
         if ((socketfd_ = ::socket(addr_->ai_family, addr_->ai_socktype, addr_->ai_protocol)) == -1) {
             continue;
         }
         break;
     }
 
-    if (addr_ == NULL) {
+    if (addr_ == nullptr) {
         std::ostringstream msg;
         msg << "UDPClient failed to create a socket";
         throw FailedSystemCall(msg.str());

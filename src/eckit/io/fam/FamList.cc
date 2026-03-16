@@ -21,7 +21,7 @@
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
@@ -34,7 +34,7 @@ namespace eckit {
 
 namespace {
 
-auto initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) -> FamObject {
+FamObject initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) {
     try {
         return region.allocateObject(object_size, object_name);
     }
@@ -49,122 +49,264 @@ auto initSentinel(const FamRegion& region, const std::string& object_name, const
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamList::FamList(const FamRegion& region, const Descriptor& desc) :
-    region_{region},
+FamList::FamList(FamRegion region, const Descriptor& desc) :
+    region_{std::move(region)},
     head_{region_.proxyObject(desc.head)},
     tail_{region_.proxyObject(desc.tail)},
-    size_{region_.proxyObject(desc.size)} {
-    ASSERT(region.index() == desc.region);
+    size_{region_.proxyObject(desc.size)},
+    epoch_{region_.proxyObject(desc.epoch)} {
+    ASSERT(region_.index() == desc.region);
 }
 
-FamList::FamList(const FamRegion& region, const std::string& list_name) :
-    region_{region},
+FamList::FamList(FamRegion region, const std::string& list_name) :
+    region_{std::move(region)},
     head_{initSentinel(region_, list_name + "-list-head", sizeof(FamListNode))},
     tail_{initSentinel(region_, list_name + "-list-tail", sizeof(FamListNode))},
-    size_{initSentinel(region_, list_name + "-list-size", sizeof(size_type))} {
-    // set head's next to tail's prev
+    size_{initSentinel(region_, list_name + "-list-size", sizeof(size_type))},
+    epoch_{initSentinel(region_, list_name + "-list-epoch", sizeof(std::uint64_t))} {
+    // set head's next to tail's prev (idempotent)
     if (FamListNode::getNextOffset(head_) == 0) {
         head_.put(tail_.descriptor(), offsetof(FamListNode, next));
     }
-    // set tail's prev to head's next
+    // set tail's prev to head's next (idempotent)
     if (FamListNode::getPrevOffset(tail_) == 0) {
         tail_.put(head_.descriptor(), offsetof(FamListNode, prev));
     }
 }
 
-FamList::FamList(const FamRegionName& name) : FamList(name.lookup(), name.path().objectName) {}
-
 auto FamList::descriptor() const -> Descriptor {
-    return {region_.index(), head_.offset(), tail_.offset(), size_.offset()};
+    return {region_.index(), head_.offset(), tail_.offset(), size_.offset(), epoch_.offset()};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // iterators
 
 auto FamList::begin() const -> iterator {
-    return {region_.proxyObject(FamListNode::getNextOffset(head_))};
+    return region_.proxyObject(FamListNode::getNextOffset(head_));
 }
 
 auto FamList::cbegin() const -> const_iterator {
-    return {region_.proxyObject(FamListNode::getNextOffset(head_))};
+    return region_.proxyObject(FamListNode::getNextOffset(head_));
 }
 
 auto FamList::end() const -> iterator {
-    return {region_.proxyObject(tail_.offset())};
+    return region_.proxyObject(tail_.offset());
 }
 
 auto FamList::cend() const -> const_iterator {
-    return {region_.proxyObject(tail_.offset())};
+    return region_.proxyObject(tail_.offset());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // accessors
 
-auto FamList::front() const -> Buffer {
+auto FamList::front() const -> value_type {
+    ASSERT(!empty());
     return std::move(*begin());
 }
 
-auto FamList::back() const -> Buffer {
+auto FamList::back() const -> value_type {
+    ASSERT(!empty());
     return std::move(*--end());
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// modifiers
+// Lock-Free Insertion
 
 void FamList::pushFront(const void* data, const size_type length) {
-    // allocate an object
+    // 1. Allocate new node with data
     auto new_object = region_.allocateObject(sizeof(FamListNode) + length);
-
-    // set new object's previous to head
-    new_object.put(head_.descriptor(), offsetof(FamListNode, prev));
-
-    // set head's next to new object
-    const auto prev_offset = head_.swap(offsetof(FamListNode, next.offset), new_object.offset());
-    const auto old_object  = region_.proxyObject(prev_offset);
-
-    // set old object's prev to new object
-    old_object.put(new_object.descriptor(), offsetof(FamListNode, prev));
-    // set new object's next to old object
-    new_object.put(old_object.descriptor(), offsetof(FamListNode, next));
-
-    // finally put the data
     new_object.put(length, offsetof(FamListNode, length));
     new_object.put(data, sizeof(FamListNode), length);
 
-    // increment size
-    size_.add(0, 1UL);
+    // 2. Link into list: use CAS-loop to atomically update head.next
+    //    This ensures the new node becomes visible to other readers
+    while (true) {
+        // Get current first node (what head.next points to)
+        const auto first_offset = FamListNode::getNextOffset(head_);
+        auto first_object       = region_.proxyObject(first_offset);
+
+        // Point new node backward to head
+        new_object.put(head_.descriptor(), offsetof(FamListNode, prev));
+
+        // Point new node forward to current first node
+        new_object.put(first_object.descriptor(), offsetof(FamListNode, next));
+
+        // Atomically update head.next to new node.
+        // On success, we become the new first node.
+        const auto old_offset =
+            head_.compareSwap(offsetof(FamListNode, next.offset), first_offset, new_object.offset());
+        if (old_offset == first_offset) {
+            // Success! Now update the old first node's prev pointer to us.
+            // Note: This happens after we're visible in the list, so readers can see us.
+            first_object.put(new_object.descriptor(), offsetof(FamListNode, prev));
+
+            // Atomically increment size
+            size_.add(0, 1UL);
+
+            // Increment epoch to invalidate old iterators (optional, for ABA safety)
+            epoch_.add(0, 1UL);
+            return;
+        }
+        // CAS failed, another thread modified head.next. Retry with updated first offset.
+    }
 }
 
 void FamList::pushBack(const void* data, const size_type length) {
-    // allocate an object
+    // 1. Allocate new node with data
     auto new_object = region_.allocateObject(sizeof(FamListNode) + length);
-
-    // set new object's next to tail
-    new_object.put(tail_.descriptor(), offsetof(FamListNode, next));
-
-    // set tail's prev to new object
-    const auto prev_offset = tail_.swap(offsetof(FamListNode, prev.offset), new_object.offset());
-    const auto old_object  = region_.proxyObject(prev_offset);
-
-    // set old object's next to new object
-    old_object.put(new_object.descriptor(), offsetof(FamListNode, next));
-    // set new object's prev to old object
-    new_object.put(old_object.descriptor(), offsetof(FamListNode, prev));
-
-    // finally put the data
     new_object.put(length, offsetof(FamListNode, length));
     new_object.put(data, sizeof(FamListNode), length);
 
-    // increment size
-    size_.add(0, 1UL);
+    // 2. Link into list: use CAS-loop to atomically update tail.prev
+    //    This ensures new node becomes visible to other readers
+    while (true) {
+        // Get current last node (what tail.prev points to)
+        const auto last_offset = FamListNode::getPrevOffset(tail_);
+        auto last_object       = region_.proxyObject(last_offset);
+
+        // Point new node forward to tail
+        new_object.put(tail_.descriptor(), offsetof(FamListNode, next));
+
+        // Point new node backward to current last node
+        new_object.put(last_object.descriptor(), offsetof(FamListNode, prev));
+
+        // Atomically update tail.prev to new node.
+        // On success, we become the new last node.
+        const auto old_offset = tail_.compareSwap(offsetof(FamListNode, prev.offset), last_offset, new_object.offset());
+        if (old_offset == last_offset) {
+            // Success! Now update the old last node's next pointer to us.
+            // Note: This happens after we're visible in the list, so readers can see us.
+            last_object.put(new_object.descriptor(), offsetof(FamListNode, next));
+
+            // Atomically increment size
+            size_.add(0, 1UL);
+
+            // Increment epoch (for iterator validation)
+            epoch_.add(0, 1UL);
+            return;
+        }
+        // CAS failed, another thread modified tail.prev. Retry with updated last offset.
+    }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+// Wait-Free Deletion (Logical + Physical)
+
 void FamList::popFront() {
-    NOTIMP;
+    ASSERT(!empty());
+
+    while (true) {
+        // Get the first node to delete
+        const auto first_offset = FamListNode::getNextOffset(head_);
+        auto first_object       = region_.proxyObject(first_offset);
+
+        // Safety check: don't delete the tail sentinel
+        if (first_offset == tail_.offset()) {
+            return;  // Already empty
+        }
+
+        // 1. Logically mark the node as deleted (wait-free flag)
+        FamListNode::mark(first_object);
+
+        // 2. Get the next node after the one we're deleting
+        const auto next_offset = FamListNode::getNextOffset(first_object);
+
+        // 3. Atomically update head.next to skip over the marked node
+        const auto old_offset = head_.compareSwap(offsetof(FamListNode, next.offset), first_offset, next_offset);
+        if (old_offset == first_offset) {
+            // Success! We've removed the node from the list.
+            // Update the next node's prev pointer to point to head
+            auto next_object = region_.proxyObject(next_offset);
+            next_object.put(head_.descriptor(), offsetof(FamListNode, prev));
+
+            // Decrement size
+            size_.subtract(0, 1UL);
+
+            // Increment epoch for iterator validation
+            epoch_.add(0, 1UL);
+
+            // Now deallocate the marked node (safe since we've unlinked it)
+            first_object.deallocate();
+            return;
+        }
+        // CAS failed, another thread modified head.next. Retry
+    }
 }
 
 void FamList::popBack() {
-    NOTIMP;
+    ASSERT(!empty());
+
+    while (true) {
+        // Get the last node to delete
+        const auto last_offset = FamListNode::getPrevOffset(tail_);
+        auto last_object       = region_.proxyObject(last_offset);
+
+        // Safety check: don't delete the head sentinel
+        if (last_offset == head_.offset()) {
+            return;  // Already empty
+        }
+
+        // 1. Logically mark the node as deleted (wait-free flag)
+        FamListNode::mark(last_object);
+
+        // 2. Get the previous node
+        const auto prev_offset = FamListNode::getPrevOffset(last_object);
+
+        // 3. Atomically update tail.prev to point before the marked node
+        const auto old_offset = tail_.compareSwap(offsetof(FamListNode, prev.offset), last_offset, prev_offset);
+        if (old_offset == last_offset) {
+            // Success! We've removed the node from the list.
+            // Update the previous node's next pointer to point to tail
+            auto prev_object = region_.proxyObject(prev_offset);
+            prev_object.put(tail_.descriptor(), offsetof(FamListNode, next));
+
+            // Decrement size
+            size_.subtract(0, 1UL);
+
+            // Increment epoch
+            epoch_.add(0, 1UL);
+
+            // Deallocate the marked node
+            last_object.deallocate();
+            return;
+        }
+        // CAS failed, another thread modified tail.prev. Retry
+    }
+}
+
+auto FamList::erase(iterator pos) -> iterator {
+    const auto& object = pos.object();
+    ASSERT(object.offset() != tail_.offset());
+
+    while (true) {
+        // 1. Mark the node for deletion
+        FamListNode::mark(object);
+
+        // 2. Get next and prev pointers
+        const auto next_offset = FamListNode::getNextOffset(object);
+        const auto prev_offset = FamListNode::getPrevOffset(object);
+
+        auto next_object = region_.proxyObject(next_offset);
+        auto prev_object = region_.proxyObject(prev_offset);
+
+        // 3. Atomically update prev.next to skip over marked node
+        const auto old_next = prev_object.compareSwap(offsetof(FamListNode, next.offset), object.offset(), next_offset);
+        if (old_next == object.offset()) {
+            // Success! Update next.prev as well
+            next_object.put(prev_object.descriptor(), offsetof(FamListNode, prev));
+
+            // Update size and epoch
+            size_.subtract(0, 1UL);
+            epoch_.add(0, 1UL);
+
+            // Deallocate marked node
+            object.deallocate();
+
+            return region_.proxyObject(next_offset);
+        }
+        // CAS failed, retry
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -174,8 +316,10 @@ auto FamList::size() const -> size_type {
     return size_.get<size_type>();
 }
 
-auto FamList::empty() const -> bool {
-    return (FamListNode::getNextOffset(head_) == tail_.offset());
+bool FamList::empty() const {
+    // A node is the first real element if it's the next of head and not tail
+    const auto first_offset = FamListNode::getNextOffset(head_);
+    return first_offset == tail_.offset();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

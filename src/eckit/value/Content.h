@@ -46,8 +46,8 @@ class Value;
 class JSON;
 class Hash;
 
-typedef std::vector<Value> ValueList;
-typedef std::map<Value, Value> ValueMap;
+using ValueList = std::vector<Value>;
+using ValueMap  = std::map<Value, Value>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

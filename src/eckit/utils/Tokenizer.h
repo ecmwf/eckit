@@ -19,18 +19,21 @@
 #include <string>
 #include <vector>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 //---------------------------------------------------------------------------------------------------------------------
 
-class Tokenizer : private NonCopyable {
+class Tokenizer {
 
 public:  // methods
 
     Tokenizer(char, bool keepEmpty = false);
     Tokenizer(const std::string&, bool keepEmpty = false);
+
+    Tokenizer(const Tokenizer&)            = delete;
+    Tokenizer& operator=(const Tokenizer&) = delete;
+    Tokenizer(Tokenizer&&)                 = delete;
+    Tokenizer& operator=(Tokenizer&&)      = delete;
 
     ~Tokenizer();
 

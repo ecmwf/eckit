@@ -15,7 +15,7 @@
 #
 # The following paths will be searched with priority if set in CMake or env
 #
-#  SNAPPY_PATH          - prefix path of the Armadillo installation
+#  SNAPPY_PATH          - prefix path of the Snappy installation
 #  SNAPPY_ROOT              - Set this variable to the root installation
 
 # Search with priority for SNAPPY_PATH if given as CMake or env var

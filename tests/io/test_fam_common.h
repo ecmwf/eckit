@@ -39,14 +39,14 @@ namespace fam {
 
 // This returns a random number as string.
 inline auto random_number() -> std::string {
-    struct timeval tv;
+    struct timeval tv{};
     ::gettimeofday(&tv, nullptr);
     // ::getpid() ?
     ::srandom(static_cast<unsigned int>(tv.tv_sec + tv.tv_usec));
     return std::to_string(::random());
 }
 
-const auto test_endpoint = "172.21.0.2:8880"s;
+const auto test_endpoint = "172.26.0.2:8880"s;
 
 class TestFam {
 public:
@@ -72,7 +72,7 @@ public:
 
 private:
 
-    FamRegionName name_{test_endpoint, {}};
+    FamRegionName name_{test_endpoint, ""};
 
     std::vector<FamRegion> regions_;
 };

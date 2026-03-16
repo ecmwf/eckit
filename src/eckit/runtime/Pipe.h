@@ -15,7 +15,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/CodeLocation.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/MutexCond.h"
@@ -33,14 +32,19 @@ template <class PAYLOAD>
 struct OnePayload;
 
 template <class PAYLOAD>
-class Pipe : private NonCopyable {
+class Pipe {
 public:
 
-    typedef void (*Proc)(Pipe<PAYLOAD>&);
+    using Proc = void (*)(Pipe<PAYLOAD>&);
 
     // -- Contructors
 
     Pipe(long count = 2);
+
+    Pipe(const Pipe&)            = delete;
+    Pipe& operator=(const Pipe&) = delete;
+    Pipe(Pipe&&)                 = delete;
+    Pipe& operator=(Pipe&&)      = delete;
 
     // -- Destructor
 
@@ -104,7 +108,7 @@ class Pipe;
 template <class PAYLOAD>
 class PipeTask : public Thread {
 
-    typedef typename Pipe<PAYLOAD>::Proc Proc;
+    using Proc = typename Pipe<PAYLOAD>::Proc;
 
     Pipe<PAYLOAD>& owner_;
     Proc& consumer_;

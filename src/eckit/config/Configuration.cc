@@ -51,6 +51,10 @@ Configuration::Configuration(const eckit::Value& root, char separator) :
     root_(new Value(root)), separator_(separator) {}
 
 Configuration& Configuration::operator=(const Configuration& other) {
+    if (this == &other) {
+        return *this;
+    }
+
     *root_     = *other.root_;
     separator_ = other.separator_;
     return *this;

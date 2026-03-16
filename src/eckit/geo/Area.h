@@ -17,10 +17,10 @@
 #include <string>
 
 #include "eckit/geo/Point.h"
-#include "eckit/geo/spec/Custom.h"
-#include "eckit/geo/spec/Generator.h"
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Generator.h"
 
 
 namespace eckit::geo::area {
@@ -37,6 +37,7 @@ public:
     // -- Types
 
     using builder_t = BuilderT1<Area>;
+    using Spec      = spec::Spec;
     using ARG1      = const Spec&;
 
     // -- Constructors
@@ -102,12 +103,12 @@ using AreaRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
 
 
 struct AreaFactory {
-    [[nodiscard]] static const Area* build(const Spec& spec) { return instance().make_from_spec_(spec); }
+    [[nodiscard]] static const Area* build(const Area::Spec& spec) { return instance().make_from_spec_(spec); }
 
     [[nodiscard]] static const Area* make_from_string(const std::string&);
-    [[nodiscard]] static Spec* make_spec(const Spec& spec) { return instance().make_spec_(spec); }
+    [[nodiscard]] static Area::Spec* make_spec(const Area::Spec& spec) { return instance().make_spec_(spec); }
 
-    static void add_library(const std::string& lib, Spec* spec) { return instance().add_library_(lib, spec); }
+    static void add_library(const std::string& lib, Area::Spec* spec) { return instance().add_library_(lib, spec); }
 
     static std::ostream& list(std::ostream& out) { return instance().list_(out); }
 
@@ -115,14 +116,14 @@ private:
 
     static AreaFactory& instance();
 
-    [[nodiscard]] const Area* make_from_spec_(const Spec&) const;
-    [[nodiscard]] Spec* make_spec_(const Spec&) const;
+    [[nodiscard]] const Area* make_from_spec_(const Area::Spec&) const;
+    [[nodiscard]] Area::Spec* make_spec_(const Area::Spec&) const;
 
-    void add_library_(const std::string& lib, Spec* spec);
+    void add_library_(const std::string& lib, Area::Spec* spec);
 
     std::ostream& list_(std::ostream&) const;
 
-    std::map<std::string, std::unique_ptr<Spec>> libraries_;
+    std::map<std::string, std::unique_ptr<Area::Spec>> libraries_;
 };
 
 

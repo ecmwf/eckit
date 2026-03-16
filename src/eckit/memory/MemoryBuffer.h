@@ -19,21 +19,24 @@
 
 #include "eckit/eckit.h"
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 // A simple class to implement buffers
 
-class MemoryBuffer : private NonCopyable {
+class MemoryBuffer {
 
 public:  // methods
 
     MemoryBuffer(size_t size);
     MemoryBuffer(const std::string& s);
     MemoryBuffer(const char*, size_t size);
+
+    MemoryBuffer(const MemoryBuffer&)            = delete;
+    MemoryBuffer& operator=(const MemoryBuffer&) = delete;
+    MemoryBuffer(MemoryBuffer&&)                 = delete;
+    MemoryBuffer& operator=(MemoryBuffer&&)      = delete;
 
     ~MemoryBuffer();
 

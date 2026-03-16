@@ -17,16 +17,16 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-MemoryBuffer::MemoryBuffer(size_t size) : buffer_(0), size_(size) {
+MemoryBuffer::MemoryBuffer(size_t size) : buffer_{nullptr}, size_(size) {
     create();
 }
 
-MemoryBuffer::MemoryBuffer(const char* p, size_t size) : buffer_(0), size_(size) {
+MemoryBuffer::MemoryBuffer(const char* p, size_t size) : buffer_{nullptr}, size_(size) {
     create();
     copy(p, size);
 }
 
-MemoryBuffer::MemoryBuffer(const std::string& s) : buffer_(0), size_(s.length() + 1) {
+MemoryBuffer::MemoryBuffer(const std::string& s) : buffer_{nullptr}, size_(s.length() + 1) {
     create();
     copy(s);
 }

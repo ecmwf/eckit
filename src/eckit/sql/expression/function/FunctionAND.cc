@@ -79,7 +79,7 @@ std::shared_ptr<SQLExpression> FunctionAND::simplify(bool& changed) {
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 }  // namespace eckit::sql::expression::function

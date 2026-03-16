@@ -34,23 +34,23 @@ class FamRegion {
 
 public:  // methods
 
-    FamRegion(FamSessionDetail& session, FamRegionDescriptor* region);
+    FamRegion(FamSession& session, FamRegionDescriptor* region);
 
     void destroy() const;
 
-    auto exists() const -> bool;
+    bool exists() const;
 
     // properties
 
-    auto index() const -> fam::index_t;
+    fam::index_t index() const;
 
-    auto size() const -> fam::size_t;
+    fam::size_t size() const;
 
-    auto permissions() const -> fam::perm_t;
+    fam::perm_t permissions() const;
 
-    auto name() const -> std::string;
+    std::string name() const;
 
-    auto property() const -> FamProperty;
+    FamProperty property() const;
 
     void setObjectLevelPermissions() const;
 
@@ -58,15 +58,15 @@ public:  // methods
 
     // object methods
 
-    auto proxyObject(fam::index_t offset) const -> FamObject;
+    FamObject proxyObject(fam::index_t offset) const;
 
-    auto lookupObject(const std::string& object_name) const -> FamObject;
+    FamObject lookupObject(const std::string& object_name) const;
 
-    auto allocateObject(fam::size_t object_size, fam::perm_t object_perm, const std::string& object_name = "",
-                        bool overwrite = false) const -> FamObject;
+    FamObject allocateObject(fam::size_t object_size, fam::perm_t object_perm, const std::string& object_name = "",
+                             bool overwrite = false) const;
 
-    auto allocateObject(fam::size_t object_size, const std::string& object_name = "", bool overwrite = false) const
-        -> FamObject {
+    FamObject allocateObject(fam::size_t object_size, const std::string& object_name = "",
+                             bool overwrite = false) const {
         return allocateObject(object_size, permissions(), object_name, overwrite);
     }
 
@@ -80,7 +80,7 @@ private:  // methods
 
 private:  // members
 
-    std::shared_ptr<FamSessionDetail> session_;
+    std::shared_ptr<FamSession> session_;
     std::shared_ptr<FamRegionDescriptor> region_;
 };
 

@@ -30,7 +30,7 @@ public:  // methods
     }
 
     /// Empty contructor
-    CodeLocation() : line_(0), file_(nullptr), func_(nullptr) {}
+    CodeLocation() : line_(0), file_{nullptr}, func_{nullptr} {}
 
     /// Full Contructor
     CodeLocation(const char* file, int line, const char* func) : line_(line), file_(file), func_(func) {}

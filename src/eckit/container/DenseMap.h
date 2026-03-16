@@ -29,19 +29,18 @@ template <typename K, typename V>
 class DenseMap {
 public:  // types
 
-    typedef K key_type;    ///< key type
-    typedef V value_type;  ///< value type
-
-    typedef std::pair<K, V> item_type;  ///< (key, value) item type
+    using key_type   = K;                ///< key type
+    using value_type = V;                ///< value type
+    using item_type  = std::pair<K, V>;  ///< (key, value) item type
 
 private:  // types
 
-    typedef std::deque<item_type> store_t;
+    using store_t = std::deque<item_type>;
 
 public:  // methods
 
-    typedef typename store_t::iterator iterator;
-    typedef typename store_t::const_iterator const_iterator;
+    using iterator       = typename store_t::iterator;
+    using const_iterator = typename store_t::const_iterator;
 
     DenseMap() : sorted_(true) {}
 

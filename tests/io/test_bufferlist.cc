@@ -13,12 +13,12 @@ namespace eckit::test {
 
 CASE("Test Empty") {
     BufferList bl;
-    EXPECT(bl.count() == 0);
-    EXPECT(bl.size() == Length(0));
+    EXPECT_EQUAL(bl.count(), 0);
+    EXPECT_EQUAL(bl.size(), Length(0));
 
     Buffer c;
     EXPECT_NO_THROW(c = bl.consolidate());
-    EXPECT(c.size() == 0);
+    EXPECT_EQUAL(c.size(), 0);
 }
 
 CASE("Test 1 Buffer Optimisation") {
@@ -27,16 +27,16 @@ CASE("Test 1 Buffer Optimisation") {
     BufferList bl;
     Buffer b(s1);
 
-    EXPECT(bl.count() == 0);
+    EXPECT_EQUAL(bl.count(), 0);
     bl.append(std::move(b));
-    EXPECT(bl.count() == 1);
+    EXPECT_EQUAL(bl.count(), 1);
 
     Buffer c;
     EXPECT_NO_THROW(c = bl.consolidate());
 
-    EXPECT(c.size() == Length(s1.size() + 1));
-    EXPECT(bl.count() == 0);
-    EXPECT(bl.size() == Length(0));
+    EXPECT_EQUAL(c.size(), s1.size() + 1);
+    EXPECT_EQUAL(bl.count(), 0);
+    EXPECT_EQUAL(bl.size(), Length(0));
 }
 
 
@@ -86,7 +86,7 @@ CASE("Test Buffer Aggregation") {
 
     Buffer empty = bl.consolidate();
 
-    EXPECT(empty.size() == Length(0));
+    EXPECT(empty.size() == 0);
 }
 
 CASE("Test ownership of aggregated buffers") {

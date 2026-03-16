@@ -19,7 +19,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 ClassSpec Streamable::classSpec_ = {
-    0,
+    nullptr,
     "Streamable",
 };
 Reanimator<Streamable> Streamable::reanimator_;

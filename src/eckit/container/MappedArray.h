@@ -18,7 +18,6 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/os/Semaphore.h"
 
 
@@ -29,17 +28,20 @@ namespace eckit {
 // Used to std::map an array to a file
 
 template <class T>
-class MappedArray : private NonCopyable {
+class MappedArray {
 public:
 
     // stl compatibility
 
-    typedef T* iterator;
-    typedef const T* const_iterator;
+    using iterator       = T*;
+    using const_iterator = const T*;
 
     // -- Contructors
 
     MappedArray(const PathName&, unsigned long);
+
+    MappedArray(const MappedArray&)            = delete;
+    MappedArray& operator=(const MappedArray&) = delete;
 
     // -- Destructor
 

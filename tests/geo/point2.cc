@@ -23,18 +23,18 @@ namespace eckit::geo::test {
 CASE("PointXY initialisation") {
     PointXY z;
 
-    EXPECT(z.X == 0.);
-    EXPECT(z.Y == 0.);
+    EXPECT(z.X() == 0.);
+    EXPECT(z.Y() == 0.);
 
     PointXY q{4., 5.};
 
-    EXPECT(q.X == 4.);
-    EXPECT(q.Y == 5.);
+    EXPECT(q.X() == 4.);
+    EXPECT(q.Y() == 5.);
 
     PointXY r(q);
 
-    EXPECT(r.X == 4.);
-    EXPECT(r.Y == 5.);
+    EXPECT(r.X() == 4.);
+    EXPECT(r.Y() == 5.);
 }
 
 
@@ -44,8 +44,8 @@ CASE("PointXY addition") {
 
     PointXY r = p1 + p2;
 
-    EXPECT(r.X == 3.);
-    EXPECT(r.Y == 6.);
+    EXPECT(r.X() == 3.);
+    EXPECT(r.Y() == 6.);
 }
 
 
@@ -55,8 +55,8 @@ CASE("PointXY subtraction") {
 
     PointXY r = p1 - p2;
 
-    EXPECT(r.X == 1.);
-    EXPECT(r.Y == 3.);
+    EXPECT(r.X() == 1.);
+    EXPECT(r.Y() == 3.);
 }
 
 
@@ -66,8 +66,8 @@ CASE("PointXY scaling") {
 
     PointXY r = p1 * 42.;
 
-    EXPECT(r.X == 42.);
-    EXPECT(r.Y == 84.);
+    EXPECT(r.X() == 42.);
+    EXPECT(r.Y() == 84.);
 
     PointXY oo;
 

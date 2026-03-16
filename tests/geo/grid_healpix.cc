@@ -12,8 +12,9 @@
 
 #include <memory>
 
-#include "eckit/geo/grid/HEALPix.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -69,7 +70,7 @@ CASE("sizes") {
     for (const auto& test : tests) {
         std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "h" + std::to_string(test.N)}})));
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"type", "HEALPix"}, {"Nside", test.N}})));
-        grid::HEALPix grid3(test.N);
+        grid::reduced::HEALPix grid3(test.N);
 
         EXPECT(grid1->size() == test.size);
         EXPECT(grid2->size() == test.size);
@@ -79,14 +80,14 @@ CASE("sizes") {
 
 
 CASE("points") {
-    std::unique_ptr<const Grid> ring(new grid::HEALPix(2));
+    std::unique_ptr<const Grid> ring(new grid::reduced::HEALPix(2));
 
-    EXPECT(ring->order() == order::HEALPix::ring);
+    EXPECT(ring->order() == order::HEALPix::RING);
 
 
-    std::unique_ptr<const Grid> nested(new grid::HEALPix(2, order::HEALPix::nested));
+    std::unique_ptr<const Grid> nested(new grid::reduced::HEALPix(2, order::HEALPix::NESTED));
 
-    EXPECT(nested->order() == order::HEALPix::nested);
+    EXPECT(nested->order() == order::HEALPix::NESTED);
 
     // reference coordinates in ring order()
     const std::vector<PointLonLat> ref{
@@ -163,7 +164,7 @@ CASE("points") {
     EXPECT(i == ring->size());
 
 
-    auto ren      = nested->reorder(order::HEALPix::ring);
+    auto ren      = nested->reorder(order::HEALPix::RING);
     auto points_n = nested->to_points();
 
     EXPECT(points_n.size() == nested->size());
@@ -190,17 +191,17 @@ CASE("points") {
 CASE("equals") {
     std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "h2"}})));
     std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("{type: HEALPix, Nside: 2}"));
-    std::unique_ptr<const Grid> grid3(new grid::HEALPix(2));
+    std::unique_ptr<const Grid> grid3(new grid::reduced::HEALPix(2));
 
     EXPECT(*grid1 == *grid2);
     EXPECT(*grid2 == *grid3);
     EXPECT(*grid3 == *grid1);
 
-    EXPECT(grid1->order() == order::HEALPix::ring);
+    EXPECT(grid1->order() == order::HEALPix::RING);
 
     std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", "h2"}, {"order", "nested"}})));
     std::unique_ptr<const Grid> grid5(GridFactory::make_from_string("{type: HEALPix, Nside: 2, order: nested}"));
-    std::unique_ptr<const Grid> grid6(new grid::HEALPix(2, order::HEALPix::nested));
+    std::unique_ptr<const Grid> grid6(new grid::reduced::HEALPix(2, order::HEALPix::NESTED));
 
     EXPECT(*grid4 != *grid1);
 
@@ -208,13 +209,13 @@ CASE("equals") {
     EXPECT(*grid5 == *grid6);
     EXPECT(*grid6 == *grid4);
 
-    EXPECT(grid4->order() == order::HEALPix::nested);
+    EXPECT(grid4->order() == order::HEALPix::NESTED);
 }
 
 
 CASE("wrong spec") {
     EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h0}"), exception::SpecError);
-    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:nested}"), exception::OrderError);
+    EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:nest}"), exception::OrderError);
     EXPECT_THROWS_AS(auto* ignore = GridFactory::make_from_string("{grid:h3, order:?}"), exception::OrderError);
 }
 

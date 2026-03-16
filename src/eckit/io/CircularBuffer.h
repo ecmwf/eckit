@@ -18,8 +18,6 @@
 #include <limits>
 
 #include "eckit/eckit.h"
-
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {
@@ -27,11 +25,16 @@ namespace eckit {
 
 // A simple class to implement buffers
 
-class CircularBuffer : public eckit::NonCopyable {
+class CircularBuffer {
 
 public:  // methods
 
     CircularBuffer(size_t size = 64 * 1024, size_t capactity = std::numeric_limits<size_t>::max());
+
+    CircularBuffer(const CircularBuffer&)            = delete;
+    CircularBuffer& operator=(const CircularBuffer&) = delete;
+    CircularBuffer(CircularBuffer&&)                 = delete;
+    CircularBuffer& operator=(CircularBuffer&&)      = delete;
 
     ~CircularBuffer();
 

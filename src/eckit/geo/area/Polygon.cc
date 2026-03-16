@@ -17,7 +17,7 @@
 #include <numeric>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::area {
@@ -26,7 +26,7 @@ namespace eckit::geo::area {
 static const AreaRegisterType<Polygon> AREATYPE("polygon");
 
 
-Polygon::Polygon(const Spec& spec) : Polygon(*std::unique_ptr<Polygon>(make_from_spec(spec))) {}
+Polygon::Polygon(const Area::Spec& spec) : Polygon(*std::unique_ptr<Polygon>(make_from_spec(spec))) {}
 
 
 bool Polygon::intersects(BoundingBox&) const {
@@ -63,7 +63,7 @@ void Polygon::fill_spec(spec::Custom& custom) const {
 }
 
 
-Polygon* Polygon::make_from_spec(const Spec& spec) {
+Polygon* Polygon::make_from_spec(const Area::Spec& spec) {
     NOTIMP;
 }
 

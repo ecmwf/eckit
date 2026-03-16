@@ -49,7 +49,7 @@ const std::vector<double>& gaussian_quadrature_weights(size_t N) {
                 zfn[i] *= std::sqrt(1. - 0.25 / (static_cast<double>(j * j)));
             }
 
-            for (size_t j = 2; j <= i - i % 2; j += 2) {
+            for (size_t j = 2; j <= i - (i % 2); j += 2) {
                 zfn[i - j] = zfn[i - j + 2] * static_cast<double>((j - 1) * (2 * i - j + 2)) /
                              static_cast<double>(j * (2 * i - j + 1));
             }
@@ -61,34 +61,37 @@ const std::vector<double>& gaussian_quadrature_weights(size_t N) {
     }
 
 
-    // Newton loop (per latitude) to find 0 of Legendre polynomial of degree N (GAWL)
+    /*
+     * Newton loop (per latitude) to find 0 of Legendre polynomial of degree N (GAWL)
+     * The convergence is run more than once, for historical reasons.
+     */
     constexpr size_t Nmax = 20;
-    constexpr double eps  = std::numeric_limits<double>::epsilon() * 1000.;
+    constexpr auto eps    = std::numeric_limits<double>::epsilon() * 1000.;
 
     for (size_t i = 0; i < N; ++i) {
-        // First guess
+        // First guess for colatitude [rad]
         auto z = static_cast<double>(4 * (i + 1) - 1) * M_PI / static_cast<double>(4 * 2 * N + 2);
         auto x = z + 1. / (std::tan(z) * static_cast<double>(8 * (2 * N) * (2 * N)));
 
         double w       = 0.;
-        bool converged = false;
+        auto converged = false;
 
         for (size_t n = 1; n < Nmax; ++n) {
-            auto f  = 0.5 * zzfn[0];  // normalised ordinary Legendre polynomial == \overbar{P_n}^0
-            auto fp = 0.;             // normalised derivative == d/d\theta(\overbar{P_n}^0)
+            auto f = zzfn[0] * 0.5 +
+                     zzfn[1] * std::cos(2. * x);         // normalised ordinary Legendre polynomial == \overbar{P_n}^0
+            auto fp = zzfn[1] * std::sin(2. * x) * -2.;  // normalised derivative == d/d\theta(\overbar{P_n}^0)
 
-            for (size_t j = 1; j <= N; ++j) {
-                const auto i2 = static_cast<double>(j * 2);
-                f += zzfn[j] * std::cos(i2 * x);
-                fp -= zzfn[j] * std::sin(i2 * x) * i2;
+            for (size_t j = 2; j <= N; ++j) {
+                const auto j2 = static_cast<double>(j * 2);
+                f += zzfn[j] * std::cos(j2 * x);
+                fp -= zzfn[j] * std::sin(j2 * x) * j2;
             }
 
             auto dx = -f / fp;
             x += dx;
 
             if (converged) {
-                const auto j = 2 * N - 1 - i;
-                w = weights[i] = static_cast<double>(2 * 2 * N + 1) / (fp * fp);
+                w = static_cast<double>(2 * 2 * N + 1) / (fp * fp);
                 break;
             }
 

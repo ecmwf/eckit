@@ -24,7 +24,6 @@ class DataHandle;
 
 #include <memory>
 
-#include "eckit/memory/OnlyMovable.h"
 #include "eckit/sql/SQLSelectFactory.h"
 // #include "eckit/sql/SQLInsertFactory.h"
 #include "eckit/sql/SQLDatabase.h"
@@ -40,16 +39,21 @@ class SQLStatement;
 class SQLTable;
 class SQLOutputConfig;
 
-class SQLSession : private eckit::OnlyMovable {
+class SQLSession {
 public:
 
     // Constructors
 
-    SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config = 0,
+    SQLSession(std::unique_ptr<SQLOutput> out, std::unique_ptr<SQLOutputConfig> config = nullptr,
                const std::string& csvDelimiter = ",");
     SQLSession(std::unique_ptr<SQLOutputConfig> config, const std::string& csvDelimiter = ",");
     SQLSession(std::unique_ptr<SQLOutput> out, const std::string& csvDelimiter);
     SQLSession(const std::string& csvDelimiter = ",");
+
+    SQLSession(const SQLSession&)            = delete;
+    SQLSession& operator=(const SQLSession&) = delete;
+    SQLSession(SQLSession&&)                 = delete;
+    SQLSession& operator=(SQLSession&&)      = delete;
 
     virtual ~SQLSession();
 

@@ -17,7 +17,6 @@
 #include "eckit/eckit.h"
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit {
 
@@ -26,7 +25,7 @@ namespace eckit {
 /// @warning This class has not been widely tested, and we don't
 //           know if they delete objects properly when the signal is caugth
 
-class SignalHandler : private NonCopyable {
+class SignalHandler {
 
 public:  // methods
 
@@ -38,6 +37,11 @@ public:  // methods
     // -- Contructors
 
     SignalHandler(void (*)(int) = interrupt, Signal = SigInt);
+
+    SignalHandler(const SignalHandler&)            = delete;
+    SignalHandler& operator=(const SignalHandler&) = delete;
+    SignalHandler(SignalHandler&&)                 = delete;
+    SignalHandler& operator=(SignalHandler&&)      = delete;
 
     // -- Destructor
 

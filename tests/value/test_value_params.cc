@@ -174,7 +174,7 @@ void test_vals(const Params& p) {
     EXPECT((unsigned long long)p["unsigned long long"] == ullmax);
     EXPECT((double)p["double"] == dmax);
     EXPECT(p["string"] == "foo");
-    EXPECT(p["Length"] == Length(42));
+    EXPECT_EQUAL(static_cast<int>(p["Length"]), 42);
     EXPECT(p["Date"] == (Date(2015, 2, 1)));
     EXPECT(p["PathName"] == PathName("/var/tmp"));
 }

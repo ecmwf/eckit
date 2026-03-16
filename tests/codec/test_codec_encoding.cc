@@ -53,6 +53,10 @@ public:
 
 
     EncodableType& operator=(const EncodableType& rhs) {
+        if (this == &rhs) {
+            return *this;
+        }
+
         // This assignment should not be called.
         str = rhs.str;
         ops = rhs.ops;

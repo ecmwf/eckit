@@ -25,6 +25,41 @@ using namespace eckit::testing;
 
 namespace eckit::test {
 
+template <typename T>
+class MyAlloc {
+public:
+
+    using value_type = T;
+    MyAlloc() {}
+    MyAlloc(const MyAlloc& other) = default;
+    template <class U>
+    MyAlloc(const MyAlloc<U>& other) noexcept {}
+
+    value_type* allocate(std::size_t size) { return (value_type*)::malloc(size * sizeof(value_type)); }
+    void deallocate(value_type* p, std::size_t /*size*/) { ::free(p); }
+    template <class U, class... Args>
+    void construct(U* p, Args&&... args) {
+        ::new (p) U(args...);
+    }
+    template <class U>
+    void destroy(U* p) {
+        p->~U();
+    }
+};
+template <class T1, class T2>
+constexpr bool operator==(const MyAlloc<T1>& lhs, const MyAlloc<T2>& rhs) {
+    return std::is_same_v<T1, T2>;
+}
+template <class T1, class T2>
+constexpr bool operator!=(const MyAlloc<T1>& lhs, const MyAlloc<T2>& rhs) {
+    return !(lhs == rhs);
+    ;
+}
+
+
+template <typename T>
+using vector = std::vector<T, MyAlloc<T>>;
+
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_rank_size") {
@@ -36,7 +71,7 @@ CASE("test_broadcast") {
     size_t root = 0;
 
     int d[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    std::vector<int> expect(d, d + 10);
+    vector<int> expect(d, d + 10);
 
     Log::info() << "Test value" << std::endl;
     {
@@ -53,7 +88,7 @@ CASE("test_broadcast") {
     }
     Log::info() << "Test vector" << std::endl;
     {
-        std::vector<int> data(10);
+        vector<int> data(10);
         if (mpi::comm().rank() == root) {
             data.assign(d, d + 10);
         }
@@ -66,7 +101,7 @@ CASE("test_broadcast") {
 
     Log::info() << "Test raw data" << std::endl;
     {
-        std::vector<int> data(10);
+        vector<int> data(10);
         if (mpi::comm().rank() == root) {
             data.assign(d, d + 10);
         }
@@ -79,7 +114,7 @@ CASE("test_broadcast") {
 
     Log::info() << "Test vector<pair<int,int>>" << std::endl;
     {
-        std::vector<std::pair<int, int> > data(5);
+        vector<std::pair<int, int>> data(5);
         if (mpi::comm().rank() == root) {
             size_t j = 0;
             for (size_t i = 0; i < 5; ++i) {
@@ -91,7 +126,7 @@ CASE("test_broadcast") {
         EXPECT_NO_THROW(mpi::comm().broadcast(data, root));
 
         // check results
-        std::vector<int> unpacked(10);
+        vector<int> unpacked(10);
         {
             size_t j = 0;
             for (size_t i = 0; i < 5; ++i) {
@@ -104,7 +139,7 @@ CASE("test_broadcast") {
 
     Log::info() << "Test vector<pair<long,long>>" << std::endl;
     {
-        std::vector<std::pair<long, long> > data(5);
+        vector<std::pair<long, long>> data(5);
         if (mpi::comm().rank() == root) {
             size_t j = 0;
             for (size_t i = 0; i < 5; ++i) {
@@ -116,7 +151,7 @@ CASE("test_broadcast") {
         EXPECT_NO_THROW(mpi::comm().broadcast(data, root));
 
         // check results
-        std::vector<int> unpacked(10);
+        vector<int> unpacked(10);
         {
             size_t j = 0;
             for (size_t i = 0; i < 5; ++i) {
@@ -129,7 +164,7 @@ CASE("test_broadcast") {
 
     Log::info() << "Test vector<pair<long long,long long>>" << std::endl;
     {
-        std::vector<std::pair<long long, long long> > data(5);
+        vector<std::pair<long long, long long>> data(5);
         if (mpi::comm().rank() == root) {
             size_t j = 0;
             for (size_t i = 0; i < 5; ++i) {
@@ -141,7 +176,7 @@ CASE("test_broadcast") {
         EXPECT_NO_THROW(mpi::comm().broadcast(data, root));
 
         // check results
-        std::vector<int> unpacked(10);
+        vector<int> unpacked(10);
         {
             size_t j = 0;
             for (size_t i = 0; i < 5; ++i) {
@@ -157,7 +192,7 @@ CASE("test_gather_scalar") {
     size_t size = mpi::comm().size();
     size_t rank = mpi::comm().rank();
 
-    std::vector<size_t> recv(size);
+    vector<size_t> recv(size);
 
     size_t send = 777 + rank;
 
@@ -166,7 +201,7 @@ CASE("test_gather_scalar") {
     EXPECT_NO_THROW(mpi::comm().gather(send, recv, root));
 
     if (rank == root) {
-        std::vector<size_t> expected(size);
+        vector<size_t> expected(size);
         for (size_t j = 0; j < recv.size(); ++j) {
             expected[j] = 777 + j;
         }
@@ -181,14 +216,14 @@ CASE("test_gather_nscalars") {
         size_t size = mpi::comm().size();
         size_t rank = mpi::comm().rank();
 
-        std::vector<long> recv(size * N);
+        vector<long> recv(size * N);
 
-        std::vector<long> send(N);
+        vector<long> send(N);
         for (size_t n = 0; n < N; ++n) {
             send[n] = long(rank * 2 + n + 1);
         }
 
-        std::vector<long> expected(size * N);
+        vector<long> expected(size * N);
         for (size_t j = 0; j < size; ++j) {
             for (size_t n = 0; n < N; ++n) {
                 expected[j * N + n] = long(j * 2 + n + 1);
@@ -203,7 +238,7 @@ CASE("test_gather_nscalars") {
             EXPECT(recv == expected);
         }
 
-        std::vector<long> recv2(size * N);
+        vector<long> recv2(size * N);
 
         EXPECT_NO_THROW(mpi::comm().gather(send.begin(), send.end(), recv2.begin(), recv2.end(), root));
 
@@ -220,16 +255,16 @@ CASE("test_gatherv_equal_stride") {
 
     size_t stride = 100;
 
-    std::vector<long> send(stride);
+    vector<long> send(stride);
 
     for (size_t i = 0; i < stride; ++i) {
         send[i] = long(rank * i);
     }
 
-    std::vector<long> recv(size * stride);
+    vector<long> recv(size * stride);
 
-    std::vector<int> displs(size);
-    std::vector<int> recvcounts(size);
+    vector<int> displs(size);
+    vector<int> recvcounts(size);
 
     for (size_t i = 0; i < size; ++i) {
         displs[i]     = int(i * stride);
@@ -238,7 +273,7 @@ CASE("test_gatherv_equal_stride") {
 
     EXPECT_NO_THROW(mpi::comm().gatherv(send, recv, recvcounts, displs, root));
 
-    std::vector<long> expected(size * stride);
+    vector<long> expected(size * stride);
     for (size_t i = 0; i < size; ++i) {
         for (size_t j = 0; j < stride; ++j) {
             expected[i * stride + j] = long(i * j);
@@ -257,14 +292,14 @@ CASE("test_gatherv_unequal_stride") {
 
     auto stride = [](size_t rank) { return 10 * (rank); };
 
-    std::vector<long> send(stride(rank));
+    vector<long> send(stride(rank));
 
     for (size_t i = 0; i < stride(rank); ++i) {
         send[i] = long(rank * i);
     }
 
-    std::vector<int> displs;
-    std::vector<int> recvcounts;
+    vector<int> displs;
+    vector<int> recvcounts;
 
     if (rank == root) {
         // displs and recvcounts only significant at root
@@ -277,7 +312,7 @@ CASE("test_gatherv_unequal_stride") {
     }
     size_t recvsize = size_t(std::accumulate(recvcounts.begin(), recvcounts.end(), 0));
 
-    std::vector<long> recv(recvsize);
+    vector<long> recv(recvsize);
 
     EXPECT_NO_THROW(mpi::comm().gatherv(send, recv, recvcounts, displs, root));
 
@@ -286,7 +321,7 @@ CASE("test_gatherv_unequal_stride") {
         EXPECT(recv.size() == recvsize);
 
         size_t e = 0;
-        std::vector<long> expected(recvsize);
+        vector<long> expected(recvsize);
         for (size_t i = 0; i < size; ++i) {
             for (size_t j = 0; j < stride(i); ++j, ++e) {
                 expected[e] = long(i * j);
@@ -299,7 +334,7 @@ CASE("test_gatherv_unequal_stride") {
 
 CASE("test_scatter_scalar") {
     size_t size = mpi::comm().size();
-    std::vector<long> send(size);
+    vector<long> send(size);
     for (size_t j = 0; j < send.size(); ++j) {
         send[j] = long(j * j) - 1;
     }
@@ -319,14 +354,14 @@ CASE("test_scatter_nscalars") {
     for (size_t N = 1; N < 4; ++N) {
 
         size_t size = mpi::comm().size();
-        std::vector<long> send(size * N);
+        vector<long> send(size * N);
         for (size_t j = 0; j < send.size() / N; ++j) {
             for (size_t n = 0; n < N; ++n) {
                 send[j * N + n] = long(j * j - n);
             }
         }
 
-        std::vector<long> recv(N);
+        vector<long> recv(N);
 
         size_t root = 0; /* master */
 
@@ -335,7 +370,7 @@ CASE("test_scatter_nscalars") {
         size_t rank = mpi::comm().rank();
 
         // check results
-        std::vector<long> expected(N);
+        vector<long> expected(N);
         for (size_t n = 0; n < N; ++n) {
             expected[n] = long(rank * rank - n);
         }
@@ -474,7 +509,7 @@ CASE("test_reduce") {
         EXPECT_EQUAL(minloc.second, mnloc.second);
     }
 
-    std::vector<float> arr(5, mpi_rank + 1);
+    vector<float> arr(5, mpi_rank + 1);
     std::cout << "arr : " << arr << std::endl;
 
     std::cout << std::flush;
@@ -508,25 +543,25 @@ CASE("test_reduce") {
         EXPECT_NO_THROW(mpi::comm().reduceInPlace(min, mpi::min(), root));
         EXPECT_EQUAL(min, mn);
 
-        std::vector<float> expected;
+        vector<float> expected;
 
-        expected                  = (mpi_rank == root) ? std::vector<float>(5, mpi_size) : arr;
-        std::vector<float> maxvec = arr;
+        expected             = (mpi_rank == root) ? vector<float>(5, mpi_size) : arr;
+        vector<float> maxvec = arr;
         EXPECT_NO_THROW(mpi::comm().reduceInPlace(maxvec.begin(), maxvec.end(), mpi::max(), root));
         EXPECT_EQUAL(maxvec, expected);
 
-        expected                  = (mpi_rank == root) ? std::vector<float>(5, 1) : arr;
-        std::vector<float> minvec = arr;
+        expected             = (mpi_rank == root) ? vector<float>(5, 1) : arr;
+        vector<float> minvec = arr;
         EXPECT_NO_THROW(mpi::comm().reduceInPlace(minvec.begin(), minvec.end(), mpi::min(), root));
         EXPECT_EQUAL(minvec, expected);
 
-        expected                  = (mpi_rank == root) ? std::vector<float>(5, s) : arr;
-        std::vector<float> sumvec = arr;
+        expected             = (mpi_rank == root) ? vector<float>(5, s) : arr;
+        vector<float> sumvec = arr;
         EXPECT_NO_THROW(mpi::comm().reduceInPlace(sumvec.begin(), sumvec.end(), mpi::sum(), root));
         EXPECT_EQUAL(sumvec, expected);
 
-        expected                   = (mpi_rank == root) ? std::vector<float>(5, p) : arr;
-        std::vector<float> prodvec = arr;
+        expected              = (mpi_rank == root) ? vector<float>(5, p) : arr;
+        vector<float> prodvec = arr;
         EXPECT_NO_THROW(mpi::comm().reduceInPlace(prodvec.begin(), prodvec.end(), mpi::prod(), root));
         EXPECT_EQUAL(prodvec, expected);
     }
@@ -585,7 +620,7 @@ CASE("test_allReduce") {
         EXPECT(size_t(minloc.second) == mpi::comm().size() - 1);
     }
 
-    std::vector<float> arr(5, mpi::comm().rank() + 1);
+    vector<float> arr(5, mpi::comm().rank() + 1);
     std::cout << "arr : " << arr << std::endl;
 
     std::cout << std::flush;
@@ -610,25 +645,25 @@ CASE("test_allReduce") {
         EXPECT_NO_THROW(mpi::comm().allReduceInPlace(min, mpi::min()));
         EXPECT(min == 1);
 
-        std::vector<float> expected;
+        vector<float> expected;
 
-        expected                  = std::vector<float>(5, mpi::comm().size());
-        std::vector<float> maxvec = arr;
+        expected             = vector<float>(5, mpi::comm().size());
+        vector<float> maxvec = arr;
         EXPECT_NO_THROW(mpi::comm().allReduceInPlace(maxvec.begin(), maxvec.end(), mpi::max()));
         EXPECT(maxvec == expected);
 
-        expected                  = std::vector<float>(5, 1);
-        std::vector<float> minvec = arr;
+        expected             = vector<float>(5, 1);
+        vector<float> minvec = arr;
         EXPECT_NO_THROW(mpi::comm().allReduceInPlace(minvec.begin(), minvec.end(), mpi::min()));
         EXPECT(minvec == expected);
 
-        expected                  = std::vector<float>(5, s);
-        std::vector<float> sumvec = arr;
+        expected             = vector<float>(5, s);
+        vector<float> sumvec = arr;
         EXPECT_NO_THROW(mpi::comm().allReduceInPlace(sumvec.begin(), sumvec.end(), mpi::sum()));
         EXPECT(sumvec == expected);
 
-        expected                   = std::vector<float>(5, p);
-        std::vector<float> prodvec = arr;
+        expected              = vector<float>(5, p);
+        vector<float> prodvec = arr;
         EXPECT_NO_THROW(mpi::comm().allReduceInPlace(prodvec.begin(), prodvec.end(), mpi::prod()));
         EXPECT(prodvec == expected);
     }
@@ -640,11 +675,11 @@ CASE("test_allGather") {
     // Scalar
 
     int send = mpi::comm().rank();
-    std::vector<int> recv(mpi::comm().size());
+    vector<int> recv(mpi::comm().size());
 
     EXPECT_NO_THROW(mpi::comm().allGather(send, recv.begin(), recv.end()));
 
-    std::vector<int> expected(mpi::comm().size());
+    vector<int> expected(mpi::comm().size());
     for (size_t j = 0; j < expected.size(); ++j) {
         expected[j] = int(j);
     }
@@ -655,13 +690,13 @@ CASE("test_allGather") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_allGatherv") {
-    std::vector<int> send(mpi::comm().rank(), mpi::comm().rank());
-    mpi::Buffer<int> recv(mpi::comm().size());
+    vector<int> send(mpi::comm().rank(), mpi::comm().rank());
+    mpi::Buffer<int, MyAlloc<int>> recv(mpi::comm().size());
 
     EXPECT_NO_THROW(mpi::comm().allGatherv(send.begin(), send.end(), recv));
 
     // check results
-    std::vector<int> expected;
+    vector<int> expected;
     for (size_t j = 0; j < mpi::comm().size(); ++j) {
         for (size_t i = 0; i < j; ++i) {
             expected.push_back(j);
@@ -674,15 +709,15 @@ CASE("test_allGatherv") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("test_allToAll") {
-    std::vector<std::vector<int> > send(mpi::comm().size(), std::vector<int>(1, mpi::comm().rank()));
-    std::vector<std::vector<int> > recv(mpi::comm().size());
+    vector<vector<int>> send(mpi::comm().size(), vector<int>(1, mpi::comm().rank()));
+    vector<vector<int>> recv(mpi::comm().size());
 
     EXPECT_NO_THROW(mpi::comm().allToAll(send, recv));
 
     // check results
-    std::vector<std::vector<int> > expected(mpi::comm().size());
+    vector<vector<int>> expected(mpi::comm().size());
     for (size_t j = 0; j < mpi::comm().size(); ++j) {
-        expected[j] = std::vector<int>(1, int(j));
+        expected[j] = vector<int>(1, int(j));
     }
 
     EXPECT(recv.size() == expected.size());
@@ -739,7 +774,7 @@ CASE("test_blocking_send_nonblocking_receive") {
     double send;
     double recv[]       = {1., 1.};
     double recv_check[] = {0.5, 0.8};
-    std::vector<mpi::Request> recvreqs;
+    vector<mpi::Request> recvreqs;
 
     // Post 2 receive requests
     if (comm.rank() == 0) {
@@ -828,7 +863,7 @@ CASE("test_waitAll") {
     std::vector<mpi::Request> rqr;
     std::vector<mpi::Request> rqs;
 
-    std::vector<int> data(nproc, -1);
+    vector<int> data(nproc, -1);
 
     for (int i = 0; i < nproc; i++) {
         rqr.push_back(comm.iReceive(&data[i], 1, i, 100));
@@ -883,7 +918,7 @@ CASE("test_waitAny") {
     std::vector<mpi::Request> rqr;
     std::vector<mpi::Request> rqs;
 
-    std::vector<int> data(nproc, -1);
+    vector<int> data(nproc, -1);
 
     for (int i = 0; i < nproc; i++) {
         rqr.push_back(comm.iReceive(&data[i], 1, i, 100));
@@ -934,7 +969,7 @@ CASE("test_probe") {
 
     std::vector<mpi::Request> requests;
 
-    std::vector<int> data(nproc, -1);
+    vector<int> data(nproc, -1);
 
     for (int i = 0; i < nproc; i++) {
         requests.push_back(comm.iSend(&irank, 1, i, 100));
@@ -990,7 +1025,7 @@ CASE("test_iProbe") {
 
     std::vector<mpi::Request> requests;
 
-    std::vector<int> data(nproc, -1);
+    vector<int> data(nproc, -1);
 
     for (int i = 0; i < nproc; i++) {
         requests.push_back(comm.iSend(&irank, 1, i, 100));

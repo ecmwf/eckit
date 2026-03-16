@@ -14,8 +14,6 @@
 #include <iosfwd>
 #include <string>
 
-#include "eckit/memory/NonCopyable.h"
-
 
 namespace eckit {
 
@@ -25,12 +23,17 @@ class Configuration;
 namespace net {
 
 
-class UDPClient : private NonCopyable {
+class UDPClient {
 
 public:  // methods
 
     explicit UDPClient(const Configuration& cfg);
     UDPClient(const std::string& hostname, int port);
+
+    UDPClient(const UDPClient&)            = delete;
+    UDPClient& operator=(const UDPClient&) = delete;
+    UDPClient(UDPClient&&)                 = delete;
+    UDPClient& operator=(UDPClient&&)      = delete;
 
     ~UDPClient();
 

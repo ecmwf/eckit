@@ -92,7 +92,7 @@ protected:
     friend class Area;
 };
 
-typedef std::vector<Coord> CoordList;
+using CoordList = std::vector<Coord>;
 
 //---------------------------------------------------------
 // Longitude

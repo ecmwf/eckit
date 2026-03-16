@@ -15,7 +15,6 @@
 #ifndef eckit_sql_SQLOutput_H
 #define eckit_sql_SQLOutput_H
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/sql/SQLOutputConfig.h"
 
 namespace eckit::sql {
@@ -28,10 +27,16 @@ class SQLSelect;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class SQLOutput : private eckit::NonCopyable {
+class SQLOutput {
 public:
 
     SQLOutput();
+
+    SQLOutput(const SQLOutput&)            = delete;
+    SQLOutput& operator=(const SQLOutput&) = delete;
+    SQLOutput(SQLOutput&&)                 = delete;
+    SQLOutput& operator=(SQLOutput&&)      = delete;
+
     virtual ~SQLOutput();
 
     virtual void preprepare(SQLSelect&);
@@ -64,9 +69,6 @@ protected:
 
 private:
 
-    // No copy allowed
-    SQLOutput(const SQLOutput&);
-    SQLOutput& operator=(const SQLOutput&);
     // -- Friends
     friend std::ostream& operator<<(std::ostream& s, const SQLOutput& p) {
         p.print(s);

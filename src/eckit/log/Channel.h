@@ -16,24 +16,27 @@
 
 #include <ostream>
 
-#include "eckit/memory/NonCopyable.h"
-
 namespace eckit {
 
 class ChannelBuffer;
 class LogTarget;
 
-typedef void (*channel_callback_t)(void* data, const char* msg);
+using channel_callback_t = void (*)(void* data, const char* msg);
 
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Output channel that is an std::ostream but more functional
 
-class Channel : public std::ostream, private NonCopyable {
+class Channel : public std::ostream {
 
 public:  // methods
 
-    Channel(LogTarget* = 0);
+    Channel(LogTarget* = nullptr);
+
+    Channel(const Channel&)            = delete;
+    Channel& operator=(const Channel&) = delete;
+    Channel(Channel&&)                 = delete;
+    Channel& operator=(Channel&&)      = delete;
 
     ~Channel() override;
 
@@ -49,8 +52,8 @@ public:  // methods
     void setFile(const std::string& path);
     void addFile(const std::string& path);
 
-    void setCallback(channel_callback_t cb, void* data = 0);
-    void addCallback(channel_callback_t cb, void* data = 0);
+    void setCallback(channel_callback_t cb, void* data = nullptr);
+    void addCallback(channel_callback_t cb, void* data = nullptr);
 
     void setTarget(LogTarget*);
     void addTarget(LogTarget*);

@@ -19,7 +19,6 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/memory/NonCopyable.h"
 
 namespace eckit::system {
 
@@ -27,11 +26,18 @@ struct MemoryInfo;
 
 //--------------------------------------------------------------------------------------------------
 
-class SystemInfo : private eckit::NonCopyable {
+class SystemInfo {
 public:  // methods
 
     static bool isBigEndian();
     static bool isLittleEndian();
+
+    SystemInfo() = default;
+
+    SystemInfo(const SystemInfo&)            = delete;
+    SystemInfo& operator=(const SystemInfo&) = delete;
+    SystemInfo(SystemInfo&&)                 = delete;
+    SystemInfo& operator=(SystemInfo&&)      = delete;
 
     virtual ~SystemInfo();
 

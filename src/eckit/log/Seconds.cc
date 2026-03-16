@@ -8,6 +8,7 @@
  * does it submit to any jurisdiction.
  */
 
+#include <cmath>
 #include <iostream>
 #include <sstream>
 
@@ -54,7 +55,7 @@ static struct {
     },
     {
         0,
-        0,
+        nullptr,
         0,
     },
 };
@@ -66,7 +67,7 @@ std::ostream& operator<<(std::ostream& s, const Seconds& sec) {
 
     std::ostringstream ss;
     double t = sec.seconds_;
-    long n   = t;
+    long n   = std::lround(t);
     int flg  = 0;
 
     for (int i = 0; periods[i].length_; i++) {

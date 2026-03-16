@@ -24,31 +24,31 @@
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamHandle.h"
 #include "eckit/io/fam/FamProperty.h"
-#include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/io/fam/FamSession.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamObjectName::withObject(const std::string& object_name) -> FamObjectName& {
+FamObjectName& FamObjectName::withObject(const std::string& object_name) {
     path().objectName = object_name;
     return *this;
 }
 
-auto FamObjectName::withUUID() -> FamObjectName& {
+FamObjectName& FamObjectName::withUUID() {
     return withObject(path().generateUUID());
 }
 
-auto FamObjectName::lookup() const -> FamObject {
+FamObject FamObjectName::lookup() const {
     return session()->lookupObject(path().regionName, path().objectName);
 }
 
-auto FamObjectName::allocate(const fam::size_t object_size, const bool overwrite) const -> FamObject {
+FamObject FamObjectName::allocate(const fam::size_t object_size, const bool overwrite) const {
     return session()->lookupRegion(path().regionName).allocateObject(object_size, path().objectName, overwrite);
 }
 
-auto FamObjectName::exists() const -> bool {
+bool FamObjectName::exists() const {
     try {
         return lookup().exists();
     }
@@ -63,11 +63,11 @@ auto FamObjectName::exists() const -> bool {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamObjectName::dataHandle(const bool overwrite) const -> DataHandle* {
+DataHandle* FamObjectName::dataHandle(const bool overwrite) const {
     return new FamHandle(*this, overwrite);
 }
 
-auto FamObjectName::partHandle(const OffsetList& offsets, const LengthList& lengths) const -> DataHandle* {
+DataHandle* FamObjectName::partHandle(const OffsetList& offsets, const LengthList& lengths) const {
     return new FamHandle(*this, offsets[0], lengths[0], true);
 }
 

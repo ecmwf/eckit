@@ -527,7 +527,7 @@ unsigned long long Exporter::getUnsignedMember(const std::string& name) {
     return 0;
 }
 
-Evolve::Evolve(eckit::Exporter& e) : e_(e), parent_(nullptr) {}
+Evolve::Evolve(eckit::Exporter& e) : e_(e), parent_{nullptr} {}
 
 Evolve::Evolve(Evolve* e, char const* klass, char const* name) : e_(e->e_), path_(e->path()), parent_(e) {
     if (path_.length()) {

@@ -40,7 +40,7 @@ class Stream;
 class Offset {
 public:  // types
 
-    typedef long long value_t;
+    using value_t = long long;
 
 public:
 
@@ -96,7 +96,7 @@ private:
     friend class Length;
 };
 
-typedef std::vector<Offset> OffsetList;
+using OffsetList = std::vector<Offset>;
 
 //-----------------------------------------------------------------------------
 

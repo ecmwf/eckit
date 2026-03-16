@@ -71,7 +71,7 @@ public:
     class Include {
     public:
 
-        Include(const std::string&, HtmlObject* = 0);
+        Include(const std::string&, HtmlObject* = nullptr);
         Include(const std::string&, HtmlObject&);
 
     private:

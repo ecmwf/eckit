@@ -258,7 +258,7 @@ static FILE* open(DataHandle* handle, const char* mode, bool delete_on_close, bo
         setvbuf(f, h->buffer_, _IOFBF, sizeof(h->buffer_));
     }
     else {
-        setvbuf(f, 0, _IONBF, 0);
+        setvbuf(f, nullptr, _IONBF, 0);
     }
     return f;
 }

@@ -17,8 +17,6 @@
 #ifndef eckit_containers_BloomFilter_H
 #define eckit_containers_BloomFilter_H
 
-#include "eckit/memory/NonCopyable.h"
-
 #include <ostream>
 #include <vector>
 
@@ -28,15 +26,21 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 template <typename T>
-class BloomFilter : private NonCopyable {
+class BloomFilter {
 
 public:  // types
 
-    typedef unsigned long long data_type;
+    using data_type = unsigned long long;
 
 public:  // methods
 
     BloomFilter(size_t size);
+
+    BloomFilter(const BloomFilter&)            = delete;
+    BloomFilter& operator=(const BloomFilter&) = delete;
+    BloomFilter(BloomFilter&&)                 = delete;
+    BloomFilter& operator=(BloomFilter&&)      = delete;
+
     ~BloomFilter();
 
     bool empty() const;

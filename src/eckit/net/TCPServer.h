@@ -20,11 +20,16 @@
 
 namespace eckit::net {
 
-class TCPServer : public TCPSocket, private NonCopyable {
+class TCPServer : public TCPSocket {
 public:
 
     TCPServer(const SocketOptions& = SocketOptions::server());
     explicit TCPServer(int port, const SocketOptions& = SocketOptions::server());
+
+    TCPServer(const TCPServer&)            = delete;
+    TCPServer& operator=(const TCPServer&) = delete;
+    TCPServer(TCPServer&&)                 = delete;
+    TCPServer& operator=(TCPServer&&)      = delete;
 
     ~TCPServer() override;
 

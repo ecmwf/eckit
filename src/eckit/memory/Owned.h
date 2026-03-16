@@ -26,11 +26,16 @@ namespace eckit {
 /// Subclass from this class to use a SharedPtr class
 
 template <typename LOCK>
-class OwnedT : private NonCopyable, public LOCK {
+class OwnedT : public LOCK {
 
 public:  // methods
 
     OwnedT() : count_(0) {}
+
+    OwnedT(const OwnedT&)            = delete;
+    OwnedT& operator=(const OwnedT&) = delete;
+    OwnedT(OwnedT&&)                 = delete;
+    OwnedT& operator=(OwnedT&&)      = delete;
 
     virtual ~OwnedT() {}
 
@@ -56,14 +61,14 @@ private:  // members
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Owned object without thread lockable resource
-typedef OwnedT<memory::detail::ThreadedLock> OwnedLock;
+using OwnedLock = OwnedT<memory::detail::ThreadedLock>;
 
 /// Owned object with thread lockable resource
-typedef OwnedT<memory::detail::NoLock> OwnedNoLock;
+using OwnedNoLock = OwnedT<memory::detail::NoLock>;
 
 /// Default Owned type
 /// Same as OwnedNoLock
-typedef OwnedNoLock Owned;
+using Owned = OwnedNoLock;
 
 //----------------------------------------------------------------------------------------------------------------------
 

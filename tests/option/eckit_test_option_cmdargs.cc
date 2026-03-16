@@ -1011,30 +1011,12 @@ CASE("test_eckit_option_cmdargs_value_with_equals") {
 #endif
 
 #if TESTCASE == 38
-// disable deprecated declarations warning here as we are testing it
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#elif defined(__INTEL_COMPILER)
-#pragma warning(push)
-#pragma warning(disable : 1786)
-#elif defined(__NVCOMPILER)
-#pragma diag_suppress 1445
-#endif
 CASE("test_eckit_option__allows_to_set_default_value_for_options") {
     options_t options;
-    {
-        auto o = (new SimpleOption<std::string>("arg1", ""))->defaultValue("default string");
-        options.push_back(o);
-    }
-    {
-        auto o = (new VectorOption<std::string>("arg2", "", 0))->defaultValue("q/w/e/r/t/y");
-        options.push_back(o);
-    }
-    {
-        auto o = (new VectorOption<long>("arg3", "", 0))->defaultValue("1/2/3/4");
-        options.push_back(o);
-    }
+    options.push_back(new SimpleOption<std::string>("arg1", "", "default string"));
+    options.push_back(
+        new VectorOption<std::string>("arg2", "", 0, std::vector<std::string>{"q", "w", "e", "r", "t", "y"}));
+    options.push_back(new VectorOption<long>("arg3", "", 0, std::vector<long>{1, 2, 3, 4}));
 
     std::vector<const char*> input = {"exe"};
     Main::initialise(input.size(), const_cast<char**>(&input[0]));
@@ -1067,11 +1049,6 @@ CASE("test_eckit_option__allows_to_set_default_value_for_options") {
         EXPECT_EQUAL(v[3], 4L);
     }
 }
-#ifdef __clang__
-#pragma clang diagnostic pop
-#elif defined(__INTEL_COMPILER)
-#pragma warning(pop)
-#endif
 #endif
 
 #if TESTCASE == 39

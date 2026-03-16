@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
@@ -79,7 +79,7 @@ CASE("projection: ll-to-xyz") {
             EXPECT(points_equal(to_xyz_1->fwd(p), to_xyz_2->fwd(p)));
             EXPECT(points_equal(to_xyz_2->fwd(p), to_xyz_1->fwd(p)));
 
-            if (p.lat == 0) {
+            if (p.lat() == 0) {
                 auto q = to_xyz_3->fwd(p);
                 EXPECT(points_equal(to_xyz_1->fwd(p), q));
                 EXPECT(points_equal(to_xyz_2->inv(q), p));

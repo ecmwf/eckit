@@ -96,7 +96,7 @@ std::shared_ptr<SQLExpression> FunctionEQ::simplify(bool& changed) {
         std::swap(args_[0], args_[1]);
     }
 
-    return 0;
+    return nullptr;
 }
 
 }  // namespace eckit::sql::expression::function

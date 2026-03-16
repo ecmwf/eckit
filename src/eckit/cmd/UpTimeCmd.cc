@@ -28,7 +28,7 @@ UpTimeCmd::~UpTimeCmd() {}
 //----------------------------------------------------------------------------------------------------------------------
 
 void UpTimeCmd::execute(std::istream&, std::ostream& out, CmdArg& arg) {
-    time_t now = ::time(0);
+    time_t now = ::time(nullptr);
 
     Monitor::TaskArray& info = Monitor::instance().tasks();
     for (unsigned long j = 0; j < info.size(); j++) {

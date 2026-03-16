@@ -24,35 +24,35 @@
 #include "eckit/io/fam/FamPath.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
-#include "eckit/io/fam/detail/FamSessionDetail.h"
+#include "eckit/io/fam/FamSession.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamRegionName::withRegion(const std::string& region_name) -> FamRegionName& {
+FamRegionName& FamRegionName::withRegion(const std::string& region_name) {
     path().regionName = region_name;
     return *this;
 }
 
-auto FamRegionName::object(const std::string& object_name) const -> FamObjectName {
+FamObjectName FamRegionName::object(const std::string& object_name) const {
     return {endpoint(), {path().regionName, object_name}};
 }
 
-auto FamRegionName::lookup() const -> FamRegion {
+FamRegion FamRegionName::lookup() const {
     return session()->lookupRegion(path().regionName);
 }
 
-auto FamRegionName::create(const fam::size_t region_size, const fam::perm_t region_perm, const bool overwrite) const
-    -> FamRegion {
+FamRegion FamRegionName::create(const fam::size_t region_size, const fam::perm_t region_perm,
+                                const bool overwrite) const {
     if (overwrite) {
         return session()->ensureCreateRegion(region_size, region_perm, path().regionName);
     }
     return session()->createRegion(region_size, region_perm, path().regionName);
 }
 
-auto FamRegionName::exists() const -> bool {
+bool FamRegionName::exists() const {
     try {
         return lookup().exists();
     }
@@ -65,7 +65,7 @@ auto FamRegionName::exists() const -> bool {
     return false;
 }
 
-auto FamRegionName::uriBelongs(const URI& uri) const -> bool {
+bool FamRegionName::uriBelongs(const URI& uri) const {
     /// @todo check if usage requires nothrow
     return (uri.endpoint() == endpoint() && FamPath(uri).regionName == path().regionName);
 }

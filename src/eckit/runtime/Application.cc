@@ -165,7 +165,7 @@ time_t Application::uptime() {
 
     TaskInfo& info = Monitor::instance().task(taskID_);
     time_t uptime  = info.start();
-    time_t now     = ::time(0);
+    time_t now     = ::time(nullptr);
 
     return now - uptime;
 }

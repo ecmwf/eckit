@@ -32,7 +32,7 @@ namespace eckit {
 
 FamName::FamName(const net::Endpoint& endpoint, FamPath path) : endpoint_{endpoint}, path_{std::move(path)} {}
 
-FamName::FamName(const URI& uri) : FamName(uri.endpoint(), uri) {}
+FamName::FamName(const URI& uri) : FamName(uri.endpoint(), FamPath(uri)) {}
 
 FamName::FamName(Stream& stream) : endpoint_{stream}, path_{stream} {}
 
@@ -40,17 +40,17 @@ FamName::~FamName() = default;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamName::session() const -> FamSessionManager::FamSession {
-    return FamSessionManager::instance().getOrAdd({endpoint_});
+FamSessionManager::Session FamName::session() const {
+    return FamSessionManager::instance().getOrAdd("EckitFAMSession", endpoint_);
 }
 
-auto FamName::asString() const -> std::string {
+std::string FamName::asString() const {
     std::ostringstream oss;
     oss << FamPath::scheme << "://" << endpoint_ << path_;
     return oss.str();
 }
 
-auto FamName::uri() const -> URI {
+URI FamName::uri() const {
     return {FamPath::scheme, endpoint_, path_.asString()};
 }
 
@@ -65,7 +65,7 @@ std::ostream& operator<<(std::ostream& out, const FamName& name) {
     return out;
 }
 
-auto operator<<(Stream& out, const FamName& name) -> Stream& {
+Stream& operator<<(Stream& out, const FamName& name) {
     out << name.endpoint_;
     out << name.path_;
     return out;

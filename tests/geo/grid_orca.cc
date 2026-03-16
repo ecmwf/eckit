@@ -17,15 +17,15 @@
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/ORCA.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-static const std::string GRID = "ORCA2_T";
-static const Grid::uid_t UID  = "d5bde4f52ff3a9bea5629cd9ac514410";
+static const std::string GRID   = "ORCA2_T";
+static const Grid::uid_type UID = "d5bde4f52ff3a9bea5629cd9ac514410";
 static const std::vector<long> SHAPE{182, 149};
 
 
@@ -54,7 +54,7 @@ CASE("caching") {
 
 
 CASE("spec") {
-    std::unique_ptr<Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID}})));
+    std::unique_ptr<spec::Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID}})));
 
     EXPECT(spec->get_string("type") == "ORCA");
     EXPECT(spec->get_string("name") == "ORCA2");

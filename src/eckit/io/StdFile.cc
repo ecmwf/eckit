@@ -16,10 +16,10 @@
 
 namespace eckit {
 
-StdFile::StdFile(const PathName& name, const std::string& mode) : file_(0) {
+StdFile::StdFile(const PathName& name, const std::string& mode) : file_{nullptr} {
     file_ = ::fopen(name.localPath(), mode.c_str());
 
-    if (file_ == 0) {
+    if (file_ == nullptr) {
         throw CantOpenFile(name);
     }
 }
@@ -34,7 +34,7 @@ void StdFile::close() noexcept(false) {
             throw FailedSystemCall("fclose");
         }
     }
-    file_ = 0;
+    file_ = nullptr;
 }
 
 }  // namespace eckit

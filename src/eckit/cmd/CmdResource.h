@@ -14,21 +14,25 @@
 #include "eckit/cmd/Arg.h"
 #include "eckit/cmd/CmdArg.h"
 #include "eckit/eckit.h"
-#include "eckit/memory/NonCopyable.h"
 
 
 namespace eckit {
 
 
-class CmdResource : private eckit::NonCopyable {
+class CmdResource {
 
-    typedef void (*Proc)(CmdResource*, CmdArg&, std::istream&, std::ostream&);
+    using Proc = void (*)(CmdResource*, CmdArg&, std::istream&, std::ostream&);
 
 public:
 
     // -- Contructors
 
     CmdResource(const std::string&);
+
+    CmdResource(const CmdResource&)            = delete;
+    CmdResource& operator=(const CmdResource&) = delete;
+    CmdResource(CmdResource&&)                 = delete;
+    CmdResource& operator=(CmdResource&&)      = delete;
 
     // -- Destructor
 
@@ -64,7 +68,7 @@ protected:  // methods
 
 private:  // members
 
-    typedef std::map<std::string, CmdResource*, std::less<std::string> > Map;
+    using Map = std::map<std::string, CmdResource*, std::less<std::string>>;
 
     static Map* resources_;
 

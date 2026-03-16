@@ -10,60 +10,24 @@
  */
 
 
+#include <memory>
 #include <numeric>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Order.h"
 #include "eckit/geo/order/HEALPix.h"
 #include "eckit/geo/order/Scan.h"
-#include "eckit/geo/spec/Custom.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {
 
 
-CASE("scan") {
-    using order::Scan;
-
-
-    SECTION("order=scan-*") {
-        for (bool alt : {false, true}) {
-            for (bool ij : {false, true}) {
-                for (bool j_pos : {false, true}) {
-                    for (bool i_pos : {false, false}) {
-                        const auto order = Scan::order_from_arguments(i_pos, j_pos, ij, alt);
-
-                        EXPECT(order == Scan(spec::Custom{{"order", order}}).order());
-                        EXPECT(order == Scan(spec::Custom{{"scan-i-positively", i_pos},
-                                                          {"scan-j-positively", j_pos},
-                                                          {"scan-i-j", ij},
-                                                          {"scan-alternative", alt}})
-                                            .order());
-
-                        constexpr const char* UNUSED = "UNUSED";
-                        EXPECT(order == Scan(spec::Custom{
-                                                 {i_pos ? UNUSED : "scan-i-negatively", true},
-                                                 {j_pos ? "scan-j-positively" : UNUSED, true},
-                                                 {ij ? UNUSED : "scan-i-j", false},
-                                                 {alt ? "scan-alternative" : UNUSED, true},
-                                             })
-                                            .order());
-
-#if 0
-                        Scan scan(order, 2, 3);
-                        auto no_reorder = scan.reorder(order);
-
-                        std::vector<size_t> expected(scan.size());
-                        std::iota(expected.begin(), expected.end(), 0);
-                        EXPECT(expected == no_reorder);
-                        EXPECT(expected == scan.no_reorder());
-#endif
-                    }
-                }
-            }
-        }
+CASE("order=scan") {
+    for (std::string scan : {"i+j+", "i+j-"}) {
+        order::Scan order(scan);
+        EXPECT(scan == order.order());
     }
 }
 
@@ -75,18 +39,19 @@ CASE("healpix") {
 
 
     SECTION("order=ring/nested") {
+        size_t Nside = 4;
+
         EXPECT(HEALPix::order_default() == HEALPix(spec::Custom{}).order());
-        EXPECT(HEALPix::ring == HEALPix(spec::Custom{{"order", HEALPix::ring}}).order());
-        EXPECT(HEALPix::nested == HEALPix(spec::Custom{{"order", HEALPix::nested}}).order());
+        EXPECT(HEALPix::RING == HEALPix(spec::Custom{{"order", HEALPix::RING}}).order());
+        EXPECT(HEALPix::NESTED == HEALPix(spec::Custom{{"order", HEALPix::NESTED}}).order());
 
-        for (const auto& type : {HEALPix::order_default(), HEALPix::ring, HEALPix::nested}) {
+        for (const auto& type : {HEALPix::order_default(), HEALPix::RING, HEALPix::NESTED}) {
             HEALPix order(type);
-            auto no_reorder = order.reorder(type);
+            auto no_reorder = order.reorder(type, Nside);
 
-            std::vector<size_t> expected(order.size());
+            std::vector<size_t> expected(no_reorder.size());
             std::iota(expected.begin(), expected.end(), 0);
             EXPECT(expected == no_reorder);
-            EXPECT(expected == order.no_reorder());
         }
     }
 
@@ -94,22 +59,13 @@ CASE("healpix") {
     SECTION("exceptions") {
         EXPECT_THROWS_AS(HEALPix(spec::Custom{{"order", "?"}}), exception::OrderError);
 
-        EXPECT_THROWS_AS(HEALPix(HEALPix::order_default(), 0), exception::OrderError);
+        EXPECT_THROWS_AS(HEALPix("?"), exception::OrderError);
 
         for (size_t Nside : {1, 2, 3}) {
             const auto size = 12 * Nside * Nside;
 
-            EXPECT_NO_THROW(HEALPix(HEALPix::order_default(), size));
-
-            EXPECT_THROWS_AS(HEALPix(HEALPix::order_default(), size - 1), exception::OrderError);
-            EXPECT_THROWS_AS(HEALPix(HEALPix::order_default(), size + 1), exception::OrderError);
-
-            if (is_power_of_two(Nside)) {
-                EXPECT_NO_THROW(HEALPix(HEALPix::nested, size));
-            }
-            else {
-                EXPECT_THROWS_AS(HEALPix(HEALPix::nested, size), exception::OrderError);
-            }
+            EXPECT_NO_THROW(HEALPix{});
+            EXPECT_NO_THROW(HEALPix{HEALPix::order_default()});
         }
     }
 }

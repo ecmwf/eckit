@@ -64,16 +64,16 @@ class Params {
 
 public:  // types
 
-    typedef std::list<Params> List;
-    typedef std::string key_t;
-    typedef Value value_t;
+    using List    = std::list<Params>;
+    using key_t   = std::string;
+    using value_t = Value;
 
     struct BaseFactory {
         virtual ~BaseFactory() {}
         virtual Concept* build(Stream& s) = 0;
     };
 
-    typedef BaseFactory* factory_t;
+    using factory_t = BaseFactory*;
 
     template <typename T>
     struct Factory : BaseFactory {
@@ -122,7 +122,7 @@ public:  // methods
 
 private:  // internal classes
 
-    typedef std::map<std::string, factory_t> factory_map;
+    using factory_map = std::map<std::string, factory_t>;
     static factory_map& factories();
 
     Params(Concept* _concept) : self_(_concept) {}

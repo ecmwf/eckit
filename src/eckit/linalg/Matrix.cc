@@ -20,7 +20,7 @@ namespace eckit::linalg {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Matrix::Matrix() : array_(0), rows_(0), cols_(0), own_(false) {}
+Matrix::Matrix() : array_{nullptr}, rows_(0), cols_(0), own_(false) {}
 
 
 Matrix::Matrix(Size rows, Size cols) : array_(new Scalar[rows * cols]), rows_(rows), cols_(cols), own_(true) {
@@ -36,7 +36,7 @@ Matrix::Matrix(const Scalar* array, Size rows, Size cols) :
 }
 
 
-Matrix::Matrix(Stream& stream) : array_(0), rows_(0), cols_(0), own_(false) {
+Matrix::Matrix(Stream& stream) : array_{nullptr}, rows_(0), cols_(0), own_(false) {
     Size rows, cols;
     stream >> rows;
     stream >> cols;

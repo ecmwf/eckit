@@ -43,11 +43,16 @@ private:
 
 //-----------------------------------------------------------------------------
 
-class ThreadPool : private NonCopyable {
+class ThreadPool {
 
 public:  // methods
 
     ThreadPool(const std::string& name, size_t count, size_t stack = 0);
+
+    ThreadPool(const ThreadPool&)            = delete;
+    ThreadPool& operator=(const ThreadPool&) = delete;
+    ThreadPool(ThreadPool&&)                 = delete;
+    ThreadPool& operator=(ThreadPool&&)      = delete;
 
     ~ThreadPool();
 

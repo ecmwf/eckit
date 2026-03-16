@@ -25,7 +25,7 @@ namespace eckit {
 //------------------------------------------------------------------------------------------------------
 
 struct KDMemory : public StatCollector {
-    typedef void* Ptr;
+    using Ptr = void*;
 
     Ptr root() const { return nullptr; }
     void root(Ptr) {}
@@ -78,7 +78,7 @@ private:
 
 template <class T, class A>
 struct TT : public T {
-    typedef A Alloc;
+    using Alloc = A;
 };
 
 //------------------------------------------------------------------------------------------------------

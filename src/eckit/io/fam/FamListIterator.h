@@ -16,8 +16,24 @@
 /// @file   FamListIterator.h
 /// @author Metin Cakircali
 /// @date   Mar 2024
+///
+/// @brief Concurrent-safe bidirectional iterator for FamList.
+///
+/// ## Thread Safety
+///
+/// Iterators are safe to use during concurrent insertions and deletions:
+///
+/// - **Marked Node Skipping**: When a node is logically deleted (marked), iterators
+///   transparently skip over it on `++` and `--` operations.
+/// - **Lock-Free Traversal**: Iteration does not require any synchronization.
+/// - **Consistency**: Each iterator snapshot sees a consistent view of the list
+///   at the moment the iterator was created, with logical deletions becoming visible
+///   as nodes are skipped.
 
 #pragma once
+
+#include <iterator>
+#include <optional>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamObject.h"
@@ -27,6 +43,10 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 // ITERATOR
 
+/// @brief Concurrent-safe forward and bidirectional iterator for FamList.
+///
+/// Advances through the list, automatically skipping marked (deleted) nodes.
+/// Safe to use while other threads insert/delete elements.
 class FamListIterator {
 public:  // types
 
@@ -34,49 +54,62 @@ public:  // types
 
     using value_type = FamObject;
     using pointer    = value_type*;
-    using reference  = Buffer&;
+    using reference  = value_type&;
+    using data_type  = Buffer;
 
 public:  // methods
 
-    FamListIterator(const value_type& object);
+    /// Construct iterator wrapping a FAM object.
+    FamListIterator(value_type object);  // NOLINT(google-explicit-constructor)
 
-    // iterate forwards
-    auto operator++() -> FamListIterator&;
+    /// Advance to next node (skip marked nodes).
+    FamListIterator& operator++();
 
-    // iterate backwards
-    auto operator--() -> FamListIterator&;
+    /// Retreat to previous node (skip marked nodes).
+    FamListIterator& operator--();
 
-    auto operator==(const FamListIterator& other) const -> bool;
+    /// Compare iterators for equality.
+    bool operator==(const FamListIterator& other) const;
 
-    auto operator!=(const FamListIterator& other) const -> bool { return !operator==(other); }
+    /// Compare iterators for inequality.
+    bool operator!=(const FamListIterator& other) const { return !operator==(other); }
 
-    auto operator->() -> pointer;
+    /// Access the underlying FAM object (to read node metadata).
+    pointer operator->();
 
-    auto operator*() -> reference;
+    /// Dereference to return data payload as Buffer.
+    data_type& operator*();
+
+    /// Access underlying FAM object.
+    value_type& object() { return object_; }
+
+    /// Access underlying FAM object (const).
+    const value_type& object() const { return object_; }
 
 private:  // members
 
-    bool invalid_{true};
-    Buffer data_{0};
-
     value_type object_;
+
+    std::optional<data_type> buffer_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
 // CONST ITERATOR
 
+/// @brief Const variant of FamListIterator.
 class FamListConstIterator : public FamListIterator {
-    using FamListIterator::FamListIterator;
+public:  // types
 
-    using value_type = FamListIterator::value_type;
-    using pointer    = const value_type*;
-    using reference  = const Buffer&;
+    using pointer   = const value_type*;
+    using reference = const data_type&;
 
 public:  // methods
 
-    auto operator->() -> pointer { return FamListIterator::operator->(); }
+    using FamListIterator::FamListIterator;
 
-    auto operator*() -> reference { return FamListIterator::operator*(); }
+    pointer operator->() { return FamListIterator::operator->(); }
+
+    reference operator*() { return FamListIterator::operator*(); }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

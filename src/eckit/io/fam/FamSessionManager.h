@@ -21,21 +21,24 @@
 
 #include <list>
 #include <memory>
+#include <mutex>
 #include <string>
-
-#include "eckit/io/fam/FamConfig.h"
 
 namespace eckit {
 
-class FamSessionDetail;
+class FamSession;
+
+namespace net {
+class Endpoint;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @brief Manages a list of FamSessionDetail.
 class FamSessionManager {
 public:  // types
 
-    using FamSession = std::shared_ptr<FamSessionDetail>;
+    class TestAccessor;
+    using Session = std::shared_ptr<FamSession>;
 
 public:  // methods
 
@@ -44,17 +47,13 @@ public:  // methods
     FamSessionManager(FamSessionManager&&)                 = delete;
     FamSessionManager& operator=(FamSessionManager&&)      = delete;
 
-    static auto instance() -> FamSessionManager&;
+    static FamSessionManager& instance();
 
-    auto get(const FamConfig& config) -> FamSession;
+    // Returns the session matching the given config
+    Session getOrAdd(const std::string& name, const net::Endpoint& endpoint);
 
-    auto getOrAdd(const FamConfig& config) -> FamSession;
-
-    void remove(const FamConfig& config);
-
-    void remove(const std::string& session_name);
-
-    void clear();
+    // Removes the session with the given name
+    void remove(const std::string& name);
 
 private:  // methods
 
@@ -62,9 +61,18 @@ private:  // methods
 
     ~FamSessionManager() = default;
 
+    Session find(const std::string& name);
+
+    // Removes null sessions or older than 30 minutes
+    void cleanup();
+
 private:  // members
 
-    std::list<FamSession> sessions_;
+    friend class TestAccessor;
+
+    mutable std::recursive_mutex mutex_;
+
+    std::list<Session> sessions_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

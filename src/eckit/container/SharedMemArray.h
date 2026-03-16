@@ -17,7 +17,6 @@
 
 #include <cstdint>
 
-#include "eckit/memory/NonCopyable.h"
 #include "eckit/os/Semaphore.h"
 
 #include "eckit/memory/Padded.h"
@@ -35,15 +34,20 @@ namespace eckit {
 /// Maps an array to shared memory
 
 template <class T>
-class SharedMemArray : private NonCopyable {
+class SharedMemArray {
 public:  // types
 
-    typedef T* iterator;
-    typedef const T* const_iterator;
+    using iterator       = T*;
+    using const_iterator = const T*;
 
 public:  // methods
 
     SharedMemArray(const PathName&, const std::string& shmName, size_t);
+
+    SharedMemArray(const SharedMemArray&)            = delete;
+    SharedMemArray& operator=(const SharedMemArray&) = delete;
+    SharedMemArray(SharedMemArray&&)                 = delete;
+    SharedMemArray& operator=(SharedMemArray&&)      = delete;
 
     ~SharedMemArray();
 

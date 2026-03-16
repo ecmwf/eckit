@@ -1,26 +1,37 @@
-eckit
-=====
+# EcKit
+
+<div align="center">
 
 [![Latest Tag](https://img.shields.io/github/v/tag/ecmwf/eckit?label=latest&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/tags)
 [![CI](https://img.shields.io/github/actions/workflow/status/ecmwf/eckit/ci.yml?branch=master&label=ci%20(master)&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/actions/workflows/ci.yml)
 [![CI](https://img.shields.io/github/actions/workflow/status/ecmwf/eckit/ci.yml?branch=develop&label=ci%20(develop)&style=flat-square&logo=github)](https://github.com/ecmwf/eckit/actions/workflows/ci.yml)
+
 [![codecov](https://codecov.io/gh/ecmwf/eckit/branch/develop/graph/badge.svg)](https://codecov.io/gh/ecmwf/eckit)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecmwf/eckit/blob/develop/LICENSE)
+[![Project Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity/graduated_badge.svg)](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity#graduated)
 
-Project home: https://software.ecmwf.int/wiki/display/ECKIT
+</div>
 
+> [!IMPORTANT]
+> This software is **Graduated** and subject to ECMWF's guidelines on
+> [Software Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity).
 
-ecKit is a cross-platform C++ toolkit that supports development of tools and
+## Overview
+
+EcKit is a cross-platform C++ toolkit that supports development of tools and
 applications at ECMWF. It is based on code developed over the last 20 years
 within the MARS software and was re-factored out to be reused by other
-applications. It provides a an abstraction layer on top of the operating
-system, so it is easier to port code to new architectures. It is developed
-taking into account the robustness requirements of running production systems
-at ECMWF. The main focus is UNIX/POSIX systems, and it has been thoroughly
-tested on AIX, Linux and Mac OSX. Historically, the code base pre-dates and in
-some way can be seen as a leaner substitute for some 'Boost' libraries.
+applications. It provides an abstraction layer on top of the operating system,
+so it is easier to port code to new architectures. It is developed taking into
+account the robustness requirements of running production systems at ECMWF. The
+main focus is UNIX/POSIX systems, and it has been thoroughly tested on Linux
+and Mac OSX. Historically, the code base pre-dates and in some way can be seen
+as a leaner substitute for some 'Boost' libraries.
+
+## Features
 
 It features facilities to easily handle, in a cross-platform way:
+
 * multi-threading
 * json and yaml parsing
 * object serialization and persistence
@@ -35,35 +46,14 @@ It features facilities to easily handle, in a cross-platform way:
 * asynchronous processing
 * exception handling and stack dumping
 * MPI object-oriented wrapper
-* linear algebra abstraction with multiple backends (BLAS, MKL, Armadillo, Eigen3)
+* linear algebra abstraction with multiple backends (BLAS, MKL, Eigen3)
 * advanced container classes
 * space partition trees
 * file-mapped arrays
 
+## Requirements
 
-Requirements
-------------
-
-Tested compilers include:
-
-- GCC 4.9.1, 5.3.0, 6.3.0, 7.2.0
-- Intel 15.0.2, 16.0.3, 17, 18
-- CCE 8.4.5, 8.5.8, 8.6.2
-- Apple LLVM 9.1.0 (clang-902.0.39.1)
-
-Required dependencies:
-
-- CMake --- For use and installation see http://www.cmake.org/
-- ecbuild --- ECMWF library of CMake macros
-- Perl5 --- For some code generation
-
-
-Installation
-------------
-
-Eckit employs an out-of-source build/install based on CMake.
-
-Make sure ecbuild is installed and the ecbuild executable script is found ( `which ecbuild` ).
+Make sure ecbuild is installed and the ecbuild executable script is found (`which ecbuild`).
 
 Now proceed with installation as follows:
 

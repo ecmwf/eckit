@@ -15,11 +15,11 @@
 #include <iterator>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/SharedBuffer.h"
-#include "eckit/memory/NonCopyable.h"
 
 #include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"
@@ -49,9 +49,19 @@ void addComm(std::string_view name, int comm);
 /// Register an existing communicator
 void addComm(std::string_view name, Comm* comm);
 
-/// Unregister and delete specific comm
+/// Unregister a communicator and call free() on the comm.
 /// @pre Comm is registered in the environment
+/// @note Cannot unregister 'world', 'self' or default communicators
+/// @throws SeriousBug if trying to unregister 'world', 'self' or default communicators,
+///         or any communicator aliasing MPI_COMM_WORLD or MPI_COMM_SELF with the parallel backend.
 void deleteComm(std::string_view name);
+
+/// Unregister a communicator without calling free() on the comm, e.g. if the registered comm is wrapping an MPI
+/// communicator managed by an external library
+/// @pre Comm is registered in the environment
+/// @note Cannot unregister 'world', 'self' or default communicators
+/// @throws SeriousBug if trying to unregister 'world', 'self' or default communicators
+void unregisterComm(std::string_view name);
 
 /// Check if a communicator is registered
 bool hasComm(std::string_view name);
@@ -71,16 +81,29 @@ namespace detail {
 /// Assertions for eckit::mpi code
 /// Don't use directly in client code
 void Assert(int code, const char* msg, const char* file, int line, const char* func);
+
+template <typename Type>
+struct is_std_vector : std::false_type {};
+
+template <typename T, typename A>
+struct is_std_vector<std::vector<T, A> > : std::true_type {};
 }  // namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Comm : private eckit::NonCopyable {
+class Comm {
     friend class Environment;
 
 public:  // class methods
 
     static Comm& comm(std::string_view name = {});
+
+    Comm() = default;
+
+    Comm(const Comm&)            = delete;
+    Comm& operator=(const Comm&) = delete;
+    Comm(Comm&&)                 = delete;
+    Comm& operator=(Comm&&)      = delete;
 
 public:  // methods
 
@@ -164,8 +187,8 @@ public:  // methods
     template <typename T>
     void broadcast(T buffer[], size_t count, size_t root) const;
 
-    template <typename T>
-    void broadcast(typename std::vector<T>& v, size_t root) const;
+    template <typename T, typename A>
+    void broadcast(typename std::vector<T, A>& v, size_t root) const;
 
     template <class Iter>
     void broadcast(Iter first, Iter last, size_t root) const;
@@ -177,11 +200,11 @@ public:  // methods
     template <class CIter, class Iter>
     void gather(CIter first, CIter last, Iter rfirst, Iter rlast, size_t root) const;
 
-    template <typename T>
-    void gather(const T send, std::vector<T>& recv, size_t root) const;
+    template <typename T, typename A>
+    void gather(const T send, std::vector<T, A>& recv, size_t root) const;
 
-    template <typename T>
-    void gather(const std::vector<T>& send, std::vector<T>& recv, size_t root) const;
+    template <typename T, typename A1, typename A2>
+    void gather(const std::vector<T, A1>& send, std::vector<T, A2>& recv, size_t root) const;
 
     ///
     /// Gather methods to one root, variable data sizes per rank
@@ -195,23 +218,23 @@ public:  // methods
     void gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const int recvcounts[], const int displs[],
                  size_t root) const;
 
-    template <class CIter, class Iter>
-    void gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const std::vector<int>& recvcounts,
-                 const std::vector<int>& displs, size_t root) const;
+    template <class CIter, class Iter, typename A1, typename A2>
+    void gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const std::vector<int, A1>& recvcounts,
+                 const std::vector<int, A2>& displs, size_t root) const;
 
-    template <typename T>
-    void gatherv(const std::vector<T>& send, std::vector<T>& recv, const std::vector<int>& recvcounts,
-                 const std::vector<int>& displs, size_t root) const;
+    template <typename T, typename A1, typename A2, typename A3, typename A4>
+    void gatherv(const std::vector<T, A1>& send, std::vector<T, A2>& recv, const std::vector<int, A3>& recvcounts,
+                 const std::vector<int, A4>& displs, size_t root) const;
 
     ///
     /// Scatter methods from one root
     ///
 
-    template <typename T>
-    void scatter(const std::vector<T>& send, T& recv, size_t root) const;
+    template <typename T, typename A>
+    void scatter(const std::vector<T, A>& send, T& recv, size_t root) const;
 
-    template <typename T>
-    void scatter(const std::vector<T>& send, std::vector<T>& recv, size_t root) const;
+    template <typename T, typename A1, typename A2>
+    void scatter(const std::vector<T, A1>& send, std::vector<T, A2>& recv, size_t root) const;
 
     ///
     /// Scatter methods from one root, variable data sizes per rank, pointer to data (also covers
@@ -226,8 +249,8 @@ public:  // methods
     void scatterv(CIter first, CIter last, const int sendcounts[], const int displs[], Iter rfirst, Iter rlast,
                   size_t root) const;
 
-    template <class CIter, class Iter>
-    void scatterv(CIter first, CIter last, const std::vector<int>& sendcounts, const std::vector<int>& displs,
+    template <class CIter, class Iter, typename A1, typename A2>
+    void scatterv(CIter first, CIter last, const std::vector<int, A1>& sendcounts, const std::vector<int, A2>& displs,
                   Iter rfirst, Iter rlast, size_t root) const;
 
     ///
@@ -240,8 +263,8 @@ public:  // methods
     template <typename T>
     void reduce(const T* send, T* recv, size_t count, Operation::Code op, size_t root) const;
 
-    template <typename T>
-    void reduce(const std::vector<T>& send, std::vector<T>& recv, Operation::Code op, size_t root) const;
+    template <typename T, typename A1, typename A2>
+    void reduce(const std::vector<T, A1>& send, std::vector<T, A2>& recv, Operation::Code op, size_t root) const;
 
     ///
     /// Reduce operations, in place buffer
@@ -260,14 +283,14 @@ public:  // methods
     /// All reduce operations, separate buffers
     ///
 
-    template <typename T>
+    template <typename T, std::enable_if_t<!eckit::mpi::detail::is_std_vector<T>::value>* = nullptr>
     void allReduce(const T send, T& recv, Operation::Code op) const;
 
     template <typename T>
     void allReduce(const T* send, T* recv, size_t count, Operation::Code op) const;
 
-    template <typename T>
-    void allReduce(const std::vector<T>& send, std::vector<T>& recv, Operation::Code op) const;
+    template <typename T, typename A1, typename A2>
+    void allReduce(const std::vector<T, A1>& send, std::vector<T, A2>& recv, Operation::Code op) const;
 
     ///
     /// All reduce operations, in place buffer
@@ -296,15 +319,15 @@ public:  // methods
     template <typename CIter, typename Iter>
     void allGatherv(CIter first, CIter last, Iter recvbuf, const int recvcounts[], const int displs[]) const;
 
-    template <typename T, typename CIter>
-    void allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv) const;
+    template <typename T, typename A, typename CIter>
+    void allGatherv(CIter first, CIter last, mpi::Buffer<T, A>& recv) const;
 
     ///
     /// All to all methods, fixed data size
     ///
 
-    template <typename T>
-    void allToAll(const std::vector<T>& send, std::vector<T>& recv) const;
+    template <typename T, typename A1, typename A2, std::enable_if_t<!detail::is_std_vector<T>::value>* = nullptr>
+    void allToAll(const std::vector<T, A1>& send, std::vector<T, A2>& recv) const;
 
     ///
     /// All to All, variable data size
@@ -379,8 +402,9 @@ public:  // methods
     /// All to all of vector< vector<> >
     ///
 
-    template <typename T>
-    void allToAll(const std::vector<std::vector<T> >& sendvec, std::vector<std::vector<T> >& recvvec) const;
+    template <typename T, typename A1, typename A2, typename A3, typename A4>
+    void allToAll(const std::vector<std::vector<T, A1>, A3>& sendvec,
+                  std::vector<std::vector<T, A2>, A4>& recvvec) const;
 
     ///
     /// Read file on one rank, and broadcast
@@ -555,8 +579,8 @@ void eckit::mpi::Comm::broadcast(T buffer[], size_t count, size_t root) const {
     broadcast(buffer, count, Data::Type<T>::code(), root);
 }
 
-template <typename T>
-void eckit::mpi::Comm::broadcast(typename std::vector<T>& v, size_t root) const {
+template <typename T, typename A>
+void eckit::mpi::Comm::broadcast(typename std::vector<T, A>& v, size_t root) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(root < commsize);
 
@@ -580,7 +604,7 @@ void eckit::mpi::Comm::broadcast(Iter first, Iter last, size_t root) const {
 
 template <class CIter, class Iter>
 void eckit::mpi::Comm::gather(CIter first, CIter last, Iter rfirst, Iter rlast, size_t root) const {
-    typedef typename std::iterator_traits<CIter>::difference_type diff_t;
+    using diff_t = typename std::iterator_traits<CIter>::difference_type;
 
     const size_t commsize = size();
     ECKIT_MPI_ASSERT(commsize > 0);
@@ -603,8 +627,8 @@ void eckit::mpi::Comm::gather(CIter first, CIter last, Iter rfirst, Iter rlast, 
     gather(sendbuf, sendcount, recvbuf, recvcount, type, root);
 }
 
-template <typename T>
-void eckit::mpi::Comm::gather(const T send, std::vector<T>& recv, size_t root) const {
+template <typename T, typename A>
+void eckit::mpi::Comm::gather(const T send, std::vector<T, A>& recv, size_t root) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(root < commsize);
@@ -616,8 +640,8 @@ void eckit::mpi::Comm::gather(const T send, std::vector<T>& recv, size_t root) c
     gather(&send, sendcount, recv.data(), recvcount, Data::Type<T>::code(), root);
 }
 
-template <typename T>
-void eckit::mpi::Comm::gather(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
+template <typename T, typename A1, typename A2>
+void eckit::mpi::Comm::gather(const std::vector<T, A1>& send, std::vector<T, A2>& recv, size_t root) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(root < commsize);
@@ -657,9 +681,9 @@ void eckit::mpi::Comm::gatherv(CIter first, CIter last, Iter rfirst, Iter rlast,
     gatherv(sendbuf, sendcount, recvbuf, recvcounts, displs, type, root);
 }
 
-template <class CIter, class Iter>
-void eckit::mpi::Comm::gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const std::vector<int>& recvcounts,
-                               const std::vector<int>& displs, size_t root) const {
+template <class CIter, class Iter, typename A1, typename A2>
+void eckit::mpi::Comm::gatherv(CIter first, CIter last, Iter rfirst, Iter rlast, const std::vector<int, A1>& recvcounts,
+                               const std::vector<int, A2>& displs, size_t root) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(root < commsize);
     ECKIT_MPI_ASSERT(recvcounts.size() == commsize);
@@ -668,9 +692,10 @@ void eckit::mpi::Comm::gatherv(CIter first, CIter last, Iter rfirst, Iter rlast,
     gatherv(first, last, rfirst, rlast, recvcounts.data(), displs.data(), root);
 }
 
-template <typename T>
-void eckit::mpi::Comm::gatherv(const std::vector<T>& send, std::vector<T>& recv, const std::vector<int>& recvcounts,
-                               const std::vector<int>& displs, size_t root) const {
+template <typename T, typename A1, typename A2, typename A3, typename A4>
+void eckit::mpi::Comm::gatherv(const std::vector<T, A1>& send, std::vector<T, A2>& recv,
+                               const std::vector<int, A3>& recvcounts, const std::vector<int, A4>& displs,
+                               size_t root) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(root < commsize);
     if (rank() == root) {
@@ -686,8 +711,8 @@ void eckit::mpi::Comm::gatherv(const std::vector<T>& send, std::vector<T>& recv,
 /// Scatter methods from one root
 ///
 
-template <typename T>
-void eckit::mpi::Comm::scatter(const std::vector<T>& send, T& recv, size_t root) const {
+template <typename T, typename A>
+void eckit::mpi::Comm::scatter(const std::vector<T, A>& send, T& recv, size_t root) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(root < commsize);
@@ -699,8 +724,8 @@ void eckit::mpi::Comm::scatter(const std::vector<T>& send, T& recv, size_t root)
     scatter(send.data(), sendcount, &recv, recvcount, Data::Type<T>::code(), root);
 }
 
-template <typename T>
-void eckit::mpi::Comm::scatter(const std::vector<T>& send, std::vector<T>& recv, size_t root) const {
+template <typename T, typename A1, typename A2>
+void eckit::mpi::Comm::scatter(const std::vector<T, A1>& send, std::vector<T, A2>& recv, size_t root) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(root < commsize);
@@ -745,9 +770,9 @@ void eckit::mpi::Comm::scatterv(CIter first, CIter last, const int sendcounts[],
     scatterv(sendbuf, sendcounts, displs, recvbuf, recvcounts, type, root);
 }
 
-template <class CIter, class Iter>
-void eckit::mpi::Comm::scatterv(CIter first, CIter last, const std::vector<int>& sendcounts,
-                                const std::vector<int>& displs, Iter rfirst, Iter rlast, size_t root) const {
+template <class CIter, class Iter, typename A1, typename A2>
+void eckit::mpi::Comm::scatterv(CIter first, CIter last, const std::vector<int, A1>& sendcounts,
+                                const std::vector<int, A2>& displs, Iter rfirst, Iter rlast, size_t root) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(root < commsize);
     ECKIT_MPI_ASSERT(sendcounts.size() == commsize);
@@ -770,8 +795,9 @@ void eckit::mpi::Comm::reduce(const T* send, T* recv, size_t count, Operation::C
     reduce(send, recv, count, Data::Type<T>::code(), op, root);
 }
 
-template <typename T>
-void eckit::mpi::Comm::reduce(const std::vector<T>& send, std::vector<T>& recv, Operation::Code op, size_t root) const {
+template <typename T, typename A1, typename A2>
+void eckit::mpi::Comm::reduce(const std::vector<T, A1>& send, std::vector<T, A2>& recv, Operation::Code op,
+                              size_t root) const {
     ECKIT_MPI_ASSERT(send.size() == recv.size());
     reduce(send.data(), recv.data(), send.size(), Data::Type<T>::code(), op, root);
 }
@@ -801,7 +827,7 @@ void eckit::mpi::Comm::reduceInPlace(Iter first, Iter last, Operation::Code op, 
 /// All reduce operations, separate buffers
 ///
 
-template <typename T>
+template <typename T, std::enable_if_t<!eckit::mpi::detail::is_std_vector<T>::value>*>
 void eckit::mpi::Comm::allReduce(const T send, T& recv, Operation::Code op) const {
     allReduce(&send, &recv, 1, Data::Type<T>::code(), op);
 }
@@ -811,8 +837,8 @@ void eckit::mpi::Comm::allReduce(const T* send, T* recv, size_t count, Operation
     allReduce(send, recv, count, Data::Type<T>::code(), op);
 }
 
-template <typename T>
-void eckit::mpi::Comm::allReduce(const std::vector<T>& send, std::vector<T>& recv, Operation::Code op) const {
+template <typename T, typename A1, typename A2>
+void eckit::mpi::Comm::allReduce(const std::vector<T, A1>& send, std::vector<T, A2>& recv, Operation::Code op) const {
     ECKIT_MPI_ASSERT(send.size() == recv.size());
     allReduce(send.data(), recv.data(), send.size(), Data::Type<T>::code(), op);
 }
@@ -883,8 +909,8 @@ void eckit::mpi::Comm::allGatherv(CIter first, CIter last, Iter rfirst, const in
 /// All to all methods, fixed data size
 ///
 
-template <typename T>
-void eckit::mpi::Comm::allToAll(const std::vector<T>& send, std::vector<T>& recv) const {
+template <typename T, typename A1, typename A2, std::enable_if_t<!eckit::mpi::detail::is_std_vector<T>::value>*>
+void eckit::mpi::Comm::allToAll(const std::vector<T, A1>& send, std::vector<T, A2>& recv) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(commsize > 0);
     ECKIT_MPI_ASSERT(send.size() % commsize == 0);
@@ -988,8 +1014,8 @@ eckit::mpi::Request eckit::mpi::Comm::iSend(const T& sendbuf, int dest, int tag)
     return iSend(&sendbuf, 1, Data::Type<T>::code(), dest, tag);
 }
 
-template <typename T, typename CIter>
-void eckit::mpi::Comm::allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv) const {
+template <typename T, typename A, typename CIter>
+void eckit::mpi::Comm::allGatherv(CIter first, CIter last, mpi::Buffer<T, A>& recv) const {
     int sendcnt = int(std::distance(first, last));
 
     allGather(sendcnt, recv.counts.begin(), recv.counts.end());
@@ -1007,9 +1033,9 @@ void eckit::mpi::Comm::allGatherv(CIter first, CIter last, mpi::Buffer<T>& recv)
     allGatherv(first, last, recv.buffer.data(), recv.counts.data(), recv.displs.data());
 }
 
-template <typename T>
-void eckit::mpi::Comm::allToAll(const std::vector<std::vector<T> >& sendvec,
-                                std::vector<std::vector<T> >& recvvec) const {
+template <typename T, typename A1, typename A2, typename A3, typename A4>
+void eckit::mpi::Comm::allToAll(const std::vector<std::vector<T, A1>, A3>& sendvec,
+                                std::vector<std::vector<T, A2>, A4>& recvvec) const {
     size_t commsize = size();
     ECKIT_MPI_ASSERT(sendvec.size() == commsize);
     ECKIT_MPI_ASSERT(recvvec.size() == commsize);

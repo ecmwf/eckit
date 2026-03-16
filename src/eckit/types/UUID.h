@@ -26,10 +26,10 @@ class UUID {
 
 public:  // types
 
-    typedef uint8_t value_type;
+    using value_type = uint8_t;
 
-    typedef uint8_t* iterator;
-    typedef uint8_t const* const_iterator;
+    using iterator       = uint8_t*;
+    using const_iterator = const uint8_t*;
 
 public:
 

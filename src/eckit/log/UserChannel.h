@@ -14,12 +14,6 @@
 #ifndef eckit_log_UserChannel_h
 #define eckit_log_UserChannel_h
 
-
-#include <ostream>
-
-#include "eckit/memory/NonCopyable.h"
-
-
 namespace eckit {
 
 //-----------------------------------------------------------------------------
@@ -38,7 +32,7 @@ public:
 
 class UserBuffer;
 
-class UserChannel : public std::ostream, private NonCopyable {
+class UserChannel : public std::ostream {
 public:  // types
 
     enum MsgType {
@@ -52,6 +46,11 @@ public:  // methods
 
     /// Constructor
     UserChannel();
+
+    UserChannel(const UserChannel&)            = delete;
+    UserChannel& operator=(const UserChannel&) = delete;
+    UserChannel(UserChannel&&)                 = delete;
+    UserChannel& operator=(UserChannel&&)      = delete;
 
     /// Destructor
     ~UserChannel();

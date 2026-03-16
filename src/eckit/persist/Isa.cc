@@ -17,7 +17,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static std::map<std::string, Isa*>* map_ = 0;
+static std::map<std::string, Isa*>* map_ = nullptr;
 
 void Isa::add(TypeInfo* t, const std::string& s) {
     Isa* i = new Isa(t, get(s));
@@ -26,11 +26,11 @@ void Isa::add(TypeInfo* t, const std::string& s) {
 }
 
 Isa* Isa::get(const std::string& s) {
-    if (map_ == 0) {
+    if (map_ == nullptr) {
         map_ = new std::map<std::string, Isa*>;
     }
     std::map<std::string, Isa*>::iterator j = map_->find(s);
-    return (j == map_->end()) ? (Isa*)0 : (Isa*)(*j).second;
+    return (j == map_->end()) ? nullptr : (Isa*)(*j).second;
 }
 
 void _describe(std::ostream& s, int depth, int what) {

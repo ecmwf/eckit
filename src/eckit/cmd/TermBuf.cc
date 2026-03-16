@@ -22,7 +22,7 @@ void TermClearEOL();
 void TermClearEOS();
 }
 
-static std::ostream* os = 0;
+static std::ostream* os = nullptr;
 
 int TermPutChar(int c) {
     *os << char(c);

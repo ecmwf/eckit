@@ -34,10 +34,11 @@ class FamName {
 public:  // methods
 
     FamName(const net::Endpoint& endpoint, FamPath path);
+    FamName(const net::Endpoint& endpoint, const std::string& path) : FamName(endpoint, FamPath(path)) {}
 
-    FamName(const URI& uri);
+    explicit FamName(const URI& uri);
 
-    FamName(Stream& stream);
+    explicit FamName(Stream& stream);
 
     // rules
     FamName(const FamName&)            = default;
@@ -47,30 +48,30 @@ public:  // methods
 
     virtual ~FamName();
 
-    virtual auto exists() const -> bool = 0;
+    virtual bool exists() const = 0;
 
     /// @todo implement
-    // virtual auto lookup() const -> FamItem = 0;
+    // virtual FamItem lookup() const = 0;
 
-    auto asString() const -> std::string;
+    std::string asString() const;
 
-    auto uri() const -> URI;
+    URI uri() const;
 
-    auto endpoint() const -> const net::Endpoint& { return endpoint_; }
+    const net::Endpoint& endpoint() const { return endpoint_; }
 
-    auto path() const -> const FamPath& { return path_; }
+    const FamPath& path() const { return path_; }
 
 protected:  // methods
 
-    auto session() const -> FamSessionManager::FamSession;
+    FamSessionManager::Session session() const;
 
-    auto path() -> FamPath& { return path_; }
+    FamPath& path() { return path_; }
 
     virtual void print(std::ostream& out) const;
 
-    friend auto operator<<(std::ostream& out, const FamName& name) -> std::ostream&;
+    friend std::ostream& operator<<(std::ostream& out, const FamName& name);
 
-    friend auto operator<<(Stream& out, const FamName& name) -> Stream&;
+    friend Stream& operator<<(Stream& out, const FamName& name);
 
 private:  // members
 

@@ -73,12 +73,12 @@ const ReanimatorBase& TestItem<T>::reanimator() const {
     return reanimator;
 }
 
-typedef unsigned char uchar;
-typedef long long llong;
+using uchar = unsigned char;
+using llong = long long;
 #ifndef ulong
-typedef unsigned long ulong;
+using ulong = unsigned long;
 #endif
-typedef unsigned long long ullong;
+using ullong = unsigned long long;
 
 /// Partially specialise ClassSpecs since they must have unique names
 template <>

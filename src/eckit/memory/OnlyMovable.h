@@ -14,7 +14,7 @@
 
 namespace eckit {
 
-/// Inherit from this class to make a NonCopyable class
+/// Inherit from this class to make a OnlyMovable class
 
 class OnlyMovable {
 protected:

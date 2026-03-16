@@ -15,39 +15,110 @@
 
 #include "eckit/io/fam/FamMapIterator.h"
 
-#include "detail/FamMapNode.h"
+#include <cstring>
+#include <utility>
 
-// #include "detail/FamSessionDetail.h"
-// #include "eckit/exception/Exceptions.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/FamMap.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-FamMapIterator::FamMapIterator(const FamRegion& region, const fam::index_t offset) :
-    region_{region}, node_{region_.proxyObject(offset)} {}
-
-auto FamMapIterator::operator++() -> FamMapIterator& {
-    if (const auto next = FamMapNode::getNext(node_); next.region > 0) {
-        node_.replaceWith(next);
-        list_.reset();
+template <typename T>
+FamMapIterator<T>::FamMapIterator(const FamMap<T>& map, const std::size_t bucket, const bool advance) :
+    map_{&map}, bucket_{bucket} {
+    if (advance) {
+        advanceToNextBucket();
     }
+}
+
+template <typename T>
+FamMapIterator<T>::FamMapIterator(const FamMap<T>& map, const std::size_t bucket, FamListIterator iter, FamList list) :
+    map_{&map}, bucket_{bucket}, list_{std::move(list)}, iter_{std::move(iter)} {}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+bool FamMapIterator<T>::hasMoreBuckets() const {
+    return bucket_ < FamMap<T>::bucket_count;
+}
+
+template <typename T>
+bool FamMapIterator<T>::loadBucket() {
+    auto bucket = map_->getBucket(bucket_);
+    if (!bucket || bucket->empty()) {
+        list_.reset();
+        iter_.reset();
+        return false;
+    }
+    list_ = std::move(*bucket);
+    iter_ = list_->begin();
+    // empty: false, non-empty: true
+    return iter_ != list_->end();
+}
+
+template <typename T>
+void FamMapIterator<T>::advanceToNextBucket() {
+    while (hasMoreBuckets()) {
+        if (loadBucket()) {
+            return;  // found a non-empty bucket with entries
+        }
+        ++bucket_;
+    }
+    // we reached the end
+    list_.reset();
+    iter_.reset();
+}
+
+template <typename T>
+FamMapIterator<T>& FamMapIterator<T>::operator++() {
+    ASSERT(hasMoreBuckets());
+    ASSERT(iter_.has_value());
+
+    // advance within current bucket
+    ++(*iter_);
+
+    if (*iter_ != list_->end()) {
+        return *this;  // entry found in this bucket
+    }
+
+    // move to next bucket
+    ++bucket_;
+    advanceToNextBucket();
+
     return *this;
 }
 
-auto FamMapIterator::operator->() -> pointer {
-    if (list_) {
-        list_ = FamMapNode::getList(region_, node_);
+template <typename T>
+bool FamMapIterator<T>::operator==(const FamMapIterator& other) const {
+    // same bucket
+    if (bucket_ != other.bucket_) {
+        return false;
     }
-    return list_.get();
+    // both are "empty or past-end position"
+    if (!iter_.has_value() && !other.iter_.has_value()) {
+        return true;
+    }
+    // compare underlying FAM objects
+    if (iter_.has_value() && other.iter_.has_value()) {
+        return iter_->object() == other.iter_->object();
+    }
+    return false;
 }
 
-auto FamMapIterator::operator*() -> reference {
-    if (list_) {
-        list_ = FamMapNode::getList(region_, node_);
-    }
-    return *list_;
+template <typename T>
+T FamMapIterator<T>::operator*() {
+    ASSERT(iter_.has_value());
+    return T{**iter_};
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// Explicit instantiations
+template class FamMapIterator<FamMapEntry<32>>;
+template class FamMapIterator<FamMapEntry<64>>;
+template class FamMapIterator<FamMapEntry<128>>;
 
 //----------------------------------------------------------------------------------------------------------------------
 

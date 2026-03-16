@@ -17,13 +17,13 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
-#include "eckit/geo/spec/Custom.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/option/CmdArgs.h"
 #include "eckit/option/EckitTool.h"
 #include "eckit/option/SimpleOption.h"
 #include "eckit/parser/YAMLParser.h"
+#include "eckit/spec/Custom.h"
 
 
 namespace eckit {
@@ -63,7 +63,7 @@ private:
         }
 
         std::unique_ptr<const geo::Grid> grid([](const std::string& str) -> const geo::Grid* {
-            std::unique_ptr<geo::Spec> spec(geo::spec::Custom::make_from_value(YAMLParser::decodeString(str)));
+            std::unique_ptr<spec::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
             return geo::GridFactory::build(*spec);
         }(spec));
 
@@ -74,7 +74,7 @@ private:
         {
             auto bbox = grid->boundingBox();
             out << "bounding box";
-            (out.startList() << bbox.north << bbox.west << bbox.south << bbox.east).endList();
+            (out.startList() << bbox.north() << bbox.west() << bbox.south() << bbox.east()).endList();
         }
 
         auto minmax_latlon = args.getBool("minmax-ll", false);
@@ -87,22 +87,22 @@ private:
             geo::PointLonLat max{min};
 
             for (size_t i = 0; i < lat.size(); ++i) {
-                min = {std::min(min.lon, lon[i]), std::min(min.lat, lat[i])};
-                max = {std::max(max.lon, lon[i]), std::max(max.lat, lat[i])};
+                min = {std::min(min.lon(), lon[i]), std::min(min.lat(), lat[i])};
+                max = {std::max(max.lon(), lon[i]), std::max(max.lat(), lat[i])};
             }
 
             out << "min";
-            (out.startList() << min.lon << min.lat).endList();
+            (out.startList() << min.lon() << min.lat()).endList();
 
             out << "max";
-            (out.startList() << max.lon << max.lat).endList();
+            (out.startList() << max.lon() << max.lat()).endList();
         }
 
         auto calculate_bbox = args.getBool("calculate-bbox", false);
         if (calculate_bbox) {
             std::unique_ptr<geo::area::BoundingBox> bbox{grid->calculate_bbox()};
             out << "bounding box (calculated)";
-            (out.startList() << bbox->north << bbox->west << bbox->south << bbox->east).endList();
+            (out.startList() << bbox->north() << bbox->west() << bbox->south() << bbox->east()).endList();
         }
 
         auto calculate_uid = args.getBool("calculate-uid", false);

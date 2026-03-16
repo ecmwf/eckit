@@ -44,7 +44,7 @@ private:
 
     // -- Members
 
-    typedef void (*proc)(int);
+    using proc = void (*)(int);
     proc old_;
     bool saveThrow_;
     int saveSec_;

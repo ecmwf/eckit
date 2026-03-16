@@ -127,7 +127,7 @@ CASE("test_multi_targets") {
 
     mychannel << "testing [" << t++ << "]" << std::endl;
 
-    mychannel.addCallback(&callback_noctxt, 0);
+    mychannel.addCallback(&callback_noctxt, nullptr);
     mychannel.addCallback(&callback_ctxt, &t);
 
     mychannel << "testing [" << t++ << "]" << std::endl;

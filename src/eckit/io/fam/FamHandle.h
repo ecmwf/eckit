@@ -61,7 +61,7 @@ public:  // methods
 
     Offset seek(const Offset& offset) override;
 
-    auto canSeek() const -> bool override { return true; }
+    bool canSeek() const override { return true; }
 
     Offset position() override { return pos_; }
 

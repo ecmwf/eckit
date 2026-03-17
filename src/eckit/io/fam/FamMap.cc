@@ -66,8 +66,8 @@ template <typename T>
 FamMap<T>::FamMap(std::string name, FamRegion region) :
     name_{std::move(name)},
     region_{std::move(region)},
-    table_{initSentinel(region_, name_ + "-map-table", bucket_count * sizeof(FamList::Descriptor))},
-    count_{initSentinel(region_, name_ + "-map-count", sizeof(size_type))} {}
+    table_{initSentinel(region_, name_ + table_suffix, bucket_count * sizeof(FamList::Descriptor))},
+    count_{initSentinel(region_, name_ + count_suffix, sizeof(size_type))} {}
 
 //----------------------------------------------------------------------------------------------------------------------
 // Bucket management

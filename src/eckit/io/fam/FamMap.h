@@ -123,6 +123,9 @@ public:  // constants
     /// needed for preventing concurrent double-init of buckets, as sentinel value in bucket head during creation
     static constexpr fam::size_t creating = ~fam::size_t{0};
 
+    static constexpr auto table_suffix = "-map-table";
+    static constexpr auto count_suffix = "-map-count";
+
 public:  // methods
 
     /// Construct or open a FamMap in the given region with the given name.

@@ -66,8 +66,8 @@ bool FamRegionName::exists() const {
 }
 
 bool FamRegionName::uriBelongs(const URI& uri) const {
-    /// @todo check if usage requires nothrow
-    return (uri.endpoint() == endpoint() && FamPath(uri).regionName == path().regionName);
+    return uri.scheme() == FamPath::scheme && uri.endpoint() == endpoint() &&
+           FamPath(uri).regionName == path().regionName;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

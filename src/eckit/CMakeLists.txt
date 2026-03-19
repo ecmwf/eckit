@@ -268,7 +268,13 @@ list(APPEND eckit_message_srcs
     message/Splitter.h
 )
 
-if(HAVE_OPENFAM)
+if(HAVE_OPENFAM OR HAVE_OPENFAM_MOCK)
+if(HAVE_OPENFAM_MOCK)
+list(APPEND eckit_io_srcs
+io/fam/openfam_mock/fam/fam.cc
+io/fam/openfam_mock/FamMockSession.h
+)
+endif()
 list(APPEND eckit_io_srcs
 io/fam/FamHandle.cc
 io/fam/FamHandle.h
@@ -302,7 +308,7 @@ io/fam/FamSessionManager.h
 io/fam/FamURIManager.cc
 io/fam/FamURIManager.h
 )
-endif(HAVE_OPENFAM)
+endif()
 
 if(HAVE_RADOS)
     list( APPEND eckit_io_srcs
@@ -964,6 +970,8 @@ ecbuild_add_library(
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
+              # When mock is active, shadow the real fam/ headers with the in-process stubs.
+              $<$<BOOL:${HAVE_OPENFAM_MOCK}>:${CMAKE_CURRENT_SOURCE_DIR}/io/fam/openfam_mock>
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
@@ -973,7 +981,9 @@ ecbuild_add_library(
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
-              $<${HAVE_OPENFAM}:OpenFAM::openfam>
+              # Link the real OpenFAM only when the native library is present.
+              $<$<AND:$<BOOL:${HAVE_OPENFAM}>,$<NOT:$<BOOL:${HAVE_OPENFAM_MOCK}>>>:OpenFAM::openfam>
+              $<$<BOOL:${HAVE_OPENFAM_MOCK}>:LibUUID>
               $<${HAVE_AEC}:libaec::aec>
 
           PUBLIC_LIBS

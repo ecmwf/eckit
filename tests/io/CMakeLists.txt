@@ -42,12 +42,18 @@ foreach(_test
                     LIBS    eckit )
 endforeach()
 
+if(HAVE_OPENFAM)
+    set(_fam_extra_libs OpenFAM::openfam)
+else()
+    set(_fam_extra_libs "")
+endif()
+
 foreach( _test fam fam_list fam_map fam_session_manager )
   ecbuild_add_test( TARGET      eckit_test_${_test}
                     SOURCES     test_${_test}.cc
-                    CONDITION   HAVE_OPENFAM
+                    CONDITION   HAVE_OPENFAM OR HAVE_OPENFAM_MOCK
                     LABELS      openfam
-                    LIBS        eckit OpenFAM::openfam )
+                    LIBS        eckit ${_fam_extra_libs} )
 endforeach()
 
 ecbuild_add_test( TARGET      eckit_test_radoshandle

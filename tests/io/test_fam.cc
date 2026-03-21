@@ -357,6 +357,59 @@ CASE("FamRegionName: invalid names are rejected") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("FamURIManager: asString produces scheme:path and appends query/fragment") {
+    const std::string region = "myregion";
+    const std::string object = "myobject";
+    const std::string path   = "/" + region + "/" + object;
+
+    // FamURIManager::asString returns "scheme:" + uri.name(), where uri.name()
+    // holds only the path portion ("/region/object") because the authority
+    // (host:port) is parsed into the separate host_/port_ fields of URI.
+    // The full canonical form — including "//host:port" — is produced by
+    // FamName::asString(); see also the @todo in FamURIManager.cc.
+    const std::string expected_base = std::string(FamPath::scheme) + ":" + path;
+
+    // Baseline: no query, no fragment.
+    {
+        const auto uri = URI(FamPath::scheme, fam::test_endpoint, path);
+        EXPECT_EQUAL(uri.asString(), expected_base);
+    }
+
+    // With a single query parameter — must appear as "?key=value".
+    {
+        auto uri = URI(FamPath::scheme, fam::test_endpoint, path);
+        uri.query("offset", "42");
+        EXPECT_EQUAL(uri.asString(), expected_base + "?offset=42");
+    }
+
+    // With a fragment — must appear as "#section".
+    {
+        auto uri = URI(FamPath::scheme, fam::test_endpoint, path);
+        uri.fragment("section");
+        EXPECT_EQUAL(uri.asString(), expected_base + "#section");
+    }
+
+    // With both query and fragment — query precedes fragment.
+    {
+        auto uri = URI(FamPath::scheme, fam::test_endpoint, path);
+        uri.query("offset", "0");
+        uri.fragment("end");
+        EXPECT_EQUAL(uri.asString(), expected_base + "?offset=0#end");
+    }
+
+    // Round-trip: parsing the output of asString yields an equivalent URI.
+    // Note: the authority is absent from asString output, so the round-tripped
+    // URI has no host/port — the fields differ from the original.
+    {
+        const auto uri      = URI(FamPath::scheme, fam::test_endpoint, path);
+        const auto reparsed = URI(uri.asString());
+        EXPECT_EQUAL(reparsed.scheme(), std::string(FamPath::scheme));
+        EXPECT_EQUAL(reparsed.name(), path);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {

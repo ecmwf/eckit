@@ -59,7 +59,7 @@ void FamHandle::flush() {
 }
 
 Offset FamHandle::seek(const Offset& offset) {
-    pos_ = pos_ + offset;
+    pos_ = offset;
 
     ASSERT(0 <= pos_ && size() >= pos_);
 

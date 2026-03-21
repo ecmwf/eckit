@@ -162,6 +162,10 @@ void fam::fam_destroy_region(Fam_Region_Descriptor* region_desc) {
 }
 
 void fam::fam_resize_region(Fam_Region_Descriptor* region_desc, std::uint64_t size) {
+    if (!region_desc) {
+        throw Fam_Exception("Null region descriptor", FAM_ERR_INVALID);
+    }
+
     auto& sess = session();
     mock::LockGuard lock(sess);
 

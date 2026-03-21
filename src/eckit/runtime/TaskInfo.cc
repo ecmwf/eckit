@@ -146,7 +146,13 @@ TaskInfo::TaskInfo() {
 
 
 TaskInfo::~TaskInfo() {
-    info.busy_ = false;
+    // Use volatile write to prevent the compiler from eliminating this store as
+    // a dead store. Without it, GCC -O2 DSE removes the store because all
+    // subsequent destructors in the chain are trivial (no code reads busy_ after
+    // this point within the process). But busy_ lives in a memory-mapped file
+    // shared across processes, so the write is externally observable and must
+    // not be suppressed.
+    *static_cast<volatile bool*>(&info.busy_) = false;
 }
 
 void TaskInfo::kind(const std::string& s) {

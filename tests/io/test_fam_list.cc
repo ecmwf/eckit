@@ -23,7 +23,6 @@
 #include <mutex>
 #include <sstream>
 #include <string>
-#include <string_view>
 #include <thread>
 #include <vector>
 
@@ -52,12 +51,14 @@ const auto list_data             = "D" + fam::random_number();
 std::vector<std::string> test_data;
 std::mutex test_mutex;
 
-auto makeTestData(const int number) -> std::string_view {
+std::string makeTestData(const int number) {
     std::ostringstream oss;
     oss << "tid:" << std::this_thread::get_id() << " #" << number << '-' << list_data;
+    auto value = oss.str();
     // add to the control list
     const std::lock_guard<std::mutex> lock(test_mutex);
-    return test_data.emplace_back(oss.str());
+    test_data.emplace_back(value);
+    return value;
 }
 
 void populateList() {
@@ -179,6 +180,7 @@ CASE("FamList: pop front/back updates size and values") {
 CASE("FamList: populate with " + std::to_string(list_size) + " items by " + std::to_string(num_threads) + " threads") {
     std::vector<std::thread> threads;
 
+    test_data.reserve(num_threads * list_size);
     threads.reserve(num_threads);
 
     for (auto i = 0; i < num_threads; i++) {

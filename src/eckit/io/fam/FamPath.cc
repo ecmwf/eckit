@@ -38,13 +38,10 @@ std::tuple<std::string, std::string> parsePath(const std::string& path) {
     switch (names.size()) {
         case 1:
             return {names[0], ""};
-            break;
         case 2:
             return {names[0], names[1]};
-            break;
         default:
             return {};
-            break;
     }
 }
 

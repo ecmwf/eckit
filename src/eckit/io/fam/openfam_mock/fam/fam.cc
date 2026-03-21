@@ -227,7 +227,7 @@ Fam_Descriptor* fam::fam_allocate(const char* name, std::uint64_t size, mode_t p
     }
 
     const std::uint64_t offset  = region.nextOffset;
-    const std::uint64_t aligned = ((offset + size) + 7u) & ~std::uint64_t{7};
+    const std::uint64_t aligned = ((offset + size) + std::uint64_t{7}) & ~std::uint64_t{7};
     region.nextOffset           = aligned;
 
     // Allocate backing storage in the shared data area.
@@ -299,7 +299,7 @@ void fam::fam_deallocate(Fam_Descriptor* object) {
     }
 
     const auto nextExpectedOffset  = objectOffset + obj->size;
-    const auto nextExpectedAligned = (nextExpectedOffset + 7u) & ~std::uint64_t{7};
+    const auto nextExpectedAligned = (nextExpectedOffset + std::uint64_t{7}) & ~std::uint64_t{7};
 
     sess.freeObject(*obj);
 

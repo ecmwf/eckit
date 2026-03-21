@@ -54,7 +54,7 @@ bool FamObject::operator==(const FamObject& other) const {
 // OPERATIONS
 
 void FamObject::replaceWith(const FamDescriptor& object) {
-    object_ = std::make_unique<FamObjectDescriptor>(Fam_Global_Descriptor{object.region, object.offset});
+    object_ = std::make_shared<FamObjectDescriptor>(Fam_Global_Descriptor{object.region, object.offset});
 }
 
 void FamObject::deallocate() const {

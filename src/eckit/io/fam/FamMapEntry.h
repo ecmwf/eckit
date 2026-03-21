@@ -19,6 +19,10 @@
 
 #pragma once
 
+#include <cstring>
+#include <type_traits>
+
+#include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/types/FixedString.h"
 

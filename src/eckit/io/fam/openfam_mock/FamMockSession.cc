@@ -285,9 +285,7 @@ Region& FamMockSession::findRegion(Fam_Region_Descriptor* desc) {
 }
 
 void FamMockSession::freeRegion(Region& region) {
-    // Zero-init the entire slot (objects included), then set the sentinel offset.
-    region            = Region{};
-    region.nextOffset = 8;
+    region = Region{};
 }
 
 //----------------------------------------------------------------------------------------------------------------------

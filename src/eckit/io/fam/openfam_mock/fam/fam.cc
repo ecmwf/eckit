@@ -114,12 +114,11 @@ Fam_Region_Descriptor* fam::fam_create_region(const char* name, std::uint64_t si
 
     const auto regionId = sess.nextRegion();
 
-    *slot            = mock::Region{};  // zero-init
-    slot->active     = true;
-    slot->id         = regionId;
-    slot->size       = size;
-    slot->perm       = perm;
-    slot->nextOffset = 8;  // reserve offset 0 as null sentinel
+    *slot        = mock::Region{};
+    slot->active = true;
+    slot->id     = regionId;
+    slot->size   = size;
+    slot->perm   = perm;
     std::strncpy(slot->name, name, mock::g_max_name_len - 1);
     slot->name[mock::g_max_name_len - 1] = '\0';
 

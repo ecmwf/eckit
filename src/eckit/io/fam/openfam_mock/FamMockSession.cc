@@ -227,7 +227,10 @@ void FamMockSession::lock() {
 
 void FamMockSession::unlock() {
     LOG_DEBUG_LIB(LibEcKit) << "Unlocking mutex.\n";
-    ::pthread_mutex_unlock(&state_->mutex);
+    const int code = ::pthread_mutex_unlock(&state_->mutex);
+    if (code != 0) {
+        throw eckit::FailedSystemCall("pthread_mutex_unlock", Here(), code);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -149,7 +149,8 @@ auto FamSession::invokeFam(Func&& fn_ptr, Args&&... args) {
         }
         if (code == openfam::Fam_Error::FAM_ERR_RPC) {
             std::string option_name       = "CIS_SERVER";
-            const std::string server_name = static_cast<const char*>(fam_->fam_get_option(option_name.data()));
+            const auto* server_cstr       = static_cast<const char*>(fam_->fam_get_option(option_name.data()));
+            const std::string server_name = server_cstr ? server_cstr : "<unknown>";
             throw RemoteException(e.fam_error_msg(), server_name);
         }
         throw SeriousBug("Code=" + std::to_string(code) + ' ' + e.fam_error_msg());

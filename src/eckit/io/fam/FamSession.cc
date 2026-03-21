@@ -195,13 +195,18 @@ void FamSession::destroyRegion(const std::string& region_name) {
 
 FamRegion FamSession::ensureCreateRegion(const fam::size_t region_size, const fam::perm_t region_perm,
                                          const std::string& region_name) {
-    try {
-        return createRegion(region_size, region_perm, region_name);
+    // Retry loop guards against TOCTOU
+    constexpr int max_retries = 3;
+    for (int attempt = 0; attempt <= max_retries; ++attempt) {
+        try {
+            return createRegion(region_size, region_perm, region_name);
+        }
+        catch (const AlreadyExists&) {
+            destroyRegion(region_name);
+        }
     }
-    catch (const AlreadyExists& e) {
-        destroyRegion(region_name);
-        return createRegion(region_size, region_perm, region_name);
-    }
+    throw SeriousBug("ensureCreateRegion: failed after " + std::to_string(max_retries) + " retries for region '" +
+                     region_name + "'");
 }
 
 FamProperty FamSession::stat(FamRegionDescriptor& region) {
@@ -252,13 +257,18 @@ void FamSession::deallocateObject(const std::string& region_name, const std::str
 
 FamObject FamSession::ensureAllocateObject(FamRegionDescriptor& region, const fam::size_t object_size,
                                            const fam::perm_t object_perm, const std::string& object_name) {
-    try {
-        return allocateObject(region, object_size, object_perm, object_name);
+    // Retry loop guards against TOCTOU
+    constexpr int max_retries = 3;
+    for (int attempt = 0; attempt <= max_retries; ++attempt) {
+        try {
+            return allocateObject(region, object_size, object_perm, object_name);
+        }
+        catch (const AlreadyExists&) {
+            deallocateObject(region.get_name(), object_name);
+        }
     }
-    catch (const AlreadyExists& e) {
-        deallocateObject(region.get_name(), object_name);
-        return allocateObject(region, object_size, object_perm, object_name);
-    }
+    throw SeriousBug("ensureAllocateObject: failed after " + std::to_string(max_retries) + " retries for object '" +
+                     object_name + "'");
 }
 
 FamProperty FamSession::stat(FamObjectDescriptor& object) {

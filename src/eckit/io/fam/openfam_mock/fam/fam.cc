@@ -25,6 +25,7 @@
 #include <cstdlib>  // std::abort
 #include <cstring>
 #include <string>
+#include <string_view>
 
 #include "fam/fam_exception.h"
 
@@ -85,7 +86,7 @@ void fam::fam_abort(int /*code*/) {
 }
 
 const void* fam::fam_get_option(char* option_name) {
-    if (option_name && std::string(option_name) == "CIS_SERVER") {
+    if (option_name && std::string_view(option_name) == "CIS_SERVER") {
         return static_cast<const void*>(serverName_.data());
     }
     return nullptr;

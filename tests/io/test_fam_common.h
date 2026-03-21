@@ -13,11 +13,12 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   fam_common.h
+/// @file   test_fam_common.h
 /// @author Metin Cakircali
 /// @date   Jun 2024
 
-#include <bits/types/struct_timeval.h>
+#pragma once
+
 #include <sys/time.h>
 
 #include <cstdlib>

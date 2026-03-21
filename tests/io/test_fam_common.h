@@ -19,8 +19,11 @@
 
 #pragma once
 
+#include <sys/mman.h>
 #include <sys/time.h>
 
+#include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <string>
 #include <vector>
@@ -51,6 +54,15 @@ const auto test_endpoint = "172.26.0.2:8880"s;
 
 class TestFam {
 public:
+
+    TestFam() {
+        // Unlink any stale POSIX shared memory from previous test runs.
+        const auto colon_pos = test_endpoint.find(':');
+        auto host            = (colon_pos != std::string::npos) ? test_endpoint.substr(0, colon_pos) : test_endpoint;
+        std::transform(host.begin(), host.end(), host.begin(),
+                       [](unsigned char ch) { return std::isalnum(ch) ? static_cast<char>(ch) : '_'; });
+        ::shm_unlink(("/eckit_fam_mock_" + host).c_str());
+    }
 
     ~TestFam() { destroyRegions(); }
 

@@ -90,7 +90,7 @@ public:  // methods
 
     /// Dereference: returns FamMapEntry{key, value} by value.
     /// (pointer and reference are intentionally omitted here)
-    value_type operator*();
+    value_type operator*() const;
 
 private:  // methods
 

@@ -78,7 +78,7 @@ public:  // methods
     pointer operator->();
 
     /// Dereference to return data payload as Buffer.
-    data_type& operator*();
+    data_type& operator*() const;
 
     /// Access underlying FAM object.
     value_type& object() { return object_; }
@@ -90,7 +90,7 @@ private:  // members
 
     value_type object_;
 
-    std::optional<data_type> buffer_;
+    mutable std::optional<data_type> buffer_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

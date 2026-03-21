@@ -77,7 +77,7 @@ auto FamListIterator::operator->() -> pointer {
 
 /// Dereference operator: returns data buffer.
 /// Safely skips marked nodes when dereferencing.
-auto FamListIterator::operator*() -> data_type& {
+auto FamListIterator::operator*() const -> data_type& {
     if (!buffer_) {
         FamListNode::getData(object_, buffer_.emplace());
     }

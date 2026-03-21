@@ -108,7 +108,7 @@ bool FamMapIterator<T>::operator==(const FamMapIterator& other) const {
 }
 
 template <typename T>
-T FamMapIterator<T>::operator*() {
+T FamMapIterator<T>::operator*() const {
     ASSERT(iter_.has_value());
     return T{**iter_};
 }

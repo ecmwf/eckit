@@ -30,6 +30,7 @@
 
 #pragma once
 
+#include <pthread.h>
 #include <sys/types.h>  // mode_t
 
 #include <cstddef>

@@ -25,11 +25,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <functional>
-#include <iterator>
 #include <map>
 #include <mutex>
 #include <string>
@@ -54,37 +54,28 @@ namespace {
 /// Magic value written to `State::initialized` once the creator finishes setup.
 constexpr std::uint32_t k_init_magic = 0xFA00CAFE;
 
+/// Byte offset of the data area from the start of the shared memory segment.
+constexpr std::size_t k_data_offset = (sizeof(State) + 7U) & ~std::size_t{7U};
+
+/// Total capacity of the data area in bytes.
+constexpr std::size_t k_data_capacity = g_shm_total_size - k_data_offset;
+
 using SessionMap = std::map<std::string, FamMockSession*>;
 
-// process-local mock Session cache ()
+// Process-local mock session cache
 std::pair<std::mutex, SessionMap>& sessionCache() {
     static std::pair<std::mutex, SessionMap> cache;
     return cache;
 }
 
-/// The name must start with '/' and contain no further slashes.
 std::string generateShmName(std::string name) {
-    for (char& chr : name) {
-        chr = (std::isalnum(static_cast<unsigned char>(chr)) != 0) ? chr : '_';
-    }
+    std::transform(name.begin(), name.end(), name.begin(),
+                   [](unsigned char ch) { return std::isalnum(ch) ? static_cast<char>(ch) : '_'; });
     // Limit length to be safe on all platforms (POSIX requires NAME_MAX support).
     if (name.size() > 200) {
-        const auto hash = std::hash<std::string>{}(name);
-        name            = name.substr(0, 64) + "_" + std::to_string(hash);
+        name = name.substr(0, 64) + "_" + std::to_string(std::hash<std::string>{}(name));
     }
     return "/eckit_fam_mock_" + (name.empty() ? "default" : name);
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// Byte offset of the data area from the start of the shared memory segment.
-std::size_t dataOffset() {
-    return (sizeof(State) + 7U) & ~std::size_t{7U};
-}
-
-/// Total capacity of the data area in bytes.
-std::size_t dataCapacity() {
-    return g_shm_total_size - dataOffset();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -135,7 +126,7 @@ ShmMapping openOrCreateShm(const std::string& name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-auto FamMockSession::instance(const std::string& name) -> FamMockSession& {
+FamMockSession& FamMockSession::instance(const std::string& name) {
     auto& [mutex, cache] = sessionCache();
     std::lock_guard lock(mutex);
 
@@ -151,34 +142,34 @@ auto FamMockSession::instance(const std::string& name) -> FamMockSession& {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void FamMockSession::mapFields(void* base) {
+    mapping_ = base;
+    state_   = static_cast<State*>(base);
+    data_    = static_cast<std::uint8_t*>(base) + k_data_offset;
+}
+
 FamMockSession::FamMockSession(const std::string& name) : shmName_{generateShmName(name)} {
     LOG_DEBUG_LIB(LibEcKit) << "Opening shared memory: " << shmName_ << '\n';
 
-    const auto shm = openOrCreateShm(shmName_);
+    auto shm = openOrCreateShm(shmName_);
 
-    bool creator = shm.creator;
-    fd_          = shm.fd;
-    mapping_     = shm.mapping;
-    state_       = static_cast<State*>(mapping_);
-    data_        = std::next(static_cast<std::uint8_t*>(mapping_), static_cast<std::ptrdiff_t>(dataOffset()));
+    fd_ = shm.fd;
+    mapFields(shm.mapping);
 
-    // Check stale/uninitialized segment (e.g., after crash or forced kill)
-    if (!creator && state_->initialized != k_init_magic) {
+    // Stale/uninitialized segment (e.g., after crash or forced kill) — tear down and recreate.
+    if (!shm.creator && state_->initialized != k_init_magic) {
         LOG_DEBUG_LIB(LibEcKit) << "Detected stale/uninitialized segment. recreating...\n";
         ::munmap(mapping_, g_shm_total_size);
         ::close(fd_);
         ::shm_unlink(shmName_.c_str());
 
-        const auto shmNew = openOrCreateShm(shmName_);
-
-        fd_      = shmNew.fd;
-        mapping_ = shmNew.mapping;
-        state_   = static_cast<State*>(mapping_);
-        data_    = std::next(static_cast<std::uint8_t*>(mapping_), static_cast<std::ptrdiff_t>(dataOffset()));
-        creator  = true;
+        shm = openOrCreateShm(shmName_);
+        fd_ = shm.fd;
+        mapFields(shm.mapping);
+        shm.creator = true;
     }
 
-    if (creator) {
+    if (shm.creator) {
         LOG_DEBUG_LIB(LibEcKit) << "Zero-initializing shared memory and mutex.\n";
         std::memset(mapping_, 0, g_shm_total_size);
 
@@ -192,7 +183,6 @@ FamMockSession::FamMockSession(const std::string& name) : shmName_{generateShmNa
         LOG_DEBUG_LIB(LibEcKit) << "pthread_mutex_init returned " << mrc << '\n';
 
         state_->nextRegion  = 1;
-        state_->dataUsed    = 0;
         state_->initialized = k_init_magic;
         LOG_DEBUG_LIB(LibEcKit) << "Shared memory initialization complete.\n";
     }
@@ -243,17 +233,12 @@ void FamMockSession::unlock() {
 
 void FamMockSession::resetUnlocked() {
     // Must be called while the mutex is already held (or during constructor setup).
-    for (auto& region : state_->regions) {
-        if (region.active) {
-            for (auto& obj : region.objects) {
-                obj.active = false;
-            }
-            region.active = false;
-        }
-    }
     state_->nextRegion = 1;
     state_->dataUsed   = 0;
-    std::memset(data_, 0, dataCapacity());
+    for (auto& region : state_->regions) {
+        region = Region{};
+    }
+    std::memset(data_, 0, k_data_capacity);
 }
 
 void FamMockSession::reset() {
@@ -275,7 +260,7 @@ Region* FamMockSession::allocateRegionSlot() {
 
 Region* FamMockSession::findRegionByName(const char* name) {
     for (auto& region : state_->regions) {
-        if (region.active && std::string_view{std::data(region.name)} == name) {
+        if (region.active && std::string_view{region.name} == name) {
             return &region;
         }
     }
@@ -292,26 +277,22 @@ Region* FamMockSession::findRegionById(std::uint64_t regionId) {
 }
 
 Region& FamMockSession::findRegion(Fam_Region_Descriptor* desc) {
-    const auto regionId = desc->get_global_descriptor().regionId;
-    if (auto* region = findRegionById(regionId)) {
+    if (auto* region = findRegionById(desc->get_global_descriptor().regionId)) {
         return *region;
     }
     throw Fam_Exception("Region not found", FAM_ERR_NOTFOUND);
 }
 
 void FamMockSession::freeRegion(Region& region) {
-    for (auto& obj : region.objects) {
-        obj.active = false;
-    }
-    region.active     = false;
-    region.name[0]    = '\0';
+    // Zero-init the entire slot (objects included), then set the sentinel offset.
+    region            = Region{};
     region.nextOffset = 8;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Object helpers
 
-auto FamMockSession::findObjectByOffset(Region& region, std::uint64_t offset) -> Object* {
+Object* FamMockSession::findObjectByOffset(Region& region, std::uint64_t offset) {
     for (auto& obj : region.objects) {
         if (obj.active && obj.offset == offset) {
             return &obj;
@@ -320,7 +301,7 @@ auto FamMockSession::findObjectByOffset(Region& region, std::uint64_t offset) ->
     return nullptr;
 }
 
-auto FamMockSession::findObjectByName(Region& region, const char* name) -> Object* {
+Object* FamMockSession::findObjectByName(Region& region, const char* name) {
     for (auto& obj : region.objects) {
         if (obj.active && obj.name[0] != '\0' && std::strcmp(obj.name, name) == 0) {
             return &obj;
@@ -329,7 +310,7 @@ auto FamMockSession::findObjectByName(Region& region, const char* name) -> Objec
     return nullptr;
 }
 
-auto FamMockSession::allocateObjectSlot(Region& region) -> Object* {
+Object* FamMockSession::allocateObjectSlot(Region& region) {
     for (auto& obj : region.objects) {
         if (!obj.active) {
             return &obj;
@@ -338,9 +319,8 @@ auto FamMockSession::allocateObjectSlot(Region& region) -> Object* {
     return nullptr;
 }
 
-auto FamMockSession::findObject(Fam_Descriptor* desc) -> Object& {
-    const auto regionId = desc->get_global_descriptor().regionId;
-    const auto offset   = desc->get_global_descriptor().offset;
+Object& FamMockSession::findObject(Fam_Descriptor* desc) {
+    const auto [regionId, offset] = desc->get_global_descriptor();
 
     auto* region = findRegionById(regionId);
     if (!region) {
@@ -355,18 +335,16 @@ auto FamMockSession::findObject(Fam_Descriptor* desc) -> Object& {
 }
 
 void FamMockSession::freeObject(Object& obj) {
-    obj.active  = false;
-    obj.name[0] = '\0';
+    obj = Object{};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Data area
 
-auto FamMockSession::allocateData(std::uint64_t size) -> std::uint64_t {
-    const auto capacity = dataCapacity();
-    const auto aligned  = (size + 7U) & ~std::uint64_t{7U};
+std::uint64_t FamMockSession::allocateData(std::uint64_t size) {
+    const auto aligned = (size + 7U) & ~std::uint64_t{7U};
 
-    if (state_->dataUsed + aligned > capacity) {
+    if (state_->dataUsed + aligned > k_data_capacity) {
         throw Fam_Exception("Mock FAM data area exhausted", FAM_ERR_NO_SPACE);
     }
 
@@ -375,7 +353,7 @@ auto FamMockSession::allocateData(std::uint64_t size) -> std::uint64_t {
     return offset;
 }
 
-auto FamMockSession::objectData(const Object& obj) -> std::uint8_t* {
+std::uint8_t* FamMockSession::objectData(const Object& obj) {
     return data_ + obj.dataOffset;
 }
 

@@ -19,6 +19,8 @@
 
 /// @brief  Implements multi-process FAM mock.
 ///
+/// Uses POSIX shared-memory to simulate FAM (Fabric-Attached Memory).
+///
 /// All mock states live in POSIX shared memory.
 //  Layout:
 ///   [State] (mutex, counters, region table)
@@ -117,7 +119,7 @@ class FamMockSession {
 public:
 
     /// Obtain (or create) the shared-memory session
-    static auto instance(const std::string& name = "") -> FamMockSession&;
+    static FamMockSession& instance(const std::string& name = "");
 
     ~FamMockSession();
 
@@ -184,6 +186,9 @@ public:
 private:
 
     explicit FamMockSession(const std::string& name);
+
+    /// @param name Identifier for the shared-memory segment
+    void mapFields(void* base);
 
     std::string shmName_;
     int fd_{-1};

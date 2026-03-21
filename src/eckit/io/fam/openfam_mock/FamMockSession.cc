@@ -343,6 +343,8 @@ void FamMockSession::freeObject(Object& obj) {
 //----------------------------------------------------------------------------------------------------------------------
 // Data area
 
+/// @note freed space is never reclaimed
+/// Resets clear the whole data area at once.
 std::uint64_t FamMockSession::allocateData(std::uint64_t size) {
     const auto aligned = (size + 7U) & ~std::uint64_t{7U};
 

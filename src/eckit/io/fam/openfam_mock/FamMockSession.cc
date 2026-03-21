@@ -182,8 +182,9 @@ FamMockSession::FamMockSession(const std::string& name) : shmName_{generateShmNa
         ::pthread_mutexattr_destroy(&attr);
         LOG_DEBUG_LIB(LibEcKit) << "pthread_mutex_init returned " << mrc << '\n';
 
-        state_->nextRegion  = 1;
-        state_->initialized = k_init_magic;
+        state_->nextRegion = 1;
+        // Release fence to ensure preceding writes (mutex, nextRegion) are visible.
+        __atomic_store_n(&state_->initialized, k_init_magic, __ATOMIC_RELEASE);
         LOG_DEBUG_LIB(LibEcKit) << "Shared memory initialization complete.\n";
     }
     else {

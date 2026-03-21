@@ -50,8 +50,14 @@ struct FamMapEntry {
     static Buffer encode(const key_type& key, const void* data, size_type length) {
         Buffer payload(key_size + length);
         std::memcpy(payload.data(), key.data(), key_size);
-        if (length > 0 && data != nullptr) {
-            std::memcpy(static_cast<char*>(payload.data()) + key_size, data, length);
+        if (length > 0) {
+            void* value_ptr = static_cast<char*>(payload.data()) + key_size;
+            if (data) {
+                std::memcpy(value_ptr, data, length);
+            }
+            else {
+                std::memset(value_ptr, 0, length);
+            }
         }
         return payload;
     }

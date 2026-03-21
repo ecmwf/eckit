@@ -175,6 +175,9 @@ void fam::fam_resize_region(Fam_Region_Descriptor* region_desc, std::uint64_t si
 }
 
 void fam::fam_stat(Fam_Region_Descriptor* region_desc, Fam_Stat* info) {
+    if (!region_desc) {
+        throw Fam_Exception("Null region descriptor", FAM_ERR_INVALID);
+    }
     if (!info) {
         return;
     }
@@ -309,6 +312,9 @@ void fam::fam_deallocate(Fam_Descriptor* object) {
 }
 
 void fam::fam_stat(Fam_Descriptor* object, Fam_Stat* info) {
+    if (!object) {
+        throw Fam_Exception("Null object descriptor", FAM_ERR_INVALID);
+    }
     if (!info) {
         return;
     }

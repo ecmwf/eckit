@@ -272,7 +272,7 @@ if(HAVE_OPENFAM OR HAVE_OPENFAM_MOCK)
 if(HAVE_OPENFAM_MOCK)
 list(APPEND eckit_io_srcs
 io/fam/openfam_mock/fam/fam.cc
-io/fam/openfam_mock/FamMockSession.h
+io/fam/openfam_mock/FamMockSession.cc
 )
 endif()
 list(APPEND eckit_io_srcs

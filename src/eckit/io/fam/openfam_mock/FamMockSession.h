@@ -17,154 +17,202 @@
 /// @author Metin Cakircali
 /// @date   Mar 2026
 
-/// @brief  Provides a singleton used by mock openfam::fam methods.
+/// @brief  Implements multi-process FAM mock.
 ///
-/// Notes:
-/// - Regions and objects are stored in std::map containers protected.
-/// - Atomic read-modify-write operations are serialised via mutex,
-///   giving sequential-consistency semantics (stricter than real FAM but safe).
-/// - The singleton persists for the lifetime of the process.  Tests that need
-///   isolated state should call FamMockSession::reset() between test cases.
+/// All mock states live in POSIX shared memory.
+//  Layout:
+///   [State] (mutex, counters, region table)
+///     └ Region[g_max_regions]
+///        └ Object[g_max_objs_per_region]
+///   [Data] — raw bytes
 
-#include <unistd.h>  // getuid, getgid
+#pragma once
 
-#include <cassert>
-#include <cstdlib>  // std::abort
+#include <sys/types.h>  // mode_t
+
+#include <cstddef>
+#include <cstdint>
 #include <cstring>
-#include <map>
-#include <mutex>
 #include <string>
-#include <vector>
-
-#include "fam/fam.h"
-#include "fam/fam_exception.h"
-
-namespace openfam::mock {
-
-//----------------------------------------------------------------------------------------------------------------------
-// Helpers for accessing typed data within an object's byte buffer
-
-template <typename T>
-T typedFetch(const std::vector<std::uint8_t>& data, std::uint64_t offset) {
-    if (offset > data.size() || sizeof(T) > (data.size() - offset)) {
-        throw openfam::Fam_Exception("Offset out of range", openfam::FAM_ERR_OUTOFRANGE);
-    }
-    T value{};
-    std::memcpy(&value, data.data() + offset, sizeof(T));
-    return value;
-}
-
-template <typename T>
-void typedStore(std::vector<std::uint8_t>& data, std::uint64_t offset, T value) {
-    if (offset > data.size() || sizeof(T) > (data.size() - offset)) {
-        throw openfam::Fam_Exception("Offset out of range", openfam::FAM_ERR_OUTOFRANGE);
-    }
-    std::memcpy(data.data() + offset, &value, sizeof(T));
-}
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct MockObject {
-    std::string name;
+namespace openfam {
+
+class Fam_Descriptor;
+class Fam_Region_Descriptor;
+
+namespace mock {
+
+//----------------------------------------------------------------------------------------------------------------------
+/// Capacity (@note: don't just change values)
+
+constexpr std::size_t g_max_regions         = 64;
+constexpr std::size_t g_max_objs_per_region = 4096;
+constexpr std::size_t g_max_name_len        = 256;
+constexpr std::size_t g_shm_total_size      = 256 * 1024 * 1024;  // 256 MiB
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// @note POD no virtual, no std::string
+struct Object {
+    bool active{false};
+
+    char name[g_max_name_len]{};
+
+    std::uint64_t offset{0};
+
     std::uint64_t size{0};
     mode_t perm{0};
     std::uint32_t uid{0};
     std::uint32_t gid{0};
-    std::vector<std::uint8_t> data;
+
+    std::uint64_t dataOffset{0};
 };
 
-struct MockRegion {
-    std::string name;
+/// @note POD no virtual, no std::string
+struct Region {
+    bool active{false};
+
+    char name[g_max_name_len]{};
+
     std::uint64_t id{0};
     std::uint64_t size{0};
     mode_t perm{0};
 
-    /// Name-to-offset index for named objects.
-    std::map<std::string, std::uint64_t> objectsByName;
-
-    /// Primary object store: offset -> object data.
-    std::map<std::uint64_t, MockObject> objects;
-
-    /// Next allocation offset inside this region.
-    /// Starts at 8 so that offset 0 remains a sentinel/null value
-    /// (FamDescriptor{0,0} is used as the null descriptor in eckit).
+    /// Starts at 8 as offset 0 is used as a null value
     std::uint64_t nextOffset{8};
+
+    Object objects[g_max_objs_per_region];
 };
+
+/// @note POD no virtual, no std::string
+struct State {
+    pthread_mutex_t mutex;
+
+    /// marker for initialization completion (set to `k_init_magic`)
+    std::uint32_t initialized;
+
+    /// next region ID (0 is invalid)
+    std::uint64_t nextRegion;
+
+    /// bytes used in data area (starts at 0)
+    std::uint64_t dataUsed;
+
+    Region regions[g_max_regions];
+
+    // The data area begins here (8-byte aligned)
+};
+
+// Build time check that State fits into the shared-memory segment.
+// Leave at least 16 MiB for the data area.
+static_assert(sizeof(State) + 16 * 1024 * 1024 <= g_shm_total_size,
+              "State overflows g_shm_total_size! reduce g_max_objs_per_region or g_max_regions");
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Manages a shared-memory that stores all mock FAM States.
+/// Thread-safe and process-safe via the shared mutex `LockGuard`.
 class FamMockSession {
 public:
 
-    static FamMockSession& instance() {
-        // Intentionally leaked to avoid static-destruction order issues with
-        // global test fixtures calling mock APIs during process shutdown.
-        static auto* session = new FamMockSession();
-        return *session;
-    }
+    /// Obtain (or create) the shared-memory session
+    static auto instance(const std::string& name = "") -> FamMockSession&;
 
-    /// Wipe all state.  Useful for test isolation.
-    void reset() {
-        std::lock_guard lock(mutex_);
-        regionsByName_.clear();
-        regions_.clear();
-        nextRegionId_ = 1;
-    }
+    ~FamMockSession();
+
+    // rules
+    FamMockSession(const FamMockSession&)            = delete;
+    FamMockSession& operator=(const FamMockSession&) = delete;
+    FamMockSession(FamMockSession&&)                 = delete;
+    FamMockSession& operator=(FamMockSession&&)      = delete;
 
     //------------------------------------------------------------------------------------------------------------------
-    // Region helpers
 
-    MockRegion& findRegion(openfam::Fam_Region_Descriptor* desc) {
-        const auto regionId = desc->get_global_descriptor().regionId;
-        auto iter           = regions_.find(regionId);
-        if (iter == regions_.end()) {
-            throw openfam::Fam_Exception("Region not found", openfam::FAM_ERR_NOTFOUND);
-        }
-        return iter->second;
-    }
+    /// Wipes all mock states and resets the session to the initial state.
+    void reset();
 
-    const MockRegion& findRegion(const openfam::Fam_Region_Descriptor* desc) const {
-        const auto regionId = desc->get_global_descriptor().regionId;
-        const auto iter     = regions_.find(regionId);
-        if (iter == regions_.end()) {
-            throw openfam::Fam_Exception("Region not found", openfam::FAM_ERR_NOTFOUND);
-        }
-        return iter->second;
-    }
+    /// Same as reset() but must be called while the mutex is held (e.g., during initialization).
+    void resetUnlocked();
 
     //------------------------------------------------------------------------------------------------------------------
-    // Object helpers
 
-    MockObject& findObject(openfam::Fam_Descriptor* desc) {
-        const auto regionId     = desc->get_global_descriptor().regionId;
-        const auto objectOffset = desc->get_global_descriptor().offset;
-
-        auto riter = regions_.find(regionId);
-        if (riter == regions_.end()) {
-            throw openfam::Fam_Exception("Region not found", openfam::FAM_ERR_NOTFOUND);
-        }
-        auto oiter = riter->second.objects.find(objectOffset);
-        if (oiter == riter->second.objects.end()) {
-            throw openfam::Fam_Exception("Object not found", openfam::FAM_ERR_NOTFOUND);
-        }
-        return oiter->second;
-    }
+    void lock();
+    void unlock();
 
     //------------------------------------------------------------------------------------------------------------------
-    // Public member data (accessed directly by openfam::fam methods)
+    // Region
 
-    std::mutex mutex_;
+    Region* findRegionByName(const char* name);
+    Region* findRegionById(std::uint64_t regionId);
+    Region* allocateRegionSlot();
 
-    std::map<std::string, std::uint64_t> regionsByName_;  // name -> regionId
-    std::map<std::uint64_t, MockRegion> regions_;         // regionId -> region
+    /// throws `FAM_ERR_NOTFOUND`
+    Region& findRegion(Fam_Region_Descriptor* desc);
 
-    std::uint64_t nextRegionId_{1};  // 0 is invalid
+    /// Frees all objects in the region and marks it inactive.
+    static void freeRegion(Region& region);
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Object
+
+    static Object* findObjectByOffset(Region& region, std::uint64_t offset);
+    static Object* findObjectByName(Region& region, const char* name);
+    static Object* allocateObjectSlot(Region& region);
+
+    /// Finds an object by descriptor or throws `FAM_ERR_NOTFOUND`.
+    Object& findObject(Fam_Descriptor* desc);
+
+    static void freeObject(Object& obj);
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Data
+
+    /// Allocate @p size bytes in the data area.
+    /// Returns the offset from data-area start.
+    /// Throws `FAM_ERR_NO_SPACE` if the data area is exhausted.
+    std::uint64_t allocateData(std::uint64_t size);
+
+    /// Returns a raw pointer to the payload bytes of an object.
+    std::uint8_t* objectData(const Object& obj);
+
+    //------------------------------------------------------------------------------------------------------------------
+    // Accessors
+
+    std::uint64_t nextRegion() { return state_->nextRegion++; }
 
 private:
 
-    FamMockSession() = default;
+    explicit FamMockSession(const std::string& name);
+
+    std::string shmName_;
+    int fd_{-1};
+    void* mapping_{nullptr};
+    State* state_{nullptr};
+    std::uint8_t* data_{nullptr};
 };
 
-}  // namespace openfam::mock
+//----------------------------------------------------------------------------------------------------------------------
+
+class LockGuard {
+public:
+
+    explicit LockGuard(FamMockSession& session) : session_(session) { session_.lock(); }
+    ~LockGuard() { session_.unlock(); }
+
+    // rules
+    LockGuard(const LockGuard&)            = delete;
+    LockGuard& operator=(const LockGuard&) = delete;
+    LockGuard(LockGuard&&)                 = delete;
+    LockGuard& operator=(LockGuard&&)      = delete;
+
+private:
+
+    FamMockSession& session_;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace mock
+
+}  // namespace openfam

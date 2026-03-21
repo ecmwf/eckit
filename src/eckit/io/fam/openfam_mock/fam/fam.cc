@@ -24,7 +24,6 @@
 #include <cassert>
 #include <cstdlib>  // std::abort
 #include <cstring>
-#include <mutex>
 #include <string>
 
 #include "fam/fam_exception.h"
@@ -35,17 +34,50 @@
 
 namespace openfam {
 
+namespace {
+
+//----------------------------------------------------------------------------------------------------------------------
+// HELPERS
+
+template <typename T>
+auto typed_fetch(std::uint8_t* base, std::uint64_t objSize, std::uint64_t offset) -> T {
+    if (offset > objSize || sizeof(T) > (objSize - offset)) {
+        throw Fam_Exception("Offset out of range", FAM_ERR_OUTOFRANGE);
+    }
+    T value{};
+    std::memcpy(&value, base + offset, sizeof(T));
+    return value;
+}
+
+template <typename T>
+void typed_store(std::uint8_t* base, std::uint64_t objSize, std::uint64_t offset, T value) {
+    if (offset > objSize || sizeof(T) > (objSize - offset)) {
+        throw Fam_Exception("Offset out of range", FAM_ERR_OUTOFRANGE);
+    }
+    std::memcpy(base + offset, &value, sizeof(T));
+}
+
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
 fam::fam()  = default;
 fam::~fam() = default;
+
+mock::FamMockSession& fam::session() {
+    assert(session_ != nullptr && "fam_initialize() must be called before any other FAM operation");
+    return *session_;
+}
 
 void fam::fam_initialize(const char* /*name*/, Fam_Options* options) {
     if (options && options->cisServer) {
         serverName_ = options->cisServer;
     }
+    session_ = &mock::FamMockSession::instance(serverName_);
 }
 
 void fam::fam_finalize(const char* /*name*/) {
-    // nothing to tear down in the mock
+    session_ = nullptr;
 }
 
 void fam::fam_abort(int /*code*/) {
@@ -59,29 +91,37 @@ const void* fam::fam_get_option(char* option_name) {
     return nullptr;
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+// REGION OPERATIONS
+
 Fam_Region_Descriptor* fam::fam_create_region(const char* name, std::uint64_t size, mode_t perm,
                                               Fam_Region_Attributes* /*region_attributes*/) {
     if (!name || !*name) {
         throw Fam_Exception("Invalid region name", FAM_ERR_INVALID);
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
-    if (session.regionsByName_.count(name) != 0) {
+    if (sess.findRegionByName(name) != nullptr) {
         throw Fam_Exception(std::string("Region already exists: ") + name, FAM_ERR_ALREADYEXIST);
     }
 
-    const std::uint64_t regionId = session.nextRegionId_++;
+    auto* slot = sess.allocateRegionSlot();
+    if (!slot) {
+        throw Fam_Exception("Maximum number of regions reached", FAM_ERR_NO_SPACE);
+    }
 
-    mock::MockRegion mregion;
-    mregion.name = name;
-    mregion.id   = regionId;
-    mregion.size = size;
-    mregion.perm = perm;
+    const auto regionId = sess.nextRegion();
 
-    session.regionsByName_[name] = regionId;
-    session.regions_[regionId]   = std::move(mregion);
+    *slot            = mock::Region{};  // zero-init
+    slot->active     = true;
+    slot->id         = regionId;
+    slot->size       = size;
+    slot->perm       = perm;
+    slot->nextOffset = 8;  // reserve offset 0 as null sentinel
+    std::strncpy(slot->name, name, mock::g_max_name_len - 1);
+    slot->name[mock::g_max_name_len - 1] = '\0';
 
     return new Fam_Region_Descriptor(regionId, size, perm, name);
 }
@@ -91,16 +131,15 @@ Fam_Region_Descriptor* fam::fam_lookup_region(const char* name) {
         throw Fam_Exception("Invalid region name", FAM_ERR_INVALID);
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
-    const auto iter = session.regionsByName_.find(name);
-    if (iter == session.regionsByName_.end()) {
+    const auto* region = sess.findRegionByName(name);
+    if (!region) {
         throw Fam_Exception(std::string("Region not found: ") + name, FAM_ERR_NOTFOUND);
     }
 
-    const auto& mregion = session.regions_.at(iter->second);
-    return new Fam_Region_Descriptor(mregion.id, mregion.size, mregion.perm, name);
+    return new Fam_Region_Descriptor(region->id, region->size, region->perm, name);
 }
 
 void fam::fam_destroy_region(Fam_Region_Descriptor* region_desc) {
@@ -108,28 +147,27 @@ void fam::fam_destroy_region(Fam_Region_Descriptor* region_desc) {
         return;
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
     const auto regionId = region_desc->get_global_descriptor().regionId;
-    const auto iter     = session.regions_.find(regionId);
-    if (iter == session.regions_.end()) {
+    auto* region        = sess.findRegionById(regionId);
+    if (!region) {
         // Keep region destruction idempotent during test teardown.
         region_desc->mock_invalidate();
         return;
     }
 
-    session.regionsByName_.erase(iter->second.name);
-    session.regions_.erase(iter);
+    sess.freeRegion(*region);
     region_desc->mock_invalidate();
 }
 
 void fam::fam_resize_region(Fam_Region_Descriptor* region_desc, std::uint64_t size) {
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
-    auto& mregion = session.findRegion(region_desc);
-    mregion.size  = size;
+    auto& region = sess.findRegion(region_desc);
+    region.size  = size;
     region_desc->mock_setSize(size);
 }
 
@@ -138,17 +176,20 @@ void fam::fam_stat(Fam_Region_Descriptor* region_desc, Fam_Stat* info) {
         return;
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
-    const auto& mregion = session.findRegion(region_desc);
-    info->size          = mregion.size;
-    info->perm          = mregion.perm;
-    std::strncpy(info->name, mregion.name.c_str(), sizeof(info->name) - 1);
+    const auto& region = sess.findRegion(region_desc);
+    info->size         = region.size;
+    info->perm         = region.perm;
+    std::strncpy(info->name, region.name, sizeof(info->name) - 1);
     info->name[sizeof(info->name) - 1] = '\0';
     info->uid                          = 0;
     info->gid                          = 0;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+// OBJECT OPERATIONS
 
 Fam_Descriptor* fam::fam_allocate(const char* name, std::uint64_t size, mode_t perm,
                                   Fam_Region_Descriptor* region_desc) {
@@ -159,44 +200,51 @@ Fam_Descriptor* fam::fam_allocate(const char* name, std::uint64_t size, mode_t p
         throw Fam_Exception("Object size must be > 0", FAM_ERR_INVALID);
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
-    auto& mregion = session.findRegion(region_desc);
+    auto& region = sess.findRegion(region_desc);
 
-    const std::string objName = name ? name : "";
-    if (!objName.empty() && mregion.objectsByName.count(objName)) {
-        throw Fam_Exception(std::string("Object already exists: ") + objName, FAM_ERR_ALREADYEXIST);
+    // Check for duplicate named object.
+    if (name && *name && sess.findObjectByName(region, name) != nullptr) {
+        throw Fam_Exception(std::string("Object already exists: ") + name, FAM_ERR_ALREADYEXIST);
     }
 
-    const std::uint64_t offset = mregion.nextOffset;
-    // Advance next-offset; align to 8 bytes after the object.
-    mregion.nextOffset += size;
-    const std::uint64_t aligned = (mregion.nextOffset + 7u) & ~std::uint64_t{7};
-
     // Match test expectations: reject only objects larger than region size.
-    if (size > mregion.size) {
-        // Reset to original state on failure
-        mregion.nextOffset = offset;
+    if (size > region.size) {
         throw Fam_Exception("Object exceeds region size", FAM_ERR_NO_SPACE);
     }
 
-    mregion.nextOffset = aligned;
-
-    mock::MockObject mobj;
-    mobj.name = objName;
-    mobj.size = size;
-    mobj.perm = perm;
-    mobj.uid  = ::getuid();
-    mobj.gid  = ::getgid();
-    mobj.data.assign(size, std::uint8_t{0});
-
-    if (!objName.empty()) {
-        mregion.objectsByName[objName] = offset;
+    auto* slot = sess.allocateObjectSlot(region);
+    if (!slot) {
+        throw Fam_Exception("Maximum number of objects per region reached", FAM_ERR_NO_SPACE);
     }
-    mregion.objects[offset] = std::move(mobj);
 
-    return new Fam_Descriptor(mregion.id, offset, size, perm, name, ::getuid(), ::getgid());
+    const std::uint64_t offset  = region.nextOffset;
+    const std::uint64_t aligned = ((offset + size) + 7u) & ~std::uint64_t{7};
+    region.nextOffset           = aligned;
+
+    // Allocate backing storage in the shared data area.
+    const std::uint64_t dataOff = sess.allocateData(size);
+
+    *slot            = mock::Object{};
+    slot->active     = true;
+    slot->offset     = offset;
+    slot->size       = size;
+    slot->perm       = perm;
+    slot->uid        = ::getuid();
+    slot->gid        = ::getgid();
+    slot->dataOffset = dataOff;
+
+    if (name && *name) {
+        std::strncpy(slot->name, name, mock::g_max_name_len - 1);
+        slot->name[mock::g_max_name_len - 1] = '\0';
+    }
+
+    // Zero-init the data area for this object.
+    std::memset(sess.objectData(*slot), 0, size);
+
+    return new Fam_Descriptor(region.id, offset, size, perm, name, slot->uid, slot->gid);
 }
 
 Fam_Descriptor* fam::fam_lookup(const char* object_name, const char* region_name) {
@@ -204,22 +252,20 @@ Fam_Descriptor* fam::fam_lookup(const char* object_name, const char* region_name
         throw Fam_Exception("Invalid name parameter", FAM_ERR_INVALID);
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
-    const auto riter = session.regionsByName_.find(region_name);
-    if (riter == session.regionsByName_.end()) {
+    auto* region = sess.findRegionByName(region_name);
+    if (!region) {
         throw Fam_Exception(std::string("Region not found: ") + region_name, FAM_ERR_NOTFOUND);
     }
 
-    mock::MockRegion& mregion = session.regions_[riter->second];
-    const auto oiter          = mregion.objectsByName.find(object_name);
-    if (oiter == mregion.objectsByName.end()) {
+    auto* obj = sess.findObjectByName(*region, object_name);
+    if (!obj) {
         throw Fam_Exception(std::string("Object not found: ") + object_name, FAM_ERR_NOTFOUND);
     }
 
-    const mock::MockObject& obj = mregion.objects.at(oiter->second);
-    return new Fam_Descriptor(mregion.id, oiter->second, obj.size, obj.perm, object_name, obj.uid, obj.gid);
+    return new Fam_Descriptor(region->id, obj->offset, obj->size, obj->perm, object_name, obj->uid, obj->gid);
 }
 
 void fam::fam_deallocate(Fam_Descriptor* object) {
@@ -227,35 +273,33 @@ void fam::fam_deallocate(Fam_Descriptor* object) {
         return;
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
     const auto regionId     = object->get_global_descriptor().regionId;
     const auto objectOffset = object->get_global_descriptor().offset;
 
-    auto riter = session.regions_.find(regionId);
-    if (riter == session.regions_.end()) {
+    auto* region = sess.findRegionById(regionId);
+    if (!region) {
         // Keep object deallocation idempotent during teardown.
         object->mock_invalidate();
         return;
     }
 
-    auto oiter = riter->second.objects.find(objectOffset);
-    if (oiter == riter->second.objects.end()) {
+    auto* obj = sess.findObjectByOffset(*region, objectOffset);
+    if (!obj) {
         object->mock_invalidate();
         return;
     }
-    const auto objectSize          = oiter->second.size;
-    const auto nextExpectedOffset  = objectOffset + objectSize;
+
+    const auto nextExpectedOffset  = objectOffset + obj->size;
     const auto nextExpectedAligned = (nextExpectedOffset + 7u) & ~std::uint64_t{7};
 
-    if (!oiter->second.name.empty()) {
-        riter->second.objectsByName.erase(oiter->second.name);
-    }
-    riter->second.objects.erase(oiter);
-    // If this was the last allocated object, reclaim its space
-    if (riter->second.nextOffset == nextExpectedAligned) {
-        riter->second.nextOffset = objectOffset;
+    sess.freeObject(*obj);
+
+    // If this was the last allocated object, reclaim its region offset space.
+    if (region->nextOffset == nextExpectedAligned) {
+        region->nextOffset = objectOffset;
     }
 
     object->mock_invalidate();
@@ -266,31 +310,34 @@ void fam::fam_stat(Fam_Descriptor* object, Fam_Stat* info) {
         return;
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
-    const mock::MockObject& mobj = session.findObject(object);
-    info->size                   = mobj.size;
-    info->perm                   = mobj.perm;
-    std::strncpy(info->name, mobj.name.c_str(), sizeof(info->name) - 1);
+    const auto& obj = sess.findObject(object);
+    info->size      = obj.size;
+    info->perm      = obj.perm;
+    std::strncpy(info->name, obj.name, sizeof(info->name) - 1);
     info->name[sizeof(info->name) - 1] = '\0';
-    info->uid                          = mobj.uid;
-    info->gid                          = mobj.gid;
+    info->uid                          = obj.uid;
+    info->gid                          = obj.gid;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+// DATA I/O
 
 void fam::fam_put_blocking(void* buffer, Fam_Descriptor* obj, std::uint64_t offset, std::uint64_t length) {
     if (!buffer || !obj || length == 0) {
         throw Fam_Exception("Invalid parameters to fam_put_blocking", FAM_ERR_INVALID);
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
-    mock::MockObject& mobj = session.findObject(obj);
-    if (offset > mobj.data.size() || length > (mobj.data.size() - offset)) {
+    auto& sobj = sess.findObject(obj);
+    if (offset > sobj.size || length > (sobj.size - offset)) {
         throw Fam_Exception("Write range out of bounds", FAM_ERR_OUTOFRANGE);
     }
-    std::memcpy(mobj.data.data() + offset, buffer, length);
+    std::memcpy(sess.objectData(sobj) + offset, buffer, length);
 }
 
 void fam::fam_get_blocking(void* buffer, Fam_Descriptor* obj, std::uint64_t offset, std::uint64_t length) {
@@ -298,24 +345,24 @@ void fam::fam_get_blocking(void* buffer, Fam_Descriptor* obj, std::uint64_t offs
         throw Fam_Exception("Invalid parameters to fam_get_blocking", FAM_ERR_INVALID);
     }
 
-    auto& session = mock::FamMockSession::instance();
-    std::lock_guard lock(session.mutex_);
+    auto& sess = session();
+    mock::LockGuard lock(sess);
 
-    const mock::MockObject& mobj = session.findObject(obj);
-    if (offset > mobj.data.size() || length > (mobj.data.size() - offset)) {
+    const auto& sobj = sess.findObject(obj);
+    if (offset > sobj.size || length > (sobj.size - offset)) {
         throw Fam_Exception("Read range out of bounds", FAM_ERR_OUTOFRANGE);
     }
-    std::memcpy(buffer, mobj.data.data() + offset, length);
+    std::memcpy(buffer, sess.objectData(sobj) + offset, length);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 #define OPENFAM_MOCK_DEFINE_FETCH(TYPE, suffix)                               \
     TYPE fam::fam_fetch_##suffix(Fam_Descriptor* obj, std::uint64_t offset) { \
-        auto& session = mock::FamMockSession::instance();                     \
-        std::lock_guard lock(session.mutex_);                                 \
-        mock::MockObject& mobj = session.findObject(obj);                     \
-        return mock::typedFetch<TYPE>(mobj.data, offset);                     \
+        auto& sess = session();                                               \
+        mock::LockGuard lock(sess);                                           \
+        auto& sobj = sess.findObject(obj);                                    \
+        return typed_fetch<TYPE>(sess.objectData(sobj), sobj.size, offset);   \
     }
 
 OPENFAM_MOCK_DEFINE_FETCH(std::int32_t, int32)
@@ -330,10 +377,10 @@ OPENFAM_MOCK_DEFINE_FETCH(double, double)
 
 #define OPENFAM_MOCK_DEFINE_SET(TYPE)                                          \
     void fam::fam_set(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) { \
-        auto& session = mock::FamMockSession::instance();                      \
-        std::lock_guard lock(session.mutex_);                                  \
-        mock::MockObject& mobj = session.findObject(obj);                      \
-        mock::typedStore<TYPE>(mobj.data, offset, value);                      \
+        auto& sess = session();                                                \
+        mock::LockGuard lock(sess);                                            \
+        auto& sobj = sess.findObject(obj);                                     \
+        typed_store<TYPE>(sess.objectData(sobj), sobj.size, offset, value);    \
     }
 
 OPENFAM_MOCK_DEFINE_SET(std::int32_t)
@@ -346,13 +393,14 @@ OPENFAM_MOCK_DEFINE_SET(double)
 
 #undef OPENFAM_MOCK_DEFINE_SET
 
-#define OPENFAM_MOCK_DEFINE_ADD(TYPE)                                                                 \
-    void fam::fam_add(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) {                        \
-        auto& session = mock::FamMockSession::instance();                                             \
-        std::lock_guard lock(session.mutex_);                                                         \
-        mock::MockObject& mobj = session.findObject(obj);                                             \
-        mock::typedStore<TYPE>(mobj.data, offset,                                                     \
-                               static_cast<TYPE>(mock::typedFetch<TYPE>(mobj.data, offset) + value)); \
+#define OPENFAM_MOCK_DEFINE_ADD(TYPE)                                                   \
+    void fam::fam_add(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) {          \
+        auto& sess = session();                                                         \
+        mock::LockGuard lock(sess);                                                     \
+        auto& sobj   = sess.findObject(obj);                                            \
+        auto* data   = sess.objectData(sobj);                                           \
+        auto current = typed_fetch<TYPE>(data, sobj.size, offset);                      \
+        typed_store<TYPE>(data, sobj.size, offset, static_cast<TYPE>(current + value)); \
     }
 
 OPENFAM_MOCK_DEFINE_ADD(std::int32_t)
@@ -364,13 +412,14 @@ OPENFAM_MOCK_DEFINE_ADD(double)
 
 #undef OPENFAM_MOCK_DEFINE_ADD
 
-#define OPENFAM_MOCK_DEFINE_SUB(TYPE)                                                                 \
-    void fam::fam_subtract(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) {                   \
-        auto& session = mock::FamMockSession::instance();                                             \
-        std::lock_guard lock(session.mutex_);                                                         \
-        mock::MockObject& mobj = session.findObject(obj);                                             \
-        mock::typedStore<TYPE>(mobj.data, offset,                                                     \
-                               static_cast<TYPE>(mock::typedFetch<TYPE>(mobj.data, offset) - value)); \
+#define OPENFAM_MOCK_DEFINE_SUB(TYPE)                                                   \
+    void fam::fam_subtract(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) {     \
+        auto& sess = session();                                                         \
+        mock::LockGuard lock(sess);                                                     \
+        auto& sobj   = sess.findObject(obj);                                            \
+        auto* data   = sess.objectData(sobj);                                           \
+        auto current = typed_fetch<TYPE>(data, sobj.size, offset);                      \
+        typed_store<TYPE>(data, sobj.size, offset, static_cast<TYPE>(current - value)); \
     }
 
 OPENFAM_MOCK_DEFINE_SUB(std::int32_t)
@@ -384,11 +433,12 @@ OPENFAM_MOCK_DEFINE_SUB(double)
 
 #define OPENFAM_MOCK_DEFINE_SWAP(TYPE)                                          \
     TYPE fam::fam_swap(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) { \
-        auto& session = mock::FamMockSession::instance();                       \
-        std::lock_guard lock(session.mutex_);                                   \
-        mock::MockObject& mobj = session.findObject(obj);                       \
-        auto old               = mock::typedFetch<TYPE>(mobj.data, offset);     \
-        mock::typedStore<TYPE>(mobj.data, offset, value);                       \
+        auto& sess = session();                                                 \
+        mock::LockGuard lock(sess);                                             \
+        auto& sobj = sess.findObject(obj);                                      \
+        auto* data = sess.objectData(sobj);                                     \
+        auto old   = typed_fetch<TYPE>(data, sobj.size, offset);                \
+        typed_store<TYPE>(data, sobj.size, offset, value);                      \
         return old;                                                             \
     }
 
@@ -403,12 +453,13 @@ OPENFAM_MOCK_DEFINE_SWAP(double)
 
 #define OPENFAM_MOCK_DEFINE_CAS(TYPE)                                                                   \
     TYPE fam::fam_compare_swap(Fam_Descriptor* obj, std::uint64_t offset, TYPE old_val, TYPE new_val) { \
-        auto& session = mock::FamMockSession::instance();                                               \
-        std::lock_guard lock(session.mutex_);                                                           \
-        mock::MockObject& mobj = session.findObject(obj);                                               \
-        auto current           = mock::typedFetch<TYPE>(mobj.data, offset);                             \
+        auto& sess = session();                                                                         \
+        mock::LockGuard lock(sess);                                                                     \
+        auto& sobj   = sess.findObject(obj);                                                            \
+        auto* data   = sess.objectData(sobj);                                                           \
+        auto current = typed_fetch<TYPE>(data, sobj.size, offset);                                      \
         if (current == old_val) {                                                                       \
-            mock::typedStore<TYPE>(mobj.data, offset, new_val);                                         \
+            typed_store<TYPE>(data, sobj.size, offset, new_val);                                        \
         }                                                                                               \
         return current;                                                                                 \
     }

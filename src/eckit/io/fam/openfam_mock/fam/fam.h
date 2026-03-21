@@ -35,9 +35,6 @@ struct Fam_Global_Descriptor {
     std::uint64_t offset{0};
 };
 
-/// @note  Real OpenFAM uses a heap-allocated `char*` for `name`.
-///        The mock uses a fixed-size buffer to avoid ownership complexity.
-///        Callers must not `delete[]` or `free()` the name field.
 struct Fam_Stat {
     std::uint64_t size{0};
     mode_t perm{0};
@@ -59,8 +56,6 @@ struct Fam_Region_Attributes {
     Fam_Permission_Level permissionLevel{PERMISSION_LEVEL_DEFAULT};
 };
 
-/// @note  Intentional subset of the real OpenFAM Fam_Options.
-///        Only the fields actually read by eckit are included.
 struct Fam_Options {
     char* runtime{nullptr};
     char* cisServer{nullptr};
@@ -182,6 +177,10 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
+namespace mock {
+class FamMockSession;
+}  // namespace mock
+
 class fam {
 public:
 
@@ -299,7 +298,13 @@ public:
 
 private:
 
-    std::string serverName_;  ///< Cached from Fam_Options::cisServer for fam_get_option
+    mock::FamMockSession& session();
+
+private:
+
+    std::string serverName_;
+
+    mock::FamMockSession* session_{nullptr};  // local cache, initialized in fam_initialize()
 };
 
 //----------------------------------------------------------------------------------------------------------------------

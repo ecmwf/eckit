@@ -142,10 +142,10 @@ void FamList::pushFront(const void* data, const size_type length) {
             first_object.put(new_object.descriptor(), offsetof(FamListNode, prev));
 
             // Atomically increment size
-            size_.add(0, 1UL);
+            size_.add(0, size_type{1});
 
             // Increment epoch to invalidate old iterators (optional, for ABA safety)
-            epoch_.add(0, 1UL);
+            epoch_.add(0, std::uint64_t{1});
             return;
         }
         // CAS failed, another thread modified head.next. Retry with updated first offset.
@@ -180,10 +180,10 @@ void FamList::pushBack(const void* data, const size_type length) {
             last_object.put(new_object.descriptor(), offsetof(FamListNode, next));
 
             // Atomically increment size
-            size_.add(0, 1UL);
+            size_.add(0, size_type{1});
 
             // Increment epoch (for iterator validation)
-            epoch_.add(0, 1UL);
+            epoch_.add(0, std::uint64_t{1});
             return;
         }
         // CAS failed, another thread modified tail.prev. Retry with updated last offset.
@@ -221,10 +221,10 @@ void FamList::popFront() {
             next_object.put(head_.descriptor(), offsetof(FamListNode, prev));
 
             // Decrement size
-            size_.subtract(0, 1UL);
+            size_.subtract(0, size_type{1});
 
             // Increment epoch for iterator validation
-            epoch_.add(0, 1UL);
+            epoch_.add(0, std::uint64_t{1});
 
             // Now deallocate the marked node (safe since we've unlinked it)
             first_object.deallocate();
@@ -262,10 +262,10 @@ void FamList::popBack() {
             prev_object.put(tail_.descriptor(), offsetof(FamListNode, next));
 
             // Decrement size
-            size_.subtract(0, 1UL);
+            size_.subtract(0, size_type{1});
 
             // Increment epoch
-            epoch_.add(0, 1UL);
+            epoch_.add(0, std::uint64_t{1});
 
             // Deallocate the marked node
             last_object.deallocate();
@@ -297,8 +297,8 @@ auto FamList::erase(iterator pos) -> iterator {
             next_object.put(prev_object.descriptor(), offsetof(FamListNode, prev));
 
             // Update size and epoch
-            size_.subtract(0, 1UL);
-            epoch_.add(0, 1UL);
+            size_.subtract(0, size_type{1});
+            epoch_.add(0, std::uint64_t{1});
 
             // Deallocate marked node
             object.deallocate();

@@ -213,7 +213,7 @@ auto FamMap<T>::insert(const key_type& key, const void* data, const size_type le
     bucket.pushBack(payload);
 
     // Atomically increment total count
-    count_.add(0, 1UL);
+    count_.add(0, size_type{1});
 
     // Re-find the entry to return a valid iterator
     auto new_it = findInBucket(bucket, key);
@@ -234,7 +234,7 @@ auto FamMap<T>::erase(const key_type& key) -> size_type {
     }
 
     bucket->erase(std::move(iter));
-    count_.subtract(0, 1UL);
+    count_.subtract(0, size_type{1});
     return 1;
 }
 

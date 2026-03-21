@@ -15,12 +15,14 @@
 
 #include "eckit/io/fam/FamProperty.h"
 
+#include "eckit/exception/Exceptions.h"
+
 #include <sys/types.h>
 #include <unistd.h>
 
 #include <cstdint>
-#include <cstdio>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -31,13 +33,20 @@ namespace eckit {
 namespace {
 
 fam::perm_t stringToPerm(const std::string& perm) {
-    return static_cast<fam::perm_t>(std::stoul(perm, nullptr, 8));
+    std::size_t pos  = 0;
+    const auto value = std::stoul(perm, &pos, 8);
+
+    // reject partial parse (e.g. "0644abc") and values beyond valid permissions
+    ASSERT_MSG(pos == perm.size(), "invalid permission string: " + perm);
+    ASSERT_MSG(value <= 07777, "permission value out of range: " + perm);
+
+    return static_cast<fam::perm_t>(value);
 }
 
 std::string permToString(fam::perm_t perm) {
-    char buf[5];
-    snprintf(buf, sizeof(buf), "%04o", perm);
-    return std::string(buf);
+    std::ostringstream oss;
+    oss << std::oct << perm;
+    return oss.str();
 }
 
 }  // namespace

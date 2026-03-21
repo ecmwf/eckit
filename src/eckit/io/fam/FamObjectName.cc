@@ -68,6 +68,8 @@ DataHandle* FamObjectName::dataHandle(const bool overwrite) const {
 }
 
 DataHandle* FamObjectName::partHandle(const OffsetList& offsets, const LengthList& lengths) const {
+    ASSERT(!offsets.empty() && !lengths.empty());
+    // FAM objects are single contiguous allocations — only the first part is supported.
     return new FamHandle(*this, offsets[0], lengths[0], true);
 }
 

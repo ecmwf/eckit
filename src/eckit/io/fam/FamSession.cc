@@ -76,7 +76,10 @@ bool isValidName(std::string_view str) {
     if (str.empty()) {
         return false;
     }
-    return std::all_of(str.begin(), str.end(), [](char c) { return std::isprint(c) > 0 && std::isspace(c) == 0; });
+    return std::all_of(str.begin(), str.end(), [](char chr) {
+        const auto uchr = static_cast<unsigned char>(chr);
+        return std::isprint(uchr) != 0 && std::isspace(uchr) == 0;
+    });
 }
 
 

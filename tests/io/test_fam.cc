@@ -280,6 +280,23 @@ CASE("FamObject: large data small object") {
     }
 }
 
+CASE("FamRegionName: invalid names are rejected") {
+    // empty name
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, "").create(1024, 0640));
+
+    // name with spaces
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, "has space").create(1024, 0640));
+
+    // name with tab
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, "has\ttab").create(1024, 0640));
+
+    // name with non-printable control character
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, std::string("ctrl\x01char")).create(1024, 0640));
+
+    // name with high UTF-8 byte (previously caused UB with signed char)
+    EXPECT_THROWS(FamRegionName(fam::test_endpoint, std::string("caf\xC3\xA9")).create(1024, 0640));
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::test

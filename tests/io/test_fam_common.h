@@ -50,7 +50,10 @@ inline auto random_number() -> std::string {
     return std::to_string(::random());
 }
 
-const auto test_endpoint = "172.26.0.2:8880"s;
+inline const std::string test_endpoint = []() -> std::string {
+    const char* ep = std::getenv("ECKIT_FAM_TEST_ENDPOINT");
+    return ep ? ep : "localhost:8880";
+}();
 
 class TestFam {
 public:

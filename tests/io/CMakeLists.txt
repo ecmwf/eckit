@@ -44,6 +44,11 @@ endforeach()
 
 if(HAVE_OPENFAM)
     set(_fam_extra_libs OpenFAM::openfam)
+    # Set environment variable for FAM tests; here is for docker setup.
+    # mock does not need this.
+    list( APPEND _fam_environment ${_test_environment}
+        "ECKIT_FAM_TEST_ENDPOINT=172.26.0.2:8880"
+    )
 else()
     set(_fam_extra_libs "")
 endif()
@@ -53,6 +58,7 @@ foreach( _test fam fam_list fam_map fam_session_manager )
                     SOURCES     test_${_test}.cc
                     CONDITION   HAVE_OPENFAM OR HAVE_OPENFAM_MOCK
                     LABELS      openfam
+                    ENVIRONMENT "${_fam_environment}"
                     LIBS        eckit ${_fam_extra_libs} )
 endforeach()
 

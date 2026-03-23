@@ -15,6 +15,7 @@
 
 #include "eckit/io/fam/FamSessionManager.h"
 
+#include <chrono>
 #include <memory>
 #include <string>
 

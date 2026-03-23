@@ -172,6 +172,8 @@ public:  // methods
 
     /// Insert a key-value pair. If the key already exists, no insertion is performed.
     /// Returns {iterator, true} on success, {iterator_to_existing, false} if key exists.
+    /// @important: This check-then-insert sequence is not atomic.
+    /// concurrent inserts of the same key may both insert resulting duplicates.
     std::pair<iterator, bool> insert(const key_type& key, const void* data, size_type length);
 
     /// Insert with string_view value.

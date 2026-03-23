@@ -35,7 +35,11 @@ namespace {
 
 std::tuple<std::string, std::string> parsePath(const std::string& path) {
     const auto names = Tokenizer("/").tokenize(path);
-    switch (names.size()) {
+    const auto count = names.size();
+    if (count > 2) {
+        throw UserError("Invalid FAM path: " + path, Here());
+    }
+    switch (count) {
         case 1:
             return {names[0], ""};
         case 2:

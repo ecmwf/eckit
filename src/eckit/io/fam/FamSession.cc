@@ -202,7 +202,15 @@ FamRegion FamSession::ensureCreateRegion(const fam::size_t region_size, const fa
             return createRegion(region_size, region_perm, region_name);
         }
         catch (const AlreadyExists&) {
-            destroyRegion(region_name);
+            try {
+                destroyRegion(region_name);
+            }
+            catch (const NotFound&) {
+                LOG_DEBUG_LIB(LibEcKit) << "Region '" << region_name
+                                        << "' already existed but was concurrently destroyed by another "
+                                           "process/thread; retrying create (attempt "
+                                        << (attempt + 1) << " of " << max_retries << ")\n";
+            }
         }
     }
     throw SeriousBug("ensureCreateRegion: failed after " + std::to_string(max_retries) + " retries for region '" +

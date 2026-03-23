@@ -98,7 +98,7 @@ CASE("FamProperty: construction and perm conversion") {
 CASE("FamPath: ctor and uuid generation") {
     {
         // uuid of "/region/object"
-        constexpr const auto* const uuid = "650fa148-fc69-5d6f-a793-5b1190c77e1a";
+        constexpr const auto* const uuid = "7b07021d-f3ce-5717-8124-c78b5613fe79";
 
         const FamPath path{"region", "object"};
         EXPECT_EQUAL(path.generateUUID(), uuid);

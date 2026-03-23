@@ -89,7 +89,7 @@ bool FamPath::operator==(const FamPath& other) const {
 }
 
 std::string FamPath::generateUUID() const {
-    return generateUuid(regionName + objectName);
+    return generateUuid(asString());
 }
 
 void FamPath::encode(Stream& stream) const {

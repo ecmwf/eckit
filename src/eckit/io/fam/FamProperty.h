@@ -19,39 +19,12 @@
 
 #pragma once
 
-#include <sys/types.h>  // mode_t
-
-#include <cstdint>  // uint64_t
 #include <ostream>
 #include <string>
 
-namespace openfam {
-class Fam_Descriptor;
-class Fam_Region_Descriptor;
-}  // namespace openfam
+#include "eckit/io/fam/FamCommon.h"
 
 namespace eckit {
-
-//----------------------------------------------------------------------------------------------------------------------
-// TYPES
-
-using FamObjectDescriptor = openfam::Fam_Descriptor;
-using FamRegionDescriptor = openfam::Fam_Region_Descriptor;
-
-//----------------------------------------------------------------------------------------------------------------------
-
-namespace fam {
-
-using size_t  = std::uint64_t;
-using perm_t  = mode_t;
-using index_t = std::uint64_t;
-
-}  // namespace fam
-
-struct FamDescriptor {
-    fam::index_t region{0};
-    fam::index_t offset{0};
-};
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -13,51 +13,43 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   FamPath.h
+/// @file   FamCommon.h
 /// @author Metin Cakircali
-/// @date   Jun 2024
+/// @date   Mar 2026
 
 #pragma once
 
-#include <iosfwd>
-#include <string>
+#include <sys/types.h>  // mode_t
 
-namespace eckit {
-
-class URI;
-class Stream;
+#include <cstdint>  // uint64_t
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct FamPath {
+namespace openfam {
+class Fam_Descriptor;
+class Fam_Region_Descriptor;
+}  // namespace openfam
 
-    FamPath() = default;
+//----------------------------------------------------------------------------------------------------------------------
 
-    FamPath(std::string region, std::string object);
+namespace eckit {
 
-    explicit FamPath(const std::string& path);
+using FamObjectDescriptor = openfam::Fam_Descriptor;
+using FamRegionDescriptor = openfam::Fam_Region_Descriptor;
 
-    explicit FamPath(const char* path);
+namespace fam {
 
-    /// @todo explicit?
-    explicit FamPath(const URI& uri);
+constexpr const char* scheme = "fam";
 
-    explicit FamPath(Stream& stream);
+using size_t  = std::uint64_t;
+using perm_t  = mode_t;
+using index_t = std::uint64_t;
 
-    bool operator==(const FamPath& other) const;
+}  // namespace fam
 
-    std::string generateUUID() const;
-
-    void encode(Stream& stream) const;
-
-    std::string asString() const;
-
-    friend std::ostream& operator<<(std::ostream& out, const FamPath& path);
-
-    friend Stream& operator<<(Stream& stream, const FamPath& name);
-
-    std::string regionName;
-    std::string objectName;
+struct FamDescriptor {
+    fam::index_t region{0};
+    fam::index_t offset{0};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

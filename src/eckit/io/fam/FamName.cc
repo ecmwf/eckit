@@ -21,7 +21,7 @@
 #include <utility>
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/fam/FamPath.h"
+#include "eckit/io/fam/FamCommon.h"
 #include "eckit/io/fam/FamSessionManager.h"
 #include "eckit/net/Endpoint.h"
 #include "eckit/serialisation/Stream.h"
@@ -46,12 +46,12 @@ FamSessionManager::Session FamName::session() const {
 
 std::string FamName::asString() const {
     std::ostringstream oss;
-    oss << FamPath::scheme << "://" << endpoint_ << path_;
+    oss << fam::scheme << "://" << endpoint_ << path_;
     return oss.str();
 }
 
 URI FamName::uri() const {
-    return {FamPath::scheme, endpoint_, path_.asString()};
+    return {fam::scheme, endpoint_, path_.asString()};
 }
 
 void FamName::print(std::ostream& out) const {

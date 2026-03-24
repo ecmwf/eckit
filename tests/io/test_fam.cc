@@ -118,7 +118,7 @@ CASE("FamPath: ctor and uuid generation") {
 
     {
         const auto uri = URI("fam", fam::test_endpoint, "/regionName/objectName");
-        EXPECT_EQUAL(uri.scheme(), FamPath::scheme);
+        EXPECT_EQUAL(uri.scheme(), eckit::fam::scheme);
         EXPECT_EQUAL(uri.hostport(), fam::test_endpoint);
         EXPECT_EQUAL(uri.name(), "/regionName/objectName");
         EXPECT_NO_THROW(const auto path = FamPath(uri));
@@ -127,7 +127,7 @@ CASE("FamPath: ctor and uuid generation") {
     {
         const auto uri = URI("fam://" + fam::test_endpoint + "/regionName/objectName");
 
-        EXPECT_EQUAL(uri.scheme(), FamPath::scheme);
+        EXPECT_EQUAL(uri.scheme(), eckit::fam::scheme);
         EXPECT_EQUAL(uri.hostport(), fam::test_endpoint);
         EXPECT_EQUAL(uri.name(), "/regionName/objectName");
     }
@@ -138,7 +138,7 @@ CASE("FamRegionName: ctor, lookup, and allocate") {
 
     const FamRegionName region(fam::test_endpoint, region_name);
 
-    EXPECT_EQUAL(region.uri().scheme(), FamPath::scheme);
+    EXPECT_EQUAL(region.uri().scheme(), eckit::fam::scheme);
     EXPECT_EQUAL(region.uri().hostport(), fam::test_endpoint);
     EXPECT_EQUAL(region.uri().name(), '/' + region_name);
     EXPECT_EQUAL(region.uri(), URI("fam://" + fam::test_endpoint + '/' + region_name));
@@ -169,7 +169,7 @@ CASE("FamObjectName: ctor, lookup, and allocate") {
 
     const FamObjectName object(fam::test_endpoint, path);
 
-    EXPECT_EQUAL(object.uri().scheme(), FamPath::scheme);
+    EXPECT_EQUAL(object.uri().scheme(), eckit::fam::scheme);
     EXPECT_EQUAL(object.uri().hostport(), fam::test_endpoint);
     EXPECT_EQUAL(object.uri().name(), path.asString());
     EXPECT_EQUAL(object.uri(), URI("fam", fam::test_endpoint, path.asString()));
@@ -367,31 +367,31 @@ CASE("FamURIManager: asString produces scheme:path and appends query/fragment") 
     // (host:port) is parsed into the separate host_/port_ fields of URI.
     // The full canonical form — including "//host:port" — is produced by
     // FamName::asString(); see also the @todo in FamURIManager.cc.
-    const std::string expected_base = std::string(FamPath::scheme) + ":" + path;
+    const std::string expected_base = std::string(eckit::fam::scheme) + ":" + path;
 
     // Baseline: no query, no fragment.
     {
-        const auto uri = URI(FamPath::scheme, fam::test_endpoint, path);
+        const auto uri = URI(eckit::fam::scheme, fam::test_endpoint, path);
         EXPECT_EQUAL(uri.asString(), expected_base);
     }
 
     // With a single query parameter — must appear as "?key=value".
     {
-        auto uri = URI(FamPath::scheme, fam::test_endpoint, path);
+        auto uri = URI(eckit::fam::scheme, fam::test_endpoint, path);
         uri.query("offset", "42");
         EXPECT_EQUAL(uri.asString(), expected_base + "?offset=42");
     }
 
     // With a fragment — must appear as "#section".
     {
-        auto uri = URI(FamPath::scheme, fam::test_endpoint, path);
+        auto uri = URI(eckit::fam::scheme, fam::test_endpoint, path);
         uri.fragment("section");
         EXPECT_EQUAL(uri.asString(), expected_base + "#section");
     }
 
     // With both query and fragment — query precedes fragment.
     {
-        auto uri = URI(FamPath::scheme, fam::test_endpoint, path);
+        auto uri = URI(eckit::fam::scheme, fam::test_endpoint, path);
         uri.query("offset", "0");
         uri.fragment("end");
         EXPECT_EQUAL(uri.asString(), expected_base + "?offset=0#end");
@@ -401,9 +401,9 @@ CASE("FamURIManager: asString produces scheme:path and appends query/fragment") 
     // Note: the authority is absent from asString output, so the round-tripped
     // URI has no host/port — the fields differ from the original.
     {
-        const auto uri      = URI(FamPath::scheme, fam::test_endpoint, path);
+        const auto uri      = URI(eckit::fam::scheme, fam::test_endpoint, path);
         const auto reparsed = URI(uri.asString());
-        EXPECT_EQUAL(reparsed.scheme(), std::string(FamPath::scheme));
+        EXPECT_EQUAL(reparsed.scheme(), std::string(eckit::fam::scheme));
         EXPECT_EQUAL(reparsed.name(), path);
     }
 }

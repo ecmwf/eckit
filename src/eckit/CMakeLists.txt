@@ -268,47 +268,54 @@ list(APPEND eckit_message_srcs
     message/Splitter.h
 )
 
-if(HAVE_OPENFAM OR HAVE_OPENFAM_MOCK)
-if(HAVE_OPENFAM_MOCK)
-list(APPEND eckit_io_srcs
-io/fam/openfam_mock/fam/fam.cc
-io/fam/openfam_mock/FamMockSession.cc
+# FAM support
+
+list( APPEND eckit_io_srcs
+    io/fam/FamCommon.h
 )
-endif()
-list(APPEND eckit_io_srcs
-io/fam/FamHandle.cc
-io/fam/FamHandle.h
-io/fam/FamList.cc
-io/fam/FamList.h
-io/fam/FamListIterator.cc
-io/fam/FamListIterator.h
-io/fam/FamMap.cc
-io/fam/FamMap.h
-io/fam/FamMapEntry.h
-io/fam/FamMapIterator.cc
-io/fam/FamMapIterator.h
-io/fam/FamName.cc
-io/fam/FamName.h
-io/fam/FamObject.cc
-io/fam/FamObject.h
-io/fam/FamObjectName.cc
-io/fam/FamObjectName.h
-io/fam/FamPath.cc
-io/fam/FamPath.h
-io/fam/FamProperty.cc
-io/fam/FamProperty.h
-io/fam/FamRegion.cc
-io/fam/FamRegion.h
-io/fam/FamRegionName.cc
-io/fam/FamRegionName.h
-io/fam/FamSession.cc
-io/fam/FamSession.h
-io/fam/FamSessionManager.cc
-io/fam/FamSessionManager.h
-io/fam/FamURIManager.cc
-io/fam/FamURIManager.h
-)
-endif()
+
+if( HAVE_OPENFAM OR HAVE_OPENFAM_MOCK )
+    if( HAVE_OPENFAM_MOCK )
+        list( APPEND eckit_io_srcs
+        io/fam/openfam_mock/fam/fam.cc
+        io/fam/openfam_mock/FamMockSession.cc
+    )
+    endif( HAVE_OPENFAM_MOCK )
+
+    list( APPEND eckit_io_srcs
+        io/fam/FamHandle.cc
+        io/fam/FamHandle.h
+        io/fam/FamList.cc
+        io/fam/FamList.h
+        io/fam/FamListIterator.cc
+        io/fam/FamListIterator.h
+        io/fam/FamMap.cc
+        io/fam/FamMap.h
+        io/fam/FamMapEntry.h
+        io/fam/FamMapIterator.cc
+        io/fam/FamMapIterator.h
+        io/fam/FamName.cc
+        io/fam/FamName.h
+        io/fam/FamObject.cc
+        io/fam/FamObject.h
+        io/fam/FamObjectName.cc
+        io/fam/FamObjectName.h
+        io/fam/FamPath.cc
+        io/fam/FamPath.h
+        io/fam/FamProperty.cc
+        io/fam/FamProperty.h
+        io/fam/FamRegion.cc
+        io/fam/FamRegion.h
+        io/fam/FamRegionName.cc
+        io/fam/FamRegionName.h
+        io/fam/FamSession.cc
+        io/fam/FamSession.h
+        io/fam/FamSessionManager.cc
+        io/fam/FamSessionManager.h
+        io/fam/FamURIManager.cc
+        io/fam/FamURIManager.h
+    )
+endif( HAVE_OPENFAM OR HAVE_OPENFAM_MOCK )
 
 if(HAVE_RADOS)
     list( APPEND eckit_io_srcs

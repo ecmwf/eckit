@@ -24,6 +24,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/fam/FamCommon.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Tokenizer.h"
 
@@ -76,7 +77,7 @@ FamPath::FamPath(const std::string& path) {
 FamPath::FamPath(const char* path) : FamPath(std::string(path)) {}
 
 FamPath::FamPath(const URI& uri) : FamPath(uri.name()) {
-    ASSERT(uri.scheme() == scheme);
+    ASSERT(uri.scheme() == fam::scheme);
 }
 
 FamPath::FamPath(Stream& stream) {

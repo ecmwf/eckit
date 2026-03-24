@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamCommon.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
 

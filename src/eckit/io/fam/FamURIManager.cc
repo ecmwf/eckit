@@ -21,8 +21,8 @@
 #include "eckit/filesystem/URIManager.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+#include "eckit/io/fam/FamCommon.h"
 #include "eckit/io/fam/FamObjectName.h"
-#include "eckit/io/fam/FamPath.h"
 
 namespace eckit {
 
@@ -63,7 +63,7 @@ std::string FamURIManager::asString(const URI& uri) const {
     return uri.scheme() + ":" + uri.name() + query + fragment;
 }
 
-static FamURIManager manager(FamPath::scheme);
+static FamURIManager manager(fam::scheme);
 
 //----------------------------------------------------------------------------------------------------------------------
 

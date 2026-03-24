@@ -20,9 +20,8 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/fam/FamCommon.h"
 #include "eckit/io/fam/FamObjectName.h"
-#include "eckit/io/fam/FamPath.h"
-#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamSession.h"
 #include "eckit/log/Log.h"
@@ -66,8 +65,7 @@ bool FamRegionName::exists() const {
 }
 
 bool FamRegionName::uriBelongs(const URI& uri) const {
-    return uri.scheme() == FamPath::scheme && uri.endpoint() == endpoint() &&
-           FamPath(uri).regionName == path().regionName;
+    return uri.scheme() == fam::scheme && uri.endpoint() == endpoint() && FamPath(uri).regionName == path().regionName;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

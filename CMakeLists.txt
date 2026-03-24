@@ -116,14 +116,17 @@ ecbuild_add_option( FEATURE OPENFAM
 ### OpenFAM Mock: for testing and development without needing a real OpenFAM library
 
 ecbuild_add_option( FEATURE OPENFAM_MOCK
-                    DEFAULT OFF
+                    DEFAULT ON
+                    CONDITION NOT OpenFAM_FOUND
                     REQUIRED_PACKAGES "LibUUID REQUIRED"
                     DESCRIPTION "Enables OpenFAM Mock for testing and development." )
 
-# When the mock is active, expose it so that downstream projects can use it.
-if( eckit_HAVE_OPENFAM_MOCK AND NOT eckit_HAVE_OPENFAM )
+if( eckit_HAVE_OPENFAM_MOCK )
+    # When the mock is active, expose OPENFAM so that downstream projects can use it.
     set( eckit_HAVE_OPENFAM 1 )
 endif()
+
+
 
 ### RADOS
 

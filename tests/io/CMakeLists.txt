@@ -42,11 +42,11 @@ foreach(_test
                     LIBS    eckit )
 endforeach()
 
-if(HAVE_OPENFAM)
+if( HAVE_OPENFAM )
     set(_fam_extra_libs OpenFAM::openfam)
-    # Set environment variable for FAM tests; here is for docker setup.
-    # mock does not need this.
+    # only relevant for testing with a real OpenFAM servers running in docker environment.
     list( APPEND _fam_environment ${_test_environment}
+        "OPENFAM_ROOT=/workspace/cis-rpc_meta-direct_mem-rpc"
         "ECKIT_FAM_TEST_ENDPOINT=172.26.0.2:8880"
     )
 else()
@@ -57,7 +57,7 @@ foreach( _test fam fam_list fam_map fam_session_manager )
   ecbuild_add_test( TARGET      eckit_test_${_test}
                     SOURCES     test_${_test}.cc
                     CONDITION   HAVE_OPENFAM OR HAVE_OPENFAM_MOCK
-                    LABELS      openfam
+                    LABELS      fam
                     ENVIRONMENT "${_fam_environment}"
                     LIBS        eckit ${_fam_extra_libs} )
 endforeach()

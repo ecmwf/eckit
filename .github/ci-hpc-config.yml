@@ -9,6 +9,7 @@ mpi_on:
     modules_package:
       - eckit:openmpi
     dependencies:
+      - ecmwf/stack-dependencies@master
       - ecmwf/ecbuild@develop
     parallel: 64
     ntasks: 4
@@ -18,5 +19,6 @@ mpi_off:
     modules:
       - ninja
     dependencies:
+      - ecmwf/stack-dependencies@master
       - ecmwf/ecbuild@develop
     parallel: 64

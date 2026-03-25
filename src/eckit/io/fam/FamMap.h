@@ -76,7 +76,6 @@
 #include "eckit/io/fam/FamMapEntry.h"
 #include "eckit/io/fam/FamMapIterator.h"
 #include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
 
 namespace eckit {

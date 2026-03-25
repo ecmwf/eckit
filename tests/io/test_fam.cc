@@ -20,20 +20,24 @@
 #include "test_fam_common.h"
 
 #include <sstream>
+#include <string>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamObjectName.h"
 #include "eckit/io/fam/FamPath.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
+#include "eckit/io/fam/FamSession.h"
+#include "eckit/io/fam/FamSessionManager.h"
+#include "eckit/serialisation/ResizableMemoryStream.h"
 #include "eckit/testing/Test.h"
 
 using namespace eckit;
-using namespace eckit::testing;
 
 namespace eckit::test {
 
@@ -397,9 +401,7 @@ CASE("FamURIManager: asString produces scheme:path and appends query/fragment") 
         EXPECT_EQUAL(uri.asString(), expected_base + "?offset=0#end");
     }
 
-    // Round-trip: parsing the output of asString yields an equivalent URI.
-    // Note: the authority is absent from asString output, so the round-tripped
-    // URI has no host/port — the fields differ from the original.
+    // URI round-trip: URI constructed from path should parse back to same path
     {
         const auto uri      = URI(eckit::fam::scheme, fam::test_endpoint, path);
         const auto reparsed = URI(uri.asString());
@@ -408,10 +410,259 @@ CASE("FamURIManager: asString produces scheme:path and appends query/fragment") 
     }
 }
 
+CASE("FamRegion: print produces meaningful output") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    FamRegionName name{fam::test_endpoint, region_name};
+
+    name.create(1024, 0640);
+    auto region = name.lookup();
+
+    std::ostringstream oss;
+    oss << region;
+    const auto str = oss.str();
+    EXPECT(str.find("FamRegion") != std::string::npos);
+    EXPECT(str.find(region_name) != std::string::npos);
+
+    region.destroy();
+}
+
+CASE("FamRegion: proxyObject creates a valid proxy") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    const auto object_name = fam::TestFam::makeRandomText("OBJECT");
+    FamRegionName name{fam::test_endpoint, region_name};
+
+    name.create(1024, 0640);
+    auto region = name.lookup();
+
+    const std::string data = "proxy_test_data";
+    auto object            = region.allocateObject(data.size(), object_name);
+    object.put(data.data(), 0, data.size());
+    const auto offset = object.offset();
+
+    // proxyObject wraps an existing object by {regionId, offset}
+    auto proxy = region.proxyObject(offset);
+
+    // proxy doesn't carry metadata, but can perform data ops
+    Buffer buf(data.size());
+    buf.zero();
+    proxy.get(buf.data(), 0, data.size());
+    EXPECT(buf.view() == data);
+
+    object.deallocate();
+    region.destroy();
+}
+
+CASE("FamRegion: set and query permission level") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    FamRegionName name{fam::test_endpoint, region_name};
+
+    name.create(1024, 0640);
+    auto region = name.lookup();
+
+    // default is REGION-level
+    EXPECT_NO_THROW(region.setRegionLevelPermissions());
+
+    // switch to OBJECT-level
+    EXPECT_NO_THROW(region.setObjectLevelPermissions());
+
+    // Switch back to region-level
+    EXPECT_NO_THROW(region.setRegionLevelPermissions());
+
+    region.destroy();
+}
+
+CASE("FamSession: destroyRegion by name") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    FamRegionName rname{fam::test_endpoint, region_name};
+
+    rname.create(1024, 0640);
+    EXPECT(rname.exists());
+
+    // destroyRegion(name) looks up and destroys internally
+    auto session = FamSessionManager::instance().getOrAdd("EckitFAMSession", fam::test_endpoint);
+    EXPECT_NO_THROW(session->destroyRegion(region_name));
+
+    EXPECT_NOT(rname.exists());
+}
+
+CASE("FamPath: stream round-trip") {
+    const FamPath original{"myRegion", "myObject"};
+
+    // Serialize
+    Buffer buffer(1024);
+    {
+        ResizableMemoryStream stream(buffer);
+        stream << original;
+    }
+
+    // Deserialize
+    {
+        ResizableMemoryStream stream(buffer);
+        FamPath decoded(stream);
+        EXPECT(decoded == original);
+        EXPECT_EQUAL(decoded.regionName, "myRegion");
+        EXPECT_EQUAL(decoded.objectName, "myObject");
+    }
+}
+
+CASE("FamPath: from char* and from string give same result") {
+    const FamPath from_string(std::string("/region/object"));
+    const FamPath from_cstr("/region/object");
+    EXPECT(from_string == from_cstr);
+    EXPECT_EQUAL(from_string.regionName, "region");
+    EXPECT_EQUAL(from_string.objectName, "object");
+}
+
+CASE("FamPath: invalid path with too many segments throws") {
+    EXPECT_THROWS(FamPath("/a/b/c"));
+}
+
+CASE("FamPath: single segment path has empty objectName") {
+    const FamPath path("/regionOnly");
+    EXPECT_EQUAL(path.regionName, "regionOnly");
+    EXPECT(path.objectName.empty());
+}
+
+CASE("FamName: stream round-trip via FamRegionName") {
+    const FamRegionName original(fam::test_endpoint, "streamTestRegion");
+
+    // Serialize
+    Buffer buffer(1024);
+    {
+        ResizableMemoryStream stream(buffer);
+        stream << original;
+    }
+
+    // Deserialize — use endpoint + path from stream
+    {
+        ResizableMemoryStream stream(buffer);
+        const FamRegionName decoded(stream);
+        EXPECT_EQUAL(decoded.path().regionName, "streamTestRegion");
+        EXPECT_EQUAL(decoded.endpoint().host(), original.endpoint().host());
+    }
+}
+
+CASE("FamName: print and asString") {
+    const FamRegionName name(fam::test_endpoint, "printRegion");
+
+    std::ostringstream oss;
+    oss << name;
+    EXPECT(oss.str().find("printRegion") != std::string::npos);
+    EXPECT(oss.str().find("endpoint") != std::string::npos);
+
+    const auto str = name.asString();
+    EXPECT(str.find("fam://") != std::string::npos);
+    EXPECT(str.find("printRegion") != std::string::npos);
+}
+
+CASE("FamObjectName: withObject replaces the object name") {
+    FamObjectName name(fam::test_endpoint, FamPath{"region", "original"});
+    EXPECT_EQUAL(static_cast<const FamName&>(name).path().objectName, "original");
+
+    name.withObject("replaced");
+    EXPECT_EQUAL(static_cast<const FamName&>(name).path().objectName, "replaced");
+}
+
+CASE("FamObjectName: withUUID replaces objectName with UUID") {
+    FamObjectName name(fam::test_endpoint, FamPath{"region", "placeholder"});
+    name.withUUID();
+
+    // UUID format: 8-4-4-4-12 hex chars
+    const auto& obj = static_cast<const FamName&>(name).path().objectName;
+    EXPECT_EQUAL(obj.size(), 36);
+    EXPECT_EQUAL(obj[8], '-');
+    EXPECT_EQUAL(obj[13], '-');
+    EXPECT_EQUAL(obj[18], '-');
+    EXPECT_EQUAL(obj[23], '-');
+}
+
+CASE("FamObjectName: exists returns false for non-existent object") {
+    FamObjectName name(fam::test_endpoint, FamPath{"nonExistentRegion", "nonExistentObject"});
+    EXPECT_NOT(name.exists());
+}
+
+CASE("FamURIManager: exists returns false for non-existent URI") {
+    const auto uri = URI("fam://" + fam::test_endpoint + "/noRegion/noObject");
+    EXPECT_NOT(uri.exists());
+}
+
+CASE("FamURIManager: newWriteHandle and newReadHandle create valid handles") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    const auto object_name = fam::TestFam::makeRandomText("OBJECT");
+
+    FamRegionName rname(fam::test_endpoint, region_name);
+    rname.create(4096, 0640);
+
+    const auto uri = URI("fam", fam::test_endpoint, "/" + region_name + "/" + object_name);
+
+    const std::string data = "URI handle data";
+
+    // write via URI-created handle
+    {
+        std::unique_ptr<DataHandle> handle(uri.newWriteHandle());
+        handle->openForWrite(64);
+        handle->write(data.data(), static_cast<long>(data.size()));
+        handle->close();
+    }
+
+    // URI should exist now
+    EXPECT(uri.exists());
+
+    // read via URI-created handle
+    {
+        std::unique_ptr<DataHandle> handle(uri.newReadHandle());
+        handle->openForRead();
+        Buffer buf(64);
+        buf.zero();
+        const auto bytes = handle->read(buf.data(), static_cast<long>(data.size()));
+        EXPECT_EQUAL(bytes, static_cast<long>(data.size()));
+        EXPECT(std::string(static_cast<const char*>(buf.data()), data.size()) == data);
+        handle->close();
+    }
+
+    rname.lookup().destroy();
+}
+
+CASE("FamObject: print and operator<<") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    const auto object_name = fam::TestFam::makeRandomText("OBJECT");
+
+    FamRegionName rname(fam::test_endpoint, region_name);
+    auto region = rname.create(1024, 0640);
+
+    auto object = region.allocateObject(64, object_name);
+
+    std::ostringstream oss;
+    oss << object;
+    EXPECT(oss.str().find("FamObject") != std::string::npos);
+
+    object.deallocate();
+    region.destroy();
+}
+
+CASE("FamObject: data() retrieves full contents") {
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    const auto object_name = fam::TestFam::makeRandomText("OBJECT");
+
+    FamRegionName rname(fam::test_endpoint, region_name);
+    auto region = rname.create(1024, 0640);
+
+    const std::string test_str = "FamObject::data() test!";
+    auto object                = region.allocateObject(test_str.size(), object_name);
+    object.put(test_str.data(), 0, test_str.size());
+
+    auto buf = object.data();
+    EXPECT_EQUAL(buf.size(), test_str.size());
+    EXPECT(buf.view() == test_str);
+
+    object.deallocate();
+    region.destroy();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

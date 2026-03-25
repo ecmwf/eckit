@@ -1,12 +1,12 @@
 if( HAVE_OPENFAM )
-    set(_fam_extra_libs OpenFAM::openfam)
+    set( _fam_extra_libs OpenFAM::openfam )
     # only relevant for testing with a real OpenFAM servers running in docker environment.
     list( APPEND _fam_environment ${_test_environment}
         "OPENFAM_ROOT=/workspace/cis-rpc_meta-direct_mem-rpc"
         "ECKIT_FAM_TEST_ENDPOINT=172.26.0.2:8880"
     )
 else()
-    set(_fam_extra_libs "")
+    set( _fam_extra_libs "" )
 endif()
 
 foreach( _test fam_handle fam_list fam_map fam_name fam_object fam_path fam_property fam_region fam_session_manager fam_uri_manager )

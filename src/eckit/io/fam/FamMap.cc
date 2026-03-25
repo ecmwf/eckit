@@ -224,6 +224,13 @@ auto FamMap<T>::insert(const key_type& key, const void* data, const size_type le
 }
 
 template <typename T>
+auto FamMap<T>::insertOrAssign(const key_type& key, const void* data, const size_type length)
+    -> std::pair<iterator, bool> {
+    erase(key);
+    return insert(key, data, length);
+}
+
+template <typename T>
 auto FamMap<T>::erase(const key_type& key) -> size_type {
     const auto index = bucketIndex(key);
     auto bucket      = getBucket(index);

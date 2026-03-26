@@ -113,9 +113,9 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
 
     if (old_head == 0) {
         // We claimed the bucket. Create a new FamList bucket.
-        // Use short name to stay within OpenFAM dataitem name limits (~40 chars).
-        // Format: "{map_name}-b{index}"
-        const auto bucket_name = name_ + "-b" + std::to_string(index);
+        // Use short name to stay within OpenFAM dataitem name limits (40 chars).
+        // Format: "{map_name}.{index}"
+        const auto bucket_name = name_ + "." + std::to_string(index);
         auto bucket            = FamList{region_, bucket_name};
         auto desc              = bucket.descriptor();
 

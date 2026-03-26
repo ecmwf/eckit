@@ -52,7 +52,7 @@ namespace mock {
 
 constexpr std::size_t g_max_regions         = 64;
 constexpr std::size_t g_max_objs_per_region = 4096;
-constexpr std::size_t g_max_name_len        = 256;
+constexpr std::size_t g_max_name_len        = 40;                 // OpenFAM real dataitem name limit
 constexpr std::size_t g_shm_total_size      = 256 * 1024 * 1024;  // 256 MiB
 
 //----------------------------------------------------------------------------------------------------------------------

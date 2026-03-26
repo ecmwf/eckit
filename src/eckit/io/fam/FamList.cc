@@ -60,10 +60,10 @@ FamList::FamList(FamRegion region, const Descriptor& desc) :
 
 FamList::FamList(FamRegion region, const std::string& list_name) :
     region_{std::move(region)},
-    head_{initSentinel(region_, list_name + "-list-h", sizeof(FamListNode))},
-    tail_{initSentinel(region_, list_name + "-list-t", sizeof(FamListNode))},
-    size_{initSentinel(region_, list_name + "-list-s", sizeof(size_type))},
-    epoch_{initSentinel(region_, list_name + "-list-e", sizeof(std::uint64_t))} {
+    head_{initSentinel(region_, list_name + "h", sizeof(FamListNode))},
+    tail_{initSentinel(region_, list_name + "t", sizeof(FamListNode))},
+    size_{initSentinel(region_, list_name + "s", sizeof(size_type))},
+    epoch_{initSentinel(region_, list_name + "e", sizeof(std::uint64_t))} {
     // set head's next to tail's prev (idempotent)
     if (FamListNode::getNextOffset(head_) == 0) {
         head_.put(tail_.descriptor(), offsetof(FamListNode, next));

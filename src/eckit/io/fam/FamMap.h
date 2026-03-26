@@ -122,8 +122,8 @@ public:  // constants
     /// needed for preventing concurrent double-init of buckets, as sentinel value in bucket head during creation
     static constexpr fam::size_t creating = ~fam::size_t{0};
 
-    static constexpr auto table_suffix = "-map-t";
-    static constexpr auto count_suffix = "-map-c";
+    static constexpr auto table_suffix = ".t";
+    static constexpr auto count_suffix = ".c";
 
 public:  // methods
 

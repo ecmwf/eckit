@@ -14,7 +14,6 @@
 
 #include "eckit/memory/Builder.h"
 #include "eckit/memory/Factory.h"
-#include "eckit/memory/Owned.h"
 #include "eckit/testing/Test.h"
 #include "eckit/value/Properties.h"
 
@@ -23,16 +22,29 @@ namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Base0 {
+class Base {
+public:
+
+    Base()            = default;
+    Base(const Base&) = default;
+    Base(Base&&)      = default;
+
+    Base& operator=(const Base&) = default;
+    Base& operator=(Base&&)      = default;
+
+    virtual ~Base() = default;
+
+    virtual std::string foo() const = 0;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class Base0 : public Base {
 public:
 
     using builder_t = BuilderT0<Base0>;
 
     static std::string className() { return "eckit_test.Base0"; }
-
-    virtual ~Base0() = default;
-
-    virtual std::string foo() const = 0;
 };
 
 class A0 : public Base0 {
@@ -68,17 +80,13 @@ static const ConcreteBuilderT0<Base0, B0> builder_B0;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Base1 : public Owned {
+class Base1 : public Base {
 public:
 
     using builder_t = BuilderT1<Base1>;
     using ARG1      = const Properties&;
 
     static std::string className() { return "eckit_test.Base1"; }
-
-    virtual ~Base1() = default;
-
-    virtual std::string foo() const = 0;
 };
 
 class A1 : public Base1 {
@@ -114,7 +122,7 @@ static const ConcreteBuilderT1<Base1, B1> builder_B1;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class Base2 : public Owned {
+class Base2 : public Base {
 public:
 
     using builder_t = BuilderT2<Base2>;
@@ -122,10 +130,6 @@ public:
     using ARG2      = int;
 
     static std::string className() { return "eckit_test.Base2"; }
-
-    virtual ~Base2() = default;
-
-    virtual std::string foo() const = 0;
 };
 
 class A2 : public Base2 {

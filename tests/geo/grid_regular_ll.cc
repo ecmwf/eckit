@@ -64,7 +64,7 @@ CASE("global") {
         EXPECT(c.nlon() == 360);
         EXPECT(c.nlat() == 180);
         EXPECT(c.size() == 360 * 180);
-        EXPECT(c.spec_str() == R"({"area":[90,0.5,-90,360.5],"grid":[1,1],"reference":[0.5,0.5]})");
+        EXPECT(c.spec_str() == R"({"area":[90,0.5,-90,360.5],"grid":[1,1]})");
 
         RegularLL d({1., 1.}, {90., 0.5, -90, 360.5}, {0.5, 0.5});
 

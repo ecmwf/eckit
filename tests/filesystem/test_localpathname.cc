@@ -255,6 +255,23 @@ CASE("Extract basename") {
     LocalPathName p("/a/made/up/path/that/does/not/exist/file.ok");
     EXPECT(p.baseName(false) == "file");
     EXPECT(p.baseName(true) == "file.ok");
+
+    // ECKIT-415: multi-dot filenames should strip only the final extension
+    EXPECT(LocalPathName("/path/archive.tar.gz").baseName(false) == "archive.tar");
+    EXPECT(LocalPathName("/path/archive.tar.gz").baseName(true) == "archive.tar.gz");
+
+    EXPECT(LocalPathName("file..txt").baseName(false) == "file.");
+    EXPECT(LocalPathName("file..txt").baseName(true) == "file..txt");
+
+    // Hidden files (leading dot is not an extension separator)
+    EXPECT(LocalPathName("/path/.hidden").baseName(false) == ".hidden");
+    EXPECT(LocalPathName("/path/.hidden").baseName(true) == ".hidden");
+    EXPECT(LocalPathName("/path/.hidden.tar.gz").baseName(false) == ".hidden.tar");
+    EXPECT(LocalPathName("/path/.hidden.tar.gz").baseName(true) == ".hidden.tar.gz");
+
+    // Directory with dots in the path should not affect baseName
+    EXPECT(LocalPathName("/path/with.dot/to/file.ext").baseName(false) == "file");
+    EXPECT(LocalPathName("/path/with.dot/to/file.ext").baseName(true) == "file.ext");
 }
 
 CASE("Extract extension from Path") {

@@ -167,19 +167,9 @@ LocalPathName LocalPathName::baseName(bool ext) const {
 
     std::string s(path_.c_str() + n + 1);
     if (!ext) {
-        n = -1;
-        i = 0;
-        q = s.c_str();
-        while (*q) {
-            if (*q == '.') {
-                n = i;
-                break;
-            }
-            q++;
-            i++;
-        }
-        if (n >= 0) {
-            s.resize(n);
+        const auto lastDot = s.find_last_of('.');
+        if (lastDot != std::string::npos && lastDot != 0) {
+            s.resize(lastDot);
         }
     }
 

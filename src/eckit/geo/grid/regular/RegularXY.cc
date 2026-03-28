@@ -29,7 +29,7 @@ namespace {
 
 
 Range* make_x_range(const spec::Spec& spec) {
-    auto inc   = RegularXY::make_increments_from_spec(spec);
+    auto inc   = RegularXY::Increments::make_from_spec(spec);
     auto first = PointLonLat::make_from_spec(spec, "first");
     Shape shape(spec);
 
@@ -41,7 +41,7 @@ Range* make_x_range(const spec::Spec& spec) {
 
 
 Range* make_y_range(const spec::Spec& spec) {
-    auto inc   = RegularXY::make_increments_from_spec(spec);
+    auto inc   = RegularXY::Increments::make_from_spec(spec);
     auto first = PointLonLat::make_from_spec(spec, "first");
     Shape shape(spec);
 
@@ -60,7 +60,7 @@ bool RegularXY::Increments::operator==(const Increments& other) const {
 }
 
 
-RegularXY::Increments RegularXY::make_increments_from_spec(const Spec& spec) {
+RegularXY::Increments RegularXY::Increments::make_from_spec(const Spec& spec) {
     std::vector<RegularXY::Increments::value_type> grid(2);
 
     if (spec.get("dx", grid[0]) && spec.get("dy", grid[1])) {
@@ -75,7 +75,7 @@ RegularXY::Increments RegularXY::make_increments_from_spec(const Spec& spec) {
 }
 
 
-RegularXY::RegularXY(const Spec& spec) : RegularXY(make_increments_from_spec(spec), BoundingBoxXY(spec)) {}
+RegularXY::RegularXY(const Spec& spec) : RegularXY(Increments::make_from_spec(spec), BoundingBoxXY(spec)) {}
 
 
 RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox) :

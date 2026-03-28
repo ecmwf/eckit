@@ -15,9 +15,12 @@
 #ifndef eckit_testing_Test_h
 #define eckit_testing_Test_h
 
+#include <cerrno>
 #include <cstdlib>  // for setenv
+#include <cstring>  // for strerror
 
 #include <functional>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <string>
@@ -52,28 +55,52 @@ enum InitEckitMain {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// RAII guard that sets an environment variable and restores its original state on destruction.
+///
+/// On construction, saves the current value of the named environment variable (if any) and sets it
+/// to the given value. On destruction, restores the original value or unsets the variable if it was
+/// not previously defined.
+///
+/// @warning Per man 3 setenv: "Modifications of environment variables are not allowed in
+///          multi-threaded programs." Do not use `SetEnv` concurrently from multiple threads.
 class SetEnv {
 public:
 
-    SetEnv(const char* key, const char* val) : key_(key), value_(val) {
-        oldValue_ = ::getenv(key_);
-        ::setenv(key_, value_, true);
+    /// @param key  Name of the environment variable to set.
+    /// @param val  Value to assign to the environment variable.
+    /// @throws eckit::SyscallException if setenv() fails.
+    SetEnv(std::string key, std::string val) : key_(std::move(key)), value_(std::move(val)) {
+        if (const char* p = ::getenv(key_.c_str())) {
+            oldValue_ = std::string(p);
+        }
+        SYSCALL(::setenv(key_.c_str(), value_.c_str(), 1));
     }
 
+    // Destructor must not throw (implicitly noexcept), so we log errors
+    // instead of using SYSCALL which would call std::terminate.
     ~SetEnv() {
-        if (not oldValue_) {
-            ::unsetenv(key_);
+        if (!oldValue_) {
+            if (::unsetenv(key_.c_str()) != 0) {
+                eckit::Log::error() << "unsetenv failed for " << key_ << ": " << std::strerror(errno) << std::endl;
+            }
         }
         else {
-            ::setenv(key_, oldValue_, true);
+            if (::setenv(key_.c_str(), oldValue_->c_str(), 1) != 0) {
+                eckit::Log::error() << "setenv failed for " << key_ << ": " << std::strerror(errno) << std::endl;
+            }
         }
     }
+
+    SetEnv(const SetEnv&)            = delete;
+    SetEnv& operator=(const SetEnv&) = delete;
+    SetEnv(SetEnv&&)                 = delete;
+    SetEnv& operator=(SetEnv&&)      = delete;
 
 private:
 
-    const char* key_;
-    const char* value_;
-    const char* oldValue_;
+    std::string key_;
+    std::string value_;
+    std::optional<std::string> oldValue_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -335,25 +362,25 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
     // force colour output unless explicitly deactivated
     // this is useful for test harness ctest that redirects output and is not attached to a tty
     if (not::getenv("ECKIT_COLOUR_OUTPUT")) {
-        ::setenv("ECKIT_COLOUR_OUTPUT", "1", true);
+        SYSCALL(::setenv("ECKIT_COLOUR_OUTPUT", "1", 1));
     }
 
     // Suppress noisy exceptions in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
     if (not::getenv("ECKIT_EXCEPTION_IS_SILENT")) {
-        ::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", true);
+        SYSCALL(::setenv("ECKIT_EXCEPTION_IS_SILENT", "1", 1));
     }
 
     // Suppress noisy ASSERT in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
     if (not::getenv("ECKIT_ASSERT_FAILED_IS_SILENT")) {
-        ::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", true);
+        SYSCALL(::setenv("ECKIT_ASSERT_FAILED_IS_SILENT", "1", 1));
     }
 
     // Suppress noisy SeriousBug exception in eckit, since we may throw many, and intentionally!!
     // we still allow the user to turn them on or off explicitly
     if (not::getenv("ECKIT_SERIOUS_BUG_IS_SILENT")) {
-        ::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", true);
+        SYSCALL(::setenv("ECKIT_SERIOUS_BUG_IS_SILENT", "1", 1));
     }
 
     bool run_all = true;
@@ -391,7 +418,7 @@ inline int run(std::vector<Test>& tests, TestVerbosity v = AllFailures) {
 int run_tests_main(std::vector<Test>& tests, int argc, char* argv[], bool initEckitMain = true) {
 
     // deactivate loading of plugins not to influence some tests
-    ::setenv("AUTO_LOAD_PLUGINS", "false", true);
+    SYSCALL(::setenv("AUTO_LOAD_PLUGINS", "false", 1));
 
     if (initEckitMain) {
         eckit::Main::initialise(argc, argv);

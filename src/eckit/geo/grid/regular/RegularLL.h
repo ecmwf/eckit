@@ -34,6 +34,12 @@ public:
 
         value_type dlon() const { return operator[](0); }
         value_type dlat() const { return operator[](1); }
+
+        static Increments make_from_spec(const Spec&);
+    };
+
+    struct Reference {
+        static PointLonLat make_from_spec(const Spec&);
     };
 
     // -- Constructors
@@ -71,11 +77,6 @@ public:
 
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }
-
-
-    // -- Class methods
-
-    static Increments make_increments_from_spec(const Spec&);
 
 private:
 

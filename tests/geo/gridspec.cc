@@ -26,6 +26,18 @@
 namespace eckit::geo::test {
 
 
+CASE("canonical") {
+    for (const std::string& gridSpec : {
+             R"({"area":[73,-27,33,45],"grid":[4,4]})",
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(gridSpec));
+
+        EXPECT(grid);
+        EXPECT(grid->spec_str() == gridSpec);
+    }
+}
+
+
 CASE("user -> type") {
     using v = std::vector<double>;
 

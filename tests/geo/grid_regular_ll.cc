@@ -76,6 +76,7 @@ CASE("global") {
 
     SECTION("3") {
         for (const double d : {
+                 7.,
                  0.35,
                  0.7,
                  0.8,

@@ -35,6 +35,8 @@ public:
 
         const value_type& dx = array::operator[](0);
         const value_type& dy = array::operator[](1);
+
+        static Increments make_from_spec(const Spec&);
     };
 
     using BoundingBoxXY = area::BoundingBoxXY;
@@ -59,11 +61,6 @@ public:
 
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }
-
-
-    // -- Class methods
-
-    static Increments make_increments_from_spec(const Spec&);
 
 private:
 

@@ -363,8 +363,8 @@ void BoundingBox::fill_spec(spec::Custom& custom) const {
 std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
     auto [n, w, s, e] = bounding_box_default().deconstruct();
 
-    if (std::vector<double> area{n, w, s, e}; spec.get("area", area) || spec.get("bounding_box", area)) {
-        ASSERT_MSG(area.size() == 4, "BoundingBox: 'area'/'bounding_box' expected list of size 4");
+    if (std::vector<double> area{n, w, s, e}; spec.get("area", area)) {
+        ASSERT_MSG(area.size() == 4, "BoundingBox: 'area' expected list of size 4");
         return make_from_area(area[0], area[1], area[2], area[3]);
     }
 

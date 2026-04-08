@@ -644,6 +644,12 @@ public:
         _(curl_multi_perform(multi, &active));
 
         if (active == 0) {
+            for (int msgs_left = 0; const auto* msg = curl_multi_info_read(multi, &msgs_left);) {
+                ASSERT(msg != nullptr);
+                if (msg->msg == CURLMSG_DONE) {
+                    call("curl_multi_perform", msg->data.result);
+                }
+            }
             _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
         }
 

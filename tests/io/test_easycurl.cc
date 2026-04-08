@@ -201,6 +201,22 @@ CASE("EasyCURL PUT (REST API, Create+Update+Delete new entity)") {
     }
 }
 
+CASE("SSL failure on plain-HTTP server throws SeriousBug") {
+    // Requesting https:// to the plain-HTTP MockREST server triggers CURLE_SSL_WRONG_VERSION_NUMBER.
+
+    SECTION("stream=false") {
+        // direct: curl_easy_perform with SSL handshake failure throws SeriousBug
+        EasyCURL curl;
+        EXPECT_THROWS_AS(curl.GET("https://" + BASE_URL.substr(7), /*stream=*/false), SeriousBug);
+    }
+
+    SECTION("stream=true") {
+        // stream: curl_multi_info_read with SSL handshake failure throws SeriousBug (avoid ASSERT(code_))
+        EasyCURL curl;
+        EXPECT_THROWS_AS(curl.GET("https://" + BASE_URL.substr(7), /*stream=*/true), SeriousBug);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace test

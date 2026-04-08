@@ -16,6 +16,7 @@
 #include "eckit/io/EasyCURL.h"
 
 #include <unistd.h>
+#include <cstdlib>
 #include <memory>
 
 #include <curl/curl.h>
@@ -449,6 +450,60 @@ public:
         pthread_once(&once, init);
         curl_ = curl_easy_init();
         ASSERT(curl_);
+
+        // set an alternate CA bundle path:
+        // - if none of CA-related env variables are defined
+        // - if built-in default CA bundle path does not exist
+        static const auto cainfo = []() -> std::string {
+            const char* vars[] = {
+                "SSL_CERT_FILE",
+                "SSL_CERT_DIR",
+                "CURL_CA_BUNDLE",
+                "CURL_CA_PATH",
+            };
+
+            const char* bases[]{
+                "ca-bundle.crt",     "cert.pem",        "ca-certificates.crt", "curl-ca-bundle.crt",
+                "tls-ca-bundle.pem", "ca-root-nss.crt", "ca-bundle.pem",
+            };
+
+            const char* dirs[]{
+                "/etc/pki/tls/certs",
+                "/etc/ssl",
+                "/etc/ssl/certs",
+                "/etc/pki/ca-trust/extracted/pem",
+                "/usr/local/share/certs",
+                "/usr/local/etc/openssl@3",
+                "/opt/homebrew/etc/openssl@3",
+            };
+
+            for (const auto* var : vars) {
+                if (std::getenv(var) != nullptr) {
+                    return {};
+                }
+            }
+
+            if (const auto* info = curl_version_info(CURLVERSION_NOW)) {
+                if (info->cainfo != nullptr && PathName(info->cainfo).exists()) {
+                    return {};
+                }
+            }
+
+            for (const auto* dirname : dirs) {
+                for (const auto* basename : bases) {
+                    if (const auto path = PathName(dirname) / basename; path.exists()) {
+                        Log::info() << "EasyCURL: using CA certificates from '" << path << "'" << std::endl;
+                        return path.asString();
+                    }
+                }
+            }
+
+            return {};
+        }();
+
+        if (!cainfo.empty()) {
+            _(curl_easy_setopt(curl_, CURLOPT_CAINFO, cainfo.c_str()));
+        }
     }
 
     ~CURLHandle() {

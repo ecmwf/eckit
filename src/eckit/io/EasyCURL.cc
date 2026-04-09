@@ -483,7 +483,7 @@ public:
                 }
             }
 
-            if (const auto* info = curl_version_info(CURLVERSION_NOW)) {
+            if (const auto* info = curl_version_info(CURLVERSION_NOW); info != nullptr) {
                 if (info->cainfo != nullptr && PathName(info->cainfo).exists()) {
                     return {};
                 }

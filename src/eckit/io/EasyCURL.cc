@@ -483,11 +483,13 @@ public:
                 }
             }
 
+#if CURL_AT_LEAST_VERSION(7, 84, 0)
             if (const auto* info = curl_version_info(CURLVERSION_NOW); info != nullptr) {
                 if (info->cainfo != nullptr && PathName(info->cainfo).exists()) {
                     return {};
                 }
             }
+#endif
 
             for (const auto* dirname : dirs) {
                 for (const auto* basename : bases) {

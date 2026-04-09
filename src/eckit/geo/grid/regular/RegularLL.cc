@@ -58,7 +58,7 @@ PointLonLat RegularLL::Reference::make_from_spec(const Spec& spec) {
         if (spec.has("area") || spec.has("south") || spec.has("west")) {
             // Default reference point to the south-west corner of the grid if not explicitly provided
             BoundingBox bbox{spec};
-            return {bbox.south(), bbox.west()};
+            return {bbox.west(), bbox.south()};
         }
     }
 

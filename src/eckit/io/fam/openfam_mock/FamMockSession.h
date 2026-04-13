@@ -36,7 +36,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <mutex>
 #include <string>
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -49,12 +48,14 @@ class Fam_Region_Descriptor;
 namespace mock {
 
 //----------------------------------------------------------------------------------------------------------------------
-/// Capacity (@note: don't just change values)
+/// Capacity
+/// default: 64 MiB total shared memory
+/// use "export ECKIT_FAM_MOCK_SHM_SIZE=536870912" for 512 MiB, etc. Must be > sizeof(State) (currently ~2 MiB).
 
-constexpr std::size_t g_max_regions         = 64;
-constexpr std::size_t g_max_objs_per_region = 4096;
-constexpr std::size_t g_max_name_len        = 40;                 // OpenFAM real dataitem name limit
-constexpr std::size_t g_shm_total_size      = 256 * 1024 * 1024;  // 256 MiB
+constexpr std::size_t g_max_name_len        = 40;    // OpenFAM real dataitem name limit
+constexpr std::size_t g_max_regions         = 64;    // Max number of regions (arbitrary limit for testing)
+constexpr std::size_t g_max_objs_per_region = 4096;  // Max number of objects per region (arbitrary limit for testing)
+constexpr std::size_t g_default_shm_size    = 64 * 1024 * 1024;  // 64 MiB default
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -106,22 +107,18 @@ struct State {
     /// bytes used in data area (starts at 0)
     std::uint64_t dataUsed;
 
+    /// runtime data area capacity (set by creator, read by joiners)
+    std::uint64_t dataCapacity;
+
     Region regions[g_max_regions];
-
-    // The data area begins here (8-byte aligned)
-    // static constexpr std::size_t dataOffset() { return (sizeof(State) + 7U) & ~std::size_t{7U}; }
-
-    // capacity in MiB (must be set such that sizeof(State) + capacity <= g_shm_total_size)
-    // Leave at least 16 MiB for the data area.
-    static constexpr auto capacity = 16 * 1024 * 1024;
 };
 
 // Ensure State is 8-byte aligned so that the data area is properly aligned for any type.
 static_assert(sizeof(State) % 8 == 0, "State size must be a multiple of 8 for proper data alignment");
 
-// Build time check that State fits into the shared-memory segment.
-static_assert(sizeof(State) + State::capacity <= g_shm_total_size,
-              "State overflows g_shm_total_size! reduce g_max_objs_per_region or g_max_regions");
+// Build time check that State fits into the default shared-memory segment.
+static_assert(sizeof(State) < g_default_shm_size,
+              "State overflows g_default_shm_size! reduce g_max_objs_per_region or g_max_regions");
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -132,6 +129,7 @@ public:
 
     struct ShmHandle {
         std::string shmName_;
+        std::size_t shmSize_{g_default_shm_size};
         int fd_{-1};
         void* mapping_{nullptr};
 

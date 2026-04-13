@@ -40,6 +40,7 @@
 #include "fam/fam_exception.h"
 
 #include "eckit/config/LibEcKit.h"
+#include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 
@@ -58,9 +59,6 @@ constexpr std::uint32_t k_init_magic = 0xFA00CAFE;
 /// Byte offset of the data area from the start of the shared memory segment.
 constexpr std::size_t k_data_offset = (sizeof(State) + 7U) & ~std::size_t{7U};
 
-/// Total capacity of the data area in bytes.
-constexpr std::size_t k_data_capacity = g_shm_total_size - k_data_offset;
-
 using SessionMap = std::map<std::string, FamMockSession*>;
 
 // Process-local mock session cache
@@ -77,6 +75,14 @@ std::string generateShmName(std::string name) {
         name = name.substr(0, 64) + "_" + std::to_string(std::hash<std::string>{}(name));
     }
     return "/eckit_fam_mock_" + (name.empty() ? "default" : name);
+}
+
+/// Reads total shm size from $ECKIT_FAM_MOCK_SHM_SIZE (bytes), defaulting to g_default_shm_size.
+std::size_t resolvedShmSize() {
+    auto size = static_cast<std::size_t>(
+        eckit::Resource<long>("famMockShmSize;$ECKIT_FAM_MOCK_SHM_SIZE", static_cast<long>(g_default_shm_size)));
+    ASSERT_MSG(size > k_data_offset, "ECKIT_FAM_MOCK_SHM_SIZE too small to hold State metadata");
+    return size;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -100,13 +106,13 @@ bool openOrCreateShm(FamMockSession::ShmHandle& handle) {
         throw eckit::FailedSystemCall("shm_open(" + handle.shmName_ + ")", Here(), errno);
     }
 
-    if (creator && ::ftruncate(shmFd, static_cast<off_t>(g_shm_total_size)) != 0) {
+    if (creator && ::ftruncate(shmFd, static_cast<off_t>(handle.shmSize_)) != 0) {
         ::close(shmFd);
         handle.unlink();
         throw eckit::FailedSystemCall("ftruncate", Here(), errno);
     }
 
-    auto* mapping = ::mmap(nullptr, g_shm_total_size, PROT_READ | PROT_WRITE, MAP_SHARED, shmFd, 0);
+    auto* mapping = ::mmap(nullptr, handle.shmSize_, PROT_READ | PROT_WRITE, MAP_SHARED, shmFd, 0);
     if (mapping == MAP_FAILED) {
         ::close(shmFd);
         if (creator) {
@@ -126,7 +132,7 @@ bool openOrCreateShm(FamMockSession::ShmHandle& handle) {
 
 void FamMockSession::ShmHandle::close() {
     if (mapping_ && mapping_ != MAP_FAILED) {
-        ::munmap(mapping_, g_shm_total_size);
+        ::munmap(mapping_, shmSize_);
         mapping_ = nullptr;
     }
     if (fd_ >= 0) {
@@ -162,8 +168,11 @@ void FamMockSession::mapFields() {
     data_  = static_cast<std::uint8_t*>(handle_.mapping_) + k_data_offset;
 }
 
-FamMockSession::FamMockSession(const std::string& name) : handle_{generateShmName(name)} {
-    LOG_DEBUG_LIB(LibEcKit) << "Opening shared memory: " << handle_.shmName_ << '\n';
+FamMockSession::FamMockSession(const std::string& name) : handle_{generateShmName(name), resolvedShmSize()} {
+    LOG_DEBUG_LIB(LibEcKit) << "Opening shared memory: " << handle_.shmName_ << " ("
+                            << (handle_.shmSize_ / (1024 * 1024)) << " MiB)\n";
+
+    const auto dataCapacity = handle_.shmSize_ - k_data_offset;
 
     bool creator = openOrCreateShm(handle_);
     mapFields();
@@ -180,7 +189,7 @@ FamMockSession::FamMockSession(const std::string& name) : handle_{generateShmNam
 
     if (creator) {
         LOG_DEBUG_LIB(LibEcKit) << "Zero-initializing shared memory and mutex.\n";
-        std::memset(handle_.mapping_, 0, g_shm_total_size);
+        std::memset(handle_.mapping_, 0, handle_.shmSize_);
 
         // Initialize process-shared robust mutex.
         pthread_mutexattr_t attr;
@@ -194,7 +203,8 @@ FamMockSession::FamMockSession(const std::string& name) : handle_{generateShmNam
         }
         LOG_DEBUG_LIB(LibEcKit) << "pthread_mutex_init returned " << mrc << '\n';
 
-        state_->nextRegion = 1;
+        state_->nextRegion   = 1;
+        state_->dataCapacity = dataCapacity;
         // Release fence to ensure preceding writes (mutex, nextRegion) are visible.
         __atomic_store_n(&state_->initialized, k_init_magic, __ATOMIC_RELEASE);
         LOG_DEBUG_LIB(LibEcKit) << "Shared memory initialization complete.\n";
@@ -249,7 +259,7 @@ void FamMockSession::resetUnlocked() {
     for (auto& region : state_->regions) {
         region = Region{};
     }
-    std::memset(data_, 0, k_data_capacity);
+    std::memset(data_, 0, state_->dataCapacity);
 }
 
 void FamMockSession::reset() {
@@ -355,7 +365,7 @@ void FamMockSession::freeObject(Object& obj) {
 std::uint64_t FamMockSession::allocateData(std::uint64_t size) {
     const auto aligned = (size + 7U) & ~std::uint64_t{7U};
 
-    if (state_->dataUsed + aligned > k_data_capacity) {
+    if (state_->dataUsed + aligned > state_->dataCapacity) {
         throw Fam_Exception("Mock FAM data area exhausted", FAM_ERR_NO_SPACE);
     }
 

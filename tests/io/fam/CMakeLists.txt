@@ -7,6 +7,9 @@ if( HAVE_OPENFAM )
     )
 else()
     set( _fam_extra_libs "" )
+    list( APPEND _fam_environment
+        "ECKIT_FAM_MOCK_SHM_SIZE=268435456"
+    )
 endif()
 
 foreach( _test fam_handle fam_list fam_map fam_name fam_object fam_path fam_property fam_region fam_session_manager fam_uri_manager )

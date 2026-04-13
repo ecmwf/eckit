@@ -24,6 +24,7 @@
 #include <cassert>
 #include <cstdlib>  // std::abort
 #include <cstring>
+#include <mutex>
 #include <string>
 #include <string_view>
 
@@ -102,7 +103,7 @@ Fam_Region_Descriptor* fam::fam_create_region(const char* name, std::uint64_t si
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     if (sess.findRegionByName(name) != nullptr) {
         throw Fam_Exception(std::string("Region already exists: ") + name, FAM_ERR_ALREADYEXIST);
@@ -132,7 +133,7 @@ Fam_Region_Descriptor* fam::fam_lookup_region(const char* name) {
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     const auto* region = sess.findRegionByName(name);
     if (!region) {
@@ -148,7 +149,7 @@ void fam::fam_destroy_region(Fam_Region_Descriptor* region_desc) {
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     const auto regionId = region_desc->get_global_descriptor().regionId;
     auto* region        = sess.findRegionById(regionId);
@@ -168,7 +169,7 @@ void fam::fam_resize_region(Fam_Region_Descriptor* region_desc, std::uint64_t si
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     auto& region = sess.findRegion(region_desc);
     region.size  = size;
@@ -184,7 +185,7 @@ void fam::fam_stat(Fam_Region_Descriptor* region_desc, Fam_Stat* info) {
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     const auto& region = sess.findRegion(region_desc);
     info->size         = region.size;
@@ -208,7 +209,7 @@ Fam_Descriptor* fam::fam_allocate(const char* name, std::uint64_t size, mode_t p
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     auto& region = sess.findRegion(region_desc);
 
@@ -260,7 +261,7 @@ Fam_Descriptor* fam::fam_lookup(const char* object_name, const char* region_name
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     auto* region = sess.findRegionByName(region_name);
     if (!region) {
@@ -281,7 +282,7 @@ void fam::fam_deallocate(Fam_Descriptor* object) {
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     const auto regionId     = object->get_global_descriptor().regionId;
     const auto objectOffset = object->get_global_descriptor().offset;
@@ -321,7 +322,7 @@ void fam::fam_stat(Fam_Descriptor* object, Fam_Stat* info) {
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     const auto& obj = sess.findObject(object);
     info->size      = obj.size;
@@ -341,7 +342,7 @@ void fam::fam_put_blocking(void* buffer, Fam_Descriptor* obj, std::uint64_t offs
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     auto& sobj = sess.findObject(obj);
     if (offset > sobj.size || length > (sobj.size - offset)) {
@@ -356,7 +357,7 @@ void fam::fam_get_blocking(void* buffer, Fam_Descriptor* obj, std::uint64_t offs
     }
 
     auto& sess = session();
-    mock::LockGuard lock(sess);
+    std::lock_guard lock(sess);
 
     const auto& sobj = sess.findObject(obj);
     if (offset > sobj.size || length > (sobj.size - offset)) {
@@ -370,7 +371,7 @@ void fam::fam_get_blocking(void* buffer, Fam_Descriptor* obj, std::uint64_t offs
 #define OPENFAM_MOCK_DEFINE_FETCH(TYPE, suffix)                               \
     TYPE fam::fam_fetch_##suffix(Fam_Descriptor* obj, std::uint64_t offset) { \
         auto& sess = session();                                               \
-        mock::LockGuard lock(sess);                                           \
+        std::lock_guard lock(sess);                                           \
         auto& sobj = sess.findObject(obj);                                    \
         return typed_fetch<TYPE>(sess.objectData(sobj), sobj.size, offset);   \
     }
@@ -388,7 +389,7 @@ OPENFAM_MOCK_DEFINE_FETCH(double, double)
 #define OPENFAM_MOCK_DEFINE_SET(TYPE)                                          \
     void fam::fam_set(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) { \
         auto& sess = session();                                                \
-        mock::LockGuard lock(sess);                                            \
+        std::lock_guard lock(sess);                                            \
         auto& sobj = sess.findObject(obj);                                     \
         typed_store<TYPE>(sess.objectData(sobj), sobj.size, offset, value);    \
     }
@@ -406,7 +407,7 @@ OPENFAM_MOCK_DEFINE_SET(double)
 #define OPENFAM_MOCK_DEFINE_ADD(TYPE)                                                   \
     void fam::fam_add(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) {          \
         auto& sess = session();                                                         \
-        mock::LockGuard lock(sess);                                                     \
+        std::lock_guard lock(sess);                                                     \
         auto& sobj   = sess.findObject(obj);                                            \
         auto* data   = sess.objectData(sobj);                                           \
         auto current = typed_fetch<TYPE>(data, sobj.size, offset);                      \
@@ -425,7 +426,7 @@ OPENFAM_MOCK_DEFINE_ADD(double)
 #define OPENFAM_MOCK_DEFINE_SUB(TYPE)                                                   \
     void fam::fam_subtract(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) {     \
         auto& sess = session();                                                         \
-        mock::LockGuard lock(sess);                                                     \
+        std::lock_guard lock(sess);                                                     \
         auto& sobj   = sess.findObject(obj);                                            \
         auto* data   = sess.objectData(sobj);                                           \
         auto current = typed_fetch<TYPE>(data, sobj.size, offset);                      \
@@ -444,7 +445,7 @@ OPENFAM_MOCK_DEFINE_SUB(double)
 #define OPENFAM_MOCK_DEFINE_SWAP(TYPE)                                          \
     TYPE fam::fam_swap(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) { \
         auto& sess = session();                                                 \
-        mock::LockGuard lock(sess);                                             \
+        std::lock_guard lock(sess);                                             \
         auto& sobj = sess.findObject(obj);                                      \
         auto* data = sess.objectData(sobj);                                     \
         auto old   = typed_fetch<TYPE>(data, sobj.size, offset);                \
@@ -464,7 +465,7 @@ OPENFAM_MOCK_DEFINE_SWAP(double)
 #define OPENFAM_MOCK_DEFINE_CAS(TYPE)                                                                   \
     TYPE fam::fam_compare_swap(Fam_Descriptor* obj, std::uint64_t offset, TYPE old_val, TYPE new_val) { \
         auto& sess = session();                                                                         \
-        mock::LockGuard lock(sess);                                                                     \
+        std::lock_guard lock(sess);                                                                     \
         auto& sobj   = sess.findObject(obj);                                                            \
         auto* data   = sess.objectData(sobj);                                                           \
         auto current = typed_fetch<TYPE>(data, sobj.size, offset);                                      \

@@ -36,6 +36,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <mutex>
 #include <string>
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -125,7 +126,7 @@ static_assert(sizeof(State) + State::capacity <= g_shm_total_size,
 //----------------------------------------------------------------------------------------------------------------------
 
 /// Manages a shared-memory that stores all mock FAM States.
-/// Thread-safe and process-safe via the shared mutex `LockGuard`.
+/// Thread-safe and process-safe via shared mutex (satisfies Lockable for std::lock_guard).
 class FamMockSession {
 public:
 
@@ -219,25 +220,6 @@ private:
 
     State* state_{nullptr};
     std::uint8_t* data_{nullptr};
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-class LockGuard {
-public:
-
-    explicit LockGuard(FamMockSession& session) : session_(session) { session_.lock(); }
-    ~LockGuard() { session_.unlock(); }
-
-    // rules
-    LockGuard(const LockGuard&)            = delete;
-    LockGuard& operator=(const LockGuard&) = delete;
-    LockGuard(LockGuard&&)                 = delete;
-    LockGuard& operator=(LockGuard&&)      = delete;
-
-private:
-
-    FamMockSession& session_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

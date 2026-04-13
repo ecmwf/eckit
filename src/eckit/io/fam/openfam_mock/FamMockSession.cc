@@ -253,7 +253,7 @@ void FamMockSession::resetUnlocked() {
 }
 
 void FamMockSession::reset() {
-    LockGuard guard(*this);
+    std::lock_guard guard(*this);
     resetUnlocked();
 }
 

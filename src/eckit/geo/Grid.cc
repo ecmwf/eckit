@@ -241,20 +241,25 @@ Grid::BoundingBox* Grid::calculate_bbox() const {
 
 
 void Grid::fill_spec(spec::Custom& custom) const {
-    static const auto& area_default_str = BoundingBox::bounding_box_default().spec().str();
-    if (const auto& area_spec = area().spec(); area_spec.str() != area_default_str) {
-        custom.set("area", area_spec);
-    }
+    auto custom_set_if_different = [&custom](const std::string& name, const auto& obj, const std::string& default_str) {
+        spec::Custom spec;
+        obj.fill_spec(spec);
 
-    if (projection_) {
-        auto projection = std::make_unique<spec::Custom>();
-        ASSERT(projection);
-
-        projection_->fill_spec(*projection);
-        if (!projection->empty()) {
-            custom.set("projection", projection.release());
+        if (default_str != spec.str()) {
+            if (spec.only(name)) {
+                custom.set(spec);
+            }
+            else {
+                custom.set(name, spec);
+            }
         }
-    }
+    };
+
+    static const auto area_default = Area::area_default().spec().str();
+    static const auto proj_default = Projection::projection_default().spec().str();
+
+    custom_set_if_different("area", area(), area_default);
+    custom_set_if_different("projection", projection(), proj_default);
 }
 
 
@@ -265,7 +270,7 @@ const Grid* GridFactory::make_from_string(const std::string& str) {
 
 
 GridFactory& GridFactory::instance() {
-    share::Grid::instance();
+    share::Grid::instance();  // ensure load of supporting files
 
     static GridFactory INSTANCE;
     return INSTANCE;

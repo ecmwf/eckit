@@ -38,8 +38,7 @@ bool RegularLL::Increments::operator==(const Increments& other) const {
     return types::is_approximately_equal(dlon(), other.dlon()) && types::is_approximately_equal(dlat(), other.dlat());
 }
 
-
-RegularLL::Increments RegularLL::make_increments_from_spec(const Spec& spec) {
+RegularLL::Increments RegularLL::Increments::make_from_spec(const Spec& spec) {
     std::vector<RegularLL::Increments::value_type> grid(2);
 
     if (spec.get("dlon", grid[0]) && spec.get("dlat", grid[1])) {
@@ -54,8 +53,21 @@ RegularLL::Increments RegularLL::make_increments_from_spec(const Spec& spec) {
 }
 
 
+PointLonLat RegularLL::Reference::make_from_spec(const Spec& spec) {
+    if (!spec.has("reference_lonlat") || !spec.has("reference_lon") || !spec.has("reference_lat")) {
+        if (spec.has("area") || spec.has("south") || spec.has("west")) {
+            // Default reference point to the south-west corner of the grid if not explicitly provided
+            BoundingBox bbox{spec};
+            return {bbox.south(), bbox.west()};
+        }
+    }
+
+    return PointLonLat::make_from_spec(spec, "reference", {});
+}
+
+
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(make_increments_from_spec(spec), BoundingBox{spec}, PointLonLat::make_from_spec(spec, "reference", {})) {}
+    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, Reference::make_from_spec(spec)) {}
 
 
 RegularLL::RegularLL(const Increments& inc) : RegularLL(inc, BoundingBox{}, {0, 0}) {}
@@ -90,7 +102,8 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
         custom.set("order", o);
     }
 
-    if (auto ref{reference()}; !points_equal(ref, PointLonLat{})) {
+    if (const auto first = first_point(); !points_equal(first, PointLonLat{x_.a(), y_.a()})) {
+        const auto ref{reference()};
         custom.set("reference", std::vector<double>{ref.lon(), ref.lat()});
     }
 

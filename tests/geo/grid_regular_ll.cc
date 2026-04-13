@@ -57,14 +57,14 @@ CASE("global") {
         RegularLL b(spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
 
         EXPECT(b.size() == 5 * 10);
-        EXPECT(b.spec_str() == R"({"area":[10,2,1,10],"grid":[2,1]})");
+        EXPECT(b.spec_str() == R"({"area":[10,1,1,9],"grid":[2,1]})");
 
         RegularLL c({1., 1.}, {89.5, 0.5, -89.5, 359.5}, {0.5, 0.5});
 
         EXPECT(c.nlon() == 360);
         EXPECT(c.nlat() == 180);
         EXPECT(c.size() == 360 * 180);
-        EXPECT(c.spec_str() == R"({"area":[90,0.5,-90,360.5],"grid":[1,1],"reference":[0.5,0.5]})");
+        EXPECT(c.spec_str() == R"({"area":[90,0.5,-90,360.5],"grid":[1,1]})");
 
         RegularLL d({1., 1.}, {90., 0.5, -90, 360.5}, {0.5, 0.5});
 
@@ -76,6 +76,7 @@ CASE("global") {
 
     SECTION("3") {
         for (const double d : {
+                 7.,
                  0.35,
                  0.7,
                  0.8,

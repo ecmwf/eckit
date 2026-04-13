@@ -90,6 +90,7 @@ private:
     // -- Overridden methods
 
     void print(std::ostream&) const override;
+    bool only(const std::string& name) const override;
     void json(JSON&) const override;
     const Spec& spec(const std::string& name) const override;
 };

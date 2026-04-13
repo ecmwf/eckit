@@ -89,8 +89,11 @@ struct Region {
     Object objects[g_max_objs_per_region];
 };
 
+/// Lives in POSIX shared memory and is accessed by multiple processes.
 /// @note POD no virtual, no std::string
 struct State {
+    /// We use pthread_mutex_t (with PTHREAD_PROCESS_SHARED) instead of std::mutex,
+    /// since it is not guaranteed to be copyable, and does not support inter-process locking.
     pthread_mutex_t mutex;
 
     /// marker for initialization completion (set to `k_init_magic`)
@@ -105,11 +108,18 @@ struct State {
     Region regions[g_max_regions];
 
     // The data area begins here (8-byte aligned)
+    // static constexpr std::size_t dataOffset() { return (sizeof(State) + 7U) & ~std::size_t{7U}; }
+
+    // capacity in MiB (must be set such that sizeof(State) + capacity <= g_shm_total_size)
+    // Leave at least 16 MiB for the data area.
+    static constexpr auto capacity = 16 * 1024 * 1024;
 };
 
+// Ensure State is 8-byte aligned so that the data area is properly aligned for any type.
+static_assert(sizeof(State) % 8 == 0, "State size must be a multiple of 8 for proper data alignment");
+
 // Build time check that State fits into the shared-memory segment.
-// Leave at least 16 MiB for the data area.
-static_assert(sizeof(State) + 16 * 1024 * 1024 <= g_shm_total_size,
+static_assert(sizeof(State) + State::capacity <= g_shm_total_size,
               "State overflows g_shm_total_size! reduce g_max_objs_per_region or g_max_regions");
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -118,6 +128,20 @@ static_assert(sizeof(State) + 16 * 1024 * 1024 <= g_shm_total_size,
 /// Thread-safe and process-safe via the shared mutex `LockGuard`.
 class FamMockSession {
 public:
+
+    struct ShmHandle {
+        std::string shmName_;
+        int fd_{-1};
+        void* mapping_{nullptr};
+
+        const char* name() const { return shmName_.c_str(); }
+
+        /// Unmaps the shared memory and closes the file descriptor.
+        void close();
+
+        /// Removes the shared-memory segment from the filesystem.
+        void unlink();
+    };
 
     /// Obtain (or create) the shared-memory session
     static FamMockSession& instance(const std::string& name = "");
@@ -134,9 +158,6 @@ public:
 
     /// Wipes all mock states and resets the session to the initial state.
     void reset();
-
-    /// Same as reset() but must be called while the mutex is held (e.g., during initialization).
-    void resetUnlocked();
 
     //------------------------------------------------------------------------------------------------------------------
 
@@ -188,12 +209,14 @@ private:
 
     explicit FamMockSession(const std::string& name);
 
-    /// @param name Identifier for the shared-memory segment
-    void mapFields(void* base);
+    /// Derives state_ and data_ pointers from handle_.mapping_.
+    void mapFields();
 
-    std::string shmName_;
-    int fd_{-1};
-    void* mapping_{nullptr};
+    /// Same as reset() but must be called while the mutex is held (e.g., during initialization).
+    void resetUnlocked();
+
+    ShmHandle handle_;
+
     State* state_{nullptr};
     std::uint8_t* data_{nullptr};
 };

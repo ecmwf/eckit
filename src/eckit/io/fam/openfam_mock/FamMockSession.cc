@@ -82,32 +82,27 @@ std::string generateShmName(std::string name) {
 //----------------------------------------------------------------------------------------------------------------------
 // SHM lifecycle helper
 
-struct ShmMapping {
-    int fd{-1};
-    void* mapping{nullptr};
-    bool creator{false};
-};
-
 /// Opens (or creates) the POSIX shm segment, truncates if creator, and maps it.
-ShmMapping openOrCreateShm(const std::string& name) {
+/// Populates @p handle with the fd and mapping. Returns true if this call created the segment.
+bool openOrCreateShm(FamMockSession::ShmHandle& handle) {
     bool creator = false;
-    auto shmFd   = ::shm_open(name.c_str(), O_CREAT | O_EXCL | O_RDWR, 0666);
+    auto shmFd   = ::shm_open(handle.name(), O_CREAT | O_EXCL | O_RDWR, 0666);
     if (shmFd >= 0) {
         creator = true;
         LOG_DEBUG_LIB(LibEcKit) << "Created new shared memory segment.\n";
     }
     else if (errno == EEXIST) {
-        shmFd = ::shm_open(name.c_str(), O_RDWR, 0666);
+        shmFd = ::shm_open(handle.name(), O_RDWR, 0666);
         LOG_DEBUG_LIB(LibEcKit) << "Opened existing shared memory segment.\n";
     }
 
     if (shmFd < 0) {
-        throw eckit::FailedSystemCall("shm_open(" + name + ")", Here(), errno);
+        throw eckit::FailedSystemCall("shm_open(" + handle.shmName_ + ")", Here(), errno);
     }
 
     if (creator && ::ftruncate(shmFd, static_cast<off_t>(g_shm_total_size)) != 0) {
         ::close(shmFd);
-        ::shm_unlink(name.c_str());
+        handle.unlink();
         throw eckit::FailedSystemCall("ftruncate", Here(), errno);
     }
 
@@ -115,15 +110,34 @@ ShmMapping openOrCreateShm(const std::string& name) {
     if (mapping == MAP_FAILED) {
         ::close(shmFd);
         if (creator) {
-            ::shm_unlink(name.c_str());
+            handle.unlink();
         }
         throw eckit::FailedSystemCall("mmap", Here(), errno);
     }
 
-    return {shmFd, mapping, creator};
+    handle.fd_      = shmFd;
+    handle.mapping_ = mapping;
+    return creator;
 }
 
 }  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void FamMockSession::ShmHandle::close() {
+    if (mapping_ && mapping_ != MAP_FAILED) {
+        ::munmap(mapping_, g_shm_total_size);
+        mapping_ = nullptr;
+    }
+    if (fd_ >= 0) {
+        ::close(fd_);
+        fd_ = -1;
+    }
+}
+
+void FamMockSession::ShmHandle::unlink() {
+    ::shm_unlink(name());
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -143,36 +157,30 @@ FamMockSession& FamMockSession::instance(const std::string& name) {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-void FamMockSession::mapFields(void* base) {
-    mapping_ = base;
-    state_   = static_cast<State*>(base);
-    data_    = static_cast<std::uint8_t*>(base) + k_data_offset;
+void FamMockSession::mapFields() {
+    state_ = static_cast<State*>(handle_.mapping_);
+    data_  = static_cast<std::uint8_t*>(handle_.mapping_) + k_data_offset;
 }
 
-FamMockSession::FamMockSession(const std::string& name) : shmName_{generateShmName(name)} {
-    LOG_DEBUG_LIB(LibEcKit) << "Opening shared memory: " << shmName_ << '\n';
+FamMockSession::FamMockSession(const std::string& name) : handle_{generateShmName(name)} {
+    LOG_DEBUG_LIB(LibEcKit) << "Opening shared memory: " << handle_.shmName_ << '\n';
 
-    auto shm = openOrCreateShm(shmName_);
-
-    fd_ = shm.fd;
-    mapFields(shm.mapping);
+    bool creator = openOrCreateShm(handle_);
+    mapFields();
 
     // Stale/uninitialized segment (e.g., after crash or forced kill) — tear down and recreate.
-    if (!shm.creator && state_->initialized != k_init_magic) {
+    if (!creator && state_->initialized != k_init_magic) {
         LOG_DEBUG_LIB(LibEcKit) << "Detected stale/uninitialized segment. recreating...\n";
-        ::munmap(mapping_, g_shm_total_size);
-        ::close(fd_);
-        ::shm_unlink(shmName_.c_str());
+        handle_.close();
+        handle_.unlink();
 
-        shm = openOrCreateShm(shmName_);
-        fd_ = shm.fd;
-        mapFields(shm.mapping);
-        shm.creator = true;
+        creator = openOrCreateShm(handle_);
+        mapFields();
     }
 
-    if (shm.creator) {
+    if (creator) {
         LOG_DEBUG_LIB(LibEcKit) << "Zero-initializing shared memory and mutex.\n";
-        std::memset(mapping_, 0, g_shm_total_size);
+        std::memset(handle_.mapping_, 0, g_shm_total_size);
 
         // Initialize process-shared robust mutex.
         pthread_mutexattr_t attr;
@@ -181,6 +189,9 @@ FamMockSession::FamMockSession(const std::string& name) : shmName_{generateShmNa
         ::pthread_mutexattr_setrobust(&attr, PTHREAD_MUTEX_ROBUST);
         const int mrc = ::pthread_mutex_init(&state_->mutex, &attr);
         ::pthread_mutexattr_destroy(&attr);
+        if (mrc != 0) {
+            throw eckit::FailedSystemCall("pthread_mutex_init", Here(), mrc);
+        }
         LOG_DEBUG_LIB(LibEcKit) << "pthread_mutex_init returned " << mrc << '\n';
 
         state_->nextRegion = 1;
@@ -200,12 +211,7 @@ FamMockSession::FamMockSession(const std::string& name) : shmName_{generateShmNa
 }
 
 FamMockSession::~FamMockSession() {
-    if (mapping_ && mapping_ != MAP_FAILED) {
-        ::munmap(mapping_, g_shm_total_size);
-    }
-    if (fd_ >= 0) {
-        ::close(fd_);
-    }
+    handle_.close();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

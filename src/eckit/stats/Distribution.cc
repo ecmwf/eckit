@@ -13,7 +13,7 @@
 #include "eckit/stats/Distribution.h"
 
 #include <map>
-#include <sstream>
+#include <ostream>
 
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/exception/Exceptions.h"
@@ -44,9 +44,7 @@ DistributionFactory::DistributionFactory(const std::string& name) : name_(name) 
     util::lock_guard<util::recursive_mutex> lock(*local_mutex);
 
     if (m->find(name) != m->end()) {
-        std::ostringstream oss;
-        oss << "DistributionFactory: duplicate '" << name << "'";
-        throw SeriousBug(oss.str());
+        throw SeriousBug("DistributionFactory: duplicate '" + name + "'");
     }
 
     (*m)[name] = this;
@@ -78,7 +76,8 @@ Distribution* DistributionFactory::build(const std::string& name) {
     }
 
     list(Log::error() << "DistributionFactory: unknown '" << key << "', choices are: ");
-    Log::warning() << std::endl;
+    Log::error() << std::endl;
+    throw SeriousBug("DistributionFactory: unknown '" + key + "'");
 }
 
 

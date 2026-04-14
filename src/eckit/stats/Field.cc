@@ -13,6 +13,7 @@
 #include "eckit/stats/Field.h"
 
 #include <algorithm>
+#include <cmath>
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"
@@ -42,7 +43,8 @@ struct StoreReference : public Field::Storage {
 
 
 struct StoreInstance : public Field::Storage {
-    StoreInstance(values_type&& values, value_type missingValue) : values_(values), missingValue_(missingValue) {}
+    StoreInstance(values_type&& values, value_type missingValue) :
+        values_(std::move(values)), missingValue_(missingValue) {}
 
     const values_type& values() const override { return values_; }
     value_type missingValue() const override { return missingValue_; }
@@ -59,7 +61,12 @@ struct StoreInstance : public Field::Storage {
 
 bool Field::Storage::hasMissing() const {
     const auto miss = missingValue();
-    return std::any_of(values().cbegin(), values().cend(), [miss](auto v) { return v != miss; });
+
+    if (std::isnan(miss)) {
+        return std::any_of(values().cbegin(), values().cend(), [](auto v) { return std::isnan(v); });
+    }
+
+    return std::any_of(values().cbegin(), values().cend(), [miss](auto v) { return v == miss; });
 }
 
 

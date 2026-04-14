@@ -39,7 +39,7 @@ struct CountAboveUpperLimit final : CounterStats {
 struct CountBelowLowerLimit final : CounterStats {
     using CounterStats::CounterStats;
     double value() const override { return double(countBelowLowerLimit()); }
-    void json(eckit::JSON& j) const override { json_tv(j, "count-below-upper-limit", value()); }
+    void json(eckit::JSON& j) const override { json_tv(j, "count-below-lower-limit", value()); }
     void print(std::ostream& out) const override { out << "CountBelowLowerLimit[" << value() << "]"; }
 };
 

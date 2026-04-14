@@ -45,7 +45,7 @@ list( APPEND eckit_stats_srcs
     statistics/Spectral.h
     statistics/StatisticsT.cc
     statistics/StatisticsT.h
-    util/mutex.h
+    util/Mutex.h
 )
 
 ecbuild_add_library(
@@ -55,4 +55,3 @@ ecbuild_add_library(
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/stats
     SOURCES            ${eckit_stats_srcs}
     PUBLIC_LIBS        eckit )
-

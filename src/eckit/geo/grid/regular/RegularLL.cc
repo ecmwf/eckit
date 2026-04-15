@@ -33,6 +33,15 @@ namespace eckit::geo::grid::regular {
 static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 #undef POSITIVE_REAL
 
+static const PointLonLat REFERENCE;
+
+
+RegularLL::Increments::Increments(value_type dlon, value_type dlat) : array{dlon, dlat} {
+    if (dlon < 0 || dlat < 0) {
+        throw exception::SpecError("'grid' = ['dlon', 'dlat'] must be positive", Here());
+    }
+}
+
 
 bool RegularLL::Increments::operator==(const Increments& other) const {
     return types::is_approximately_equal(dlon(), other.dlon()) && types::is_approximately_equal(dlat(), other.dlat());
@@ -54,15 +63,16 @@ RegularLL::Increments RegularLL::Increments::make_from_spec(const Spec& spec) {
 
 
 PointLonLat RegularLL::Reference::make_from_spec(const Spec& spec) {
-    if (!spec.has("reference_lonlat") || !spec.has("reference_lon") || !spec.has("reference_lat")) {
-        if (spec.has("area") || spec.has("south") || spec.has("west")) {
-            // Default reference point to the south-west corner of the grid if not explicitly provided
-            BoundingBox bbox{spec};
-            return {bbox.west(), bbox.south()};
-        }
+    if (spec.has("reference")) {
+        return PointLonLat::make_from_spec(spec, "reference", REFERENCE);
     }
 
-    return PointLonLat::make_from_spec(spec, "reference", {});
+    if (spec.has("area") || spec.has("south") || spec.has("west")) {
+        BoundingBox bbox{spec};
+        return {bbox.west(), bbox.south()};
+    }
+
+    return REFERENCE;
 }
 
 
@@ -79,8 +89,6 @@ RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref) :
 
     order(std::string{x().increment() < 0 ? "i-" : "i+"} +  //
           std::string{y().increment() < 0 ? "j-" : "j+"});
-
-    // TODO reference to modify bounding box
 }
 
 
@@ -102,14 +110,14 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
         custom.set("order", o);
     }
 
-    if (const auto first = first_point(); !points_equal(first, PointLonLat{x_.a(), y_.a()})) {
-        const auto ref{reference()};
-        custom.set("reference", std::vector<double>{ref.lon(), ref.lat()});
-    }
-
-    if (auto bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {
+    if (const auto& bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {
         auto [n, w, s, e] = bbox.deconstruct();
         custom.set("area", std::vector<double>{n, w, s, e});
+    }
+    else {
+        if (const auto ref{reference()}; !points_equal(ref, REFERENCE)) {
+            custom.set("reference", std::vector<double>{ref.lon(), ref.lat()});
+        }
     }
 }
 
@@ -164,7 +172,14 @@ Grid::BoundingBox* RegularLL::calculate_bbox() const {
     auto n = y_.includesNorthPole() ? PointLonLat::RIGHT_ANGLE : y_.max();
     auto s = y_.includesSouthPole() ? -PointLonLat::RIGHT_ANGLE : y_.min();
     auto w = x_.a();
-    auto e = x_.periodic() ? w + PointLonLat::FULL_ANGLE : x_.b();
+    auto e = x_.b();
+
+    if (x_.periodic()) {
+        if (const auto ref = reference(); types::is_approximately_equal(ref.lon(), w, PointLonLat::EPS)) {
+            w = 0;
+        }
+        e = w + PointLonLat::FULL_ANGLE;
+    }
 
     return new BoundingBox{n, w, s, e};
 }

@@ -55,6 +55,13 @@ Range* make_y_range(const spec::Spec& spec) {
 }  // namespace
 
 
+RegularXY::Increments::Increments(value_type dx, value_type dy) : array{dx, dy} {
+    if (dx < 0 || dy < 0) {
+        throw exception::SpecError("'grid' = ['dx', 'dy'] must be positive", Here());
+    }
+}
+
+
 bool RegularXY::Increments::operator==(const Increments& other) const {
     return types::is_approximately_equal(dx, other.dx) && types::is_approximately_equal(dy, other.dy);
 }

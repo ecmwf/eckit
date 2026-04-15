@@ -26,7 +26,7 @@ public:
     // -- Types
 
     struct Increments : public std::array<double, 2> {
-        Increments(value_type dx, value_type dy) : array{dx, dy} {}
+        Increments(value_type dx, value_type dy);
 
         using array::array;
 

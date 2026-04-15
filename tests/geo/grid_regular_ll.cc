@@ -64,7 +64,7 @@ CASE("global") {
         EXPECT(c.nlon() == 360);
         EXPECT(c.nlat() == 180);
         EXPECT(c.size() == 360 * 180);
-        EXPECT(c.spec_str() == R"({"area":[90,0.5,-90,360.5],"grid":[1,1]})");
+        EXPECT(c.spec_str() == R"({"area":[90,0.5,-90,360.5],"grid":[1,1],"reference_lonlat":[0.5,0.5]})");
 
         RegularLL d({1., 1.}, {90., 0.5, -90, 360.5}, {0.5, 0.5});
 
@@ -162,6 +162,75 @@ CASE("non-global") {
             EXPECT(points_equal(ref[i++], it));
         }
         EXPECT(i == grid.size());
+    }
+}
+
+
+CASE("ECC-2258: explicit reference with area must not be overridden") {
+    // When both an explicit reference point and an area are provided via spec,
+    // the reference point must be used (not the south-west corner of the area).
+    // A fractional reference shifts the grid to half-integer positions; the bug
+    // (|| instead of &&) silently replaces the reference with the SW corner of
+    // the bounding box, producing integer-aligned grid points instead.
+    spec::Custom spec{{
+        {"grid", std::vector<double>{1, 1}},
+        {"area", std::vector<double>{10, -5, -10, 5}},
+        {"reference_lon", 0.5},
+        {"reference_lat", 0.5},
+    }};
+
+    RegularLL grid(spec);
+
+    auto points = grid.to_points();
+    EXPECT(grid.size() > 0);
+
+    // With reference_lon=0.5 the x-range shifts to half-integers (-4.5, -3.5, …, 4.5).
+    // With reference_lat=0.5 the y-range shifts to half-integers (9.5, 8.5, …, -9.5).
+    // The first point (NW corner in i+/j- scan) should be at (-4.5, 9.5).
+    EXPECT(points_equal(grid.first_point(), PointLonLat{-4.5, 9.5}));
+
+    // If the bug is present, the reference defaults to the SW corner (-5, -10),
+    // which has zero fractional shift, producing integer-aligned first point (-5, 10).
+    EXPECT(!points_equal(grid.first_point(), PointLonLat{-5., 10.}));
+}
+
+
+CASE("ECC-2258: global shifted grid round-trip through spec") {
+    // A global shifted grid (like Met Office N96) has grid points offset from the
+    // standard positions (e.g., latitudes at 45,-45 instead of 90,0,-90).
+    //
+    // The round-trip construct → spec_str() → reconstruct must preserve the shift.
+    // calculate_bbox() expands the bbox to include the poles, so fill_spec() must
+    // explicitly write the reference to preserve the shift information.
+
+    SECTION("simple shifted global") {
+        // 4×2 grid: lon at 45,135,225,315; lat at 45,-45
+        RegularLL original({90, 90}, area::BoundingBox{}, {45, 45});
+
+        EXPECT(original.size() == 4 * 2);
+        EXPECT(points_equal(original.first_point(), PointLonLat{45., 45.}));
+
+        // Round-trip: serialise spec → reconstruct from it
+        const Grid& grid_ref = original;
+        std::unique_ptr<const Grid> reconstructed(GridFactory::build(grid_ref.spec()));
+
+        EXPECT(reconstructed->size() == original.size());
+        EXPECT(points_equal(reconstructed->first_point(), original.first_point()));
+    }
+
+    SECTION("N96-like shifted global") {
+        // 192×144 grid shifted by half an increment
+        RegularLL original({1.875, 1.25}, area::BoundingBox{}, {0.9375, 89.375});
+
+        EXPECT(original.size() == 192 * 144);
+        EXPECT(points_equal(original.first_point(), PointLonLat{0.9375, 89.375}));
+
+        // Round-trip: serialise spec → reconstruct from it
+        const Grid& grid_ref = original;
+        std::unique_ptr<const Grid> reconstructed(GridFactory::build(grid_ref.spec()));
+
+        EXPECT(reconstructed->size() == original.size());
+        EXPECT(points_equal(reconstructed->first_point(), original.first_point()));
     }
 }
 

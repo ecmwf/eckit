@@ -54,7 +54,7 @@ RegularLL::Increments RegularLL::Increments::make_from_spec(const Spec& spec) {
 
 
 PointLonLat RegularLL::Reference::make_from_spec(const Spec& spec) {
-    if (!spec.has("reference_lonlat") || !spec.has("reference_lon") || !spec.has("reference_lat")) {
+    if (!spec.has("reference_lonlat") && !spec.has("reference_lon") && !spec.has("reference_lat")) {
         if (spec.has("area") || spec.has("south") || spec.has("west")) {
             // Default reference point to the south-west corner of the grid if not explicitly provided
             BoundingBox bbox{spec};
@@ -102,14 +102,20 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
         custom.set("order", o);
     }
 
-    if (const auto first = first_point(); !points_equal(first, PointLonLat{x_.a(), y_.a()})) {
-        const auto ref{reference()};
-        custom.set("reference", std::vector<double>{ref.lon(), ref.lat()});
-    }
-
-    if (auto bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {
+    auto bbox = boundingBox();
+    if (bbox != BoundingBox::bounding_box_default()) {
         auto [n, w, s, e] = bbox.deconstruct();
         custom.set("area", std::vector<double>{n, w, s, e});
+    }
+
+    // Write reference when calculate_bbox() expanded the south boundary to a pole,
+    // which would change the implicit reference on reconstruction and lose the
+    // latitude shift for global shifted grids (e.g., Met Office N96).
+    if (const auto ref = reference();
+        !types::is_approximately_equal(ref.lon(), 0.) || !types::is_approximately_equal(ref.lat(), 0.)) {
+        if (!types::is_approximately_equal<double>(bbox.south(), y_.min())) {
+            custom.set("reference_lonlat", std::vector<double>{ref.lon(), ref.lat()});
+        }
     }
 }
 

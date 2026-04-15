@@ -56,8 +56,14 @@ namespace {
 /// Magic value written to `State::initialized` once the creator finishes setup.
 constexpr std::uint32_t k_init_magic = 0xFA00CAFE;
 
+/// Round @p n up to the next multiple of 8.
+template <typename T>
+constexpr T alignTo8(T n) {
+    return (n + T{7}) & ~T{7};
+}
+
 /// Byte offset of the data area from the start of the shared memory segment.
-constexpr std::size_t k_data_offset = (sizeof(State) + 7U) & ~std::size_t{7U};
+constexpr std::size_t k_data_offset = alignTo8(sizeof(State));
 
 using SessionMap = std::map<std::string, FamMockSession*>;
 
@@ -363,7 +369,7 @@ void FamMockSession::freeObject(Object& obj) {
 /// @note freed space is never reclaimed
 /// Resets clear the whole data area at once.
 std::uint64_t FamMockSession::allocateData(std::uint64_t size) {
-    const auto aligned = (size + 7U) & ~std::uint64_t{7U};
+    const auto aligned = alignTo8(size);
 
     if (state_->dataUsed + aligned > state_->dataCapacity) {
         throw Fam_Exception("Mock FAM data area exhausted", FAM_ERR_NO_SPACE);

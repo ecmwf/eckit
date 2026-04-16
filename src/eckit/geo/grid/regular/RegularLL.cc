@@ -16,11 +16,13 @@
 #include <memory>
 #include <vector>
 
+#include "eckit/geo/Arrangement.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
@@ -185,10 +187,48 @@ Grid::BoundingBox* RegularLL::calculate_bbox() const {
 }
 
 
+struct ArakawaC final : public RegularLL {
+    [[nodiscard]] static Arrangement arrangement_from_string(const std::string& str) {
+        return str == "T"   ? Arrangement::ARAKAWA_C_T
+               : str == "U" ? Arrangement::ARAKAWA_C_U
+               : str == "V" ? Arrangement::ARAKAWA_C_V
+                            : throw exception::GridError("ArakawaC: unsupported arrangement '" + str + "'", Here());
+    }
+
+    static Spec* extend_spec(const Spec& spec) {
+        auto extended = std::make_unique<spec::Layered>(spec);
+        ASSERT(extended);
+
+        auto back = std::make_unique<spec::Custom>();
+        ASSERT(back);
+
+        auto a = arrangement_from_string(spec.get_string("arrangement", "T"));
+        auto N = spec.get_unsigned("n");
+        if (N == 0) {
+            throw exception::SpecError("ArakawaC: 'n' must be a positive integer", Here());
+        }
+
+        auto dlon = 180. / static_cast<double>(N);
+        auto dlat = 120. / static_cast<double>(N);
+
+        back->set("grid", std::vector<double>{dlon, dlat});
+        back->set("reference", std::vector<double>{a == Arrangement::ARAKAWA_C_U ? 0. : 0.5 * dlon,
+                                                   a == Arrangement::ARAKAWA_C_V ? 0. : 0.5 * dlat});
+
+        extended->push_back(back.release());
+        return extended.release();
+    }
+
+    explicit ArakawaC(const Spec& spec) : RegularLL(*std::unique_ptr<Spec>(extend_spec(spec))) {}
+};
+
+
 static const auto GRIDNAME = GridRegisterName<RegularLL>(REGULAR_LL_PATTERN);
 
 static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
 static const GridRegisterType<RegularLL> GRIDTYPE2("rotated_ll");
+
+static const GridRegisterType<ArakawaC> GRIDTYPE3("regular_ll_arakawa_c");
 
 
 }  // namespace eckit::geo::grid::regular

@@ -19,7 +19,7 @@
 namespace eckit::geo::grid::regular {
 
 
-class RegularLL final : public Regular {
+class RegularLL : public Regular {
 public:
 
     // -- Types

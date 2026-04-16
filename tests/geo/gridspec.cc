@@ -163,6 +163,25 @@ CASE("grid: HEALPix") {
 }
 
 
+CASE("grid: regular_ll") {
+    SECTION("arakawa c-grids") {
+        spec::Custom spec({{"type", "regular_ll_arakawa_c"}, {"N", 96}});
+
+        spec.set("arrangement", "T");
+        auto N96_T = std::unique_ptr<const Grid>(GridFactory::build(spec))->spec_str();
+        EXPECT(N96_T == R"({"grid":[1.875,1.25],"reference":[0.9375,0.625]})");
+
+        spec.set("arrangement", "U");
+        auto N96_U = std::unique_ptr<const Grid>(GridFactory::build(spec))->spec_str();
+        EXPECT(N96_U == R"({"grid":[1.875,1.25],"reference":[0,0.625]})");
+
+        spec.set("arrangement", "V");
+        auto N96_V = std::unique_ptr<const Grid>(GridFactory::build(spec))->spec_str();
+        EXPECT(N96_V == R"({"grid":[1.875,1.25],"reference":[0.9375,0]})");
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

@@ -221,6 +221,71 @@ CASE("non-global, shifted") {
 }
 
 
+CASE("arakawa c-grids") {
+    struct test_t {
+        size_t N;
+        std::vector<size_t> shape;
+        PointLonLat inc;
+    };
+
+    auto increments = [](const Grid& g) -> PointLonLat {
+        auto grid = g.spec().get_double_vector("grid");
+        ASSERT(grid.size() == 2);
+        return {grid[0], grid[1]};
+    };
+
+    auto reference = [](const Grid& g) -> PointLonLat {
+        auto ref = g.spec().get_double_vector("reference");
+        ASSERT(ref.size() == 2);
+        return {ref[0], ref[1]};
+    };
+
+    for (const auto& test : {
+             test_t{48, {72, 96}, {3.75, 2.5}},
+             {96, {144, 192}, {1.875, 1.25}},
+             {144, {216, 288}, {1.25, 0.833333333333333}},
+             {216, {324, 432}, {0.833333333333333, 0.555555555555556}},
+             {320, {480, 640}, {0.5625, 0.375}},
+             {512, {768, 1024}, {0.3515625, 0.234375}},
+             {768, {1152, 1536}, {0.234375, 0.15625}},
+             {1280, {1920, 2560}, {0.140625, 0.09375}},
+         }) {
+        spec::Custom spec({{"type", "regular_ll_arakawa_c"}, {"N", test.N}});
+        PointLonLat ref{test.inc.lon() / 2., test.inc.lat() / 2.};
+
+        std::unique_ptr<const Grid> g(GridFactory::build(spec));
+
+        EXPECT(points_equal(increments(*g), test.inc));
+        EXPECT(points_equal(reference(*g), ref));
+        EXPECT(g->shape() == test.shape);
+
+        spec.set("arrangement", "T");
+        std::unique_ptr<const Grid> t(GridFactory::build(spec));
+
+        EXPECT(points_equal(increments(*t), test.inc));
+        EXPECT(points_equal(reference(*g), ref));
+        EXPECT(t->shape() == test.shape);
+
+        spec.set("arrangement", "U");
+        std::unique_ptr<const Grid> u(GridFactory::build(spec));
+
+        EXPECT(points_equal(increments(*u), test.inc));
+        EXPECT(points_equal(reference(*g), ref));
+        EXPECT(u->shape() == test.shape);
+
+        spec.set("arrangement", "V");
+        std::unique_ptr<const Grid> v(GridFactory::build(spec));
+
+        EXPECT(points_equal(increments(*v), test.inc));
+        EXPECT(points_equal(reference(*g), ref));
+
+        auto test_shape_v = test.shape;
+        test_shape_v[0] += 1;
+        EXPECT(v->shape() == test_shape_v);
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

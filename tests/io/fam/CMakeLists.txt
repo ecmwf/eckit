@@ -1,5 +1,5 @@
 if( HAVE_OPENFAM )
-    set( _fam_extra_libs OpenFAM::openfam )
+    set( _fam_extra_libs LibOPENFAM )
     # only relevant for testing with a real OpenFAM servers running in docker environment.
     list( APPEND _fam_environment ${_test_environment}
         "OPENFAM_ROOT=/workspace/cis-rpc_meta-direct_mem-rpc"

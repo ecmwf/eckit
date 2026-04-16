@@ -989,7 +989,7 @@ ecbuild_add_library(
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
               # Link the real OpenFAM only when the native library is present.
-              $<$<AND:$<BOOL:${HAVE_OPENFAM}>,$<NOT:$<BOOL:${HAVE_OPENFAM_MOCK}>>>:OpenFAM::openfam>
+              $<$<AND:$<BOOL:${HAVE_OPENFAM}>,$<NOT:$<BOOL:${HAVE_OPENFAM_MOCK}>>>:LibOPENFAM>
               $<$<BOOL:${HAVE_OPENFAM_MOCK}>:LibUUID>
               $<${HAVE_AEC}:libaec::aec>
 

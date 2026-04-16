@@ -106,27 +106,24 @@ if( NOT TARGET OpenMP::OpenMP_CXX )
     set( eckit_HAVE_OMP 0 )
 endif()
 
+find_package(LibUUID QUIET)
+find_package(LibOPENFAM QUIET)
+
 ### OpenFAM Support
 
 ecbuild_add_option( FEATURE OPENFAM
-                    DEFAULT OFF
-                    REQUIRED_PACKAGES "LibUUID REQUIRED" "OpenFAM 3.2.0 REQUIRED"
+                    DEFAULT ON
+                    CONDITION LibUUID_FOUND AND LibOPENFAM_FOUND
                     DESCRIPTION "Enables OpenFAM support" )
-
-### OpenFAM Mock: for testing and development without needing a real OpenFAM library
 
 ecbuild_add_option( FEATURE OPENFAM_MOCK
                     DEFAULT ON
-                    CONDITION NOT OpenFAM_FOUND
-                    REQUIRED_PACKAGES "LibUUID REQUIRED"
+                    CONDITION LibUUID_FOUND AND NOT eckit_HAVE_OPENFAM
                     DESCRIPTION "Enables OpenFAM Mock for testing and development." )
 
 if( eckit_HAVE_OPENFAM_MOCK )
-    # When the mock is active, expose OPENFAM so that downstream projects can use it.
     set( eckit_HAVE_OPENFAM 1 )
 endif()
-
-
 
 ### RADOS
 

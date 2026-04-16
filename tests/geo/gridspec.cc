@@ -165,7 +165,7 @@ CASE("grid: HEALPix") {
 
 CASE("grid: regular_ll") {
     SECTION("arakawa c-grids") {
-        spec::Custom spec({{"type", "regular_ll_arakawa_c"}, {"N", 96}});
+        spec::Custom spec({{"type", "arakawa_c"}, {"N", 96}});
 
         spec.set("arrangement", "T");
         auto N96_T = std::unique_ptr<const Grid>(GridFactory::build(spec))->spec_str();
@@ -178,6 +178,51 @@ CASE("grid: regular_ll") {
         spec.set("arrangement", "V");
         auto N96_V = std::unique_ptr<const Grid>(GridFactory::build(spec))->spec_str();
         EXPECT(N96_V == R"({"grid":[1.875,1.25],"reference":[0.9375,0]})");
+    }
+}
+
+
+CASE("scan modes") {
+    using v = std::vector<double>;
+
+
+    SECTION("regular_ll with order") {
+        spec::Custom spec({{"type", "regular_ll"}, {"grid", v{90, 90}}});
+        std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+
+        EXPECT(grid1->order() == "i+j-");
+        EXPECT(grid1->spec_str() == R"({"grid":[90,90]})");
+
+        spec.set("order", "i+j+");
+        std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
+
+        EXPECT(grid2->order() == "i+j+");
+        EXPECT(grid2->spec_str() == R"({"grid":[90,90],"order":"i+j+"})");
+
+        std::unique_ptr<const Grid> grid3(GridFactory::make_from_string(grid2->spec_str()));
+
+        EXPECT(grid3->order() == "i+j+");
+        EXPECT(grid3->spec_str() == grid2->spec_str());
+    }
+
+
+    SECTION("regular_gg with order") {
+        spec::Custom spec({{"type", "regular_gg"}, {"N", 2}});
+        std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+
+        EXPECT(grid1->order() == "i+j-");
+        EXPECT(grid1->spec_str() == R"({"grid":"F2"})");
+
+        spec.set("order", "i+j+");
+        std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
+
+        EXPECT(grid2->order() == "i+j+");
+        EXPECT(grid2->spec_str() == R"({"grid":"F2","order":"i+j+"})");
+
+        std::unique_ptr<const Grid> grid3(GridFactory::make_from_string(grid2->spec_str()));
+
+        EXPECT(grid3->order() == "i+j+");
+        EXPECT(grid3->spec_str() == grid2->spec_str());
     }
 }
 

@@ -44,7 +44,7 @@ public:
     // -- Constructors
 
     explicit RegularXY(const Spec&);
-    explicit RegularXY(const Increments&, BoundingBoxXY);
+    explicit RegularXY(const Increments&, BoundingBoxXY, order::Scan = scan_default());
 
     // -- Overridden methods
 

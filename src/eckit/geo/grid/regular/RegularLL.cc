@@ -12,8 +12,9 @@
 
 #include "eckit/geo/grid/regular/RegularLL.h"
 
-#include <algorithm>
+#include <cmath>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Arrangement.h"
@@ -24,7 +25,6 @@
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -34,8 +34,6 @@ namespace eckit::geo::grid::regular {
 #define POSITIVE_REAL "[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)(e[-+][0-9]+)?"
 static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REAL ")");
 #undef POSITIVE_REAL
-
-static const PointLonLat REFERENCE;
 
 
 RegularLL::Increments::Increments(value_type dlon, value_type dlat) : array{dlon, dlat} {
@@ -64,33 +62,35 @@ RegularLL::Increments RegularLL::Increments::make_from_spec(const Spec& spec) {
 }
 
 
-PointLonLat RegularLL::Reference::make_from_spec(const Spec& spec) {
+RegularLL::Reference make_reference_from_spec(const Grid::Spec& spec) {
     if (spec.has("reference")) {
-        return PointLonLat::make_from_spec(spec, "reference", REFERENCE);
+        return PointLonLat::make_from_spec(spec, "reference", RegularLL::reference_default());
     }
 
     if (spec.has("area") || spec.has("south") || spec.has("west")) {
-        BoundingBox bbox{spec};
+        Grid::BoundingBox bbox{spec};
         return {bbox.west(), bbox.south()};
     }
 
-    return REFERENCE;
+    return RegularLL::reference_default();
 }
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, Reference::make_from_spec(spec)) {}
+    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec), order::Scan{spec}) {}
 
 
-RegularLL::RegularLL(const Increments& inc) : RegularLL(inc, BoundingBox{}, {0, 0}) {}
-
-
-RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref) :
-    x_{inc.dlon(), bbox.west(), bbox.east(), ref.lon()}, y_{-inc.dlat(), bbox.north(), bbox.south(), ref.lat()} {
+RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s) :
+    Regular(s),
+    x_{s.is_scan_i_positive() ? inc.dlon() : -inc.dlon(),
+       s.is_scan_i_positive() ? bbox.west() : bbox.east(),
+       s.is_scan_i_positive() ? bbox.east() : bbox.west(),
+       ref.lon()},
+    y_{s.is_scan_j_positive() ? inc.dlat() : -inc.dlat(),
+       s.is_scan_j_positive() ? bbox.south() : bbox.north(),
+       s.is_scan_j_positive() ? bbox.north() : bbox.south(),
+       ref.lat()} {
     ASSERT(!empty());
-
-    order(std::string{x().increment() < 0 ? "i-" : "i+"} +  //
-          std::string{y().increment() < 0 ? "j-" : "j+"});
 }
 
 
@@ -99,7 +99,7 @@ Grid::Spec* RegularLL::spec(const std::string& name) {
     std::regex_match(name, match, std::regex(REGULAR_LL_PATTERN));
     ASSERT(match.size() == 9);
 
-    auto d = Translator<std::string, double>{};
+    Translator<std::string, double> d;
 
     return new spec::Custom({{"type", "regular_ll"}, {"grid", std::vector<double>{d(match[1]), d(match[5])}}});
 }
@@ -116,10 +116,8 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
         auto [n, w, s, e] = bbox.deconstruct();
         custom.set("area", std::vector<double>{n, w, s, e});
     }
-    else {
-        if (const auto ref{reference()}; !points_equal(ref, REFERENCE)) {
-            custom.set("reference", std::vector<double>{ref.lon(), ref.lat()});
-        }
+    else if (const auto ref{reference()}; !points_equal(ref, reference_default())) {
+        custom.set("reference", std::vector<double>{ref.lon(), ref.lat()});
     }
 }
 
@@ -167,6 +165,12 @@ Grid* RegularLL::make_grid_cropped(const Area& crop) const {
     }
 
     throw UserError("RegularLL: cannot crop grid (empty intersection)", Here());
+}
+
+
+RegularLL::Reference RegularLL::reference_default() {
+    static const PointLonLat REFERENCE{0, 0};
+    return REFERENCE;
 }
 
 
@@ -228,7 +232,7 @@ static const auto GRIDNAME = GridRegisterName<RegularLL>(REGULAR_LL_PATTERN);
 static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
 static const GridRegisterType<RegularLL> GRIDTYPE2("rotated_ll");
 
-static const GridRegisterType<ArakawaC> GRIDTYPE3("regular_ll_arakawa_c");
+static const GridRegisterType<ArakawaC> GRIDTYPE3("arakawa_c");
 
 
 }  // namespace eckit::geo::grid::regular

@@ -147,6 +147,47 @@ CASE("equals") {
 }
 
 
+CASE("scan modes") {
+    SECTION("i+j- (default)") {
+        // Default scan: i increasing, j decreasing (north to south)
+        RegularGaussian grid(1);
+
+        EXPECT(grid.order() == "i+j-");
+
+        const std::vector<PointLonLat> ref{
+            {0., 35.264389683},  {90., 35.264389683},  {180., 35.264389683},  {270., 35.264389683},   // north row
+            {0., -35.264389683}, {90., -35.264389683}, {180., -35.264389683}, {270., -35.264389683},  // south row
+        };
+
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+        }
+    }
+
+    SECTION("i+j+") {
+        // Scan: i increasing, j increasing (south to north)
+        RegularGaussian grid(1, {}, order::Scan{"i+j+"});
+
+        EXPECT(grid.order() == "i+j+");
+
+        const std::vector<PointLonLat> ref{
+            {0., -35.264389683}, {90., -35.264389683}, {180., -35.264389683}, {270., -35.264389683},  // south row first
+            {0., 35.264389683},  {90., 35.264389683},  {180., 35.264389683},  {270., 35.264389683},   // north row last
+        };
+
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+        }
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

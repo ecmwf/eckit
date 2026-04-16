@@ -221,67 +221,160 @@ CASE("non-global, shifted") {
 }
 
 
+CASE("scan modes") {
+    SECTION("i+j- (default)") {
+        // i increasing (west to east), j decreasing (North to South)
+        RegularLL grid({90., 90.});
+
+        EXPECT(grid.order() == "i+j-");
+        EXPECT(grid.size() == 4 * 3);
+        EXPECT(grid.spec_str() == R"({"grid":[90,90]})");
+
+        const std::vector<PointLonLat> ref{
+            {0., 90.},  {90., 90.},  {180., 90.},  {270., 90.},   //
+            {0., 0.},   {90., 0.},   {180., 0.},   {270., 0.},    //
+            {0., -90.}, {90., -90.}, {180., -90.}, {270., -90.},  //
+        };
+
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+        }
+    }
+
+    SECTION("i+j+") {
+        // i increasing (west to east), j increasing (South to North)
+        RegularLL grid({90., 90.}, {}, {}, order::Scan{"i+j+"});
+
+        EXPECT(grid.order() == "i+j+");
+        EXPECT(grid.size() == 4 * 3);
+        EXPECT(grid.spec_str() == R"({"grid":[90,90],"order":"i+j+"})");
+
+        const std::vector<PointLonLat> ref{
+            {0., -90.}, {90., -90.}, {180., -90.}, {270., -90.},  //
+            {0., 0.},   {90., 0.},   {180., 0.},   {270., 0.},    //
+            {0., 90.},  {90., 90.},  {180., 90.},  {270., 90.},   //
+        };
+
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+        }
+    }
+}
+
+
 CASE("arakawa c-grids") {
-    struct test_t {
-        size_t N;
-        std::vector<size_t> shape;
-        PointLonLat inc;
-    };
+    SECTION("properties") {
+        struct test_t {
+            size_t N;
+            std::vector<size_t> shape;
+            PointLonLat inc;
+        };
 
-    auto increments = [](const Grid& g) -> PointLonLat {
-        auto grid = g.spec().get_double_vector("grid");
-        ASSERT(grid.size() == 2);
-        return {grid[0], grid[1]};
-    };
+        auto increments = [](const Grid& g) -> PointLonLat {
+            auto grid = g.spec().get_double_vector("grid");
+            ASSERT(grid.size() == 2);
+            return {grid[0], grid[1]};
+        };
 
-    auto reference = [](const Grid& g) -> PointLonLat {
-        auto ref = g.spec().get_double_vector("reference");
-        ASSERT(ref.size() == 2);
-        return {ref[0], ref[1]};
-    };
+        auto reference = [](const Grid& g) -> PointLonLat {
+            auto ref = g.spec().get_double_vector("reference");
+            ASSERT(ref.size() == 2);
+            return {ref[0], ref[1]};
+        };
 
-    for (const auto& test : {
-             test_t{48, {72, 96}, {3.75, 2.5}},
-             {96, {144, 192}, {1.875, 1.25}},
-             {144, {216, 288}, {1.25, 0.833333333333333}},
-             {216, {324, 432}, {0.833333333333333, 0.555555555555556}},
-             {320, {480, 640}, {0.5625, 0.375}},
-             {512, {768, 1024}, {0.3515625, 0.234375}},
-             {768, {1152, 1536}, {0.234375, 0.15625}},
-             {1280, {1920, 2560}, {0.140625, 0.09375}},
-         }) {
-        spec::Custom spec({{"type", "regular_ll_arakawa_c"}, {"N", test.N}});
-        PointLonLat ref{test.inc.lon() / 2., test.inc.lat() / 2.};
+        for (const auto& test : {
+                 test_t{48, {72, 96}, {3.75, 2.5}},
+                 {96, {144, 192}, {1.875, 1.25}},
+                 {144, {216, 288}, {1.25, 0.833333333333333}},
+                 {216, {324, 432}, {0.833333333333333, 0.555555555555556}},
+                 {320, {480, 640}, {0.5625, 0.375}},
+                 {512, {768, 1024}, {0.3515625, 0.234375}},
+                 {768, {1152, 1536}, {0.234375, 0.15625}},
+                 {1280, {1920, 2560}, {0.140625, 0.09375}},
+             }) {
+            spec::Custom spec({{"type", "arakawa_c"}, {"N", test.N}});
+            PointLonLat ref{test.inc.lon() / 2., test.inc.lat() / 2.};
 
-        std::unique_ptr<const Grid> g(GridFactory::build(spec));
+            std::unique_ptr<const Grid> g(GridFactory::build(spec));
 
-        EXPECT(points_equal(increments(*g), test.inc));
-        EXPECT(points_equal(reference(*g), ref));
-        EXPECT(g->shape() == test.shape);
+            EXPECT(points_equal(increments(*g), test.inc));
+            EXPECT(points_equal(reference(*g), ref));
+            EXPECT(g->shape() == test.shape);
+
+            spec.set("arrangement", "T");
+            std::unique_ptr<const Grid> t(GridFactory::build(spec));
+
+            EXPECT(points_equal(increments(*t), test.inc));
+            EXPECT(points_equal(reference(*g), ref));
+            EXPECT(t->shape() == test.shape);
+
+            spec.set("arrangement", "U");
+            std::unique_ptr<const Grid> u(GridFactory::build(spec));
+
+            EXPECT(points_equal(increments(*u), test.inc));
+            EXPECT(points_equal(reference(*g), ref));
+            EXPECT(u->shape() == test.shape);
+
+            spec.set("arrangement", "V");
+            std::unique_ptr<const Grid> v(GridFactory::build(spec));
+
+            EXPECT(points_equal(increments(*v), test.inc));
+            EXPECT(points_equal(reference(*g), ref));
+
+            auto test_shape_v = test.shape;
+            test_shape_v[0] += 1;
+            EXPECT(v->shape() == test_shape_v);
+        }
+    }
+
+
+    SECTION("points") {
+        spec::Custom spec({
+            {"type", "arakawa_c"},
+            {"N", 96},
+            {"order", "i+j+"},
+        });
+
+        std::vector<size_t> shape{144, 192};
+        auto size = shape[0] * shape[1];
+
+        constexpr PointLonLat::value_type EPS = 1e-3;
 
         spec.set("arrangement", "T");
-        std::unique_ptr<const Grid> t(GridFactory::build(spec));
+        const auto points_t = std::unique_ptr<const Grid>(GridFactory::build(spec))->to_points();
 
-        EXPECT(points_equal(increments(*t), test.inc));
-        EXPECT(points_equal(reference(*g), ref));
-        EXPECT(t->shape() == test.shape);
+        EXPECT(points_t.size() == size);
+
+        EXPECT(points_equal(PointLonLat{0.9375, -89.375}, points_t.front()));
+        EXPECT(points_equal(PointLonLat{2.8125, -89.375}, points_t[1]));
+        EXPECT(points_equal(PointLonLat{357.188, 89.375}, points_t[size - 2], EPS));
+        EXPECT(points_equal(PointLonLat{359.062, 89.375}, points_t.back(), EPS));
 
         spec.set("arrangement", "U");
-        std::unique_ptr<const Grid> u(GridFactory::build(spec));
+        const auto points_u = std::unique_ptr<const Grid>(GridFactory::build(spec))->to_points();
+        EXPECT(points_u.size() == size);
 
-        EXPECT(points_equal(increments(*u), test.inc));
-        EXPECT(points_equal(reference(*g), ref));
-        EXPECT(u->shape() == test.shape);
+        EXPECT(points_equal(PointLonLat{0., -89.375}, points_u.front()));
+        EXPECT(points_equal(PointLonLat{1.875, -89.375}, points_u[1]));
+        EXPECT(points_equal(PointLonLat{356.25, 89.375}, points_u[size - 2], EPS));
+        EXPECT(points_equal(PointLonLat{358.125, 89.375}, points_u.back(), EPS));
 
         spec.set("arrangement", "V");
-        std::unique_ptr<const Grid> v(GridFactory::build(spec));
+        const auto points_v = std::unique_ptr<const Grid>(GridFactory::build(spec))->to_points();
 
-        EXPECT(points_equal(increments(*v), test.inc));
-        EXPECT(points_equal(reference(*g), ref));
+        size = (shape[0] + 1) * shape[1];
+        EXPECT(points_v.size() == size);
 
-        auto test_shape_v = test.shape;
-        test_shape_v[0] += 1;
-        EXPECT(v->shape() == test_shape_v);
+        EXPECT(points_equal(PointLonLat{0.9375, -90.}, points_v.front()));
+        EXPECT(points_equal(PointLonLat{2.8125, -90.}, points_v[1]));
+        EXPECT(points_equal(PointLonLat{357.188, 90.}, points_v[size - 2], EPS));
+        EXPECT(points_equal(PointLonLat{359.062, 90.}, points_v.back(), EPS));
     }
 }
 

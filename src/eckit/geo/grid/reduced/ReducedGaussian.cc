@@ -40,7 +40,7 @@ Range* make_x_range(size_t Ni, const area::BoundingBox& bbox) {
         throw exception::GridError("ReducedGaussian: zero points in x range (along parallel)", Here());
     }
 
-    range::RegularLongitude global(360. / static_cast<double>(Ni), 0., 360.);
+    range::RegularLongitude global(PointLonLat::FULL_ANGLE / static_cast<double>(Ni), 0., PointLonLat::FULL_ANGLE);
     return global.make_cropped_range(bbox.west(), bbox.east());
 }
 

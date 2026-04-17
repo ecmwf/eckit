@@ -104,10 +104,12 @@ void FamObject::get(void* buffer, const fam::size_t offset, const fam::size_t le
 }
 
 auto FamObject::data(const fam::size_t offset) const -> value_type {
-    ASSERT(offset < this->size());
+    ASSERT(offset <= this->size());
     const auto size = this->size() - offset;
     Buffer buffer(size);
-    get(buffer.data(), offset, size);
+    if (size > 0) {
+        get(buffer.data(), offset, size);
+    }
     return buffer;
 }
 

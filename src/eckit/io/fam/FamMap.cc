@@ -224,9 +224,11 @@ auto FamMap<T>::insert(const key_type& key, const void* data, const size_type le
         return {iterator{*this, index, std::move(iter), std::move(bucket)}, false};
     }
 
-    // Encode and insert into bucket list (lock-free via FamList::pushBack)
+    // Encode and insert into bucket list (lock-free via FamList::pushFront).
+    // pushFront ensures the new entry is found first by findInBucket (head→tail scan),
+    // consistent with emplace() and insertOrAssign().
     auto payload = entry_type::encode(key, data, length);
-    bucket.pushBack(payload);
+    bucket.pushFront(payload);
 
     // Atomically increment total count
     count_.add(0, size_type{1});

@@ -85,7 +85,9 @@ namespace eckit {
 /// @brief Hash functor for FamMap keys.
 template <typename T>
 struct FamHash {
-    std::size_t operator()(const T& key) const noexcept { return std::hash<std::string>{}(key.asString()); }
+    std::size_t operator()(const T& key) const noexcept {
+        return std::hash<std::string_view>{}(std::string_view{key.data(), T::static_size()});
+    }
 };
 
 //----------------------------------------------------------------------------------------------------------------------

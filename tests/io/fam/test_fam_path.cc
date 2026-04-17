@@ -89,8 +89,8 @@ CASE("FamPath: stream round-trip") {
         ResizableMemoryStream stream(buffer);
         FamPath decoded(stream);
         EXPECT(decoded == original);
-        EXPECT_EQUAL(decoded.regionName, "myRegion");
-        EXPECT_EQUAL(decoded.objectName, "myObject");
+        EXPECT_EQUAL(decoded.regionName(), "myRegion");
+        EXPECT_EQUAL(decoded.objectName(), "myObject");
     }
 }
 
@@ -98,8 +98,8 @@ CASE("FamPath: from char* and from string give same result") {
     const FamPath from_string(std::string("/region/object"));
     const FamPath from_cstr("/region/object");
     EXPECT(from_string == from_cstr);
-    EXPECT_EQUAL(from_string.regionName, "region");
-    EXPECT_EQUAL(from_string.objectName, "object");
+    EXPECT_EQUAL(from_string.regionName(), "region");
+    EXPECT_EQUAL(from_string.objectName(), "object");
 }
 
 CASE("FamPath: invalid path with too many segments throws") {
@@ -108,8 +108,8 @@ CASE("FamPath: invalid path with too many segments throws") {
 
 CASE("FamPath: single segment path has empty objectName") {
     const FamPath path("/regionOnly");
-    EXPECT_EQUAL(path.regionName, "regionOnly");
-    EXPECT(path.objectName.empty());
+    EXPECT_EQUAL(path.regionName(), "regionOnly");
+    EXPECT(path.objectName().empty());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

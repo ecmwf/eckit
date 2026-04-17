@@ -47,7 +47,7 @@ CASE("FamName: stream round-trip via FamRegionName") {
     {
         ResizableMemoryStream stream(buffer);
         const FamRegionName decoded(stream);
-        EXPECT_EQUAL(decoded.path().regionName, "streamTestRegion");
+        EXPECT_EQUAL(decoded.path().regionName(), "streamTestRegion");
         EXPECT_EQUAL(decoded.endpoint().host(), original.endpoint().host());
     }
 }

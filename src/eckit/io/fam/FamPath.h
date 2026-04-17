@@ -29,7 +29,8 @@ class Stream;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct FamPath {
+class FamPath {
+public:
 
     FamPath() = default;
 
@@ -39,7 +40,6 @@ struct FamPath {
 
     explicit FamPath(const char* path);
 
-    /// @todo explicit?
     explicit FamPath(const URI& uri);
 
     explicit FamPath(Stream& stream);
@@ -52,12 +52,22 @@ struct FamPath {
 
     std::string asString() const;
 
+    auto regionName() const -> const std::string& { return regionName_; }
+    auto objectName() const -> const std::string& { return objectName_; }
+
+    void regionName(std::string name) { regionName_ = std::move(name); }
+    void objectName(std::string name) { objectName_ = std::move(name); }
+
+private:
+
     friend std::ostream& operator<<(std::ostream& out, const FamPath& path);
 
     friend Stream& operator<<(Stream& stream, const FamPath& name);
 
-    std::string regionName;
-    std::string objectName;
+private:  // members
+
+    std::string regionName_;
+    std::string objectName_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

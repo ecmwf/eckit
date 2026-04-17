@@ -68,10 +68,10 @@ std::string generateUuid(const std::string& name) {
 //----------------------------------------------------------------------------------------------------------------------
 
 FamPath::FamPath(std::string region, std::string object) :
-    regionName{std::move(region)}, objectName{std::move(object)} {}
+    regionName_{std::move(region)}, objectName_{std::move(object)} {}
 
 FamPath::FamPath(const std::string& path) {
-    std::tie(regionName, objectName) = parsePath(path);
+    std::tie(regionName_, objectName_) = parsePath(path);
 }
 
 FamPath::FamPath(const char* path) : FamPath(std::string(path)) {}
@@ -81,12 +81,12 @@ FamPath::FamPath(const URI& uri) : FamPath(uri.name()) {
 }
 
 FamPath::FamPath(Stream& stream) {
-    stream >> regionName;
-    stream >> objectName;
+    stream >> regionName_;
+    stream >> objectName_;
 }
 
 bool FamPath::operator==(const FamPath& other) const {
-    return (regionName == other.regionName && objectName == other.objectName);
+    return (regionName_ == other.regionName_ && objectName_ == other.objectName_);
 }
 
 std::string FamPath::generateUUID() const {
@@ -94,12 +94,12 @@ std::string FamPath::generateUUID() const {
 }
 
 void FamPath::encode(Stream& stream) const {
-    stream << regionName;
-    stream << objectName;
+    stream << regionName_;
+    stream << objectName_;
 }
 
 std::string FamPath::asString() const {
-    return objectName.empty() ? '/' + regionName : '/' + regionName + '/' + objectName;
+    return objectName_.empty() ? '/' + regionName_ : '/' + regionName_ + '/' + objectName_;
 }
 
 std::ostream& operator<<(std::ostream& out, const FamPath& path) {

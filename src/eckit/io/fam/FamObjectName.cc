@@ -23,7 +23,6 @@
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamHandle.h"
-#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamSession.h"
 #include "eckit/log/Log.h"
 
@@ -32,7 +31,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 FamObjectName& FamObjectName::withObject(const std::string& object_name) {
-    path().objectName = object_name;
+    path().objectName(object_name);
     return *this;
 }
 
@@ -41,11 +40,11 @@ FamObjectName& FamObjectName::withUUID() {
 }
 
 FamObject FamObjectName::lookup() const {
-    return session()->lookupObject(path().regionName, path().objectName);
+    return session()->lookupObject(path().regionName(), path().objectName());
 }
 
 FamObject FamObjectName::allocate(const fam::size_t object_size, const bool overwrite) const {
-    return session()->lookupRegion(path().regionName).allocateObject(object_size, path().objectName, overwrite);
+    return session()->lookupRegion(path().regionName()).allocateObject(object_size, path().objectName(), overwrite);
 }
 
 bool FamObjectName::exists() const {

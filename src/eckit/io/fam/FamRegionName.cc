@@ -31,24 +31,24 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 FamRegionName& FamRegionName::withRegion(const std::string& region_name) {
-    path().regionName = region_name;
+    path().regionName(region_name);
     return *this;
 }
 
 FamObjectName FamRegionName::object(const std::string& object_name) const {
-    return {endpoint(), {path().regionName, object_name}};
+    return {endpoint(), {path().regionName(), object_name}};
 }
 
 FamRegion FamRegionName::lookup() const {
-    return session()->lookupRegion(path().regionName);
+    return session()->lookupRegion(path().regionName());
 }
 
 FamRegion FamRegionName::create(const fam::size_t region_size, const fam::perm_t region_perm,
                                 const bool overwrite) const {
     if (overwrite) {
-        return session()->ensureCreateRegion(region_size, region_perm, path().regionName);
+        return session()->ensureCreateRegion(region_size, region_perm, path().regionName());
     }
-    return session()->createRegion(region_size, region_perm, path().regionName);
+    return session()->createRegion(region_size, region_perm, path().regionName());
 }
 
 bool FamRegionName::exists() const {
@@ -65,7 +65,8 @@ bool FamRegionName::exists() const {
 }
 
 bool FamRegionName::uriBelongs(const URI& uri) const {
-    return uri.scheme() == fam::scheme && uri.endpoint() == endpoint() && FamPath(uri).regionName == path().regionName;
+    return uri.scheme() == fam::scheme && uri.endpoint() == endpoint() &&
+           FamPath(uri).regionName() == path().regionName();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

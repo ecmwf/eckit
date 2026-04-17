@@ -43,7 +43,7 @@ CASE("FamObjectName: ctor, lookup, and allocate") {
     FamPath path{fam::TestFam::makeRandomText("REGION"), fam::TestFam::makeRandomText("OBJECT")};
 
     // create region
-    EXPECT_NO_THROW(FamRegionName(fam::test_endpoint, "").withRegion(path.regionName).create(1024, 0640));
+    EXPECT_NO_THROW(FamRegionName(fam::test_endpoint, "").withRegion(path.regionName()).create(1024, 0640));
 
     const FamObjectName object(fam::test_endpoint, path);
 
@@ -192,10 +192,10 @@ CASE("FamObject: large data small object") {
 
 CASE("FamObjectName: withObject replaces the object name") {
     FamObjectName name(fam::test_endpoint, FamPath{"region", "original"});
-    EXPECT_EQUAL(static_cast<const FamName&>(name).path().objectName, "original");
+    EXPECT_EQUAL(static_cast<const FamName&>(name).path().objectName(), "original");
 
     name.withObject("replaced");
-    EXPECT_EQUAL(static_cast<const FamName&>(name).path().objectName, "replaced");
+    EXPECT_EQUAL(static_cast<const FamName&>(name).path().objectName(), "replaced");
 }
 
 CASE("FamObjectName: withUUID replaces objectName with UUID") {
@@ -203,7 +203,7 @@ CASE("FamObjectName: withUUID replaces objectName with UUID") {
     name.withUUID();
 
     // UUID format: 8-4-4-4-12 hex chars
-    const auto& obj = static_cast<const FamName&>(name).path().objectName;
+    const auto& obj = static_cast<const FamName&>(name).path().objectName();
     EXPECT_EQUAL(obj.size(), 36);
     EXPECT_EQUAL(obj[8], '-');
     EXPECT_EQUAL(obj[13], '-');

@@ -49,7 +49,7 @@ CASE("FamRegionName: ctor, lookup, and allocate") {
     EXPECT_EQUAL(region.uri().name(), '/' + region_name);
     EXPECT_EQUAL(region.uri(), URI("fam://" + fam::test_endpoint + '/' + region_name));
     EXPECT_EQUAL(region.asString(), "fam://" + fam::test_endpoint + '/' + region_name);
-    EXPECT_EQUAL(region.path().regionName, region_name);
+    EXPECT_EQUAL(region.path().regionName(), region_name);
 
     EXPECT_THROWS_AS(region.lookup(), NotFound);
 

@@ -16,7 +16,6 @@
 #include "eckit/io/fam/FamMap.h"
 
 #include <cstddef>
-#include <cstring>
 #include <ostream>
 #include <string>
 #include <thread>
@@ -36,7 +35,7 @@ namespace eckit {
 
 namespace {
 
-/// Offset of the head field within a FamList::Descriptor.
+/// Byte offset of the bucket descriptor at given index in the table.
 constexpr fam::size_t bucketOffset(std::size_t index) {
     return static_cast<fam::size_t>(index * sizeof(FamList::Descriptor));
 }
@@ -119,7 +118,7 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
         auto desc              = bucket.descriptor();
 
         // Write remaining descriptor fields FIRST (tail, size, epoch)
-        const auto offset = static_cast<fam::size_t>(index * sizeof(FamList::Descriptor));
+        const auto offset = bucketOffset(index);
         table_.put(desc.region, offset + offsetof(FamList::Descriptor, region));
         table_.put(desc.tail, offset + offsetof(FamList::Descriptor, tail));
         table_.put(desc.size, offset + offsetof(FamList::Descriptor, size));

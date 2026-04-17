@@ -315,6 +315,184 @@ CASE("FamMap<32>: insert with empty value") {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: insertOrAssign inserts new entry") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MO" + fam::random_number(), region);
+
+    FamMap32::key_type key("assign-key");
+    std::string val = "first";
+
+    auto [iter, inserted] = map.insertOrAssign(key, val);
+    EXPECT(inserted);
+    EXPECT_EQUAL(map.size(), 1);
+
+    auto entry = *map.find(key);
+    EXPECT_EQUAL(entry.value.view(), val);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: insertOrAssign replaces existing entry") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MP" + fam::random_number(), region);
+
+    FamMap32::key_type key("replace-me");
+    std::string val1 = "original";
+    std::string val2 = "replaced";
+
+    auto [it1, ins1] = map.insertOrAssign(key, val1);
+    EXPECT(ins1);
+    EXPECT_EQUAL(map.size(), 1);
+
+    auto [it2, ins2] = map.insertOrAssign(key, val2);
+    EXPECT_NOT(ins2);  // replaced, not inserted
+    EXPECT_EQUAL(map.size(), 1);
+
+    auto entry = *map.find(key);
+    EXPECT_EQUAL(entry.value.view(), val2);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: forceInsert allows duplicate keys") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MF" + fam::random_number(), region);
+
+    FamMap32::key_type key("dup");
+    std::string val1 = "first";
+    std::string val2 = "second";
+
+    map.forceInsert(key, val1);
+    map.forceInsert(key, val2);
+
+    EXPECT_EQUAL(map.size(), 2);
+    EXPECT(map.contains(key));
+
+    // find returns the most recently inserted (pushFront)
+    auto entry = *map.find(key);
+    EXPECT_EQUAL(entry.value.view(), val2);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: count returns correct number of entries per key") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MN" + fam::random_number(), region);
+
+    FamMap32::key_type key("counted");
+    FamMap32::key_type other("other");
+
+    EXPECT_EQUAL(map.count(key), 0);
+
+    map.forceInsert(key, "a");
+    EXPECT_EQUAL(map.count(key), 1);
+
+    map.forceInsert(key, "b");
+    EXPECT_EQUAL(map.count(key), 2);
+
+    map.forceInsert(other, "c");
+    EXPECT_EQUAL(map.count(key), 2);
+    EXPECT_EQUAL(map.count(other), 1);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: loadFactor reflects entry count") {
+    constexpr eckit::fam::size_t region_size = 2 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("ML" + fam::random_number(), region);
+
+    EXPECT(map.loadFactor() == 0.0f);
+
+    for (std::size_t i = 0; i < 10; ++i) {
+        FamMap32::key_type key("lf-" + std::to_string(i));
+        map.insert(key, "v");
+    }
+
+    float expected = 10.0f / static_cast<float>(FamMap32::bucket_count);
+    EXPECT(map.loadFactor() == expected);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: merge copies entries from another map") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map1   = FamMap32("MG1" + fam::random_number(), region);
+    auto map2   = FamMap32("MG2" + fam::random_number(), region);
+
+    FamMap32::key_type k1("alpha");
+    FamMap32::key_type k2("beta");
+    FamMap32::key_type k3("gamma");
+
+    map1.insert(k1, "a1");
+    map2.insert(k2, "b2");
+    map2.insert(k3, "c3");
+
+    map1.merge(map2);
+
+    EXPECT_EQUAL(map1.size(), 3);
+    EXPECT(map1.contains(k1));
+    EXPECT(map1.contains(k2));
+    EXPECT(map1.contains(k3));
+
+    EXPECT_EQUAL((*map1.find(k2)).value.view(), "b2");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: merge skips existing keys") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map1   = FamMap32("MH1" + fam::random_number(), region);
+    auto map2   = FamMap32("MH2" + fam::random_number(), region);
+
+    FamMap32::key_type key("shared");
+
+    map1.insert(key, "from-map1");
+    map2.insert(key, "from-map2");
+
+    map1.merge(map2);
+
+    EXPECT_EQUAL(map1.size(), 1);
+    EXPECT_EQUAL((*map1.find(key)).value.view(), "from-map1");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: erase after forceInsert removes all duplicates") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MQ" + fam::random_number(), region);
+
+    FamMap32::key_type key("multi");
+
+    map.forceInsert(key, "a");
+    map.forceInsert(key, "b");
+    map.forceInsert(key, "c");
+    EXPECT_EQUAL(map.size(), 3);
+    EXPECT_EQUAL(map.count(key), 3);
+
+    auto erased = map.erase(key);
+    EXPECT_EQUAL(erased, 3);
+    EXPECT_EQUAL(map.size(), 0);
+    EXPECT_NOT(map.contains(key));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 //
 // KeySize = 64

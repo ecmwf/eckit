@@ -198,6 +198,17 @@ public:  // methods
         return insertOrAssign(key, data.view());
     }
 
+    /// Insert a key-value pair unconditionally (no dedup check). Supports multi-valued keys.
+    /// The new entry is prepended (pushFront) so the latest entry for a key is found first.
+    /// Returns an iterator to the newly inserted entry.
+    iterator emplace(const key_type& key, const void* data, size_type length);
+
+    /// emplace with string_view value.
+    iterator emplace(const key_type& key, std::string_view data) { return emplace(key, data.data(), data.size()); }
+
+    /// emplace with Buffer value.
+    iterator emplace(const key_type& key, const Buffer& data) { return emplace(key, data.view()); }
+
     /// Erase the entry with the given key. Returns 1 if erased, 0 if not found.
     size_type erase(const key_type& key);
 

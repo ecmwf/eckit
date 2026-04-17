@@ -231,6 +231,20 @@ auto FamMap<T>::insertOrAssign(const key_type& key, const void* data, const size
 }
 
 template <typename T>
+auto FamMap<T>::emplace(const key_type& key, const void* data, const size_type length) -> iterator {
+    const auto index = bucketIndex(key);
+    auto bucket      = getOrCreateBucket(index);
+
+    auto payload = entry_type::encode(key, data, length);
+    bucket.pushFront(payload);
+
+    count_.add(0, size_type{1});
+
+    auto new_it = findInBucket(bucket, key);
+    return {*this, index, std::move(new_it), std::move(bucket)};
+}
+
+template <typename T>
 auto FamMap<T>::erase(const key_type& key) -> size_type {
     const auto index = bucketIndex(key);
     auto bucket      = getBucket(index);

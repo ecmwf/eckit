@@ -28,7 +28,6 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamList.h"
-#include "eckit/io/fam/FamProperty.h"
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
@@ -61,8 +60,8 @@ std::string makeTestData(const int number) {
     return value;
 }
 
-void populateList() {
-    FamList list(tester.lastRegion(), list_name);
+void populateList(FamRegion& region) {
+    FamList list(region, list_name);
     for (auto i = 0; i < list_size; i++) {
         auto buffer = makeTestData(i);
         list.pushBack(buffer.data(), buffer.size());
@@ -178,31 +177,30 @@ CASE("FamList: pop front/back updates size and values") {
 //----------------------------------------------------------------------------------------------------------------------
 
 CASE("FamList: populate with " + std::to_string(list_size) + " items by " + std::to_string(num_threads) + " threads") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+
     std::vector<std::thread> threads;
 
     test_data.reserve(num_threads * list_size);
     threads.reserve(num_threads);
 
     for (auto i = 0; i < num_threads; i++) {
-        EXPECT_NO_THROW(threads.emplace_back(populateList));
+        EXPECT_NO_THROW(threads.emplace_back(populateList, std::ref(region)));
     }
 
     for (auto&& thread : threads) {
         thread.join();
     }
-}
 
-//----------------------------------------------------------------------------------------------------------------------
-
-CASE("FamList: validate size and values after creation") {
-    const auto list = FamList(tester.lastRegion(), list_name);
+    // validate size and values
+    const auto list = FamList(region, list_name);
 
     EXPECT_NOT(list.empty());
-
     EXPECT(list.size() == num_threads * list_size);
 
     for (const auto& item : list) {
-        // std::cout << "Validating item: " << item.view() << '\n';
         EXPECT(std::find(test_data.cbegin(), test_data.cend(), item.view()) != test_data.cend());
     }
 }

@@ -159,8 +159,7 @@ void fam::fam_destroy_region(Fam_Region_Descriptor* region_desc) {
         return;
     }
 
-    mock::FamMockSession::freeRegion(*region);
-    session.reclaimDataArea();
+    session.freeRegion(*region);
     region_desc->mock_invalidate();
 }
 
@@ -304,8 +303,7 @@ void fam::fam_deallocate(Fam_Descriptor* object) {
     const auto nextExpectedOffset  = objectOffset + obj->size;
     const auto nextExpectedAligned = (nextExpectedOffset + std::uint64_t{7}) & ~std::uint64_t{7};
 
-    mock::FamMockSession::freeObject(*obj);
-    session.reclaimDataArea();
+    session.freeObject(*obj);
 
     // If this was the last allocated object, reclaim its region offset space.
     if (region->nextOffset == nextExpectedAligned) {

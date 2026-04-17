@@ -27,7 +27,6 @@
 #include "eckit/io/fam/FamList.h"
 #include "eckit/io/fam/FamMapIterator.h"
 #include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
 
 namespace eckit {
@@ -172,26 +171,40 @@ template <typename T>
 auto FamMap<T>::find(const key_type& key) const -> iterator {
     const auto index = bucketIndex(key);
 
-    auto bucket_list = getBucket(index);
-    if (!bucket_list) {
+    auto bucket = getBucket(index);
+    if (!bucket) {
         return end();
     }
 
-    auto iter = findInBucket(*bucket_list, key);
-    if (iter == bucket_list->end()) {
+    auto iter = findInBucket(*bucket, key);
+    if (iter == bucket->end()) {
         return end();
     }
 
-    return {*this, index, std::move(iter), std::move(*bucket_list)};
+    return {*this, index, std::move(iter), std::move(*bucket)};
 }
 
 template <typename T>
 bool FamMap<T>::contains(const key_type& key) const {
-    const auto bucket_list = getBucket(bucketIndex(key));
-    if (bucket_list) {
-        return findInBucket(*bucket_list, key) != bucket_list->end();
+    const auto bucket = getBucket(bucketIndex(key));
+    if (bucket) {
+        return findInBucket(*bucket, key) != bucket->end();
     }
     return false;
+}
+
+template <typename T>
+auto FamMap<T>::count(const key_type& key) const -> size_type {
+    if (const auto bucket = getBucket(bucketIndex(key))) {
+        size_type result = 0;
+        for (const auto& buffer : *bucket) {
+            if (buffer.size() >= key_size && entry_type::decodeKey(buffer) == key) {
+                ++result;
+            }
+        }
+        return result;
+    }
+    return 0;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -293,14 +306,20 @@ auto FamMap<T>::erase(const key_type& key) -> size_type {
 template <typename T>
 void FamMap<T>::clear() {
     for (std::size_t i = 0; i < bucket_count; ++i) {
-        auto bucket_list = getBucket(i);
-        if (bucket_list) {
-            while (!bucket_list->empty()) {
-                bucket_list->popFront();
+        if (auto bucket = getBucket(i)) {
+            while (!bucket->empty()) {
+                bucket->popFront();
             }
         }
     }
     count_.set(0, size_type{0});
+}
+
+template <typename T>
+void FamMap<T>::merge(const FamMap& other) {
+    for (const auto& [key, value] : other) {
+        insert(key, value);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -314,6 +333,11 @@ auto FamMap<T>::size() const -> size_type {
 template <typename T>
 bool FamMap<T>::empty() const {
     return size() == 0;
+}
+
+template <typename T>
+float FamMap<T>::loadFactor() const {
+    return static_cast<float>(size()) / static_cast<float>(bucket_count);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

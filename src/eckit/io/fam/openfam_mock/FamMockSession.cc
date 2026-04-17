@@ -318,6 +318,7 @@ Region& FamMockSession::findRegion(Fam_Region_Descriptor* desc) {
 
 void FamMockSession::freeRegion(Region& region) {
     region = Region{};
+    reclaimDataArea();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -367,13 +368,12 @@ Object& FamMockSession::findObject(Fam_Descriptor* desc) {
 
 void FamMockSession::freeObject(Object& obj) {
     obj = Object{};
+    reclaimDataArea();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 // Data area
 
-/// @note freed space is never reclaimed
-/// Resets clear the whole data area at once.
 std::uint64_t FamMockSession::allocateData(std::uint64_t size) {
     const auto aligned = alignTo8(size);
 
@@ -384,6 +384,25 @@ std::uint64_t FamMockSession::allocateData(std::uint64_t size) {
     const auto offset = state_->dataUsed;
     state_->dataUsed += aligned;
     return offset;
+}
+
+void FamMockSession::reclaimDataArea() {
+    std::uint64_t highWater = 0;
+    for (const auto& region : state_->regions) {
+        if (!region.active) {
+            continue;
+        }
+        for (const auto& obj : region.objects) {
+            if (!obj.active) {
+                continue;
+            }
+            const auto end = obj.dataOffset + alignTo8(obj.size);
+            if (end > highWater) {
+                highWater = end;
+            }
+        }
+    }
+    state_->dataUsed = highWater;
 }
 
 std::uint8_t* FamMockSession::objectData(const Object& obj) {

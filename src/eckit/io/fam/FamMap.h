@@ -147,6 +147,9 @@ public:  // methods
     [[nodiscard]]
     bool empty() const;
 
+    /// Return the average number of entries per bucket (size / bucket_count).
+    float loadFactor() const;
+
     // ---- iterators ----
 
     /// Return iterator to the first entry (across all buckets).
@@ -166,6 +169,10 @@ public:  // methods
 
     /// Check if an entry with the given key exists.
     bool contains(const key_type& key) const;
+
+    /// Return the number of entries matching key.
+    /// For unique-key usage this is 0 or 1; may be >1 after emplace() creates duplicates.
+    size_type count(const key_type& key) const;
 
     // ---- modifiers (concurrent-safe) ----
 
@@ -214,7 +221,14 @@ public:  // methods
     size_type erase(const key_type& key);
 
     /// Remove all entries from all buckets.
+    /// @pre No concurrent modifications. Not thread-safe.
     void clear();
+
+    /// Insert all entries from @p other into this map.
+    /// Entries that already exist (by key) are skipped (insert semantics).
+    /// Data is copied across regions; FAM nodes are not spliced.
+    /// @pre No concurrent modifications to @p other during merge.
+    void merge(const FamMap& other);
 
 private:  // methods
 

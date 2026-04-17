@@ -50,11 +50,11 @@ namespace mock {
 //----------------------------------------------------------------------------------------------------------------------
 /// Capacity
 /// default: 64 MiB total shared memory
-/// use "export ECKIT_FAM_MOCK_SHM_SIZE=536870912" for 512 MiB, etc. Must be > sizeof(State) (currently ~2 MiB).
+/// use "export ECKIT_FAM_MOCK_SHM_SIZE=536870912" for 512 MiB, etc. Must be > sizeof(State) (currently ~3 MiB).
 
-constexpr std::size_t g_max_name_len        = 40;    // OpenFAM real dataitem name limit
-constexpr std::size_t g_max_regions         = 64;    // Max number of regions (arbitrary limit for testing)
-constexpr std::size_t g_max_objs_per_region = 4096;  // Max number of objects per region (arbitrary limit for testing)
+constexpr std::size_t g_max_name_len        = 40;                // OpenFAM real dataitem name limit
+constexpr std::size_t g_max_regions         = 32;                // Max number of regions
+constexpr std::size_t g_max_objs_per_region = 4096;              // Max objects per region
 constexpr std::size_t g_default_shm_size    = 64 * 1024 * 1024;  // 64 MiB default
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -171,8 +171,8 @@ public:
     /// throws `FAM_ERR_NOTFOUND`
     Region& findRegion(Fam_Region_Descriptor* desc);
 
-    /// Frees all objects in the region and marks it inactive.
-    static void freeRegion(Region& region);
+    /// Frees all objects in the region, marks it inactive, and reclaims data.
+    void freeRegion(Region& region);
 
     //------------------------------------------------------------------------------------------------------------------
     // Object
@@ -184,7 +184,7 @@ public:
     /// Finds an object by descriptor or throws `FAM_ERR_NOTFOUND`.
     Object& findObject(Fam_Descriptor* desc);
 
-    static void freeObject(Object& obj);
+    void freeObject(Object& obj);
 
     //------------------------------------------------------------------------------------------------------------------
     // Data
@@ -206,7 +206,8 @@ private:
 
     explicit FamMockSession(const std::string& name);
 
-    /// Derives state_ and data_ pointers from handle_.mapping_.
+    void reclaimDataArea();
+
     void mapFields();
 
     /// Same as reset() but must be called while the mutex is held (e.g., during initialization).

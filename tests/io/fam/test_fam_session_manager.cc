@@ -73,9 +73,9 @@ namespace eckit::test {
 CASE("FamSessionManager: cleanup and access time update") {
     auto& manager = FamSessionManager::instance();
 
-    const std::string name{"ECKIT_TEST_FAM_SESSION_MANAGER"};
+    const std::string name{"FamSession:" + fam::test_endpoint};
 
-    const auto session = manager.getOrAdd(name, fam::test_endpoint);
+    const auto session = manager.session(fam::test_endpoint);
     EXPECT(session);
 
     const auto expired = std::chrono::system_clock::now() - std::chrono::minutes(31);
@@ -87,7 +87,7 @@ CASE("FamSessionManager: cleanup and access time update") {
     FamSessionManager::TestAccessor::insert_null_entry(manager);
     EXPECT_EQUAL(FamSessionManager::TestAccessor::size(manager), 2);
 
-    const auto session2 = manager.getOrAdd(name, fam::test_endpoint);
+    const auto session2 = manager.session(fam::test_endpoint);
     EXPECT(session2);
     EXPECT_EQUAL(FamSessionManager::TestAccessor::size(manager), 1);
 

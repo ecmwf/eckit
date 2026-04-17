@@ -41,7 +41,7 @@ FamName::~FamName() = default;
 //----------------------------------------------------------------------------------------------------------------------
 
 FamSessionManager::Session FamName::session() const {
-    return FamSessionManager::instance().getOrAdd("EckitFAMSession", endpoint_);
+    return FamSessionManager::instance().session(endpoint_);
 }
 
 std::string FamName::asString() const {

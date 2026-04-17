@@ -184,7 +184,7 @@ CASE("FamSession: destroyRegion by name") {
     EXPECT(rname.exists());
 
     // destroyRegion(name) looks up and destroys internally
-    auto session = FamSessionManager::instance().getOrAdd("EckitFAMSession", fam::test_endpoint);
+    auto session = FamSessionManager::instance().session(fam::test_endpoint);
     EXPECT_NO_THROW(session->destroyRegion(region_name));
 
     EXPECT_NOT(rname.exists());

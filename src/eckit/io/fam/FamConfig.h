@@ -22,15 +22,38 @@
 #include <ostream>
 #include <string>
 
+#include "eckit/config/Resource.h"
 #include "eckit/net/Endpoint.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+/// Configuration for a FAM session.
+///
+/// Session name resolution order:
+///   1. Explicit sessionName passed at construction
+///   2. Resource "famSessionName" / env $FAM_SESSION_NAME
+///   3. Derived from endpoint: "FamSession:<host>:<port>"
 struct FamConfig {
+
+    /// Resolves the session name for a given endpoint.
+    /// Checks Resource "famSessionName" / $FAM_SESSION_NAME first;
+    /// falls back to "FamSession:<host>:<port>" for per-endpoint uniqueness.
+    static std::string resolveSessionName(const net::Endpoint& endpoint) {
+        std::string name = Resource<std::string>{"famSessionName;$FAM_SESSION_NAME", ""};
+        if (!name.empty()) {
+            return name;
+        }
+        return "FamSession:" + endpoint.host() + ":" + std::to_string(endpoint.port());
+    }
+
     net::Endpoint endpoint{"127.0.0.1", -1};
-    std::string sessionName{"EckitFamSession"};
+    std::string sessionName{resolveSessionName(endpoint)};
+
+    explicit FamConfig(const net::Endpoint& ep) : endpoint{ep}, sessionName{resolveSessionName(endpoint)} {}
+
+    explicit FamConfig(const net::Endpoint& ep, std::string name) : endpoint{ep}, sessionName{std::move(name)} {}
 
     bool operator==(const FamConfig& other) const {
         return (endpoint == other.endpoint && sessionName == other.sessionName);

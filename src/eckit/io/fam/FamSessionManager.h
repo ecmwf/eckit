@@ -49,10 +49,8 @@ public:  // methods
 
     static FamSessionManager& instance();
 
-    // Returns the session matching the given config
-    Session getOrAdd(const std::string& name, const net::Endpoint& endpoint);
+    Session session(const net::Endpoint& endpoint);
 
-    // Removes the session with the given name
     void remove(const std::string& name);
 
 private:  // methods

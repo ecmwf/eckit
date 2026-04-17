@@ -19,6 +19,7 @@
 #include <memory>
 #include <string>
 
+#include "eckit/io/fam/FamConfig.h"
 #include "eckit/io/fam/FamSession.h"
 
 namespace eckit {
@@ -56,8 +57,10 @@ auto FamSessionManager::find(const std::string& name) -> Session {
     return {};
 }
 
-auto FamSessionManager::getOrAdd(const std::string& name, const net::Endpoint& endpoint) -> Session {
+auto FamSessionManager::session(const net::Endpoint& endpoint) -> Session {
     std::lock_guard lock(mutex_);
+
+    const auto name = FamConfig::resolveSessionName(endpoint);
 
     auto session = find(name);
 

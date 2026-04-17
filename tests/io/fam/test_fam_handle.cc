@@ -25,6 +25,7 @@
 #include <string>
 
 #include "eckit/io/Buffer.h"
+#include "eckit/io/DataHandle.h"
 #include "eckit/io/fam/FamHandle.h"
 #include "eckit/io/fam/FamObjectName.h"
 #include "eckit/io/fam/FamRegionName.h"
@@ -60,8 +61,8 @@ CASE("FamHandle: write and read back data") {
     // write via FamHandle
     {
         std::unique_ptr<DataHandle> handle(objName.dataHandle(true));
-
         handle->openForWrite(object_size);
+        AutoClose closer(*handle);
 
         EXPECT(handle->estimate() == Length(object_size));
 
@@ -69,15 +70,14 @@ CASE("FamHandle: write and read back data") {
         EXPECT_EQUAL(written, static_cast<long>(test_data.size()));
 
         EXPECT(handle->position() == Offset(static_cast<long long>(test_data.size())));
-
-        handle->close();
     }
 
     // read back via FamHandle
     {
         std::unique_ptr<DataHandle> handle(objName.dataHandle());
-
         const auto len = handle->openForRead();
+        AutoClose closer(*handle);
+
         EXPECT(len == Length(object_size));
 
         Buffer buf(object_size);
@@ -86,8 +86,6 @@ CASE("FamHandle: write and read back data") {
         EXPECT_EQUAL(bytes_read, static_cast<long>(test_data.size()));
 
         EXPECT(std::string(static_cast<const char*>(buf.data()), test_data.size()) == test_data);
-
-        handle->close();
     }
 }
 
@@ -110,17 +108,17 @@ CASE("FamHandle: seek and canSeek") {
     {
         std::unique_ptr<DataHandle> handle(objName.dataHandle(true));
         handle->openForWrite(object_size);
+        AutoClose closer(*handle);
 
         handle->write(part1.data(), static_cast<long>(part1.size()));
         handle->write(part2.data(), static_cast<long>(part2.size()));
-
-        handle->close();
     }
 
     // seek to read second chunk
     {
         std::unique_ptr<DataHandle> handle(objName.dataHandle());
         handle->openForRead();
+        AutoClose closer(*handle);
 
         EXPECT(handle->canSeek());
 
@@ -132,8 +130,6 @@ CASE("FamHandle: seek and canSeek") {
         const auto bytes = handle->read(buf.data(), static_cast<long>(part2.size()));
         EXPECT_EQUAL(bytes, static_cast<long>(part2.size()));
         EXPECT(std::string(static_cast<const char*>(buf.data()), part2.size()) == part2);
-
-        handle->close();
     }
 }
 
@@ -154,13 +150,14 @@ CASE("FamHandle: read returns 0 at end of data") {
     {
         std::unique_ptr<DataHandle> handle(objName.dataHandle(true));
         handle->openForWrite(object_size);
+        AutoClose closer(*handle);
         handle->write(data.data(), static_cast<long>(data.size()));
-        handle->close();
     }
 
     {
         std::unique_ptr<DataHandle> handle(objName.dataHandle());
         handle->openForRead();
+        AutoClose closer(*handle);
 
         // read entire object
         Buffer buf(object_size);
@@ -171,8 +168,6 @@ CASE("FamHandle: read returns 0 at end of data") {
         char extra        = 0;
         const auto result = handle->read(&extra, 1);
         EXPECT_EQUAL(result, 0);
-
-        handle->close();
     }
 }
 
@@ -193,12 +188,12 @@ CASE("FamHandle: openForWrite on non-existing object allocates") {
     {
         std::unique_ptr<DataHandle> handle(obj_name.dataHandle(true));
         handle->openForWrite(object_size);
+        AutoClose closer(*handle);
 
         EXPECT(handle->size() == Length(object_size));
 
         const std::string data = "fresh";
         handle->write(data.data(), static_cast<long>(data.size()));
-        handle->close();
     }
 
     EXPECT(obj_name.exists());
@@ -224,10 +219,10 @@ CASE("FamHandle: openForWrite on existing object with overwrite") {
     {
         std::unique_ptr<DataHandle> handle(obj_name.dataHandle(true));
         handle->openForWrite(32);
+        AutoClose closer(*handle);
 
         const std::string data = "overwritten";
         handle->write(data.data(), static_cast<long>(data.size()));
-        handle->close();
     }
 }
 
@@ -257,20 +252,20 @@ CASE("FamHandle: print") {
         obj_name.allocate(64, true);
         FamHandle handle(obj_name);
         handle.openForRead();
+        AutoClose closer(handle);
         std::ostringstream oss;
         oss << handle;
         EXPECT(oss.str().find("read") != std::string::npos);
-        handle.close();
     }
 
     // write mode
     {
         FamHandle handle(obj_name, true);
         handle.openForWrite(64);
+        AutoClose closer(handle);
         std::ostringstream oss;
         oss << handle;
         EXPECT(oss.str().find("write") != std::string::npos);
-        handle.close();
     }
 }
 
@@ -292,19 +287,20 @@ CASE("FamHandle: partHandle") {
     {
         std::unique_ptr<DataHandle> handle(obj_name.dataHandle(true));
         handle->openForWrite(object_size);
+        AutoClose closer(*handle);
         handle->write(data.data(), static_cast<long>(data.size()));
-        handle->close();
     }
 
     // partHandle creates a FamHandle then the we seek + read
     {
         OffsetList offsets;
-        offsets.push_back(Offset(4));
+        offsets.emplace_back(4);
         LengthList lengths;
-        lengths.push_back(Length(8));
+        lengths.emplace_back(8);
 
         std::unique_ptr<DataHandle> handle(obj_name.partHandle(offsets, lengths));
         handle->openForRead();
+        AutoClose closer(*handle);
 
         // seek to the desired offset manually
         handle->seek(Offset(4));
@@ -314,8 +310,6 @@ CASE("FamHandle: partHandle") {
         const auto bytes = handle->read(buf.data(), 8);
         EXPECT_EQUAL(bytes, 8);
         EXPECT(std::string(static_cast<const char*>(buf.data()), 8) == "456789AB");
-
-        handle->close();
     }
 }
 
@@ -332,10 +326,9 @@ CASE("FamHandle: flush (is a no-op but) does not crash") {
 
     FamHandle handle(obj_name, true);
     handle.openForWrite(64);
+    AutoClose closer(handle);
 
     EXPECT_NO_THROW(handle.flush());
-
-    handle.close();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -364,9 +357,9 @@ CASE("FamHandle: size before and after open") {
         // size after openForRead returns object size
         FamHandle handle(obj_name);
         const auto len = handle.openForRead();
+        AutoClose closer(handle);
         EXPECT(len == Length(object_size));
         EXPECT(handle.size() == Length(object_size));
-        handle.close();
     }
 }
 

@@ -58,6 +58,7 @@ public:  // methods
 
     // object methods
 
+    /// @note this avoids invoking fam, as in lookupObject.
     FamObject proxyObject(fam::index_t offset) const;
 
     FamObject lookupObject(const std::string& object_name) const;

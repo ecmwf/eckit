@@ -25,7 +25,6 @@
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamObjectName.h"
-#include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {
@@ -40,18 +39,15 @@ FamHandle::FamHandle(const FamObjectName& name, const bool overwrite) : FamHandl
 //----------------------------------------------------------------------------------------------------------------------
 
 void FamHandle::open(const Mode mode) {
-    ASSERT(!handle_ && mode_ == Mode::CLOSED);
+    ASSERT(!object_ && mode_ == Mode::CLOSED);
     pos_  = 0;
     mode_ = mode;
 }
 
 void FamHandle::close() {
-    if (mode_ == Mode::WRITE) {
-        flush();
-    }
     pos_  = 0;
     mode_ = Mode::CLOSED;
-    handle_.reset();
+    object_.reset();
 }
 
 void FamHandle::flush() {
@@ -67,14 +63,14 @@ Offset FamHandle::seek(const Offset& offset) {
 }
 
 Length FamHandle::size() {
-    return handle_ ? Length(handle_->size()) : estimate();
+    return object_ ? Length(object_->size()) : estimate();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
 Length FamHandle::openForRead() {
     open(Mode::READ);
-    handle_ = name_.lookup();
+    object_ = name_.lookup();
     len_    = size();
     return len_;
 }
@@ -83,7 +79,7 @@ void FamHandle::openForWrite(const Length& length) {
     open(Mode::WRITE);
 
     try {
-        handle_ = name_.lookup();
+        object_ = name_.lookup();
         if (overwrite_ && length > 0) {
             ASSERT(size() >= length);
         }
@@ -91,7 +87,7 @@ void FamHandle::openForWrite(const Length& length) {
     catch (const NotFound& e) {
         Log::debug<LibEcKit>() << "FamHandle::openForWrite() " << e.what() << '\n';
         ASSERT(length > 0);
-        handle_ = name_.allocate(length);
+        object_ = name_.allocate(length);
     }
 
     len_ = size();
@@ -110,7 +106,7 @@ long FamHandle::read(void* buffer, long length) {
     // Adjust length to read only up to the end of the object
     length = std::min<long>(len_ - pos_, length);
 
-    handle_->get(buffer, pos_, length);
+    object_->get(buffer, pos_, length);
 
     pos_ += length;
 
@@ -120,7 +116,7 @@ long FamHandle::read(void* buffer, long length) {
 long FamHandle::write(const void* buffer, const long length) {
     ASSERT(mode_ == Mode::WRITE);
 
-    handle_->put(buffer, pos_, length);
+    object_->put(buffer, pos_, length);
 
     pos_ += length;
 

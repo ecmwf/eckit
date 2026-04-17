@@ -54,7 +54,6 @@ bool FamMapIterator<T>::loadBucket() {
     }
     list_ = std::move(*bucket);
     iter_ = list_->begin();
-    // empty: false, non-empty: true
     return iter_ != list_->end();
 }
 
@@ -66,7 +65,6 @@ void FamMapIterator<T>::advanceToNextBucket() {
         }
         ++bucket_;
     }
-    // we reached the end
     list_.reset();
     iter_.reset();
 }
@@ -76,14 +74,12 @@ FamMapIterator<T>& FamMapIterator<T>::operator++() {
     ASSERT(hasMoreBuckets());
     ASSERT(iter_.has_value());
 
-    // advance within current bucket
     ++(*iter_);
 
     if (*iter_ != list_->end()) {
-        return *this;  // entry found in this bucket
+        return *this;
     }
 
-    // move to next bucket
     ++bucket_;
     advanceToNextBucket();
 
@@ -92,15 +88,12 @@ FamMapIterator<T>& FamMapIterator<T>::operator++() {
 
 template <typename T>
 bool FamMapIterator<T>::operator==(const FamMapIterator& other) const {
-    // same bucket
     if (bucket_ != other.bucket_) {
         return false;
     }
-    // both are "empty or past-end position"
     if (!iter_.has_value() && !other.iter_.has_value()) {
         return true;
     }
-    // compare underlying FAM objects
     if (iter_.has_value() && other.iter_.has_value()) {
         return iter_->object() == other.iter_->object();
     }

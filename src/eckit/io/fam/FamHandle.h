@@ -86,7 +86,7 @@ private:  // members
 
     Mode mode_{Mode::CLOSED};
 
-    std::optional<FamObject> handle_;
+    std::optional<FamObject> object_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

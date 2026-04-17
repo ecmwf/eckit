@@ -119,7 +119,7 @@ void FamList::pushFront(const void* data, const size_type length) {
     new_object.put(length, offsetof(FamListNode, length));
     new_object.put(data, sizeof(FamListNode), length);
 
-    // 2. Link into list: use CAS-loop to atomically update head.next
+    // 2. Link into list: use CAS-loop (Compare-And-Swap) to atomically update head.next
     //    This ensures the new node becomes visible to other readers
     while (true) {
         // Get current first node (what head.next points to)

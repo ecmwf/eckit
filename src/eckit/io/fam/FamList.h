@@ -73,7 +73,6 @@
 
 #include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
 

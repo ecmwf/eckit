@@ -79,6 +79,7 @@ void FamRegion::setObjectLevelPermissions() const {
 //----------------------------------------------------------------------------------------------------------------------
 // OBJECT factory methods
 
+/// creates a FamObject wrapper around an existing object identified by {regionId, offset}
 FamObject FamRegion::proxyObject(const fam::index_t offset) const {
     return session_->proxyObject(index(), offset);
 }

@@ -298,7 +298,7 @@ CASE("arakawa c-grids") {
                  {768, {1152, 1536}, {0.234375, 0.15625}},
                  {1280, {1920, 2560}, {0.140625, 0.09375}},
              }) {
-            spec::Custom spec({{"type", "arakawa_c"}, {"N", test.N}});
+            spec::Custom spec({{"type", "arakawa_c_um"}, {"N", test.N}});
             PointLonLat ref{test.inc.lon() / 2., test.inc.lat() / 2.};
 
             std::unique_ptr<const Grid> g(GridFactory::build(spec));
@@ -336,9 +336,8 @@ CASE("arakawa c-grids") {
 
     SECTION("points") {
         spec::Custom spec({
-            {"type", "arakawa_c"},
+            {"type", "arakawa_c_um"},
             {"N", 96},
-            {"order", "i+j+"},
         });
 
         std::vector<size_t> shape{144, 192};

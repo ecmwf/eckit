@@ -191,7 +191,7 @@ Grid::BoundingBox* RegularLL::calculate_bbox() const {
 }
 
 
-struct ArakawaC final : public RegularLL {
+struct ArakawaC : public RegularLL {
     [[nodiscard]] static Arrangement arrangement_from_string(const std::string& str) {
         return str == "T"   ? Arrangement::ARAKAWA_C_T
                : str == "U" ? Arrangement::ARAKAWA_C_U
@@ -200,30 +200,55 @@ struct ArakawaC final : public RegularLL {
     }
 
     static Spec* extend_spec(const Spec& spec) {
-        auto extended = std::make_unique<spec::Layered>(spec);
-        ASSERT(extended);
-
-        auto back = std::make_unique<spec::Custom>();
-        ASSERT(back);
-
         auto a = arrangement_from_string(spec.get_string("arrangement", "T"));
+
         auto N = spec.get_unsigned("n");
         if (N == 0) {
             throw exception::SpecError("ArakawaC: 'n' must be a positive integer", Here());
         }
 
-        auto dlon = 180. / static_cast<double>(N);
-        auto dlat = 120. / static_cast<double>(N);
+        auto grid_factor = spec.get_double_vector("grid-factor", {1., 1.});
+        if (grid_factor.size() != 2 || types::is_approximately_lesser_or_equal(grid_factor[0], 0.) ||
+            types::is_approximately_lesser_or_equal(grid_factor[1], 0.)) {
+            throw exception::SpecError(
+                "ArakawaC: 'grid-factor' = ['dlon-factor', 'dlat-factor'] must be a vector of two positive real "
+                "numbers",
+                Here());
+        }
 
-        back->set("grid", std::vector<double>{dlon, dlat});
-        back->set("reference", std::vector<double>{a == Arrangement::ARAKAWA_C_U ? 0. : 0.5 * dlon,
-                                                   a == Arrangement::ARAKAWA_C_V ? 0. : 0.5 * dlat});
+        auto dlon = grid_factor[0] * PointLonLat::RIGHT_ANGLE / static_cast<double>(N);
+        auto dlat = grid_factor[1] * PointLonLat::RIGHT_ANGLE / static_cast<double>(N);
 
-        extended->push_back(back.release());
+        auto extended = std::make_unique<spec::Layered>(spec);
+        ASSERT(extended);
+
+        extended->push_back(new spec::Custom{
+            {"grid", std::vector<double>{dlon, dlat}},
+            {"reference", std::vector<double>{a == Arrangement::ARAKAWA_C_U ? 0. : 0.5 * dlon,
+                                              a == Arrangement::ARAKAWA_C_V ? 0. : 0.5 * dlat}},
+        });
+
         return extended.release();
     }
 
     explicit ArakawaC(const Spec& spec) : RegularLL(*std::unique_ptr<Spec>(extend_spec(spec))) {}
+};
+
+
+struct ArakawaCUnifiedModel : public ArakawaC {
+    static Spec* extend_spec(const Spec& spec) {
+        auto extended = std::make_unique<spec::Layered>(spec);
+        ASSERT(extended);
+
+        extended->push_back(new spec::Custom{
+            {"grid-factor", std::vector<double>{2., 4. / 3.}},
+            {"order", "i+j+"},
+        });
+
+        return extended.release();
+    }
+
+    explicit ArakawaCUnifiedModel(const Spec& spec) : ArakawaC(*std::unique_ptr<Spec>(extend_spec(spec))) {}
 };
 
 
@@ -233,6 +258,7 @@ static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
 static const GridRegisterType<RegularLL> GRIDTYPE2("rotated_ll");
 
 static const GridRegisterType<ArakawaC> GRIDTYPE3("arakawa_c");
+static const GridRegisterType<ArakawaCUnifiedModel> GRIDTYPE4("arakawa_c_um");
 
 
 }  // namespace eckit::geo::grid::regular

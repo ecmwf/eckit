@@ -173,7 +173,7 @@ public:  // methods
     bool contains(const key_type& key) const;
 
     /// Return the number of entries matching key.
-    /// For unique-key usage this is 0 or 1; may be >1 after emplace() creates duplicates.
+    /// For unique-key usage this is 0 or 1; may be >1 after forceInsert() creates duplicates.
     size_type count(const key_type& key) const;
 
     // ---- modifiers (concurrent-safe) ----
@@ -192,10 +192,10 @@ public:  // methods
     /// Insert with Buffer value.
     std::pair<iterator, bool> insert(const key_type& key, const Buffer& data) { return insert(key, data.view()); }
 
-    /// Insert or replace a key-value pair. The new entry is inserted first (via pushFront),
-    /// then any previous entry with the same key is erased. This ordering guarantees that
+    /// Insert or replace a key-value pair.
+    /// First insert (via pushFront), then erase any previous entry. This ordering guarantees that
     /// concurrent readers always see either the old or the new value — never an empty slot.
-    /// Always returns {iterator_to_new_entry, true} on success.
+    /// Returns {iterator, true} if no prior entry existed, {iterator, false} if an existing entry was replaced.
     std::pair<iterator, bool> insertOrAssign(const key_type& key, const void* data, size_type length);
 
     /// insertOrAssign with string_view value.
@@ -210,16 +210,19 @@ public:  // methods
 
     /// Insert a key-value pair unconditionally (no dedup check). Supports multi-valued keys.
     /// The new entry is prepended (pushFront) so the latest entry for a key is found first.
+    /// Use insert() for unique-key semantics.
     /// Returns an iterator to the newly inserted entry.
-    iterator emplace(const key_type& key, const void* data, size_type length);
+    iterator forceInsert(const key_type& key, const void* data, size_type length);
 
-    /// emplace with string_view value.
-    iterator emplace(const key_type& key, std::string_view data) { return emplace(key, data.data(), data.size()); }
+    /// forceInsert with string_view value.
+    iterator forceInsert(const key_type& key, std::string_view data) {
+        return forceInsert(key, data.data(), data.size());
+    }
 
-    /// emplace with Buffer value.
-    iterator emplace(const key_type& key, const Buffer& data) { return emplace(key, data.view()); }
+    /// forceInsert with Buffer value.
+    iterator forceInsert(const key_type& key, const Buffer& data) { return forceInsert(key, data.view()); }
 
-    /// Erase the entry with the given key. Returns 1 if erased, 0 if not found.
+    /// Erase all entries with the given key. Returns the number of entries removed.
     size_type erase(const key_type& key);
 
     /// Remove all entries from all buckets.

@@ -229,7 +229,7 @@ auto FamMap<T>::insert(const key_type& key, const void* data, const size_type le
 
     // Encode and insert into bucket list (lock-free via FamList::pushFront).
     // pushFront ensures the new entry is found first by findInBucket (head→tail scan),
-    // consistent with emplace() and insertOrAssign().
+    // consistent with forceInsert() and insertOrAssign().
     auto payload = entry_type::encode(key, data, length);
     bucket.pushFront(payload);
 
@@ -257,6 +257,7 @@ auto FamMap<T>::insertOrAssign(const key_type& key, const void* data, const size
     //    findInBucket returns the first match, which is the entry we just inserted.
     //    We need to find and erase the next match, if any.
     bool found_first = false;
+    bool replaced    = false;
     for (auto iter = bucket.begin(); iter != bucket.end(); ++iter) {
         const auto& buffer = *iter;
         if (buffer.size() >= key_size && entry_type::decodeKey(buffer) == key) {
@@ -267,17 +268,19 @@ auto FamMap<T>::insertOrAssign(const key_type& key, const void* data, const size
             // This is the old entry — erase it and adjust count.
             bucket.erase(std::move(iter));
             count_.subtract(0, size_type{1});
+            replaced = true;
             break;
         }
     }
 
     // 3. Return iterator to the new entry (first match from head).
+    //    Second element: true if inserted (no prior entry), false if replaced.
     auto new_it = findInBucket(bucket, key);
-    return {iterator{*this, index, std::move(new_it), std::move(bucket)}, true};
+    return {iterator{*this, index, std::move(new_it), std::move(bucket)}, !replaced};
 }
 
 template <typename T>
-auto FamMap<T>::emplace(const key_type& key, const void* data, const size_type length) -> iterator {
+auto FamMap<T>::forceInsert(const key_type& key, const void* data, const size_type length) -> iterator {
     const auto index = bucketIndex(key);
     auto bucket      = getOrCreateBucket(index);
 
@@ -298,14 +301,22 @@ auto FamMap<T>::erase(const key_type& key) -> size_type {
         return 0;
     }
 
-    auto iter = findInBucket(*bucket, key);
-    if (iter == bucket->end()) {
-        return 0;
+    size_type removed = 0;
+    for (auto iter = bucket->begin(); iter != bucket->end();) {
+        const auto& buffer = *iter;
+        if (buffer.size() >= key_size && entry_type::decodeKey(buffer) == key) {
+            iter = bucket->erase(std::move(iter));
+            ++removed;
+        }
+        else {
+            ++iter;
+        }
     }
 
-    bucket->erase(std::move(iter));
-    count_.subtract(0, size_type{1});
-    return 1;
+    if (removed > 0) {
+        count_.subtract(0, removed);
+    }
+    return removed;
 }
 
 template <typename T>

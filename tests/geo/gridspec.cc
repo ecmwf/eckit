@@ -17,9 +17,12 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/order/HEALPix.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Layered.h"
 #include "eckit/testing/Test.h"
 
 
@@ -91,8 +94,6 @@ CASE("user -> type") {
 
     for (const auto& [user, ref] : tests) {
         spec::Custom userspec(user);
-
-        Log::info() << userspec << " -> type: " << ref << std::endl;
 
         try {
             std::unique_ptr<const Grid::Spec> spec(GridFactory::make_spec(userspec));
@@ -182,46 +183,50 @@ CASE("grid: regular_ll") {
 }
 
 
-CASE("scan modes") {
-    using v = std::vector<double>;
+CASE("order") {
+    struct test_t {
+        const spec::Custom spec;
+        const std::string order_default;
+        const std::string order_nondefault;
+        const std::string spec_str_order_default;
+        const std::string spec_str_order_nondefault;
+    };
 
+    for (const auto& test : {
+             test_t{{{"type", "regular_ll"}, {"grid", std::vector<double>{90, 90}}},
+                    order::Scan::order_default(),
+                    "i+j+",
+                    R"({"grid":[90,90]})",
+                    R"({"grid":[90,90],"order":"i+j+"})"},
+             test_t{{{"type", "regular_gg"}, {"N", 2}},
+                    order::Scan::order_default(),
+                    "i+j+",
+                    R"({"grid":"F2"})",
+                    R"({"grid":"F2","order":"i+j+"})"},
+             test_t{{{"grid", "H2"}},
+                    order::HEALPix::order_default(),
+                    order::HEALPix::NESTED,
+                    R"({"grid":"H2"})",
+                    R"({"grid":"H2","order":")" + order::HEALPix::NESTED + R"("})"},
+         }) {
+        ASSERT(test.order_default != test.order_nondefault);
 
-    SECTION("regular_ll with order") {
-        spec::Custom spec({{"type", "regular_ll"}, {"grid", v{90, 90}}});
-        std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+        std::unique_ptr<const Grid> grid1(GridFactory::build(test.spec));
 
-        EXPECT(grid1->order() == "i+j-");
-        EXPECT(grid1->spec_str() == R"({"grid":[90,90]})");
+        EXPECT(grid1->order() == test.order_default);
+        EXPECT(grid1->spec_str() == test.spec_str_order_default);
 
-        spec.set("order", "i+j+");
+        spec::Layered spec(test.spec);
+        spec.push_back(new spec::Custom({{"order", test.order_nondefault}}));
+
         std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
 
-        EXPECT(grid2->order() == "i+j+");
-        EXPECT(grid2->spec_str() == R"({"grid":[90,90],"order":"i+j+"})");
+        EXPECT(grid2->order() == test.order_nondefault);
+        EXPECT(grid2->spec_str() == test.spec_str_order_nondefault);
 
         std::unique_ptr<const Grid> grid3(GridFactory::make_from_string(grid2->spec_str()));
 
-        EXPECT(grid3->order() == "i+j+");
-        EXPECT(grid3->spec_str() == grid2->spec_str());
-    }
-
-
-    SECTION("regular_gg with order") {
-        spec::Custom spec({{"type", "regular_gg"}, {"N", 2}});
-        std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
-
-        EXPECT(grid1->order() == "i+j-");
-        EXPECT(grid1->spec_str() == R"({"grid":"F2"})");
-
-        spec.set("order", "i+j+");
-        std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
-
-        EXPECT(grid2->order() == "i+j+");
-        EXPECT(grid2->spec_str() == R"({"grid":"F2","order":"i+j+"})");
-
-        std::unique_ptr<const Grid> grid3(GridFactory::make_from_string(grid2->spec_str()));
-
-        EXPECT(grid3->order() == "i+j+");
+        EXPECT(grid3->order() == grid2->order());
         EXPECT(grid3->spec_str() == grid2->spec_str());
     }
 }

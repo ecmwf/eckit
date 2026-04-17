@@ -118,10 +118,11 @@ ecbuild_add_option( FEATURE OPENFAM
 
 ecbuild_add_option( FEATURE OPENFAM_MOCK
                     DEFAULT ON
-                    CONDITION LibUUID_FOUND AND NOT eckit_HAVE_OPENFAM
+                    CONDITION LibUUID_FOUND AND NOT LibOPENFAM_FOUND
                     DESCRIPTION "Enables OpenFAM Mock for testing and development." )
 
 if( eckit_HAVE_OPENFAM_MOCK )
+    add_subdirectory( src/eckit/io/fam/openfam_mock )
     set( eckit_HAVE_OPENFAM 1 )
 endif()
 

@@ -30,7 +30,7 @@
 
 #include "fam/fam_exception.h"
 
-#include "eckit/io/fam/openfam_mock/FamMockSession.h"
+#include "FamMockSession.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 

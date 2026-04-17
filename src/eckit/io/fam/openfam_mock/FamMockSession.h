@@ -128,18 +128,16 @@ class FamMockSession {
 public:
 
     struct ShmHandle {
-        std::string shmName_;
-        std::size_t shmSize_{g_default_shm_size};
-        int fd_{-1};
-        void* mapping_{nullptr};
-
-        const char* name() const { return shmName_.c_str(); }
+        std::string name;
+        std::size_t size{g_default_shm_size};
+        int fd{-1};
+        void* mapping{nullptr};
 
         /// Unmaps the shared memory and closes the file descriptor.
         void close();
 
         /// Removes the shared-memory segment from the filesystem.
-        void unlink();
+        void unlink() const;
     };
 
     /// Obtain (or create) the shared-memory session

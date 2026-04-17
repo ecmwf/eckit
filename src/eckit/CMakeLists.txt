@@ -274,14 +274,7 @@ list( APPEND eckit_io_srcs
     io/fam/FamCommon.h
 )
 
-if( HAVE_OPENFAM OR HAVE_OPENFAM_MOCK )
-    if( HAVE_OPENFAM_MOCK )
-        list( APPEND eckit_io_srcs
-        io/fam/openfam_mock/fam/fam.cc
-        io/fam/openfam_mock/FamMockSession.cc
-    )
-    endif( HAVE_OPENFAM_MOCK )
-
+if( eckit_HAVE_OPENFAM )
     list( APPEND eckit_io_srcs
         io/fam/FamHandle.cc
         io/fam/FamHandle.h
@@ -315,7 +308,7 @@ if( HAVE_OPENFAM OR HAVE_OPENFAM_MOCK )
         io/fam/FamURIManager.cc
         io/fam/FamURIManager.h
     )
-endif( HAVE_OPENFAM OR HAVE_OPENFAM_MOCK )
+endif( eckit_HAVE_OPENFAM )
 
 if(HAVE_RADOS)
     list( APPEND eckit_io_srcs
@@ -977,8 +970,7 @@ ecbuild_add_library(
               "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
-              # When mock is active, shadow the real fam/ headers with the in-process stubs.
-              $<$<BOOL:${HAVE_OPENFAM_MOCK}>:${CMAKE_CURRENT_SOURCE_DIR}/io/fam/openfam_mock>
+              "${LIB_OPENFAM_INCLUDE_DIRS}"
 
           PRIVATE_LIBS
               "${SNAPPY_LIBRARIES}"
@@ -988,9 +980,8 @@ ecbuild_add_library(
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
-              # Link the real OpenFAM only when the native library is present.
-              $<$<AND:$<BOOL:${HAVE_OPENFAM}>,$<NOT:$<BOOL:${HAVE_OPENFAM_MOCK}>>>:LibOPENFAM>
-              $<$<BOOL:${HAVE_OPENFAM_MOCK}>:LibUUID>
+              $<$<BOOL:${eckit_HAVE_OPENFAM}>:LibUUID>
+              $<$<BOOL:${eckit_HAVE_OPENFAM}>:LibOPENFAM>
               $<${HAVE_AEC}:libaec::aec>
 
           PUBLIC_LIBS

@@ -132,8 +132,11 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
     }
 
     // Another proc/thread is creating this bucket. Spin until head is valid.
-    auto head = old_head;
-    while (head == 0 || head == creating) {
+    // Limit retries to detect a crashed creator (avoid infinite spin).
+    static constexpr int max_spin = 100000;
+    auto head                     = old_head;
+    for (int spin = 0; head == 0 || head == creating; ++spin) {
+        ASSERT_MSG(spin < max_spin, "FamMap::getOrCreateBucket: bucket creation stalled (creator may have crashed)");
         std::this_thread::yield();
         head = table_.get<fam::size_t>(bucketHeadOffset(index));
     }

@@ -105,13 +105,13 @@ std::size_t getShmSize() {
 /// Populates @p handle with the fd and mapping. Returns true if this call created the segment.
 bool openOrCreateShm(FamMockSession::ShmHandle& handle) {
     bool creator = false;
-    auto shm_fd  = ::shm_open(handle.name.c_str(), O_CREAT | O_EXCL | O_RDWR, 0666);
+    auto shm_fd  = ::shm_open(handle.name.c_str(), O_CREAT | O_EXCL | O_RDWR, 0600);
     if (shm_fd >= 0) {
         creator = true;
         debugLog("Created new shared memory segment.");
     }
     else if (errno == EEXIST) {
-        shm_fd = ::shm_open(handle.name.c_str(), O_RDWR, 0666);
+        shm_fd = ::shm_open(handle.name.c_str(), O_RDWR, 0600);
         debugLog("Opened existing shared memory segment.");
     }
 

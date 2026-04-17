@@ -6,7 +6,7 @@ if( eckit_HAVE_OPENFAM )
     )
 elseif( eckit_HAVE_OPENFAM_MOCK )
     list( APPEND _fam_environment
-        "ECKIT_FAM_MOCK_SHM_SIZE=268435456"
+        "ECKIT_FAM_MOCK_SHM_SIZE=67108864"
     )
 endif()
 

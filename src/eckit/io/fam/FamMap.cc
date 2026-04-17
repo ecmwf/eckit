@@ -226,8 +226,36 @@ auto FamMap<T>::insert(const key_type& key, const void* data, const size_type le
 template <typename T>
 auto FamMap<T>::insertOrAssign(const key_type& key, const void* data, const size_type length)
     -> std::pair<iterator, bool> {
-    erase(key);
-    return insert(key, data, length);
+    const auto index = bucketIndex(key);
+    auto bucket      = getOrCreateBucket(index);
+
+    // 1. Insert new entry at the FRONT of the bucket
+    // so, concurrent find() (which iterate head→tail) sees it
+    auto payload = entry_type::encode(key, data, length);
+    bucket.pushFront(payload);
+    count_.add(0, size_type{1});
+
+    // 2. Scan for old entry with the same key (the second occurrence) and erase it.
+    //    findInBucket returns the first match, which is the entry we just inserted.
+    //    We need to find and erase the next match, if any.
+    bool found_first = false;
+    for (auto iter = bucket.begin(); iter != bucket.end(); ++iter) {
+        const auto& buffer = *iter;
+        if (buffer.size() >= key_size && entry_type::decodeKey(buffer) == key) {
+            if (!found_first) {
+                found_first = true;  // skip the newly inserted entry (first match)
+                continue;
+            }
+            // This is the old entry — erase it and adjust count.
+            bucket.erase(std::move(iter));
+            count_.subtract(0, size_type{1});
+            break;
+        }
+    }
+
+    // 3. Return iterator to the new entry (first match from head).
+    auto new_it = findInBucket(bucket, key);
+    return {iterator{*this, index, std::move(new_it), std::move(bucket)}, true};
 }
 
 template <typename T>

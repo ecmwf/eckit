@@ -183,9 +183,10 @@ public:  // methods
     /// Insert with Buffer value.
     std::pair<iterator, bool> insert(const key_type& key, const Buffer& data) { return insert(key, data.view()); }
 
-    /// Insert or replace a key-value pair. If the key already exists, the old entry is erased first.
+    /// Insert or replace a key-value pair. The new entry is inserted first (via pushFront),
+    /// then any previous entry with the same key is erased. This ordering guarantees that
+    /// concurrent readers always see either the old or the new value — never an empty slot.
     /// Always returns {iterator_to_new_entry, true} on success.
-    /// @note The erase-then-insert sequence is not atomic; see insert() concurrency note.
     std::pair<iterator, bool> insertOrAssign(const key_type& key, const void* data, size_type length);
 
     /// insertOrAssign with string_view value.

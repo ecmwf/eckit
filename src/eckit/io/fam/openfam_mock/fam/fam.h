@@ -298,7 +298,7 @@ public:
 
 private:
 
-    mock::FamMockSession& session();
+    mock::FamMockSession& getSession();
 
 private:
 

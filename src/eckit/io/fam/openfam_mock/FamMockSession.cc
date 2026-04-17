@@ -33,6 +33,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <stdexcept>
 #include <string>
@@ -69,7 +70,7 @@ void debugLog(Args&&... args) {
 /// Byte offset of the data area from the start of the shared memory segment.
 constexpr std::size_t k_data_offset = alignTo8(sizeof(State));
 
-using SessionMap = std::map<std::string, FamMockSession*>;
+using SessionMap = std::map<std::string, std::unique_ptr<FamMockSession>>;
 
 // Process-local mock session cache
 std::pair<std::mutex, SessionMap>& sessionCache() {
@@ -167,10 +168,10 @@ FamMockSession& FamMockSession::instance(const std::string& name) {
         return *iter->second;
     }
 
-    /// @note Intentionally leaking to avoid static-destruction-order issues
-    auto* session = new FamMockSession(name);
-    cache[name]   = session;
-    return *session;
+    auto session = std::unique_ptr<FamMockSession>(new FamMockSession(name));
+    auto& ref    = *session;
+    cache[name]  = std::move(session);
+    return ref;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

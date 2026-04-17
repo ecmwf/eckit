@@ -21,6 +21,7 @@
 
 #include <sys/mman.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 #include <algorithm>
 #include <cctype>
@@ -50,30 +51,54 @@ inline auto random_number() -> std::string {
     return std::to_string(::random());
 }
 
+/// Derives the POSIX shm name from an endpoint using the same algorithm as FamMockSession.
+/// The mock uses only the host part (cisServer) of the endpoint for the shm name.
+inline std::string shmNameFromEndpoint(const std::string& endpoint) {
+    auto colon = endpoint.rfind(':');
+    auto host  = (colon != std::string::npos) ? endpoint.substr(0, colon) : endpoint;
+    std::transform(host.begin(), host.end(), host.begin(),
+                   [](unsigned char ch) { return std::isalnum(ch) ? static_cast<char>(ch) : '_'; });
+    return "/eckit_fam_mock_" + (host.empty() ? "default" : host);
+}
+
+/// Per-process unique endpoint so parallel test binaries each get their own shm segment.
+/// Appends "_<pid>" to the base endpoint; the mock's getShmName() converts non-alnum to '_',
+/// producing a unique shm path like /eckit_fam_mock_localhost_8880_12345.
+/// Registers an atexit handler to unlink the shm segment when the process exits.
 inline const std::string test_endpoint = []() -> std::string {
     const char* ep = std::getenv("ECKIT_FAM_TEST_ENDPOINT");
-    return ep ? ep : "localhost:8880";
+    auto base      = ep ? std::string(ep) : std::string("localhost:8880");
+    // Append PID before the port to keep the URI authority valid.
+    // host:port → host_<pid>:port  (no port → host_<pid>:0)
+    auto colon = base.rfind(':');
+    std::string endpoint;
+    if (colon == std::string::npos) {
+        endpoint = base + "_" + std::to_string(::getpid()) + ":0";
+    }
+    else {
+        auto host = base.substr(0, colon);
+        auto port = base.substr(colon);  // includes ':'
+        endpoint  = host + "_" + std::to_string(::getpid()) + port;
+    }
+    // Register cleanup — must capture the shm name by value since test_endpoint
+    // (an inline static) may be destroyed before atexit handlers run in LIFO order.
+    static std::string shm_name = shmNameFromEndpoint(endpoint);
+    std::atexit([] { ::shm_unlink(shm_name.c_str()); });
+    return endpoint;
 }();
 
 class TestFam {
 public:
 
-    TestFam() {
-        // Unlink any stale POSIX shared memory from previous test runs.
-        const auto colon_pos = test_endpoint.find(':');
-        auto host            = (colon_pos != std::string::npos) ? test_endpoint.substr(0, colon_pos) : test_endpoint;
-        std::transform(host.begin(), host.end(), host.begin(),
-                       [](unsigned char ch) { return std::isalnum(ch) ? static_cast<char>(ch) : '_'; });
-        ::shm_unlink(("/eckit_fam_mock_" + host).c_str());
-    }
+    TestFam() = default;
 
-    ~TestFam() { destroyRegions(); }
+    ~TestFam() = default;
 
-    void destroyRegions() {
-        for (auto& region : regions_) {
-            region.destroy();
-        }
-    }
+    // rules
+    TestFam(const TestFam&)            = delete;
+    TestFam(TestFam&&)                 = delete;
+    TestFam& operator=(const TestFam&) = delete;
+    TestFam& operator=(TestFam&&)      = delete;
 
     static auto makeRandomText(const std::string& text = "") -> std::string {
         return "ECKIT_TEST_FAM_" + text + '_' + random_number();
@@ -83,8 +108,6 @@ public:
         auto region = name_.withRegion(makeRandomText("REGION")).create(size, 0640, true);
         return regions_.emplace_back(region);
     }
-
-    auto lastRegion() -> FamRegion& { return regions_.back(); }
 
 private:
 

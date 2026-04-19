@@ -106,11 +106,9 @@ Grid::Spec* RegularLL::spec(const std::string& name) {
 
 
 void RegularLL::fill_spec(spec::Custom& custom) const {
-    custom.set("grid", std::vector<double>{std::abs(dlon()), std::abs(dlat())});
+    Regular::fill_spec(custom);
 
-    if (auto o = order(); o != order::Scan::order_default()) {
-        custom.set("order", o);
-    }
+    custom.set("grid", std::vector<double>{std::abs(dlon()), std::abs(dlat())});
 
     if (const auto& bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {
         auto [n, w, s, e] = bbox.deconstruct();

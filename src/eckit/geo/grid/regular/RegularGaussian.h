@@ -28,7 +28,7 @@ public:
     // -- Constructors
 
     explicit RegularGaussian(const Spec&);
-    explicit RegularGaussian(size_t N, BoundingBox = {});
+    explicit RegularGaussian(size_t N, BoundingBox = {}, order::Scan = scan_default());
 
     // -- Methods
 

@@ -209,7 +209,7 @@ template <typename T>
 bool GridRegisterName(const std::string& name_or_pattern) {
     new eckit::spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
     return true;
-};
+}
 
 
 struct GridFactory {

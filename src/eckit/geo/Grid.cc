@@ -301,7 +301,6 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
     // hardcoded, interpreted options (contributing to spec)
 
     auto back = std::make_unique<spec::Custom>();
-    ASSERT(back);
 
     if (size_t N = 0; cfg->get("N", N)) {
         back->set("grid", "O" + std::to_string(N));
@@ -315,19 +314,17 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
         back->set("type", "regular_ll");
     }
 
-    if (static const std::string projection{"projection"}; !cfg->has(projection)) {
-        auto ptr = std::make_unique<spec::Custom>();
-        ASSERT(ptr);
-
-        if (static const std::string rotation{"rotation"}; cfg->has(rotation)) {
-            ptr->set("type", rotation);
-            ptr->set(rotation, cfg->get_double_vector(rotation));
+    if (auto lats = cfg->has("latitudes"), lons = cfg->has("longitudes"); lats || lons) {
+        if (lats != lons) {
+            throw exception::SpecError("Grid: both 'latitudes' and 'longitudes' are required", Here());
         }
-        else {
-            ptr->set("type", "none");
-        }
+        back->set("type", "unstructured");
+    }
 
-        back->set(projection, ptr.release());
+
+    if (static const std::string projection{"projection"}, rotation{"rotation"};
+        !cfg->has(projection) && cfg->has(rotation)) {
+        back->set(projection, new spec::Custom({{"type", rotation}, {rotation, cfg->get_double_vector(rotation)}}));
     }
 
     if (!back->empty()) {

@@ -18,7 +18,7 @@
 namespace eckit::geo::grid::unstructured {
 
 
-class UnstructuredGeneric final : public Unstructured {
+class UnstructuredLL final : public Unstructured {
 public:
 
     // -- Constructors

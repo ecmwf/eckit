@@ -88,8 +88,8 @@ list(APPEND eckit_geo_srcs
     grid/regular/RegularLL.h
     grid/regular/RegularXY.cc
     grid/regular/RegularXY.h
-    grid/unstructured/UnstructuredGeneric.cc
-    grid/unstructured/UnstructuredGeneric.h
+    grid/unstructured/UnstructuredLL.cc
+    grid/unstructured/UnstructuredLL.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc

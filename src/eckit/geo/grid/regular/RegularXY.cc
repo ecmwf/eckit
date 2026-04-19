@@ -55,6 +55,13 @@ Range* make_y_range(const spec::Spec& spec) {
 }  // namespace
 
 
+RegularXY::Increments::Increments(value_type dx, value_type dy) : array{dx, dy} {
+    if (dx < 0 || dy < 0) {
+        throw exception::SpecError("'grid' = ['dx', 'dy'] must be positive", Here());
+    }
+}
+
+
 bool RegularXY::Increments::operator==(const Increments& other) const {
     return types::is_approximately_equal(dx, other.dx) && types::is_approximately_equal(dy, other.dy);
 }
@@ -75,11 +82,18 @@ RegularXY::Increments RegularXY::Increments::make_from_spec(const Spec& spec) {
 }
 
 
-RegularXY::RegularXY(const Spec& spec) : RegularXY(Increments::make_from_spec(spec), BoundingBoxXY(spec)) {}
+RegularXY::RegularXY(const Spec& spec) :
+    RegularXY(Increments::make_from_spec(spec), BoundingBoxXY(spec), order::Scan{spec}) {}
 
 
-RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox) :
-    x_(inc.dx, bbox.min_x, bbox.max_x), y_(inc.dy, bbox.min_y, bbox.max_y) {
+RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox, order::Scan s) :
+    Regular(s),
+    x_(s.is_scan_i_positive() ? inc.dx : -inc.dx,
+       s.is_scan_i_positive() ? bbox.min_x : bbox.max_x,
+       s.is_scan_i_positive() ? bbox.max_x : bbox.min_x),
+    y_(s.is_scan_j_positive() ? inc.dy : -inc.dy,
+       s.is_scan_j_positive() ? bbox.min_y : bbox.max_y,
+       s.is_scan_j_positive() ? bbox.max_y : bbox.min_y) {
     ASSERT(!empty());
 }
 

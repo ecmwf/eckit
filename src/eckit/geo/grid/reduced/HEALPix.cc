@@ -175,7 +175,7 @@ void HEALPix::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& HEALPix::type() const {
-    static const std::string type{"healpix"};
+    static const std::string type{"HEALPix"};
     return type;
 }
 

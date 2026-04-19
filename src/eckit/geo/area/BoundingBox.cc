@@ -563,7 +563,7 @@ double BoundingBox::area() const {
 
 
 const std::string& BoundingBox::type() const {
-    static const std::string type{"bounding-box"};
+    static const std::string type{"bounding_box"};
     return type;
 }
 

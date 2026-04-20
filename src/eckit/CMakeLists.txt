@@ -937,6 +937,7 @@ ecbuild_add_library(
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
               "${RADOS_LIBRARIES}"
+              "${NLOHMANN_JSON_LIBRARIES}"
               $<${HAVE_AEC}:libaec::aec>
 
           PUBLIC_LIBS

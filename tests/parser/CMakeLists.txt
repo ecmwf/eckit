@@ -25,3 +25,9 @@ ecbuild_add_test( TARGET   eckit_test_parser_stream_parser
 ecbuild_add_test( TARGET   eckit_test_parser_csv
                   SOURCES  test_csv.cc
                   LIBS     eckit )
+
+if( eckit_HAVE_NLOHMANN_JSON_SCHEMA_VALIDATOR )
+    ecbuild_add_test( TARGET   eckit_test_json_schema_validator
+                      SOURCES  test_json_schema_validator.cc
+                      LIBS     eckit ${NLOHMANN_JSON_SCHEMA_VALIDATOR_LIBRARIES} )
+endif()

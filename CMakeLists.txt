@@ -15,6 +15,8 @@ find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CUR
 
 project( eckit LANGUAGES CXX )
 
+include( cmake/eckit_find_or_fetch.cmake )
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -287,6 +289,32 @@ ecbuild_add_option( FEATURE UNICODE
                     DEFAULT ON
                     CONDITION HAVE_CXX_CODECVT
                     DESCRIPTION "Add support for Unicode characters in Yaml/JSON parsers" )
+
+### nlohmann/json - alternative JSON parser implementation
+
+eckit_find_or_fetch(
+    NAME                   nlohmann_json
+    DESCRIPTION            "nlohmann/json library"
+    FIND_PACKAGE_NAME      nlohmann_json
+    FIND_PACKAGE_VERSION   3.11.0
+    GIT_REPOSITORY         https://github.com/nlohmann/json.git
+    GIT_TAG                v3.11.3
+    TARGET                 nlohmann_json::nlohmann_json
+    FETCH_OPTIONS          JSON_BuildTests OFF JSON_Install OFF
+)
+
+### json-schema-validator - JSON Schema validation (requires nlohmann/json)
+
+eckit_find_or_fetch(
+    NAME                   nlohmann_json_schema_validator
+    DESCRIPTION            "JSON Schema validator (requires nlohmann/json)"
+    FIND_PACKAGE_NAME      nlohmann_json_schema_validator
+    GIT_REPOSITORY         https://github.com/pboettch/json-schema-validator.git
+    GIT_TAG                2.3.0
+    TARGET                 nlohmann_json_schema_validator
+    FETCH_OPTIONS          JSON_VALIDATOR_BUILD_TESTS OFF JSON_VALIDATOR_BUILD_EXAMPLES OFF
+    CONDITION              eckit_HAVE_NLOHMANN_JSON
+)
 
 ### async io support
 

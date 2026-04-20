@@ -54,6 +54,8 @@
 #cmakedefine01 eckit_HAVE_LAPACK
 #cmakedefine01 eckit_HAVE_MKL
 #cmakedefine01 eckit_HAVE_MPI
+#cmakedefine01 eckit_HAVE_NLOHMANN_JSON
+#cmakedefine01 eckit_HAVE_NLOHMANN_JSON_SCHEMA_VALIDATOR
 #cmakedefine01 eckit_HAVE_OMP
 #cmakedefine01 eckit_HAVE_SSL
 #cmakedefine01 eckit_HAVE_ZIP

@@ -218,8 +218,6 @@ struct ArakawaC : public RegularLL {
         auto dlat = grid_factor[1] * PointLonLat::RIGHT_ANGLE / static_cast<double>(N);
 
         auto extended = std::make_unique<spec::Layered>(spec);
-        ASSERT(extended);
-
         extended->push_back(new spec::Custom{
             {"grid", std::vector<double>{dlon, dlat}},
             {"reference", std::vector<double>{a == Arrangement::ARAKAWA_C_U ? 0. : 0.5 * dlon,
@@ -236,8 +234,6 @@ struct ArakawaC : public RegularLL {
 struct ArakawaCUnifiedModel : public ArakawaC {
     static Spec* extend_spec(const Spec& spec) {
         auto extended = std::make_unique<spec::Layered>(spec);
-        ASSERT(extended);
-
         extended->push_back(new spec::Custom{
             {"grid-factor", std::vector<double>{2., 4. / 3.}},
             {"order", "i+j+"},

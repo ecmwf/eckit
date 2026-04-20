@@ -20,13 +20,8 @@
 #include "test_fam_common.h"
 
 #include <cstddef>
-#include <cstring>
-#include <mutex>
 #include <set>
-#include <sstream>
 #include <string>
-#include <thread>
-#include <vector>
 
 #include "eckit/io/fam/FamMap.h"
 #include "eckit/testing/Test.h"
@@ -39,9 +34,6 @@ namespace eckit::test {
 namespace {
 
 fam::TestFam tester;
-
-constexpr std::size_t num_threads = 8;
-constexpr std::size_t num_entries = 50;
 
 }  // namespace
 
@@ -250,51 +242,6 @@ CASE("FamMap<32>: idempotent reopen preserves data") {
         EXPECT(map.contains(key));
         auto entry = *map.find(key);
         EXPECT_EQUAL(entry.value.view(), value);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
-CASE("FamMap<32>: concurrent insert from " + std::to_string(num_threads) + " threads with " +
-     std::to_string(num_entries) + " entries each") {
-    constexpr eckit::fam::size_t region_size = 16 * 1024 * 1024;
-
-    auto region = tester.makeRandomRegion(region_size);
-    auto name   = "MK" + fam::random_number();
-
-    std::mutex data_mutex;
-    std::set<std::string> all_keys;
-
-    auto worker = [&](std::size_t thread_id) {
-        auto map = FamMap32(name, region);
-        for (std::size_t i = 0; i < num_entries; ++i) {
-            auto key_str = "t" + std::to_string(thread_id) + "-k" + std::to_string(i);
-            auto val_str = "v" + std::to_string(thread_id) + "-" + std::to_string(i);
-            FamMap32::key_type key(key_str);
-
-            auto [iter, success] = map.insert(key, val_str);
-            EXPECT(success);
-
-            const std::lock_guard lock(data_mutex);
-            all_keys.insert(key_str);
-        }
-    };
-
-    std::vector<std::thread> threads;
-    threads.reserve(num_threads);
-    for (std::size_t t = 0; t < num_threads; ++t) {
-        threads.emplace_back(worker, t);
-    }
-    for (auto& thread : threads) {
-        thread.join();
-    }
-
-    auto map = FamMap32(name, region);
-    EXPECT_EQUAL(map.size(), num_threads * num_entries);
-
-    for (const auto& key_str : all_keys) {
-        FamMap32::key_type key(key_str);
-        EXPECT(map.contains(key));
     }
 }
 
@@ -851,51 +798,6 @@ CASE("FamMap<64>: idempotent reopen preserves data") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("FamMap<64>: concurrent insert from " + std::to_string(num_threads) + " threads with " +
-     std::to_string(num_entries) + " entries each") {
-    constexpr eckit::fam::size_t region_size = 16 * 1024 * 1024;
-
-    auto region = tester.makeRandomRegion(region_size);
-    auto name   = "NK" + fam::random_number();
-
-    std::mutex data_mutex;
-    std::set<std::string> all_keys;
-
-    auto worker = [&](std::size_t thread_id) {
-        auto map = FamMap64(name, region);
-        for (std::size_t i = 0; i < num_entries; ++i) {
-            auto key_str = "t" + std::to_string(thread_id) + "-k64-" + std::to_string(i);
-            auto val_str = "v" + std::to_string(thread_id) + "-64-" + std::to_string(i);
-            FamMap64::key_type key(key_str);
-
-            auto [iter, success] = map.insert(key, val_str);
-            EXPECT(success);
-
-            const std::lock_guard lock(data_mutex);
-            all_keys.insert(key_str);
-        }
-    };
-
-    std::vector<std::thread> threads;
-    threads.reserve(num_threads);
-    for (std::size_t t = 0; t < num_threads; ++t) {
-        threads.emplace_back(worker, t);
-    }
-    for (auto& thread : threads) {
-        thread.join();
-    }
-
-    auto map = FamMap64(name, region);
-    EXPECT_EQUAL(map.size(), num_threads * num_entries);
-
-    for (const auto& key_str : all_keys) {
-        FamMap64::key_type key(key_str);
-        EXPECT(map.contains(key));
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 CASE("FamMap<64>: insert with empty value") {
     constexpr eckit::fam::size_t region_size = 1024 * 1024;
 
@@ -910,6 +812,86 @@ CASE("FamMap<64>: insert with empty value") {
     auto entry = *map.find(key);
     EXPECT(entry.key == key);
     EXPECT_EQUAL(entry.value.size(), 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: concurrent insert from 4 processes") {
+    constexpr eckit::fam::size_t region_size = 16 * 1024 * 1024;
+    constexpr int num_procs      = 4;
+    constexpr int items_per_proc = 50;
+
+    auto region   = tester.makeRandomRegion(region_size);
+    auto map_name = "MPM" + fam::random_number();
+
+    { FamMap32 map(map_name, region); }
+
+    bool ok = forkAndRun(num_procs, [&](int child_id) {
+        FamMap32 map(map_name, region);
+        for (int i = 0; i < items_per_proc; ++i) {
+            auto key_str = "p" + std::to_string(child_id) + "-k" + std::to_string(i);
+            auto val_str = "v" + std::to_string(child_id) + "-" + std::to_string(i);
+            FamMap32::key_type key(key_str);
+
+            auto [iter, success] = map.insert(key, val_str);
+            if (!success) {
+                ::_exit(2);
+            }
+        }
+    });
+
+    EXPECT(ok);
+
+    FamMap32 map(map_name, region);
+    EXPECT_EQUAL(map.size(), static_cast<eckit::fam::size_t>(num_procs * items_per_proc));
+
+    for (int c = 0; c < num_procs; ++c) {
+        for (int i = 0; i < items_per_proc; ++i) {
+            auto key_str = "p" + std::to_string(c) + "-k" + std::to_string(i);
+            FamMap32::key_type key(key_str);
+            EXPECT(map.contains(key));
+
+            auto entry        = *map.find(key);
+            auto expected_val = "v" + std::to_string(c) + "-" + std::to_string(i);
+            EXPECT_EQUAL(entry.value.view(), expected_val);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: one writer process, parent reads") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+    constexpr int count = 30;
+
+    auto region   = tester.makeRandomRegion(region_size);
+    auto map_name = "MPKV" + fam::random_number();
+
+    { FamMap32 map(map_name, region); }
+
+    bool ok = forkWriter([&]() {
+        FamMap32 map(map_name, region);
+        for (int i = 0; i < count; ++i) {
+            auto key_str = "wk-" + std::to_string(i);
+            auto val_str = "wv-" + std::to_string(i);
+            FamMap32::key_type key(key_str);
+            map.insert(key, val_str);
+        }
+    });
+
+    EXPECT(ok);
+
+    FamMap32 map(map_name, region);
+    EXPECT_EQUAL(map.size(), static_cast<eckit::fam::size_t>(count));
+
+    for (int i = 0; i < count; ++i) {
+        auto key_str = "wk-" + std::to_string(i);
+        FamMap32::key_type key(key_str);
+        EXPECT(map.contains(key));
+
+        auto entry = *map.find(key);
+        EXPECT_EQUAL(entry.value.view(), "wv-" + std::to_string(i));
+    }
 }
 
 }  // namespace eckit::test

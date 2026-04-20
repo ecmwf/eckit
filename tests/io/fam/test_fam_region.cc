@@ -192,6 +192,29 @@ CASE("FamSession: destroyRegion by name") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+CASE("FamRegion: idempotent creation from 4 processes") {
+    auto region_name                         = fam::TestFam::makeRandomText("REGION");
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    bool ok = forkAndRun(4, [&](int /*child_id*/) {
+        auto name = FamRegionName(fam::test_endpoint, "").withRegion(region_name);
+        try {
+            name.create(region_size, 0640);
+        }
+        catch (const AlreadyExists&) {
+            name.lookup();
+        }
+    });
+
+    EXPECT(ok);
+
+    auto name   = FamRegionName(fam::test_endpoint, "").withRegion(region_name);
+    auto region = name.lookup();
+    EXPECT(region.size() > 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {

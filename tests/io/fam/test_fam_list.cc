@@ -19,12 +19,8 @@
 
 #include "test_fam_common.h"
 
-#include <algorithm>
-#include <mutex>
-#include <sstream>
+#include <set>
 #include <string>
-#include <thread>
-#include <vector>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamList.h"
@@ -39,34 +35,9 @@ namespace {
 
 using fam::TestFam;
 
-
 TestFam tester;
 
-constexpr const auto num_threads = 8;
-constexpr const auto list_size   = 200;
-const auto list_name             = "L" + fam::random_number();
-const auto list_data             = "D" + fam::random_number();
-
-std::vector<std::string> test_data;
-std::mutex test_mutex;
-
-std::string makeTestData(const int number) {
-    std::ostringstream oss;
-    oss << "tid:" << std::this_thread::get_id() << " #" << number << '-' << list_data;
-    auto value = oss.str();
-    // add to the control list
-    const std::lock_guard<std::mutex> lock(test_mutex);
-    test_data.emplace_back(value);
-    return value;
-}
-
-void populateList(FamRegion& region) {
-    FamList list(region, list_name);
-    for (auto i = 0; i < list_size; i++) {
-        auto buffer = makeTestData(i);
-        list.pushBack(buffer.data(), buffer.size());
-    }
-}
+const auto list_name = "L" + fam::random_number();
 
 }  // namespace
 
@@ -176,33 +147,110 @@ CASE("FamList: pop front/back updates size and values") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("FamList: populate with " + std::to_string(list_size) + " items by " + std::to_string(num_threads) + " threads") {
-    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+CASE("FamList: concurrent pushBack from 4 processes") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+    constexpr int num_procs     = 4;
+    constexpr int items_per_proc = 50;
+
+    auto region    = tester.makeRandomRegion(region_size);
+    auto name      = "MPL" + fam::random_number();
+
+    { FamList list(region, name); }
+
+    bool ok = forkAndRun(num_procs, [&](int child_id) {
+        FamList list(region, name);
+        for (int i = 0; i < items_per_proc; ++i) {
+            auto data = "c" + std::to_string(child_id) + "-i" + std::to_string(i);
+            list.pushBack(data.data(), data.size());
+        }
+    });
+
+    EXPECT(ok);
+
+    FamList list(region, name);
+    EXPECT_EQUAL(list.size(), num_procs * items_per_proc);
+
+    std::set<std::string> found;
+    for (const auto& item : list) {
+        found.insert(std::string(item.view()));
+    }
+    EXPECT_EQUAL(found.size(), static_cast<std::size_t>(num_procs * items_per_proc));
+
+    for (int c = 0; c < num_procs; ++c) {
+        for (int i = 0; i < items_per_proc; ++i) {
+            EXPECT(found.count("c" + std::to_string(c) + "-i" + std::to_string(i)) == 1);
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamList: one writer process, parent reads") {
+    constexpr eckit::fam::size_t region_size = 2 * 1024 * 1024;
+    constexpr int count = 20;
 
     auto region = tester.makeRandomRegion(region_size);
+    auto name   = "MPWR" + fam::random_number();
 
-    std::vector<std::thread> threads;
+    { FamList list(region, name); }
 
-    test_data.reserve(num_threads * list_size);
-    threads.reserve(num_threads);
+    bool ok = forkWriter([&]() {
+        FamList list(region, name);
+        for (int i = 0; i < count; ++i) {
+            auto data = "item-" + std::to_string(i);
+            list.pushBack(data.data(), data.size());
+        }
+    });
 
-    for (auto i = 0; i < num_threads; i++) {
-        EXPECT_NO_THROW(threads.emplace_back(populateList, std::ref(region)));
-    }
+    EXPECT(ok);
 
-    for (auto&& thread : threads) {
-        thread.join();
-    }
+    FamList list(region, name);
+    EXPECT_EQUAL(list.size(), count);
 
-    // validate size and values
-    const auto list = FamList(region, list_name);
-
-    EXPECT_NOT(list.empty());
-    EXPECT(list.size() == num_threads * list_size);
-
+    std::set<std::string> found;
     for (const auto& item : list) {
-        EXPECT(std::find(test_data.cbegin(), test_data.cend(), item.view()) != test_data.cend());
+        found.insert(std::string(item.view()));
     }
+    for (int i = 0; i < count; ++i) {
+        EXPECT(found.count("item-" + std::to_string(i)) == 1);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamList: concurrent pushFront and pushBack from 4 processes") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+    constexpr int num_procs      = 4;
+    constexpr int items_per_proc = 50;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto name   = "MPFB" + fam::random_number();
+
+    { FamList list(region, name); }
+
+    bool ok = forkAndRun(num_procs, [&](int child_id) {
+        FamList list(region, name);
+        for (int i = 0; i < items_per_proc; ++i) {
+            auto data = "c" + std::to_string(child_id) + "-i" + std::to_string(i);
+            if (child_id % 2 == 0) {
+                list.pushFront(data.data(), data.size());
+            }
+            else {
+                list.pushBack(data.data(), data.size());
+            }
+        }
+    });
+
+    EXPECT(ok);
+
+    FamList list(region, name);
+    EXPECT_EQUAL(list.size(), num_procs * items_per_proc);
+
+    std::set<std::string> found;
+    for (const auto& item : list) {
+        found.insert(std::string(item.view()));
+    }
+    EXPECT_EQUAL(found.size(), static_cast<std::size_t>(num_procs * items_per_proc));
 }
 
 }  // namespace eckit::test

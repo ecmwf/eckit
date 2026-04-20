@@ -143,6 +143,7 @@ public:  // methods
     // ---- capacity ----
 
     /// Return total number of entries across all buckets (atomic read).
+    [[nodiscard]]
     size_type size() const;
 
     /// Check if the map has no entries.
@@ -150,6 +151,7 @@ public:  // methods
     bool empty() const;
 
     /// Return the average number of entries per bucket (size / bucket_count).
+    [[nodiscard]]
     float loadFactor() const;
 
     // ---- iterators ----
@@ -167,13 +169,16 @@ public:  // methods
     // ---- lookup ----
 
     /// Find entry by key. Returns end() if not found.
+    [[nodiscard]]
     iterator find(const key_type& key) const;
 
     /// Check if an entry with the given key exists.
+    [[nodiscard]]
     bool contains(const key_type& key) const;
 
     /// Return the number of entries matching key.
     /// For unique-key usage this is 0 or 1; may be >1 after forceInsert() creates duplicates.
+    [[nodiscard]]
     size_type count(const key_type& key) const;
 
     // ---- modifiers (concurrent-safe) ----

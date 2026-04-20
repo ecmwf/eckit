@@ -387,7 +387,7 @@ std::uint64_t FamMockSession::allocateData(std::uint64_t size) {
 }
 
 void FamMockSession::reclaimDataArea() {
-    std::uint64_t highWater = 0;
+    std::uint64_t high_water = 0;
     for (const auto& region : state_->regions) {
         if (!region.active) {
             continue;
@@ -397,12 +397,10 @@ void FamMockSession::reclaimDataArea() {
                 continue;
             }
             const auto end = obj.dataOffset + alignTo8(obj.size);
-            if (end > highWater) {
-                highWater = end;
-            }
+            high_water     = std::max(end, high_water);
         }
     }
-    state_->dataUsed = highWater;
+    state_->dataUsed = high_water;
 }
 
 std::uint8_t* FamMockSession::objectData(const Object& obj) {

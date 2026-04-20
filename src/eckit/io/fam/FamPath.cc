@@ -17,7 +17,7 @@
 
 #include <uuid/uuid.h>
 
-#include <iostream>
+#include <ostream>
 #include <string>
 #include <tuple>
 #include <utility>

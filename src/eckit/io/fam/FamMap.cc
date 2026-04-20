@@ -217,10 +217,10 @@ auto FamMap<T>::insert(const key_type& key, const void* data, const size_type le
     const auto index = bucketIndex(key);
     auto bucket      = getOrCreateBucket(index);
 
-    /// Check if key already exists
-    /// @note: This check-then-insert sequence is not atomic.
-    /// concurrent inserts of the same key may both insert resulting duplicates.
-    /// A per-bucket CAS lock would be needed for full MRMW uniqueness guarantees.
+    // Check if key already exists.
+    // NOTE: This check-then-insert sequence is not atomic.
+    // Concurrent inserts of the same key may both succeed, resulting in duplicates.
+    // A per-bucket CAS lock would be needed for full MRMW uniqueness guarantees.
     auto iter = findInBucket(bucket, key);
     if (iter != bucket.end()) {
         return {iterator{*this, index, std::move(iter), std::move(bucket)}, false};

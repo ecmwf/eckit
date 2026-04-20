@@ -15,7 +15,6 @@
 
 #include "eckit/io/fam/FamMapIterator.h"
 
-#include <cstring>
 #include <utility>
 
 #include "eckit/exception/Exceptions.h"

@@ -53,7 +53,7 @@ namespace mock {
 /// use "export ECKIT_FAM_MOCK_SHM_SIZE=536870912" for 512 MiB, etc. Must be > sizeof(State) (currently ~3 MiB).
 
 constexpr std::size_t g_max_name_len        = 40;                // OpenFAM real dataitem name limit
-constexpr std::size_t g_max_regions         = 32;                // Max number of regions
+constexpr std::size_t g_max_regions         = 64;                // Max number of regions
 constexpr std::size_t g_max_objs_per_region = 4096;              // Max objects per region
 constexpr std::size_t g_default_shm_size    = 64 * 1024 * 1024;  // 64 MiB default
 

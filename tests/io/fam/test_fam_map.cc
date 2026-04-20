@@ -20,8 +20,10 @@
 #include "test_fam_common.h"
 
 #include <cstddef>
+#include <cstring>
 #include <mutex>
 #include <set>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -490,6 +492,170 @@ CASE("FamMap<32>: erase after forceInsert removes all duplicates") {
     EXPECT_EQUAL(erased, 3);
     EXPECT_EQUAL(map.size(), 0);
     EXPECT_NOT(map.contains(key));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: forceInsert entries are all visible during iteration") {
+    constexpr eckit::fam::size_t region_size = 2 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MJ" + fam::random_number(), region);
+
+    FamMap32::key_type key("multi");
+
+    map.forceInsert(key, "val-a");
+    map.forceInsert(key, "val-b");
+    map.forceInsert(key, "val-c");
+    EXPECT_EQUAL(map.size(), 3);
+
+    // Iterate all entries — all three duplicates must appear.
+    std::set<std::string> values;
+    for (const auto& [k, v] : map) {
+        EXPECT(k == key);
+        values.insert(std::string{v.view()});
+    }
+    EXPECT_EQUAL(values.size(), 3);
+    EXPECT(values.count("val-a"));
+    EXPECT(values.count("val-b"));
+    EXPECT(values.count("val-c"));
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: insertOrAssign repeated replacement keeps size 1") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MW" + fam::random_number(), region);
+
+    FamMap32::key_type key("hot-key");
+
+    for (int i = 0; i < 5; ++i) {
+        auto val            = "v" + std::to_string(i);
+        auto [it, inserted] = map.insertOrAssign(key, val);
+        // First iteration inserts, the rest replace.
+        if (i == 0) {
+            EXPECT(inserted);
+        }
+        else {
+            EXPECT_NOT(inserted);
+        }
+        EXPECT_EQUAL(map.size(), 1);
+    }
+
+    auto entry = *map.find(key);
+    EXPECT_EQUAL(entry.value.view(), "v4");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: clear then re-insert works") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MY" + fam::random_number(), region);
+
+    for (std::size_t i = 0; i < 5; ++i) {
+        FamMap32::key_type key("phase1-" + std::to_string(i));
+        map.insert(key, "data");
+    }
+    EXPECT_EQUAL(map.size(), 5);
+
+    map.clear();
+    EXPECT(map.empty());
+    EXPECT(map.begin() == map.end());
+
+    // Re-insert different keys.
+    for (std::size_t i = 0; i < 3; ++i) {
+        FamMap32::key_type key("phase2-" + std::to_string(i));
+        auto [iter, success] = map.insert(key, "new");
+        EXPECT(success);
+    }
+    EXPECT_EQUAL(map.size(), 3);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: move construction transfers ownership") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map1   = FamMap32("MZ" + fam::random_number(), region);
+
+    FamMap32::key_type key("movable");
+    map1.insert(key, "data");
+    EXPECT_EQUAL(map1.size(), 1);
+
+    auto map2 = std::move(map1);
+    EXPECT_EQUAL(map2.size(), 1);
+    EXPECT(map2.contains(key));
+    EXPECT_EQUAL((*map2.find(key)).value.view(), "data");
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: operator<< prints summary") {
+    constexpr eckit::fam::size_t region_size = 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MA" + fam::random_number(), region);
+
+    map.insert(FamMap32::key_type("k1"), "v1");
+    map.insert(FamMap32::key_type("k2"), "v2");
+
+    std::ostringstream oss;
+    oss << map;
+
+    auto str = oss.str();
+    // Verify the output contains expected substrings.
+    EXPECT(str.find("FamMap") != std::string::npos);
+    EXPECT(str.find("key_size=32") != std::string::npos);
+    EXPECT(str.find("size=2") != std::string::npos);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: large binary values") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MB" + fam::random_number(), region);
+
+    // Simulate FDB-like payload: a 512-byte binary blob.
+    constexpr std::size_t payload_size = 512;
+    std::vector<char> blob(payload_size);
+    for (std::size_t i = 0; i < payload_size; ++i) {
+        blob[i] = static_cast<char>(i % 256);
+    }
+
+    FamMap32::key_type key("big-val");
+    auto [iter, success] = map.insert(key, blob.data(), payload_size);
+    EXPECT(success);
+
+    auto entry = *map.find(key);
+    EXPECT_EQUAL(entry.value.size(), payload_size);
+    EXPECT(std::memcmp(entry.value.data(), blob.data(), payload_size) == 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: cbegin/cend const iteration") {
+    constexpr eckit::fam::size_t region_size = 2 * 1024 * 1024;
+
+    auto region = tester.makeRandomRegion(region_size);
+    auto map    = FamMap32("MU" + fam::random_number(), region);
+
+    map.insert(FamMap32::key_type("a"), "1");
+    map.insert(FamMap32::key_type("b"), "2");
+
+    std::size_t count = 0;
+    for (auto it = map.cbegin(); it != map.cend(); ++it) {
+        auto entry = *it;
+        EXPECT(entry.value.size() > 0);
+        ++count;
+    }
+    EXPECT_EQUAL(count, 2);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

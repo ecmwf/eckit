@@ -245,9 +245,13 @@ void FamMockSession::lock() {
     if (code == EOWNERDEAD) {
         // The previous owner died holding the mutex.
         // MUST NOT call lock()/LockGuard here — the mutex is already ours.
-        debugLog("EOWNERDEAD detected, calling pthread_mutex_consistent and full reset.");
+        debugLog("EOWNERDEAD detected, calling pthread_mutex_consistent (data preserved).");
         ::pthread_mutex_consistent(&state_->mutex);
-        resetUnlocked();
+        // Note: we intentionally do NOT reset data here.  The previous owner's
+        // half-finished operation may have left a partially-written object, but
+        // a full reset would destroy all regions/objects — catastrophic for
+        // multi-process workloads where another process simply _exit()'d while
+        // holding the lock.
     }
     else if (code != 0) {
         throw std::system_error(code, std::system_category(), "pthread_mutex_lock");

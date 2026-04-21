@@ -147,6 +147,7 @@ bool forkAndRun(int n, Fn&& fn) {
             return false;
         }
         if (pid == 0) {
+            std::set_terminate([]() { ::_exit(1); });
             ::close(barrier[1]);
             char buf;
             static_cast<void>(::read(barrier[0], &buf, 1));
@@ -194,6 +195,7 @@ bool forkWriter(Fn&& fn) {
         return false;
     }
     if (pid == 0) {
+        std::set_terminate([]() { ::_exit(1); });
         ::close(barrier[0]);
         try {
             fn();

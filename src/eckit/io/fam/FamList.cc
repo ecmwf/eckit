@@ -32,23 +32,6 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-namespace {
-
-FamObject initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) {
-    try {
-        return region.allocateObject(object_size, object_name);
-    }
-    catch (const AlreadyExists&) {
-        auto object = region.lookupObject(object_name);
-        ASSERT(object.size() == object_size);
-        return object;
-    }
-}
-
-}  // namespace
-
-//----------------------------------------------------------------------------------------------------------------------
-
 FamList::FamList(FamRegion region, const Descriptor& desc) :
     region_{std::move(region)},
     head_{region_.proxyObject(desc.head)},
@@ -60,10 +43,10 @@ FamList::FamList(FamRegion region, const Descriptor& desc) :
 
 FamList::FamList(FamRegion region, const std::string& list_name) :
     region_{std::move(region)},
-    head_{initSentinel(region_, list_name + "h", sizeof(FamListNode))},
-    tail_{initSentinel(region_, list_name + "t", sizeof(FamListNode))},
-    size_{initSentinel(region_, list_name + "s", sizeof(size_type))},
-    epoch_{initSentinel(region_, list_name + "e", sizeof(std::uint64_t))} {
+    head_{region_.ensureObject(sizeof(FamListNode), list_name + "h")},
+    tail_{region_.ensureObject(sizeof(FamListNode), list_name + "t")},
+    size_{region_.ensureObject(sizeof(size_type), list_name + "s")},
+    epoch_{region_.ensureObject(sizeof(std::uint64_t), list_name + "e")} {
     // set head's next to tail's prev (idempotent)
     if (FamListNode::getNextOffset(head_) == 0) {
         head_.put(tail_.descriptor(), offsetof(FamListNode, next));

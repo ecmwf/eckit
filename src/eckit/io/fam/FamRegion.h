@@ -71,6 +71,9 @@ public:  // methods
         return allocateObject(object_size, permissions(), object_name, overwrite);
     }
 
+    /// Allocate a named object, or look it up if it already exists (idempotent).
+    FamObject ensureObject(fam::size_t object_size, const std::string& object_name) const;
+
     void deallocateObject(const std::string& object_name) const;
 
 private:  // methods

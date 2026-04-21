@@ -100,6 +100,17 @@ void FamRegion::deallocateObject(const std::string& object_name) const {
     session_->deallocateObject(region_->get_name(), object_name);
 }
 
+FamObject FamRegion::ensureObject(const fam::size_t object_size, const std::string& object_name) const {
+    try {
+        return allocateObject(object_size, object_name);
+    }
+    catch (const AlreadyExists&) {
+        auto object = lookupObject(object_name);
+        ASSERT(object.size() == object_size);
+        return object;
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void FamRegion::print(std::ostream& out) const {

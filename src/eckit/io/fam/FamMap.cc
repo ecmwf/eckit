@@ -45,17 +45,6 @@ constexpr fam::size_t bucketHeadOffset(std::size_t index) {
     return bucketOffset(index) + offsetof(FamList::Descriptor, head);
 }
 
-FamObject initSentinel(const FamRegion& region, const std::string& object_name, const fam::size_t object_size) {
-    try {
-        return region.allocateObject(object_size, object_name);
-    }
-    catch (const AlreadyExists&) {
-        auto object = region.lookupObject(object_name);
-        ASSERT(object.size() == object_size);
-        return object;
-    }
-}
-
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -64,9 +53,9 @@ template <typename T>
 FamMap<T>::FamMap(std::string name, FamRegion region) :
     name_{std::move(name)},
     region_{std::move(region)},
-    table_{initSentinel(region_, name_ + table_suffix, bucket_count * sizeof(FamList::Descriptor))},
-    count_{initSentinel(region_, name_ + count_suffix, sizeof(size_type))},
-    lock_{initSentinel(region_, name_ + lock_suffix, sizeof(size_type))} {}
+    table_{region_.ensureObject(bucket_count * sizeof(FamList::Descriptor), name_ + table_suffix)},
+    count_{region_.ensureObject(sizeof(size_type), name_ + count_suffix)},
+    lock_{region_.ensureObject(sizeof(size_type), name_ + lock_suffix)} {}
 
 //----------------------------------------------------------------------------------------------------------------------
 // Bucket management

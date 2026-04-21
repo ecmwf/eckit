@@ -120,9 +120,10 @@ void FamList::pushFront(const void* data, const size_type length) {
         const auto old_offset =
             head_.compareSwap(offsetof(FamListNode, next.offset), first_offset, new_object.offset());
         if (old_offset == first_offset) {
-            // Success! Now update the old first node's prev pointer to us.
-            // Note: This happens after we're visible in the list, so readers can see us.
-            first_object.put(new_object.descriptor(), offsetof(FamListNode, prev));
+            // Success! Update old first node's prev to point to us.
+            // Use CAS instead of plain put to avoid overwriting a concurrent
+            // pushBack's CAS on tail.prev (when first_object is the tail sentinel).
+            first_object.compareSwap(offsetof(FamListNode, prev.offset), head_.offset(), new_object.offset());
 
             // Atomically increment size
             size_.add(0, size_type{1});
@@ -158,9 +159,27 @@ void FamList::pushBack(const void* data, const size_type length) {
         // On success, we become the new last node.
         const auto old_offset = tail_.compareSwap(offsetof(FamListNode, prev.offset), last_offset, new_object.offset());
         if (old_offset == last_offset) {
-            // Success! Now update the old last node's next pointer to us.
-            // Note: This happens after we're visible in the list, so readers can see us.
-            last_object.put(new_object.descriptor(), offsetof(FamListNode, next));
+            // Success! Now link new_object into the forward chain.
+            // Use CAS-loop: walk forward from last_object to find the node whose
+            // next is tail, then CAS its next to new_object.
+            // This prevents the plain-put race with concurrent pushFront on head.next.
+            auto current = std::move(last_object);
+            while (true) {
+                const auto cur_next = FamListNode::getNextOffset(current);
+                if (cur_next == tail_.offset()) {
+                    const auto old = current.compareSwap(
+                        offsetof(FamListNode, next.offset), tail_.offset(), new_object.offset());
+                    if (old == tail_.offset()) {
+                        break;  // Successfully linked into forward chain
+                    }
+                    // CAS failed — another node was inserted. Follow the new link.
+                    current.replaceWith({region_.index(), old});
+                }
+                else {
+                    // Follow forward chain to find the node just before tail
+                    current.replaceWith({region_.index(), cur_next});
+                }
+            }
 
             // Atomically increment size
             size_.add(0, size_type{1});

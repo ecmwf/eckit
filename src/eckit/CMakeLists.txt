@@ -872,6 +872,7 @@ list( APPEND eckit_transaction_srcs
 list( APPEND eckit_testing_srcs
     testing/Filesystem.cc
     testing/Filesystem.h
+    testing/ProcessFork.h
     testing/Test.h
     testing/Filesystem.cc
     testing/Filesystem.h

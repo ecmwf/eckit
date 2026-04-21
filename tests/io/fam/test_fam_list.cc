@@ -149,15 +149,15 @@ CASE("FamList: pop front/back updates size and values") {
 
 CASE("FamList: concurrent pushBack from 4 processes") {
     constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
-    constexpr int num_procs     = 4;
-    constexpr int items_per_proc = 50;
+    constexpr int num_procs                  = 4;
+    constexpr int items_per_proc             = 50;
 
-    auto region    = tester.makeRandomRegion(region_size);
-    auto name      = "MPL" + fam::random_number();
+    auto region = tester.makeRandomRegion(region_size);
+    auto name   = "MPL" + fam::random_number();
 
     { FamList list(region, name); }
 
-    bool ok = forkAndRun(num_procs, [&](int child_id) {
+    bool ok = fork_and_run(num_procs, [&](int child_id) {
         FamList list(region, name);
         for (int i = 0; i < items_per_proc; ++i) {
             auto data = "c" + std::to_string(child_id) + "-i" + std::to_string(i);
@@ -187,14 +187,14 @@ CASE("FamList: concurrent pushBack from 4 processes") {
 
 CASE("FamList: one writer process, parent reads") {
     constexpr eckit::fam::size_t region_size = 2 * 1024 * 1024;
-    constexpr int count = 20;
+    constexpr int count                      = 20;
 
     auto region = tester.makeRandomRegion(region_size);
     auto name   = "MPWR" + fam::random_number();
 
     { FamList list(region, name); }
 
-    bool ok = forkWriter([&]() {
+    bool ok = fork_and_run(1, [&](int) {
         FamList list(region, name);
         for (int i = 0; i < count; ++i) {
             auto data = "item-" + std::to_string(i);
@@ -220,15 +220,15 @@ CASE("FamList: one writer process, parent reads") {
 
 CASE("FamList: concurrent pushFront and pushBack from 4 processes") {
     constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
-    constexpr int num_procs      = 4;
-    constexpr int items_per_proc = 50;
+    constexpr int num_procs                  = 4;
+    constexpr int items_per_proc             = 50;
 
     auto region = tester.makeRandomRegion(region_size);
     auto name   = "MPFB" + fam::random_number();
 
     { FamList list(region, name); }
 
-    bool ok = forkAndRun(num_procs, [&](int child_id) {
+    bool ok = fork_and_run(num_procs, [&](int child_id) {
         FamList list(region, name);
         for (int i = 0; i < items_per_proc; ++i) {
             auto data = "c" + std::to_string(child_id) + "-i" + std::to_string(i);

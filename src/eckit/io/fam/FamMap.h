@@ -126,6 +126,7 @@ public:  // constants
 
     static constexpr auto table_suffix = ".t";
     static constexpr auto count_suffix = ".c";
+    static constexpr auto lock_suffix  = ".l";
 
 public:  // methods
 
@@ -240,6 +241,12 @@ public:  // methods
     /// @pre No concurrent modifications to @p other during merge.
     void merge(const FamMap& other);
 
+    /// Acquire the map-wide FAM spinlock.  Pair with unlock().
+    /// Use when a caller needs to perform an atomic read-modify-write
+    /// sequence (e.g. find + merge + insertOrAssign) across processes.
+    void lock();
+    void unlock();
+
 private:  // methods
 
     friend class FamMapIterator<T>;
@@ -276,6 +283,7 @@ private:  // members
     FamRegion region_;  ///< FAM region holding all map objects
     FamObject table_;   ///< Flat array of FamList::Descriptor, one per bucket
     FamObject count_;   ///< Atomic uint64 tracking total element count
+    FamObject lock_;    ///< FAM spinlock (uint64: 0=free, 1=held) for lock()/unlock()
 };
 
 //----------------------------------------------------------------------------------------------------------------------

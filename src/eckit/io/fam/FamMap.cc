@@ -65,7 +65,8 @@ FamMap<T>::FamMap(std::string name, FamRegion region) :
     name_{std::move(name)},
     region_{std::move(region)},
     table_{initSentinel(region_, name_ + table_suffix, bucket_count * sizeof(FamList::Descriptor))},
-    count_{initSentinel(region_, name_ + count_suffix, sizeof(size_type))} {}
+    count_{initSentinel(region_, name_ + count_suffix, sizeof(size_type))},
+    lock_{initSentinel(region_, name_ + lock_suffix, sizeof(size_type))} {}
 
 //----------------------------------------------------------------------------------------------------------------------
 // Bucket management
@@ -361,6 +362,21 @@ float FamMap<T>::loadFactor() const {
 template <typename T>
 void FamMap<T>::print(std::ostream& out) const {
     out << "FamMap[name=" << name_ << ",key_size=" << key_size << ",size=" << size() << ",region=" << region_ << ']';
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Locking
+
+template <typename T>
+void FamMap<T>::lock() {
+    while (lock_.compareSwap<size_type>(0, 0, 1) != 0) {
+        std::this_thread::yield();
+    }
+}
+
+template <typename T>
+void FamMap<T>::unlock() {
+    lock_.set<size_type>(0, 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

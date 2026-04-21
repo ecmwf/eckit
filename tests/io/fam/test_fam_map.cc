@@ -894,6 +894,47 @@ CASE("FamMap<32>: one writer process, parent reads") {
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("FamMap<32>: lock/unlock serialises concurrent read-modify-write") {
+    constexpr eckit::fam::size_t region_size = 4 * 1024 * 1024;
+    constexpr int num_writers                = 4;
+    constexpr int increments_per_proc        = 50;
+
+    auto region   = tester.makeRandomRegion(region_size);
+    auto map_name = "MPLK" + fam::random_number();
+
+    // Pre-create map and seed the counter key with "0".
+    {
+        FamMap32 map(map_name, region);
+        FamMap32::key_type key("counter");
+        map.insert(key, "0");
+    }
+
+    bool ok = forkAndRun(num_writers, [&](int /*id*/) {
+        FamMap32 map(map_name, region);
+        FamMap32::key_type key("counter");
+
+        for (int i = 0; i < increments_per_proc; ++i) {
+            map.lock();
+            auto entry = *map.find(key);
+            int val    = std::stoi(std::string(entry.value.view()));
+            map.insertOrAssign(key, std::to_string(val + 1));
+            map.unlock();
+        }
+    });
+
+    EXPECT(ok);
+
+    FamMap32 map(map_name, region);
+    FamMap32::key_type key("counter");
+    auto entry       = *map.find(key);
+    int final_val    = std::stoi(std::string(entry.value.view()));
+    int expected_val = num_writers * increments_per_proc;
+    eckit::Log::info() << "lock/unlock counter: " << final_val << "/" << expected_val << std::endl;
+    EXPECT_EQUAL(final_val, expected_val);
+}
+
 }  // namespace eckit::test
 
 //----------------------------------------------------------------------------------------------------------------------

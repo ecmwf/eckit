@@ -65,14 +65,19 @@ inline std::string shm_name_from_endpoint(const std::string& endpoint) {
 }
 
 /// Per-process unique endpoint so parallel test binaries each get their own shm segment.
-/// Appends "_<pid>" to the base endpoint; the mock's getShmName() converts non-alnum to '_',
-/// producing a unique shm path like /eckit_fam_mock_localhost_8880_12345.
-/// Registers an atexit handler to unlink the shm segment when the process exits.
+/// When ECKIT_FAM_TEST_ENDPOINT is set (real OpenFAM CIS), use it verbatim — the PID
+/// mangling is only needed for the mock backend, where the endpoint string becomes a POSIX
+/// shm key. With real OpenFAM, the endpoint must be a valid host:port for DNS resolution.
 inline const std::string test_endpoint = []() -> std::string {
     const char* ep = std::getenv("ECKIT_FAM_TEST_ENDPOINT");
-    auto base      = ep ? std::string(ep) : std::string("localhost:8880");
-    // Append PID before the port to keep the URI authority valid.
-    // host:port → host_<pid>:port  (no port → host_<pid>:0)
+
+    // Real OpenFAM: use the endpoint as-is.
+    if (ep && *ep) {
+        return std::string(ep);
+    }
+
+    // Mock OpenFAM: append "_<pid>" to produce a unique POSIX shm path per process.
+    auto base  = std::string("localhost:8880");
     auto colon = base.rfind(':');
     std::string endpoint;
     if (colon == std::string::npos) {
@@ -83,8 +88,6 @@ inline const std::string test_endpoint = []() -> std::string {
         auto port = base.substr(colon);  // includes ':'
         endpoint  = host + "_" + std::to_string(::getpid()) + port;
     }
-    // Register cleanup — must capture the shm name by value since test_endpoint
-    // (an inline static) may be destroyed before atexit handlers run in LIFO order.
     static std::string shm_name = shm_name_from_endpoint(endpoint);
     std::atexit([] { ::shm_unlink(shm_name.c_str()); });
     return endpoint;

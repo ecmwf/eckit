@@ -11,6 +11,7 @@
 
 
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/grid/regular/RegularLL.h"
 #include "eckit/spec/Custom.h"
@@ -330,6 +331,24 @@ CASE("arakawa c-grids") {
             auto test_shape_v = test.shape;
             test_shape_v[0] += 1;
             EXPECT(v->shape() == test_shape_v);
+        }
+    }
+
+
+    SECTION("equality") {
+        const std::vector<std::string> n96{
+            "{type: arakawa_c_um, N: 96}",
+            "{type: arakawa_c, N: 96, grid-factor: [2, 1.3333333333], order: i+j+}",
+            "{grid: [1.875, 1.25], reference: [0.9375, 0.625], order: i+j+}",
+            "{grid: [1.875, 1.25], area: [89.375, 0.9375, -89.375, 359.0625], order: i+j+}",
+        };
+        for (const auto& a : n96) {
+            for (const auto& b : n96) {
+                std::unique_ptr<const Grid> ga(GridFactory::make_from_string(a));
+                std::unique_ptr<const Grid> gb(GridFactory::make_from_string(b));
+
+                EXPECT(*ga == *gb);
+            }
         }
     }
 

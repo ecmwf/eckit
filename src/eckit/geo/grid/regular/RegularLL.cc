@@ -189,9 +189,9 @@ struct ArakawaC : public RegularLL {
     explicit ArakawaC(const Spec& spec) :
         RegularLL(*std::unique_ptr<Spec>([](const Spec& spec) {
             auto a = [](const std::string& str) {
-                return str == "T"   ? Arrangement::ARAKAWA_C_T
-                       : str == "U" ? Arrangement::ARAKAWA_C_U
-                       : str == "V"
+                return str == "T" || str == "t"   ? Arrangement::ARAKAWA_C_T
+                       : str == "U" || str == "u" ? Arrangement::ARAKAWA_C_U
+                       : str == "V" || str == "v"
                            ? Arrangement::ARAKAWA_C_V
                            : throw exception::GridError("ArakawaC: unsupported arrangement '" + str + "'", Here());
             }(spec.get_string("arrangement", "T"));

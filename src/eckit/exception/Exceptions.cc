@@ -23,9 +23,35 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static bool getenv_on(const char* env) {
-    const auto* var = std::getenv(env);
-    return var != nullptr && std::string(var) != "0";
+struct Runtime {
+    static const Runtime& instance() {
+        static const Runtime runtime;
+        return runtime;
+    }
+
+    bool assertFailedIsSilent;
+    bool exceptionIsSilent;
+    bool seriousBugIsSilent;
+
+    bool assertAborts;
+    bool exceptionDumpsBacktrace;
+    bool stopOnPanic;
+
+private:
+
+    static bool getenv_on(const char* env) {
+        static const std::string ZERO("0");
+        const auto* var = std::getenv(env);
+        return var != nullptr && var != ZERO;
+    }
+
+    Runtime() :
+        assertFailedIsSilent(getenv_on("ECKIT_ASSERT_FAILED_IS_SILENT")),
+        exceptionIsSilent(getenv_on("ECKIT_EXCEPTION_IS_SILENT")),
+        seriousBugIsSilent(getenv_on("ECKIT_SERIOUS_BUG_IS_SILENT")),
+        assertAborts(getenv_on("ECKIT_ASSERT_ABORTS")),
+        exceptionDumpsBacktrace(getenv_on("ECKIT_EXCEPTION_DUMPS_BACKTRACE")),
+        stopOnPanic(getenv_on("STOP_ON_PANIC")) {}
 };
 
 static Exception*& first() {
@@ -38,7 +64,7 @@ Exception::Exception() : next_(first()) {
 
     callStack_ = BackTrace::dump();
 
-    if (getenv_on("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
+    if (Runtime::instance().exceptionDumpsBacktrace) {
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 }
@@ -69,11 +95,11 @@ Exception::Exception(const std::string& w, const CodeLocation& loc, bool quiet) 
     what_(w), next_(first()), location_(loc) {
     callStack_ = BackTrace::dump();
 
-    if (getenv_on("ECKIT_EXCEPTION_DUMPS_BACKTRACE")) {
+    if (Runtime::instance().exceptionDumpsBacktrace) {
         std::cerr << "Exception dumping backtrace: " << callStack_ << std::endl;
     }
 
-    if (!getenv_on("ECKIT_EXCEPTION_IS_SILENT") && !quiet) {
+    if (!Runtime::instance().exceptionIsSilent && !quiet) {
         Log::error() << "Exception: " << w << " " << location_ << std::endl;
         Log::status() << "** " << w << location_ << std::endl;
     }
@@ -86,7 +112,7 @@ std::ostream& Exception::dumpStackTrace(std::ostream& out) {
 }
 
 void Exception::reason(const std::string& w) {
-    if (!getenv_on("ECKIT_EXCEPTION_IS_SILENT")) {
+    if (!Runtime::instance().exceptionIsSilent) {
         Log::error() << "Exception: " << w << std::endl;
     }
     what_ = w;
@@ -115,7 +141,7 @@ FailedSystemCall::FailedSystemCall(const std::string& w, const CodeLocation& loc
 }
 
 SeriousBug::SeriousBug(const std::string& w, const CodeLocation& loc) : Exception("Serious bug: " + w, loc) {
-    if (!getenv_on("ECKIT_SERIOUS_BUG_IS_SILENT")) {
+    if (!Runtime::instance().seriousBugIsSilent) {
         std::cout << what() << std::endl << BackTrace::dump() << std::endl;
     }
 }
@@ -127,13 +153,13 @@ void handle_assert(const std::string& msg, const CodeLocation& loc) {
     std::ostringstream s;
     s << "Assertion failed: " << msg << loc;
 
-    if (!getenv_on("ECKIT_ASSERT_FAILED_IS_SILENT")) {
+    if (!Runtime::instance().assertFailedIsSilent) {
         Log::status() << s.str() << std::endl;
 
         std::cout << s.str() << std::endl << BackTrace::dump() << std::endl;
     }
 
-    if (getenv_on("ECKIT_ASSERT_ABORTS")) {
+    if (Runtime::instance().assertAborts) {
         LibEcKit::instance().abort();
         return;
     }
@@ -231,7 +257,7 @@ void handle_panic(const char* msg, const CodeLocation& loc) {
               << "----------------------------------------\n"
               << std::endl;
 
-    if (getenv_on("STOP_ON_PANIC")) {
+    if (Runtime::instance().stopOnPanic) {
         pid_t pid = ::getpid();
 
         std::cout << "Stopped process with PID " << pid << " - attach a debugger or send a SIGCONT signal to abort"

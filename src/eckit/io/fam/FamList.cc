@@ -167,8 +167,8 @@ void FamList::pushBack(const void* data, const size_type length) {
             while (true) {
                 const auto cur_next = FamListNode::getNextOffset(current);
                 if (cur_next == tail_.offset()) {
-                    const auto old = current.compareSwap(
-                        offsetof(FamListNode, next.offset), tail_.offset(), new_object.offset());
+                    const auto old =
+                        current.compareSwap(offsetof(FamListNode, next.offset), tail_.offset(), new_object.offset());
                     if (old == tail_.offset()) {
                         break;  // Successfully linked into forward chain
                     }

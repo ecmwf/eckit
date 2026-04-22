@@ -8,6 +8,9 @@
 # does it submit to any jurisdiction.
 
 import findlibs
+from eckit._certifi_env import configure_ca_bundle_from_certifi
+
+configure_ca_bundle_from_certifi()
 
 findlibs.load("eckit_geo", "eckitlib")
 

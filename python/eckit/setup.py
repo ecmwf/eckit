@@ -67,7 +67,7 @@ except Exception:
     warnings.warn("failed to read VERSION, falling back to 0.0.0")
     version = "0.0.0"
 
-install_requires = ["findlibs", "pyyaml"]
+install_requires = ["findlibs", "pyyaml", "certifi"]
 try:
     import eckitlib
 

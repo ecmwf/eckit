@@ -564,7 +564,7 @@ void UserInput::loadHistory(const char* path) {
     memset(line, 0, sizeof(line));
     while (fgets(line, sizeof(line) - 1, f)) {
 
-        entry* h = (entry*)calloc(sizeof(entry), 1);
+        entry* h = (entry*)calloc(1, sizeof(entry));
 
         int len = strlen(line);
         while (len) {
@@ -639,7 +639,7 @@ const char* UserInput::getUserInput(const char* prompt, completion_proc completi
 
     bool done = false;
     context s;
-    entry* h = (entry*)calloc(sizeof(entry), 1);
+    entry* h = (entry*)calloc(1, sizeof(entry));
     h->len   = 80;
     h->line  = (char*)calloc(h->len, 1);
     h->prev  = history;

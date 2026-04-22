@@ -55,7 +55,7 @@ CmdArg::CmdArg() {}
 
 CmdArg::~CmdArg() {}
 
-CmdArg::CmdArg(const CmdArg& other) : args_(other.args_) {}
+CmdArg::CmdArg(const CmdArg& other) : Streamable(other), args_(other.args_) {}
 
 CmdArg& CmdArg::operator=(const CmdArg& other) {
     args_ = other.args_;

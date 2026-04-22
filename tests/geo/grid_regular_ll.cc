@@ -338,7 +338,7 @@ CASE("arakawa c-grids") {
     SECTION("equality") {
         const std::vector<std::string> n96{
             "{type: arakawa_c_um, N: 96}",
-            "{type: arakawa_c, N: 96, grid-factor: [2, 1.3333333333], order: i+j+}",
+            "{type: arakawa_c, N: 96, grid_factor: [2, 1.3333333333], order: i+j+}",
             "{grid: [1.875, 1.25], reference: [0.9375, 0.625], order: i+j+}",
             "{grid: [1.875, 1.25], area: [89.375, 0.9375, -89.375, 359.0625], order: i+j+}",
         };

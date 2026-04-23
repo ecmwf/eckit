@@ -20,6 +20,8 @@
 #include <string>
 #include <utility>
 
+#include "eckit/io/fam/detail/FamBackoff.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
@@ -104,6 +106,7 @@ void FamList::pushFront(const void* data, const size_type length) {
 
     // 2. Link into list: use CAS-loop (Compare-And-Swap) to atomically update head.next
     //    This ensures the new node becomes visible to other readers
+    fam::detail::CasBackoff backoff;
     while (true) {
         // Get current first node (what head.next points to)
         const auto first_offset = FamListNode::getNextOffset(head_);
@@ -132,7 +135,8 @@ void FamList::pushFront(const void* data, const size_type length) {
             epoch_.add(0, std::uint64_t{1});
             return;
         }
-        // CAS failed, another thread modified head.next. Retry with updated first offset.
+        // CAS failed, another thread modified head.next. Back off before retry.
+        backoff();
     }
 }
 
@@ -144,6 +148,7 @@ void FamList::pushBack(const void* data, const size_type length) {
 
     // 2. Link into list: use CAS-loop to atomically update tail.prev
     //    This ensures new node becomes visible to other readers
+    fam::detail::CasBackoff backoff;
     while (true) {
         // Get current last node (what tail.prev points to)
         const auto last_offset = FamListNode::getPrevOffset(tail_);
@@ -163,6 +168,7 @@ void FamList::pushBack(const void* data, const size_type length) {
             // Use CAS-loop: walk forward from last_object to find the node whose
             // next is tail, then CAS its next to new_object.
             // This prevents the plain-put race with concurrent pushFront on head.next.
+            fam::detail::CasBackoff inner_backoff;
             auto current = std::move(last_object);
             while (true) {
                 const auto cur_next = FamListNode::getNextOffset(current);
@@ -174,6 +180,7 @@ void FamList::pushBack(const void* data, const size_type length) {
                     }
                     // CAS failed — another node was inserted. Follow the new link.
                     current.replaceWith({region_.index(), old});
+                    inner_backoff();
                 }
                 else {
                     // Follow forward chain to find the node just before tail
@@ -188,7 +195,8 @@ void FamList::pushBack(const void* data, const size_type length) {
             epoch_.add(0, std::uint64_t{1});
             return;
         }
-        // CAS failed, another thread modified tail.prev. Retry with updated last offset.
+        // CAS failed, another thread modified tail.prev. Back off before retry.
+        backoff();
     }
 }
 
@@ -198,6 +206,7 @@ void FamList::pushBack(const void* data, const size_type length) {
 void FamList::popFront() {
     ASSERT(!empty());
 
+    fam::detail::CasBackoff backoff;
     while (true) {
         // Get the first node to delete
         const auto first_offset = FamListNode::getNextOffset(head_);
@@ -232,13 +241,15 @@ void FamList::popFront() {
             first_object.deallocate();
             return;
         }
-        // CAS failed, another thread modified head.next. Retry
+        // CAS failed, another thread modified head.next. Back off before retry.
+        backoff();
     }
 }
 
 void FamList::popBack() {
     ASSERT(!empty());
 
+    fam::detail::CasBackoff backoff;
     while (true) {
         // Get the last node to delete
         const auto last_offset = FamListNode::getPrevOffset(tail_);
@@ -273,7 +284,8 @@ void FamList::popBack() {
             last_object.deallocate();
             return;
         }
-        // CAS failed, another thread modified tail.prev. Retry
+        // CAS failed, another thread modified tail.prev. Back off before retry.
+        backoff();
     }
 }
 
@@ -281,6 +293,7 @@ auto FamList::erase(iterator pos) -> iterator {
     const auto& object = pos.object();
     ASSERT(object.offset() != tail_.offset());
 
+    fam::detail::CasBackoff backoff;
     while (true) {
         // 1. Mark the node for deletion
         FamListNode::mark(object);
@@ -307,7 +320,8 @@ auto FamList::erase(iterator pos) -> iterator {
 
             return region_.proxyObject(next_offset);
         }
-        // CAS failed, retry
+        // CAS failed, back off before retry.
+        backoff();
     }
 }
 

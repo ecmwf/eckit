@@ -10,7 +10,7 @@
  */
 
 
-#include "eckit/geo/grid/unstructured/UnstructuredGeneric.h"
+#include "eckit/geo/grid/unstructured/UnstructuredLL.h"
 
 #include "eckit/utils/MD5.h"
 
@@ -18,7 +18,7 @@
 namespace eckit::geo::grid::unstructured {
 
 
-Grid::uid_type UnstructuredGeneric::calculate_uid() const {
+Grid::uid_type UnstructuredLL::calculate_uid() const {
     MD5 hash;
     hash.add(type());
     container()->hash(hash);
@@ -29,24 +29,25 @@ Grid::uid_type UnstructuredGeneric::calculate_uid() const {
 }
 
 
-Grid::Spec* UnstructuredGeneric::spec(const std::string& name) {
+Grid::Spec* UnstructuredLL::spec(const std::string& name) {
     return GridSpecByUID::instance().get(name).spec();
 }
 
 
-void UnstructuredGeneric::fill_spec(spec::Custom& custom) const {
+void UnstructuredLL::fill_spec(spec::Custom& custom) const {
     custom.set("grid", name_);
     custom.set("uid", uid());
 }
 
 
-const std::string& UnstructuredGeneric::type() const {
+const std::string& UnstructuredLL::type() const {
     static const std::string type{"unstructured"};
     return type;
 }
 
 
-static const GridRegisterType<UnstructuredGeneric> GRIDTYPE("unstructured");
+static const GridRegisterType<UnstructuredLL> GRIDTYPE1("unstructured");
+static const GridRegisterType<UnstructuredLL> GRIDTYPE2("unstructured_ll");
 
 
 }  // namespace eckit::geo::grid::unstructured

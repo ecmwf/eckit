@@ -314,6 +314,14 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
         back->set("type", "regular_ll");
     }
 
+    if (auto lats = cfg->has("latitudes"), lons = cfg->has("longitudes"); lats || lons) {
+        if (lats != lons) {
+            throw exception::SpecError("Grid: both 'latitudes' and 'longitudes' are required", Here());
+        }
+        back->set("type", "unstructured");
+    }
+
+
     if (static const std::string projection{"projection"}, rotation{"rotation"};
         !cfg->has(projection) && cfg->has(rotation)) {
         back->set(projection, new spec::Custom({{"type", rotation}, {rotation, cfg->get_double_vector(rotation)}}));

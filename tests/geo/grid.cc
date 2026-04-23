@@ -99,6 +99,28 @@ CASE("Grid from increments") {
 }
 
 
+CASE("Grid from latitudes and longitudes") {
+    const std::vector<double> lats{1., 2., 3.};
+    const std::vector<double> lons{4., 5., 6.};
+
+    SECTION("keys latitudes/longitudes") {
+        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({
+            {"latitudes", lats},
+            {"longitudes", lons},
+        })));
+
+        EXPECT_EQUAL(grid->size(), lats.size());
+
+        const auto [out_lats, out_lons] = grid->to_latlons();
+        EXPECT(out_lats == lats);
+        EXPECT(out_lons == lons);
+
+        EXPECT_THROWS((void)GridFactory::build(spec::Custom({{"latitudes", lats}})));
+        EXPECT_THROWS((void)GridFactory::build(spec::Custom({{"longitudes", lons}})));
+    }
+}
+
+
 }  // namespace eckit::geo::test
 
 

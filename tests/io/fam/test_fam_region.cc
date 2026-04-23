@@ -19,6 +19,7 @@
 
 #include "test_fam_common.h"
 
+#include <cstdlib>
 #include <sstream>
 #include <string>
 
@@ -31,6 +32,7 @@
 #include "eckit/io/fam/FamRegionName.h"
 #include "eckit/io/fam/FamSession.h"
 #include "eckit/io/fam/FamSessionManager.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/testing/Test.h"
 
 using namespace eckit;
@@ -196,14 +198,10 @@ CASE("FamRegion: idempotent creation from 4 processes") {
     auto region_name                         = fam::TestFam::makeRandomText("REGION");
     constexpr eckit::fam::size_t region_size = 1024 * 1024;
 
-    bool ok = fork_and_run(4, [&](int /*child_id*/) {
-        auto name = FamRegionName(fam::test_endpoint, "").withRegion(region_name);
-        try {
-            name.create(region_size, 0640);
-        }
-        catch (const AlreadyExists&) {
-            name.lookup();
-        }
+    bool ok = fork_and_exec(4, {
+        "--fn=idempotent_create",
+        "--region=" + region_name,
+        "--region-size=" + std::to_string(region_size),
     });
 
     EXPECT(ok);
@@ -217,6 +215,44 @@ CASE("FamRegion: idempotent creation from 4 processes") {
 
 }  // namespace eckit::test
 
+namespace {
+
+int child_worker_main(int argc, char** argv) {
+    auto args = eckit::testing::parse_worker_args(argc, argv);
+    auto fn   = eckit::testing::get_worker_arg(args, "fn");
+    if (fn == "idempotent_create") {
+        auto region_name = eckit::testing::get_worker_arg(args, "region");
+        auto region_size = static_cast<eckit::fam::size_t>(std::stol(eckit::testing::get_worker_arg(args, "region-size")));
+        auto name = eckit::FamRegionName(eckit::test::fam::test_endpoint, "").withRegion(region_name);
+        try {
+            name.create(region_size, 0640);
+        }
+        catch (const eckit::AlreadyExists&) {
+            // Region created by another child — retry lookup (CIS may not have
+            // committed metadata yet when we race).
+            for (int attempt = 0; attempt < 20; ++attempt) {
+                try {
+                    name.lookup();
+                    return 0;
+                }
+                catch (const eckit::NotFound&) {
+                    ::usleep(50000);  // 50 ms
+                }
+            }
+            return 1;  // lookup never succeeded
+        }
+        return 0;
+    }
+    return 1;
+}
+
+}  // namespace
+
 int main(int argc, char** argv) {
+    auto args = eckit::testing::parse_worker_args(argc, argv);
+    if (!args.empty()) {
+        eckit::Main::initialise(argc, argv);
+        return child_worker_main(argc, argv);
+    }
     return eckit::testing::run_tests(argc, argv);
 }

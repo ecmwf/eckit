@@ -38,11 +38,6 @@ fam::TestFam tester;
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
-// Type aliases for the two key sizes under test
-
-using FamMap32 = FamMap<FamMapEntry<32>>;
-
-//----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 //
 // KeySize = 32
@@ -478,8 +473,8 @@ CASE("FamMap<32>: insertOrAssign repeated replacement keeps size 1") {
     FamMap32::key_type key("hot-key");
 
     for (int i = 0; i < 5; ++i) {
-        auto val            = "v" + std::to_string(i);
-        auto [it, inserted] = map.insertOrAssign(key, val);
+        auto val              = "v" + std::to_string(i);
+        auto [iter, inserted] = map.insertOrAssign(key, val);
         // First iteration inserts, the rest replace.
         if (i == 0) {
             EXPECT(inserted);

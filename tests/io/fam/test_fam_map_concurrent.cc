@@ -20,10 +20,14 @@
 #include "test_fam_common.h"
 
 #include <cstddef>
+#include <cstdlib>
 #include <set>
 #include <string>
 
 #include "eckit/io/fam/FamMap.h"
+#include "eckit/io/fam/FamRegionName.h"
+#include "eckit/log/Log.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
@@ -38,8 +42,91 @@ fam::TestFam tester;
 }  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
+// CHILD WORKER — runs in a clean exec'd process (no inherited gRPC state)
 
-using FamMap32 = FamMap<FamMapEntry<32>>;
+namespace {
+
+/// Look up a pre-created region by name from the test FAM endpoint.
+FamRegion lookupRegion(const std::string& region_name) {
+    return FamRegionName(fam::test_endpoint, "").withRegion(region_name).lookup();
+}
+
+/// Worker entry point for "concurrent insert" test.
+int worker_insert(int child_id, const std::vector<std::pair<std::string, std::string>>& args) {
+    auto region   = lookupRegion(get_worker_arg(args, "region"));
+    auto map_name = get_worker_arg(args, "map");
+    int count     = std::stoi(get_worker_arg(args, "count"));
+
+    FamMap32 map(map_name, region);
+    for (int i = 0; i < count; ++i) {
+        auto key_str = "p" + std::to_string(child_id) + "-k" + std::to_string(i);
+        auto val_str = "v" + std::to_string(child_id) + "-" + std::to_string(i);
+        FamMap32::key_type key(key_str);
+        auto [iter, success] = map.insert(key, val_str);
+        if (!success) {
+            return 2;
+        }
+    }
+    return 0;
+}
+
+/// Worker entry point for "one writer" test.
+int worker_write(int /*child_id*/, const std::vector<std::pair<std::string, std::string>>& args) {
+    auto region   = lookupRegion(get_worker_arg(args, "region"));
+    auto map_name = get_worker_arg(args, "map");
+    int count     = std::stoi(get_worker_arg(args, "count"));
+
+    FamMap32 map(map_name, region);
+    for (int i = 0; i < count; ++i) {
+        auto key_str = "wk-" + std::to_string(i);
+        auto val_str = "wv-" + std::to_string(i);
+        FamMap32::key_type key(key_str);
+        map.insert(key, val_str);
+    }
+    return 0;
+}
+
+/// Worker entry point for "lock/unlock" test.
+int worker_lock(int /*child_id*/, const std::vector<std::pair<std::string, std::string>>& args) {
+    auto region   = lookupRegion(get_worker_arg(args, "region"));
+    auto map_name = get_worker_arg(args, "map");
+    int count     = std::stoi(get_worker_arg(args, "count"));
+
+    FamMap32 map(map_name, region);
+    FamMap32::key_type key("counter");
+    for (int i = 0; i < count; ++i) {
+        map.lock();
+        auto entry = *map.find(key);
+        int val    = std::stoi(std::string(entry.value.view()));
+        map.insertOrAssign(key, std::to_string(val + 1));
+        map.unlock();
+    }
+    return 0;
+}
+
+/// Dispatch table for child workers.
+int child_worker_main(int argc, char** argv) {
+    auto args    = parse_worker_args(argc, argv);
+    int child_id = std::stoi(get_worker_arg(args, "worker-id"));
+    auto fn      = get_worker_arg(args, "fn");
+
+    if (fn == "insert") {
+        return worker_insert(child_id, args);
+    }
+    if (fn == "write") {
+        return worker_write(child_id, args);
+    }
+    if (fn == "lock") {
+        return worker_lock(child_id, args);
+    }
+
+    return 1;  // unknown worker
+}
+
+}  // namespace
+
+//----------------------------------------------------------------------------------------------------------------------
+
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -53,19 +140,12 @@ CASE("FamMap<32>: concurrent insert from 4 processes") {
 
     { FamMap32 map(map_name, region); }
 
-    bool ok = fork_and_run(num_procs, [&](int child_id) {
-        FamMap32 map(map_name, region);
-        for (int i = 0; i < items_per_proc; ++i) {
-            auto key_str = "p" + std::to_string(child_id) + "-k" + std::to_string(i);
-            auto val_str = "v" + std::to_string(child_id) + "-" + std::to_string(i);
-            FamMap32::key_type key(key_str);
-
-            auto [iter, success] = map.insert(key, val_str);
-            if (!success) {
-                ::_exit(2);
-            }
-        }
-    });
+    bool ok = fork_and_exec(num_procs, {
+                                           "--fn=insert",
+                                           "--region=" + region.name(),
+                                           "--map=" + map_name,
+                                           "--count=" + std::to_string(items_per_proc),
+                                       });
 
     EXPECT(ok);
 
@@ -96,15 +176,12 @@ CASE("FamMap<32>: one writer process, parent reads") {
 
     { FamMap32 map(map_name, region); }
 
-    bool ok = fork_and_run(1, [&](int) {
-        FamMap32 map(map_name, region);
-        for (int i = 0; i < count; ++i) {
-            auto key_str = "wk-" + std::to_string(i);
-            auto val_str = "wv-" + std::to_string(i);
-            FamMap32::key_type key(key_str);
-            map.insert(key, val_str);
-        }
-    });
+    bool ok = fork_and_exec(1, {
+                                   "--fn=write",
+                                   "--region=" + region.name(),
+                                   "--map=" + map_name,
+                                   "--count=" + std::to_string(count),
+                               });
 
     EXPECT(ok);
 
@@ -138,18 +215,12 @@ CASE("FamMap<32>: lock/unlock serialises concurrent read-modify-write") {
         map.insert(key, "0");
     }
 
-    bool ok = fork_and_run(num_writers, [&](int /*id*/) {
-        FamMap32 map(map_name, region);
-        FamMap32::key_type key("counter");
-
-        for (int i = 0; i < increments_per_proc; ++i) {
-            map.lock();
-            auto entry = *map.find(key);
-            int val    = std::stoi(std::string(entry.value.view()));
-            map.insertOrAssign(key, std::to_string(val + 1));
-            map.unlock();
-        }
-    });
+    bool ok = fork_and_exec(num_writers, {
+                                             "--fn=lock",
+                                             "--region=" + region.name(),
+                                             "--map=" + map_name,
+                                             "--count=" + std::to_string(increments_per_proc),
+                                         });
 
     EXPECT(ok);
 
@@ -167,5 +238,10 @@ CASE("FamMap<32>: lock/unlock serialises concurrent read-modify-write") {
 //----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
+    auto args = eckit::testing::parse_worker_args(argc, argv);
+    if (!args.empty()) {
+        eckit::Main::initialise(argc, argv);
+        return eckit::test::child_worker_main(argc, argv);
+    }
     return eckit::testing::run_tests(argc, argv);
 }

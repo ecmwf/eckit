@@ -9,15 +9,14 @@
  */
 
 /*
- * This software was developed as part of the EC H2020 funded project IO-SEA
- * (Project ID: 955811) iosea-project.eu
+ * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
+ * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
 #include "eckit/io/fam/FamHandle.h"
 
 #include <algorithm>
 #include <ostream>
-#include <string>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"

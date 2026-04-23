@@ -8,11 +8,10 @@
  * does it submit to any jurisdiction.
  */
 
-/// @brief Exponential backoff helper for CAS Copy-And-Swap retry loops.
-///        Used in FamMap bucket creation to reduce contention under high concurrency.
-///
-/// With OpenFAM/libfabric backend, multiple processes doing RDMA CAS create contention
-/// that causes lock for retry loops.
+/*
+ * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
+ * (Grant agreement: 101092984) horizon-opencube.eu
+ */
 
 #pragma once
 
@@ -24,6 +23,12 @@
 namespace eckit::fam::detail {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+/// @brief Exponential backoff helper for CAS Copy-And-Swap retry loops.
+///        Used in FamMap bucket creation to reduce contention under high concurrency.
+///
+/// With OpenFAM/libfabric backend, multiple processes doing RDMA CAS create contention
+/// that causes lock for retry loops.
 
 struct CasBackoff {
     std::uint32_t delay = 1;

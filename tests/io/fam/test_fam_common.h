@@ -45,12 +45,11 @@ using namespace std::string_literals;
 
 namespace fam {
 
-// This returns a random number as string.
+// This returns a random number as string, unique per process.
 inline auto random_number() -> std::string {
     struct timeval tv{};
     ::gettimeofday(&tv, nullptr);
-    // ::getpid() ?
-    ::srandom(static_cast<unsigned int>(tv.tv_sec + tv.tv_usec));
+    ::srandom(static_cast<unsigned int>(tv.tv_sec + tv.tv_usec + ::getpid()));
     return std::to_string(::random());
 }
 
@@ -73,7 +72,7 @@ inline const std::string test_endpoint = []() -> std::string {
 
     // Real OpenFAM: use the endpoint as-is.
     if (ep && *ep) {
-        return std::string(ep);
+        return ep;
     }
 
     // Mock OpenFAM: append "_<pid>" to produce a unique POSIX shm path per process.
@@ -126,7 +125,9 @@ private:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-using eckit::testing::fork_and_run;
+using eckit::testing::fork_and_exec;
+using eckit::testing::get_worker_arg;
+using eckit::testing::parse_worker_args;
 
 //----------------------------------------------------------------------------------------------------------------------
 

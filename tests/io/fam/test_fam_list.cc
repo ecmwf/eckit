@@ -19,11 +19,14 @@
 
 #include "test_fam_common.h"
 
+#include <cstdlib>
 #include <set>
 #include <string>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamList.h"
+#include "eckit/io/fam/FamRegionName.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
@@ -157,12 +160,11 @@ CASE("FamList: concurrent pushBack from 4 processes") {
 
     { FamList list(region, name); }
 
-    bool ok = fork_and_run(num_procs, [&](int child_id) {
-        FamList list(region, name);
-        for (int i = 0; i < items_per_proc; ++i) {
-            auto data = "c" + std::to_string(child_id) + "-i" + std::to_string(i);
-            list.pushBack(data.data(), data.size());
-        }
+    bool ok = fork_and_exec(num_procs, {
+        "--fn=pushBack",
+        "--region=" + region.name(),
+        "--list=" + name,
+        "--count=" + std::to_string(items_per_proc),
     });
 
     EXPECT(ok);
@@ -194,12 +196,11 @@ CASE("FamList: one writer process, parent reads") {
 
     { FamList list(region, name); }
 
-    bool ok = fork_and_run(1, [&](int) {
-        FamList list(region, name);
-        for (int i = 0; i < count; ++i) {
-            auto data = "item-" + std::to_string(i);
-            list.pushBack(data.data(), data.size());
-        }
+    bool ok = fork_and_exec(1, {
+        "--fn=write",
+        "--region=" + region.name(),
+        "--list=" + name,
+        "--count=" + std::to_string(count),
     });
 
     EXPECT(ok);
@@ -228,17 +229,11 @@ CASE("FamList: concurrent pushFront and pushBack from 4 processes") {
 
     { FamList list(region, name); }
 
-    bool ok = fork_and_run(num_procs, [&](int child_id) {
-        FamList list(region, name);
-        for (int i = 0; i < items_per_proc; ++i) {
-            auto data = "c" + std::to_string(child_id) + "-i" + std::to_string(i);
-            if (child_id % 2 == 0) {
-                list.pushFront(data.data(), data.size());
-            }
-            else {
-                list.pushBack(data.data(), data.size());
-            }
-        }
+    bool ok = fork_and_exec(num_procs, {
+        "--fn=pushFrontBack",
+        "--region=" + region.name(),
+        "--list=" + name,
+        "--count=" + std::to_string(items_per_proc),
     });
 
     EXPECT(ok);
@@ -257,6 +252,60 @@ CASE("FamList: concurrent pushFront and pushBack from 4 processes") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+namespace {
+
+/// Look up a pre-created region by name from the test FAM endpoint.
+eckit::FamRegion lookupRegion(const std::string& region_name) {
+    return eckit::FamRegionName(eckit::test::fam::test_endpoint, "").withRegion(region_name).lookup();
+}
+
+int child_worker_main(int argc, char** argv) {
+    auto args      = eckit::testing::parse_worker_args(argc, argv);
+    int child_id   = std::stoi(eckit::testing::get_worker_arg(args, "worker-id"));
+    auto fn        = eckit::testing::get_worker_arg(args, "fn");
+    auto region    = lookupRegion(eckit::testing::get_worker_arg(args, "region"));
+    auto list_name = eckit::testing::get_worker_arg(args, "list");
+    int count      = std::stoi(eckit::testing::get_worker_arg(args, "count"));
+
+    if (fn == "pushBack") {
+        eckit::FamList list(region, list_name);
+        for (int i = 0; i < count; ++i) {
+            auto data = "c" + std::to_string(child_id) + "-i" + std::to_string(i);
+            list.pushBack(data.data(), data.size());
+        }
+        return 0;
+    }
+    if (fn == "write") {
+        eckit::FamList list(region, list_name);
+        for (int i = 0; i < count; ++i) {
+            auto data = "item-" + std::to_string(i);
+            list.pushBack(data.data(), data.size());
+        }
+        return 0;
+    }
+    if (fn == "pushFrontBack") {
+        eckit::FamList list(region, list_name);
+        for (int i = 0; i < count; ++i) {
+            auto data = "c" + std::to_string(child_id) + "-i" + std::to_string(i);
+            if (child_id % 2 == 0) {
+                list.pushFront(data.data(), data.size());
+            }
+            else {
+                list.pushBack(data.data(), data.size());
+            }
+        }
+        return 0;
+    }
+    return 1;
+}
+
+}  // namespace
+
 int main(int argc, char** argv) {
+    auto args = eckit::testing::parse_worker_args(argc, argv);
+    if (!args.empty()) {
+        eckit::Main::initialise(argc, argv);
+        return child_worker_main(argc, argv);
+    }
     return eckit::testing::run_tests(argc, argv);
 }

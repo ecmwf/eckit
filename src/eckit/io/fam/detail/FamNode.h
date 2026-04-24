@@ -21,9 +21,9 @@
 
 #include <cstddef>
 #include <cstdint>  // uint8_t
+#include <type_traits>
 
 #include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamProperty.h"
 
 namespace eckit {
 
@@ -40,6 +40,10 @@ struct FamNode {
         return object.get<std::uint64_t>(offsetof(FamNode, next.offset));
     }
 };
+
+static_assert(std::is_standard_layout_v<FamNode>, "FamNode must be standard-layout for offsetof()");
+static_assert(std::is_trivially_copyable_v<FamNode>, "FamNode must be trivially copyable for FAM put/get");
+static_assert(sizeof(FamNode) == 24, "FamNode layout changed — FAM on-wire format depends on this");
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -44,6 +44,11 @@ struct FamMapNode : public FamNode {
     }
 };
 
+// FamMapNode is not standard-layout (data in both base and derived), but offsetof()
+// is well-supported by all target compilers for trivially-copyable types.
+static_assert(sizeof(FamMapNode) == 64, "FamMapNode layout changed — FAM on-wire format depends on this");
+static_assert(offsetof(FamMapNode, desc) == 24, "FamMapNode::desc offset mismatch");
+
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

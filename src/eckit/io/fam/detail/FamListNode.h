@@ -21,10 +21,10 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <type_traits>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamObject.h"
-#include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/detail/FamNode.h"
 
 namespace eckit {
@@ -95,6 +95,12 @@ struct FamListNode : public FamNode {
         }
     }
 };
+
+static_assert(std::is_trivially_copyable_v<FamListNode>, "FamListNode must be trivially copyable for FAM put/get");
+static_assert(sizeof(FamListNode) == 56, "FamListNode layout changed — FAM on-wire format depends on this");
+static_assert(offsetof(FamListNode, prev) == 24, "FamListNode::prev offset mismatch");
+static_assert(offsetof(FamListNode, length) == 40, "FamListNode::length offset mismatch");
+static_assert(offsetof(FamListNode, marked) == 48, "FamListNode::marked offset mismatch");
 
 //----------------------------------------------------------------------------------------------------------------------
 

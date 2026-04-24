@@ -38,8 +38,7 @@ FamList::FamList(FamRegion region, const Descriptor& desc) :
     region_{std::move(region)},
     head_{region_.proxyObject(desc.head)},
     tail_{region_.proxyObject(desc.tail)},
-    size_{region_.proxyObject(desc.size)},
-    epoch_{region_.proxyObject(desc.epoch)} {
+    size_{region_.proxyObject(desc.size)} {
     ASSERT(region_.index() == desc.region);
 }
 
@@ -47,8 +46,7 @@ FamList::FamList(FamRegion region, const std::string& list_name) :
     region_{std::move(region)},
     head_{region_.ensureObject(sizeof(FamListNode), list_name + "h")},
     tail_{region_.ensureObject(sizeof(FamListNode), list_name + "t")},
-    size_{region_.ensureObject(sizeof(size_type), list_name + "s")},
-    epoch_{region_.ensureObject(sizeof(std::uint64_t), list_name + "e")} {
+    size_{region_.ensureObject(sizeof(size_type), list_name + "s")} {
     // set head's next to tail's prev (idempotent)
     if (FamListNode::getNextOffset(head_) == 0) {
         head_.put(tail_.descriptor(), offsetof(FamListNode, next));
@@ -60,7 +58,7 @@ FamList::FamList(FamRegion region, const std::string& list_name) :
 }
 
 auto FamList::descriptor() const -> Descriptor {
-    return {region_.index(), head_.offset(), tail_.offset(), size_.offset(), epoch_.offset()};
+    return {region_.index(), head_.offset(), tail_.offset(), size_.offset()};
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -131,8 +129,6 @@ void FamList::pushFront(const void* data, const size_type length) {
             // Atomically increment size
             size_.add(0, size_type{1});
 
-            // Increment epoch to invalidate old iterators (optional, for ABA safety)
-            epoch_.add(0, std::uint64_t{1});
             return;
         }
         // CAS failed, another thread modified head.next. Back off before retry.
@@ -191,8 +187,6 @@ void FamList::pushBack(const void* data, const size_type length) {
             // Atomically increment size
             size_.add(0, size_type{1});
 
-            // Increment epoch (for iterator validation)
-            epoch_.add(0, std::uint64_t{1});
             return;
         }
         // CAS failed, another thread modified tail.prev. Back off before retry.
@@ -234,11 +228,10 @@ void FamList::popFront() {
             // Decrement size
             size_.subtract(0, size_type{1});
 
-            // Increment epoch for iterator validation
-            epoch_.add(0, std::uint64_t{1});
-
-            // Now deallocate the marked node (safe since we've unlinked it)
-            first_object.deallocate();
+            // Node is marked and unlinked but NOT deallocated.
+            // Concurrent iterators may still hold the node's offset and
+            // follow its next/prev pointers, which remain valid.
+            // Physical reclamation happens on region wipe or clear().
             return;
         }
         // CAS failed, another thread modified head.next. Back off before retry.
@@ -277,11 +270,8 @@ void FamList::popBack() {
             // Decrement size
             size_.subtract(0, size_type{1});
 
-            // Increment epoch
-            epoch_.add(0, std::uint64_t{1});
-
-            // Deallocate the marked node
-            last_object.deallocate();
+            // Node is marked and unlinked but NOT deallocated.
+            // See popFront() for rationale.
             return;
         }
         // CAS failed, another thread modified tail.prev. Back off before retry.
@@ -311,12 +301,11 @@ auto FamList::erase(iterator pos) -> iterator {
             // Success! Update next.prev as well
             next_object.put(prev_object.descriptor(), offsetof(FamListNode, prev));
 
-            // Update size and epoch
+            // Update size
             size_.subtract(0, size_type{1});
-            epoch_.add(0, std::uint64_t{1});
 
-            // Deallocate marked node
-            object.deallocate();
+            // Node is marked and unlinked but NOT deallocated.
+            // See popFront() for rationale.
 
             return region_.proxyObject(next_offset);
         }

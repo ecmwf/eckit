@@ -100,7 +100,6 @@ public:  // types
         fam::index_t head{0};    // offset of head sentinel
         fam::index_t tail{0};    // offset of tail sentinel
         fam::index_t size{0};    // offset of atomic size counter
-        fam::index_t epoch{0};   // offset of atomic epoch (version counter for ABA)
     };
 
 public:  // methods
@@ -162,16 +161,19 @@ public:  // methods
 
     void pushBack(const Buffer& data) { pushBack(data.view()); }
 
-    /// Remove first element. Wait-free (logical deletion).
+    /// Remove first element. Lock-free (logical mark + unlink).
+    /// The node is NOT deallocated; concurrent iterators may still
+    /// reference it. Physical reclamation happens on region wipe or clear().
     /// Precondition: !empty()
     void popFront();
 
-    /// Remove last element. Wait-free (logical deletion).
+    /// Remove last element. Lock-free (logical mark + unlink).
+    /// The node is NOT deallocated; see popFront() for rationale.
     /// Precondition: !empty()
     void popBack();
 
     /// Remove element at position. Returns iterator to following element.
-    /// Wait-free; skips marked nodes in linked list.
+    /// The node is NOT deallocated; see popFront() for rationale.
     iterator erase(iterator pos);
 
 private:  // methods
@@ -186,7 +188,6 @@ private:  // members
     FamObject head_;
     FamObject tail_;
     FamObject size_;
-    FamObject epoch_;  // atomic counter for version-based ABA detection
 };
 
 //----------------------------------------------------------------------------------------------------------------------

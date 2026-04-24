@@ -272,7 +272,15 @@ FamObject FamSession::ensureAllocateObject(FamRegionDescriptor& region, const fa
             return allocateObject(region, object_size, object_perm, object_name);
         }
         catch (const AlreadyExists&) {
-            deallocateObject(region.get_name(), object_name);
+            try {
+                deallocateObject(region.get_name(), object_name);
+            }
+            catch (const NotFound&) {
+                LOG_DEBUG_LIB(LibEcKit) << "Object '" << object_name
+                                        << "' already existed but was concurrently destroyed by another "
+                                           "process/thread; retrying allocate (attempt "
+                                        << (attempt + 1) << " of " << max_retries << ")\n";
+            }
         }
     }
     throw SeriousBug("ensureAllocateObject: failed after " + std::to_string(max_retries) + " retries for object '" +

@@ -117,7 +117,7 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& RegularLL::type() const {
-    static const std::string type{"regular-ll"};
+    static const std::string type{"regular_ll"};
     return type;
 }
 

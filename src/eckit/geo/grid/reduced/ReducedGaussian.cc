@@ -150,7 +150,7 @@ void ReducedGaussian::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& ReducedGaussian::type() const {
-    static const std::string type{"reduced-gg"};
+    static const std::string type{"reduced_gg"};
     return type;
 }
 

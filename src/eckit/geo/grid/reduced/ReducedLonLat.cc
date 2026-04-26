@@ -140,7 +140,7 @@ void ReducedLonLat::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& ReducedLonLat::type() const {
-    static const std::string type{"reduced-ll"};
+    static const std::string type{"reduced_ll"};
     return type;
 }
 

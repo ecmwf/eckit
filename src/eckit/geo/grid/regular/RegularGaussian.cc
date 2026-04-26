@@ -73,7 +73,7 @@ void RegularGaussian::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& RegularGaussian::type() const {
-    static const std::string type{"regular-gg"};
+    static const std::string type{"regular_gg"};
     return type;
 }
 

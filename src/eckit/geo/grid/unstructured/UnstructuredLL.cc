@@ -41,7 +41,7 @@ void UnstructuredLL::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& UnstructuredLL::type() const {
-    static const std::string type{"unstructured"};
+    static const std::string type{"unstructured_ll"};
     return type;
 }
 

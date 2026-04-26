@@ -66,7 +66,7 @@ PointLonLat PolarStereographic::inv(const PointXY& q) const {
 
 
 const std::string& PolarStereographic::type() const {
-    static const std::string type{"polar-stereographic"};
+    static const std::string type{"polar_stereographic"};
     return type;
 }
 

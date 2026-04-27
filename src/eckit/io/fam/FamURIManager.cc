@@ -21,8 +21,8 @@
 #include "eckit/filesystem/URIManager.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
-#include "eckit/io/fam/FamCommon.h"
 #include "eckit/io/fam/FamObjectName.h"
+#include "eckit/io/fam/FamTypes.h"
 
 namespace eckit {
 

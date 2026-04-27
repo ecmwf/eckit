@@ -22,7 +22,7 @@
 #include <ostream>
 #include <string>
 
-#include "eckit/io/fam/FamCommon.h"
+#include "eckit/io/fam/FamTypes.h"
 
 namespace eckit {
 

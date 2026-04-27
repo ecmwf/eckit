@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <signal.h>
 #include <sys/mman.h>
 #include <sys/time.h>
 #include <sys/wait.h>
@@ -31,9 +30,9 @@
 #include <string>
 #include <vector>
 
-#include "eckit/io/fam/FamCommon.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
+#include "eckit/io/fam/FamTypes.h"
 #include "eckit/testing/ProcessFork.h"
 
 namespace eckit::test {
@@ -89,6 +88,10 @@ inline const std::string test_endpoint = []() -> std::string {
     }
     static std::string shm_name = shm_name_from_endpoint(endpoint);
     std::atexit([] { ::shm_unlink(shm_name.c_str()); });
+    // Export the computed endpoint so fork_and_exec'd children use the same shm segment.
+    ::setenv("ECKIT_FAM_TEST_ENDPOINT", endpoint.c_str(), 1);
+    fprintf(stderr, "[test_fam_common] PID %d: mock endpoint=%s shm=%s\n", ::getpid(), endpoint.c_str(),
+            shm_name.c_str());
     return endpoint;
 }();
 

@@ -24,7 +24,7 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/fam/FamCommon.h"
+#include "eckit/io/fam/FamTypes.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Tokenizer.h"
 

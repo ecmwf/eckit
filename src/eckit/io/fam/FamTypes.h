@@ -13,7 +13,7 @@
  * (Grant agreement: 101092984) horizon-opencube.eu
  */
 
-/// @file   FamCommon.h
+/// @file   FamTypes.h
 /// @author Metin Cakircali
 /// @date   Mar 2026
 

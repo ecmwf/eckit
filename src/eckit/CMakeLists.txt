@@ -271,7 +271,7 @@ list(APPEND eckit_message_srcs
 # FAM support
 
 list( APPEND eckit_io_srcs
-    io/fam/FamCommon.h
+    io/fam/FamTypes.h
 )
 
 if( eckit_HAVE_OPENFAM )

@@ -20,10 +20,10 @@
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/fam/FamCommon.h"
 #include "eckit/io/fam/FamObjectName.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamSession.h"
+#include "eckit/io/fam/FamTypes.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {

@@ -21,8 +21,8 @@
 #include <utility>
 
 #include "eckit/filesystem/URI.h"
-#include "eckit/io/fam/FamCommon.h"
 #include "eckit/io/fam/FamSessionManager.h"
+#include "eckit/io/fam/FamTypes.h"
 #include "eckit/net/Endpoint.h"
 #include "eckit/serialisation/Stream.h"
 

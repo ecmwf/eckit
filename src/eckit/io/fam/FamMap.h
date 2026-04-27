@@ -28,7 +28,7 @@
 /// ## Architecture
 ///
 /// - **Hash table**: A flat FAM object holding `bucket_count` (1024) bucket slots. Each slot stores a
-///   `FamList::Descriptor` (40 bytes). A zero `head` field means the bucket is empty.
+///   `FamList::Descriptor` (32 bytes). A zero `head` field means the bucket is empty.
 /// - **Buckets**: Each non-empty bucket is a `FamList` whose nodes store key-value entries as:
 ///   `[key (32/64/128 bytes)] [value data (variable length)]`
 /// - **Size counter**: An atomic FAM counter tracking total number of entries across all buckets.

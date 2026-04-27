@@ -15,6 +15,7 @@
 
 #include "eckit/io/fam/FamMap.h"
 
+#include <chrono>
 #include <cstddef>
 #include <ostream>
 #include <string>
@@ -27,6 +28,7 @@
 #include "eckit/io/fam/FamMapIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 
@@ -43,6 +45,12 @@ constexpr fam::size_t bucketOffset(std::size_t index) {
 /// Offset of the head field within a FamList::Descriptor.
 constexpr fam::size_t bucketHeadOffset(std::size_t index) {
     return bucketOffset(index) + offsetof(FamList::Descriptor, head);
+}
+
+/// Current wall-clock time as seconds since epoch (uint64).
+inline fam::size_t nowSeconds() {
+    return static_cast<fam::size_t>(
+        std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 }
 
 }  // namespace
@@ -353,11 +361,30 @@ void FamMap<T>::print(std::ostream& out) const {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-// Locking
+// Locking (lease-based with TTL)
 
 template <typename T>
 void FamMap<T>::lock() {
-    while (lock_.compareSwap<size_type>(0, 0, 1) != 0) {
+    for (;;) {
+        const auto now = nowSeconds();
+
+        // Fast path: lock is free (0)
+        if (lock_.compareSwap<size_type>(0, 0, now) == 0) {
+            return;
+        }
+
+        // Locked: check for a stale lease.
+        const auto held = lock_.fetch<size_type>(0);
+        if (held != 0 && (now - held) > static_cast<size_type>(lock_ttl.count())) {
+            // Lease expired — attempt to steal.
+            if (lock_.compareSwap<size_type>(0, held, now) == held) {
+                Log::warning() << "FamMap::lock(): stale lock detected (held for " << (now - held) << "s > TTL "
+                               << lock_ttl.count() << "s) — stolen\n";
+                return;
+            }
+            // Another process acquired it; retry.
+        }
+
         std::this_thread::yield();
     }
 }

@@ -63,6 +63,7 @@
 
 #pragma once
 
+#include <chrono>
 #include <cstddef>
 #include <functional>
 #include <iosfwd>
@@ -127,6 +128,10 @@ public:  // constants
     static constexpr auto table_suffix = ".t";
     static constexpr auto count_suffix = ".c";
     static constexpr auto lock_suffix  = ".l";
+
+    /// Lock lease time-to-live.  If a lock holder crashes, waiters can steal
+    /// the lock after this many seconds.
+    static constexpr std::chrono::seconds lock_ttl{30};
 
 public:  // methods
 
@@ -241,10 +246,12 @@ public:  // methods
     /// @pre No concurrent modifications to @p other during merge.
     void merge(const FamMap& other);
 
-    /// Acquire the map-wide FAM spinlock.  Pair with unlock().
-    /// Use when a caller needs to perform an atomic read-modify-write
-    /// sequence (e.g. find + merge + insertOrAssign) across processes.
+    /// Acquire the map-wide FAM spinlock (lease-based).  Pair with unlock().
+    /// Stores a wall-clock timestamp in the FAM lock object.  If the holder
+    /// crashes, waiters take the lock after @c lock_ttl seconds.
     void lock();
+
+    /// Release the map-wide FAM spinlock.  Pair with lock().
     void unlock();
 
 private:  // methods
@@ -283,7 +290,7 @@ private:  // members
     FamRegion region_;  ///< FAM region holding all map objects
     FamObject table_;   ///< Flat array of FamList::Descriptor, one per bucket
     FamObject count_;   ///< Atomic uint64 tracking total element count
-    FamObject lock_;    ///< FAM spinlock (uint64: 0=free, 1=held) for lock()/unlock()
+    FamObject lock_;    ///< Lease-based FAM lock (uint64: 0=free, timestamp=held)
 };
 
 //----------------------------------------------------------------------------------------------------------------------

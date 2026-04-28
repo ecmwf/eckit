@@ -17,6 +17,7 @@
 
 #include <memory>
 #include <ostream>
+#include <sstream>
 #include <string>
 
 #include "fam/fam.h"
@@ -106,7 +107,12 @@ FamObject FamRegion::ensureObject(const fam::size_t object_size, const std::stri
     }
     catch (const AlreadyExists&) {
         auto object = lookupObject(object_name);
-        ASSERT(object.size() == object_size);
+        if (object.size() != object_size) {
+            std::ostringstream msg;
+            msg << "FamRegion::ensureObject: size mismatch for object '" << object_name << "' in region '"
+                << region_->get_name() << "': existing=" << object.size() << ", requested=" << object_size;
+            throw SeriousBug(msg.str(), Here());
+        }
         return object;
     }
 }

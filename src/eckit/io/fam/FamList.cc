@@ -314,6 +314,28 @@ auto FamList::erase(iterator pos) -> iterator {
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+
+void FamList::clear() {
+    while (true) {
+        const auto first_offset = FamListNode::getNextOffset(head_);
+        if (first_offset == tail_.offset()) {
+            break;  // empty
+        }
+
+        auto first_object      = region_.proxyObject(first_offset);
+        const auto next_offset = FamListNode::getNextOffset(first_object);
+        auto next_object       = region_.proxyObject(next_offset);
+
+        // this is single-threaded, no CAS / mark needed
+        head_.put(next_object.descriptor(), offsetof(FamListNode, next));
+        next_object.put(head_.descriptor(), offsetof(FamListNode, prev));
+
+        first_object.deallocate();
+        size_.subtract(0, size_type{1});
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 // capacity
 
 auto FamList::size() const -> size_type {

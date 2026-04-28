@@ -317,14 +317,21 @@ auto FamMap<T>::erase(const key_type& key) -> size_type {
 
 template <typename T>
 void FamMap<T>::clear() {
-    for (std::size_t i = 0; i < bucket_count; ++i) {
-        if (auto bucket = getBucket(i)) {
-            while (!bucket->empty()) {
-                bucket->popFront();
+    /// @note insert/erase paths are lock-free
+    lock();
+    try {
+        for (std::size_t i = 0; i < bucket_count; ++i) {
+            if (auto bucket = getBucket(i)) {
+                bucket->clear();
             }
         }
+        count_.set(0, size_type{0});
     }
-    count_.set(0, size_type{0});
+    catch (...) {
+        unlock();
+        throw;
+    }
+    unlock();
 }
 
 template <typename T>

@@ -176,6 +176,11 @@ public:  // methods
     /// The node is NOT deallocated; see popFront() for rationale.
     iterator erase(iterator pos);
 
+    /// Reclaims the FAM memory immediately. Deallocate all data nodes and reset the list to empty.
+    /// Precondition: caller guarantees no concurrent operations on this list.
+    /// @pre  No concurrent readers or writers.
+    void clear();
+
 private:  // methods
 
     void print(std::ostream& out) const;

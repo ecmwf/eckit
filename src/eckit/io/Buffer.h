@@ -17,6 +17,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 
 namespace eckit {
 
@@ -53,6 +54,8 @@ public:  // methods
     Buffer& operator=(Buffer&& rhs) noexcept;
 
     ~Buffer();
+
+    std::string_view view() const noexcept { return {buffer_, size_}; }
 
     operator char*() { return buffer_; }
     operator const char*() const { return buffer_; }

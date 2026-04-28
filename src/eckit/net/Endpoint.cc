@@ -10,16 +10,21 @@
 
 #include "eckit/net/Endpoint.h"
 
-#include <ostream>
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
+#include <ostream>
+
 namespace eckit::net {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+Endpoint::Endpoint(const URI& uri) : host_(uri.host()), port_(uri.port()) {
+    validate();
+}
 
 Endpoint::Endpoint(const std::string& s) {
     Tokenizer tokenize(":");

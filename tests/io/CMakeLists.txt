@@ -54,3 +54,5 @@ ecbuild_add_test( TARGET      eckit_rados-performance
                   INCLUDES    ${RADOS_INCLUDE_DIRS}
                   TEST_DEPENDS get_eckit_io_test_data
                   LIBS        eckit )
+
+add_subdirectory( fam )

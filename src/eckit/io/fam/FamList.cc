@@ -118,12 +118,12 @@ void FamList::pushFront(const void* data, const size_type length) {
         // Atomically update head.next to new node.
         // On success, we become the new first node.
         const auto old_offset =
-            head_.compareSwap(offsetof(FamListNode, next.offset), first_offset, new_object.offset());
+            head_.compareSwap(FamListNode::nextOffsetOff(), first_offset, new_object.offset());
         if (old_offset == first_offset) {
             // Success! Update old first node's prev to point to us.
             // Use CAS instead of plain put to avoid overwriting a concurrent
             // pushBack's CAS on tail.prev (when first_object is the tail sentinel).
-            first_object.compareSwap(offsetof(FamListNode, prev.offset), head_.offset(), new_object.offset());
+            first_object.compareSwap(FamListNode::prevOffsetOff(), head_.offset(), new_object.offset());
 
             // Atomically increment size
             size_.add(0, size_type{1});
@@ -157,7 +157,7 @@ void FamList::pushBack(const void* data, const size_type length) {
 
         // Atomically update tail.prev to new node.
         // On success, we become the new last node.
-        const auto old_offset = tail_.compareSwap(offsetof(FamListNode, prev.offset), last_offset, new_object.offset());
+        const auto old_offset = tail_.compareSwap(FamListNode::prevOffsetOff(), last_offset, new_object.offset());
         if (old_offset == last_offset) {
             // Success! Now link new_object into the forward chain.
             // Use CAS-loop: walk forward from last_object to find the node whose
@@ -169,7 +169,7 @@ void FamList::pushBack(const void* data, const size_type length) {
                 const auto cur_next = FamListNode::getNextOffset(current);
                 if (cur_next == tail_.offset()) {
                     const auto old =
-                        current.compareSwap(offsetof(FamListNode, next.offset), tail_.offset(), new_object.offset());
+                        current.compareSwap(FamListNode::nextOffsetOff(), tail_.offset(), new_object.offset());
                     if (old == tail_.offset()) {
                         break;  // Successfully linked into forward chain
                     }
@@ -217,7 +217,7 @@ void FamList::popFront() {
         const auto next_offset = FamListNode::getNextOffset(first_object);
 
         // 3. Atomically update head.next to skip over the marked node
-        const auto old_offset = head_.compareSwap(offsetof(FamListNode, next.offset), first_offset, next_offset);
+        const auto old_offset = head_.compareSwap(FamListNode::nextOffsetOff(), first_offset, next_offset);
         if (old_offset == first_offset) {
             // Success! We've removed the node from the list.
             // Update the next node's prev pointer to point to head
@@ -259,7 +259,7 @@ void FamList::popBack() {
         const auto prev_offset = FamListNode::getPrevOffset(last_object);
 
         // 3. Atomically update tail.prev to point before the marked node
-        const auto old_offset = tail_.compareSwap(offsetof(FamListNode, prev.offset), last_offset, prev_offset);
+        const auto old_offset = tail_.compareSwap(FamListNode::prevOffsetOff(), last_offset, prev_offset);
         if (old_offset == last_offset) {
             // Success! We've removed the node from the list.
             // Update the previous node's next pointer to point to tail
@@ -295,7 +295,7 @@ auto FamList::erase(iterator pos) -> iterator {
         auto prev_object = region_.proxyObject(prev_offset);
 
         // 3. Atomically update prev.next to skip over marked node
-        const auto old_next = prev_object.compareSwap(offsetof(FamListNode, next.offset), object.offset(), next_offset);
+        const auto old_next = prev_object.compareSwap(FamListNode::nextOffsetOff(), object.offset(), next_offset);
         if (old_next == object.offset()) {
             // Success! Update next.prev as well
             next_object.put(prev_object.descriptor(), offsetof(FamListNode, prev));

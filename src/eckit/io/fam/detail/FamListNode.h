@@ -56,6 +56,14 @@ struct FamListNode : public FamNode {
     std::uint8_t marked{0};  // 0=active, 1=logically deleted (concurrent-safe marker)
     // 7 bytes padding to align 'data' to 8-byte boundary
 
+    /// Byte offset of `prev.offset` within FamListNode (portable two-step form).
+    static constexpr std::size_t prevOffsetOff() noexcept {
+        return offsetof(FamListNode, prev) + offsetof(FamDescriptor, offset);
+    }
+
+    /// Byte offset of `next.offset` within FamListNode, inherited from FamNode.
+    static constexpr std::size_t nextOffsetOff() noexcept { return FamNode::nextOffsetOff(); }
+
     /// Increment version stamp to prevent ABA problems on node reuse
     static void bumpVersion(const FamObject& object) {
         auto ver = object.get<std::uint8_t>(offsetof(FamNode, version));
@@ -68,9 +76,7 @@ struct FamListNode : public FamNode {
     }
 
     /// Fetch previous node offset only
-    static std::uint64_t getPrevOffset(const FamObject& object) {
-        return object.get<std::uint64_t>(offsetof(FamListNode, prev.offset));
-    }
+    static std::uint64_t getPrevOffset(const FamObject& object) { return object.get<std::uint64_t>(prevOffsetOff()); }
 
     /// Fetch data payload length
     static fam::size_t getLength(const FamObject& object) {

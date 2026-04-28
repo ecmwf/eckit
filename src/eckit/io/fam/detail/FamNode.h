@@ -34,11 +34,14 @@ struct FamNode {
     std::uint8_t version{1};  // 1 byte
     FamDescriptor next;
 
+    /// Byte offset of `next.offset` within FamNode.
+    static constexpr std::size_t nextOffsetOff() noexcept {
+        return offsetof(FamNode, next) + offsetof(FamDescriptor, offset);
+    }
+
     static FamDescriptor getNext(const FamObject& object) { return object.get<FamDescriptor>(offsetof(FamNode, next)); }
 
-    static std::uint64_t getNextOffset(const FamObject& object) {
-        return object.get<std::uint64_t>(offsetof(FamNode, next.offset));
-    }
+    static std::uint64_t getNextOffset(const FamObject& object) { return object.get<std::uint64_t>(nextOffsetOff()); }
 };
 
 static_assert(std::is_standard_layout_v<FamNode>, "FamNode must be standard-layout for offsetof()");

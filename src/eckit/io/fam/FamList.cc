@@ -48,7 +48,7 @@ FamList::FamList(FamRegion region, const std::string& list_name) :
     size_{region_.ensureObject(sizeof(size_type), list_name + "s")} {
     // set head's next to tail's prev (idempotent)
     if (FamListNode::getNextOffset(head_) == 0) {
-        head_.put(tail_.descriptor(), offsetof(FamListNode, next));
+        head_.put(tail_.descriptor(), FamListNode::nextOff());
     }
     // set tail's prev to head's next (idempotent)
     if (FamListNode::getPrevOffset(tail_) == 0) {
@@ -113,7 +113,7 @@ void FamList::pushFront(const void* data, const size_type length) {
         new_object.put(head_.descriptor(), offsetof(FamListNode, prev));
 
         // Point new node forward to current first node
-        new_object.put(first_object.descriptor(), offsetof(FamListNode, next));
+        new_object.put(first_object.descriptor(), FamListNode::nextOff());
 
         // Atomically update head.next to new node.
         // On success, we become the new first node.
@@ -150,7 +150,7 @@ void FamList::pushBack(const void* data, const size_type length) {
         auto last_object       = region_.proxyObject(last_offset);
 
         // Point new node forward to tail
-        new_object.put(tail_.descriptor(), offsetof(FamListNode, next));
+        new_object.put(tail_.descriptor(), FamListNode::nextOff());
 
         // Point new node backward to current last node
         new_object.put(last_object.descriptor(), offsetof(FamListNode, prev));
@@ -264,7 +264,7 @@ void FamList::popBack() {
             // Success! We've removed the node from the list.
             // Update the previous node's next pointer to point to tail
             auto prev_object = region_.proxyObject(prev_offset);
-            prev_object.put(tail_.descriptor(), offsetof(FamListNode, next));
+            prev_object.put(tail_.descriptor(), FamListNode::nextOff());
 
             // Decrement size
             size_.subtract(0, size_type{1});
@@ -327,7 +327,7 @@ void FamList::clear() {
         auto next_object       = region_.proxyObject(next_offset);
 
         // this is single-threaded, no CAS / mark needed
-        head_.put(next_object.descriptor(), offsetof(FamListNode, next));
+        head_.put(next_object.descriptor(), FamListNode::nextOff());
         next_object.put(head_.descriptor(), offsetof(FamListNode, prev));
 
         first_object.deallocate();

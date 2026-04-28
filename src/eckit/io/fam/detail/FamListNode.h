@@ -50,10 +50,11 @@ namespace eckit {
 ///  - Readers can safely traverse marked nodes; they'll eventually be cleaned up
 ///
 /// @important: DO NOT add any virtual functions in this class.
-struct FamListNode : public FamNode {
-    FamDescriptor prev;
-    fam::size_t length{0};
-    std::uint8_t marked{0};  // 0=active, 1=logically deleted (concurrent-safe marker)
+struct FamListNode {
+    FamNode header{};        // 24 bytes: { version, next }
+    FamDescriptor prev;      // 16 bytes
+    fam::size_t length{0};   //  8 bytes
+    std::uint8_t marked{0};  //  1 byte: 0=active, 1=logically deleted
     // 7 bytes padding to align 'data' to 8-byte boundary
 
     /// Byte offset of `prev.offset` within FamListNode (portable two-step form).
@@ -61,8 +62,18 @@ struct FamListNode : public FamNode {
         return offsetof(FamListNode, prev) + offsetof(FamDescriptor, offset);
     }
 
-    /// Byte offset of `next.offset` within FamListNode, inherited from FamNode.
-    static constexpr std::size_t nextOffsetOff() noexcept { return FamNode::nextOffsetOff(); }
+    /// Byte offset of the embedded `next` descriptor (header).
+    static constexpr std::size_t nextOff() noexcept { return offsetof(FamListNode, header) + offsetof(FamNode, next); }
+
+    /// Byte offset of `next.offset` within FamListNode (portable two-step form).
+    /// Equivalent to FamNode::nextOffsetOff() because `header` is placed first.
+    static constexpr std::size_t nextOffsetOff() noexcept {
+        return offsetof(FamListNode, header) + FamNode::nextOffsetOff();
+    }
+
+    /// Forwarders to the embedded FamNode header.
+    static FamDescriptor getNext(const FamObject& object) { return FamNode::getNext(object); }
+    static std::uint64_t getNextOffset(const FamObject& object) { return FamNode::getNextOffset(object); }
 
     /// Increment version stamp to prevent ABA problems on node reuse
     static void bumpVersion(const FamObject& object) {
@@ -102,8 +113,10 @@ struct FamListNode : public FamNode {
     }
 };
 
+static_assert(std::is_standard_layout_v<FamListNode>, "FamListNode must be standard-layout for offsetof()");
 static_assert(std::is_trivially_copyable_v<FamListNode>, "FamListNode must be trivially copyable for FAM put/get");
-static_assert(sizeof(FamListNode) == 56, "FamListNode layout changed — FAM on-wire format depends on this");
+static_assert(sizeof(FamListNode) == 56, "FamListNode layout changed (FAM on-wire format depends on this)");
+static_assert(offsetof(FamListNode, header) == 0, "FamListNode::header must be at offset 0 (wire layout)");
 static_assert(offsetof(FamListNode, prev) == 24, "FamListNode::prev offset mismatch");
 static_assert(offsetof(FamListNode, length) == 40, "FamListNode::length offset mismatch");
 static_assert(offsetof(FamListNode, marked) == 48, "FamListNode::marked offset mismatch");

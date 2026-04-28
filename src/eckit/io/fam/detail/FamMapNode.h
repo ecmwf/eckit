@@ -29,8 +29,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-struct FamMapNode : public FamNode {
-    FamList::Descriptor desc;
+struct FamMapNode {
+    FamNode header{};          // 24 bytes: { version, next }
+    FamList::Descriptor desc;  // bucket FamList descriptor
 
     //------------------------------------------------------------------------------------------------------------------
     // HELPERS (DO NOT add any virtual function here)
@@ -44,9 +45,10 @@ struct FamMapNode : public FamNode {
     }
 };
 
-// FamMapNode is not standard-layout (data in both base and derived), but offsetof()
-// is well-supported by all target compilers for trivially-copyable types.
-static_assert(sizeof(FamMapNode) == 56, "FamMapNode layout changed — FAM on-wire format depends on this");
+static_assert(std::is_standard_layout_v<FamMapNode>, "FamMapNode must be standard-layout for offsetof()");
+static_assert(std::is_trivially_copyable_v<FamMapNode>, "FamMapNode must be trivially copyable for FAM put/get");
+static_assert(sizeof(FamMapNode) == 56, "FamMapNode layout changed (FAM on-wire format depends on this)");
+static_assert(offsetof(FamMapNode, header) == 0, "FamMapNode::header must be the first member (wire layout)");
 static_assert(offsetof(FamMapNode, desc) == 24, "FamMapNode::desc offset mismatch");
 
 //----------------------------------------------------------------------------------------------------------------------

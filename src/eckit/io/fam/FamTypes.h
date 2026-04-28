@@ -55,7 +55,7 @@ struct FamDescriptor {
 
 static_assert(std::is_standard_layout_v<FamDescriptor>, "FamDescriptor must be standard-layout for offsetof()");
 static_assert(std::is_trivially_copyable_v<FamDescriptor>, "FamDescriptor must be trivially copyable for FAM put/get");
-static_assert(sizeof(FamDescriptor) == 16, "FamDescriptor layout changed — FAM on-wire format depends on this");
+static_assert(sizeof(FamDescriptor) == 16, "FamDescriptor layout changed (FAM on-wire format depends on this)");
 
 //----------------------------------------------------------------------------------------------------------------------
 

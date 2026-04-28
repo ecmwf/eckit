@@ -46,7 +46,7 @@ struct FamNode {
 
 static_assert(std::is_standard_layout_v<FamNode>, "FamNode must be standard-layout for offsetof()");
 static_assert(std::is_trivially_copyable_v<FamNode>, "FamNode must be trivially copyable for FAM put/get");
-static_assert(sizeof(FamNode) == 24, "FamNode layout changed — FAM on-wire format depends on this");
+static_assert(sizeof(FamNode) == 24, "FamNode layout changed (FAM on-wire format depends on this)");
 
 //----------------------------------------------------------------------------------------------------------------------
 

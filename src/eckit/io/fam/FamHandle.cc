@@ -17,6 +17,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <sstream>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
@@ -114,6 +115,16 @@ long FamHandle::read(void* buffer, long length) {
 
 long FamHandle::write(const void* buffer, const long length) {
     ASSERT(mode_ == Mode::WRITE);
+    ASSERT(0 <= pos_);
+    ASSERT(length >= 0);
+
+    const auto end = static_cast<fam::size_t>(pos_) + static_cast<fam::size_t>(length);
+    if (end > object_->size()) {
+        std::ostringstream msg;
+        msg << "FamHandle::write: out of range for object '" << name_ << "': pos=" << pos_ << ", length=" << length
+            << ", object size=" << object_->size();
+        throw OutOfRange(msg.str(), Here());
+    }
 
     object_->put(buffer, pos_, length);
 

@@ -102,7 +102,7 @@ size_t ORCA::ORCARecord::nj() const {
 void ORCA::ORCARecord::read(const PathName& p) {
     codec::RecordReader reader(p);
 
-    int version = -1;
+    int32_t version = -1;
     reader.read("version", version).wait();
 
     if (version == 0) {

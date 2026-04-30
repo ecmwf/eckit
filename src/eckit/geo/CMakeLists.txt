@@ -1,4 +1,3 @@
-
 list(APPEND eckit_geo_srcs
     Area.cc
     Area.h
@@ -68,6 +67,8 @@ list(APPEND eckit_geo_srcs
     figure/SphereT.h
     figure/UnitSphere.cc
     figure/UnitSphere.h
+    grid/ORCA.cc
+    grid/ORCA.h
     grid/Reduced.cc
     grid/Reduced.h
     grid/Regular.cc
@@ -88,6 +89,10 @@ list(APPEND eckit_geo_srcs
     grid/regular/RegularLL.h
     grid/regular/RegularXY.cc
     grid/regular/RegularXY.h
+    grid/unstructured/FESOM.cc
+    grid/unstructured/FESOM.h
+    grid/unstructured/ICON.cc
+    grid/unstructured/ICON.h
     grid/unstructured/UnstructuredLL.cc
     grid/unstructured/UnstructuredLL.h
     iterator/Reduced.cc
@@ -169,34 +174,21 @@ set(eckit_geo_include_dirs
     $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>
 )
 
-set(eckit_geo_libs eckit_maths eckit_spec)
+set(eckit_geo_libs eckit_codec eckit_maths eckit_spec)
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
-set(eckit_GEO_SHARE_GRID "~eckit/share/eckit/geo/grid.yaml")
+set(eckit_GEO_SHARE_GRID
+    "~eckit/share/eckit/geo/grid.yaml"
+    "~eckit/share/eckit/geo/FESOM.yaml"
+    "~eckit/share/eckit/geo/ICON-CH.yaml"
+    "~eckit/share/eckit/geo/ICON-DWD.yaml"
+    "~eckit/share/eckit/geo/ICON-MPIM.yaml"
+    "~eckit/share/eckit/geo/ORCA.yaml"
+)
 set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")
 
 if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
     list(APPEND eckit_geo_libs PROJ::proj)
-endif()
-
-if(ECKIT_GEO_CODEC_GRIDS)
-    list(APPEND eckit_geo_srcs
-        grid/unstructured/FESOM.cc
-        grid/unstructured/FESOM.h
-        grid/unstructured/ICON.cc
-        grid/unstructured/ICON.h
-        grid/ORCA.cc grid/ORCA.h
-    )
-
-    list(APPEND eckit_GEO_SHARE_GRID
-        "~eckit/share/eckit/geo/FESOM.yaml"
-        "~eckit/share/eckit/geo/ICON-CH.yaml"
-        "~eckit/share/eckit/geo/ICON-DWD.yaml"
-        "~eckit/share/eckit/geo/ICON-MPIM.yaml"
-        "~eckit/share/eckit/geo/ORCA.yaml"
-    )
-
-    list(APPEND eckit_geo_libs eckit_codec)
 endif()
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)

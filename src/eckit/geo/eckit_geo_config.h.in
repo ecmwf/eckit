@@ -20,7 +20,6 @@ constexpr bool _to_bool(int x) {
     return x != 0;
 }
 
-constexpr bool eckit_HAVE_ECKIT_CODEC     = _to_bool(@eckit_HAVE_ECKIT_CODEC@);
 #cmakedefine01 eckit_HAVE_PROJ
 
 constexpr bool eckit_HAVE_GEO_CACHING                 = _to_bool(@eckit_HAVE_GEO_CACHING@);

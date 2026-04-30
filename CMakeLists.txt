@@ -182,6 +182,7 @@ endif()
 
 ecbuild_add_option( FEATURE ECKIT_GEO
                     DEFAULT ON
+                    CONDITION eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_ECKIT_SPEC
                     DESCRIPTION "eckit::geo geometry library" )
 
 ecbuild_add_option( FEATURE GEO_CACHING
@@ -204,11 +205,6 @@ ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
                     CONDITION eckit_HAVE_ECKIT_GEO AND eckit_HAVE_ZIP
                     REQUIRED_PACKAGES shapelib
                     DESCRIPTION "eckit::geo geometry library support for shapefiles" )
-
-set( ECKIT_GEO_CODEC_GRIDS OFF )
-if( eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4 )
-    set( ECKIT_GEO_CODEC_GRIDS ON )
-endif()
 
 if( eckit_HAVE_GEO_AREA_SHAPEFILE )
     if( NOT TARGET shapelib::shp OR NOT TARGET libzip::zip )

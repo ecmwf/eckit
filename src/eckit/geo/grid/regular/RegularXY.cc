@@ -25,36 +25,6 @@
 namespace eckit::geo::grid::regular {
 
 
-namespace {
-
-
-Range* make_x_range(const spec::Spec& spec) {
-    auto inc   = RegularXY::Increments::make_from_spec(spec);
-    auto first = PointLonLat::make_from_spec(spec, "first");
-    Shape shape(spec);
-
-    auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).X();
-    auto b = a + (shape.nx > 1 ? inc.dx * static_cast<double>(shape.nx - 1) : 0);
-
-    return new range::RegularXY(inc.dx, a, b, a);
-}
-
-
-Range* make_y_range(const spec::Spec& spec) {
-    auto inc   = RegularXY::Increments::make_from_spec(spec);
-    auto first = PointLonLat::make_from_spec(spec, "first");
-    Shape shape(spec);
-
-    auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).Y();
-    auto b = a + (shape.ny > 1 ? inc.dy * static_cast<double>(shape.ny - 1) : 0);
-
-    return new range::RegularXY(inc.dy, a, b, a);
-}
-
-
-}  // namespace
-
-
 RegularXY::Increments::Increments(value_type dx, value_type dy) : array{dx, dy} {
     if (dx < 0 || dy < 0) {
         throw exception::SpecError("'grid' = ['dx', 'dy'] must be positive", Here());

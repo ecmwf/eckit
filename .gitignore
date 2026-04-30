@@ -13,3 +13,7 @@ build/
 tests/geo/eckit_geo_cache
 _build
 *.ccls-cache
+
+# Rust
+rust/target/
+rust/Cargo.lock

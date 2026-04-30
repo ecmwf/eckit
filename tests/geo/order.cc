@@ -10,8 +10,9 @@
  */
 
 
-#include <memory>
+#include <map>
 #include <numeric>
+#include <string>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -25,9 +26,49 @@ namespace eckit::geo::test {
 
 
 CASE("order=scan") {
-    for (std::string scan : {"i+j+", "i+j-"}) {
-        order::Scan order(scan);
-        EXPECT(scan == order.order());
+    using order::Scan;
+
+    static const std::map<std::string, long> modes{
+        {"i+j+", 64},    //
+        {"i+j-", 0},     //
+        {"i-j+", 192},   //
+        {"i-j-", 128},   //
+        {"i-+j+", 208},  //
+        {"i-+j-", 144},  //
+        {"i+-j+", 80},   //
+        {"i+-j-", 16},   //
+        {"j+i+", 96},    //
+        {"j+i-", 224},   //
+        {"j-i+", 32},    //
+        {"j-i-", 160},   //
+        {"j-+i+", 32},   //
+        {"j-+i-", 160},  //
+        {"j+-i+", 96},   //
+        {"j+-i-", 224},  //
+    };
+
+    for (const auto& [order, scanningMode] : modes) {
+        const Scan scan(order);
+        EXPECT(scan.is_scan_i_then_j() == (order.front() == 'i'));
+        EXPECT(scan.is_scan_i_positive() == (order.find("i+") != std::string::npos));
+        EXPECT(scan.is_scan_j_positive() == (order.find("j+") != std::string::npos));
+
+        bool alternating = order.find("+-") != std::string::npos || order.find("-+") != std::string::npos;
+        EXPECT(scan.is_scan_alternating() == alternating);
+
+        EXPECT(order == scan.order());
+
+
+        auto alternativeRowScanning = order.find("i+-") != std::string::npos || order.find("i-+") != std::string::npos;
+        auto jPointsAreConsecutive  = order.front() == 'j';
+        auto jScansPositively       = order.find("j+") != std::string::npos;
+        auto iScansNegatively       = order.find("i-") != std::string::npos;
+
+        long mode = (alternativeRowScanning ? (1 << 4) : 0) |  //
+                    (jPointsAreConsecutive ? (1 << 5) : 0) |   //
+                    (jScansPositively ? (1 << 6) : 0) |        //
+                    (iScansNegatively ? (1 << 7) : 0);
+        EXPECT(mode == scanningMode);
     }
 }
 

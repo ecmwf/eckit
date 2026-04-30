@@ -54,6 +54,7 @@ public:
     renumber_type reorder(const order_type& to, size_t ni, size_t nj) const;
     renumber_type reorder(const order_type& to, const pl_type&) const;
 
+    bool is_scan_i_then_j() const;
     bool is_scan_i_positive() const;
     bool is_scan_j_positive() const;
     bool is_scan_alternating() const;

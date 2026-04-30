@@ -110,7 +110,8 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
         auto [n, w, s, e] = bbox.deconstruct();
         custom.set("area", std::vector<double>{n, w, s, e});
     }
-    else if (const auto ref{reference()}; !points_equal(ref, reference_default())) {
+
+    if (const auto ref{reference()}; !points_equal(ref, reference_default())) {
         custom.set("reference", std::vector<double>{ref.lon(), ref.lat()});
     }
 }

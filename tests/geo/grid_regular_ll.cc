@@ -182,7 +182,7 @@ CASE("non-global, shifted") {
         RegularLL b(spec::Custom{{{"grid", std::vector<double>{2, 1}}, {"area", std::vector<double>{10, 1, 1, 10}}}});
 
         EXPECT(b.size() == 5 * 10);
-        EXPECT(b.spec_str() == R"({"area":[10,1,1,9],"grid":[2,1]})");
+        EXPECT(b.spec_str() == R"({"area":[10,1,1,9],"grid":[2,1],"reference":[1,0]})");
     }
 
 
@@ -218,6 +218,90 @@ CASE("non-global, shifted") {
             EXPECT(points_equal(ref[i++], it));
         }
         EXPECT(i == grid.size());
+    }
+}
+
+
+CASE("MARS-like grid + area -> gridSpec-like grid + area + reference") {
+    enum Arrangement {
+        T,  // Arakawa C-grid T points (center)
+        U,  // Arakawa C-grid U points (west-east faces)
+        V,  // Arakawa C-grid V points (south-north faces)
+    };
+
+    struct test {
+        double inc;
+        Arrangement arrangement;
+        std::string expected_spec_str;
+    };
+
+    for (
+        const auto& [inc, arr, expected_spec_str] : {
+            test{1., T,  //
+                 R"({"area":[90,-179.5,-90,180.5],"grid":[1,1],"reference":[0.5,0.5]})"},
+            test{1., U,  //
+                 R"({"area":[90,-180,-90,180],"grid":[1,1],"reference":[0,0.5]})"},
+            test{1., V,  //
+                 R"({"area":[90,-179.5,-90,180.5],"grid":[1,1],"reference":[0.5,0]})"},
+            test{0.25, T,  //
+                 R"({"area":[90,-179.875,-90,180.125],"grid":[0.25,0.25],"reference":[0.125,0.125]})"},
+            test{0.25, U,  //
+                 R"({"area":[90,-180,-90,180],"grid":[0.25,0.25],"reference":[0,0.125]})"},
+            test{0.25, V,  //
+                 R"({"area":[90,-179.875,-90,180.125],"grid":[0.25,0.25],"reference":[0.125,0]})"},
+            test{0.1, T,  //
+                 R"({"area":[90,-179.95,-90,180.05],"grid":[0.1,0.1],"reference":[0.05,0.05]})"},
+            test{0.1, U,  //
+                 R"({"area":[90,-180,-90,180],"grid":[0.1,0.1],"reference":[0,0.05]})"},
+            test{0.1, V,  //
+                 R"({"area":[90,-179.95,-90,180.05],"grid":[0.1,0.1],"reference":[0.05,0]})"},
+            test{
+                1. / 12., T,  //
+                R"({"area":[90,-179.958333333333,-90,180.041666666667],"grid":[0.0833333333333333,0.0833333333333333],"reference":[0.0416666666666667,0.0416666666666667]})"},
+            test{
+                1. / 12., U,  //
+                R"({"area":[90,-180,-90,180],"grid":[0.0833333333333333,0.0833333333333333],"reference":[0,0.0416666666666667]})"},
+            test{
+                1. / 12., V,  //
+                R"({"area":[90,-179.958333333333,-90,180.041666666667],"grid":[0.0833333333333333,0.0833333333333333],"reference":[0.0416666666666667,0]})"},
+            test{0.05, T,  //
+                 R"({"area":[90,-179.975,-90,180.025],"grid":[0.05,0.05],"reference":[0.025,0.025]})"},
+            test{0.05, U,  //
+                 R"({"area":[90,-180,-90,180],"grid":[0.05,0.05],"reference":[0,0.025]})"},
+            test{0.05, V,  //
+                 R"({"area":[90,-179.975,-90,180.025],"grid":[0.05,0.05],"reference":[0.025,0]})"},
+            test{
+                1. / 60., T,  //
+                R"({"area":[90,-179.991666666667,-90,180.008333333333],"grid":[0.0166666666666667,0.0166666666666667],"reference":[0.00833333333333333,0.00833333333333333]})"},
+            test{
+                1. / 60., U,  //
+                R"({"area":[90,-180,-90,180],"grid":[0.0166666666666667,0.0166666666666667],"reference":[0,0.00833333333333333]})"},
+            test{
+                1. / 60., V,  //
+                R"({"area":[90,-179.991666666667,-90,180.008333333333],"grid":[0.0166666666666667,0.0166666666666667],"reference":[0.00833333333333333,0]})"},
+        }) {
+        auto n = static_cast<size_t>(90. / inc);
+        std::vector<size_t> expected_shape{2 * n + (arr == V ? 1 : 0), 4 * n};
+
+        std::vector<double> grid = {inc, inc};
+        std::vector<double> area = {90 - (arr == V ? 0 : inc / 2), -180 + (arr == U ? 0 : inc / 2),
+                                    -90 + (arr == V ? 0 : inc / 2), 180 - (arr == U ? 0 : inc / 2)};
+        spec::Custom spec{{"grid", grid}, {"area", area}};
+
+        RegularLL g1({grid[0], grid[1]}, {area[0], area[1], area[2], area[3]}, {area[1], area[2]});
+        EXPECT(expected_shape == g1.shape());
+        EXPECT(expected_spec_str == g1.spec_str());
+
+        RegularLL g2(spec);
+        EXPECT(g1 == g2);
+
+        std::unique_ptr<const Grid> g3(GridFactory::build(spec));
+        ASSERT(g3);
+        EXPECT(g1 == *g3);
+
+        std::unique_ptr<const Grid> g4(GridFactory::make_from_string(spec.str()));
+        ASSERT(g4);
+        EXPECT(g1 == *g4);
     }
 }
 

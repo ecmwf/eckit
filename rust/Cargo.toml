@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+members = ["crates/eckit-sys"]
+
+[workspace.package]
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/ecmwf/eckit"
+rust-version = "1.90"
+readme = "README.md"
+keywords = ["ecmwf", "weather", "meteorology", "geo"]
+categories = ["science"]
+
+[workspace.dependencies]
+# Internal
+eckit-sys = { path = "crates/eckit-sys" }
+
+# Build tools
+bindman = { git = "ssh://git@github.com/ecmwf/bindman.git", branch = "generate_exception_bridge" }
+bindman-build = { git = "ssh://git@github.com/ecmwf/bindman.git", branch = "generate_exception_bridge" }
+bindman-utils = { git = "ssh://git@github.com/ecmwf/bindman.git", branch = "generate_exception_bridge" }
+
+# External
+cxx = "1.0"
+cxx-build = "1.0"
+log = "0.4"
+thiserror = "2"
+tempfile = "3"

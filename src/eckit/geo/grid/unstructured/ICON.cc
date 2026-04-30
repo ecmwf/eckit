@@ -127,6 +127,7 @@ std::string ICON::arrangement_to_string(Arrangement a) {
 
 
 void ICON::fill_spec(spec::Custom& custom) const {
+    ASSERT(!name_.empty());
     custom.set("grid", name_);  // only T-arrangement is currently catalogued
 
     if (auto _uid = uid(); !GridSpecByUID::instance().exists(_uid)) {

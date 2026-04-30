@@ -12,6 +12,7 @@
 
 #include "eckit/geo/grid/unstructured/UnstructuredLL.h"
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -35,7 +36,9 @@ Grid::Spec* UnstructuredLL::spec(const std::string& name) {
 
 
 void UnstructuredLL::fill_spec(spec::Custom& custom) const {
-    custom.set("grid", name_);
+    if (!name_.empty()) {
+        custom.set("grid", name_);
+    }
     custom.set("uid", uid());
 }
 

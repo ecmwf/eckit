@@ -13,16 +13,36 @@
 
 #pragma once
 
+#include <functional>
 #include <iosfwd>
 #include <string>
 #include <vector>
-
-#include "eckit/filesystem/LocalPathName.h"
 
 namespace eckit::system {
 
 class Library;
 class Plugin;
+class LibraryRegistry;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// @brief Parsed plugin manifest metadata
+struct PluginManifest {
+    std::string name;               ///< Plugin name (matches Plugin("name") in C++)
+    std::string ns;                 ///< Namespace for fully-qualified name
+    std::string library;            ///< Shared library filename stem (no lib prefix / .so extension)
+    std::string forLibrary;         ///< Owning library name, empty means global/unscoped
+    std::string minVersion;         ///< Minimum version of forLibrary required, empty means no check
+    std::string version;            ///< Expected exact value of the plugin's self-reported version()
+                                    ///< (compared verbatim, not as semver). Empty means no check.
+    std::vector<std::string> tags;  ///< Arbitrary labels for filtering
+
+    /// @brief Fully-qualified plugin name: namespace.name
+    std::string fqName() const { return ns + "." + name; }
+
+    /// @brief Check if this plugin has all of the given tags
+    bool matchesTags(const std::vector<std::string>& required) const;
+};
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -78,9 +98,47 @@ public:  // class methods
     /// @returns Plugin object loaded
     static Plugin& loadPlugin(const std::string& name, const std::string& library = std::string());
 
-    /// @brief Scans and Auto loads Plugins
-    /// @param [in] dir path to scan for plugin manifests
+    /// @brief Scans manifest paths and loads plugins.
+    ///
+    /// Behaviour depends on @p plugins:
+    ///   - empty: discovers all manifests but loads only GLOBAL plugins
+    ///     (those without `for-library` in their manifest). Scoped plugins
+    ///     are skipped here and must be loaded via loadPluginsFor() from
+    ///     their owning library, typically from that library's
+    ///     initialisation path.
+    ///   - non-empty: loads exactly the listed fully-qualified names
+    ///     (`namespace.name`), scoped or not. A name with no matching
+    ///     manifest throws BadValue. A scoped entry whose owning library
+    ///     is not registered also throws.
+    ///
+    /// Plugins listed in $DISABLE_PLUGINS are silently skipped in both modes.
+    ///
+    /// @see loadPluginsFor
+    /// @see docs/content/plugins.rst for the plugin manifest schema.
+    /// @throws BadValue
     static void autoLoadPlugins(const std::vector<std::string>& plugins);
+
+    /// @brief Load all plugins scoped to the given library, optionally filtering by tags.
+    ///
+    /// A manifest is considered iff its `for-library` equals @p libraryName
+    /// and ALL of @p tags are present in its `tags` list (an empty @p tags
+    /// matches every scoped manifest for the library).
+    ///
+    /// If the manifest declares `min-version`, the registered owning
+    /// library's version() must satisfy it (semver-ish numeric compare).
+    /// If the manifest declares `version:`, it is compared verbatim against
+    /// Plugin::version(); on mismatch the offending shared object is
+    /// unloaded again (rolling back the dlopen) and BadValue is thrown.
+    /// Plugins listed in $DISABLE_PLUGINS are skipped.
+    ///
+    /// Typically called from a library's initialisation routine.
+    ///
+    /// @param [in] libraryName  The Library::name() of the owning library
+    /// @param [in] tags  If non-empty, only load plugins that have ALL specified tags
+    /// @returns Loaded Plugin references
+    /// @throws BadValue
+    static std::vector<std::reference_wrapper<Plugin>> loadPluginsFor(const std::string& libraryName,
+                                                                      const std::vector<std::string>& tags = {});
 
     /// @brief Registers a library as a plugin
     ///        To be called from the Plugin constructor
@@ -95,6 +153,24 @@ public:  // class methods
     /// @brief Adds plugin search paths
     /// @param [in] ":" separated list of search paths
     static void addPluginSearchPath(const std::string& path);
+
+    /// @brief Compare two semver version strings
+    /// @returns negative if a < b, 0 if equal, positive if a > b
+    static int compareVersions(const std::string& a, const std::string& b);
+
+    /// @brief Check if a plugin is disabled via $DISABLE_PLUGINS environment variable
+    /// @param [in] fqName Fully-qualified plugin name to check
+    /// @returns true if the plugin should be suppressed
+    static bool isPluginDisabled(const std::string& fqName);
+
+private:  // class methods
+
+    friend class LibraryRegistry;
+
+    /// @brief Apply manifest metadata to a Plugin.
+    ///        Single internal call site keeps Plugin::setManifestMetadata private.
+    static void setPluginManifestMetadata(Plugin& plugin, const std::string& forLibrary,
+                                          const std::vector<std::string>& tags);
 };
 
 //----------------------------------------------------------------------------------------------------------------------

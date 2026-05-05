@@ -9,4 +9,6 @@ Welcome to EcKit’s Documentation!
    :caption: Contents
 
    content/concepts
+   content/plugins
+   content/string_tools
    content/reference

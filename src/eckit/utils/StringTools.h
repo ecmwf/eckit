@@ -11,16 +11,59 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
-#ifndef eckit_StringTools_h
-#define eckit_StringTools_h
-
+#pragma once
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+namespace detail {
+
+/// @brief Lazy ostream-formatter for a delimited sequence.
+///
+/// Produced by StringTools::joinOstream; written to an ostream with operator<<
+/// and never materialised as a std::string. Holds a reference to the source
+/// container and delimiter, so it must be consumed in the same full-expression
+/// in which it was created (the typical `os << join(...)` pattern). It is
+/// intentionally non-copyable to make stale references harder to write
+/// accidentally.
+template <typename Container>
+class JoinOstreamProxy {
+public:
+
+    JoinOstreamProxy(const Container& container, std::string_view delimiter) :
+        container_(container), delimiter_(delimiter) {}
+
+    JoinOstreamProxy(const JoinOstreamProxy&)            = delete;
+    JoinOstreamProxy& operator=(const JoinOstreamProxy&) = delete;
+    JoinOstreamProxy(JoinOstreamProxy&&)                 = default;
+    JoinOstreamProxy& operator=(JoinOstreamProxy&&)      = delete;
+
+    friend std::ostream& operator<<(std::ostream& os, const JoinOstreamProxy& p) {
+        bool first = true;
+        for (const auto& e : p.container_) {
+            if (!first) {
+                os << p.delimiter_;
+            }
+            os << e;
+            first = false;
+        }
+        return os;
+    }
+
+private:
+
+    const Container& container_;
+    std::string_view delimiter_;
+};
+
+}  // namespace detail
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -54,6 +97,21 @@ public:
     template <typename Iterator>
     static std::string join(const std::string&, Iterator begin, Iterator end);
 
+    /// @brief Stream a delimited sequence directly to an ostream without building a temporary string.
+    ///
+    /// Returns a lightweight proxy that, when streamed, walks @p container and writes each
+    /// element with `operator<<` separated by @p delimiter. The proxy holds references to
+    /// both arguments and must be used in the same full-expression in which it was created;
+    /// do not store it. Typical use:
+    ///
+    ///     Log::error() << "values: [" << StringTools::joinOstream(values, ", ") << "]";
+    ///
+    /// @tparam Container any range-iterable container whose elements have `operator<<(ostream&, ...)`.
+    template <typename Container>
+    static detail::JoinOstreamProxy<Container> joinOstream(const Container& container, std::string_view delimiter) {
+        return detail::JoinOstreamProxy<Container>(container, delimiter);
+    }
+
     static bool startsWith(const std::string& str, const std::string& substr);
     static bool beginsWith(const std::string& str, const std::string& substr);
     static bool endsWith(const std::string& str, const std::string& substr);
@@ -85,5 +143,3 @@ std::string StringTools::join(const std::string& delimiter, const T& words) {
 //----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

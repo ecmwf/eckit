@@ -14,12 +14,13 @@
 #include <algorithm>
 #include <cctype>
 #include <map>
+#include <set>
+#include <sstream>
 
 #include <dlfcn.h>  // for dlopen
 #include <climits>  // for PATH_MAX
 
 #include "eckit/system/LibraryManager.h"
-
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/Resource.h"
@@ -29,18 +30,25 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/log/Log.h"
-#include "eckit/log/OStreamTarget.h"
-#include "eckit/log/PrefixTarget.h"
-#include "eckit/os/System.h"
 #include "eckit/system/Library.h"
 #include "eckit/system/Plugin.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/Tokenizer.h"
-#include "eckit/utils/Translator.h"
 
 namespace eckit::system {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+bool PluginManifest::matchesTags(const std::vector<std::string>& required) const {
+    for (const auto& tag : required) {
+        if (std::find(tags.begin(), tags.end(), tag) == tags.end()) {
+            return false;
+        }
+    }
+    return true;
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -56,6 +64,68 @@ static std::string path_from_libhandle(const std::string& libname, void* handle)
 #else
     return libname;
 #endif
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+static PluginManifest parseManifest(const LocalConfiguration& conf) {
+    PluginManifest m;
+    m.name    = conf.getString("name");
+    m.ns      = conf.getString("namespace");
+    m.library = conf.getString("library");
+
+    if (conf.has("for-library")) {
+        m.forLibrary = conf.getString("for-library");
+    }
+    if (conf.has("min-version")) {
+        m.minVersion = conf.getString("min-version");
+    }
+    if (conf.has("version")) {
+        m.version = conf.getString("version");
+    }
+    if (conf.has("tags")) {
+        m.tags = conf.getStringVector("tags");
+    }
+    return m;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// Parse a semver-ish version string into (major, minor, patch).
+/// Accepts "major.minor" (patch defaults to 0) or "major.minor.patch".
+/// Each component must be a non-empty run of digits parsable as an int.
+/// Returns true on success, false on any other input (including overflow).
+static bool parseSemver(const std::string& v, int& major, int& minor, int& patch) {
+    major = minor = patch = 0;
+
+    std::vector<std::string> parts;
+    Tokenizer(".")(v, parts);
+    if (parts.size() < 2 || parts.size() > 3) {
+        return false;
+    }
+
+    try {
+        size_t consumed = 0;
+        major           = std::stoi(parts[0], &consumed);
+        if (consumed != parts[0].size()) {
+            return false;
+        }
+        minor = std::stoi(parts[1], &consumed);
+        if (consumed != parts[1].size()) {
+            return false;
+        }
+        if (parts.size() == 3) {
+            patch = std::stoi(parts[2], &consumed);
+            if (consumed != parts[2].size()) {
+                return false;
+            }
+        }
+    }
+    catch (const std::exception&) {
+        // std::invalid_argument (non-numeric) or std::out_of_range (overflow)
+        return false;
+    }
+    return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -222,7 +292,7 @@ public:  // methods
         return nullptr;
     }
 
-    Plugin& loadPlugin(const std::string& name, const std::string& libname = std::string()) {
+    Plugin& loadPlugin(const std::string& name, const std::string& libname = std::string(), bool initialise = true) {
 
         AutoLock<Mutex> lockme(mutex_);
 
@@ -245,7 +315,9 @@ public:  // methods
             if (plugin) {
                 Log::debug() << "Loaded plugin [" << name << "] from library [" << lib << "]" << std::endl;
                 plugin->handle(libhandle);
-                initPlugin(plugin);
+                if (initialise) {
+                    initPlugin(plugin);
+                }
                 return *plugin;
             }
             // If the plugin library still doesn't exist after a successful call of dlopen, then
@@ -259,13 +331,69 @@ public:  // methods
         if (plugin) {
             // Plugin is already loaded, likely because it is explicitly linked into the executable
             Log::debug() << "Plugin [" << name << "] already loaded" << std::endl;
-            initPlugin(plugin);
+            if (initialise) {
+                initPlugin(plugin);
+            }
             return *plugin;
         }
 
         std::ostringstream ss;
         ss << "A library " << name << " is loaded but it is not a Plugin library";
         throw UnexpectedState(ss.str(), Here());
+    }
+
+    /// Load a plugin from a manifest, performing version check and setting metadata
+    Plugin& loadPluginFromManifest(const PluginManifest& manifest, bool requireOwningLibrary = false) {
+        // Version check: if for-library and min-version are set, verify the library meets the minimum
+        if (!manifest.forLibrary.empty()) {
+            if (!exists(manifest.forLibrary)) {
+                if (requireOwningLibrary) {
+                    std::ostringstream ss;
+                    ss << "Plugin " << manifest.fqName() << " requires owning library " << manifest.forLibrary
+                       << " but it is not registered";
+                    throw BadValue(ss.str(), Here());
+                }
+            }
+            else if (!manifest.minVersion.empty()) {
+                const Library& owningLib  = lookup(manifest.forLibrary);
+                std::string actualVersion = owningLib.version();
+                int cmp                   = LibraryManager::compareVersions(actualVersion, manifest.minVersion);
+                if (cmp < 0) {
+                    std::ostringstream ss;
+                    ss << "Plugin " << manifest.fqName() << " requires " << manifest.forLibrary
+                       << " >= " << manifest.minVersion << " but found version " << actualVersion;
+                    throw BadValue(ss.str(), Here());
+                }
+            }
+        }
+
+        const bool wasAlreadyLoaded = exists(manifest.library);
+
+        Plugin& plugin = loadPlugin(manifest.name, manifest.library, false);
+
+        if (!manifest.version.empty() && plugin.version() != manifest.version) {
+            std::ostringstream ss;
+            ss << "Plugin " << manifest.fqName() << " self-reported version " << plugin.version()
+               << " does not match manifest version " << manifest.version;
+
+            if (!wasAlreadyLoaded) {
+                const std::string pluginName = plugin.name();
+                try {
+                    unloadPlugin(pluginName);
+                }
+                catch (const std::exception& e) {
+                    // Do not let a rollback failure mask the original cause.
+                    Log::error() << "Failed to roll back plugin " << manifest.fqName()
+                                 << " after manifest version mismatch: " << e.what() << std::endl;
+                }
+            }
+
+            throw BadValue(ss.str(), Here());
+        }
+
+        LibraryManager::setPluginManifestMetadata(plugin, manifest.forLibrary, manifest.tags);
+        initPlugin(&plugin);
+        return plugin;
     }
 
     bool unloadPlugin(const std::string& name) {
@@ -297,13 +425,22 @@ public:  // methods
 
     std::vector<std::string> pluginManifestScanPaths() {
         std::vector<std::string> scanPaths;
-        eckit::Tokenizer tokenize(":");
 
         static std::string pluginManifestPath = Resource<std::string>("$PLUGINS_MANIFEST_PATH;pluginManifestPath", "");
-        tokenize(pluginManifestPath, scanPaths);
+        Tokenizer(":")(pluginManifestPath, scanPaths);
 
         for (const auto& p : pluginSearchPaths()) {
             scanPaths.push_back(p + "/share/plugins");
+        }
+
+        // Collect manifest paths from all registered libraries
+        {
+            AutoLock<Mutex> lockme(mutex_);
+            for (const auto& kv : libs_) {
+                for (const auto& path : kv.second->pluginManifestPaths()) {
+                    scanPaths.push_back(path);
+                }
+            }
         }
 
         // always scan ~eckit/share/plugins and ~/share/plugins as a last resort
@@ -313,8 +450,8 @@ public:  // methods
         return scanPaths;
     }
 
-    std::map<std::string, LocalConfiguration> scanManifestPaths() {
-        std::map<std::string, LocalConfiguration> manifests;
+    std::map<std::string, PluginManifest> scanManifestPaths() {
+        std::map<std::string, PluginManifest> manifests;
         std::vector<std::string> scanPaths = pluginManifestScanPaths();
 
         Log::debug() << "Plugins manifest candidate paths " << scanPaths << std::endl;
@@ -344,21 +481,20 @@ public:  // methods
             std::vector<LocalPathName> dirs;
             realdir.children(files, dirs);
             for (const auto& p : files) {
-                PathName path(p);
-                Log::debug() << "Found plugin manifest " << path << std::endl;
-                YAMLConfiguration conf(path);
+                PathName fpath(p);
+                Log::debug() << "Found plugin manifest " << fpath << std::endl;
+                YAMLConfiguration conf(fpath);
                 if (conf.has("plugin")) {
-                    LocalConfiguration manifest = conf.getSubConfiguration("plugin");
-                    Log::debug() << "Loaded plugin manifest " << manifest << std::endl;
-                    std::string name              = manifest.getString("name");
-                    std::string namespce          = manifest.getString("namespace");
-                    std::string fullQualifiedName = namespce + "." + name;
+                    LocalConfiguration manifestConf = conf.getSubConfiguration("plugin");
+                    Log::debug() << "Loaded plugin manifest " << manifestConf << std::endl;
+                    PluginManifest manifest       = parseManifest(manifestConf);
+                    std::string fullQualifiedName = manifest.fqName();
                     if (manifests.find(fullQualifiedName) == manifests.end()) {
                         manifests[fullQualifiedName] = manifest;
                     }
                     else {
                         Log::debug() << "The plugin " << fullQualifiedName
-                                     << " was already found before, skipping plugin defined in " << path << std::endl;
+                                     << " was already found before, skipping plugin defined in " << fpath << std::endl;
                     }
                 }
             }
@@ -370,10 +506,11 @@ public:  // methods
     void autoLoadPlugins(const std::vector<std::string>& inlist) {
 
         std::vector<std::string> plugins = inlist;
+        const bool explicitList          = !plugins.empty();
 
         AutoLock<Mutex> lockme(mutex_);
 
-        std::map<std::string, LocalConfiguration> manifests = scanManifestPaths();
+        std::map<std::string, PluginManifest> manifests = scanManifestPaths();
 
         // if no plugins configured we load all what was found in the manifests
         if (plugins.empty()) {
@@ -386,21 +523,67 @@ public:  // methods
 
         // loop over full qualified plugin names
         for (const auto& fqname : plugins) {
-            if (manifests.find(fqname) != manifests.end()) {
-                LocalConfiguration manifest   = manifests[fqname];
-                std::string name              = manifest.getString("name");
-                std::string namespce          = manifest.getString("namespace");
-                std::string fullQualifiedName = namespce + "." + name;
-                ASSERT(fqname == fullQualifiedName);
-                std::string lib = manifest.getString("library");
-                Plugin& plugin  = loadPlugin(name, lib);
+            if (LibraryManager::isPluginDisabled(fqname)) {
+                Log::debug() << "Plugin " << fqname << " is disabled" << std::endl;
+                continue;
             }
-            else {
-                Log::warning() << "Could not find manifest file for plugin " << fqname << std::endl;
+            auto it = manifests.find(fqname);
+            if (it != manifests.end()) {
+                const PluginManifest& manifest = it->second;
+                ASSERT(fqname == manifest.fqName());
+
+                // Skip scoped plugins during broad auto-load. Explicit LOAD_PLUGINS entries
+                // are different: the user asked for this exact plugin, so load it if its
+                // owning library is registered and satisfies any min-version constraint.
+                if (!explicitList && !manifest.forLibrary.empty()) {
+                    Log::debug() << "Skipping scoped plugin " << fqname << " (for-library: " << manifest.forLibrary
+                                 << ") during auto-load" << std::endl;
+                    continue;
+                }
+
+                // When the user asks for a scoped plugin by name, the owning library must
+                // already be registered - otherwise we'd silently load a plugin whose
+                // version constraint cannot be checked.
+                const bool requireOwningLibrary = explicitList && !manifest.forLibrary.empty();
+                loadPluginFromManifest(manifest, requireOwningLibrary);
+                continue;
             }
+
+            if (explicitList) {
+                throw BadValue("Could not find manifest file for plugin " + fqname, Here());
+            }
+            Log::warning() << "Could not find manifest file for plugin " << fqname << std::endl;
         }
     }
 
+    std::vector<std::reference_wrapper<Plugin>> loadPluginsFor(const std::string& libraryName,
+                                                               const std::vector<std::string>& tags) {
+        std::vector<std::reference_wrapper<Plugin>> loaded;
+
+        AutoLock<Mutex> lockme(mutex_);
+
+        std::map<std::string, PluginManifest> manifests = scanManifestPaths();
+
+        for (const auto& kv : manifests) {
+            const PluginManifest& manifest = kv.second;
+
+            if (manifest.forLibrary != libraryName) {
+                continue;
+            }
+            if (!manifest.matchesTags(tags)) {
+                continue;
+            }
+            if (LibraryManager::isPluginDisabled(manifest.fqName())) {
+                Log::debug() << "Plugin " << manifest.fqName() << " is disabled" << std::endl;
+                continue;
+            }
+
+            Plugin& plugin = loadPluginFromManifest(manifest);
+            loaded.push_back(plugin);
+        }
+
+        return loaded;
+    }
 
     void enregisterPlugin(const std::string& name, const std::string& libname) {
         AutoLock<Mutex> lockme(mutex_);
@@ -419,8 +602,8 @@ public:  // methods
     }
 
     void addPluginSearchPath(const std::string& path) {
-        Tokenizer tokenizer(":");
-        tokenizer(path, plugin_search_paths_);
+        AutoLock<Mutex> lockme(mutex_);
+        Tokenizer(":")(path, plugin_search_paths_);
     }
 
 private:  // members
@@ -478,6 +661,11 @@ void LibraryManager::autoLoadPlugins(const std::vector<std::string>& plugins) {
     LibraryRegistry::instance().autoLoadPlugins(plugins);
 }
 
+std::vector<std::reference_wrapper<Plugin>> LibraryManager::loadPluginsFor(const std::string& libraryName,
+                                                                           const std::vector<std::string>& tags) {
+    return LibraryRegistry::instance().loadPluginsFor(libraryName, tags);
+}
+
 void LibraryManager::enregisterPlugin(const std::string& name, const std::string& libname) {
     LibraryRegistry::instance().enregisterPlugin(name, libname);
 }
@@ -488,6 +676,44 @@ void LibraryManager::deregisterPlugin(const std::string& name) {
 
 void LibraryManager::addPluginSearchPath(const std::string& path) {
     LibraryRegistry::instance().addPluginSearchPath(path);
+}
+
+int LibraryManager::compareVersions(const std::string& a, const std::string& b) {
+    int aMajor, aMinor, aPatch;
+    int bMajor, bMinor, bPatch;
+
+    if (!parseSemver(a, aMajor, aMinor, aPatch)) {
+        throw BadValue("Invalid version string: " + a, Here());
+    }
+    if (!parseSemver(b, bMajor, bMinor, bPatch)) {
+        throw BadValue("Invalid version string: " + b, Here());
+    }
+
+    if (aMajor != bMajor) {
+        return aMajor - bMajor;
+    }
+    if (aMinor != bMinor) {
+        return aMinor - bMinor;
+    }
+    return aPatch - bPatch;
+}
+
+bool LibraryManager::isPluginDisabled(const std::string& fqName) {
+    static std::vector<std::string> disabled = [] {
+        std::string env = Resource<std::string>("disablePlugins;$DISABLE_PLUGINS", "");
+        std::vector<std::string> result;
+        if (!env.empty()) {
+            Tokenizer(",:")(env, result);
+        }
+        return result;
+    }();
+
+    return std::find(disabled.begin(), disabled.end(), fqName) != disabled.end();
+}
+
+void LibraryManager::setPluginManifestMetadata(Plugin& plugin, const std::string& forLibrary,
+                                               const std::vector<std::string>& tags) {
+    plugin.setManifestMetadata(forLibrary, tags);
 }
 
 //----------------------------------------------------------------------------------------------------------------------

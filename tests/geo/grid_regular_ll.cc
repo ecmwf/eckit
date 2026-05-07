@@ -429,8 +429,9 @@ CASE("arakawa c-grids") {
             "{grid: [1.875, 1.25], area: [89.375, 0.9375, -89.375, 359.0625], order: i+j+}",
         };
         for (const auto& a : n96) {
+            std::unique_ptr<const Grid> ga(GridFactory::make_from_string(a));
+
             for (const auto& b : n96) {
-                std::unique_ptr<const Grid> ga(GridFactory::make_from_string(a));
                 std::unique_ptr<const Grid> gb(GridFactory::make_from_string(b));
 
                 EXPECT(*ga == *gb);

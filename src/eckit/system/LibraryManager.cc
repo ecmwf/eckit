@@ -99,7 +99,7 @@ static bool parseSemver(const std::string& v, int& major, int& minor, int& patch
     major = minor = patch = 0;
 
     std::vector<std::string> parts;
-    Tokenizer(".")(v, parts);
+    Tokenizer(".", true)(v, parts);
     if (parts.size() < 2 || parts.size() > 3) {
         return false;
     }

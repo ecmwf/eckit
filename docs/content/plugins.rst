@@ -117,7 +117,7 @@ There are three orthogonal ways a plugin can be loaded.
    Scoped plugins are *not* loaded by this path.
 
    ***Note: This mechanism is deprecated and will be removed in the future.***
-   Plugins should be explictily loaded by their owning library via the scoped
+   Plugins should be explicitly loaded by their owning library via the scoped
    mechanism described below.
 
 **Scoped load (library-driven)**

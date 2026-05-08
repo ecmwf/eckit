@@ -80,8 +80,7 @@ int main(int argc, char** argv) {
     // AUTO_LOAD_PLUGINS=false MUST be honoured: nothing else may be loaded apart from the
     // single fqname listed in LOAD_PLUGINS. Without this assertion, the test would silently
     // pass even if global autoload were broken (the explicit plugin would be loaded too).
-    test::expectLoadedPluginsEqual({"main-autoload-explicit-plugin"},
-                                          "after Main ctor (autoload explicit list)");
+    test::expectLoadedPluginsEqual({"main-autoload-explicit-plugin"}, "after Main ctor (autoload explicit list)");
 
     return run_tests(argc, argv, false);
 }

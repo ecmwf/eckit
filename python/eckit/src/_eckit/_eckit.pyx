@@ -11,3 +11,11 @@
 cimport eckit
 
 eckit.eckit_main_initialise()
+
+
+def version() -> str:
+    return eckit.LibEcKit.instance().version()
+
+
+def git_sha1() -> str:
+    return eckit.LibEcKit.instance().gitsha1(40)

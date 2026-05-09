@@ -13,3 +13,6 @@ findlibs.load("eckit_geo", "eckitlib")
 
 
 from eckit.geo._eckit_geo import *
+
+__version__ = version()
+__git_sha1__ = git_sha1()

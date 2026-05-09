@@ -13,3 +13,6 @@ findlibs.load("eckit")
 
 
 from eckit._eckit import *
+
+__version__ = version()
+__git_sha1__ = git_sha1()

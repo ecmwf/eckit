@@ -16,6 +16,15 @@ cdef extern from "eckit.h":
     void eckit_main_initialise()
 
 
+cdef extern from "eckit/config/LibEcKit.h" namespace "eckit":
+    cdef cppclass LibEcKit:
+        @staticmethod
+        LibEcKit& instance()
+
+        string version()
+        string gitsha1(unsigned int n)  # n=40 for full sha1
+
+
 cdef extern from "eckit/filesystem/PathName.h" namespace "eckit":
     cdef cppclass PathName:
         PathName(string)

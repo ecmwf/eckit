@@ -46,6 +46,7 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         string spec_str() const
         string type() const
         string uid() const
+        string order() const
         vector[size_t] shape() const
         size_t size() const
         const BoundingBox& boundingBox() const

@@ -115,6 +115,10 @@ cdef class Grid:
         return self._grid.uid()
 
     @property
+    def order(self) -> str:
+        return self._grid.order()
+
+    @property
     def shape(self) -> tuple:
         cdef vector[size_t] shape_vec = self._grid.shape()
         return tuple(shape_vec)

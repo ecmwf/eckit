@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
@@ -30,6 +31,34 @@ namespace eckit::geo::grid::reduced {
 
 
 static const std::string HEALPIX_PATTERN = "h([rn][1-9][0-9]*|[1-9][0-9]*(|r|_ring|n|_nested))";
+
+
+const std::vector<double>& healpix_longitudes(size_t Nside, size_t j) {
+    using cache_t = cache::MemoryCacheT<std::pair<size_t, size_t>, std::vector<double>>;
+    const cache_t::key_type key{Nside, j};
+
+    static cache_t cache;
+    if (cache.contains(key)) {
+        return cache[key];
+    }
+
+    ASSERT(0 < Nside);
+
+    const auto Nj = 4 * Nside - 1;
+    ASSERT(j < Nj);
+
+    const auto Ni = j < Nside ? 4 * (j + 1) : j < 3 * Nside ? 4 * Nside : 4 * (4 * Nside - 1 - j);
+    ASSERT(0 < Ni);
+
+    const auto step  = PointLonLat::FULL_ANGLE / static_cast<double>(Ni);
+    const auto start = j < Nside || 3 * Nside - 1 < j || static_cast<bool>((j + Nside) % 2) ? step / 2. : 0.;
+
+    std::vector<double> lons(Ni);
+    std::generate_n(lons.begin(), Ni,
+                    [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
+
+    return (cache[key] = std::move(lons));
+}
 
 
 HEALPix::HEALPix(const Spec& spec) :
@@ -142,7 +171,7 @@ const std::vector<double>& HEALPix::latitudes() const {
                                ? 1. - static_cast<double>(ring * ring) / (3 * static_cast<double>(Nside_ * Nside_))
                                : 4. / 3. - 2 * static_cast<double>(ring) / (3 * static_cast<double>(Nside_));
 
-            *i = 90. - util::RADIAN_TO_DEGREE * std::acos(f);
+            *i = PointLonLat::RIGHT_ANGLE - util::RADIAN_TO_DEGREE * std::acos(f);
             *j = -*i;
         }
         *i = 0.;
@@ -153,16 +182,8 @@ const std::vector<double>& HEALPix::latitudes() const {
 }
 
 
-std::vector<double> HEALPix::longitudes(size_t j) const {
-    const auto Ni    = nx(j);
-    const auto step  = 360. / static_cast<double>(Ni);
-    const auto start = j < Nside_ || 3 * Nside_ - 1 < j || static_cast<bool>((j + Nside_) % 2) ? step / 2. : 0.;
-
-    std::vector<double> lons(Ni);
-    std::generate_n(lons.begin(), Ni,
-                    [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
-
-    return lons;
+const std::vector<double>& HEALPix::longitudes(size_t j) const {
+    return healpix_longitudes(Nside_, j);
 }
 
 

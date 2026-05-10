@@ -25,7 +25,6 @@
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
@@ -95,9 +94,8 @@ Grid::Spec* RegularLL::spec(const std::string& name) {
     std::regex_match(name, match, std::regex(REGULAR_LL_PATTERN));
     ASSERT(match.size() == 9);
 
-    Translator<std::string, double> d;
-
-    return new spec::Custom({{"type", "regular_ll"}, {"grid", std::vector<double>{d(match[1]), d(match[5])}}});
+    return new spec::Custom(
+        {{"type", "regular_ll"}, {"grid", std::vector<double>{std::stod(match[1].str()), std::stod(match[5].str())}}});
 }
 
 

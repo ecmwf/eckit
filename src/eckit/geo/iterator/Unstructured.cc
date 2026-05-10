@@ -12,10 +12,10 @@
 
 #include "eckit/geo/iterator/Unstructured.h"
 
-#include <memory>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/container/PointsContainer.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 
@@ -37,13 +37,16 @@ struct UnstructuredInstance : Instance, Unstructured {
 };
 
 
-Unstructured::Unstructured(const Grid& grid, size_t index, std::shared_ptr<container::PointsContainer> container) :
-    container_(container), index_(index), size_(container_->size()), uid_(grid.uid()) {
-    ASSERT(container_->size() == grid.size());
+Unstructured::Unstructured(const Grid& grid, size_t index, const std::vector<double>& longitudes,
+                           const std::vector<double>& latitudes) :
+    longitudes_(&longitudes), latitudes_(&latitudes), index_(index), size_(longitudes.size()), uid_(grid.uid()) {
+    ASSERT(longitudes.size() == latitudes.size());
+    ASSERT(size_ == grid.size());
 }
 
 
-Unstructured::Unstructured(const Grid& grid) : index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
+Unstructured::Unstructured(const Grid& grid) :
+    longitudes_(nullptr), latitudes_(nullptr), index_(grid.size()), size_(grid.size()), uid_(grid.uid()) {}
 
 
 bool Unstructured::operator==(const geo::Iterator& other) const {
@@ -79,8 +82,9 @@ Unstructured::operator bool() const {
 
 
 Point Unstructured::operator*() const {
-    ASSERT(container_);
-    return container_->get(index_);
+    ASSERT(longitudes_ != nullptr);
+    ASSERT(latitudes_ != nullptr);
+    return PointLonLat{longitudes_->at(index_), latitudes_->at(index_)};
 }
 
 

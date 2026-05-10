@@ -92,7 +92,16 @@ bool Grid::empty() const {
 
 
 size_t Grid::size() const {
-    NOTIMP;
+    size_t size = shape().empty() ? 0 : 1;
+    for (auto s : shape()) {
+        size *= s;
+    }
+    return size;
+}
+
+
+void Grid::cache() const {
+    // By default, there's no cacheable data, so do nothing
 }
 
 
@@ -121,30 +130,10 @@ Grid::uid_type Grid::calculate_uid() const {
 
 
 void Grid::reset_uid(uid_type id) {
-    if (id.empty()) {
-        uid_.clear();
-        return;
-    }
-
-    ASSERT(is_uid(id));
+    ASSERT(is_uid(id) || id.empty());
     std::transform(id.begin(), id.end(), id.begin(), [](unsigned char c) { return std::tolower(c); });
 
     uid_ = id;
-}
-
-
-bool Grid::includesNorthPole() const {
-    NOTIMP;
-}
-
-
-bool Grid::includesSouthPole() const {
-    NOTIMP;
-}
-
-
-bool Grid::isPeriodicWestEast() const {
-    NOTIMP;
 }
 
 
@@ -177,6 +166,16 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
     });
 
     return ll;
+}
+
+
+std::vector<double> Grid::distinct_latitudes() const {
+    NOTIMP;
+}
+
+
+std::vector<double> Grid::distinct_longitudes() const {
+    NOTIMP;
 }
 
 

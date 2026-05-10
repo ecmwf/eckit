@@ -118,13 +118,14 @@ const std::vector<double>& ReducedLonLat::latitudes() const {
 }
 
 
-std::vector<double> ReducedLonLat::longitudes(size_t j) const {
+const std::vector<double>& ReducedLonLat::longitudes(size_t j) const {
     if (nx(j) > 0) {
         ASSERT(longitude_[j]);
         return longitude_[j]->values();
     }
 
-    return {};
+    static const std::vector<double> empty;
+    return empty;
 }
 
 

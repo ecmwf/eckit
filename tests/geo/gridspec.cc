@@ -31,7 +31,7 @@ namespace eckit::geo::test {
 
 CASE("canonical") {
     for (const std::string& gridSpec : {
-             R"({"area":[73,-27,33,45],"grid":[4,4]})",
+             R"({"area":[73,-27,33,45],"grid":[4,4],"reference":[1,1]})",
          }) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(gridSpec));
 
@@ -127,29 +127,40 @@ CASE("grid: name -> spec -> grid: name") {
 
 
 CASE("grid: reduced_gg") {
-    std::unique_ptr<const Grid> o16(GridFactory::build(spec::Custom({{"grid", "o16"}})));
+    SECTION("O16, N16") {
+        std::unique_ptr<const Grid> o16(GridFactory::build(spec::Custom({{"grid", "o16"}})));
 
-    EXPECT(o16->spec_str() == R"({"grid":"O16"})");
+        EXPECT(o16->spec_str() == R"({"grid":"O16"})");
 
-    std::unique_ptr<const Grid> n16(GridFactory::build(spec::Custom({{"grid", "n16"}})));
+        std::unique_ptr<const Grid> n16(GridFactory::build(spec::Custom({{"grid", "n16"}})));
 
-    EXPECT(n16->spec_str() == R"({"grid":"N16"})");
+        EXPECT(n16->spec_str() == R"({"grid":"N16"})");
 
-    std::unique_ptr<const Grid> known_pl_1(GridFactory::build(
-        spec::Custom({{"pl", pl_type{20, 27, 32, 40, 45, 48, 60, 60, 64, 64, 64, 64, 64, 64, 64, 64,
-                                     64, 64, 64, 64, 64, 64, 64, 64, 60, 60, 48, 45, 40, 32, 27, 20}}})));
+        std::unique_ptr<const Grid> known_pl_1(GridFactory::build(
+            spec::Custom({{"pl", pl_type{20, 27, 32, 40, 45, 48, 60, 60, 64, 64, 64, 64, 64, 64, 64, 64,
+                                         64, 64, 64, 64, 64, 64, 64, 64, 60, 60, 48, 45, 40, 32, 27, 20}}})));
 
-    EXPECT(known_pl_1->spec_str() == R"({"grid":"N16"})");
+        EXPECT(known_pl_1->spec_str() == R"({"grid":"N16"})");
 
-    std::unique_ptr<const Grid> known_pl_2(
-        GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 20}}})));
+        std::unique_ptr<const Grid> known_pl_2(
+            GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 20}}})));
 
-    EXPECT(known_pl_2->spec_str() == R"({"grid":"O4"})");
+        EXPECT(known_pl_2->spec_str() == R"({"grid":"O4"})");
 
-    std::unique_ptr<const Grid> unknown_pl(
-        GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 99}}})));
+        std::unique_ptr<const Grid> unknown_pl(
+            GridFactory::build(spec::Custom({{"pl", pl_type{20, 24, 28, 32, 32, 28, 24, 99}}})));
 
-    EXPECT(unknown_pl->spec_str() == R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
+        EXPECT(unknown_pl->spec_str() == R"({"grid":"N4","pl":[20,24,28,32,32,28,24,99]})");
+    }
+
+
+    SECTION("O96") {
+        const auto spec     = R"({"grid":"O96", "area":[89.2842275325138,0,-89.2842275325138,359.1]})";
+        const auto expected = R"({"grid":"O96"})";
+
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        EXPECT(grid->spec().str() == expected);
+    }
 }
 
 

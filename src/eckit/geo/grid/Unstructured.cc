@@ -12,9 +12,15 @@
 
 #include "eckit/geo/grid/Unstructured.h"
 
+#include <utility>
+#include <type_traits>
+#include <variant>
+
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointLonLatR.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -22,7 +28,7 @@ namespace eckit::geo::grid {
 
 
 Grid::iterator Unstructured::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(*this, 0, container_)};
+    return iterator{new geo::iterator::Unstructured(*this, 0, longitudes(), latitudes())};
 }
 
 
@@ -32,27 +38,23 @@ Grid::iterator Unstructured::cend() const {
 
 
 Unstructured::Unstructured(const Spec& spec) :
-    Unstructured(new container::PointsLonLatInstance{spec.get_double_vector("longitudes"),
-                                                     spec.get_double_vector("latitudes")}) {}
+    longitudes_(spec.get_double_vector("longitudes")), latitudes_(spec.get_double_vector("latitudes")) {
+    ASSERT(longitudes_.size() == latitudes_.size());
+}
 
 
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes) :
-    Unstructured(new container::PointsLonLatReference{longitudes, latitudes}) {}
-
-
-Unstructured::Unstructured(const std::vector<Point>& points) : Unstructured(new container::PointsReference{points}) {}
-
-
-Unstructured::Unstructured(std::vector<Point>&& points) :
-    Unstructured(new container::PointsInstance{std::move(points)}) {}
-
-
-Unstructured::Unstructured(container::PointsContainer* container) : container_{container} {}
-
-
-size_t Unstructured::size() const {
-    return container_->size();
+    longitudes_(longitudes), latitudes_(latitudes) {
+    ASSERT(longitudes_.size() == latitudes_.size());
 }
+
+
+std::vector<size_t> Unstructured::shape() const {
+    return {longitudes_.size()};
+}
+
+
+Unstructured::Unstructured() = default;
 
 
 Grid::BoundingBox* Unstructured::calculate_bbox() const {
@@ -61,12 +63,23 @@ Grid::BoundingBox* Unstructured::calculate_bbox() const {
 
 
 std::vector<Point> Unstructured::to_points() const {
-    return container_->to_points();
+    const auto& lons = longitudes();
+    const auto& lats = latitudes();
+    ASSERT(lons.size() == lats.size());
+
+    std::vector<Point> pts;
+    pts.reserve(size());
+
+    for (size_t i = 0; i < lons.size(); ++i) {
+        pts.emplace_back(PointLonLat{lons[i], lats[i]});
+    }
+
+    return pts;
 }
 
 
 std::pair<std::vector<double>, std::vector<double> > Unstructured::to_latlons() const {
-    return container_->to_latlons();
+    return {latitudes(), longitudes()};
 }
 
 

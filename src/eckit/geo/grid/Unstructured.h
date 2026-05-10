@@ -13,10 +13,9 @@
 #pragma once
 
 #include <cstddef>
-#include <memory>
+#include <vector>
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/container/PointsContainer.h"
 
 
 namespace eckit::geo::iterator {
@@ -33,28 +32,16 @@ public:
     // -- Constructors
 
     explicit Unstructured(const Spec&);
-
     explicit Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
-    explicit Unstructured(const std::vector<Point>&);
-    explicit Unstructured(std::vector<Point>&&);
-
-    // -- Methods
-
-    std::shared_ptr<container::PointsContainer> container() const { return container_; }
 
     // -- Overridden methods
 
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t size() const override;
-    std::vector<size_t> shape() const override { return {size()}; }
+    std::vector<size_t> shape() const override;
 
     BoundingBox* calculate_bbox() const override;
-
-    bool includesNorthPole() const override { return true; }
-    bool includesSouthPole() const override { return true; }
-    bool isPeriodicWestEast() const override { return true; }
 
     [[nodiscard]] std::vector<Point> to_points() const override;
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
@@ -68,17 +55,21 @@ protected:
 
     // -- Constructors
 
-    explicit Unstructured(container::PointsContainer*);
+    Unstructured();
+
+    virtual const std::vector<double>& longitudes() const { return longitudes_; }
+    virtual const std::vector<double>& latitudes() const { return latitudes_; }
+
+    // -- Overridden methods
+
+    void fill_spec(spec::Custom&) const override;
 
 private:
 
     // -- Members
 
-    std::shared_ptr<container::PointsContainer> container_;
-
-    // -- Overridden methods
-
-    void fill_spec(spec::Custom&) const override;
+    std::vector<double> longitudes_;
+    std::vector<double> latitudes_;
 
     // -- Friends
 

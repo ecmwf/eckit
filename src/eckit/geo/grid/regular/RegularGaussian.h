@@ -40,7 +40,8 @@ public:
 
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
-
+    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return y_.values(); }
+    [[nodiscard]] std::vector<double> distinct_longitudes() const override { return x_.values(); }
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 

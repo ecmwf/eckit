@@ -39,8 +39,11 @@ public:
 
     // -- Methods
 
-    PathName to_cached_path(const url_type&, const std::string& prefix = "",
-                            const std::string& suffix = ".download") const;
+    static const std::string PREFIX;
+    static const std::string SUFFIX;
+
+    PathName to_cached_path(const url_type&, const std::string& prefix = PREFIX,
+                            const std::string& suffix = SUFFIX) const;
 
     // -- Class methods
 

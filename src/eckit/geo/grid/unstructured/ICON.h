@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include <cstddef>
+#include <string>
 
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 
-namespace eckit {
-class PathName;
+namespace eckit::geo::cache {
+class LatitudeLongitude;
 }
 
 
@@ -28,23 +28,6 @@ namespace eckit::geo::grid::unstructured {
 
 class ICON final : public Unstructured {
 public:
-
-    // -- Types
-
-    struct ICONRecord {
-        explicit ICONRecord() = default;
-
-        void read(const PathName&);
-        void check(const Spec&) const;
-
-        using bytes_t = decltype(sizeof(int));
-        bytes_t footprint() const;
-
-        size_t n() const;
-
-        std::vector<double> longitudes_;
-        std::vector<double> latitudes_;
-    };
 
     // -- Constructors
 
@@ -61,11 +44,11 @@ public:
     // -- Overridden methods
 
     const std::string& type() const override;
-    uid_type calculate_uid() const override;
-    BoundingBox* calculate_bbox() const override;
+    std::vector<size_t> shape() const override;
 
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
+    void cache() const override;
+
+    BoundingBox* calculate_bbox() const override;
 
     // -- Class methods
 
@@ -78,15 +61,17 @@ private:
 
     // -- Constructors
 
-    ICON(const ICONRecord&, const uid_type&, const std::string& arrangement, const std::string& name);
+    ICON(const uid_type&, const std::string& arrangement, const std::string& name);
 
     // -- Members
 
-    std::string name_;
-    Arrangement arrangement_;
-    const ICONRecord& record_;
+    const std::string name_;
+    const Arrangement arrangement_;
 
     // -- Overridden methods
+
+    const std::vector<double>& longitudes() const override;
+    const std::vector<double>& latitudes() const override;
 
     void fill_spec(spec::Custom&) const override;
 };

@@ -42,10 +42,15 @@ cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
 
 cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
     cdef cppclass Grid:
-        pair[vector[double], vector[double]] to_latlons() const
         string spec_str() const
         string type() const
         string uid() const
+        string order() const
+
+        pair[vector[double], vector[double]] to_latlons() const
+        vector[double] distinct_latitudes() const
+        vector[double] distinct_longitudes() const
+
         vector[size_t] shape() const
         size_t size() const
         const BoundingBox& boundingBox() const

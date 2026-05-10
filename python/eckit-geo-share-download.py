@@ -105,7 +105,7 @@ def execute(args):
         print("Known grid names:")
         for name in sorted(grids_by_name.keys()):
             grid = grids_by_name[name]
-            uid = grid.get("orca_uid", "")
+            uid = grid.get("uid", "")
             print(f"  {name}" + (f" (uid: {uid})" if uid else ""))
         return
 

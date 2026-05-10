@@ -37,6 +37,9 @@ namespace eckit::geo::cache {
 
 static util::recursive_mutex MUTEX;
 
+const std::string Download::PREFIX = "";
+const std::string Download::SUFFIX = ".download";
+
 
 class lock_type {
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};

@@ -70,10 +70,19 @@ ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const BoundingBox&
     ASSERT(N_ * 2 == pl_.size());
     ASSERT(0 < N_ && Nj_ <= 2 * N_);
 
-    boundingBox(new BoundingBox{bbox});
-
     latitude_.reset(make_y_range(N, bbox));
     ASSERT(latitude_);
+
+    bool periodic = true;
+    for (size_t j = 0; j < Nj_; ++j) {
+        longitude_[j].reset(make_x_range(static_cast<size_t>(pl[j]), bbox));
+        periodic = periodic && longitude_[j]->periodic();
+    }
+
+    boundingBox(new BoundingBox{latitude_->includesNorthPole() ? PointLonLat::RIGHT_ANGLE : bbox.north(),   //
+                                bbox.west(),                                                                //
+                                latitude_->includesSouthPole() ? -PointLonLat::RIGHT_ANGLE : bbox.south(),  //
+                                periodic ? bbox.west() + PointLonLat::FULL_ANGLE : bbox.east()});
 }
 
 
@@ -97,15 +106,6 @@ size_t ReducedGaussian::size() const {
 
 
 size_t ReducedGaussian::nx(size_t j) const {
-    if (!longitude_.at(j_ + j)) {
-        const auto& bbox = boundingBox();
-        auto Ni          = pl_.at(j_ + j);
-        ASSERT(Ni >= 0);
-
-        longitude_[j].reset(make_x_range(static_cast<size_t>(Ni), bbox));
-        ASSERT(longitude_[j]);
-    }
-
     return longitude_[j]->size();
 }
 

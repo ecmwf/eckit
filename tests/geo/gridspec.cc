@@ -31,7 +31,7 @@ namespace eckit::geo::test {
 
 CASE("canonical") {
     for (const std::string& gridSpec : {
-             R"({"area":[73,-27,33,45],"grid":[4,4]})",
+             R"({"area":[73,-27,33,45],"grid":[4,4],"reference":[1,1]})",
          }) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(gridSpec));
 

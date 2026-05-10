@@ -34,7 +34,7 @@ CASE("Grid from grid_spec") {
             {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},          //
             {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},        //
             {"{grid: o8}", R"({"grid":"O8"})", 544},                   //
-            {"{grid: h2_ring}", R"({"grid":"H2"})", 48},               //
+            {"{grid: h2}", R"({"grid":"H2"})", 48},                    //
             {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},  //
         };
 

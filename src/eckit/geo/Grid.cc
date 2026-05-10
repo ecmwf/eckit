@@ -133,21 +133,6 @@ void Grid::reset_uid(uid_type id) {
 }
 
 
-bool Grid::includesNorthPole() const {
-    NOTIMP;
-}
-
-
-bool Grid::includesSouthPole() const {
-    NOTIMP;
-}
-
-
-bool Grid::isPeriodicWestEast() const {
-    NOTIMP;
-}
-
-
 Point Grid::first_point() const {
     ASSERT(!empty());
     return to_points().front();

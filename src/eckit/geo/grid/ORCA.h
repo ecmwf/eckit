@@ -89,10 +89,6 @@ public:
 
     BoundingBox* calculate_bbox() const override;
 
-    bool includesNorthPole() const override { return true; }
-    bool includesSouthPole() const override { return true; }  // FIXME: not sure this is semanticaly correct
-    bool isPeriodicWestEast() const override { return true; }
-
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
     [[nodiscard]] std::vector<Point> to_points() const override;

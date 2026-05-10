@@ -52,10 +52,6 @@ public:
 
     BoundingBox* calculate_bbox() const override;
 
-    bool includesNorthPole() const override { return true; }
-    bool includesSouthPole() const override { return true; }
-    bool isPeriodicWestEast() const override { return true; }
-
     [[nodiscard]] std::vector<Point> to_points() const override;
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 

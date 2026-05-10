@@ -77,10 +77,6 @@ private:
 
     // -- Overridden methods
 
-    bool includesNorthPole() const override { return true; }
-    bool includesSouthPole() const override { return true; }
-    bool isPeriodicWestEast() const override { return true; }
-
     void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;
 };

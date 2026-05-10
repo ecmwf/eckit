@@ -118,10 +118,6 @@ public:
 
     static bool is_uid(const std::string& uid);
 
-    virtual bool includesNorthPole() const;
-    virtual bool includesSouthPole() const;
-    virtual bool isPeriodicWestEast() const;
-
     [[nodiscard]] virtual Point first_point() const;
     [[nodiscard]] virtual Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;

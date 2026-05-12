@@ -29,10 +29,6 @@ fn main() {
         std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
     bindman_build::check_cpp_api(&include, &crate_dir.join("src/lib.rs"));
 
-    // Export OUT_DIR for downstream crates that need eckit_exceptions.h
-    let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").expect("OUT_DIR"));
-    println!("cargo:out_dir={}", out_dir.display());
-
     // Export cpp directory for downstream crates that include eckit_bridge.h
     println!("cargo:cpp_dir={}", crate_dir.join("cpp").display());
 }
@@ -58,23 +54,30 @@ fn build_cxx_bridge(include: &std::path::Path) {
     bindman_utils::link_cpp_stdlib();
 }
 
-/// Generate exception bridge files from eckit's `Exceptions.h`.
+/// Generate exception bridge files from eckit's `Exceptions.h`. Publishes the
+/// source list so downstream `-sys` crates can re-parse and inherit eckit's
+/// catch blocks into their own generated bridge.
 fn generate_exceptions(include: &std::path::Path) {
     let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").expect("OUT_DIR not set"));
-    let header = include.join("eckit/exception/Exceptions.h");
+
+    let own = vec![bindman_build::ExceptionSource {
+        header: include.join("eckit/exception/Exceptions.h"),
+        include_path: "eckit/exception/Exceptions.h".to_string(),
+        cpp_namespace: "eckit".to_string(),
+        message_prefix: "eckit".to_string(),
+        base_class: "Exception".to_string(),
+        recursive: true,
+    }];
 
     bindman_build::generate_exception_bridge(&bindman_build::ExceptionBridgeConfig {
-        header: &header,
-        base_class: "Exception",
-        namespace: "eckit",
+        primary_namespace: "eckit",
         out_dir: &out_dir,
+        own: &own,
+        inherited: &[],
     });
 
-    // Export path to generated header for downstream -sys crates
-    println!(
-        "cargo:exceptions_header={}",
-        out_dir.join("eckit_exceptions.h").display()
-    );
+    // Publish for downstream `-sys` crates that inherit eckit's exceptions.
+    bindman_build::publish_exception_sources(&own, &out_dir);
 }
 
 /// Minimum eckit version this crate's bridge is known to compile against.

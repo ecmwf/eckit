@@ -1,9 +1,11 @@
 // eckit C++ bridge for Rust FFI
 #pragma once
 
-// Include auto-generated trycatch handler FIRST — before cxx generates its
-// default
-#include "eckit_exceptions.h"
+// Note: the auto-generated `rust::behavior::trycatch` lives in
+// `eckit_exceptions.h`, which is included by `eckit_bridge.cpp` directly
+// (not from this header). Downstream `-sys` crates have their own generated
+// `<ns>_exceptions.h` and must not see eckit's transitively through here,
+// or they would have two `trycatch` specializations in one translation unit.
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/YAMLConfiguration.h"

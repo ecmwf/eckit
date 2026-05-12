@@ -4,8 +4,8 @@
 // generated wrappers' Result<T> handling picks up our specialization.
 #include "eckit_exceptions.h"
 
-#include "eckit_bridge.h"
 #include "eckit-sys/src/lib.rs.h"  // cxx-generated — provides LogLevel values
+#include "eckit_bridge.h"
 
 namespace eckit_bridge {
 

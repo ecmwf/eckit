@@ -24,3 +24,10 @@ cdef extern from "eckit/filesystem/PathName.h" namespace "eckit":
 cdef extern from "eckit/log/JSON.h" namespace "eckit":
     cdef cppclass JSON:
         JSON(std.ostream&)
+
+
+cdef extern from "eckit/io/EasyCURL.h" namespace "eckit":
+    void easycurl_setopt_bool(string option_name, bool value)
+    void easycurl_setopt_long(string option_name, long value)
+    void easycurl_setopt_string(string option_name, string value)
+    void easycurl_clear_options()

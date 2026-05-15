@@ -16,22 +16,26 @@
 #include "eckit/io/EasyCURL.h"
 
 #include <unistd.h>
+
 #include <memory>
+#include <ostream>
+#include <sstream>
+#include <variant>
+#include <vector>
 
 #include <curl/curl.h>
 
+// #include "eckit/io/BufferedHandle.h"
+#include "eckit/io/CircularBuffer.h"
+#include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"
+#include "eckit/log/Timer.h"
+#include "eckit/parser/JSONParser.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
-
-#include "eckit/io/BufferedHandle.h"
-#include "eckit/io/CircularBuffer.h"
-#include "eckit/log/Bytes.h"
-#include "eckit/log/Timer.h"
-#include "eckit/parser/JSONParser.h"
-#include "eckit/utils/StringTools.h"
-#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit {
@@ -40,368 +44,355 @@ namespace eckit {
 
 namespace {
 
+using recursive_mutex = eckit::Mutex;
+
+template <typename T>
+using lock_guard = typename eckit::AutoLock<T>;
+
+struct once_flag {
+    pthread_once_t once_ = PTHREAD_ONCE_INIT;
+};
+
+template <class Callable>
+inline void call_once(once_flag& flag, Callable&& fun) {
+    pthread_once(&(flag.once_), fun);
+}
+
 struct http_code {
-    int code_;
     const char* message_;
     bool retriable_;
     bool redirect_;
 };
 
-std::vector<http_code> http_codes = {
-    {
-        100,
-        "Continue",
-        false,
-        false,
-    },
-    {
-        101,
-        "Switching Protocols",
-        false,
-        false,
-    },
-    {
-        102,
-        "Processing",
-        false,
-        false,
-    },
-    {
-        103,
-        "Early Hints",
-        false,
-        false,
-    },
-
-    {
-        200,
-        "OK",
-        false,
-        false,
-    },
-    {
-        201,
-        "Created",
-        false,
-        false,
-    },
-    {
-        202,
-        "Accepted",
-        false,
-        false,
-    },
-    {
-        203,
-        "Non-Authoritative Information",
-        false,
-        false,
-    },
-    {
-        204,
-        "No Content",
-        false,
-        false,
-    },
-    {
-        205,
-        "Reset Content",
-        false,
-        false,
-    },
-    {
-        206,
-        "Partial Content",
-        false,
-        false,
-    },
-
-    {
-        300,
-        "Multiple Choices",
-        false,
-        false,
-    },
-    {
-        301,
-        "Moved Permanently",
-        false,
-        true,
-    },
-    {
-        302,
-        "Found",
-        false,
-        true,
-    },
-    {
-        303,
-        "See Other",
-        false,
-        true,
-    },
-    {
-        304,
-        "Not Modified",
-        false,
-        false,
-    },
-    {
-        305,
-        "Use Proxy",
-        false,
-        false,
-    },
-    {
-        306,
-        "Switch Proxy",
-        false,
-        false,
-    },
-    {
-        307,
-        "Temporary Redirect",
-        false,
-        true,
-    },
-    {
-        308,
-        "Permanent Redirect",
-        false,
-        true,
-    },
-
-    {
-        400,
-        "Bad Request",
-        false,
-        false,
-    },
-    {
-        401,
-        "Unauthorized",
-        false,
-        false,
-    },
-    {
-        402,
-        "Payment Required",
-        false,
-        false,
-    },
-    {
-        403,
-        "Forbidden",
-        false,
-        false,
-    },
-    {
-        404,
-        "Not Found",
-        false,
-        false,
-    },
-    {
-        405,
-        "Method Not Allowed",
-        false,
-        false,
-    },
-    {
-        406,
-        "Not Acceptable",
-        false,
-        false,
-    },
-    {
-        407,
-        "Proxy Authentication Required",
-        false,
-        false,
-    },
-    {
-        408,
-        "Request Timeout",
-        false,
-        false,
-    },
-    {
-        409,
-        "Conflict",
-        false,
-        false,
-    },
-    {
-        410,
-        "Gone",
-        false,
-        false,
-    },
-    {
-        411,
-        "Length Required",
-        false,
-        false,
-    },
-    {
-        412,
-        "Precondition Failed",
-        false,
-        false,
-    },
-    {
-        413,
-        "Request Entity Too Large",
-        false,
-        false,
-    },
-    {
-        414,
-        "URI Too Long",
-        false,
-        false,
-    },
-    {
-        415,
-        "Unsupported Media Type",
-        false,
-        false,
-    },
-    {
-        416,
-        "Range Not Satisfiable",
-        false,
-        false,
-    },
-    {
-        417,
-        "Expectation Failed",
-        false,
-        false,
-    },
-    {
-        418,
-        "I'm a teapot",
-        false,
-        false,
-    },
-    {
-        421,
-        "Misdirected Request",
-        false,
-        false,
-    },
-    {
-        422,
-        "Unprocessable Entity",
-        false,
-        false,
-    },
-    {
-        423,
-        "Locked",
-        false,
-        false,
-    },
-    {
-        425,
-        "Too Early",
-        true,
-        false,
-    },
-    {
-        426,
-        "Upgrade Required",
-        false,
-        false,
-    },
-    {
-        428,
-        "Precondition Required",
-        false,
-        false,
-    },
-    {
-        429,
-        "Too Many Requests",
-        true,
-        false,
-    },
-    {
-        431,
-        "Request Header Fields Too Large",
-        false,
-        false,
-    },
-    {
-        451,
-        "Unavailable For Legal Reasons",
-        false,
-        false,
-    },
-
-    {
-        500,
-        "Internal Server Error",
-        true,
-        false,
-    },
-    {
-        501,
-        "Not Implemented",
-        false,
-        false,
-    },
-    {
-        502,
-        "Bad Gateway",
-        true,
-        false,
-    },
-    {
-        503,
-        "Service Unavailable",
-        true,
-        false,
-    },
-    {
-        504,
-        "Gateway Timeout",
-        true,
-        false,
-    },
-    {
-        505,
-        "HTTP Version Not Supported",
-        false,
-        false,
-    },
-    {
-        506,
-        "Variant Also Negotiates",
-        false,
-        false,
-    },
-    {
-        507,
-        "Insufficient Storage",
-        false,
-        false,
-    },
-    {
-        510,
-        "Not Extended",
-        false,
-        false,
-    },
-    {
-        511,
-        "Network Authentication Required",
-        false,
-        false,
-    },
-
+static const std::map<long, http_code> HTTP_CODES{
+    {100, {"Continue", false, false}},
+    {101, {"Switching Protocols", false, false}},
+    {102, {"Processing", false, false}},
+    {103, {"Early Hints", false, false}},
+    {200, {"OK", false, false}},
+    {201, {"Created", false, false}},
+    {202, {"Accepted", false, false}},
+    {203, {"Non-Authoritative Information", false, false}},
+    {204, {"No Content", false, false}},
+    {205, {"Reset Content", false, false}},
+    {206, {"Partial Content", false, false}},
+    {300, {"Multiple Choices", false, false}},
+    {301, {"Moved Permanently", false, true}},
+    {302, {"Found", false, true}},
+    {303, {"See Other", false, true}},
+    {304, {"Not Modified", false, false}},
+    {305, {"Use Proxy", false, false}},
+    {306, {"Switch Proxy", false, false}},
+    {307, {"Temporary Redirect", false, true}},
+    {308, {"Permanent Redirect", false, true}},
+    {400, {"Bad Request", false, false}},
+    {401, {"Unauthorized", false, false}},
+    {402, {"Payment Required", false, false}},
+    {403, {"Forbidden", false, false}},
+    {404, {"Not Found", false, false}},
+    {405, {"Method Not Allowed", false, false}},
+    {406, {"Not Acceptable", false, false}},
+    {407, {"Proxy Authentication Required", false, false}},
+    {408, {"Request Timeout", false, false}},
+    {409, {"Conflict", false, false}},
+    {410, {"Gone", false, false}},
+    {411, {"Length Required", false, false}},
+    {412, {"Precondition Failed", false, false}},
+    {413, {"Request Entity Too Large", false, false}},
+    {414, {"URI Too Long", false, false}},
+    {415, {"Unsupported Media Type", false, false}},
+    {416, {"Range Not Satisfiable", false, false}},
+    {417, {"Expectation Failed", false, false}},
+    {418, {"I'm a teapot", false, false}},
+    {421, {"Misdirected Request", false, false}},
+    {422, {"Unprocessable Entity", false, false}},
+    {423, {"Locked", false, false}},
+    {425, {"Too Early", true, false}},
+    {426, {"Upgrade Required", false, false}},
+    {428, {"Precondition Required", false, false}},
+    {429, {"Too Many Requests", true, false}},
+    {431, {"Request Header Fields Too Large", false, false}},
+    {451, {"Unavailable For Legal Reasons", false, false}},
+    {500, {"Internal Server Error", true, false}},
+    {501, {"Not Implemented", false, false}},
+    {502, {"Bad Gateway", true, false}},
+    {503, {"Service Unavailable", true, false}},
+    {504, {"Gateway Timeout", true, false}},
+    {505, {"HTTP Version Not Supported", false, false}},
+    {506, {"Variant Also Negotiates", false, false}},
+    {507, {"Insufficient Storage", false, false}},
+    {510, {"Not Extended", false, false}},
+    {511, {"Network Authentication Required", false, false}},
 };
+
+#define CURL_AT_LEAST(major, minor) \
+    (LIBCURL_VERSION_MAJOR > (major) || (LIBCURL_VERSION_MAJOR == (major) && LIBCURL_VERSION_MINOR >= (minor)))
+
+static const std::map<std::string, CURLoption> OPTIONS{
+    {"CURLOPT_ABSTRACT_UNIX_SOCKET", CURLOPT_ABSTRACT_UNIX_SOCKET},
+    {"CURLOPT_ACCEPTTIMEOUT_MS", CURLOPT_ACCEPTTIMEOUT_MS},
+    {"CURLOPT_ACCEPT_ENCODING", CURLOPT_ACCEPT_ENCODING},
+    {"CURLOPT_ADDRESS_SCOPE", CURLOPT_ADDRESS_SCOPE},
+    {"CURLOPT_APPEND", CURLOPT_APPEND},
+    {"CURLOPT_AUTOREFERER", CURLOPT_AUTOREFERER},
+    {"CURLOPT_BUFFERSIZE", CURLOPT_BUFFERSIZE},
+    {"CURLOPT_CAINFO", CURLOPT_CAINFO},
+    {"CURLOPT_CAPATH", CURLOPT_CAPATH},
+    {"CURLOPT_CERTINFO", CURLOPT_CERTINFO},
+    {"CURLOPT_CONNECTTIMEOUT", CURLOPT_CONNECTTIMEOUT},
+    {"CURLOPT_CONNECTTIMEOUT_MS", CURLOPT_CONNECTTIMEOUT_MS},
+    {"CURLOPT_CONNECT_ONLY", CURLOPT_CONNECT_ONLY},
+    {"CURLOPT_COOKIE", CURLOPT_COOKIE},
+    {"CURLOPT_COOKIEFILE", CURLOPT_COOKIEFILE},
+    {"CURLOPT_COOKIEJAR", CURLOPT_COOKIEJAR},
+    {"CURLOPT_COOKIELIST", CURLOPT_COOKIELIST},
+    {"CURLOPT_COOKIESESSION", CURLOPT_COOKIESESSION},
+    {"CURLOPT_CRLF", CURLOPT_CRLF},
+    {"CURLOPT_CRLFILE", CURLOPT_CRLFILE},
+    {"CURLOPT_CUSTOMREQUEST", CURLOPT_CUSTOMREQUEST},
+    {"CURLOPT_DEFAULT_PROTOCOL", CURLOPT_DEFAULT_PROTOCOL},
+    {"CURLOPT_DIRLISTONLY", CURLOPT_DIRLISTONLY},
+    {"CURLOPT_DISALLOW_USERNAME_IN_URL", CURLOPT_DISALLOW_USERNAME_IN_URL},
+    {"CURLOPT_DNS_CACHE_TIMEOUT", CURLOPT_DNS_CACHE_TIMEOUT},
+    {"CURLOPT_DNS_INTERFACE", CURLOPT_DNS_INTERFACE},
+    {"CURLOPT_DNS_LOCAL_IP4", CURLOPT_DNS_LOCAL_IP4},
+    {"CURLOPT_DNS_LOCAL_IP6", CURLOPT_DNS_LOCAL_IP6},
+    {"CURLOPT_DNS_SERVERS", CURLOPT_DNS_SERVERS},
+    {"CURLOPT_DNS_SHUFFLE_ADDRESSES", CURLOPT_DNS_SHUFFLE_ADDRESSES},
+    {"CURLOPT_EXPECT_100_TIMEOUT_MS", CURLOPT_EXPECT_100_TIMEOUT_MS},
+    {"CURLOPT_FAILONERROR", CURLOPT_FAILONERROR},
+    {"CURLOPT_FILETIME", CURLOPT_FILETIME},
+    {"CURLOPT_FOLLOWLOCATION", CURLOPT_FOLLOWLOCATION},
+    {"CURLOPT_FORBID_REUSE", CURLOPT_FORBID_REUSE},
+    {"CURLOPT_FRESH_CONNECT", CURLOPT_FRESH_CONNECT},
+    {"CURLOPT_FTPPORT", CURLOPT_FTPPORT},
+    {"CURLOPT_FTPSSLAUTH", CURLOPT_FTPSSLAUTH},
+    {"CURLOPT_FTP_ACCOUNT", CURLOPT_FTP_ACCOUNT},
+    {"CURLOPT_FTP_ALTERNATIVE_TO_USER", CURLOPT_FTP_ALTERNATIVE_TO_USER},
+    {"CURLOPT_FTP_CREATE_MISSING_DIRS", CURLOPT_FTP_CREATE_MISSING_DIRS},
+    {"CURLOPT_FTP_FILEMETHOD", CURLOPT_FTP_FILEMETHOD},
+    {"CURLOPT_FTP_SKIP_PASV_IP", CURLOPT_FTP_SKIP_PASV_IP},
+    {"CURLOPT_FTP_SSL_CCC", CURLOPT_FTP_SSL_CCC},
+    {"CURLOPT_FTP_USE_EPRT", CURLOPT_FTP_USE_EPRT},
+    {"CURLOPT_FTP_USE_EPSV", CURLOPT_FTP_USE_EPSV},
+    {"CURLOPT_FTP_USE_PRET", CURLOPT_FTP_USE_PRET},
+    {"CURLOPT_GSSAPI_DELEGATION", CURLOPT_GSSAPI_DELEGATION},
+    {"CURLOPT_HAPPY_EYEBALLS_TIMEOUT_MS", CURLOPT_HAPPY_EYEBALLS_TIMEOUT_MS},
+    {"CURLOPT_HAPROXYPROTOCOL", CURLOPT_HAPROXYPROTOCOL},
+    {"CURLOPT_HEADER", CURLOPT_HEADER},
+    {"CURLOPT_HEADEROPT", CURLOPT_HEADEROPT},
+    {"CURLOPT_HTTPAUTH", CURLOPT_HTTPAUTH},
+    {"CURLOPT_HTTPGET", CURLOPT_HTTPGET},
+    {"CURLOPT_HTTPPROXYTUNNEL", CURLOPT_HTTPPROXYTUNNEL},
+    {"CURLOPT_HTTP_CONTENT_DECODING", CURLOPT_HTTP_CONTENT_DECODING},
+    {"CURLOPT_HTTP_TRANSFER_DECODING", CURLOPT_HTTP_TRANSFER_DECODING},
+    {"CURLOPT_HTTP_VERSION", CURLOPT_HTTP_VERSION},
+    {"CURLOPT_IGNORE_CONTENT_LENGTH", CURLOPT_IGNORE_CONTENT_LENGTH},
+    {"CURLOPT_INFILESIZE", CURLOPT_INFILESIZE},
+    {"CURLOPT_INTERFACE", CURLOPT_INTERFACE},
+    {"CURLOPT_IPRESOLVE", CURLOPT_IPRESOLVE},
+    {"CURLOPT_ISSUERCERT", CURLOPT_ISSUERCERT},
+    {"CURLOPT_KEEP_SENDING_ON_ERROR", CURLOPT_KEEP_SENDING_ON_ERROR},
+    {"CURLOPT_KEYPASSWD", CURLOPT_KEYPASSWD},
+    {"CURLOPT_KRBLEVEL", CURLOPT_KRBLEVEL},
+    {"CURLOPT_LOCALPORT", CURLOPT_LOCALPORT},
+    {"CURLOPT_LOCALPORTRANGE", CURLOPT_LOCALPORTRANGE},
+    {"CURLOPT_LOGIN_OPTIONS", CURLOPT_LOGIN_OPTIONS},
+    {"CURLOPT_LOW_SPEED_LIMIT", CURLOPT_LOW_SPEED_LIMIT},
+    {"CURLOPT_LOW_SPEED_TIME", CURLOPT_LOW_SPEED_TIME},
+    {"CURLOPT_MAIL_AUTH", CURLOPT_MAIL_AUTH},
+    {"CURLOPT_MAIL_FROM", CURLOPT_MAIL_FROM},
+    {"CURLOPT_MAXCONNECTS", CURLOPT_MAXCONNECTS},
+    {"CURLOPT_MAXFILESIZE", CURLOPT_MAXFILESIZE},
+    {"CURLOPT_MAXREDIRS", CURLOPT_MAXREDIRS},
+    {"CURLOPT_NETRC", CURLOPT_NETRC},
+    {"CURLOPT_NETRC_FILE", CURLOPT_NETRC_FILE},
+    {"CURLOPT_NEW_DIRECTORY_PERMS", CURLOPT_NEW_DIRECTORY_PERMS},
+    {"CURLOPT_NEW_FILE_PERMS", CURLOPT_NEW_FILE_PERMS},
+    {"CURLOPT_NOBODY", CURLOPT_NOBODY},
+    {"CURLOPT_NOPROGRESS", CURLOPT_NOPROGRESS},
+    {"CURLOPT_NOPROXY", CURLOPT_NOPROXY},
+    {"CURLOPT_NOSIGNAL", CURLOPT_NOSIGNAL},
+    {"CURLOPT_PASSWORD", CURLOPT_PASSWORD},
+    {"CURLOPT_PATH_AS_IS", CURLOPT_PATH_AS_IS},
+    {"CURLOPT_PINNEDPUBLICKEY", CURLOPT_PINNEDPUBLICKEY},
+    {"CURLOPT_PIPEWAIT", CURLOPT_PIPEWAIT},
+    {"CURLOPT_PORT", CURLOPT_PORT},
+    {"CURLOPT_POST", CURLOPT_POST},
+    {"CURLOPT_POSTFIELDSIZE", CURLOPT_POSTFIELDSIZE},
+    {"CURLOPT_POSTREDIR", CURLOPT_POSTREDIR},
+    {"CURLOPT_PRE_PROXY", CURLOPT_PRE_PROXY},
+    {"CURLOPT_PROXY", CURLOPT_PROXY},
+    {"CURLOPT_PROXYAUTH", CURLOPT_PROXYAUTH},
+    {"CURLOPT_PROXYPASSWORD", CURLOPT_PROXYPASSWORD},
+    {"CURLOPT_PROXYPORT", CURLOPT_PROXYPORT},
+    {"CURLOPT_PROXYTYPE", CURLOPT_PROXYTYPE},
+    {"CURLOPT_PROXYUSERNAME", CURLOPT_PROXYUSERNAME},
+    {"CURLOPT_PROXYUSERPWD", CURLOPT_PROXYUSERPWD},
+    {"CURLOPT_PROXY_CAINFO", CURLOPT_PROXY_CAINFO},
+    {"CURLOPT_PROXY_CAPATH", CURLOPT_PROXY_CAPATH},
+    {"CURLOPT_PROXY_CRLFILE", CURLOPT_PROXY_CRLFILE},
+    {"CURLOPT_PROXY_KEYPASSWD", CURLOPT_PROXY_KEYPASSWD},
+    {"CURLOPT_PROXY_PINNEDPUBLICKEY", CURLOPT_PROXY_PINNEDPUBLICKEY},
+    {"CURLOPT_PROXY_SERVICE_NAME", CURLOPT_PROXY_SERVICE_NAME},
+    {"CURLOPT_PROXY_SSLCERT", CURLOPT_PROXY_SSLCERT},
+    {"CURLOPT_PROXY_SSLCERTTYPE", CURLOPT_PROXY_SSLCERTTYPE},
+    {"CURLOPT_PROXY_SSLKEY", CURLOPT_PROXY_SSLKEY},
+    {"CURLOPT_PROXY_SSLKEYTYPE", CURLOPT_PROXY_SSLKEYTYPE},
+    {"CURLOPT_PROXY_SSLVERSION", CURLOPT_PROXY_SSLVERSION},
+    {"CURLOPT_PROXY_SSL_CIPHER_LIST", CURLOPT_PROXY_SSL_CIPHER_LIST},
+    {"CURLOPT_PROXY_SSL_OPTIONS", CURLOPT_PROXY_SSL_OPTIONS},
+    {"CURLOPT_PROXY_SSL_VERIFYHOST", CURLOPT_PROXY_SSL_VERIFYHOST},
+    {"CURLOPT_PROXY_SSL_VERIFYPEER", CURLOPT_PROXY_SSL_VERIFYPEER},
+    {"CURLOPT_PROXY_TLS13_CIPHERS", CURLOPT_PROXY_TLS13_CIPHERS},
+    {"CURLOPT_PROXY_TLSAUTH_PASSWORD", CURLOPT_PROXY_TLSAUTH_PASSWORD},
+    {"CURLOPT_PROXY_TLSAUTH_TYPE", CURLOPT_PROXY_TLSAUTH_TYPE},
+    {"CURLOPT_PROXY_TLSAUTH_USERNAME", CURLOPT_PROXY_TLSAUTH_USERNAME},
+    {"CURLOPT_PROXY_TRANSFER_MODE", CURLOPT_PROXY_TRANSFER_MODE},
+    {"CURLOPT_RANGE", CURLOPT_RANGE},
+    {"CURLOPT_REFERER", CURLOPT_REFERER},
+    {"CURLOPT_REQUEST_TARGET", CURLOPT_REQUEST_TARGET},
+    {"CURLOPT_RESUME_FROM", CURLOPT_RESUME_FROM},
+    {"CURLOPT_RTSP_CLIENT_CSEQ", CURLOPT_RTSP_CLIENT_CSEQ},
+    {"CURLOPT_RTSP_REQUEST", CURLOPT_RTSP_REQUEST},
+    {"CURLOPT_RTSP_SERVER_CSEQ", CURLOPT_RTSP_SERVER_CSEQ},
+    {"CURLOPT_RTSP_SESSION_ID", CURLOPT_RTSP_SESSION_ID},
+    {"CURLOPT_RTSP_STREAM_URI", CURLOPT_RTSP_STREAM_URI},
+    {"CURLOPT_RTSP_TRANSPORT", CURLOPT_RTSP_TRANSPORT},
+    {"CURLOPT_SASL_IR", CURLOPT_SASL_IR},
+    {"CURLOPT_SERVER_RESPONSE_TIMEOUT", CURLOPT_SERVER_RESPONSE_TIMEOUT},
+    {"CURLOPT_SERVICE_NAME", CURLOPT_SERVICE_NAME},
+    {"CURLOPT_SOCKS5_AUTH", CURLOPT_SOCKS5_AUTH},
+    {"CURLOPT_SOCKS5_GSSAPI_NEC", CURLOPT_SOCKS5_GSSAPI_NEC},
+    {"CURLOPT_SSH_AUTH_TYPES", CURLOPT_SSH_AUTH_TYPES},
+    {"CURLOPT_SSH_COMPRESSION", CURLOPT_SSH_COMPRESSION},
+    {"CURLOPT_SSH_HOST_PUBLIC_KEY_MD5", CURLOPT_SSH_HOST_PUBLIC_KEY_MD5},
+    {"CURLOPT_SSH_KNOWNHOSTS", CURLOPT_SSH_KNOWNHOSTS},
+    {"CURLOPT_SSH_PRIVATE_KEYFILE", CURLOPT_SSH_PRIVATE_KEYFILE},
+    {"CURLOPT_SSH_PUBLIC_KEYFILE", CURLOPT_SSH_PUBLIC_KEYFILE},
+    {"CURLOPT_SSLCERT", CURLOPT_SSLCERT},
+    {"CURLOPT_SSLCERTTYPE", CURLOPT_SSLCERTTYPE},
+    {"CURLOPT_SSLENGINE", CURLOPT_SSLENGINE},
+    {"CURLOPT_SSLENGINE_DEFAULT", CURLOPT_SSLENGINE_DEFAULT},
+    {"CURLOPT_SSLKEY", CURLOPT_SSLKEY},
+    {"CURLOPT_SSLKEYTYPE", CURLOPT_SSLKEYTYPE},
+    {"CURLOPT_SSLVERSION", CURLOPT_SSLVERSION},
+    {"CURLOPT_SSL_CIPHER_LIST", CURLOPT_SSL_CIPHER_LIST},
+    {"CURLOPT_SSL_ENABLE_ALPN", CURLOPT_SSL_ENABLE_ALPN},
+    {"CURLOPT_SSL_FALSESTART", CURLOPT_SSL_FALSESTART},
+    {"CURLOPT_SSL_OPTIONS", CURLOPT_SSL_OPTIONS},
+    {"CURLOPT_SSL_SESSIONID_CACHE", CURLOPT_SSL_SESSIONID_CACHE},
+    {"CURLOPT_SSL_VERIFYHOST", CURLOPT_SSL_VERIFYHOST},
+    {"CURLOPT_SSL_VERIFYPEER", CURLOPT_SSL_VERIFYPEER},
+    {"CURLOPT_SSL_VERIFYSTATUS", CURLOPT_SSL_VERIFYSTATUS},
+    {"CURLOPT_STREAM_WEIGHT", CURLOPT_STREAM_WEIGHT},
+    {"CURLOPT_SUPPRESS_CONNECT_HEADERS", CURLOPT_SUPPRESS_CONNECT_HEADERS},
+    {"CURLOPT_TCP_FASTOPEN", CURLOPT_TCP_FASTOPEN},
+    {"CURLOPT_TCP_KEEPALIVE", CURLOPT_TCP_KEEPALIVE},
+    {"CURLOPT_TCP_KEEPIDLE", CURLOPT_TCP_KEEPIDLE},
+    {"CURLOPT_TCP_KEEPINTVL", CURLOPT_TCP_KEEPINTVL},
+    {"CURLOPT_TCP_NODELAY", CURLOPT_TCP_NODELAY},
+    {"CURLOPT_TFTP_BLKSIZE", CURLOPT_TFTP_BLKSIZE},
+    {"CURLOPT_TFTP_NO_OPTIONS", CURLOPT_TFTP_NO_OPTIONS},
+    {"CURLOPT_TIMECONDITION", CURLOPT_TIMECONDITION},
+    {"CURLOPT_TIMEOUT", CURLOPT_TIMEOUT},
+    {"CURLOPT_TIMEOUT_MS", CURLOPT_TIMEOUT_MS},
+    {"CURLOPT_TIMEVALUE", CURLOPT_TIMEVALUE},
+    {"CURLOPT_TLS13_CIPHERS", CURLOPT_TLS13_CIPHERS},
+    {"CURLOPT_TLSAUTH_PASSWORD", CURLOPT_TLSAUTH_PASSWORD},
+    {"CURLOPT_TLSAUTH_TYPE", CURLOPT_TLSAUTH_TYPE},
+    {"CURLOPT_TLSAUTH_USERNAME", CURLOPT_TLSAUTH_USERNAME},
+    {"CURLOPT_TRANSFERTEXT", CURLOPT_TRANSFERTEXT},
+    {"CURLOPT_TRANSFER_ENCODING", CURLOPT_TRANSFER_ENCODING},
+    {"CURLOPT_UNIX_SOCKET_PATH", CURLOPT_UNIX_SOCKET_PATH},
+    {"CURLOPT_UNRESTRICTED_AUTH", CURLOPT_UNRESTRICTED_AUTH},
+    {"CURLOPT_UPLOAD", CURLOPT_UPLOAD},
+    {"CURLOPT_URL", CURLOPT_URL},
+    {"CURLOPT_USERAGENT", CURLOPT_USERAGENT},
+    {"CURLOPT_USERNAME", CURLOPT_USERNAME},
+    {"CURLOPT_USERPWD", CURLOPT_USERPWD},
+    {"CURLOPT_USE_SSL", CURLOPT_USE_SSL},
+    {"CURLOPT_VERBOSE", CURLOPT_VERBOSE},
+    {"CURLOPT_WILDCARDMATCH", CURLOPT_WILDCARDMATCH},
+    {"CURLOPT_XOAUTH2_BEARER", CURLOPT_XOAUTH2_BEARER},
+
+#if CURL_AT_LEAST(7, 62)
+    {"CURLOPT_DOH_URL", CURLOPT_DOH_URL},
+    {"CURLOPT_UPKEEP_INTERVAL_MS", CURLOPT_UPKEEP_INTERVAL_MS},
+    {"CURLOPT_UPLOAD_BUFFERSIZE", CURLOPT_UPLOAD_BUFFERSIZE},
+#endif
+
+#if CURL_AT_LEAST(7, 64)
+    {"CURLOPT_HTTP09_ALLOWED", CURLOPT_HTTP09_ALLOWED},
+#endif
+
+#if CURL_AT_LEAST(7, 66)
+    {"CURLOPT_SASL_AUTHZID", CURLOPT_SASL_AUTHZID},
+#endif
+
+#if CURL_AT_LEAST(7, 67)
+    {"CURLOPT_MAXAGE_CONN", CURLOPT_MAXAGE_CONN},
+#endif
+
+#if CURL_AT_LEAST(7, 71)
+    {"CURLOPT_PROXY_ISSUERCERT", CURLOPT_PROXY_ISSUERCERT},
+#endif
+
+#if CURL_AT_LEAST(7, 73)
+    {"CURLOPT_SSL_EC_CURVES", CURLOPT_SSL_EC_CURVES},
+#endif
+
+#if CURL_AT_LEAST(7, 74)
+    {"CURLOPT_ALTSVC", CURLOPT_ALTSVC},
+    {"CURLOPT_ALTSVC_CTRL", CURLOPT_ALTSVC_CTRL},
+    {"CURLOPT_HSTS", CURLOPT_HSTS},
+    {"CURLOPT_HSTS_CTRL", CURLOPT_HSTS_CTRL},
+#endif
+
+#if CURL_AT_LEAST(7, 75)
+    {"CURLOPT_AWS_SIGV4", CURLOPT_AWS_SIGV4},
+#endif
+
+#if CURL_AT_LEAST(7, 76)
+    {"CURLOPT_DOH_SSL_VERIFYHOST", CURLOPT_DOH_SSL_VERIFYHOST},
+    {"CURLOPT_DOH_SSL_VERIFYPEER", CURLOPT_DOH_SSL_VERIFYPEER},
+    {"CURLOPT_DOH_SSL_VERIFYSTATUS", CURLOPT_DOH_SSL_VERIFYSTATUS},
+#endif
+
+#if CURL_AT_LEAST(7, 80)
+    {"CURLOPT_MAXLIFETIME_CONN", CURLOPT_MAXLIFETIME_CONN},
+    {"CURLOPT_SSH_HOST_PUBLIC_KEY_SHA256", CURLOPT_SSH_HOST_PUBLIC_KEY_SHA256},
+#endif
+
+#if CURL_AT_LEAST(7, 81)
+    {"CURLOPT_MIME_OPTIONS", CURLOPT_MIME_OPTIONS},
+#endif
+
+#if CURL_AT_LEAST(7, 85)
+    {"CURLOPT_PROTOCOLS_STR", CURLOPT_PROTOCOLS_STR},
+    {"CURLOPT_REDIR_PROTOCOLS_STR", CURLOPT_REDIR_PROTOCOLS_STR},
+#endif
+
+#if CURL_AT_LEAST(7, 86)
+    {"CURLOPT_WS_OPTIONS", CURLOPT_WS_OPTIONS},
+#endif
+
+#if CURL_AT_LEAST(7, 87)
+    {"CURLOPT_CA_CACHE_TIMEOUT", CURLOPT_CA_CACHE_TIMEOUT},
+    {"CURLOPT_QUICK_EXIT", CURLOPT_QUICK_EXIT},
+#endif
+
+#if CURL_AT_LEAST(8, 2)
+    {"CURLOPT_HAPROXY_CLIENT_IP", CURLOPT_HAPROXY_CLIENT_IP},
+    {"CURLOPT_MAIL_RCPT_ALLOWFAILS", CURLOPT_MAIL_RCPT_ALLOWFAILS},
+#endif
+
+#if CURL_AT_LEAST(8, 6)
+    {"CURLOPT_SERVER_RESPONSE_TIMEOUT_MS", CURLOPT_SERVER_RESPONSE_TIMEOUT_MS},
+#endif
+};
+
+#undef CURL_AT_LEAST
 
 }  // namespace
 
@@ -426,8 +417,8 @@ static void call(const char* what, CURLMcode code) {
     }
 }
 
-static pthread_once_t once = PTHREAD_ONCE_INIT;
-static CURLM* multi        = nullptr;
+static once_flag once;
+static CURLM* multi = nullptr;
 
 static void init() {
     _(curl_global_init(CURL_GLOBAL_DEFAULT));
@@ -444,18 +435,80 @@ public:
 
     CURL* curl_;
     curl_slist* chunks_;
+    std::map<std::string, std::string> options_strings_;  // copies for c_str() safety
+
+    using options_registry_type = std::map<std::string, std::variant<bool, long, std::string>>;
+
+    static recursive_mutex options_mutex_;
+    static options_registry_type options_registry_;
 
     CURLHandle() : curl_{nullptr}, chunks_{nullptr} {
-        pthread_once(&once, init);
+        call_once(once, init);
         curl_ = curl_easy_init();
         ASSERT(curl_);
+
+        // Apply all registered default options
+        applyRegisteredOptions();
     }
 
     ~CURLHandle() {
         curl_slist_free_all(chunks_);
         curl_easy_cleanup(curl_);
     }
+
+    void setopt(const std::string& name, bool value) { setopt(name, value ? 1L : 0L); }
+
+    void setopt(const std::string& name, long value) {
+        if (OPTIONS.find(name) == OPTIONS.end()) {
+            throw SeriousBug("EasyCURL: unknown option '" + name + "'");
+        }
+        _(curl_easy_setopt(curl_, OPTIONS.at(name), value));
+    }
+
+    void setopt(const std::string& name, const std::string& value) {
+        if (OPTIONS.find(name) == OPTIONS.end()) {
+            throw SeriousBug("EasyCURL: unknown option '" + name + "'");
+        }
+        options_strings_[name] = value;
+        _(curl_easy_setopt(curl_, OPTIONS.at(name), options_strings_[name].c_str()));
+    }
+
+    void setopt(const std::string& name, const char* value) { setopt(name, std::string(value)); }
+
+    static void registerOption(const options_registry_type::key_type& name,
+                               const options_registry_type::mapped_type& value) {
+        lock_guard<recursive_mutex> lock(options_mutex_);
+        if (OPTIONS.find(name) == OPTIONS.end()) {
+            throw SeriousBug("EasyCURL: unknown option '" + name + "'");
+        }
+        options_registry_[name] = value;
+    }
+
+    static void clearRegisteredOptions() {
+        try {
+            lock_guard<recursive_mutex> lock(options_mutex_);
+            options_registry_.clear();
+        } catch (...) {
+            throw;
+        }
+    }
+
+private:
+    void applyRegisteredOptions() {
+        try {
+            lock_guard<recursive_mutex> lock(options_mutex_);
+            for (const auto& opt : options_registry_) {
+                std::visit([this, &opt](const auto& value) { setopt(opt.first, value); }, opt.second);
+            }
+        }
+        catch (...) {
+            throw;
+        }
+    }
 };
+
+recursive_mutex CURLHandle::options_mutex_;
+CURLHandle::options_registry_type CURLHandle::options_registry_;
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -502,18 +555,18 @@ public:
 
 bool EasyCURLResponseImp::redirect(std::string& location) {
     ensureHeaders();
-    ASSERT(code_);
-    for (auto c : http_codes) {
-        if (c.code_ == code_) {
-            if (c.redirect_) {
-                char* url = nullptr;
-                _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
-                ASSERT(url);
-                location = url;
-                return true;
-            }
+    ASSERT(code_ != 0L);
+
+    if (auto j = HTTP_CODES.find(code_); j != HTTP_CODES.end()) {
+        if (j->second.redirect_) {
+            char* url = nullptr;
+            _(curl_easy_getinfo(ch_->curl_, CURLINFO_REDIRECT_URL, &url));
+            ASSERT(url);
+            location = url;
+            return true;
         }
     }
+
     return false;
 }
 
@@ -697,8 +750,7 @@ EasyCURLResponseImp::~EasyCURLResponseImp() {
 }
 
 size_t EasyCURLResponseImp::headersCallback(const void* ptr, size_t size) {
-
-    char* p = (char*)ptr;
+    const auto* p = static_cast<const char*>(ptr);
 
     ASSERT(!body_);
 
@@ -877,28 +929,44 @@ EasyCURL::~EasyCURL() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+void EasyCURL::setopt(const std::string& opt, bool value) {
+    ch_->setopt(opt, value);
+}
+
+void EasyCURL::setopt(const std::string& opt, long value) {
+    ch_->setopt(opt, value);
+}
+
+void EasyCURL::setopt(const std::string& opt, const std::string& value) {
+    ch_->setopt(opt, value);
+}
+
+void EasyCURL::setopt(const std::string& opt, const char* value) {
+    ch_->setopt(opt, value);
+}
+
 void EasyCURL::verbose(bool on) {
-    _(curl_easy_setopt(ch_->curl_, CURLOPT_VERBOSE, on ? 1L : 0L));
+    setopt("CURLOPT_VERBOSE", on);
 }
 
 void EasyCURL::followLocation(bool on) {
-    _(curl_easy_setopt(ch_->curl_, CURLOPT_FOLLOWLOCATION, on ? 1L : 0L));
+    setopt("CURLOPT_FOLLOWLOCATION", on);
 }
 
 void EasyCURL::sslVerifyPeer(bool on) {
-    _(curl_easy_setopt(ch_->curl_, CURLOPT_SSL_VERIFYPEER, on ? 1L : 0L));
+    setopt("CURLOPT_SSL_VERIFYPEER", on);
 }
 
 void EasyCURL::sslVerifyHost(bool on) {
-    _(curl_easy_setopt(ch_->curl_, CURLOPT_SSL_VERIFYHOST, on ? 1L : 0L));
+    setopt("CURLOPT_SSL_VERIFYHOST", on);
 }
 
 void EasyCURL::useSSL(bool use) {
-    _(curl_easy_setopt(ch_->curl_, CURLOPT_USE_SSL, use ? CURLUSESSL_ALL : CURLUSESSL_NONE));
+    setopt("CURLOPT_USE_SSL", static_cast<long>(use ? CURLUSESSL_ALL : CURLUSESSL_NONE));
 }
 
 void EasyCURL::failOnError(bool on) {
-    _(curl_easy_setopt(ch_->curl_, CURLOPT_FAILONERROR, on ? 1L : 0L));
+    setopt("CURLOPT_FAILONERROR", on);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -1006,6 +1074,24 @@ void EasyCURL::headers(const EasyCURLHeaders& headers) {
     }
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void easycurl_setopt_bool(const std::string& option_name, bool value) {
+    CURLHandle::registerOption(option_name, value);
+}
+
+void easycurl_setopt_long(const std::string& option_name, long value) {
+    CURLHandle::registerOption(option_name, value);
+}
+
+void easycurl_setopt_string(const std::string& option_name, const std::string& value) {
+    CURLHandle::registerOption(option_name, value);
+}
+
+void easycurl_clear_options() {
+    CURLHandle::clearRegisteredOptions();
+}
 
 //----------------------------------------------------------------------------------------------------------------------
 

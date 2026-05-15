@@ -19,9 +19,8 @@
 
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
+using eckit::EasyCURL;
+using eckit::SeriousBug;
 
 /*
  *
@@ -121,8 +120,7 @@ std::string make_blob(std::string_view key, std::string_view value) {
 
 }  // namespace
 
-namespace eckit {
-namespace test {
+namespace eckit::tests::io {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -217,13 +215,28 @@ CASE("SSL failure on plain-HTTP server throws SeriousBug") {
     }
 }
 
+CASE("EasyCURL: option handling and SSL CA failure") {
+    SECTION("Unknown option throws SeriousBug") {
+        EasyCURL curl;
+        EXPECT_THROWS_AS(curl.setopt("NOT_A_REAL_OPTION", 1L), SeriousBug);
+    }
+
+    SECTION("Set CAINFO to bad path and fail SSL") {
+        EasyCURL curl;
+        curl.setopt("CURLOPT_CAINFO", "does/not/exist");
+        curl.setopt("CURLOPT_VERBOSE", true);
+
+        std::string bad_ssl_url = "https://expired.badssl.com/robots.txt";
+        EXPECT_THROWS_AS(curl.GET(bad_ssl_url), SeriousBug);
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::tests::io
 
 int main(int argc, char** argv) {
     MockREST mock_rest_api_running_in_background;
 
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

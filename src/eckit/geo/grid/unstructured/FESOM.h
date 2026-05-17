@@ -12,15 +12,14 @@
 
 #pragma once
 
-#include <cstddef>
-#include <memory>
+#include <string>
 
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 
-namespace eckit {
-class PathName;
+namespace eckit::geo::cache {
+class LatitudeLongitude;
 }
 
 
@@ -29,23 +28,6 @@ namespace eckit::geo::grid::unstructured {
 
 class FESOM final : public Unstructured {
 public:
-
-    // -- Types
-
-    struct FESOMRecord {
-        explicit FESOMRecord() = default;
-
-        void read(const PathName&);
-        void check(const Spec&) const;
-
-        using bytes_t = decltype(sizeof(int));
-        bytes_t footprint() const;
-
-        size_t n() const;
-
-        std::vector<double> longitudes_;
-        std::vector<double> latitudes_;
-    };
 
     // -- Constructors
 
@@ -61,11 +43,10 @@ public:
 
     // -- Overridden methods
 
-    uid_type calculate_uid() const override;
     const std::string& type() const override;
+    std::vector<size_t> shape() const override;
 
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
+    uid_type calculate_uid() const override;
 
     // -- Class methods
 
@@ -78,15 +59,17 @@ private:
 
     // -- Constructors
 
-    FESOM(const FESOMRecord&, const uid_type&, const std::string& arrangement, const std::string& name);
+    FESOM(const uid_type&, const std::string& arrangement, const std::string& name);
 
     // -- Members
 
-    std::string name_;
-    Arrangement arrangement_;
-    const FESOMRecord& record_;
+    const std::string name_;
+    const Arrangement arrangement_;
 
     // -- Overridden methods
+
+    const std::vector<double>& longitudes() const override;
+    const std::vector<double>& latitudes() const override;
 
     void fill_spec(spec::Custom&) const override;
 };

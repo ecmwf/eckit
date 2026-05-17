@@ -12,17 +12,14 @@
 
 #include "eckit/geo/grid/unstructured/FESOM.h"
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 
 #include "eckit/codec/codec.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Download.h"
-#include "eckit/geo/cache/Record.h"
-#include "eckit/geo/container/PointsContainer.h"
+#include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
@@ -46,25 +43,14 @@ class lock_type {
 };
 
 
-static const FESOM::FESOMRecord& fesom_record(const spec::Spec& spec) {
-    static cache::Record<FESOM::FESOMRecord> cache(LibEcKitGeo::cacheDir() + "/grid/fesom");
-    return cache.get(spec);
+FESOM::FESOM(const uid_type& uid, const std::string& arrangement, const std::string& name) :
+    name_(name), arrangement_(arrangement_from_string(arrangement)) {
+    reset_uid(uid);
 }
-
-
-FESOM::FESOM(const FESOMRecord& record, const uid_type& uid, const std::string& arrangement, const std::string& name) :
-    Unstructured(new container::PointsLonLatReference{record.longitudes_, record.latitudes_}),
-    name_(name),
-    arrangement_(arrangement_from_string(arrangement)),
-    record_(record) {}
 
 
 FESOM::FESOM(const Spec& spec) :
-    FESOM(fesom_record(spec), spec.get_string("fesom_uid"), spec.get_string("fesom_arrangement"),
-          spec.get_string("name")) {
-    ASSERT(container());
-    reset_uid(spec.get_string("fesom_uid"));
-}
+    FESOM(spec.get_string("uid"), spec.get_string("arrangement"), spec.get_string("name")) {}
 
 
 FESOM::FESOM(uid_type uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
@@ -80,52 +66,24 @@ std::string FESOM::arrangement() const {
 }
 
 
-FESOM::FESOMRecord::bytes_t FESOM::FESOMRecord::footprint() const {
-    return sizeof(longitudes_.front()) * longitudes_.size() + sizeof(latitudes_.front()) * latitudes_.size();
+const std::vector<double>& FESOM::longitudes() const {
+    return cache::LatitudeLongitude::get(uid()).longitude();
 }
 
 
-size_t FESOM::FESOMRecord::n() const {
-    return latitudes_.size();
-}
-
-
-void FESOM::FESOMRecord::read(const PathName& p) {
-    codec::RecordReader reader(p);
-
-    uint64_t version = 0;
-    reader.read("version", version).wait();
-
-    if (version == 0) {
-        uint64_t n = 0;
-        reader.read("n", n);
-
-        reader.read("latitude", latitudes_);
-        reader.read("longitude", longitudes_);
-        reader.wait();
-
-        ASSERT(n == latitudes_.size());
-        ASSERT(n == longitudes_.size());
-        return;
-    }
-
-    throw SeriousBug("FESOM: unsupported version", Here());
-}
-
-
-void FESOM::FESOMRecord::check(const Spec&) const {
-    // FIXME check
+const std::vector<double>& FESOM::latitudes() const {
+    return cache::LatitudeLongitude::get(uid()).latitude();
 }
 
 
 Grid::uid_type FESOM::calculate_uid() const {
     if (arrangement_ == Arrangement::FESOM_N) {
         MD5 hash;
-        util::hash_vector_double(hash, record_.latitudes_);
-        util::hash_vector_double(hash, record_.longitudes_);
+        util::hash_vector_double(hash, latitudes());
+        util::hash_vector_double(hash, longitudes());
 
         auto d = hash.digest();
-        ASSERT(d.length() == 32);
+        ASSERT(is_uid(d));
         return {d};
     }
 
@@ -138,10 +96,10 @@ Grid::uid_type FESOM::calculate_uid() const {
         // bootstrap uid
         std::unique_ptr<Spec> spec(GridSpecByUID::instance().get(uid()).spec());
 
-        // get coordinates from fesom_arrangement: N
+        // get coordinates from arrangement: N
         auto [lat, lon] = FESOM(spec->get_string("name"), Arrangement::FESOM_N).to_latlons();
 
-        // get element indices (0-based) from fesom_arrangement: C (this one)
+        // get element indices (0-based) from arrangement: C (this one)
         auto url  = LibEcKitGeo::url(spec->get_string("url_connectivity"));
         auto path = download.to_cached_path(url, spec->get_string("name", ""), ".ek");
         ASSERT_MSG(path.exists(), "FESOM: file '" + path + "' not found");
@@ -161,7 +119,7 @@ Grid::uid_type FESOM::calculate_uid() const {
         util::hash_vector_size_t(hash, elem2d);
 
         auto d = hash.digest();
-        ASSERT(d.length() == 32);
+        ASSERT(is_uid(d));
         return {d};
     }
 
@@ -194,7 +152,7 @@ void FESOM::fill_spec(spec::Custom& custom) const {
     custom.set("grid", grid);
 
     if (auto _uid = uid(); !GridSpecByName::instance().exists(grid) ||
-                           GridSpecByName::instance().match(grid).spec(grid)->get_string("fesom_uid") != _uid) {
+                           GridSpecByName::instance().match(grid).spec(grid)->get_string("uid") != _uid) {
         custom.set("uid", _uid);
     }
 }
@@ -206,15 +164,8 @@ const std::string& FESOM::type() const {
 }
 
 
-Point FESOM::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record_.longitudes_.front(), record_.latitudes_.front()};
-}
-
-
-Point FESOM::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record_.longitudes_.back(), record_.latitudes_.back()};
+std::vector<size_t> FESOM::shape() const {
+    return catalog().get_unsigned_vector("shape");
 }
 
 

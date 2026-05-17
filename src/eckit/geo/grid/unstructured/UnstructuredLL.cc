@@ -16,13 +16,21 @@
 #include "eckit/utils/MD5.h"
 
 
+namespace eckit::geo::util {
+void hash_vector_double(MD5&, const std::vector<double>&);
+}
+
+
 namespace eckit::geo::grid::unstructured {
 
 
 Grid::uid_type UnstructuredLL::calculate_uid() const {
     MD5 hash;
     hash.add(type());
-    container()->hash(hash);
+
+    const auto [lat, lon] = to_latlons();
+    util::hash_vector_double(hash, lat);
+    util::hash_vector_double(hash, lon);
 
     auto d = hash.digest();
     ASSERT(Grid::is_uid(d));

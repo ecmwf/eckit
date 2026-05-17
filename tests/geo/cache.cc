@@ -13,13 +13,17 @@
 #include "eckit/eckit_config.h"
 
 #include <fstream>
+#include <memory>
 #include <vector>
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/util.h"
+#include "eckit/log/Log.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/utils/StringTools.h"
 
 #include "eckit/testing/Test.h"
@@ -173,6 +177,34 @@ CASE("download: cached") {
 
     download.rm_cache_root();
     EXPECT(!root.exists());
+}
+
+
+CASE("grid") {
+    using Cache = cache::MemoryCache;
+
+    const auto footprint_1 = Cache::total_footprint();
+
+    spec::Custom spec({{"uid", "d5bde4f52ff3a9bea5629cd9ac514410"}});  // ORCA2_T
+    std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+
+    // lazy behaviour is expected, force load only on calculate_uid
+    Log::info() << "uid: '" << grid1->uid() << "'" << std::endl;
+
+    const auto footprint_2 = Cache::total_footprint();
+    EXPECT(footprint_1 == footprint_2);
+    EXPECT(grid1->calculate_uid() == spec.get_string("uid"));
+
+    const auto footprint_3 = Cache::total_footprint();
+    EXPECT(footprint_2 <= footprint_3);
+
+    std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("{uid:" + grid1->uid() + "}"));
+
+    EXPECT(footprint_3 == Cache::total_footprint());
+    EXPECT(grid1->size() == grid2->size());
+
+    Cache::total_purge();
+    EXPECT(Cache::total_footprint() <= footprint_1);
 }
 #endif
 

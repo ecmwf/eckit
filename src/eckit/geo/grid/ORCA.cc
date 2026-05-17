@@ -14,15 +14,11 @@
 
 #include <memory>
 
-#include "eckit/codec/codec.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/cache/Record.h"
 #include "eckit/geo/iterator/Unstructured.h"
+#include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
-#include "eckit/types/FloatCompare.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -34,22 +30,9 @@ void hash_vector_double(MD5&, const std::vector<double>&);
 namespace eckit::geo::grid {
 
 
-static const ORCA::ORCARecord& orca_record(const spec::Spec& spec) {
-    static cache::Record<ORCA::ORCARecord> cache(LibEcKitGeo::cacheDir() + "/grid/orca");
-    return cache.get(spec);
-}
-
-
 ORCA::ORCA(const Spec& spec) :
-    name_(spec.get_string("name")),
-    arrangement_(arrangement_from_string(spec.get_string("orca_arrangement"))),
-    record_(orca_record(spec)),
-    container_(new container::PointsLonLatReference{record_.longitudes_, record_.latitudes_}) {
-    ASSERT(container_);
-
-    if (spec.has("orca_uid")) {
-        reset_uid(spec.get_string("orca_uid"));
-    }
+    name_(spec.get_string("name")), arrangement_(arrangement_from_string(spec.get_string("arrangement"))) {
+    reset_uid(spec.get_string("uid"));
 }
 
 
@@ -66,12 +49,16 @@ std::string ORCA::arrangement() const {
 }
 
 
-Grid::uid_type ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
-    MD5 hash;
-    hash.add(arrangement_to_string(arrangement));
+const cache::LatitudeLongitude& ORCA::record() const {
+    return cache::LatitudeLongitude::get(uid());
+}
 
-    util::hash_vector_double(hash, latitudes_);
-    util::hash_vector_double(hash, longitudes_);
+
+Grid::uid_type ORCA::calculate_uid() const {
+    MD5 hash;
+    hash.add(arrangement_to_string(arrangement_));
+    util::hash_vector_double(hash, record().latitude());
+    util::hash_vector_double(hash, record().longitude());
 
     auto d = hash.digest();
     ASSERT(Grid::is_uid(d));
@@ -80,98 +67,8 @@ Grid::uid_type ORCA::ORCARecord::calculate_uid(Arrangement arrangement) const {
 }
 
 
-ORCA::ORCARecord::bytes_t ORCA::ORCARecord::footprint() const {
-    return sizeof(dimensions_.front()) * dimensions_.size() + sizeof(halo_.front()) * halo_.size() +
-           sizeof(pivot_.front()) * pivot_.size() + sizeof(longitudes_.front()) * longitudes_.size() +
-           sizeof(latitudes_.front()) * latitudes_.size() + sizeof(flags_.front()) * flags_.size();
-}
-
-
-size_t ORCA::ORCARecord::ni() const {
-    ASSERT(0 <= dimensions_[0]);
-    return static_cast<size_t>(dimensions_[0]);
-}
-
-
-size_t ORCA::ORCARecord::nj() const {
-    ASSERT(0 <= dimensions_[1]);
-    return static_cast<size_t>(dimensions_[1]);
-}
-
-
-void ORCA::ORCARecord::read(const PathName& p) {
-    codec::RecordReader reader(p);
-
-    int32_t version = -1;
-    reader.read("version", version).wait();
-
-    if (version == 0) {
-        reader.read("dimensions", dimensions_);
-        reader.read("pivot", pivot_);  // different order from writer
-        reader.read("halo", halo_);    //...
-        reader.read("longitude", longitudes_);
-        reader.read("latitude", latitudes_);
-        reader.read("flags", flags_);
-        reader.wait();
-        return;
-    }
-
-    throw SeriousBug("ORCA::read: unsupported version", Here());
-}
-
-
-void ORCA::ORCARecord::check(const Spec& spec) const {
-    if (spec.get_bool("orca_uid_check", false)) {
-        auto uid = spec.get_string("orca_uid");
-        ASSERT(Grid::is_uid(uid));
-        ASSERT(uid == calculate_uid(arrangement_from_string(spec.get_string("orca_arrangement"))));
-    }
-
-    if (std::vector<decltype(dimensions_)::value_type> d; spec.get("dimensions", d)) {
-        ASSERT(d.size() == 2);
-        ASSERT(d[0] == dimensions_[0] && d[1] == dimensions_[1]);
-    }
-
-    if (std::vector<decltype(halo_)::value_type> h; spec.get("halo", h)) {
-        ASSERT(h.size() == 4);
-        ASSERT(h[0] == halo_[0] && h[1] == halo_[1] && h[2] == halo_[2] && h[3] == halo_[3]);
-    }
-
-    if (std::vector<decltype(pivot_)::value_type> p; spec.get("pivot", p)) {
-        ASSERT(p.size() == 2);
-        ASSERT(types::is_approximately_equal(p[0], pivot_[0]));
-        ASSERT(types::is_approximately_equal(p[1], pivot_[1]));
-    }
-
-    auto n = static_cast<size_t>(dimensions_[0] * dimensions_[1]);
-    ASSERT(n > 0);
-    ASSERT(n == longitudes_.size());
-    ASSERT(n == latitudes_.size());
-    ASSERT(n == flags_.size());
-}
-
-
-size_t ORCA::ORCARecord::write(const PathName& p, const std::string& compression) {
-    codec::RecordWriter record;
-
-    codec::ArrayShape shape{static_cast<size_t>(dimensions_[0]), static_cast<size_t>(dimensions_[1])};
-
-    record.compression(compression);
-    record.set("version", 0);
-    record.set("dimensions", dimensions_);
-    record.set("halo", halo_);
-    record.set("pivot", pivot_);
-    record.set("longitude", codec::ArrayReference(longitudes_.data(), shape));
-    record.set("latitude", codec::ArrayReference(latitudes_.data(), shape));
-    record.set("flags", codec::ArrayReference(flags_.data(), shape));
-
-    return record.write(p);
-}
-
-
 Grid::iterator ORCA::cbegin() const {
-    return iterator{new geo::iterator::Unstructured(
-        *this, 0, std::make_shared<container::PointsLonLatReference>(record_.longitudes_, record_.latitudes_))};
+    return iterator{new geo::iterator::Unstructured(*this, 0, record().longitude(), record().latitude())};
 }
 
 
@@ -180,36 +77,34 @@ Grid::iterator ORCA::cend() const {
 }
 
 
-Grid::uid_type ORCA::calculate_uid() const {
-    return record_.calculate_uid(arrangement_);
-}
-
-
 Point ORCA::first_point() const {
     ASSERT(!empty());
-    return PointLonLat{record_.longitudes_.front(), record_.latitudes_.front()};
+    return PointLonLat{record().longitude().front(), record().latitude().front()};
 }
 
 
 Point ORCA::last_point() const {
     ASSERT(!empty());
-    return PointLonLat{record_.longitudes_.back(), record_.latitudes_.back()};
+    return PointLonLat{record().longitude().back(), record().latitude().back()};
 }
 
 
 std::vector<Point> ORCA::to_points() const {
+    const auto& lon = record().longitude();
+    const auto& lat = record().latitude();
+
     std::vector<Point> p;
     p.reserve(size());
 
     for (size_t i = 0; i < size(); ++i) {
-        p.emplace_back(PointLonLat{record_.longitudes_[i], record_.latitudes_[i]});
+        p.emplace_back(PointLonLat{lon[i], lat[i]});
     }
     return p;
 }
 
 
 std::pair<std::vector<double>, std::vector<double>> ORCA::to_latlons() const {
-    return {record_.latitudes_, record_.longitudes_};
+    return {record().latitude(), record().longitude()};
 }
 
 
@@ -254,7 +149,7 @@ void ORCA::fill_spec(spec::Custom& custom) const {
     custom.set("grid", grid);
 
     if (auto _uid = uid(); !GridSpecByName::instance().exists(grid) ||
-                           GridSpecByName::instance().match(grid).spec(grid)->get_string("orca_uid") != _uid) {
+                           GridSpecByName::instance().match(grid).spec(grid)->get_string("uid") != _uid) {
         custom.set("uid", _uid);
     }
 }
@@ -263,6 +158,11 @@ void ORCA::fill_spec(spec::Custom& custom) const {
 const std::string& ORCA::type() const {
     static const std::string type{"ORCA"};
     return type;
+}
+
+
+std::vector<size_t> ORCA::shape() const {
+    return catalog().get_unsigned_vector("shape");
 }
 
 

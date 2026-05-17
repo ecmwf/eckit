@@ -14,7 +14,6 @@
 
 #include <memory>
 
-#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/HEALPix.h"
 
@@ -72,8 +71,9 @@ private:
     const size_t Nside_;
     order::HEALPix healpix_;
 
-    mutable std::shared_ptr<container::PointsInstance> points_;
-    mutable std::vector<double> latitudes_;
+    mutable std::vector<double> healpix_latitudes_;
+    mutable std::vector<double> nested_latitudes_;
+    mutable std::vector<double> nested_longitudes_;
 
     // -- Overridden methods
 

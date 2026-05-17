@@ -12,18 +12,14 @@
 
 #pragma once
 
-#include <array>
 #include <cstddef>
-#include <cstdint>
-#include <memory>
 
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/container/PointsContainer.h"
 
 
-namespace eckit {
-class PathName;
+namespace eckit::geo::cache {
+class LatitudeLongitude;
 }
 
 
@@ -32,31 +28,6 @@ namespace eckit::geo::grid {
 
 class ORCA final : public Grid {
 public:
-
-    // -- Types
-
-    struct ORCARecord {
-        explicit ORCARecord() = default;
-
-        void read(const PathName&);
-        void check(const Spec&) const;
-        size_t write(const PathName&, const std::string& compression = "none");
-        uid_type calculate_uid(Arrangement) const;
-
-        using bytes_t = decltype(sizeof(int));
-        bytes_t footprint() const;
-
-        size_t ni() const;
-        size_t nj() const;
-
-        std::array<std::int32_t, 2> dimensions_ = {-1, -1};
-        std::array<std::int32_t, 4> halo_       = {-1, -1, -1, -1};
-        std::array<double, 2> pivot_            = {-1, -1};
-
-        std::vector<double> longitudes_;
-        std::vector<double> latitudes_;
-        std::vector<std::byte> flags_;
-    };
 
     // -- Constructors
 
@@ -67,13 +38,11 @@ public:
 
     // -- Methods
 
-    size_t nx() const { return record_.nj(); }
-    size_t ny() const { return record_.ni(); }
+    size_t nx() const { return shape().at(1); }
+    size_t ny() const { return shape().at(0); }
 
     std::string name() const { return name_; }
     std::string arrangement() const;
-
-    std::shared_ptr<container::PointsContainer> container() const { return container_; }
 
     // -- Overridden methods
 
@@ -83,9 +52,7 @@ public:
     uid_type calculate_uid() const override;
 
     const std::string& type() const override;
-    std::vector<size_t> shape() const override { return {record_.ni(), record_.nj()}; }
-
-    size_t size() const override { return record_.ni() * record_.nj(); };
+    std::vector<size_t> shape() const override;
 
     BoundingBox* calculate_bbox() const override;
 
@@ -106,12 +73,14 @@ public:
 
 private:
 
+    // -- Methods
+
+    const cache::LatitudeLongitude& record() const;
+
     // -- Members
 
-    std::string name_;
-    Arrangement arrangement_;
-    const ORCARecord& record_;
-    std::shared_ptr<container::PointsContainer> container_;
+    const std::string name_;
+    const Arrangement arrangement_;
 
     // -- Overridden methods
 

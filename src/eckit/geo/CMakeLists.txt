@@ -51,12 +51,11 @@ list(APPEND eckit_geo_srcs
     cache/DiskCache.h
     cache/Download.cc
     cache/Download.h
+    cache/LatitudeLongitude.cc
+    cache/LatitudeLongitude.h
     cache/MemoryCache.cc
     cache/MemoryCache.h
-    cache/Record.cc
-    cache/Record.h
-    container/PointsContainer.cc
-    container/PointsContainer.h
+    cache/RecordCache.h
     figure/Earth.cc
     figure/Earth.h
     figure/OblateSpheroid.cc

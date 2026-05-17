@@ -12,16 +12,10 @@
 
 #include "eckit/geo/grid/unstructured/ICON.h"
 
-#include <cstdint>
 #include <memory>
-#include <vector>
 
-#include "eckit/codec/codec.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/cache/Record.h"
-#include "eckit/geo/container/PointsContainer.h"
+#include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 
@@ -29,24 +23,13 @@
 namespace eckit::geo::grid::unstructured {
 
 
-static const ICON::ICONRecord& icon_record(const spec::Spec& spec) {
-    static cache::Record<ICON::ICONRecord> cache(LibEcKitGeo::cacheDir() + "/grid/icon");
-    return cache.get(spec);
+ICON::ICON(const uid_type& uid, const std::string& arrangement, const std::string& name) :
+    name_(name), arrangement_(arrangement_from_string(arrangement)) {
+    reset_uid(uid);
 }
 
 
-ICON::ICON(const ICONRecord& record, const uid_type& uid, const std::string& arrangement, const std::string& name) :
-    Unstructured(new container::PointsLonLatReference{record.longitudes_, record.latitudes_}),
-    name_(name),
-    arrangement_(arrangement_from_string(arrangement)),
-    record_(record) {}
-
-
-ICON::ICON(const Spec& spec) :
-    ICON(icon_record(spec), spec.get_string("icon_uid"), spec.get_string("icon_arrangement"), spec.get_string("name")) {
-    ASSERT(container());
-    reset_uid(spec.get_string("icon_uid"));
-}
+ICON::ICON(const Spec& spec) : ICON(spec.get_string("uid"), spec.get_string("arrangement"), spec.get_string("name")) {}
 
 
 ICON::ICON(uid_type uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
@@ -62,45 +45,13 @@ std::string ICON::arrangement() const {
 }
 
 
-ICON::ICONRecord::bytes_t ICON::ICONRecord::footprint() const {
-    return sizeof(longitudes_.front()) * longitudes_.size() + sizeof(latitudes_.front()) * latitudes_.size();
+const std::vector<double>& ICON::longitudes() const {
+    return cache::LatitudeLongitude::get(uid()).longitude();
 }
 
 
-size_t ICON::ICONRecord::n() const {
-    return latitudes_.size();
-}
-
-
-void ICON::ICONRecord::read(const PathName& p) {
-    codec::RecordReader reader(p);
-
-    int32_t version = 0;
-    reader.read("version", version).wait();
-
-    if (version == 0) {
-        reader.read("latitude", latitudes_);
-        reader.read("longitude", longitudes_);
-        reader.wait();
-
-        ASSERT(latitudes_.size() == longitudes_.size());
-        return;
-    }
-
-    throw SeriousBug("ICON: unsupported version", Here());
-}
-
-
-void ICON::ICONRecord::check(const Spec& spec) const {
-    auto _n = static_cast<size_t>(n());
-    ASSERT(_n > 0);
-
-    if (std::vector<size_t> shape; spec.get("shape", shape)) {
-        ASSERT(shape.size() == 1 && shape.front() == _n);
-    }
-
-    ASSERT(_n == longitudes_.size());
-    ASSERT(_n == latitudes_.size());
+const std::vector<double>& ICON::latitudes() const {
+    return cache::LatitudeLongitude::get(uid()).latitude();
 }
 
 
@@ -142,8 +93,8 @@ const std::string& ICON::type() const {
 }
 
 
-Grid::uid_type ICON::calculate_uid() const {
-    NOTIMP;
+std::vector<size_t> ICON::shape() const {
+    return catalog().get_unsigned_vector("shape");
 }
 
 
@@ -156,18 +107,6 @@ Grid::BoundingBox* ICON::calculate_bbox() const {
     }
 
     return Unstructured::calculate_bbox();
-}
-
-
-Point ICON::first_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record_.longitudes_.front(), record_.latitudes_.front()};
-}
-
-
-Point ICON::last_point() const {
-    ASSERT(!empty());
-    return PointLonLat{record_.longitudes_.back(), record_.latitudes_.back()};
 }
 
 

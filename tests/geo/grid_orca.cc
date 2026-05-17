@@ -14,8 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/ORCA.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -29,38 +27,14 @@ static const Grid::uid_type UID = "d5bde4f52ff3a9bea5629cd9ac514410";
 static const std::vector<long> SHAPE{182, 149};
 
 
-CASE("caching") {
-    if (LibEcKitGeo::caching()) {
-        using Cache = cache::MemoryCache;
-
-        SECTION("Grid::build_from_uid") {
-            spec::Custom spec({{"uid", UID}});
-
-            const auto footprint_1 = Cache::total_footprint();
-
-            std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
-
-            const auto footprint_2 = Cache::total_footprint();
-            EXPECT(footprint_1 < footprint_2);
-
-            std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
-
-            EXPECT(footprint_2 == Cache::total_footprint());
-
-            EXPECT(grid1->size() == grid2->size());
-        }
-    }
-}
-
-
 CASE("spec") {
     std::unique_ptr<spec::Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID}})));
 
     EXPECT(spec->get_string("type") == "ORCA");
     EXPECT(spec->get_string("name") == "ORCA2");
-    EXPECT(spec->get_string("orca_arrangement") == "T");
-    EXPECT(spec->get_string("orca_uid") == UID);
-    EXPECT(spec->get_long_vector("dimensions") == SHAPE);
+    EXPECT(spec->get_string("arrangement") == "T");
+    EXPECT(spec->get_string("uid") == UID);
+    EXPECT(spec->get_long_vector("shape") == SHAPE);
 
     std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + UID + "}"));
 

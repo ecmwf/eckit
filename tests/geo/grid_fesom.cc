@@ -15,8 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/unstructured/FESOM.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -27,52 +25,28 @@ namespace eckit::geo::test {
 
 static const std::string GRID_N   = "pi_N";
 static const Grid::uid_type UID_N = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
-static const size_t SHAPE_N       = 3140;
+static const std::vector<size_t> SHAPE_N{3140};
 
 static const std::string GRID_C   = "pi_C";
 static const Grid::uid_type UID_C = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
-
-
-CASE("caching") {
-    if (LibEcKitGeo::caching()) {
-        using Cache = cache::MemoryCache;
-
-        SECTION("Grid::build_from_uid") {
-            spec::Custom spec({{"uid", UID_N}});
-
-            const auto footprint_1 = Cache::total_footprint();
-
-            std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
-
-            const auto footprint_2 = Cache::total_footprint();
-            EXPECT(footprint_1 < footprint_2);
-
-            std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
-
-            EXPECT(footprint_2 == Cache::total_footprint());
-
-            EXPECT(grid1->size() == grid2->size());
-        }
-    }
-}
 
 
 CASE("spec") {
     std::unique_ptr<spec::Spec> spec(GridFactory::make_spec(spec::Custom({{"uid", UID_N}})));
 
     EXPECT(spec->get_string("type") == "FESOM");
-    EXPECT(spec->get_string("fesom_arrangement") == "N");
-    EXPECT(spec->get_string("fesom_uid") == UID_N);
-    EXPECT(spec->get_unsigned("shape") == SHAPE_N);
+    EXPECT(spec->get_string("arrangement") == "N");
+    EXPECT(spec->get_string("uid") == UID_N);
+    EXPECT(spec->get_unsigned_vector("shape") == SHAPE_N);
 
     std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + UID_N + "}"));
 
-    EXPECT(grid1->size() == SHAPE_N);
+    EXPECT(grid1->shape() == SHAPE_N);
     EXPECT(grid1->uid() == UID_N);
 
     std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", UID_N}})));
 
-    EXPECT(grid2->size() == SHAPE_N);
+    EXPECT(grid2->shape() == SHAPE_N);
     EXPECT(grid2->uid() == UID_N);
 
     grid::unstructured::FESOM grid3(UID_N);

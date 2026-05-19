@@ -12,6 +12,7 @@
 #include <string>
 
 #include "eckit/log/JSON.h"
+#include "eckit/log/Seconds.h"
 #include "eckit/types/DateTime.h"
 
 namespace eckit {
@@ -296,7 +297,7 @@ JSON& JSON::operator<<(const DateTime& datetime) {
 }
 
 JSON& JSON::operator<<(const ::timeval& t) {
-    *this << double(t.tv_sec + t.tv_usec / 1000000.0);
+    *this << double(t.tv_sec + (t.tv_usec / Seconds::usec_per_sec));
     return *this;
 }
 

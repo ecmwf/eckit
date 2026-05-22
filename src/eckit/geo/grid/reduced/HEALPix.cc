@@ -24,14 +24,13 @@
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/types/FloatCompare.h"
 #include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::grid::reduced {
 
 
-static const std::string HEALPIX_PATTERN = "h([rn][1-9][0-9]*|[1-9][0-9]*(|r|_ring|n|_nested))";
+static const std::string HEALPIX_PATTERN = "h[rn][1-9][0-9]*|h[1-9][0-9]*[rn]?";
 
 
 const std::vector<double>& healpix_longitudes(size_t Nside, size_t j) {

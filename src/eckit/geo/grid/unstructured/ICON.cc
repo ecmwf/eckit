@@ -98,6 +98,11 @@ std::vector<size_t> ICON::shape() const {
 }
 
 
+void ICON::cache() const {
+    (void)cache::LatitudeLongitude::get(uid());
+}
+
+
 Grid::BoundingBox* ICON::calculate_bbox() const {
     if (const std::string BOUNDING_BOX = "bounding_box"; catalog().has(BOUNDING_BOX)) {
         const auto bbox = catalog().get_double_vector(BOUNDING_BOX);

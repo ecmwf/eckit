@@ -100,6 +100,11 @@ size_t Grid::size() const {
 }
 
 
+void Grid::cache() const {
+    // By default, there's no cacheable data, so do nothing
+}
+
+
 bool Grid::is_uid(const std::string& str) {
     return str.length() == DIGEST_LENGTH &&
            std::all_of(str.begin(), str.end(), [](char c) { return std::isxdigit(static_cast<unsigned char>(c)); });

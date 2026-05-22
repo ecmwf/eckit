@@ -7,7 +7,10 @@ foreach(_test
         gaussian
         great_circle
         grid
+        grid_fesom
         grid_healpix
+        grid_icon
+        grid_orca
         grid_reduced_gg
         grid_reduced_ll
         grid_regular_gg
@@ -62,14 +65,3 @@ ecbuild_add_test(
     LIBS              eckit_geo
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
-function(ecbuild_add_test_geo_grid _grid)
-    ecbuild_add_test(
-        TARGET      eckit_test_geo_grid_${_grid}
-        SOURCES     grid_${_grid}.cc
-        LIBS        eckit_geo
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
-endfunction()
-
-ecbuild_add_test_geo_grid(fesom)
-ecbuild_add_test_geo_grid(icon)
-ecbuild_add_test_geo_grid(orca)

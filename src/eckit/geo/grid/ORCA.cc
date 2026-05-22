@@ -166,6 +166,11 @@ std::vector<size_t> ORCA::shape() const {
 }
 
 
+void ORCA::cache() const {
+    (void)cache::LatitudeLongitude::get(uid());
+}
+
+
 Grid::BoundingBox* ORCA::calculate_bbox() const {
     return new BoundingBox;
 }

@@ -54,6 +54,8 @@ public:
     const std::string& type() const override;
     std::vector<size_t> shape() const override;
 
+    void cache() const override;
+
     BoundingBox* calculate_bbox() const override;
 
     [[nodiscard]] Point first_point() const override;

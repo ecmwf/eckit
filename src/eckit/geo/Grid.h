@@ -24,7 +24,6 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
 
@@ -112,11 +111,10 @@ public:
 
     virtual bool empty() const;
     virtual size_t size() const;
+    virtual void cache() const;
 
     uid_type uid() const;
     [[nodiscard]] virtual uid_type calculate_uid() const;
-
-    static bool is_uid(const std::string& uid);
 
     [[nodiscard]] virtual Point first_point() const;
     [[nodiscard]] virtual Point last_point() const;
@@ -140,6 +138,7 @@ public:
     // -- Class methods
 
     static std::string className() { return "grid"; }
+    static bool is_uid(const std::string&);
 
 protected:
 
@@ -198,8 +197,10 @@ struct GridSpecByUID {
 template <typename T>
 using GridRegisterType = ConcreteBuilderT1<Grid, T>;
 
+
 template <typename T>
 using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
+
 
 template <typename T>
 bool GridRegisterName(const std::string& name_or_pattern) {

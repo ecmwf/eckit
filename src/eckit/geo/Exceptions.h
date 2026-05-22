@@ -85,13 +85,6 @@ public:
 };
 
 
-class RecordError : public geo::Exception {
-public:
-
-    explicit RecordError(const std::string&, const CodeLocation&);
-};
-
-
 class SearchError : public geo::Exception {
 public:
 

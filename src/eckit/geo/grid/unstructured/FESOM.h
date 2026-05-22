@@ -46,6 +46,8 @@ public:
     const std::string& type() const override;
     std::vector<size_t> shape() const override;
 
+    void cache() const override;
+
     uid_type calculate_uid() const override;
 
     // -- Class methods

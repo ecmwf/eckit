@@ -44,10 +44,6 @@ RangeError::RangeError(const std::string& what, const CodeLocation& location) :
     Exception("RangeError: [" + what + "]", location) {}
 
 
-RecordError::RecordError(const std::string& what, const CodeLocation& location) :
-    Exception("RecordError: [" + what + "]", location) {}
-
-
 SearchError::SearchError(const std::string& what, const CodeLocation& location) :
     Exception("SearchError: [" + what + "]", location) {}
 

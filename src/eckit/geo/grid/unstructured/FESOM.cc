@@ -169,6 +169,11 @@ std::vector<size_t> FESOM::shape() const {
 }
 
 
+void FESOM::cache() const {
+    (void)cache::LatitudeLongitude::get(uid());
+}
+
+
 static const GridRegisterType<FESOM> GRIDTYPE("FESOM");
 
 

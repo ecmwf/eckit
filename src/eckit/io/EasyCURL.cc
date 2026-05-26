@@ -34,7 +34,6 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/utils/StringTools.h"
-#include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 
 
@@ -555,7 +554,16 @@ public:
 
 bool EasyCURLResponseImp::redirect(std::string& location) {
     ensureHeaders();
-    ASSERT(code_ != 0L);
+
+    // Some proxy/tunnel flows can complete without the header callback setting code_.
+    // Fall back to CURLINFO_RESPONSE_CODE before deciding redirect behaviour.
+    if (code_ == 0L) {
+        _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
+    }
+
+    if (code_ == 0L) {
+        return false;
+    }
 
     if (auto j = HTTP_CODES.find(code_); j != HTTP_CODES.end()) {
         if (j->second.redirect_) {
@@ -698,8 +706,7 @@ public:
 
         if (active == 0) {
             for (int msgs_left = 0; const auto* msg = curl_multi_info_read(multi, &msgs_left);) {
-                ASSERT(msg != nullptr);
-                if (msg->msg == CURLMSG_DONE) {
+                if (msg->msg == CURLMSG_DONE && msg->easy_handle == ch_->curl_) {
                     call("curl_multi_perform", msg->data.result);
                 }
             }
@@ -752,8 +759,6 @@ EasyCURLResponseImp::~EasyCURLResponseImp() {
 size_t EasyCURLResponseImp::headersCallback(const void* ptr, size_t size) {
     const auto* p = static_cast<const char*>(ptr);
 
-    ASSERT(!body_);
-
     ASSERT(size >= 2);
     ASSERT(p[size - 1] == '\n');
     ASSERT(p[size - 2] == '\r');
@@ -764,15 +769,16 @@ size_t EasyCURLResponseImp::headersCallback(const void* ptr, size_t size) {
         body_ = true;
         _(curl_easy_getinfo(ch_->curl_, CURLINFO_RESPONSE_CODE, &code_));
     }
-    else {
-        std::vector<std::string> v;
-
-        Tokenizer parse(":");
-
-        parse(line, v);
-        if (v.size() == 2) {
-            headers_[StringTools::lower(v[0])] = StringTools::trim(v[1]);
-        }
+    else if (line.rfind("HTTP/", 0) == 0) {
+        // new response starting (e.g. after CONNECT tunnel) — reset state
+        body_ = false;
+        code_ = 0;
+        headers_.clear();
+    }
+    else if (auto colon = line.find(':'); colon != std::string::npos) {
+        auto key      = StringTools::lower(StringTools::trim(line.substr(0, colon)));
+        auto value    = StringTools::trim(line.substr(colon + 1));
+        headers_[key] = value;
     }
 
     return size;
@@ -983,7 +989,7 @@ EasyCURLResponse EasyCURL::request(const std::string& url, bool stream) {
             r.reset(new EasyCURLResponseStream(location, ch_));
         }
         else {
-            r.reset(new EasyCURLResponseDirect(url, ch_));
+            r.reset(new EasyCURLResponseDirect(location, ch_));
         }
 
         r->perform();

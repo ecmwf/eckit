@@ -13,13 +13,15 @@
 #include <iomanip>
 #include <sstream>
 
+#include "eckit/log/Seconds.h"
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
 ETA::ETA(double ETA) : ETA_(ETA) {}
 
-ETA::ETA(const ::timeval& time) : ETA_(time.tv_sec + time.tv_usec / 1000000.0) {}
+ETA::ETA(const ::timeval& time) : ETA_(time.tv_sec + (time.tv_usec / Seconds::usec_per_sec)) {}
 
 std::ostream& operator<<(std::ostream& s, const ETA& sec) {
     double t = sec.ETA_;

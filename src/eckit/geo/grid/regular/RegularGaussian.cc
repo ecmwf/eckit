@@ -17,7 +17,6 @@
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
@@ -60,7 +59,7 @@ RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s) :
 Grid::Spec* RegularGaussian::spec(const std::string& name) {
     ASSERT(name.size() > 1 && (name[0] == 'f' || name[0] == 'F'));
 
-    auto N = Translator<std::string, size_t>{}(name.substr(1));
+    auto N = std::stoul(name.substr(1));
     return new spec::Custom({{"type", "regular_gg"}, {"N", N}});
 }
 

@@ -17,7 +17,6 @@
 #include "eckit/geo/range/Regular.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::reduced {
@@ -112,7 +111,7 @@ struct ReducedGaussianClassical {
     static Grid::Spec* spec(const std::string& name) {
         ASSERT(name.size() > 1 && (name[0] == 'n' || name[0] == 'N'));
 
-        auto N = Translator<std::string, size_t>{}(name.substr(1));
+        auto N = std::stoul(name.substr(1));
         return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
     }
 };
@@ -122,7 +121,7 @@ struct ReducedGaussianOctahedral {
     static Grid::Spec* spec(const std::string& name) {
         ASSERT(name.size() > 1 && (name[0] == 'o' || name[0] == 'O'));
 
-        auto N = Translator<std::string, size_t>{}(name.substr(1));
+        auto N = std::stoul(name.substr(1));
         return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_octahedral_pl(N)}});
     }
 };

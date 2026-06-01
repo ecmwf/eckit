@@ -61,6 +61,10 @@ void StreamParser::putback(char c) {
     in_.putback(c);
 }
 
+size_t StreamParser::line() {
+    return line_;
+}
+
 char StreamParser::peek(bool spaces) {
     for (;;) {
         char c = _peek();

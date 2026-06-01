@@ -53,6 +53,8 @@ public:  // methods
     void expect(const char*);
     void putback(char);
 
+    size_t line();
+
 protected:  // members
 
     size_t line_;

@@ -10,12 +10,16 @@
 
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cstdlib>
+#include <sstream>
+#include <stdexcept>
 #include <string>
 #include <thread>
+#include <type_traits>
+#include <utility>
 
 #include "eckit/io/EasyCURL.h"
-#include "eckit/value/Value.h"
 
 #include "eckit/testing/Test.h"
 
@@ -215,7 +219,7 @@ CASE("SSL failure on plain-HTTP server throws SeriousBug") {
     }
 }
 
-CASE("EasyCURL: option handling and SSL CA failure") {
+CASE("CURL option handling and SSL CA failure") {
     SECTION("Unknown option throws SeriousBug") {
         EasyCURL curl;
         EXPECT_THROWS_AS(curl.setopt("NOT_A_REAL_OPTION", 1L), SeriousBug);
@@ -229,6 +233,43 @@ CASE("EasyCURL: option handling and SSL CA failure") {
         std::string bad_ssl_url = "https://expired.badssl.com/robots.txt";
         EXPECT_THROWS_AS(curl.GET(bad_ssl_url), SeriousBug);
     }
+}
+
+CASE("Follow redirects") {
+    easycurl_clear_options();
+    easycurl_setopt_long("CURLOPT_CONNECTTIMEOUT_MS", 5000L);
+    easycurl_setopt_string("CURLOPT_USERAGENT", "eckit-easycurl-test");
+
+    EasyCURL ec;
+    ec.followLocation(false);
+    ec.verbose(false);
+    ec.sslVerifyPeer(false);
+    ec.sslVerifyHost(false);
+    ec.failOnError(false);
+
+    SECTION("Without following redirects") {
+        auto response = ec.GET("https://www.wikipedia.net");
+        EXPECT(response.code() == 200);
+        EXPECT(!response.body().empty());
+    }
+
+    SECTION("With following redirects") {
+        auto response = ec.HEAD(BASE_URL + "/ping");
+        EXPECT(response.code() == 200);
+        EXPECT(response.body().empty());
+    }
+
+    SECTION("With following redirects (streaming)") {
+        auto response = ec.GET(BASE_URL + "/ping", true);
+        EXPECT(response.code() == 200);
+        EXPECT(response.contentLength() == 3);
+
+        std::array<char, 3> buffer {' ', ' ', ' '};
+        EXPECT(response.read(buffer.data(), buffer.size()) == buffer.size());
+        EXPECT(std::string(buffer.data(), buffer.size()) == "Hi!");
+    }
+
+    easycurl_clear_options();
 }
 
 //----------------------------------------------------------------------------------------------------------------------

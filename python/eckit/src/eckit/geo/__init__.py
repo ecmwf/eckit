@@ -16,5 +16,5 @@ from eckit.geo._eckit_geo import *
 
 configure_ca_bundle_from_certifi()
 
-__version__ = version()
+__lib_version__ = version()
 __git_sha1__ = git_sha1()

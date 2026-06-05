@@ -284,10 +284,11 @@ pub use ffi::*;
 
 // ==================== Read → DataHandle adapter ====================
 
-/// Trait alias for `Read + Seek`. Required so the trait object inside
-/// [`ReaderBox`] exposes both `read` (for streaming bytes into C++) and
-/// `seek` (for rewind on `openForRead`, matching `eckit::FileHandle`'s
-/// `fopen("r")` semantics).
+/// Trait alias for `Read + Seek`.
+///
+/// Required so the trait object inside [`ReaderBox`] exposes both `read`
+/// (for streaming bytes into C++) and `seek` (for rewind on `openForRead`,
+/// matching `eckit::FileHandle`'s `fopen("r")` semantics).
 pub trait ReadSeek: std::io::Read + std::io::Seek {}
 impl<T: std::io::Read + std::io::Seek + ?Sized> ReadSeek for T {}
 
@@ -299,10 +300,11 @@ impl<T: std::io::Read + std::io::Seek + ?Sized> ReadSeek for T {}
 /// [`invoke_reader_seek`].
 pub struct ReaderBox(Box<dyn ReadSeek + Send>);
 
-/// Wrap a Rust `Read + Seek` source in a [`ReaderBox`] suitable for handing
-/// to [`ffi::data_handle_from_reader`]. The `Seek` bound is load-bearing:
-/// eckit's `DataHandle::openForRead` contract is "leave at offset 0", so the
-/// C++ side rewinds the source on every re-open.
+/// Wrap a Rust `Read + Seek` source for [`ffi::data_handle_from_reader`].
+///
+/// The `Seek` bound is load-bearing: eckit's `DataHandle::openForRead`
+/// contract is "leave at offset 0", so the C++ side rewinds the source on
+/// every re-open.
 pub fn make_reader_box<R>(reader: R) -> Box<ReaderBox>
 where
     R: std::io::Read + std::io::Seek + Send + 'static,

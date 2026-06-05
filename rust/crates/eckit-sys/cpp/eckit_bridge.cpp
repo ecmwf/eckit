@@ -265,6 +265,67 @@ std::unique_ptr<DataHandleWrapper> data_handle_tee(rust::Slice<const rust::Strin
     return std::make_unique<DataHandleWrapper>(new eckit::TeeHandle(handles));
 }
 
+namespace {
+
+// `eckit::DataHandle` subclass that forwards `read()` / `seek()` to a Rust
+// `Read + Seek` source held in a `rust::Box<ReaderBox>`. `openForRead`
+// rewinds via `seek(0)` to match `eckit::FileHandle`'s `fopen("r")`
+// semantics — eckit's archive pipeline relies on re-opening the source for
+// the analyser and per-database passes.
+class RustReaderHandle : public eckit::DataHandle {
+public:
+
+    explicit RustReaderHandle(rust::Box<ReaderBox> reader) : reader_(std::move(reader)) {}
+
+    void print(std::ostream& s) const override { s << "RustReaderHandle[]"; }
+
+    eckit::Length openForRead() override {
+        if (invoke_reader_seek(*reader_, 0) < 0) {
+            throw eckit::ReadError("RustReaderHandle: rewind failed on openForRead");
+        }
+        return eckit::Length(0);
+    }
+
+    long read(void* buffer, long length) override {
+        if (length <= 0) {
+            return 0;
+        }
+        auto* bytes = static_cast<uint8_t*>(buffer);
+        rust::Slice<uint8_t> slice{bytes, static_cast<size_t>(length)};
+        int64_t n = invoke_reader_read(*reader_, slice);
+        if (n < 0) {
+            throw eckit::ReadError("RustReaderHandle: error reading from Rust source");
+        }
+        return static_cast<long>(n);
+    }
+
+    bool canSeek() const override { return true; }
+
+    eckit::Offset seek(const eckit::Offset& offset) override {
+        int64_t pos = invoke_reader_seek(*reader_, static_cast<int64_t>(offset));
+        if (pos < 0) {
+            throw eckit::ReadError("RustReaderHandle: seek failed");
+        }
+        return eckit::Offset(pos);
+    }
+
+    void close() override {}
+
+    eckit::Length estimate() override { return eckit::Length(0); }
+
+    eckit::Length size() override { return eckit::Length(0); }
+
+private:
+
+    rust::Box<ReaderBox> reader_;
+};
+
+}  // namespace
+
+std::unique_ptr<DataHandleWrapper> data_handle_from_reader(rust::Box<ReaderBox> reader) {
+    return std::make_unique<DataHandleWrapper>(new RustReaderHandle(std::move(reader)));
+}
+
 // ==================== Message + Reader ====================
 
 bool MessageWrapper::is_valid() const {

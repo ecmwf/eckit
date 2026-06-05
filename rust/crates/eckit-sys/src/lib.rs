@@ -141,6 +141,10 @@ mod ffi {
         /// Create a TeeHandle from multiple file paths — writes all targets in parallel.
         fn data_handle_tee(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
 
+        /// Create a DataHandle that forwards `read()` calls to a Rust
+        /// `std::io::Read` source wrapped in a [`ReaderBox`].
+        fn data_handle_from_reader(reader: Box<ReaderBox>) -> Result<UniquePtr<DataHandleWrapper>>;
+
         // ==================== Message + Reader ====================
 
         type MessageWrapper;
@@ -234,6 +238,26 @@ mod ffi {
         /// the library name (e.g. "metkit", "mir") for per-library debug channels.
         fn rust_log(level: LogLevel, target: &str, msg: &str);
 
+        /// Opaque Rust box holding a `dyn ReadSeek + Send` source.
+        ///
+        /// Constructed via [`make_reader_box`]; the C++ `RustReaderHandle`
+        /// holds it by `rust::Box<ReaderBox>` and forwards `read()` / `seek()`
+        /// calls through [`invoke_reader_read`] / [`invoke_reader_seek`].
+        type ReaderBox;
+
+        /// Called by the C++ `RustReaderHandle::read` shim to fill the next
+        /// chunk from the wrapped Rust `Read` source.
+        ///
+        /// Returns the number of bytes written into `buf`, or `-1` on error.
+        /// A return of `0` signals EOF.
+        fn invoke_reader_read(reader: &mut ReaderBox, buf: &mut [u8]) -> i64;
+
+        /// Called by the C++ `RustReaderHandle::seek` / `openForRead` shim to
+        /// reposition the wrapped Rust source. `offset` is from the start.
+        ///
+        /// Returns the new absolute position, or `-1` on error.
+        fn invoke_reader_seek(reader: &mut ReaderBox, offset: i64) -> i64;
+
         /// Opaque Rust box holding a `dyn Library` trait object.
         type LibraryBox;
 
@@ -257,6 +281,56 @@ mod ffi {
 // Public re-exports for the safe wrapper crate
 pub use cxx::{Exception, UniquePtr};
 pub use ffi::*;
+
+// ==================== Read → DataHandle adapter ====================
+
+/// Trait alias for `Read + Seek`. Required so the trait object inside
+/// [`ReaderBox`] exposes both `read` (for streaming bytes into C++) and
+/// `seek` (for rewind on `openForRead`, matching `eckit::FileHandle`'s
+/// `fopen("r")` semantics).
+pub trait ReadSeek: std::io::Read + std::io::Seek {}
+impl<T: std::io::Read + std::io::Seek + ?Sized> ReadSeek for T {}
+
+/// Opaque wrapper holding a `Box<dyn ReadSeek + Send>`.
+///
+/// The C++ `RustReaderHandle` (declared in `eckit_bridge.h` as `struct
+/// ReaderBox`) carries this by `rust::Box<ReaderBox>` and forwards each C++
+/// `read(void*, long)` / `seek(Offset)` call via [`invoke_reader_read`] /
+/// [`invoke_reader_seek`].
+pub struct ReaderBox(Box<dyn ReadSeek + Send>);
+
+/// Wrap a Rust `Read + Seek` source in a [`ReaderBox`] suitable for handing
+/// to [`ffi::data_handle_from_reader`]. The `Seek` bound is load-bearing:
+/// eckit's `DataHandle::openForRead` contract is "leave at offset 0", so the
+/// C++ side rewinds the source on every re-open.
+pub fn make_reader_box<R>(reader: R) -> Box<ReaderBox>
+where
+    R: std::io::Read + std::io::Seek + Send + 'static,
+{
+    Box::new(ReaderBox(Box::new(reader)))
+}
+
+/// Called from C++ `RustReaderHandle::read` to fill the next chunk from the
+/// wrapped Rust reader. Returns the byte count, `0` on EOF, or `-1` on error.
+fn invoke_reader_read(reader: &mut ReaderBox, buf: &mut [u8]) -> i64 {
+    reader
+        .0
+        .read(buf)
+        .map_or(-1, |n| i64::try_from(n).unwrap_or(i64::MAX))
+}
+
+/// Called from C++ `RustReaderHandle::seek` / `openForRead` to reposition
+/// the inner Rust source from the start. Returns the new position, or `-1`
+/// on error.
+fn invoke_reader_seek(reader: &mut ReaderBox, offset: i64) -> i64 {
+    let Ok(off_u64) = u64::try_from(offset) else {
+        return -1;
+    };
+    reader
+        .0
+        .seek(std::io::SeekFrom::Start(off_u64))
+        .map_or(-1, |n| i64::try_from(n).unwrap_or(i64::MAX))
+}
 
 /// Called from C++ `RustLogTarget::write()` — routes to Rust `log` crate.
 fn rust_log(level: ffi::LogLevel, target: &str, msg: &str) {

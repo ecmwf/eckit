@@ -226,6 +226,18 @@ std::unique_ptr<DataHandleWrapper> data_handle_from_multi(rust::Slice<const rust
 /// parallel.
 std::unique_ptr<DataHandleWrapper> data_handle_tee(rust::Slice<const rust::String> paths);
 
+// Forward declaration — defined on the Rust side, cxx generates the type.
+struct ReaderBox;
+
+/// Create a DataHandle that forwards `read()` calls to a Rust `std::io::Read`
+/// source wrapped in a `ReaderBox`. Used to stream bytes from Rust into any
+/// C++ API that consumes an `eckit::DataHandle&` (e.g. fdb5 archive, the
+/// streaming retrieve API) without staging through a temp file or buffer.
+///
+/// The returned handle is owned by the Rust side; on drop, the contained
+/// `ReaderBox` is dropped, releasing the underlying `Read` source.
+std::unique_ptr<DataHandleWrapper> data_handle_from_reader(rust::Box<ReaderBox> reader);
+
 // ==================== Library registration ====================
 
 // Forward declaration — defined on the Rust side, cxx generates the type.

@@ -39,16 +39,19 @@ namespace eckit_bridge {
 
 // Forward declarations — full definitions in cxx-generated code
 enum class LogLevel : std::uint8_t;
-void rust_log(LogLevel level, rust::Str msg) noexcept;
+void rust_log(LogLevel level, rust::Str target, rust::Str msg) noexcept;
 
 // ==================== Logging ====================
 
 /// LogTarget that routes all output to Rust's log crate.
 /// Accumulates writes until a newline or flush, then emits a single log call.
+/// `target` is the tracing/log target string passed to Rust (e.g. "eckit",
+/// "metkit") — global channels use "eckit", per-library debug channels use
+/// the library name from `eckit::system::LibraryManager`.
 class RustLogTarget : public eckit::LogTarget {
 public:
 
-    explicit RustLogTarget(LogLevel level) : level_(level) {}
+    RustLogTarget(LogLevel level, std::string target) : level_(level), target_(std::move(target)) {}
 
     void write(const char* start, const char* end) override;
     void flush() override;
@@ -56,6 +59,7 @@ public:
 private:
 
     LogLevel level_;
+    std::string target_;
     std::string buffer_;
 };
 

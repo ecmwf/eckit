@@ -230,7 +230,9 @@ mod ffi {
 
     extern "Rust" {
         /// Called from C++ RustLogTarget to emit log messages via Rust's log crate.
-        fn rust_log(level: LogLevel, msg: &str);
+        /// `target` is the tracing/log target — "eckit" for global channels,
+        /// the library name (e.g. "metkit", "mir") for per-library debug channels.
+        fn rust_log(level: LogLevel, target: &str, msg: &str);
 
         /// Opaque Rust box holding a `dyn Library` trait object.
         type LibraryBox;
@@ -257,14 +259,14 @@ pub use cxx::{Exception, UniquePtr};
 pub use ffi::*;
 
 /// Called from C++ `RustLogTarget::write()` — routes to Rust `log` crate.
-fn rust_log(level: ffi::LogLevel, msg: &str) {
+fn rust_log(level: ffi::LogLevel, target: &str, msg: &str) {
     match level {
-        ffi::LogLevel::Error => log::error!(target: "eckit", "{msg}"),
-        ffi::LogLevel::Warn => log::warn!(target: "eckit", "{msg}"),
-        ffi::LogLevel::Info => log::info!(target: "eckit", "{msg}"),
-        ffi::LogLevel::Debug => log::debug!(target: "eckit", "{msg}"),
+        ffi::LogLevel::Error => log::error!(target: target, "{msg}"),
+        ffi::LogLevel::Warn => log::warn!(target: target, "{msg}"),
+        ffi::LogLevel::Info => log::info!(target: target, "{msg}"),
+        ffi::LogLevel::Debug => log::debug!(target: target, "{msg}"),
         // Trace + wildcard for cxx non-exhaustive enum
-        _ => log::trace!(target: "eckit", "{msg}"),
+        _ => log::trace!(target: target, "{msg}"),
     }
 }
 

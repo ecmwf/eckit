@@ -21,7 +21,7 @@ void RustLogTarget::write(const char* start, const char* end) {
             line.pop_back();
         }
         if (!line.empty()) {
-            rust_log(level_, rust::Str(line.data(), line.size()));
+            rust_log(level_, rust::Str(target_.data(), target_.size()), rust::Str(line.data(), line.size()));
         }
         buffer_.erase(0, pos + 1);
     }
@@ -33,7 +33,7 @@ void RustLogTarget::flush() {
             buffer_.pop_back();
         }
         if (!buffer_.empty()) {
-            rust_log(level_, rust::Str(buffer_.data(), buffer_.size()));
+            rust_log(level_, rust::Str(target_.data(), target_.size()), rust::Str(buffer_.data(), buffer_.size()));
             buffer_.clear();
         }
     }
@@ -42,19 +42,29 @@ void RustLogTarget::flush() {
 RustMain::RustMain(int argc, char** argv) : Main(argc, argv) {}
 
 eckit::LogTarget* RustMain::createInfoLogTarget() const {
-    return new RustLogTarget(LogLevel::Info);
+    return new RustLogTarget(LogLevel::Info, "eckit");
 }
 eckit::LogTarget* RustMain::createWarningLogTarget() const {
-    return new RustLogTarget(LogLevel::Warn);
+    return new RustLogTarget(LogLevel::Warn, "eckit");
 }
 eckit::LogTarget* RustMain::createErrorLogTarget() const {
-    return new RustLogTarget(LogLevel::Error);
+    return new RustLogTarget(LogLevel::Error, "eckit");
 }
 eckit::LogTarget* RustMain::createDebugLogTarget() const {
-    return new RustLogTarget(LogLevel::Debug);
+    return new RustLogTarget(LogLevel::Debug, "eckit");
 }
 eckit::LogTarget* RustMain::createMetricsLogTarget() const {
-    return new RustLogTarget(LogLevel::Trace);
+    return new RustLogTarget(LogLevel::Trace, "eckit");
+}
+
+/// Install a per-library `RustLogTarget` on every registered library's debug
+/// channel. Each library's debug output is then tagged with its own name as
+/// the tracing/log target. Idempotent — `Channel::setTarget` replaces.
+static void install_per_library_targets() {
+    for (const auto& libname : eckit::system::LibraryManager::list()) {
+        const auto& lib = eckit::system::LibraryManager::lookup(libname);
+        lib.debugChannel().setTarget(new RustLogTarget(LogLevel::Debug, libname));
+    }
 }
 
 void init() {
@@ -62,6 +72,7 @@ void init() {
         static const char* argv[] = {"eckit-rs", nullptr};
         static auto* main         = new RustMain(1, const_cast<char**>(argv));
         (void)main;
+        install_per_library_targets();
     }
 }
 

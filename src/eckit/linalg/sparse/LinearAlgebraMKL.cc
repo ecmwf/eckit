@@ -91,9 +91,9 @@ void LinearAlgebraMKL::spmv(const SparseMatrix& A, const Vector& x, Vector& y) c
     const auto description = generalMatrixDescription();
     const auto handle      = createSparseMatrixHandle(A);
 
-    checkSparseStatus(mkl_sparse_d_mv(SPARSE_OPERATION_NON_TRANSPOSE, alpha, handle, description, x.data(), beta,
-                                      y.data()),
-                      "mkl_sparse_d_mv");
+    checkSparseStatus(
+        mkl_sparse_d_mv(SPARSE_OPERATION_NON_TRANSPOSE, alpha, handle, description, x.data(), beta, y.data()),
+        "mkl_sparse_d_mv");
 }
 
 

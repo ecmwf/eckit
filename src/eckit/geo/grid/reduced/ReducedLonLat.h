@@ -48,8 +48,9 @@ public:
     const order_type& order() const override { return scan_.order(); }
     renumber_type reorder(const order_type& to) const override { return scan_.reorder(to, pl_); }
 
-    const std::vector<double>& latitudes() const override;
-    const std::vector<double>& longitudes(size_t j) const override;
+    [[nodiscard]] const std::vector<double>& latitudes() const override;
+    [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override;
+    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return latitude_->values(); }
 
 private:
 

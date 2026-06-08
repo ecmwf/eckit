@@ -52,8 +52,9 @@ public:
         return new HEALPix(Nside_, order);
     }
 
-    const std::vector<double>& latitudes() const override;
-    const std::vector<double>& longitudes(size_t j) const override;
+    [[nodiscard]] const std::vector<double>& latitudes() const override;
+    [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override;
+    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return healpix_latitudes_; }
 
     // -- Class members
 

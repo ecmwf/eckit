@@ -27,7 +27,7 @@ ReducedGaussian::ReducedGaussian(const Spec& spec) : ReducedGaussian(spec.get_lo
 
 ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox) :
     N_(pl.size() / 2), pl_(pl), latitude_(N_, false) {
-    const auto& lats = eckit::geo::util::gaussian_latitudes(N_, false);
+    const auto& lats = latitude_.values();
     ASSERT(lats.size() == pl_.size());
 
     const auto [n, w, s, e] = bbox.deconstruct();

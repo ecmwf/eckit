@@ -89,6 +89,12 @@ cdef class Grid:
         cdef pair[vector[double], vector[double]] latlons = self._grid.to_latlons()
         return list(latlons.first), list(latlons.second)
 
+    def distinct_latitudes(self):
+        return self._grid.distinct_latitudes()
+
+    def distinct_longitudes(self):
+        return self._grid.distinct_longitudes()
+
     def bounding_box(self) -> tuple:
         cdef const eckit_geo.BoundingBox* bbox = &self._grid.boundingBox()
         cdef double north = bbox.north()

@@ -169,6 +169,16 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
 }
 
 
+std::vector<double> Grid::distinct_latitudes() const {
+    NOTIMP;
+}
+
+
+std::vector<double> Grid::distinct_longitudes() const {
+    NOTIMP;
+}
+
+
 const Grid::order_type& Grid::order() const {
     NOTIMP;
 }

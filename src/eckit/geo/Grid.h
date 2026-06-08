@@ -121,6 +121,9 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
+    [[nodiscard]] virtual std::vector<double> distinct_latitudes() const;
+    [[nodiscard]] virtual std::vector<double> distinct_longitudes() const;
+
     virtual const order_type& order() const;
     virtual renumber_type reorder(const order_type&) const;
 

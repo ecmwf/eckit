@@ -1,4 +1,4 @@
-# (C) Copyright 2026- ECMWF.
+# (C) Copyright 1996- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -54,12 +54,11 @@ Python3_add_library(_eckit MODULE WITH_SOABI
 
 target_include_directories(_eckit PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${_src})
 target_link_libraries(_eckit PRIVATE eckit)
-target_compile_features(_eckit PRIVATE cxx_std_17)
 
 install(TARGETS _eckit DESTINATION ${ECKIT_PYTHON_INSTALL_DIR}/eckit COMPONENT python)
 install(FILES eckit/src/eckit/__init__.py DESTINATION ${ECKIT_PYTHON_INSTALL_DIR}/eckit COMPONENT python)
 
-# ---- eckit.geo._eckit_geo (only when ECKIT_GEO is enabled) ----
+# ---- eckit.geo._eckit_geo ----
 if(eckit_HAVE_ECKIT_GEO)
     set(_eckit_geo_cpp ${CMAKE_CURRENT_BINARY_DIR}/_eckit_geo.cpp)
     add_custom_command(
@@ -83,7 +82,6 @@ if(eckit_HAVE_ECKIT_GEO)
 
     target_include_directories(_eckit_geo PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BINARY_DIR}/src ${_src})
     target_link_libraries(_eckit_geo PRIVATE eckit_geo)
-    target_compile_features(_eckit_geo PRIVATE cxx_std_17)
 
     install(TARGETS _eckit_geo DESTINATION ${ECKIT_PYTHON_INSTALL_DIR}/eckit/geo COMPONENT python)
     install(FILES eckit/src/eckit/geo/__init__.py DESTINATION ${ECKIT_PYTHON_INSTALL_DIR}/eckit/geo COMPONENT python)

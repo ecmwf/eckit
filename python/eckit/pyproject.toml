@@ -32,8 +32,11 @@ classifiers = [
 	"Operating System :: MacOS",
 	"Topic :: Scientific/Engineering",
 ]
-dependencies = ["findlibs", "pyyaml"]
+dependencies = ["findlibs", "pyyaml", "requests"]
 dynamic = ["version"]
+
+[project.scripts]
+eckit-geo-share-download = "eckit.tools.geo_share_download:main"
 
 [tool.setuptools.dynamic]
 version = {file = "../../VERSION"}

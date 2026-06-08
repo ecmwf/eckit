@@ -299,11 +299,16 @@ ecbuild_add_option( FEATURE PROJ
                     DESCRIPTION "support PROJ-based projections"
                     REQUIRED_PACKAGES "PROJ 9.1.1" )
 
-ecbuild_add_option(
-    FEATURE DOCS
-    DEFAULT OFF
-    DESCRIPTION "Enable documentation generation"
-)
+ecbuild_add_option( FEATURE DOCS
+                    DEFAULT OFF
+                    DESCRIPTION "Enable documentation generation" )
+
+### Python bindings
+
+ecbuild_add_option( FEATURE PYTHON
+                    DEFAULT OFF
+                    DESCRIPTION "Build Python bindings (Cython)"
+                    REQUIRED_PACKAGES "Python3 COMPONENTS Interpreter Development" )
 
 ### c math library, needed when including "math.h"
 
@@ -336,9 +341,15 @@ include(cmake/compiler_warnings.cmake) # optionally handle compiler specific war
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 add_subdirectory( src )
-if(eckit_HAVE_DOCS)
-    add_subdirectory(docs)
+
+if( eckit_HAVE_DOCS )
+    add_subdirectory( docs )
 endif()
+
+if( eckit_HAVE_PYTHON )
+    add_subdirectory( python )
+endif()
+
 add_subdirectory( share )
 
 if( eckit_HAVE_TESTS )

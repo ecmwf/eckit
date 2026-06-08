@@ -1,4 +1,4 @@
-# (C) Copyright 2025- ECMWF.
+# (C) Copyright 1996- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -22,7 +22,7 @@ set -euo pipefail
 rm -rf .venv
 uv venv --python python$PYVERSION .venv
 source .venv/bin/activate
-uv pip install --upgrade -r ./requirements-devel.txt
+uv pip install --upgrade -r ./requirements.txt twine build
 
 TEST_PYPI=${TEST_PYPI:-no}
 if [ "$TEST_PYPI" = "yes" ] ; then

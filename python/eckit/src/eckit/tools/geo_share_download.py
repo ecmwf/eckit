@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-# Requirements:
-#   Python >= 3.6
-#   PyYAML >= 6.0.1
-#   Requests >= 2.31.0
+# (C) Copyright 2026- ECMWF.
 #
-# Install dependencies with pip:
-#   pip install pyyaml requests
-
+# This software is licensed under the terms of the Apache Licence Version 2.0
+# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+# In applying this licence, ECMWF does not waive the privileges and immunities
+# granted to it by virtue of its status as an intergovernmental organisation nor
+# does it submit to any jurisdiction.
 
 import argparse
 import logging
@@ -20,21 +19,23 @@ import yaml
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-
-# TODO: configuration options control the cache path, available grids, but they're not considered here
-CONFIG_PATH = (
-    Path(os.path.abspath(__file__)).parents[2] / "eckit" / "share" / "eckit" / "geo" / "ORCA.yaml"
-)
-CACHE_PATH = Path(
-    os.getenv(
-        "ECKIT_GEO_CACHE_PATH", Path.home() / ".local" / "share" / "eckit" / "geo"
-    )
-)
 CHUNK_SIZE = 32768
 
 
+def _default_config_path() -> Path:
+    if env := os.getenv("ECKIT_GEO_CONFIG_PATH"):
+        return Path(env)
+    try:
+        import eckit
+        return Path(eckit.home()) / "share" / "eckit" / "geo" / "ORCA.yaml"
+    except Exception:
+        return Path("/usr/local/share/eckit/geo/ORCA.yaml")
+
+
+CACHE_PATH = Path(os.getenv("ECKIT_GEO_CACHE_PATH", Path.home() / ".local" / "share" / "eckit" / "geo"))
+
+
 def pretty_bytes(num: float, suffix="B"):
-    """Convert bytes to a more readable format."""
     for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
         if abs(num) < 1024.0:
             return f"{num:3.1f} {unit}{suffix}"
@@ -46,7 +47,7 @@ def download_file(url: str, path: Path):
     try:
         logging.info(f"Downloading '{url}'...")
         with requests.get(url, stream=True, timeout=60) as r:
-            r.raise_for_status()  # Verify status code
+            r.raise_for_status()
 
             path.parent.mkdir(parents=True, exist_ok=True)
             bytes = 0
@@ -83,24 +84,18 @@ def execute(args):
     with open(args.config, "r") as file:
         config = yaml.safe_load(file)
 
-    # Build lookup dict from grid_names
-    # Each entry is a flat dict where the grid name key has None value (due to YAML anchor)
-    # and the rest of the keys are grid properties
     grids_by_name = {}
     for entry in config.get("grid_names", []):
         if isinstance(entry, dict):
-            # Find the grid name (key with None value, which is the anchor)
             grid_name = None
             for key, value in entry.items():
                 if value is None:
                     grid_name = key
                     break
             if grid_name:
-                # The grid info is all the other keys in the entry
                 grid_info = {k: v for k, v in entry.items() if k != grid_name}
                 grids_by_name[grid_name] = grid_info
 
-    # Handle --list-grids
     if args.list_grids:
         print("Known grid names:")
         for name in sorted(grids_by_name.keys()):
@@ -109,7 +104,6 @@ def execute(args):
             print(f"  {name}" + (f" (uid: {uid})" if uid else ""))
         return
 
-    # Determine which grids to process
     if args.grid == ["all"]:
         grids_to_process = list(grids_by_name.values())
     else:
@@ -137,26 +131,29 @@ def execute(args):
             assert path.exists()
 
 
-if __name__ == "__main__":
-    p = argparse.ArgumentParser(description="Create binary grid data files")
+def main():
+    config_path = _default_config_path()
+    p = argparse.ArgumentParser(description="Download eckit-geo share files")
     p.add_argument(
         "--list-grids",
         action="store_true",
-        help="List all known grid names and UIDs, then exit."
+        help="List all known grid names and UIDs, then exit.",
     )
     p.add_argument(
         "--config",
-        default=CONFIG_PATH,
-        help=f"Path to the YAML configuration file (default: {CONFIG_PATH})",
+        default=config_path,
+        help=f"Path to YAML configuration file (default: {config_path})",
     )
     p.add_argument(
         "--cache-path",
         default=CACHE_PATH,
-        help=f"Path to the cache directory (default: {CACHE_PATH})",
+        help=f"Path to cache directory (default: {CACHE_PATH})",
     )
-    p.add_argument(
-        "--grid", default=["all"], nargs="+", help="Grid to cache (default: all)"
-    )
+    p.add_argument("--grid", default=["all"], nargs="+", help="Grid to cache (default: all)")
     p.add_argument("--overwrite", action="store_true", help="Overwrite existing files")
 
     execute(p.parse_args())
+
+
+if __name__ == "__main__":
+    main()

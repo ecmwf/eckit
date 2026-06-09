@@ -56,7 +56,14 @@ target_include_directories(_eckit PRIVATE ${PROJECT_SOURCE_DIR}/src ${PROJECT_BI
 target_link_libraries(_eckit PRIVATE eckit)
 
 install(TARGETS _eckit DESTINATION ${ECKIT_PYTHON_INSTALL_DIR}/eckit COMPONENT python)
-install(FILES eckit/src/eckit/__init__.py DESTINATION ${ECKIT_PYTHON_INSTALL_DIR}/eckit COMPONENT python)
+install(FILES
+    eckit/src/eckit/__init__.py
+    eckit/src/eckit/stream.py
+    DESTINATION ${ECKIT_PYTHON_INSTALL_DIR}/eckit COMPONENT python)
+install(FILES
+    eckit/src/eckit/tools/__init__.py
+    eckit/src/eckit/tools/geo_share_download.py
+    DESTINATION ${ECKIT_PYTHON_INSTALL_DIR}/eckit/tools COMPONENT python)
 
 # ---- eckit.geo._eckit_geo ----
 if(eckit_HAVE_ECKIT_GEO)

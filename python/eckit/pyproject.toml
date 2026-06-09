@@ -41,5 +41,5 @@ eckit-geo-share-download = "eckit.tools.geo_share_download:main"
 [tool.setuptools.dynamic]
 version = {file = "../../VERSION"}
 
-[tool.setuptools]
-include-package-data = false
+[tool.setuptools.packages.find]
+where = ["src"]

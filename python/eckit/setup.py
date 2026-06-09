@@ -1,108 +1,37 @@
-# (C) Copyright 2025- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-#
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
-
-
-import sys
-import warnings
-from os import getenv
-from pathlib import Path
-from typing import Any
-
-from Cython.Build import cythonize
-from setuptools import Extension
+import os
 from setuptools import setup
+import platform
+from wheel.bdist_wheel import bdist_wheel
+import sys
 
-source_dir = getenv("ECKIT_SOURCE_DIR", str(Path(getenv("HOME"), "git", "eckit")))
-binary_dir = getenv("ECKIT_BUILD_DIR", str(Path(getenv("HOME"), "build", "eckit")))
-library_dirs = getenv("ECKIT_LIB_DIR", str(Path(binary_dir, "lib"))).split(":")
+with open('VERSION', 'r') as fVersion:
+    version = fVersion.readlines()[0].strip()
+install_requires = [
+    f"eckitlib=={version}",
+    "findlibs",
+    "pyyaml",
+    "requests",
+]
 
-include_dirs_default = ":".join(
-    str(p)
-    for p in (
-        Path(source_dir, "src"),
-        Path(binary_dir, "src"),
-        Path(source_dir, "eckit", "src"),
-        Path(binary_dir, "eckit", "src"),
-    )
-    if p.exists()
-)
-include_dirs = getenv("ECKIT_INCLUDE_DIRS", include_dirs_default).split(":")
-
-extra_compile_args = ["-std=c++17"]
-
-
-def _ext(name: str, sources: list, libraries: list) -> Extension:
-    return Extension(
-        name,
-        sources,
-        language="c++",
-        libraries=libraries,
-        library_dirs=library_dirs,
-        include_dirs=include_dirs,
-        extra_compile_args=extra_compile_args,
-        runtime_library_dirs=library_dirs,
-        extra_link_args=extra_compile_args,
-    )
+# NOTE see ci-utils/wheelmaker/buildscripts/setup_utils, we need to get the right abi compat tag
+class bdist_wheel_ext(bdist_wheel):
+    def get_tag(self):
+        python, abi, plat = bdist_wheel.get_tag(self)
+        return python, abi, f"manylinux_2_28_{platform.machine()}"
 
 
-kwargs_set: dict[str, Any] = {}
-try:
-    from setup_utils import ext_kwargs as wheel_ext_kwargs
-
-    kwargs_set.update(wheel_ext_kwargs[sys.platform])
-except ImportError:
-    warnings.warn("failed to import setup_utils, won't mark the wheel as manylinux")
-
-version: str
-try:
-    with open("../../VERSION", "r") as f:
-        version = f.readlines()[0].strip()
-except Exception:
-    warnings.warn("failed to read VERSION, falling back to 0.0.0")
-    version = "0.0.0"
-
-install_requires = ["findlibs", "pyyaml", "certifi"]
-try:
-    import eckitlib
-
-    install_requires.append(f"eckitlib=={eckitlib.__version__}")
-except ImportError:
-    warnings.warn("failed to import eckitlib, not listing as a dependency")
+ext_kwargs = {
+    "darwin": {},
+    "linux": {"cmdclass": {"bdist_wheel": bdist_wheel_ext}},
+}
 
 setup(
-    name="eckit",
     version=version,
+    packages=["eckit"],
+    package_data={
+        "": ["*.so"],
+    },
+    has_ext_modules=lambda: True,
     install_requires=install_requires,
-    ext_modules=cythonize(
-        [
-            _ext(
-                "eckit._eckit",
-                [
-                    "src/_eckit/_eckit.pyx",
-                    "src/_eckit/eckit.cc",
-                ],
-                ["eckit"],
-            ),
-            _ext(
-                "eckit.geo._eckit_geo",
-                [
-                    "src/_eckit/_eckit_geo.pyx",
-                    "src/_eckit/eckit.cc",
-                ],
-                ["eckit_geo"],
-            ),
-        ],
-        compiler_directives={
-            "language_level": 3,
-            "c_string_type": "unicode",  # accept Python str
-            "c_string_encoding": "utf8",
-        },
-    ),
-    **kwargs_set,
+    **ext_kwargs[sys.platform],
 )

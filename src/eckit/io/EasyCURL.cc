@@ -538,7 +538,7 @@ public:
 
         if (active == 0) {
             for (int msgs_left = 0; const auto* msg = curl_multi_info_read(multi, &msgs_left);) {
-                if (msg->msg == CURLMSG_DONE && msg->easy_handle == ch_->curl_) {
+                if (msg->msg == CURLMSG_DONE) {
                     call("curl_multi_perform", msg->data.result);
                 }
             }

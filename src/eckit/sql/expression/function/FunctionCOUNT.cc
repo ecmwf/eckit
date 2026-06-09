@@ -19,8 +19,7 @@ namespace eckit::sql::expression::function {
 static FunctionBuilder<FunctionCOUNT> countFunctionBuilder("count");
 
 const type::SQLType* FunctionCOUNT::type() const {
-    const type::SQLType& x = type::SQLType::lookup("double");
-    return &x;
+    return &type::SQLType::lookup(std::string{"double"});
 }
 
 FunctionCOUNT::FunctionCOUNT(const std::string& name, const expression::Expressions& args) :

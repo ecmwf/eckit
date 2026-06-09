@@ -17,7 +17,7 @@ name = "eckit"
 description = "Python bindings for eckit"
 requires-python = ">=3.9"
 license = "Apache-2.0"
-license-files = ["../../LICENSE"]
+license-files = ["LICENSE"]
 authors = [
 	{ name = "European Centre for Medium-Range Weather Forecasts (ECMWF)", email = "software.support@ecmwf.int" }
 ]
@@ -39,7 +39,7 @@ dynamic = ["version"]
 eckit-geo-share-download = "eckit.tools.geo_share_download:main"
 
 [tool.setuptools.dynamic]
-version = {file = "../../VERSION"}
+version = {file = "VERSION"}
 
 [tool.setuptools.packages.find]
 where = ["src"]

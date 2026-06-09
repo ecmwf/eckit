@@ -17,6 +17,14 @@ cimport eckit
 eckit.eckit_main_initialise()
 
 
+def version() -> str:
+    return eckit_geo.LibEcKitGeo.instance().version()
+
+
+def git_sha1() -> str:
+    return eckit_geo.LibEcKitGeo.instance().gitsha1(40)
+
+
 cdef class Area:
     cdef const eckit_geo.Area* _area
 

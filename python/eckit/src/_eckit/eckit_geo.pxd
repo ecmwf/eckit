@@ -13,6 +13,15 @@ from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
 
+cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
+    cdef cppclass LibEcKitGeo:
+        @staticmethod
+        LibEcKitGeo& instance()
+
+        string version()
+        string gitsha1(unsigned int n)  # n=40 for full sha1
+
+
 cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":
     cdef cppclass Area:
         string spec_str() const
@@ -21,6 +30,7 @@ cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":
     cdef cppclass AreaFactory:
         @staticmethod
         const Area* make_from_string(const string) except +
+
 
 cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
     cdef cppclass BoundingBox(Area):

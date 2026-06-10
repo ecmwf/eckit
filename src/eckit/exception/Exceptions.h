@@ -26,6 +26,7 @@
 #include <cerrno>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/log/Log.h"

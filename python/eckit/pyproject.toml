@@ -43,4 +43,4 @@ version = {file = "VERSION"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-exclude = ["_eckit"]
+exclude = ["_eckit*"]

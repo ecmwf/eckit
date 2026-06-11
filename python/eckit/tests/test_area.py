@@ -12,11 +12,14 @@ import pytest
 
 SPECS = [
     (dict(north=90, west=0, south=-90, east=360), dict(area=[90, 0, -90, 360])),
-    (dict(north=10, west=360*99+1, south=0, east=360*42+10), dict(area=[10, 1, 0, 10])),
+    (
+        dict(north=10, west=360 * 99 + 1, south=0, east=360 * 42 + 10),
+        dict(area=[10, 1, 0, 10]),
+    ),
 ]
 
 
-@pytest.mark.parametrize( "_spec, _expected", SPECS)
+@pytest.mark.parametrize("_spec, _expected", SPECS)
 def test_area(_spec, _expected):
     from eckit.geo import Area
 

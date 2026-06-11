@@ -22,9 +22,9 @@
 namespace eckit::geo::test {
 
 
-static const std::string GRID   = "ORCA2_T";
-static const Grid::uid_type UID = "d5bde4f52ff3a9bea5629cd9ac514410";
-static const std::vector<long> SHAPE{182, 149};
+const std::string GRID   = "ORCA2_T";
+const Grid::uid_type UID = "d5bde4f52ff3a9bea5629cd9ac514410";
+const std::vector<long> SHAPE{182, 149};
 
 
 CASE("spec") {
@@ -80,6 +80,14 @@ CASE("equals") {
 
     EXPECT(grid2->uid() == grid3->calculate_uid());
     EXPECT(grid3->uid() == grid2->calculate_uid());
+}
+
+
+CASE("catalog") {
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid:" + GRID + "}"));
+    std::string intgrid;
+
+    EXPECT(grid->catalog().get("intgrid", intgrid) && !intgrid.empty());
 }
 
 

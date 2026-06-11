@@ -7,7 +7,8 @@
 # granted to it by virtue of its status as an intergovernmental organisation nor
 # does it submit to any jurisdiction.
 
-from struct import pack, unpack
+from struct import pack
+from struct import unpack
 
 TAG_ZERO = 0
 TAG_START_OBJ = 1
@@ -81,7 +82,10 @@ class Stream:
         # TODO Maybe worth having a look at it sometime.
         if tag != expected_tag:
             if tag < len(TAG_NAME):
-                raise RuntimeError("Unexpected tag: %s, wanted %s" % (TAG_NAME[tag], TAG_NAME[expected_tag]))
+                raise RuntimeError(
+                    "Unexpected tag: %s, wanted %s"
+                    % (TAG_NAME[tag], TAG_NAME[expected_tag])
+                )
             else:
                 raise RuntimeError("Invalid tag with id: '%s'" % tag)
 
@@ -102,7 +106,10 @@ class Stream:
                 return 1
             else:
                 if tag < len(TAG_NAME):
-                    raise RuntimeError("Unexpected tag: '%s', wanted '%s'" % (TAG_NAME[tag], TAG_NAME[TAG_START_OBJ]))
+                    raise RuntimeError(
+                        "Unexpected tag: '%s', wanted '%s'"
+                        % (TAG_NAME[tag], TAG_NAME[TAG_START_OBJ])
+                    )
                 else:
                     raise RuntimeError("Invalid tag with id: '%d'" % tag)
 
@@ -188,7 +195,9 @@ class Stream:
 
     def read_long_long(self):
         self.read_tag(TAG_LONG_LONG)
-        raise NotImplementedError("read_long_long: write_long_long only writes 4 bytes, format inconsistent")
+        raise NotImplementedError(
+            "read_long_long: write_long_long only writes 4 bytes, format inconsistent"
+        )
 
     def _read_long_long(self):
         return unpack("!Q", self._read(8))[0]

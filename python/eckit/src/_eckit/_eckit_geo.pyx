@@ -25,10 +25,19 @@ def git_sha1() -> str:
     return eckit_geo.LibEcKitGeo.instance().gitsha1(40)
 
 
+def cache_dir_purge() -> None:
+    eckit_geo.LibEcKitGeo.purgeCacheDir()
+
+
 cdef class Area:
     cdef const eckit_geo.Area* _area
 
+    def __dealloc__(self):
+        if self._area != NULL:
+            del self._area
+
     def __cinit__(self, spec = None, **kwargs):
+        self._area = NULL
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
@@ -65,7 +74,12 @@ cdef class Area:
 cdef class Grid:
     cdef const eckit_geo.Grid* _grid
 
+    def __dealloc__(self):
+        if self._grid != NULL:
+            del self._grid
+
     def __cinit__(self, spec = None, **kwargs):
+        self._grid = NULL
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
@@ -103,6 +117,14 @@ cdef class Grid:
         cdef double east = bbox.east()
         return north, west, south, east
 
+    def grid_box_areas(self):
+        try:
+            import mir
+        except ModuleNotFoundError:
+            return None
+
+        return mir.grid_box_areas(self)
+
     @property
     def spec_str(self) -> str:
         return self._grid.spec_str()
@@ -111,6 +133,15 @@ cdef class Grid:
     def spec(self) -> dict:
         from yaml import safe_load
         return safe_load(self.spec_str)
+
+    @property
+    def catalog_str(self) -> str:
+        return self._grid.catalog_str()
+
+    @property
+    def catalog(self) -> dict:
+        from yaml import safe_load
+        return safe_load(self.catalog_str)
 
     @property
     def type(self) -> str:
@@ -134,6 +165,3 @@ cdef class Grid:
 
     def __len__(self) -> int:
         return self.size()
-
-    def __dealloc__(self):
-        del self._grid

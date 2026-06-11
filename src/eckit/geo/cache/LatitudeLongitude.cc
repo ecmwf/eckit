@@ -19,54 +19,109 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Download.h"
+#include "eckit/geo/grid/Unstructured.h"
+#include "eckit/geo/util/mutex.h"
 #include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::cache {
 
 
-using Cache = cache::RecordCacheT<LatitudeLongitude, Grid::uid_type>;
+namespace {
+
+
+util::recursive_mutex MUTEX;
+
+
+using Cache = cache::RecordCacheT<LatitudeLongitude, LatitudeLongitude::uid_type>;
 
 
 struct Loader final : Cache::Loader {
     void load(const Cache::key_type& uid, Cache::value_type& record) const override {
-        static cache::Download download(LibEcKitGeo::cacheDir() + "/latlon");
-
         if (!GridSpecByUID::instance().exists(uid)) {
             throw exception::GridError("LatitudeLongitude: unknown uid='" + uid + "'", Here());
         }
 
-        const auto url = LibEcKitGeo::url(
-            std::unique_ptr<const Grid::Spec>(GridSpecByUID::instance().get(uid).spec())->get_string("url"));
+        std::unique_ptr<const Grid::Spec> spec(GridSpecByUID::instance().get(uid).spec());
+        ASSERT(spec);
 
-        const auto path = download.to_cached_path(url, "", ".ek");
-        ASSERT_MSG(path.exists(), "LatitudeLongitude: file '" + path + "' not found (url: '" + url + "')");
+        if (spec->has("cached_path")) {
+            record.read(spec->get_string("cached_path"));
+            return;
+        }
 
-        record.read(path);
+        if (spec->has("url")) {
+            static cache::Download download(PathName(LibEcKitGeo::cacheDir()) / "latlon");
+            record.read(download.to_cached_path(LibEcKitGeo::url(spec->get_string("url")), "", ".ek"));
+            return;
+        }
+
+        throw exception::GridError("LatitudeLongitude: unknown uid='" + uid + "', no 'cached_path' or 'url'", Here());
     }
 };
 
 
-const LatitudeLongitude& LatitudeLongitude::get(const Grid::uid_type& uid) {
+Cache& cache() {
     static const Loader loader;
-    static Cache cache(loader);
-    return cache.get(uid);
+    static Cache CACHE(loader);
+    return CACHE;
+}
+
+
+}  // namespace
+
+
+LatitudeLongitude::LatitudeLongitude(const std::vector<double>& lat, const std::vector<double>& lon) :
+    lon_(lon), lat_(lat) {
+    ASSERT(lat_.size() == lon_.size());
+}
+
+
+const LatitudeLongitude& LatitudeLongitude::get(const uid_type& uid) {
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    return cache().get(uid);
+}
+
+
+const LatitudeLongitude& LatitudeLongitude::set(const uid_type& uid, LatitudeLongitude&& ll) {
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    return cache().set(uid, std::move(ll));
 }
 
 
 void LatitudeLongitude::read(const PathName& p) {
-    codec::RecordReader reader(p);
+    ASSERT_MSG(p.exists(), "LatitudeLongitude: path '" + p + "' not found");
 
-    reader.read("latitude", latitude_);
-    reader.read("longitude", longitude_);
-    reader.wait();
+    codec::RecordReader record(p);
+    record.read("latitude", lat_);
+    record.read("longitude", lon_);
+    record.wait();
 
-    ASSERT(latitude_.size() == longitude_.size());
+    ASSERT(lat_.size() == lon_.size());
+}
+
+
+void LatitudeLongitude::write(const PathName& p) const {
+    codec::RecordWriter record;
+    record.set("latitude", codec::ref(lat_));
+    record.set("longitude", codec::ref(lon_));
+    record.write(p);
+}
+
+
+PathName LatitudeLongitude::to_cached_path() const {
+    auto uid  = grid::Unstructured::uid_from_latlons(latitude(), longitude());
+    auto path = PathName(LibEcKitGeo::cacheDir()) / "latlon" / (uid + ".ek");
+    if (!path.exists()) {
+        write(path);
+    }
+
+    return path;
 }
 
 
 size_t LatitudeLongitude::size() const {
-    return latitude_.size();
+    return lat_.size();
 }
 
 

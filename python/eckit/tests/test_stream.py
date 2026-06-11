@@ -12,7 +12,6 @@ import io
 import math
 
 import pytest
-
 from eckit.stream import Stream
 
 
@@ -43,17 +42,27 @@ def test_unsigned_long_roundtrip(v):
 @pytest.mark.parametrize("v", [0, 1, 2**32 - 1])
 def test_unsigned_long_long_roundtrip(v):
     # write_unsigned_long_long hard-codes 0 for the high 32 bits — values > 2**32-1 not supported
-    assert _roundtrip(Stream.write_unsigned_long_long, Stream.read_unsigned_long_long, v) == v
+    assert (
+        _roundtrip(Stream.write_unsigned_long_long, Stream.read_unsigned_long_long, v)
+        == v
+    )
 
 
-@pytest.mark.parametrize("v", [
-    0.0, 1.0, -1.0,
-    3.14159265358979323846,
-    -2.718281828459045,
-    1e-300, 1e300,
-    float("inf"), float("-inf"),
-    1.1754943508222875e-38,   # min normal float32
-])
+@pytest.mark.parametrize(
+    "v",
+    [
+        0.0,
+        1.0,
+        -1.0,
+        3.14159265358979323846,
+        -2.718281828459045,
+        1e-300,
+        1e300,
+        float("inf"),
+        float("-inf"),
+        1.1754943508222875e-38,  # min normal float32
+    ],
+)
 def test_double_roundtrip(v):
     result = _roundtrip(Stream.write_double, Stream.read_double, v)
     if math.isnan(v):
@@ -75,13 +84,16 @@ def test_string_roundtrip(v):
     assert _roundtrip(Stream.write_string, Stream.read_string, v) == v
 
 
-@pytest.mark.parametrize("data", [
-    b"",
-    b"\x00" * 1,
-    bytes(range(256)),
-    b"binary\x00data\xff\xfe",
-    b"x" * 65536,
-])
+@pytest.mark.parametrize(
+    "data",
+    [
+        b"",
+        b"\x00" * 1,
+        bytes(range(256)),
+        b"binary\x00data\xff\xfe",
+        b"x" * 65536,
+    ],
+)
 def test_large_blob_roundtrip(data):
     assert _roundtrip(Stream.write_large_blob, Stream.read_large_blob, data) == data
 
@@ -106,7 +118,7 @@ def test_end_object_skipped_between_reads():
     buf = io.BytesIO()
     s = Stream(buf)
     s.write_unsigned_long(10)
-    s.end_object()             # TAG_END_OBJ interleaved
+    s.end_object()  # TAG_END_OBJ interleaved
     s.write_unsigned_long(20)
 
     buf.seek(0)

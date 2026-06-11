@@ -18,6 +18,9 @@ cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
         @staticmethod
         LibEcKitGeo& instance()
 
+        @staticmethod
+        void purgeCacheDir()
+
         string version()
         string gitsha1(unsigned int n)  # n=40 for full sha1
 
@@ -43,6 +46,7 @@ cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
 cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
     cdef cppclass Grid:
         string spec_str() const
+        string catalog_str() const
         string type() const
         string uid() const
         string order() const

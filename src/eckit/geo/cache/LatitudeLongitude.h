@@ -14,6 +14,7 @@
 
 #include <vector>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/cache/RecordCache.h"
 
@@ -24,19 +25,30 @@ namespace eckit::geo::cache {
 class LatitudeLongitude : public RecordCache {
 public:
 
-    static const LatitudeLongitude& get(const Grid::uid_type&);
+    using uid_type = geo::Grid::uid_type;
+
+    LatitudeLongitude() = default;
+    LatitudeLongitude(const std::vector<double>&, const std::vector<double>&);
+
+    static const LatitudeLongitude& get(const uid_type&);
+    static const LatitudeLongitude& set(const uid_type&, LatitudeLongitude&&);
 
     bytes_size_t footprint() const override { return 2 * size() * sizeof(double); }
+
     void read(const PathName&) override;
+    void write(const PathName&) const;
+
+    PathName to_cached_path() const;
 
     size_t size() const;
-    const std::vector<double>& longitude() const { return longitude_; }
-    const std::vector<double>& latitude() const { return latitude_; }
+
+    const std::vector<double>& longitude() const { return lon_; }
+    const std::vector<double>& latitude() const { return lat_; }
 
 private:
 
-    std::vector<double> longitude_;
-    std::vector<double> latitude_;
+    std::vector<double> lon_;
+    std::vector<double> lat_;
 };
 
 

@@ -22,4 +22,5 @@ def configure_ca_bundle_from_certifi() -> None:
     ca_bundle = certifi.where()
     if ca_bundle:
         from eckit._eckit import easycurl_setopt
+
         easycurl_setopt("CURLOPT_CAINFO", ca_bundle)

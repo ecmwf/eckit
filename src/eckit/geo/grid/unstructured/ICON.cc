@@ -15,52 +15,12 @@
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/cache/LatitudeLongitude.h"
-#include "eckit/spec/Custom.h"
-#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::grid::unstructured {
 
 
-ICON::ICON(const uid_type& uid, const std::string& arrangement, const std::string& name) :
-    name_(name), arrangement_(arrangement_from_string(arrangement)) {
-    reset_uid(uid);
-}
-
-
-ICON::ICON(const Spec& spec) : ICON(spec.get_string("uid"), spec.get_string("arrangement"), spec.get_string("name")) {}
-
-
-ICON::ICON(uid_type uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
-
-
-ICON::ICON(const std::string& name, Arrangement a) :
-    ICON(*std::unique_ptr<Spec>(
-        GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement_to_string(a)}})))) {}
-
-
-std::string ICON::arrangement() const {
-    return arrangement_to_string(arrangement_);
-}
-
-
-const std::vector<double>& ICON::longitudes() const {
-    return cache::LatitudeLongitude::get(uid()).longitude();
-}
-
-
-const std::vector<double>& ICON::latitudes() const {
-    return cache::LatitudeLongitude::get(uid()).latitude();
-}
-
-
-Grid::Spec* ICON::spec(const std::string& name) {
-    return GridSpecByUID::instance().get(name).spec();
-}
-
-
-Arrangement ICON::arrangement_from_string(const std::string& str) {
+static Arrangement arrangement_from_string(const std::string& str) {
     return str == "C"   ? Arrangement::ICON_C
            : str == "V" ? Arrangement::ICON_V
            : str == "E" ? Arrangement::ICON_E
@@ -68,7 +28,7 @@ Arrangement ICON::arrangement_from_string(const std::string& str) {
 }
 
 
-std::string ICON::arrangement_to_string(Arrangement a) {
+static std::string arrangement_to_string(Arrangement a) {
     return a == Arrangement::ICON_C   ? "C"
            : a == Arrangement::ICON_V ? "V"
            : a == Arrangement::ICON_E
@@ -77,14 +37,18 @@ std::string ICON::arrangement_to_string(Arrangement a) {
 }
 
 
-void ICON::fill_spec(spec::Custom& custom) const {
-    ASSERT(!name_.empty());
-    custom.set("grid", name_);  // only T-arrangement is currently catalogued
+ICON::ICON(const Spec& spec) :
+    Unstructured(spec.get_string("uid"), spec.get_string("name"),
+                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement")))) {}
 
-    if (auto _uid = uid(); !GridSpecByUID::instance().exists(_uid)) {
-        custom.set("uid", _uid);
-    }
-}
+
+ICON::ICON(const uid_type& uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+
+
+ICON::ICON(const std::string& name, Arrangement a) :
+    ICON(*[](const std::string& grid) {
+        return std::unique_ptr<const spec::Spec>(GridSpecByName::instance().match(grid).spec(grid));
+    }(name + "_" + arrangement_to_string(a))) {}
 
 
 const std::string& ICON::type() const {
@@ -98,20 +62,8 @@ std::vector<size_t> ICON::shape() const {
 }
 
 
-void ICON::cache() const {
-    (void)cache::LatitudeLongitude::get(uid());
-}
-
-
-Grid::BoundingBox* ICON::calculate_bbox() const {
-    if (const std::string BOUNDING_BOX = "bounding_box"; catalog().has(BOUNDING_BOX)) {
-        const auto bbox = catalog().get_double_vector(BOUNDING_BOX);
-        ASSERT(bbox.size() == 4);
-
-        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
-    }
-
-    return Unstructured::calculate_bbox();
+Grid::Spec* ICON::spec(const std::string& str) {
+    return is_uid(str) ? GridSpecByUID::instance().get(str).spec() : GridSpecByName::instance().get(str).spec(str);
 }
 
 

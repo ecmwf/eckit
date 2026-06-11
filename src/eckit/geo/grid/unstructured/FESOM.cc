@@ -13,16 +13,11 @@
 #include "eckit/geo/grid/unstructured/FESOM.h"
 
 #include <memory>
-#include <vector>
 
 #include "eckit/codec/codec.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Download.h"
-#include "eckit/geo/cache/LatitudeLongitude.h"
-#include "eckit/geo/util/mutex.h"
-#include "eckit/spec/Custom.h"
-#include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -35,62 +30,54 @@ void hash_vector_size_t(MD5&, const std::vector<size_t>&);
 namespace eckit::geo::grid::unstructured {
 
 
-static util::recursive_mutex MUTEX;
+static Arrangement arrangement_from_string(const std::string& str) {
+    return str == "C"   ? Arrangement::FESOM_C
+           : str == "N" ? Arrangement::FESOM_N
+                        : throw SeriousBug("FESOM: unsupported arrangement '" + str + "'");
+}
 
 
-class lock_type {
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
-
-
-FESOM::FESOM(const uid_type& uid, const std::string& arrangement, const std::string& name) :
-    name_(name), arrangement_(arrangement_from_string(arrangement)) {
-    reset_uid(uid);
+static std::string arrangement_to_string(Arrangement a) {
+    return a == Arrangement::FESOM_C ? "C"
+           : a == Arrangement::FESOM_N
+               ? "N"
+               : throw SeriousBug("ORCA: unsupported arrangement '" + std::to_string(a) + "'", Here());
 }
 
 
 FESOM::FESOM(const Spec& spec) :
-    FESOM(spec.get_string("uid"), spec.get_string("arrangement"), spec.get_string("name")) {}
+    Unstructured(spec.get_string("uid"), spec.get_string("name"),
+                 arrangement_to_string(arrangement_from_string(spec.get_string("arrangement")))) {}
 
 
-FESOM::FESOM(uid_type uid) : FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
+FESOM::FESOM(const uid_type& uid) :
+    FESOM(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}
 
 
 FESOM::FESOM(const std::string& name, Arrangement a) :
-    FESOM(*std::unique_ptr<Spec>(
-        GridFactory::make_spec(spec::Custom({{"grid", name + '_' + arrangement_to_string(a)}})))) {}
+    FESOM(*[](const std::string& grid) {
+        return std::unique_ptr<const spec::Spec>(GridSpecByName::instance().match(grid).spec(grid));
+    }(name + "_" + arrangement_to_string(a))) {}
 
 
-std::string FESOM::arrangement() const {
-    return arrangement_to_string(arrangement_);
+const std::string& FESOM::type() const {
+    static const std::string type{"FESOM"};
+    return type;
 }
 
 
-const std::vector<double>& FESOM::longitudes() const {
-    return cache::LatitudeLongitude::get(uid()).longitude();
-}
-
-
-const std::vector<double>& FESOM::latitudes() const {
-    return cache::LatitudeLongitude::get(uid()).latitude();
+std::vector<size_t> FESOM::shape() const {
+    return catalog().get_unsigned_vector("shape");
 }
 
 
 Grid::uid_type FESOM::calculate_uid() const {
-    if (arrangement_ == Arrangement::FESOM_N) {
-        MD5 hash;
-        util::hash_vector_double(hash, latitudes());
-        util::hash_vector_double(hash, longitudes());
-
-        auto d = hash.digest();
-        ASSERT(is_uid(d));
-        return {d};
+    if (arrangement_from_string(arrangement()) == Arrangement::FESOM_N) {
+        return Unstructured::calculate_uid();
     }
 
-    if (arrangement_ == Arrangement::FESOM_C) {
-        // control concurrent reads/writes
-        lock_type lock;
-
+    if (arrangement_from_string(arrangement()) == Arrangement::FESOM_C) {
+        // download internally controls concurrent reads/writes
         static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
 
         // bootstrap uid
@@ -127,50 +114,8 @@ Grid::uid_type FESOM::calculate_uid() const {
 }
 
 
-Grid::Spec* FESOM::spec(const std::string& name) {
-    return GridSpecByUID::instance().get(name).spec();
-}
-
-
-Arrangement FESOM::arrangement_from_string(const std::string& str) {
-    return str == "C"   ? Arrangement::FESOM_C
-           : str == "N" ? Arrangement::FESOM_N
-                        : throw SeriousBug("FESOM: unsupported arrangement '" + str + "'");
-}
-
-
-std::string FESOM::arrangement_to_string(Arrangement a) {
-    return a == Arrangement::FESOM_C ? "C"
-           : a == Arrangement::FESOM_N
-               ? "N"
-               : throw SeriousBug("ORCA: unsupported arrangement '" + std::to_string(a) + "'", Here());
-}
-
-
-void FESOM::fill_spec(spec::Custom& custom) const {
-    auto grid = name_ + "_" + arrangement_to_string(arrangement_);
-    custom.set("grid", grid);
-
-    if (auto _uid = uid(); !GridSpecByName::instance().exists(grid) ||
-                           GridSpecByName::instance().match(grid).spec(grid)->get_string("uid") != _uid) {
-        custom.set("uid", _uid);
-    }
-}
-
-
-const std::string& FESOM::type() const {
-    static const std::string type{"FESOM"};
-    return type;
-}
-
-
-std::vector<size_t> FESOM::shape() const {
-    return catalog().get_unsigned_vector("shape");
-}
-
-
-void FESOM::cache() const {
-    (void)cache::LatitudeLongitude::get(uid());
+Grid::Spec* FESOM::spec(const std::string& str) {
+    return is_uid(str) ? GridSpecByUID::instance().get(str).spec() : GridSpecByName::instance().get(str).spec(str);
 }
 
 

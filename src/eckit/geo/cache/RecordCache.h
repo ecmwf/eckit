@@ -70,6 +70,11 @@ public:
         return record;
     }
 
+    const value_type& set(const key_type& key, value_type&& record) {
+        util::lock_guard<util::recursive_mutex> lock(mutex_);
+        return cache_[key] = std::move(record);
+    }
+
     void purge() {
         util::lock_guard<util::recursive_mutex> lock(mutex_);
         cache_.purge();

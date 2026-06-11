@@ -1,10 +1,10 @@
-import os
-from setuptools import setup
 import platform
-from wheel.bdist_wheel import bdist_wheel
 import sys
 
-with open('VERSION', 'r') as fVersion:
+from setuptools import setup
+from wheel.bdist_wheel import bdist_wheel
+
+with open("VERSION", "r") as fVersion:
     version = fVersion.readlines()[0].strip()
 install_requires = [
     f"eckitlib=={version}",
@@ -13,10 +13,11 @@ install_requires = [
     "requests",
 ]
 
+
 # NOTE see ci-utils/wheelmaker/buildscripts/setup_utils, we need to get the right abi compat tag
 class bdist_wheel_ext(bdist_wheel):
     def get_tag(self):
-        python, abi, plat = bdist_wheel.get_tag(self)
+        python, abi, plat = bdist_wheel.get_tag(self)  # noqa: F841
         return python, abi, f"manylinux_2_28_{platform.machine()}"
 
 

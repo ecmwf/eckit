@@ -22,9 +22,9 @@
 namespace eckit::geo::test {
 
 
-static const std::string GRID   = "icon-grid-0055-r02b05-n";
-static const Grid::uid_type UID = "e234e01a8556e9a84bcb42361d2f24e0";
-static const std::vector<long> SHAPE{2656};
+const std::string GRID   = "icon-grid-0055-r02b05-n";
+const Grid::uid_type UID = "e234e01a8556e9a84bcb42361d2f24e0";
+const std::vector<long> SHAPE{2656};
 
 
 CASE("spec") {
@@ -44,27 +44,12 @@ CASE("spec") {
     EXPECT(grid1->uid() == UID);
 
     std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", UID}})));
+    std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", GRID}})));
+    grid::unstructured::ICON grid4(UID);
 
-    EXPECT(grid2->size() == SHAPE[0]);
-    EXPECT(grid2->uid() == UID);
-
-    grid::unstructured::ICON grid3(UID);
-
-    const std::string expected_spec_str = R"({"grid":")" + GRID + R"("})";
-    Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
-
-    EXPECT(grid3.uid() == UID);
-    EXPECT(static_cast<const Grid&>(grid3).spec_str() == expected_spec_str);
-
-    EXPECT(grid1->spec_str() == grid2->spec_str());
-
-    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", GRID}})));
-
-    EXPECT(grid4->spec_str() == expected_spec_str);
-
-    std::unique_ptr<const Grid> grid5(GridFactory::build(spec::Custom({{"uid", UID}})));
-
-    EXPECT(*grid4 == *grid5);
+    EXPECT(*grid1 == *grid2);
+    EXPECT(*grid1 == *grid3);
+    EXPECT(*grid1 == grid4);
 }
 
 

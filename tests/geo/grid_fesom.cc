@@ -23,12 +23,12 @@
 namespace eckit::geo::test {
 
 
-static const std::string GRID_N   = "pi_N";
-static const Grid::uid_type UID_N = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
-static const std::vector<size_t> SHAPE_N{3140};
+const std::string GRID_N   = "pi_N";
+const Grid::uid_type UID_N = "bdc49d97a27e389fb86decd08a185c2f";  // {grid:pi_N}
+const std::vector<size_t> SHAPE_N{3140};
 
-static const std::string GRID_C   = "pi_C";
-static const Grid::uid_type UID_C = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
+const std::string GRID_C   = "pi_C";
+const Grid::uid_type UID_C = "e548b74fa53eef5ab412c6061330f043";  // {grid:pi_C}
 
 
 CASE("spec") {
@@ -43,29 +43,15 @@ CASE("spec") {
 
     EXPECT(grid1->shape() == SHAPE_N);
     EXPECT(grid1->uid() == UID_N);
+    EXPECT(grid1->calculate_uid() == UID_N);
 
     std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", UID_N}})));
+    std::unique_ptr<const Grid> grid3(GridFactory::build(spec::Custom({{"grid", GRID_N}})));
+    grid::unstructured::FESOM grid4(UID_N);
 
-    EXPECT(grid2->shape() == SHAPE_N);
-    EXPECT(grid2->uid() == UID_N);
-
-    grid::unstructured::FESOM grid3(UID_N);
-
-    const std::string expected_spec_str = R"({"grid":")" + GRID_N + R"("})";
-    Log::info() << "'" << static_cast<const Grid&>(grid3).spec_str() << "'" << std::endl;
-
-    EXPECT(grid3.uid() == UID_N);
-    EXPECT(grid3.calculate_uid() == UID_N);
-    EXPECT(static_cast<const Grid&>(grid3).spec_str() == expected_spec_str);
-
-    EXPECT(grid1->spec_str() == grid2->spec_str());
-
-    std::unique_ptr<const Grid> grid4(GridFactory::build(spec::Custom({{"grid", GRID_N}})));
-    EXPECT(grid4->spec_str() == expected_spec_str);
-
-    std::unique_ptr<const Grid> grid5(GridFactory::build(spec::Custom({{"uid", UID_N}})));
-
-    EXPECT(*grid4 == *grid5);
+    EXPECT(*grid1 == *grid2);
+    EXPECT(*grid1 == *grid3);
+    EXPECT(*grid1 == grid4);
 }
 
 

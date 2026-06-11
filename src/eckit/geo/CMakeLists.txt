@@ -51,6 +51,8 @@ list(APPEND eckit_geo_srcs
     cache/DiskCache.h
     cache/Download.cc
     cache/Download.h
+    cache/Grid.cc
+    cache/Grid.h
     cache/LatitudeLongitude.cc
     cache/LatitudeLongitude.h
     cache/MemoryCache.cc
@@ -92,8 +94,6 @@ list(APPEND eckit_geo_srcs
     grid/unstructured/FESOM.h
     grid/unstructured/ICON.cc
     grid/unstructured/ICON.h
-    grid/unstructured/UnstructuredLL.cc
-    grid/unstructured/UnstructuredLL.h
     iterator/Reduced.cc
     iterator/Reduced.h
     iterator/Regular.cc

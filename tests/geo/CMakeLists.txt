@@ -1,3 +1,6 @@
+set(_cache_path "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
 foreach(_test
         area_boundingbox
         area_polygon
@@ -17,6 +20,7 @@ foreach(_test
         grid_regular_ll
         grid_reorder
         grid_to_points
+        grid_unstructured_ll
         gridspec
         integration
         iterator
@@ -40,13 +44,8 @@ foreach(_test
         TARGET      eckit_test_geo_${_test}
         SOURCES     ${_test}.cc
         LIBS        eckit_geo
-        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" )
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
 endforeach()
-
-set_tests_properties(
-    eckit_test_geo_search
-    PROPERTIES
-    ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache" )
 
 if(eckit_HAVE_ZIP)
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")

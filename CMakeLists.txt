@@ -213,7 +213,7 @@ if( eckit_HAVE_GEO_AREA_SHAPEFILE )
 endif()
 
 # (keep paths as strings to avoid normalisation/expansion)
-set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" CACHE STRING "eckit::geo cache path default" )
+set( eckit_GEO_CACHE_PATH "~/.cache/eckit/geo" CACHE STRING "eckit::geo cache path default" )
 set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
 
 ### LAPACK
@@ -308,7 +308,7 @@ ecbuild_add_option( FEATURE DOCS
 ecbuild_add_option( FEATURE PYTHON
                     DEFAULT OFF
                     DESCRIPTION "Build Python bindings (Cython)"
-                    REQUIRED_PACKAGES "Python3 COMPONENTS Interpreter Development" )
+                    REQUIRED_PACKAGES "Python3 COMPONENTS Interpreter Development.Module" )
 
 ### c math library, needed when including "math.h"
 

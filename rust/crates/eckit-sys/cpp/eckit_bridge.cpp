@@ -377,73 +377,6 @@ std::unique_ptr<ReaderWrapper> new_reader(DataHandleWrapper& handle) {
     return std::make_unique<ReaderWrapper>(handle);
 }
 
-// ==================== Library registration ====================
-
-RustLibrary::RustLibrary(rust::Box<LibraryBox> lib) :
-    eckit::system::Library(std::string(library_name(*lib))), rust_(std::move(lib)) {}
-
-std::string RustLibrary::version() const {
-    return std::string(library_version(*rust_));
-}
-
-std::string RustLibrary::gitsha1(unsigned int count) const {
-    return std::string(library_git_sha1(*rust_, count));
-}
-
-std::string RustLibrary::home() const {
-    if (library_home_is_set(*rust_)) {
-        return std::string(library_home(*rust_));
-    }
-    return Library::home();
-}
-
-std::string RustLibrary::libraryHome() const {
-    if (library_library_home_is_set(*rust_)) {
-        return std::string(library_library_home(*rust_));
-    }
-    return Library::libraryHome();
-}
-
-std::string RustLibrary::prefixDirectory() const {
-    if (library_prefix_directory_is_set(*rust_)) {
-        return std::string(library_prefix_directory(*rust_));
-    }
-    return Library::prefixDirectory();
-}
-
-std::string RustLibrary::expandPath(const std::string& path) const {
-    rust::Str rpath(path.data(), path.size());
-    if (library_expand_path_is_set(*rust_, rpath)) {
-        return std::string(library_expand_path(*rust_, rpath));
-    }
-    return Library::expandPath(path);
-}
-
-bool RustLibrary::debug() const {
-    if (library_debug_is_set(*rust_)) {
-        return library_debug(*rust_);
-    }
-    return Library::debug();
-}
-
-const void* RustLibrary::addr() const {
-    // Return a pointer inside the code segment so dladdr can resolve the
-    // binary path. `this` is heap-allocated and dladdr cannot resolve it.
-    return reinterpret_cast<const void*>(&register_library);
-}
-
-void register_library(rust::Box<LibraryBox> lib) {
-    // Heap-allocate and leak — Library registers itself with LibraryManager
-    // in its constructor and must live for the process lifetime.
-    new RustLibrary(std::move(lib));
-}
-
-std::unique_ptr<ConfigWrapper> library_configuration(rust::Str name) {
-    auto& lib       = eckit::system::LibraryManager::lookup(std::string(name));
-    const auto& cfg = lib.configuration();
-    return std::make_unique<ConfigWrapper>(eckit::LocalConfiguration(cfg));
-}
-
 // ==================== Stream (base class) ====================
 
 void StreamWrapper::write_char(uint8_t c) {
@@ -543,17 +476,6 @@ std::unique_ptr<DataHandleWrapper> TcpStreamWrapper::into_data_handle() {
 
 std::unique_ptr<DataHandleWrapper> StreamWrapper::into_data_handle() {
     throw eckit::NotImplemented("StreamWrapper::into_data_handle is only supported on TCP streams", Here());
-}
-
-rust::Vec<LibraryVersion> library_versions() {
-    rust::Vec<LibraryVersion> out;
-    constexpr size_t sha1len = 8;
-    for (const auto& name : eckit::system::LibraryManager::list()) {
-        const auto& lib = eckit::system::LibraryManager::lookup(name);
-        out.push_back(LibraryVersion{rust::String(lib.name()), rust::String(lib.version()),
-                                     rust::String(lib.gitsha1(sha1len)), rust::String(lib.libraryHome())});
-    }
-    return out;
 }
 
 // ==================== MemoryWriteStreamWrapper ====================

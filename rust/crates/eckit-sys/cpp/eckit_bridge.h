@@ -238,48 +238,6 @@ struct ReaderBox;
 /// `ReaderBox` is dropped, releasing the underlying `Read` source.
 std::unique_ptr<DataHandleWrapper> data_handle_from_reader(rust::Box<ReaderBox> reader);
 
-// ==================== Library registration ====================
-
-// Forward declaration — defined on the Rust side, cxx generates the type.
-struct LibraryBox;
-
-/// eckit::system::Library subclass that delegates to a Rust `dyn Library`.
-class RustLibrary : public eckit::system::Library {
-    rust::Box<LibraryBox> rust_;
-
-public:
-
-    explicit RustLibrary(rust::Box<LibraryBox> lib);
-
-    std::string version() const override;
-    std::string gitsha1(unsigned int count) const override;
-
-protected:
-
-    std::string home() const override;
-    std::string libraryHome() const override;
-    std::string prefixDirectory() const override;
-    std::string expandPath(const std::string& path) const override;
-    bool debug() const override;
-    const void* addr() const override;
-};
-
-/// Register a Rust library with eckit's LibraryManager.
-void register_library(rust::Box<LibraryBox> lib);
-
-/// Get configuration for a registered library by name.
-std::unique_ptr<ConfigWrapper> library_configuration(rust::Str name);
-
-// `LibraryVersion` is a shared struct defined by cxx in this same namespace
-// (see the bridge in lib.rs). Forward-declare it here so the function
-// signature below compiles when this header is included before the cxx
-// definition.
-struct LibraryVersion;
-
-/// Snapshot of every ECMWF library currently registered with
-/// `eckit::system::LibraryManager`. Mirrors C++ `Environment::library_versions`.
-rust::Vec<LibraryVersion> library_versions();
-
 // ==================== Stream ====================
 
 /// Base wrapper for `eckit::Stream`. Subclasses own the transport-specific

@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/eckit-sys"]
+members = ["crates/eckit-sys", "crates/eckit"]
 
 [workspace.package]
 edition = "2024"
@@ -14,6 +14,7 @@ categories = ["science"]
 [workspace.dependencies]
 # Internal
 eckit-sys = { path = "crates/eckit-sys" }
+eckit = { path = "crates/eckit" }
 
 # Build tools
 bindman = { git = "ssh://git@github.com/ecmwf/bindman.git" }

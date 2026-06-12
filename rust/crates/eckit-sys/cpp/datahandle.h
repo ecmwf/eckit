@@ -10,6 +10,9 @@
 
 namespace eckit_bridge {
 
+// Forward declaration — defined on the Rust side, cxx generates the type.
+struct ReaderBox;
+
 /// Wraps `eckit::DataHandle*` for Rust FFI. Takes ownership.
 class DataHandleWrapper {
     std::unique_ptr<eckit::DataHandle> handle_;
@@ -38,34 +41,34 @@ public:
 
     /// Release ownership — caller takes responsibility.
     eckit::DataHandle* release() { return handle_.release(); }
+
+    // ============== Factories ==============
+
+    /// Open a file as a DataHandle for reading.
+    static std::unique_ptr<DataHandleWrapper> from_file(rust::Str path);
+
+    /// Open a byte range of a file as a DataHandle.
+    static std::unique_ptr<DataHandleWrapper> from_part(rust::Str path, int64_t offset, int64_t length);
+
+    /// Create a DataHandle from an in-memory buffer (copies the data).
+    static std::unique_ptr<DataHandleWrapper> from_buffer(rust::Slice<const uint8_t> data);
+
+    /// Create a MultiHandle from multiple file paths.
+    static std::unique_ptr<DataHandleWrapper> from_multi(rust::Slice<const rust::String> paths);
+
+    /// Create a TeeHandle from multiple file paths — writes all targets in
+    /// parallel.
+    static std::unique_ptr<DataHandleWrapper> tee(rust::Slice<const rust::String> paths);
+
+    /// Create a DataHandle that forwards `read()` calls to a Rust
+    /// `std::io::Read` source wrapped in a `ReaderBox`. Used to stream bytes
+    /// from Rust into any C++ API that consumes an `eckit::DataHandle&`
+    /// (e.g. fdb5 archive, the streaming retrieve API) without staging
+    /// through a temp file or buffer.
+    ///
+    /// The returned handle is owned by the Rust side; on drop, the contained
+    /// `ReaderBox` is dropped, releasing the underlying `Read` source.
+    static std::unique_ptr<DataHandleWrapper> from_reader(rust::Box<ReaderBox> reader);
 };
-
-/// Open a file as a DataHandle for reading.
-std::unique_ptr<DataHandleWrapper> data_handle_from_file(rust::Str path);
-
-/// Open a byte range of a file as a DataHandle.
-std::unique_ptr<DataHandleWrapper> data_handle_from_part(rust::Str path, int64_t offset, int64_t length);
-
-/// Create a DataHandle from an in-memory buffer (copies the data).
-std::unique_ptr<DataHandleWrapper> data_handle_from_buffer(rust::Slice<const uint8_t> data);
-
-/// Create a MultiHandle from multiple file paths.
-std::unique_ptr<DataHandleWrapper> data_handle_from_multi(rust::Slice<const rust::String> paths);
-
-/// Create a TeeHandle from multiple file paths — writes all targets in
-/// parallel.
-std::unique_ptr<DataHandleWrapper> data_handle_tee(rust::Slice<const rust::String> paths);
-
-// Forward declaration — defined on the Rust side, cxx generates the type.
-struct ReaderBox;
-
-/// Create a DataHandle that forwards `read()` calls to a Rust `std::io::Read`
-/// source wrapped in a `ReaderBox`. Used to stream bytes from Rust into any
-/// C++ API that consumes an `eckit::DataHandle&` (e.g. fdb5 archive, the
-/// streaming retrieve API) without staging through a temp file or buffer.
-///
-/// The returned handle is owned by the Rust side; on drop, the contained
-/// `ReaderBox` is dropped, releasing the underlying `Read` source.
-std::unique_ptr<DataHandleWrapper> data_handle_from_reader(rust::Box<ReaderBox> reader);
 
 }  // namespace eckit_bridge

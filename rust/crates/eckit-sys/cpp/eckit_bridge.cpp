@@ -248,21 +248,21 @@ int64_t DataHandleWrapper::save_into(DataHandleWrapper& target) {
     return static_cast<int64_t>(handle_->saveInto(*target.handle_));
 }
 
-std::unique_ptr<DataHandleWrapper> data_handle_from_file(rust::Str path) {
+std::unique_ptr<DataHandleWrapper> DataHandleWrapper::from_file(rust::Str path) {
     auto p = eckit::PathName{std::string(path)};
     return std::make_unique<DataHandleWrapper>(p.fileHandle());
 }
 
-std::unique_ptr<DataHandleWrapper> data_handle_from_part(rust::Str path, int64_t offset, int64_t length) {
+std::unique_ptr<DataHandleWrapper> DataHandleWrapper::from_part(rust::Str path, int64_t offset, int64_t length) {
     return std::make_unique<DataHandleWrapper>(
         new eckit::PartFileHandle(eckit::PathName{std::string(path)}, eckit::Offset(offset), eckit::Length(length)));
 }
 
-std::unique_ptr<DataHandleWrapper> data_handle_from_buffer(rust::Slice<const uint8_t> data) {
+std::unique_ptr<DataHandleWrapper> DataHandleWrapper::from_buffer(rust::Slice<const uint8_t> data) {
     return std::make_unique<DataHandleWrapper>(new eckit::MemoryHandle(data.data(), data.size()));
 }
 
-std::unique_ptr<DataHandleWrapper> data_handle_from_multi(rust::Slice<const rust::String> paths) {
+std::unique_ptr<DataHandleWrapper> DataHandleWrapper::from_multi(rust::Slice<const rust::String> paths) {
     auto* mh = new eckit::MultiHandle();
     for (const auto& p : paths) {
         (*mh) += eckit::PathName(std::string(p)).fileHandle();
@@ -270,7 +270,7 @@ std::unique_ptr<DataHandleWrapper> data_handle_from_multi(rust::Slice<const rust
     return std::make_unique<DataHandleWrapper>(mh);
 }
 
-std::unique_ptr<DataHandleWrapper> data_handle_tee(rust::Slice<const rust::String> paths) {
+std::unique_ptr<DataHandleWrapper> DataHandleWrapper::tee(rust::Slice<const rust::String> paths) {
     std::vector<eckit::DataHandle*> handles;
     handles.reserve(paths.size());
     for (const auto& p : paths) {
@@ -336,7 +336,7 @@ private:
 
 }  // namespace
 
-std::unique_ptr<DataHandleWrapper> data_handle_from_reader(rust::Box<ReaderBox> reader) {
+std::unique_ptr<DataHandleWrapper> DataHandleWrapper::from_reader(rust::Box<ReaderBox> reader) {
     return std::make_unique<DataHandleWrapper>(new RustReaderHandle(std::move(reader)));
 }
 

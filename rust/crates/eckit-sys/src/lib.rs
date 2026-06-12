@@ -114,27 +114,29 @@ mod ffi {
         ) -> Result<i64>;
 
         /// Open a file as a DataHandle for reading.
-        fn data_handle_from_file(path: &str) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_file(path: &str) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Open a byte range of a file as a DataHandle.
-        fn data_handle_from_part(
-            path: &str,
-            offset: i64,
-            length: i64,
-        ) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_part(path: &str, offset: i64, length: i64) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Create a DataHandle from an in-memory buffer (copies the data).
-        fn data_handle_from_buffer(data: &[u8]) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_buffer(data: &[u8]) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Create a MultiHandle from multiple file paths.
-        fn data_handle_from_multi(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_multi(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Create a TeeHandle from multiple file paths — writes all targets in parallel.
-        fn data_handle_tee(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn tee(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Create a DataHandle that forwards `read()` calls to a Rust
         /// `std::io::Read` source wrapped in a [`ReaderBox`].
-        fn data_handle_from_reader(reader: Box<ReaderBox>) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_reader(reader: Box<ReaderBox>) -> Result<UniquePtr<DataHandleWrapper>>;
 
         // ==================== Message + Reader ====================
 

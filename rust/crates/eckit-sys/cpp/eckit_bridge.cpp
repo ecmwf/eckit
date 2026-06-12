@@ -84,9 +84,8 @@ static void install_per_library_targets() {
 
 void init() {
     if (!eckit::Main::ready()) {
-        static const char* argv[] = {"eckit-rs", nullptr};
-        static auto* main         = new RustMain(1, const_cast<char**>(argv));
-        (void)main;
+        static const char* argv[]                = {"eckit-rs", nullptr};
+        [[maybe_unused]] static auto* main_inst_ = new RustMain(1, const_cast<char**>(argv));
         install_per_library_targets();
     }
 }

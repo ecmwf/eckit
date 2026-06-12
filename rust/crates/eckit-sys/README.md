@@ -6,7 +6,9 @@ library.
 This crate provides raw FFI bindings using [cxx](https://cxx.rs/). For a safe,
 ergonomic API, use the higher-level `eckit` crate (forthcoming).
 
-## Features
+## Cargo build features
+
+These flags control what the underlying C++ eckit library is compiled with.
 
 ### Build strategy (mutually exclusive)
 

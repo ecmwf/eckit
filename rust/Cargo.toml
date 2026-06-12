@@ -16,9 +16,9 @@ categories = ["science"]
 eckit-sys = { path = "crates/eckit-sys" }
 
 # Build tools
-bindman = { git = "ssh://git@github.com/ecmwf/bindman.git" }
-bindman-build = { git = "ssh://git@github.com/ecmwf/bindman.git" }
-bindman-utils = { git = "ssh://git@github.com/ecmwf/bindman.git" }
+bindman = { git = "ssh://git@github.com/ecmwf/bindman.git", rev = "47edf68" }
+bindman-build = { git = "ssh://git@github.com/ecmwf/bindman.git", rev = "47edf68" }
+bindman-utils = { git = "ssh://git@github.com/ecmwf/bindman.git", rev = "47edf68" }
 
 # External
 cxx = "1.0"

@@ -42,6 +42,11 @@ fn build_cxx_bridge(include: &std::path::Path) {
 
     println!("cargo:rerun-if-changed=cpp/eckit_bridge.h");
     println!("cargo:rerun-if-changed=cpp/eckit_bridge.cpp");
+    println!("cargo:rerun-if-changed=cpp/log.h");
+    println!("cargo:rerun-if-changed=cpp/config.h");
+    println!("cargo:rerun-if-changed=cpp/datahandle.h");
+    println!("cargo:rerun-if-changed=cpp/message.h");
+    println!("cargo:rerun-if-changed=cpp/stream.h");
 
     cxx_build::bridge("src/lib.rs")
         .file(crate_dir.join("cpp/eckit_bridge.cpp"))

@@ -7,6 +7,21 @@
 #include "eckit-sys/src/lib.rs.h"  // cxx-generated — provides LogLevel values
 #include "eckit_bridge.h"
 
+// Implementation-only eckit headers — used by the .cc bodies below but not
+// part of any public bridge declaration, so they stay out of the per-topic
+// sub-headers to keep those minimal.
+#include "eckit/config/YAMLConfiguration.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/MemoryHandle.h"
+#include "eckit/io/MultiHandle.h"
+#include "eckit/io/PartFileHandle.h"
+#include "eckit/io/TCPSocketHandle.h"
+#include "eckit/io/TeeHandle.h"
+#include "eckit/net/TCPClient.h"
+#include "eckit/system/Library.h"
+#include "eckit/system/LibraryManager.h"
+
 namespace eckit_bridge {
 
 // ==================== Logging ====================

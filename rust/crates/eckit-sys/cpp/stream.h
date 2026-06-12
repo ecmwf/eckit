@@ -18,13 +18,9 @@
 namespace eckit_bridge {
 
 /// Base wrapper for `eckit::Stream`. Subclasses own the transport-specific
-/// resources (socket, buffer, etc.). All read/write methods delegate to the
-/// `eckit::Stream*` set by the subclass.
+/// resources (socket, buffer, etc.) and expose them via `stream()`; all
+/// read/write methods in this base dispatch through that virtual accessor.
 class StreamWrapper {
-protected:
-
-    eckit::Stream* stream_ = nullptr;
-
 public:
 
     virtual ~StreamWrapper() = default;
@@ -54,10 +50,6 @@ public:
     // Raw byte read (for data transfer after protocol handshake)
     virtual int64_t read_bytes(rust::Slice<uint8_t> buf);
 
-    /// Access underlying stream for other bridge code.
-    eckit::Stream& inner() { return *stream_; }
-    const eckit::Stream& inner() const { return *stream_; }
-
     /// Number of bytes written so far.
     int64_t bytes_written() const;
 
@@ -74,6 +66,10 @@ public:
 protected:
 
     StreamWrapper() = default;
+
+    /// Subclass-supplied access to the owned `eckit::Stream`. Called by every
+    /// read/write method in this base.
+    virtual eckit::Stream& stream() = 0;
 };
 
 /// TCP stream — connects to host:port via `eckit::net::TCPClient`.
@@ -86,6 +82,10 @@ public:
     TcpStreamWrapper(const std::string& host, int port);
     int64_t read_bytes(rust::Slice<uint8_t> buf) override;
     std::unique_ptr<DataHandleWrapper> into_data_handle() override;
+
+protected:
+
+    eckit::Stream& stream() override { return tcp_; }
 };
 
 /// Resizable memory stream — for writing, buffer grows as needed.
@@ -97,6 +97,10 @@ public:
 
     MemoryWriteStreamWrapper();
     rust::Slice<const uint8_t> buffer() override;
+
+protected:
+
+    eckit::Stream& stream() override { return mem_; }
 };
 
 /// Fixed memory stream — for reading from existing data.
@@ -107,6 +111,10 @@ class MemoryReadStreamWrapper : public StreamWrapper {
 public:
 
     MemoryReadStreamWrapper(rust::Slice<const uint8_t> data);
+
+protected:
+
+    eckit::Stream& stream() override { return mem_; }
 };
 
 // Factory functions

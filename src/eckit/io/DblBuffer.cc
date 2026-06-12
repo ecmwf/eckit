@@ -9,6 +9,7 @@
  */
 
 
+#include "eckit/config/Resource.h"
 #include "eckit/io/DblBuffer.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/Buffer.h"
@@ -99,6 +100,9 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
     Length total  = estimate;
     Length copied = 0;
 
+    static Resource<long> maxRetriesResource("dblBufferMaxRetries", 5);
+    long maxRetries = maxRetriesResource;
+
     bool more = true;
     while (more) {
         more = false;
@@ -115,8 +119,14 @@ Length DblBuffer::copy(DataHandle& in, DataHandle& out) {
             }
         }
         catch (RestartTransfer& retry) {
+            if (maxRetries-- <= 0) {
+                Log::error() << "DblBuffer::copy() failed after maximum retries" << std::endl;
+                throw DblBufferError("Maximum retry attempts reached");
+            }
+
             Log::warning() << "Retrying transfer from " << retry.from() << " (" << Bytes(retry.from()) << ")"
                            << std::endl;
+            watcher_.restartFrom(retry.from());
             in.restartReadFrom(retry.from());
             out.restartWriteFrom(retry.from());
             estimate = total - retry.from();

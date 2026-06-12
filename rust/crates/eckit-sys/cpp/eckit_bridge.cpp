@@ -57,19 +57,19 @@ void RustLogTarget::flush() {
 RustMain::RustMain(int argc, char** argv) : Main(argc, argv) {}
 
 eckit::LogTarget* RustMain::createInfoLogTarget() const {
-    return new RustLogTarget(LogLevel::Info, "eckit");
+    return new RustLogTarget(LogLevel::Info);
 }
 eckit::LogTarget* RustMain::createWarningLogTarget() const {
-    return new RustLogTarget(LogLevel::Warn, "eckit");
+    return new RustLogTarget(LogLevel::Warn);
 }
 eckit::LogTarget* RustMain::createErrorLogTarget() const {
-    return new RustLogTarget(LogLevel::Error, "eckit");
+    return new RustLogTarget(LogLevel::Error);
 }
 eckit::LogTarget* RustMain::createDebugLogTarget() const {
-    return new RustLogTarget(LogLevel::Debug, "eckit");
+    return new RustLogTarget(LogLevel::Debug);
 }
 eckit::LogTarget* RustMain::createMetricsLogTarget() const {
-    return new RustLogTarget(LogLevel::Trace, "eckit");
+    return new RustLogTarget(LogLevel::Trace);
 }
 
 /// Install a per-library `RustLogTarget` on every registered library's debug

@@ -23,6 +23,11 @@ void rust_log(LogLevel level, rust::Str target, rust::Str msg) noexcept;
 class RustLogTarget : public eckit::LogTarget {
 public:
 
+    /// No target — the Rust side falls back to the `log` crate's default
+    /// (`module_path!()` of the bridge, i.e. `eckit_sys`).
+    explicit RustLogTarget(LogLevel level) : level_(level) {}
+
+    /// Tagged target (e.g. a registered library name).
     RustLogTarget(LogLevel level, std::string target) : level_(level), target_(std::move(target)) {}
 
     void write(const char* start, const char* end) override;

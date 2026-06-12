@@ -294,13 +294,22 @@ fn invoke_reader_seek(reader: &mut ReaderBox, offset: i64) -> i64 {
 
 /// Called from C++ `RustLogTarget::write()` — routes to Rust `log` crate.
 fn rust_log(level: ffi::LogLevel, target: &str, msg: &str) {
-    match level {
-        ffi::LogLevel::Error => log::error!(target: target, "{msg}"),
-        ffi::LogLevel::Warn => log::warn!(target: target, "{msg}"),
-        ffi::LogLevel::Info => log::info!(target: target, "{msg}"),
-        ffi::LogLevel::Debug => log::debug!(target: target, "{msg}"),
-        // Trace + wildcard for cxx non-exhaustive enum
-        _ => log::trace!(target: target, "{msg}"),
+    if target.is_empty() {
+        match level {
+            ffi::LogLevel::Error => log::error!("{msg}"),
+            ffi::LogLevel::Warn => log::warn!("{msg}"),
+            ffi::LogLevel::Info => log::info!("{msg}"),
+            ffi::LogLevel::Debug => log::debug!("{msg}"),
+            _ => log::trace!("{msg}"),
+        }
+    } else {
+        match level {
+            ffi::LogLevel::Error => log::error!(target: target, "{msg}"),
+            ffi::LogLevel::Warn => log::warn!(target: target, "{msg}"),
+            ffi::LogLevel::Info => log::info!(target: target, "{msg}"),
+            ffi::LogLevel::Debug => log::debug!(target: target, "{msg}"),
+            _ => log::trace!(target: target, "{msg}"),
+        }
     }
 }
 

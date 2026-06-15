@@ -10,7 +10,7 @@
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
 
-#include <cstdlib>  // getprogname 
+#include <cstdlib>  // getprogname
 
 namespace eckit_bridge {
 

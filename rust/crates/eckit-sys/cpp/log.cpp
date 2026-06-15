@@ -10,6 +10,8 @@
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
 
+#include <cstdlib>  // getprogname 
+
 namespace eckit_bridge {
 
 void RustLogTarget::write(const char* start, const char* end) {
@@ -40,22 +42,22 @@ void RustLogTarget::flush() {
     }
 }
 
-RustMain::RustMain(int argc, char** argv) : Main(argc, argv) {}
+RustMain::RustMain(int argc, char** argv) : Main(argc, argv), app_name_(displayName()) {}
 
 eckit::LogTarget* RustMain::createInfoLogTarget() const {
-    return new RustLogTarget(LogLevel::Info);
+    return new RustLogTarget(LogLevel::Info, app_name_);
 }
 eckit::LogTarget* RustMain::createWarningLogTarget() const {
-    return new RustLogTarget(LogLevel::Warn);
+    return new RustLogTarget(LogLevel::Warn, app_name_);
 }
 eckit::LogTarget* RustMain::createErrorLogTarget() const {
-    return new RustLogTarget(LogLevel::Error);
+    return new RustLogTarget(LogLevel::Error, app_name_);
 }
 eckit::LogTarget* RustMain::createDebugLogTarget() const {
-    return new RustLogTarget(LogLevel::Debug);
+    return new RustLogTarget(LogLevel::Debug, app_name_);
 }
 eckit::LogTarget* RustMain::createMetricsLogTarget() const {
-    return new RustLogTarget(LogLevel::Trace);
+    return new RustLogTarget(LogLevel::Trace, app_name_);
 }
 
 /// Install a per-library `RustLogTarget` on every registered library's debug
@@ -70,7 +72,8 @@ static void install_per_library_targets() {
 
 void init() {
     if (!eckit::Main::ready()) {
-        static const char* argv[]                = {"eckit-rs", nullptr};
+        const char* progname                     = getprogname();
+        static const char* argv[]                = {progname ? progname : "eckit-rs", nullptr};
         [[maybe_unused]] static auto* main_inst_ = new RustMain(1, const_cast<char**>(argv));
         install_per_library_targets();
     }

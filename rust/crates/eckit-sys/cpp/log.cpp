@@ -10,9 +10,23 @@
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
 
+#ifdef __APPLE__
 #include <cstdlib>  // getprogname
+#elif defined(__linux__)
+extern "C" char* program_invocation_short_name;
+#endif
 
 namespace eckit_bridge {
+
+static const char* progname() {
+#ifdef __APPLE__
+    return getprogname();
+#elif defined(__linux__)
+    return program_invocation_short_name;
+#else
+    return nullptr;
+#endif
+}
 
 void RustLogTarget::write(const char* start, const char* end) {
     buffer_.append(start, end);
@@ -72,8 +86,8 @@ static void install_per_library_targets() {
 
 void init() {
     if (!eckit::Main::ready()) {
-        const char* progname                     = getprogname();
-        static const char* argv[]                = {progname ? progname : "eckit-rs", nullptr};
+        const char* name                         = progname();
+        static const char* argv[]                = {name ? name : "eckit-rs", nullptr};
         [[maybe_unused]] static auto* main_inst_ = new RustMain(1, const_cast<char**>(argv));
         install_per_library_targets();
     }

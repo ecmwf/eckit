@@ -216,7 +216,7 @@ static DiskArray* clusterDisks = nullptr;
 static pthread_once_t once     = PTHREAD_ONCE_INIT;
 
 static void diskarray_init() {
-    LocalPathName path("~/etc/cluster/disks");  // avoid recursion...
+    LocalPathName path(LocalPathName("~/run").exists() ? "~/run/cluster/disks" : "~/etc/cluster/disks");  // avoid recursion...
 
     size_t disksArraySize = Resource<size_t>("disksArraySize", 10240);
 

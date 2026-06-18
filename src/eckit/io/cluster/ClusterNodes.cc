@@ -16,6 +16,7 @@
 #include "eckit/config/EtcTable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
+#include "eckit/filesystem/LocalPathName.h"
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/JSON.h"
@@ -242,7 +243,7 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::set<std::string> offsiteNodes_;
 
 static void init() {
-    nodeArray = new NodeArray("~/etc/cluster/nodes", 1024);
+    nodeArray = new NodeArray(LocalPathName("~/run").exists() ? "~/run/cluster/nodes" : "~/etc/cluster/nodes", 1024);
 
     EtcKeyTable config("cluster/offsite", 1);
     if (config.exists()) {

@@ -83,7 +83,10 @@ static pthread_once_t once          = PTHREAD_ONCE_INIT;
 
 static void taskarray_init(void) {
 
-    LocalPathName monitorPath(Resource<std::string>("monitorPath", "~/etc/monitor"));
+    LocalPathName monitorPath(Resource<std::string>("monitorPath", ""));
+    if (monitorPath == "") {
+        monitorPath = LocalPathName("~/run").exists() ? "~/run/monitor" : "~/etc/monitor";
+    }
     size_t size = Resource<size_t>("monitorSize", 1000);
 
     std::string monitorArrayType = Resource<std::string>("monitorArrayType", "MemoryMapped");

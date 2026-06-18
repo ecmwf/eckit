@@ -41,7 +41,8 @@ jobs:
     with:
       manifest-path: rust/Cargo.toml
       features: --features vendored
-    secrets: inherit
+    secrets:
+      private_repos_token: ${{ secrets.GH_REPO_READ_TOKEN }}
 
   # Run CI of private downstream packages on self-hosted runners
   private-downstream-ci:

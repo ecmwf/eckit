@@ -18,7 +18,7 @@
 namespace eckit_bridge {
 
 /// Base wrapper for `eckit::Stream`. Subclasses own the transport-specific
-/// resources (socket, buffer, etc.) and expose them via `stream()`; all
+/// resources (socket, buffer, etc.) and expose them via `inner()`; all
 /// read/write methods in this base dispatch through that virtual accessor.
 class StreamWrapper {
 public:
@@ -63,13 +63,14 @@ public:
     /// used; the returned `DataHandleWrapper` owns the connection.
     virtual std::unique_ptr<DataHandleWrapper> into_data_handle();
 
+    /// Subclass-supplied access to the owned `eckit::Stream`. Called by every
+    /// read/write method in this base, and by downstream bridge code that
+    /// needs to plumb the raw stream into other eckit APIs.
+    virtual eckit::Stream& inner() = 0;
+
 protected:
 
     StreamWrapper() = default;
-
-    /// Subclass-supplied access to the owned `eckit::Stream`. Called by every
-    /// read/write method in this base.
-    virtual eckit::Stream& stream() = 0;
 };
 
 /// TCP stream — connects to host:port via `eckit::net::TCPClient`.
@@ -85,7 +86,7 @@ public:
 
 protected:
 
-    eckit::Stream& stream() override { return tcp_; }
+    eckit::Stream& inner() override { return tcp_; }
 };
 
 /// Resizable memory stream — for writing, buffer grows as needed.
@@ -100,7 +101,7 @@ public:
 
 protected:
 
-    eckit::Stream& stream() override { return mem_; }
+    eckit::Stream& inner() override { return mem_; }
 };
 
 /// Fixed memory stream — for reading from existing data.
@@ -114,7 +115,7 @@ public:
 
 protected:
 
-    eckit::Stream& stream() override { return mem_; }
+    eckit::Stream& inner() override { return mem_; }
 };
 
 // Factory functions

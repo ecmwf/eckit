@@ -14,63 +14,63 @@ namespace eckit_bridge {
 // ==================== Stream (base class) ====================
 
 void StreamWrapper::write_char(uint8_t c) {
-    stream() << static_cast<char>(c);
+    inner() << static_cast<char>(c);
 }
 void StreamWrapper::write_bool(bool v) {
-    stream() << v;
+    inner() << v;
 }
 void StreamWrapper::write_int(int32_t v) {
-    stream() << v;
+    inner() << v;
 }
 void StreamWrapper::write_long(int64_t v) {
-    stream() << static_cast<long long>(v);
+    inner() << static_cast<long long>(v);
 }
 void StreamWrapper::write_unsigned_long(uint64_t v) {
-    stream() << static_cast<unsigned long long>(v);
+    inner() << static_cast<unsigned long long>(v);
 }
 void StreamWrapper::write_double(double v) {
-    stream() << v;
+    inner() << v;
 }
 void StreamWrapper::write_string(rust::Str v) {
-    stream() << std::string(v.data(), v.size());
+    inner() << std::string(v.data(), v.size());
 }
 void StreamWrapper::write_blob(rust::Slice<const uint8_t> data) {
-    stream().writeBlob(data.data(), data.size());
+    inner().writeBlob(data.data(), data.size());
 }
 
 uint8_t StreamWrapper::read_char() {
     char c{};
-    stream() >> c;
+    inner() >> c;
     return static_cast<uint8_t>(c);
 }
 bool StreamWrapper::read_bool() {
     bool v{};
-    stream() >> v;
+    inner() >> v;
     return v;
 }
 int32_t StreamWrapper::read_int() {
     int v{};
-    stream() >> v;
+    inner() >> v;
     return v;
 }
 int64_t StreamWrapper::read_long() {
     long long v{};
-    stream() >> v;
+    inner() >> v;
     return static_cast<int64_t>(v);
 }
 uint64_t StreamWrapper::read_unsigned_long() {
     unsigned long long v{};
-    stream() >> v;
+    inner() >> v;
     return static_cast<uint64_t>(v);
 }
 double StreamWrapper::read_double() {
     double v{};
-    stream() >> v;
+    inner() >> v;
     return v;
 }
 rust::String StreamWrapper::read_string() {
     std::string v;
-    stream() >> v;
+    inner() >> v;
     return rust::String(v);
 }
 
@@ -83,7 +83,7 @@ rust::Slice<const uint8_t> StreamWrapper::buffer() {
 }
 
 int64_t StreamWrapper::bytes_written() const {
-    return const_cast<StreamWrapper*>(this)->stream().bytesWritten();
+    return const_cast<StreamWrapper*>(this)->inner().bytesWritten();
 }
 
 std::unique_ptr<DataHandleWrapper> StreamWrapper::into_data_handle() {

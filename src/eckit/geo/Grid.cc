@@ -56,19 +56,24 @@ Grid::Grid(Projection* proj) :
 
 const spec::Spec& Grid::catalog() const {
     if (!catalog_) {
+        auto get_name = [](const spec::Spec& spec) {
+            std::string grid;
+            return spec.get_string("name", spec.get("grid", grid) && is_uid(grid) ? "" : grid);
+        };
+
         if (GridSpecByUID::instance().exists(uid())) {
             catalog_.reset(GridSpecByUID::instance().get(uid()).spec());
         }
-        else if (std::string grid(spec().get_string("grid")); GridSpecByName::instance().matches(grid)) {
-            catalog_.reset(GridSpecByName::instance().match(grid).spec(grid));
+        else if (std::string name = get_name(spec()); GridSpecByName::instance().matches(name)) {
+            catalog_.reset(GridSpecByName::instance().match(name).spec(name));
         }
         else {
-            static const spec::Custom empty;
-            catalog_.reset(&empty);
+            catalog_.reset(new spec::Custom);
         }
+
+        ASSERT(catalog_);
     }
 
-    ASSERT(catalog_);
     return *catalog_;
 }
 
@@ -317,7 +322,7 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
         if (lats != lons) {
             throw exception::SpecError("Grid: both 'latitudes' and 'longitudes' are required", Here());
         }
-        back->set("type", "unstructured");
+        back->set("type", "unstructured_ll");
     }
 
 

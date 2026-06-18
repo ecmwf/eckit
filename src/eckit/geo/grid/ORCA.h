@@ -77,7 +77,7 @@ private:
 
     // -- Methods
 
-    const cache::LatitudeLongitude& record() const;
+    [[nodiscard]] const cache::LatitudeLongitude& record() const;
 
     // -- Members
 

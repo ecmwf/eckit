@@ -4,6 +4,7 @@ grid_names:
   - ORCA2_F: &ORCA2_F
     type: ORCA
     name: ORCA2
+    intgrid: O42
     arrangement: F
     shape: [182, 149]
     uid: "174487fbace54b00d959d971e88b71e7"
@@ -12,6 +13,7 @@ grid_names:
   - ORCA2_T: &ORCA2_T
     type: ORCA
     name: ORCA2
+    intgrid: O42
     arrangement: T
     shape: [182, 149]
     uid: "d5bde4f52ff3a9bea5629cd9ac514410"
@@ -20,6 +22,7 @@ grid_names:
   - ORCA2_U: &ORCA2_U
     type: ORCA
     name: ORCA2
+    intgrid: O42
     arrangement: U
     shape: [182, 149]
     uid: "857f7affa3a381e3882d38d321384e49"
@@ -28,6 +31,7 @@ grid_names:
   - ORCA2_V: &ORCA2_V
     type: ORCA
     name: ORCA2
+    intgrid: O42
     arrangement: V
     shape: [182, 149]
     uid: "ca637bc5dc9a54e2ea4b9750e1b79e6e"
@@ -36,6 +40,7 @@ grid_names:
   - ORCA2_W: &ORCA2_W
     type: ORCA
     name: ORCA2
+    intgrid: O42
     arrangement: W
     shape: [182, 149]
     uid: "edea6f71eb558dc056b5f576d5b904f7"
@@ -44,6 +49,7 @@ grid_names:
   - ORCA1_F: &ORCA1_F
     type: ORCA
     name: ORCA1
+    intgrid: O96
     arrangement: F
     shape: [362, 292]
     uid: "a832a12030c73928133553ec3a8d2a7e"
@@ -52,6 +58,7 @@ grid_names:
   - ORCA1_T: &ORCA1_T
     type: ORCA
     name: ORCA1
+    intgrid: O96
     arrangement: T
     shape: [362, 292]
     uid: "f4c91b6233fe55dec992160ec12b38df"
@@ -60,6 +67,7 @@ grid_names:
   - ORCA1_U: &ORCA1_U
     type: ORCA
     name: ORCA1
+    intgrid: O96
     arrangement: U
     shape: [362, 292]
     uid: "1b0f8d234753f910197c975c906b4da5"
@@ -68,6 +76,7 @@ grid_names:
   - ORCA1_V: &ORCA1_V
     type: ORCA
     name: ORCA1
+    intgrid: O96
     arrangement: V
     shape: [362, 292]
     uid: "c637340454795b395f982851b840943d"
@@ -76,6 +85,7 @@ grid_names:
   - ORCA1_W: &ORCA1_W
     type: ORCA
     name: ORCA1
+    intgrid: O96
     arrangement: W
     shape: [362, 292]
     uid: "d50061c43e83c46c3810002591ea21e1"
@@ -84,6 +94,7 @@ grid_names:
   - eORCA1_F: &eORCA1_F
     type: ORCA
     name: eORCA1
+    intgrid: O96
     arrangement: F
     shape: [362, 332]
     uid: "3c6d95561710c6f39b394809ff6c588c"
@@ -92,6 +103,7 @@ grid_names:
   - eORCA1_T: &eORCA1_T
     type: ORCA
     name: eORCA1
+    intgrid: O96
     arrangement: T
     shape: [362, 332]
     uid: "ba65665a9e68d1a8fa0352ecfcf8e496"
@@ -100,6 +112,7 @@ grid_names:
   - eORCA1_U: &eORCA1_U
     type: ORCA
     name: eORCA1
+    intgrid: O96
     arrangement: U
     shape: [362, 332]
     uid: "4eb1054957dcae914e219faf9a4068e3"
@@ -108,6 +121,7 @@ grid_names:
   - eORCA1_V: &eORCA1_V
     type: ORCA
     name: eORCA1
+    intgrid: O96
     arrangement: V
     shape: [362, 332]
     uid: "09131429766e7737c087d3a8d7073dc9"
@@ -116,6 +130,7 @@ grid_names:
   - eORCA1_W: &eORCA1_W
     type: ORCA
     name: eORCA1
+    intgrid: O96
     arrangement: W
     shape: [362, 332]
     uid: "5c678d8f9aa2edfbf57246d11d9c1278"
@@ -124,6 +139,7 @@ grid_names:
   - ORCA025_F: &ORCA025_F
     type: ORCA
     name: ORCA025
+    intgrid: O400
     arrangement: F
     shape: [1442, 1021]
     uid: "efbc280d8d4b6048797880da2605bacb"
@@ -132,6 +148,7 @@ grid_names:
   - ORCA025_T: &ORCA025_T
     type: ORCA
     name: ORCA025
+    intgrid: O400
     arrangement: T
     shape: [1442, 1021]
     uid: "15c961c269ac182ca226d7195f3921ba"
@@ -140,6 +157,7 @@ grid_names:
   - ORCA025_U: &ORCA025_U
     type: ORCA
     name: ORCA025
+    intgrid: O400
     arrangement: U
     shape: [1442, 1021]
     uid: "3f4a68bc5b54c9f867fbcc12aacc723d"
@@ -148,6 +166,7 @@ grid_names:
   - ORCA025_V: &ORCA025_V
     type: ORCA
     name: ORCA025
+    intgrid: O400
     arrangement: V
     shape: [1442, 1021]
     uid: "9c87699ee2026c0feee07d2a972eaccd"
@@ -156,6 +175,7 @@ grid_names:
   - ORCA025_W: &ORCA025_W
     type: ORCA
     name: ORCA025
+    intgrid: O400
     arrangement: W
     shape: [1442, 1021]
     uid: "74ca68f1c8524811f3d3aad99536adc2"
@@ -164,6 +184,7 @@ grid_names:
   - eORCA025_F: &eORCA025_F
     type: ORCA
     name: eORCA025
+    intgrid: O400
     arrangement: F
     shape: [1442, 1207]
     uid: "770e5bbb667a253d55db8a98a3b2d3a9"
@@ -172,6 +193,7 @@ grid_names:
   - eORCA025_T: &eORCA025_T
     type: ORCA
     name: eORCA025
+    intgrid: O400
     arrangement: T
     shape: [1442, 1207]
     uid: "983412216c9768bc794c18dc92082895"
@@ -180,6 +202,7 @@ grid_names:
   - eORCA025_U: &eORCA025_U
     type: ORCA
     name: eORCA025
+    intgrid: O400
     arrangement: U
     shape: [1442, 1207]
     uid: "b1b2922e9b57ee9c6eeddad218b6e4f3"
@@ -188,6 +211,7 @@ grid_names:
   - eORCA025_V: &eORCA025_V
     type: ORCA
     name: eORCA025
+    intgrid: O400
     arrangement: V
     shape: [1442, 1207]
     uid: "9b06bf73a8f14e927bd9b0f1f0c04f74"
@@ -196,6 +220,7 @@ grid_names:
   - eORCA025_W: &eORCA025_W
     type: ORCA
     name: eORCA025
+    intgrid: O400
     arrangement: W
     shape: [1442, 1207]
     uid: "4a1ba3b11b8888aefc96992b6b1cab62"
@@ -204,6 +229,7 @@ grid_names:
   - ORCA12_F: &ORCA12_F
     type: ORCA
     name: ORCA12
+    intgrid: O1600
     arrangement: F
     shape: [4322, 3059]
     uid: "29693ad8a7af3ae3ee0f02d090f0ec7b"
@@ -212,6 +238,7 @@ grid_names:
   - ORCA12_T: &ORCA12_T
     type: ORCA
     name: ORCA12
+    intgrid: O1600
     arrangement: T
     shape: [4322, 3059]
     uid: "b117d01170ac77bca68560ab10e559de"
@@ -220,6 +247,7 @@ grid_names:
   - ORCA12_U: &ORCA12_U
     type: ORCA
     name: ORCA12
+    intgrid: O1600
     arrangement: U
     shape: [4322, 3059]
     uid: "fff193b92d94d03e847ff2fa62b493f4"
@@ -228,6 +256,7 @@ grid_names:
   - ORCA12_V: &ORCA12_V
     type: ORCA
     name: ORCA12
+    intgrid: O1600
     arrangement: V
     shape: [4322, 3059]
     uid: "986e3450774b716f6e75c1987e370b10"
@@ -236,6 +265,7 @@ grid_names:
   - ORCA12_W: &ORCA12_W
     type: ORCA
     name: ORCA12
+    intgrid: O1600
     arrangement: W
     shape: [4322, 3059]
     uid: "ccfe953619a8dd49a7f765923882a274"
@@ -244,6 +274,7 @@ grid_names:
   - eORCA12_F: &eORCA12_F
     type: ORCA
     name: eORCA12
+    intgrid: O1600
     arrangement: F
     shape: [4322, 3606]
     uid: "25da53ed581b3931fa310840fa9aefd9"
@@ -252,6 +283,7 @@ grid_names:
   - eORCA12_T: &eORCA12_T
     type: ORCA
     name: eORCA12
+    intgrid: O1600
     arrangement: T
     shape: [4322, 3606]
     uid: "1553b66f5885cf5f83ad4b4fdf25f460"
@@ -260,6 +292,7 @@ grid_names:
   - eORCA12_U: &eORCA12_U
     type: ORCA
     name: eORCA12
+    intgrid: O1600
     arrangement: U
     shape: [4322, 3606]
     uid: "3e87c826643da440b4e9d9f67588a576"
@@ -268,6 +301,7 @@ grid_names:
   - eORCA12_V: &eORCA12_V
     type: ORCA
     name: eORCA12
+    intgrid: O1600
     arrangement: V
     shape: [4322, 3606]
     uid: "cc1e3fc06a2cd18c0653e557510b8a71"
@@ -276,6 +310,7 @@ grid_names:
   - eORCA12_W: &eORCA12_W
     type: ORCA
     name: eORCA12
+    intgrid: O1600
     arrangement: W
     shape: [4322, 3606]
     uid: "462469edbd0e0586a0cf17424cc58c89"
@@ -321,6 +356,7 @@ grid_uids:
   - "16076978a048410747dd7c9876677b28":
       type: ORCA
       name: eORCA1
+      intgrid: O96
       arrangement: T
       shape: [362, 332]
       uid: "16076978a048410747dd7c9876677b28"  # (uid older version)
@@ -329,6 +365,7 @@ grid_uids:
   - "7378487847e050559b82d0792374a705":
       type: ORCA
       name: eORCA1
+      intgrid: O96
       arrangement: U
       shape: [362, 332]
       uid: "7378487847e050559b82d0792374a705"  # (uid older version)
@@ -337,6 +374,7 @@ grid_uids:
   - "d9622b55f3120eafb3dbaf5c742bc56c":
       type: ORCA
       name: eORCA1
+      intgrid: O96
       arrangement: V
       shape: [362, 332]
       uid: "d9622b55f3120eafb3dbaf5c742bc56c"  # (uid older version)

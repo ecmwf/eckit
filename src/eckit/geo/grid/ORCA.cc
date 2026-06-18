@@ -15,8 +15,8 @@
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
+#include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
@@ -167,7 +167,7 @@ std::vector<size_t> ORCA::shape() const {
 
 
 void ORCA::cache() const {
-    (void)cache::LatitudeLongitude::get(uid());
+    (void)record();
 }
 
 

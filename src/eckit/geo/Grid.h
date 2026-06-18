@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <iosfwd>
 #include <memory>
 #include <string>
@@ -102,9 +103,11 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    [[nodiscard]] const spec::Spec& catalog() const;
     [[nodiscard]] const Spec& spec() const;
-    std::string spec_str() const { return spec().str(); }
+    [[nodiscard]] std::string spec_str() const { return spec().str(); }
+
+    [[nodiscard]] const spec::Spec& catalog() const;
+    [[nodiscard]] std::string catalog_str() const { return catalog().str(); }
 
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;

@@ -264,7 +264,7 @@ CASE("Follow redirects") {
         EXPECT(response.code() == 200);
         EXPECT(response.contentLength() == 3);
 
-        std::array<char, 3> buffer {' ', ' ', ' '};
+        std::array<char, 3> buffer{' ', ' ', ' '};
         EXPECT(response.read(buffer.data(), buffer.size()) == buffer.size());
         EXPECT(std::string(buffer.data(), buffer.size()) == "Hi!");
     }

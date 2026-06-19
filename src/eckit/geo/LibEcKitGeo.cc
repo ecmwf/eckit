@@ -12,7 +12,6 @@
 
 #include "eckit/geo/LibEcKitGeo.h"
 
-#include <filesystem>
 #include <regex>
 
 #include "eckit/config/Resource.h"
@@ -28,18 +27,45 @@ namespace eckit {
 
 static std::vector<PathName> paths(const std::string& rsrc, const std::string& rsrc_default,
                                    const std::string& path_in_cache) {
-    const auto vs = StringTools::split(":", LibResource<std::string, LibEcKitGeo>(rsrc, rsrc_default));
-    std::vector<PathName> v{vs.begin(), vs.end()};
-    if (LibEcKitGeo::caching()) {
-        v.emplace_back(PathName{LibEcKitGeo::cacheDir(), true} / path_in_cache);
+    std::vector<PathName> ps;
+    for (const auto& s : StringTools::split(":", LibResource<std::string, LibEcKitGeo>(rsrc, rsrc_default))) {
+        ps.emplace_back(s, true);
     }
-    return v;
+
+    if (LibEcKitGeo::caching()) {
+        ps.emplace_back(PathName{LibEcKitGeo::cacheDir(), true} / path_in_cache);
+    }
+
+    return ps;
 }
 
 
-static void purge_cached_path(const PathName& p) {
-    if (std::error_code ec; p.exists() && !std::filesystem::remove_all(p.asString(), ec)) {
-        throw eckit::SeriousBug("LibEcKitGeo: failed to remove path '" + p + "': " + ec.message(), Here());
+static void purge_path_recursive(const PathName& p) {
+    std::vector<PathName> files;
+    std::vector<PathName> dirs;
+    p.children(files, dirs);
+
+    for (auto& f : files) {
+        f.unlink();
+    }
+
+    for (auto& d : dirs) {
+        purge_path_recursive(d);
+    }
+
+    if (p.exists()) {
+        p.rmdir();
+    }
+}
+
+static void purge_path(const PathName& p) {
+    if (p.exists()) {
+        try {
+            purge_path_recursive(p);
+        }
+        catch (const Exception& e) {
+            throw SeriousBug("LibEcKitGeo: failed to remove path '" + p + "': " + e.what(), Here());
+        }
     }
 }
 
@@ -109,22 +135,22 @@ std::string LibEcKitGeo::cacheDir() {
 
 
 void LibEcKitGeo::purgeCacheDir() {
-    purge_cached_path(cacheDir());
+    purge_path_recursive(cacheDir());
 }
 
 
 void LibEcKitGeo::purgeCacheArea() {
-    purge_cached_path(cacheArea());
+    purge_path(cacheArea());
 }
 
 
 void LibEcKitGeo::purgeCacheGrid() {
-    purge_cached_path(cacheGrid());
+    purge_path(cacheGrid());
 }
 
 
 void LibEcKitGeo::purgeCacheProjection() {
-    purge_cached_path(cacheProjection());
+    purge_path(cacheProjection());
 }
 
 

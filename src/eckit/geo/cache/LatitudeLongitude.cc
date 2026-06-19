@@ -16,11 +16,13 @@
 #include <string>
 
 #include "eckit/codec/codec.h"
+#include "eckit/config/Resource.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/os/AutoUmask.h"
 #include "eckit/spec/Spec.h"
 
 
@@ -103,6 +105,15 @@ void LatitudeLongitude::read(const PathName& p) {
 
 void LatitudeLongitude::write(const PathName& p) const {
     codec::RecordWriter record;
+    if (static const std::string cmp =
+            LibResource<std::string, LibEcKitGeo>("eckit-codec-compression;$ECKIT_CODEC_COMPRESSION", "lz4");
+        cmp.empty()) {
+        record.compression(false);
+    }
+    else {
+        record.compression(cmp);
+    }
+
     record.set("latitude", codec::ref(lat_));
     record.set("longitude", codec::ref(lon_));
     record.write(p);
@@ -112,6 +123,18 @@ void LatitudeLongitude::write(const PathName& p) const {
 PathName LatitudeLongitude::to_cached_path() const {
     auto uid  = grid::Unstructured::uid_from_latlons(latitude(), longitude());
     auto path = PathName(LibEcKitGeo::cacheDir()) / "latlon" / (uid + ".ek");
+
+    if (auto dir = path.dirName(); !dir.exists()) {
+        try {
+            // use umask = 0 so mkdir creates the directory with the correct permissions
+            AutoUmask umask(0);
+            dir.mkdir(0777);
+        }
+        catch (FailedSystemCall&) {
+            // possibly failing later is more meaningful
+        }
+    }
+
     if (!path.exists()) {
         write(path);
     }

@@ -27,10 +27,8 @@ namespace eckit {
 
 static std::vector<PathName> paths(const std::string& rsrc, const std::string& rsrc_default,
                                    const std::string& path_in_cache) {
-    std::vector<PathName> ps;
-    for (const auto& s : StringTools::split(":", LibResource<std::string, LibEcKitGeo>(rsrc, rsrc_default))) {
-        ps.emplace_back(s, true);
-    }
+    auto vs = StringTools::split(":", LibResource<std::string, LibEcKitGeo>(rsrc, rsrc_default));
+    std::vector<PathName> ps(vs.begin(), vs.end());
 
     if (LibEcKitGeo::caching()) {
         ps.emplace_back(PathName{LibEcKitGeo::cacheDir(), true} / path_in_cache);

@@ -58,11 +58,9 @@ RegularXY::RegularXY(const Spec& spec) :
 
 RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox, order::Scan s) :
     Regular(s),
-    x_(s.is_scan_i_positive() ? inc.dx : -inc.dx,
-       s.is_scan_i_positive() ? bbox.min_x : bbox.max_x,
+    x_(s.is_scan_i_positive() ? inc.dx : -inc.dx, s.is_scan_i_positive() ? bbox.min_x : bbox.max_x,
        s.is_scan_i_positive() ? bbox.max_x : bbox.min_x),
-    y_(s.is_scan_j_positive() ? inc.dy : -inc.dy,
-       s.is_scan_j_positive() ? bbox.min_y : bbox.max_y,
+    y_(s.is_scan_j_positive() ? inc.dy : -inc.dy, s.is_scan_j_positive() ? bbox.min_y : bbox.max_y,
        s.is_scan_j_positive() ? bbox.max_y : bbox.min_y) {
     ASSERT(!empty());
 }

@@ -18,6 +18,8 @@ extern "C" char* program_invocation_short_name;
 
 namespace eckit_bridge {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 static const char* progname() {
 #ifdef __APPLE__
     return getprogname();
@@ -27,6 +29,8 @@ static const char* progname() {
     return nullptr;
 #endif
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 void RustLogTarget::write(const char* start, const char* end) {
     buffer_.append(start, end);
@@ -56,6 +60,8 @@ void RustLogTarget::flush() {
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 RustMain::RustMain(int argc, char** argv) : Main(argc, argv), app_name_(displayName()) {}
 
 eckit::LogTarget* RustMain::createInfoLogTarget() const {
@@ -84,6 +90,8 @@ static void install_per_library_targets() {
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 void init() {
     if (!eckit::Main::ready()) {
         const char* name                         = progname();
@@ -92,5 +100,7 @@ void init() {
         install_per_library_targets();
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit_bridge

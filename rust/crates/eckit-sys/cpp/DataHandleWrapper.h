@@ -10,6 +10,8 @@
 
 namespace eckit_bridge {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 // Forward declaration — defined on the Rust side, cxx generates the type.
 struct ReaderBox;
 
@@ -70,5 +72,7 @@ public:
     /// `ReaderBox` is dropped, releasing the underlying `Read` source.
     static std::unique_ptr<DataHandleWrapper> from_reader(rust::Box<ReaderBox> reader);
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit_bridge

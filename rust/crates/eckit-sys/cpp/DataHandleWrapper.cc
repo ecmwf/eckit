@@ -14,6 +14,8 @@
 
 namespace eckit_bridge {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 int64_t DataHandleWrapper::open_for_read() {
     return static_cast<int64_t>(handle_->openForRead());
 }
@@ -54,6 +56,8 @@ int64_t DataHandleWrapper::save_into(DataHandleWrapper& target) {
     return static_cast<int64_t>(handle_->saveInto(*target.handle_));
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 std::unique_ptr<DataHandleWrapper> DataHandleWrapper::from_file(rust::Str path) {
     auto p = eckit::PathName{std::string(path)};
     return std::make_unique<DataHandleWrapper>(p.fileHandle());
@@ -84,6 +88,8 @@ std::unique_ptr<DataHandleWrapper> DataHandleWrapper::tee(rust::Slice<const rust
     }
     return std::make_unique<DataHandleWrapper>(new eckit::TeeHandle(handles));
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 namespace {
 
@@ -142,8 +148,12 @@ private:
 
 }  // namespace
 
+//----------------------------------------------------------------------------------------------------------------------
+
 std::unique_ptr<DataHandleWrapper> DataHandleWrapper::from_reader(rust::Box<ReaderBox> reader) {
     return std::make_unique<DataHandleWrapper>(new RustReaderHandle(std::move(reader)));
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit_bridge

@@ -11,6 +11,8 @@
 
 namespace eckit_bridge {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// Wraps `eckit::LocalConfiguration` for Rust FFI.
 class ConfigWrapper {
     eckit::LocalConfiguration config_;
@@ -53,10 +55,14 @@ public:
     eckit::LocalConfiguration& inner() { return config_; }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 // Factory functions — names match cxx bridge declarations
 std::unique_ptr<ConfigWrapper> create();
 std::unique_ptr<ConfigWrapper> from_path(rust::Str path);
 std::unique_ptr<ConfigWrapper> from_yaml(rust::Str yaml);
 std::unique_ptr<ConfigWrapper> clone(const ConfigWrapper& src);
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit_bridge

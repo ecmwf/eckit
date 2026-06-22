@@ -7,6 +7,8 @@
 
 namespace eckit_bridge {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bool MessageWrapper::is_valid() const {
     return static_cast<bool>(msg_);
 }
@@ -44,6 +46,8 @@ std::unique_ptr<MessageWrapper> MessageWrapper::clone() const {
     return std::make_unique<MessageWrapper>(msg_);
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 ReaderWrapper::ReaderWrapper(DataHandleWrapper& handle) :
     reader_(std::make_unique<eckit::message::Reader>(handle.inner(), true)) {}
 
@@ -52,8 +56,12 @@ std::unique_ptr<MessageWrapper> ReaderWrapper::next() {
     return std::make_unique<MessageWrapper>(std::move(msg));
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 std::unique_ptr<ReaderWrapper> new_reader(DataHandleWrapper& handle) {
     return std::make_unique<ReaderWrapper>(handle);
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit_bridge

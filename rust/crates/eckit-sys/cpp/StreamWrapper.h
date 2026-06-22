@@ -17,6 +17,8 @@
 
 namespace eckit_bridge {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// Base wrapper for `eckit::Stream`. Subclasses own the transport-specific
 /// resources (socket, buffer, etc.) and expose them via `inner()`; all
 /// read/write methods in this base dispatch through that virtual accessor.
@@ -73,6 +75,8 @@ protected:
     StreamWrapper() = default;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// TCP stream — connects to host:port via `eckit::net::TCPClient`.
 class TcpStreamWrapper : public StreamWrapper {
     eckit::net::TCPSocket socket_;
@@ -89,6 +93,8 @@ protected:
     eckit::Stream& inner() override { return tcp_; }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// Resizable memory stream — for writing, buffer grows as needed.
 class MemoryWriteStreamWrapper : public StreamWrapper {
     eckit::Buffer buf_;
@@ -104,6 +110,8 @@ protected:
     eckit::Stream& inner() override { return mem_; }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// Fixed memory stream — for reading from existing data.
 class MemoryReadStreamWrapper : public StreamWrapper {
     eckit::Buffer buf_;
@@ -118,9 +126,13 @@ protected:
     eckit::Stream& inner() override { return mem_; }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 // Factory functions
 std::unique_ptr<StreamWrapper> stream_connect(rust::Str host, int32_t port);
 std::unique_ptr<StreamWrapper> stream_memory_write();
 std::unique_ptr<StreamWrapper> stream_memory_read(rust::Slice<const uint8_t> data);
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit_bridge

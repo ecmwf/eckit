@@ -10,6 +10,8 @@
 
 namespace eckit_bridge {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 bool ConfigWrapper::has(rust::Str key) const {
     return config_.has(std::string(key));
 }
@@ -104,6 +106,8 @@ void ConfigWrapper::remove(rust::Str key) {
     config_.remove(std::string(key));
 }
 
+//----------------------------------------------------------------------------------------------------------------------
+
 std::unique_ptr<ConfigWrapper> create() {
     return std::make_unique<ConfigWrapper>();
 }
@@ -123,5 +127,7 @@ std::unique_ptr<ConfigWrapper> from_yaml(rust::Str yaml) {
 std::unique_ptr<ConfigWrapper> clone(const ConfigWrapper& src) {
     return std::make_unique<ConfigWrapper>(src.inner());
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit_bridge

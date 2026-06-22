@@ -13,6 +13,8 @@
 
 namespace eckit_bridge {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// Wraps `eckit::message::Message` for Rust FFI.
 /// Message is a value type with internal reference counting.
 class MessageWrapper {
@@ -43,6 +45,8 @@ public:
     eckit::message::Message& inner() { return msg_; }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// Wraps `eckit::message::Reader` for Rust FFI.
 /// Reads messages from a `DataHandle`.
 class ReaderWrapper {
@@ -56,7 +60,11 @@ public:
     std::unique_ptr<MessageWrapper> next();
 };
 
+//----------------------------------------------------------------------------------------------------------------------
+
 // Factory
 std::unique_ptr<ReaderWrapper> new_reader(DataHandleWrapper& handle);
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit_bridge

@@ -11,7 +11,7 @@
 
 namespace eckit_bridge {
 
-// ==================== Stream (base class) ====================
+//----------------------------------------------------------------------------------------------------------------------
 
 void StreamWrapper::write_char(uint8_t c) {
     inner() << static_cast<char>(c);
@@ -90,7 +90,7 @@ std::unique_ptr<DataHandleWrapper> StreamWrapper::into_data_handle() {
     throw eckit::NotImplemented("StreamWrapper::into_data_handle is only supported on TCP streams", Here());
 }
 
-// ==================== TcpStreamWrapper ====================
+//----------------------------------------------------------------------------------------------------------------------
 
 TcpStreamWrapper::TcpStreamWrapper(const std::string& host, int port) :
     socket_(eckit::net::TCPClient().connect(host, port)), tcp_(socket_) {}
@@ -110,7 +110,7 @@ std::unique_ptr<DataHandleWrapper> TcpStreamWrapper::into_data_handle() {
     return std::make_unique<DataHandleWrapper>(new eckit::TCPSocketHandle(tcp_.socket()));
 }
 
-// ==================== MemoryWriteStreamWrapper ====================
+//----------------------------------------------------------------------------------------------------------------------
 
 MemoryWriteStreamWrapper::MemoryWriteStreamWrapper() : buf_(4096), mem_(buf_) {}
 
@@ -118,12 +118,12 @@ rust::Slice<const uint8_t> MemoryWriteStreamWrapper::buffer() {
     return {static_cast<const uint8_t*>(buf_.data()), static_cast<size_t>(mem_.bytesWritten())};
 }
 
-// ==================== MemoryReadStreamWrapper ====================
+//----------------------------------------------------------------------------------------------------------------------
 
 MemoryReadStreamWrapper::MemoryReadStreamWrapper(rust::Slice<const uint8_t> data) :
     buf_(data.data(), data.size()), mem_(buf_) {}
 
-// ==================== Factory functions ====================
+//----------------------------------------------------------------------------------------------------------------------
 
 std::unique_ptr<StreamWrapper> stream_connect(rust::Str host, int32_t port) {
     return std::make_unique<TcpStreamWrapper>(std::string(host), port);
@@ -136,5 +136,7 @@ std::unique_ptr<StreamWrapper> stream_memory_write() {
 std::unique_ptr<StreamWrapper> stream_memory_read(rust::Slice<const uint8_t> data) {
     return std::make_unique<MemoryReadStreamWrapper>(data);
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit_bridge

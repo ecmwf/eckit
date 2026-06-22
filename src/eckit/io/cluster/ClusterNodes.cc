@@ -21,6 +21,7 @@
 #include "eckit/log/JSON.h"
 #include "eckit/memory/Zero.h"
 #include "eckit/net/IPAddress.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Clock.h"
 
@@ -242,7 +243,7 @@ static pthread_once_t once = PTHREAD_ONCE_INIT;
 static std::set<std::string> offsiteNodes_;
 
 static void init() {
-    nodeArray = new NodeArray("~/etc/cluster/nodes", 1024);
+    nodeArray = new NodeArray(Main::instance().rundir() / "cluster/nodes", 1024);
 
     EtcKeyTable config("cluster/offsite", 1);
     if (config.exists()) {

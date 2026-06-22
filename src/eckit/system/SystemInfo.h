@@ -44,6 +44,7 @@ public:  // methods
     static const SystemInfo& instance();
 
     virtual std::string userName() const;
+    virtual std::string groupName() const;
 
     virtual eckit::LocalPathName executablePath() const = 0;
 
@@ -65,7 +66,6 @@ protected:  // methods
 
 private:  // members
 };
-
 
 //--------------------------------------------------------------------------------------------------
 

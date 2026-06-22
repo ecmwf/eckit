@@ -210,6 +210,16 @@ void Main::initialise(int argc, char** argv, const char* homeenv) {
     }
 }
 
+const PathName& Main::rundir() const {
+    // In typical usage we have a number of runtime-mutable files that have ended up in etc. Specfically
+    // ~/etc/monitor and various cluster-related configuration. This prevents us mounting configuration
+    // read-only in containerised environments.
+    //
+    // As a result, we now use ~/run if it exists, and fall back to the existing behaviour otherwise.
+    static PathName rd = LocalPathName("~/run").exists() ? "~/run" : "~/etc";
+    return rd;
+}
+
 bool Main::debug() const {
     return debug_;
 }

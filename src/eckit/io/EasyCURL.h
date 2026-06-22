@@ -15,6 +15,7 @@
 #define eckit_io_EasyCURL_h
 
 #include <map>
+#include <string>
 
 #include "eckit/io/MemoryHandle.h"
 
@@ -74,13 +75,17 @@ public:
     EasyCURLResponse POST(const std::string& url, const std::string& data);
     EasyCURLResponse DELETE(const std::string& url);
 
+    void setopt(const std::string& name, bool);
+    void setopt(const std::string& name, long);
+    void setopt(const std::string& name, const std::string&);
+    void setopt(const std::string& name, const char*);
+
     void verbose(bool on);
     void followLocation(bool on);
     void sslVerifyPeer(bool on);
     void sslVerifyHost(bool on);
     void failOnError(bool on);
     void useSSL(bool use);
-
 
     void customRequest(const std::string&);
     void headers(const EasyCURLHeaders& headers);
@@ -102,6 +107,15 @@ private:
     }
 };
 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// CURL options applicable to new curl handles
+
+void easycurl_setopt_bool(const std::string& name, bool value);
+void easycurl_setopt_long(const std::string& name, long value);
+void easycurl_setopt_string(const std::string& name, const std::string& value);
+void easycurl_clear_options();
 
 //----------------------------------------------------------------------------------------------------------------------
 

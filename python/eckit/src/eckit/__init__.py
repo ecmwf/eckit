@@ -12,4 +12,10 @@ import findlibs
 findlibs.load("eckit")
 
 
+from eckit._certifi import configure_ca_bundle_from_certifi
 from eckit._eckit import *
+
+configure_ca_bundle_from_certifi()
+
+__lib_version__ = version()
+__git_sha1__ = git_sha1()

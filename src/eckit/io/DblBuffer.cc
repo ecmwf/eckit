@@ -9,8 +9,8 @@
  */
 
 
-#include "eckit/config/Resource.h"
 #include "eckit/io/DblBuffer.h"
+#include "eckit/config/Resource.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"

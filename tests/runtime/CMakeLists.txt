@@ -23,3 +23,15 @@ ecbuild_add_test( TARGET  eckit_test_runtime_metrics
                   SOURCES test_metrics.cc
                   LIBS    eckit
 )
+
+ecbuild_add_test( TARGET  eckit_test_runtime_rundir_run
+                  SOURCES test_rundir.cc
+                  ENVIRONMENT ECKIT_TEST_RUNDIR_EXPECT=run
+                  LIBS    eckit
+)
+
+ecbuild_add_test( TARGET  eckit_test_runtime_rundir_etc
+                  SOURCES test_rundir.cc
+                  ENVIRONMENT ECKIT_TEST_RUNDIR_EXPECT=etc
+                  LIBS    eckit
+)

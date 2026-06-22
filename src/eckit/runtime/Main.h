@@ -25,7 +25,13 @@ class PathName;
 class Main {
 protected:
 
-    Main(int argc, char** argv, const char* homeenv = nullptr);
+    /// @param autoLoadPlugins  When true (default), Main consults the
+    ///   $AUTO_LOAD_PLUGINS / $LOAD_PLUGINS resources and triggers plugin
+    ///   loading at construction. Subclasses that should not perform global
+    ///   auto-load can pass false; the default is expected to flip to false
+    ///   in a future release once existing plugins have migrated to scoped
+    ///   (for-library) manifests.
+    Main(int argc, char** argv, const char* homeenv = nullptr, bool autoLoadPlugins = true);
 
     Main(const Main&)            = delete;
     Main& operator=(const Main&) = delete;

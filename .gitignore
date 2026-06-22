@@ -13,3 +13,4 @@ build/
 tests/geo/eckit_geo_cache
 _build
 *.ccls-cache
+Testing/

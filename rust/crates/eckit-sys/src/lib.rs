@@ -30,7 +30,7 @@ mod ffi {
     }
 
     unsafe extern "C++" {
-        include!("eckit_bridge.h");
+        include!("EckitBridge.h");
 
         /// Initialize eckit runtime with Rust log bridge.
         /// Safe to call multiple times — only the first call has effect.
@@ -254,7 +254,7 @@ impl<T: std::io::Read + std::io::Seek + ?Sized> ReadSeek for T {}
 
 /// Opaque wrapper holding a `Box<dyn ReadSeek + Send>`.
 ///
-/// The C++ `RustReaderHandle` (declared in `eckit_bridge.h` as `struct
+/// The C++ `RustReaderHandle` (declared in `DataHandleWrapper.h` as `struct
 /// ReaderBox`) carries this by `rust::Box<ReaderBox>` and forwards each C++
 /// `read(void*, long)` / `seek(Offset)` call via [`invoke_reader_read`] /
 /// [`invoke_reader_seek`].

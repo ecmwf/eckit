@@ -29,7 +29,7 @@ fn main() {
         std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
     bindman_build::check_cpp_api(&include, &crate_dir.join("src/lib.rs"));
 
-    // Export cpp directory for downstream crates that include eckit_bridge.h
+    // Export cpp directory for downstream crates that include EckitBridge.h
     println!("cargo:cpp_dir={}", crate_dir.join("cpp").display());
 }
 
@@ -40,24 +40,24 @@ fn build_cxx_bridge(include: &std::path::Path) {
     );
     let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").expect("OUT_DIR not set"));
 
-    println!("cargo:rerun-if-changed=cpp/eckit_bridge.h");
-    println!("cargo:rerun-if-changed=cpp/log.h");
-    println!("cargo:rerun-if-changed=cpp/log.cpp");
-    println!("cargo:rerun-if-changed=cpp/config.h");
-    println!("cargo:rerun-if-changed=cpp/config.cpp");
-    println!("cargo:rerun-if-changed=cpp/datahandle.h");
-    println!("cargo:rerun-if-changed=cpp/datahandle.cpp");
-    println!("cargo:rerun-if-changed=cpp/message.h");
-    println!("cargo:rerun-if-changed=cpp/message.cpp");
-    println!("cargo:rerun-if-changed=cpp/stream.h");
-    println!("cargo:rerun-if-changed=cpp/stream.cpp");
+    println!("cargo:rerun-if-changed=cpp/EckitBridge.h");
+    println!("cargo:rerun-if-changed=cpp/RustLogTarget.h");
+    println!("cargo:rerun-if-changed=cpp/RustLogTarget.cc");
+    println!("cargo:rerun-if-changed=cpp/ConfigWrapper.h");
+    println!("cargo:rerun-if-changed=cpp/ConfigWrapper.cc");
+    println!("cargo:rerun-if-changed=cpp/DataHandleWrapper.h");
+    println!("cargo:rerun-if-changed=cpp/DataHandleWrapper.cc");
+    println!("cargo:rerun-if-changed=cpp/MessageWrapper.h");
+    println!("cargo:rerun-if-changed=cpp/MessageWrapper.cc");
+    println!("cargo:rerun-if-changed=cpp/StreamWrapper.h");
+    println!("cargo:rerun-if-changed=cpp/StreamWrapper.cc");
 
     cxx_build::bridge("src/lib.rs")
-        .file(crate_dir.join("cpp/log.cpp"))
-        .file(crate_dir.join("cpp/config.cpp"))
-        .file(crate_dir.join("cpp/datahandle.cpp"))
-        .file(crate_dir.join("cpp/message.cpp"))
-        .file(crate_dir.join("cpp/stream.cpp"))
+        .file(crate_dir.join("cpp/RustLogTarget.cc"))
+        .file(crate_dir.join("cpp/ConfigWrapper.cc"))
+        .file(crate_dir.join("cpp/DataHandleWrapper.cc"))
+        .file(crate_dir.join("cpp/MessageWrapper.cc"))
+        .file(crate_dir.join("cpp/StreamWrapper.cc"))
         .include(include)
         .include(crate_dir.join("cpp"))
         .include(&out_dir) // for eckit_exceptions.h

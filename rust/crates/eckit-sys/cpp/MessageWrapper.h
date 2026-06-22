@@ -1,7 +1,7 @@
 // eckit Message + Reader bridge — iterate GRIB messages over a DataHandle.
 #pragma once
 
-#include "datahandle.h"
+#include "DataHandleWrapper.h"
 #include "eckit/message/Message.h"
 #include "eckit/message/Reader.h"
 

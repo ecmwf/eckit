@@ -1,7 +1,7 @@
 // eckit Stream bridge — TCP and in-memory `eckit::Stream` serialization.
 #pragma once
 
-#include "datahandle.h"
+#include "DataHandleWrapper.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/net/TCPStream.h"

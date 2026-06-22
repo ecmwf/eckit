@@ -2,7 +2,7 @@
 
 #include "eckit_exceptions.h"
 
-#include "config.h"
+#include "ConfigWrapper.h"
 #include "eckit-sys/src/lib.rs.h"
 
 #include "eckit/config/YAMLConfiguration.h"

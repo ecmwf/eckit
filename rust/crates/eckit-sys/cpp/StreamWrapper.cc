@@ -2,8 +2,8 @@
 
 #include "eckit_exceptions.h"
 
+#include "StreamWrapper.h"
 #include "eckit-sys/src/lib.rs.h"
-#include "stream.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/TCPSocketHandle.h"

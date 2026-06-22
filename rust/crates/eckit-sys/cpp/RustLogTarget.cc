@@ -4,8 +4,8 @@
 // generated wrappers' Result<T> handling picks up our specialization.
 #include "eckit_exceptions.h"
 
+#include "RustLogTarget.h"
 #include "eckit-sys/src/lib.rs.h"  // cxx-generated — provides LogLevel values
-#include "log.h"
 
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"

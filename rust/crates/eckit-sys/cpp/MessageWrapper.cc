@@ -2,8 +2,8 @@
 
 #include "eckit_exceptions.h"
 
+#include "MessageWrapper.h"
 #include "eckit-sys/src/lib.rs.h"
-#include "message.h"
 
 namespace eckit_bridge {
 

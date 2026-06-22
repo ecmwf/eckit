@@ -2,7 +2,7 @@
 
 #include "eckit_exceptions.h"
 
-#include "datahandle.h"
+#include "DataHandleWrapper.h"
 #include "eckit-sys/src/lib.rs.h"
 
 #include "eckit/exception/Exceptions.h"

@@ -125,15 +125,15 @@ MemoryReadStreamWrapper::MemoryReadStreamWrapper(rust::Slice<const uint8_t> data
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::unique_ptr<StreamWrapper> stream_connect(rust::Str host, int32_t port) {
+std::unique_ptr<StreamWrapper> StreamWrapper::connect(rust::Str host, int32_t port) {
     return std::make_unique<TcpStreamWrapper>(std::string(host), port);
 }
 
-std::unique_ptr<StreamWrapper> stream_memory_write() {
+std::unique_ptr<StreamWrapper> StreamWrapper::memory_write() {
     return std::make_unique<MemoryWriteStreamWrapper>();
 }
 
-std::unique_ptr<StreamWrapper> stream_memory_read(rust::Slice<const uint8_t> data) {
+std::unique_ptr<StreamWrapper> StreamWrapper::memory_read(rust::Slice<const uint8_t> data) {
     return std::make_unique<MemoryReadStreamWrapper>(data);
 }
 

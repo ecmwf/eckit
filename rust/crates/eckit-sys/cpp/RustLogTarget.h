@@ -55,12 +55,11 @@ public:
     eckit::LogTarget* createErrorLogTarget() const override;
     eckit::LogTarget* createDebugLogTarget() const override;
     eckit::LogTarget* createMetricsLogTarget() const override;
+
+    /// Initialise eckit runtime with the Rust log bridge. Safe to call
+    /// multiple times — only the first call has effect.
+    static void initialise();
 };
-
-//----------------------------------------------------------------------------------------------------------------------
-
-/// Initialize eckit runtime with Rust log bridge.
-void init();
 
 //----------------------------------------------------------------------------------------------------------------------
 

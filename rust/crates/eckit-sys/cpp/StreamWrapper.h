@@ -70,6 +70,17 @@ public:
     /// needs to plumb the raw stream into other eckit APIs.
     virtual eckit::Stream& inner() = 0;
 
+    // ============== Factories ==============
+
+    /// Connect to a TCP host:port and return a stream.
+    static std::unique_ptr<StreamWrapper> connect(rust::Str host, int32_t port);
+
+    /// Create a resizable memory stream for writing.
+    static std::unique_ptr<StreamWrapper> memory_write();
+
+    /// Create a fixed memory stream for reading from existing data.
+    static std::unique_ptr<StreamWrapper> memory_read(rust::Slice<const uint8_t> data);
+
 protected:
 
     StreamWrapper() = default;
@@ -125,13 +136,6 @@ protected:
 
     eckit::Stream& inner() override { return mem_; }
 };
-
-//----------------------------------------------------------------------------------------------------------------------
-
-// Factory functions
-std::unique_ptr<StreamWrapper> stream_connect(rust::Str host, int32_t port);
-std::unique_ptr<StreamWrapper> stream_memory_write();
-std::unique_ptr<StreamWrapper> stream_memory_read(rust::Slice<const uint8_t> data);
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -58,12 +58,12 @@ public:
 
     /// Returns next message, or an invalid message when exhausted.
     std::unique_ptr<MessageWrapper> next();
+
+    // ============== Factories ==============
+
+    /// Open a `ReaderWrapper` over a `DataHandleWrapper`.
+    static std::unique_ptr<ReaderWrapper> from_handle(DataHandleWrapper& handle);
 };
-
-//----------------------------------------------------------------------------------------------------------------------
-
-// Factory
-std::unique_ptr<ReaderWrapper> new_reader(DataHandleWrapper& handle);
 
 //----------------------------------------------------------------------------------------------------------------------
 

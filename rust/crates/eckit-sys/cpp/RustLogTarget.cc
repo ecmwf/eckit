@@ -20,7 +20,9 @@ namespace eckit_bridge {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static const char* progname() {
+namespace {
+
+const char* progname() {
 #ifdef __APPLE__
     return getprogname();
 #elif defined(__linux__)
@@ -29,6 +31,18 @@ static const char* progname() {
     return nullptr;
 #endif
 }
+
+/// Install a per-library `RustLogTarget` on every registered library's debug
+/// channel. Each library's debug output is then tagged with its own name as
+/// the tracing/log target. Idempotent — `Channel::setTarget` replaces.
+void install_per_library_targets() {
+    for (const auto& libname : eckit::system::LibraryManager::list()) {
+        const auto& lib = eckit::system::LibraryManager::lookup(libname);
+        lib.debugChannel().setTarget(new RustLogTarget(LogLevel::Debug, libname));
+    }
+}
+
+}  // namespace
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -80,19 +94,9 @@ eckit::LogTarget* RustMain::createMetricsLogTarget() const {
     return new RustLogTarget(LogLevel::Trace, app_name_);
 }
 
-/// Install a per-library `RustLogTarget` on every registered library's debug
-/// channel. Each library's debug output is then tagged with its own name as
-/// the tracing/log target. Idempotent — `Channel::setTarget` replaces.
-static void install_per_library_targets() {
-    for (const auto& libname : eckit::system::LibraryManager::list()) {
-        const auto& lib = eckit::system::LibraryManager::lookup(libname);
-        lib.debugChannel().setTarget(new RustLogTarget(LogLevel::Debug, libname));
-    }
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 
-void init() {
+void RustMain::initialise() {
     if (!eckit::Main::ready()) {
         const char* name                         = progname();
         static const char* argv[]                = {name ? name : "eckit-rs", nullptr};

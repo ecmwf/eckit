@@ -53,15 +53,21 @@ public:
     // Access underlying for other C++ bridge code
     const eckit::LocalConfiguration& inner() const { return config_; }
     eckit::LocalConfiguration& inner() { return config_; }
+
+    /// Deep-copy this configuration.
+    std::unique_ptr<ConfigWrapper> clone() const;
+
+    // ============== Factories ==============
+
+    /// Create an empty configuration.
+    static std::unique_ptr<ConfigWrapper> create();
+
+    /// Load configuration from a YAML file.
+    static std::unique_ptr<ConfigWrapper> from_path(rust::Str path);
+
+    /// Parse configuration from a YAML string.
+    static std::unique_ptr<ConfigWrapper> from_yaml(rust::Str yaml);
 };
-
-//----------------------------------------------------------------------------------------------------------------------
-
-// Factory functions — names match cxx bridge declarations
-std::unique_ptr<ConfigWrapper> create();
-std::unique_ptr<ConfigWrapper> from_path(rust::Str path);
-std::unique_ptr<ConfigWrapper> from_yaml(rust::Str yaml);
-std::unique_ptr<ConfigWrapper> clone(const ConfigWrapper& src);
 
 //----------------------------------------------------------------------------------------------------------------------
 

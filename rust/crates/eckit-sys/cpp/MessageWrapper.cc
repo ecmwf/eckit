@@ -58,7 +58,7 @@ std::unique_ptr<MessageWrapper> ReaderWrapper::next() {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-std::unique_ptr<ReaderWrapper> new_reader(DataHandleWrapper& handle) {
+std::unique_ptr<ReaderWrapper> ReaderWrapper::from_handle(DataHandleWrapper& handle) {
     return std::make_unique<ReaderWrapper>(handle);
 }
 

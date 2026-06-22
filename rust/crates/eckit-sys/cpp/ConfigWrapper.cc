@@ -106,26 +106,26 @@ void ConfigWrapper::remove(rust::Str key) {
     config_.remove(std::string(key));
 }
 
+std::unique_ptr<ConfigWrapper> ConfigWrapper::clone() const {
+    return std::make_unique<ConfigWrapper>(config_);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
-std::unique_ptr<ConfigWrapper> create() {
+std::unique_ptr<ConfigWrapper> ConfigWrapper::create() {
     return std::make_unique<ConfigWrapper>();
 }
 
-std::unique_ptr<ConfigWrapper> from_path(rust::Str path) {
+std::unique_ptr<ConfigWrapper> ConfigWrapper::from_path(rust::Str path) {
     auto p    = eckit::PathName{std::string(path)};
     auto yaml = eckit::YAMLConfiguration{p};
     return std::make_unique<ConfigWrapper>(yaml);
 }
 
-std::unique_ptr<ConfigWrapper> from_yaml(rust::Str yaml) {
+std::unique_ptr<ConfigWrapper> ConfigWrapper::from_yaml(rust::Str yaml) {
     auto str    = std::string(yaml);
     auto parsed = eckit::YAMLConfiguration{str};
     return std::make_unique<ConfigWrapper>(parsed);
-}
-
-std::unique_ptr<ConfigWrapper> clone(const ConfigWrapper& src) {
-    return std::make_unique<ConfigWrapper>(src.inner());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

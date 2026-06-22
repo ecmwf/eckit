@@ -32,30 +32,35 @@ mod ffi {
     unsafe extern "C++" {
         include!("EckitBridge.h");
 
-        /// Initialize eckit runtime with Rust log bridge.
+        // ==================== Runtime ====================
+
+        type RustMain;
+
+        /// Initialise eckit runtime with the Rust log bridge.
         /// Safe to call multiple times — only the first call has effect.
-        fn init();
+        #[Self = "RustMain"]
+        fn initialise();
 
         // ==================== Configuration ====================
 
         type ConfigWrapper;
 
         /// Create empty configuration.
-        #[rust_name = "config_create"]
+        #[Self = "ConfigWrapper"]
         #[must_use]
         fn create() -> UniquePtr<ConfigWrapper>;
 
         /// Load from YAML file path.
-        #[rust_name = "config_from_path"]
+        #[Self = "ConfigWrapper"]
         fn from_path(path: &str) -> Result<UniquePtr<ConfigWrapper>>;
 
         /// Parse from YAML string.
-        #[rust_name = "config_from_yaml"]
+        #[Self = "ConfigWrapper"]
         fn from_yaml(yaml: &str) -> Result<UniquePtr<ConfigWrapper>>;
 
-        /// Copy a configuration.
-        #[rust_name = "config_clone"]
-        fn clone(src: &ConfigWrapper) -> UniquePtr<ConfigWrapper>;
+        /// Deep-copy this configuration.
+        #[rust_name = "clone_config"]
+        fn clone(self: &ConfigWrapper) -> UniquePtr<ConfigWrapper>;
 
         // Read
         fn has(self: &ConfigWrapper, key: &str) -> bool;
@@ -157,7 +162,10 @@ mod ffi {
 
         type ReaderWrapper;
 
-        fn new_reader(handle: Pin<&mut DataHandleWrapper>) -> Result<UniquePtr<ReaderWrapper>>;
+        /// Open a `ReaderWrapper` over a `DataHandleWrapper`.
+        #[Self = "ReaderWrapper"]
+        fn from_handle(handle: Pin<&mut DataHandleWrapper>) -> Result<UniquePtr<ReaderWrapper>>;
+
         fn next(self: Pin<&mut ReaderWrapper>) -> Result<UniquePtr<MessageWrapper>>;
 
         // ==================== Stream ====================
@@ -199,15 +207,18 @@ mod ffi {
         fn bytes_written(self: &StreamWrapper) -> i64;
 
         /// Connect to a TCP host:port and return a stream.
-        fn stream_connect(host: &str, port: i32) -> Result<UniquePtr<StreamWrapper>>;
+        #[Self = "StreamWrapper"]
+        fn connect(host: &str, port: i32) -> Result<UniquePtr<StreamWrapper>>;
 
         /// Create a resizable memory stream for writing.
+        #[Self = "StreamWrapper"]
         #[must_use]
-        fn stream_memory_write() -> UniquePtr<StreamWrapper>;
+        fn memory_write() -> UniquePtr<StreamWrapper>;
 
         /// Create a fixed memory stream for reading from existing data.
+        #[Self = "StreamWrapper"]
         #[must_use]
-        fn stream_memory_read(data: &[u8]) -> UniquePtr<StreamWrapper>;
+        fn memory_read(data: &[u8]) -> UniquePtr<StreamWrapper>;
     }
 
     extern "Rust" {
@@ -313,5 +324,5 @@ fn rust_log(level: ffi::LogLevel, target: &str, msg: &str) {
 /// factory methods, ensuring every thread gets log output routed through
 /// Rust's `log` crate.
 pub fn init() {
-    ffi::init();
+    ffi::RustMain::initialise();
 }

@@ -58,10 +58,6 @@ mod ffi {
         #[Self = "ConfigWrapper"]
         fn from_yaml(yaml: &str) -> Result<UniquePtr<ConfigWrapper>>;
 
-        /// Deep-copy this configuration.
-        #[rust_name = "clone_config"]
-        fn clone(self: &ConfigWrapper) -> UniquePtr<ConfigWrapper>;
-
         // Read
         fn has(self: &ConfigWrapper, key: &str) -> bool;
         fn is_list(self: &ConfigWrapper, key: &str) -> bool;

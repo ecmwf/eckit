@@ -106,10 +106,6 @@ void ConfigWrapper::remove(rust::Str key) {
     config_.remove(std::string(key));
 }
 
-std::unique_ptr<ConfigWrapper> ConfigWrapper::clone() const {
-    return std::make_unique<ConfigWrapper>(config_);
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 
 std::unique_ptr<ConfigWrapper> ConfigWrapper::create() {

@@ -54,9 +54,6 @@ public:
     const eckit::LocalConfiguration& inner() const { return config_; }
     eckit::LocalConfiguration& inner() { return config_; }
 
-    /// Deep-copy this configuration.
-    std::unique_ptr<ConfigWrapper> clone() const;
-
     // ============== Factories ==============
 
     /// Create an empty configuration.

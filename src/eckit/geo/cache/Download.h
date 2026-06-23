@@ -39,6 +39,7 @@ public:
 
     // -- Methods
 
+    static const int VERSION;
     static const std::string PREFIX;
     static const std::string SUFFIX;
 
@@ -48,6 +49,8 @@ public:
     // -- Class methods
 
     static info_type to_path(const url_type&, const PathName&, bool html = false);
+
+    static int version() { return VERSION; }
 
     static std::string url_file_basename(const url_type&, bool ext = true);
     static std::string url_file_extension(const url_type&);

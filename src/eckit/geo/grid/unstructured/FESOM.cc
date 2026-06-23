@@ -78,7 +78,8 @@ Grid::uid_type FESOM::calculate_uid() const {
 
     if (arrangement_from_string(arrangement()) == Arrangement::FESOM_C) {
         // download internally controls concurrent reads/writes
-        static cache::Download download(LibEcKitGeo::cacheDir() + "/grid/fesom");
+        static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "fesom" /
+                                        std::to_string(cache::Download::version()));
 
         // bootstrap uid
         std::unique_ptr<Spec> spec(GridSpecByUID::instance().get(uid()).spec());

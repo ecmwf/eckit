@@ -53,7 +53,9 @@ struct Loader final : Cache::Loader {
         }
 
         if (spec->has("url")) {
-            static cache::Download download(PathName(LibEcKitGeo::cacheDir()) / "latlon");
+            static cache::Download download(PathName{LibEcKitGeo::cacheDir()} / "latlon" /
+                                            std::to_string(cache::Download::version()));
+
             record.read(download.to_cached_path(LibEcKitGeo::url(spec->get_string("url")), "", ".ek"));
             return;
         }

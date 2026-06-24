@@ -55,8 +55,20 @@ public:
     using Spec      = spec::Spec;
     using ARG1      = const Spec&;
 
-    struct Iterator final : std::shared_ptr<geo::Iterator> {
-        explicit Iterator(geo::Iterator* it) : shared_ptr(it) { ASSERT(shared_ptr::operator bool()); }
+    struct Iterator final : std::unique_ptr<geo::Iterator> {
+        explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
+
+        Iterator(const Iterator& other) : unique_ptr(other->clone()) {}
+        Iterator(Iterator&&) noexcept = default;
+
+        Iterator& operator=(const Iterator& other) {
+            if (this != &other) {
+                reset(other->clone());
+            }
+            return *this;
+        }
+
+        Iterator& operator=(Iterator&&) noexcept = default;
 
         using iterator_category = element_type::iterator_category;
         using difference_type   = element_type::difference_type;

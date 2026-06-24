@@ -20,13 +20,13 @@
 #pragma once
 
 #include <sys/mman.h>
-#include <sys/time.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <random>
 #include <string>
 #include <vector>
 
@@ -46,10 +46,8 @@ namespace fam {
 
 // This returns a random number as string, unique per process.
 inline auto random_number() -> std::string {
-    struct timeval tv{};
-    ::gettimeofday(&tv, nullptr);
-    ::srandom(static_cast<unsigned int>(tv.tv_sec + tv.tv_usec + ::getpid()));
-    return std::to_string(::random());
+    static thread_local std::mt19937 gen(std::random_device{}() ^ static_cast<unsigned int>(::getpid()));
+    return std::to_string(gen());
 }
 
 /// Derives the POSIX shm name from an endpoint using the same algorithm as FamMockSession.

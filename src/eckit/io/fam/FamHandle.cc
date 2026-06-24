@@ -51,7 +51,7 @@ void FamHandle::close() {
 }
 
 void FamHandle::flush() {
-    Log::debug<LibEcKit>() << "FamHandle::flush() ?! noop\n";
+    LOG_DEBUG_LIB(LibEcKit) << "FamHandle::flush() ?! noop\n";
 }
 
 Offset FamHandle::seek(const Offset& offset) {
@@ -85,7 +85,7 @@ void FamHandle::openForWrite(const Length& length) {
         }
     }
     catch (const NotFound& e) {
-        Log::debug<LibEcKit>() << "FamHandle::openForWrite() " << e.what() << '\n';
+        LOG_DEBUG_LIB(LibEcKit) << "FamHandle::openForWrite() " << e.what() << '\n';
         ASSERT(length > 0);
         object_ = name_.allocate(length);
     }

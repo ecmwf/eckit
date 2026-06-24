@@ -46,7 +46,7 @@ namespace eckit {
 namespace {
 
 std::unique_ptr<openfam::fam> initializeFamSession(const std::string& name, const net::Endpoint& endpoint) {
-    Log::debug<LibEcKit>() << "Initializing FAM session: " << name << " with endpoint " << endpoint << '\n';
+    LOG_DEBUG_LIB(LibEcKit) << "Initializing FAM session: " << name << " with endpoint " << endpoint << '\n';
 
     auto fam = std::make_unique<openfam::fam>();
 
@@ -195,7 +195,7 @@ void FamSession::destroyRegion(const std::string& region_name) {
 
 FamRegion FamSession::ensureCreateRegion(const fam::size_t region_size, const fam::perm_t region_perm,
                                          const std::string& region_name) {
-    // Retry loop guards against TOCTOU
+    // Retry loop guards against TOCTOU (Time Of Check To Time Of Use)
     constexpr int max_retries = 3;
     for (int attempt = 0; attempt <= max_retries; ++attempt) {
         try {

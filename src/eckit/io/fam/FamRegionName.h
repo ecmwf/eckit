@@ -23,7 +23,6 @@
 
 #include "eckit/io/fam/FamName.h"
 #include "eckit/io/fam/FamObjectName.h"
-#include "eckit/io/fam/FamProperty.h"
 
 namespace eckit {
 

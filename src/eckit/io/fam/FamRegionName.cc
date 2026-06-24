@@ -56,10 +56,7 @@ bool FamRegionName::exists() const {
         return lookup().exists();
     }
     catch (const NotFound& not_found) {
-        Log::debug<LibEcKit>() << not_found << '\n';
-    }
-    catch (const PermissionDenied& permission_denied) {
-        Log::debug<LibEcKit>() << permission_denied << '\n';
+        LOG_DEBUG_LIB(LibEcKit) << not_found << '\n';
     }
     return false;
 }

@@ -37,7 +37,7 @@ static const std::string REGULAR_LL_PATTERN("(" POSITIVE_REAL ")/(" POSITIVE_REA
 
 RegularLL::Increments::Increments(value_type dlon, value_type dlat) : array{dlon, dlat} {
     if (dlon < 0 || dlat < 0) {
-        throw exception::SpecError("'grid' = ['dlon', 'dlat'] must be positive", Here());
+        throw exception::GridError("'grid' = ['dlon', 'dlat'] must be positive", Here());
     }
 }
 
@@ -57,7 +57,7 @@ RegularLL::Increments RegularLL::Increments::make_from_spec(const Spec& spec) {
         return {grid[0], grid[1]};
     }
 
-    throw exception::SpecError("'grid' = ['dlon', 'dlat'] expected", Here());
+    throw exception::GridError("'grid' = ['dlon', 'dlat'] expected", Here());
 }
 
 
@@ -197,13 +197,13 @@ struct ArakawaC : public RegularLL {
 
             auto N = spec.get_unsigned("n");
             if (N == 0) {
-                throw exception::SpecError("ArakawaC: 'n' must be a positive integer", Here());
+                throw exception::GridError("ArakawaC: 'n' must be a positive integer", Here());
             }
 
             auto grid_factor = spec.get_double_vector("grid_factor", {1., 1.});
             if (grid_factor.size() != 2 || types::is_approximately_lesser_or_equal(grid_factor[0], 0.) ||
                 types::is_approximately_lesser_or_equal(grid_factor[1], 0.)) {
-                throw exception::SpecError(
+                throw exception::GridError(
                     "ArakawaC: 'grid_factor' = ['dlon-factor', 'dlat-factor'] must be a vector of two positive "
                     "real numbers",
                     Here());

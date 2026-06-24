@@ -224,6 +224,15 @@ CASE("FamHandle: openForWrite on existing object with overwrite") {
         const std::string data = "overwritten";
         handle->write(data.data(), static_cast<long>(data.size()));
     }
+
+    {
+        std::unique_ptr<DataHandle> handle(obj_name.dataHandle());
+        handle->openForRead();
+        AutoClose closer(*handle);
+        std::string read(32, '\0');
+        handle->read(read.data(), 32);
+        EXPECT_EQUAL(read.substr(0, 11), "overwritten");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

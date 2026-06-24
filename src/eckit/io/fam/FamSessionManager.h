@@ -68,7 +68,7 @@ private:  // members
 
     friend class TestAccessor;
 
-    mutable std::recursive_mutex mutex_;
+    mutable std::mutex mutex_;
 
     std::list<Session> sessions_;
 };

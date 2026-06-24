@@ -19,26 +19,50 @@
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/cache/MemoryCache.h"
+#include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/types/FloatCompare.h"
 #include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::grid::reduced {
 
 
-static const std::string HEALPIX_PATTERN = "h([rn][1-9][0-9]*|[1-9][0-9]*(|r|_ring|n|_nested))";
+static const std::string HEALPIX_PATTERN = "h[rn][1-9][0-9]*|h[1-9][0-9]*[rn]?";
+
+
+const std::vector<double>& healpix_longitudes(size_t Nside, size_t j) {
+    using cache_t = cache::MemoryCacheT<std::pair<size_t, size_t>, std::vector<double>>;
+    const cache_t::key_type key{Nside, j};
+
+    static cache_t cache;
+    if (cache.contains(key)) {
+        return cache[key];
+    }
+
+    ASSERT(0 < Nside);
+
+    const auto Nj = 4 * Nside - 1;
+    ASSERT(j < Nj);
+
+    const auto Ni = j < Nside ? 4 * (j + 1) : j < 3 * Nside ? 4 * Nside : 4 * (4 * Nside - 1 - j);
+    ASSERT(0 < Ni);
+
+    const auto step  = PointLonLat::FULL_ANGLE / static_cast<double>(Ni);
+    const auto start = j < Nside || 3 * Nside - 1 < j || static_cast<bool>((j + Nside) % 2) ? step / 2. : 0.;
+
+    std::vector<double> lons(Ni);
+    std::generate_n(lons.begin(), Ni,
+                    [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
+
+    return (cache[key] = std::move(lons));
+}
 
 
 HEALPix::HEALPix(const Spec& spec) :
-    HEALPix(into_unsigned(spec.get_long("Nside")), spec.get_string("order", order::HEALPix::order_default())) {
-    // NOTE: this is format-specific and should be moved from here
-    if (double west = 45.; spec.get("west", west) && !types::is_approximately_equal(west, 45., PointLonLat::EPS)) {
-        throw exception::GridError("HEALPix: west offset should be 45 degrees", Here());
-    }
-}
+    HEALPix(into_unsigned(spec.get_long("Nside")), spec.get_string("order", order::HEALPix::order_default())) {}
 
 
 HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), healpix_(order) {
@@ -50,14 +74,35 @@ HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), healpix_(order
 
 
 Grid::iterator HEALPix::cbegin() const {
-    std::ignore = to_points();
-    ASSERT(points_);
+    if (healpix_.order() == order::HEALPix::RING) {
+        return iterator{new geo::iterator::Reduced(*this, 0)};
+    }
 
-    return iterator{new geo::iterator::Unstructured(*this, 0, points_)};
+    // order=nested: cache full latitudes/longitudes for the unstructured iterator
+    if (nested_latitudes_.empty()) {
+        const auto ren = order::HEALPix{}.reorder(order(), Nside_);
+
+        nested_latitudes_.resize(size());
+        nested_longitudes_.resize(size());
+
+        const auto& latvec = latitudes();
+        for (size_t j = 0, k = 0; j < latvec.size(); ++j) {
+            for (const auto lon : longitudes(j)) {
+                nested_latitudes_[ren.at(k)]  = latvec[j];
+                nested_longitudes_[ren.at(k)] = lon;
+                ++k;
+            }
+        }
+    }
+
+    return iterator{new geo::iterator::Unstructured(*this, 0, nested_longitudes_, nested_latitudes_)};
 }
 
 
 Grid::iterator HEALPix::cend() const {
+    if (healpix_.order() == order::HEALPix::RING) {
+        return iterator{new geo::iterator::Reduced(*this, size())};
+    }
     return iterator{new geo::iterator::Unstructured(*this)};
 }
 
@@ -80,8 +125,7 @@ Grid::Spec* HEALPix::spec(const std::string& name) {
     ASSERT(std::regex_search(name, match, rex));
 
     auto Nside  = std::stoul(match.str());
-    auto nested = (name.find("n") != std::string::npos || name.find("N") != std::string::npos) &&
-                  (name.find("r") == std::string::npos && name.find("R") == std::string::npos);
+    auto nested = (name.find("n") != std::string::npos || name.find("N") != std::string::npos);
 
     return new spec::Custom{
         {"type", "HEALPix"}, {"Nside", Nside}, {"order", nested ? order::HEALPix::NESTED : order::HEALPix::RING}};
@@ -108,61 +152,53 @@ size_t HEALPix::size() const {
 
 
 std::vector<Point> HEALPix::to_points() const {
-    if (!points_) {
-        // reorder to this grid's order
-        const auto ren = order::HEALPix{}.reorder(order(), Nside());
+    // This isn't very efficient
+    std::vector<Point> points;
+    points.reserve(size());
 
-        std::vector<Point> points(size());
-
-        const auto& lats = latitudes();
-        for (size_t j = 0, k = 0; j < lats.size(); ++j) {
-            for (const auto lon : longitudes(j)) {
-                points[ren.at(k++)] = PointLonLat{lon, lats[j]};
-            }
+    if (!nested_latitudes_.empty() || !nested_longitudes_.empty()) {
+        ASSERT(nested_latitudes_.size() == size() && nested_longitudes_.size() == size());
+        for (size_t i = 0; i < size(); ++i) {
+            points.emplace_back(PointLonLat{nested_longitudes_[i], nested_latitudes_[i]});
         }
-
-        points_ = std::make_shared<container::PointsInstance>(std::move(points));
+        return points;
     }
 
-    ASSERT(points_);
-    return points_->to_points();
+    auto [lats, lons] = to_latlons();
+    for (size_t i = 0; i < size(); ++i) {
+        points.emplace_back(PointLonLat{lons[i], lats[i]});
+    }
+
+    return points;
 }
 
 
 const std::vector<double>& HEALPix::latitudes() const {
     const auto Nj = ny();
 
-    if (latitudes_.empty()) {
-        latitudes_.resize(Nj);
+    if (healpix_latitudes_.empty()) {
+        healpix_latitudes_.resize(Nj);
 
-        auto i = latitudes_.begin();
-        auto j = latitudes_.rbegin();
+        auto i = healpix_latitudes_.begin();
+        auto j = healpix_latitudes_.rbegin();
         for (size_t ring = 1; ring < 2 * Nside_; ++ring, ++i, ++j) {
             const auto f = ring < Nside_
                                ? 1. - static_cast<double>(ring * ring) / (3 * static_cast<double>(Nside_ * Nside_))
                                : 4. / 3. - 2 * static_cast<double>(ring) / (3 * static_cast<double>(Nside_));
 
-            *i = 90. - util::RADIAN_TO_DEGREE * std::acos(f);
+            *i = PointLonLat::RIGHT_ANGLE - util::RADIAN_TO_DEGREE * std::acos(f);
             *j = -*i;
         }
         *i = 0.;
     }
 
-    ASSERT(latitudes_.size() == Nj);
-    return latitudes_;
+    ASSERT(healpix_latitudes_.size() == Nj);
+    return healpix_latitudes_;
 }
 
 
-std::vector<double> HEALPix::longitudes(size_t j) const {
-    const auto Ni    = nx(j);
-    const auto step  = 360. / static_cast<double>(Ni);
-    const auto start = j < Nside_ || 3 * Nside_ - 1 < j || static_cast<bool>((j + Nside_) % 2) ? step / 2. : 0.;
-
-    std::vector<double> lons(Ni);
-    std::generate_n(lons.begin(), Ni,
-                    [start, step, n = 0ULL]() mutable { return start + static_cast<double>(n++) * step; });
-
-    return lons;
+const std::vector<double>& HEALPix::longitudes(size_t j) const {
+    return healpix_longitudes(Nside_, j);
 }
 
 
@@ -175,7 +211,7 @@ void HEALPix::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& HEALPix::type() const {
-    static const std::string type{"healpix"};
+    static const std::string type{"HEALPix"};
     return type;
 }
 

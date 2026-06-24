@@ -42,7 +42,6 @@ class lock_type {
 const Area::Spec& Area::spec() const {
     if (!spec_) {
         spec_ = std::make_shared<spec::Custom>();
-        ASSERT(spec_);
 
         auto& custom = *spec_;
         fill_spec(custom);
@@ -114,7 +113,6 @@ Area::Spec* AreaFactory::make_spec_(const Area::Spec& spec) const {
     // hardcoded, interpreted options (contributing to areaspec)
 
     auto back = std::make_unique<spec::Custom>();
-    ASSERT(back);
 
     cfg->push_back(new spec::Custom{{"type", "bounding_box"}});
 

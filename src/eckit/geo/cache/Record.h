@@ -12,65 +12,28 @@
 
 #pragma once
 
-#include <string>
+#include <cstddef>
 
-#include "eckit/filesystem/PathName.h"
-#include "eckit/geo/cache/Download.h"
-#include "eckit/geo/cache/MemoryCache.h"
-#include "eckit/geo/util/mutex.h"
-
-
-namespace eckit::spec {
+namespace eckit {
+class PathName;
+namespace spec {
 class Spec;
 }
+}  // namespace eckit
 
 
 namespace eckit::geo::cache {
 
 
-std::string record_uid_from_spec(const spec::Spec&);
-std::string record_url_from_spec(const spec::Spec&);
-
-
-template <typename T>
-class Record {
+class RecordCache {
 public:
 
-    using value_type = T;
+    using bytes_t = decltype(sizeof(int));
+    using Spec    = spec::Spec;
 
-    explicit Record(const PathName& cacheDir) : download_(cacheDir) {}
-
-    const T& get(const spec::Spec& s) { return get(record_url_from_spec(s), record_uid_from_spec(s), ".ek", s); }
-
-    const T& get(const std::string& url, const std::string& prefix, const std::string& suffix, const spec::Spec& spec) {
-        util::lock_guard<util::recursive_mutex> lock(mutex_);
-
-        auto path = download_.to_cached_path(url, prefix, suffix);
-        ASSERT_MSG(path.exists(), "Record: file '" + path + "' not found");
-
-        if (cache_.contains(path)) {
-            return cache_[path];
-        }
-
-        auto& record = cache_[path];
-        record.read(path);
-        record.check(spec);
-
-        return record;
-    }
-
-    void purge() {
-        util::lock_guard<util::recursive_mutex> lock(mutex_);
-        cache_.purge();
-    }
-
-    const PathName& cacheDir() const { return download_.cache_root(); }
-
-private:
-
-    util::recursive_mutex mutex_;
-    MemoryCacheT<PathName, value_type> cache_;
-    Download download_;
+    virtual ~RecordCache()             = default;
+    virtual bytes_t footprint() const  = 0;
+    virtual void read(const PathName&) = 0;
 };
 
 

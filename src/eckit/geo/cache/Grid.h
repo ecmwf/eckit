@@ -10,23 +10,29 @@
  */
 
 
-#include "eckit/geo/cache/Record.h"
+#pragma once
 
-#include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/spec/Spec.h"
+#include "eckit/geo/Grid.h"
 
 
 namespace eckit::geo::cache {
 
 
-std::string record_uid_from_spec(const spec::Spec& s) {
-    return s.get_string("uid", "");
-}
+class Grid final {
+public:
 
+    // -- Class methods
 
-std::string record_url_from_spec(const spec::Spec& s) {
-    return LibEcKitGeo::url(s.get_string("url"));
-}
+    static Grid& instance();
+
+    static void save(const geo::Grid::uid_type&, const geo::Grid::Spec&);
+
+private:
+
+    // -- Constructors
+
+    explicit Grid() = default;
+};
 
 
 }  // namespace eckit::geo::cache

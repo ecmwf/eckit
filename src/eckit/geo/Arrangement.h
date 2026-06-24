@@ -19,6 +19,10 @@ namespace eckit::geo {
 enum Arrangement {
     NONE = 0,
 
+    ARAKAWA_C_T,
+    ARAKAWA_C_U,
+    ARAKAWA_C_V,
+
     FESOM_C,
     FESOM_N,
 

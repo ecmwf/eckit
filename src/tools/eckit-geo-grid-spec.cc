@@ -23,10 +23,10 @@
 
 namespace eckit {
 
-class EckitGridSpec final : public EckitTool {
+class EckitGeoGridSpec final : public EckitTool {
 public:
 
-    EckitGridSpec(int argc, char** argv) : EckitTool(argc, argv) {
+    EckitGeoGridSpec(int argc, char** argv) : EckitTool(argc, argv) {
         options_.push_back(new option::SimpleOption<bool>("shape", "Grid shape"));
     }
 
@@ -72,6 +72,6 @@ private:
 
 
 int main(int argc, char** argv) {
-    eckit::EckitGridSpec app(argc, argv);
+    eckit::EckitGeoGridSpec app(argc, argv);
     return app.start();
 }

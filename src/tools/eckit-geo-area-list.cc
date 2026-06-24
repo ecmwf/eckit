@@ -27,8 +27,8 @@
 namespace eckit::tools {
 
 
-struct EckitAreaList final : EckitTool {
-    EckitAreaList(int argc, char** argv) : EckitTool(argc, argv) {
+struct EckitGeoAreaList final : EckitTool {
+    EckitGeoAreaList(int argc, char** argv) : EckitTool(argc, argv) {
 #if eckit_HAVE_GEO_AREA_SHAPEFILE
         options_.push_back(new option::SimpleOption<std::string>("shapefile-file", "Shapefile file path"));
         options_.push_back(new option::SimpleOption<std::string>("shapefile-url", "Shapefile URL"));
@@ -70,6 +70,6 @@ struct EckitAreaList final : EckitTool {
 
 
 int main(int argc, char** argv) {
-    eckit::tools::EckitAreaList app(argc, argv);
+    eckit::tools::EckitGeoAreaList app(argc, argv);
     return app.start();
 }

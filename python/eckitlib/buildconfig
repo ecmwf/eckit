@@ -1,4 +1,4 @@
-# (C) Copyright 2024- ECMWF.
+# (C) Copyright 1996- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -11,6 +11,8 @@
 # TODO we duplicate information -- pyproject.toml's `name` and `packages` are derivable from $NAME and must stay consistent
 
 NAME="eckit"
-CMAKE_PARAMS="-DENABLE_MPI=0  -DENABLE_ECKIT_GEO=1 -DENABLE_BUILD_TOOLS=OFF -DENABLE_AEC=0 -DENABLE_EIGEN=0 -DENABLE_LZ4=1"
+_HERE="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
+PYTHON_INSTALL_DIR=$(cd -- "$_HERE/../eckit/src" && pwd) # dont use readlink -m here, not macos portable
+CMAKE_PARAMS="-DENABLE_MPI=0  -DENABLE_ECKIT_GEO=1 -DENABLE_BUILD_TOOLS=OFF -DENABLE_AEC=0 -DENABLE_EIGEN=0 -DENABLE_LZ4=1 -DENABLE_PYTHON=1 -DPYTHONEXT_INSTALL_DIR=$PYTHON_INSTALL_DIR"
 PYPROJECT_DIR="python/eckitlib"
 DEPENDENCIES='[]'

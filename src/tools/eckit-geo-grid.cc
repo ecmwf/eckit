@@ -29,10 +29,10 @@
 namespace eckit {
 
 
-class EckitGrid final : public EckitTool {
+class EckitGeoGrid final : public EckitTool {
 public:
 
-    EckitGrid(int argc, char** argv) : EckitTool(argc, argv) {
+    EckitGeoGrid(int argc, char** argv) : EckitTool(argc, argv) {
         options_.push_back(new option::SimpleOption<std::string>("grid", "spec"));
         options_.push_back(new option::SimpleOption<bool>("minmax-ll", "Limits for (lon, lat) coordinates"));
         options_.push_back(new option::SimpleOption<bool>("calculate-bbox", "Calculate bounding box"));
@@ -135,6 +135,6 @@ private:
 
 
 int main(int argc, char** argv) {
-    eckit::EckitGrid app(argc, argv);
+    eckit::EckitGeoGrid app(argc, argv);
     return app.start();
 }

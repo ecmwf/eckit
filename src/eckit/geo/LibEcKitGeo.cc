@@ -16,12 +16,56 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/utils/StringTools.h"
 
 
 namespace eckit {
+
+
+static std::vector<PathName> paths(const std::string& rsrc, const std::string& rsrc_default,
+                                   const std::string& path_in_cache) {
+    auto vs = StringTools::split(":", LibResource<std::string, LibEcKitGeo>(rsrc, rsrc_default));
+    std::vector<PathName> ps(vs.begin(), vs.end());
+
+    if (LibEcKitGeo::caching()) {
+        ps.emplace_back(PathName{LibEcKitGeo::cacheDir(), true} / path_in_cache);
+    }
+
+    return ps;
+}
+
+
+static void purge_path_recursive(const PathName& p) {
+    std::vector<PathName> files;
+    std::vector<PathName> dirs;
+    p.children(files, dirs);
+
+    for (auto& f : files) {
+        f.unlink();
+    }
+
+    for (auto& d : dirs) {
+        purge_path_recursive(d);
+    }
+
+    if (p.exists()) {
+        p.rmdir();
+    }
+}
+
+static void purge_path(const PathName& p) {
+    if (p.exists()) {
+        try {
+            purge_path_recursive(p);
+        }
+        catch (const Exception& e) {
+            throw SeriousBug("LibEcKitGeo: failed to remove path '" + p + "': " + e.what(), Here());
+        }
+    }
+}
 
 
 REGISTER_LIBRARY(LibEcKitGeo);
@@ -37,30 +81,39 @@ LibEcKitGeo& LibEcKitGeo::instance() {
 
 
 std::vector<PathName> LibEcKitGeo::shareArea() {
-    static const auto paths = [](const std::string& s) -> std::vector<PathName> {
-        const auto ss = StringTools::split(":", s);
-        return {ss.begin(), ss.end()};
-    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-area;$ECKIT_GEO_SHARE_AREA", eckit_GEO_SHARE_AREA));
-    return paths;
+    static const auto ps = paths("eckit-geo-share-area;$ECKIT_GEO_SHARE_AREA", eckit_GEO_SHARE_AREA, "area.yaml");
+    return ps;
 }
 
 
 std::vector<PathName> LibEcKitGeo::shareGrid() {
-    static const auto paths = [](const std::string& s) -> std::vector<PathName> {
-        const auto ss = StringTools::split(":", s);
-        return {ss.begin(), ss.end()};
-    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-grid;$ECKIT_GEO_SHARE_GRID", eckit_GEO_SHARE_GRID));
-    return paths;
+    static const auto ps = paths("eckit-geo-share-grid;$ECKIT_GEO_SHARE_GRID", eckit_GEO_SHARE_GRID, "grid.yaml");
+    return ps;
 }
 
 
 std::vector<PathName> LibEcKitGeo::shareProjection() {
-    static const auto paths = [](const std::string& s) -> std::vector<PathName> {
-        const auto ss = StringTools::split(":", s);
-        return {ss.begin(), ss.end()};
-    }(LibResource<std::string, LibEcKitGeo>("eckit-geo-share-projection;$ECKIT_GEO_SHARE_PROJECTION",
-                                                       eckit_GEO_SHARE_PROJECTION));
-    return paths;
+    static const auto ps =
+        paths("eckit-geo-share-projection;$ECKIT_GEO_SHARE_PROJECTION", eckit_GEO_SHARE_PROJECTION, "projection.yaml");
+    return ps;
+}
+
+
+PathName LibEcKitGeo::cacheArea() {
+    static const auto p = PathName(cacheDir()) / "area.yaml";
+    return p;
+}
+
+
+PathName LibEcKitGeo::cacheGrid() {
+    static const auto p = PathName(cacheDir()) / "grid.yaml";
+    return p;
+}
+
+
+PathName LibEcKitGeo::cacheProjection() {
+    static const auto p = PathName(cacheDir()) / "projection.yaml";
+    return p;
 }
 
 
@@ -72,10 +125,30 @@ bool LibEcKitGeo::caching() {
 
 
 std::string LibEcKitGeo::cacheDir() {
-    static std::string path = PathName{
+    static const std::string path = PathName{
         LibResource<std::string, LibEcKitGeo>("eckit-geo-cache-path;$ECKIT_GEO_CACHE_PATH", eckit_GEO_CACHE_PATH),
         true};
     return path;
+}
+
+
+void LibEcKitGeo::purgeCacheDir() {
+    purge_path_recursive(cacheDir());
+}
+
+
+void LibEcKitGeo::purgeCacheArea() {
+    purge_path(cacheArea());
+}
+
+
+void LibEcKitGeo::purgeCacheGrid() {
+    purge_path(cacheGrid());
+}
+
+
+void LibEcKitGeo::purgeCacheProjection() {
+    purge_path(cacheProjection());
 }
 
 

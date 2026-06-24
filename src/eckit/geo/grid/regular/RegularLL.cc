@@ -170,8 +170,8 @@ RegularLL::Reference RegularLL::reference_default() {
 Grid::BoundingBox* RegularLL::calculate_bbox() const {
     auto n = y_.includesNorthPole() ? PointLonLat::RIGHT_ANGLE : y_.max();
     auto s = y_.includesSouthPole() ? -PointLonLat::RIGHT_ANGLE : y_.min();
-    auto w = x_.a();
-    auto e = x_.b();
+    auto w = x_.min();
+    auto e = x_.max();
 
     if (x_.periodic()) {
         if (const auto ref = reference(); types::is_approximately_equal(ref.lon(), w, PointLonLat::EPS)) {

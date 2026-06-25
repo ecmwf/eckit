@@ -161,11 +161,11 @@ CASE("FamList: concurrent pushBack from 4 processes") {
     { FamList list(region, name); }
 
     bool ok = fork_and_exec(num_procs, {
-        "--fn=pushBack",
-        "--region=" + region.name(),
-        "--list=" + name,
-        "--count=" + std::to_string(items_per_proc),
-    });
+                                           "--fn=pushBack",
+                                           "--region=" + region.name(),
+                                           "--list=" + name,
+                                           "--count=" + std::to_string(items_per_proc),
+                                       });
 
     EXPECT(ok);
 
@@ -197,11 +197,11 @@ CASE("FamList: one writer process, parent reads") {
     { FamList list(region, name); }
 
     bool ok = fork_and_exec(1, {
-        "--fn=write",
-        "--region=" + region.name(),
-        "--list=" + name,
-        "--count=" + std::to_string(count),
-    });
+                                   "--fn=write",
+                                   "--region=" + region.name(),
+                                   "--list=" + name,
+                                   "--count=" + std::to_string(count),
+                               });
 
     EXPECT(ok);
 
@@ -230,11 +230,11 @@ CASE("FamList: concurrent pushFront and pushBack from 4 processes") {
     { FamList list(region, name); }
 
     bool ok = fork_and_exec(num_procs, {
-        "--fn=pushFrontBack",
-        "--region=" + region.name(),
-        "--list=" + name,
-        "--count=" + std::to_string(items_per_proc),
-    });
+                                           "--fn=pushFrontBack",
+                                           "--region=" + region.name(),
+                                           "--list=" + name,
+                                           "--count=" + std::to_string(items_per_proc),
+                                       });
 
     EXPECT(ok);
 

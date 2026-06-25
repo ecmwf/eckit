@@ -199,10 +199,10 @@ CASE("FamRegion: idempotent creation from 4 processes") {
     constexpr eckit::fam::size_t region_size = 1024 * 1024;
 
     bool ok = fork_and_exec(4, {
-        "--fn=idempotent_create",
-        "--region=" + region_name,
-        "--region-size=" + std::to_string(region_size),
-    });
+                                   "--fn=idempotent_create",
+                                   "--region=" + region_name,
+                                   "--region-size=" + std::to_string(region_size),
+                               });
 
     EXPECT(ok);
 
@@ -222,7 +222,8 @@ int child_worker_main(int argc, char** argv) {
     auto fn   = eckit::testing::get_worker_arg(args, "fn");
     if (fn == "idempotent_create") {
         auto region_name = eckit::testing::get_worker_arg(args, "region");
-        auto region_size = static_cast<eckit::fam::size_t>(std::stol(eckit::testing::get_worker_arg(args, "region-size")));
+        auto region_size =
+            static_cast<eckit::fam::size_t>(std::stol(eckit::testing::get_worker_arg(args, "region-size")));
         auto name = eckit::FamRegionName(eckit::test::fam::test_endpoint, "").withRegion(region_name);
         try {
             name.create(region_size, 0640);

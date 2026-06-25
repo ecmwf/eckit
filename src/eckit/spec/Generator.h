@@ -68,6 +68,7 @@ public:
 
     const generator_t& get(const key_t&) const;
     const generator_t& match(const std::string&) const;
+    const storage_t& store() const { return store_; }
 
     bool match(const Custom& spec, std::string& name) const {
         auto end = store_.cend();

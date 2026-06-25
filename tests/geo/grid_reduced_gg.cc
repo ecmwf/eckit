@@ -37,14 +37,23 @@ CASE("gridspec") {
         EXPECT_EQUAL(n1, 88);
         EXPECT_EQUAL(grid1->spec_str(), R"({"grid":"O2"})");
 
-        spec::Custom hemisphere(spec.container());
-        hemisphere.set("south", 0);
+        spec::Custom nhemisphere(spec.container());
+        nhemisphere.set("south", 0);
 
-        std::unique_ptr<const Grid> grid2(GridFactory::build(hemisphere));
+        std::unique_ptr<const Grid> grid2(GridFactory::build(nhemisphere));
         auto n2 = grid2->size();
 
         EXPECT_EQUAL(n2, n1 / 2);
-        EXPECT_EQUAL(grid2->spec_str(), R"({"area":[90,0,0,360],"grid":"O2"})");
+        EXPECT_EQUAL(grid2->spec_str(), R"({"area":[90,0,19.8757191474409,360],"grid":"O2"})");
+
+        spec::Custom shemisphere(spec.container());
+        shemisphere.set("north", 0);
+
+        std::unique_ptr<const Grid> grid3(GridFactory::build(shemisphere));
+        auto n3 = grid3->size();
+
+        EXPECT_EQUAL(n3, n2);
+        EXPECT_EQUAL(grid3->spec_str(), R"({"area":[-19.8757191474409,0,-90,360],"grid":"O2"})");
     }
 }
 
@@ -167,7 +176,7 @@ CASE("equals") {
     std::unique_ptr<const Grid> grid1(GridFactory::build(spec::Custom({{"grid", "o3"}})));
     std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("N: 3"));
     std::unique_ptr<const Grid> grid3(new ReducedGaussian(3));
-    std::unique_ptr<const Grid> grid4(new ReducedGaussian(3, pl_type{20, 24, 28, 28, 24, 20}));
+    std::unique_ptr<const Grid> grid4(new ReducedGaussian(pl_type{20, 24, 28, 28, 24, 20}));
 
     EXPECT(*grid1 == *grid2);
     EXPECT(*grid2 == *grid3);

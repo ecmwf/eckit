@@ -27,10 +27,10 @@
 
 namespace eckit {
 
-class EckitGridNearest final : public EckitTool {
+class EckitGeoGridNearest final : public EckitTool {
 public:
 
-    EckitGridNearest(int argc, char** argv) : EckitTool(argc, argv) {
+    EckitGeoGridNearest(int argc, char** argv) : EckitTool(argc, argv) {
         options_.push_back(new option::SimpleOption<bool>("uid", "by grid unique identifier, instead of name"));
         options_.push_back(new option::VectorOption<double>("nearest-point", "nearest point location (lon/lat)", 2));
         options_.push_back(new option::SimpleOption<size_t>("nearest-k", "nearest k points"));
@@ -90,6 +90,6 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-    eckit::EckitGridNearest app(argc, argv);
+    eckit::EckitGeoGridNearest app(argc, argv);
     return app.start();
 }

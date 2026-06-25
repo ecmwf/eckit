@@ -1,4 +1,4 @@
-# (C) Copyright 2025- ECMWF.
+# (C) Copyright 1996- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -25,10 +25,19 @@ def git_sha1() -> str:
     return eckit_geo.LibEcKitGeo.instance().gitsha1(40)
 
 
+def cache_dir_purge() -> None:
+    eckit_geo.LibEcKitGeo.purgeCacheDir()
+
+
 cdef class Area:
     cdef const eckit_geo.Area* _area
 
+    def __dealloc__(self):
+        if self._area != NULL:
+            del self._area
+
     def __cinit__(self, spec = None, **kwargs):
+        self._area = NULL
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
@@ -65,7 +74,12 @@ cdef class Area:
 cdef class Grid:
     cdef const eckit_geo.Grid* _grid
 
+    def __dealloc__(self):
+        if self._grid != NULL:
+            del self._grid
+
     def __cinit__(self, spec = None, **kwargs):
+        self._grid = NULL
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
@@ -89,6 +103,12 @@ cdef class Grid:
         cdef pair[vector[double], vector[double]] latlons = self._grid.to_latlons()
         return list(latlons.first), list(latlons.second)
 
+    def distinct_latitudes(self):
+        return self._grid.distinct_latitudes()
+
+    def distinct_longitudes(self):
+        return self._grid.distinct_longitudes()
+
     def bounding_box(self) -> tuple:
         cdef const eckit_geo.BoundingBox* bbox = &self._grid.boundingBox()
         cdef double north = bbox.north()
@@ -96,6 +116,14 @@ cdef class Grid:
         cdef double south = bbox.south()
         cdef double east = bbox.east()
         return north, west, south, east
+
+    def grid_box_areas(self):
+        try:
+            import mir
+        except ModuleNotFoundError:
+            return None
+
+        return mir.grid_box_areas(self)
 
     @property
     def spec_str(self) -> str:
@@ -107,12 +135,25 @@ cdef class Grid:
         return safe_load(self.spec_str)
 
     @property
+    def catalog_str(self) -> str:
+        return self._grid.catalog_str()
+
+    @property
+    def catalog(self) -> dict:
+        from yaml import safe_load
+        return safe_load(self.catalog_str)
+
+    @property
     def type(self) -> str:
         return self._grid.type()
 
     @property
     def uid(self) -> str:
         return self._grid.uid()
+
+    @property
+    def order(self) -> str:
+        return self._grid.order()
 
     @property
     def shape(self) -> tuple:
@@ -124,6 +165,3 @@ cdef class Grid:
 
     def __len__(self) -> int:
         return self.size()
-
-    def __dealloc__(self):
-        del self._grid

@@ -27,7 +27,7 @@ using types::is_approximately_equal;
 
 
 static bool is_pole(const double lat) {
-    return is_approximately_equal(std::abs(lat), 90.);
+    return is_approximately_equal(std::abs(lat), PointLonLat::RIGHT_ANGLE, PointLonLat::EPS);
 }
 
 

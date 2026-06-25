@@ -18,7 +18,6 @@
 #include "eckit/geo/area/None.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid {
@@ -42,9 +41,7 @@ Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
     std::regex_match(name, match, std::regex(PATTERN));
     ASSERT(match.size() == 2);
 
-    auto u = Translator<std::string, size_t>{};
-
-    return new spec::Custom({{"type", "sh"}, {"truncation", u(match[1])}});
+    return new spec::Custom({{"type", "sh"}, {"truncation", std::stoul(match[1].str())}});
 }
 
 

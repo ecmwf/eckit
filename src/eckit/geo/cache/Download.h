@@ -39,12 +39,18 @@ public:
 
     // -- Methods
 
-    PathName to_cached_path(const url_type&, const std::string& prefix = "",
-                            const std::string& suffix = ".download") const;
+    static const int VERSION;
+    static const std::string PREFIX;
+    static const std::string SUFFIX;
+
+    PathName to_cached_path(const url_type&, const std::string& prefix = PREFIX,
+                            const std::string& suffix = SUFFIX) const;
 
     // -- Class methods
 
     static info_type to_path(const url_type&, const PathName&, bool html = false);
+
+    static int version() { return VERSION; }
 
     static std::string url_file_basename(const url_type&, bool ext = true);
     static std::string url_file_extension(const url_type&);

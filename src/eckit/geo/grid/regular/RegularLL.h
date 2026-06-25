@@ -19,13 +19,13 @@
 namespace eckit::geo::grid::regular {
 
 
-class RegularLL final : public Regular {
+class RegularLL : public Regular {
 public:
 
     // -- Types
 
     struct Increments : public std::array<double, 2> {
-        Increments(value_type dlon, value_type dlat) : array{dlon, dlat} {}
+        Increments(value_type dlon, value_type dlat);
 
         using array::array;
 
@@ -38,15 +38,12 @@ public:
         static Increments make_from_spec(const Spec&);
     };
 
-    struct Reference {
-        static PointLonLat make_from_spec(const Spec&);
-    };
+    using Reference = PointLonLat;
 
     // -- Constructors
 
     explicit RegularLL(const Spec&);
-    explicit RegularLL(const Increments&);
-    explicit RegularLL(const Increments&, BoundingBox, PointLonLat ref = {});
+    explicit RegularLL(const Increments&, BoundingBox = {}, Reference = {}, order::Scan = scan_default());
 
     // -- Methods
 
@@ -65,6 +62,9 @@ public:
 
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
+    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return y_.values(); }
+    [[nodiscard]] std::vector<double> distinct_longitudes() const override { return x_.values(); }
+
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
@@ -77,6 +77,10 @@ public:
 
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }
+
+    //-- Class methods
+
+    [[nodiscard]] static Reference reference_default();
 
 private:
 

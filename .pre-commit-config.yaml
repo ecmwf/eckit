@@ -46,5 +46,5 @@ repos:
     rev: v19.1.7
     hooks:
       - id: clang-format
-        types: [c, c++]
+        types_or: [c, c++]
         exclude: 'src/_eckit/_.*\.(h|cpp)'

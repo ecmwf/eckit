@@ -17,7 +17,6 @@
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::regular {
@@ -38,14 +37,21 @@ size_t check_N(size_t N) {
 }  // namespace
 
 
-RegularGaussian::RegularGaussian(const Spec& spec) : RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec)) {}
+RegularGaussian::RegularGaussian(const Spec& spec) :
+    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec), order::Scan{spec}) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox) :
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s) :
+    Regular(s),
     N_(check_N(N)),
-    x_(*range::RegularLongitude(360. / static_cast<double>(4 * N), 0., 360.)
-            .make_cropped_range(bbox.west(), bbox.east())),
-    y_(*range::GaussianLatitude(N, false).make_cropped_range(bbox.north(), bbox.south())) {
+    x_(*range::RegularLongitude(
+            (s.is_scan_i_positive() ? 1. : -1.) * PointLonLat::FULL_ANGLE / static_cast<double>(4 * N), 0.,
+            PointLonLat::FULL_ANGLE)
+            .make_cropped_range(s.is_scan_i_positive() ? bbox.west() : bbox.east(),
+                                s.is_scan_i_positive() ? bbox.east() : bbox.west())),
+    y_(*range::GaussianLatitude(N, s.is_scan_j_positive())
+            .make_cropped_range(s.is_scan_j_positive() ? bbox.south() : bbox.north(),
+                                s.is_scan_j_positive() ? bbox.north() : bbox.south())) {
     ASSERT(!empty());
 }
 
@@ -53,7 +59,7 @@ RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox) :
 Grid::Spec* RegularGaussian::spec(const std::string& name) {
     ASSERT(name.size() > 1 && (name[0] == 'f' || name[0] == 'F'));
 
-    auto N = Translator<std::string, size_t>{}(name.substr(1));
+    auto N = std::stoul(name.substr(1));
     return new spec::Custom({{"type", "regular_gg"}, {"N", N}});
 }
 
@@ -66,7 +72,7 @@ void RegularGaussian::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& RegularGaussian::type() const {
-    static const std::string type{"regular-gg"};
+    static const std::string type{"regular_gg"};
     return type;
 }
 

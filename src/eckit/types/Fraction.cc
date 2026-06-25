@@ -32,7 +32,7 @@ Fraction::Fraction(value_type top, value_type bottom) {
     const auto abs_top    = std::abs(top);
     const auto abs_bottom = std::abs(bottom);
 
-    const value_type sgn = top < 0 == bottom < 0 ? 1 : -1;
+    const value_type sgn = ((top < 0) == (bottom < 0)) ? 1 : -1;
     const value_type g   = std::gcd(abs_top, abs_bottom);
 
     top_    = abs_top / g * sgn;

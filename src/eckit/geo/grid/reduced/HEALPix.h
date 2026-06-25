@@ -14,7 +14,6 @@
 
 #include <memory>
 
-#include "eckit/geo/container/PointsContainer.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/HEALPix.h"
 
@@ -53,8 +52,9 @@ public:
         return new HEALPix(Nside_, order);
     }
 
-    const std::vector<double>& latitudes() const override;
-    std::vector<double> longitudes(size_t j) const override;
+    [[nodiscard]] const std::vector<double>& latitudes() const override;
+    [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override;
+    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return healpix_latitudes_; }
 
     // -- Class members
 
@@ -72,14 +72,11 @@ private:
     const size_t Nside_;
     order::HEALPix healpix_;
 
-    mutable std::shared_ptr<container::PointsInstance> points_;
-    mutable std::vector<double> latitudes_;
+    mutable std::vector<double> healpix_latitudes_;
+    mutable std::vector<double> nested_latitudes_;
+    mutable std::vector<double> nested_longitudes_;
 
     // -- Overridden methods
-
-    bool includesNorthPole() const override { return true; }
-    bool includesSouthPole() const override { return true; }
-    bool isPeriodicWestEast() const override { return true; }
 
     void fill_spec(spec::Custom&) const override;
     const std::string& type() const override;

@@ -12,11 +12,9 @@
 
 #include "eckit/geo/grid/Regular.h"
 
-#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/types/Fraction.h"
 
 
 namespace eckit::geo::grid {
@@ -43,27 +41,41 @@ Grid::iterator Regular::cend() const {
 
 
 const Regular::order_type& Regular::order() const {
-    return order_.order();
+    return scan_.order();
 }
 
 
 Grid::renumber_type Regular::reorder(const order_type& to) const {
-    return order_.reorder(to, nx(), ny());
+    return scan_.reorder(to, nx(), ny());
 }
 
 
-Regular::Regular(const Spec& spec) : order_(spec) {}
+const order::Scan& Regular::scan_default() {
+    static const order::Scan SCAN("i+j-");
+    return SCAN;
+}
 
 
-Regular::Regular(const Projection*) {}
+Regular::Regular(const Spec& spec) : scan_(spec) {}
+
+
+Regular::Regular(order::Scan s, const Projection*) : scan_(s) {}
 
 
 void Regular::fill_spec(spec::Custom& custom) const {
     Grid::fill_spec(custom);
+
+    if (scan_.order() != order::Scan::order_default()) {
+        custom.set("order", scan_.order());
+    }
 }
 
-void Regular::order(const order_type& to) {
-    order_.order(to);
+void Regular::scan(const order_type& to) {
+    scan_.order(to);
+}
+
+void Regular::scan(order::Scan s) {
+    scan_ = s;
 }
 
 

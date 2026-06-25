@@ -23,10 +23,10 @@
 
 namespace eckit {
 
-class EckitGaussianLatitudes final : public EckitTool {
+class EckitGeoGaussianLatitudes final : public EckitTool {
 public:
 
-    EckitGaussianLatitudes(int argc, char** argv) : EckitTool(argc, argv) {
+    EckitGeoGaussianLatitudes(int argc, char** argv) : EckitTool(argc, argv) {
         options_.push_back(new option::SimpleOption<bool>("first", "Only the first latitude"));
     }
 
@@ -68,6 +68,6 @@ private:
 //----------------------------------------------------------------------------------------------------------------------
 
 int main(int argc, char** argv) {
-    eckit::EckitGaussianLatitudes app(argc, argv);
+    eckit::EckitGeoGaussianLatitudes app(argc, argv);
     return app.start();
 }

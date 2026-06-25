@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <memory>
-
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/order/Scan.h"
@@ -21,7 +19,7 @@
 
 namespace eckit::geo::iterator {
 class Regular;
-}  // namespace eckit::geo::iterator
+}
 
 
 namespace eckit::geo::grid {
@@ -52,12 +50,16 @@ public:
     const order_type& order() const final;
     renumber_type reorder(const order_type& to) const final;
 
+    // -- Class methods
+
+    static const order::Scan& scan_default();
+
 protected:
 
     // -- Constructors
 
     explicit Regular(const Spec&);
-    explicit Regular(const Projection* = nullptr);
+    explicit Regular(order::Scan scan = scan_default(), const Projection* = nullptr);
 
     // -- Overridden methods
 
@@ -65,13 +67,15 @@ protected:
 
     // -- Methods
 
-    void order(const order_type& to);
+    void scan(const order_type& to);
+    void scan(order::Scan);
+    const order::Scan& scan() const { return scan_; }
 
 private:
 
     // -- Members
 
-    order::Scan order_;
+    order::Scan scan_;
 
     // -- Friends
 

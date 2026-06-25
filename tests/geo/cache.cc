@@ -13,13 +13,17 @@
 #include "eckit/eckit_config.h"
 
 #include <fstream>
+#include <memory>
 #include <vector>
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/cache/Unzip.h"
 #include "eckit/geo/util.h"
+#include "eckit/log/Log.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/utils/StringTools.h"
 
 #include "eckit/testing/Test.h"
@@ -28,7 +32,10 @@
 namespace eckit::geo::test {
 
 
-const std::string URL = "https://www.ecmwf.int/robots.txt";
+const std::string URL             = "https://www.ecmwf.int/robots.txt";
+const std::string URL_NOT_FOUND_1 = "https://does.not/exist";
+const std::string URL_NOT_FOUND_2 = "https://sites.ecmwf.int/repository/does/not/exist";
+const std::string URL_BAD_SSL     = "https://expired.badssl.com/robots.txt";
 
 
 CASE("eckit::geo::util") {
@@ -124,11 +131,18 @@ CASE("download: error handling") {
         ASSERT(!path.exists());
     }
 
-    EXPECT_THROWS_AS(cache::Download::to_path("https://does.not/exist", path), UserError);
-    EXPECT(!path.exists());
+    SECTION("not found") {
+        EXPECT_THROWS_AS(cache::Download::to_path(URL_NOT_FOUND_1, path), UserError);
+        EXPECT(!path.exists());
 
-    EXPECT_THROWS_AS(cache::Download::to_path("https://sites.ecmwf.int/repository/does/not/exist", path), UserError);
-    EXPECT(!path.exists());
+        EXPECT_THROWS_AS(cache::Download::to_path(URL_NOT_FOUND_2, path), UserError);
+        EXPECT(!path.exists());
+    }
+
+    SECTION("bad ssl") {
+        EXPECT_THROWS_AS(cache::Download::to_path(URL_BAD_SSL, path), UserError);
+        EXPECT(!path.exists());
+    }
 }
 
 
@@ -173,6 +187,34 @@ CASE("download: cached") {
 
     download.rm_cache_root();
     EXPECT(!root.exists());
+}
+
+
+CASE("grid") {
+    using Cache = cache::MemoryCache;
+
+    const auto footprint_1 = Cache::total_footprint();
+
+    spec::Custom spec({{"uid", "d5bde4f52ff3a9bea5629cd9ac514410"}});  // ORCA2_T
+    std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
+
+    // lazy behaviour is expected, force load only on calculate_uid
+    Log::info() << "uid: '" << grid1->uid() << "'" << std::endl;
+
+    const auto footprint_2 = Cache::total_footprint();
+    EXPECT(footprint_1 == footprint_2);
+    EXPECT(grid1->calculate_uid() == spec.get_string("uid"));
+
+    const auto footprint_3 = Cache::total_footprint();
+    EXPECT(footprint_2 <= footprint_3);
+
+    std::unique_ptr<const Grid> grid2(GridFactory::make_from_string("{uid:" + grid1->uid() + "}"));
+
+    EXPECT(footprint_3 == Cache::total_footprint());
+    EXPECT(grid1->size() == grid2->size());
+
+    Cache::total_purge();
+    EXPECT(Cache::total_footprint() <= footprint_1);
 }
 #endif
 

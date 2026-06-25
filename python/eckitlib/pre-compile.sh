@@ -31,3 +31,5 @@ fi
 
 wget https://raw.githubusercontent.com/lz4/lz4/dev/LICENSE -O python/eckitlib/src/copying/liblz4.txt
 echo '{"liblz4": {"path": "copying/liblz4.txt", "home": "https://github.com/lz4/lz4"}}' > python/eckitlib/src/copying/list.json
+
+uv pip install cython

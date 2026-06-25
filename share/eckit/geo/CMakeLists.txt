@@ -1,13 +1,15 @@
-set(_files)
+set(_files
+    "area.yaml"
+    "grid.yaml"
 
-list(APPEND _files "area.yaml" "grid.yaml")
+    "FESOM.yaml"
+    "ICON-CH.yaml"
+    "ICON-DWD.yaml"
+    "ICON-MPIM.yaml"
+    "ORCA.yaml")
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)
     list(APPEND _files "shapefile.yaml")
-endif()
-
-if(ECKIT_GEO_CODEC_GRIDS)
-    list(APPEND _files "FESOM.yaml" "ICON-CH.yaml" "ICON-DWD.yaml" "ICON-MPIM.yaml" "ORCA.yaml")
 endif()
 
 set(_destination "share/eckit/geo")

@@ -24,12 +24,13 @@ ecbuild_add_executable( TARGET      eckit_codec_list
                         LIBS        eckit_codec eckit_option )
 
 foreach( _name
-        eckit-area-list
-        eckit-gaussian-latitudes
-        eckit-grid
-        eckit-grid-list
-        eckit-grid-nearest
-        eckit-grid-spec )
+        eckit-geo-area-list
+        eckit-geo-gaussian-latitudes
+        eckit-geo-grid
+        eckit-geo-grid-cache
+        eckit-geo-grid-list
+        eckit-geo-grid-nearest
+        eckit-geo-grid-spec )
     string(REPLACE "-" "_" _target ${_name})
     ecbuild_add_executable( TARGET      ${_target}
                             OUTPUT_NAME ${_name}

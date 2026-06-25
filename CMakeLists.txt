@@ -182,6 +182,7 @@ endif()
 
 ecbuild_add_option( FEATURE ECKIT_GEO
                     DEFAULT ON
+                    CONDITION eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_ECKIT_SPEC
                     DESCRIPTION "eckit::geo geometry library" )
 
 ecbuild_add_option( FEATURE GEO_CACHING
@@ -205,11 +206,6 @@ ecbuild_add_option( FEATURE GEO_AREA_SHAPEFILE
                     REQUIRED_PACKAGES shapelib
                     DESCRIPTION "eckit::geo geometry library support for shapefiles" )
 
-set( ECKIT_GEO_CODEC_GRIDS OFF )
-if( eckit_HAVE_ECKIT_CODEC AND eckit_HAVE_LZ4 )
-    set( ECKIT_GEO_CODEC_GRIDS ON )
-endif()
-
 if( eckit_HAVE_GEO_AREA_SHAPEFILE )
     if( NOT TARGET shapelib::shp OR NOT TARGET libzip::zip )
         message( FATAL_ERROR "eckit::geo geometry library support for shapefiles requires the shapelib::shp and libzip::zip libraries" )
@@ -217,7 +213,7 @@ if( eckit_HAVE_GEO_AREA_SHAPEFILE )
 endif()
 
 # (keep paths as strings to avoid normalisation/expansion)
-set( eckit_GEO_CACHE_PATH "~/.local/share/eckit/geo" CACHE STRING "eckit::geo cache path default" )
+set( eckit_GEO_CACHE_PATH "~/.cache/eckit/geo" CACHE STRING "eckit::geo cache path default" )
 set( eckit_GEO_SHARE_URL_PREFIX "https://sites.ecmwf.int/repository/eckit/geo" CACHE STRING "eckit::geo URL prefix for downloadable assets" )
 
 ### LAPACK
@@ -246,7 +242,7 @@ endif()
 
 ecbuild_add_option( FEATURE CURL
                     DESCRIPTION "Curl library for transfering data with URLs"
-                    REQUIRED_PACKAGES "CURL 7.20" )
+                    REQUIRED_PACKAGES "CURL 7.61" )
 
 if(HAVE_CURL)
   ecbuild_info("Curl version ${CURL_VERSION_STRING} -- libs [${CURL_LIBRARIES}] incs [${CURL_INCLUDE_DIRS}]")
@@ -303,11 +299,16 @@ ecbuild_add_option( FEATURE PROJ
                     DESCRIPTION "support PROJ-based projections"
                     REQUIRED_PACKAGES "PROJ 9.1.1" )
 
-ecbuild_add_option(
-    FEATURE DOCS
-    DEFAULT OFF
-    DESCRIPTION "Enable documentation generation"
-)
+ecbuild_add_option( FEATURE DOCS
+                    DEFAULT OFF
+                    DESCRIPTION "Enable documentation generation" )
+
+### Python bindings
+
+ecbuild_add_option( FEATURE PYTHON
+                    DEFAULT OFF
+                    DESCRIPTION "Build Python bindings (Cython)"
+                    REQUIRED_PACKAGES "Python3 COMPONENTS Interpreter Development.Module" )
 
 ### c math library, needed when including "math.h"
 
@@ -340,9 +341,15 @@ include(cmake/compiler_warnings.cmake) # optionally handle compiler specific war
 set( PERSISTENT_NAMESPACE "eckit" CACHE INTERNAL "" ) # needed for generating .b files for persistent support
 
 add_subdirectory( src )
-if(eckit_HAVE_DOCS)
-    add_subdirectory(docs)
+
+if( eckit_HAVE_DOCS )
+    add_subdirectory( docs )
 endif()
+
+if( eckit_HAVE_PYTHON )
+    add_subdirectory( python )
+endif()
+
 add_subdirectory( share )
 
 if( eckit_HAVE_TESTS )

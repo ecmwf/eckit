@@ -14,71 +14,53 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/iterator/Reduced.h"
-#include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid::reduced {
-
-
-namespace {
-
-
-size_t check_N(size_t N) {
-    if (N == 0) {
-        throw exception::GridError("ReducedGaussian: Gaussian N cannot be zero", Here());
-    }
-
-    return N;
-}
-
-
-Range* make_x_range(size_t Ni, const area::BoundingBox& bbox) {
-    if (Ni == 0) {
-        throw exception::GridError("ReducedGaussian: zero points in x range (along parallel)", Here());
-    }
-
-    range::RegularLongitude global(360. / static_cast<double>(Ni), 0., 360.);
-    return global.make_cropped_range(bbox.west(), bbox.east());
-}
-
-
-Range* make_y_range(size_t N, const area::BoundingBox& bbox) {
-    if (N == 0) {
-        throw exception::GridError("ReducedGaussian: zero points in y range (along meridian)", Here());
-    }
-
-    range::GaussianLatitude global(N, false);
-    return global.make_cropped_range(bbox.north(), bbox.south());
-}
-
-
-}  // namespace
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) : ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}) {}
 
 
 ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox) :
-    ReducedGaussian(pl.size() / 2, pl, bbox) {}
+    N_(pl.size() / 2), pl_(pl), latitude_(N_, false) {
+    const auto& lats = latitude_.values();
+    ASSERT(lats.size() == pl_.size());
 
+    const auto [n, w, s, e] = bbox.deconstruct();
+    auto periodic           = true;
+    auto strictly_less      = [](double a, double b) { return a + PointLonLat::EPS < b; };
 
-ReducedGaussian::ReducedGaussian(size_t N, const pl_type& pl, const BoundingBox& bbox) :
-    N_(check_N(N)), pl_(pl), j_(0), Nj_(pl.size()), longitude_(Nj_) {
-    ASSERT(N_ * 2 == pl_.size());
-    ASSERT(0 < N_ && Nj_ <= 2 * N_);
+    longitude_.reserve(pl_.size());
+    for (size_t j = 0; j < pl_.size(); ++j) {
+        auto Ni = pl_[j];
+        if (Ni == 0 || strictly_less(n, lats[j]) || strictly_less(lats[j], s)) {
+            ASSERT(nullptr != longitude_.emplace_back(range::RegularLongitude::make_empty_range(w, e)));
+            continue;
+        }
 
-    boundingBox(new BoundingBox{bbox});
+        range::RegularLongitude global(PointLonLat::FULL_ANGLE / static_cast<double>(Ni), 0., PointLonLat::FULL_ANGLE);
+        ASSERT(nullptr != longitude_.emplace_back(global.make_cropped_range(w, e)));
+        periodic = periodic && longitude_.back()->periodic();
+    }
 
-    latitude_.reset(make_y_range(N, bbox));
-    ASSERT(latitude_);
+    auto ni = std::find_if(longitude_.begin(), longitude_.end(), [](const auto& r) { return r->size() > 0; });
+    auto si = std::find_if(longitude_.rbegin(), longitude_.rend(), [](const auto& r) { return r->size() > 0; });
+    ASSERT(ni != longitude_.end() && si != longitude_.rend());
+
+    boundingBox(new BoundingBox{
+        ni == longitude_.begin() ? PointLonLat::RIGHT_ANGLE : lats[std::distance(longitude_.begin(), ni)], w,
+        si == longitude_.rbegin() ? -PointLonLat::RIGHT_ANGLE
+                                  : lats[pl_.size() - std::distance(longitude_.rbegin(), si) - 1],
+        periodic ? w + PointLonLat::FULL_ANGLE : e});
 }
 
 
 ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox) :
-    ReducedGaussian(N, util::reduced_octahedral_pl(N), bbox) {}
+    ReducedGaussian(util::reduced_octahedral_pl(N), bbox) {}
 
 
 Grid::iterator ReducedGaussian::cbegin() const {
@@ -88,45 +70,6 @@ Grid::iterator ReducedGaussian::cbegin() const {
 
 Grid::iterator ReducedGaussian::cend() const {
     return iterator{new geo::iterator::Reduced(*this, size())};
-}
-
-
-size_t ReducedGaussian::size() const {
-    return nxacc().back();
-}
-
-
-size_t ReducedGaussian::nx(size_t j) const {
-    if (!longitude_.at(j_ + j)) {
-        const auto& bbox = boundingBox();
-        auto Ni          = pl_.at(j_ + j);
-        ASSERT(Ni >= 0);
-
-        longitude_[j].reset(make_x_range(static_cast<size_t>(Ni), bbox));
-        ASSERT(longitude_[j]);
-    }
-
-    return longitude_[j]->size();
-}
-
-
-size_t ReducedGaussian::ny() const {
-    return latitude_->size();
-}
-
-
-const std::vector<double>& ReducedGaussian::latitudes() const {
-    return latitude_->values();
-}
-
-
-std::vector<double> ReducedGaussian::longitudes(size_t j) const {
-    if (nx(j) > 0) {
-        ASSERT(longitude_[j]);
-        return longitude_[j]->values();
-    }
-
-    return {};
 }
 
 
@@ -150,15 +93,14 @@ void ReducedGaussian::fill_spec(spec::Custom& custom) const {
 
 
 const std::string& ReducedGaussian::type() const {
-    static const std::string type{"reduced-gg"};
+    static const std::string type{"reduced_gg"};
     return type;
 }
 
 
 Grid* ReducedGaussian::make_grid_cropped(const Area& crop) const {
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new ReducedGaussian(N_, pl_,
-                                   BoundingBox{cropped.north(), cropped.west(), cropped.south(), cropped.east()});
+        return new ReducedGaussian(pl_, BoundingBox{cropped.north(), cropped.west(), cropped.south(), cropped.east()});
     }
 
     throw UserError("ReducedGaussian: cannot crop grid (empty intersection)", Here());
@@ -169,7 +111,7 @@ struct ReducedGaussianClassical {
     static Grid::Spec* spec(const std::string& name) {
         ASSERT(name.size() > 1 && (name[0] == 'n' || name[0] == 'N'));
 
-        auto N = Translator<std::string, size_t>{}(name.substr(1));
+        auto N = std::stoul(name.substr(1));
         return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_classical_pl(N)}});
     }
 };
@@ -179,7 +121,7 @@ struct ReducedGaussianOctahedral {
     static Grid::Spec* spec(const std::string& name) {
         ASSERT(name.size() > 1 && (name[0] == 'o' || name[0] == 'O'));
 
-        auto N = Translator<std::string, size_t>{}(name.substr(1));
+        auto N = std::stoul(name.substr(1));
         return new spec::Custom({{"type", "reduced_gg"}, {"N", N}, {"pl", util::reduced_octahedral_pl(N)}});
     }
 };

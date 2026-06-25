@@ -70,7 +70,15 @@ bool Regular::operator++() {
 
 
 bool Regular::operator+=(difference_type d) {
-    NOTIMP;
+    if (auto di = static_cast<difference_type>(index_); 0 <= di + d && di + d < static_cast<difference_type>(size_)) {
+        index_ = static_cast<size_t>(di + d);
+        ix_    = index_ % nx_;  // FIXME depends on order
+        iy_    = index_ / nx_;  //...
+        return true;
+    }
+
+    index_ = size_;  // ensure it's invalid
+    return false;
 }
 
 

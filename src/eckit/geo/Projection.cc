@@ -62,7 +62,6 @@ const Figure& Projection::figure() const {
 const Projection::Spec& Projection::spec() const {
     if (!spec_) {
         spec_ = std::make_shared<spec::Custom>();
-        ASSERT(spec_);
 
         auto& custom = *spec_;
         fill_spec(custom);

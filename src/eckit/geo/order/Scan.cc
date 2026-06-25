@@ -57,6 +57,12 @@ Scan::Scan(const order_type& order) : order_(order) {
 Scan::Scan(const Spec& spec) : Scan(spec.get_string("order", order_default())) {}
 
 
+bool Scan::is_scan_i_then_j() const {
+    ASSERT(!order_.empty());
+    return order_.front() == 'i';
+}
+
+
 bool Scan::is_scan_i_positive() const {
     return order_.find("i+") != order_type::npos;
 }

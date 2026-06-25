@@ -23,28 +23,24 @@ namespace eckit {
 using abort_handler_t = void (*)();
 
 class LibEcKit : public eckit::system::Library {
-
-public:  // methods
+public:
 
     LibEcKit();
 
     static LibEcKit& instance();
-
     void setAbortHandler(abort_handler_t h);
-
     void abort();
 
     bool dontDeregisterFactories() const;
 
-protected:  // methods
+    virtual std::string version() const;
+    virtual std::string gitsha1(unsigned int count) const;
+
+protected:
 
     const void* addr() const;
 
-    virtual std::string version() const;
-
-    virtual std::string gitsha1(unsigned int count) const;
-
-private:  // members
+private:
 
     abort_handler_t abort_handler_;
     bool dontDeregisterFactories_;

@@ -94,6 +94,12 @@ Length MoverTransfer::transfer(DataHandle& from, DataHandle& to) {
         else if (pos == -2) {
             watcher_.toHandleOpened();
         }
+        else if (pos == -3) {
+            Offset from;
+            s >> from;
+            watcher_.restartFrom(from);
+            progress(from);
+        }
         s >> more;
     }
 

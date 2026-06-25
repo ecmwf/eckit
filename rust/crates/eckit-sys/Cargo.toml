@@ -1,0 +1,88 @@
+[package]
+name = "eckit-sys"
+version = "2.0.7"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "FFI bindings to ECMWF eckit C++ library"
+links = "eckit_sys"
+build = "build.rs"
+
+[features]
+# Defaults: core features that don't require external libraries
+default = ["vendored", "eckit-codec", "eckit-spec", "eckit-geo", "unicode", "aio"]
+
+# Build strategy (mutually exclusive)
+vendored = []
+system = []
+
+# Core eckit libraries (CMake default: ON)
+eckit-codec = ["eckit-spec"]  # eckit::codec encoding/decoding library (requires eckit-spec)
+eckit-spec = []   # eckit::spec metadata library
+eckit-geo = []    # eckit::geo geometry library
+eckit-sql = []    # eckit::sql SQL engine (required by odc)
+
+# MPI support (CMake default: ON, requires MPI)
+mpi = []  # Use system MPI libraries
+
+# Compression codecs (CMake default: OFF, require external libs)
+bzip2 = []   # BZip2 support for compression
+snappy = []  # Snappy support for compression
+lz4 = []     # LZ4 support for compression
+aec = []     # AEC support for compression
+zip = []     # ZIP support for compression
+
+# Hashing (CMake default: OFF)
+xxhash = []  # xxHash support for hashing
+
+# Linear algebra (CMake default: OFF, require external libs)
+eigen = []   # Eigen linear algebra library
+lapack = []  # Linear Algebra PACKage
+mkl = []     # MKL linear algebra library
+omp = []     # OpenMP linear algebra backend
+
+# Network (CMake default: OFF, require external libs)
+curl = []  # Curl library for transfering data with URLs
+ssl = []   # OpenSSL support
+
+# Other features
+unicode = []   # Unicode support (CMake default: ON)
+aio = []       # Async IO support (CMake default: ON)
+proj = []      # PROJ-based projections support
+rados = []     # Ceph/Rados storage support
+jemalloc = []  # Link against jemalloc memory allocator
+rsync = []     # librsync implementation of the rsync algorithm
+
+# GPU support (CMake default: OFF)
+cuda = []  # CUDA GPU linear algebra operations
+hip = []   # HIP GPU linear algebra operations
+
+# Geo sub-features (CMake default: OFF, except geo-area-shapefile)
+geo-codec-grids = ["eckit-codec", "lz4", "eckit-geo"]  # ORCA/FESOM/ICON grid types (requires codec + LZ4)
+geo-caching = []               # eckit::geo default caching behaviour
+geo-bitreproducible = []       # eckit::geo bit reproducibility tests
+geo-projection-proj-default = []  # eckit::geo default to PROJ-based projections
+geo-area-shapefile = []        # Shapefile support (CMake default: ON)
+
+# Advanced (CMake default: OFF)
+convex-hull = []  # eckit::maths convex hull/Delaunay triangulation
+
+# Experimental (CMake default: OFF)
+experimental = []  # Experimental features
+sandbox = []       # Sandbox playground for prototyping
+
+[dependencies]
+bindman.workspace = true
+cxx.workspace = true
+log.workspace = true
+
+[build-dependencies]
+bindman-utils.workspace = true
+bindman-build.workspace = true
+cxx-build.workspace = true
+
+[package.metadata.docs.rs]

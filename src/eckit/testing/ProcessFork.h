@@ -127,7 +127,7 @@ inline std::vector<std::pair<std::string, std::string>> parse_worker_args(int ar
 
 /// Convenience: extract a named argument from the child worker args map.
 inline const std::string& get_worker_arg(const std::vector<std::pair<std::string, std::string>>& args,
-                                           const std::string& key) {
+                                         const std::string& key) {
     for (const auto& kv : args) {
         if (kv.first == key) {
             return kv.second;

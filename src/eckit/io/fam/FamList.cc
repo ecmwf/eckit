@@ -117,8 +117,7 @@ void FamList::pushFront(const void* data, const size_type length) {
 
         // Atomically update head.next to new node.
         // On success, we become the new first node.
-        const auto old_offset =
-            head_.compareSwap(FamListNode::nextOffsetOff(), first_offset, new_object.offset());
+        const auto old_offset = head_.compareSwap(FamListNode::nextOffsetOff(), first_offset, new_object.offset());
         if (old_offset == first_offset) {
             // Success! Update old first node's prev to point to us.
             // Use CAS instead of plain put to avoid overwriting a concurrent

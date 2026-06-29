@@ -17,6 +17,11 @@ ecbuild_add_executable( TARGET      eckit_fraction
                         SOURCES     eckit-fraction.cc
                         LIBS        eckit_option eckit )
 
+ecbuild_add_executable( TARGET      eckit_monitor_dump
+                        OUTPUT_NAME eckit-monitor-dump
+                        SOURCES     eckit-monitor-dump.cc
+                        LIBS        eckit_option eckit )
+
 ecbuild_add_executable( TARGET      eckit_codec_list
                         OUTPUT_NAME eckit-codec-list
                         CONDITION   eckit_HAVE_ECKIT_CODEC

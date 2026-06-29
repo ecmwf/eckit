@@ -121,6 +121,7 @@ public:
 
     void out(char*, char*);
     bool busy(bool = false);
+    const Info& rawInfo() const { return info; }
     const char* name() const { return info.name_; }
     const char* kind() const { return info.kind_; }
     const char* status() const { return info.status_; }

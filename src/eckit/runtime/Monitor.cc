@@ -9,13 +9,20 @@
  */
 
 #include <pthread.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <csignal>
+#include <cstdint>
 
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
 #include "eckit/container/SharedMemArray.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/memory/MMap.h"
+#include "eckit/memory/Padded.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
@@ -74,6 +81,109 @@ public:
         TaskArray(), map_(path, name, size) {}
 };
 
+class ReadOnlyMemoryMappedTaskArray : public Monitor::TaskArray {
+
+    struct Header {
+        uint32_t version_;
+        uint32_t headerSize_;
+        uint32_t elemSize_;
+    };
+
+    using PaddedHeader = Padded<Header, 4096>;
+
+    virtual void sync() {}
+    virtual void lock() {}
+    virtual void unlock() {}
+
+    virtual iterator begin() { return array_; }
+    virtual iterator end() { return array_ + size_; }
+
+    virtual const_iterator begin() const { return array_; }
+    virtual const_iterator end() const { return array_ + size_; }
+
+    virtual unsigned long size() { return size_; }
+    virtual TaskInfo& operator[](unsigned long n) { return array_[n]; }
+
+    PathName path_;
+    void* map_;
+    size_t length_;
+    int fd_;
+
+    TaskInfo* array_;
+    unsigned long size_;
+
+    void cleanup() {
+        if (map_ && map_ != MAP_FAILED) {
+            MMap::munmap(map_, length_);
+            map_ = nullptr;
+        }
+        if (fd_ >= 0) {
+            ::close(fd_);
+            fd_ = -1;
+        }
+    }
+
+public:
+
+    ReadOnlyMemoryMappedTaskArray(const PathName& path) :
+        path_(path), map_(nullptr), length_(0), fd_(-1), array_(nullptr), size_(0) {
+        fd_ = ::open(path_.localPath(), O_RDONLY);
+        if (fd_ < 0) {
+            Log::error() << "open(" << path_ << ')' << Log::syserr << std::endl;
+            throw FailedSystemCall("open", Here());
+        }
+
+        struct stat s;
+        if (::fstat(fd_, &s) != 0) {
+            Log::error() << "fstat(" << path_ << ')' << Log::syserr << std::endl;
+            cleanup();
+            throw FailedSystemCall("fstat", Here());
+        }
+
+        if (s.st_size < static_cast<off_t>(sizeof(PaddedHeader))) {
+            std::ostringstream oss;
+            oss << "Monitor file " << path_ << " is too small to contain a mapped-array header";
+            cleanup();
+            throw BadParameter(oss.str(), Here());
+        }
+
+        const off_t payload = s.st_size - static_cast<off_t>(sizeof(PaddedHeader));
+        if (payload % static_cast<off_t>(sizeof(TaskInfo)) != 0) {
+            std::ostringstream oss;
+            oss << "Monitor file " << path_ << " size " << s.st_size << " is not compatible with TaskInfo size "
+                << sizeof(TaskInfo);
+            cleanup();
+            throw BadParameter(oss.str(), Here());
+        }
+
+        length_ = static_cast<size_t>(s.st_size);
+        size_   = static_cast<unsigned long>(payload / static_cast<off_t>(sizeof(TaskInfo)));
+
+        map_ = MMap::mmap(0, length_, PROT_READ, MAP_SHARED, fd_, 0);
+        if (map_ == MAP_FAILED) {
+            Log::error() << "Monitor file path=" << path_ << " fails to mmap(0,length,PROT_READ,MAP_SHARED,fd_,0)"
+                         << Log::syserr << std::endl;
+            cleanup();
+            throw FailedSystemCall("mmap", Here());
+        }
+
+        const Header& header = *static_cast<const Header*>(map_);
+        if (header.version_ != 1 || header.headerSize_ != sizeof(Header) || header.elemSize_ != sizeof(TaskInfo)) {
+            std::ostringstream oss;
+            oss << "Invalid monitor file header in " << path_ << ": version=" << header.version_
+                << ", headerSize=" << header.headerSize_ << ", elemSize=" << header.elemSize_;
+            cleanup();
+            throw BadParameter(oss.str(), Here());
+        }
+
+        array_ = reinterpret_cast<TaskInfo*>(static_cast<char*>(map_) + sizeof(PaddedHeader));
+    }
+
+    ~ReadOnlyMemoryMappedTaskArray() {
+        cleanup();
+    }
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 static bool active_ = false;
@@ -114,6 +224,10 @@ Monitor::TaskArray& Monitor::tasks() {
     ASSERT(active_);
     pthread_once(&once, taskarray_init);
     return *mapArray;
+}
+
+std::unique_ptr<Monitor::TaskArray> Monitor::openReadOnlyTasks(const PathName& path) {
+    return std::unique_ptr<Monitor::TaskArray>(new ReadOnlyMemoryMappedTaskArray(path));
 }
 
 //----------------------------------------------------------------------------------------------------------------------

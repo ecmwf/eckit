@@ -21,6 +21,8 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/ThreadSingleton.h"
 
+#include <memory>
+
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -63,6 +65,8 @@ public:  // types
 public:  // methods
 
     static Monitor& instance();
+
+    static std::unique_ptr<TaskArray> openReadOnlyTasks(const PathName& path);
 
     Monitor(const Monitor&)            = delete;
     Monitor& operator=(const Monitor&) = delete;

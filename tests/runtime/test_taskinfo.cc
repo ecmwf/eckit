@@ -17,8 +17,11 @@
 #include <type_traits>
 #include <vector>
 
+#include "eckit/container/MappedArray.h"
+#include "eckit/filesystem/TmpFile.h"
 #include "eckit/memory/Padded.h"
 #include "eckit/runtime/Main.h"
+#include "eckit/runtime/Monitor.h"
 #include "eckit/runtime/TaskInfo.h"
 #include "eckit/testing/Test.h"
 
@@ -178,6 +181,38 @@ CASE("Info struct binary compatibility") {
     // Type traits
     EXPECT(std::is_standard_layout_v<Info>);
     EXPECT(std::is_trivially_copyable_v<Info>);
+}
+
+CASE("Monitor opens mapped monitor files read-only") {
+    TmpFile path(false);
+
+    {
+        MappedArray<TaskInfo> writable(path, 2);
+        new (&writable[0]) TaskInfo();
+        writable[0].name("readonly-monitor-test");
+        writable[0].kind("unit-test");
+        writable[0].status("Testing read-only monitor dump");
+        writable[0].message("hello");
+
+        char log[] = "monitor log line\n";
+        writable[0].out(log, log + ::strlen(log));
+        writable.sync();
+    }
+
+    std::unique_ptr<Monitor::TaskArray> tasks = Monitor::openReadOnlyTasks(path);
+    EXPECT_EQUAL(tasks->size(), 2u);
+
+    const TaskInfo& task = (*tasks)[0];
+    EXPECT(task.rawInfo().busy_);
+    EXPECT_EQUAL(::strncmp(task.rawInfo().name_, "readonly-monitor-test", sizeof(task.rawInfo().name_)), 0);
+    EXPECT_EQUAL(::strncmp(task.rawInfo().kind_, "unit-test", sizeof(task.rawInfo().kind_)), 0);
+    EXPECT_EQUAL(::strncmp(task.rawInfo().status_, "Testing read-only monitor dump", sizeof(task.rawInfo().status_)), 0);
+    EXPECT_EQUAL(::strncmp(task.rawInfo().message_, "hello", sizeof(task.rawInfo().message_)), 0);
+
+    char log[Info::size_] = {};
+    unsigned long pos    = 0;
+    const unsigned long len = task.text(log, sizeof(log), pos);
+    EXPECT_EQUAL(std::string(log, len), "monitor log line\n");
 }
 
 }  // namespace eckit::test

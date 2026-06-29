@@ -13,6 +13,7 @@ build/
 tests/geo/eckit_geo_cache
 _build
 *.ccls-cache
+compile_commands.json
 
 # Rust
 rust/target/

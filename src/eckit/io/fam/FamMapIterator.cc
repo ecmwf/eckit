@@ -1,0 +1,117 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/*
+ * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
+ * (Grant agreement: 101092984) horizon-opencube.eu
+ */
+
+#include "eckit/io/fam/FamMapIterator.h"
+
+#include <utility>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/fam/FamMap.h"
+
+namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+FamMapIterator<T>::FamMapIterator(const FamMap<T>& map, const std::size_t bucket, const bool advance) :
+    map_{&map}, bucket_{bucket} {
+    if (advance) {
+        advanceToNextBucket();
+    }
+}
+
+template <typename T>
+FamMapIterator<T>::FamMapIterator(const FamMap<T>& map, const std::size_t bucket, FamListIterator iter, FamList list) :
+    map_{&map}, bucket_{bucket}, list_{std::move(list)}, iter_{std::move(iter)} {}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+template <typename T>
+bool FamMapIterator<T>::hasMoreBuckets() const {
+    return bucket_ < FamMap<T>::bucket_count;
+}
+
+template <typename T>
+bool FamMapIterator<T>::loadBucket() {
+    auto bucket = map_->getBucket(bucket_);
+    if (!bucket || bucket->empty()) {
+        list_.reset();
+        iter_.reset();
+        return false;
+    }
+    list_ = std::move(*bucket);
+    iter_ = list_->begin();
+    return iter_ != list_->end();
+}
+
+template <typename T>
+void FamMapIterator<T>::advanceToNextBucket() {
+    while (hasMoreBuckets()) {
+        if (loadBucket()) {
+            return;  // found a non-empty bucket with entries
+        }
+        ++bucket_;
+    }
+    list_.reset();
+    iter_.reset();
+}
+
+template <typename T>
+FamMapIterator<T>& FamMapIterator<T>::operator++() {
+    ASSERT(hasMoreBuckets());
+    ASSERT(iter_.has_value());
+
+    ++(*iter_);
+
+    if (*iter_ != list_->end()) {
+        return *this;
+    }
+
+    ++bucket_;
+    advanceToNextBucket();
+
+    return *this;
+}
+
+template <typename T>
+bool FamMapIterator<T>::operator==(const FamMapIterator& other) const {
+    if (bucket_ != other.bucket_) {
+        return false;
+    }
+    if (!iter_.has_value() && !other.iter_.has_value()) {
+        return true;
+    }
+    if (iter_.has_value() && other.iter_.has_value()) {
+        return iter_->object() == other.iter_->object();
+    }
+    return false;
+}
+
+template <typename T>
+T FamMapIterator<T>::operator*() const {
+    ASSERT(iter_.has_value());
+    return T{**iter_};
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+// Explicit instantiations
+template class FamMapIterator<FamMapEntry<32>>;
+template class FamMapIterator<FamMapEntry<64>>;
+template class FamMapIterator<FamMapEntry<128>>;
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit

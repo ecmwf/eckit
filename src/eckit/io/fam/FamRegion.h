@@ -1,0 +1,93 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/*
+ * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
+ * (Grant agreement: 101092984) horizon-opencube.eu
+ */
+
+/// @file   FamRegion.h
+/// @author Metin Cakircali
+/// @date   Mar 2024
+
+#pragma once
+
+#include <iosfwd>
+#include <memory>
+#include <string>
+
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/FamProperty.h"
+
+namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+class FamRegion {
+
+public:  // methods
+
+    FamRegion(FamSession& session, FamRegionDescriptor* region);
+
+    void destroy() const;
+
+    bool exists() const;
+
+    // properties
+
+    fam::index_t index() const;
+
+    fam::size_t size() const;
+
+    fam::perm_t permissions() const;
+
+    std::string name() const;
+
+    FamProperty property() const;
+
+    void setObjectLevelPermissions() const;
+
+    void setRegionLevelPermissions() const;
+
+    // object methods
+
+    /// @note this avoids invoking fam, as in lookupObject.
+    FamObject proxyObject(fam::index_t offset) const;
+
+    FamObject lookupObject(const std::string& object_name) const;
+
+    FamObject allocateObject(fam::size_t object_size, fam::perm_t object_perm, const std::string& object_name = "",
+                             bool overwrite = false) const;
+
+    FamObject allocateObject(fam::size_t object_size, const std::string& object_name = "",
+                             bool overwrite = false) const {
+        return allocateObject(object_size, permissions(), object_name, overwrite);
+    }
+
+    /// Allocate a named object, or look it up if it already exists (idempotent).
+    FamObject ensureObject(fam::size_t object_size, const std::string& object_name) const;
+
+    void deallocateObject(const std::string& object_name) const;
+
+private:  // methods
+
+    void print(std::ostream& out) const;
+
+    friend std::ostream& operator<<(std::ostream& out, const FamRegion& region);
+
+private:  // members
+
+    std::shared_ptr<FamSession> session_;
+    std::shared_ptr<FamRegionDescriptor> region_;
+};
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit

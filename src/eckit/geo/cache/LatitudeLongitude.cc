@@ -39,6 +39,8 @@ using Cache = cache::RecordCacheT<LatitudeLongitude, LatitudeLongitude::uid_type
 
 
 struct Loader final : Cache::Loader {
+    Loader() = default;
+
     void load(const Cache::key_type& uid, Cache::value_type& record) const override {
         if (!GridSpecByUID::instance().exists(uid)) {
             throw exception::GridError("LatitudeLongitude: unknown uid='" + uid + "'", Here());

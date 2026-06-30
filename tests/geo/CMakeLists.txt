@@ -64,3 +64,5 @@ ecbuild_add_test(
     SOURCES           area_library.cc
     LIBS              eckit_geo
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+
+add_subdirectory(integration)

@@ -271,6 +271,124 @@ long Date::dateToJulian(long ddate) {
     return (j1);
 }
 
+bool Date::isLeapYear(long year) {
+    return ((year % 4) == 0) && (((year % 100) != 0) || ((year % 400) == 0));
+}
+
+bool Date::isLeap() const {
+    return isLeapYear(year());
+}
+
+long Date::numberOfDaysInMonth(long year, long month) {
+    ASSERT(month >= 1 && month <= 12);
+
+    static const long days[] = {
+        31, 28, 31, 30, 31, 30,
+        31, 31, 30, 31, 30, 31
+    };
+
+    if (month == 2 && isLeapYear(year)) {
+        return 29;
+    }
+
+    return days[month - 1];
+}
+
+long Date::numberOfDaysInMonth() const {
+    return numberOfDaysInMonth(year(), month());
+}
+
+Date& Date::shiftMonths(long n) {
+    long y = year();
+    long m = month();
+    long d = day();
+
+    long total = (m - 1) + n;
+    long newYear = y + total / 12;
+    long newMonth = total % 12;
+
+    if (newMonth < 0) {
+        newMonth += 12;
+        --newYear;
+    }
+
+    newMonth += 1;
+
+    long maxDay = numberOfDaysInMonth(newYear, newMonth);
+    if (d > maxDay) {
+        d = maxDay;
+    }
+
+    julian_ = dateToJulian(newYear * 10000 + newMonth * 100 + d);
+    return *this;
+}
+
+Date& Date::shiftYears(long n) {
+    return shiftMonths(12 * n);
+}
+
+Date& Date::beginOfMonth() {
+    long y = year();
+    long m = month();
+    julian_ = dateToJulian(y * 10000 + m * 100 + 1);
+    return *this;
+}
+
+Date& Date::endOfMonth() {
+    long y = year();
+    long m = month();
+    long d = numberOfDaysInMonth(y, m);
+    julian_ = dateToJulian(y * 10000 + m * 100 + d);
+    return *this;
+}
+
+Date& Date::beginOfYear() {
+    long y = year();
+    julian_ = dateToJulian(y * 10000 + 101);
+    return *this;
+}
+
+Date& Date::endOfYear() {
+    long y = year();
+    julian_ = dateToJulian(y * 10000 + 1231);
+    return *this;
+}
+
+Date Date::withShiftMonths(long n) const {
+    Date out(*this);
+    out.shiftMonths(n);
+    return out;
+}
+
+Date Date::withShiftYears(long n) const {
+    Date out(*this);
+    out.shiftYears(n);
+    return out;
+}
+
+Date Date::withBeginOfMonth() const {
+    Date out(*this);
+    out.beginOfMonth();
+    return out;
+}
+
+Date Date::withEndOfMonth() const {
+    Date out(*this);
+    out.endOfMonth();
+    return out;
+}
+
+Date Date::withBeginOfYear() const {
+    Date out(*this);
+    out.beginOfYear();
+    return out;
+}
+
+Date Date::withEndOfYear() const {
+    Date out(*this);
+    out.endOfYear();
+    return out;
+}
 
 void Date::print(std::ostream& s) const {
     long ddate = julianToDate(julian_);

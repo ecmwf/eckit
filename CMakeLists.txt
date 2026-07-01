@@ -131,7 +131,7 @@ endif()
 ecbuild_add_option( FEATURE RADOS
                     DEFAULT OFF
                     DESCRIPTION "Ceph/Rados storage support"
-                    REQUIRED_PACKAGES Rados )
+                    REQUIRED_PACKAGES RADOS )
 
 ### MKL
 

@@ -968,7 +968,6 @@ ecbuild_add_library(
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
-              "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
               "${LIB_OPENFAM_INCLUDE_DIRS}"
@@ -980,7 +979,7 @@ ecbuild_add_library(
               "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
-              "${RADOS_LIBRARIES}"
+              $<$<BOOL:${eckit_HAVE_RADOS}>:Ceph::RADOS>
               $<$<BOOL:${eckit_HAVE_OPENFAM}>:LibUUID>
               $<$<BOOL:${eckit_HAVE_OPENFAM}>:LibOPENFAM>
               $<${HAVE_AEC}:libaec::aec>

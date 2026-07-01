@@ -10,10 +10,14 @@
 
 #include <cstring>
 
+#include "eckit/eckit_config.h"
+
+#include "eckit/config/Resource.h"
 #include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosReadHandle.h"
-#include "eckit/io/rados/RadosWriteHandle.h"
+#include "eckit/io/rados/RadosMultiObjReadHandle.h"
+#include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 
 #include "eckit/io/Buffer.h"
 
@@ -28,69 +32,100 @@ namespace test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("RadosHandle") {
+CASE("Test Rados Handles") {
 
-    const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+#ifdef eckit_HAVE_RADOS_ADMIN
+    std::string pool_name = "test_handle";
+    std::string nspace = "default";
+    RadosPool pool(pool_name);
+    pool.ensureDestroyed();
+    pool.ensureCreated();
+#else
+    std::string pool_name;
+    std::string nspace = "test_handle";
+    pool_name = eckit::Resource<std::string>(
+        "eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name
+    );
+    EXPECT(pool_name.length() > 0);
+    RadosPool pool(pool_name);
+#endif
 
-    RadosHandle h("mars:foobar");
-    std::cout << "====> " << h << std::endl;
+    SECTION("RadosHandle") {
 
-    h.openForWrite(sizeof(buf));
-    h.write(buf, sizeof(buf));
-    h.close();
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    std::cout << "write done" << std::endl;
+        RadosObject obj(pool.name(), nspace, "foobar");
 
-    Buffer mem(1024);
-    RadosHandle g("mars:foobar");
-    std::cout << "====> " << g << std::endl;
+        RadosHandle h(obj);
+        std::cout << "====> " << h << std::endl;
 
-    std::cout << "Size is " << g.openForRead() << std::endl;
-    g.read(mem, mem.size());
-    g.close();
+        h.openForWrite(sizeof(buf));
+        h.write(buf, sizeof(buf));
+        h.close();
 
-    std::cout << "read done" << std::endl;
+        std::cout << "write done" << std::endl;
 
+        Buffer mem(1024);
+        RadosHandle g(obj);
+        std::cout << "====> " << g << std::endl;
 
-    EXPECT(buf == std::string(mem));
+        std::cout << "Size is " << g.openForRead() << std::endl;
+        g.read(mem, mem.size());
+        g.close();
 
-
-    RadosCluster::instance().remove(RadosObject("mars:foobar"));
-}
-
-
-CASE("RadosWriteHandle") {
-
-    const char buf[] =
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz";
-
-    RadosWriteHandle h("mars:foobar", 16);
-    std::cout << "====> " << h << std::endl;
-
-    h.openForWrite(sizeof(buf));
-    h.write(buf, sizeof(buf));
-    h.close();
-
-    Buffer mem(1024);
-    RadosReadHandle g("mars:foobar");
-    std::cout << "====> " << g << std::endl;
-
-    std::cout << "Size is " << g.openForRead() << std::endl;
-    g.read(mem, mem.size());
-    g.close();
-
-    std::cout << "read done" << std::endl;
+        std::cout << "read done" << std::endl;
 
 
-    EXPECT(buf == std::string(mem));
+        EXPECT(buf == std::string(mem));
 
-    RadosCluster::instance().removeAll(RadosObject("mars:foobar"));
+        obj.ensureDestroyed();
+
+    }
+
+    SECTION("RadosMultiObjWriteHandle") {
+
+        const char buf[] =
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject obj(pool.name(), nspace, "foobar");
+
+        RadosMultiObjWriteHandle h(obj, false, 16);
+        std::cout << "====> " << h << std::endl;
+
+        h.openForWrite(sizeof(buf));
+        h.write(buf, sizeof(buf));
+        h.close();
+
+        Buffer mem(1024);
+        RadosMultiObjReadHandle g(obj);
+        std::cout << "====> " << g << std::endl;
+
+        std::cout << "Size is " << g.openForRead() << std::endl;
+        g.read(mem, mem.size());
+        g.close();
+
+        std::cout << "read done" << std::endl;
+
+
+        EXPECT(buf == std::string(mem));
+
+        RadosCluster::instance().removeAll(obj);
+
+    }
+
+#ifdef eckit_HAVE_RADOS_ADMIN
+    pool.destroy();
+#else
+    RadosNamespace ns(pool_name, nspace);
+    ns.destroy();
+#endif
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------

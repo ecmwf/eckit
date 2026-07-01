@@ -133,6 +133,21 @@ ecbuild_add_option( FEATURE RADOS
                     DESCRIPTION "Ceph/Rados storage support"
                     REQUIRED_PACKAGES RADOS )
 
+ecbuild_add_option( FEATURE RADOS_ADMIN
+                    DEFAULT OFF
+                    DESCRIPTION "Have Ceph/Rados unit tests create pools automatically rather than using an existing pool specified in the ECKIT_RADOS_TEST_POOL cmake variable." )
+
+### Armadillo
+
+ecbuild_add_option( FEATURE ARMADILLO
+                    CONDITION HAVE_EXPERIMENTAL
+                    DESCRIPTION "Armadillo linear algebra library"
+                    REQUIRED_PACKAGES Armadillo )
+
+set_package_properties( Armadillo PROPERTIES
+                        DESCRIPTION "C++ linear algebra"
+                      )
+
 ### MKL
 
 ecbuild_add_option( FEATURE MKL

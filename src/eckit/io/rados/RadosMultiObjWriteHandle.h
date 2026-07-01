@@ -12,8 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosWriteHandle_h
-#define eckit_io_rados_RadosWriteHandle_h
+#pragma once
 
 #include <memory>
 
@@ -23,19 +22,19 @@
 namespace eckit {
 
 
-class RadosWriteHandle : public eckit::DataHandle {
+class RadosMultiObjWriteHandle : public eckit::DataHandle {
 
 public:  // methods
+    RadosMultiObjWriteHandle(const RadosObject&, bool async = false, const Length& maxPartSize = 0, 
+        size_t maxAioBuffSize = 1024, size_t maxHandleBuffSize = 1024);
+    // RadosMultiObjWriteHandle(const eckit::URI&, const Length& maxPartSize = 0);
+    // RadosMultiObjWriteHandle(Stream&);
 
-    RadosWriteHandle(const RadosObject&, const Length& maxObjectSize = 0);
-    RadosWriteHandle(const std::string&, const Length& maxObjectSize = 0);
-    RadosWriteHandle(Stream&);
-
-    ~RadosWriteHandle() override;
+    ~RadosMultiObjWriteHandle() override;
 
     // -- Class methods
 
-    static const ClassSpec& classSpec() { return classSpec_; }
+    // static const ClassSpec& classSpec() { return classSpec_; }
 
     std::string title() const;
 
@@ -57,26 +56,27 @@ public:  // methods
 
     // From Streamable
 
-    void encode(Stream&) const override;
-    const ReanimatorBase& reanimator() const override { return reanimator_; }
+    // void encode(Stream&) const override;
+    // const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
 
     RadosObject object_;
 
-    Length maxObjectSize_;
+    bool async_;
+    Length maxPartSize_;
+    size_t maxAioBuffSize_;
+    size_t maxHandleBuffSize_;
+
     size_t written_;
     Offset position_;
     size_t part_;
     bool opened_;
 
-    std::unique_ptr<DataHandle> handle_;
+    std::vector<std::unique_ptr<DataHandle>> handles_;
 
-
-    static ClassSpec classSpec_;
-    static Reanimator<RadosWriteHandle> reanimator_;
+    // static ClassSpec classSpec_;
+    // static Reanimator<RadosMultiObjWriteHandle> reanimator_;
 };
 
 }  // namespace eckit
-
-#endif

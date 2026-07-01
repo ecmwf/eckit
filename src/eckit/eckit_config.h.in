@@ -12,7 +12,7 @@
 
 // system
 
-#define ECKIT_SIZEOF_TIME_T    @ECKIT_SIZEOF_TIME_T@
+#define ECKIT_SIZEOF_TIME_T @ECKIT_SIZEOF_TIME_T @
 
 #cmakedefine01 eckit_HAVE_DLFCN_H
 #cmakedefine01 eckit_HAVE_DLADDR
@@ -64,4 +64,6 @@
 #cmakedefine01 eckit_HAVE_ECKIT_SQL
 #cmakedefine01 eckit_HAVE_ECKIT_MPI
 
-#endif // eckit_config_h
+#cmakedefine eckit_HAVE_RADOS_ADMIN
+
+#endif  // eckit_config_h

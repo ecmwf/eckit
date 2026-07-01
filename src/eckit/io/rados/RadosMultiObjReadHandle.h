@@ -12,8 +12,7 @@
 /// @author Tiago Quintino
 /// @date   June 2019
 
-#ifndef eckit_io_rados_RadosReadHandle_h
-#define eckit_io_rados_RadosReadHandle_h
+#pragma once
 
 #include <memory>
 
@@ -24,19 +23,18 @@ namespace eckit {
 
 class MultiHandle;
 
-class RadosReadHandle : public eckit::DataHandle {
+class RadosMultiObjReadHandle : public eckit::DataHandle {
 
 public:  // methods
+    RadosMultiObjReadHandle(const RadosObject&);
+    // RadosMultiObjReadHandle(const eckit::URI&);
+    // RadosMultiObjReadHandle(Stream&);
 
-    RadosReadHandle(const RadosObject&);
-    RadosReadHandle(const std::string&);
-    RadosReadHandle(Stream&);
-
-    ~RadosReadHandle() override;
+    ~RadosMultiObjReadHandle() override;
 
     // -- Class methods
 
-    static const ClassSpec& classSpec() { return classSpec_; }
+    // static const ClassSpec& classSpec() { return classSpec_; }
 
     std::string title() const;
 
@@ -51,6 +49,8 @@ public:  // methods
     void close() override;
     void flush() override;
     void rewind() override;
+    eckit::Offset seek(const eckit::Offset&) override;
+    bool canSeek() const override { return true; };
 
     Offset position() override;
     Length estimate() override;
@@ -59,8 +59,8 @@ public:  // methods
 
     // From Streamable
 
-    void encode(Stream&) const override;
-    const ReanimatorBase& reanimator() const override { return reanimator_; }
+    // void encode(Stream&) const override;
+    // const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
 
@@ -72,10 +72,8 @@ private:  // members
     std::unique_ptr<MultiHandle> handle_;
 
 
-    static ClassSpec classSpec_;
-    static Reanimator<RadosReadHandle> reanimator_;
+    // static ClassSpec classSpec_;
+    // static Reanimator<RadosMultiObjReadHandle> reanimator_;
 };
 
 }  // namespace eckit
-
-#endif

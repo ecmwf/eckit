@@ -311,20 +311,34 @@ if( eckit_HAVE_OPENFAM )
 endif( eckit_HAVE_OPENFAM )
 
 if(HAVE_RADOS)
-    list( APPEND eckit_io_srcs
-        io/rados/RadosHandle.cc
-        io/rados/RadosHandle.h
-        io/rados/RadosCluster.h
-        io/rados/RadosCluster.cc
-        io/rados/RadosReadHandle.cc
-        io/rados/RadosReadHandle.h
-        io/rados/RadosWriteHandle.cc
-        io/rados/RadosWriteHandle.h
-        io/rados/RadosObject.h
-        io/rados/RadosObject.cc
-        io/rados/RadosAttributes.h
-        io/rados/RadosAttributes.cc
-    )
+list( APPEND eckit_io_srcs
+io/rados/RadosHandle.cc
+io/rados/RadosHandle.h
+io/rados/RadosCluster.cc
+io/rados/RadosCluster.h
+io/rados/RadosMultiObjReadHandle.cc
+io/rados/RadosMultiObjReadHandle.h
+io/rados/RadosMultiObjWriteHandle.cc
+io/rados/RadosMultiObjWriteHandle.h
+io/rados/RadosAsyncHandle.cc
+io/rados/RadosAsyncHandle.h
+io/rados/RadosNamespace.cc
+io/rados/RadosNamespace.h
+io/rados/RadosPool.cc
+io/rados/RadosPool.h
+io/rados/RadosObject.cc
+io/rados/RadosObject.h
+io/rados/RadosKeyValue.cc
+io/rados/RadosKeyValue.h
+io/rados/RadosAsyncKeyValue.cc
+io/rados/RadosAsyncKeyValue.h
+io/rados/RadosAttributes.cc
+io/rados/RadosAttributes.h
+io/rados/RadosException.cc
+io/rados/RadosException.h
+io/rados/RadosPartHandle.cc
+io/rados/RadosPartHandle.h
+)
 endif()
 
 list( APPEND eckit_filesystem_srcs
@@ -968,6 +982,8 @@ ecbuild_add_library(
               "${SNAPPY_INCLUDE_DIRS}"
               "${LZ4_INCLUDE_DIRS}"
               "${BZIP2_INCLUDE_DIRS}"
+              "${AEC_INCLUDE_DIRS}"
+              "${RADOS_INCLUDE_DIRS}"
               "${OPENSSL_INCLUDE_DIR}"
               "${AIO_INCLUDE_DIRS}"
               "${LIB_OPENFAM_INCLUDE_DIRS}"
@@ -1013,12 +1029,4 @@ add_subdirectory( web )
 
 if( eckit_HAVE_ECKIT_CODEC )
     add_subdirectory( codec )
-endif()
-
-if( eckit_HAVE_ECKIT_SPEC )
-    add_subdirectory( spec )
-endif()
-
-if( eckit_HAVE_ECKIT_GEO )
-    add_subdirectory( geo )
 endif()

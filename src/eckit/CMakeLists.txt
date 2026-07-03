@@ -310,7 +310,7 @@ if( eckit_HAVE_OPENFAM )
     )
 endif( eckit_HAVE_OPENFAM )
 
-if(HAVE_RADOS)
+if(eckit_HAVE_RADOS)
 list( APPEND eckit_io_srcs
 io/rados/RadosHandle.cc
 io/rados/RadosHandle.h

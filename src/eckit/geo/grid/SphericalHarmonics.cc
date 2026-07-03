@@ -30,7 +30,12 @@ static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
 static const auto GRIDNAME = GridRegisterName<SphericalHarmonics>(PATTERN);
 
 
-SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {}
+SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {
+    // TODO improve conversion from signed to unsigned
+    if (spec.get_long("truncation") <= 0) {
+        throw exception::SpecError("SphericalHarmonics: truncation must be positive", Here());
+    }
+}
 
 
 SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {}
@@ -92,8 +97,14 @@ void SphericalHarmonics::fill_spec(spec::Custom& custom) const {
 }
 
 
+size_t SphericalHarmonics::number_of_real_coefficients(size_t truncation) {
+    // for triangular spectral truncation
+    return (truncation + 1) * (truncation + 2);
+}
+
+
 size_t SphericalHarmonics::number_of_complex_coefficients(size_t truncation) {
-    return (truncation + 1) * (truncation + 2) / 2;
+    return number_of_real_coefficients(truncation) / 2;
 }
 
 

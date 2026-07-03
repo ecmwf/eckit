@@ -41,7 +41,7 @@ public:
     std::vector<size_t> shape() const override;
 
     bool empty() const override;
-    size_t size() const override { return number_of_complex_coefficients(truncation_); }
+    size_t size() const override { return number_of_real_coefficients(truncation_); }
 
     [[nodiscard]] uid_type calculate_uid() const override;
 
@@ -53,13 +53,14 @@ public:
 
     // -- Class methods
 
+    static size_t number_of_real_coefficients(size_t truncation);
     static size_t number_of_complex_coefficients(size_t truncation);
 
 private:
 
     // -- Members
 
-    size_t truncation_;
+    const size_t truncation_;
 };
 
 

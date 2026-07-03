@@ -39,6 +39,7 @@ foreach(_test
         projection_rotation
         range
         search
+        sh
         util )
     ecbuild_add_test(
         TARGET      eckit_test_geo_${_test}
@@ -64,3 +65,4 @@ ecbuild_add_test(
     LIBS              eckit_geo
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
+add_subdirectory(integration)

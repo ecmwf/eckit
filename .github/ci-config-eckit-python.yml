@@ -1,3 +1,5 @@
+dependency_cmake_options: |
+  ecmwf/eckit: "-DENABLE_ECKIT_GEO=ON"
 dependencies: |
   ecmwf/ecbuild
   ecmwf/eckit

@@ -1,0 +1,11 @@
+build:
+  modules:
+    - ninja
+  dependencies:
+    - ecmwf/ecbuild@develop
+    - ecmwf/eckit@develop
+  dependency_cmake_options:
+    - "ecmwf/eckit: '-DENABLE_ECKIT_GEO=ON'"
+  parallel: 64
+  env:
+    - FINDLIBS_DISABLE_PACKAGE=yes

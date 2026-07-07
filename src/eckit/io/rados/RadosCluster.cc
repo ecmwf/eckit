@@ -108,9 +108,9 @@ const RadosCluster& RadosCluster::instance() {
 
 RadosCluster::RadosCluster() : cluster_(0) {
 
-    static const std::string radosClusterName = Resource<std::string>("radosClusterName", "ceph");
-    static const std::string radosClusterUser = Resource<std::string>("radosClusterUser", "client.admin");
-    static const std::string radosClusterConf = Resource<std::string>("radosClusterConf", "~/.ceph/ceph.conf");
+    static const std::string radosClusterName = Resource<std::string>("radosClusterName;$ECKIT_RADOS_CLUSTER_NAME", "ceph");
+    static const std::string radosClusterUser = Resource<std::string>("radosClusterUser;$ECKIT_RADOS_CLUSTER_USER", "client.admin");
+    static const std::string radosClusterConf = Resource<std::string>("radosClusterConf;$ECKIT_RADOS_CLUSTER_CONF", "~/.ceph/ceph.conf");
 
     static const PathName radosClusterConfPath(radosClusterConf, true);
 

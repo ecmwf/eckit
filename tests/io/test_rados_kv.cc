@@ -10,8 +10,8 @@
 
 // #include <cstring>
 
-#include "eckit/eckit_config.h"
 #include "eckit/config/Resource.h"
+#include "eckit/eckit_config.h"
 
 // #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosKeyValue.h"
@@ -36,22 +36,20 @@ CASE("Rados KeyValue") {
 
 #ifdef eckit_HAVE_RADOS_ADMIN
     std::string pool_name = "test_kv";
-    std::string nspace = "default";
+    std::string nspace    = "default";
     RadosPool pool(pool_name);
     pool.ensureDestroyed();
     pool.ensureCreated();
 #else
     std::string pool_name;
     std::string nspace = "test_kv";
-    pool_name = eckit::Resource<std::string>(
-        "eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name
-    );
+    pool_name          = eckit::Resource<std::string>("eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name);
     EXPECT(pool_name.length() > 0);
     RadosPool pool(pool_name);
 #endif
 
     SECTION("RadosKeyValue operations") {
-            
+
         std::string key = "key";
         std::string val = "abcdefghijklmnopqrstuvwxyz";
 
@@ -74,7 +72,7 @@ CASE("Rados KeyValue") {
 
         // get
         char read_val[100] = "";
-        res = kv.get(key, read_val, sizeof(read_val));
+        res                = kv.get(key, read_val, sizeof(read_val));
         EXPECT(res == val.size());
         EXPECT(std::string(read_val) == val);
 
@@ -105,7 +103,6 @@ CASE("Rados KeyValue") {
         EXPECT(kv.exists());
         kv.ensureDestroyed();
         EXPECT_NOT(kv.exists());
-
     }
 
 #ifdef eckit_HAVE_RADOS_ADMIN
@@ -114,7 +111,6 @@ CASE("Rados KeyValue") {
     RadosNamespace ns(pool_name, nspace);
     ns.destroy();
 #endif
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

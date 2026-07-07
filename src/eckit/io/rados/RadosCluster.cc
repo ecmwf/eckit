@@ -10,8 +10,8 @@
 
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosAttributes.h"
-#include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosKeyValue.h"
+#include "eckit/io/rados/RadosObject.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
@@ -31,12 +31,14 @@ public:
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx <= rados_ioctx_create(" << pool << ")" << std::endl;
 
         std::string nspace_name = nspace;
-        if (nspace == "") nspace_name = "LIBRADOS_ALL_NSPACES";
+        if (nspace == "")
+            nspace_name = "LIBRADOS_ALL_NSPACES";
 
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx => rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
         if (nspace == "") {
             rados_ioctx_set_namespace(io_, LIBRADOS_ALL_NSPACES);
-        } else {
+        }
+        else {
             rados_ioctx_set_namespace(io_, nspace.c_str());
         }
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx <= rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
@@ -108,9 +110,12 @@ const RadosCluster& RadosCluster::instance() {
 
 RadosCluster::RadosCluster() : cluster_(0) {
 
-    static const std::string radosClusterName = Resource<std::string>("radosClusterName;$ECKIT_RADOS_CLUSTER_NAME", "ceph");
-    static const std::string radosClusterUser = Resource<std::string>("radosClusterUser;$ECKIT_RADOS_CLUSTER_USER", "client.admin");
-    static const std::string radosClusterConf = Resource<std::string>("radosClusterConf;$ECKIT_RADOS_CLUSTER_CONF", "~/.ceph/ceph.conf");
+    static const std::string radosClusterName =
+        Resource<std::string>("radosClusterName;$ECKIT_RADOS_CLUSTER_NAME", "ceph");
+    static const std::string radosClusterUser =
+        Resource<std::string>("radosClusterUser;$ECKIT_RADOS_CLUSTER_USER", "client.admin");
+    static const std::string radosClusterConf =
+        Resource<std::string>("radosClusterConf;$ECKIT_RADOS_CLUSTER_CONF", "~/.ceph/ceph.conf");
 
     static const PathName radosClusterConfPath(radosClusterConf, true);
 
@@ -191,14 +196,14 @@ rados_ioctx_t& RadosCluster::ioCtx(const std::string& pool, const std::string& n
 
     if (j == ctx_.end()) {
         ctx_[pool] = NamespaceCtxCache{};
-        j = ctx_.find(pool);
+        j          = ctx_.find(pool);
     }
 
     auto k = (*j).second.find(nspace);
 
     if (k == (*j).second.end()) {
         (*j).second[nspace] = new RadosIOCtx(cluster_, pool, nspace);
-        k = (*j).second.find(nspace);
+        k                   = (*j).second.find(nspace);
     }
 
     return (*k).second->io_;
@@ -216,43 +221,43 @@ bool RadosCluster::poolExists(const std::string& pool) const {
 
     /// @note: this is making the strong assumption that if an ioCtx
     /// for a pool exists in ctx_, then the pool exists as well. This
-    /// may well not be true as the pool can be destroyed by another 
-    /// process after this process adds it to ctx_. But because pools 
-    /// are not intended to be intensively created and destroyed 
+    /// may well not be true as the pool can be destroyed by another
+    /// process after this process adds it to ctx_. But because pools
+    /// are not intended to be intensively created and destroyed
     /// concurrently, this assumption is safe enough and saves
     /// rados_pool_lookups e.g. in the FDB Rados backend.
     // if (ctx_.find(pool) != ctx_.end()) return true;
     /// @note: if making this assumption, then we should at least have
-    /// a method to close pools and remove the open connection from 
+    /// a method to close pools and remove the open connection from
     /// ctx_.
 
     try {
         RADOS_CALL(rados_pool_lookup(cluster_, pool.c_str()));
-    } catch (eckit::RadosEntityNotFoundException& e) {
+    }
+    catch (eckit::RadosEntityNotFoundException& e) {
         return false;
     }
 
     return true;
-
 }
 
 void RadosCluster::createPool(const std::string& pool) const {
 
     RADOS_CALL(rados_pool_create(cluster_, pool.c_str()));
-
 }
 
 void RadosCluster::ensurePool(const std::string& pool) const {
 
-    if (!poolExists(pool)) createPool(pool);
-
+    if (!poolExists(pool))
+        createPool(pool);
 }
 
 void RadosCluster::destroyPool(const std::string& pool) const {
 
     for (auto j = ctx_.begin(); j != ctx_.end(); ++j) {
 
-        if ((*j).first != pool) continue;
+        if ((*j).first != pool)
+            continue;
 
         for (auto k = (*j).second.begin(); k != (*j).second.end(); k++) {
             delete (*k).second;
@@ -263,11 +268,9 @@ void RadosCluster::destroyPool(const std::string& pool) const {
         ctx_.erase(j);
 
         break;
-
     }
 
     RADOS_CALL(rados_pool_delete(cluster_, pool.c_str()));
-
 }
 
 void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& attr) const {
@@ -329,7 +332,8 @@ bool RadosCluster::exists(const RadosObject& object) const {
 
     try {
         RADOS_CALL(rados_stat(ioCtx(object), object.name().c_str(), &psize, &pmtime));
-    } catch (eckit::RadosEntityNotFoundException& e) {
+    }
+    catch (eckit::RadosEntityNotFoundException& e) {
         return false;
     }
 
@@ -381,7 +385,7 @@ std::vector<std::string> RadosCluster::listPools() const {
 
     int buflen = RADOS_CALL(rados_pool_list(cluster_, NULL, 0));
 
-    std::vector<char> v((long) buflen);
+    std::vector<char> v((long)buflen);
 
     RADOS_CALL(rados_pool_list(cluster_, v.data(), buflen));
 
@@ -392,7 +396,6 @@ std::vector<std::string> RadosCluster::listPools() const {
     }
 
     return res;
-    
 }
 
 /// @todo: this lists all regular objects as well as omaps with no distinction
@@ -404,21 +407,21 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
     rados_list_ctx_t listctx;
     RADOS_CALL(rados_nobjects_list_open(ioctx, &listctx));
 
-    const char * entry;
+    const char* entry;
     bool end = false;
     do {
         try {
             RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, NULL));
             res.push_back(std::string(entry));
-        } catch (eckit::RadosEntityNotFoundException& e) {
+        }
+        catch (eckit::RadosEntityNotFoundException& e) {
             end = true;
         }
-    } while(!end);
+    } while (!end);
 
     rados_nobjects_list_close(listctx);
 
     return res;
-    
 }
 
 std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) const {
@@ -429,9 +432,9 @@ std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) c
     rados_list_ctx_t listctx;
     RADOS_CALL(rados_nobjects_list_open(ioctx, &listctx));
 
-    const char * entry;
+    const char* entry;
     // size_t entry_size;
-    const char * nspace;
+    const char* nspace;
     // size_t nspace_size;
     bool end = false;
     do {
@@ -440,15 +443,15 @@ std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) c
             RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, &nspace));
             // res.insert(std::string(nspace, nspace_size));
             res.insert(std::string(nspace));
-        } catch (eckit::RadosEntityNotFoundException& e) {
+        }
+        catch (eckit::RadosEntityNotFoundException& e) {
             end = true;
         }
-    } while(!end);
+    } while (!end);
 
     rados_nobjects_list_close(listctx);
 
     return std::vector<std::string>(res.begin(), res.end());
-    
 }
 
 void RadosCluster::removeAll(const RadosObject& object) const {

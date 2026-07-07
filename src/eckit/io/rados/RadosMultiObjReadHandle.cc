@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/MultiHandle.h"
 #include "eckit/io/rados/RadosAttributes.h"
@@ -39,7 +39,7 @@ void RadosMultiObjReadHandle::print(std::ostream& s) const {
 
 RadosMultiObjReadHandle::RadosMultiObjReadHandle(const eckit::RadosObject& obj) : object_(obj) {}
 
-// RadosMultiObjReadHandle::RadosMultiObjReadHandle(const eckit::URI& uri) : 
+// RadosMultiObjReadHandle::RadosMultiObjReadHandle(const eckit::URI& uri) :
 //     RadosMultiObjReadHandle(eckit::RadosObject(uri)) {}
 
 RadosMultiObjReadHandle::~RadosMultiObjReadHandle() {}

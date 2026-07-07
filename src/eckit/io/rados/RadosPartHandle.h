@@ -23,7 +23,7 @@ namespace eckit {
 
 class RadosPartHandle : public eckit::DataHandle {
 
-public: // methods
+public:  // methods
 
     RadosPartHandle(const eckit::RadosObject&, const eckit::Offset&, const eckit::Length&);
 
@@ -58,7 +58,7 @@ public: // methods
 
     // static const ClassSpec& classSpec() { return classSpec_; }
 
-private: // members
+private:  // members
 
     eckit::RadosObject object_;
     bool open_;
@@ -67,7 +67,6 @@ private: // members
 
     // static ClassSpec classSpec_;
     // static Reanimator<DataHandle> reanimator_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

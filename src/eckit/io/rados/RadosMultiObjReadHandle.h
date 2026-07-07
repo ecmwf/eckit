@@ -26,6 +26,7 @@ class MultiHandle;
 class RadosMultiObjReadHandle : public eckit::DataHandle {
 
 public:  // methods
+
     RadosMultiObjReadHandle(const RadosObject&);
     // RadosMultiObjReadHandle(const eckit::URI&);
     // RadosMultiObjReadHandle(Stream&);

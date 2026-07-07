@@ -21,10 +21,11 @@ namespace eckit {
 
 class RadosAsyncKeyValue : public RadosKeyValue {
 
-public: // methods
+public:  // methods
 
     RadosAsyncKeyValue(const eckit::URI&, size_t maxAioBuffSize = 1024 * 1024);
-    RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid, size_t maxAioBuffSize = 1024 * 1024);
+    RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid,
+                       size_t maxAioBuffSize = 1024 * 1024);
 
     void ensureCreated();
     /// @todo:
@@ -35,12 +36,11 @@ public: // methods
 
     void flush();
 
-private: // members
+private:  // members
 
     std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
 
     size_t maxAioBuffSize_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

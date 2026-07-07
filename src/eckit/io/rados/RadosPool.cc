@@ -45,8 +45,9 @@ void RadosPool::ensureDestroyed() const {
 
     try {
         destroy();
-    } catch (eckit::RadosEntityNotFoundException& e) {}
-
+    }
+    catch (eckit::RadosEntityNotFoundException& e) {
+    }
 }
 
 // std::string RadosObject::str() const {

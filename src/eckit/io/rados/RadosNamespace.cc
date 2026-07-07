@@ -27,8 +27,7 @@ RadosNamespace::RadosNamespace(const eckit::URI& uri) {
     ASSERT(bits.size() == 2);
 
     pool_ = eckit::RadosPool(bits[0]);
-    ns_ = bits[1];
-
+    ns_   = bits[1];
 }
 
 RadosNamespace::RadosNamespace(const std::string& pool, const std::string& nspace) : pool_({pool}), ns_(nspace) {}
@@ -50,14 +49,12 @@ std::vector<eckit::RadosObject> RadosNamespace::listObjects() const {
         res.push_back(eckit::RadosObject(pool_.name(), ns_, i));
 
     return res;
-
 }
 
 void RadosNamespace::destroy() {
 
     for (auto& i : listObjects())
         i.ensureDestroyed();
-
 }
 
 // void RadosObject::print(std::ostream& s) const {

@@ -23,6 +23,7 @@ namespace eckit {
 
 class RadosPool {
 public:
+
     RadosPool(const eckit::URI&);
     RadosPool(const std::string& pool);
 
@@ -38,10 +39,12 @@ public:
     std::vector<std::string> listNamespaces() const { return RadosCluster::instance().listNamespaces(pool_); }
 
 private:  // methods
+
     friend class RadosNamespace;
     RadosPool() {}
 
-private: // members
+private:  // members
+
     std::string pool_;
 };
 

@@ -14,10 +14,10 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#include "eckit/io/rados/RadosObject.h"
 
 #include "eckit/io/Buffer.h"
 
@@ -36,16 +36,14 @@ CASE("Test Rados Handles") {
 
 #ifdef eckit_HAVE_RADOS_ADMIN
     std::string pool_name = "test_handle";
-    std::string nspace = "default";
+    std::string nspace    = "default";
     RadosPool pool(pool_name);
     pool.ensureDestroyed();
     pool.ensureCreated();
 #else
     std::string pool_name;
     std::string nspace = "test_handle";
-    pool_name = eckit::Resource<std::string>(
-        "eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name
-    );
+    pool_name          = eckit::Resource<std::string>("eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name);
     EXPECT(pool_name.length() > 0);
     RadosPool pool(pool_name);
 #endif
@@ -79,7 +77,6 @@ CASE("Test Rados Handles") {
         EXPECT(buf == std::string(mem));
 
         obj.ensureDestroyed();
-
     }
 
     SECTION("RadosMultiObjWriteHandle") {
@@ -116,7 +113,6 @@ CASE("Test Rados Handles") {
         EXPECT(buf == std::string(mem));
 
         RadosCluster::instance().removeAll(obj);
-
     }
 
 #ifdef eckit_HAVE_RADOS_ADMIN
@@ -125,7 +121,6 @@ CASE("Test Rados Handles") {
     RadosNamespace ns(pool_name, nspace);
     ns.destroy();
 #endif
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

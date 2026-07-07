@@ -39,10 +39,11 @@ class RadosIOCtx;
 #define RADOS_CALL(a) eckit::rados_call(a, #a, __FILE__, __LINE__, __func__)
 
 using NamespaceCtxCache = std::map<std::string, RadosIOCtx*>;
-using PoolCtxCache = std::map<std::string, NamespaceCtxCache>;
+using PoolCtxCache      = std::map<std::string, NamespaceCtxCache>;
 
 class RadosCluster {
 public:
+
     rados_ioctx_t& ioCtx(const std::string& pool, const std::string& nspace) const;
     rados_ioctx_t& ioCtx(const RadosObject& object) const;
     rados_ioctx_t& ioCtx(const RadosKeyValue& object) const;
@@ -111,7 +112,8 @@ static inline int rados_call(int code, const char* msg, const char* file, int li
     if (code < 0) {
         std::cout << "RADOS_FAIL !! " << msg << std::endl;
 
-        if (code == -ENOENT) throw eckit::RadosEntityNotFoundException(msg);
+        if (code == -ENOENT)
+            throw eckit::RadosEntityNotFoundException(msg);
         RadosCluster::error(code, msg, file, line, func);
     }
 
@@ -124,6 +126,7 @@ static inline int rados_call(int code, const char* msg, const char* file, int li
 
 class RadosAIO {
 public:
+
     rados_completion_t comp_;
     RadosAIO();
     ~RadosAIO();
@@ -133,6 +136,7 @@ public:
 
 class RadosWriteOp {
 public:
+
     rados_write_op_t op_;
     RadosWriteOp();
     ~RadosWriteOp();
@@ -142,6 +146,7 @@ public:
 
 class RadosReadOp {
 public:
+
     rados_read_op_t op_;
     RadosReadOp();
     ~RadosReadOp();
@@ -151,6 +156,7 @@ public:
 
 class RadosIter {
 public:
+
     rados_omap_iter_t it_;
     ~RadosIter();
 };

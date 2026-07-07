@@ -33,42 +33,26 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
 
     if (first_write_) {
 
-        RADOS_CALL(
-            rados_aio_write_full(
-                RadosCluster::instance().ioCtx(object_), 
-                object_.name().c_str(),
-                comps_.back()->comp_,
-                reinterpret_cast<const char*>(buffer), 
-                length
-            )
-        );
+        RADOS_CALL(rados_aio_write_full(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
+                                        comps_.back()->comp_, reinterpret_cast<const char*>(buffer), length));
 
         first_write_ = false;
+    }
+    else {
 
-    } else {
-
-        RADOS_CALL(
-            rados_aio_write(
-                RadosCluster::instance().ioCtx(object_), 
-                object_.name().c_str(),
-                comps_.back()->comp_,
-                reinterpret_cast<const char*>(buffer), 
-                length, offset_
-            )
-        );
-
+        RADOS_CALL(rados_aio_write(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
+                                   comps_.back()->comp_, reinterpret_cast<const char*>(buffer), length, offset_));
     }
 
     offset_ += length;
 
     return length;
-
 }
 
 void RadosAsyncHandle::flush() {
 
     /// @note: not correct! aio_flush waits for safe on all AIOs for an IoCtx for an entire pool/namespace
-    ///   where AIOs from multiple RadosAsyncHandles (belonging to a same process) for 
+    ///   where AIOs from multiple RadosAsyncHandles (belonging to a same process) for
     ///   objects on the same pool could be ongoing.
     ///   Alternative: wait_for_complete on each AIO in comps_.
     ///   Alternative: have an IoCtx for each application in RadosCluster
@@ -80,7 +64,6 @@ void RadosAsyncHandle::flush() {
     for (const auto& comp : comps_)
         RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
     comps_.clear();
-
 }
 
 void RadosAsyncHandle::close() {
@@ -88,7 +71,6 @@ void RadosAsyncHandle::close() {
     RadosHandle::close();
 
     comps_.clear();
-
 }
 
 }  // namespace eckit

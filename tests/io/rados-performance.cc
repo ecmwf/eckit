@@ -20,9 +20,9 @@
 #include "eckit/io/Buffer.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#include "eckit/io/rados/RadosObject.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
@@ -60,7 +60,7 @@ CASE("Test rados performance") {
 
     RadosObject obj(pool.name(), "default", "largeFile")
 
-    RadosMultiObjWriteHandle h(obj, false, 0);
+        RadosMultiObjWriteHandle h(obj, false, 0);
     h.openForWrite(size);
 
     timer.start();
@@ -81,7 +81,6 @@ CASE("Test rados performance") {
     obj.ensureDestroyed();
 
     pool.destroy();
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------

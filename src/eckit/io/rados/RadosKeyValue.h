@@ -24,7 +24,7 @@ namespace eckit {
 
 class RadosKeyValue {
 
-public: // methods
+public:  // methods
 
     RadosKeyValue(const eckit::URI&);
     RadosKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid);
@@ -46,19 +46,20 @@ public: // methods
     void remove(const std::string& key);
     std::vector<std::string> keys(int keysPerQuery = 1000) const;
 
-protected: // methods
+protected:  // methods
 
     std::unique_ptr<eckit::RadosAIO> ensureCreatedAsync();
     std::unique_ptr<eckit::RadosAIO> putAsync(const std::string& key, const void* buf, const long& buflen, long& res);
     std::unique_ptr<eckit::RadosAIO> removeAsync(const std::string& key);
 
-private: // methods
+private:  // methods
+
     std::unique_ptr<eckit::RadosIter> get(const std::string& key, char*& val, size_t& len) const;
 
-private: // members
+private:  // members
+
     eckit::RadosNamespace ns_;
     std::string oid_;
-
 };
 
 //----------------------------------------------------------------------------------------------------------------------

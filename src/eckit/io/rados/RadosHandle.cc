@@ -41,8 +41,8 @@ RadosHandle::RadosHandle(const RadosObject& object) :
 
 RadosHandle::~RadosHandle() {
 
-    if (opened_) eckit::Log::error() << "RadosHandle not closed before destruction." << std::endl;
-
+    if (opened_)
+        eckit::Log::error() << "RadosHandle not closed before destruction." << std::endl;
 }
 
 void RadosHandle::open() {
@@ -52,7 +52,6 @@ void RadosHandle::open() {
     offset_ = 0;
 
     opened_ = true;
-
 }
 
 Length RadosHandle::size() {
@@ -66,16 +65,14 @@ Length RadosHandle::openForRead() {
     write_ = false;
 
     return RadosCluster::instance().size(object_);
-    
 }
 
 void RadosHandle::openForWrite(const Length& length) {
 
     open();
 
-    write_ = true;
+    write_       = true;
     first_write_ = true;
-
 }
 
 // void RadosHandle::openForAppend(const Length&) {
@@ -87,26 +84,19 @@ long RadosHandle::read(void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(!write_);
 
-    /// @note: is this useful at all? even if trimming down the length, if offset_ > 0 
+    /// @note: is this useful at all? even if trimming down the length, if offset_ > 0
     ///   then the read call will request a range that exceed the object span.
     /// @note: is this check/trimming desirable? in the read pathway, we want to discover the length of the parts
     ///   rather than assuming a certain configured length which might have had a different value on write.
     // long maxLength = RadosCluster::instance().maxObjectSize();
     // long readLength = length > maxLength ? maxLength : length;
 
-    int len = RADOS_CALL(
-        rados_read(
-            RadosCluster::instance().ioCtx(object_), 
-            object_.name().c_str(),
-            reinterpret_cast<char*>(buffer),
-            length, offset_
-        )
-    );
+    int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
+                                    reinterpret_cast<char*>(buffer), length, offset_));
 
     offset_ += len;
 
     return len;
-
 }
 
 long RadosHandle::write(const void* buffer, long length) {
@@ -120,34 +110,20 @@ long RadosHandle::write(const void* buffer, long length) {
 
     if (first_write_) {
 
-        RADOS_CALL(
-            rados_write_full(
-                RadosCluster::instance().ioCtx(object_), 
-                object_.name().c_str(),
-                reinterpret_cast<const char*>(buffer), 
-                length
-            )
-        );
+        RADOS_CALL(rados_write_full(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
+                                    reinterpret_cast<const char*>(buffer), length));
 
         first_write_ = false;
+    }
+    else {
 
-    } else {
-
-        RADOS_CALL(
-            rados_write(
-                RadosCluster::instance().ioCtx(object_), 
-                object_.name().c_str(),
-                reinterpret_cast<const char*>(buffer), 
-                length, offset_
-            )
-        );
-
+        RADOS_CALL(rados_write(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
+                               reinterpret_cast<const char*>(buffer), length, offset_));
     }
 
     offset_ += length;
 
     return length;
-
 }
 
 void RadosHandle::flush() {
@@ -165,7 +141,6 @@ void RadosHandle::close() {
     ASSERT(opened_);
 
     opened_ = false;
-
 }
 
 // void RadosHandle::rewind() {

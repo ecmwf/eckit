@@ -15,7 +15,8 @@ namespace eckit {
 RadosAsyncKeyValue::RadosAsyncKeyValue(const eckit::URI& uri, size_t maxAioBuffSize) :
     RadosKeyValue(uri), maxAioBuffSize_(maxAioBuffSize) {}
 
-RadosAsyncKeyValue::RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid, size_t maxAioBuffSize) :
+RadosAsyncKeyValue::RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid,
+                                       size_t maxAioBuffSize) :
     RadosKeyValue(pool, nspace, oid), maxAioBuffSize_(maxAioBuffSize) {}
 
 void RadosAsyncKeyValue::ensureCreated() {
@@ -23,7 +24,6 @@ void RadosAsyncKeyValue::ensureCreated() {
     std::unique_ptr<eckit::RadosAIO> comp = RadosKeyValue::ensureCreatedAsync();
     ASSERT(comps_.size() < maxAioBuffSize_);
     comps_.emplace_back(comp.release());
-
 }
 
 long RadosAsyncKeyValue::put(const std::string& key, const void* buf, const long& len) {
@@ -35,7 +35,6 @@ long RadosAsyncKeyValue::put(const std::string& key, const void* buf, const long
     comps_.emplace_back(comp.release());
 
     return res;
-
 }
 
 void RadosAsyncKeyValue::remove(const std::string& key) {
@@ -45,7 +44,6 @@ void RadosAsyncKeyValue::remove(const std::string& key) {
     comps_.emplace_back(comp.release());
 
     return;
-
 }
 
 void RadosAsyncKeyValue::flush() {
@@ -53,7 +51,6 @@ void RadosAsyncKeyValue::flush() {
     for (const auto& comp : comps_)
         RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
     comps_.clear();
-
 }
 
 }  // namespace eckit

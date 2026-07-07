@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
@@ -39,7 +39,6 @@ private:  // members
 
     std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
     size_t maxAioBuffSize_;
-
 };
 
 }  // namespace eckit

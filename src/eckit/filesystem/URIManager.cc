@@ -13,9 +13,9 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/io/rados/RadosObject.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"
-#include "eckit/io/rados/RadosObject.h"
 
 
 namespace eckit {
@@ -216,28 +216,22 @@ class RadosURIManager : public eckit::URIManager {
 
     // virtual eckit::PathName path(const eckit::URI& f) const override { return f.name(); }
 
-    virtual bool exists(const eckit::URI& f) override {
-
-        return eckit::RadosObject(f).exists();
-
-    }
+    virtual bool exists(const eckit::URI& f) override { return eckit::RadosObject(f).exists(); }
 
     virtual eckit::DataHandle* newWriteHandle(const eckit::URI& f) override {
-        
+
         return eckit::RadosObject(f).dataHandle();
-        
     }
 
     virtual eckit::DataHandle* newReadHandle(const eckit::URI& f) override {
-        
+
         return eckit::RadosObject(f).dataHandle();
-        
     }
 
-    virtual eckit::DataHandle* newReadHandle(const eckit::URI& f, const eckit::OffsetList& ol, const eckit::LengthList& ll) override {
+    virtual eckit::DataHandle* newReadHandle(const eckit::URI& f, const eckit::OffsetList& ol,
+                                             const eckit::LengthList& ll) override {
 
         NOTIMP;
-        
     }
 
     virtual std::string asString(const eckit::URI& uri) const override {
@@ -250,7 +244,9 @@ class RadosURIManager : public eckit::URIManager {
 
         return uri.scheme() + ":" + uri.name() + q + f;
     }
+
 public:
+
     RadosURIManager(const std::string& name) : eckit::URIManager(name) {}
 };
 

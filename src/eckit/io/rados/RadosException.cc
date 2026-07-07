@@ -16,8 +16,7 @@ namespace eckit {
 
 RadosException::RadosException(const std::string& w) : Exception(w) {}
 
-RadosException::RadosException(const std::string& w, const eckit::CodeLocation& l) :
-    Exception(w, l) {}
+RadosException::RadosException(const std::string& w, const eckit::CodeLocation& l) : Exception(w, l) {}
 
 RadosEntityNotFoundException::RadosEntityNotFoundException(const std::string& w) : RadosException(w) {}
 
@@ -26,4 +25,4 @@ RadosEntityNotFoundException::RadosEntityNotFoundException(const std::string& w,
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace fdb5
+}  // namespace eckit

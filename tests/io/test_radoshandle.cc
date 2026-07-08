@@ -97,6 +97,7 @@ CASE("Test Rados Handles") {
 
         h.openForWrite(sizeof(buf));
         h.write(buf, sizeof(buf));
+        h.flush();
         h.close();
 
         Buffer mem(1024);

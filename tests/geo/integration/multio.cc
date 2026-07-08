@@ -106,7 +106,7 @@ CASE("MARS grid") {
 
 
     SECTION("ORCA") {
-        for (const std::string& name : {
+        for (const auto& name : std::vector<std::string>{
                  "ORCA025",
                  "ORCA1",
                  "ORCA12",

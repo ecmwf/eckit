@@ -56,12 +56,10 @@ jobs:
             libssl-dev
             uuid-dev
             libbz2-dev
-            libzip-dev
-            libzip-tools
             libcurl4-openssl-dev
             libaec-dev
             librados-dev
-          version: 0.1
+          version: 0.2
 
       - name: Start Ceph cluster
         run: |

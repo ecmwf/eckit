@@ -14,8 +14,10 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/geo/grid/regular/RegularXY.h"
 #include "eckit/geo/range/GaussianLatitude.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/log/Log.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 
@@ -42,6 +44,24 @@ CASE("range::RegularXY") {
         EXPECT_APPROX(values[1], 0.);
         EXPECT_APPROX(values[2], 1.);
         EXPECT_APPROX(values[3], 2.);
+    }
+
+
+    SECTION("grid::regular::RegularXY::RangeXY") {
+        using test_t = std::pair<grid::regular::RegularXY::RangeXY, size_t>;
+
+        for (const auto& range_size : {
+                 test_t{{2474500., 2843500., 1000.}, 370},
+                 test_t{{1064500., 1303500., 1000.}, 240},
+                 test_t{{2439000., 2867000., 1000.}, 429},
+                 test_t{{1040500., 1333500., 1000.}, 294},
+                 test_t{{255500., 964500., 1000.}, 710},
+                 test_t{{-159500., 479500., 1000.}, 640},
+
+             }) {
+            Log::info() << range_size.first.size() << " == " << range_size.second << std::endl;
+            EXPECT(range_size.first.size() == range_size.second);
+        }
     }
 }
 

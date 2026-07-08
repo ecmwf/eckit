@@ -338,6 +338,8 @@ if( eckit_HAVE_RADOS )
         io/rados/RadosException.h
         io/rados/RadosPartHandle.cc
         io/rados/RadosPartHandle.h
+        io/rados/RadosURIManager.cc
+        io/rados/RadosURIManager.h
     )
 endif()
 

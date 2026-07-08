@@ -184,7 +184,7 @@ Grid::BoundingBox* RegularLL::calculate_bbox() const {
 }
 
 
-struct ArakawaC : public RegularLL {
+struct ArakawaC : RegularLL {
     explicit ArakawaC(const Spec& spec) :
         RegularLL(*std::unique_ptr<Spec>([](const Spec& spec) {
             auto a = [](const std::string& str) {
@@ -224,7 +224,7 @@ struct ArakawaC : public RegularLL {
 };
 
 
-struct ArakawaCUnifiedModel : public ArakawaC {
+struct ArakawaCUnifiedModel : ArakawaC {
     explicit ArakawaCUnifiedModel(const Spec& spec) :
         ArakawaC(*std::unique_ptr<Spec>([](const Spec& spec) {
             auto extended = std::make_unique<spec::Layered>(spec);
@@ -238,7 +238,7 @@ struct ArakawaCUnifiedModel : public ArakawaC {
 };
 
 
-static const auto GRIDNAME = GridRegisterName<RegularLL>(REGULAR_LL_PATTERN);
+static const GridRegisterName<RegularLL> GRIDNAME(REGULAR_LL_PATTERN);
 
 static const GridRegisterType<RegularLL> GRIDTYPE1("regular_ll");
 static const GridRegisterType<RegularLL> GRIDTYPE2("rotated_ll");

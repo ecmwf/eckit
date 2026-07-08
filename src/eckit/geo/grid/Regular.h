@@ -59,7 +59,7 @@ protected:
     // -- Constructors
 
     explicit Regular(const Spec&);
-    explicit Regular(order::Scan scan = scan_default(), const Projection* = nullptr);
+    explicit Regular(order::Scan scan = scan_default(), Projection* = nullptr);
 
     // -- Overridden methods
 

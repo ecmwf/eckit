@@ -88,7 +88,7 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return projection_.fwd(PointXY{x_.at(ix_), y_.at(iy_)});
+    return projection_.inv(PointXY{x_.at(ix_), y_.at(iy_)});
 }
 
 

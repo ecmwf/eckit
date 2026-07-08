@@ -27,7 +27,7 @@ static const std::string NOT_SUPPORTED{"SphericalHarmonics does not support grid
 static const std::string PATTERN{"[tT]([1-9][0-9]*)"};
 
 static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
-static const auto GRIDNAME = GridRegisterName<SphericalHarmonics>(PATTERN);
+static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
 
 
 SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {

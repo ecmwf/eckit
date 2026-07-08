@@ -32,8 +32,7 @@ static ProjectionRegisterType<PROJ> PROJECTION("proj");
 namespace {
 
 
-constexpr auto CTX               = PJ_DEFAULT_CTX;
-static const std::string DEFAULT = "EPSG:4326";  // WGS84, latitude/longitude coordinate system
+constexpr auto CTX = PJ_DEFAULT_CTX;
 
 
 struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
@@ -169,8 +168,11 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
 
 
 PROJ::PROJ(const Spec& spec) :
-    PROJ(spec.get_string("source", DEFAULT), spec.get_string("target", spec.get_string("proj", DEFAULT)),
+    PROJ(spec.get_string("source", proj_default()), spec.get_string("target", spec.get_string("proj", proj_default())),
          spec.get_double("lon_minimum", 0)) {}
+
+
+PROJ::~PROJ() = default;
 
 
 const std::string& PROJ::type() const {
@@ -252,12 +254,18 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 }
 
 
+const std::string& PROJ::proj_default() {
+    static const std::string DEFAULT = "EPSG:4326";  // WGS84, latitude/longitude coordinate system
+    return DEFAULT;
+}
+
+
 void PROJ::fill_spec(spec::Custom& custom) const {
     custom.set("type", "proj");
-    if (source_ != DEFAULT) {
+    if (source_ != proj_default()) {
         custom.set("source", source_);
     }
-    if (target_ != DEFAULT) {
+    if (target_ != proj_default()) {
         custom.set("target", target_);
     }
 }

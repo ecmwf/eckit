@@ -27,7 +27,12 @@ public:
     // -- Constructors
 
     PROJ(const std::string& source, const std::string& target, double lon_minimum = 0.);
+    explicit PROJ(const std::string& target, double lon_minimum = 0.) : PROJ(proj_default(), target, lon_minimum) {}
     explicit PROJ(const Spec&);
+
+    // -- Destructor
+
+    ~PROJ() override;
 
     // -- Methods
 
@@ -44,6 +49,7 @@ public:
     // -- Class methods
 
     static std::string proj_str(const spec::Custom&);
+    static const std::string& proj_default();
 
 private:
 

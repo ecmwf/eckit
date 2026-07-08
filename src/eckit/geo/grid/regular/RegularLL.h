@@ -24,7 +24,7 @@ public:
 
     // -- Types
 
-    struct Increments : public std::array<double, 2> {
+    struct Increments : std::array<double, 2> {
         Increments(value_type dlon, value_type dlat);
 
         using array::array;

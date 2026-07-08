@@ -59,7 +59,7 @@ const order::Scan& Regular::scan_default() {
 Regular::Regular(const Spec& spec) : scan_(spec) {}
 
 
-Regular::Regular(order::Scan s, const Projection*) : scan_(s) {}
+Regular::Regular(order::Scan s, Projection* proj) : Grid(proj), scan_(s) {}
 
 
 void Regular::fill_spec(spec::Custom& custom) const {

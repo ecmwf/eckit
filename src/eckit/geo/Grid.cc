@@ -18,7 +18,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -50,8 +49,7 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(Projection* proj) :
-    projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {}
+Grid::Grid(Projection* proj) : projection_(proj == nullptr ? new projection::EquidistantCylindrical : proj) {}
 
 
 const spec::Spec& Grid::catalog() const {
@@ -216,7 +214,7 @@ Grid::renumber_type Grid::crop(const Area&) const {
 
 const Projection& Grid::projection() const {
     if (!projection_) {
-        projection_ = std::make_unique<projection::Reverse<projection::EquidistantCylindrical>>();
+        projection_ = std::make_unique<projection::EquidistantCylindrical>();
         ASSERT(projection_);
     }
 

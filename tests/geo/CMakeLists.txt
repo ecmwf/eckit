@@ -14,6 +14,7 @@ foreach(_test
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll
+        grid_regular_xy
         grid_reorder
         grid_to_points
         gridspec

@@ -255,7 +255,7 @@ public:
 static LocalFilePartManager manager_file("file");
 static HttpURIManager manager_http("http");
 static HttpURIManager manager_https("https");
-static RadosURIManager rados_uri_manager("rados");
+static RadosURIManager manager_rados("rados");
 
 //----------------------------------------------------------------------------------------------------------------------
 

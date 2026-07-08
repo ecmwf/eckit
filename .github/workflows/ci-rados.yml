@@ -1,0 +1,115 @@
+name: ci-rados
+
+# Build eckit with librados (Ceph/RADOS storage support) and run the RADOS unit
+# tests against a live single-node Ceph cluster on a GitHub-hosted runner.
+#
+# This workflow is self-contained and does NOT use the self-hosted downstream-ci
+# reusable workflow, where the RADOS feature is disabled by default.
+
+on:
+  push:
+    branches:
+      - "feature/ECKIT-684-ceph-backend"
+
+    tags-ignore:
+      - "**"
+
+  # pull_request:
+  #   branches:
+  #     - "feature/ECKIT-684-ceph-backend"
+  # workflow_dispatch: ~
+
+jobs:
+  rados:
+    name: build-and-test-rados
+    runs-on: ubuntu-latest
+
+    env:
+      # Pool the RADOS unit tests read/write. Created below on the Ceph cluster.
+      ECKIT_RADOS_TEST_POOL: eckit_test
+      # Ceph client identity used by RadosCluster (see src/eckit/io/rados/RadosCluster.cc).
+      ECKIT_RADOS_CLUSTER_NAME: ceph
+      ECKIT_RADOS_CLUSTER_USER: client.admin
+      # Default Ceph config dir. Using /etc/ceph (rather than a workspace path)
+      # lets librados find ceph.client.admin.keyring via its default search path.
+      CEPH_ETC: /etc/ceph
+
+    steps:
+      - name: Checkout ecbuild
+        uses: actions/checkout@v4
+        with:
+          repository: ecmwf/ecbuild
+          path: ecbuild
+
+      - name: Checkout eckit
+        uses: actions/checkout@v4
+        with:
+          path: eckit
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            cmake \
+            ninja-build \
+            libssl-dev \
+            uuid-dev \
+            libbz2-dev \
+            libzip-dev \
+            libcurl4-openssl-dev \
+            libaec-dev \
+            librados-dev
+
+      - name: Start Ceph cluster
+        run: |
+          sudo mkdir -p "${CEPH_ETC}"
+          docker run -d --name ceph-demo \
+            --network host \
+            -e MON_IP=127.0.0.1 \
+            -e CEPH_PUBLIC_NETWORK=0.0.0.0/0 \
+            -e CEPH_DEMO_UID=ci \
+            -v "${CEPH_ETC}:/etc/ceph" \
+            quay.io/ceph/demo:latest-squid demo
+
+      - name: Wait for Ceph and create test pool
+        run: |
+          echo "Waiting for Ceph to become ready..."
+          for i in $(seq 1 60); do
+            if docker exec ceph-demo ceph osd pool ls >/dev/null 2>&1; then
+              ready=1
+              break
+            fi
+            sleep 5
+          done
+          if [ "${ready:-0}" != "1" ]; then
+            echo "Ceph did not become ready in time" >&2
+            docker logs ceph-demo || true
+            exit 1
+          fi
+          docker exec ceph-demo ceph osd pool create "${ECKIT_RADOS_TEST_POOL}" 8 8
+          docker exec ceph-demo ceph osd pool application enable "${ECKIT_RADOS_TEST_POOL}" rados
+          docker exec ceph-demo ceph osd pool ls
+          sudo chmod 0644 "${CEPH_ETC}/ceph.client.admin.keyring"
+
+      - name: Configure
+        run: |
+          # eckit locates ecbuild via find_package(ecbuild ... HINTS .../../ecbuild),
+          # which resolves to the sibling ecbuild checkout above.
+          cmake -S eckit -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DENABLE_RADOS=ON \
+            -DENABLE_RADOS_ADMIN=OFF
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Run RADOS tests
+        env:
+          ECKIT_RADOS_CLUSTER_CONF: /etc/ceph/ceph.conf
+        run: |
+          ctest --test-dir build -L eckit_rados --output-on-failure
+
+      - name: Dump Ceph logs on failure
+        if: failure()
+        run: docker logs ceph-demo || true

@@ -1,11 +1,5 @@
 name: ci-rados
 
-# Build eckit with librados (Ceph/RADOS storage support) and run the RADOS unit
-# tests against a live single-node Ceph cluster on a GitHub-hosted runner.
-#
-# This workflow is self-contained and does NOT use the self-hosted downstream-ci
-# reusable workflow, where the RADOS feature is disabled by default.
-
 on:
   push:
     branches:
@@ -21,18 +15,14 @@ on:
 
 jobs:
   rados:
-    name: build-and-test-rados
+    name: Ceph/RADOS
     runs-on: ubuntu-latest
 
     env:
-      # Pool the RADOS unit tests read/write. Created below on the Ceph cluster.
+      CEPH_ETC: /etc/ceph
       ECKIT_RADOS_TEST_POOL: eckit_test
-      # Ceph client identity used by RadosCluster (see src/eckit/io/rados/RadosCluster.cc).
       ECKIT_RADOS_CLUSTER_NAME: ceph
       ECKIT_RADOS_CLUSTER_USER: client.admin
-      # Default Ceph config dir. Using /etc/ceph (rather than a workspace path)
-      # lets librados find ceph.client.admin.keyring via its default search path.
-      CEPH_ETC: /etc/ceph
 
     steps:
       - name: Checkout ecbuild
@@ -99,7 +89,8 @@ jobs:
           cmake -S eckit -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DENABLE_RADOS=ON \
-            -DENABLE_RADOS_ADMIN=OFF
+            -DENABLE_RADOS_ADMIN=OFF \
+            -DECKIT_RADOS_TEST_POOL="${ECKIT_RADOS_TEST_POOL}"
 
       - name: Build
         run: cmake --build build --parallel

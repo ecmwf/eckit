@@ -15,7 +15,7 @@ on:
 
 jobs:
   rados:
-    name: Ceph/RADOS
+    name: Ceph/RADOS Backend Tests
     runs-on: ubuntu-latest
 
     env:
@@ -23,6 +23,10 @@ jobs:
       ECKIT_RADOS_TEST_POOL: eckit_test
       ECKIT_RADOS_CLUSTER_NAME: ceph
       ECKIT_RADOS_CLUSTER_USER: client.admin
+      # Local dirs used to cache apt archives and the Ceph docker image.
+      APT_CACHE: ${{ github.workspace }}/.apt-cache
+      CEPH_IMAGE: quay.io/ceph/demo:latest-squid
+      CEPH_IMAGE_CACHE: ${{ github.workspace }}/.docker-ceph
 
     steps:
       - name: Checkout ecbuild
@@ -36,10 +40,20 @@ jobs:
         with:
           path: eckit
 
+      - name: Cache apt packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.apt-cache
+          # Bump the suffix to invalidate when the package list changes.
+          key: apt-rados-${{ runner.os }}-v1
+
       - name: Install build dependencies
         run: |
+          mkdir -p "${APT_CACHE}/archives/partial"
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
+            -o Dir::Cache::archives="${APT_CACHE}/archives" \
+            -o APT::Keep-Downloaded-Packages=true \
             build-essential \
             cmake \
             ninja-build \
@@ -49,6 +63,25 @@ jobs:
             libcurl4-openssl-dev \
             libaec-dev \
             librados-dev
+          # Make the cached .deb archives readable/writable by the runner user.
+          sudo chown -R "$(id -u):$(id -g)" "${APT_CACHE}"
+
+      - name: Cache Ceph image
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/.docker-ceph
+          # Bump the suffix to refresh the pinned image snapshot.
+          key: ceph-image-latest-squid-v1
+
+      - name: Load or pull Ceph image
+        run: |
+          if [ -f "${CEPH_IMAGE_CACHE}/ceph-demo.tar" ]; then
+            docker load -i "${CEPH_IMAGE_CACHE}/ceph-demo.tar"
+          else
+            docker pull "${CEPH_IMAGE}"
+            mkdir -p "${CEPH_IMAGE_CACHE}"
+            docker save "${CEPH_IMAGE}" -o "${CEPH_IMAGE_CACHE}/ceph-demo.tar"
+          fi
 
       - name: Start Ceph cluster
         run: |
@@ -59,7 +92,7 @@ jobs:
             -e CEPH_PUBLIC_NETWORK=0.0.0.0/0 \
             -e CEPH_DEMO_UID=ci \
             -v "${CEPH_ETC}:/etc/ceph" \
-            quay.io/ceph/demo:latest-squid demo
+            "${CEPH_IMAGE}" demo
 
       - name: Wait for Ceph and create test pool
         run: |

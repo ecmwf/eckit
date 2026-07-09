@@ -4,7 +4,6 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" DESTINATION "${CMAKE_CUR
 foreach(_test
         area_boundingbox
         area_polygon
-        cache
         figure
         figure_earth
         gaussian
@@ -49,6 +48,12 @@ foreach(_test
 endforeach()
 
 if(eckit_HAVE_ZIP)
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_cache
+        SOURCES     cache.cc ${PROJECT_SOURCE_DIR}/src/eckit/geo/cache/Unzip.cc
+        LIBS        eckit_geo libzip::zip
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
+
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
 endif()
 

@@ -20,7 +20,7 @@ on:
 
 jobs:
   rados:
-    name: Ceph/RADOS Backend Tests
+    name: Test Ceph/RADOS Backend
     runs-on: ubuntu-latest
 
     env:

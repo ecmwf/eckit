@@ -19,6 +19,11 @@ on:
   # Trigger the workflow manually
   workflow_dispatch: ~
 
+# avoid duplicate runs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   rados:
     name: Test Ceph/RADOS Backend

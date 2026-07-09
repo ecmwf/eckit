@@ -37,19 +37,18 @@ jobs:
           path: eckit
 
       - name: Install build dependencies
-        uses: awalsh128/cache-apt-pkgs-action@v1
-        with:
-          packages: >-
-            build-essential
-            cmake
-            ninja-build
-            libssl-dev
-            uuid-dev
-            libbz2-dev
-            libcurl4-openssl-dev
-            libaec-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            cmake \
+            ninja-build \
+            libssl-dev \
+            uuid-dev \
+            libbz2-dev \
+            libcurl4-openssl-dev \
+            libaec-dev \
             librados-dev
-          version: 0.2
 
       - name: Start Ceph cluster
         run: |

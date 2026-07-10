@@ -8,7 +8,7 @@ with open("VERSION", "r") as fVersion:
     version = fVersion.readlines()[0].strip()
 install_requires = [
     f"eckitlib=={version}",
-    "findlibs",
+    "findlibs>=0.1.2",
     "pyyaml",
     "requests",
 ]

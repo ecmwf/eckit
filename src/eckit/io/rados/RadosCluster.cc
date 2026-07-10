@@ -19,6 +19,7 @@
 #include <cstring>
 #include <ctime>
 #include <iostream>
+#include <mutex>
 #include <ostream>
 #include <set>
 #include <sstream>
@@ -136,7 +137,9 @@ RadosReadOp::~RadosReadOp() {
 
 RadosIter::~RadosIter() {
     LOG_DEBUG_LIB(LibEcKit) << "~RadosIter => rados_omap_get_end()" << std::endl;
-    rados_omap_get_end(it_);
+    if (it_) {
+        rados_omap_get_end(it_);
+    }
     LOG_DEBUG_LIB(LibEcKit) << "~RadosIter <= rados_omap_get_end()" << std::endl;
 }
 
@@ -177,6 +180,8 @@ RadosCluster::~RadosCluster() {
 
 
     LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::~RadosCluster" << std::endl;
+
+    std::lock_guard lock(ctxMutex_);
 
     for (auto j = ctx_.begin(); j != ctx_.end(); ++j) {
         for (auto k = (*j).second.begin(); k != (*j).second.end(); k++) {
@@ -230,6 +235,8 @@ Length RadosCluster::maxObjectSize() const {
 
 
 rados_ioctx_t& RadosCluster::ioCtx(const std::string& pool, const std::string& nspace) const {
+
+    std::lock_guard lock(ctxMutex_);
 
     auto j = ctx_.find(pool);
 
@@ -287,19 +294,23 @@ void RadosCluster::createPool(const std::string& pool) const {
 
 void RadosCluster::ensurePool(const std::string& pool) const {
 
-    if (!poolExists(pool))
+    if (!poolExists(pool)) {
         createPool(pool);
+    }
 }
 
 void RadosCluster::destroyPool(const std::string& pool) const {
 
+    std::lock_guard lock(ctxMutex_);
+
     for (auto j = ctx_.begin(); j != ctx_.end(); ++j) {
 
-        if ((*j).first != pool)
+        if ((*j).first != pool) {
             continue;
+        }
 
-        for (auto k = (*j).second.begin(); k != (*j).second.end(); k++) {
-            delete (*k).second;
+        for (auto& k : (*j).second) {
+            delete k.second;
         }
 
         (*j).second.clear();
@@ -328,7 +339,6 @@ void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& 
 RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
 
     RadosAttributes attr;
-
 
     rados_xattrs_iter_t iter;
     RADOS_CALL(rados_getxattrs(ioCtx(object), object.name().c_str(), &iter));
@@ -361,7 +371,6 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
 
     rados_getxattrs_end(iter);
 
-
     return attr;
 }
 
@@ -375,12 +384,7 @@ bool RadosCluster::exists(const RadosObject& object) const {
     catch (eckit::RadosEntityNotFoundException& e) {
         return false;
     }
-
     return true;
-
-    // RADOS_CALL(rados_stat(ioCtx(object), object.name().c_str(), &psize, &pmtime));
-
-    // NOTIMP;
 }
 
 /// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
@@ -403,11 +407,10 @@ void RadosCluster::remove(const RadosObject& object) const {
 /// @todo: make RadosObject and RadosKeyValue derived classes of a common class and
 ///   define RadosCluster::remove() only for arguments of that base class.
 void RadosCluster::remove(const RadosKeyValue& object) const {
-    return remove(RadosObject{object.uri()});
+    remove(RadosObject{object.uri()});
 }
 
 void RadosCluster::truncate(const RadosObject& object, const Length& length) const {
-
     RADOS_CALL(rados_trunc(ioCtx(object), object.name().c_str(), length));
 }
 
@@ -430,7 +433,7 @@ std::vector<std::string> RadosCluster::listPools() const {
 
     size_t offset = 0;
     while (v.at(offset)) {
-        res.push_back(std::string(v.data() + offset));
+        res.emplace_back(v.data() + offset);
         offset += res.back().size() + 1;
     }
 
@@ -451,7 +454,7 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
     do {
         try {
             RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, NULL));
-            res.push_back(std::string(entry));
+            res.emplace_back(entry);
         }
         catch (eckit::RadosEntityNotFoundException& e) {
             end = true;
@@ -490,7 +493,7 @@ std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) c
 
     rados_nobjects_list_close(listctx);
 
-    return std::vector<std::string>(res.begin(), res.end());
+    return {res.begin(), res.end()};
 }
 
 void RadosCluster::removeAll(const RadosObject& object) const {

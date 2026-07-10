@@ -20,6 +20,7 @@
 #include <cstddef>
 #include <ctime>
 #include <map>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -92,6 +93,7 @@ private:
 
     rados_t cluster_;
     mutable PoolCtxCache ctx_;
+    mutable std::mutex ctxMutex_;
 
     void reset();
 

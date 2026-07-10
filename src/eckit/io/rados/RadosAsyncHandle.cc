@@ -80,8 +80,9 @@ void RadosAsyncHandle::flush() {
     // RADOS_CALL(rados_aio_flush(RadosCluster::instance().ioCtx(object_)));
     // comps_.clear();
 
-    for (const auto& comp : comps_)
+    for (const auto& comp : comps_) {
         RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    }
     comps_.clear();
 }
 

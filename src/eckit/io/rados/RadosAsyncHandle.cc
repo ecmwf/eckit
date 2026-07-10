@@ -10,13 +10,25 @@
 
 #include "eckit/io/rados/RadosAsyncHandle.h"
 
+#include <rados/librados.h>
+
+#include <cstddef>
+#include <ostream>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosHandle.h"
+#include "eckit/io/rados/RadosObject.h"
+
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 RadosAsyncHandle::RadosAsyncHandle(const RadosObject& object, size_t maxAioBuffSize) :
     RadosHandle(object), maxAioBuffSize_(maxAioBuffSize) {}
 
-void RadosAsyncHandle::print(std::ostream& s) const {
-    s << "RadosAsyncHandle[" << object_.str() << ";";
+void RadosAsyncHandle::print(std::ostream& out) const {
+    out << "RadosAsyncHandle[" << object_.str() << ";";
 }
 
 long RadosAsyncHandle::write(const void* buffer, long length) {
@@ -50,7 +62,6 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
 }
 
 void RadosAsyncHandle::flush() {
-
     /// @note: not correct! aio_flush waits for safe on all AIOs for an IoCtx for an entire pool/namespace
     ///   where AIOs from multiple RadosAsyncHandles (belonging to a same process) for
     ///   objects on the same pool could be ongoing.
@@ -72,5 +83,7 @@ void RadosAsyncHandle::close() {
 
     comps_.clear();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

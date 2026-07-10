@@ -19,6 +19,8 @@
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 /// @note: ensures writes are persisted on flush
 
 class RadosAsyncHandle : public eckit::RadosHandle {
@@ -33,12 +35,14 @@ public:  // methods
     void close() override;
     void flush() override;
 
-    void print(std::ostream&) const override;
+    void print(std::ostream& out) const override;
 
 private:  // members
 
     std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
     size_t maxAioBuffSize_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

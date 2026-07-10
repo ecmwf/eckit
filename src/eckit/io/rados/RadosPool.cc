@@ -9,17 +9,25 @@
  */
 
 #include "eckit/io/rados/RadosPool.h"
-#include "eckit/io/rados/RadosNamespace.h"
 
-// #include "eckit/config/Resource.h"
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosException.h"
+#include "eckit/io/rados/RadosNamespace.h"
+#include "eckit/log/Log.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 
-RadosPool::RadosPool(const eckit::URI& uri) {
-    // static const std::string defaultRadosPool = Resource<std::string>("defaultRadosPool", "default");
+//----------------------------------------------------------------------------------------------------------------------
 
+RadosPool::RadosPool(const eckit::URI& uri) {
     Tokenizer parse("/");
 
     std::vector<std::string> bits;
@@ -30,7 +38,7 @@ RadosPool::RadosPool(const eckit::URI& uri) {
     pool_ = bits[0];
 }
 
-RadosPool::RadosPool(const std::string& pool) : pool_(pool) {}
+RadosPool::RadosPool(std::string pool) : pool_{std::move(pool)} {}
 
 void RadosPool::destroy() const {
     /// @note: explicitly destroy every object in the pool, as rados_pool_delete
@@ -38,25 +46,18 @@ void RadosPool::destroy() const {
     for (const auto& ns : listNamespaces()) {
         eckit::RadosNamespace(pool_, ns).destroy();
     }
-    return RadosCluster::instance().destroyPool(pool_);
+    RadosCluster::instance().destroyPool(pool_);
 }
 
 void RadosPool::ensureDestroyed() const {
-
     try {
         destroy();
     }
     catch (eckit::RadosEntityNotFoundException& e) {
+        LOG_DEBUG_LIB(LibEcKit) << e.what() << '\n';
     }
 }
 
-// std::string RadosObject::str() const {
-//     return pool_ + ':' + oid_;
-// }
-
-
-// void RadosObject::print(std::ostream& s) const {
-//     s << "RadosObject[pool=" << pool_ << ",oid=" << oid_ << "]";
-// }
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

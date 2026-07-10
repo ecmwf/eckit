@@ -25,9 +25,7 @@ namespace eckit {
 class RadosURIManager : public URIManager {
 public:  // methods
 
-    RadosURIManager(const std::string& name);
-
-    ~RadosURIManager() override;
+    explicit RadosURIManager(const std::string& name);
 
 private:  // methods
 

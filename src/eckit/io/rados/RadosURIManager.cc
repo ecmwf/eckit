@@ -14,6 +14,9 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
+#include "eckit/filesystem/URIManager.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
@@ -21,8 +24,6 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 RadosURIManager::RadosURIManager(const std::string& name) : URIManager(name) {}
-
-RadosURIManager::~RadosURIManager() = default;
 
 bool RadosURIManager::exists(const URI& uri) {
     return RadosObject(uri).exists();

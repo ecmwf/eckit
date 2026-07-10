@@ -15,22 +15,26 @@
 
 #pragma once
 
-#include <memory>
+#include <cstddef>
 #include <string>
 
+#include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosNamespace.h"
 
 namespace eckit {
 
-// class Stream;
+class DataHandle;
 
+//----------------------------------------------------------------------------------------------------------------------
 
 class RadosObject {
 public:
 
-    // RadosObject(Stream&);
+    explicit RadosObject(const eckit::URI&);
 
-    RadosObject(const eckit::URI&);
     RadosObject(const std::string& pool, const std::string& nspace, const std::string& oid);
 
     RadosObject(const RadosObject& other, size_t part);
@@ -41,8 +45,8 @@ public:
     std::string str() const;
 
     bool exists() const;
-    void ensureDestroyed();
-    void ensureAllDestroyed();
+    void ensureDestroyed() const;
+    void ensureAllDestroyed() const;
 
     eckit::DataHandle* dataHandle() const;
     eckit::DataHandle* asyncDataHandle(size_t maxAioBuffSize = 1024 * 1024) const;
@@ -56,20 +60,8 @@ private:
 
     eckit::RadosNamespace ns_;
     std::string oid_;
-
-    // void print(std::ostream&) const;
-    // void encode(Stream&) const;
-
-    // friend std::ostream& operator<<(std::ostream& s, const RadosObject& o) {
-    //     o.print(s);
-    //     return s;
-    // }
-
-    // friend Stream& operator<<(Stream& s, const RadosObject& o) {
-    //     o.encode(s);
-    //     return s;
-    // }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

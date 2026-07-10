@@ -13,8 +13,12 @@
 
 #pragma once
 
-#include "eckit/io/DataHandle.h"
+#include <ostream>
+#include <string>
 
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
@@ -29,34 +33,21 @@ public:  // methods
 
     ~RadosPartHandle();
 
-    virtual void print(std::ostream&) const override;
+    void print(std::ostream& out) const override;
 
-    // virtual void openForWrite(const eckit::Length&) override;
-    // virtual void openForAppend(const eckit::Length&) override;
-    virtual eckit::Length openForRead() override;
+    eckit::Length openForRead() override;
 
-    // virtual long write(const void*, long) override;
-    virtual long read(void*, long) override;
-    virtual void close() override;
-    virtual void flush() override;
+    long read(void*, long) override;
+    void close() override;
+    void flush() override;
 
-    virtual eckit::Length size() override;
-    virtual eckit::Length estimate() override;
-    virtual eckit::Offset position() override;
-    virtual eckit::Offset seek(const eckit::Offset&) override;
-    virtual bool canSeek() const override;
-    // virtual void skip(const eckit::Length&) override;
+    eckit::Length size() override;
+    eckit::Length estimate() override;
+    eckit::Offset position() override;
+    eckit::Offset seek(const eckit::Offset&) override;
+    bool canSeek() const override;
 
-    // virtual void rewind() override;
-    // virtual void restartReadFrom(const Offset&) override;
-    // virtual void restartWriteFrom(const Offset&) override;
-
-    virtual std::string title() const override;
-
-    // virtual void encode(Stream&) const override;
-    // virtual const ReanimatorBase& reanimator() const override { return reanimator_; }
-
-    // static const ClassSpec& classSpec() { return classSpec_; }
+    std::string title() const override;
 
 private:  // members
 
@@ -64,9 +55,6 @@ private:  // members
     bool open_;
     eckit::Offset offset_;
     eckit::Length len_;
-
-    // static ClassSpec classSpec_;
-    // static Reanimator<DataHandle> reanimator_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

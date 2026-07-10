@@ -10,20 +10,30 @@
 
 #include "eckit/io/rados/RadosPartHandle.h"
 
-#include "eckit/exception/Exceptions.h"
+#include <rados/librados.h>
 
-using eckit::Length;
-using eckit::Offset;
+#include <algorithm>
+#include <ostream>
+#include <string>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosObject.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 RadosPartHandle::RadosPartHandle(const eckit::RadosObject& object, const eckit::Offset& off, const eckit::Length& len) :
     object_(object), open_(false), offset_(off), len_(len) {}
 
 RadosPartHandle::~RadosPartHandle() {
-
-    if (open_)
+    if (open_) {
         eckit::Log::error() << "RadosPartHandle not closed before destruction." << std::endl;
+    }
 }
 
 void RadosPartHandle::print(std::ostream& s) const {
@@ -44,8 +54,8 @@ long RadosPartHandle::read(void* buf, long len) {
     ASSERT(open_);
 
     eckit::Length s = size();
-    if (len > s - offset_)
-        len = s - offset_;
+
+    len = std::min<long>(len, s - offset_);
 
     int read = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
                                      reinterpret_cast<char*>(buf), len, offset_));
@@ -57,52 +67,40 @@ long RadosPartHandle::read(void* buf, long len) {
 
 void RadosPartHandle::close() {
 
-    if (!open_)
+    if (!open_) {
         return;
+    }
 
     open_ = false;
 }
 
-void RadosPartHandle::flush() {
-
-    /// empty implmenetation
-}
+void RadosPartHandle::flush() {}
 
 Length RadosPartHandle::size() {
-
     return len_;
 }
 
 Length RadosPartHandle::estimate() {
-
     return size();
 }
 
 Offset RadosPartHandle::position() {
-
     return offset_;
 }
 
 Offset RadosPartHandle::seek(const Offset& offset) {
-
     offset_ = offset;
     return offset_;
 }
 
 bool RadosPartHandle::canSeek() const {
-
     return true;
 }
 
-// void RadosPartHandle::skip(const Length& len) {
-
-//     offset_ += Offset(len);
-
-// }
-
 std::string RadosPartHandle::title() const {
-
     return object_.name();
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

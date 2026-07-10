@@ -9,13 +9,20 @@
  */
 
 #include "eckit/io/rados/RadosNamespace.h"
-#include "eckit/io/rados/RadosObject.h"
 
-// #include "eckit/config/Resource.h"
+#include <string>
+#include <vector>
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosObject.h"
+#include "eckit/io/rados/RadosPool.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 RadosNamespace::RadosNamespace(const eckit::URI& uri) {
 
@@ -31,11 +38,6 @@ RadosNamespace::RadosNamespace(const eckit::URI& uri) {
 }
 
 RadosNamespace::RadosNamespace(const std::string& pool, const std::string& nspace) : pool_({pool}), ns_(nspace) {}
-
-// std::string RadosObject::str() const {
-//     return pool_ + ':' + oid_;
-// }
-
 
 std::string RadosNamespace::str() const {
     return pool_.name() + '/' + ns_;
@@ -57,8 +59,6 @@ void RadosNamespace::destroy() {
         i.ensureDestroyed();
 }
 
-// void RadosObject::print(std::ostream& s) const {
-//     s << "RadosObject[pool=" << pool_ << ",oid=" << oid_ << "]";
-// }
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

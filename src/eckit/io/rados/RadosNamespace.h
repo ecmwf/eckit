@@ -13,18 +13,22 @@
 
 #pragma once
 
-// #include <memory>
-// #include <string>
+#include <string>
+#include <vector>
 
+#include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/URI.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosPool.h"
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class RadosNamespace {
 public:
 
-    RadosNamespace(const eckit::URI&);
+    explicit RadosNamespace(const eckit::URI& uri);
     RadosNamespace(const std::string& pool, const std::string& nspace);
 
     const eckit::RadosPool& pool() const { return pool_; }
@@ -49,5 +53,6 @@ private:  // members
     std::string ns_;
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

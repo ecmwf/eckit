@@ -8,13 +8,29 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstring>
-
 #include "eckit/io/rados/RadosKeyValue.h"
 
+#include <rados/librados.h>
+
+#include <cstring>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "eckit/config/LibEcKit.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosException.h"
+#include "eckit/io/rados/RadosNamespace.h"
+#include "eckit/log/Log.h"
+#include "eckit/serialisation/MemoryStream.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 RadosKeyValue::RadosKeyValue(const eckit::URI& uri) {
     eckit::Tokenizer parse("/");
@@ -38,7 +54,7 @@ bool RadosKeyValue::exists() const {
     return eckit::RadosCluster::instance().exists(*this);
 }
 
-std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() {
+std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() const {
 
     eckit::RadosWriteOp op{};
 
@@ -54,20 +70,18 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() {
     return comp;
 }
 
-void RadosKeyValue::ensureCreated() {
-
+void RadosKeyValue::ensureCreated() const {
     auto comp = ensureCreatedAsync();
-
     RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
 }
 
-void RadosKeyValue::ensureDestroyed() {
-
+void RadosKeyValue::ensureDestroyed() const {
     try {
 
         eckit::RadosCluster::instance().remove(*this);
     }
     catch (eckit::RadosEntityNotFoundException& e) {
+        LOG_DEBUG_LIB(LibEcKit) << e.what() << '\n';
     }
 }
 
@@ -109,7 +123,7 @@ bool RadosKeyValue::has(const std::string& key) const {
 }
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key, const void* buf, const long& buflen,
-                                                         long& res) {
+                                                         long& res) const {
 
     eckit::RadosWriteOp op{};
 
@@ -133,7 +147,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::putAsync(const std::string& key,
     return comp;
 }
 
-long RadosKeyValue::put(const std::string& key, const void* buf, const long& len) {
+long RadosKeyValue::put(const std::string& key, const void* buf, const long& len) const {
 
     long res;
 
@@ -171,8 +185,9 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
 
     ASSERT(rc == 0);
 
-    if (rados_omap_iter_size(iter->it_) != 1)
+    if (rados_omap_iter_size(iter->it_) != 1) {
         throw eckit::RadosEntityNotFoundException("Key '" + key + "' not found in KeyValue with name " + oid_);
+    }
 
     char* found_key;
     size_t found_key_len;
@@ -214,7 +229,7 @@ eckit::MemoryStream RadosKeyValue::getMemoryStream(std::vector<char>& v, const s
     return eckit::MemoryStream(&v[0], found_val_len);
 }
 
-std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& key) {
+std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& key) const {
 
     eckit::RadosWriteOp op{};
 
@@ -271,7 +286,7 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
 
         ASSERT(rc == 0);
 
-        char* key;
+        char* key = nullptr;
         size_t key_len;
 
         for (int i = 0; i < rados_omap_iter_size(iter.it_); ++i) {
@@ -282,11 +297,13 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
                                             NULL  /// @note: where to store the value length
                                             ));
 
-            res.push_back(std::string(key, key + key_len));
+            res.emplace_back(key, key + key_len);
         }
     }
 
     return res;
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

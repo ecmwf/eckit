@@ -13,10 +13,17 @@
 
 #pragma once
 
-#include "eckit/filesystem/URI.h"
-#include "eckit/serialisation/MemoryStream.h"
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
 
+#include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosNamespace.h"
+#include "eckit/serialisation/MemoryStream.h"
 
 namespace eckit {
 
@@ -35,12 +42,12 @@ public:  // methods
     std::string str() const;
     bool exists() const;
 
-    void ensureCreated();
-    void ensureDestroyed();
+    void ensureCreated() const;
+    void ensureDestroyed() const;
 
     eckit::Length size(const std::string& key) const;
     bool has(const std::string& key) const;
-    long put(const std::string& key, const void*, const long&);
+    long put(const std::string& key, const void*, const long&) const;
     long get(const std::string& key, void*, const long&) const;
     eckit::MemoryStream getMemoryStream(std::vector<char>& v, const std::string& key, const std::string& kvTitle) const;
     void remove(const std::string& key);
@@ -48,9 +55,10 @@ public:  // methods
 
 protected:  // methods
 
-    std::unique_ptr<eckit::RadosAIO> ensureCreatedAsync();
-    std::unique_ptr<eckit::RadosAIO> putAsync(const std::string& key, const void* buf, const long& buflen, long& res);
-    std::unique_ptr<eckit::RadosAIO> removeAsync(const std::string& key);
+    std::unique_ptr<eckit::RadosAIO> ensureCreatedAsync() const;
+    std::unique_ptr<eckit::RadosAIO> putAsync(const std::string& key, const void* buf, const long& buflen,
+                                              long& res) const;
+    std::unique_ptr<eckit::RadosAIO> removeAsync(const std::string& key) const;
 
 private:  // methods
 

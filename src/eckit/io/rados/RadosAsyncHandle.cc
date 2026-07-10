@@ -13,6 +13,7 @@
 #include <rados/librados.h>
 
 #include <cstddef>
+#include <memory>
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
@@ -31,6 +32,14 @@ void RadosAsyncHandle::print(std::ostream& out) const {
     out << "RadosAsyncHandle[" << object_.str() << ";";
 }
 
+size_t RadosAsyncHandle::totalCompsBuffSize() const {
+    size_t buff_size = 0;
+    for (const auto& comp : comps_) {
+        buff_size += comp->len_;
+    }
+    return buff_size;
+}
+
 long RadosAsyncHandle::write(const void* buffer, long length) {
 
     ASSERT(length);
@@ -40,18 +49,17 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
     ASSERT(length <= RadosCluster::instance().maxWriteSize());
     ASSERT((offset_ + length) <= RadosCluster::instance().maxObjectSize());
 
-    ASSERT(comps_.size() < maxAioBuffSize_);
-    comps_.emplace_back(new eckit::RadosAIO());
+    ASSERT(totalCompsBuffSize() < maxAioBuffSize_);
+
+    auto& handle = comps_.emplace_back(std::make_unique<eckit::RadosAIO>());
+    handle->len_ = length;
 
     if (first_write_) {
-
         RADOS_CALL(rados_aio_write_full(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
                                         comps_.back()->comp_, reinterpret_cast<const char*>(buffer), length));
-
         first_write_ = false;
     }
     else {
-
         RADOS_CALL(rados_aio_write(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
                                    comps_.back()->comp_, reinterpret_cast<const char*>(buffer), length, offset_));
     }

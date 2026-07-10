@@ -13,6 +13,11 @@
 
 #pragma once
 
+#include <cstddef>
+#include <memory>
+#include <ostream>
+#include <vector>
+
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosObject.h"
@@ -36,6 +41,10 @@ public:  // methods
     void flush() override;
 
     void print(std::ostream& out) const override;
+
+private:  // methods
+
+    size_t totalCompsBuffSize() const;
 
 private:  // members
 

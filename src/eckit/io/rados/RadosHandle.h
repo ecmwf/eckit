@@ -17,31 +17,27 @@
 
 // #include <memory>
 
+#include <cstdint>
+#include <ostream>
+
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
 
-class RadosHandle : public eckit::DataHandle {
+class RadosHandle : public DataHandle {
 
 public:  // methods
 
-    RadosHandle(const RadosObject&);
-    //     RadosHandle(const std::string&);
-
-    //     RadosHandle(Stream&);
+    explicit RadosHandle(const RadosObject&);
 
     ~RadosHandle() override;
 
-    //     // -- Class methods
-
-    //     static const ClassSpec& classSpec() { return classSpec_; }
-
-    //     std::string title() const;
-
-    // public:  // methods
     Length openForRead() override;
     void openForWrite(const Length&) override;
     //     void openForAppend(const Length&) override;
@@ -50,8 +46,7 @@ public:  // methods
     long write(const void*, long) override;
     void close() override;
     void flush() override;
-    //     void rewind() override;
-    eckit::Offset seek(const eckit::Offset&) override;
+    Offset seek(const Offset&) override;
     bool canSeek() const override { return true; };
 
     Offset position() override;
@@ -59,11 +54,6 @@ public:  // methods
     Length size() override;
 
     void print(std::ostream&) const override;
-
-    //     // From Streamable
-
-    //     void encode(Stream&) const override;
-    //     const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 protected:  // members
 
@@ -75,9 +65,8 @@ protected:  // members
     bool first_write_;
 
     void open();
-
-    //     static ClassSpec classSpec_;
-    //     static Reanimator<RadosHandle> reanimator_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

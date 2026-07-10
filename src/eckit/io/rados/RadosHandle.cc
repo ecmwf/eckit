@@ -10,39 +10,32 @@
 
 #include "eckit/io/rados/RadosHandle.h"
 
+#include <rados/librados.h>
+
+#include <ostream>
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosObject.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 
-// ClassSpec RadosHandle::classSpec_ = {
-//     &DataHandle::classSpec(),
-//     "RadosHandle",
-// };
-
-// Reanimator<RadosHandle> RadosHandle::reanimator_;
+//----------------------------------------------------------------------------------------------------------------------
 
 void RadosHandle::print(std::ostream& s) const {
     s << "RadosHandle[" << object_.str() << ']';
 }
 
-// void RadosHandle::encode(Stream& s) const {
-//     DataHandle::encode(s);
-//     s << object_;
-// }
-
-// RadosHandle::RadosHandle(Stream& s) :
-//     DataHandle(s), object_(s), offset_(0), opened_(false), write_(false) {}
-
 RadosHandle::RadosHandle(const RadosObject& object) :
     object_(object), offset_(0), opened_(false), write_(false), first_write_(false) {}
 
-// RadosHandle::RadosHandle(const std::string& object) :
-//     object_(object), offset_(0), opened_(false), write_(false) {}
-
 RadosHandle::~RadosHandle() {
-
-    if (opened_)
+    if (opened_) {
         eckit::Log::error() << "RadosHandle not closed before destruction." << std::endl;
+    }
 }
 
 void RadosHandle::open() {
@@ -74,10 +67,6 @@ void RadosHandle::openForWrite(const Length& length) {
     write_       = true;
     first_write_ = true;
 }
-
-// void RadosHandle::openForAppend(const Length&) {
-//     NOTIMP;
-// }
 
 long RadosHandle::read(void* buffer, long length) {
 
@@ -126,9 +115,7 @@ long RadosHandle::write(const void* buffer, long length) {
     return length;
 }
 
-void RadosHandle::flush() {
-    // NOOP
-}
+void RadosHandle::flush() {}
 
 eckit::Offset RadosHandle::seek(const eckit::Offset& offset) {
     offset_ = offset;
@@ -143,17 +130,10 @@ void RadosHandle::close() {
     opened_ = false;
 }
 
-// void RadosHandle::rewind() {
-//     offset_ = 0;
-// }
-
-
 Offset RadosHandle::position() {
     return offset_;
 }
 
-// std::string RadosHandle::title() const {
-//     return PathName::shorten(object_.str());
-// }
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

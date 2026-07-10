@@ -78,9 +78,7 @@ void RadosAsyncHandle::flush() {
 }
 
 void RadosAsyncHandle::close() {
-
     RadosHandle::close();
-
     comps_.clear();
 }
 

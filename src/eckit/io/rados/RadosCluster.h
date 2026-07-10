@@ -14,26 +14,27 @@
 
 #pragma once
 
+#include <rados/librados.h>
+
+#include <cerrno>
+#include <ctime>
 #include <iostream>
 #include <map>
-#include <memory>
 #include <string>
-
-#include <rados/librados.h>
+#include <vector>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/io/Length.h"
-
 #include "eckit/io/rados/RadosException.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
+
 class RadosObject;
-
 class RadosKeyValue;
-
 class RadosAttributes;
-
 class RadosIOCtx;
 
 #define RADOS_CALL(a) eckit::rados_call(a, #a, __FILE__, __LINE__, __func__)

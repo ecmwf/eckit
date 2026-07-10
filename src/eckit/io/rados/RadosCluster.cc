@@ -9,12 +9,32 @@
  */
 
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosAttributes.h"
-#include "eckit/io/rados/RadosKeyValue.h"
-#include "eckit/io/rados/RadosObject.h"
 
+#include <rados/librados.h>
+#include <rados/rados_types.h>
+
+#include <cctype>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <ctime>
+#include <iostream>
+#include <ostream>
+#include <set>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/rados/RadosAttributes.h"
+#include "eckit/io/rados/RadosException.h"
+#include "eckit/io/rados/RadosKeyValue.h"
+#include "eckit/io/rados/RadosObject.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 
@@ -463,5 +483,7 @@ void RadosCluster::removeAll(const RadosObject& object) const {
         remove(RadosObject(object, i));
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

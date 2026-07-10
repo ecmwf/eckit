@@ -9,43 +9,35 @@
  */
 
 
+#include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+
+#include <algorithm>
+#include <cstddef>
 #include <map>
+#include <memory>
+#include <ostream>
+#include <string>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosAsyncHandle.h"
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#include "eckit/log/Log.h"
 
 
 namespace eckit {
 
-
-// ClassSpec RadosMultiObjWriteHandle::classSpec_ = {
-//     &DataHandle::classSpec(),
-//     "RadosMultiObjWriteHandle",
-// };
-// Reanimator<RadosMultiObjWriteHandle> RadosMultiObjWriteHandle::reanimator_;
+//----------------------------------------------------------------------------------------------------------------------
 
 void RadosMultiObjWriteHandle::print(std::ostream& s) const {
     s << "RadosMultiObjWriteHandle[" << object_.str() << ']';
 }
-
-// void RadosMultiObjWriteHandle::encode(Stream& s) const {
-//     DataHandle::encode(s);
-//     s << object_;
-//     s << Length(0);  // For future extensio
-// }
-
-// RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(Stream& s) :
-//     DataHandle(s), object_(s), opened_(false) {
-//     s >> maxPartSize_;
-//     if (!maxPartSize_) {
-//         maxPartSize_ = RadosCluster::instance().maxObjectSize();
-//     }
-// }
 
 RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::RadosObject& obj, bool async, const Length& maxPartSize,
                                                    size_t maxAioBuffSize, size_t maxHandleBuffSize) :
@@ -60,11 +52,6 @@ RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::RadosObject& obj
         maxPartSize_ = RadosCluster::instance().maxObjectSize();
     }
 }
-
-// RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::URI& uri, const Length& maxPartSize) :
-//     RadosMultiObjWriteHandle(eckit::RadosObject(uri), maxPartSize) {}
-
-RadosMultiObjWriteHandle::~RadosMultiObjWriteHandle() {}
 
 Length RadosMultiObjWriteHandle::openForRead() {
     NOTIMP;
@@ -194,5 +181,7 @@ Offset RadosMultiObjWriteHandle::position() {
 std::string RadosMultiObjWriteHandle::title() const {
     return PathName::shorten(object_.str());
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

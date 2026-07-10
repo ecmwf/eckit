@@ -14,13 +14,20 @@
 
 #pragma once
 
+#include <cstddef>
 #include <memory>
+#include <ostream>
+#include <string>
+#include <vector>
 
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
+//----------------------------------------------------------------------------------------------------------------------
 
 class RadosMultiObjWriteHandle : public eckit::DataHandle {
 
@@ -28,16 +35,8 @@ public:  // methods
 
     RadosMultiObjWriteHandle(const RadosObject&, bool async = false, const Length& maxPartSize = 0,
                              size_t maxAioBuffSize = 1024, size_t maxHandleBuffSize = 1024);
-    // RadosMultiObjWriteHandle(const eckit::URI&, const Length& maxPartSize = 0);
-    // RadosMultiObjWriteHandle(Stream&);
 
-    ~RadosMultiObjWriteHandle() override;
-
-    // -- Class methods
-
-    // static const ClassSpec& classSpec() { return classSpec_; }
-
-    std::string title() const;
+    std::string title() const override;
 
 public:  // methods
 
@@ -55,10 +54,6 @@ public:  // methods
 
     void print(std::ostream&) const override;
 
-    // From Streamable
-
-    // void encode(Stream&) const override;
-    // const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
 
@@ -75,9 +70,8 @@ private:  // members
     bool opened_;
 
     std::vector<std::unique_ptr<DataHandle>> handles_;
-
-    // static ClassSpec classSpec_;
-    // static Reanimator<RadosMultiObjWriteHandle> reanimator_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

@@ -10,33 +10,21 @@
 
 #include <cassert>
 #include <cstdio>
-#include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <locale>
-#include <memory>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/FileHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 #include "eckit/io/rados/RadosObject.h"
+#include "eckit/io/rados/RadosPool.h"
 #include "eckit/log/Bytes.h"
-#include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
 
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-
-namespace eckit {
-namespace test {
-
-//----------------------------------------------------------------------------------------------------------------------
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -58,9 +46,9 @@ CASE("Test rados performance") {
     /// @todo: auto pool destroyer
     pool.ensureCreated();
 
-    RadosObject obj(pool.name(), "default", "largeFile")
+    RadosObject obj(pool.name(), "default", "largeFile");
 
-        RadosMultiObjWriteHandle h(obj, false, 0);
+    RadosMultiObjWriteHandle h(obj, false, 0);
     h.openForWrite(size);
 
     timer.start();
@@ -85,9 +73,8 @@ CASE("Test rados performance") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char* argv[]) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

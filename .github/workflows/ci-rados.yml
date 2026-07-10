@@ -142,7 +142,7 @@ jobs:
         env:
           ECKIT_RADOS_CLUSTER_CONF: /etc/ceph/ceph.conf
         run: |
-          ctest --test-dir build -L eckit_rados --output-on-failure
+          ctest --test-dir build -L rados --output-on-failure
 
       - name: Dump Ceph logs on failure
         if: failure()

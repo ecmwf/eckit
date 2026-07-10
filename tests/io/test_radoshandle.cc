@@ -9,10 +9,12 @@
  */
 
 #include <cstring>
+#include <iostream>
+#include <ostream>
+#include <string>
 
 #include "eckit/eckit_config.h"
 
-#include "eckit/config/Resource.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
@@ -21,14 +23,10 @@
 
 #include "eckit/io/Buffer.h"
 
+#include "eckit/io/rados/RadosPool.h"
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -126,9 +124,8 @@ CASE("Test Rados Handles") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

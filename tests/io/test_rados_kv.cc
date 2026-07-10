@@ -8,27 +8,16 @@
  * does it submit to any jurisdiction.
  */
 
-// #include <cstring>
+#include <string>
+#include <vector>
 
-#include "eckit/config/Resource.h"
 #include "eckit/eckit_config.h"
-
-// #include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosKeyValue.h"
-// #include "eckit/io/rados/RadosHandle.h"
-// #include "eckit/io/rados/RadosMultiObjReadHandle.h"
-// #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
-
-// #include "eckit/io/Buffer.h"
-
+#include "eckit/io/rados/RadosPool.h"
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -115,9 +104,8 @@ CASE("Rados KeyValue") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    return eckit::testing::run_tests(argc, argv);
 }

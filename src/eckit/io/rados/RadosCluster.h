@@ -17,18 +17,21 @@
 #include <rados/librados.h>
 
 #include <cerrno>
+#include <cstddef>
 #include <ctime>
-#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/io/Length.h"
-#include "eckit/io/rados/RadosException.h"
-#include "eckit/log/Log.h"
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+int radosCall(int code, const char* msg, const char* file, int line, const char* func);
+
+#define RADOS_CALL(a) eckit::radosCall(a, #a, __FILE__, __LINE__, __func__)
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -36,8 +39,6 @@ class RadosObject;
 class RadosKeyValue;
 class RadosAttributes;
 class RadosIOCtx;
-
-#define RADOS_CALL(a) eckit::rados_call(a, #a, __FILE__, __LINE__, __func__)
 
 using NamespaceCtxCache = std::map<std::string, RadosIOCtx*>;
 using PoolCtxCache      = std::map<std::string, NamespaceCtxCache>;
@@ -63,7 +64,6 @@ public:
 
     RadosAttributes attributes(const RadosObject&) const;
 
-
     bool exists(const RadosObject&) const;
     Length size(const RadosObject&) const;
     void remove(const RadosObject&) const;
@@ -77,20 +77,16 @@ public:
     std::vector<std::string> listNamespaces(const std::string& pool) const;
     std::vector<std::string> listObjects(const std::string& pool, const std::string& nspace) const;
 
-
     // For multi-object items
 
     void removeAll(const RadosObject&) const;
-
 
     static const RadosCluster& instance();
 
 private:
 
     RadosCluster();
-
     ~RadosCluster();
-
 
 private:
 
@@ -106,29 +102,11 @@ public:
 
 //----------------------------------------------------------------------------------------------------------------------
 
-static inline int rados_call(int code, const char* msg, const char* file, int line, const char* func) {
-
-    LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL => " << msg << std::endl;
-
-    if (code < 0) {
-        std::cout << "RADOS_FAIL !! " << msg << std::endl;
-
-        if (code == -ENOENT)
-            throw eckit::RadosEntityNotFoundException(msg);
-        RadosCluster::error(code, msg, file, line, func);
-    }
-
-    LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL <= " << msg << std::endl;
-
-    return code;
-}
-
-//----------------------------------------------------------------------------------------------------------------------
-
 class RadosAIO {
 public:
 
-    rados_completion_t comp_;
+    rados_completion_t comp_{nullptr};
+    size_t len_{0};
     RadosAIO();
     ~RadosAIO();
 };
@@ -158,7 +136,7 @@ public:
 class RadosIter {
 public:
 
-    rados_omap_iter_t it_;
+    rados_omap_iter_t it_{nullptr};
     ~RadosIter();
 };
 

@@ -40,6 +40,25 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+int radosCall(int code, const char* msg, const char* file, int line, const char* func) {
+
+    LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL => " << msg << std::endl;
+
+    if (code < 0) {
+        std::cout << "RADOS_FAIL !! " << msg << std::endl;
+        if (code == -ENOENT) {
+            throw eckit::RadosEntityNotFoundException(msg);
+        }
+        RadosCluster::error(code, msg, file, line, func);
+    }
+
+    LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL <= " << msg << std::endl;
+
+    return code;
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
 class RadosIOCtx {
 public:
 

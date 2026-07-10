@@ -14,12 +14,19 @@
 
 #pragma once
 
+#include <cstddef>
 #include <memory>
+#include <ostream>
+#include <string>
 
 #include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
 
 class MultiHandle;
 
@@ -28,16 +35,10 @@ class RadosMultiObjReadHandle : public eckit::DataHandle {
 public:  // methods
 
     RadosMultiObjReadHandle(const RadosObject&);
-    // RadosMultiObjReadHandle(const eckit::URI&);
-    // RadosMultiObjReadHandle(Stream&);
 
     ~RadosMultiObjReadHandle() override;
 
-    // -- Class methods
-
-    // static const ClassSpec& classSpec() { return classSpec_; }
-
-    std::string title() const;
+    std::string title() const override;
 
 public:  // methods
 
@@ -50,7 +51,7 @@ public:  // methods
     void close() override;
     void flush() override;
     void rewind() override;
-    eckit::Offset seek(const eckit::Offset&) override;
+    Offset seek(const Offset&) override;
     bool canSeek() const override { return true; };
 
     Offset position() override;
@@ -58,10 +59,6 @@ public:  // methods
 
     void print(std::ostream&) const override;
 
-    // From Streamable
-
-    // void encode(Stream&) const override;
-    // const ReanimatorBase& reanimator() const override { return reanimator_; }
 
 private:  // members
 
@@ -71,10 +68,8 @@ private:  // members
     size_t parts_;
 
     std::unique_ptr<MultiHandle> handle_;
-
-
-    // static ClassSpec classSpec_;
-    // static Reanimator<RadosMultiObjReadHandle> reanimator_;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

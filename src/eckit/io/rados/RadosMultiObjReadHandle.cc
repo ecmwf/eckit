@@ -9,38 +9,32 @@
  */
 
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
+
+#include <cstddef>
+#include <memory>
+#include <ostream>
+#include <string>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
 #include "eckit/io/MultiHandle.h"
+#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 
-
-// ClassSpec RadosMultiObjReadHandle::classSpec_ = {
-//     &DataHandle::classSpec(),
-//     "RadosMultiObjReadHandle",
-// };
-// Reanimator<RadosMultiObjReadHandle> RadosMultiObjReadHandle::reanimator_;
+//----------------------------------------------------------------------------------------------------------------------
 
 void RadosMultiObjReadHandle::print(std::ostream& s) const {
     s << "RadosMultiObjReadHandle[" << object_.str() << ']';
 }
 
-// void RadosMultiObjReadHandle::encode(Stream& s) const {
-//     DataHandle::encode(s);
-//     s << object_;
-// }
-
-// RadosMultiObjReadHandle::RadosMultiObjReadHandle(Stream& s) :
-//     DataHandle(s), object_(s) {}
-
 RadosMultiObjReadHandle::RadosMultiObjReadHandle(const eckit::RadosObject& obj) : object_(obj) {}
-
-// RadosMultiObjReadHandle::RadosMultiObjReadHandle(const eckit::URI& uri) :
-//     RadosMultiObjReadHandle(eckit::RadosObject(uri)) {}
 
 RadosMultiObjReadHandle::~RadosMultiObjReadHandle() {}
 
@@ -62,7 +56,8 @@ Length RadosMultiObjReadHandle::openForRead() {
     ASSERT(attr.get("length", length_));
     ASSERT(attr.get("parts", parts_));
 
-    handle_.reset(new MultiHandle());
+    handle_ = std::make_unique<MultiHandle>();
+
     for (size_t i = 0; i < parts_; ++i) {
         (*handle_) += new RadosHandle(RadosObject(object_, i));
     }
@@ -120,5 +115,7 @@ Offset RadosMultiObjReadHandle::position() {
 std::string RadosMultiObjReadHandle::title() const {
     return PathName::shorten(object_.str());
 }
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

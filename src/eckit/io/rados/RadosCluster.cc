@@ -475,15 +475,11 @@ std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) c
     RADOS_CALL(rados_nobjects_list_open(ioctx, &listctx));
 
     const char* entry;
-    // size_t entry_size;
     const char* nspace;
-    // size_t nspace_size;
     bool end = false;
     do {
         try {
-            // RADOS_CALL(rados_nobjects_list_next2(listctx, &entry, NULL, &nspace, &entry_size, NULL, &nspace_size));
             RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, &nspace));
-            // res.insert(std::string(nspace, nspace_size));
             res.insert(std::string(nspace));
         }
         catch (eckit::RadosEntityNotFoundException& e) {

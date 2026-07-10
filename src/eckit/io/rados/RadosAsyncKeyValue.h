@@ -13,6 +13,13 @@
 
 #pragma once
 
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosKeyValue.h"
 
 namespace eckit {

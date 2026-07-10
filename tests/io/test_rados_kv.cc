@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "eckit/eckit_config.h"
+#include "eckit/config/Resource.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosKeyValue.h"
 #include "eckit/io/rados/RadosPool.h"

@@ -13,16 +13,13 @@
 #include <ostream>
 #include <string>
 
-#include "eckit/eckit_config.h"
-
+#include "eckit/config/Resource.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 #include "eckit/io/rados/RadosObject.h"
-
-#include "eckit/io/Buffer.h"
-
 #include "eckit/io/rados/RadosPool.h"
 #include "eckit/testing/Test.h"
 

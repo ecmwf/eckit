@@ -33,7 +33,8 @@ namespace eckit {
 class JSON;
 namespace geo {
 class Area;
-}
+class Range;
+}  // namespace geo
 }  // namespace eckit
 
 
@@ -152,6 +153,13 @@ public:
 
     [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
+
+    virtual double dx() const;
+    virtual double dy() const;
+    virtual size_t nx() const;
+    virtual size_t ny() const;
+    virtual const Range& x() const;
+    virtual const Range& y() const;
 
     // -- Class methods
 

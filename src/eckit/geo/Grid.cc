@@ -17,6 +17,7 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/util/mutex.h"
@@ -224,6 +225,36 @@ const Projection& Grid::projection() const {
 
 Grid* Grid::make_grid_cropped(const Area&) const {
     throw exception::NotImplemented("Grid: make_grid_cropped() is not implemented for type '" + type() + "'", Here());
+}
+
+
+double Grid::dx() const {
+    return x().increment();
+}
+
+
+double Grid::dy() const {
+    return y().increment();
+}
+
+
+size_t Grid::nx() const {
+    return x().size();
+}
+
+
+size_t Grid::ny() const {
+    return y().size();
+}
+
+
+const Range& Grid::x() const {
+    throw exception::NotImplemented("Grid: x() is not implemented for type '" + type() + "'", Here());
+}
+
+
+const Range& Grid::y() const {
+    throw exception::NotImplemented("Grid: y() is not implemented for type '" + type() + "'", Here());
 }
 
 

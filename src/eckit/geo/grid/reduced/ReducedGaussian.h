@@ -45,8 +45,8 @@ public:
     iterator cend() const override;
 
     size_t size() const override { return nxacc().back(); }
-    size_t nx(size_t j) const override { return longitude_.at(j)->size(); }
-    size_t ny() const override { return latitude_.size(); }
+    size_t nxj(size_t j) const override { return longitude_.at(j)->size(); }
+    const Range& y() const override { return latitude_; }
 
     const order_type& order() const override { return scan_.order(); }
     renumber_type reorder(const order_type& to) const override { return scan_.reorder(to, pl_); }

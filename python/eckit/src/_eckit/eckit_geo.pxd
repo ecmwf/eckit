@@ -43,6 +43,11 @@ cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
         double east() const
 
 
+cdef extern from "eckit/geo/Range.h" namespace "eckit::geo":
+    cdef cppclass Range:
+        vector[double] values() const
+
+
 cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
     cdef cppclass Grid:
         string spec_str() const
@@ -58,7 +63,31 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         vector[size_t] shape() const
         size_t size() const
         const BoundingBox& boundingBox() const
+        const Range& x() const
+        const Range& y() const
 
     cdef cppclass GridFactory:
         @staticmethod
         const Grid* make_from_string(const string) except +
+
+
+cdef extern from * namespace "eckit::geo::python":
+    """
+    #include <vector>
+
+    #include "eckit/geo/Grid.h"
+
+    namespace eckit::geo::python {
+
+    inline std::vector<double> grid_x_values(const Grid& grid) {
+        return grid.x().values();
+    }
+
+    inline std::vector<double> grid_y_values(const Grid& grid) {
+        return grid.y().values();
+    }
+
+    }
+    """
+    vector[double] grid_x_values(const Grid& grid) except +
+    vector[double] grid_y_values(const Grid& grid) except +

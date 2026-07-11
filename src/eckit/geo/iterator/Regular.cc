@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Regular.h"
 
 

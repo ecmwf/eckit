@@ -12,22 +12,13 @@
 
 #include "eckit/geo/grid/Regular.h"
 
+#include "eckit/geo/Range.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::grid {
-
-
-double Regular::dx() const {
-    return x().increment();
-}
-
-
-double Regular::dy() const {
-    return y().increment();
-}
 
 
 Grid::iterator Regular::cbegin() const {

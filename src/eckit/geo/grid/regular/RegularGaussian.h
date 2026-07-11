@@ -47,12 +47,6 @@ public:
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 
-    double dx() const override { return x_.increment(); }
-    double dy() const override { return y_.increment(); }
-
-    size_t nx() const override { return x_.size(); }
-    size_t ny() const override { return y_.size(); }
-
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }
 

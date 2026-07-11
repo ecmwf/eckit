@@ -187,7 +187,12 @@ set(eckit_GEO_SHARE_GRID
 set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")
 
 if(eckit_HAVE_PROJ)
-    list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
+    list(APPEND eckit_geo_srcs
+        grid/regular/SwissLV03.cc
+        grid/regular/SwissLV95.cc
+        projection/PROJ.cc
+        projection/PROJ.h
+    )
     list(APPEND eckit_geo_libs PROJ::proj)
 endif()
 

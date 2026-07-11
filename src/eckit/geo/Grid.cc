@@ -173,27 +173,27 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
 
 
 std::vector<double> Grid::distinct_latitudes() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: distinct_latitudes() is not implemented for type '" + type() + "'", Here());
 }
 
 
 std::vector<double> Grid::distinct_longitudes() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: distinct_longitudes() is not implemented for type '" + type() + "'", Here());
 }
 
 
 const Grid::order_type& Grid::order() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: order() is not implemented for type '" + type() + "'", Here());
 }
 
 
 Grid::renumber_type Grid::reorder(const order_type&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: reorder() is not implemented for type '" + type() + "'", Here());
 }
 
 
 Grid* Grid::make_grid_reordered(const order_type&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: make_grid_reordered() is not implemented for type '" + type() + "'", Here());
 }
 
 
@@ -208,7 +208,7 @@ const Area& Grid::area() const {
 
 
 Grid::renumber_type Grid::crop(const Area&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: crop() is not implemented for type '" + type() + "'", Here());
 }
 
 
@@ -223,7 +223,7 @@ const Projection& Grid::projection() const {
 
 
 Grid* Grid::make_grid_cropped(const Area&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: make_grid_cropped() is not implemented for type '" + type() + "'", Here());
 }
 
 
@@ -238,7 +238,7 @@ const Grid::BoundingBox& Grid::boundingBox() const {
 
 
 Grid::BoundingBox* Grid::calculate_bbox() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: calculate_bbox() is not implemented for type '" + type() + "'", Here());
 }
 
 

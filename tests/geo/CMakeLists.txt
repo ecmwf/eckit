@@ -8,18 +8,15 @@ foreach(_test
         figure_earth
         gaussian
         great_circle
-        grid
         grid_fesom
         grid_healpix
         grid_icon
-        grid_orca
         grid_reduced_gg
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll
         grid_reorder
         grid_to_points
-        grid_unstructured_ll
         gridspec
         integration
         iterator
@@ -46,6 +43,24 @@ foreach(_test
         LIBS        eckit_geo
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
 endforeach()
+
+if(eckit_HAVE_LZ4)
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_grid
+        SOURCES     grid.cc
+        LIBS        eckit_geo
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_grid_orca
+        SOURCES     grid_orca.cc
+        LIBS        eckit_geo
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_grid_unstructured_ll
+        SOURCES     grid_unstructured_ll.cc
+        LIBS        eckit_geo
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
+endif()
 
 if(eckit_HAVE_ZIP)
     ecbuild_add_test(

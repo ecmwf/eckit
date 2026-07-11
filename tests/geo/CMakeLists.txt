@@ -28,9 +28,7 @@ foreach(_test
         pointlonlat
         pointlonlatr
         projection
-        projection_albers
         projection_ll_to_xyz
-        projection_mercator
         projection_plate-caree
         projection_rotation
         range
@@ -69,10 +67,18 @@ if(eckit_HAVE_ZIP)
 endif()
 
 if(eckit_HAVE_PROJ)
-    ecbuild_add_test(
-        TARGET  eckit_test_geo_projection_proj
-        SOURCES projection_proj.cc
-        LIBS    eckit_geo )
+    foreach(_test
+            grid_regular_xy_swisslv03
+            grid_regular_xy_swisslv95
+            projection_albers
+            projection_mercator
+            projection_proj
+        )
+        ecbuild_add_test(
+            TARGET  eckit_test_geo_${_test}
+            SOURCES ${_test}.cc
+            LIBS    eckit_geo )
+    endforeach()
 endif()
 
 ecbuild_add_test(

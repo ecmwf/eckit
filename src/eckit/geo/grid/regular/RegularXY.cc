@@ -19,11 +19,9 @@
 #include "eckit/geo/grid/Regular.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
-#include "eckit/geo/projection/PROJ.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
-
 
 namespace eckit::geo::grid::regular {
 
@@ -133,52 +131,6 @@ void RegularXY::fill_spec(spec::Custom& custom) const {
     custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
     // custom.set("first_lonlat", std::vector<double>{first_lonlat.lon, first_lonlat.lat});
 }
-
-
-// ---
-
-
-struct SwissLV03 : RegularXY {
-    explicit SwissLV03(const Spec& spec) :                //
-        RegularXY(RangeXY::make_from_spec(spec, "x"),     //
-                  RangeXY::make_from_spec(spec, "y"),     //
-                  new projection::PROJ("EPSG:21781")) {}  // https://epsg.io/21781
-};
-
-
-struct SwissLV03ByName : SwissLV03 {
-    using SwissLV03::SwissLV03;
-    static Spec* spec(const std::string& name) {
-        return new spec::Custom({{"type", name},
-                                 {"x", std::vector<double>{255500., 964500., 1000.}},  //
-                                 {"y", std::vector<double>{-159500., 479500., 1000.}}});
-    }
-};
-
-
-struct SwissLV95 : RegularXY {
-    explicit SwissLV95(const Spec& spec) :               //
-        RegularXY(RangeXY::make_from_spec(spec, "x"),    //
-                  RangeXY::make_from_spec(spec, "y"),    //
-                  new projection::PROJ("EPSG:2056")) {}  // https://epsg.io/2056
-};
-
-
-struct SwissLV95ByName : SwissLV95 {
-    using SwissLV95::SwissLV95;
-    static Spec* spec(const std::string& name) {
-        return new spec::Custom({{"type", name},
-                                 {"x", std::vector<double>{2439000., 2867000., 1000.}},  //
-                                 {"y", std::vector<double>{1040500., 1333500., 1000.}}});
-    }
-};
-
-
-static const GridRegisterType<SwissLV03> SWISSLV03("swisslv03");
-static const GridRegisterName<SwissLV03ByName> SWISSLV03_BY_NAME("swisslv03");
-
-static const GridRegisterType<SwissLV95> SWISSLV95("swisslv95");
-static const GridRegisterName<SwissLV95ByName> SWISSLV95_BY_NAME("swisslv95");
 
 
 // ---

@@ -16,6 +16,7 @@
 #include <memory>
 #include <vector>
 
+#include "eckit/eckit_config.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/cache/Download.h"
@@ -203,7 +204,11 @@ CASE("grid") {
 
     const auto footprint_2 = Cache::total_footprint();
     EXPECT(footprint_1 == footprint_2);
+
+#if eckit_HAVE_LZ4
+    // calculate_uid requires the coordinates, which need uncompressing
     EXPECT(grid1->calculate_uid() == spec.get_string("uid"));
+#endif
 
     const auto footprint_3 = Cache::total_footprint();
     EXPECT(footprint_2 <= footprint_3);

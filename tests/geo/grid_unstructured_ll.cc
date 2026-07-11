@@ -39,10 +39,22 @@ CASE("unstructured_ll") {
     const std::vector<double> lons{static_cast<double>(std::rand() % 3), 1, 2};
 
     std::unique_ptr<const Grid> a(new grid::Unstructured(lons, lats));  // registers uid only
+
+    EXPECT_EQUAL(a->size(), lats.size());
+
+    const auto [out_lats, out_lons] = a->to_latlons();
+
+    EXPECT(out_lats == lats);
+    EXPECT(out_lons == lons);
+
+    EXPECT_THROWS((void)GridFactory::build(spec::Custom({{"latitudes", lats}})));
+    EXPECT_THROWS((void)GridFactory::build(spec::Custom({{"longitudes", lons}})));
+
     std::unique_ptr<const Grid> b(
         GridFactory::build(spec::Custom{{"longitudes", lons}, {"latitudes", lats}, {"grid", name}}));  // registers name
     std::unique_ptr<const Grid> c(
         GridFactory::build(spec::Custom{{"longitudes", lons}, {"latitudes", lats}, {"name", name}}));
+
     std::unique_ptr<const Grid> d(GridFactory::make_from_string("{grid:" + name + "}"));
     std::unique_ptr<const Grid> e(GridFactory::make_from_string("{grid:" + a->uid() + "}"));
     std::unique_ptr<const Grid> f(GridFactory::make_from_string("{uid:" + a->uid() + "}"));

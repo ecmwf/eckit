@@ -85,8 +85,8 @@ CASE("global, shifted") {
              }) {
             static const std::string spec_ref = R"({"grid":[1,1],"reference":[0.5,0.5]})";
 
-            EXPECT(grid.nlon() == 360);
-            EXPECT(grid.nlat() == 180);
+            EXPECT(grid.nx() == 360);
+            EXPECT(grid.ny() == 180);
             EXPECT(grid.size() == 360 * 180);
             EXPECT(grid.spec_str() == spec_ref);
         }
@@ -105,8 +105,8 @@ CASE("global, shifted") {
              }) {
             static const std::string spec_ref = R"({"grid":[2,1],"reference":[1,0.5]})";
 
-            EXPECT(grid.nlon() == 180);
-            EXPECT(grid.nlat() == 180);
+            EXPECT(grid.nx() == 180);
+            EXPECT(grid.ny() == 180);
             EXPECT(grid.size() == 180 * 180);
             EXPECT(grid.spec_str() == spec_ref);
         }

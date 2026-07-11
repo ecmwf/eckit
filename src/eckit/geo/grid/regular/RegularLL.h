@@ -50,12 +50,6 @@ public:
     [[nodiscard]] static Spec* spec(const std::string& name);
     [[nodiscard]] PointLonLat reference() const { return {x_.shift(), y_.shift()}; }
 
-    double dlon() const { return dx(); }
-    double dlat() const { return dy(); }
-
-    size_t nlon() const { return nx(); }
-    size_t nlat() const { return ny(); }
-
     // -- Overridden methods
 
     const std::string& type() const override;
@@ -69,11 +63,6 @@ public:
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
-    double dx() const override { return x_.increment(); }
-    double dy() const override { return y_.increment(); }
-
-    size_t nx() const override { return x_.size(); }
-    size_t ny() const override { return y_.size(); }
 
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }

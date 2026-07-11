@@ -102,7 +102,7 @@ Grid::Spec* RegularLL::spec(const std::string& name) {
 void RegularLL::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
-    custom.set("grid", std::vector<double>{std::abs(dlon()), std::abs(dlat())});
+    custom.set("grid", std::vector<double>{std::abs(dx()), std::abs(dy())});
 
     if (const auto& bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {
         auto [n, w, s, e] = bbox.deconstruct();
@@ -154,7 +154,7 @@ std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlons() cons
 
 Grid* RegularLL::make_grid_cropped(const Area& crop) const {
     if (auto cropped(boundingBox()); crop.intersects(cropped)) {
-        return new RegularLL({dlon(), dlat()}, cropped);
+        return new RegularLL({dx(), dy()}, cropped);
     }
 
     throw UserError("RegularLL: cannot crop grid (empty intersection)", Here());

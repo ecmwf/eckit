@@ -13,7 +13,6 @@
 #pragma once
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Range.h"
 #include "eckit/geo/order/Scan.h"
 
 
@@ -27,17 +26,6 @@ namespace eckit::geo::grid {
 
 class Regular : public Grid {
 public:
-
-    // -- Methods
-
-    virtual double dx() const = 0;
-    virtual double dy() const = 0;
-
-    virtual size_t nx() const = 0;
-    virtual size_t ny() const = 0;
-
-    virtual const Range& x() const = 0;
-    virtual const Range& y() const = 0;
 
     // -- Overridden methods
 

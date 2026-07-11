@@ -52,11 +52,6 @@ public:
     explicit RegularXY(const Increments&, BoundingBoxXY, order::Scan = scan_default(), Projection* = nullptr);
     explicit RegularXY(const RangeXY& x, const RangeXY& y, Projection* = nullptr);
 
-    // -- Methods
-
-    size_t nlon() const { return nx(); }
-    size_t nlat() const { return ny(); }
-
     // -- Overridden methods
 
     const std::string& type() const override;
@@ -65,12 +60,6 @@ public:
     [[nodiscard]] Point last_point() const override;
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
-
-    double dx() const override { return x_.increment(); }
-    double dy() const override { return y_.increment(); }
-
-    size_t nx() const override { return x_.size(); }
-    size_t ny() const override { return y_.size(); }
 
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }

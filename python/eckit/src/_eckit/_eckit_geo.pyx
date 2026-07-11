@@ -9,6 +9,7 @@
 
 
 cimport eckit_geo
+from cython.operator cimport dereference
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
@@ -108,6 +109,14 @@ cdef class Grid:
 
     def distinct_longitudes(self):
         return self._grid.distinct_longitudes()
+
+    def x(self):
+        cdef vector[double] v = eckit_geo.grid_x_values(dereference(self._grid))
+        return list(v)
+
+    def y(self):
+        cdef vector[double] v = eckit_geo.grid_y_values(dereference(self._grid))
+        return list(v)
 
     def bounding_box(self) -> tuple:
         cdef const eckit_geo.BoundingBox* bbox = &self._grid.boundingBox()

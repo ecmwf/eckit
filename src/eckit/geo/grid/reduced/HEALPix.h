@@ -14,6 +14,7 @@
 
 #include <memory>
 
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/HEALPix.h"
 
@@ -40,13 +41,13 @@ public:
 
     size_t size() const override;
 
-    size_t nx(size_t j) const override;
-    size_t ny() const override;
+    size_t nxj(size_t j) const override;
+    const Range& y() const override { return *y_; }
 
     [[nodiscard]] std::vector<Point> to_points() const override;
 
-    const order_type& order() const override { return healpix_.order(); }
-    renumber_type reorder(const order_type& to) const override { return healpix_.reorder(to, Nside_); }
+    const order_type& order() const override { return order_.order(); }
+    renumber_type reorder(const order_type& to) const override { return order_.reorder(to, Nside_); }
 
     [[nodiscard]] Grid* make_grid_reordered(const order_type& order) const override {
         return new HEALPix(Nside_, order);
@@ -54,7 +55,7 @@ public:
 
     [[nodiscard]] const std::vector<double>& latitudes() const override;
     [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override;
-    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return healpix_latitudes_; }
+    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return latitudes(); }
 
     // -- Class members
 
@@ -70,9 +71,10 @@ private:
     // -- Members
 
     const size_t Nside_;
-    order::HEALPix healpix_;
+    order::HEALPix order_;
 
-    mutable std::vector<double> healpix_latitudes_;
+    const std::unique_ptr<Range> y_;
+
     mutable std::vector<double> nested_latitudes_;
     mutable std::vector<double> nested_longitudes_;
 

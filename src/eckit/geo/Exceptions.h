@@ -32,8 +32,9 @@ public:
 namespace eckit::geo::exception {
 
 
-using SeriousBug = ::eckit::SeriousBug;
-using SpecError  = ::eckit::spec::exception::SpecError;
+using NotImplemented = ::eckit::NotImplemented;
+using SeriousBug     = ::eckit::SeriousBug;
+using SpecError      = ::eckit::spec::exception::SpecError;
 
 
 class AreaError : public geo::Exception {

@@ -28,7 +28,7 @@ namespace eckit {
 //----------------------------------------------------------------------------------------------------------------------
 
 RadosPartHandle::RadosPartHandle(const eckit::RadosObject& object, const eckit::Offset& off, const eckit::Length& len) :
-    object_(object), open_(false), offset_(off), len_(len) {}
+    object_(object), open_(false), offset_(off), len_(len), pos_(0) {}
 
 RadosPartHandle::~RadosPartHandle() {
     if (open_) {
@@ -53,14 +53,21 @@ long RadosPartHandle::read(void* buf, long len) {
 
     ASSERT(open_);
 
-    eckit::Length s = size();
+    /// @note: offset_ is the absolute start of the part within the object, and
+    ///   pos_ is the current read position relative to that start. The number
+    ///   of bytes still available in the part is len_ - pos_.
+    const long long remaining = len_ - pos_;
 
-    len = std::min<long>(len, s - offset_);
+    if (remaining <= 0) {
+        return 0;
+    }
+
+    len = std::min<long>(len, remaining);
 
     int read = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
-                                     reinterpret_cast<char*>(buf), len, offset_));
+                                     reinterpret_cast<char*>(buf), len, offset_ + pos_));
 
-    offset_ += read;
+    pos_ += eckit::Length(read);
 
     return read;
 }
@@ -85,12 +92,12 @@ Length RadosPartHandle::estimate() {
 }
 
 Offset RadosPartHandle::position() {
-    return offset_;
+    return eckit::Offset(pos_);
 }
 
 Offset RadosPartHandle::seek(const Offset& offset) {
-    offset_ = offset;
-    return offset_;
+    pos_ = eckit::Length(offset);
+    return offset;
 }
 
 bool RadosPartHandle::canSeek() const {

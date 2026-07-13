@@ -53,8 +53,9 @@ private:  // members
 
     eckit::RadosObject object_;
     bool open_;
-    eckit::Offset offset_;
-    eckit::Length len_;
+    eckit::Offset offset_;  ///< absolute start offset of the part within the object (immutable)
+    eckit::Length len_;     ///< length of the part
+    eckit::Length pos_;     ///< current read position relative to the start of the part
 };
 
 //----------------------------------------------------------------------------------------------------------------------

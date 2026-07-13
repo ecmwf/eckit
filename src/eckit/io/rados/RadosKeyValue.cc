@@ -266,6 +266,9 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
     int rc;
     unsigned char more = 1;
 
+    /// @note: marker to resume the listing. each iteration advances rather than restarting from the beginning.
+    std::string startAfter;
+
     while (more) {
 
         eckit::RadosReadOp op{};
@@ -273,7 +276,7 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
         eckit::RadosIter iter{};
 
         rados_read_op_omap_get_keys2(op.op_,
-                                     NULL,  /// @note: start search after
+                                     startAfter.empty() ? NULL : startAfter.c_str(),  /// @note: start search after
                                      keysPerQuery, &(iter.it_), &more, &rc);
 
         eckit::RadosAIO comp{};
@@ -299,6 +302,13 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
 
             res.emplace_back(key, key + key_len);
         }
+
+        /// @note: If this page was empty while more keys are reported, there is no valid
+        ///   marker to advance with, so stop to avoid an infinite loop.
+        if (res.empty()) {
+            break;
+        }
+        startAfter = res.back();
     }
 
     return res;

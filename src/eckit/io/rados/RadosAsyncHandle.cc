@@ -29,7 +29,7 @@ RadosAsyncHandle::RadosAsyncHandle(const RadosObject& object, size_t maxAioBuffS
     RadosHandle(object), maxAioBuffSize_(maxAioBuffSize) {}
 
 void RadosAsyncHandle::print(std::ostream& out) const {
-    out << "RadosAsyncHandle[" << object_.str() << ";";
+    out << "RadosAsyncHandle[" << object_.str() << "]";
 }
 
 size_t RadosAsyncHandle::totalCompsBuffSize() const {

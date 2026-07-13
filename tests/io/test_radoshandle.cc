@@ -9,8 +9,6 @@
  */
 
 #include <cstring>
-#include <iostream>
-#include <ostream>
 #include <string>
 
 #include "eckit/config/Resource.h"
@@ -50,24 +48,17 @@ CASE("Test Rados Handles") {
         RadosObject obj(pool.name(), nspace, "foobar");
 
         RadosHandle h(obj);
-        std::cout << "====> " << h << std::endl;
 
         h.openForWrite(sizeof(buf));
         h.write(buf, sizeof(buf));
         h.close();
 
-        std::cout << "write done" << std::endl;
-
         Buffer mem(1024);
         RadosHandle g(obj);
-        std::cout << "====> " << g << std::endl;
 
-        std::cout << "Size is " << g.openForRead() << std::endl;
+        g.openForRead();
         g.read(mem, mem.size());
         g.close();
-
-        std::cout << "read done" << std::endl;
-
 
         EXPECT(buf == std::string(mem));
 
@@ -88,7 +79,6 @@ CASE("Test Rados Handles") {
         RadosObject obj(pool.name(), nspace, "foobar");
 
         RadosMultiObjWriteHandle h(obj, false, 16);
-        std::cout << "====> " << h << std::endl;
 
         h.openForWrite(sizeof(buf));
         h.write(buf, sizeof(buf));
@@ -97,14 +87,10 @@ CASE("Test Rados Handles") {
 
         Buffer mem(1024);
         RadosMultiObjReadHandle g(obj);
-        std::cout << "====> " << g << std::endl;
 
-        std::cout << "Size is " << g.openForRead() << std::endl;
+        g.openForRead();
         g.read(mem, mem.size());
         g.close();
-
-        std::cout << "read done" << std::endl;
-
 
         EXPECT(buf == std::string(mem));
 

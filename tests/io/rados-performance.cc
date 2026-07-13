@@ -12,16 +12,17 @@
 #include <cstdio>
 #include <iostream>
 
+#include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#include "eckit/io/rados/RadosNamespace.h"
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosPool.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Timer.h"
-
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {
@@ -42,11 +43,21 @@ CASE("Test rados performance") {
     dh->read(buf, size);
     dh->close();
 
-    RadosPool pool("mars");
-    /// @todo: auto pool destroyer
+#ifdef eckit_HAVE_RADOS_ADMIN
+    std::string pool_name = "mars";
+    std::string nspace    = "default";
+    RadosPool pool(pool_name);
+    pool.ensureDestroyed();
     pool.ensureCreated();
+#else
+    std::string pool_name;
+    std::string nspace = "performance";
+    pool_name          = eckit::Resource<std::string>("eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name);
+    EXPECT(pool_name.length() > 0);
+    RadosPool pool(pool_name);
+#endif
 
-    RadosObject obj(pool.name(), "default", "largeFile");
+    RadosObject obj(pool.name(), nspace, "largeFile");
 
     RadosMultiObjWriteHandle h(obj, false, 0);
     h.openForWrite(size);
@@ -68,7 +79,12 @@ CASE("Test rados performance") {
 
     obj.ensureDestroyed();
 
+#ifdef eckit_HAVE_RADOS_ADMIN
     pool.destroy();
+#else
+    RadosNamespace ns(pool_name, nspace);
+    ns.destroy();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------

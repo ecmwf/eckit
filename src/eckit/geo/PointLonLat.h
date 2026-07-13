@@ -128,6 +128,7 @@ public:
         return {p.lon() + q.lon(), p.lat() + q.lat()};
     }
     friend PointLonLat operator*(const PointLonLat& p, value_type d) { return {p.lon() * d, p.lat() * d}; }
+    friend PointLonLat operator/(const PointLonLat& p, value_type d) { return {p.lon() / d, p.lat() / d}; }
 
     friend bool operator<(const PointLonLat& p, const PointLonLat& q) {
         return static_cast<const container_type&>(p) < static_cast<const container_type&>(q);

@@ -99,7 +99,7 @@ void Polygon::emplace_back_point_at_intersection(const Edge& E, const Edge& F) {
 
     if (const auto D = cross(A, B); !is_zero(D)) {
         const auto C = E.first - F.first;
-        emplace_back_point(E.first + A * cross(B, C) * (1. / D));
+        emplace_back_point(E.first + A * cross(B, C) / D);
     }
 }
 

@@ -52,6 +52,7 @@
 #cmakedefine01 eckit_HAVE_CURL
 #cmakedefine01 eckit_HAVE_EIGEN
 #cmakedefine01 eckit_HAVE_LAPACK
+#cmakedefine01 eckit_HAVE_LZ4
 #cmakedefine01 eckit_HAVE_MKL
 #cmakedefine01 eckit_HAVE_MPI
 #cmakedefine01 eckit_HAVE_OMP

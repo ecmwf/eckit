@@ -105,10 +105,10 @@ cdef class Grid:
         return list(latlons.first), list(latlons.second)
 
     def distinct_latitudes(self):
-        return self._grid.distinct_latitudes()
+        return self.lat()
 
     def distinct_longitudes(self):
-        return self._grid.distinct_longitudes()
+        return self.lon()
 
     def x(self):
         cdef vector[double] v = eckit_geo.grid_x_values(dereference(self._grid))
@@ -116,6 +116,14 @@ cdef class Grid:
 
     def y(self):
         cdef vector[double] v = eckit_geo.grid_y_values(dereference(self._grid))
+        return list(v)
+
+    def lon(self):
+        cdef vector[double] v = eckit_geo.grid_lon_values(dereference(self._grid))
+        return list(v)
+
+    def lat(self):
+        cdef vector[double] v = eckit_geo.grid_lat_values(dereference(self._grid))
         return list(v)
 
     def bounding_box(self) -> tuple:

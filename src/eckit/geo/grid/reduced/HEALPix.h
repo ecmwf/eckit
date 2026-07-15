@@ -42,7 +42,7 @@ public:
     size_t size() const override;
 
     size_t nxj(size_t j) const override;
-    const Range& y() const override { return *y_; }
+    const Range& lat() const override { return *y_; }
 
     [[nodiscard]] std::vector<Point> to_points() const override;
 
@@ -55,7 +55,6 @@ public:
 
     [[nodiscard]] const std::vector<double>& latitudes() const override;
     [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override;
-    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return latitudes(); }
 
     // -- Class members
 

@@ -1,0 +1,37 @@
+---
+
+grid_names:
+    - EFAS-5:
+        type: arakawa_c
+        n: 5400
+        area: [72.25,-25.25,22.75,50.25]
+
+    - GLOFAS-4:
+        type: arakawa_c
+        n: 1800
+        area: [89.975,-179.975,-59.975,179.975]
+
+    - CAMA-15min:
+        type: arakawa_c
+        n: 360
+        west: -180
+
+    - CAMA-06min:
+        type: arakawa_c
+        n: 900
+        west: -180
+
+    - CAMA-05min:
+        type: arakawa_c
+        n: 1080
+        west: -180
+
+    - CAMA-03min:
+        type: arakawa_c
+        n: 1800
+        west: -180
+
+    - CAMA-01min:
+        type: arakawa_c
+        n: 5400
+        west: -180

@@ -14,7 +14,6 @@
 
 #include <cmath>
 #include <memory>
-#include <utility>
 #include <vector>
 
 #include "eckit/geo/Arrangement.h"
@@ -130,25 +129,6 @@ Point RegularLL::first_point() const {
 Point RegularLL::last_point() const {
     ASSERT(!empty());
     return PointLonLat{x().values().back(), y().values().back()};
-}
-
-
-std::pair<std::vector<double>, std::vector<double>> RegularLL::to_latlons() const {
-    const auto N = size();
-
-    std::pair<std::vector<double>, std::vector<double>> latlon;
-    auto& lat = latlon.first;
-    auto& lon = latlon.second;
-    lat.reserve(N);
-    lon.reserve(N);
-
-    for (auto point : *this) {
-        const auto& p = std::get<PointLonLat>(point);
-        lat.emplace_back(p.lat());
-        lon.emplace_back(p.lon());
-    }
-
-    return latlon;
 }
 
 

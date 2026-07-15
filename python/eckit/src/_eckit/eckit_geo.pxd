@@ -57,14 +57,14 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         string order() const
 
         pair[vector[double], vector[double]] to_latlons() const
-        vector[double] distinct_latitudes() const
-        vector[double] distinct_longitudes() const
 
         vector[size_t] shape() const
         size_t size() const
         const BoundingBox& boundingBox() const
         const Range& x() const
         const Range& y() const
+        const Range& lon() const
+        const Range& lat() const
 
     cdef cppclass GridFactory:
         @staticmethod
@@ -79,15 +79,16 @@ cdef extern from * namespace "eckit::geo::python":
 
     namespace eckit::geo::python {
 
-    inline std::vector<double> grid_x_values(const Grid& grid) {
-        return grid.x().values();
-    }
+    using v = std::vector<double>;
 
-    inline std::vector<double> grid_y_values(const Grid& grid) {
-        return grid.y().values();
-    }
+    inline v grid_x_values(const Grid& grid) { return grid.x().values(); }
+    inline v grid_y_values(const Grid& grid) { return grid.y().values(); }
+    inline v grid_lon_values(const Grid& grid) { return grid.lon().values(); }
+    inline v grid_lat_values(const Grid& grid) { return grid.lat().values(); }
 
     }
     """
     vector[double] grid_x_values(const Grid& grid) except +
     vector[double] grid_y_values(const Grid& grid) except +
+    vector[double] grid_lon_values(const Grid& grid) except +
+    vector[double] grid_lat_values(const Grid& grid) except +

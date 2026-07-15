@@ -137,9 +137,6 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    [[nodiscard]] virtual std::vector<double> distinct_latitudes() const;
-    [[nodiscard]] virtual std::vector<double> distinct_longitudes() const;
-
     virtual const order_type& order() const;
     virtual renumber_type reorder(const order_type&) const;
 
@@ -154,12 +151,19 @@ public:
     [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
 
-    virtual double dx() const;
-    virtual double dy() const;
+    double dx() const;
+    double dy() const;
     virtual size_t nx() const;
     virtual size_t ny() const;
     virtual const Range& x() const;
     virtual const Range& y() const;
+
+    double dlon() const;
+    double dlat() const;
+    size_t nlon() const;
+    size_t nlat() const;
+    virtual const Range& lon() const;
+    virtual const Range& lat() const;
 
     // -- Class methods
 

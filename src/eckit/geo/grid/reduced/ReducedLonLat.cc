@@ -108,12 +108,6 @@ size_t ReducedLonLat::nxj(size_t j) const {
 }
 
 
-const Range& ReducedLonLat::y() const {
-    ASSERT(latitude_);
-    return *latitude_;
-}
-
-
 const std::vector<double>& ReducedLonLat::latitudes() const {
     return latitude_->values();
 }

@@ -173,16 +173,6 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
 }
 
 
-std::vector<double> Grid::distinct_latitudes() const {
-    throw exception::NotImplemented("Grid: distinct_latitudes() is not implemented for type '" + type() + "'", Here());
-}
-
-
-std::vector<double> Grid::distinct_longitudes() const {
-    throw exception::NotImplemented("Grid: distinct_longitudes() is not implemented for type '" + type() + "'", Here());
-}
-
-
 const Grid::order_type& Grid::order() const {
     throw exception::NotImplemented("Grid: order() is not implemented for type '" + type() + "'", Here());
 }
@@ -249,12 +239,42 @@ size_t Grid::ny() const {
 
 
 const Range& Grid::x() const {
-    throw exception::NotImplemented("Grid: x() is not implemented for type '" + type() + "'", Here());
+    return lon();
 }
 
 
 const Range& Grid::y() const {
-    throw exception::NotImplemented("Grid: y() is not implemented for type '" + type() + "'", Here());
+    return lat();
+}
+
+
+double Grid::dlon() const {
+    return lon().increment();
+}
+
+
+double Grid::dlat() const {
+    return lat().increment();
+}
+
+
+size_t Grid::nlon() const {
+    return x().size();
+}
+
+
+size_t Grid::nlat() const {
+    return y().size();
+}
+
+
+const Range& Grid::lon() const {
+    throw exception::NotImplemented("Grid: lon() is not implemented for type '" + type() + "'", Here());
+}
+
+
+const Range& Grid::lat() const {
+    throw exception::NotImplemented("Grid: lat() is not implemented for type '" + type() + "'", Here());
 }
 
 

@@ -48,7 +48,10 @@ public:
         static Pool pool;
         return pool;
     }
+    // Acquire the entry for `name` and register `file` as a user.
+    // The returned pointer is valid until the matching release(name, file).
     eckit::PoolFileEntry* get(const eckit::PathName& name, const eckit::PooledFile* file);
+    // Unregister `file`; close and erase the entry when the last user releases it.
     void release(const eckit::PathName& name, const eckit::PooledFile* file);
 };
 

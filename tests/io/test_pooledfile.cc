@@ -8,6 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
 #include <algorithm>
 #include <cstring>
 #include <thread>
@@ -170,6 +172,7 @@ CASE("Error handling") {
         Tester test;
         PooledFile* f = new PooledFile(test.path1_);
         EXPECT_NO_THROW(f->open());
+        EXPECT_EQUAL(::close(f->fileno()), 0);
         EXPECT_NO_THROW(delete f);
     }
 }

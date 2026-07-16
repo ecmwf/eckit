@@ -88,11 +88,12 @@ public:
 
     PoolFileEntry(const std::string& name) : name_(name), file_{nullptr}, count_(0) {}
 
-    void doClose() {
+    void doClose() noexcept {
         if (file_) {
             Log::debug<LibEcKit>() << "Closing from file " << name_ << std::endl;
+            // log and swallow rather than throw (a throwing destructor would terminate!)
             if (::fclose(file_) != 0) {
-                throw PooledFileError(name_, "Failed to close", Here());
+                Log::error() << "PooledFile: failed to close " << name_ << " (" << Log::syserr << ")" << std::endl;
             }
             file_ = nullptr;
             buffer_.reset();
@@ -235,9 +236,7 @@ public:
 
 PooledFile::PooledFile(const PathName& name) : name_(name), entry_(Pool::instance().get(name, this)) {}
 
-/// @note this dtor may throw
 PooledFile::~PooledFile() {
-    ASSERT(entry_);
     Pool::instance().release(name_, this);
 }
 

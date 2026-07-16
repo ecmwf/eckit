@@ -314,7 +314,9 @@ void Pool::release(const eckit::PathName& name, const eckit::PooledFile* file) {
     std::lock_guard lock(filePoolMutex_);
     auto iter = filePool_.find(name);
     ASSERT(iter != filePool_.end());
-    if (auto* entry = iter->second.get(); entry->remove(file)) {
+    auto* entry        = iter->second.get();
+    auto last_user_out = entry->remove(file);
+    if (last_user_out) {
         entry->doClose();
         filePool_.erase(iter);
     }

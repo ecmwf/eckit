@@ -19,8 +19,12 @@
 
 #include "FamMockSession.h"
 
+#include "fam/fam.h"
+#include "fam/fam_exception.h"
+
 #include <fcntl.h>
 #include <pthread.h>
+#include <sys/fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -28,6 +32,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cerrno>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <functional>
@@ -39,9 +44,14 @@
 #include <string>
 #include <string_view>
 #include <system_error>
+#include <utility>
 
-#include "fam/fam.h"
-#include "fam/fam_exception.h"
+// process-shared mutexes are an optional POSIX feature
+#if defined(PTHREAD_MUTEX_ROBUST) && !defined(__APPLE__)
+#define ECKIT_FAM_MOCK_ROBUST_MUTEX 1
+#else
+#define ECKIT_FAM_MOCK_ROBUST_MUTEX 0
+#endif
 
 namespace openfam::mock {
 
@@ -207,7 +217,9 @@ FamMockSession::FamMockSession(const std::string& name) : handle_{getShmName(nam
         pthread_mutexattr_t attr;
         ::pthread_mutexattr_init(&attr);
         ::pthread_mutexattr_setpshared(&attr, PTHREAD_PROCESS_SHARED);
+#if ECKIT_FAM_MOCK_ROBUST_MUTEX
         ::pthread_mutexattr_setrobust(&attr, PTHREAD_MUTEX_ROBUST);
+#endif
         const int mrc = ::pthread_mutex_init(&state_->mutex, &attr);
         ::pthread_mutexattr_destroy(&attr);
         if (mrc != 0) {
@@ -242,6 +254,7 @@ void FamMockSession::lock() {
     debugLog("Attempting to lock mutex...");
     const auto code = ::pthread_mutex_lock(&state_->mutex);
     debugLog("pthread_mutex_lock returned ", code);
+#if ECKIT_FAM_MOCK_ROBUST_MUTEX
     if (code == EOWNERDEAD) {
         // The previous owner died holding the mutex.
         // MUST NOT call lock()/LockGuard here — the mutex is already ours.
@@ -256,6 +269,14 @@ void FamMockSession::lock() {
     else if (code != 0) {
         throw std::system_error(code, std::system_category(), "pthread_mutex_lock");
     }
+#else
+    // Without robust-mutex support there is no EOWNERDEAD recovery path: if the
+    // owner dies while holding the lock, waiters block indefinitely. This is a
+    // known limitation of the mock on platforms lacking robust mutexes.
+    if (code != 0) {
+        throw std::system_error(code, std::system_category(), "pthread_mutex_lock");
+    }
+#endif
 }
 
 void FamMockSession::unlock() {

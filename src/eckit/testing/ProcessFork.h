@@ -14,13 +14,19 @@
 
 #pragma once
 
-#include <signal.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <csignal>
 #include <cstdlib>
 #include <string>
 #include <vector>
+
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+
+#include <cstdint>
+#endif
 
 namespace eckit::testing {
 
@@ -41,11 +47,19 @@ namespace eckit::testing {
 inline bool fork_and_exec(int n, const std::vector<std::string>& args = {}) {
     // Resolve path to current executable
     char exe[4096];
+#if defined(__APPLE__)
+    // macOS has no /proc; query the dynamic loader for the executable path.
+    uint32_t exe_size = sizeof(exe);
+    if (_NSGetExecutablePath(exe, &exe_size) != 0) {
+        return false;  // buffer too small
+    }
+#else
     const ssize_t len = ::readlink("/proc/self/exe", exe, sizeof(exe) - 1);
     if (len <= 0) {
         return false;
     }
     exe[len] = '\0';
+#endif
 
     std::vector<pid_t> pids;
     pids.reserve(n);

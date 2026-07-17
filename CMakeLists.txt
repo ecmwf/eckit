@@ -117,7 +117,7 @@ ecbuild_add_option( FEATURE OPENFAM
                     DESCRIPTION "Enables OpenFAM support" )
 
 ecbuild_add_option( FEATURE OPENFAM_MOCK
-                    DEFAULT ON
+                    DEFAULT OFF
                     CONDITION LibUUID_FOUND AND NOT LibOPENFAM_FOUND
                     DESCRIPTION "Enables OpenFAM Mock for testing and development." )
 

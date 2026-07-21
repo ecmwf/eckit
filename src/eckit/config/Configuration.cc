@@ -194,8 +194,8 @@ bool Configuration::get(const std::string& name, double& value) const {
 }
 
 bool Configuration::get(const std::string& name, std::vector<int>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -211,8 +211,8 @@ bool Configuration::get(const std::string& name, std::vector<int>& value) const 
 }
 
 bool Configuration::get(const std::string& name, std::vector<long>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -226,8 +226,8 @@ bool Configuration::get(const std::string& name, std::vector<long>& value) const
 }
 
 bool Configuration::get(const std::string& name, std::vector<long long>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -241,8 +241,8 @@ bool Configuration::get(const std::string& name, std::vector<long long>& value) 
 }
 
 bool Configuration::get(const std::string& name, std::vector<size_t>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -256,8 +256,8 @@ bool Configuration::get(const std::string& name, std::vector<size_t>& value) con
 }
 
 bool Configuration::get(const std::string& name, std::vector<float>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -271,8 +271,8 @@ bool Configuration::get(const std::string& name, std::vector<float>& value) cons
 }
 
 bool Configuration::get(const std::string& name, std::vector<double>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -286,8 +286,8 @@ bool Configuration::get(const std::string& name, std::vector<double>& value) con
 }
 
 bool Configuration::get(const std::string& name, std::vector<std::string>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();
@@ -317,8 +317,8 @@ void Configuration::hash(Hash& h) const {
 }
 
 bool Configuration::get(const std::string& name, std::vector<LocalConfiguration>& value) const {
-    bool found     = false;
-    eckit::Value v = lookUp(name, found);
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
         value.clear();

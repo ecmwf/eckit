@@ -423,6 +423,26 @@ OPENFAM_MOCK_DEFINE_ADD(double)
 
 #undef OPENFAM_MOCK_DEFINE_ADD
 
+#define OPENFAM_MOCK_DEFINE_FETCH_ADD(TYPE)                                          \
+    TYPE fam::fam_fetch_add(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) { \
+        auto& session = getSession();                                                \
+        std::lock_guard lock(session);                                               \
+        auto& sobj = session.findObject(obj);                                        \
+        auto* data = session.objectData(sobj);                                       \
+        auto old   = typed_fetch<TYPE>(data, sobj.size, offset);                     \
+        typed_store<TYPE>(data, sobj.size, offset, static_cast<TYPE>(old + value));  \
+        return old;                                                                  \
+    }
+
+OPENFAM_MOCK_DEFINE_FETCH_ADD(std::int32_t)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(std::int64_t)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(std::uint32_t)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(std::uint64_t)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(float)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(double)
+
+#undef OPENFAM_MOCK_DEFINE_FETCH_ADD
+
 #define OPENFAM_MOCK_DEFINE_SUB(TYPE)                                                   \
     void fam::fam_subtract(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) {     \
         auto& session = getSession();                                                   \

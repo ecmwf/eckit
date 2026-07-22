@@ -111,15 +111,15 @@ find_package(LibOPENFAM QUIET)
 
 ### OpenFAM Support
 
-ecbuild_add_option( FEATURE OPENFAM
-                    DEFAULT ON
-                    CONDITION LibUUID_FOUND AND LibOPENFAM_FOUND
-                    DESCRIPTION "Enables OpenFAM support" )
-
 ecbuild_add_option( FEATURE OPENFAM_MOCK
                     DEFAULT ON
                     CONDITION LibUUID_FOUND AND NOT LibOPENFAM_FOUND
                     DESCRIPTION "Enables OpenFAM Mock for testing and development." )
+
+ecbuild_add_option( FEATURE OPENFAM
+                    DEFAULT ON
+                    CONDITION LibUUID_FOUND AND ( LibOPENFAM_FOUND OR eckit_HAVE_OPENFAM_MOCK )
+                    DESCRIPTION "Enables OpenFAM support" )
 
 if( eckit_HAVE_OPENFAM_MOCK )
     add_subdirectory( src/eckit/io/fam/openfam_mock )

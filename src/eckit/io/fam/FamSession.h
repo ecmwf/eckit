@@ -135,6 +135,10 @@ public:  // methods
     template <typename T>
     void add(FamObjectDescriptor& object, fam::size_t offset, T value);
 
+    /// Atomic fetch-add: adds @p value at @p offset and returns the previous value.
+    template <typename T>
+    T fetchAdd(FamObjectDescriptor& object, fam::size_t offset, T value);
+
     template <typename T>
     void subtract(FamObjectDescriptor& object, fam::size_t offset, T value);
 

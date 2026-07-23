@@ -25,6 +25,7 @@
 #include <string>
 
 #include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamTypes.h"
 
 namespace eckit {
 
@@ -119,6 +120,10 @@ public:  // methods
 
     template <typename T>
     T compareSwap(fam::size_t offset, T old_value, T new_value) const;
+
+    /// Atomically add @p value to the word at @p offset and return the previous value.
+    template <typename T>
+    T fetchAdd(fam::size_t offset, T value) const;
 
 private:  // methods
 

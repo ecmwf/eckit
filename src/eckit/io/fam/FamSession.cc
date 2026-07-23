@@ -368,6 +368,12 @@ void FamSession::add(FamObjectDescriptor& object, const fam::size_t offset, cons
 }
 
 template <typename T>
+T FamSession::fetchAdd(FamObjectDescriptor& object, const fam::size_t offset, const T value) {
+    auto fptr = static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_fetch_add);
+    return invokeFam(fptr, &object, offset, value);
+}
+
+template <typename T>
 void FamSession::subtract(FamObjectDescriptor& object, const fam::size_t offset, const T value) {
     auto fptr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_subtract);
     invokeFam(fptr, &object, offset, value);
@@ -403,6 +409,13 @@ template void FamSession::add(FamObjectDescriptor&, const fam::size_t, const uin
 template void FamSession::add(FamObjectDescriptor&, const fam::size_t, const uint64_t);
 template void FamSession::add(FamObjectDescriptor&, const fam::size_t, const float);
 template void FamSession::add(FamObjectDescriptor&, const fam::size_t, const double);
+
+template int32_t FamSession::fetchAdd(FamObjectDescriptor&, const fam::size_t, const int32_t);
+template int64_t FamSession::fetchAdd(FamObjectDescriptor&, const fam::size_t, const int64_t);
+template uint32_t FamSession::fetchAdd(FamObjectDescriptor&, const fam::size_t, const uint32_t);
+template uint64_t FamSession::fetchAdd(FamObjectDescriptor&, const fam::size_t, const uint64_t);
+template float FamSession::fetchAdd(FamObjectDescriptor&, const fam::size_t, const float);
+template double FamSession::fetchAdd(FamObjectDescriptor&, const fam::size_t, const double);
 
 template void FamSession::subtract(FamObjectDescriptor&, const fam::size_t, const int32_t);
 template void FamSession::subtract(FamObjectDescriptor&, const fam::size_t, const int64_t);

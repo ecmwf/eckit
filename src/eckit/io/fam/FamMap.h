@@ -74,10 +74,12 @@
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamList.h"
+#include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamMapEntry.h"
 #include "eckit/io/fam/FamMapIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamTypes.h"
 
 namespace eckit {
 
@@ -125,9 +127,10 @@ public:  // constants
     /// needed for preventing concurrent double-init of buckets, as sentinel value in bucket head during creation
     static constexpr fam::size_t creating = ~fam::size_t{0};
 
-    static constexpr auto table_suffix = ".t";
-    static constexpr auto count_suffix = ".c";
-    static constexpr auto lock_suffix  = ".l";
+    static constexpr auto table_suffix       = ".t";
+    static constexpr auto count_suffix       = ".c";
+    static constexpr auto lock_suffix        = ".l";
+    static constexpr auto bucket_lock_suffix = ".lb";
 
     /// Lock lease time-to-live.  If a lock holder crashes, waiters can steal
     /// the lock after this many seconds.
@@ -254,6 +257,9 @@ public:  // methods
     /// Release the map-wide FAM spinlock.  Pair with lock().
     void unlock();
 
+    /// Deallocate every FAM object backing the map
+    static void deallocate(const FamRegion& region, const std::string& name);
+
 private:  // methods
 
     friend class FamMapIterator<T>;
@@ -284,13 +290,35 @@ private:  // methods
         return out;
     }
 
+    void lockBucket(std::size_t index);
+
+    void unlockBucket(std::size_t index);
+
+    class BucketGuard {
+    public:
+
+        BucketGuard(FamMap& map, std::size_t index) : map_{map}, index_{index} { map_.lockBucket(index_); }
+        ~BucketGuard() { map_.unlockBucket(index_); }
+        // rules
+        BucketGuard(const BucketGuard&)            = delete;
+        BucketGuard& operator=(const BucketGuard&) = delete;
+        BucketGuard(BucketGuard&&)                 = delete;
+        BucketGuard& operator=(BucketGuard&&)      = delete;
+
+    private:
+
+        FamMap& map_;
+        std::size_t index_;
+    };
+
 private:  // members
 
-    std::string name_;  ///< Map name (used for bucket list naming)
-    FamRegion region_;  ///< FAM region holding all map objects
-    FamObject table_;   ///< Flat array of FamList::Descriptor, one per bucket
-    FamObject count_;   ///< Atomic uint64 tracking total element count
-    FamObject lock_;    ///< Lease-based FAM lock (uint64: 0=free, timestamp=held)
+    std::string name_;       ///< Map name (used for bucket list naming)
+    FamRegion region_;       ///< FAM region holding all map objects
+    FamObject table_;        ///< Flat array of FamList::Descriptor, one per bucket
+    FamObject count_;        ///< Atomic uint64 tracking total element count
+    FamObject lock_;         ///< Lease-based FAM lock (uint64: 0=free, timestamp=held)
+    FamObject bucketLocks_;  ///< Array of per-bucket lease locks (uint64 each: 0=free, timestamp=held)
 };
 
 //----------------------------------------------------------------------------------------------------------------------

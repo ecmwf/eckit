@@ -264,6 +264,16 @@ public:
     void fam_add(Fam_Descriptor* obj, std::uint64_t offset, double value);
 
     //------------------------------------------------------------------
+    // Atomic fetch-add (returns old value)
+
+    std::int32_t fam_fetch_add(Fam_Descriptor* obj, std::uint64_t offset, std::int32_t value);
+    std::int64_t fam_fetch_add(Fam_Descriptor* obj, std::uint64_t offset, std::int64_t value);
+    std::uint32_t fam_fetch_add(Fam_Descriptor* obj, std::uint64_t offset, std::uint32_t value);
+    std::uint64_t fam_fetch_add(Fam_Descriptor* obj, std::uint64_t offset, std::uint64_t value);
+    float fam_fetch_add(Fam_Descriptor* obj, std::uint64_t offset, float value);
+    double fam_fetch_add(Fam_Descriptor* obj, std::uint64_t offset, double value);
+
+    //------------------------------------------------------------------
     // Atomic subtract
 
     void fam_subtract(Fam_Descriptor* obj, std::uint64_t offset, std::int32_t value);

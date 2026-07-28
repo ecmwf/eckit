@@ -17,17 +17,22 @@
 
 #include <chrono>
 #include <cstddef>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <thread>
 #include <utility>
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamList.h"
+#include "eckit/io/fam/FamListIterator.h"
+#include "eckit/io/fam/FamMapEntry.h"
 #include "eckit/io/fam/FamMapIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
+#include "eckit/io/fam/FamTypes.h"
 #include "eckit/log/Log.h"
 
 namespace eckit {
@@ -38,17 +43,17 @@ namespace eckit {
 namespace {
 
 /// Byte offset of the bucket descriptor at given index in the table.
-constexpr fam::size_t bucketOffset(std::size_t index) {
+constexpr fam::size_t bucket_offset(std::size_t index) {
     return static_cast<fam::size_t>(index * sizeof(FamList::Descriptor));
 }
 
 /// Offset of the head field within a FamList::Descriptor.
-constexpr fam::size_t bucketHeadOffset(std::size_t index) {
-    return bucketOffset(index) + offsetof(FamList::Descriptor, head);
+constexpr fam::size_t bucket_head_offset(std::size_t index) {
+    return bucket_offset(index) + offsetof(FamList::Descriptor, head);
 }
 
 /// Current wall-clock time as seconds since epoch (uint64).
-inline fam::size_t nowSeconds() {
+inline fam::size_t now_seconds() {
     return static_cast<fam::size_t>(
         std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count());
 }
@@ -63,7 +68,8 @@ FamMap<T>::FamMap(std::string name, FamRegion region) :
     region_{std::move(region)},
     table_{region_.ensureObject(bucket_count * sizeof(FamList::Descriptor), name_ + table_suffix)},
     count_{region_.ensureObject(sizeof(size_type), name_ + count_suffix)},
-    lock_{region_.ensureObject(sizeof(size_type), name_ + lock_suffix)} {}
+    lock_{region_.ensureObject(sizeof(size_type), name_ + lock_suffix)},
+    bucketLocks_{region_.ensureObject(bucket_count * sizeof(size_type), name_ + bucket_lock_suffix)} {}
 
 //----------------------------------------------------------------------------------------------------------------------
 // Bucket management
@@ -81,12 +87,12 @@ FamListIterator FamMap<T>::findInBucket(const FamList& bucket, const key_type& k
 
 template <typename T>
 fam::size_t FamMap<T>::getBucketHead(const std::size_t index) const {
-    return table_.get<fam::size_t>(bucketHeadOffset(index));
+    return table_.get<fam::size_t>(bucket_head_offset(index));
 }
 
 template <typename T>
 FamList::Descriptor FamMap<T>::getBucketDescriptor(const std::size_t index) const {
-    return table_.get<FamList::Descriptor>(bucketOffset(index));
+    return table_.get<FamList::Descriptor>(bucket_offset(index));
 }
 
 template <typename T>
@@ -105,7 +111,7 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
     }
 
     // Try to claim the bucket via CAS: 0 -> CREATING
-    const auto old_head = table_.compareSwap(bucketHeadOffset(index), fam::size_t{0}, creating);
+    const auto old_head = table_.compareSwap(bucket_head_offset(index), fam::size_t{0}, creating);
 
     if (old_head == 0) {
         // We claimed the bucket. Create a new FamList bucket.
@@ -116,13 +122,13 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
         auto desc              = bucket.descriptor();
 
         // Write remaining descriptor fields FIRST (tail, size)
-        const auto offset = bucketOffset(index);
+        const auto offset = bucket_offset(index);
         table_.put(desc.region, offset + offsetof(FamList::Descriptor, region));
         table_.put(desc.tail, offset + offsetof(FamList::Descriptor, tail));
         table_.put(desc.size, offset + offsetof(FamList::Descriptor, size));
 
         // Write head LAST to "publish" the bucket (transitions from CREATING → real offset)
-        table_.put(desc.head, bucketHeadOffset(index));
+        table_.put(desc.head, bucket_head_offset(index));
 
         return bucket;
     }
@@ -134,7 +140,7 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
     for (int spin = 0; head == 0 || head == creating; ++spin) {
         ASSERT_MSG(spin < max_spin, "FamMap::getOrCreateBucket: bucket creation stalled (creator may have crashed)");
         std::this_thread::yield();
-        head = table_.get<fam::size_t>(bucketHeadOffset(index));
+        head = table_.get<fam::size_t>(bucket_head_offset(index));
     }
 
     return {region_, getBucketDescriptor(index)};
@@ -212,7 +218,8 @@ auto FamMap<T>::count(const key_type& key) const -> size_type {
 template <typename T>
 auto FamMap<T>::insert(const key_type& key, const void* data, const size_type length) -> std::pair<iterator, bool> {
     const auto index = bucketIndex(key);
-    auto bucket      = getOrCreateBucket(index);
+    const BucketGuard guard{*this, index};
+    auto bucket = getOrCreateBucket(index);
 
     // Check if key already exists.
     // NOTE: This check-then-insert sequence is not atomic.
@@ -241,7 +248,8 @@ template <typename T>
 auto FamMap<T>::insertOrAssign(const key_type& key, const void* data, const size_type length)
     -> std::pair<iterator, bool> {
     const auto index = bucketIndex(key);
-    auto bucket      = getOrCreateBucket(index);
+    const BucketGuard guard{*this, index};
+    auto bucket = getOrCreateBucket(index);
 
     // 1. Insert new entry at the FRONT of the bucket
     // so, concurrent find() (which iterate head→tail) sees it
@@ -278,7 +286,8 @@ auto FamMap<T>::insertOrAssign(const key_type& key, const void* data, const size
 template <typename T>
 auto FamMap<T>::forceInsert(const key_type& key, const void* data, const size_type length) -> iterator {
     const auto index = bucketIndex(key);
-    auto bucket      = getOrCreateBucket(index);
+    const BucketGuard guard{*this, index};
+    auto bucket = getOrCreateBucket(index);
 
     auto payload = entry_type::encode(key, data, length);
     bucket.pushFront(payload);
@@ -292,7 +301,8 @@ auto FamMap<T>::forceInsert(const key_type& key, const void* data, const size_ty
 template <typename T>
 auto FamMap<T>::erase(const key_type& key) -> size_type {
     const auto index = bucketIndex(key);
-    auto bucket      = getBucket(index);
+    const BucketGuard guard{*this, index};
+    auto bucket = getBucket(index);
     if (!bucket) {
         return 0;
     }
@@ -373,7 +383,7 @@ void FamMap<T>::print(std::ostream& out) const {
 template <typename T>
 void FamMap<T>::lock() {
     for (;;) {
-        const auto now = nowSeconds();
+        const auto now = now_seconds();
 
         // Fast path: lock is free (0)
         if (lock_.compareSwap<size_type>(0, 0, now) == 0) {
@@ -399,6 +409,72 @@ void FamMap<T>::lock() {
 template <typename T>
 void FamMap<T>::unlock() {
     lock_.set<size_type>(0, 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Per-bucket locking (lease-based with TTL)
+
+template <typename T>
+void FamMap<T>::lockBucket(const std::size_t index) {
+    const auto offset = static_cast<fam::size_t>(index * sizeof(size_type));
+    for (;;) {
+        const auto now = now_seconds();
+
+        // Fast path: lock is free (0)
+        if (bucketLocks_.compareSwap<size_type>(offset, 0, now) == 0) {
+            return;
+        }
+
+        // Locked: check for a stale lease.
+        const auto held = bucketLocks_.fetch<size_type>(offset);
+        if (held != 0 && (now - held) > static_cast<size_type>(lock_ttl.count())) {
+            // Lease expired — attempt to steal.
+            if (bucketLocks_.compareSwap<size_type>(offset, held, now) == held) {
+                Log::warning() << "FamMap::lockBucket(): stale lock detected on bucket " << index << " (held for "
+                               << (now - held) << "s > TTL " << lock_ttl.count() << "s) — stolen\n";
+                return;
+            }
+            // Another process acquired it; retry.
+        }
+
+        std::this_thread::yield();
+    }
+}
+
+template <typename T>
+void FamMap<T>::unlockBucket(const std::size_t index) {
+    const auto offset = static_cast<fam::size_t>(index * sizeof(size_type));
+    bucketLocks_.set<size_type>(offset, 0);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Lifecycle
+
+template <typename T>
+void FamMap<T>::deallocate(const FamRegion& region, const std::string& name) {
+    // 1. Free the per-bucket lists. Must run BEFORE the table itself is deallocated.
+    try {
+        const auto table = region.lookupObject(name + table_suffix);
+        for (std::size_t index = 0; index < bucket_count; ++index) {
+            const auto head = table.get<fam::size_t>(bucket_head_offset(index));
+            if (head == 0 || head == creating) {
+                continue;  // empty or half-created bucket
+            }
+            FamList{region, table.get<FamList::Descriptor>(bucket_offset(index))}.deallocate();
+        }
+    }
+    catch (const NotFound& e) {
+        LOG_DEBUG_LIB(LibEcKit) << "FamMap::deallocate: " << e.what() << '\n';
+    }
+    // 2. Free the map's own fixed objects.
+    for (const char* suffix : {table_suffix, count_suffix, lock_suffix, bucket_lock_suffix}) {
+        try {
+            region.deallocateObject(name + suffix);
+        }
+        catch (const NotFound& e) {
+            LOG_DEBUG_LIB(LibEcKit) << "FamMap::deallocate: " << name + suffix << " (" << e.what() << ")\n";
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

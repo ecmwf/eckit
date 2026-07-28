@@ -334,6 +334,13 @@ void FamList::clear() {
     }
 }
 
+void FamList::deallocate() {
+    clear();
+    head_.deallocate();
+    tail_.deallocate();
+    size_.deallocate();
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 // capacity
 

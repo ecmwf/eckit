@@ -22,6 +22,7 @@
 #include <unistd.h>  // getuid, getgid
 
 #include <cassert>
+#include <cstdint>
 #include <cstdlib>  // std::abort
 #include <cstring>
 #include <mutex>
@@ -214,7 +215,7 @@ Fam_Descriptor* fam::fam_allocate(const char* name, std::uint64_t size, mode_t p
     auto& region = session.findRegion(region_desc);
 
     // Check for duplicate named object.
-    if (name && *name && session.findObjectByName(region, name) != nullptr) {
+    if (name && *name && mock::FamMockSession::findObjectByName(region, name) != nullptr) {
         throw Fam_Exception(std::string("Object already exists: ") + name, FAM_ERR_ALREADYEXIST);
     }
 
@@ -223,7 +224,7 @@ Fam_Descriptor* fam::fam_allocate(const char* name, std::uint64_t size, mode_t p
         throw Fam_Exception("Object exceeds region size", FAM_ERR_NO_SPACE);
     }
 
-    auto* slot = session.allocateObjectSlot(region);
+    auto* slot = mock::FamMockSession::allocateObjectSlot(region);
     if (!slot) {
         throw Fam_Exception("Maximum number of objects per region reached", FAM_ERR_NO_SPACE);
     }
@@ -268,7 +269,7 @@ Fam_Descriptor* fam::fam_lookup(const char* object_name, const char* region_name
         throw Fam_Exception(std::string("Region not found: ") + region_name, FAM_ERR_NOTFOUND);
     }
 
-    auto* obj = session.findObjectByName(*region, object_name);
+    auto* obj = mock::FamMockSession::findObjectByName(*region, object_name);
     if (!obj) {
         throw Fam_Exception(std::string("Object not found: ") + object_name, FAM_ERR_NOTFOUND);
     }
@@ -294,7 +295,7 @@ void fam::fam_deallocate(Fam_Descriptor* object) {
         return;
     }
 
-    auto* obj = session.findObjectByOffset(*region, objectOffset);
+    auto* obj = mock::FamMockSession::findObjectByOffset(*region, objectOffset);
     if (!obj) {
         object->mock_invalidate();
         return;
@@ -422,6 +423,26 @@ OPENFAM_MOCK_DEFINE_ADD(float)
 OPENFAM_MOCK_DEFINE_ADD(double)
 
 #undef OPENFAM_MOCK_DEFINE_ADD
+
+#define OPENFAM_MOCK_DEFINE_FETCH_ADD(TYPE)                                          \
+    TYPE fam::fam_fetch_add(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) { \
+        auto& session = getSession();                                                \
+        std::lock_guard lock(session);                                               \
+        auto& sobj = session.findObject(obj);                                        \
+        auto* data = session.objectData(sobj);                                       \
+        auto old   = typed_fetch<TYPE>(data, sobj.size, offset);                     \
+        typed_store<TYPE>(data, sobj.size, offset, static_cast<TYPE>(old + value));  \
+        return old;                                                                  \
+    }
+
+OPENFAM_MOCK_DEFINE_FETCH_ADD(std::int32_t)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(std::int64_t)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(std::uint32_t)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(std::uint64_t)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(float)
+OPENFAM_MOCK_DEFINE_FETCH_ADD(double)
+
+#undef OPENFAM_MOCK_DEFINE_FETCH_ADD
 
 #define OPENFAM_MOCK_DEFINE_SUB(TYPE)                                                   \
     void fam::fam_subtract(Fam_Descriptor* obj, std::uint64_t offset, TYPE value) {     \

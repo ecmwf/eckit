@@ -178,6 +178,10 @@ public:  // methods
     /// @pre  No concurrent readers or writers.
     void clear();
 
+    /// Deallocate the list. The list must not be used again afterwards.
+    /// @pre  No concurrent readers or writers.
+    void deallocate();
+
 private:  // methods
 
     void print(std::ostream& out) const;

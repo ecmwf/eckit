@@ -146,6 +146,11 @@ T FamObject::compareSwap(const fam::size_t offset, const T old_value, const T ne
     return session_->compareSwap<T>(*object_, offset, old_value, new_value);
 }
 
+template <typename T>
+T FamObject::fetchAdd(const fam::size_t offset, const T value) const {
+    return session_->fetchAdd<T>(*object_, offset, value);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 void FamObject::print(std::ostream& out) const {
@@ -201,6 +206,11 @@ template int32_t FamObject::compareSwap(const fam::size_t, const int32_t, const 
 template int64_t FamObject::compareSwap(const fam::size_t, const int64_t, const int64_t) const;
 template uint32_t FamObject::compareSwap(const fam::size_t, const uint32_t, const uint32_t) const;
 template uint64_t FamObject::compareSwap(const fam::size_t, const uint64_t, const uint64_t) const;
+
+template int32_t FamObject::fetchAdd(const fam::size_t, const int32_t) const;
+template int64_t FamObject::fetchAdd(const fam::size_t, const int64_t) const;
+template uint32_t FamObject::fetchAdd(const fam::size_t, const uint32_t) const;
+template uint64_t FamObject::fetchAdd(const fam::size_t, const uint64_t) const;
 
 //----------------------------------------------------------------------------------------------------------------------
 

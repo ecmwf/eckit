@@ -39,8 +39,8 @@ public:
 
     // Methods
 
-    virtual const std::vector<double>& latitudes() const = 0;
-    virtual std::vector<double> longitudes(size_t) const = 0;
+    virtual const std::vector<double>& latitudes() const        = 0;
+    virtual const std::vector<double>& longitudes(size_t) const = 0;
 
 protected:
 

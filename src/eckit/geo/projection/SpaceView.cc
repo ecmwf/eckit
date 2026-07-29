@@ -35,7 +35,7 @@ PointLonLat SpaceView::inv(const PointXY&) const {
 
 
 const std::string& SpaceView::type() const {
-    static const std::string type{"space-view"};
+    static const std::string type{"space_view"};
     return type;
 }
 

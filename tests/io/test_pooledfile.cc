@@ -8,7 +8,12 @@
  * does it submit to any jurisdiction.
  */
 
+#include <unistd.h>
+
+#include <algorithm>
 #include <cstring>
+#include <thread>
+#include <vector>
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
@@ -167,6 +172,7 @@ CASE("Error handling") {
         Tester test;
         PooledFile* f = new PooledFile(test.path1_);
         EXPECT_NO_THROW(f->open());
+        EXPECT_EQUAL(::close(f->fileno()), 0);
         EXPECT_NO_THROW(delete f);
     }
 }
@@ -254,6 +260,47 @@ CASE("Seeking to location") {
 
         EXPECT(b[0] == 'A');
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// test for the race reported by TSAN on the shared PoolFileEntry (ECKIT-687)
+CASE("Concurrent ctor/dtor on the same path") {
+
+    Tester test;
+
+    size_t num_threads    = Resource<size_t>("$ECKIT_TEST_THREADS", 32);
+    num_threads           = std::min(size_t{48}, num_threads);
+    const size_t num_iter = Resource<size_t>("$ECKIT_TEST_ITERATIONS", 200);
+    const size_t len_msg  = ::strlen(test.message);
+
+    std::vector<std::thread> threads;
+    threads.reserve(num_threads);
+
+    for (size_t t = 0; t < num_threads; ++t) {
+        const auto& path = (t % 2 == 0) ? test.path1_ : test.path2_;
+        // spawn a thread that repeatedly constructs and destructs a PooledFile, reading from it
+        threads.emplace_back([&path, num_iter, len_msg]() {
+            std::vector<char> buffer(len_msg, '\0');
+            for (size_t i = 0; i < num_iter; ++i) {
+                PooledFile file{path};
+                file.open();
+                const auto len = file.read(buffer.data(), static_cast<long>(buffer.size()));
+                EXPECT(len == static_cast<long>(len_msg));
+                file.close();
+            }
+        });
+    }
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+
+    // test a fresh PooledFile
+    PooledFile file{test.path1_};
+    EXPECT_NO_THROW(file.open());
+    EXPECT(file.nbOpens() == 1);
+    EXPECT_NO_THROW(file.close());
 }
 
 //----------------------------------------------------------------------------------------------------------------------

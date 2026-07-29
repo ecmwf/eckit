@@ -61,6 +61,8 @@ private:
     Point operator*() const override;
 
     size_t index() const override { return index_; }
+
+    [[nodiscard]] Iterator* clone() const override { return new Regular(*this); }
 };
 
 

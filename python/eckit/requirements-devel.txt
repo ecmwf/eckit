@@ -1,8 +1,0 @@
-Cython
-numpy
-pyyaml
-setuptools
-build
-twine
-wheel
-pytest

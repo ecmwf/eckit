@@ -12,15 +12,8 @@
 
 #pragma once
 
-#include <cstddef>
-
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/grid/Unstructured.h"
-
-
-namespace eckit {
-class PathName;
-}
 
 
 namespace eckit::geo::grid::unstructured {
@@ -29,66 +22,20 @@ namespace eckit::geo::grid::unstructured {
 class ICON final : public Unstructured {
 public:
 
-    // -- Types
-
-    struct ICONRecord {
-        explicit ICONRecord() = default;
-
-        void read(const PathName&);
-        void check(const Spec&) const;
-
-        using bytes_t = decltype(sizeof(int));
-        bytes_t footprint() const;
-
-        size_t n() const;
-
-        std::vector<double> longitudes_;
-        std::vector<double> latitudes_;
-    };
-
     // -- Constructors
 
     explicit ICON(const Spec&);
-    explicit ICON(uid_type);
-
+    explicit ICON(const uid_type&);
     ICON(const std::string& name, Arrangement);
-
-    // -- Methods
-
-    std::string name() const { return name_; }
-    std::string arrangement() const;
 
     // -- Overridden methods
 
     const std::string& type() const override;
-    uid_type calculate_uid() const override;
-    BoundingBox* calculate_bbox() const override;
-
-    [[nodiscard]] Point first_point() const override;
-    [[nodiscard]] Point last_point() const override;
+    std::vector<size_t> shape() const override;
 
     // -- Class methods
 
-    [[nodiscard]] static Spec* spec(const std::string& name);
-
-    [[nodiscard]] static Arrangement arrangement_from_string(const std::string&);
-    [[nodiscard]] static std::string arrangement_to_string(Arrangement);
-
-private:
-
-    // -- Constructors
-
-    ICON(const ICONRecord&, const uid_type&, const std::string& arrangement, const std::string& name);
-
-    // -- Members
-
-    std::string name_;
-    Arrangement arrangement_;
-    const ICONRecord& record_;
-
-    // -- Overridden methods
-
-    void fill_spec(spec::Custom&) const override;
+    [[nodiscard]] static Spec* spec(const std::string&);
 };
 
 

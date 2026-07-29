@@ -18,7 +18,6 @@
 #include "eckit/geo/area/None.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
-#include "eckit/utils/Translator.h"
 
 
 namespace eckit::geo::grid {
@@ -31,7 +30,12 @@ static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
 static const auto GRIDNAME = GridRegisterName<SphericalHarmonics>(PATTERN);
 
 
-SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {}
+SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {
+    // TODO improve conversion from signed to unsigned
+    if (spec.get_long("truncation") <= 0) {
+        throw exception::SpecError("SphericalHarmonics: truncation must be positive", Here());
+    }
+}
 
 
 SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {}
@@ -42,9 +46,7 @@ Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
     std::regex_match(name, match, std::regex(PATTERN));
     ASSERT(match.size() == 2);
 
-    auto u = Translator<std::string, size_t>{};
-
-    return new spec::Custom({{"type", "sh"}, {"truncation", u(match[1])}});
+    return new spec::Custom({{"type", "sh"}, {"truncation", std::stoul(match[1].str())}});
 }
 
 
@@ -95,8 +97,14 @@ void SphericalHarmonics::fill_spec(spec::Custom& custom) const {
 }
 
 
+size_t SphericalHarmonics::number_of_real_coefficients(size_t truncation) {
+    // for triangular spectral truncation
+    return (truncation + 1) * (truncation + 2);
+}
+
+
 size_t SphericalHarmonics::number_of_complex_coefficients(size_t truncation) {
-    return (truncation + 1) * (truncation + 2) / 2;
+    return number_of_real_coefficients(truncation) / 2;
 }
 
 

@@ -1,0 +1,126 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+/*
+ * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
+ * (Grant agreement: 101092984) horizon-opencube.eu
+ */
+
+/// @file   FamListNode.h
+/// @author Metin Cakircali
+/// @date   Mar 2024
+
+#pragma once
+
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
+
+#include "eckit/io/Buffer.h"
+#include "eckit/io/fam/FamObject.h"
+#include "eckit/io/fam/detail/FamNode.h"
+
+namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+/// @brief Concurrent-safe list node for FAM-resident doubly-linked list.
+///
+/// Layout (56+ bytes):
+///  - version:   u8  - node version (incremented on reuse, for ABA detection)
+///  - next:      FamDescriptor  - next node pointer
+///  - prev:      FamDescriptor  - previous node pointer
+///  - length:    u64 - data payload length in bytes
+///  - marked:    u8  - logical deletion marker (for wait-free deletion)
+///  - padding:   u7  - alignment
+///  - [data]:    next node allocation starts here
+///
+/// Thread safety:
+///  - Use version field to detect ABA problems when reusing freed nodes
+///  - The 'marked' bit enables logical deletion: physical deallocation happens
+///    asynchronously to avoid disrupting other readers
+///  - Atomic swap() and compareSwap() on next/prev pointers coordinate insertions
+///  - Readers can safely traverse marked nodes; they'll eventually be cleaned up
+///
+/// @important: DO NOT add any virtual functions in this class.
+struct FamListNode {
+    FamNode header{};        // 24 bytes: { version, next }
+    FamDescriptor prev;      // 16 bytes
+    fam::size_t length{0};   //  8 bytes
+    std::uint8_t marked{0};  //  1 byte: 0=active, 1=logically deleted
+    // 7 bytes padding to align 'data' to 8-byte boundary
+
+    /// Byte offset of `prev.offset` within FamListNode (portable two-step form).
+    static constexpr std::size_t prevOffsetOff() noexcept {
+        return offsetof(FamListNode, prev) + offsetof(FamDescriptor, offset);
+    }
+
+    /// Byte offset of the embedded `next` descriptor (header).
+    static constexpr std::size_t nextOff() noexcept { return offsetof(FamListNode, header) + offsetof(FamNode, next); }
+
+    /// Byte offset of `next.offset` within FamListNode (portable two-step form).
+    /// Equivalent to FamNode::nextOffsetOff() because `header` is placed first.
+    static constexpr std::size_t nextOffsetOff() noexcept {
+        return offsetof(FamListNode, header) + FamNode::nextOffsetOff();
+    }
+
+    /// Forwarders to the embedded FamNode header.
+    static FamDescriptor getNext(const FamObject& object) { return FamNode::getNext(object); }
+    static std::uint64_t getNextOffset(const FamObject& object) { return FamNode::getNextOffset(object); }
+
+    /// Increment version stamp to prevent ABA problems on node reuse
+    static void bumpVersion(const FamObject& object) {
+        auto ver = object.get<std::uint8_t>(offsetof(FamNode, version));
+        object.put(static_cast<std::uint8_t>(ver + 1), offsetof(FamNode, version));
+    }
+
+    /// Fetch previous node descriptor (includes version for ABA detection)
+    static FamDescriptor getPrev(const FamObject& object) {
+        return object.get<FamDescriptor>(offsetof(FamListNode, prev));
+    }
+
+    /// Fetch previous node offset only
+    static std::uint64_t getPrevOffset(const FamObject& object) { return object.get<std::uint64_t>(prevOffsetOff()); }
+
+    /// Fetch data payload length
+    static fam::size_t getLength(const FamObject& object) {
+        return object.get<fam::size_t>(offsetof(FamListNode, length));
+    }
+
+    /// Check if node is logically deleted (marked for removal)
+    static bool isMarked(const FamObject& object) {
+        return object.get<std::uint8_t>(offsetof(FamListNode, marked)) != 0;
+    }
+
+    /// Mark node as logically deleted (wait-free deletion)
+    static void mark(const FamObject& object) {
+        object.put(static_cast<std::uint8_t>(1), offsetof(FamListNode, marked));
+    }
+
+    /// Copy node data to buffer
+    static void getData(const FamObject& object, Buffer& buffer) {
+        if (const auto length = getLength(object); length > 0) {
+            buffer.resize(length);
+            object.get(buffer.data(), sizeof(FamListNode), length);
+        }
+    }
+};
+
+static_assert(std::is_standard_layout_v<FamListNode>, "FamListNode must be standard-layout for offsetof()");
+static_assert(std::is_trivially_copyable_v<FamListNode>, "FamListNode must be trivially copyable for FAM put/get");
+static_assert(sizeof(FamListNode) == 56, "FamListNode layout changed (FAM on-wire format depends on this)");
+static_assert(offsetof(FamListNode, header) == 0, "FamListNode::header must be at offset 0 (wire layout)");
+static_assert(offsetof(FamListNode, prev) == 24, "FamListNode::prev offset mismatch");
+static_assert(offsetof(FamListNode, length) == 40, "FamListNode::length offset mismatch");
+static_assert(offsetof(FamListNode, marked) == 48, "FamListNode::marked offset mismatch");
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit

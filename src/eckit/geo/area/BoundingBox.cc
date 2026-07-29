@@ -13,7 +13,6 @@
 #include "eckit/geo/area/BoundingBox.h"
 
 #include <algorithm>
-#include <cmath>
 #include <cstddef>
 #include <cstring>
 #include <memory>
@@ -32,6 +31,7 @@
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit::geo::area {
@@ -363,9 +363,19 @@ void BoundingBox::fill_spec(spec::Custom& custom) const {
 std::unique_ptr<BoundingBox> BoundingBox::make_from_spec(const Spec& spec) {
     auto [n, w, s, e] = bounding_box_default().deconstruct();
 
-    if (std::vector<double> area{n, w, s, e}; spec.get("area", area)) {
-        ASSERT_MSG(area.size() == 4, "BoundingBox: 'area' expected list of size 4");
-        return make_from_area(area[0], area[1], area[2], area[3]);
+    if (std::vector<double> area_vd{n, w, s, e}; spec.get("area", area_vd) && area_vd.size() == 4) {
+        return make_from_area(area_vd[0], area_vd[1], area_vd[2], area_vd[3]);
+    }
+
+    if (std::string area_s; spec.get("area", area_s) && area_s.find('/') != std::string::npos) {
+        if (auto area = Tokenizer("/").tokenize(area_s); area.size() == 4) {
+            return make_from_area(std::stod(area[0]), std::stod(area[1]), std::stod(area[2]), std::stod(area[3]));
+        }
+    }
+
+    if (spec.has("area")) {
+        throw exception::SpecError("BoundingBox: 'area' expected [north,west,south,east] or 'north/west/south/east'",
+                                   Here());
     }
 
     spec.get("north", n);
@@ -563,7 +573,7 @@ double BoundingBox::area() const {
 
 
 const std::string& BoundingBox::type() const {
-    static const std::string type{"bounding-box"};
+    static const std::string type{"bounding_box"};
     return type;
 }
 

@@ -14,8 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/grid/ORCA.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -24,33 +22,9 @@
 namespace eckit::geo::test {
 
 
-static const std::string GRID   = "ORCA2_T";
-static const Grid::uid_type UID = "d5bde4f52ff3a9bea5629cd9ac514410";
-static const std::vector<long> SHAPE{182, 149};
-
-
-CASE("caching") {
-    if (LibEcKitGeo::caching()) {
-        using Cache = cache::MemoryCache;
-
-        SECTION("Grid::build_from_uid") {
-            spec::Custom spec({{"uid", UID}});
-
-            const auto footprint_1 = Cache::total_footprint();
-
-            std::unique_ptr<const Grid> grid1(GridFactory::build(spec));
-
-            const auto footprint_2 = Cache::total_footprint();
-            EXPECT(footprint_1 < footprint_2);
-
-            std::unique_ptr<const Grid> grid2(GridFactory::build(spec));
-
-            EXPECT(footprint_2 == Cache::total_footprint());
-
-            EXPECT(grid1->size() == grid2->size());
-        }
-    }
-}
+const std::string GRID   = "ORCA2_T";
+const Grid::uid_type UID = "d5bde4f52ff3a9bea5629cd9ac514410";
+const std::vector<long> SHAPE{182, 149};
 
 
 CASE("spec") {
@@ -58,9 +32,9 @@ CASE("spec") {
 
     EXPECT(spec->get_string("type") == "ORCA");
     EXPECT(spec->get_string("name") == "ORCA2");
-    EXPECT(spec->get_string("orca_arrangement") == "T");
-    EXPECT(spec->get_string("orca_uid") == UID);
-    EXPECT(spec->get_long_vector("dimensions") == SHAPE);
+    EXPECT(spec->get_string("arrangement") == "T");
+    EXPECT(spec->get_string("uid") == UID);
+    EXPECT(spec->get_long_vector("shape") == SHAPE);
 
     std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + UID + "}"));
 
@@ -106,6 +80,14 @@ CASE("equals") {
 
     EXPECT(grid2->uid() == grid3->calculate_uid());
     EXPECT(grid3->uid() == grid2->calculate_uid());
+}
+
+
+CASE("catalog") {
+    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid:" + GRID + "}"));
+    std::string intgrid;
+
+    EXPECT(grid->catalog().get("intgrid", intgrid) && !intgrid.empty());
 }
 
 

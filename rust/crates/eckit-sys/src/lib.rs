@@ -29,42 +29,34 @@ mod ffi {
         Trace = 5,
     }
 
-    /// One ECMWF library reported by `eckit::system::LibraryManager`.
-    #[derive(Debug, Clone)]
-    struct LibraryVersion {
-        name: String,
-        version: String,
-        gitsha1: String,
-        home: String,
-    }
-
     unsafe extern "C++" {
-        include!("eckit_bridge.h");
+        include!("EckitBridge.h");
 
-        /// Initialize eckit runtime with Rust log bridge.
+        // ==================== Runtime ====================
+
+        type RustMain;
+
+        /// Initialise eckit runtime with the Rust log bridge.
         /// Safe to call multiple times — only the first call has effect.
-        fn init();
+        #[Self = "RustMain"]
+        fn initialise();
 
         // ==================== Configuration ====================
 
         type ConfigWrapper;
 
         /// Create empty configuration.
-        #[rust_name = "config_create"]
+        #[Self = "ConfigWrapper"]
         #[must_use]
         fn create() -> UniquePtr<ConfigWrapper>;
 
         /// Load from YAML file path.
-        #[rust_name = "config_from_path"]
+        #[Self = "ConfigWrapper"]
         fn from_path(path: &str) -> Result<UniquePtr<ConfigWrapper>>;
 
         /// Parse from YAML string.
-        #[rust_name = "config_from_yaml"]
+        #[Self = "ConfigWrapper"]
         fn from_yaml(yaml: &str) -> Result<UniquePtr<ConfigWrapper>>;
-
-        /// Copy a configuration.
-        #[rust_name = "config_clone"]
-        fn clone(src: &ConfigWrapper) -> UniquePtr<ConfigWrapper>;
 
         // Read
         fn has(self: &ConfigWrapper, key: &str) -> bool;
@@ -123,27 +115,29 @@ mod ffi {
         ) -> Result<i64>;
 
         /// Open a file as a DataHandle for reading.
-        fn data_handle_from_file(path: &str) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_file(path: &str) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Open a byte range of a file as a DataHandle.
-        fn data_handle_from_part(
-            path: &str,
-            offset: i64,
-            length: i64,
-        ) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_part(path: &str, offset: i64, length: i64) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Create a DataHandle from an in-memory buffer (copies the data).
-        fn data_handle_from_buffer(data: &[u8]) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_buffer(data: &[u8]) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Create a MultiHandle from multiple file paths.
-        fn data_handle_from_multi(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_multi(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Create a TeeHandle from multiple file paths — writes all targets in parallel.
-        fn data_handle_tee(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn tee(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
 
         /// Create a DataHandle that forwards `read()` calls to a Rust
         /// `std::io::Read` source wrapped in a [`ReaderBox`].
-        fn data_handle_from_reader(reader: Box<ReaderBox>) -> Result<UniquePtr<DataHandleWrapper>>;
+        #[Self = "DataHandleWrapper"]
+        fn from_reader(reader: Box<ReaderBox>) -> Result<UniquePtr<DataHandleWrapper>>;
 
         // ==================== Message + Reader ====================
 
@@ -164,7 +158,10 @@ mod ffi {
 
         type ReaderWrapper;
 
-        fn new_reader(handle: Pin<&mut DataHandleWrapper>) -> Result<UniquePtr<ReaderWrapper>>;
+        /// Open a `ReaderWrapper` over a `DataHandleWrapper`.
+        #[Self = "ReaderWrapper"]
+        fn from_handle(handle: Pin<&mut DataHandleWrapper>) -> Result<UniquePtr<ReaderWrapper>>;
+
         fn next(self: Pin<&mut ReaderWrapper>) -> Result<UniquePtr<MessageWrapper>>;
 
         // ==================== Stream ====================
@@ -206,30 +203,18 @@ mod ffi {
         fn bytes_written(self: &StreamWrapper) -> i64;
 
         /// Connect to a TCP host:port and return a stream.
-        fn stream_connect(host: &str, port: i32) -> Result<UniquePtr<StreamWrapper>>;
+        #[Self = "StreamWrapper"]
+        fn connect(host: &str, port: i32) -> Result<UniquePtr<StreamWrapper>>;
 
         /// Create a resizable memory stream for writing.
+        #[Self = "StreamWrapper"]
         #[must_use]
-        fn stream_memory_write() -> UniquePtr<StreamWrapper>;
+        fn memory_write() -> UniquePtr<StreamWrapper>;
 
         /// Create a fixed memory stream for reading from existing data.
+        #[Self = "StreamWrapper"]
         #[must_use]
-        fn stream_memory_read(data: &[u8]) -> UniquePtr<StreamWrapper>;
-
-        // ==================== Library registration ====================
-
-        /// Register a Rust-implemented library with eckit's LibraryManager.
-        /// Enables `~name` tilde expansion via `$NAME_HOME` env var.
-        fn register_library(lib: Box<LibraryBox>);
-
-        /// Get configuration for a registered library by name.
-        fn library_configuration(name: &str) -> Result<UniquePtr<ConfigWrapper>>;
-
-        /// Snapshot of every ECMWF library registered with
-        /// `eckit::system::LibraryManager` (e.g. eckit, metkit, fdb5, mir).
-        /// Mirrors C++ `Environment::library_versions()` (mars-client).
-        #[must_use]
-        fn library_versions() -> Vec<LibraryVersion>;
+        fn memory_read(data: &[u8]) -> UniquePtr<StreamWrapper>;
     }
 
     extern "Rust" {
@@ -257,24 +242,6 @@ mod ffi {
         ///
         /// Returns the new absolute position, or `-1` on error.
         fn invoke_reader_seek(reader: &mut ReaderBox, offset: i64) -> i64;
-
-        /// Opaque Rust box holding a `dyn Library` trait object.
-        type LibraryBox;
-
-        // Callbacks from C++ RustLibrary into Rust trait methods
-        fn library_name(lib: &LibraryBox) -> &str;
-        fn library_version(lib: &LibraryBox) -> String;
-        fn library_git_sha1(lib: &LibraryBox, count: u32) -> String;
-        fn library_home(lib: &LibraryBox) -> String;
-        fn library_home_is_set(lib: &LibraryBox) -> bool;
-        fn library_library_home(lib: &LibraryBox) -> String;
-        fn library_library_home_is_set(lib: &LibraryBox) -> bool;
-        fn library_prefix_directory(lib: &LibraryBox) -> String;
-        fn library_prefix_directory_is_set(lib: &LibraryBox) -> bool;
-        fn library_expand_path(lib: &LibraryBox, path: &str) -> String;
-        fn library_expand_path_is_set(lib: &LibraryBox, path: &str) -> bool;
-        fn library_debug(lib: &LibraryBox) -> bool;
-        fn library_debug_is_set(lib: &LibraryBox) -> bool;
     }
 }
 
@@ -294,7 +261,7 @@ impl<T: std::io::Read + std::io::Seek + ?Sized> ReadSeek for T {}
 
 /// Opaque wrapper holding a `Box<dyn ReadSeek + Send>`.
 ///
-/// The C++ `RustReaderHandle` (declared in `eckit_bridge.h` as `struct
+/// The C++ `RustReaderHandle` (declared in `DataHandleWrapper.h` as `struct
 /// ReaderBox`) carries this by `rust::Box<ReaderBox>` and forwards each C++
 /// `read(void*, long)` / `seek(Offset)` call via [`invoke_reader_read`] /
 /// [`invoke_reader_seek`].
@@ -341,81 +308,8 @@ fn rust_log(level: ffi::LogLevel, target: &str, msg: &str) {
         ffi::LogLevel::Warn => log::warn!(target: target, "{msg}"),
         ffi::LogLevel::Info => log::info!(target: target, "{msg}"),
         ffi::LogLevel::Debug => log::debug!(target: target, "{msg}"),
-        // Trace + wildcard for cxx non-exhaustive enum
         _ => log::trace!(target: target, "{msg}"),
     }
-}
-
-// ==================== Library registration (internal plumbing) ====================
-
-type OptStringFn = Box<dyn Fn() -> Option<String> + Send + Sync>;
-type OptStringArgFn = Box<dyn Fn(&str) -> Option<String> + Send + Sync>;
-type OptBoolFn = Box<dyn Fn() -> Option<bool> + Send + Sync>;
-
-/// Opaque box holding library callbacks for FFI. Constructed by the `eckit` crate.
-pub struct LibraryBox {
-    pub name: String,
-    pub version_fn: Box<dyn Fn() -> String + Send + Sync>,
-    pub git_sha1_fn: Box<dyn Fn(u32) -> String + Send + Sync>,
-    pub home_fn: OptStringFn,
-    pub library_home_fn: OptStringFn,
-    pub prefix_directory_fn: OptStringFn,
-    pub expand_path_fn: OptStringArgFn,
-    pub debug_fn: OptBoolFn,
-}
-
-// Callbacks from C++ RustLibrary into Rust closures
-
-fn library_name(lib: &LibraryBox) -> &str {
-    &lib.name
-}
-
-fn library_version(lib: &LibraryBox) -> String {
-    (lib.version_fn)()
-}
-
-fn library_git_sha1(lib: &LibraryBox, count: u32) -> String {
-    (lib.git_sha1_fn)(count)
-}
-
-fn library_home(lib: &LibraryBox) -> String {
-    (lib.home_fn)().unwrap_or_default()
-}
-
-fn library_home_is_set(lib: &LibraryBox) -> bool {
-    (lib.home_fn)().is_some()
-}
-
-fn library_library_home(lib: &LibraryBox) -> String {
-    (lib.library_home_fn)().unwrap_or_default()
-}
-
-fn library_library_home_is_set(lib: &LibraryBox) -> bool {
-    (lib.library_home_fn)().is_some()
-}
-
-fn library_prefix_directory(lib: &LibraryBox) -> String {
-    (lib.prefix_directory_fn)().unwrap_or_default()
-}
-
-fn library_prefix_directory_is_set(lib: &LibraryBox) -> bool {
-    (lib.prefix_directory_fn)().is_some()
-}
-
-fn library_expand_path(lib: &LibraryBox, path: &str) -> String {
-    (lib.expand_path_fn)(path).unwrap_or_default()
-}
-
-fn library_expand_path_is_set(lib: &LibraryBox, path: &str) -> bool {
-    (lib.expand_path_fn)(path).is_some()
-}
-
-fn library_debug(lib: &LibraryBox) -> bool {
-    (lib.debug_fn)().unwrap_or(false)
-}
-
-fn library_debug_is_set(lib: &LibraryBox) -> bool {
-    (lib.debug_fn)().is_some()
 }
 
 /// Initialize eckit runtime with Rust log bridge.
@@ -426,5 +320,5 @@ fn library_debug_is_set(lib: &LibraryBox) -> bool {
 /// factory methods, ensuring every thread gets log output routed through
 /// Rust's `log` crate.
 pub fn init() {
-    ffi::init();
+    ffi::RustMain::initialise();
 }

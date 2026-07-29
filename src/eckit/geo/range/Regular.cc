@@ -118,9 +118,12 @@ Regular::Implementation::Implementation(Fraction inc, Fraction a, Fraction b, Fr
     }
 
     shift_ = (ref / inc).decimalPart() * inc;
-    a_     = shift_ + detail::adjust(a_ - shift_, inc_, true);
-    b_     = shift_ + detail::adjust(b_ - shift_, inc_, false);
-    ASSERT(a < b == a_ < b_);
+    if (shift_ < 0) {
+        shift_ += Fraction::abs(inc);  // [0, |inc|)
+    }
+    a_ = shift_ + detail::adjust(a_ - shift_, inc_, true);
+    b_ = shift_ + detail::adjust(b_ - shift_, inc_, false);
+    ASSERT((a < b) == (a_ < b_));
 
     size_ = detail::N(inc_, a_, b_);
     ASSERT(size_ > 0);

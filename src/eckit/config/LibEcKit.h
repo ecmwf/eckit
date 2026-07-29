@@ -30,7 +30,6 @@ public:
     static LibEcKit& instance();
     void setAbortHandler(abort_handler_t h);
     void abort();
-
     bool dontDeregisterFactories() const;
 
     virtual std::string version() const;

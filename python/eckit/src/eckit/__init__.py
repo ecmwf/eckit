@@ -1,4 +1,4 @@
-# (C) Copyright 2025- ECMWF.
+# (C) Copyright 1996- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -9,7 +9,8 @@
 
 import findlibs
 
-findlibs.load("eckit")
+findlibs.load("eckit", "eckitlib")
+findlibs.load("eckit_maths", "eckitlib")
 
 
 from eckit._certifi import configure_ca_bundle_from_certifi

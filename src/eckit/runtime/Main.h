@@ -69,6 +69,9 @@ public:  // methods
     // To be used before main() to check if the instance is ready
     static bool ready();
 
+    // A path, conceptually ~/run, which can be used for mutable runtime state
+    virtual const eckit::PathName& rundir() const;
+
     // Check if debugging was set to on (either through environment variable "DEBUG=1",
     // or command-line argument "--debug" or "-debug".
     virtual bool debug() const;

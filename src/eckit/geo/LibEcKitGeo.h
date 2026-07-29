@@ -34,8 +34,17 @@ public:
     static std::vector<PathName> shareGrid();
     static std::vector<PathName> shareProjection();
 
+    static PathName cacheArea();
+    static PathName cacheGrid();
+    static PathName cacheProjection();
+
     static bool caching();
     static std::string cacheDir();
+
+    static void purgeCacheDir();
+    static void purgeCacheArea();
+    static void purgeCacheGrid();
+    static void purgeCacheProjection();
 
     static std::string url(const std::string& url_path);
 

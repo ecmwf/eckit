@@ -82,14 +82,6 @@ Value cleanPaths(const Value& in) {
     }
 }
 
-std::string strLen(size_t n, const std::string& str) {
-    std::ostringstream os;
-    for (size_t i = str.length(); i < n; ++i)
-        os << " ";
-    os << str;
-    return os.str();
-}
-
 //----------------------------------------------------------------------------------------------------------------------
 
 struct MetricsPrefixInfo {

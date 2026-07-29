@@ -319,12 +319,14 @@ public:
         try {
             lock_guard<recursive_mutex> lock(options_mutex_);
             options_registry_.clear();
-        } catch (...) {
+        }
+        catch (...) {
             throw;
         }
     }
 
 private:
+
     void applyRegisteredOptions() {
         try {
             lock_guard<recursive_mutex> lock(options_mutex_);

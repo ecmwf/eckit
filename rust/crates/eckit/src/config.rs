@@ -41,11 +41,6 @@ impl Config {
         }
     }
 
-    /// Create from a raw eckit-sys wrapper.
-    pub(crate) const fn from_raw(inner: eckit_sys::UniquePtr<eckit_sys::ConfigWrapper>) -> Self {
-        Self { inner }
-    }
-
     /// Load configuration from a YAML file.
     pub fn from_path(path: impl AsRef<Path>) -> Result<Self> {
         let path_str = path.as_ref().to_str().ok_or_else(|| {

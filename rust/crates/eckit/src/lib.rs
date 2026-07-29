@@ -10,14 +10,12 @@
 pub mod config;
 pub mod datahandle;
 pub mod error;
-pub mod library;
 pub mod message;
 pub mod stream;
 
 pub use config::{Config, ConfigGet, ConfigSet, SubConfigs};
 pub use datahandle::{Closed, DataHandle, HandleState, Reading, Writing};
 pub use error::{Error, Result};
-pub use library::{Library, LibraryVersion, library_configuration, library_versions, register};
 pub use message::{Message, MessageGet, MessageReader};
 pub use stream::{MemoryStream, Stream, StreamRead, StreamWrite, TcpStream};
 

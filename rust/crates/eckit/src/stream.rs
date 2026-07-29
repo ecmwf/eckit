@@ -162,7 +162,8 @@ unsafe impl Send for TcpStream {}
 impl TcpStream {
     /// Connect to a TCP host:port.
     pub fn connect(host: &str, port: i32) -> Result<Self> {
-        let inner = eckit_sys::stream_connect(host, port).map_err(eckit_sys::Error::from)?;
+        let inner =
+            eckit_sys::StreamWrapper::connect(host, port).map_err(eckit_sys::Error::from)?;
         Ok(Self { inner })
     }
 
@@ -210,7 +211,7 @@ impl MemoryStream {
     #[must_use]
     pub fn writer() -> Self {
         Self {
-            inner: eckit_sys::stream_memory_write(),
+            inner: eckit_sys::StreamWrapper::memory_write(),
         }
     }
 
@@ -218,7 +219,7 @@ impl MemoryStream {
     #[must_use]
     pub fn reader(data: &[u8]) -> Self {
         Self {
-            inner: eckit_sys::stream_memory_read(data),
+            inner: eckit_sys::StreamWrapper::memory_read(data),
         }
     }
 

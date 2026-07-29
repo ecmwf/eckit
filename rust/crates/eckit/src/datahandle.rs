@@ -72,21 +72,23 @@ impl DataHandle<Closed> {
     /// Open a file as a `DataHandle`.
     pub fn from_path(path: impl AsRef<Path>) -> Result<Self> {
         let path_str = path_to_str(path.as_ref())?;
-        let inner = eckit_sys::data_handle_from_file(path_str).map_err(eckit_sys::Error::from)?;
+        let inner =
+            eckit_sys::DataHandleWrapper::from_file(path_str).map_err(eckit_sys::Error::from)?;
         Ok(Self::from_raw(inner))
     }
 
     /// Open a byte range of a file as a `DataHandle`.
     pub fn from_part(path: impl AsRef<Path>, offset: i64, length: i64) -> Result<Self> {
         let path_str = path_to_str(path.as_ref())?;
-        let inner = eckit_sys::data_handle_from_part(path_str, offset, length)
+        let inner = eckit_sys::DataHandleWrapper::from_part(path_str, offset, length)
             .map_err(eckit_sys::Error::from)?;
         Ok(Self::from_raw(inner))
     }
 
     /// Create a `DataHandle` from an in-memory buffer (copies the data).
     pub fn from_buffer(data: &[u8]) -> Result<Self> {
-        let inner = eckit_sys::data_handle_from_buffer(data).map_err(eckit_sys::Error::from)?;
+        let inner =
+            eckit_sys::DataHandleWrapper::from_buffer(data).map_err(eckit_sys::Error::from)?;
         Ok(Self::from_raw(inner))
     }
 
@@ -95,7 +97,8 @@ impl DataHandle<Closed> {
     /// Reads from multiple files sequentially. Mirrors C++ `eckit::MultiHandle`.
     pub fn from_multi(paths: &[impl AsRef<Path>]) -> Result<Self> {
         let strings = paths_to_strings(paths)?;
-        let inner = eckit_sys::data_handle_from_multi(&strings).map_err(eckit_sys::Error::from)?;
+        let inner =
+            eckit_sys::DataHandleWrapper::from_multi(&strings).map_err(eckit_sys::Error::from)?;
         Ok(Self::from_raw(inner))
     }
 
@@ -104,7 +107,7 @@ impl DataHandle<Closed> {
     /// One write call fans out to every destination. Mirrors C++ `eckit::TeeHandle`.
     pub fn tee(paths: &[impl AsRef<Path>]) -> Result<Self> {
         let strings = paths_to_strings(paths)?;
-        let inner = eckit_sys::data_handle_tee(&strings).map_err(eckit_sys::Error::from)?;
+        let inner = eckit_sys::DataHandleWrapper::tee(&strings).map_err(eckit_sys::Error::from)?;
         Ok(Self::from_raw(inner))
     }
 
@@ -117,7 +120,7 @@ impl DataHandle<Closed> {
     where
         R: std::io::Read + std::io::Seek + Send + 'static,
     {
-        let inner = eckit_sys::data_handle_from_reader(eckit_sys::make_reader_box(reader))
+        let inner = eckit_sys::DataHandleWrapper::from_reader(eckit_sys::make_reader_box(reader))
             .map_err(eckit_sys::Error::from)?;
         Ok(Self::from_raw(inner))
     }

@@ -37,7 +37,7 @@ impl Config {
     #[must_use]
     pub fn new() -> Self {
         Self {
-            inner: eckit_sys::config_create(),
+            inner: eckit_sys::ConfigWrapper::create(),
         }
     }
 
@@ -54,7 +54,8 @@ impl Config {
                 path.as_ref().display()
             ))
         })?;
-        let inner = eckit_sys::config_from_path(path_str).map_err(eckit_sys::Error::from)?;
+        let inner =
+            eckit_sys::ConfigWrapper::from_path(path_str).map_err(eckit_sys::Error::from)?;
         Ok(Self { inner })
     }
 
@@ -120,14 +121,6 @@ impl Config {
     }
 }
 
-impl Clone for Config {
-    fn clone(&self) -> Self {
-        Self {
-            inner: eckit_sys::config_clone(&self.inner),
-        }
-    }
-}
-
 impl Default for Config {
     fn default() -> Self {
         Self::new()
@@ -139,7 +132,7 @@ impl FromStr for Config {
 
     /// Parse a YAML string into a configuration.
     fn from_str(yaml: &str) -> std::result::Result<Self, Self::Err> {
-        let inner = eckit_sys::config_from_yaml(yaml).map_err(eckit_sys::Error::from)?;
+        let inner = eckit_sys::ConfigWrapper::from_yaml(yaml).map_err(eckit_sys::Error::from)?;
         Ok(Self { inner })
     }
 }

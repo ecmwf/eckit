@@ -110,6 +110,14 @@ fn build_system() -> std::path::PathBuf {
 
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
     println!("cargo:rustc-link-lib=dylib=eckit");
+    // eckit_geo is a separate library; the companions mirror its exported
+    // INTERFACE_LINK_LIBRARIES in lib/cmake/eckit/eckit-targets.cmake.
+    #[cfg(feature = "eckit-geo")]
+    {
+        println!("cargo:rustc-link-lib=dylib=eckit_geo");
+        println!("cargo:rustc-link-lib=dylib=eckit_spec");
+        println!("cargo:rustc-link-lib=dylib=eckit_maths");
+    }
     bindman_utils::link_cpp_stdlib();
 
     // Export for downstream crates
@@ -404,6 +412,14 @@ fn build_vendored() -> std::path::PathBuf {
 
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
     println!("cargo:rustc-link-lib=dylib=eckit");
+    // eckit_geo is a separate library; the companions mirror its exported
+    // INTERFACE_LINK_LIBRARIES in lib/cmake/eckit/eckit-targets.cmake.
+    #[cfg(feature = "eckit-geo")]
+    {
+        println!("cargo:rustc-link-lib=dylib=eckit_geo");
+        println!("cargo:rustc-link-lib=dylib=eckit_spec");
+        println!("cargo:rustc-link-lib=dylib=eckit_maths");
+    }
     bindman_utils::link_cpp_stdlib();
 
     // Export for downstream crates

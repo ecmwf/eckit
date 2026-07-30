@@ -2,33 +2,196 @@
 
 set -euo pipefail
 
-# TODO:
-# The situation, at the time of execution of the script, is as follows
-# 1/ a wheel with libeckit.so, libeckit_geo.so, and some more, exists, at the location /tmp/eckit/build/wheel/*whl (see $F below)
-# 2/ some of these .so files have a dependency which is not inside the wheel
-# 3/ we invoke auditwheel to fix this, which puts `eckitlib.libs` module into the wheel, containing these external dependencies, with changed names, and updates the original libeckit.so and others to properly link them
-# 4/ however, there is _another_ wheel which will be built later on, that refers to these external dependencies as well
-# 5/ we do *not* want to call auditwheel on it -- instead, we would like this another wheel to utilize the eckitlib.libs instead! That another wheel will depend on the wheel with these libs, hence it should be runtime safe. We also have exact dependency constraints, hence we are even ABI-stable
-# 6/ this _another_ wheel is not built yet, but the .so file which will go in there already exists! So we can simply patchelf it -- we will need to add rpath to it (relative, ie, assume that the two wheels are installed in the same venv folder and are `..`-reachable) and change the `Shared library` name to the name which auditwheel created
-# 7/ the list of dependencies may change over time -- hence you will need to do it as follows: for each library name that is required by the .so that will be in the _another_ wheel, you need to check whether a library starting with the same name has been handled by auditwheel (example: the another wheel may require 'libproj.so.25' and auditwheel has created 'libproj-8e62344d.so.25.9.8.1' -- that is a match!)
-# 8/ the _another_ wheel is not just one .so, it can be multiple ones -- and those will be nested at a different location. Which affects what you will put to rpath -- for an .so that will reside in the _another_ wheel's top level, you put there like '$ORIGIN/../eckitlib.libs/', for an .so that is in a submodule you'll have there instead '../../'.
-# 9/ the .so files which will constitute the another wheel are located at ../eckit/src relative to this script (use the dirname BASH_SOURCE[0] thing to get it). Invoke find to get all .so files there, fix each in place
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+ECKIT_SRC_DIR=$(cd -- "$SCRIPT_DIR/../eckit/src" && pwd)
 
-# the above describes the linux situation. For macos, we need to do the same -- note we currently dont inspect the delocated wheel at all, you will need to do so (but unlike in linux, you can then drop the inspected wheel). There are a few more differences -- delocate uses a different naming convention than auditwheel, and install name in the _another_ wheel's dylib would probably have to be changed as well, not just the rpath
+compute_relative_up() {
+    local rel_dir="$1"
+    if [ -z "$rel_dir" ] || [ "$rel_dir" = "." ]; then
+        echo ""
+        return
+    fi
+    local count
+    count=$(echo "$rel_dir" | awk -F'/' '{print NF}')
+    local up=""
+    for ((i=0; i<count; i++)); do
+        up="../$up"
+    done
+    echo "$up"
+}
 
+extract_lib_stem() {
+    local name
+    name=$(basename "$1")
+    local stem="${name%%.so*}"
+    stem="${stem%%.dylib*}"
+    stem="${stem%%.*}"
+    stem="${stem%%-*}"
+    echo "$stem"
+}
+
+find_matching_vendor_lib() {
+    local vendor_dir="$1"
+    local needed_lib="$2"
+
+    local stem
+    stem=$(extract_lib_stem "$needed_lib")
+
+    if [ -z "$stem" ] || [ ! -d "$vendor_dir" ]; then
+        return
+    fi
+
+    local match
+    match=$(find "$vendor_dir" -maxdepth 1 \( -name "${stem}-*" -o -name "${stem}.*" -o -name "${stem}" \) | head -n 1)
+    if [ -n "$match" ]; then
+        basename "$match"
+    fi
+}
+
+process_binary_linux() {
+    local bin_file="$1"
+    local eckit_src_dir="$2"
+    local vendor_dir="$3"
+
+    local bin_dir
+    bin_dir=$(dirname "$bin_file")
+    local rel_dir="${bin_dir#"$eckit_src_dir"}"
+    rel_dir="${rel_dir#/}"
+
+    local rel_up
+    rel_up=$(compute_relative_up "$rel_dir")
+    local vendor_dir_name
+    vendor_dir_name=$(basename "$vendor_dir")
+
+    # shellcheck disable=SC2016
+    local rpath='$ORIGIN/'"${rel_up}${vendor_dir_name}:"' $ORIGIN/'"${rel_up}eckitlib"
+    # Clean up any whitespace introduced above
+    rpath=$(echo "$rpath" | tr -d ' ')
+
+    echo "running patchelf --print-needed $bin_file"
+    local needed_libs
+    needed_libs=$(patchelf --print-needed "$bin_file")
+
+    while read -r needed_lib; do
+        [ -z "$needed_lib" ] && continue
+        local matched_lib
+        matched_lib=$(find_matching_vendor_lib "$vendor_dir" "$needed_lib")
+        if [ -n "$matched_lib" ]; then
+            echo "running patchelf --replace-needed $needed_lib $matched_lib $bin_file"
+            patchelf --replace-needed "$needed_lib" "$matched_lib" "$bin_file"
+        fi
+    done <<< "$needed_libs"
+
+    echo "running patchelf --add-rpath $rpath $bin_file"
+    patchelf --add-rpath "$rpath" "$bin_file"
+}
+
+process_binary_macos() {
+    local bin_file="$1"
+    local eckit_src_dir="$2"
+    local vendor_dir="$3"
+
+    local bin_dir
+    bin_dir=$(dirname "$bin_file")
+    local rel_dir="${bin_dir#"$eckit_src_dir"}"
+    rel_dir="${rel_dir#/}"
+
+    local rel_up
+    rel_up=$(compute_relative_up "$rel_dir")
+    local vendor_dir_name
+    vendor_dir_name=$(basename "$vendor_dir")
+
+    local rpath_vendor="@loader_path/${rel_up}${vendor_dir_name}"
+    local rpath_eckit="@loader_path/${rel_up}eckitlib"
+
+    echo "running otool -L $bin_file"
+    local otool_out
+    otool_out=$(otool -L "$bin_file")
+
+    echo "$otool_out" | tail -n +2 | awk '{print $1}' | while read -r dep_path; do
+        [ -z "$dep_path" ] && continue
+        # Ignore system libraries and existing rpath/loader_path entries
+        case "$dep_path" in
+            /usr/lib/*|/System/Library/*|@rpath/*|@loader_path/*)
+                continue
+                ;;
+        esac
+
+        local matched_lib
+        matched_lib=$(find_matching_vendor_lib "$vendor_dir" "$dep_path")
+        if [ -n "$matched_lib" ]; then
+            echo "running install_name_tool -change $dep_path @rpath/$matched_lib $bin_file"
+            install_name_tool -change "$dep_path" "@rpath/$matched_lib" "$bin_file"
+        fi
+    done
+
+    echo "running install_name_tool -add_rpath $rpath_vendor $bin_file"
+    install_name_tool -add_rpath "$rpath_vendor" "$bin_file" 2>/dev/null || true
+
+    echo "running install_name_tool -add_rpath $rpath_eckit $bin_file"
+    install_name_tool -add_rpath "$rpath_eckit" "$bin_file" 2>/dev/null || true
+}
+
+fix_another_wheel_linux() {
+    local vendor_dir="$1"
+
+    echo "will crawl $ECKIT_SRC_DIR"
+    if [ -d "$ECKIT_SRC_DIR" ]; then
+        while read -r bin_file; do
+            [ -z "$bin_file" ] && continue
+            echo "found $bin_file, will process it"
+            process_binary_linux "$bin_file" "$ECKIT_SRC_DIR" "$vendor_dir"
+        done < <(find "$ECKIT_SRC_DIR" -type f -name "*.so")
+    fi
+}
+
+fix_another_wheel_macos() {
+    local wheel_file="$1"
+
+    echo "inspecting delocated wheel $wheel_file"
+    local inspect_dir="/tmp/eckit/delocate_inspect"
+    rm -rf "$inspect_dir"
+    mkdir -p "$inspect_dir"
+    unzip -q "$wheel_file" -d "$inspect_dir"
+
+    local vendor_dir
+    vendor_dir=$(find "$inspect_dir" -maxdepth 2 -type d \( -name "*.dylibs" -o -name ".dylibs" -o -name "*.libs" \) | head -n 1)
+
+    if [ -n "$vendor_dir" ] && [ -d "$vendor_dir" ]; then
+        echo "found vendor dylibs at $vendor_dir"
+    else
+        echo "warning: vendor dylibs directory not found in $wheel_file"
+        vendor_dir="$inspect_dir"
+    fi
+
+    echo "will crawl $ECKIT_SRC_DIR"
+    if [ -d "$ECKIT_SRC_DIR" ]; then
+        while read -r bin_file; do
+            [ -z "$bin_file" ] && continue
+            echo "found $bin_file, will process it"
+            process_binary_macos "$bin_file" "$ECKIT_SRC_DIR" "$vendor_dir"
+        done < <(find "$ECKIT_SRC_DIR" -type f \( -name "*.so" -o -name "*.dylib" \))
+    fi
+
+    rm -rf "$inspect_dir"
+}
 
 # NOTE in case of problems like we had with eccodes, replace with noop here
 if [ "$(uname)" != "Darwin" ] ; then
     rm -rf /tmp/eckit/auditwheel
     auditwheel repair -w /tmp/eckit/auditwheel /tmp/eckit/build/wheel/*whl
     cd /tmp/eckit/auditwheel
-    F=$(ls *whl)
-    unzip $F
+    F=$(basename "$(ls ./*.whl)")
+    unzip "$F"
+    # shellcheck disable=SC2016
     patchelf --add-rpath '$ORIGIN' eckitlib.libs/*
-    rm $F
-    zip -r $F ./*
+
+    fix_another_wheel_linux "/tmp/eckit/auditwheel/eckitlib.libs"
+
+    rm "$F"
+    zip -r "$F" ./*
     rm /tmp/eckit/build/wheel/*
-    mv /tmp/eckit/auditwheel/$F /tmp/eckit/build/wheel
+    mv "/tmp/eckit/auditwheel/$F" /tmp/eckit/build/wheel
     cd -
 fi
 
@@ -36,8 +199,8 @@ fi
 # is disabled anyway
 if [ "$(uname)" = "Darwin" ] ; then
     delocate-wheel /tmp/eckit/build/wheel/*whl
+    WHEEL_FILE=$(find /tmp/eckit/build/wheel -name "*.whl" | head -n 1)
+    if [ -n "$WHEEL_FILE" ]; then
+        fix_another_wheel_macos "$WHEEL_FILE"
+    fi
 fi
-
-
-# idea: 
-# - have a look at the eckit.libs/ content, and inspect the bindings lip, and reroute

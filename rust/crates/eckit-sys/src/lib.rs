@@ -10,6 +10,11 @@ use bindman::track_cpp_api;
 // Auto-generated exception Error enum + From<cxx::Exception> impl
 include!(concat!(env!("OUT_DIR"), "/eckit_exceptions.rs"));
 
+// `eckit::geo` lives in its own cxx bridge: cxx does not support `#[cfg]` on
+// individual bridge items, so an optional area needs a separate module.
+#[cfg(feature = "eckit-geo")]
+pub mod geo;
+
 #[track_cpp_api(
     ("eckit/config/LocalConfiguration.h", class = "LocalConfiguration"),
     ("eckit/io/DataHandle.h", class = "DataHandle"),

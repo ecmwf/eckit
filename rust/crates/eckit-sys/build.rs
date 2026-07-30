@@ -53,12 +53,30 @@ fn build_cxx_bridge(include: &std::path::Path) {
     println!("cargo:rerun-if-changed=cpp/StreamWrapper.h");
     println!("cargo:rerun-if-changed=cpp/StreamWrapper.cc");
 
-    cxx_build::bridge("src/lib.rs")
+    let mut bridges = vec![std::path::PathBuf::from("src/lib.rs")];
+
+    #[cfg(feature = "eckit-geo")]
+    {
+        println!("cargo:rerun-if-changed=src/geo.rs");
+        println!("cargo:rerun-if-changed=cpp/EckitGeoBridge.h");
+        println!("cargo:rerun-if-changed=cpp/GridWrapper.h");
+        println!("cargo:rerun-if-changed=cpp/GridWrapper.cc");
+        bridges.push(std::path::PathBuf::from("src/geo.rs"));
+    }
+
+    let mut build = cxx_build::bridges(&bridges);
+
+    build
         .file(crate_dir.join("cpp/RustLogTarget.cc"))
         .file(crate_dir.join("cpp/ConfigWrapper.cc"))
         .file(crate_dir.join("cpp/DataHandleWrapper.cc"))
         .file(crate_dir.join("cpp/MessageWrapper.cc"))
-        .file(crate_dir.join("cpp/StreamWrapper.cc"))
+        .file(crate_dir.join("cpp/StreamWrapper.cc"));
+
+    #[cfg(feature = "eckit-geo")]
+    build.file(crate_dir.join("cpp/GridWrapper.cc"));
+
+    build
         .include(include)
         .include(crate_dir.join("cpp"))
         .include(&out_dir) // for eckit_exceptions.h
@@ -74,7 +92,8 @@ fn build_cxx_bridge(include: &std::path::Path) {
 fn generate_exceptions(include: &std::path::Path) {
     let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").expect("OUT_DIR not set"));
 
-    let own = vec![bindman_build::ExceptionSource {
+    #[cfg_attr(not(feature = "eckit-geo"), allow(unused_mut))]
+    let mut own = vec![bindman_build::ExceptionSource {
         header: include.join("eckit/exception/Exceptions.h"),
         include_path: "eckit/exception/Exceptions.h".to_string(),
         cpp_namespace: "eckit".to_string(),
@@ -82,6 +101,30 @@ fn generate_exceptions(include: &std::path::Path) {
         base_class: "Exception".to_string(),
         recursive: true,
     }];
+
+    // geo throws `eckit::spec::exception::SpecError` and the
+    // `eckit::geo::exception` hierarchy; without these they collapse into
+    // `Error::Other`. `SpecError` derives from the unqualified `Exception`,
+    // the geo errors from `geo::Exception`.
+    #[cfg(feature = "eckit-geo")]
+    own.extend([
+        bindman_build::ExceptionSource {
+            header: include.join("eckit/spec/Exceptions.h"),
+            include_path: "eckit/spec/Exceptions.h".to_string(),
+            cpp_namespace: "eckit::spec::exception".to_string(),
+            message_prefix: "eckit::spec".to_string(),
+            base_class: "Exception".to_string(),
+            recursive: true,
+        },
+        bindman_build::ExceptionSource {
+            header: include.join("eckit/geo/Exceptions.h"),
+            include_path: "eckit/geo/Exceptions.h".to_string(),
+            cpp_namespace: "eckit::geo::exception".to_string(),
+            message_prefix: "eckit::geo".to_string(),
+            base_class: "geo::Exception".to_string(),
+            recursive: true,
+        },
+    ]);
 
     bindman_build::generate_exception_bridge(&bindman_build::ExceptionBridgeConfig {
         primary_namespace: "eckit",

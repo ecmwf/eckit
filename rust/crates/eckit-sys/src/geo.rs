@@ -71,6 +71,7 @@ mod ffi {
         /// Total size of the caches, in bytes.
         #[namespace = "eckit::geo::cache"]
         #[Self = "MemoryCache"]
+        #[must_use]
         fn total_footprint() -> usize;
 
         /// Drop every cached entry.

@@ -7,8 +7,18 @@
 
 use bindman::track_cpp_api;
 
-// Auto-generated exception Error enum + From<cxx::Exception> impl
-include!(concat!(env!("OUT_DIR"), "/eckit_exceptions.rs"));
+// Auto-generated exception Error enum + From<cxx::Exception> impl.
+//
+// Wrapped in a private module purely so the lint allow has something to attach
+// to — attributes on `include!` are ignored. `Error` is re-exported at the
+// crate root, so `eckit_sys::Error` and its variants, `try_from_cxx` and trait
+// impls are all reachable exactly as before.
+#[allow(clippy::too_many_lines)]
+mod exceptions {
+    include!(concat!(env!("OUT_DIR"), "/eckit_exceptions.rs"));
+}
+
+pub use exceptions::Error;
 
 // `eckit::geo` lives in its own cxx bridge: cxx does not support `#[cfg]` on
 // individual bridge items, so an optional area needs a separate module.

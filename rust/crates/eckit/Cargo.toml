@@ -10,9 +10,12 @@ links = "eckit_rs"
 build = "build.rs"
 
 [features]
-default = ["vendored"]
+default = ["vendored", "geo"]
 vendored = ["eckit-sys/vendored"]
 system = ["eckit-sys/system"]
+
+# Geospatial grids (`eckit::geo`)
+geo = ["eckit-sys/eckit-geo"]
 
 [dependencies]
 eckit-sys.workspace = true

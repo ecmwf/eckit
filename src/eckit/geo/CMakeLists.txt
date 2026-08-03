@@ -182,6 +182,7 @@ set(eckit_GEO_SHARE_GRID
     "~eckit/share/eckit/geo/ICON-DWD.yaml"
     "~eckit/share/eckit/geo/ICON-MPIM.yaml"
     "~eckit/share/eckit/geo/ORCA.yaml"
+    "~eckit/share/eckit/geo/hydro.yaml"
 )
 set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")
 

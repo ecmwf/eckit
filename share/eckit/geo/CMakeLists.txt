@@ -1,12 +1,13 @@
 set(_files
     "area.yaml"
-    "grid.yaml"
 
+    "grid.yaml"
     "FESOM.yaml"
     "ICON-CH.yaml"
     "ICON-DWD.yaml"
     "ICON-MPIM.yaml"
-    "ORCA.yaml")
+    "ORCA.yaml"
+    "hydro.yaml")
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)
     list(APPEND _files "shapefile.yaml")

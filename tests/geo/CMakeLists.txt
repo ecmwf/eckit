@@ -4,23 +4,18 @@ file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" DESTINATION "${CMAKE_CUR
 foreach(_test
         area_boundingbox
         area_polygon
-        cache
         figure
         figure_earth
         gaussian
         great_circle
         grid
-        grid_fesom
         grid_healpix
-        grid_icon
-        grid_orca
         grid_reduced_gg
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll
         grid_reorder
         grid_to_points
-        grid_unstructured_ll
         gridspec
         integration
         iterator
@@ -39,6 +34,7 @@ foreach(_test
         projection_rotation
         range
         search
+        sh
         util )
     ecbuild_add_test(
         TARGET      eckit_test_geo_${_test}
@@ -47,7 +43,27 @@ foreach(_test
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
 endforeach()
 
+if(eckit_HAVE_LZ4)
+    foreach(_test
+            grid_fesom
+            grid_icon
+            grid_orca
+            grid_unstructured_ll )
+        ecbuild_add_test(
+            TARGET      eckit_test_geo_${_test}
+            SOURCES     ${_test}.cc
+            LIBS        eckit_geo
+            ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
+    endforeach()
+endif()
+
 if(eckit_HAVE_ZIP)
+    ecbuild_add_test(
+        TARGET      eckit_test_geo_cache
+        SOURCES     cache.cc ${PROJECT_SOURCE_DIR}/src/eckit/geo/cache/Unzip.cc
+        LIBS        eckit_geo libzip::zip
+        ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
+
     target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
 endif()
 
@@ -64,3 +80,4 @@ ecbuild_add_test(
     LIBS              eckit_geo
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
 
+add_subdirectory(integration)

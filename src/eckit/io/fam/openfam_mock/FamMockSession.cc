@@ -129,10 +129,21 @@ bool openOrCreateShm(FamMockSession::ShmHandle& handle) {
         throw std::system_error(errno, std::system_category(), "shm_open(" + handle.name + ")");
     }
 
-    if (creator && ::ftruncate(shm_fd, static_cast<off_t>(handle.size)) != 0) {
-        ::close(shm_fd);
-        handle.unlink();
-        throw std::system_error(errno, std::system_category(), "ftruncate");
+    if (creator) {
+#if defined(__APPLE__)
+        // macOS has no posix_fallocate; ftruncate only sets the size (acceptable on this dev platform).
+        const bool ok = ::ftruncate(shm_fd, static_cast<off_t>(handle.size)) == 0;
+        const int err = errno;
+#else
+        const int rc  = ::posix_fallocate(shm_fd, 0, static_cast<off_t>(handle.size));
+        const bool ok = (rc == 0);
+        const int err = rc;  // posix_fallocate returns the error code directly (does not set errno)
+#endif
+        if (!ok) {
+            ::close(shm_fd);
+            handle.unlink();
+            throw std::system_error(err, std::system_category(), "reserve shm space (" + handle.name + ")");
+        }
     }
 
     auto* mapping = ::mmap(nullptr, handle.size, PROT_READ | PROT_WRITE, MAP_SHARED, shm_fd, 0);

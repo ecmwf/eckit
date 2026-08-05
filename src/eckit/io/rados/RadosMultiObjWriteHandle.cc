@@ -70,6 +70,7 @@ void RadosMultiObjWriteHandle::openForWrite(const Length& length) {
     ///   a vector of open handles will be kept until flush or close.
     ///   If it is configured to not be async, a single handle will be kept in the handles_ vector.
     ///   Either way, the algorithm requires that the vector is initialised with an empty unique_ptr.
+    /// this is buggy:
     handles_.push_back(std::unique_ptr<DataHandle>(nullptr));
 }
 
@@ -145,7 +146,9 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
 void RadosMultiObjWriteHandle::flush() {
 
     for (const auto& handle : handles_) {
-        handle->flush();
+        if (handle) {
+            handle->flush();
+        }
     }
 
     if (written_ > 0) {
@@ -164,7 +167,9 @@ void RadosMultiObjWriteHandle::flush() {
 void RadosMultiObjWriteHandle::close() {
 
     for (const auto& handle : handles_) {
-        handle->close();
+        if (handle) {
+            handle->close();
+        }
     }
     handles_.clear();
 }

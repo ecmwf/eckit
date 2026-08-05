@@ -12,12 +12,12 @@ use crate::error::Result;
 ///
 /// ```ignore
 /// let cfg = Config::from_path("config.yaml")?;
-/// let name: String = cfg.get("name", "")?;
+/// let name: String = cfg.get("name", String::new())?;
 /// let port: i64 = cfg.get("port", 9000)?;
 ///
-/// for sub in cfg.subs("databases")? {
+/// for sub in cfg.subs(Some("databases"))? {
 ///     let sub = sub?;
-///     let class: String = sub.get("class", "")?;
+///     let class: String = sub.get("class", String::new())?;
 /// }
 /// ```
 pub struct Config {

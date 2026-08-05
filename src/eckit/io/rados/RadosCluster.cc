@@ -432,7 +432,7 @@ std::vector<std::string> RadosCluster::listPools() const {
     RADOS_CALL(rados_pool_list(cluster_, v.data(), buflen));
 
     size_t offset = 0;
-    while (v.at(offset)) {
+    while (offset < v.size() && v[offset]) {
         res.emplace_back(v.data() + offset);
         offset += res.back().size() + 1;
     }

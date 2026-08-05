@@ -156,6 +156,8 @@ pub struct TcpStream {
     inner: eckit_sys::UniquePtr<eckit_sys::StreamWrapper>,
 }
 
+// SAFETY: The wrapper exclusively owns the underlying C++ stream, which is
+// accessed through &mut self only.
 #[allow(clippy::non_send_fields_in_send_ty)]
 unsafe impl Send for TcpStream {}
 
@@ -203,6 +205,8 @@ pub struct MemoryStream {
     inner: eckit_sys::UniquePtr<eckit_sys::StreamWrapper>,
 }
 
+// SAFETY: The wrapper exclusively owns the underlying C++ stream, which is
+// accessed through &mut self only.
 #[allow(clippy::non_send_fields_in_send_ty)]
 unsafe impl Send for MemoryStream {}
 

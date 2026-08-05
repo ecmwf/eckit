@@ -32,25 +32,25 @@ class RadosHandle : public DataHandle {
 
 public:  // methods
 
-    explicit RadosHandle(const RadosObject&);
+    explicit RadosHandle(const RadosObject& object);
 
     ~RadosHandle() override;
 
     Length openForRead() override;
-    void openForWrite(const Length&) override;
+    void openForWrite(const Length& length) override;
 
-    long read(void*, long) override;
-    long write(const void*, long) override;
+    long read(void* buffer, long length) override;
+    long write(const void* buffer, long length) override;
     void close() override;
     void flush() override;
-    Offset seek(const Offset&) override;
+    Offset seek(const Offset& offset) override;
     bool canSeek() const override { return true; };
 
     Offset position() override;
     Length estimate() override { return size(); }
     Length size() override;
 
-    void print(std::ostream&) const override;
+    void print(std::ostream& s) const override;
 
 protected:  // members
 

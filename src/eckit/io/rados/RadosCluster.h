@@ -61,18 +61,18 @@ public:
     void ensurePool(const std::string& pool) const;
     void destroyPool(const std::string& pool) const;
 
-    void attributes(const RadosObject&, const RadosAttributes&) const;
+    void attributes(const RadosObject& object, const RadosAttributes& attr) const;
 
-    RadosAttributes attributes(const RadosObject&) const;
+    RadosAttributes attributes(const RadosObject& object) const;
 
-    bool exists(const RadosObject&) const;
-    Length size(const RadosObject&) const;
-    void remove(const RadosObject&) const;
-    void truncate(const RadosObject&, const Length& = 0) const;
-    time_t lastModified(const RadosObject&) const;
+    bool exists(const RadosObject& object) const;
+    Length size(const RadosObject& object) const;
+    void remove(const RadosObject& object) const;
+    void truncate(const RadosObject& object, const Length& length = 0) const;
+    time_t lastModified(const RadosObject& object) const;
 
-    bool exists(const RadosKeyValue&) const;
-    void remove(const RadosKeyValue&) const;
+    bool exists(const RadosKeyValue& kv) const;
+    void remove(const RadosKeyValue& kv) const;
 
     std::vector<std::string> listPools() const;
     std::vector<std::string> listNamespaces(const std::string& pool) const;
@@ -80,7 +80,7 @@ public:
 
     // For multi-object items
 
-    void removeAll(const RadosObject&) const;
+    void removeAll(const RadosObject& object) const;
 
     static const RadosCluster& instance();
 

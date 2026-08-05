@@ -32,11 +32,11 @@ class RadosAsyncHandle : public eckit::RadosHandle {
 
 public:  // methods
 
-    RadosAsyncHandle(const RadosObject&, size_t maxAioBuffSize = 1024 * 1024);
+    RadosAsyncHandle(const RadosObject& object, size_t maxAioBuffSize = 1024 * 1024);
 
 public:  // methods
 
-    long write(const void*, long) override;
+    long write(const void* buffer, long length) override;
     void close() override;
     void flush() override;
 

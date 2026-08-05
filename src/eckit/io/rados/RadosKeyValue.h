@@ -33,7 +33,7 @@ class RadosKeyValue {
 
 public:  // methods
 
-    RadosKeyValue(const eckit::URI&);
+    RadosKeyValue(const eckit::URI& uri);
     RadosKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid);
 
     const eckit::RadosNamespace& nspace() const { return ns_; }
@@ -47,8 +47,8 @@ public:  // methods
 
     eckit::Length size(const std::string& key) const;
     bool has(const std::string& key) const;
-    long put(const std::string& key, const void*, const long&) const;
-    long get(const std::string& key, void*, const long&) const;
+    long put(const std::string& key, const void* buf, const long& len) const;
+    long get(const std::string& key, void* buf, const long& len) const;
     eckit::MemoryStream getMemoryStream(std::vector<char>& v, const std::string& key, const std::string& kvTitle) const;
     void remove(const std::string& key);
     std::vector<std::string> keys(int keysPerQuery = 1000) const;

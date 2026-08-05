@@ -29,7 +29,7 @@ class RadosPartHandle : public eckit::DataHandle {
 
 public:  // methods
 
-    RadosPartHandle(const eckit::RadosObject&, const eckit::Offset&, const eckit::Length&);
+    RadosPartHandle(const eckit::RadosObject& object, const eckit::Offset& offset, const eckit::Length& length);
 
     ~RadosPartHandle();
 
@@ -37,14 +37,14 @@ public:  // methods
 
     eckit::Length openForRead() override;
 
-    long read(void*, long) override;
+    long read(void* buffer, long length) override;
     void close() override;
     void flush() override;
 
     eckit::Length size() override;
     eckit::Length estimate() override;
     eckit::Offset position() override;
-    eckit::Offset seek(const eckit::Offset&) override;
+    eckit::Offset seek(const eckit::Offset& offset) override;
     bool canSeek() const override;
 
     std::string title() const override;

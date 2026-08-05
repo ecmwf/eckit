@@ -27,7 +27,7 @@ namespace eckit::test {
 
 CASE("Test Rados Handles") {
 
-#ifdef eckit_HAVE_RADOS_ADMIN
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
     std::string pool_name = "test_handle";
     std::string nspace    = "default";
     RadosPool pool(pool_name);
@@ -97,7 +97,7 @@ CASE("Test Rados Handles") {
         RadosCluster::instance().removeAll(obj);
     }
 
-#ifdef eckit_HAVE_RADOS_ADMIN
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
     pool.destroy();
 #else
     RadosNamespace ns(pool_name, nspace);

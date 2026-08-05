@@ -132,7 +132,7 @@ jobs:
           cmake -S eckit -B build -G Ninja \
             -DCMAKE_BUILD_TYPE=Release \
             -DENABLE_RADOS=ON \
-            -DENABLE_RADOS_ADMIN=OFF \
+            -DENABLE_RADOS_TESTS_MANAGE_POOLS=OFF \
             -DECKIT_RADOS_TEST_POOL="${ECKIT_RADOS_TEST_POOL}"
 
       - name: Build

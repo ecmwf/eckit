@@ -43,7 +43,7 @@ CASE("Test rados performance") {
     dh->read(buf, size);
     dh->close();
 
-#ifdef eckit_HAVE_RADOS_ADMIN
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
     std::string pool_name = "mars";
     std::string nspace    = "default";
     RadosPool pool(pool_name);
@@ -79,7 +79,7 @@ CASE("Test rados performance") {
 
     obj.ensureDestroyed();
 
-#ifdef eckit_HAVE_RADOS_ADMIN
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
     pool.destroy();
 #else
     RadosNamespace ns(pool_name, nspace);

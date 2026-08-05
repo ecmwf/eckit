@@ -23,7 +23,7 @@ namespace eckit::test {
 
 CASE("Rados KeyValue") {
 
-#ifdef eckit_HAVE_RADOS_ADMIN
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
     std::string pool_name = "test_kv";
     std::string nspace    = "default";
     RadosPool pool(pool_name);
@@ -94,7 +94,7 @@ CASE("Rados KeyValue") {
         EXPECT_NOT(kv.exists());
     }
 
-#ifdef eckit_HAVE_RADOS_ADMIN
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
     pool.destroy();
 #else
     RadosNamespace ns(pool_name, nspace);

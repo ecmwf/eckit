@@ -65,6 +65,6 @@
 #cmakedefine01 eckit_HAVE_ECKIT_SQL
 #cmakedefine01 eckit_HAVE_ECKIT_MPI
 
-#cmakedefine eckit_HAVE_RADOS_ADMIN
+#cmakedefine eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
 
 #endif // eckit_config_h

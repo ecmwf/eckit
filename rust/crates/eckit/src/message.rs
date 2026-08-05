@@ -109,7 +109,7 @@ impl<'h> MessageReader<'h> {
     /// Create a reader over an opened `DataHandle<Reading>`. The returned
     /// reader borrows the handle for `'h` — it cannot outlive the handle.
     pub fn new(handle: &'h mut DataHandle<crate::Reading>) -> Result<Self> {
-        let inner = eckit_sys::ReaderWrapper::from_handle(handle.pin_mut()?)
+        let inner = eckit_sys::ReaderWrapper::from_handle(handle.inner_mut()?)
             .map_err(eckit_sys::Error::from)?;
         Ok(Self {
             inner,

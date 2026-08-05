@@ -190,7 +190,7 @@ impl<S: HandleState> DataHandle<S> {
     }
 
     /// Access the underlying C++ `DataHandleWrapper` for FFI interop.
-    pub fn inner_mut(&mut self) -> Result<std::pin::Pin<&mut eckit_sys::DataHandleWrapper>> {
+    pub(crate) fn inner_mut(&mut self) -> Result<std::pin::Pin<&mut eckit_sys::DataHandleWrapper>> {
         Ok(self
             .inner
             .as_mut()
@@ -222,11 +222,6 @@ impl DataHandle<Reading> {
             inner: self.inner.take(),
             _state: PhantomData,
         })
-    }
-
-    /// Access the underlying wrapper (for `MessageReader`).
-    pub(crate) fn pin_mut(&mut self) -> Result<std::pin::Pin<&mut eckit_sys::DataHandleWrapper>> {
-        self.inner_mut()
     }
 }
 

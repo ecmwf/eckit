@@ -61,8 +61,13 @@ unsafe impl<S: HandleState> Send for DataHandle<S> {}
 
 impl DataHandle<Closed> {
     /// Create from a raw eckit-sys wrapper.
+    ///
+    /// The wrapper must not be opened yet — the `Closed` typestate assumes
+    /// it, and `Drop` will not close a handle in this state.
     #[must_use]
-    pub const fn from_raw(inner: eckit_sys::UniquePtr<eckit_sys::DataHandleWrapper>) -> Self {
+    pub(crate) const fn from_raw(
+        inner: eckit_sys::UniquePtr<eckit_sys::DataHandleWrapper>,
+    ) -> Self {
         Self {
             inner: Some(inner),
             _state: PhantomData,

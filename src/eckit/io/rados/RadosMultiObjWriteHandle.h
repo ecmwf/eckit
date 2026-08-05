@@ -64,10 +64,10 @@ private:  // members
     size_t maxAioBuffSize_;
     size_t maxHandleBuffSize_;
 
-    size_t written_;
-    Offset position_;
-    size_t part_;
-    bool opened_;
+    size_t written_{0};
+    Offset position_{0};
+    size_t part_{0};
+    bool opened_{false};
 
     std::vector<std::unique_ptr<DataHandle>> handles_;
 };

@@ -65,13 +65,6 @@ void RadosMultiObjWriteHandle::openForWrite(const Length& length) {
     position_ = 0;
     part_     = 0;
     opened_   = true;
-
-    /// @note: if the RadosMultiObjWriteHandle is configured to be async (via bool async),
-    ///   a vector of open handles will be kept until flush or close.
-    ///   If it is configured to not be async, a single handle will be kept in the handles_ vector.
-    ///   Either way, the algorithm requires that the vector is initialised with an empty unique_ptr.
-    /// this is buggy:
-    handles_.push_back(std::unique_ptr<DataHandle>(nullptr));
 }
 
 void RadosMultiObjWriteHandle::openForAppend(const Length&) {
@@ -106,7 +99,7 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
             ASSERT(handles_.back());
             if (!async_) {
                 handles_.back()->close();
-                handles_.back().reset(0);
+                handles_.back().reset();
             }
             else {
                 ASSERT(handles_.size() < maxHandleBuffSize_);
@@ -119,10 +112,13 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
         LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write " << len << " - " << maxPartSize_ << " - "
                                 << written_ << std::endl;
 
-        if (!handles_.back().get()) {
+        if (handles_.empty() || !handles_.back()) {
 
             RadosObject object(object_, part_++);
             LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write open " << object.str() << std::endl;
+            if (handles_.empty()) {
+                handles_.push_back(std::unique_ptr<DataHandle>(nullptr));
+            }
             if (async_) {
                 handles_.back().reset(new RadosAsyncHandle(object, maxAioBuffSize_));
             }
@@ -146,9 +142,7 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
 void RadosMultiObjWriteHandle::flush() {
 
     for (const auto& handle : handles_) {
-        if (handle) {
-            handle->flush();
-        }
+        handle->flush();
     }
 
     if (written_ > 0) {
@@ -167,9 +161,7 @@ void RadosMultiObjWriteHandle::flush() {
 void RadosMultiObjWriteHandle::close() {
 
     for (const auto& handle : handles_) {
-        if (handle) {
-            handle->close();
-        }
+        handle->close();
     }
     handles_.clear();
 }

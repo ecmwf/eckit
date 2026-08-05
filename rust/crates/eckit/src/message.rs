@@ -54,7 +54,6 @@ impl Message {
     /// Access the underlying `MessageWrapper` for FFI interop.
     #[must_use]
     pub fn as_sys(&self) -> &eckit_sys::MessageWrapper {
-        // inner is always Some for a valid Message
         &self.inner
     }
 

@@ -111,11 +111,12 @@ impl DataHandle<Closed> {
         Ok(Self::from_raw(inner))
     }
 
-    /// Wrap a Rust `std::io::Read` source as a `DataHandle`.
+    /// Wrap a Rust `std::io::Read + Seek` source as a `DataHandle`.
     ///
-    /// The C++ side calls back into the Rust reader on each `read()`; no
-    /// intermediate buffer or temp file is staged. Forward-only — the
-    /// resulting handle cannot be seeked or written to.
+    /// The C++ side calls back into the Rust source on each `read()` and
+    /// `seek()`; no intermediate buffer or temp file is staged. Opening
+    /// for read rewinds the source to the start. The resulting handle is
+    /// read-only — it cannot be written to.
     pub fn from_reader<R>(reader: R) -> Result<Self>
     where
         R: std::io::Read + std::io::Seek + Send + 'static,
@@ -248,9 +249,9 @@ impl Read for DataHandle<Reading> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         let n = self
             .inner_mut()
-            .map_err(|e| std::io::Error::other(e.to_string()))?
+            .map_err(to_io_error)?
             .read(buf)
-            .map_err(|e| std::io::Error::other(e.to_string()))?;
+            .map_err(to_io_error)?;
         usize::try_from(n).map_err(|e| std::io::Error::other(e.to_string()))
     }
 }
@@ -260,26 +261,28 @@ impl Seek for DataHandle<Reading> {
         let new_pos = match pos {
             SeekFrom::Start(offset) => offset,
             SeekFrom::End(offset) => {
-                let size = self
-                    .estimate()
-                    .map_err(|e| std::io::Error::other(e.to_string()))?;
+                let size = self.estimate().map_err(to_io_error)?;
                 let new = size
                     .checked_add(offset)
                     .ok_or_else(|| std::io::Error::other("seek position overflow"))?;
                 if new < 0 {
-                    return Err(std::io::Error::other("seek to negative position"));
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::InvalidInput,
+                        "seek to negative position",
+                    ));
                 }
                 new.cast_unsigned()
             }
             SeekFrom::Current(offset) => {
-                let current = self
-                    .position()
-                    .map_err(|e| std::io::Error::other(e.to_string()))?;
+                let current = self.position().map_err(to_io_error)?;
                 let new = current
                     .checked_add(offset)
                     .ok_or_else(|| std::io::Error::other("seek position overflow"))?;
                 if new < 0 {
-                    return Err(std::io::Error::other("seek to negative position"));
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::InvalidInput,
+                        "seek to negative position",
+                    ));
                 }
                 new.cast_unsigned()
             }
@@ -287,9 +290,9 @@ impl Seek for DataHandle<Reading> {
 
         let actual = self
             .inner_mut()
-            .map_err(|e| std::io::Error::other(e.to_string()))?
+            .map_err(to_io_error)?
             .seek(i64::try_from(new_pos).map_err(|e| std::io::Error::other(e.to_string()))?)
-            .map_err(|e| std::io::Error::other(e.to_string()))?;
+            .map_err(to_io_error)?;
 
         // Some `eckit::DataHandle` subclasses can land at an offset
         // different from the requested one (e.g. `MultiHandle` clamps to
@@ -308,20 +311,20 @@ impl Write for DataHandle<Writing> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let n = self
             .inner_mut()
-            .map_err(|e| std::io::Error::other(e.to_string()))?
+            .map_err(to_io_error)?
             .write(buf)
-            .map_err(|e| std::io::Error::other(e.to_string()))?;
+            .map_err(to_io_error)?;
         usize::try_from(n).map_err(|e| std::io::Error::other(e.to_string()))
     }
 
     /// Forwards to `eckit::DataHandle::flush()`. Handle types without a
     /// flush implementation throw `NotImplemented`, which surfaces here
-    /// as an error.
+    /// as `ErrorKind::Unsupported`.
     fn flush(&mut self) -> std::io::Result<()> {
         self.inner_mut()
-            .map_err(|e| std::io::Error::other(e.to_string()))?
+            .map_err(to_io_error)?
             .flush()
-            .map_err(|e| std::io::Error::other(e.to_string()))
+            .map_err(to_io_error)
     }
 }
 
@@ -338,6 +341,27 @@ impl<S: HandleState> Drop for DataHandle<S> {
 }
 
 // ==================== Helpers ====================
+
+/// Map an eckit error to a `std::io::Error` with a matching `ErrorKind`
+/// where one exists; everything else degrades to `ErrorKind::Other`.
+fn to_io_error(error: impl Into<eckit_sys::Error>) -> std::io::Error {
+    use std::io::ErrorKind;
+
+    let error = error.into();
+    let kind = match &error {
+        eckit_sys::Error::NotImplemented(_) | eckit_sys::Error::FunctionalityNotSupported(_) => {
+            ErrorKind::Unsupported
+        }
+        eckit_sys::Error::ShortFile(_) => ErrorKind::UnexpectedEof,
+        eckit_sys::Error::TimeOut(_) => ErrorKind::TimedOut,
+        eckit_sys::Error::OutOfMemory => ErrorKind::OutOfMemory,
+        eckit_sys::Error::OutOfRange(_)
+        | eckit_sys::Error::BadParameter(_)
+        | eckit_sys::Error::BadValue(_) => ErrorKind::InvalidInput,
+        _ => return std::io::Error::other(error.to_string()),
+    };
+    std::io::Error::new(kind, error.to_string())
+}
 
 fn path_to_str(path: &Path) -> Result<&str> {
     path.to_str().ok_or_else(|| {

@@ -15,8 +15,6 @@
 
 #pragma once
 
-// #include <memory>
-
 #include <cstdint>
 #include <ostream>
 
@@ -40,7 +38,6 @@ public:  // methods
 
     Length openForRead() override;
     void openForWrite(const Length&) override;
-    //     void openForAppend(const Length&) override;
 
     long read(void*, long) override;
     long write(const void*, long) override;

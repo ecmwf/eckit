@@ -28,6 +28,7 @@ public:
     void open_for_write(int64_t estimated_length);
     int64_t read(rust::Slice<uint8_t> buf);
     int64_t write(rust::Slice<const uint8_t> buf);
+    void flush();
     void close();
     int64_t position() const;
     int64_t seek(int64_t offset);

@@ -32,6 +32,10 @@ int64_t DataHandleWrapper::write(rust::Slice<const uint8_t> buf) {
     return handle_->write(buf.data(), static_cast<long>(buf.size()));
 }
 
+void DataHandleWrapper::flush() {
+    handle_->flush();
+}
+
 void DataHandleWrapper::close() {
     handle_->close();
 }

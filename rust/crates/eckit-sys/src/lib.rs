@@ -102,6 +102,7 @@ mod ffi {
         fn open_for_write(self: Pin<&mut DataHandleWrapper>, estimated_length: i64) -> Result<()>;
         fn read(self: Pin<&mut DataHandleWrapper>, buf: &mut [u8]) -> Result<i64>;
         fn write(self: Pin<&mut DataHandleWrapper>, buf: &[u8]) -> Result<i64>;
+        fn flush(self: Pin<&mut DataHandleWrapper>) -> Result<()>;
         fn close(self: Pin<&mut DataHandleWrapper>) -> Result<()>;
         fn position(self: &DataHandleWrapper) -> Result<i64>;
         fn seek(self: Pin<&mut DataHandleWrapper>, offset: i64) -> Result<i64>;

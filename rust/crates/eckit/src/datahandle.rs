@@ -314,14 +314,14 @@ impl Write for DataHandle<Writing> {
         usize::try_from(n).map_err(|e| std::io::Error::other(e.to_string()))
     }
 
-    /// `eckit::DataHandle::flush()` is virtual but its base implementation
-    /// throws `NotImplemented`, so most handle types do not actually
-    /// support a mid-stream flush. The commit boundary for write-side
-    /// handles is [`DataHandle::close`] — call it explicitly to surface
-    /// any flush/commit errors. This `Write::flush` impl is therefore a
-    /// no-op by design.
+    /// Forwards to `eckit::DataHandle::flush()`. Handle types without a
+    /// flush implementation throw `NotImplemented`, which surfaces here
+    /// as an error.
     fn flush(&mut self) -> std::io::Result<()> {
-        Ok(())
+        self.inner_mut()
+            .map_err(|e| std::io::Error::other(e.to_string()))?
+            .flush()
+            .map_err(|e| std::io::Error::other(e.to_string()))
     }
 }
 

@@ -64,8 +64,8 @@ private:  // members
 
     RadosObject object_;
 
-    Length length_;
-    size_t parts_;
+    Length length_{0};
+    size_t parts_{0};
 
     std::unique_ptr<MultiHandle> handle_;
 };

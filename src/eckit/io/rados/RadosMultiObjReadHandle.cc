@@ -36,12 +36,17 @@ void RadosMultiObjReadHandle::print(std::ostream& s) const {
 
 RadosMultiObjReadHandle::RadosMultiObjReadHandle(const eckit::RadosObject& obj) : object_(obj) {}
 
-RadosMultiObjReadHandle::~RadosMultiObjReadHandle() {}
+RadosMultiObjReadHandle::~RadosMultiObjReadHandle() {
+    if (handle_) {
+        eckit::Log::error() << "RadosMultiObjReadHandle not closed before destruction." << std::endl;
+    }
+}
 
 Length RadosMultiObjReadHandle::estimate() {
-    if (length_ == Length(0)) {
+    if (parts_ == 0) {
         RadosAttributes attr = RadosCluster::instance().attributes(object_);
         ASSERT(attr.get("length", length_));
+        ASSERT(attr.get("parts", parts_));
     }
     return length_;
 }
@@ -50,11 +55,13 @@ Length RadosMultiObjReadHandle::estimate() {
 Length RadosMultiObjReadHandle::openForRead() {
     ASSERT(!handle_);
 
-    RadosAttributes attr = RadosCluster::instance().attributes(object_);
-    LOG_DEBUG_LIB(LibEcKit) << "Attributes for " << object_.str() << " ===> " << attr << std::endl;
+    if (parts_ == 0) {
+        RadosAttributes attr = RadosCluster::instance().attributes(object_);
+        LOG_DEBUG_LIB(LibEcKit) << "Attributes for " << object_.str() << " ===> " << attr << std::endl;
 
-    ASSERT(attr.get("length", length_));
-    ASSERT(attr.get("parts", parts_));
+        ASSERT(attr.get("length", length_));
+        ASSERT(attr.get("parts", parts_));
+    }
 
     handle_ = std::make_unique<MultiHandle>();
 
@@ -99,7 +106,7 @@ eckit::Offset RadosMultiObjReadHandle::seek(const eckit::Offset& offset) {
 void RadosMultiObjReadHandle::close() {
     if (handle_) {
         handle_->close();
-        handle_.reset(0);
+        handle_.reset();
     }
 }
 
@@ -109,7 +116,8 @@ void RadosMultiObjReadHandle::rewind() {
 
 
 Offset RadosMultiObjReadHandle::position() {
-    NOTIMP;
+    ASSERT(handle_);
+    return handle_->position();
 }
 
 std::string RadosMultiObjReadHandle::title() const {

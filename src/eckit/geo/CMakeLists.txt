@@ -206,12 +206,11 @@ if(eckit_HAVE_GEO_AREA_SHAPEFILE)
         cache/Unzip.cc
         cache/Unzip.h
     )
-
-    # shapelib is exposed by the installed Shapefile.h (public header includes
-    # shapefil.h and holds SHPInfo*), so it must stay PUBLIC.
-    # libzip is only used from cache/Unzip.cc, so it can be PRIVATE.
-    list(APPEND eckit_geo_libs shapelib::shp)
-    list(APPEND eckit_geo_private_libs libzip::zip)
+    # Both are implementation details of eckit_geo, kept out of the installed
+    # public headers via PIMPL (Shapefile.h) and by only being included from
+    # cache/Unzip.cc. Downstream consumers of eckit_geo therefore don't need
+    # find_package(shapelib) / find_package(libzip) themselves.
+    list(APPEND eckit_geo_private_libs shapelib::shp libzip::zip)
 endif()
 
 string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")

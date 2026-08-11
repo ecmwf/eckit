@@ -45,6 +45,32 @@ struct ctx_t : std::unique_ptr<PJ_CONTEXT, decltype(&proj_context_destroy)> {
 };
 
 
+// Wrap proj_create_crs_to_crs so that a NULL return (which most commonly means
+// "proj.db not found" or "invalid CRS string") turns into an actionable eckit
+// exception, rather than propagating NULL into subsequent PROJ calls that may
+// segfault or produce cryptic stack traces.
+PJ* checked_proj_create_crs_to_crs(PJ_CONTEXT* ctx, const std::string& source, const std::string& target) {
+    if (auto* pj = proj_create_crs_to_crs(ctx, source.c_str(), target.c_str(), nullptr); pj != nullptr) {
+        return pj;
+    }
+
+    const auto err       = proj_context_errno(ctx);
+    const char* err_desc = proj_errno_string(err);
+
+    std::string msg = "PROJ: proj_create_crs_to_crs failed for source='" + source + "', target='" + target + "'";
+    if (err_desc != nullptr && *err_desc != '\0') {
+        msg += " (";
+        msg += err_desc;
+        msg += ")";
+    }
+    msg +=
+        ". Ensure PROJ's database is available: set PROJ_DATA to a directory containing proj.db, "
+        "or install the eckitlib wheel (which bundles its own).";
+
+    throw exception::ProjectionError(msg, Here());
+}
+
+
 struct Convert {
     Convert()          = default;
     virtual ~Convert() = default;
@@ -93,7 +119,7 @@ struct XYZ final : Convert {
 
 
 Figure* make_figure(const std::string& proj_str) {
-    pj_t identity(proj_create_crs_to_crs(CTX, proj_str.c_str(), proj_str.c_str(), nullptr));
+    pj_t identity(checked_proj_create_crs_to_crs(CTX, proj_str, proj_str));
 
     pj_t crs(proj_get_target_crs(CTX, identity.get()));
     pj_t ellipsoid(proj_get_ellipsoid(CTX, crs.get()));
@@ -142,7 +168,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     ASSERT(!target_.empty());
 
     auto make_convert = [lon_minimum](const std::string& string) -> Convert* {
-        pj_t identity(proj_create_crs_to_crs(CTX, string.c_str(), string.c_str(), nullptr));
+        pj_t identity(checked_proj_create_crs_to_crs(CTX, string, string));
         pj_t crs(proj_get_target_crs(CTX, identity.get()));
         pj_t cs(proj_crs_get_coordinate_system(CTX, crs.get()));
         ASSERT(cs);
@@ -160,9 +186,16 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     // projection, normalised
     auto ctx = PJ_DEFAULT_CTX;
 
-    implementation_ = std::make_unique<Implementation>(
-        proj_normalize_for_visualization(ctx, proj_create_crs_to_crs(ctx, source_.c_str(), target_.c_str(), nullptr)),
-        ctx, make_convert(source_), make_convert(target_));
+    // proj_normalize_for_visualization destroys its input in all cases, so we
+    // must not pass it a NULL; the checked wrapper guarantees non-NULL or throw.
+    auto* normalized = proj_normalize_for_visualization(ctx, checked_proj_create_crs_to_crs(ctx, source_, target_));
+    if (normalized == nullptr) {
+        throw exception::ProjectionError(
+            "PROJ: proj_normalize_for_visualization failed for source='" + source_ + "', target='" + target_ + "'",
+            Here());
+    }
+
+    implementation_ = std::make_unique<Implementation>(normalized, ctx, make_convert(source_), make_convert(target_));
     ASSERT(implementation_);
 }
 

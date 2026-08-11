@@ -29,10 +29,10 @@ if [ "$(uname)" != "Darwin" ] ; then
     # git clone https://github.com/lz4/lz4 /src/lz4 && cd /src/lz4
     # make -j10 && make install DESTDIR=/tmp/lz4
     # cd -
-    PROJ_ROOT="${PROJ_ROOT:-/opt/proj}"
+    PROJ_ROOT="${PROJ_ROOT:-/cxx-deps}"
 else
     echo "no deps installation for platform $(uname)"
-    PROJ_ROOT="${PROJ_ROOT:-/cxx-deps}"
+    PROJ_ROOT="${PROJ_ROOT:-/tmp/cxx-deps}"
 fi
 
 

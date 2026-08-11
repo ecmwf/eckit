@@ -97,7 +97,7 @@ fn generate_exceptions(include: &std::path::Path) {
 /// `system` builds require >= this version; `vendored` builds clone exactly
 /// this tag — keeping both modes pinned to the same source revision so
 /// downstream code can rely on the same API surface either way.
-const ECKIT_VERSION: &str = "2.0.7";
+const ECKIT_VERSION: &str = "2.2.0";
 
 #[cfg(feature = "system")]
 fn build_system() -> std::path::PathBuf {

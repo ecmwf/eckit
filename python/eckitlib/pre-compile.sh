@@ -32,7 +32,7 @@ if [ "$(uname)" != "Darwin" ] ; then
     PROJ_ROOT="${PROJ_ROOT:-/opt/proj}"
 else
     echo "no deps installation for platform $(uname)"
-    PROJ_ROOT="${PROJ_ROOT:-/tmp/cxx-deps}"
+    PROJ_ROOT="${PROJ_ROOT:-/cxx-deps}"
 fi
 
 

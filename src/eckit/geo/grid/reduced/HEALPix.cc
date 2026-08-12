@@ -35,7 +35,11 @@ namespace eckit::geo::range {
 class HEALPixLatitude final : public Range {
 public:
 
-    explicit HEALPixLatitude(size_t Nside) : Nside_(Nside) { ASSERT(Nside_ > 0); }
+    explicit HEALPixLatitude(size_t Nside) : Nside_(Nside) {
+        if (Nside_ == 0) {
+            throw exception::GridError("HEALPix: Nside must be greater than zero", Here());
+        }
+    }
 
     [[nodiscard]] HEALPixLatitude* make_cropped_range(double, double) const override { NOTIMP; }
 
@@ -149,9 +153,6 @@ HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), order_(order),
     ASSERT(y_);
 
     boundingBox(new BoundingBox{});
-    if (Nside_ == 0) {
-        throw exception::GridError("HEALPix: Nside must be greater than zero", Here());
-    }
 }
 
 

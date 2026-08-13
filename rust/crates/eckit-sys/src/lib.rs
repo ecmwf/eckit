@@ -264,11 +264,11 @@ impl<T: std::io::Read + std::io::Seek + ?Sized> ReadSeek for T {}
 ///
 /// The C++ `RustReaderHandle` (declared in `DataHandleWrapper.h` as `struct
 /// ReaderBox`) carries this by `rust::Box<ReaderBox>` and forwards each C++
-/// `read(void*, long)` / `seek(Offset)` call via [`invoke_reader_read`] /
-/// [`invoke_reader_seek`].
+/// `read(void*, long)` / `seek(Offset)` call via `invoke_reader_read` /
+/// `invoke_reader_seek`.
 pub struct ReaderBox(Box<dyn ReadSeek + Send>);
 
-/// Wrap a Rust `Read + Seek` source for [`ffi::data_handle_from_reader`].
+/// Wrap a Rust `Read + Seek` source for `ffi::from_reader`.
 ///
 /// The `Seek` bound is load-bearing: eckit's `DataHandle::openForRead`
 /// contract is "leave at offset 0", so the C++ side rewinds the source on

@@ -72,7 +72,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::ensureCreatedAsync() const {
 
 void RadosKeyValue::ensureCreated() const {
     auto comp = ensureCreatedAsync();
-    RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    comp->waitForComplete();
 }
 
 void RadosKeyValue::ensureDestroyed() const {
@@ -115,7 +115,7 @@ bool RadosKeyValue::has(const std::string& key) const {
                                          0  /// @note: flags
                                          ));
 
-    RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
+    comp.waitForComplete();
 
     ASSERT(rc == 0);
 
@@ -153,7 +153,7 @@ long RadosKeyValue::put(const std::string& key, const void* buf, const long& len
 
     auto comp = putAsync(key, buf, len, res);
 
-    RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    comp->waitForComplete();
 
     return res;
 }
@@ -181,7 +181,7 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
                                          0  /// @note: flags
                                          ));
 
-    RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
+    comp.waitForComplete();
 
     ASSERT(rc == 0);
 
@@ -254,7 +254,7 @@ void RadosKeyValue::remove(const std::string& key) {
 
     auto comp = removeAsync(key);
 
-    RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    comp->waitForComplete();
 }
 
 std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
@@ -285,7 +285,7 @@ std::vector<std::string> RadosKeyValue::keys(int keysPerQuery) const {
                                              0  /// @note: flags
                                              ));
 
-        RADOS_CALL(rados_aio_wait_for_complete(comp.comp_));
+        comp.waitForComplete();
 
         ASSERT(rc == 0);
 

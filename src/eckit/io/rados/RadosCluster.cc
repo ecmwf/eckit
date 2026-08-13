@@ -105,6 +105,11 @@ RadosAIO::~RadosAIO() {
     LOG_DEBUG_LIB(LibEcKit) << "~RadosAIO <= rados_aio_release()" << std::endl;
 }
 
+void RadosAIO::waitForComplete() const {
+    RADOS_CALL(rados_aio_wait_for_complete(comp_));
+    RADOS_CALL(rados_aio_get_return_value(comp_));
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 
 RadosWriteOp::RadosWriteOp() {
@@ -178,16 +183,15 @@ RadosCluster::RadosCluster() : cluster_(0) {
 
 RadosCluster::~RadosCluster() {
 
-
     LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::~RadosCluster" << std::endl;
 
     std::lock_guard lock(ctxMutex_);
 
-    for (auto j = ctx_.begin(); j != ctx_.end(); ++j) {
-        for (auto k = (*j).second.begin(); k != (*j).second.end(); k++) {
-            delete (*k).second;
+    for (auto& [pool, nsCache] : ctx_) {
+        for (auto& [nspace, radosIOCtx] : nsCache) {
+            delete radosIOCtx;
         }
-        (*j).second.clear();
+        nsCache.clear();
     }
 
     ctx_.clear();
@@ -239,7 +243,6 @@ rados_ioctx_t& RadosCluster::ioCtx(const std::string& pool, const std::string& n
     std::lock_guard lock(ctxMutex_);
 
     auto j = ctx_.find(pool);
-
     if (j == ctx_.end()) {
         ctx_[pool] = NamespaceCtxCache{};
         j          = ctx_.find(pool);
@@ -450,16 +453,15 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
     RADOS_CALL(rados_nobjects_list_open(ioctx, &listctx));
 
     const char* entry;
-    bool end = false;
-    do {
+    while (true) {
         try {
             RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, NULL));
             res.emplace_back(entry);
         }
         catch (eckit::RadosEntityNotFoundException& e) {
-            end = true;
+            break;
         }
-    } while (!end);
+    }
 
     rados_nobjects_list_close(listctx);
 
@@ -476,16 +478,15 @@ std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) c
 
     const char* entry;
     const char* nspace;
-    bool end = false;
-    do {
+    while (true) {
         try {
             RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, &nspace));
             res.insert(std::string(nspace));
         }
         catch (eckit::RadosEntityNotFoundException& e) {
-            end = true;
+            break;
         }
-    } while (!end);
+    }
 
     rados_nobjects_list_close(listctx);
 

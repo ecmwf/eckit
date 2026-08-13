@@ -81,7 +81,7 @@ void RadosAsyncHandle::flush() {
     // comps_.clear();
 
     for (const auto& comp : comps_) {
-        RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+        comp->waitForComplete();
     }
     comps_.clear();
 }

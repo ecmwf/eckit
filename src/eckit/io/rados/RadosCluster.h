@@ -71,8 +71,8 @@ public:
     void truncate(const RadosObject& object, const Length& length = 0) const;
     time_t lastModified(const RadosObject& object) const;
 
-    bool exists(const RadosKeyValue& kv) const;
-    void remove(const RadosKeyValue& kv) const;
+    bool exists(const RadosKeyValue& object) const;
+    void remove(const RadosKeyValue& object) const;
 
     std::vector<std::string> listPools() const;
     std::vector<std::string> listNamespaces(const std::string& pool) const;
@@ -111,6 +111,8 @@ public:
     size_t len_{0};
     RadosAIO();
     ~RadosAIO();
+
+    void waitForComplete() const;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -53,9 +53,9 @@ void RadosAsyncKeyValue::remove(const std::string& key) {
 }
 
 void RadosAsyncKeyValue::flush() {
-
-    for (const auto& comp : comps_)
-        RADOS_CALL(rados_aio_wait_for_complete(comp->comp_));
+    for (const auto& comp : comps_) {
+        comp->waitForComplete();
+    }
     comps_.clear();
 }
 

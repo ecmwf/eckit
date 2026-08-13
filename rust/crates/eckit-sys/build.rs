@@ -106,15 +106,12 @@ fn docs_source_include() -> std::path::PathBuf {
         .join("docs-headers")
 }
 
-/// Minimum eckit version this crate's bridge is known to compile against.
-/// `system` builds require >= this version; `vendored` builds clone exactly
-/// this tag — keeping both modes pinned to the same source revision so
-/// downstream code can rely on the same API surface either way.
-const ECKIT_VERSION: &str = "2.0.7";
-
+/// Build using system-installed eckit via `CMake` `find_package`
 #[cfg(feature = "system")]
 fn build_system() -> std::path::PathBuf {
-    let (root, include, lib_dir) = bindman_utils::cmake_find_package("eckit", ECKIT_VERSION);
+    // Minimum supported system version, independent of the crate version
+    // (which tracks the vendored eckit release).
+    let (root, include, lib_dir) = bindman_utils::cmake_find_package("eckit", "2.0.7");
 
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
     println!("cargo:rustc-link-lib=dylib=eckit");
@@ -132,6 +129,52 @@ fn build_system() -> std::path::PathBuf {
     unreachable!("build_system called without system feature");
 }
 
+/// Locate the eckit C++ sources. When the crate lives inside the eckit
+/// repository (path dependency, or a git dependency — cargo checks out the
+/// whole repo), the sources are three levels up from the crate and we build
+/// them directly: branch changes take effect and no tag/network is required.
+/// Cloning the release tag is the fallback for the packaged (crates.io) case,
+/// where the crate ships without the C++ tree.
+#[cfg(feature = "vendored")]
+fn resolve_eckit_src(src_dir: &std::path::Path) -> std::path::PathBuf {
+    const ECKIT_REPO: &str = "https://github.com/ecmwf/eckit.git";
+    const ECKIT_TAG: &str = env!("CARGO_PKG_VERSION");
+
+    let manifest_dir = std::path::PathBuf::from(
+        std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set"),
+    );
+    if let Some(root) = manifest_dir.ancestors().nth(3)
+        && root.join("CMakeLists.txt").exists()
+        && root.join("VERSION").exists()
+        && root.join("src/eckit").is_dir()
+    {
+        eprintln!("eckit-sys: building in-tree sources at {}", root.display());
+
+        // Retrigger on C++ source edits.
+        println!("cargo:rerun-if-changed={}", root.join("src").display());
+        println!(
+            "cargo:rerun-if-changed={}",
+            root.join("CMakeLists.txt").display()
+        );
+        println!("cargo:rerun-if-changed={}", root.join("VERSION").display());
+
+        // Diverging is legitimate mid-development (unreleased C++ changes are
+        // the point of in-tree builds), but should never go unnoticed. The
+        // crate-version test enforces equality at release time.
+        let tree_version = std::fs::read_to_string(root.join("VERSION"))
+            .map(|s| s.trim().to_string())
+            .unwrap_or_default();
+        if tree_version != ECKIT_TAG {
+            println!(
+                "cargo:warning=eckit-sys {ECKIT_TAG} is building in-tree eckit {tree_version} (versions differ)"
+            );
+        }
+
+        return root.to_path_buf();
+    }
+    bindman_utils::git_clone(ECKIT_REPO, ECKIT_TAG, &src_dir.join("eckit"))
+}
+
 /// Build eckit from source using ecbuild
 #[cfg(feature = "vendored")]
 #[allow(clippy::too_many_lines)]
@@ -143,10 +186,6 @@ fn build_vendored() -> std::path::PathBuf {
 
     const ECBUILD_REPO: &str = "https://github.com/ecmwf/ecbuild.git";
     const ECBUILD_TAG: &str = "3.13.1";
-    const ECKIT_REPO: &str = "https://github.com/ecmwf/eckit.git";
-    // Pinned via the shared `ECKIT_VERSION` const above — `system` mode
-    // requires the same minimum so both modes give the same API surface.
-    const ECKIT_TAG: &str = ECKIT_VERSION;
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR not set"));
     let src_dir = out_dir.join("src");
@@ -156,9 +195,23 @@ fn build_vendored() -> std::path::PathBuf {
     fs::create_dir_all(&src_dir).expect("Failed to create src directory");
     fs::create_dir_all(&build_dir).expect("Failed to create build directory");
 
-    // Clone ecbuild and eckit
+    // Clone ecbuild (always external); eckit comes from the in-tree checkout
+    // when available, falling back to a clone of the release tag.
     let ecbuild_src = bindman_utils::git_clone(ECBUILD_REPO, ECBUILD_TAG, &src_dir.join("ecbuild"));
-    let eckit_src = bindman_utils::git_clone(ECKIT_REPO, ECKIT_TAG, &src_dir.join("eckit"));
+    let eckit_src = resolve_eckit_src(&src_dir);
+
+    // CMakeCache.txt pins the source path the build dir was configured with;
+    // cmake hard-errors if it changes (e.g. switching between cloned and
+    // in-tree sources). Wipe the build dir when the cached path is stale.
+    if let Ok(cache) = fs::read_to_string(build_dir.join("CMakeCache.txt")) {
+        let cached_src = cache
+            .lines()
+            .find_map(|l| l.strip_prefix("CMAKE_HOME_DIRECTORY:INTERNAL="));
+        if cached_src != eckit_src.to_str() {
+            fs::remove_dir_all(&build_dir).expect("Failed to remove stale eckit build directory");
+            fs::create_dir_all(&build_dir).expect("Failed to create build directory");
+        }
+    }
 
     // Configure with ecbuild
     let ecbuild_bin = ecbuild_src.join("bin/ecbuild");

@@ -8,6 +8,8 @@
 # does it submit to any jurisdiction.
 
 
+from libcpp cimport bool
+from libcpp.memory cimport unique_ptr
 from libcpp.string cimport string
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
@@ -37,10 +39,41 @@ cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":
 
 cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
     cdef cppclass BoundingBox(Area):
+        BoundingBox(double north, double west, double south, double east) except +
+
         double north() const
         double west() const
         double south() const
         double east() const
+
+        bool intersects(BoundingBox&) const
+        bool contains(const BoundingBox&) const
+        bool is_global "global"() const
+        bool periodic() const
+        bool empty() const
+        double area() const
+
+        @staticmethod
+        unique_ptr[BoundingBox] make_from_area(
+            double n, double w, double s, double e
+        ) except +
+
+
+cdef extern from "eckit/geo/Figure.h" namespace "eckit::geo":
+    cdef cppclass Figure:
+        double a() const
+        double b() const
+        double area() const
+        double area(const BoundingBox&) const
+        string spec_str() const
+        string proj_str() const
+        bool spherical() const
+        double eccentricity() const
+        double flattening() const
+
+    cdef cppclass FigureFactory:
+        @staticmethod
+        Figure* make_from_string(const string) except +
 
 
 cdef extern from "eckit/geo/Range.h" namespace "eckit::geo":
@@ -75,7 +108,10 @@ cdef extern from * namespace "eckit::geo::python":
     """
     #include <vector>
 
+    #include "eckit/geo/area/BoundingBox.h"
+    #include "eckit/geo/Figure.h"
     #include "eckit/geo/Grid.h"
+    #include "eckit/geo/PointLonLat.h"
 
     namespace eckit::geo::python {
 
@@ -86,9 +122,25 @@ cdef extern from * namespace "eckit::geo::python":
     inline v grid_lon_values(const Grid& grid) { return grid.lon().values(); }
     inline v grid_lat_values(const Grid& grid) { return grid.lat().values(); }
 
+    inline bool bbox_intersects(const area::BoundingBox& lhs, area::BoundingBox& rhs) {
+        return lhs.intersects(rhs);
+    }
+
+    inline bool bbox_contains_lonlat(
+        const area::BoundingBox& bbox, double lon, double lat
+    ) {
+        return bbox.contains(PointLonLat{lon, lat});
+    }
+
+    inline double figure_R(const Figure& figure) { return figure.R(); }
+
     }
     """
     vector[double] grid_x_values(const Grid& grid) except +
     vector[double] grid_y_values(const Grid& grid) except +
     vector[double] grid_lon_values(const Grid& grid) except +
     vector[double] grid_lat_values(const Grid& grid) except +
+
+    bint bbox_intersects(const BoundingBox& lhs, BoundingBox& rhs) except +
+    bint bbox_contains_lonlat(const BoundingBox& bbox, double lon, double lat) except +
+    double figure_R(const Figure& figure) except +

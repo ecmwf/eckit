@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
@@ -22,6 +23,10 @@
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
+
+#if eckit_HAVE_PROJ
+#include "eckit/geo/projection/PROJ.h"
+#endif
 
 
 namespace eckit::geo {
@@ -72,6 +77,16 @@ spec::Custom* Figure::spec() const {
 std::string Figure::spec_str() const {
     std::unique_ptr<const spec::Custom> custom(spec());
     return custom->str();
+}
+
+
+std::string Figure::proj_str() const {
+#if eckit_HAVE_PROJ
+    std::unique_ptr<const spec::Custom> custom(spec());
+    return projection::PROJ::proj_str(*custom);
+#else
+    NOTIMP;
+#endif
 }
 
 

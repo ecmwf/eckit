@@ -23,6 +23,9 @@ cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
         @staticmethod
         void purgeCacheDir()
 
+        @staticmethod
+        bool ensureProjDatabase(const string& fallback_db, const vector[string]& fallback_search_paths) except +
+
         string version()
         string gitsha1(unsigned int n)  # n=40 for full sha1
 

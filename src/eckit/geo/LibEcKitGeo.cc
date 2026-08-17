@@ -21,6 +21,12 @@
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/utils/StringTools.h"
 
+#if eckit_HAVE_PROJ
+#include <cstdlib>
+
+#include <proj.h>
+#endif
+
 
 namespace eckit {
 
@@ -169,6 +175,60 @@ bool LibEcKitGeo::proj() {
         LibResource<bool, LibEcKitGeo>("eckit-geo-projection-proj;$ECKIT_GEO_PROJECTION_PROJ",
                                        (eckit_HAVE_PROJ != 0) && (eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT != 0))};
     return yes;
+}
+
+
+bool LibEcKitGeo::ensureProjDatabase(const std::string& fallback_db,
+                                     const std::vector<std::string>& fallback_search_paths) {
+#if eckit_HAVE_PROJ
+    auto* ctx = PJ_DEFAULT_CTX;
+
+    // Whether PROJ can currently resolve a usable database. This opens and
+    // queries the database, so it validates existence and readability, not just
+    // that a file is named proj.db. We silence PROJ's log during the probe so a
+    // "Cannot find proj.db" line is not emitted when we are about to fix it.
+    auto database_available = [ctx]() -> bool {
+        const auto previous = proj_log_level(ctx, PJ_LOG_NONE);
+        const auto* path    = proj_context_get_database_path(ctx);
+        const bool ok       = path != nullptr && path[0] != '\0';
+        proj_log_level(ctx, previous);
+        return ok;
+    };
+
+    // (1) Respect an explicit user configuration unconditionally.
+    if (::getenv("PROJ_DATA") != nullptr || ::getenv("PROJ_LIB") != nullptr) {
+        return database_available();
+    }
+
+    // (2) If PROJ already finds a usable database on its own, leave it alone.
+    if (database_available()) {
+        return true;
+    }
+
+    // (3) Only now fall back to the provided (bundled) database, if present.
+    if (!fallback_db.empty() && PathName{fallback_db}.exists()) {
+        proj_context_set_database_path(ctx, fallback_db.c_str(), nullptr, nullptr);
+
+        if (!fallback_search_paths.empty()) {
+            std::vector<const char*> paths;
+            paths.reserve(fallback_search_paths.size());
+            for (const auto& p : fallback_search_paths) {
+                paths.push_back(p.c_str());
+            }
+            proj_context_set_search_paths(ctx, static_cast<int>(paths.size()), paths.data());
+        }
+
+        return database_available();
+    }
+
+    // (4) Nothing available; PROJ will raise a clear error on first use.
+    return false;
+#else
+    // eckit built without PROJ: nothing to configure.
+    static_cast<void>(fallback_db);
+    static_cast<void>(fallback_search_paths);
+    return false;
+#endif
 }
 
 

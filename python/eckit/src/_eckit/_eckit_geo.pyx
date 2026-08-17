@@ -11,6 +11,7 @@
 cimport eckit_geo
 from cython.operator cimport dereference
 from libcpp.memory cimport unique_ptr
+from libcpp.string cimport string
 from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
@@ -29,6 +30,22 @@ def git_sha1() -> str:
 
 def cache_dir_purge() -> None:
     eckit_geo.LibEcKitGeo.purgeCacheDir()
+
+
+def ensure_proj_database(fallback_db, fallback_search_paths=()) -> bool:
+    """Ensure eckit's PROJ subsystem can find a usable proj.db.
+
+    Respects PROJ_DATA/PROJ_LIB and any database PROJ can already resolve on
+    its own; only if neither yields a database does it fall back to the given
+    proj.db + search paths. No-op (returns False) when eckit was built without
+    PROJ. See LibEcKitGeo::ensureProjDatabase for the full policy.
+    """
+    cdef vector[string] paths
+    cdef string db
+    for p in fallback_search_paths:
+        paths.push_back(p.encode("utf-8") if isinstance(p, str) else p)
+    db = fallback_db.encode("utf-8") if isinstance(fallback_db, str) else fallback_db
+    return eckit_geo.LibEcKitGeo.ensureProjDatabase(db, paths)
 
 
 cdef class Area:

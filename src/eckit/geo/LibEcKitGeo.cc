@@ -181,7 +181,7 @@ bool LibEcKitGeo::proj() {
 bool LibEcKitGeo::ensureProjDatabase(const std::string& fallback_db,
                                      const std::vector<std::string>& fallback_search_paths) {
 #if eckit_HAVE_PROJ
-    auto* ctx = PJ_DEFAULT_CTX;
+    PJ_CONTEXT* ctx = PJ_DEFAULT_CTX;
 
     // Whether PROJ can currently resolve a usable database. This opens and
     // queries the database, so it validates existence and readability, not just

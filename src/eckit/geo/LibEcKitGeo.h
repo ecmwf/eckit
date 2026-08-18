@@ -50,28 +50,11 @@ public:
     static std::string url(const std::string& url_path);
 
     static bool proj();
-    /// Ensure eckit's PROJ subsystem can locate a usable PROJ database, using
-    /// the given database only as a fallback if one cannot already be found.
-    ///
-    /// Resolution order:
-    ///   1. If @c PROJ_DATA or @c PROJ_LIB is set in the environment, it is
-    ///      respected unconditionally and this is a no-op (even if it turns out
-    ///      to point at an incompatible database -- that is the user's choice).
-    ///   2. Otherwise, if PROJ can already resolve a database on its own (via
-    ///      its compiled-in default search paths, e.g. a system install), it is
-    ///      left untouched.
-    ///   3. Only if neither of the above yields a database, and
-    ///      @p fallback_db points at an existing @c proj.db file, is the PROJ
-    ///      default context pointed at it, with @p fallback_search_paths used to
-    ///      locate @c proj.ini and grid files.
-    ///
-    /// The fallback is applied via the PROJ per-context API, so it affects only
-    /// eckit's libproj instance and never leaks into other PROJ users in the
-    /// process (pyproj, fiona, GDAL, ...). It is a no-op when eckit was built
-    /// without PROJ support. Intended to be called once, at initialisation,
-    /// before any PROJ-backed projection is created.
-    ///
-    /// @return true if PROJ has a usable database after the call, false otherwise.
+
+    /**
+     *  If PROJ has a usable database.
+     *  @return true if PROJ has a usable database, false otherwise
+     */
     static bool ensureProjDatabase(const std::string& fallback_db,
                                    const std::vector<std::string>& fallback_search_paths = {});
 

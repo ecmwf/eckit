@@ -194,8 +194,6 @@ if(eckit_HAVE_PROJ)
         projection/PROJ.cc
         projection/PROJ.h
     )
-
-    # PROJ is used only internally.
     list(APPEND eckit_geo_private_libs PROJ::proj)
 endif()
 
@@ -206,10 +204,6 @@ if(eckit_HAVE_GEO_AREA_SHAPEFILE)
         cache/Unzip.cc
         cache/Unzip.h
     )
-    # Both are implementation details of eckit_geo, kept out of the installed
-    # public headers via PIMPL (Shapefile.h) and by only being included from
-    # cache/Unzip.cc. Downstream consumers of eckit_geo therefore don't need
-    # find_package(shapelib) / find_package(libzip) themselves.
     list(APPEND eckit_geo_private_libs shapelib::shp libzip::zip)
 endif()
 
@@ -226,12 +220,12 @@ install(
 )
 
 ecbuild_add_library(
-    TARGET eckit_geo
-    TYPE SHARED
-    INSTALL_HEADERS ALL
+    TARGET             eckit_geo
+    TYPE               SHARED
+    INSTALL_HEADERS    ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo
-    PUBLIC_LIBS ${eckit_geo_libs}
-    PRIVATE_LIBS ${eckit_geo_private_libs}
-    PUBLIC_INCLUDES ${eckit_geo_include_dirs}
-    SOURCES ${eckit_geo_srcs}
+    PUBLIC_LIBS        ${eckit_geo_libs}
+    PRIVATE_LIBS       ${eckit_geo_private_libs}
+    PUBLIC_INCLUDES    ${eckit_geo_include_dirs}
+    SOURCES            ${eckit_geo_srcs}
 )

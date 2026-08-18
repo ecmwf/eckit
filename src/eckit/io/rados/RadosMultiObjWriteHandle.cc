@@ -144,7 +144,7 @@ void RadosMultiObjWriteHandle::flush() {
         handle->flush();
     }
 
-    if (written_ > 0) {
+    if (position_ > Offset(0)) {
 
         RadosAttributes attrs;
 
@@ -159,10 +159,17 @@ void RadosMultiObjWriteHandle::flush() {
 
 void RadosMultiObjWriteHandle::close() {
 
+    if (!opened_) {
+        return;
+    }
+
+    flush();
+
     for (const auto& handle : handles_) {
         handle->close();
     }
     handles_.clear();
+    opened_ = false;
 }
 
 void RadosMultiObjWriteHandle::rewind() {

@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include <algorithm>
+
 #include "eckit/config/Resource.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosKeyValue.h"
@@ -59,26 +61,42 @@ CASE("Rados KeyValue") {
         res = kv.put(key2, val2.c_str(), val2.size());
         EXPECT(res == val2.size());
 
+        std::string empty_key = "empty";
+        res                   = kv.put(empty_key, nullptr, 0);
+        EXPECT(res == 0);
+
         // get
         char read_val[100] = "";
         res                = kv.get(key, read_val, sizeof(read_val));
         EXPECT(res == val.size());
         EXPECT(std::string(read_val) == val);
 
+        char empty_val = '\0';
+        res            = kv.get(empty_key, &empty_val, sizeof(empty_val));
+        EXPECT(res == 0);
+
+        std::vector<char> empty_stream_data;
+        eckit::MemoryStream empty_stream = kv.getMemoryStream(empty_stream_data, empty_key, "test kv");
+        EXPECT(empty_stream.read(&empty_val, sizeof(empty_val)) == 0);
+        EXPECT(empty_stream_data.empty());
+
         // list keys
         std::vector<std::string> keys = kv.keys();
-        EXPECT(keys.size() == 2);
-        EXPECT(keys.front() == key);
-        EXPECT(keys.back() == key2);
+        EXPECT(keys.size() == 3);
+        EXPECT(std::find(keys.begin(), keys.end(), key) != keys.end());
+        EXPECT(std::find(keys.begin(), keys.end(), key2) != keys.end());
+        EXPECT(std::find(keys.begin(), keys.end(), empty_key) != keys.end());
 
         // has
         EXPECT(kv.has(key));
         EXPECT(kv.has(key2));
+        EXPECT(kv.has(empty_key));
         EXPECT_NOT(kv.has("key3"));
 
         // remove
         kv.remove(key);
         kv.remove(key2);
+        kv.remove(empty_key);
 
         // get non-existing key
         EXPECT_THROWS_AS(kv.get(key, read_val, sizeof(read_val)), eckit::RadosEntityNotFoundException);

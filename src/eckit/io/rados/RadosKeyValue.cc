@@ -191,8 +191,9 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
     RADOS_CALL(rados_omap_get_next2(iter->it_, &found_key, &val, &found_key_len, &len));
 
     ASSERT(found_key);
-    ASSERT(val);
-    ASSERT(len > 0);
+    if (len > 0) {
+        ASSERT(val);
+    }
     ASSERT(key.size() == found_key_len);
     ASSERT(std::memcmp(key.c_str(), found_key, found_key_len) == 0);
 
@@ -207,7 +208,9 @@ long RadosKeyValue::get(const std::string& key, void* buf, const long& len) cons
 
     ASSERT(found_val_len <= len);
 
-    std::memcpy(buf, found_val, found_val_len);
+    if (found_val_len > 0) {
+        std::memcpy(buf, found_val, found_val_len);
+    }
 
     return found_val_len;
 }
@@ -220,9 +223,12 @@ eckit::MemoryStream RadosKeyValue::getMemoryStream(std::vector<char>& v, const s
     auto val_mem         = get(key, found_val, found_val_len);
 
     v.resize(found_val_len);
-    std::memcpy(&v[0], found_val, found_val_len);
+    if (found_val_len > 0) {
+        std::memcpy(v.data(), found_val, found_val_len);
+    }
 
-    return {&v[0], found_val_len};
+    static const char empty = '\0';
+    return {found_val_len > 0 ? v.data() : &empty, found_val_len};
 }
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& key) const {

@@ -97,6 +97,54 @@ CASE("Test Rados Handles") {
         RadosCluster::instance().removeAll(obj);
     }
 
+    SECTION("RadosMultiObjWriteHandle closes an exact-part write") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz012345";
+
+        RadosObject obj(pool.name(), nspace, "exact-part");
+        RadosMultiObjWriteHandle h(obj, false, 16);
+
+        h.openForWrite(sizeof(buf) - 1);
+        h.write(buf, sizeof(buf) - 1);
+        h.close();
+
+        Buffer mem(1024);
+        RadosMultiObjReadHandle g(obj);
+
+        g.openForRead();
+        long read = g.read(mem, mem.size());
+        g.close();
+
+        EXPECT(read == sizeof(buf) - 1);
+        EXPECT(std::memcmp(buf, mem.data(), read) == 0);
+
+        RadosCluster::instance().removeAll(obj);
+    }
+
+    SECTION("RadosMultiObjWriteHandle closes asynchronous writes") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject obj(pool.name(), nspace, "async");
+        RadosMultiObjWriteHandle h(obj, true, 16);
+
+        h.openForWrite(sizeof(buf) - 1);
+        h.write(buf, sizeof(buf) - 1);
+        h.close();
+
+        Buffer mem(1024);
+        RadosMultiObjReadHandle g(obj);
+
+        g.openForRead();
+        long read = g.read(mem, mem.size());
+        g.close();
+
+        EXPECT(read == sizeof(buf) - 1);
+        EXPECT(std::memcmp(buf, mem.data(), read) == 0);
+
+        RadosCluster::instance().removeAll(obj);
+    }
+
 #ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
     pool.destroy();
 #else

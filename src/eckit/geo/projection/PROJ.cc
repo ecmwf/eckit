@@ -14,10 +14,13 @@
 
 #include <proj.h>
 
+#include <cstdlib>
 #include <map>
 #include <set>
 #include <utility>
+#include <vector>
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/spec/Custom.h"
@@ -32,43 +35,29 @@ static ProjectionRegisterType<PROJ> PROJECTION("proj");
 namespace {
 
 
-constexpr auto CTX = PJ_DEFAULT_CTX;
+constexpr auto CTX              = PJ_DEFAULT_CTX;
+constexpr PJ_AREA* DEFAULT_AREA = nullptr;
 
 
 struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
-    explicit pj_t(element_type* ptr) : unique_ptr(ptr, &proj_destroy) {}
+    explicit pj_t(element_type* ptr) : unique_ptr(ptr, &proj_destroy) {
+        if (!operator bool()) {
+            // common errors are "proj.db not found" or "invalid CRS string"
+            const auto err = proj_context_errno(CTX);
+            throw exception::ProjectionError(
+                "PROJ: failed to create object (err=" + std::to_string(err) + ", description='" +
+                    proj_errno_string(err) +
+                    "'). Ensure proj.db is available (https://proj.org/en/stable/resource_files.html) or install "
+                    "the eckitlib wheel which bundles its own).",
+                Here());
+        }
+    }
 };
 
 
 struct ctx_t : std::unique_ptr<PJ_CONTEXT, decltype(&proj_context_destroy)> {
     explicit ctx_t(element_type* ptr) : unique_ptr(ptr, &proj_context_destroy) {}
 };
-
-
-// Wrap proj_create_crs_to_crs so that a NULL return (which most commonly means
-// "proj.db not found" or "invalid CRS string") turns into an actionable eckit
-// exception, rather than propagating NULL into subsequent PROJ calls that may
-// segfault or produce cryptic stack traces.
-PJ* checked_proj_create_crs_to_crs(PJ_CONTEXT* ctx, const std::string& source, const std::string& target) {
-    if (auto* pj = proj_create_crs_to_crs(ctx, source.c_str(), target.c_str(), nullptr); pj != nullptr) {
-        return pj;
-    }
-
-    const auto err       = proj_context_errno(ctx);
-    const char* err_desc = proj_errno_string(err);
-
-    std::string msg = "PROJ: proj_create_crs_to_crs failed for source='" + source + "', target='" + target + "'";
-    if (err_desc != nullptr && *err_desc != '\0') {
-        msg += " (";
-        msg += err_desc;
-        msg += ")";
-    }
-    msg +=
-        ". Ensure PROJ's database is available: set PROJ_DATA to a directory containing proj.db, "
-        "or install the eckitlib wheel (which bundles its own).";
-
-    throw exception::ProjectionError(msg, Here());
-}
 
 
 struct Convert {
@@ -119,7 +108,7 @@ struct XYZ final : Convert {
 
 
 Figure* make_figure(const std::string& proj_str) {
-    pj_t identity(checked_proj_create_crs_to_crs(CTX, proj_str, proj_str));
+    pj_t identity(proj_create_crs_to_crs(CTX, proj_str.c_str(), proj_str.c_str(), DEFAULT_AREA));
 
     pj_t crs(proj_get_target_crs(CTX, identity.get()));
     pj_t ellipsoid(proj_get_ellipsoid(CTX, crs.get()));
@@ -168,7 +157,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     ASSERT(!target_.empty());
 
     auto make_convert = [lon_minimum](const std::string& string) -> Convert* {
-        pj_t identity(checked_proj_create_crs_to_crs(CTX, string, string));
+        pj_t identity(proj_create_crs_to_crs(CTX, string.c_str(), string.c_str(), DEFAULT_AREA));
         pj_t crs(proj_get_target_crs(CTX, identity.get()));
         pj_t cs(proj_crs_get_coordinate_system(CTX, crs.get()));
         ASSERT(cs);
@@ -184,18 +173,10 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     };
 
     // projection, normalised
-    auto ctx = PJ_DEFAULT_CTX;
+    pj_t p(proj_create_crs_to_crs(CTX, source_.c_str(), target_.c_str(), DEFAULT_AREA));
+    p.reset(proj_normalize_for_visualization(CTX, p.release()));
 
-    // proj_normalize_for_visualization destroys its input in all cases, so we
-    // must not pass it a NULL; the checked wrapper guarantees non-NULL or throw.
-    auto* normalized = proj_normalize_for_visualization(ctx, checked_proj_create_crs_to_crs(ctx, source_, target_));
-    if (normalized == nullptr) {
-        throw exception::ProjectionError(
-            "PROJ: proj_normalize_for_visualization failed for source='" + source_ + "', target='" + target_ + "'",
-            Here());
-    }
-
-    implementation_ = std::make_unique<Implementation>(normalized, ctx, make_convert(source_), make_convert(target_));
+    implementation_ = std::make_unique<Implementation>(p.release(), CTX, make_convert(source_), make_convert(target_));
     ASSERT(implementation_);
 }
 
@@ -290,6 +271,67 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 const std::string& PROJ::proj_default() {
     static const std::string DEFAULT = "EPSG:4326";  // WGS84, latitude/longitude coordinate system
     return DEFAULT;
+}
+
+
+bool PROJ::proj_database_available(const std::string& fallback_db,
+                                   const std::vector<std::string>& fallback_search_paths) {
+    // Resolution order:
+    //   1. If PROJ can resolve a database on its own (via its compiled-in default search paths, e.g. a system install)
+    //   2. If @p fallback_db points at a @c proj.db file, with @p fallback_search_paths used to locate @c proj.ini and
+    //   grid files.
+    //
+    // The fallback is applied via the PROJ per-context API, so it affects only eckit's libproj instance and never leaks
+    // into other PROJ users in the process (pyproj, fiona, GDAL, ...). It is a no-op when eckit was built without PROJ
+    // support. Intended to be called once, at initialisation, before any PROJ-backed projection is created.
+
+    struct Database {
+        Database(const std::string& fallback_db, const std::vector<std::string>& fallback_search_paths) {
+            auto database_available = [&]() -> bool {
+                const auto previous_level = proj_log_level(CTX, PJ_LOG_NONE);
+
+                auto avail = false;
+                try {
+                    pj_t crs(proj_create_from_database(CTX, "EPSG", "4326", PJ_CATEGORY_CRS, false, nullptr));
+                    avail = static_cast<bool>(crs);
+                }
+                catch (...) {
+                }
+
+                proj_log_level(CTX, previous_level);
+                return avail;
+            };
+
+            // (1) If PROJ already finds a usable database on its own, leave it alone.
+            if (database_available()) {
+                available = true;
+                return;
+            }
+
+            // (2) Only now fall back to the provided (bundled) database, if present.
+            if (!fallback_db.empty() && PathName{fallback_db}.exists()) {
+                proj_context_set_database_path(CTX, fallback_db.c_str(), nullptr, nullptr);
+
+                std::vector<const char*> paths;
+                paths.reserve(fallback_search_paths.size());
+                for (const auto& p : fallback_search_paths) {
+                    if (!p.empty() && PathName{p}.exists()) {
+                        paths.push_back(p.c_str());
+                    }
+                }
+
+                if (!fallback_search_paths.empty()) {
+                    proj_context_set_search_paths(CTX, static_cast<int>(paths.size()), paths.data());
+                }
+
+                available = database_available();
+            }
+        }
+
+        bool available = false;
+    } static const DATABASE(fallback_db, fallback_search_paths);
+
+    return DATABASE.available;
 }
 
 

@@ -18,16 +18,10 @@ findlibs.load("eckit_geo", "eckitlib")
 
 def _configure_eckit_proj() -> None:
     """
-    Point eckit's PROJ subsystem at the proj.db bundled inside the eckitlib
-    wheel, so PROJ-backed projections work out of the box.
+    Point eckit's PROJ to the proj.db in the eckitlib wheel, so projections work out of the box.
 
-    All the policy -- respecting PROJ_DATA/PROJ_LIB, deferring to a database
-    PROJ can already find (e.g. a system install), and applying the fallback
-    only to eckit's own libproj instance -- lives in the eckit C++ library
-    (LibEcKitGeo::ensureProjDatabase). Here we only discover the candidate
-    bundled location, which is something only the Python layer can do (it knows
-    where pip installed the eckitlib package). The C++ side is a no-op when the
-    bundle, or PROJ support itself, is absent.
+    All the policy is in LibEcKitGeo::ensureProjDatabase. Here we only discover the candidate
+    bundled location (it knows where pip installed the eckitlib package).
     """
     try:
         import eckitlib
@@ -40,7 +34,12 @@ def _configure_eckit_proj() -> None:
     proj_dir = Path(eckitlib_file).parent / "share" / "proj"
     from eckit.geo._eckit_geo import ensure_proj_database
 
-    ensure_proj_database(str(proj_dir / "proj.db"), [str(proj_dir)])
+    if not ensure_proj_database(str(proj_dir / "proj.db"), [str(proj_dir)]):
+        import warnings
+
+        warnings.warn(
+            f"Could not find bundled proj.db at {proj_dir / 'proj.db'}, projection support is limited. Please install PROJ and/or set the PROJ_DATA environment variable."
+        )
 
 
 _configure_eckit_proj()

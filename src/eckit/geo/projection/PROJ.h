@@ -51,6 +51,13 @@ public:
     static std::string proj_str(const spec::Custom&);
     static const std::string& proj_default();
 
+    /**
+     *  If PROJ has a usable database.
+     *  @return true if PROJ has a usable database, false otherwise
+     */
+    static bool proj_database_available(const std::string& fallback_db,
+                                        const std::vector<std::string>& fallback_search_paths = {});
+
 private:
 
     // -- Types

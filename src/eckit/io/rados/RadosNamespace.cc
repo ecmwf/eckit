@@ -48,15 +48,15 @@ std::vector<eckit::RadosObject> RadosNamespace::listObjects() const {
     std::vector<eckit::RadosObject> res;
 
     for (const auto& i : eckit::RadosCluster::instance().listObjects(pool_.name(), ns_))
-        res.push_back(eckit::RadosObject(pool_.name(), ns_, i));
+        res.emplace_back(pool_.name(), ns_, i);
 
     return res;
 }
 
-void RadosNamespace::destroy() {
-
-    for (auto& i : listObjects())
-        i.ensureDestroyed();
+void RadosNamespace::destroy() const {
+    for (auto& object : listObjects()) {
+        object.ensureDestroyed();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------

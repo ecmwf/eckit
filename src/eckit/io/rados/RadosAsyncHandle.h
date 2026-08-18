@@ -26,13 +26,11 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-/// @note: ensures writes are persisted on flush
-
 class RadosAsyncHandle : public eckit::RadosHandle {
 
 public:  // methods
 
-    RadosAsyncHandle(const RadosObject& object, size_t maxAioBuffSize = 1024 * 1024);
+    explicit RadosAsyncHandle(const RadosObject& object, size_t maxAioBuffSize = 1024 * 1024);
 
 public:  // methods
 

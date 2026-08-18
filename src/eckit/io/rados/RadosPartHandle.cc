@@ -41,11 +41,8 @@ void RadosPartHandle::print(std::ostream& s) const {
 }
 
 Length RadosPartHandle::openForRead() {
-
     ASSERT(!open_);
-
     open_ = true;
-
     return size();
 }
 
@@ -53,9 +50,6 @@ long RadosPartHandle::read(void* buf, long len) {
 
     ASSERT(open_);
 
-    /// @note: offset_ is the absolute start of the part within the object, and
-    ///   pos_ is the current read position relative to that start. The number
-    ///   of bytes still available in the part is len_ - pos_.
     const long long remaining = len_ - pos_;
 
     if (remaining <= 0) {
@@ -92,7 +86,7 @@ Length RadosPartHandle::estimate() {
 }
 
 Offset RadosPartHandle::position() {
-    return eckit::Offset(pos_);
+    return {pos_};
 }
 
 Offset RadosPartHandle::seek(const Offset& offset) {

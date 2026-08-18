@@ -86,11 +86,7 @@ void RadosKeyValue::ensureDestroyed() const {
 }
 
 eckit::Length RadosKeyValue::size(const std::string& key) const {
-
     NOTIMP;
-    /// @note: not implemented as it would require retrieving the actual value
-    ///   with a read_op_omap_get_vals_by_keys2 call. Better force the user code
-    ///   to use the available get methods.
 }
 
 bool RadosKeyValue::has(const std::string& key) const {
@@ -163,7 +159,7 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
 
     eckit::RadosReadOp op{};
 
-    std::unique_ptr<eckit::RadosIter> iter = std::make_unique<eckit::RadosIter>();
+    auto iter = std::make_unique<eckit::RadosIter>();
 
     const char* key_c = key.c_str();
     size_t key_len    = key.size();
@@ -189,8 +185,8 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
         throw eckit::RadosEntityNotFoundException("Key '" + key + "' not found in KeyValue with name " + oid_);
     }
 
-    char* found_key;
-    size_t found_key_len;
+    char* found_key      = nullptr;
+    size_t found_key_len = 0;
 
     RADOS_CALL(rados_omap_get_next2(iter->it_, &found_key, &val, &found_key_len, &len));
 
@@ -205,9 +201,9 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
 
 long RadosKeyValue::get(const std::string& key, void* buf, const long& len) const {
 
-    char* found_val;
-    size_t found_val_len;
-    auto val_mem = get(key, found_val, found_val_len);
+    char* found_val      = nullptr;
+    size_t found_val_len = 0;
+    auto val_mem         = get(key, found_val, found_val_len);
 
     ASSERT(found_val_len <= len);
 
@@ -219,14 +215,14 @@ long RadosKeyValue::get(const std::string& key, void* buf, const long& len) cons
 eckit::MemoryStream RadosKeyValue::getMemoryStream(std::vector<char>& v, const std::string& key,
                                                    const std::string& kvTitle) const {
 
-    char* found_val;
-    size_t found_val_len;
-    auto val_mem = get(key, found_val, found_val_len);
+    char* found_val      = nullptr;
+    size_t found_val_len = 0;
+    auto val_mem         = get(key, found_val, found_val_len);
 
     v.resize(found_val_len);
     std::memcpy(&v[0], found_val, found_val_len);
 
-    return eckit::MemoryStream(&v[0], found_val_len);
+    return {&v[0], found_val_len};
 }
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& key) const {

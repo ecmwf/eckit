@@ -13,7 +13,10 @@
 
 #pragma once
 
+#include <string>
+
 #include "eckit/exception/Exceptions.h"
+#include "eckit/log/CodeLocation.h"
 
 namespace eckit {
 

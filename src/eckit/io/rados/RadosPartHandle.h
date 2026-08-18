@@ -31,7 +31,7 @@ public:  // methods
 
     RadosPartHandle(const eckit::RadosObject& object, const eckit::Offset& offset, const eckit::Length& length);
 
-    ~RadosPartHandle();
+    ~RadosPartHandle() override;
 
     void print(std::ostream& out) const override;
 

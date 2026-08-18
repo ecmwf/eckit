@@ -30,9 +30,9 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int radosCall(int code, const char* msg, const char* file, int line, const char* func);
+int call_rados(int code, const char* msg, const char* file, int line, const char* func);
 
-#define RADOS_CALL(a) eckit::radosCall(a, #a, __FILE__, __LINE__, __func__)
+#define RADOS_CALL(a) eckit::call_rados(a, #a, __FILE__, __LINE__, __func__)
 
 //----------------------------------------------------------------------------------------------------------------------
 

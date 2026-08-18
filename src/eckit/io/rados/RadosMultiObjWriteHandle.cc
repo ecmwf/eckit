@@ -45,10 +45,9 @@ RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::RadosObject& obj
     async_(async),
     maxPartSize_(maxPartSize),
     maxAioBuffSize_(maxAioBuffSize),
-    maxHandleBuffSize_(maxHandleBuffSize),
-    opened_(false) {
+    maxHandleBuffSize_(maxHandleBuffSize) {
 
-    if (!maxPartSize_) {
+    if (maxPartSize_ == Length(0)) {
         maxPartSize_ = RadosCluster::instance().maxObjectSize();
     }
 }
@@ -120,10 +119,10 @@ long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
                 handles_.push_back(std::unique_ptr<DataHandle>(nullptr));
             }
             if (async_) {
-                handles_.back().reset(new RadosAsyncHandle(object, maxAioBuffSize_));
+                handles_.back() = std::make_unique<RadosAsyncHandle>(object, maxAioBuffSize_);
             }
             else {
-                handles_.back().reset(new RadosHandle(object));
+                handles_.back() = std::make_unique<RadosHandle>(object);
             }
             handles_.back()->openForWrite(0);  // TODO: use proper size
         }

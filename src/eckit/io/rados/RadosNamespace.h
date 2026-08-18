@@ -39,13 +39,13 @@ public:
     bool exists() const { return pool_.exists(); };
     std::vector<eckit::RadosObject> listObjects() const;
 
-    void destroy();
+    void destroy() const;
 
 private:  // methods
 
     friend class RadosObject;
     friend class RadosKeyValue;
-    RadosNamespace() {}
+    RadosNamespace() = default;
 
 private:  // members
 

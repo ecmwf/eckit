@@ -34,7 +34,7 @@ class RadosMultiObjReadHandle : public eckit::DataHandle {
 
 public:  // methods
 
-    RadosMultiObjReadHandle(const RadosObject& object);
+    explicit RadosMultiObjReadHandle(const RadosObject& object);
 
     ~RadosMultiObjReadHandle() override;
 

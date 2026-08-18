@@ -41,7 +41,7 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-int radosCall(int code, const char* msg, const char* file, int line, const char* func) {
+int call_rados(int code, const char* msg, const char* file, int line, const char* func) {
 
     LOG_DEBUG_LIB(LibEcKit) << "RADOS_CALL => " << msg << std::endl;
 
@@ -71,8 +71,9 @@ public:
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx <= rados_ioctx_create(" << pool << ")" << std::endl;
 
         std::string nspace_name = nspace;
-        if (nspace == "")
+        if (nspace == "") {
             nspace_name = "LIBRADOS_ALL_NSPACES";
+        }
 
         LOG_DEBUG_LIB(LibEcKit) << "RadosIOCtx => rados_ioctx_set_namespace(" << nspace_name << ")" << std::endl;
         if (nspace == "") {
@@ -203,8 +204,6 @@ RadosCluster::~RadosCluster() {
 }
 
 void RadosCluster::error(int code, const char* msg, const char* file, int line, const char* func) {
-
-
     std::ostringstream oss;
     oss << "RADOS error " << msg << ", file " << file << ", line " << line << ", function " << func << " [" << code
         << "] (" << strerror(-code) << ")";
@@ -212,27 +211,15 @@ void RadosCluster::error(int code, const char* msg, const char* file, int line, 
 }
 
 Length RadosCluster::maxWriteSize() const {
-    // TODO: Get from server
-    // ceph configuration parameter "osd_max_write_size" default value is 90MiB
+    /// TODO: Get from server
+    /// ceph configuration parameter "osd_max_write_size" default value is 90MiB
     static long long len = Resource<long long>("radosMaxWriteSize", 90 * 1024 * 1024);
     return len;
 }
 
 Length RadosCluster::maxObjectSize() const {
-    /*    rados_ioctx_t& ctx=ioCtx("mars");
-        char keys[1000000];
-        size_t keyLen;
-        char vals[1000000];
-        size_t valLen;
-
-        rados_application_metadata_list(ctx, "ceph", keys, &keyLen, vals, &valLen);
-
-        std::cout << vals <<std::endl;
-
-        std::cout << keys <<std::endl;*/
-
-    // TODO: Get from server
-    // ceph configuration parameter "osd_max_object_size" default value is 124MiB
+    /// TODO: Get from server
+    /// ceph configuration parameter "osd_max_object_size" default value is 124MiB
     static long long len = Resource<long long>("radosMaxObjectSize", 124 * 1024 * 1024);
     return len;
 }
@@ -267,36 +254,20 @@ rados_ioctx_t& RadosCluster::ioCtx(const RadosKeyValue& object) const {
 }
 
 bool RadosCluster::poolExists(const std::string& pool) const {
-
-    /// @note: this is making the strong assumption that if an ioCtx
-    /// for a pool exists in ctx_, then the pool exists as well. This
-    /// may well not be true as the pool can be destroyed by another
-    /// process after this process adds it to ctx_. But because pools
-    /// are not intended to be intensively created and destroyed
-    /// concurrently, this assumption is safe enough and saves
-    /// rados_pool_lookups e.g. in the FDB Rados backend.
-    // if (ctx_.find(pool) != ctx_.end()) return true;
-    /// @note: if making this assumption, then we should at least have
-    /// a method to close pools and remove the open connection from
-    /// ctx_.
-
     try {
         RADOS_CALL(rados_pool_lookup(cluster_, pool.c_str()));
     }
     catch (eckit::RadosEntityNotFoundException& e) {
         return false;
     }
-
     return true;
 }
 
 void RadosCluster::createPool(const std::string& pool) const {
-
     RADOS_CALL(rados_pool_create(cluster_, pool.c_str()));
 }
 
 void RadosCluster::ensurePool(const std::string& pool) const {
-
     if (!poolExists(pool)) {
         createPool(pool);
     }
@@ -327,31 +298,25 @@ void RadosCluster::destroyPool(const std::string& pool) const {
 }
 
 void RadosCluster::attributes(const RadosObject& object, const RadosAttributes& attr) const {
-
     const char* oid = object.name().c_str();
-    auto a          = attr.attrs();
-    for (auto j = a.begin(); j != a.end(); ++j) {
-
-        LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::attributes => [" << (*j).first << "] [" << (*j).second << "]";
-
-
-        RADOS_CALL(rados_setxattr(ioCtx(object), oid, (*j).first.c_str(), (*j).second.c_str(), (*j).second.size()));
+    auto attributes = attr.attrs();
+    for (const auto& [key, value] : attributes) {
+        LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::attributes => [" << key << "] [" << value << "]";
+        RADOS_CALL(rados_setxattr(ioCtx(object), oid, key.c_str(), value.c_str(), value.size()));
     }
 }
 
 RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
-
     RadosAttributes attr;
 
-    rados_xattrs_iter_t iter;
+    rados_xattrs_iter_t iter = nullptr;
     RADOS_CALL(rados_getxattrs(ioCtx(object), object.name().c_str(), &iter));
 
 
     for (;;) {
-        const char* name;
-
-        const char* val;
-        size_t len;
+        const char* name = nullptr;
+        const char* val  = nullptr;
+        size_t len       = 0;
 
         RADOS_CALL(rados_getxattrs_next(iter, &name, &val, &len));
         if (!name) {
@@ -360,7 +325,7 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
 
         LOG_DEBUG_LIB(LibEcKit) << "RadosCluster::attributes <= [" << name << "] [";
         for (size_t i = 0; i < len; i++) {
-            if (isprint(val[i])) {
+            if (0 != isprint(val[i])) {
                 LOG_DEBUG_LIB(LibEcKit) << val[i];
             }
             else {
@@ -378,8 +343,8 @@ RadosAttributes RadosCluster::attributes(const RadosObject& object) const {
 }
 
 bool RadosCluster::exists(const RadosObject& object) const {
-    uint64_t psize;
-    time_t pmtime;
+    uint64_t psize = 0;
+    time_t pmtime  = 0;
 
     try {
         RADOS_CALL(rados_stat(ioCtx(object), object.name().c_str(), &psize, &pmtime));
@@ -397,8 +362,8 @@ bool RadosCluster::exists(const RadosKeyValue& object) const {
 }
 
 Length RadosCluster::size(const RadosObject& object) const {
-    uint64_t psize;
-    time_t pmtime;
+    uint64_t psize = 0;
+    time_t pmtime  = 0;
     RADOS_CALL(rados_stat(ioCtx(object), object.name().c_str(), &psize, &pmtime));
     return psize;
 }
@@ -418,14 +383,13 @@ void RadosCluster::truncate(const RadosObject& object, const Length& length) con
 }
 
 time_t RadosCluster::lastModified(const RadosObject& object) const {
-    uint64_t psize;
-    time_t pmtime;
+    uint64_t psize = 0;
+    time_t pmtime  = 0;
     RADOS_CALL(rados_stat(ioCtx(object), object.name().c_str(), &psize, &pmtime));
     return pmtime;
 }
 
 std::vector<std::string> RadosCluster::listPools() const {
-
     std::vector<std::string> res;
 
     int buflen = RADOS_CALL(rados_pool_list(cluster_, NULL, 0));
@@ -469,15 +433,14 @@ std::vector<std::string> RadosCluster::listObjects(const std::string& pool, cons
 }
 
 std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) const {
-
     std::set<std::string> res;
 
-    rados_ioctx_t ioctx = ioCtx(pool, "");
-    rados_list_ctx_t listctx;
+    rados_ioctx_t ioctx      = ioCtx(pool, "");
+    rados_list_ctx_t listctx = nullptr;
     RADOS_CALL(rados_nobjects_list_open(ioctx, &listctx));
 
-    const char* entry;
-    const char* nspace;
+    const char* entry  = nullptr;
+    const char* nspace = nullptr;
     while (true) {
         try {
             RADOS_CALL(rados_nobjects_list_next(listctx, &entry, NULL, &nspace));
@@ -496,7 +459,7 @@ std::vector<std::string> RadosCluster::listNamespaces(const std::string& pool) c
 void RadosCluster::removeAll(const RadosObject& object) const {
     RadosAttributes attr = attributes(object);
 
-    size_t parts;
+    size_t parts = 0;
     ASSERT(attr.get("parts", parts));
     for (size_t i = 0; i < parts; ++i) {
         remove(RadosObject(object, i));

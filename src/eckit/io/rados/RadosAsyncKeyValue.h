@@ -30,7 +30,8 @@ class RadosAsyncKeyValue : public RadosKeyValue {
 
 public:  // methods
 
-    RadosAsyncKeyValue(const eckit::URI& uri, size_t maxAioBuffSize = 1024 * 1024);
+    explicit RadosAsyncKeyValue(const eckit::URI& uri, size_t maxAioBuffSize = 1024 * 1024);
+
     RadosAsyncKeyValue(const std::string& pool, const std::string& nspace, const std::string& oid,
                        size_t maxAioBuffSize = 1024 * 1024);
 

@@ -73,13 +73,6 @@ long RadosHandle::read(void* buffer, long length) {
     ASSERT(opened_);
     ASSERT(!write_);
 
-    /// @note: is this useful at all? even if trimming down the length, if offset_ > 0
-    ///   then the read call will request a range that exceed the object span.
-    /// @note: is this check/trimming desirable? in the read pathway, we want to discover the length of the parts
-    ///   rather than assuming a certain configured length which might have had a different value on write.
-    // long maxLength = RadosCluster::instance().maxObjectSize();
-    // long readLength = length > maxLength ? maxLength : length;
-
     int len = RADOS_CALL(rados_read(RadosCluster::instance().ioCtx(object_), object_.name().c_str(),
                                     reinterpret_cast<char*>(buffer), length, offset_));
 
@@ -119,14 +112,11 @@ void RadosHandle::flush() {}
 
 eckit::Offset RadosHandle::seek(const eckit::Offset& offset) {
     offset_ = offset;
-    /// @todo: assert offset <= size() ?
     return offset_;
 }
 
 void RadosHandle::close() {
-
     ASSERT(opened_);
-
     opened_ = false;
 }
 

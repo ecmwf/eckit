@@ -70,16 +70,6 @@ long RadosAsyncHandle::write(const void* buffer, long length) {
 }
 
 void RadosAsyncHandle::flush() {
-    /// @note: not correct! aio_flush waits for safe on all AIOs for an IoCtx for an entire pool/namespace
-    ///   where AIOs from multiple RadosAsyncHandles (belonging to a same process) for
-    ///   objects on the same pool could be ongoing.
-    ///   Alternative: wait_for_complete on each AIO in comps_.
-    ///   Alternative: have an IoCtx for each application in RadosCluster
-    ///   Alternative: call rados_aio_flush in RadosStore::flush for all IoCtx for all open handles.
-    ///     Since they all ??must belong to a same pool and namespace?? a single aio_flush should suffice?
-    // RADOS_CALL(rados_aio_flush(RadosCluster::instance().ioCtx(object_)));
-    // comps_.clear();
-
     for (const auto& comp : comps_) {
         comp->waitForComplete();
     }

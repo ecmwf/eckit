@@ -202,33 +202,33 @@ std::unique_ptr<eckit::RadosIter> RadosKeyValue::get(const std::string& key, cha
 
 long RadosKeyValue::get(const std::string& key, void* buf, const long& len) const {
 
-    char* found_val      = nullptr;
-    size_t found_val_len = 0;
-    auto val_mem         = get(key, found_val, found_val_len);
+    char* found      = nullptr;
+    size_t found_len = 0;
+    auto val_mem     = get(key, found, found_len);
 
-    ASSERT(found_val_len <= len);
+    ASSERT(found_len <= len);
 
-    if (found_val_len > 0) {
-        std::memcpy(buf, found_val, found_val_len);
+    if (found_len > 0) {
+        std::memcpy(buf, found, found_len);
     }
 
-    return found_val_len;
+    return found_len;
 }
 
-eckit::MemoryStream RadosKeyValue::getMemoryStream(std::vector<char>& v, const std::string& key,
+eckit::MemoryStream RadosKeyValue::getMemoryStream(std::vector<char>& value, const std::string& key,
                                                    const std::string& kvTitle) const {
 
-    char* found_val      = nullptr;
-    size_t found_val_len = 0;
-    auto val_mem         = get(key, found_val, found_val_len);
+    char* found  = nullptr;
+    size_t len   = 0;
+    auto val_mem = get(key, found, len);
 
-    v.resize(found_val_len);
-    if (found_val_len > 0) {
-        std::memcpy(v.data(), found_val, found_val_len);
+    value.resize(len);
+    if (len > 0) {
+        std::memcpy(value.data(), found, len);
     }
 
     static const char empty = '\0';
-    return {found_val_len > 0 ? v.data() : &empty, found_val_len};
+    return {len > 0 ? value.data() : &empty, len};
 }
 
 std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& key) const {

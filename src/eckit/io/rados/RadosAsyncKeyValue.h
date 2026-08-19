@@ -36,8 +36,6 @@ public:  // methods
                        size_t maxAioBuffSize = 1024 * 1024);
 
     void ensureCreated();
-    /// @todo:
-    // void ensureDestroyed();
 
     long put(const std::string& key, const void* buf, const long& len);
     void remove(const std::string& key);

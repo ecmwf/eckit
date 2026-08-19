@@ -172,6 +172,10 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
     return ll;
 }
 
+size_t Grid::truncation() const {
+    throw exception::NotImplemented("Grid: truncation() is not implemented for type '" + type() + "'", Here());
+}
+
 
 const Grid::order_type& Grid::order() const {
     throw exception::NotImplemented("Grid: order() is not implemented for type '" + type() + "'", Here());

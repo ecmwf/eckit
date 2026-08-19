@@ -137,6 +137,8 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
+    virtual size_t truncation() const;
+
     virtual const order_type& order() const;
     virtual renumber_type reorder(const order_type&) const;
 

@@ -51,12 +51,17 @@ public:
     static std::string proj_str(const spec::Custom&);
     static const std::string& proj_default();
 
-    /**
-     *  If PROJ has a usable database.
-     *  @return true if PROJ has a usable database, false otherwise
-     */
-    static bool proj_database_available(const std::string& fallback_db,
-                                        const std::vector<std::string>& fallback_search_paths = {});
+    /// If PROJ has a usable database.
+    /// @return true if PROJ has a usable database, false otherwise
+    static bool projdb_is_available();
+
+    /// Set PROJ search paths for the database.
+    /// @param db_path Path to the PROJ database.
+    /// @param search_paths Additional search paths for the PROJ database.
+    static void projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths = {});
+
+    /// Reset PROJ search paths to the default values.
+    static void projdb_reset();
 
 private:
 

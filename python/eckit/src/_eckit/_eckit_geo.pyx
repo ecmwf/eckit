@@ -32,20 +32,27 @@ def cache_dir_purge() -> None:
     eckit_geo.LibEcKitGeo.purgeCacheDir()
 
 
-def ensure_proj_database(fallback_db, fallback_search_paths=()) -> bool:
-    """Ensure eckit's PROJ subsystem can find a usable proj.db.
-
-    Respects PROJ_DATA/PROJ_LIB and any database PROJ can already resolve on
-    its own; only if neither yields a database does it fall back to the given
-    proj.db + search paths. No-op (returns False) when eckit was built without
-    PROJ. See LibEcKitGeo::ensureProjDatabase for the full policy.
+def projdb_is_available() -> bool:
     """
-    cdef vector[string] paths
-    cdef string db
-    for p in fallback_search_paths:
-        paths.push_back(p.encode("utf-8") if isinstance(p, str) else p)
-    db = fallback_db.encode("utf-8") if isinstance(fallback_db, str) else fallback_db
-    return eckit_geo.LibEcKitGeo.ensureProjDatabase(db, paths)
+    If PROJ has a usable database.
+    """
+    return eckit_geo.LibEcKitGeo.projdb_is_available()
+
+
+def projdb_set_search_paths(db_path, search_paths=()) -> None:
+    """
+    Point eckit's PROJ context at a proj.db and its auxiliary search paths.
+
+    Affects only eckit's libproj instance (per-context PROJ API); never leaks
+    into other PROJ users in the process (pyproj, GDAL, ...). Call before any
+    PROJ-backed projection is created, then re-check projdb_is_available().
+    """
+    cdef vector[string] _search_paths
+    cdef string _db_path
+    for p in search_paths:
+        _search_paths.push_back(p.encode("utf-8") if isinstance(p, str) else p)
+    _db_path = db_path.encode("utf-8") if isinstance(db_path, str) else db_path
+    eckit_geo.LibEcKitGeo.projdb_set_search_paths(_db_path, _search_paths)
 
 
 cdef class Area:

@@ -176,14 +176,26 @@ bool LibEcKitGeo::proj() {
 }
 
 
-bool LibEcKitGeo::ensureProjDatabase(const std::string& fallback_db,
-                                     const std::vector<std::string>& fallback_search_paths) {
+bool LibEcKitGeo::projdb_is_available() {
 #if eckit_HAVE_PROJ
-    return geo::projection::PROJ::proj_database_available(fallback_db, fallback_search_paths);
+    return geo::projection::PROJ::projdb_is_available();
 #else
-    static_cast<void>(fallback_db);
-    static_cast<void>(fallback_search_paths);
     return false;
+#endif
+}
+
+
+void LibEcKitGeo::projdb_set_search_paths([[maybe_unused]] const std::string& db_path,
+                                          [[maybe_unused]] const std::vector<std::string>& search_paths) {
+#if eckit_HAVE_PROJ
+    geo::projection::PROJ::projdb_set_search_paths(db_path, search_paths);
+#endif
+}
+
+
+void LibEcKitGeo::projdb_reset() {
+#if eckit_HAVE_PROJ
+    geo::projection::PROJ::projdb_reset();
 #endif
 }
 

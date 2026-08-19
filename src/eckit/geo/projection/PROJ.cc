@@ -20,7 +20,6 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/spec/Custom.h"
@@ -35,28 +34,40 @@ static ProjectionRegisterType<PROJ> PROJECTION("proj");
 namespace {
 
 
-constexpr auto CTX              = PJ_DEFAULT_CTX;
-constexpr PJ_AREA* DEFAULT_AREA = nullptr;
+PJ_AREA* AREA       = nullptr;
+PJ_CONTEXT* CONTEXT = nullptr;
+
+
+PJ_CONTEXT* ctx() {
+    return CONTEXT == nullptr ? (CONTEXT = proj_context_create()) : CONTEXT;
+}
+
+
+PJ_AREA* area() {
+    return AREA;  // not specific
+}
+
+
+void proj_reset() {
+    if (CONTEXT != nullptr) {
+        proj_context_destroy(CONTEXT);
+        CONTEXT = nullptr;
+    }
+    ctx();
+    area();
+}
 
 
 struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
     explicit pj_t(element_type* ptr) : unique_ptr(ptr, &proj_destroy) {
         if (!operator bool()) {
             // common errors are "proj.db not found" or "invalid CRS string"
-            const auto err = proj_context_errno(CTX);
-            throw exception::ProjectionError(
-                "PROJ: failed to create object (err=" + std::to_string(err) + ", description='" +
-                    proj_errno_string(err) +
-                    "'). Ensure proj.db is available (https://proj.org/en/stable/resource_files.html) or install "
-                    "the eckitlib wheel which bundles its own).",
-                Here());
+            const auto err = proj_context_errno(ctx());
+            throw exception::ProjectionError("PROJ: failed to create object (err=" + std::to_string(err) +
+                                                 ", description='" + proj_errno_string(err) + "')",
+                                             Here());
         }
     }
-};
-
-
-struct ctx_t : std::unique_ptr<PJ_CONTEXT, decltype(&proj_context_destroy)> {
-    explicit ctx_t(element_type* ptr) : unique_ptr(ptr, &proj_context_destroy) {}
 };
 
 
@@ -108,15 +119,15 @@ struct XYZ final : Convert {
 
 
 Figure* make_figure(const std::string& proj_str) {
-    pj_t identity(proj_create_crs_to_crs(CTX, proj_str.c_str(), proj_str.c_str(), DEFAULT_AREA));
+    pj_t identity(proj_create_crs_to_crs(ctx(), proj_str.c_str(), proj_str.c_str(), area()));
 
-    pj_t crs(proj_get_target_crs(CTX, identity.get()));
-    pj_t ellipsoid(proj_get_ellipsoid(CTX, crs.get()));
+    pj_t crs(proj_get_target_crs(ctx(), identity.get()));
+    pj_t ellipsoid(proj_get_ellipsoid(ctx(), crs.get()));
     ASSERT(ellipsoid);
 
     double a = 0;
     double b = 0;
-    ASSERT(proj_ellipsoid_get_parameters(CTX, ellipsoid.get(), &a, &b, nullptr, nullptr));
+    ASSERT(proj_ellipsoid_get_parameters(ctx(), ellipsoid.get(), &a, &b, nullptr, nullptr));
     ASSERT(0 < b && b <= a);
 
     return FigureFactory::build(spec::Custom{{{"a", a}, {"b", b}}});
@@ -127,8 +138,8 @@ Figure* make_figure(const std::string& proj_str) {
 
 
 struct PROJ::Implementation {
-    Implementation(PJ* pj_ptr, PJ_CONTEXT* pjc_ptr, Convert* source_ptr, Convert* target_ptr) :
-        proj_(pj_ptr), ctx_(pjc_ptr), source_(source_ptr), target_(target_ptr) {
+    Implementation(PJ* pj_ptr, Convert* source_ptr, Convert* target_ptr) :
+        proj_(pj_ptr), source_(source_ptr), target_(target_ptr) {
         ASSERT(proj_);
         ASSERT(source_);
         ASSERT(target_);
@@ -145,7 +156,6 @@ struct PROJ::Implementation {
 private:
 
     const pj_t proj_;
-    const ctx_t ctx_;
     const std::unique_ptr<Convert> source_;
     const std::unique_ptr<Convert> target_;
 };
@@ -157,13 +167,13 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     ASSERT(!target_.empty());
 
     auto make_convert = [lon_minimum](const std::string& string) -> Convert* {
-        pj_t identity(proj_create_crs_to_crs(CTX, string.c_str(), string.c_str(), DEFAULT_AREA));
-        pj_t crs(proj_get_target_crs(CTX, identity.get()));
-        pj_t cs(proj_crs_get_coordinate_system(CTX, crs.get()));
+        pj_t identity(proj_create_crs_to_crs(ctx(), string.c_str(), string.c_str(), area()));
+        pj_t crs(proj_get_target_crs(ctx(), identity.get()));
+        pj_t cs(proj_crs_get_coordinate_system(ctx(), crs.get()));
         ASSERT(cs);
 
-        auto type = proj_cs_get_type(CTX, cs.get());
-        auto dim  = proj_cs_get_axis_count(CTX, cs.get());
+        auto type = proj_cs_get_type(ctx(), cs.get());
+        auto dim  = proj_cs_get_axis_count(ctx(), cs.get());
 
         return type == PJ_CS_TYPE_CARTESIAN && dim == 3   ? static_cast<Convert*>(new XYZ)
                : type == PJ_CS_TYPE_CARTESIAN && dim == 2 ? static_cast<Convert*>(new XY)
@@ -173,10 +183,10 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     };
 
     // projection, normalised
-    pj_t p(proj_create_crs_to_crs(CTX, source_.c_str(), target_.c_str(), DEFAULT_AREA));
-    p.reset(proj_normalize_for_visualization(CTX, p.release()));
+    pj_t p(proj_create_crs_to_crs(ctx(), source_.c_str(), target_.c_str(), area()));
+    p.reset(proj_normalize_for_visualization(ctx(), p.release()));
 
-    implementation_ = std::make_unique<Implementation>(p.release(), CTX, make_convert(source_), make_convert(target_));
+    implementation_ = std::make_unique<Implementation>(p.release(), make_convert(source_), make_convert(target_));
     ASSERT(implementation_);
 }
 
@@ -274,64 +284,47 @@ const std::string& PROJ::proj_default() {
 }
 
 
-bool PROJ::proj_database_available(const std::string& fallback_db,
-                                   const std::vector<std::string>& fallback_search_paths) {
-    // Resolution order:
-    //   1. If PROJ can resolve a database on its own (via its compiled-in default search paths, e.g. a system install)
-    //   2. If @p fallback_db points at a @c proj.db file, with @p fallback_search_paths used to locate @c proj.ini and
-    //   grid files.
-    //
-    // The fallback is applied via the PROJ per-context API, so it affects only eckit's libproj instance and never leaks
-    // into other PROJ users in the process (pyproj, fiona, GDAL, ...). It is a no-op when eckit was built without PROJ
-    // support. Intended to be called once, at initialisation, before any PROJ-backed projection is created.
+bool PROJ::projdb_is_available() {
+    struct MuteLog {
+        MuteLog() : previous_(proj_log_level(ctx(), PJ_LOG_NONE)) {}
+        ~MuteLog() { proj_log_level(ctx(), previous_); }
+        const PJ_LOG_LEVEL previous_;
+    } mute_log;
 
-    struct Database {
-        Database(const std::string& fallback_db, const std::vector<std::string>& fallback_search_paths) {
-            auto database_available = [&]() -> bool {
-                const auto previous_level = proj_log_level(CTX, PJ_LOG_NONE);
+    try {
+        pj_t crs(proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, false, nullptr));
+        return static_cast<bool>(crs);
+    }
+    catch (...) {
+    }
 
-                auto avail = false;
-                try {
-                    pj_t crs(proj_create_from_database(CTX, "EPSG", "4326", PJ_CATEGORY_CRS, false, nullptr));
-                    avail = static_cast<bool>(crs);
-                }
-                catch (...) {
-                }
+    return false;
+}
 
-                proj_log_level(CTX, previous_level);
-                return avail;
-            };
 
-            // (1) If PROJ already finds a usable database on its own, leave it alone.
-            if (database_available()) {
-                available = true;
-                return;
-            }
+void PROJ::projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths) {
+    // Recreate context so the new paths takes effect (an already-open database is reset)
+    proj_reset();
 
-            // (2) Only now fall back to the provided (bundled) database, if present.
-            if (!fallback_db.empty() && PathName{fallback_db}.exists()) {
-                proj_context_set_database_path(CTX, fallback_db.c_str(), nullptr, nullptr);
+    if (!db_path.empty()) {
+        proj_context_set_database_path(ctx(), db_path.c_str(), nullptr, nullptr);
+    }
 
-                std::vector<const char*> paths;
-                paths.reserve(fallback_search_paths.size());
-                for (const auto& p : fallback_search_paths) {
-                    if (!p.empty() && PathName{p}.exists()) {
-                        paths.push_back(p.c_str());
-                    }
-                }
-
-                if (!fallback_search_paths.empty()) {
-                    proj_context_set_search_paths(CTX, static_cast<int>(paths.size()), paths.data());
-                }
-
-                available = database_available();
-            }
+    if (!search_paths.empty()) {
+        std::vector<const char*> paths;
+        paths.reserve(search_paths.size());
+        for (const auto& p : search_paths) {
+            paths.push_back(p.c_str());
         }
 
-        bool available = false;
-    } static const DATABASE(fallback_db, fallback_search_paths);
+        proj_context_set_search_paths(ctx(), static_cast<int>(search_paths.size()), paths.data());
+    }
+}
 
-    return DATABASE.available;
+
+void PROJ::projdb_reset() {
+    // a fresh context re-resolves the database from the environment / compiled-in defaults.
+    proj_reset();
 }
 
 

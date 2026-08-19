@@ -50,7 +50,7 @@ public:  // methods
     long put(const std::string& key, const void* buf, const long& len) const;
     long get(const std::string& key, void* buf, const long& len) const;
     eckit::MemoryStream getMemoryStream(std::vector<char>& v, const std::string& key, const std::string& kvTitle) const;
-    void remove(const std::string& key);
+    void remove(const std::string& key) const;
     std::vector<std::string> keys(int keysPerQuery = 1000) const;
 
 protected:  // methods

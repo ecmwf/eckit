@@ -252,7 +252,7 @@ std::unique_ptr<eckit::RadosAIO> RadosKeyValue::removeAsync(const std::string& k
     return comp;
 }
 
-void RadosKeyValue::remove(const std::string& key) {
+void RadosKeyValue::remove(const std::string& key) const {
 
     auto comp = removeAsync(key);
 

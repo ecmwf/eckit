@@ -21,6 +21,10 @@
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/utils/StringTools.h"
 
+#if eckit_HAVE_PROJ
+#include "eckit/geo/projection/PROJ.h"
+#endif
+
 
 namespace eckit {
 
@@ -169,6 +173,30 @@ bool LibEcKitGeo::proj() {
         LibResource<bool, LibEcKitGeo>("eckit-geo-projection-proj;$ECKIT_GEO_PROJECTION_PROJ",
                                        (eckit_HAVE_PROJ != 0) && (eckit_HAVE_GEO_PROJECTION_PROJ_DEFAULT != 0))};
     return yes;
+}
+
+
+bool LibEcKitGeo::projdb_is_available() {
+#if eckit_HAVE_PROJ
+    return geo::projection::PROJ::projdb_is_available();
+#else
+    return false;
+#endif
+}
+
+
+void LibEcKitGeo::projdb_set_search_paths([[maybe_unused]] const std::string& db_path,
+                                          [[maybe_unused]] const std::vector<std::string>& search_paths) {
+#if eckit_HAVE_PROJ
+    geo::projection::PROJ::projdb_set_search_paths(db_path, search_paths);
+#endif
+}
+
+
+void LibEcKitGeo::projdb_reset() {
+#if eckit_HAVE_PROJ
+    geo::projection::PROJ::projdb_reset();
+#endif
 }
 
 

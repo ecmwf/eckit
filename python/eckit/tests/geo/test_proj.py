@@ -47,13 +47,13 @@ def _restore_proj_context():
         else:
             os.environ[k] = v
 
-    from eckit.geo import _configure_eckit_proj
+    from eckit._utils import configure_projdb
 
     # Recreate the context (drops any test database path, re-resolves the
     # defaults from the now-restored environment), then re-apply the bundled
     # fallback if this build relies on it.
     projdb_set_search_paths("", [])
-    _configure_eckit_proj()
+    configure_projdb()
 
 
 def test_projdb_bad_search_paths():

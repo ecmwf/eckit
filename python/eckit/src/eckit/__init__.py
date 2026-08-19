@@ -12,9 +12,8 @@ import findlibs
 findlibs.load("eckit", "eckitlib")
 findlibs.load("eckit_maths", "eckitlib")
 
-
-from eckit._certifi import configure_ca_bundle_from_certifi
 from eckit._eckit import *
+from eckit._utils import configure_ca_bundle_from_certifi
 
 configure_ca_bundle_from_certifi()
 

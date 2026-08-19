@@ -36,7 +36,7 @@ jobs:
       ECKIT_RADOS_CLUSTER_USER: client.admin
       # Local dirs used to cache apt archives and the Ceph docker image.
       APT_CACHE: ${{ github.workspace }}/.apt-cache
-      CEPH_IMAGE: quay.io/ceph/demo:latest-squid
+      CEPH_IMAGE: quay.io/ceph/demo@sha256:522483cf07cfce6386b8e18a3edfa88a1b32c688dee231d0a6962b1513557723
       CEPH_IMAGE_CACHE: ${{ github.workspace }}/.docker-ceph
 
     steps:
@@ -82,8 +82,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/.docker-ceph
-          # Bump the suffix to refresh the pinned image snapshot.
-          key: ceph-image-latest-squid-v1
+          key: ceph-image-522483cf07cf-v1
 
       - name: Load or pull Ceph image
         run: |

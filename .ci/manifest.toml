@@ -59,6 +59,36 @@ forwarded-inputs = ["cxx-compiler", "build-type"]
 forwarded-deps-outputs = ["cmake-prefix-path"]
 needs = ["ecbuild/build", "stack-deps/build"]
 
+# --- HPC build --------------------------------------------------------------
+# eckit built inside a SLURM job, linking the atos-hpc-gnu ecbuild and stack-deps
+# artifacts. `needs` names the HPC kinds, never the runner ones: the two lanes
+# are separate artifact universes distinguished by platform, and a runner rebuild
+# must not be what re-runs this.
+#
+# The compiler fields are discriminators for artifact identity and dep matching,
+# not the binaries the recipe invokes — the job loads whatever prgenv/gnu
+# provides. They only have to agree with what the upstreams published under.
+#
+# runs-on/container/site are scheduling only and never enter the artifact name.
+# The container carries the cluster ssh identity (keys, the hpc-batch alias,
+# known_hosts) without which troika cannot submit; it is private, hence
+# container-credentials.
+[[matrix.build-hpc.include]]
+cxx-compiler = "g++-13"
+build-type = "Release"
+runs-on = "arc-hpc-pet-vsphere-prod"
+container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+site = "hpc-batch"
+platform = "atos-hpc-gnu"
+
+[matrix.build-hpc]
+execution = "hpc"
+container-credentials = true
+job-script = "./.ci/hpc/build.sh"
+triggers = ["upstream-change", "rebuild-request"]
+forwarded-deps-outputs = ["cmake-prefix-path"]
+needs = ["ecbuild/build-hpc", "stack-deps/build-hpc"]
+
 # --- downstream CI fan-out ---------------------------------------------------
 # eccodes consumes eckit only on its ENABLE_ECKIT_GEO leg; that scoping lives in
 # eccodes' own manifest, via a `when` predicate on its [[deps]] entry for us.

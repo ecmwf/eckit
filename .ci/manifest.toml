@@ -1,0 +1,106 @@
+# Single source of truth for eckit's CI under ecmwf/ci-infrastructure.
+#
+# Alongside this manifest:
+#   - .github/workflows/ci.yml               push/PR build that publishes the artifact
+#   - .github/workflows/cross-repo-trigger.yml
+#                                            GENERATED entry point for upstream fan-out
+#                                            and consumer-driven rebuilds
+#   - .github/workflows/trigger-downstream.yml
+#                                            GENERATED fan-out to our own consumers
+#   - .github/workflows/old_CI.yml           the legacy ecmwf/downstream-ci pipeline,
+#                                            still running unchanged during migration
+
+[package]
+name = "eckit"
+prefix = "eckit"
+repo = "ecmwf/eckit"
+# Public, so upstreams call our cross-repo-trigger.yml directly via `uses:`
+# rather than dispatching it to keep logs out of a public run.
+visibility = "public"
+compiler-inputs = ["cxx-compiler"]
+
+[[deps]]
+repo = "ecmwf/ecbuild"
+package = "ecbuild"
+ref = "develop"
+# ecbuild installs a compiler-independent CMake toolchain: one artifact serves
+# every compiler, so no compiler field enters its name.
+compiler-inputs = []
+
+[[deps]]
+repo = "ecmwf/stack-dependencies"
+package = "stack-deps"
+ref = "master"
+# Supplies libaec (FEATURE AEC), and qhull/PROJ should those features ever be
+# switched on. Compiled C++, so the compiler is part of its identity.
+compiler-inputs = ["cxx-compiler"]
+
+# Both legs share platform ubuntu-24.04 so they reuse the ecbuild and stack-deps
+# artifacts built under that same slug. runs-on/container are scheduling only and
+# never enter an artifact name.
+[[matrix.build.include]]
+cxx-compiler = "clang++-18"
+build-type = "Release"
+runs-on = "arc-runner-very-large"
+container = "eccr.ecmwf.int/public-playground-ci/ubuntu24.04-clang18-gfortran13:latest"
+platform = "ubuntu-24.04"
+
+[[matrix.build.include]]
+cxx-compiler = "g++-13"
+build-type = "Release"
+runs-on = "arc-runner-very-large"
+container = "eccr.ecmwf.int/public-playground-ci/ubuntu24.04-clang18-gfortran13:latest"
+platform = "ubuntu-24.04"
+
+[matrix.build]
+triggers = ["upstream-change", "rebuild-request"]
+action = "./.github/actions/build-eckit"
+forwarded-inputs = ["cxx-compiler", "build-type"]
+forwarded-deps-outputs = ["cmake-prefix-path"]
+needs = ["ecbuild/build", "stack-deps/build"]
+
+# --- HPC build --------------------------------------------------------------
+# eckit built inside a SLURM job, linking the atos-hpc-gnu ecbuild and stack-deps
+# artifacts. `needs` names the HPC kinds, never the runner ones: the two lanes
+# are separate artifact universes distinguished by platform, and a runner rebuild
+# must not be what re-runs this.
+#
+# The compiler fields are discriminators for artifact identity and dep matching,
+# not the binaries the recipe invokes — the job loads whatever prgenv/gnu
+# provides. They only have to agree with what the upstreams published under.
+#
+# runs-on/container/site are scheduling only and never enter the artifact name.
+# The container carries the cluster ssh identity (keys, the hpc-batch alias,
+# known_hosts) without which troika cannot submit; it is private, hence
+# container-credentials.
+[[matrix.build-hpc.include]]
+cxx-compiler = "g++-13"
+build-type = "Release"
+runs-on = "arc-hpc-pet-vsphere-prod"
+container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+site = "hpc-batch"
+platform = "atos-hpc-gnu"
+
+[matrix.build-hpc]
+execution = "hpc"
+container-credentials = true
+job-script = "./.ci/hpc/build.sh"
+triggers = ["upstream-change", "rebuild-request"]
+forwarded-deps-outputs = ["cmake-prefix-path"]
+needs = ["ecbuild/build-hpc", "stack-deps/build-hpc"]
+
+# --- downstream CI fan-out ---------------------------------------------------
+# eccodes consumes eckit only on its ENABLE_ECKIT_GEO leg; that scoping lives in
+# eccodes' own manifest, via a `when` predicate on its [[deps]] entry for us.
+# ROLLOUT NOTE: pinned to the sync branch on purpose, and TEMPORARY.
+# `ref` is what the orchestrator pins its `uses:` to, and `uses:` cannot take an
+# expression, so it selects which WORKFLOW DEFINITION runs. Pointing it at the
+# sync branch is what lets the full downstream CI be exercised before the
+# rollout merges: the orchestrator lives on the default branch (workflow_run
+# only ever runs the default-branch copy) while the consumer logic it calls
+# comes from the sync branch. Source checkout and artifact refs are handled
+# independently at runtime by pick-ref and resolve_deps' sync-branch override.
+# FLIP TO develop AND REGENERATE WHEN THE ROLLOUT MERGES.
+[[trigger-downstream]]
+repo = "ecmwf/eccodes"
+ref = "sync-branch-ci-rollout"

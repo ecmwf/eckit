@@ -16,6 +16,10 @@
 #include "eckit/config/Resource.h"
 #include "eckit/io/rados/RadosException.h"
 #include "eckit/io/rados/RadosKeyValue.h"
+#ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+#include "eckit/io/rados/RadosNamespace.h"
+#endif
+#include "RadosTestUtils.h"
 #include "eckit/io/rados/RadosPool.h"
 #include "eckit/testing/Test.h"
 
@@ -125,5 +129,19 @@ CASE("Rados KeyValue") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return eckit::testing::run_tests(argc, argv);
+    int ret = -1;
+    try {
+        ret = eckit::testing::run_tests(argc, argv);
+    }
+    catch (...) {
+        eckit::Log::error() << "RADOS key/value tests terminated with an exception" << std::endl;
+    }
+
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+    eckit::test::cleanupRados("test_kv", "default");
+#else
+    eckit::test::cleanupRados(eckit::test::configuredRadosTestPool(), "test_kv");
+#endif
+
+    return ret;
 }

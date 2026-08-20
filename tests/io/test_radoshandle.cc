@@ -18,6 +18,10 @@
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
 #include "eckit/io/rados/RadosObject.h"
+#ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+#include "eckit/io/rados/RadosNamespace.h"
+#endif
+#include "RadosTestUtils.h"
 #include "eckit/io/rados/RadosPool.h"
 #include "eckit/testing/Test.h"
 
@@ -158,5 +162,19 @@ CASE("Test Rados Handles") {
 }  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return eckit::testing::run_tests(argc, argv);
+    int ret = -1;
+    try {
+        ret = eckit::testing::run_tests(argc, argv);
+    }
+    catch (...) {
+        eckit::Log::error() << "RADOS handle tests terminated with an exception" << std::endl;
+    }
+
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+    eckit::test::cleanupRados("test_handle", "default");
+#else
+    eckit::test::cleanupRados(eckit::test::configuredRadosTestPool(), "test_handle");
+#endif
+
+    return ret;
 }

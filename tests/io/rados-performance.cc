@@ -18,7 +18,10 @@
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosMultiObjReadHandle.h"
 #include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
 #include "eckit/io/rados/RadosNamespace.h"
+#endif
+#include "RadosTestUtils.h"
 #include "eckit/io/rados/RadosObject.h"
 #include "eckit/io/rados/RadosPool.h"
 #include "eckit/log/Bytes.h"
@@ -92,5 +95,19 @@ CASE("Test rados performance") {
 }  // namespace eckit::test
 
 int main(int argc, char* argv[]) {
-    return eckit::testing::run_tests(argc, argv);
+    int ret = -1;
+    try {
+        ret = eckit::testing::run_tests(argc, argv);
+    }
+    catch (...) {
+        eckit::Log::error() << "RADOS performance test terminated with an exception" << std::endl;
+    }
+
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+    eckit::test::cleanupRados("mars", "default");
+#else
+    eckit::test::cleanupRados(eckit::test::configuredRadosTestPool(), "performance");
+#endif
+
+    return ret;
 }

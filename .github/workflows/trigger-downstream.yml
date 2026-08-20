@@ -73,13 +73,13 @@ jobs:
     name: eccodes
     needs:
     - validate
-    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger.yml@sync-branch-ci-rollout
+    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger.yml@develop
     with:
       from-repo: ${{ github.repository }}
       from-sha: ${{ github.event.workflow_run.head_sha }}
       from-jobs: '["eckit/build"]'
       branch: ${{ github.event.workflow_run.head_branch }}
-      fallback-ref: sync-branch-ci-rollout
+      fallback-ref: develop
     secrets: inherit
   report-result:
     needs:

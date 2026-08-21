@@ -33,7 +33,9 @@ def configure_projdb() -> None:
         return
 
     if "PROJ_DATA" in environ or "PROJ_LIB" in environ:
-        warn(f"PROJ_DATA/PROJ_LIB does not point at a usable proj.db. {msg_footer} Try unsetting it to use the bundled database.")
+        warn(
+            f"PROJ_DATA/PROJ_LIB does not point at a usable proj.db. {msg_footer} Try unsetting it to use the bundled database."
+        )
         return
 
     try:
@@ -41,13 +43,17 @@ def configure_projdb() -> None:
 
         proj_dir = Path(eckitlib.__file__).parent / "share" / "proj"
     except (ImportError, AttributeError, TypeError):
-        warn(f"Could not locate the eckitlib module for the bundled proj.db. {msg_footer}")
+        warn(
+            f"Could not locate the eckitlib module for the bundled proj.db. {msg_footer}"
+        )
         return
 
     projdb_set_search_paths(str(proj_dir / "proj.db"), [str(proj_dir)])
 
     if not projdb_is_available():
-        warn(f"Could not find a usable bundled proj.db at {proj_dir / 'proj.db'}. {msg_footer}")
+        warn(
+            f"Could not find a usable bundled proj.db at {proj_dir / 'proj.db'}. {msg_footer}"
+        )
 
 
 def configure_ca_bundle_from_certifi() -> None:

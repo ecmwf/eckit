@@ -29,8 +29,12 @@ def test_figure_earth():
     assert figure.spec == dict(r=R)
 
     assert A == pytest.approx(figure.area())
-    assert A == pytest.approx(figure.area(BoundingBox(north=90, west=0, south=-90, east=360)))
-    assert A / 2 == pytest.approx(figure.area(BoundingBox(north=90, west=0, south=0, east=360)))
+    assert A == pytest.approx(
+        figure.area(BoundingBox(north=90, west=0, south=-90, east=360))
+    )
+    assert A / 2 == pytest.approx(
+        figure.area(BoundingBox(north=90, west=0, south=0, east=360))
+    )
 
 
 def test_figure_wgs84():
@@ -49,5 +53,9 @@ def test_figure_wgs84():
     assert figure.spec == dict(figure="wgs84")
 
     assert A == pytest.approx(figure.area())
-    assert A == pytest.approx(figure.area(BoundingBox(north=90, west=0, south=-90, east=360)))
-    assert A / 2 == pytest.approx(figure.area(BoundingBox(north=90, west=0, south=0, east=360)))
+    assert A == pytest.approx(
+        figure.area(BoundingBox(north=90, west=0, south=-90, east=360))
+    )
+    assert A / 2 == pytest.approx(
+        figure.area(BoundingBox(north=90, west=0, south=0, east=360))
+    )

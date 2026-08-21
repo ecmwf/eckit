@@ -89,8 +89,8 @@ cdef class Area:
 
     @property
     def spec(self) -> dict:
-        from yaml import safe_load
-        return safe_load(self.spec_str)
+        from json import loads
+        return loads(self.spec_str)
 
     @property
     def type(self) -> str:
@@ -145,8 +145,8 @@ cdef class BoundingBox:
 
     @property
     def spec(self) -> dict:
-        from yaml import safe_load
-        return safe_load(self.spec_str)
+        from json import loads
+        return loads(self.spec_str)
 
     @property
     def north(self) -> float:
@@ -241,8 +241,8 @@ cdef class Figure:
 
     @property
     def spec(self) -> dict:
-        from yaml import safe_load
-        return safe_load(self.spec_str)
+        from json import loads
+        return loads(self.spec_str)
 
     @property
     def proj_str(self) -> str:
@@ -337,8 +337,8 @@ cdef class Grid:
 
     @property
     def spec(self) -> dict:
-        from yaml import safe_load
-        return safe_load(self.spec_str)
+        from json import loads
+        return loads(self.spec_str)
 
     @property
     def catalog_str(self) -> str:
@@ -346,8 +346,8 @@ cdef class Grid:
 
     @property
     def catalog(self) -> dict:
-        from yaml import safe_load
-        return safe_load(self.catalog_str)
+        from json import loads
+        return loads(self.catalog_str)
 
     @property
     def type(self) -> str:

@@ -38,3 +38,13 @@ def test_unstructured_ll():
 
     assert grid == Grid(name)
     assert grid.spec == dict(grid=name)
+
+
+def test_regular_ll():
+    spec = dict(
+        area=[71.9834273, -25, 25, 49.9834833],
+        grid=[0.0166667, 0.0166667],
+        reference=[5e-05, 0.0166167],
+    )
+    grid = Grid(spec)
+    assert grid.spec == spec

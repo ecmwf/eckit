@@ -95,12 +95,8 @@ fn generate_exceptions(include: &std::path::Path) {
 }
 
 /// Header root for docs builds (`DOCS_RS=1`), where the native eckit build
-/// — normally the provider of the include tree — is skipped. `docs-headers/`
-/// mirrors the include-tree layout, holding a symlink into this repo's
-/// `src/`; `cargo package` embeds the linked file's content, so the same
-/// path serves in-repo checkouts and published crates alike. Docs builds
-/// consume only the generated Rust side; the C++ catch-block header is
-/// never compiled.
+/// is skipped. `docs-headers/` mirrors the include-tree layout with a symlink
+/// into this repo's `src/`; `cargo package` embeds the linked file's content.
 fn docs_source_include() -> std::path::PathBuf {
     std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"))
         .join("docs-headers")
@@ -109,8 +105,7 @@ fn docs_source_include() -> std::path::PathBuf {
 /// Build using system-installed eckit via `CMake` `find_package`
 #[cfg(feature = "system")]
 fn build_system() -> std::path::PathBuf {
-    // Minimum supported system version, independent of the crate version
-    // (which tracks the vendored eckit release).
+    // Minimum supported system version; the crate version tracks the vendored release.
     let (root, include, lib_dir) = bindman_utils::cmake_find_package("eckit", "2.0.7");
 
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
@@ -129,12 +124,9 @@ fn build_system() -> std::path::PathBuf {
     unreachable!("build_system called without system feature");
 }
 
-/// Locate the eckit C++ sources. When the crate lives inside the eckit
-/// repository (path dependency, or a git dependency — cargo checks out the
-/// whole repo), the sources are three levels up from the crate and we build
-/// them directly: branch changes take effect and no tag/network is required.
-/// Cloning the release tag is the fallback for the packaged (crates.io) case,
-/// where the crate ships without the C++ tree.
+/// Locate the eckit C++ sources: prefer the in-tree checkout when the crate
+/// lives inside the eckit repository (path or git dependency), falling back
+/// to cloning the release tag (packaged crates.io case).
 #[cfg(feature = "vendored")]
 fn resolve_eckit_src(src_dir: &std::path::Path) -> std::path::PathBuf {
     const ECKIT_REPO: &str = "https://github.com/ecmwf/eckit.git";
@@ -158,9 +150,7 @@ fn resolve_eckit_src(src_dir: &std::path::Path) -> std::path::PathBuf {
         );
         println!("cargo:rerun-if-changed={}", root.join("VERSION").display());
 
-        // Diverging is legitimate mid-development (unreleased C++ changes are
-        // the point of in-tree builds), but should never go unnoticed. The
-        // crate-version test enforces equality at release time.
+        // Diverging is fine mid-development, but should never go unnoticed.
         let tree_version = std::fs::read_to_string(root.join("VERSION"))
             .map(|s| s.trim().to_string())
             .unwrap_or_default();
@@ -195,14 +185,11 @@ fn build_vendored() -> std::path::PathBuf {
     fs::create_dir_all(&src_dir).expect("Failed to create src directory");
     fs::create_dir_all(&build_dir).expect("Failed to create build directory");
 
-    // Clone ecbuild (always external); eckit comes from the in-tree checkout
-    // when available, falling back to a clone of the release tag.
     let ecbuild_src = bindman_utils::git_clone(ECBUILD_REPO, ECBUILD_TAG, &src_dir.join("ecbuild"));
     let eckit_src = resolve_eckit_src(&src_dir);
 
-    // CMakeCache.txt pins the source path the build dir was configured with;
-    // cmake hard-errors if it changes (e.g. switching between cloned and
-    // in-tree sources). Wipe the build dir when the cached path is stale.
+    // cmake hard-errors if the source path recorded in CMakeCache.txt changes
+    // (e.g. cloned <-> in-tree); wipe the build dir when it is stale.
     if let Ok(cache) = fs::read_to_string(build_dir.join("CMakeCache.txt")) {
         let cached_src = cache
             .lines()

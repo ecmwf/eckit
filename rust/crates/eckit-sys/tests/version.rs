@@ -1,9 +1,5 @@
-//! Guard against version drift between the crate and the C++ sources.
-//!
-//! The crate version is duplicated from the repo's `VERSION` file by
-//! necessity — cargo cannot read it dynamically — and it drives which
-//! eckit tag the vendored build clones. This test fails CI whenever one
-//! is bumped without the other.
+//! Guard against drift between the crate version and the repo's `VERSION`
+//! file (cargo cannot read it dynamically).
 
 #[test]
 fn crate_version_matches_repo_version_file() {

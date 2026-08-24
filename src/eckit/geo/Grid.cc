@@ -18,6 +18,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Range.h"
+#include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/util/mutex.h"
@@ -170,6 +171,11 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
     });
 
     return ll;
+}
+
+Grid* Grid::to_unstructured_ll(const std::string& name) const {
+    auto [lat, lon] = to_latlons();
+    return new grid::Unstructured(lon, lat, name);
 }
 
 size_t Grid::truncation() const {

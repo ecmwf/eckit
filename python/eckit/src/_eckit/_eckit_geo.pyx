@@ -270,6 +270,8 @@ cdef class Grid:
 
     def __cinit__(self, spec = None, **kwargs):
         self._grid = NULL
+        if spec is None and not kwargs:
+            return  # internal use only (to_unstructured_ll)
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
@@ -292,6 +294,11 @@ cdef class Grid:
     def to_latlons(self):
         cdef pair[vector[double], vector[double]] latlons = self._grid.to_latlons()
         return list(latlons.first), list(latlons.second)
+
+    def to_unstructured_ll(self, name: str = ""):
+        cdef Grid grid = Grid.__new__(Grid)  # wrap pointer directly
+        grid._grid = self._grid.to_unstructured_ll(name)
+        return grid
 
     def distinct_latitudes(self):
         return self.lat()

@@ -22,12 +22,12 @@ SPECS = [
 
 
 @pytest.mark.parametrize("spec, shape", SPECS)
-def test_shape(spec, shape):
+def test_grid_shape(spec, shape):
     grid = Grid(spec)
     assert shape == grid.shape
 
 
-def test_unstructured_ll():
+def test_grid_unstructured_ll():
     grid = Grid(latitudes=[1, 2, 3], longitudes=[4, 5, 6])
 
     assert grid.spec == dict(type="unstructured_ll", uid=grid.uid)
@@ -40,7 +40,21 @@ def test_unstructured_ll():
     assert grid.spec == dict(grid=name)
 
 
-def test_regular_ll():
+def test_grid_to_unstructured_ll():
+    grid = Grid(latitudes=[1, 2, 3], longitudes=[4, 5, 6])
+
+    a = grid.to_unstructured_ll()
+    assert a.type == "unstructured_ll"
+    assert a.to_latlons() == grid.to_latlons()
+    assert a.uid == grid.uid  # no name given, same points -> same uid
+
+    name = "custom-to-unstructured-ll"
+    b = grid.to_unstructured_ll(name)
+    assert b.uid == grid.uid  # name doesn't change uid
+    assert b == Grid(name)
+
+
+def test_grid_regular_ll():
     spec = dict(
         area=[71.9834273, -25, 25, 49.9834833],
         grid=[0.0166667, 0.0166667],

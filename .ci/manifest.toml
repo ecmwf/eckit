@@ -42,14 +42,14 @@ compiler-inputs = ["cxx-compiler"]
 cxx-compiler = "clang++-18"
 build-type = "Release"
 runs-on = "arc-runner-very-large"
-container = "eccr.ecmwf.int/public-playground-ci/ubuntu24.04-clang18-gfortran13:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-clang18-gfortran13:latest"
 platform = "ubuntu-24.04"
 
 [[matrix.build.include]]
 cxx-compiler = "g++-13"
 build-type = "Release"
 runs-on = "arc-runner-very-large"
-container = "eccr.ecmwf.int/public-playground-ci/ubuntu24.04-clang18-gfortran13:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-clang18-gfortran13:latest"
 platform = "ubuntu-24.04"
 
 [matrix.build]
@@ -87,7 +87,7 @@ ctest-args = '-j "$(nproc)"'
 cxx-compiler = "g++-13"
 build-type = "Release"
 runs-on = "arc-hpc-pet-vsphere-prod"
-container = "eccr.ecmwf.int/private-playground-ci/ubuntu24.04-internal-tools:latest"
+container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
 platform = "atos-hpc-gnu"
 

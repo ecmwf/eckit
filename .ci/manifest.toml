@@ -60,10 +60,14 @@ forwarded-deps-outputs = ["cmake-prefix-path"]
 needs = ["ecbuild/build", "stack-deps/build"]
 # Run the suite in the fan-out too, not just on push/PR: an upstream-driven
 # build that only compiles proves nothing beyond "eckit still links against the
-# new ecbuild". Plain `ctest`, matching what ci.yml's build+test job runs.
+# new ecbuild". Same invocation as ci.yml's build+test job.
 # The build-eckit composite leaves the build tree in place and exposes build-dir
 # for exactly this.
 ctest = true
+# Parallel, like the build step above: ctest defaults to one test at a time, which
+# left cumulative sec*proc equal to wall-clock in every run so far — the whole
+# machine idle but for one test. Kept identical to ci.yml's Test step.
+ctest-args = '-j "$(nproc)"'
 
 # --- HPC build --------------------------------------------------------------
 # eckit built inside a SLURM job, linking the atos-hpc-gnu ecbuild and stack-deps

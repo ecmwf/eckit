@@ -58,15 +58,13 @@ action = "./.github/actions/build-eckit"
 forwarded-inputs = ["cxx-compiler", "build-type"]
 forwarded-deps-outputs = ["cmake-prefix-path"]
 needs = ["ecbuild/build", "stack-deps/build"]
-# Run the suite in the fan-out too, not just on push/PR: an upstream-driven
-# build that only compiles proves nothing beyond "eckit still links against the
-# new ecbuild". Same invocation as ci.yml's build+test job.
-# The build-eckit composite leaves the build tree in place and exposes build-dir
-# for exactly this.
+# Run the suite in the fan-out too, not just on push/PR: an upstream-driven build
+# that only compiles proves nothing beyond "eckit still links against the new
+# ecbuild". Same invocation as ci.yml's build+test job; the build-eckit composite
+# leaves the build tree in place and exposes build-dir for exactly this.
 ctest = true
-# Parallel, like the build step above: ctest defaults to one test at a time, which
-# left cumulative sec*proc equal to wall-clock in every run so far — the whole
-# machine idle but for one test. Kept identical to ci.yml's Test step.
+# ctest defaults to one test at a time, which leaves the whole runner idle but
+# for one test.
 ctest-args = '-j "$(nproc)"'
 
 # --- HPC build --------------------------------------------------------------
@@ -103,13 +101,13 @@ needs = ["ecbuild/build-hpc", "stack-deps/build-hpc"]
 # eccodes consumes eckit only on its ENABLE_ECKIT_GEO leg; that scoping lives in
 # eccodes' own manifest, via a `when` predicate on its [[deps]] entry for us.
 # ROLLOUT NOTE: pinned to the sync branch on purpose, and TEMPORARY.
-# `ref` is what the orchestrator pins its `uses:` to, and `uses:` cannot take an
-# expression, so it selects which WORKFLOW DEFINITION runs. Pointing it at the
-# sync branch is what lets the full downstream CI be exercised before the
-# rollout merges: the orchestrator lives on the default branch (workflow_run
-# only ever runs the default-branch copy) while the consumer logic it calls
-# comes from the sync branch. Source checkout and artifact refs are handled
-# independently at runtime by pick-ref and resolve_deps' sync-branch override.
+# `uses:` cannot take an expression, so `ref` selects which WORKFLOW DEFINITION
+# runs. Pointing it at the sync branch lets the full downstream CI be exercised
+# before the rollout merges: the orchestrator lives on the default branch
+# (workflow_run only ever runs the default-branch copy) while the consumer logic
+# it calls comes from the sync branch. Source checkout and artifact refs are
+# resolved independently at runtime by pick-ref and resolve_deps' sync-branch
+# override.
 # FLIP TO develop AND REGENERATE WHEN THE ROLLOUT MERGES.
 [[trigger-downstream]]
 repo = "ecmwf/eccodes"

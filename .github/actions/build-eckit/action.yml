@@ -79,7 +79,7 @@ runs:
         LAUNCHER: ${{ steps.launcher.outputs.flags }}
       # ENABLE_AEC is on by default and pulls libaec out of the stack-deps
       # prefix. The remaining optional features (CONVEX_HULL, PROJ, SSL, CURL,
-      # MPI, ...) stay at their defaults for this first rollout.
+      # MPI, ...) stay at their defaults.
       run: |
         set -euo pipefail
         # Word-splitting $LAUNCHER is intended: it is either empty or a fixed pair

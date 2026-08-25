@@ -20,15 +20,10 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  # No pre-commit job yet. This repo has a .pre-commit-config.yaml, but nothing
-  # has ever run it: the shared workflow runs `pre-commit run --all-files`, and
-  # yamllint --strict currently fails on the pre-existing workflows here (every
-  # one of them trips document-start and the `on:` truthy rule). Wiring it in
-  # would fail this pipeline for reasons unrelated to the CI migration, so it is
-  # a follow-up: fix the hooks repo-wide, then add an inlined pre-commit job
-  # (copy the one in stack-dependencies' ci.yml — ci-infrastructure dropped its
-  # reusable pre-commit.yml in ecmwf/ci-infrastructure#14) and make `resolve`
-  # need it.
+  # No pre-commit job yet: `pre-commit run --all-files` fails here because
+  # yamllint --strict rejects the pre-existing workflows (document-start and the
+  # `on:` truthy rule). Follow-up: fix the hooks repo-wide, then add an inlined
+  # pre-commit job (copy stack-dependencies' ci.yml) that `resolve` needs.
   resolve:
     # Runs in the base image on purpose. ci-infrastructure is baked into that
     # image and advertised via CI_INFRASTRUCTURE_PYTHON, so
@@ -36,7 +31,7 @@ jobs:
     # container it instead builds a venv per job — with PyPI/GitHub egress —
     # and cannot cache it: ARC's Kubernetes mode overlays _work, where
     # RUNNER_TOOL_CACHE lives, with an ephemeral per-job volume. That costs far
-    # more than the runner size saves, so keep the container.
+    # more than the runner size saves.
     runs-on: arc-runner-normal
     container:
       image: eccr.ecmwf.int/public-ci-images/ubuntu24.04-base:latest
@@ -65,11 +60,11 @@ jobs:
     # the tree in place, rather than starting a second container that would
     # re-checkout, re-fetch deps and re-download our own artifact.
     #
-    # Publishing comes AFTER the tests, so a red suite leaves nothing behind. The
+    # Publishing comes AFTER the tests, so a red suite leaves nothing behind: the
     # artifact store records existence and nothing else — resolve_deps and
-    # fetch_deps both decide with a bare object_exists — so once an artifact is
-    # published, no consumer can tell it came from a build whose tests failed.
-    # The cost is that a consumer waits for our tests; accepted deliberately.
+    # fetch_deps both decide with a bare object_exists — so a published artifact
+    # carries no hint that its tests failed. The cost is that a consumer waits
+    # for our tests.
     needs: resolve
     name: build+test (${{ matrix.cxx-compiler }}, ${{ matrix.platform }})
     runs-on: ${{ matrix['runs-on'] }}
@@ -125,7 +120,6 @@ jobs:
           mode: publish
           install-path: ${{ steps.build.outputs.install-path }}
           artifact-name: ${{ matrix._resolved.own-artifact-name }}
-
 
   build-hpc:
     # eckit built and tested inside a SLURM job against the atos-hpc-gnu ecbuild

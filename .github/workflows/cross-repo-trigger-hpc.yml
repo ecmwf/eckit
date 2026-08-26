@@ -115,7 +115,7 @@ jobs:
     needs:
     - resolve
     if: contains(fromJSON(inputs.from-jobs), 'ecbuild/build-hpc') || contains(fromJSON(inputs.from-jobs), 'stack-deps/build-hpc') || inputs.rebuild-request
-    name: eckit/build-hpc (${{ matrix['build-type'] }}, ${{ matrix.platform }})
+    name: eckit/build-hpc (${{ matrix.platform }}, ${{ matrix['build-type'] }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
       image: ${{ matrix.container || '' }}
@@ -139,7 +139,7 @@ jobs:
         token: ${{ steps.mint.outputs.token }}
         head-repo: ${{ inputs.from-repo }}
         head-sha: ${{ inputs.from-sha }}
-        name: eckit/build-hpc (${{ matrix['build-type'] }}, ${{ matrix.platform }})
+        name: eckit/build-hpc (${{ matrix.platform }}, ${{ matrix['build-type'] }})
         details-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         phase: start
     - uses: actions/checkout@v6
@@ -186,7 +186,7 @@ jobs:
       uses: ecmwf/ci-infrastructure/actions/build-on-hpc@main
       with:
         site: ${{ matrix.site }}
-        job-script: ${{ matrix.job-script || './.ci/hpc/build.sh' }}
+        job-script: ${{ matrix.job-script || './.ci/hpc/build-gnu.sh' }}
         artifact-name: ${{ steps.m.outputs.own-artifact-name }}
         cmake-prefix-path: ${{ steps.deps.outputs.cmake-prefix-path }}
         work-dir: ${{ vars.HPC_CI_WORK_DIR }}
@@ -199,7 +199,7 @@ jobs:
         token: ${{ steps.mint.outputs.token }}
         head-repo: ${{ inputs.from-repo }}
         head-sha: ${{ inputs.from-sha }}
-        name: eckit/build-hpc (${{ matrix['build-type'] }}, ${{ matrix.platform }})
+        name: eckit/build-hpc (${{ matrix.platform }}, ${{ matrix['build-type'] }})
         details-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         phase: finish
         conclusion: ${{ job.status }}

@@ -26,6 +26,14 @@ module load prgenv/gnu
 module load cmake
 module load ninja
 
+for tool in bison flex; do
+  if command -v "$tool" >/dev/null 2>&1; then
+    "$tool" --version | head -1
+  else
+    echo "$tool: NOT on PATH -- ENABLE_ECKIT_SQL/CMD will fail configure below"
+  fi
+done
+
 # ENABLE_AEC is on by default and finds libaec in the stack-deps prefix. The
 # remaining optional features (CONVEX_HULL, PROJ, SSL, CURL, MPI, ...) stay at
 # their defaults, matching the runner leg.
@@ -34,6 +42,8 @@ cmake -S "$CI_SOURCE_DIR" -B "${TMPDIR:-/tmp}/build" \
   -DCMAKE_BUILD_TYPE=Release \
   -DENABLE_TESTS=ON \
   -DENABLE_AEC=1 \
+  -DENABLE_ECKIT_SQL=ON \
+  -DENABLE_ECKIT_CMD=ON \
   -DCMAKE_INSTALL_RPATH_USE_LINK_PATH=ON \
   -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
   -DCMAKE_INSTALL_PREFIX="$CI_INSTALL_PREFIX"

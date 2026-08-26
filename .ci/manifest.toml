@@ -68,7 +68,7 @@ ctest = true
 ctest-args = '-j "$(nproc)"'
 
 # --- HPC build --------------------------------------------------------------
-# eckit built inside a SLURM job, linking the atos-hpc-gnu ecbuild and stack-deps
+# eckit built inside a SLURM job, linking the hpc-atos-gnu ecbuild and stack-deps
 # artifacts. `needs` names the HPC kinds, never the runner ones: the two lanes
 # are separate artifact universes distinguished by platform, and a runner rebuild
 # must not be what re-runs this.
@@ -84,15 +84,16 @@ ctest-args = '-j "$(nproc)"'
 [[matrix.build-hpc.include]]
 cxx-compiler = "g++-13"
 build-type = "Release"
-runs-on = "arc-hpc-pet-vsphere-prod"
+runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
-platform = "atos-hpc-gnu"
+platform = "hpc-atos-gnu"
+job-script = "./.ci/hpc/build-gnu.sh"
 
 [matrix.build-hpc]
 execution = "hpc"
 container-credentials = true
-job-script = "./.ci/hpc/build.sh"
+job-script = "./.ci/hpc/build-gnu.sh"
 triggers = ["upstream-change", "rebuild-request"]
 forwarded-deps-outputs = ["cmake-prefix-path"]
 needs = ["ecbuild/build-hpc", "stack-deps/build-hpc"]

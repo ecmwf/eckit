@@ -80,6 +80,7 @@ runs:
       # ENABLE_AEC is on by default and pulls libaec out of the stack-deps
       # prefix. The remaining optional features (CONVEX_HULL, PROJ, SSL, CURL,
       # MPI, ...) stay at their defaults.
+      #
       run: |
         set -euo pipefail
         # Word-splitting $LAUNCHER is intended: it is either empty or a fixed pair
@@ -92,6 +93,8 @@ runs:
               -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
               -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH_IN" \
               -DENABLE_TESTS=ON \
+              -DENABLE_ECKIT_SQL=ON \
+              -DENABLE_ECKIT_CMD=ON \
               $LAUNCHER
 
     - name: Build and install eckit

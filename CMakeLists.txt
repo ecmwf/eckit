@@ -7,7 +7,6 @@
 # does it submit to any jurisdiction.
 
 ########################################################################################################################
-
 cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)

@@ -8,60 +8,54 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Baudouin Raoult
-/// @author Tiago Quintino
 /// @author Nicolau Manubens
-/// @date   June 2019
+/// @date Jun 2025
 
 #pragma once
 
-#include <cstdint>
 #include <ostream>
+#include <string>
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
-#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class RadosHandle : public DataHandle {
+class RadosPartHandle : public eckit::DataHandle {
 
 public:  // methods
 
-    explicit RadosHandle(const RadosObject& object);
+    RadosPartHandle(const eckit::RadosObject& object, const eckit::Offset& offset, const eckit::Length& length);
 
-    ~RadosHandle() override;
+    ~RadosPartHandle() override;
 
-    Length openForRead() override;
-    void openForWrite(const Length& length) override;
+    void print(std::ostream& out) const override;
+
+    eckit::Length openForRead() override;
 
     long read(void* buffer, long length) override;
-    long write(const void* buffer, long length) override;
     void close() override;
     void flush() override;
-    Offset seek(const Offset& offset) override;
-    bool canSeek() const override { return true; };
 
-    Offset position() override;
-    Length estimate() override { return size(); }
-    Length size() override;
+    eckit::Length size() override;
+    eckit::Length estimate() override;
+    eckit::Offset position() override;
+    eckit::Offset seek(const eckit::Offset& offset) override;
+    bool canSeek() const override;
 
-    void print(std::ostream& s) const override;
+    std::string title() const override;
 
-protected:  // members
+private:  // members
 
-    RadosObject object_;
-
-    uint64_t offset_;
-    bool opened_;
-    bool write_;
-    bool first_write_;
-
-    void open();
+    eckit::RadosObject object_;
+    bool open_;
+    eckit::Offset offset_;  ///< absolute start offset of the part within the object (immutable)
+    eckit::Length len_;     ///< length of the part
+    eckit::Length pos_;     ///< current read position relative to the start of the part
 };
 
 //----------------------------------------------------------------------------------------------------------------------

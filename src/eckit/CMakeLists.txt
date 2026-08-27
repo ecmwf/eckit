@@ -310,20 +310,36 @@ if( eckit_HAVE_OPENFAM )
     )
 endif( eckit_HAVE_OPENFAM )
 
-if(HAVE_RADOS)
+if( eckit_HAVE_RADOS )
     list( APPEND eckit_io_srcs
         io/rados/RadosHandle.cc
         io/rados/RadosHandle.h
-        io/rados/RadosCluster.h
         io/rados/RadosCluster.cc
-        io/rados/RadosReadHandle.cc
-        io/rados/RadosReadHandle.h
-        io/rados/RadosWriteHandle.cc
-        io/rados/RadosWriteHandle.h
-        io/rados/RadosObject.h
+        io/rados/RadosCluster.h
+        io/rados/RadosMultiObjReadHandle.cc
+        io/rados/RadosMultiObjReadHandle.h
+        io/rados/RadosMultiObjWriteHandle.cc
+        io/rados/RadosMultiObjWriteHandle.h
+        io/rados/RadosAsyncHandle.cc
+        io/rados/RadosAsyncHandle.h
+        io/rados/RadosNamespace.cc
+        io/rados/RadosNamespace.h
+        io/rados/RadosPool.cc
+        io/rados/RadosPool.h
         io/rados/RadosObject.cc
-        io/rados/RadosAttributes.h
+        io/rados/RadosObject.h
+        io/rados/RadosKeyValue.cc
+        io/rados/RadosKeyValue.h
+        io/rados/RadosAsyncKeyValue.cc
+        io/rados/RadosAsyncKeyValue.h
         io/rados/RadosAttributes.cc
+        io/rados/RadosAttributes.h
+        io/rados/RadosException.cc
+        io/rados/RadosException.h
+        io/rados/RadosPartHandle.cc
+        io/rados/RadosPartHandle.h
+        io/rados/RadosURIManager.cc
+        io/rados/RadosURIManager.h
     )
 endif()
 
@@ -980,7 +996,7 @@ ecbuild_add_library(
               "${OPENSSL_LIBRARIES}"
               "${CURL_LIBRARIES}"
               "${AIO_LIBRARIES}"
-              "${RADOS_LIBRARIES}"
+              $<$<BOOL:${eckit_HAVE_RADOS}>:Ceph::RADOS>
               $<$<BOOL:${eckit_HAVE_OPENFAM}>:LibUUID>
               $<$<BOOL:${eckit_HAVE_OPENFAM}>:LibOPENFAM>
               $<${HAVE_AEC}:libaec::aec>

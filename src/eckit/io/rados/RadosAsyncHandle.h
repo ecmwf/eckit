@@ -8,60 +8,46 @@
  * does it submit to any jurisdiction.
  */
 
-/// @author Baudouin Raoult
-/// @author Tiago Quintino
 /// @author Nicolau Manubens
-/// @date   June 2019
+/// @date   March 2024
 
 #pragma once
 
-#include <cstdint>
+#include <cstddef>
+#include <memory>
 #include <ostream>
+#include <vector>
 
-#include "eckit/io/DataHandle.h"
-#include "eckit/io/Length.h"
-#include "eckit/io/Offset.h"
 #include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class RadosHandle : public DataHandle {
+class RadosAsyncHandle : public eckit::RadosHandle {
 
 public:  // methods
 
-    explicit RadosHandle(const RadosObject& object);
+    explicit RadosAsyncHandle(const RadosObject& object, size_t maxAioBuffSize = 1024 * 1024);
 
-    ~RadosHandle() override;
+public:  // methods
 
-    Length openForRead() override;
-    void openForWrite(const Length& length) override;
-
-    long read(void* buffer, long length) override;
     long write(const void* buffer, long length) override;
     void close() override;
     void flush() override;
-    Offset seek(const Offset& offset) override;
-    bool canSeek() const override { return true; };
 
-    Offset position() override;
-    Length estimate() override { return size(); }
-    Length size() override;
+    void print(std::ostream& out) const override;
 
-    void print(std::ostream& s) const override;
+private:  // methods
 
-protected:  // members
+    size_t totalCompsBuffSize() const;
 
-    RadosObject object_;
+private:  // members
 
-    uint64_t offset_;
-    bool opened_;
-    bool write_;
-    bool first_write_;
-
-    void open();
+    std::vector<std::unique_ptr<eckit::RadosAIO>> comps_;
+    size_t maxAioBuffSize_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

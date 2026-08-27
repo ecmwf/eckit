@@ -1,0 +1,190 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+
+#include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <map>
+#include <memory>
+#include <ostream>
+#include <string>
+
+#include "eckit/config/LibEcKit.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosAsyncHandle.h"
+#include "eckit/io/rados/RadosAttributes.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosHandle.h"
+#include "eckit/log/Log.h"
+
+
+namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void RadosMultiObjWriteHandle::print(std::ostream& s) const {
+    s << "RadosMultiObjWriteHandle[" << object_.str() << ']';
+}
+
+RadosMultiObjWriteHandle::RadosMultiObjWriteHandle(const eckit::RadosObject& obj, bool async, const Length& maxPartSize,
+                                                   size_t maxAioBuffSize, size_t maxHandleBuffSize) :
+    object_(obj),
+    async_(async),
+    maxPartSize_(maxPartSize),
+    maxAioBuffSize_(maxAioBuffSize),
+    maxHandleBuffSize_(maxHandleBuffSize) {
+
+    if (maxPartSize_ == Length(0)) {
+        maxPartSize_ = RadosCluster::instance().maxObjectSize();
+    }
+}
+
+Length RadosMultiObjWriteHandle::openForRead() {
+    NOTIMP;
+}
+
+void RadosMultiObjWriteHandle::openForWrite(const Length& length) {
+
+    ASSERT(!opened_);
+
+    written_  = 0;
+    position_ = 0;
+    part_     = 0;
+    opened_   = true;
+}
+
+void RadosMultiObjWriteHandle::openForAppend(const Length&) {
+    NOTIMP;
+}
+
+long RadosMultiObjWriteHandle::read(void* buffer, long length) {
+
+    NOTIMP;
+}
+
+long RadosMultiObjWriteHandle::write(const void* buffer, long length) {
+
+    LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write " << length << std::endl;
+    ASSERT(opened_);
+
+    if (length == 0) {
+        return 0;
+    }
+
+
+    long result     = 0;
+    const char* buf = reinterpret_cast<const char*>(buffer);
+
+    while (length > 0) {
+
+        Length len = std::min(Length(maxPartSize_ - Length(written_)), Length(length));
+        long l     = (long)len;
+        ASSERT(len == Length(l));
+
+        if (l == 0) {
+            ASSERT(handles_.back());
+            if (!async_) {
+                handles_.back()->close();
+                handles_.back().reset();
+            }
+            else {
+                ASSERT(handles_.size() < maxHandleBuffSize_);
+                handles_.push_back(std::unique_ptr<DataHandle>(nullptr));
+            }
+            written_ = 0;
+            continue;
+        }
+
+        LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write " << len << " - " << maxPartSize_ << " - "
+                                << written_ << std::endl;
+
+        if (handles_.empty() || !handles_.back()) {
+
+            RadosObject object(object_, part_++);
+            LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjWriteHandle::write open " << object.str() << std::endl;
+            if (handles_.empty()) {
+                handles_.push_back(std::unique_ptr<DataHandle>(nullptr));
+            }
+            if (async_) {
+                handles_.back() = std::make_unique<RadosAsyncHandle>(object, maxAioBuffSize_);
+            }
+            else {
+                handles_.back() = std::make_unique<RadosHandle>(object);
+            }
+            handles_.back()->openForWrite(0);  // TODO: use proper size
+        }
+
+
+        handles_.back()->write(buf + result, l);
+        written_ += l;
+        result += l;
+        length -= l;
+        position_ += l;
+    }
+
+    return result;
+}
+
+void RadosMultiObjWriteHandle::flush() {
+
+    for (const auto& handle : handles_) {
+        handle->flush();
+    }
+
+    if (position_ > Offset(0)) {
+
+        RadosAttributes attrs;
+
+        attrs.set("length", position_);
+        attrs.set("parts", part_);
+        attrs.set("maxsize", maxPartSize_);
+
+        RadosCluster::instance().attributes(object_, attrs);
+    }
+}
+
+
+void RadosMultiObjWriteHandle::close() {
+
+    if (!opened_) {
+        return;
+    }
+
+    flush();
+
+    for (const auto& handle : handles_) {
+        handle->close();
+    }
+    handles_.clear();
+    opened_ = false;
+}
+
+void RadosMultiObjWriteHandle::rewind() {
+    NOTIMP;
+}
+
+
+Offset RadosMultiObjWriteHandle::position() {
+    return position_;
+}
+
+std::string RadosMultiObjWriteHandle::title() const {
+    return PathName::shorten(object_.str());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit

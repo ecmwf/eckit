@@ -193,6 +193,22 @@ bool Configuration::get(const std::string& name, double& value) const {
     return found;
 }
 
+bool Configuration::get(const std::string& name, std::vector<bool>& value) const {
+    bool found           = false;
+    const eckit::Value v = lookUp(name, found);
+    if (found) {
+        ASSERT(v.isList());
+        value.clear();
+        int i = 0;
+        while (v.contains(i)) {
+            bool result(v[i]);
+            value.push_back(static_cast<bool>(result));
+            i++;
+        }
+    }
+    return found;
+}
+
 bool Configuration::get(const std::string& name, std::vector<int>& value) const {
     bool found           = false;
     const eckit::Value v = lookUp(name, found);
@@ -394,6 +410,11 @@ std::string Configuration::getString(const std::string& name) const {
     return result;
 }
 
+std::vector<bool> Configuration::getBoolVector(const std::string& name) const {
+    std::vector<bool> result;
+    _get(name, result);
+    return result;
+}
 
 std::vector<int> Configuration::getIntVector(const std::string& name) const {
     std::vector<int> result;
@@ -634,6 +655,12 @@ double Configuration::getDouble(const std::string& name, const double& defaultVa
 std::string Configuration::getString(const std::string& name, const std::string& defaultVal) const {
     std::string result;
     _getWithDefault(name, result, defaultVal);
+    return result;
+}
+
+std::vector<bool> Configuration::getBoolVector(const std::string& name, const std::vector<bool>& defaultValue) const {
+    std::vector<bool> result;
+    _getWithDefault(name, result, defaultValue);
     return result;
 }
 

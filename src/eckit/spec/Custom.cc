@@ -131,6 +131,16 @@ bool get_t_v_real(const Custom::container_type& map, const std::string& name, To
 }
 
 
+template <typename To>
+bool get_t_v_boolean(const Custom::container_type& map, const std::string& name, To& value) {
+    if (auto it = map.find(name); it != map.cend()) {
+        const auto& v = it->second;
+        return std::holds_alternative<std::vector<bool>>(v) ? get_t_v(std::get<std::vector<bool>>(v), value) : false;
+    }
+    return false;
+}
+
+
 template <typename T>
 Custom::value_type from_value_t(const Value& value) {
     T to;
@@ -192,6 +202,10 @@ Custom* Custom::make_from_value(const Value& value) {
         const auto list(value.as<ValueList>());
         ASSERT(!list.empty());
 
+        if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isBool(); })) {
+            return std::vector<bool>(list.begin(), list.end());
+        }
+
         if (std::all_of(list.begin(), list.end(), [](const auto& v) { return v.isNumber(); })) {
             return std::vector<int>(list.begin(), list.end());
         }
@@ -235,6 +249,7 @@ bool Custom::operator==(const Custom& other) const {
         const auto& name = _a.first;
         auto _b          = other.map_.find(name);
         return _b != other.map_.end() && (custom_value_equal(*this, other, name, long{}) ||
+                                          custom_value_equal(*this, other, name, std::vector<bool>{}) ||
                                           custom_value_equal(*this, other, name, std::vector<long>{}) ||
                                           custom_value_equal(*this, other, name, double{}) ||
                                           custom_value_equal(*this, other, name, std::vector<double>{}) ||
@@ -284,6 +299,11 @@ void Custom::set(const std::string& name, double value) {
 }
 
 
+void Custom::set(const std::string& name, const std::vector<bool>& value) {
+    map_[name] = value;
+}
+
+
 void Custom::set(const std::string& name, const std::vector<int>& value) {
     map_[name] = value;
 }
@@ -324,7 +344,9 @@ void Custom::set(const std::string& name, const Value& value) {
 
     auto list_of = [](const ValueList& list, auto pred) { return std::all_of(list.begin(), list.end(), pred); };
 
-    auto val = value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })
+    auto val = value.isList() && list_of(value, [](const Value& v) { return v.isBool(); })
+                   ? from_value_t<std::vector<bool>>(value)
+               : value.isList() && list_of(value, [](const Value& v) { return v.isDouble(); })
                    ? from_value_t<std::vector<double>>(value)
                : value.isList() && list_of(value, [](const Value& v) { return v.isNumber(); })
                    ? from_value_t<std::vector<number_type>>(value)
@@ -454,6 +476,11 @@ bool Custom::get(const std::string& name, float& value) const {
 
 bool Custom::get(const std::string& name, double& value) const {
     return get_t_s_real(map_, name, value);
+}
+
+
+bool Custom::get(const std::string& name, std::vector<bool>& value) const {
+    return get_t_v_boolean(map_, name, value);
 }
 
 

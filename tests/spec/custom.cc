@@ -335,8 +335,8 @@ CASE("Spec <- Custom") {
 
 
     SECTION("conversion (5)") {
-        std::unique_ptr<Spec> custom(
-            Custom::make_from_value(YAMLParser::decodeString("{bool_list: [true, false, true], long_list: [1, 2, 3], double_list: [1, 2.1, 3]}")));
+        std::unique_ptr<Spec> custom(Custom::make_from_value(YAMLParser::decodeString(
+            "{bool_list: [true, false, true], long_list: [1, 2, 3], double_list: [1, 2.1, 3]}")));
 
         const std::vector<bool> expected_bool_list{true, false, true};
         std::vector<bool> bool_list;

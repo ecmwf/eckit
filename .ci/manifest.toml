@@ -60,3 +60,6 @@ needs = ["ecbuild/build-hpc", "stack-deps/build-hpc"]
 [[trigger-downstream]]
 repo = "ecmwf/eccodes"
 ref = "sync-branch-ci-rollout"
+
+[downstream-gate]
+label = "run-downstream-CI"

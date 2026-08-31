@@ -42,14 +42,6 @@ runs:
           echo "build-dir=$RUNNER_TEMP/_eckit-build"
         } >> "$GITHUB_OUTPUT"
 
-    # Compile caching. Lives in the build action, not the workflow, so both the
-    # push/PR path and the generated cross-repo-trigger.yml path get it — the
-    # latter calls this action directly and never sees the workflow's steps.
-    #
-    # Opt-in by presence of the bucket: sccache has no default bucket and a
-    # daemon that cannot reach one refuses to start, which would fail the build.
-    # With SCCACHE_BUCKET unset both steps below no-op and the compile runs
-    # uncached, so a repo without the secret still builds.
     - name: Set up sccache
       if: env.SCCACHE_BUCKET != ''
       uses: ecmwf/ci-infrastructure/actions/setup-sccache@main
@@ -77,15 +69,8 @@ runs:
         INSTALL_PATH: ${{ steps.set-paths.outputs.install-path }}
         BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
         LAUNCHER: ${{ steps.launcher.outputs.flags }}
-      # ENABLE_AEC is on by default and pulls libaec out of the stack-deps
-      # prefix. The remaining optional features (CONVEX_HULL, PROJ, SSL, CURL,
-      # MPI, ...) stay at their defaults.
-      #
       run: |
         set -euo pipefail
-        # Word-splitting $LAUNCHER is intended: it is either empty or a fixed pair
-        # of -D flags produced by the step above, never user input.
-        # shellcheck disable=SC2086
         cmake -S "$GITHUB_WORKSPACE" \
               -B "$BUILD_DIR" \
               -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \

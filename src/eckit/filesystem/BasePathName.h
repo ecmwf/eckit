@@ -80,6 +80,7 @@ public:
 
     virtual std::string asString() const                                       = 0;
     virtual void fileSystemSize(FileSystemSize&) const                         = 0;
+    virtual std::string fileSystemType() const                                 = 0;
     virtual DataHandle* fileHandle(bool overwrite) const                       = 0;
     virtual DataHandle* partHandle(const OffsetList&, const LengthList&) const = 0;
     virtual DataHandle* partHandle(const Offset&, const Length&) const         = 0;

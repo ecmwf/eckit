@@ -341,6 +341,7 @@ list( APPEND eckit_filesystem_srcs
     filesystem/FileSystem.cc
     filesystem/FileSystem.h
     filesystem/FileSystemSize.h
+    filesystem/detail/FileSystemType.h
     filesystem/LocalPathName.cc
     filesystem/LocalPathName.h
     filesystem/PathExpander.cc

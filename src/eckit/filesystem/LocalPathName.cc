@@ -15,10 +15,23 @@
 #include <sys/stat.h>
 #include <sys/statvfs.h>
 #include <sys/types.h>
+
+#if defined(__linux__)
+#include <sys/vfs.h>
+#elif defined(__APPLE__) || defined(__FreeBSD__)
+#include <sys/param.h>
+// order matters here
+#include <sys/mount.h>
+#endif
+
 #include <unistd.h>
 #include <utime.h>
+
+#include <cerrno>
 #include <climits>
+#include <cstdint>
 #include <cstdlib>
+#include <ios>
 
 #include <cstring>  // for strlen
 #include <deque>
@@ -28,6 +41,7 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/BasePathNameT.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/PathNameFactory.h"
@@ -52,6 +66,9 @@
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/utils/Tokenizer.h"
+#if defined(__linux__)
+#include "eckit/filesystem/detail/FileSystemType.h"
+#endif
 
 namespace eckit {
 
@@ -899,6 +916,33 @@ void LocalPathName::fileSystemSize(FileSystemSize& fs) const {
     long unavail = (d.f_bfree - d.f_bavail);
     fs.available = (unsigned long long)d.f_bavail * (unsigned long long)d.f_bsize;
     fs.total     = (unsigned long long)(d.f_blocks - unavail) * (unsigned long long)d.f_bsize;
+}
+
+std::string LocalPathName::fileSystemType() const {
+#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
+    struct statfs d;
+    // n.b. statfs is interruptible; retry rather than reporting a spurious failure.
+    while (::statfs(path_.c_str(), &d) != 0) {
+        if (errno == EINTR) {
+            continue;
+        }
+        throw FailedSystemCall("statfs " + path_, Here(), errno);
+    }
+#if defined(__linux__)
+    // truncate as f_type may be signed
+    const auto magic = static_cast<uint32_t>(d.f_type);
+    if (const char* name = filesystem::detail::file_system_type_name(magic)) {
+        return name;
+    }
+    std::ostringstream oss;
+    oss << "unknown(0x" << std::hex << magic << ")";
+    return oss.str();
+#else
+    return d.f_fstypename;
+#endif
+#else
+    throw NotImplemented("LocalPathName::fileSystemType", Here());
+#endif
 }
 
 

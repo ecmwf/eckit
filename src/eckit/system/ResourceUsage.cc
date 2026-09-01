@@ -48,7 +48,12 @@ size_t ResourceUsage::maxResidentSetSize() const {
 }
 
 double ResourceUsage::cpuTime() const {
-    return usage_.ru_utime.tv_sec + usage_.ru_utime.tv_usec / 1000000.0;
+    return usage_.ru_utime.tv_sec + (usage_.ru_utime.tv_usec / eckit::Seconds::usec_per_sec);
+}
+
+double ResourceUsage::totalCpuTime() const {
+    return usage_.ru_utime.tv_sec + (usage_.ru_utime.tv_usec / eckit::Seconds::usec_per_sec) + usage_.ru_stime.tv_sec +
+           (usage_.ru_stime.tv_usec / eckit::Seconds::usec_per_sec);
 }
 
 size_t ResourceUsage::numberOfSwaps() const {

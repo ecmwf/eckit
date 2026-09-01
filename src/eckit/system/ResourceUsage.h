@@ -31,6 +31,7 @@ public:  // methods
 
     size_t maxResidentSetSize() const;
     double cpuTime() const;
+    double totalCpuTime() const;
     size_t numberOfSwaps() const;
 
 protected:  // methods

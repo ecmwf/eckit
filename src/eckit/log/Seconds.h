@@ -29,6 +29,9 @@ namespace eckit {
 class Seconds {
 public:
 
+    /// Microseconds per second, for timeval conversions
+    static constexpr double usec_per_sec = 1000000.0;
+
     // -- Contructors
 
     Seconds(double, bool compact = false);

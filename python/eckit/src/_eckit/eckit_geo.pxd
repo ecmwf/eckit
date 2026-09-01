@@ -1,4 +1,4 @@
-# (C) Copyright 2025- ECMWF.
+# (C) Copyright 1996- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -13,6 +13,18 @@ from libcpp.utility cimport pair
 from libcpp.vector cimport vector
 
 
+cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
+    cdef cppclass LibEcKitGeo:
+        @staticmethod
+        LibEcKitGeo& instance()
+
+        @staticmethod
+        void purgeCacheDir()
+
+        string version()
+        string gitsha1(unsigned int n)  # n=40 for full sha1
+
+
 cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":
     cdef cppclass Area:
         string spec_str() const
@@ -21,6 +33,7 @@ cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":
     cdef cppclass AreaFactory:
         @staticmethod
         const Area* make_from_string(const string) except +
+
 
 cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
     cdef cppclass BoundingBox(Area):
@@ -32,10 +45,16 @@ cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
 
 cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
     cdef cppclass Grid:
-        pair[vector[double], vector[double]] to_latlons() const
         string spec_str() const
+        string catalog_str() const
         string type() const
         string uid() const
+        string order() const
+
+        pair[vector[double], vector[double]] to_latlons() const
+        vector[double] distinct_latitudes() const
+        vector[double] distinct_longitudes() const
+
         vector[size_t] shape() const
         size_t size() const
         const BoundingBox& boundingBox() const

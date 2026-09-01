@@ -14,7 +14,6 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/spec/Layered.h"
 
 
 namespace eckit::geo {
@@ -43,32 +42,12 @@ IteratorFactory& IteratorFactory::instance() {
 Iterator* IteratorFactory::build_(const Iterator::Spec& spec) const {
     lock_type lock;
 
-    std::unique_ptr<Iterator::Spec> cfg(make_spec_(spec));
-
-    if (std::string type; cfg->get("type", type)) {
-        return IteratorFactoryType::instance().get(type).create(*cfg);
+    if (std::string type; spec.get("type", type)) {
+        return IteratorFactoryType::instance().get(type).create(spec);
     }
 
     list(Log::error() << "Iterator: cannot build iterator without 'type', choices are: ");
     throw exception::SpecError("Iterator: cannot build iterator without 'type'", Here());
-}
-
-
-Iterator::Spec* IteratorFactory::make_spec_(const Iterator::Spec& spec) const {
-    lock_type lock;
-
-    auto* cfg = new spec::Layered(spec);
-    ASSERT(cfg != nullptr);
-
-
-    // hardcoded, interpreted options (contributing to spec)
-
-    auto back = std::make_unique<spec::Custom>();
-    ASSERT(back);
-
-    back->set("type", cfg->has("pl") ? "reduced" : "regular");
-
-    return cfg;
 }
 
 

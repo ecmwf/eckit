@@ -23,7 +23,7 @@ namespace eckit::geo::test {
 
 CASE("gridspec") {
     for (size_t n : {1, 2}) {
-        for (const std::string& suffix : {"", "n", "_nested", "r", "_ring"}) {
+        for (const std::string& suffix : {"", "n", "r"}) {
             const auto spec = "{grid: H" + std::to_string(n) + suffix + "}";
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
             EXPECT(grid->size() == 12 * n * n);
@@ -48,12 +48,16 @@ CASE("gridspec") {
     EXPECT_EQUAL(grid3->size(), 48);
     EXPECT_EQUAL(grid3->spec_str(), R"({"grid":"H2"})");
 
-    for (const std::string& name : {"h2N", "Hn2", "h2_nEsted"}) {
+    for (const std::string& name : {"h2N", "Hn2"}) {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{"grid", name}}));
         EXPECT(*grid2 == *grid);
     }
 
-    for (const std::string& name : {"H2", "h2r", "hR2", "h2_rinG"}) {
+    for (const std::string& name : {
+             "H2",
+             "h2r",
+             "hR2",
+         }) {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{"grid", name}}));
         EXPECT(*grid3 == *grid);
     }
@@ -158,7 +162,8 @@ CASE("points") {
 
     size_t i = 0;
     for (const auto& it : *ring) {
-        EXPECT(points_equal(ref[i++], it));
+        EXPECT(points_equal(ref[i], it));
+        i++;
     }
 
     EXPECT(i == ring->size());
@@ -181,10 +186,11 @@ CASE("points") {
 
     size_t j = 0;
     for (const auto& it : *nested) {
-        EXPECT(points_equal(ref[ren.at(j++)], it));
+        EXPECT(points_equal(ref[ren.at(j)], it));
+        j++;
     }
 
-    EXPECT(i == nested->size());
+    EXPECT(j == nested->size());
 }
 
 

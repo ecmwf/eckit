@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (C) Copyright 1996- ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
@@ -12,16 +12,17 @@
 
 #pragma once
 
-#include <cstddef>
-#include <memory>
-
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/container/PointsContainer.h"
 
 
-namespace eckit::geo::iterator {
+namespace eckit::geo {
+namespace cache {
+class LatitudeLongitude;
+}
+namespace iterator {
 class Unstructured;
 }
+}  // namespace eckit::geo
 
 
 namespace eckit::geo::grid {
@@ -33,48 +34,53 @@ public:
     // -- Constructors
 
     explicit Unstructured(const Spec&);
+    explicit Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,
+                          const std::string& name = "");
 
-    explicit Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes);
-    explicit Unstructured(const std::vector<Point>&);
-    explicit Unstructured(std::vector<Point>&&);
+    using Grid::Grid;
 
     // -- Methods
 
-    std::shared_ptr<container::PointsContainer> container() const { return container_; }
+    const std::string& name() const { return name_; }
+    const std::string& arrangement() const { return arrangement_; }
 
     // -- Overridden methods
 
     iterator cbegin() const override;
     iterator cend() const override;
 
-    size_t size() const override;
-    std::vector<size_t> shape() const override { return {size()}; }
+    std::vector<size_t> shape() const override;
 
     BoundingBox* calculate_bbox() const override;
-
-    bool includesNorthPole() const override { return true; }
-    bool includesSouthPole() const override { return true; }
-    bool isPeriodicWestEast() const override { return true; }
 
     [[nodiscard]] std::vector<Point> to_points() const override;
     [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
 
+    uid_type calculate_uid() const override;
+    const std::string& type() const override;
+    void cache() const override;
+
     // -- Class methods
 
-    [[nodiscard]] static Spec* spec(const std::string& uid);
-    [[nodiscard]] static Unstructured* make_from_latlon(const std::vector<double>&, const std::vector<double>&);
+    [[nodiscard]] static uid_type uid_from_latlons(const std::vector<double>&, const std::vector<double>&);
 
 protected:
 
     // -- Constructors
 
-    explicit Unstructured(container::PointsContainer*);
+    explicit Unstructured(const uid_type&, const std::string& name = "");
+    explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement);
+
+    // -- Methods
+
+    [[nodiscard]] const cache::LatitudeLongitude& record() const;
 
 private:
 
     // -- Members
 
-    std::shared_ptr<container::PointsContainer> container_;
+    std::string name_;
+    std::string arrangement_;
 
     // -- Overridden methods
 

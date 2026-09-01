@@ -10,6 +10,7 @@
  */
 
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
@@ -24,77 +25,93 @@ namespace eckit::geo::test {
 
 
 CASE("Grid from grid_spec") {
-    SECTION("GridSpec canonical") {
-        struct {
-            const char* grid;
-            const char* canonical;
-            size_t size;
-        } tests[]{
-            {"{grid: [10, 10]}", R"({"grid":[10,10]})", 684},          //
-            {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},          //
-            {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},        //
-            {"{grid: o8}", R"({"grid":"O8"})", 544},                   //
-            {"{grid: h2_ring}", R"({"grid":"H2"})", 48},               //
-            {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},  //
-        };
+    struct {
+        const char* grid;
+        const char* canonical;
+        size_t size;
+    } tests[]{
+        {"{grid: [10, 10]}", R"({"grid":[10,10]})", 684},          //
+        {"{grid: [20, 10]}", R"({"grid":[20,10]})", 342},          //
+        {"{pl: [20, 24, 24, 20]}", R"({"grid":"O2"})", 88},        //
+        {"{grid: o8}", R"({"grid":"O8"})", 544},                   //
+        {"{grid: h2}", R"({"grid":"H2"})", 48},                    //
+        {"{grid: h2n}", R"({"grid":"H2","order":"nested"})", 48},  //
+    };
 
 
-        for (const auto& test : tests) {
-            std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
+    for (const auto& test : tests) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
 
-            EXPECT(grid->size() == test.size);
-            EXPECT(grid->spec_str() == test.canonical);
+        EXPECT(grid->size() == test.size);
+        EXPECT(grid->spec_str() == test.canonical);
 
-            static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
+        static const auto bbox_spec_str = area::BoundingBox::bounding_box_default().spec_str();
 
-            EXPECT(grid->boundingBox().spec_str() == bbox_spec_str);
-        }
+        EXPECT(grid->boundingBox().spec_str() == bbox_spec_str);
     }
 }
 
 
 CASE("Grid from name") {
-    SECTION("GridFactory::build_from_name") {
-        struct {
-            const char* name;
-            size_t size;
-        } tests[]{{"O2", 88}, {"f2", 32}, {"h2", 48}};
+    struct {
+        const char* name;
+        size_t size;
+    } tests[]{{"O2", 88}, {"f2", 32}, {"h2", 48}};
 
-        for (const auto& test : tests) {
-            std::unique_ptr<const Grid> a(GridFactory::build(spec::Custom({{"grid", test.name}})));
+    for (const auto& test : tests) {
+        std::unique_ptr<const Grid> a(GridFactory::build(spec::Custom({{"grid", test.name}})));
 
-            EXPECT_EQUAL(test.size, a->size());
+        EXPECT_EQUAL(test.size, a->size());
 
-            std::unique_ptr<const Grid> b(GridFactory::make_from_string(test.name));
+        std::unique_ptr<const Grid> b(GridFactory::make_from_string(test.name));
 
-            EXPECT_EQUAL(test.size, b->size());
-        }
+        EXPECT_EQUAL(test.size, b->size());
     }
 }
 
 
 CASE("Grid from increments") {
-    SECTION("global") {
-        std::unique_ptr<const Grid> global(GridFactory::build(spec::Custom({
-            {"type", "regular_ll"},
-            {"grid", std::vector<double>{1, 1}},
-        })));
+    using d = std::vector<double>;
 
-        EXPECT_EQUAL(global->size(), 360 * 181);
-    }
+    auto prod = [](const std::vector<size_t>& shape) {
+        size_t p = 1;
+        for (size_t s : shape) {
+            p *= s;
+        }
+        return p;
+    };
 
+    struct test_type {
+        std::vector<double> grid;
+        std::vector<double> area;
+        std::vector<size_t> shape;
+    };
 
-    SECTION("non-global") {
-        std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({
-            {"type", "regular_ll"},
-            {"grid", std::vector<double>{1, 1}},
-            {"north", 10},
-            {"west", 1},
-            {"south", 1},
-            {"east", 10},
-        })));
+    for (const auto& test : std::vector<test_type>{
+             // global
+             {d{1, 1}, d{}, {181, 360}},
+             {d{0.05, 0.05}, d{89.975, -179.975, -89.975, 179.975}, {3600, 7200}},
 
-        EXPECT_EQUAL(grid->size(), 100);
+             // non-global
+             {d{1, 1}, d{10, 1, 1, 10}, {10, 10}},
+             {d{0.25, 0.25}, d{41.0, -4.5, 40.0, -3.0}, {5, 7}},
+             {d{0.1, 0.1}, d{41.15, -4.55, 39.95, -3.05}, {13, 16}},
+         }) {
+        spec::Custom spec{{"grid", test.grid}};
+        if (!test.area.empty()) {
+            spec.set("area", test.area);
+        }
+
+        std::unique_ptr<const Grid> a(GridFactory::build(spec));
+        ASSERT(a);
+
+        EXPECT(a->shape() == test.shape);
+        EXPECT_EQUAL(a->size(), prod(test.shape));
+
+        std::unique_ptr<const Grid> b(GridFactory::build(a->spec()));
+        ASSERT(b);
+
+        EXPECT(*a == *b);
     }
 }
 

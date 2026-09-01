@@ -28,32 +28,36 @@ namespace eckit {
 class LibEcKitGeo final : public system::Library {
 public:
 
-    // -- Methods
-
     static LibEcKitGeo& instance();
 
     static std::vector<PathName> shareArea();
     static std::vector<PathName> shareGrid();
     static std::vector<PathName> shareProjection();
 
+    static PathName cacheArea();
+    static PathName cacheGrid();
+    static PathName cacheProjection();
+
     static bool caching();
     static std::string cacheDir();
+
+    static void purgeCacheDir();
+    static void purgeCacheArea();
+    static void purgeCacheGrid();
+    static void purgeCacheProjection();
 
     static std::string url(const std::string& url_path);
 
     static bool proj();
 
-private:
+    std::string version() const override;
+    std::string gitsha1(unsigned int count) const override;
 
-    // -- Constructors
+private:
 
     LibEcKitGeo();
 
-    // -- Overridden methods
-
     [[nodiscard]] const void* addr() const override;
-    std::string version() const override;
-    std::string gitsha1(unsigned int count) const override;
 };
 
 

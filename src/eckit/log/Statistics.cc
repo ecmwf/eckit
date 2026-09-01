@@ -19,6 +19,7 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/serialisation/Stream.h"
+#include "eckit/system/ResourceUsage.h"
 
 namespace eckit {
 

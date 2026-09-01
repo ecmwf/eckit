@@ -74,6 +74,8 @@ public:
 
     virtual size_t index() const = 0;
 
+    [[nodiscard]] virtual Iterator* clone() const = 0;
+
     // -- Class methods
 
     static std::string className() { return "iterator"; }

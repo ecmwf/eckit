@@ -25,6 +25,7 @@
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/JSON.h"
 #include "eckit/memory/Zero.h"
+#include "eckit/runtime/Main.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/utils/Tokenizer.h"
@@ -216,7 +217,7 @@ static DiskArray* clusterDisks = nullptr;
 static pthread_once_t once     = PTHREAD_ONCE_INIT;
 
 static void diskarray_init() {
-    LocalPathName path("~/etc/cluster/disks");  // avoid recursion...
+    LocalPathName path(Main::instance().rundir() / "cluster/disks");
 
     size_t disksArraySize = Resource<size_t>("disksArraySize", 10240);
 

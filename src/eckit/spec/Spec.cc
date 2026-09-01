@@ -23,7 +23,7 @@ namespace eckit::spec {
 template <typename T>
 static inline T _get_d(const Spec& spec, const std::string& name, const T& _default) {
     T value{_default};
-    spec.has(name) && spec.get(name, value);
+    spec.get(name, value);
     return value;
 }
 

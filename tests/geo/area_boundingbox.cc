@@ -139,7 +139,7 @@ CASE("properties") {
     ASSERT(c);
 
     auto d = area::BoundingBox::make_global_antiprime();
-    ASSERT(c);
+    ASSERT(d);
 
     area::BoundingBox e;
 

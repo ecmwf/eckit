@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <iosfwd>
 #include <memory>
 #include <string>
@@ -24,7 +25,6 @@
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
 
@@ -55,8 +55,20 @@ public:
     using Spec      = spec::Spec;
     using ARG1      = const Spec&;
 
-    struct Iterator final : std::shared_ptr<geo::Iterator> {
-        explicit Iterator(geo::Iterator* it) : shared_ptr(it) { ASSERT(shared_ptr::operator bool()); }
+    struct Iterator final : std::unique_ptr<geo::Iterator> {
+        explicit Iterator(geo::Iterator* it) : unique_ptr(it) { ASSERT(unique_ptr::operator bool()); }
+
+        Iterator(const Iterator& other) : unique_ptr(other->clone()) {}
+        Iterator(Iterator&&) noexcept = default;
+
+        Iterator& operator=(const Iterator& other) {
+            if (this != &other) {
+                reset(other->clone());
+            }
+            return *this;
+        }
+
+        Iterator& operator=(Iterator&&) noexcept = default;
 
         using iterator_category = element_type::iterator_category;
         using difference_type   = element_type::difference_type;
@@ -103,29 +115,29 @@ public:
     virtual iterator cbegin() const = 0;
     virtual iterator cend() const   = 0;
 
-    [[nodiscard]] const spec::Spec& catalog() const;
     [[nodiscard]] const Spec& spec() const;
-    std::string spec_str() const { return spec().str(); }
+    [[nodiscard]] std::string spec_str() const { return spec().str(); }
+
+    [[nodiscard]] const spec::Spec& catalog() const;
+    [[nodiscard]] std::string catalog_str() const { return catalog().str(); }
 
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;
 
     virtual bool empty() const;
     virtual size_t size() const;
+    virtual void cache() const;
 
     uid_type uid() const;
     [[nodiscard]] virtual uid_type calculate_uid() const;
-
-    static bool is_uid(const std::string& uid);
-
-    virtual bool includesNorthPole() const;
-    virtual bool includesSouthPole() const;
-    virtual bool isPeriodicWestEast() const;
 
     [[nodiscard]] virtual Point first_point() const;
     [[nodiscard]] virtual Point last_point() const;
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
+
+    [[nodiscard]] virtual std::vector<double> distinct_latitudes() const;
+    [[nodiscard]] virtual std::vector<double> distinct_longitudes() const;
 
     virtual const order_type& order() const;
     virtual renumber_type reorder(const order_type&) const;
@@ -144,6 +156,7 @@ public:
     // -- Class methods
 
     static std::string className() { return "grid"; }
+    static bool is_uid(const std::string&);
 
 protected:
 
@@ -202,14 +215,16 @@ struct GridSpecByUID {
 template <typename T>
 using GridRegisterType = ConcreteBuilderT1<Grid, T>;
 
+
 template <typename T>
 using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
+
 
 template <typename T>
 bool GridRegisterName(const std::string& name_or_pattern) {
     new eckit::spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
     return true;
-};
+}
 
 
 struct GridFactory {

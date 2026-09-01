@@ -25,34 +25,11 @@
 namespace eckit::geo::grid::regular {
 
 
-namespace {
-
-
-Range* make_x_range(const spec::Spec& spec) {
-    auto inc   = RegularXY::Increments::make_from_spec(spec);
-    auto first = PointLonLat::make_from_spec(spec, "first");
-    Shape shape(spec);
-
-    auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).X();
-    auto b = a + (shape.nx > 1 ? inc.dx * static_cast<double>(shape.nx - 1) : 0);
-
-    return new range::RegularXY(inc.dx, a, b, a);
+RegularXY::Increments::Increments(value_type dx, value_type dy) : array{dx, dy} {
+    if (dx < 0 || dy < 0) {
+        throw exception::SpecError("'grid' = ['dx', 'dy'] must be positive", Here());
+    }
 }
-
-
-Range* make_y_range(const spec::Spec& spec) {
-    auto inc   = RegularXY::Increments::make_from_spec(spec);
-    auto first = PointLonLat::make_from_spec(spec, "first");
-    Shape shape(spec);
-
-    auto a = std::get<PointXY>(std::unique_ptr<const Projection>(ProjectionFactory::build(spec))->inv(first)).Y();
-    auto b = a + (shape.ny > 1 ? inc.dy * static_cast<double>(shape.ny - 1) : 0);
-
-    return new range::RegularXY(inc.dy, a, b, a);
-}
-
-
-}  // namespace
 
 
 bool RegularXY::Increments::operator==(const Increments& other) const {
@@ -75,11 +52,16 @@ RegularXY::Increments RegularXY::Increments::make_from_spec(const Spec& spec) {
 }
 
 
-RegularXY::RegularXY(const Spec& spec) : RegularXY(Increments::make_from_spec(spec), BoundingBoxXY(spec)) {}
+RegularXY::RegularXY(const Spec& spec) :
+    RegularXY(Increments::make_from_spec(spec), BoundingBoxXY(spec), order::Scan{spec}) {}
 
 
-RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox) :
-    x_(inc.dx, bbox.min_x, bbox.max_x), y_(inc.dy, bbox.min_y, bbox.max_y) {
+RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox, order::Scan s) :
+    Regular(s),
+    x_(s.is_scan_i_positive() ? inc.dx : -inc.dx, s.is_scan_i_positive() ? bbox.min_x : bbox.max_x,
+       s.is_scan_i_positive() ? bbox.max_x : bbox.min_x),
+    y_(s.is_scan_j_positive() ? inc.dy : -inc.dy, s.is_scan_j_positive() ? bbox.min_y : bbox.max_y,
+       s.is_scan_j_positive() ? bbox.max_y : bbox.min_y) {
     ASSERT(!empty());
 }
 

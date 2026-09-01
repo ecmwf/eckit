@@ -41,15 +41,11 @@ public:
     std::vector<size_t> shape() const override;
 
     bool empty() const override;
-    size_t size() const override { return number_of_complex_coefficients(truncation_); }
+    size_t size() const override { return number_of_real_coefficients(truncation_); }
 
     [[nodiscard]] uid_type calculate_uid() const override;
 
     const Area& area() const override;
-
-    bool includesNorthPole() const override { return true; }
-    bool includesSouthPole() const override { return true; }
-    bool isPeriodicWestEast() const override { return true; }
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
@@ -57,13 +53,14 @@ public:
 
     // -- Class methods
 
+    static size_t number_of_real_coefficients(size_t truncation);
     static size_t number_of_complex_coefficients(size_t truncation);
 
 private:
 
     // -- Members
 
-    size_t truncation_;
+    const size_t truncation_;
 };
 
 

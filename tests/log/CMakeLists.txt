@@ -35,3 +35,7 @@ ecbuild_add_test( TARGET      eckit_test_syslog
 ecbuild_add_test( TARGET      eckit_test_log_tcp
                   SOURCES     test_log_tcp.cc
                   LIBS        eckit )
+
+ecbuild_add_test( TARGET      eckit_test_statistics
+                  SOURCES     test_statistics.cc
+                  LIBS        eckit )

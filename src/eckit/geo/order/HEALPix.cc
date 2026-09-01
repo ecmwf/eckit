@@ -111,7 +111,7 @@ struct Renumber {
         ASSERT(0 <= k_);
     }
 
-    int ring_to_nest(int r) const {
+    int ring_to_nest(int _r) const {
         auto to_nest = [&](int f,      //!< base pixel index
                            int ring,   //!< 1-based ring number
                            int Nring,  //!< number of pixels in ring
@@ -132,23 +132,23 @@ struct Renumber {
         };
 
         if (Nside_ == 1) {
-            return r;
+            return _r;
         }
 
-        if (r < Ncap_) {
+        if (_r < Ncap_) {
             // North polar cap
-            int Nring = (1 + sqrt(2 * r + 1)) >> 1;
-            int phi   = 1 + r - 2 * Nring * (Nring - 1);
+            int Nring = (1 + sqrt(2 * _r + 1)) >> 1;
+            int phi   = 1 + _r - 2 * Nring * (Nring - 1);
             int r     = Nring;
             int f     = div_03(phi - 1, Nring);
 
             return to_nest(f, r, Nring, phi, 0);
         }
 
-        if (Npix_ - Ncap_ <= r) {
+        if (Npix_ - Ncap_ <= _r) {
             // South polar cap
-            int Nring = (1 + sqrt(2 * Npix_ - 2 * r - 1)) >> 1;
-            int phi   = 1 + r + 2 * Nring * (Nring - 1) + 4 * Nring - Npix_;
+            int Nring = (1 + sqrt(2 * Npix_ - 2 * _r - 1)) >> 1;
+            int phi   = 1 + _r + 2 * Nring * (Nring - 1) + 4 * Nring - Npix_;
             int ring  = 4 * Nside_ - Nring;  // (from South pole)
             int f     = div_03(phi - 1, Nring) + 8;
 
@@ -156,7 +156,7 @@ struct Renumber {
         }
 
         // Equatorial belt
-        int ip  = r - Ncap_;
+        int ip  = _r - Ncap_;
         int tmp = ip >> (k_ + 2);
 
         int Nring = Nside_;

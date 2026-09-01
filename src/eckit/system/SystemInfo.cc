@@ -14,19 +14,20 @@
 
 #include "SystemInfo.h"
 
+#include <grp.h>
 #include <pwd.h>
 #include <sys/types.h>
 #include <unistd.h>
 
 #include <memory>
+#include <string>
 
 #include "eckit/eckit.h"
-#include "eckit/utils/StringTools.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/memory/MMap.h"
 #include "eckit/memory/Shmget.h"
+#include "eckit/utils/StringTools.h"
 
 #if defined(__APPLE__) && defined(__MACH__)
 #include "eckit/system/SystemInfoMacOSX.h"
@@ -93,6 +94,15 @@ std::string SystemInfo::userName() const {
     return std::string(pwbuf.pw_name);
 }
 
+std::string SystemInfo::groupName() const {
+    char buf[1024];
+    struct group grp{};
+    struct group* result = nullptr;
+    SYSCALL(::getgrgid_r(::getgid(), &grp, buf, sizeof(buf), &result));
+    ASSERT(result);
+    return grp.gr_name;
+}
+
 void SystemInfo::dumpProcMemInfo(std::ostream& os, const char* prepend) const {
     if (prepend) {
         os << prepend;
@@ -115,7 +125,6 @@ void SystemInfo::print(std::ostream& out) const {
     out << "SystemInfo("
         << "executablePath=" << executablePath() << ")";
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -198,12 +198,12 @@ bool Configuration::get(const std::string& name, std::vector<bool>& value) const
     const eckit::Value v = lookUp(name, found);
     if (found) {
         ASSERT(v.isList());
+        if (v.size() != 0 && !v[0].isBool()) {
+            return false;
+        }
         value.clear();
-        int i = 0;
-        while (v.contains(i)) {
-            bool result(v[i]);
-            value.push_back(static_cast<bool>(result));
-            i++;
+        for (int i = 0; v.contains(i); ++i) {
+            value.push_back(static_cast<bool>(v[i]));
         }
     }
     return found;

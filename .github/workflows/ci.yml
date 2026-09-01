@@ -58,7 +58,7 @@ jobs:
           app-private-key: ${{ secrets.CI_PERMISSIONS_APP_PRIVATE_KEY }}
 
   build:
-    needs: resolve
+    needs: [ci-approval, resolve]
     name: build+test (${{ matrix.platform }}, ${{ matrix.cxx-compiler }})
     runs-on: ${{ matrix['runs-on'] }}
     container:
@@ -113,7 +113,7 @@ jobs:
           artifact-name: ${{ matrix._resolved.own-artifact-name }}
 
   build-hpc:
-    needs: resolve
+    needs: [ci-approval, resolve]
     name: build-hpc (${{ matrix.platform }})
     runs-on: ${{ matrix['runs-on'] }}
     container:

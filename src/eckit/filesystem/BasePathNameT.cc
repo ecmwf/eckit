@@ -227,6 +227,11 @@ void BasePathNameT<T>::fileSystemSize(FileSystemSize& fs) const {
 }
 
 template <class T>
+std::string BasePathNameT<T>::fileSystemType() const {
+    return path_.fileSystemType();
+}
+
+template <class T>
 DataHandle* BasePathNameT<T>::fileHandle(bool overwrite) const {
     return path_.fileHandle(overwrite);
 }

@@ -106,7 +106,7 @@ Grid* RegularGaussian::make_grid_cropped(const Area& crop) const {
 }
 
 
-static const auto GRIDNAME = GridRegisterName<RegularGaussian>("f[1-9][0-9]*");
+static const GridRegisterName<RegularGaussian> GRIDNAME("f[1-9][0-9]*");
 
 static const GridRegisterType<RegularGaussian> GRIDTYPE1("regular_gg");
 static const GridRegisterType<RegularGaussian> GRIDTYPE2("rotated_gg");

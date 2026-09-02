@@ -76,9 +76,6 @@ CASE("order=scan") {
 CASE("healpix") {
     using order::HEALPix;
 
-    auto is_power_of_two = [](size_t n) { return (n & (n - 1)) == 0; };
-
-
     SECTION("order=ring/nested") {
         size_t Nside = 4;
 

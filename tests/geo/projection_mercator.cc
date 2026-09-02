@@ -12,7 +12,6 @@
 
 #include <limits>
 
-#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/projection/Mercator.h"
 #include "eckit/testing/Test.h"
 
@@ -56,13 +55,11 @@ CASE("Mercator: spec_str, proj_str") {
     }
 
 
-#if eckit_HAVE_PROJ
     SECTION("proj_str") {
         EXPECT(proj1.proj_str() == "+proj=merc +lat_ts=14 +R=6371229");
         EXPECT(proj2.proj_str() == "+proj=merc +lat_ts=14 +R=6371229");
         EXPECT(proj3.proj_str() == "+proj=merc +lon_0=-180 +R=6371229");
     }
-#endif
 }
 
 

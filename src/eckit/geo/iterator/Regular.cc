@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Regular.h"
 
 
@@ -88,7 +89,7 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return projection_.fwd(PointXY{x_.at(ix_), y_.at(iy_)});
+    return projection_.inv(PointXY{x_.at(ix_), y_.at(iy_)});
 }
 
 

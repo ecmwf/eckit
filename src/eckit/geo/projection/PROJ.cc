@@ -14,9 +14,11 @@
 
 #include <proj.h>
 
+#include <cstdlib>
 #include <map>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
@@ -32,17 +34,40 @@ static ProjectionRegisterType<PROJ> PROJECTION("proj");
 namespace {
 
 
-constexpr auto CTX               = PJ_DEFAULT_CTX;
-static const std::string DEFAULT = "EPSG:4326";  // WGS84, latitude/longitude coordinate system
+PJ_AREA* AREA       = nullptr;
+PJ_CONTEXT* CONTEXT = nullptr;
+
+
+PJ_CONTEXT* ctx() {
+    return CONTEXT == nullptr ? (CONTEXT = proj_context_create()) : CONTEXT;
+}
+
+
+PJ_AREA* area() {
+    return AREA;  // not specific
+}
+
+
+void proj_reset() {
+    if (CONTEXT != nullptr) {
+        proj_context_destroy(CONTEXT);
+        CONTEXT = nullptr;
+    }
+    ctx();
+    area();
+}
 
 
 struct pj_t : std::unique_ptr<PJ, decltype(&proj_destroy)> {
-    explicit pj_t(element_type* ptr) : unique_ptr(ptr, &proj_destroy) {}
-};
-
-
-struct ctx_t : std::unique_ptr<PJ_CONTEXT, decltype(&proj_context_destroy)> {
-    explicit ctx_t(element_type* ptr) : unique_ptr(ptr, &proj_context_destroy) {}
+    explicit pj_t(element_type* ptr) : unique_ptr(ptr, &proj_destroy) {
+        if (!operator bool()) {
+            // common errors are "proj.db not found" or "invalid CRS string"
+            const auto err = proj_context_errno(ctx());
+            throw exception::ProjectionError("PROJ: failed to create object (err=" + std::to_string(err) +
+                                                 ", description='" + proj_errno_string(err) + "')",
+                                             Here());
+        }
+    }
 };
 
 
@@ -94,15 +119,15 @@ struct XYZ final : Convert {
 
 
 Figure* make_figure(const std::string& proj_str) {
-    pj_t identity(proj_create_crs_to_crs(CTX, proj_str.c_str(), proj_str.c_str(), nullptr));
+    pj_t identity(proj_create_crs_to_crs(ctx(), proj_str.c_str(), proj_str.c_str(), area()));
 
-    pj_t crs(proj_get_target_crs(CTX, identity.get()));
-    pj_t ellipsoid(proj_get_ellipsoid(CTX, crs.get()));
+    pj_t crs(proj_get_target_crs(ctx(), identity.get()));
+    pj_t ellipsoid(proj_get_ellipsoid(ctx(), crs.get()));
     ASSERT(ellipsoid);
 
     double a = 0;
     double b = 0;
-    ASSERT(proj_ellipsoid_get_parameters(CTX, ellipsoid.get(), &a, &b, nullptr, nullptr));
+    ASSERT(proj_ellipsoid_get_parameters(ctx(), ellipsoid.get(), &a, &b, nullptr, nullptr));
     ASSERT(0 < b && b <= a);
 
     return FigureFactory::build(spec::Custom{{{"a", a}, {"b", b}}});
@@ -113,8 +138,8 @@ Figure* make_figure(const std::string& proj_str) {
 
 
 struct PROJ::Implementation {
-    Implementation(PJ* pj_ptr, PJ_CONTEXT* pjc_ptr, Convert* source_ptr, Convert* target_ptr) :
-        proj_(pj_ptr), ctx_(pjc_ptr), source_(source_ptr), target_(target_ptr) {
+    Implementation(PJ* pj_ptr, Convert* source_ptr, Convert* target_ptr) :
+        proj_(pj_ptr), source_(source_ptr), target_(target_ptr) {
         ASSERT(proj_);
         ASSERT(source_);
         ASSERT(target_);
@@ -131,7 +156,6 @@ struct PROJ::Implementation {
 private:
 
     const pj_t proj_;
-    const ctx_t ctx_;
     const std::unique_ptr<Convert> source_;
     const std::unique_ptr<Convert> target_;
 };
@@ -143,13 +167,13 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     ASSERT(!target_.empty());
 
     auto make_convert = [lon_minimum](const std::string& string) -> Convert* {
-        pj_t identity(proj_create_crs_to_crs(CTX, string.c_str(), string.c_str(), nullptr));
-        pj_t crs(proj_get_target_crs(CTX, identity.get()));
-        pj_t cs(proj_crs_get_coordinate_system(CTX, crs.get()));
+        pj_t identity(proj_create_crs_to_crs(ctx(), string.c_str(), string.c_str(), area()));
+        pj_t crs(proj_get_target_crs(ctx(), identity.get()));
+        pj_t cs(proj_crs_get_coordinate_system(ctx(), crs.get()));
         ASSERT(cs);
 
-        auto type = proj_cs_get_type(CTX, cs.get());
-        auto dim  = proj_cs_get_axis_count(CTX, cs.get());
+        auto type = proj_cs_get_type(ctx(), cs.get());
+        auto dim  = proj_cs_get_axis_count(ctx(), cs.get());
 
         return type == PJ_CS_TYPE_CARTESIAN && dim == 3   ? static_cast<Convert*>(new XYZ)
                : type == PJ_CS_TYPE_CARTESIAN && dim == 2 ? static_cast<Convert*>(new XY)
@@ -159,18 +183,20 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     };
 
     // projection, normalised
-    auto ctx = PJ_DEFAULT_CTX;
+    pj_t p(proj_create_crs_to_crs(ctx(), source_.c_str(), target_.c_str(), area()));
+    p.reset(proj_normalize_for_visualization(ctx(), p.release()));
 
-    implementation_ = std::make_unique<Implementation>(
-        proj_normalize_for_visualization(ctx, proj_create_crs_to_crs(ctx, source_.c_str(), target_.c_str(), nullptr)),
-        ctx, make_convert(source_), make_convert(target_));
+    implementation_ = std::make_unique<Implementation>(p.release(), make_convert(source_), make_convert(target_));
     ASSERT(implementation_);
 }
 
 
 PROJ::PROJ(const Spec& spec) :
-    PROJ(spec.get_string("source", DEFAULT), spec.get_string("target", spec.get_string("proj", DEFAULT)),
+    PROJ(spec.get_string("source", proj_default()), spec.get_string("target", spec.get_string("proj", proj_default())),
          spec.get_double("lon_minimum", 0)) {}
+
+
+PROJ::~PROJ() = default;
 
 
 const std::string& PROJ::type() const {
@@ -252,12 +278,62 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 }
 
 
+const std::string& PROJ::proj_default() {
+    static const std::string DEFAULT = "EPSG:4326";  // WGS84, latitude/longitude coordinate system
+    return DEFAULT;
+}
+
+
+bool PROJ::projdb_is_available() {
+    struct MuteLog {
+        MuteLog() : previous_(proj_log_level(ctx(), PJ_LOG_NONE)) {}
+        ~MuteLog() { proj_log_level(ctx(), previous_); }
+        const PJ_LOG_LEVEL previous_;
+    } mute_log;
+
+    try {
+        pj_t crs(proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, false, nullptr));
+        return static_cast<bool>(crs);
+    }
+    catch (...) {
+    }
+
+    return false;
+}
+
+
+void PROJ::projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths) {
+    // Recreate context so the new paths takes effect (an already-open database is reset)
+    proj_reset();
+
+    if (!db_path.empty()) {
+        proj_context_set_database_path(ctx(), db_path.c_str(), nullptr, nullptr);
+    }
+
+    if (!search_paths.empty()) {
+        std::vector<const char*> paths;
+        paths.reserve(search_paths.size());
+        for (const auto& p : search_paths) {
+            paths.push_back(p.c_str());
+        }
+
+        proj_context_set_search_paths(ctx(), static_cast<int>(search_paths.size()), paths.data());
+    }
+}
+
+
+void PROJ::projdb_reset() {
+    // a fresh context re-resolves the database from the environment / compiled-in defaults.
+    proj_reset();
+}
+
+
 void PROJ::fill_spec(spec::Custom& custom) const {
     custom.set("type", "proj");
-    if (source_ != DEFAULT) {
+    if (source_ != proj_default()) {
         custom.set("source", source_);
     }
-    if (target_ != DEFAULT) {
+    if (target_ != proj_default()) {
         custom.set("target", target_);
     }
 }

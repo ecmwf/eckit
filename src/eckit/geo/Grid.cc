@@ -17,8 +17,9 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
+#include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -50,8 +51,7 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(Projection* proj) :
-    projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {}
+Grid::Grid(Projection* proj) : projection_(proj == nullptr ? new projection::EquidistantCylindrical : proj) {}
 
 
 const spec::Spec& Grid::catalog() const {
@@ -173,29 +173,28 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
     return ll;
 }
 
-
-std::vector<double> Grid::distinct_latitudes() const {
-    NOTIMP;
+Grid* Grid::to_unstructured_ll(const std::string& name) const {
+    auto [lat, lon] = to_latlons();
+    return new grid::Unstructured(lon, lat, name);
 }
 
-
-std::vector<double> Grid::distinct_longitudes() const {
-    NOTIMP;
+size_t Grid::truncation() const {
+    throw exception::NotImplemented("Grid: truncation() is not implemented for type '" + type() + "'", Here());
 }
 
 
 const Grid::order_type& Grid::order() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: order() is not implemented for type '" + type() + "'", Here());
 }
 
 
 Grid::renumber_type Grid::reorder(const order_type&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: reorder() is not implemented for type '" + type() + "'", Here());
 }
 
 
 Grid* Grid::make_grid_reordered(const order_type&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: make_grid_reordered() is not implemented for type '" + type() + "'", Here());
 }
 
 
@@ -210,13 +209,13 @@ const Area& Grid::area() const {
 
 
 Grid::renumber_type Grid::crop(const Area&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: crop() is not implemented for type '" + type() + "'", Here());
 }
 
 
 const Projection& Grid::projection() const {
     if (!projection_) {
-        projection_ = std::make_unique<projection::Reverse<projection::EquidistantCylindrical>>();
+        projection_ = std::make_unique<projection::EquidistantCylindrical>();
         ASSERT(projection_);
     }
 
@@ -225,7 +224,67 @@ const Projection& Grid::projection() const {
 
 
 Grid* Grid::make_grid_cropped(const Area&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: make_grid_cropped() is not implemented for type '" + type() + "'", Here());
+}
+
+
+double Grid::dx() const {
+    return x().increment();
+}
+
+
+double Grid::dy() const {
+    return y().increment();
+}
+
+
+size_t Grid::nx() const {
+    return x().size();
+}
+
+
+size_t Grid::ny() const {
+    return y().size();
+}
+
+
+const Range& Grid::x() const {
+    return lon();
+}
+
+
+const Range& Grid::y() const {
+    return lat();
+}
+
+
+double Grid::dlon() const {
+    return lon().increment();
+}
+
+
+double Grid::dlat() const {
+    return lat().increment();
+}
+
+
+size_t Grid::nlon() const {
+    return x().size();
+}
+
+
+size_t Grid::nlat() const {
+    return y().size();
+}
+
+
+const Range& Grid::lon() const {
+    throw exception::NotImplemented("Grid: lon() is not implemented for type '" + type() + "'", Here());
+}
+
+
+const Range& Grid::lat() const {
+    throw exception::NotImplemented("Grid: lat() is not implemented for type '" + type() + "'", Here());
 }
 
 
@@ -240,7 +299,7 @@ const Grid::BoundingBox& Grid::boundingBox() const {
 
 
 Grid::BoundingBox* Grid::calculate_bbox() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: calculate_bbox() is not implemented for type '" + type() + "'", Here());
 }
 
 

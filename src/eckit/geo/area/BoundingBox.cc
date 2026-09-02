@@ -500,7 +500,7 @@ const BoundingBox& BoundingBox::bounding_box_default() {
 
 bool BoundingBox::contains(const BoundingBox& other) const {
     if (other.empty()) {
-        return contains(PointLonLat{other.south(), other.west()});
+        return contains(PointLonLat{other.west(), other.south()});
     }
 
     // check for West/East range (if non-periodic), then other's corners
@@ -509,8 +509,8 @@ bool BoundingBox::contains(const BoundingBox& other) const {
         return false;
     }
 
-    return contains(PointLonLat{other.north(), other.west()}) && contains(PointLonLat{other.north(), other.east()}) &&
-           contains(PointLonLat{other.south(), other.west()}) && contains(PointLonLat{other.south(), other.east()});
+    return contains(PointLonLat{other.west(), other.north()}) && contains(PointLonLat{other.east(), other.north()}) &&
+           contains(PointLonLat{other.west(), other.south()}) && contains(PointLonLat{other.east(), other.south()});
 }
 
 

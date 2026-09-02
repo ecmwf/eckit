@@ -40,6 +40,7 @@ public:  // methods
     virtual bool get(const std::string& name, float& value) const  = 0;
     virtual bool get(const std::string& name, double& value) const = 0;
 
+    virtual bool get(const std::string& name, std::vector<bool>& value) const;
     virtual bool get(const std::string& name, std::vector<int>& value) const  = 0;
     virtual bool get(const std::string& name, std::vector<long>& value) const = 0;
     virtual bool get(const std::string& name, std::vector<long long>& value) const;

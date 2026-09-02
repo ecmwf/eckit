@@ -47,6 +47,10 @@ void test_t() {
         a = b = {"1", "2", "3"};
         c     = {"7", "8", "9", "10"};
     }
+    else if constexpr (std::is_same_v<T, std::vector<bool>>) {
+        a = b = {false, false, true};
+        c     = {true, false, true};
+    }
     else if constexpr (std::is_same_v<T, std::string>) {
         a = b = "1";
         c     = "7";
@@ -85,6 +89,7 @@ CASE("Custom::value_type") {
     test_t<size_t>();
     test_t<float>();
     test_t<double>();
+    test_t<std::vector<bool>>();
     test_t<std::vector<int>>();
     test_t<std::vector<long>>();
     test_t<std::vector<long long>>();
@@ -168,6 +173,13 @@ CASE("Custom::operator==") {
     EXPECT(d != a);
     EXPECT_NOT(a != d);
     EXPECT_NOT(d == a);
+
+    Custom e({{"mask", std::vector<bool>{true, false, true}}});
+    Custom f({{"mask", std::vector<bool>{true, false, true}}});
+    Custom g({{"mask", std::vector<bool>{false, true, false}}});
+
+    EXPECT(e == f);
+    EXPECT(e != g);
 }
 
 
@@ -323,8 +335,13 @@ CASE("Spec <- Custom") {
 
 
     SECTION("conversion (5)") {
-        std::unique_ptr<Spec> custom(
-            Custom::make_from_value(YAMLParser::decodeString("{long_list: [1, 2, 3], double_list: [1, 2.1, 3]}")));
+        std::unique_ptr<Spec> custom(Custom::make_from_value(YAMLParser::decodeString(
+            "{bool_list: [true, false, true], long_list: [1, 2, 3], double_list: [1, 2.1, 3]}")));
+
+        const std::vector<bool> expected_bool_list{true, false, true};
+        std::vector<bool> bool_list;
+        EXPECT(custom->get("bool_list", bool_list));
+        EXPECT(bool_list == expected_bool_list);
 
         const std::vector<long> expected_long_list{1, 2, 3};
         auto long_list = custom->get_double_vector("long_list");
@@ -338,6 +355,22 @@ CASE("Spec <- Custom") {
         EXPECT(double_list.size() == expected_double_list.size());
         EXPECT(std::equal(double_list.begin(), double_list.end(), expected_double_list.begin(),
                           [](const auto& a, const auto& b) { return types::is_approximately_equal(a, b); }));
+    }
+
+
+    SECTION("conversion (6)") {
+        const std::vector<bool> expected_bool_list{true, false, true};
+
+        Custom custom;
+        custom.set("bool_list", expected_bool_list);
+
+        const Spec& spec = custom;
+        std::vector<bool> bool_list;
+        EXPECT(spec.get("bool_list", bool_list));
+        EXPECT(bool_list == expected_bool_list);
+
+        std::vector<int> int_list;
+        EXPECT(!spec.get("bool_list", int_list));
     }
 
 
@@ -358,6 +391,7 @@ CASE("Spec <- Custom") {
                                             {"size_t", static_cast<std::size_t>(4)},
                                             {"float", static_cast<float>(5)},
                                             {"double", static_cast<double>(6)},
+                                            {"vector<bool>", std::vector<bool>{true, false}},
                                             {"vector<int>", std::vector<int>{1, 1}},
                                             {"vector<long>", std::vector<long>{2, 2}},
                                             {"vector<long long>", std::vector<long long>{3, 3}},
@@ -368,7 +402,7 @@ CASE("Spec <- Custom") {
 
         const std::string b_str = b->str();
         const std::string b_ref =
-            R"({"bool":true,"double":6,"float":5,"int":1,"long":2,"long long":3,"size_t":4,"string":"string","vector<double>":[6,6],"vector<float>":[5,5],"vector<int>":[1,1],"vector<long long>":[3,3],"vector<long>":[2,2],"vector<size_t>":[4,4],"vector<string>":["string","string"]})";
+            R"({"bool":true,"double":6,"float":5,"int":1,"long":2,"long long":3,"size_t":4,"string":"string","vector<bool>":[true,false],"vector<double>":[6,6],"vector<float>":[5,5],"vector<int>":[1,1],"vector<long long>":[3,3],"vector<long>":[2,2],"vector<size_t>":[4,4],"vector<string>":["string","string"]})";
         EXPECT_EQUAL(b_str, b_ref);
     }
 }

@@ -39,9 +39,9 @@ private:
 
     // -- Members
 
-    const grid::Regular& grid_;
     const Projection& projection_;
 
+    const bool xy_;
     const std::vector<double>& x_;
     const std::vector<double>& y_;
     size_t ix_;

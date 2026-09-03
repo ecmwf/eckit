@@ -350,6 +350,22 @@ CASE("scan modes") {
             EXPECT(points_equal(ref[i], points[i]));
         }
     }
+
+    SECTION("j+i+") {
+        RegularLL grid({1., 1.}, {1, 0, 0, 2}, {}, order::Scan{"j+i+"});
+
+        EXPECT(grid.order() == "j+i+");
+        EXPECT(grid.size() == 2 * 3);
+
+        const std::vector<PointLonLat> ref{{0, 0}, {0, 1}, {1, 0}, {1, 1}, {2, 0}, {2, 1}};
+
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+        }
+    }
 }
 
 

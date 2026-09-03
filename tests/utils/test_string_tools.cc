@@ -13,6 +13,10 @@
 #include "eckit/types/Types.h"
 #include "eckit/utils/StringTools.h"
 
+#include <list>
+#include <set>
+#include <sstream>
+
 #include "eckit/testing/Test.h"
 
 using namespace std;
@@ -164,6 +168,59 @@ CASE("back_trim") {
 
     string t7("0000010");
     EXPECT(StringTools::back_trim(t7, "0") == string("000001"));
+}
+
+CASE("joinOstream streams a delimited sequence with no temporary string") {
+    std::vector<std::string> v{"alpha", "beta", "gamma"};
+
+    std::ostringstream oss;
+    oss << StringTools::joinOstream(v, ", ");
+    EXPECT_EQUAL(oss.str(), "alpha, beta, gamma");
+}
+
+CASE("joinOstream handles edge cases (empty / single-element)") {
+    std::vector<std::string> empty;
+    std::ostringstream oss;
+    oss << "[" << StringTools::joinOstream(empty, ", ") << "]";
+    EXPECT_EQUAL(oss.str(), "[]");
+
+    std::vector<std::string> one{"only"};
+    oss.str("");
+    oss << StringTools::joinOstream(one, ", ");
+    EXPECT_EQUAL(oss.str(), "only");
+}
+
+CASE("joinOstream is generic over container and element type") {
+    // std::list of strings
+    std::list<std::string> l{"a", "b", "c"};
+    std::ostringstream oss;
+    oss << StringTools::joinOstream(l, "|");
+    EXPECT_EQUAL(oss.str(), "a|b|c");
+
+    // std::set: deterministic alphabetic order
+    std::set<std::string> s{"gamma", "alpha", "beta"};
+    oss.str("");
+    oss << StringTools::joinOstream(s, "-");
+    EXPECT_EQUAL(oss.str(), "alpha-beta-gamma");
+
+    // Numeric vector: relies on operator<< for the element type, not std::string conversion.
+    std::vector<int> nums{1, 2, 3, 4};
+    oss.str("");
+    oss << StringTools::joinOstream(nums, ", ");
+    EXPECT_EQUAL(oss.str(), "1, 2, 3, 4");
+}
+
+CASE("joinOstream accepts string_view-compatible delimiters") {
+    std::vector<std::string> v{"x", "y"};
+
+    std::ostringstream oss;
+    oss << StringTools::joinOstream(v, "::");  // const char*
+    EXPECT_EQUAL(oss.str(), "x::y");
+
+    const std::string sep = " -> ";
+    oss.str("");
+    oss << StringTools::joinOstream(v, sep);  // std::string -> string_view
+    EXPECT_EQUAL(oss.str(), "x -> y");
 }
 
 //----------------------------------------------------------------------------------------------------------------------

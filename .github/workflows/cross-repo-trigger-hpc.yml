@@ -142,6 +142,8 @@ jobs:
         name: eckit/build-hpc (${{ matrix.platform }}, ${{ matrix['build-type'] }})
         details-url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         phase: start
+    - name: Announce image
+      uses: ecmwf/ci-infrastructure/actions/announce-image@main
     - uses: actions/checkout@v6
       with:
         repository: ecmwf/eckit

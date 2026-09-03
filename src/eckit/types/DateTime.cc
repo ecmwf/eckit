@@ -149,6 +149,186 @@ DateTime DateTime::round(const Second& rnd) const {
     return DateTime(Date(d, true), Time(t));
 }
 
+bool DateTime::isLeap() const {
+    return date_.isLeap();
+}
+
+long DateTime::numberOfDaysInMonth() const {
+    return date_.numberOfDaysInMonth();
+}
+
+DateTime& DateTime::shiftSeconds(long n) {
+    long dummy;
+    return shiftSeconds(n, dummy);
+}
+
+DateTime& DateTime::shiftSeconds(long n, long& dayCarry) {
+    time_.shiftSeconds(n, dayCarry);
+    date_ += dayCarry;
+    return *this;
+}
+
+DateTime& DateTime::shiftMinutes(long n) {
+    long dummy;
+    return shiftMinutes(n, dummy);
+}
+
+DateTime& DateTime::shiftMinutes(long n, long& dayCarry) {
+    time_.shiftMinutes(n, dayCarry);
+    date_ += dayCarry;
+    return *this;
+}
+
+DateTime& DateTime::shiftHours(long n) {
+    long dummy;
+    return shiftHours(n, dummy);
+}
+
+DateTime& DateTime::shiftHours(long n, long& dayCarry) {
+    time_.shiftHours(n, dayCarry);
+    date_ += dayCarry;
+    return *this;
+}
+
+DateTime& DateTime::shiftDays(long n) {
+    date_ += n;
+    return *this;
+}
+
+DateTime& DateTime::shiftMonths(long n) {
+    date_.shiftMonths(n);
+    return *this;
+}
+
+DateTime& DateTime::shiftYears(long n) {
+    date_.shiftYears(n);
+    return *this;
+}
+
+DateTime& DateTime::beginOfDay() {
+    time_ = Time(0, 0, 0);
+    return *this;
+}
+
+DateTime& DateTime::endOfDay() {
+    time_ = Time(23, 59, 59);
+    return *this;
+}
+
+DateTime& DateTime::beginOfMonth() {
+    date_.beginOfMonth();
+    time_ = Time(0, 0, 0);
+    return *this;
+}
+
+DateTime& DateTime::endOfMonth() {
+    date_.endOfMonth();
+    time_ = Time(23, 59, 59);
+    return *this;
+}
+
+DateTime& DateTime::beginOfYear() {
+    date_.beginOfYear();
+    time_ = Time(0, 0, 0);
+    return *this;
+}
+
+DateTime& DateTime::endOfYear() {
+    date_.endOfYear();
+    time_ = Time(23, 59, 59);
+    return *this;
+}
+
+DateTime DateTime::withShiftSeconds(long n) const {
+    DateTime out(*this);
+    out.shiftSeconds(n);
+    return out;
+}
+
+DateTime DateTime::withShiftSeconds(long n, long& dayCarry) const {
+    DateTime out(*this);
+    out.shiftSeconds(n, dayCarry);
+    return out;
+}
+
+DateTime DateTime::withShiftMinutes(long n) const {
+    DateTime out(*this);
+    out.shiftMinutes(n);
+    return out;
+}
+
+DateTime DateTime::withShiftMinutes(long n, long& dayCarry) const {
+    DateTime out(*this);
+    out.shiftMinutes(n, dayCarry);
+    return out;
+}
+
+DateTime DateTime::withShiftHours(long n) const {
+    DateTime out(*this);
+    out.shiftHours(n);
+    return out;
+}
+
+DateTime DateTime::withShiftHours(long n, long& dayCarry) const {
+    DateTime out(*this);
+    out.shiftHours(n, dayCarry);
+    return out;
+}
+
+DateTime DateTime::withShiftDays(long n) const {
+    DateTime out(*this);
+    out.shiftDays(n);
+    return out;
+}
+
+DateTime DateTime::withShiftMonths(long n) const {
+    DateTime out(*this);
+    out.shiftMonths(n);
+    return out;
+}
+
+DateTime DateTime::withShiftYears(long n) const {
+    DateTime out(*this);
+    out.shiftYears(n);
+    return out;
+}
+
+DateTime DateTime::withBeginOfDay() const {
+    DateTime out(*this);
+    out.beginOfDay();
+    return out;
+}
+
+DateTime DateTime::withEndOfDay() const {
+    DateTime out(*this);
+    out.endOfDay();
+    return out;
+}
+
+DateTime DateTime::withBeginOfMonth() const {
+    DateTime out(*this);
+    out.beginOfMonth();
+    return out;
+}
+
+DateTime DateTime::withEndOfMonth() const {
+    DateTime out(*this);
+    out.endOfMonth();
+    return out;
+}
+
+DateTime DateTime::withBeginOfYear() const {
+    DateTime out(*this);
+    out.beginOfYear();
+    return out;
+}
+
+DateTime DateTime::withEndOfYear() const {
+    DateTime out(*this);
+    out.endOfYear();
+    return out;
+}
+
 void DateTime::dump(DumpLoad& a) const {
     date_.dump(a);
     time_.dump(a);

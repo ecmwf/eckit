@@ -92,6 +92,24 @@ public:  // methods
     long seconds() const;
     long hhmmss() const;
 
+    Time& shiftSeconds(long n);
+    Time& shiftSeconds(long n, long& dayCarry);
+
+    Time& shiftMinutes(long n);
+    Time& shiftMinutes(long n, long& dayCarry);
+
+    Time& shiftHours(long n);
+    Time& shiftHours(long n, long& dayCarry);
+
+    Time withShiftSeconds(long n) const;
+    Time withShiftSeconds(long n, long& dayCarry) const;
+
+    Time withShiftMinutes(long n) const;
+    Time withShiftMinutes(long n, long& dayCarry) const;
+
+    Time withShiftHours(long n) const;
+    Time withShiftHours(long n, long& dayCarry) const;
+
     void dump(DumpLoad&) const;
     void load(DumpLoad&);
 
@@ -106,6 +124,8 @@ protected:  // methods
 private:  // members
 
     Second seconds_;
+
+    friend class DateTime;
 
     friend std::ostream& operator<<(std::ostream& s, const Time& t) {
         t.print(s);

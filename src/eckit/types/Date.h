@@ -111,6 +111,27 @@ public:
     std::string monthName() const;
     long dayOfWeek() const { return julian_ % 7; }
 
+    bool isLeap() const;
+    long numberOfDaysInMonth() const;
+
+    Date& shiftMonths(long n = 1);
+    Date& shiftYears(long n = 1);
+
+    Date& beginOfMonth();
+    Date& endOfMonth();
+
+    Date& beginOfYear();
+    Date& endOfYear();
+
+    Date withShiftMonths(long n = 1) const;
+    Date withShiftYears(long n = 1) const;
+
+    Date withBeginOfMonth() const;
+    Date withEndOfMonth() const;
+
+    Date withBeginOfYear() const;
+    Date withEndOfYear() const;
+
     void dump(DumpLoad&) const;
     void load(DumpLoad&);
 
@@ -146,6 +167,9 @@ private:
     static long julianToDate(long);
     static long dateToJulian(long);
     static long today();
+
+    static bool isLeapYear(long year);
+    static long numberOfDaysInMonth(long year, long month);
 
     // -- Friends
 

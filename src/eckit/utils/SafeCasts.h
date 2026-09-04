@@ -9,7 +9,7 @@
  */
 
 /**
- * Place functions to allow for save type casting in this file
+ * Safe type casting between integer types, preserving the value across changes of width and signedness.
  */
 #pragma once
 #include <limits>
@@ -22,10 +22,9 @@ namespace eckit {
 
 namespace detail {
 
-/// Tag defaulting the first template parameter of 'into_signed'/'into_unsigned', so that supplying an
-/// explicit template argument (which would name the *source* type) is rejected instead of silently
-/// converting the argument before the check is applied.
-struct deduce_source_type {};
+/// Tag defaulting the target type of 'into_signed'/'into_unsigned' to the same width as the source, so that an
+/// explicit template argument names the target rather than being silently converted to before being checked.
+struct deduce_target_type {};
 
 /**
  *  Tells whether a value is representable by the target type, checking it against both the minimum and the
@@ -36,41 +35,24 @@ struct deduce_source_type {};
  */
 template <typename T, typename S, std::enable_if_t<std::is_integral_v<T> && std::is_integral_v<S>, int> = 0>
 [[nodiscard]] constexpr bool fits(S value) {
+    using L = std::numeric_limits<T>;
+
     if constexpr (std::is_signed_v<S> == std::is_signed_v<T>) {
-        // same signedness: a target at least as wide represents every value exactly
-        if constexpr (sizeof(T) >= sizeof(S)) {
-            return true;
-        }
-        else if constexpr (std::is_signed_v<S>) {
-            return value >= static_cast<S>(std::numeric_limits<T>::min()) &&
-                   value <= static_cast<S>(std::numeric_limits<T>::max());
+        // sharing a signedness, the wider type represents both bounds and the value exactly
+        using C = std::conditional_t<(sizeof(T) > sizeof(S)), T, S>;
+        if constexpr (std::is_signed_v<C>) {
+            return static_cast<C>(value) >= static_cast<C>(L::min()) &&
+                   static_cast<C>(value) <= static_cast<C>(L::max());
         }
         else {
-            // the minimum (0) is shared by both types, so only the maximum can be exceeded
-            return value <= static_cast<S>(std::numeric_limits<T>::max());
+            return static_cast<C>(value) <= static_cast<C>(L::max());  // both start at zero
         }
     }
     else if constexpr (std::is_signed_v<S>) {
-        // signed into unsigned: the minimum check rejects every negative value
-        if (value < 0) {
-            return false;
-        }
-        if constexpr (sizeof(T) >= sizeof(S)) {
-            return true;
-        }
-        else {
-            using US = std::make_unsigned_t<S>;
-            return static_cast<US>(value) <= static_cast<US>(std::numeric_limits<T>::max());
-        }
+        return value >= 0 && static_cast<std::make_unsigned_t<S>>(value) <= L::max();
     }
     else {
-        // unsigned into signed: the minimum (0) is always representable, a strictly wider target always fits
-        if constexpr (sizeof(T) > sizeof(S)) {
-            return true;
-        }
-        else {
-            return value <= static_cast<S>(std::numeric_limits<T>::max());
-        }
+        return value <= static_cast<std::make_unsigned_t<T>>(L::max());  // zero is always representable
     }
 }
 
@@ -96,30 +78,38 @@ template <typename T, typename S, std::enable_if_t<std::is_integral_v<T> && std:
  *  Casts signed integer into unsigned.
  *  @param value to cast from.
  *  @return value cast into, same as before but unsigned type.
- *  @throws BadCast if used with a negative value.
+ *  @throws BadCast if the value is negative, or too large for the target type.
  */
-template <typename Deduce = detail::deduce_source_type, typename S,
-          std::enable_if_t<std::is_integral_v<S> && !std::is_same_v<std::remove_cv_t<S>, bool>, int> = 0>
-[[nodiscard]] constexpr auto into_unsigned(S value) -> std::make_unsigned_t<S> {
-    static_assert(std::is_same_v<Deduce, detail::deduce_source_type>,
-                  "eckit::into_unsigned takes no explicit template argument: it would name the source type, "
-                  "converting the argument before it is checked. Use eckit::into<T>(value) to pick a target type.");
-    return into<std::make_unsigned_t<S>>(value);
+template <typename T = detail::deduce_target_type, typename S, std::enable_if_t<std::is_integral_v<S>, int> = 0>
+[[nodiscard]] constexpr auto into_unsigned(S value) {
+    if constexpr (std::is_same_v<T, detail::deduce_target_type>) {
+        return into<std::make_unsigned_t<S>>(value);
+    }
+    else {
+        static_assert(std::is_integral_v<T> && std::is_unsigned_v<T>,
+                      "the explicit template argument of eckit::into_unsigned names the target type, "
+                      "which must be an unsigned integer");
+        return into<T>(value);
+    }
 }
 
 /**
  *  Casts unsigned integer into signed.
  *  @param value to cast from.
  *  @return value cast into, same as before but signed type.
- *  @throws BadCast if used with a value > 2^(bits-1)-1
+ *  @throws BadCast if the value is not representable by the target type.
  */
-template <typename Deduce = detail::deduce_source_type, typename S,
-          std::enable_if_t<std::is_integral_v<S> && !std::is_same_v<std::remove_cv_t<S>, bool>, int> = 0>
-[[nodiscard]] constexpr auto into_signed(S value) -> std::make_signed_t<S> {
-    static_assert(std::is_same_v<Deduce, detail::deduce_source_type>,
-                  "eckit::into_signed takes no explicit template argument: it would name the source type, "
-                  "converting the argument before it is checked. Use eckit::into<T>(value) to pick a target type.");
-    return into<std::make_signed_t<S>>(value);
+template <typename T = detail::deduce_target_type, typename S, std::enable_if_t<std::is_integral_v<S>, int> = 0>
+[[nodiscard]] constexpr auto into_signed(S value) {
+    if constexpr (std::is_same_v<T, detail::deduce_target_type>) {
+        return into<std::make_signed_t<S>>(value);
+    }
+    else {
+        static_assert(std::is_integral_v<T> && std::is_signed_v<T>,
+                      "the explicit template argument of eckit::into_signed names the target type, "
+                      "which must be a signed integer");
+        return into<T>(value);
+    }
 }
 
 }  // namespace eckit

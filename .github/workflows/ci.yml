@@ -83,9 +83,8 @@ jobs:
 
       - name: Fetch resolved deps
         id: deps
-        uses: ecmwf/ci-infrastructure/actions/fetch-and-publish@main
+        uses: ecmwf/ci-infrastructure/actions/fetch-deps@main
         with:
-          mode: download-only
           deps-json: ${{ toJSON(matrix._resolved.deps) }}
           token: ${{ steps.mint.outputs.token }}
 
@@ -110,9 +109,8 @@ jobs:
         run: ctest --test-dir "${{ steps.build.outputs.build-dir }}" --output-on-failure ${{ matrix._resolved['ctest-args'] }}
 
       - name: Publish eckit
-        uses: ecmwf/ci-infrastructure/actions/fetch-and-publish@main
+        uses: ecmwf/ci-infrastructure/actions/publish-artifact@main
         with:
-          mode: publish
           install-path: ${{ steps.build.outputs.install-path }}
           artifact-name: ${{ matrix._resolved.own-artifact-name }}
 
@@ -143,9 +141,8 @@ jobs:
 
       - name: Fetch resolved deps
         id: deps
-        uses: ecmwf/ci-infrastructure/actions/fetch-and-publish@main
+        uses: ecmwf/ci-infrastructure/actions/fetch-deps@main
         with:
-          mode: download-only
           deps-json: ${{ toJSON(matrix._resolved.deps) }}
           token: ${{ steps.mint.outputs.token }}
           # Stage the dep prefixes for shipment without installing anything

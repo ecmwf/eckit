@@ -9,6 +9,10 @@ repos:
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: check-merge-conflict
+      - id: pretty-format-json
+        args: [--autofix]
+        types: [json]
+        exclude: '\.geojson$'
   - repo: https://github.com/PyCQA/isort
     rev: 6.0.1
     hooks:
@@ -28,13 +32,6 @@ repos:
       - id: yamllint
         args: [--strict, -d, '{extends: default, rules: {line-length: disable}}']
         types: [yaml]
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: pretty-format-json
-        args: [--autofix]
-        types: [json]
-        exclude: '\.geojson$'
   - repo: https://github.com/MarcoGorelli/cython-lint
     rev: v0.16.6
     hooks:

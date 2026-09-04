@@ -21,18 +21,18 @@ cdef extern from "eckit/geo/LibEcKitGeo.h" namespace "eckit":
         LibEcKitGeo& instance()
 
         @staticmethod
-        void purgeCacheDir()
+        void purgeCacheDir() except +
 
         @staticmethod
-        bool projdb_is_available()
+        bool projdb_is_available() except +
 
         @staticmethod
         void projdb_set_search_paths(
             const string& db_path, const vector[string]& search_paths
-        )
+        ) except +
 
-        string version()
-        string gitsha1(unsigned int n)  # n=40 for full sha1
+        string version() except +
+        string gitsha1(unsigned int n) except +  # n=40 for full sha1
 
 
 cdef extern from "eckit/geo/Area.h" namespace "eckit::geo":

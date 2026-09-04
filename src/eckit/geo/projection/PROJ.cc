@@ -291,14 +291,11 @@ bool PROJ::projdb_is_available() {
         const PJ_LOG_LEVEL previous_;
     } mute_log;
 
-    try {
-        pj_t crs(proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, false, nullptr));
-        return static_cast<bool>(crs);
-    }
-    catch (...) {
-    }
+    // Note: not using pj_t, which throws on failure (failure is a possible outcome)
+    std::unique_ptr<PJ, decltype(&proj_destroy)> crs(
+        proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, false, nullptr), &proj_destroy);
 
-    return false;
+    return static_cast<bool>(crs);
 }
 
 

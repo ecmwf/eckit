@@ -38,8 +38,8 @@ public:
 
     // -- Methods
 
-    size_t nx() const { return shape().at(1); }
-    size_t ny() const { return shape().at(0); }
+    size_t nx() const override { return shape().at(1); }
+    size_t ny() const override { return shape().at(0); }
 
     std::string name() const { return name_; }
     std::string arrangement() const;

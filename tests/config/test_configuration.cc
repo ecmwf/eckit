@@ -30,6 +30,7 @@ CASE("test_configuration_interface") {
     float value_float                          = 1.234567;
     double value_double                        = 1.2345678912345789123456789;
     std::string value_string                   = "string";
+    std::vector<bool> value_arr_bool           = {true, false, true};
     std::vector<int> value_arr_int             = {1, 2, 3};
     std::vector<long> value_arr_long           = {4, 5};
     std::vector<long long> value_arr_long_long = {4, 5};
@@ -50,6 +51,7 @@ CASE("test_configuration_interface") {
     float result_float         = 0;
     double result_double       = 0;
     std::string result_string;
+    std::vector<bool> result_arr_bool;
     std::vector<int> result_arr_int;
     std::vector<long> result_arr_long;
     std::vector<long long> result_arr_long_long;
@@ -72,6 +74,7 @@ CASE("test_configuration_interface") {
         local.set("float", value_float);
         local.set("double", value_double);
         local.set("string", value_string);
+        local.set("arr_bool", value_arr_bool);
         local.set("arr_int", value_arr_int);
         local.set("arr_long", value_arr_long);
         local.set("arr_long_long", value_arr_long_long);
@@ -94,6 +97,7 @@ CASE("test_configuration_interface") {
     EXPECT(!conf.get("missing", result_float));
     EXPECT(!conf.get("missing", result_double));
     EXPECT(!conf.get("missing", result_string));
+    EXPECT(!conf.get("missing", result_arr_bool));
     EXPECT(!conf.get("missing", result_arr_int));
     EXPECT(!conf.get("missing", result_arr_long));
     EXPECT(!conf.get("missing", result_arr_long_long));
@@ -114,6 +118,7 @@ CASE("test_configuration_interface") {
     EXPECT(conf.get("float", result_float));
     EXPECT(conf.get("double", result_double));
     EXPECT(conf.get("string", result_string));
+    EXPECT(conf.get("arr_bool", result_arr_bool));
     EXPECT(conf.get("arr_int", result_arr_int));
     EXPECT(conf.get("arr_long", result_arr_long));
     EXPECT(conf.get("arr_long_long", result_arr_long_long));
@@ -134,6 +139,7 @@ CASE("test_configuration_interface") {
     EXPECT(result_float == value_float);
     EXPECT(result_double == value_double);
     EXPECT(result_string == value_string);
+    EXPECT(result_arr_bool == value_arr_bool);
     EXPECT(result_arr_int == value_arr_int);
     EXPECT(result_arr_long_long == value_arr_long_long);
     EXPECT(result_arr_size_t == value_arr_size_t);
@@ -150,6 +156,13 @@ CASE("test_configuration_interface") {
     EXPECT(conf.getFloat("float") == value_float);
     EXPECT(conf.getDouble("double") == value_double);
     EXPECT(conf.getString("string") == value_string);
+    EXPECT(conf.getBoolVector("arr_bool") == value_arr_bool);
+    EXPECT(conf.isBooleanList("arr_bool"));
+    EXPECT(!conf.isBooleanList("arr_int"));
+    EXPECT(!conf.isBooleanList("arr_string"));
+    EXPECT(conf.isConvertible<std::vector<bool>>("arr_bool"));
+    EXPECT(!conf.isConvertible<std::vector<bool>>("arr_int"));
+    EXPECT(!conf.isConvertible<std::vector<bool>>("arr_string"));
     EXPECT(conf.getIntVector("arr_int") == value_arr_int);
     EXPECT(conf.getLongVector("arr_long") == value_arr_long);
     EXPECT(conf.getUnsignedVector("arr_size_t") == value_arr_size_t);
@@ -170,6 +183,7 @@ CASE("test_configuration_interface") {
     EXPECT_THROWS_AS(conf.getFloat("missing"), eckit::Exception);
     EXPECT_THROWS_AS(conf.getDouble("missing"), eckit::Exception);
     EXPECT_THROWS_AS(conf.getString("missing"), eckit::Exception);
+    EXPECT_THROWS_AS(conf.getBoolVector("missing"), eckit::Exception);
     EXPECT_THROWS_AS(conf.getIntVector("missing"), eckit::Exception);
     EXPECT_THROWS_AS(conf.getLongVector("missing"), eckit::Exception);
     EXPECT_THROWS_AS(conf.getUnsignedVector("missing"), eckit::Exception);
@@ -190,6 +204,7 @@ CASE("test_configuration_interface") {
     EXPECT(conf.getFloat("missing", value_float) == value_float);
     EXPECT(conf.getDouble("missing", value_double) == value_double);
     EXPECT(conf.getString("missing", value_string) == value_string);
+    EXPECT(conf.getBoolVector("missing", value_arr_bool) == value_arr_bool);
     EXPECT(conf.getIntVector("missing", value_arr_int) == value_arr_int);
     EXPECT(conf.getLongVector("missing", value_arr_long) == value_arr_long);
     EXPECT(conf.getUnsignedVector("missing", value_arr_size_t) == value_arr_size_t);

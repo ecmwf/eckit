@@ -24,7 +24,7 @@ namespace eckit::geo::test {
 
 const std::string GRID   = "ORCA2_T";
 const Grid::uid_type UID = "d5bde4f52ff3a9bea5629cd9ac514410";
-const std::vector<long> SHAPE{182, 149};
+const std::vector<long> SHAPE{149, 182};
 
 
 CASE("spec") {

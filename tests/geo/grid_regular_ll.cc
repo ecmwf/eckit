@@ -85,8 +85,8 @@ CASE("global, shifted") {
              }) {
             static const std::string spec_ref = R"({"grid":[1,1],"reference":[0.5,0.5]})";
 
-            EXPECT(grid.nlon() == 360);
-            EXPECT(grid.nlat() == 180);
+            EXPECT(grid.nx() == 360);
+            EXPECT(grid.ny() == 180);
             EXPECT(grid.size() == 360 * 180);
             EXPECT(grid.spec_str() == spec_ref);
         }
@@ -105,8 +105,8 @@ CASE("global, shifted") {
              }) {
             static const std::string spec_ref = R"({"grid":[2,1],"reference":[1,0.5]})";
 
-            EXPECT(grid.nlon() == 180);
-            EXPECT(grid.nlat() == 180);
+            EXPECT(grid.nx() == 180);
+            EXPECT(grid.ny() == 180);
             EXPECT(grid.size() == 180 * 180);
             EXPECT(grid.spec_str() == spec_ref);
         }
@@ -342,6 +342,22 @@ CASE("scan modes") {
             {0., 0.},   {90., 0.},   {180., 0.},   {270., 0.},    //
             {0., 90.},  {90., 90.},  {180., 90.},  {270., 90.},   //
         };
+
+        auto points = grid.to_points();
+        ASSERT(points.size() == ref.size());
+
+        for (size_t i = 0; i < points.size(); ++i) {
+            EXPECT(points_equal(ref[i], points[i]));
+        }
+    }
+
+    SECTION("j+i+") {
+        RegularLL grid({1., 1.}, {1, 0, 0, 2}, {}, order::Scan{"j+i+"});
+
+        EXPECT(grid.order() == "j+i+");
+        EXPECT(grid.size() == 2 * 3);
+
+        const std::vector<PointLonLat> ref{{0, 0}, {0, 1}, {1, 0}, {1, 1}, {2, 0}, {2, 1}};
 
         auto points = grid.to_points();
         ASSERT(points.size() == ref.size());

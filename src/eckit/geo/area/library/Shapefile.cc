@@ -17,6 +17,8 @@
 #include <ostream>
 #include <vector>
 
+#include "shapefil.h"
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/area/Polygon.h"
@@ -29,6 +31,15 @@
 
 
 namespace eckit::geo::area::library {
+
+
+// PIMPL body: holds the shapelib-typed state so <shapefil.h> stays out of the
+// installed public header. Kept in the .cc so that the unique_ptr in the
+// Shapefile class only sees a complete Implementation type where its
+// destructor is instantiated (i.e. in ~Shapefile() below).
+struct Shapefile::Implementation {
+    SHPInfo* shp = nullptr;
+};
 
 
 namespace {
@@ -91,16 +102,19 @@ Shapefile::Shapefile(const PathName& file) : Shapefile(file, "") {}
 
 
 Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string& name) :
-    shpPath_(path_shp(shp)), dbfPath_(path_dbf(dbf, shpPath_)), nEntities_(0) {
+    shpPath_(path_shp(shp)),
+    dbfPath_(path_dbf(dbf, shpPath_)),
+    impl_(std::make_unique<Implementation>()),
+    nEntities_(0) {
     Log::debug<LibEcKitGeo>() << "eckit::geo::area::library::Shapefile(shp='" << shpPath_.realName() << "',dbf='"
                               << dbfPath_.realName() << "',name='" << name << "')" << std::endl;
 
-    if ((shp_ = SHPOpen(shpPath_.localPath(), "rb")) == nullptr) {
+    if ((impl_->shp = SHPOpen(shpPath_.localPath(), "rb")) == nullptr) {
         throw CantOpenFile(shpPath_ + " (as .shp)", Here());
     }
 
     int type = 0;
-    SHPGetInfo(shp_, &nEntities_, &type, nullptr, nullptr);
+    SHPGetInfo(impl_->shp, &nEntities_, &type, nullptr, nullptr);
 
     if (type != SHPT_ARC && type != SHPT_POLYGON) {
         throw ReadError("Shapefile: unsupported shape type", Here());
@@ -142,7 +156,7 @@ Shapefile::Shapefile(const PathName& shp, const PathName& dbf, const std::string
 
 
 Shapefile::~Shapefile() {
-    SHPClose(shp_);
+    SHPClose(impl_->shp);
 }
 
 
@@ -200,7 +214,7 @@ Area* Shapefile::make_area(size_t entity) const {
         explicit Object(SHPObject* ptr) : unique_ptr{ptr, SHPDestroyObject} { ASSERT(operator bool()); }
     };
 
-    Object obj(SHPReadObject(shp_, static_cast<int>(entity)));
+    Object obj(SHPReadObject(impl_->shp, static_cast<int>(entity)));
     ASSERT(obj);
     ASSERT(obj->nSHPType == SHPT_ARC || obj->nSHPType == SHPT_POLYGON);
 

@@ -52,13 +52,14 @@ public:
     virtual Configured& set(const std::string& name, double value)             = 0;
     virtual Configured& set(const std::string& name, int value)                = 0;
     virtual Configured& set(const std::string& name, long value)               = 0;
-    // virtual Configured& set(const std::string &name, long long value) = 0;
+    virtual Configured& set(const std::string& name, long long value);
     virtual Configured& set(const std::string& name, bool value)   = 0;
     virtual Configured& set(const std::string& name, size_t value) = 0;
 
+    virtual Configured& set(const std::string& name, const std::vector<bool>& value);
     virtual Configured& set(const std::string& name, const std::vector<int>& value)  = 0;
     virtual Configured& set(const std::string& name, const std::vector<long>& value) = 0;
-    // virtual Configured& set(const std::string& name, const std::vector<long long>& value) = 0;
+    virtual Configured& set(const std::string& name, const std::vector<long long>& value);
     virtual Configured& set(const std::string& name, const std::vector<size_t>& value)      = 0;
     virtual Configured& set(const std::string& name, const std::vector<float>& value)       = 0;
     virtual Configured& set(const std::string& name, const std::vector<double>& value)      = 0;

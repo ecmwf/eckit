@@ -13,6 +13,7 @@
 #include "eckit/geo/grid/Reduced.h"
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
 
 
 namespace eckit::geo::grid {
@@ -41,7 +42,7 @@ const std::vector<size_t>& Reduced::nxacc() const {
 
         size_t j = 0;
         for (auto a = nxacc_.begin(), b = a + 1; b != nxacc_.end(); ++j, ++a, ++b) {
-            *b = *a + nx(j);
+            *b = *a + nxj(j);
         }
 
         ASSERT(nxacc_.back() == size());

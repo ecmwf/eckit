@@ -32,10 +32,11 @@ struct EckitGeoGridCache final : EckitTool {
         options_.push_back(new option::SimpleOption<bool>("dryrun", "dry run (default: false)"));
     }
 
+    int numberOfPositionalArguments() const override { return 0; }
+    int minimumPositionalArguments() const override { return 0; }
+
     void usage(const std::string& tool) const override {
-        Log::info() << "\n"
-                       "Usage: "
-                    << tool << "[options] ..." << std::endl;
+        Log::info() << "\nUsage: " << tool << " [options] ..." << std::endl;
     }
 
     void execute(const option::CmdArgs& args) override {

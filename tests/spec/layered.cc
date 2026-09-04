@@ -20,12 +20,14 @@ namespace eckit::spec::test {
 
 
 CASE("Spec <- Layered") {
-    int one    = 1;
-    double two = 2.;
+    int one                              = 1;
+    double two                           = 2.;
+    std::vector<bool> expected_bool_list = {true, false, true};
 
-    spec::Custom a({{"foo", one}, {"bar", two}});
+    spec::Custom a({{"foo", one}, {"bar", two}, {"bool_list", expected_bool_list}});
     ASSERT(a.has("foo"));
     ASSERT(a.has("bar"));
+    ASSERT(a.has("bool_list"));
 
     spec::Layered b(a);
 
@@ -42,6 +44,13 @@ CASE("Spec <- Layered") {
 
     auto value = b.get_int("foo");
     EXPECT(value == one);
+
+    std::vector<bool> bool_list;
+    EXPECT(b.get("bool_list", bool_list));
+    EXPECT(bool_list == expected_bool_list);
+
+    b.hide("bool_list");
+    EXPECT_NOT(b.get("bool_list", bool_list));
 }
 
 

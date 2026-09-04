@@ -24,6 +24,7 @@ namespace eckit::geo::test {
 CASE("sh") {
     grid::SphericalHarmonics a(1);
 
+    EXPECT(a.truncation() == 1);
     EXPECT(a.size() == 6);
     EXPECT(a.size() == grid::SphericalHarmonics::number_of_real_coefficients(1));
     EXPECT(a.size() == grid::SphericalHarmonics::number_of_complex_coefficients(1) * 2);
@@ -31,6 +32,7 @@ CASE("sh") {
 
     grid::SphericalHarmonics b(1279);
 
+    EXPECT(b.truncation() == 1279);
     EXPECT(b.size() == 1639680);
     EXPECT(b.size() == grid::SphericalHarmonics::number_of_real_coefficients(1279));
     EXPECT(b.size() == grid::SphericalHarmonics::number_of_complex_coefficients(1279) * 2);

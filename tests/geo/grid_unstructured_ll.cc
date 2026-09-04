@@ -71,6 +71,30 @@ CASE("unstructured_ll") {
 }
 
 
+CASE("to_unstructured_ll") {
+    cleanup();
+
+    const std::vector<double> lats{0, 1, 2};
+    const std::vector<double> lons{2, 1, 0};
+
+    std::unique_ptr<const Grid> src(new grid::Unstructured(lons, lats));
+
+    std::unique_ptr<const Grid> a(src->to_unstructured_ll());
+    EXPECT_EQUAL(a->type(), std::string("unstructured_ll"));
+    EXPECT(a->to_latlons() == src->to_latlons());
+    EXPECT(a->uid() == src->uid());  // same points, no name -> same uid
+
+    const std::string name = "custom-to-unstructured-ll";
+    std::unique_ptr<const Grid> b(src->to_unstructured_ll(name));
+    std::unique_ptr<const Grid> c(GridFactory::make_from_string("{grid:" + name + "}"));
+
+    EXPECT(b->uid() == src->uid());  // name doesn't change uid
+    EXPECT(*b == *c);
+
+    cleanup();
+}
+
+
 }  // namespace eckit::geo::test
 
 

@@ -6,17 +6,12 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=8
 
-module load prgenv/gnu
-# gcc/old, not a version number: it is the alias for the compiler a login node
-# gives you with nothing loaded (8.5.0 today), which is what this cluster's GNU
-# builds actually target. `module avail gcc` lists no 8.5.0 to pin directly.
-module unload gcc
-module load gcc/old
-module load cmake
-module load ninja
+{% for m in modules %}
+module {{ m }}
+{% endfor %}
 
-echo "Using: $(command -v gcc) ($($(command -v gcc) --version | head -1))"
-echo "Using: $(command -v g++) ($($(command -v g++) --version | head -1))"
+echo "Using: $(command -v {{ cc }}) ($($(command -v {{ cc }}) --version | head -1))"
+echo "Using: $(command -v {{ cxx }}) ($($(command -v {{ cxx }}) --version | head -1))"
 
 for tool in bison flex; do
   if command -v "$tool" >/dev/null 2>&1; then
@@ -28,9 +23,9 @@ done
 
 cmake -S "$CI_SOURCE_DIR" -B "${TMPDIR:-/tmp}/build" \
   -GNinja \
-  -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_C_COMPILER="$(command -v gcc)" \
-  -DCMAKE_CXX_COMPILER="$(command -v g++)" \
+  -DCMAKE_BUILD_TYPE={{ build_type }} \
+  -DCMAKE_C_COMPILER="$(command -v {{ cc }})" \
+  -DCMAKE_CXX_COMPILER="$(command -v {{ cxx }})" \
   -DENABLE_TESTS=ON \
   -DENABLE_AEC=1 \
   -DENABLE_ECKIT_SQL=ON \

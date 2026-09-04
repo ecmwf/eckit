@@ -41,7 +41,7 @@ ctest = true
 ctest-args = '-j "$(nproc)"'
 
 [[matrix.build-hpc.include]]
-cxx-compiler = "g++-13"
+cxx-compiler = "g++-8"
 build-type = "Release"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"

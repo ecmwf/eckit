@@ -98,13 +98,13 @@ jobs:
     needs:
     - label-gate
     - validate
-    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger.yml@develop
+    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger.yml@sync-branch-ci-rollout
     with:
       from-repo: ${{ github.repository }}
       from-sha: ${{ github.event.workflow_run.head_sha }}
       from-jobs: '["eckit/build"]'
       branch: ${{ github.event.workflow_run.head_branch }}
-      fallback-ref: develop
+      fallback-ref: sync-branch-ci-rollout
     secrets: inherit
     if: ${{ needs['label-gate'].outputs.run == 'true' }}
   report-result:

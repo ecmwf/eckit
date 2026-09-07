@@ -27,5 +27,8 @@ bool Parametrisation::get(const std::string& name, std::vector<long long>& value
     NOTIMP;
 }
 
+bool Parametrisation::get(const std::string& name, std::vector<bool>& value) const {
+    NOTIMP;
+}
 
 }  // namespace eckit

@@ -14,12 +14,11 @@
 
 #include <iosfwd>
 #include <map>
+#include <memory>
 #include <string>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/area/Library.h"
-
-#include "shapefil.h"
 
 
 namespace eckit::geo {
@@ -65,12 +64,16 @@ public:
 
 private:
 
+    // -- Types
+
+    struct Implementation;
+
     // -- Members
 
     const PathName shpPath_;
     const PathName dbfPath_;
 
-    SHPInfo* shp_;
+    std::unique_ptr<Implementation> impl_;
 
     std::string name_;
     int nEntities_;

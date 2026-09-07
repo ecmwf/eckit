@@ -149,7 +149,7 @@ CASE("gridSpec") {
 
     SECTION("gridSpec (ORCA)") {
         std::vector<test_type> tests{
-            {R"({"grid":"ORCA2_T"})", {182, 149}},  // eORCA025_T [1740494] is too large as an integration test
+            {R"({"grid":"ORCA2_T"})", {149, 182}},  // eORCA025_T [1740494] is too large as an integration test
         };
         for (const auto& t : tests) {
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(t.spec));

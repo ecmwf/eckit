@@ -15,6 +15,7 @@
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Regular.h"
 
 
@@ -36,10 +37,10 @@ struct RegularInstance : Instance, Regular {
 
 
 Regular::Regular(const grid::Regular& grid, size_t index) :
-    grid_(grid),
-    projection_(grid_.projection()),
-    x_(grid.x().values()),
-    y_(grid.y().values()),
+    projection_(grid.projection()),
+    xy_(grid.scan().is_scan_i_then_j()),
+    x_((xy_ ? grid.x() : grid.y()).values()),
+    y_((xy_ ? grid.y() : grid.x()).values()),
     ix_(0),
     iy_(0),
     index_(index),
@@ -72,8 +73,8 @@ bool Regular::operator++() {
 bool Regular::operator+=(difference_type d) {
     if (auto di = static_cast<difference_type>(index_); 0 <= di + d && di + d < static_cast<difference_type>(size_)) {
         index_ = static_cast<size_t>(di + d);
-        ix_    = index_ % nx_;  // FIXME depends on order
-        iy_    = index_ / nx_;  //...
+        ix_    = index_ % nx_;
+        iy_    = index_ / nx_;
         return true;
     }
 
@@ -88,7 +89,7 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return projection_.fwd(PointXY{x_.at(ix_), y_.at(iy_)});
+    return projection_.inv(xy_ ? PointXY{x_.at(ix_), y_.at(iy_)} : PointXY{y_.at(iy_), x_.at(ix_)});
 }
 
 

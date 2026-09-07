@@ -10,8 +10,10 @@
  */
 
 
+#include <cstdlib>
 #include <memory>
 
+#include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
@@ -22,6 +24,43 @@ namespace eckit::geo::test {
 
 
 using P = std::unique_ptr<Projection>;
+
+
+CASE("projdb") {
+    // eckit uses its own PROJ context. Reconfiguring it (projdb_reset()) recreates the context and re-reads PROJ_DATA
+    // if set, so these transitions are deterministic regardless of whether the database was already accessed.
+
+
+    SECTION("available by default") {
+        LibEcKitGeo::projdb_reset();
+
+        EXPECT(LibEcKitGeo::projdb_is_available());
+    }
+
+
+    SECTION("unavailable when pointed at a bad database") {
+        LibEcKitGeo::projdb_set_search_paths("/does/not/exist/proj.db", {"/does/not/exist"});
+
+        EXPECT(!LibEcKitGeo::projdb_is_available());
+
+        LibEcKitGeo::projdb_reset();
+
+        EXPECT(LibEcKitGeo::projdb_is_available());
+    }
+
+
+    SECTION("unavailable when PROJ_DATA points nowhere") {
+        ::setenv("PROJ_DATA", "/does/not/exist", 1);
+        LibEcKitGeo::projdb_reset();
+
+        EXPECT(!LibEcKitGeo::projdb_is_available());
+
+        ::unsetenv("PROJ_DATA");
+        LibEcKitGeo::projdb_reset();
+
+        EXPECT(LibEcKitGeo::projdb_is_available());
+    }
+}
 
 
 CASE("projection: proj") {

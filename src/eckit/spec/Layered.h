@@ -55,6 +55,7 @@ public:
     bool get(const std::string& name, size_t& value) const override { return get_t(name, value); }
     bool get(const std::string& name, float& value) const override { return get_t(name, value); }
     bool get(const std::string& name, double& value) const override { return get_t(name, value); }
+    bool get(const std::string& name, std::vector<bool>& value) const override { return get_t(name, value); }
     bool get(const std::string& name, std::vector<int>& value) const override { return get_t(name, value); }
     bool get(const std::string& name, std::vector<long>& value) const override { return get_t(name, value); }
     bool get(const std::string& name, std::vector<long long>& value) const override { return get_t(name, value); }

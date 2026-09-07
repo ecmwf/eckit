@@ -30,7 +30,7 @@ public:
 
     [[nodiscard]] static Spec* spec(const std::string& name);
 
-    size_t truncation() const { return truncation_; }
+    size_t truncation() const override { return truncation_; }
 
     // -- Overridden methods
 

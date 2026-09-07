@@ -25,7 +25,7 @@ public:
 
     // -- Types
 
-    struct Increments : public std::array<double, 2> {
+    struct Increments : std::array<double, 2> {
         Increments(value_type dx, value_type dy);
 
         using array::array;
@@ -39,12 +39,18 @@ public:
         static Increments make_from_spec(const Spec&);
     };
 
+    struct RangeXY : range::RegularXY {
+        RangeXY(double start, double stop_included, double step);
+        static RangeXY make_from_spec(const Spec&, const std::string& key);
+    };
+
     using BoundingBoxXY = area::BoundingBoxXY;
 
     // -- Constructors
 
     explicit RegularXY(const Spec&);
-    explicit RegularXY(const Increments&, BoundingBoxXY, order::Scan = scan_default());
+    explicit RegularXY(const Increments&, BoundingBoxXY, order::Scan = scan_default(), Projection* = nullptr);
+    explicit RegularXY(const RangeXY& x, const RangeXY& y, Projection* = nullptr);
 
     // -- Overridden methods
 
@@ -53,11 +59,7 @@ public:
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
 
-    double dx() const override { return x_.increment(); }
-    double dy() const override { return y_.increment(); }
-
-    size_t nx() const override { return x_.size(); }
-    size_t ny() const override { return y_.size(); }
+    [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
     const Range& x() const override { return x_; }
     const Range& y() const override { return y_; }

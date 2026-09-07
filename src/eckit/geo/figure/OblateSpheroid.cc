@@ -86,7 +86,7 @@ double OblateSpheroid::_area(double a, double b, const area::BoundingBox& bbox) 
     const auto dlam = util::DEGREE_TO_RADIAN * (bbox.east() - bbox.west());
 
     const auto e = eccentricity(a, b);
-    const auto A = dlam * a * b * (f(phi2, e) - f(phi1, e));
+    const auto A = dlam * b * b / 2. * (f(phi2, e) - f(phi1, e));
 
     return A;
 }

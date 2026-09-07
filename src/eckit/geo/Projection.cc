@@ -92,6 +92,13 @@ const Projection& Projection::projection_default() {
 
 
 Projection* Projection::make_from_spec(const Spec& spec) {
+    if (const std::string projection = "projection"; spec.has(projection)) {
+        auto ptr = dynamic_cast<const spec::Custom&>(spec).custom(projection);
+        ASSERT(ptr);
+
+        return make_from_spec(*ptr);
+    }
+
     if (std::string type; spec.get("type", type)) {
         return ProjectionFactoryType::instance().get(type).create(spec);
     }

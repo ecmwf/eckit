@@ -98,7 +98,7 @@ size_t ReducedLonLat::size() const {
 }
 
 
-size_t ReducedLonLat::nx(size_t j) const {
+size_t ReducedLonLat::nxj(size_t j) const {
     if (!longitude_.at(j)) {
         longitude_[j].reset(make_lon_range(into_unsigned(pl_.at(j)), boundingBox()));
         ASSERT(longitude_[j]);
@@ -108,18 +108,13 @@ size_t ReducedLonLat::nx(size_t j) const {
 }
 
 
-size_t ReducedLonLat::ny() const {
-    return latitude_->size();
-}
-
-
 const std::vector<double>& ReducedLonLat::latitudes() const {
     return latitude_->values();
 }
 
 
 const std::vector<double>& ReducedLonLat::longitudes(size_t j) const {
-    if (nx(j) > 0) {
+    if (nxj(j) > 0) {
         ASSERT(longitude_[j]);
         return longitude_[j]->values();
     }

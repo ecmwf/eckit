@@ -174,6 +174,7 @@ set(eckit_geo_include_dirs
 )
 
 set(eckit_geo_libs eckit_codec eckit_maths eckit_spec)
+set(eckit_geo_private_libs)
 set(eckit_GEO_SHARE_AREA "~eckit/share/eckit/geo/area.yaml")
 set(eckit_GEO_SHARE_GRID
     "~eckit/share/eckit/geo/grid.yaml"
@@ -187,8 +188,13 @@ set(eckit_GEO_SHARE_GRID
 set(eckit_GEO_SHARE_PROJECTION "~eckit/share/eckit/geo/projection.yaml")
 
 if(eckit_HAVE_PROJ)
-    list(APPEND eckit_geo_srcs projection/PROJ.cc projection/PROJ.h)
-    list(APPEND eckit_geo_libs PROJ::proj)
+    list(APPEND eckit_geo_srcs
+        grid/regular/SwissLV03.cc
+        grid/regular/SwissLV95.cc
+        projection/PROJ.cc
+        projection/PROJ.h
+    )
+    list(APPEND eckit_geo_private_libs PROJ::proj)
 endif()
 
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)
@@ -198,7 +204,7 @@ if(eckit_HAVE_GEO_AREA_SHAPEFILE)
         cache/Unzip.cc
         cache/Unzip.h
     )
-    list(APPEND eckit_geo_libs shapelib::shp libzip::zip)
+    list(APPEND eckit_geo_private_libs shapelib::shp libzip::zip)
 endif()
 
 string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")
@@ -219,6 +225,7 @@ ecbuild_add_library(
     INSTALL_HEADERS    ALL
     HEADER_DESTINATION ${INSTALL_INCLUDE_DIR}/eckit/geo
     PUBLIC_LIBS        ${eckit_geo_libs}
+    PRIVATE_LIBS       ${eckit_geo_private_libs}
     PUBLIC_INCLUDES    ${eckit_geo_include_dirs}
     SOURCES            ${eckit_geo_srcs}
 )

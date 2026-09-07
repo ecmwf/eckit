@@ -24,7 +24,7 @@ public:
 
     // -- Types
 
-    struct Increments : public std::array<double, 2> {
+    struct Increments : std::array<double, 2> {
         Increments(value_type dlon, value_type dlat);
 
         using array::array;
@@ -50,33 +50,19 @@ public:
     [[nodiscard]] static Spec* spec(const std::string& name);
     [[nodiscard]] PointLonLat reference() const { return {x_.shift(), y_.shift()}; }
 
-    double dlon() const { return dx(); }
-    double dlat() const { return dy(); }
-
-    size_t nlon() const { return nx(); }
-    size_t nlat() const { return ny(); }
-
     // -- Overridden methods
 
     const std::string& type() const override;
 
     [[nodiscard]] Point first_point() const override;
     [[nodiscard]] Point last_point() const override;
-    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return y_.values(); }
-    [[nodiscard]] std::vector<double> distinct_longitudes() const override { return x_.values(); }
 
-    [[nodiscard]] std::pair<std::vector<double>, std::vector<double>> to_latlons() const override;
+    [[nodiscard]] BoundingBox* calculate_bbox() const override;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
-    [[nodiscard]] BoundingBox* calculate_bbox() const override;
-    double dx() const override { return x_.increment(); }
-    double dy() const override { return y_.increment(); }
 
-    size_t nx() const override { return x_.size(); }
-    size_t ny() const override { return y_.size(); }
-
-    const Range& x() const override { return x_; }
-    const Range& y() const override { return y_; }
+    const Range& lon() const override { return x_; };
+    const Range& lat() const override { return y_; };
 
     //-- Class methods
 

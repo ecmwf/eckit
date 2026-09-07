@@ -106,7 +106,7 @@ CASE("MARS grid") {
 
 
     SECTION("ORCA") {
-        for (const std::string& name : {
+        for (const auto& name : std::vector<std::string>{
                  "ORCA025",
                  "ORCA1",
                  "ORCA12",
@@ -137,12 +137,12 @@ CASE("eckit::geo Grid") {
         grid::regular::RegularLL grid({1., 1.});
 
         Log::info() << "Grid: '" << grid.spec_str() << "'" << std::endl
-                    << "grid.nlon() = " << grid.nlon()                   //
-                    << "\ngrid.nlat() = " << grid.nlat()                 //
+                    << "grid.nx() = " << grid.nx()                       //
+                    << "\ngrid.ny() = " << grid.ny()                     //
                     << "\ngrid.first_point()) = " << grid.first_point()  //
                     << "\ngrid.last_point()) = " << grid.last_point()    //
-                    << "\ngrid.dlon() = " << grid.dlon()                 //
-                    << "\ngrid.dlat() = " << grid.dlat()                 //
+                    << "\ngrid.dx() = " << grid.dx()                     //
+                    << "\ngrid.dy() = " << grid.dy()                     //
                     << std::endl;
     }
 

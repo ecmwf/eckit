@@ -23,7 +23,7 @@ namespace eckit::geo::test {
 
 CASE("gridspec") {
     for (size_t n : {1, 2}) {
-        for (const std::string& suffix : {"", "n", "r"}) {
+        for (const auto& suffix : std::vector<std::string>{"", "n", "r"}) {
             const auto spec = "{grid: H" + std::to_string(n) + suffix + "}";
             std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
             EXPECT(grid->size() == 12 * n * n);
@@ -48,12 +48,12 @@ CASE("gridspec") {
     EXPECT_EQUAL(grid3->size(), 48);
     EXPECT_EQUAL(grid3->spec_str(), R"({"grid":"H2"})");
 
-    for (const std::string& name : {"h2N", "Hn2"}) {
+    for (const auto& name : std::vector<std::string>{"h2N", "Hn2"}) {
         std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom{{"grid", name}}));
         EXPECT(*grid2 == *grid);
     }
 
-    for (const std::string& name : {
+    for (const auto& name : std::vector<std::string>{
              "H2",
              "h2r",
              "hR2",

@@ -33,7 +33,8 @@ namespace eckit {
 class JSON;
 namespace geo {
 class Area;
-}
+class Range;
+}  // namespace geo
 }  // namespace eckit
 
 
@@ -136,8 +137,9 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    [[nodiscard]] virtual std::vector<double> distinct_latitudes() const;
-    [[nodiscard]] virtual std::vector<double> distinct_longitudes() const;
+    [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
+
+    virtual size_t truncation() const;
 
     virtual const order_type& order() const;
     virtual renumber_type reorder(const order_type&) const;
@@ -152,6 +154,20 @@ public:
 
     [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
+
+    double dx() const;
+    double dy() const;
+    virtual size_t nx() const;
+    virtual size_t ny() const;
+    virtual const Range& x() const;
+    virtual const Range& y() const;
+
+    double dlon() const;
+    double dlat() const;
+    size_t nlon() const;
+    size_t nlat() const;
+    virtual const Range& lon() const;
+    virtual const Range& lat() const;
 
     // -- Class methods
 
@@ -221,10 +237,11 @@ using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
 
 
 template <typename T>
-bool GridRegisterName(const std::string& name_or_pattern) {
-    new eckit::spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
-    return true;
-}
+struct GridRegisterName {
+    explicit GridRegisterName(const std::string& name_or_pattern) {
+        new spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
+    }
+};
 
 
 struct GridFactory {

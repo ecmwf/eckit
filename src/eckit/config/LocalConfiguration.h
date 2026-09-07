@@ -52,14 +52,15 @@ public:  // methods
     LocalConfiguration& set(const std::string& name, bool value) override;
     LocalConfiguration& set(const std::string& name, int value) override;
     LocalConfiguration& set(const std::string& name, long value) override;
-    LocalConfiguration& set(const std::string& name, long long value);
+    LocalConfiguration& set(const std::string& name, long long value) override;
     LocalConfiguration& set(const std::string& name, size_t value) override;
     LocalConfiguration& set(const std::string& name, float value) override;
     LocalConfiguration& set(const std::string& name, double value) override;
 
+    LocalConfiguration& set(const std::string& name, const std::vector<bool>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<int>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<long>& value) override;
-    LocalConfiguration& set(const std::string& name, const std::vector<long long>& value);
+    LocalConfiguration& set(const std::string& name, const std::vector<long long>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<size_t>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<float>& value) override;
     LocalConfiguration& set(const std::string& name, const std::vector<double>& value) override;

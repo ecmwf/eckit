@@ -48,8 +48,7 @@ protected:
 
     const std::vector<size_t>& nxacc() const;
 
-    virtual size_t nx(size_t) const = 0;
-    virtual size_t ny() const       = 0;
+    virtual size_t nxj(size_t) const = 0;
 
 private:
 

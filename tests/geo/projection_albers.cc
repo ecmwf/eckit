@@ -12,7 +12,6 @@
 
 #include <memory>
 
-#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/AlbersEqualArea.h"
 #include "eckit/spec/Custom.h"
@@ -23,7 +22,6 @@ namespace eckit::geo::test {
 
 
 CASE("AlbersEqualArea") {
-#if eckit_HAVE_PROJ
     constexpr auto eps = 10. * PointXY::EPS;  // FIXME improve floating-point errors
 
     projection::AlbersEqualArea proj1(-96., 23., 29.5, 45.5, new figure::Sphere(6378206.4));
@@ -65,7 +63,6 @@ CASE("AlbersEqualArea") {
             EXPECT(points_equal(b, bbbbb));
         }
     }
-#endif
 }
 
 

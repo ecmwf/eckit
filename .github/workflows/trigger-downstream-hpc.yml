@@ -98,13 +98,13 @@ jobs:
     needs:
     - label-gate
     - validate
-    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger-hpc.yml@sync-branch-ci-rollout
+    uses: ecmwf/eccodes/.github/workflows/cross-repo-trigger-hpc.yml@develop
     with:
       from-repo: ${{ github.repository }}
       from-sha: ${{ github.event.workflow_run.head_sha }}
       from-jobs: '["eckit/build-hpc"]'
       branch: ${{ github.event.workflow_run.head_branch }}
-      fallback-ref: sync-branch-ci-rollout
+      fallback-ref: develop
     secrets: inherit
     if: ${{ needs['label-gate'].outputs.run == 'true' }}
   report-result:

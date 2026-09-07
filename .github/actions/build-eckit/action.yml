@@ -1,0 +1,92 @@
+name: Build eckit from source
+description: >
+  Configures, builds and installs the already-checked-out eckit against the
+  resolved dependency prefixes, and leaves the build tree in place so the caller
+  can run ctest against it without reconfiguring. Caller must have already run
+  actions/checkout@v6 in the same job — the action reads the source from
+  $GITHUB_WORKSPACE.
+
+inputs:
+  cmake-prefix-path:
+    description: 'Semicolon-separated prefixes of the resolved deps (ecbuild, stack-deps)'
+    required: true
+  cxx-compiler:
+    description: 'C++ compiler binary including version (e.g. clang++-18, g++-13)'
+    required: true
+  build-type:
+    description: 'CMake build type (e.g. Release, Debug, RelWithDebInfo)'
+    required: true
+
+outputs:
+  install-path:
+    description: 'Absolute path where eckit is installed'
+    value: ${{ steps.set-paths.outputs.install-path }}
+  build-dir:
+    description: 'Absolute path of the build tree, for ctest'
+    value: ${{ steps.set-paths.outputs.build-dir }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get install prefix
+      id: prefix
+      uses: ecmwf/ci-infrastructure/actions/install-prefix@main
+
+    - name: Set paths
+      id: set-paths
+      shell: bash
+      run: |
+        set -euo pipefail
+        {
+          echo "install-path=${{ steps.prefix.outputs.base }}/eckit"
+          echo "build-dir=$RUNNER_TEMP/_eckit-build"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Set up sccache
+      if: env.SCCACHE_BUCKET != ''
+      uses: ecmwf/ci-infrastructure/actions/setup-sccache@main
+      with:
+        cache-key-suffix: ${{ inputs.cxx-compiler }}-${{ inputs.build-type }}
+
+    - name: Select compiler launcher
+      id: launcher
+      shell: bash
+      run: |
+        set -euo pipefail
+        if [ -n "${{ env.SCCACHE_BUCKET }}" ]; then
+          echo "flags=-DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache" >> "$GITHUB_OUTPUT"
+        else
+          echo "::notice::SCCACHE_BUCKET unset — compiling without sccache"
+          echo "flags=" >> "$GITHUB_OUTPUT"
+        fi
+
+    - name: Configure eckit
+      shell: bash
+      env:
+        CMAKE_PREFIX_PATH_IN: ${{ inputs.cmake-prefix-path }}
+        CXX_COMPILER: ${{ inputs.cxx-compiler }}
+        BUILD_TYPE: ${{ inputs.build-type }}
+        INSTALL_PATH: ${{ steps.set-paths.outputs.install-path }}
+        BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
+        LAUNCHER: ${{ steps.launcher.outputs.flags }}
+      run: |
+        set -euo pipefail
+        cmake -S "$GITHUB_WORKSPACE" \
+              -B "$BUILD_DIR" \
+              -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+              -DCMAKE_CXX_COMPILER="$CXX_COMPILER" \
+              -DCMAKE_INSTALL_PREFIX="$INSTALL_PATH" \
+              -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH_IN" \
+              -DENABLE_TESTS=ON \
+              -DENABLE_ECKIT_SQL=ON \
+              -DENABLE_ECKIT_CMD=ON \
+              $LAUNCHER
+
+    - name: Build and install eckit
+      shell: bash
+      env:
+        BUILD_DIR: ${{ steps.set-paths.outputs.build-dir }}
+      run: |
+        set -euo pipefail
+        cmake --build "$BUILD_DIR" --parallel "$(nproc)"
+        cmake --install "$BUILD_DIR"

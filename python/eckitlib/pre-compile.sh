@@ -22,6 +22,10 @@ source python/eckitlib/buildconfig
 mkdir -p python/eckitlib/src/copying
 mkdir -p /tmp/eckit/target/eckit/lib64/
 
+# TODO this PROJ_ROOT discovery is suboptimally hardcoded, leaving it prone
+# to break when there is a change in the docker image / macos build script.
+# It would be better to dynamically search for PROJ like cmake does, relying
+# on the cmake prefix path etc
 if [ "$(uname)" != "Darwin" ] ; then
     echo "no deps installation for platform $(uname)"
     # echo "installing deps for platform $(uname)"
@@ -32,7 +36,7 @@ if [ "$(uname)" != "Darwin" ] ; then
     PROJ_ROOT="${PROJ_ROOT:-/cxx-deps}"
 else
     echo "no deps installation for platform $(uname)"
-    PROJ_ROOT="${PROJ_ROOT:-/tmp/cxx-deps}"
+    PROJ_ROOT="${PROJ_ROOT:-/opt/ecmwf/stack-deps}"
 fi
 
 

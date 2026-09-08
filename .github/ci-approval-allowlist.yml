@@ -1,0 +1,8 @@
+---
+exempt:
+  - workflow: contributor-declaration.yml
+  - workflow: label-public-pr.yml
+  - workflow: notify-pull-request.yml
+  - workflow: pr-label-downstream-ci.yml
+  - workflow: old_CI.yml
+    reason: "legacy, retiring; gates downstream-ci with an if: rather than needs:"

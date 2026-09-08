@@ -481,6 +481,7 @@ CASE("test_localpathname_filesystemtype_magic_mapping") {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
 CASE("test_localpathname_filesystemtype_on_real_nfs") {
     const char* nfs_mount = ::getenv("ECKIT_TEST_NFS_MOUNT");
     if (nfs_mount == nullptr || nfs_mount[0] == '\0') {
@@ -493,6 +494,7 @@ CASE("test_localpathname_filesystemtype_on_real_nfs") {
     EXPECT_EQUAL(mount.fileSystemType(), std::string("nfs"));
     EXPECT_EQUAL(PathName(mount).fileSystemType(), std::string("nfs"));
 }
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------
 

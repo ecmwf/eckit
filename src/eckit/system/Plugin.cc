@@ -17,12 +17,17 @@ namespace eckit::system {
 //----------------------------------------------------------------------------------------------------------------------
 
 Plugin::Plugin(const std::string& name, const std::string& libname) :
-    eckit::system::Library(libname.size() ? libname : name), name_(name), libname_(libname.size() ? libname : name) {
+    Library(libname.empty() ? name : libname), name_(name), libname_(libname.empty() ? name : libname) {
     LibraryManager::enregisterPlugin(name_, libname_);
 }
 
 Plugin::~Plugin() {
     LibraryManager::deregisterPlugin(name_);
+}
+
+void Plugin::setManifestMetadata(const std::string& forLibrary, const std::vector<std::string>& tags) {
+    forLibrary_ = forLibrary;
+    tags_       = tags;
 }
 
 void Plugin::init() {}

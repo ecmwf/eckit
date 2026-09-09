@@ -8,7 +8,6 @@
  * does it submit to any jurisdiction.
  */
 
-#include <cstdlib>
 #include <cstring>
 #include <iostream>
 
@@ -25,10 +24,8 @@
 
 using namespace std;
 using namespace eckit;
+using namespace eckit::system;
 using namespace eckit::testing;
-using eckit::system::Library;
-using eckit::system::LibraryManager;
-using eckit::system::Plugin;
 
 namespace eckit::test {
 
@@ -43,7 +40,7 @@ class TestPlugin : Plugin {
 public:
 
     TestPlugin() : Plugin("test-plugin") {}
-    ~TestPlugin() { std::cout << "~TestPlugin()" << std::endl; }
+    ~TestPlugin() override { std::cout << "~TestPlugin()" << std::endl; }
     static const TestPlugin& instance() {
         static TestPlugin instance;
         return instance;
@@ -135,6 +132,34 @@ CASE("Fails to load a plugin without a eckit::Plugin object") {
     EXPECT_THROW_AS(LibraryManager::loadPlugin("eckit_mpi"), UnexpectedState);
 }
 #endif
+
+//----------------------------------------------------------------------------------------------------------------------
+// Tests for scoped plugin loading infrastructure
+//
+// PluginManifest's fqName/matchesTags and LibraryManager::compareVersions are
+// covered by the dedicated test_system_plugin_manifest_loading and
+// test_system_plugin_version programs respectively; this file only verifies
+// the Library/LibraryManager surface that does not require manifest scanning.
+//----------------------------------------------------------------------------------------------------------------------
+
+CASE("Plugin metadata accessors") {
+    // The TestPlugin registered above should have empty forLibrary/tags by default
+    const Plugin& p = LibraryManager::lookupPlugin("test-plugin");
+    EXPECT(p.forLibrary().empty());
+    EXPECT(p.tags().empty());
+}
+
+CASE("isPluginDisabled without env var") {
+    // Without DISABLE_PLUGINS set, nothing should be disabled
+    EXPECT(!LibraryManager::isPluginDisabled("int.ecmwf.some-plugin"));
+}
+
+CASE("Library pluginManifestPaths default") {
+    // LibEcKit should return ~eckit/share/plugins by default
+    auto paths = LibEcKit::instance().pluginManifestPaths();
+    EXPECT(paths.size() == 1);
+    EXPECT(paths[0] == "~eckit/share/plugins");
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -9,7 +9,6 @@
  */
 
 #include <unistd.h>
-#include <cstdlib>
 #include <cstring>
 #include <string>
 
@@ -24,7 +23,6 @@
 #include "eckit/system/LibraryManager.h"
 #include "eckit/system/SystemInfo.h"
 #include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/utils/Translator.h"
 
@@ -37,7 +35,7 @@ static Main* instance_ = nullptr;
 
 //----------------------------------------------------------------------------------------------------------------------
 
-Main::Main(int argc, char** argv, const char* homeenv) :
+Main::Main(int argc, char** argv, const char* homeenv, bool autoLoadPlugins) :
     taskID_(-1), argc_(argc), argv_(argv), home_("/"), debug_(false) {
 
     if (instance_) {
@@ -121,12 +119,13 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         }
     }
 
-    // Load eckit::Plugin libraries
-    std::vector<std::string> plugins = Resource<std::vector<std::string>>("$LOAD_PLUGINS;loadPlugins", {});
-    bool autoLoadPlugins             = Resource<bool>("$AUTO_LOAD_PLUGINS;autoLoadPlugins;-autoLoadPlugins", true);
-    if (autoLoadPlugins or plugins.size()) {
-        Log::debug() << "Configured to load plugins " << plugins << std::endl;
-        system::LibraryManager::autoLoadPlugins(plugins);
+    if (autoLoadPlugins) {
+        std::vector<std::string> plugins = Resource<std::vector<std::string>>("$LOAD_PLUGINS;loadPlugins", {});
+        const bool autoLoadResource      = Resource<bool>("$AUTO_LOAD_PLUGINS;autoLoadPlugins;-autoLoadPlugins", true);
+        if (autoLoadResource || !plugins.empty()) {
+            Log::debug() << "Configured to load plugins " << plugins << std::endl;
+            system::LibraryManager::autoLoadPlugins(plugins);
+        }
     }
 
     Log::debug() << "Application " << name_ << " loaded libraries: " << system::LibraryManager::list() << std::endl;

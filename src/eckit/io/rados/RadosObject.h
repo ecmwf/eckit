@@ -10,55 +10,58 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @date   June 2019
+/// @author Nicolau Manubens
+/// @date June 2019
 
-#ifndef eckit_io_rados_RadosObject_h
-#define eckit_io_rados_RadosObject_h
+#pragma once
 
-#include <memory>
+#include <cstddef>
 #include <string>
 
+#include "eckit/filesystem/PathName.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosNamespace.h"
 
 namespace eckit {
 
-class Stream;
+class DataHandle;
 
+//----------------------------------------------------------------------------------------------------------------------
 
 class RadosObject {
 public:
 
-    RadosObject(Stream&);
+    explicit RadosObject(const eckit::URI& uri);
 
-    RadosObject(const std::string& path);
-    RadosObject(const std::string& pool, const std::string& oid);
+    RadosObject(const std::string& pool, const std::string& nspace, const std::string& oid);
 
     RadosObject(const RadosObject& other, size_t part);
 
-    const std::string& pool() const { return pool_; }
-    const std::string& oid() const { return oid_; }
+    const eckit::RadosNamespace& nspace() const { return ns_; }
+    const std::string& name() const { return oid_; }
+    eckit::URI uri() const { return eckit::URI{"rados", eckit::PathName(str())}; }
     std::string str() const;
+
+    bool exists() const;
+    void ensureDestroyed() const;
+    void ensureAllDestroyed() const;
+
+    eckit::DataHandle* dataHandle() const;
+    eckit::DataHandle* asyncDataHandle(size_t maxAioBuffSize = 1024 * 1024) const;
+    eckit::DataHandle* rangeReadHandle(const eckit::Offset& offset, const eckit::Length& length) const;
+    eckit::DataHandle* multipartWriteHandle(const eckit::Length& maxPartSize = 0) const;
+    eckit::DataHandle* asyncMultipartWriteHandle(const eckit::Length& maxPartSize = 0, size_t maxAioBuffSize = 1024,
+                                                 size_t maxHandleBuffSize = 1024) const;
+    eckit::DataHandle* multipartRangeReadHandle(const eckit::Offset& offset, const eckit::Length& length) const;
 
 private:
 
-    std::string pool_;
+    eckit::RadosNamespace ns_;
     std::string oid_;
-
-    void print(std::ostream&) const;
-    void encode(Stream&) const;
-
-
-    friend std::ostream& operator<<(std::ostream& s, const RadosObject& o) {
-        o.print(s);
-        return s;
-    }
-
-    friend Stream& operator<<(Stream& s, const RadosObject& o) {
-        o.encode(s);
-        return s;
-    }
 };
 
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit
-
-#endif

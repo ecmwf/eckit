@@ -10,32 +10,25 @@
 
 #include <cassert>
 #include <cstdio>
-#include <fstream>
-#include <iomanip>
 #include <iostream>
-#include <locale>
-#include <memory>
 
+#include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/FileHandle.h"
 #include "eckit/io/rados/RadosCluster.h"
-#include "eckit/io/rados/RadosReadHandle.h"
-#include "eckit/io/rados/RadosWriteHandle.h"
+#include "eckit/io/rados/RadosMultiObjReadHandle.h"
+#include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+#include "eckit/io/rados/RadosNamespace.h"
+#endif
+#include "RadosTestUtils.h"
+#include "eckit/io/rados/RadosObject.h"
+#include "eckit/io/rados/RadosPool.h"
 #include "eckit/log/Bytes.h"
-#include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
-
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-
-namespace eckit {
-namespace test {
-
-//----------------------------------------------------------------------------------------------------------------------
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
@@ -53,7 +46,23 @@ CASE("Test rados performance") {
     dh->read(buf, size);
     dh->close();
 
-    RadosWriteHandle h("mars:largeFile", 0);
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+    std::string pool_name = "mars";
+    std::string nspace    = "default";
+    RadosPool pool(pool_name);
+    pool.ensureDestroyed();
+    pool.ensureCreated();
+#else
+    std::string pool_name;
+    std::string nspace = "performance";
+    pool_name          = eckit::Resource<std::string>("eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name);
+    EXPECT(pool_name.length() > 0);
+    RadosPool pool(pool_name);
+#endif
+
+    RadosObject obj(pool.name(), nspace, "largeFile");
+
+    RadosMultiObjWriteHandle h(obj, false, 0);
     h.openForWrite(size);
 
     timer.start();
@@ -62,7 +71,7 @@ CASE("Test rados performance") {
     timer.stop();
     std::cout << " - write rate " << Bytes(size, timer) << std::endl;
 
-    RadosReadHandle g("mars:largeFile");
+    RadosMultiObjReadHandle g(obj);
     std::cout << "Size is " << g.openForRead() << std::endl;
 
     timer.start();
@@ -71,14 +80,34 @@ CASE("Test rados performance") {
     timer.stop();
     std::cout << " - read rate " << Bytes(size, timer) << std::endl;
 
-    RadosCluster::instance().remove(RadosObject("mars:largeFile"));
+    obj.ensureDestroyed();
+
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+    pool.destroy();
+#else
+    RadosNamespace ns(pool_name, nspace);
+    ns.destroy();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char* argv[]) {
-    return run_tests(argc, argv);
+    int ret = -1;
+    try {
+        ret = eckit::testing::run_tests(argc, argv);
+    }
+    catch (...) {
+        eckit::Log::error() << "RADOS performance test terminated with an exception" << std::endl;
+    }
+
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+    eckit::test::cleanupRados("mars", "default");
+#else
+    eckit::test::cleanupRados(eckit::test::configuredRadosTestPool(), "performance");
+#endif
+
+    return ret;
 }

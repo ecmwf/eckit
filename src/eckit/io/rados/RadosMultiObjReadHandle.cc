@@ -1,0 +1,129 @@
+/*
+ * (C) Copyright 1996- ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+#include "eckit/io/rados/RadosMultiObjReadHandle.h"
+
+#include <cstddef>
+#include <memory>
+#include <ostream>
+#include <string>
+
+#include "eckit/config/LibEcKit.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/MultiHandle.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/rados/RadosAttributes.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosHandle.h"
+#include "eckit/log/Log.h"
+
+namespace eckit {
+
+//----------------------------------------------------------------------------------------------------------------------
+
+void RadosMultiObjReadHandle::print(std::ostream& s) const {
+    s << "RadosMultiObjReadHandle[" << object_.str() << ']';
+}
+
+RadosMultiObjReadHandle::RadosMultiObjReadHandle(const eckit::RadosObject& obj) : object_(obj) {}
+
+RadosMultiObjReadHandle::~RadosMultiObjReadHandle() {
+    if (handle_) {
+        eckit::Log::error() << "RadosMultiObjReadHandle not closed before destruction." << std::endl;
+    }
+}
+
+Length RadosMultiObjReadHandle::estimate() {
+    if (parts_ == 0) {
+        RadosAttributes attr = RadosCluster::instance().attributes(object_);
+        ASSERT(attr.get("length", length_));
+        ASSERT(attr.get("parts", parts_));
+    }
+    return length_;
+}
+
+
+Length RadosMultiObjReadHandle::openForRead() {
+    ASSERT(!handle_);
+
+    if (parts_ == 0) {
+        RadosAttributes attr = RadosCluster::instance().attributes(object_);
+        LOG_DEBUG_LIB(LibEcKit) << "Attributes for " << object_.str() << " ===> " << attr << std::endl;
+
+        ASSERT(attr.get("length", length_));
+        ASSERT(attr.get("parts", parts_));
+    }
+
+    handle_ = std::make_unique<MultiHandle>();
+
+    for (size_t i = 0; i < parts_; ++i) {
+        (*handle_) += new RadosHandle(RadosObject(object_, i));
+    }
+
+    Length len = handle_->openForRead();
+
+    LOG_DEBUG_LIB(LibEcKit) << "RadosMultiObjReadHandle::openForRead attr=" << length_ << ", open=" << len << std::endl;
+    ASSERT(len == length_);
+
+    return length_;
+}
+
+void RadosMultiObjReadHandle::openForWrite(const Length& length) {
+    NOTIMP;
+}
+
+void RadosMultiObjReadHandle::openForAppend(const Length&) {
+    NOTIMP;
+}
+
+long RadosMultiObjReadHandle::read(void* buffer, long length) {
+    ASSERT(handle_);
+    return handle_->read(buffer, length);
+}
+
+long RadosMultiObjReadHandle::write(const void* buffer, long length) {
+    NOTIMP;
+}
+
+void RadosMultiObjReadHandle::flush() {
+    NOTIMP;
+}
+
+eckit::Offset RadosMultiObjReadHandle::seek(const eckit::Offset& offset) {
+    ASSERT(handle_);
+    return handle_->seek(offset);
+}
+
+void RadosMultiObjReadHandle::close() {
+    if (handle_) {
+        handle_->close();
+        handle_.reset();
+    }
+}
+
+void RadosMultiObjReadHandle::rewind() {
+    NOTIMP;
+}
+
+
+Offset RadosMultiObjReadHandle::position() {
+    ASSERT(handle_);
+    return handle_->position();
+}
+
+std::string RadosMultiObjReadHandle::title() const {
+    return PathName::shorten(object_.str());
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+
+}  // namespace eckit

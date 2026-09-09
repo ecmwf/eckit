@@ -9,95 +9,172 @@
  */
 
 #include <cstring>
+#include <string>
 
+#include "eckit/config/Resource.h"
+#include "eckit/io/Buffer.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosReadHandle.h"
-#include "eckit/io/rados/RadosWriteHandle.h"
-
-#include "eckit/io/Buffer.h"
-
+#include "eckit/io/rados/RadosMultiObjReadHandle.h"
+#include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#include "eckit/io/rados/RadosObject.h"
+#ifndef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+#include "eckit/io/rados/RadosNamespace.h"
+#endif
+#include "RadosTestUtils.h"
+#include "eckit/io/rados/RadosPool.h"
 #include "eckit/testing/Test.h"
 
-using namespace std;
-using namespace eckit;
-using namespace eckit::testing;
-
-namespace eckit {
-namespace test {
+namespace eckit::test {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-CASE("RadosHandle") {
+CASE("Test Rados Handles") {
 
-    const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+    std::string pool_name = "test_handle";
+    std::string nspace    = "default";
+    RadosPool pool(pool_name);
+    pool.ensureDestroyed();
+    pool.ensureCreated();
+#else
+    std::string pool_name;
+    std::string nspace = "test_handle";
+    pool_name          = eckit::Resource<std::string>("eckitRadosTestPool;$ECKIT_RADOS_TEST_POOL", pool_name);
+    EXPECT(pool_name.length() > 0);
+    RadosPool pool(pool_name);
+#endif
 
-    RadosHandle h("mars:foobar");
-    std::cout << "====> " << h << std::endl;
+    SECTION("RadosHandle") {
 
-    h.openForWrite(sizeof(buf));
-    h.write(buf, sizeof(buf));
-    h.close();
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
 
-    std::cout << "write done" << std::endl;
+        RadosObject obj(pool.name(), nspace, "foobar");
 
-    Buffer mem(1024);
-    RadosHandle g("mars:foobar");
-    std::cout << "====> " << g << std::endl;
+        RadosHandle h(obj);
 
-    std::cout << "Size is " << g.openForRead() << std::endl;
-    g.read(mem, mem.size());
-    g.close();
+        h.openForWrite(sizeof(buf));
+        h.write(buf, sizeof(buf));
+        h.close();
 
-    std::cout << "read done" << std::endl;
+        Buffer mem(1024);
+        RadosHandle g(obj);
 
+        g.openForRead();
+        g.read(mem, mem.size());
+        g.close();
 
-    EXPECT(buf == std::string(mem));
+        EXPECT(buf == std::string(mem));
 
+        obj.ensureDestroyed();
+    }
 
-    RadosCluster::instance().remove(RadosObject("mars:foobar"));
-}
+    SECTION("RadosMultiObjWriteHandle") {
 
+        const char buf[] =
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz"
+            "abcdefghijklmnopqrstuvwxyz";
 
-CASE("RadosWriteHandle") {
+        RadosObject obj(pool.name(), nspace, "foobar");
 
-    const char buf[] =
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz"
-        "abcdefghijklmnopqrstuvwxyz";
+        RadosMultiObjWriteHandle h(obj, false, 16);
 
-    RadosWriteHandle h("mars:foobar", 16);
-    std::cout << "====> " << h << std::endl;
+        h.openForWrite(sizeof(buf));
+        h.write(buf, sizeof(buf));
+        h.flush();
+        h.close();
 
-    h.openForWrite(sizeof(buf));
-    h.write(buf, sizeof(buf));
-    h.close();
+        Buffer mem(1024);
+        RadosMultiObjReadHandle g(obj);
 
-    Buffer mem(1024);
-    RadosReadHandle g("mars:foobar");
-    std::cout << "====> " << g << std::endl;
+        g.openForRead();
+        g.read(mem, mem.size());
+        g.close();
 
-    std::cout << "Size is " << g.openForRead() << std::endl;
-    g.read(mem, mem.size());
-    g.close();
+        EXPECT(buf == std::string(mem));
 
-    std::cout << "read done" << std::endl;
+        RadosCluster::instance().removeAll(obj);
+    }
 
+    SECTION("RadosMultiObjWriteHandle closes an exact-part write") {
 
-    EXPECT(buf == std::string(mem));
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz012345";
 
-    RadosCluster::instance().removeAll(RadosObject("mars:foobar"));
+        RadosObject obj(pool.name(), nspace, "exact-part");
+        RadosMultiObjWriteHandle h(obj, false, 16);
+
+        h.openForWrite(sizeof(buf) - 1);
+        h.write(buf, sizeof(buf) - 1);
+        h.close();
+
+        Buffer mem(1024);
+        RadosMultiObjReadHandle g(obj);
+
+        g.openForRead();
+        long read = g.read(mem, mem.size());
+        g.close();
+
+        EXPECT(read == sizeof(buf) - 1);
+        EXPECT(std::memcmp(buf, mem.data(), read) == 0);
+
+        RadosCluster::instance().removeAll(obj);
+    }
+
+    SECTION("RadosMultiObjWriteHandle closes asynchronous writes") {
+
+        const char buf[] = "abcdefghijklmnopqrstuvwxyz";
+
+        RadosObject obj(pool.name(), nspace, "async");
+        RadosMultiObjWriteHandle h(obj, true, 16);
+
+        h.openForWrite(sizeof(buf) - 1);
+        h.write(buf, sizeof(buf) - 1);
+        h.close();
+
+        Buffer mem(1024);
+        RadosMultiObjReadHandle g(obj);
+
+        g.openForRead();
+        long read = g.read(mem, mem.size());
+        g.close();
+
+        EXPECT(read == sizeof(buf) - 1);
+        EXPECT(std::memcmp(buf, mem.data(), read) == 0);
+
+        RadosCluster::instance().removeAll(obj);
+    }
+
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+    pool.destroy();
+#else
+    RadosNamespace ns(pool_name, nspace);
+    ns.destroy();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-}  // namespace test
-}  // namespace eckit
+}  // namespace eckit::test
 
 int main(int argc, char** argv) {
-    return run_tests(argc, argv);
+    int ret = -1;
+    try {
+        ret = eckit::testing::run_tests(argc, argv);
+    }
+    catch (...) {
+        eckit::Log::error() << "RADOS handle tests terminated with an exception" << std::endl;
+    }
+
+#ifdef eckit_HAVE_RADOS_TESTS_MANAGE_POOLS
+    eckit::test::cleanupRados("test_handle", "default");
+#else
+    eckit::test::cleanupRados(eckit::test::configuredRadosTestPool(), "test_handle");
+#endif
+
+    return ret;
 }

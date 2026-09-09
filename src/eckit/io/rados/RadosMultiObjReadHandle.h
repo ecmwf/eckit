@@ -10,58 +10,64 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @author Nicolau Manubens
 /// @date   June 2019
 
 #pragma once
 
-#include <cstdint>
+#include <cstddef>
+#include <memory>
 #include <ostream>
+#include <string>
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
-#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class RadosHandle : public DataHandle {
+class MultiHandle;
+
+class RadosMultiObjReadHandle : public eckit::DataHandle {
 
 public:  // methods
 
-    explicit RadosHandle(const RadosObject& object);
+    explicit RadosMultiObjReadHandle(const RadosObject& object);
 
-    ~RadosHandle() override;
+    ~RadosMultiObjReadHandle() override;
+
+    std::string title() const override;
+
+public:  // methods
 
     Length openForRead() override;
     void openForWrite(const Length& length) override;
+    void openForAppend(const Length& length) override;
 
     long read(void* buffer, long length) override;
     long write(const void* buffer, long length) override;
     void close() override;
     void flush() override;
+    void rewind() override;
     Offset seek(const Offset& offset) override;
     bool canSeek() const override { return true; };
 
     Offset position() override;
-    Length estimate() override { return size(); }
-    Length size() override;
+    Length estimate() override;
 
     void print(std::ostream& s) const override;
 
-protected:  // members
+
+private:  // members
 
     RadosObject object_;
 
-    uint64_t offset_;
-    bool opened_;
-    bool write_;
-    bool first_write_;
+    Length length_{0};
+    size_t parts_{0};
 
-    void open();
+    std::unique_ptr<MultiHandle> handle_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

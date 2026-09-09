@@ -10,64 +10,112 @@
 
 #include "eckit/io/rados/RadosObject.h"
 
-#include "eckit/config/Resource.h"
+#include <cstddef>
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/URI.h"
+#include "eckit/io/DataHandle.h"
+#include "eckit/io/Length.h"
+#include "eckit/io/Offset.h"
+#include "eckit/io/PartHandle.h"
+#include "eckit/io/rados/RadosAsyncHandle.h"
+#include "eckit/io/rados/RadosCluster.h"
+#include "eckit/io/rados/RadosException.h"
+#include "eckit/io/rados/RadosHandle.h"
+#include "eckit/io/rados/RadosMultiObjReadHandle.h"
+#include "eckit/io/rados/RadosMultiObjWriteHandle.h"
+#include "eckit/io/rados/RadosNamespace.h"
+#include "eckit/io/rados/RadosPartHandle.h"
+#include "eckit/log/Log.h"
 #include "eckit/utils/Tokenizer.h"
 
 namespace eckit {
 
-RadosObject::RadosObject(Stream& s) {
-    s >> pool_;
-    s >> oid_;
-}
-
-
-void RadosObject::encode(Stream& s) const {
-    s << pool_;
-    s << oid_;
-}
+//----------------------------------------------------------------------------------------------------------------------
 
 RadosObject::RadosObject(const RadosObject& other, size_t part) {
     *this = other;
-    if (part) {
+    if (part != 0) {
         std::ostringstream oss;
         oss << oid_ << ";part-" << part;
         oid_ = oss.str();
     }
 }
 
+RadosObject::RadosObject(const eckit::URI& uri) {
 
-RadosObject::RadosObject(const std::string& path) {
-    // static const std::string defaultRadosPool = Resource<std::string>("defaultRadosPool", "default");
-    static const std::string defaultRadosPool = Resource<std::string>("defaultRadosPool", "cephfs_data");
-
-    Tokenizer parse(":");
+    Tokenizer parse("/");
 
     std::vector<std::string> bits;
-    parse(path, bits);
+    parse(uri.name(), bits);
 
-    ASSERT(bits.size() == 1 || bits.size() == 2);
+    ASSERT(bits.size() == 3);
 
-    if (bits.size() == 1) {
-        oid_  = path;
-        pool_ = defaultRadosPool;
-    }
-    else {
-        pool_ = bits[0];
-        oid_  = bits[1];
-    }
+    ns_  = eckit::RadosNamespace{bits[0], bits[1]};
+    oid_ = bits[2];
 }
 
-RadosObject::RadosObject(const std::string& pool, const std::string& oid) : pool_(pool), oid_(oid) {}
+RadosObject::RadosObject(const std::string& pool, const std::string& nspace, const std::string& oid) :
+    ns_(pool, nspace), oid_(oid) {}
 
 std::string RadosObject::str() const {
-    return pool_ + ':' + oid_;
+    return ns_.pool().name() + '/' + ns_.name() + '/' + oid_;
 }
 
+bool RadosObject::exists() const {
 
-void RadosObject::print(std::ostream& s) const {
-    s << "RadosObject[pool=" << pool_ << ",oid=" << oid_ << "]";
+    return eckit::RadosCluster::instance().exists(*this);
 }
 
+void RadosObject::ensureDestroyed() const {
+    try {
+
+        eckit::RadosCluster::instance().remove(*this);
+    }
+    catch (eckit::RadosEntityNotFoundException& e) {
+        LOG_DEBUG_LIB(LibEcKit) << e.what() << '\n';
+    }
+}
+
+void RadosObject::ensureAllDestroyed() const {
+    try {
+
+        eckit::RadosCluster::instance().removeAll(*this);
+    }
+    catch (eckit::RadosEntityNotFoundException& e) {
+        LOG_DEBUG_LIB(LibEcKit) << e.what() << '\n';
+    }
+}
+
+eckit::DataHandle* RadosObject::dataHandle() const {
+    return new eckit::RadosHandle(*this);
+}
+
+eckit::DataHandle* RadosObject::asyncDataHandle(size_t maxAioBuffSize) const {
+    return new eckit::RadosAsyncHandle(*this, maxAioBuffSize);
+}
+
+eckit::DataHandle* RadosObject::rangeReadHandle(const eckit::Offset& off, const eckit::Length& len) const {
+    return new eckit::RadosPartHandle(*this, off, len);
+}
+
+eckit::DataHandle* RadosObject::multipartWriteHandle(const eckit::Length& maxPartSize) const {
+    return new eckit::RadosMultiObjWriteHandle(*this, false, maxPartSize);
+}
+
+eckit::DataHandle* RadosObject::asyncMultipartWriteHandle(const eckit::Length& maxPartSize, size_t maxAioBuffSize,
+                                                          size_t maxHandleBuffSize) const {
+    return new eckit::RadosMultiObjWriteHandle(*this, true, maxPartSize, maxAioBuffSize, maxHandleBuffSize);
+}
+
+eckit::DataHandle* RadosObject::multipartRangeReadHandle(const eckit::Offset& off, const eckit::Length& len) const {
+    return new eckit::PartHandle(new eckit::RadosMultiObjReadHandle(*this), off, len);
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 
 }  // namespace eckit

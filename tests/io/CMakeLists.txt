@@ -44,14 +44,22 @@ endforeach()
 
 ecbuild_add_test( TARGET      eckit_test_radoshandle
                   SOURCES     test_radoshandle.cc
-                  CONDITION   HAVE_RADOS
-                  INCLUDES    ${RADOS_INCLUDE_DIRS}
-                  LIBS        eckit )
+                  CONDITION   eckit_HAVE_RADOS
+                  LABELS      rados
+                  LIBS        eckit
+                  ENVIRONMENT ECKIT_RADOS_TEST_POOL=${ECKIT_RADOS_TEST_POOL} )
+
+ecbuild_add_test( TARGET      eckit_test_rados_kv
+                  SOURCES     test_rados_kv.cc
+                  CONDITION   eckit_HAVE_RADOS
+                  LABELS      rados
+                  LIBS        eckit
+                  ENVIRONMENT ECKIT_RADOS_TEST_POOL=${ECKIT_RADOS_TEST_POOL} )
 
 ecbuild_add_test( TARGET      eckit_rados-performance
                   SOURCES     rados-performance.cc
-                  CONDITION   HAVE_EXTRA_TESTS AND HAVE_RADOS
-                  INCLUDES    ${RADOS_INCLUDE_DIRS}
+                  CONDITION   HAVE_EXTRA_TESTS AND eckit_HAVE_RADOS
+                  LABELS      rados
                   TEST_DEPENDS get_eckit_io_test_data
                   LIBS        eckit )
 

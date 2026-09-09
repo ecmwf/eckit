@@ -10,58 +10,66 @@
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
-/// @author Nicolau Manubens
 /// @date   June 2019
 
 #pragma once
 
-#include <cstdint>
+#include <cstddef>
+#include <memory>
 #include <ostream>
+#include <string>
+#include <vector>
 
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
-#include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosObject.h"
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
-class RadosHandle : public DataHandle {
+class RadosMultiObjWriteHandle : public eckit::DataHandle {
 
 public:  // methods
 
-    explicit RadosHandle(const RadosObject& object);
+    RadosMultiObjWriteHandle(const RadosObject&, bool async = false, const Length& maxPartSize = 0,
+                             size_t maxAioBuffSize = 1024, size_t maxHandleBuffSize = 1024);
 
-    ~RadosHandle() override;
+    std::string title() const override;
+
+public:  // methods
 
     Length openForRead() override;
     void openForWrite(const Length& length) override;
+    void openForAppend(const Length& length) override;
 
     long read(void* buffer, long length) override;
     long write(const void* buffer, long length) override;
     void close() override;
     void flush() override;
-    Offset seek(const Offset& offset) override;
-    bool canSeek() const override { return true; };
+    void rewind() override;
 
     Offset position() override;
-    Length estimate() override { return size(); }
-    Length size() override;
 
     void print(std::ostream& s) const override;
 
-protected:  // members
+
+private:  // members
 
     RadosObject object_;
 
-    uint64_t offset_;
-    bool opened_;
-    bool write_;
-    bool first_write_;
+    bool async_;
+    Length maxPartSize_;
+    size_t maxAioBuffSize_;
+    size_t maxHandleBuffSize_;
 
-    void open();
+    size_t written_{0};
+    Offset position_{0};
+    size_t part_{0};
+    bool opened_{false};
+
+    std::vector<std::unique_ptr<DataHandle>> handles_;
 };
 
 //----------------------------------------------------------------------------------------------------------------------

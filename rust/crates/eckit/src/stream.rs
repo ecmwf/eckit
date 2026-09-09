@@ -1,11 +1,11 @@
-//! Stream — tagged binary serialization over TCP or memory.
+//! Stream: tagged binary serialization over TCP or memory.
 //!
 //! Wraps `eckit::Stream` (`TCPStream`, `MemoryStream`, `ResizableMemoryStream`).
 //! Used by the Hermes protocol for `MarsRequest` serialization.
 
 use crate::error::Result;
 
-/// Tagged binary stream — primitive read/write operations.
+/// Tagged binary stream with primitive read/write operations.
 ///
 /// Implemented by [`TcpStream`] and [`MemoryStream`].
 /// Hermes protocol code uses `&mut dyn Stream` for testability.
@@ -151,7 +151,7 @@ macro_rules! impl_stream {
 
 // ==================== TcpStream ====================
 
-/// TCP stream — connects to a Hermes server.
+/// TCP stream that connects to a Hermes server.
 pub struct TcpStream {
     inner: eckit_sys::UniquePtr<eckit_sys::StreamWrapper>,
 }
@@ -181,7 +181,7 @@ impl TcpStream {
 /// Hand off the connected socket as a streaming `DataHandle`.
 ///
 /// Use after a protocol handshake when the remainder of the connection should
-/// be drained as raw bytes — the resulting `DataHandle` reads on demand from
+/// be drained as raw bytes; the resulting `DataHandle` reads on demand from
 /// the socket, with no in-memory buffering. Consumes the [`TcpStream`].
 impl TryFrom<TcpStream> for crate::DataHandle {
     type Error = crate::Error;
@@ -200,7 +200,7 @@ impl_stream!(TcpStream);
 
 // ==================== MemoryStream ====================
 
-/// Memory-backed stream — for testing and in-memory serialization.
+/// Memory-backed stream for testing and in-memory serialization.
 pub struct MemoryStream {
     inner: eckit_sys::UniquePtr<eckit_sys::StreamWrapper>,
 }

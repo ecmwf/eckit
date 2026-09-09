@@ -1,11 +1,11 @@
 //! Safe Rust wrapper for ECMWF's eckit C++ library.
 //!
 //! Provides:
-//! - [`Config`] — YAML configuration loading and access
-//! - [`DataHandle`] — abstract I/O (`impl Read + Seek`)
-//! - [`Message`] / [`MessageReader`] — GRIB message abstraction
-//! - [`Error`] — auto-generated exception types from eckit
-//! - [`init`] — runtime initialization with Rust log bridge
+//! - [`Config`] - YAML configuration loading and access
+//! - [`DataHandle`] - abstract I/O (`impl Read + Seek`)
+//! - [`Message`] / [`MessageReader`] - GRIB message abstraction
+//! - [`Error`] - auto-generated exception types from eckit
+//! - [`init`] - runtime initialization with Rust log bridge
 
 pub mod config;
 pub mod datahandle;

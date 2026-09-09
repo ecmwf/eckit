@@ -4,7 +4,7 @@ Safe Rust wrapper for ECMWF's [eckit](https://github.com/ecmwf/eckit) C++ librar
 
 ## Overview
 
-This crate provides a safe, ergonomic API on top of the low-level
+This crate provides a safe API on top of the low-level
 [`eckit-sys`](https://crates.io/crates/eckit-sys) bindings:
 
 - `Config` - YAML configuration loading and typed key access

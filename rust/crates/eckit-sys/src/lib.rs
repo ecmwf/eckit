@@ -37,7 +37,7 @@ mod ffi {
         type RustMain;
 
         /// Initialise eckit runtime with the Rust log bridge.
-        /// Safe to call multiple times — only the first call has effect.
+        /// Safe to call multiple times; only the first call has effect.
         #[Self = "RustMain"]
         fn initialise();
 
@@ -82,7 +82,7 @@ mod ffi {
             index: usize,
         ) -> Result<UniquePtr<ConfigWrapper>>;
 
-        // Sub-configurations (root-level list — no-arg getSubConfigurations())
+        // Sub-configurations (root-level list, no-arg getSubConfigurations())
         fn root_sub_count(self: &ConfigWrapper) -> Result<usize>;
         fn root_sub_at(self: &ConfigWrapper, index: usize) -> Result<UniquePtr<ConfigWrapper>>;
 
@@ -131,7 +131,7 @@ mod ffi {
         #[Self = "DataHandleWrapper"]
         fn from_multi(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
 
-        /// Create a TeeHandle from multiple file paths — writes all targets in parallel.
+        /// Create a TeeHandle from multiple file paths; writes all targets in parallel.
         #[Self = "DataHandleWrapper"]
         fn tee(paths: &[String]) -> Result<UniquePtr<DataHandleWrapper>>;
 
@@ -195,7 +195,7 @@ mod ffi {
         ///
         /// Only TCP streams support this; memory streams throw. After the
         /// call the source stream is left in an unspecified state and must
-        /// be dropped — only the returned `DataHandleWrapper` holds the
+        /// be dropped; only the returned `DataHandleWrapper` holds the
         /// connection.
         fn into_data_handle(self: Pin<&mut StreamWrapper>) -> Result<UniquePtr<DataHandleWrapper>>;
 
@@ -220,7 +220,7 @@ mod ffi {
 
     extern "Rust" {
         /// Called from C++ RustLogTarget to emit log messages via Rust's log crate.
-        /// `target` is the tracing/log target — "eckit" for global channels,
+        /// `target` is the tracing/log target: "eckit" for global channels,
         /// the library name (e.g. "metkit", "mir") for per-library debug channels.
         fn rust_log(level: LogLevel, target: &str, msg: &str);
 
@@ -302,7 +302,7 @@ fn invoke_reader_seek(reader: &mut ReaderBox, offset: i64) -> i64 {
         .map_or(-1, |n| i64::try_from(n).unwrap_or(i64::MAX))
 }
 
-/// Called from C++ `RustLogTarget::write()` — routes to Rust `log` crate.
+/// Called from C++ `RustLogTarget::write()`; routes to Rust `log` crate.
 fn rust_log(level: ffi::LogLevel, target: &str, msg: &str) {
     match level {
         ffi::LogLevel::Error => log::error!(target: target, "{msg}"),

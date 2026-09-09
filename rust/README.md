@@ -7,8 +7,8 @@ Rust bindings for ECMWF's [eckit](https://github.com/ecmwf/eckit) C++ library.
 eckit is a cross-platform C++ toolkit that supports the development of tools
 and applications at ECMWF. These crates make it usable from Rust: the C++
 library is built from source (or located on the system) at build time, and its
-facilities — configuration, data handles, GRIB messages, streams, logging —
-are exposed through a safe, idiomatic API.
+configuration, data handle, GRIB message, stream, and logging facilities are
+exposed through a safe API.
 
 ## Installation
 
@@ -29,8 +29,8 @@ eckit = { version = "0.1", default-features = false, features = ["system"] }
 
 ## Crates
 
-- **eckit**: the safe, ergonomic API. Configuration, data handles, GRIB
-  messages, streams, and eckit exceptions surfaced as typed Rust errors.
+- **eckit**: the safe API. Configuration, data handles, GRIB messages,
+  streams, and eckit exceptions surfaced as typed Rust errors.
 - **eckit-sys**: the low-level FFI layer using [CXX](https://cxx.rs/). Builds
   the eckit C++ library from source (`vendored`, default) or links against a
   system installation (`system`), and exposes the raw bridge. Its Cargo

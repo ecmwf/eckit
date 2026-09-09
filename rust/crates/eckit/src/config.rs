@@ -26,7 +26,7 @@ pub struct Config {
 
 // SAFETY: The underlying C++ `LocalConfiguration` is accessed through
 // `&mut self` only on mutation paths (mirroring the `DataHandle` Send
-// marker — same rationale). `Sync` follows because the `&self` getters
+// marker, same rationale). `Sync` follows because the `&self` getters
 // read immutable state with no interior mutability on the C++ side.
 #[allow(clippy::non_send_fields_in_send_ty)]
 unsafe impl Send for Config {}

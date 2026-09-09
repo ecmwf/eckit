@@ -1,11 +1,11 @@
-//! `DataHandle` wrapper — abstract I/O with typestate for read/write mode.
+//! `DataHandle` wrapper: abstract I/O with typestate for read/write mode.
 //!
 //! The handle is modal: opened for read OR write, never both.
 //! The typestate pattern encodes this at compile time:
 //!
-//! - `DataHandle<Closed>` — not yet opened, call `open_for_read()` or `open_for_write()`
-//! - `DataHandle<Reading>` — opened for read, implements `Read + Seek`
-//! - `DataHandle<Writing>` — opened for write, implements `Write`
+//! - `DataHandle<Closed>` - not yet opened, call `open_for_read()` or `open_for_write()`
+//! - `DataHandle<Reading>` - opened for read, implements `Read + Seek`
+//! - `DataHandle<Writing>` - opened for write, implements `Write`
 
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::marker::PhantomData;
@@ -19,7 +19,7 @@ mod sealed {
     pub trait Sealed {}
 }
 
-/// Trait for handle states. Sealed — cannot be implemented outside this crate.
+/// Trait for handle states. Sealed; cannot be implemented outside this crate.
 pub trait HandleState: sealed::Sealed {
     /// Whether the handle needs closing on drop.
     const NEEDS_CLOSE: bool;
@@ -64,7 +64,7 @@ impl DataHandle<Closed> {
     ///
     /// Public so sister crates (metkit, fdb, gribjump, …) can wrap the
     /// `DataHandle`s their C++ APIs return. The wrapper must not be opened
-    /// yet — the `Closed` typestate assumes it, and `Drop` will not close a
+    /// yet; the `Closed` typestate assumes it, and `Drop` will not close a
     /// handle in this state.
     #[must_use]
     pub const fn from_raw(inner: eckit_sys::UniquePtr<eckit_sys::DataHandleWrapper>) -> Self {
@@ -107,7 +107,7 @@ impl DataHandle<Closed> {
         Ok(Self::from_raw(inner))
     }
 
-    /// Create a `TeeHandle` from multiple file paths — writes to all targets in parallel.
+    /// Create a `TeeHandle` from multiple file paths; writes to all targets in parallel.
     ///
     /// One write call fans out to every destination. Mirrors C++ `eckit::TeeHandle`.
     pub fn tee(paths: &[impl AsRef<Path>]) -> Result<Self> {
@@ -121,7 +121,7 @@ impl DataHandle<Closed> {
     /// The C++ side calls back into the Rust source on each `read()` and
     /// `seek()`; no intermediate buffer or temp file is staged. Opening
     /// for read rewinds the source to the start. The resulting handle is
-    /// read-only — it cannot be written to.
+    /// read-only; it cannot be written to.
     pub fn from_reader<R>(reader: R) -> Result<Self>
     where
         R: std::io::Read + std::io::Seek + Send + 'static,
@@ -230,7 +230,7 @@ impl DataHandle<Writing> {
     ///
     /// Surfaces underlying close/flush errors to the caller (the `Drop`
     /// impl silently swallows them). Prefer calling `close()` explicitly
-    /// when you care about commit/flush failures — e.g. write targets
+    /// when you care about commit/flush failures, e.g. write targets
     /// where a buffered tail of bytes might not yet be persisted.
     pub fn close(mut self) -> Result<DataHandle<Closed>> {
         if let Some(ref mut inner) = self.inner {

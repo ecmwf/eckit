@@ -16,7 +16,7 @@ Add the safe wrapper to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-eckit = "0.1"
+eckit = "2.2"
 ```
 
 Building requires CMake and a C++17 compiler. To link against an existing
@@ -24,7 +24,7 @@ eckit installation instead of building from source, use the `system` feature:
 
 ```toml
 [dependencies]
-eckit = { version = "0.1", default-features = false, features = ["system"] }
+eckit = { version = "2.2", default-features = false, features = ["system"] }
 ```
 
 ## Crates

@@ -22,7 +22,7 @@ Add the crate to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-eckit = "0.1"
+eckit = "2.2"
 ```
 
 The default `vendored` feature builds the eckit C++ library from source, which

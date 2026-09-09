@@ -65,7 +65,7 @@ impl Message {
     /// Write this message to a `DataHandle` opened for writing.
     pub fn write_to(&self, handle: &mut DataHandle<crate::Writing>) -> Result<()> {
         self.inner
-            .write_to(handle.inner_mut()?)
+            .write_to(handle.as_sys_mut()?)
             .map_err(eckit_sys::Error::from)
     }
 }
@@ -107,7 +107,7 @@ impl<'h> MessageReader<'h> {
     /// Create a reader over an opened `DataHandle<Reading>`. The returned
     /// reader borrows the handle for `'h`; it cannot outlive the handle.
     pub fn new(handle: &'h mut DataHandle<crate::Reading>) -> Result<Self> {
-        let inner = eckit_sys::ReaderWrapper::from_handle(handle.inner_mut()?)
+        let inner = eckit_sys::ReaderWrapper::from_handle(handle.as_sys_mut()?)
             .map_err(eckit_sys::Error::from)?;
         Ok(Self {
             inner,

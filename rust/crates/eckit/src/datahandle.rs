@@ -190,7 +190,14 @@ impl<S: HandleState> DataHandle<S> {
     }
 
     /// Access the underlying C++ `DataHandleWrapper` for FFI interop.
-    pub(crate) fn inner_mut(&mut self) -> Result<std::pin::Pin<&mut eckit_sys::DataHandleWrapper>> {
+    ///
+    /// Public so sister crates (odc, metkit, fdb, gribjump, …) can pass the
+    /// handle to their own C++ APIs taking an `eckit::DataHandle&`.
+    ///
+    /// # Errors
+    ///
+    /// Fails if the handle has already been consumed.
+    pub fn as_sys_mut(&mut self) -> Result<std::pin::Pin<&mut eckit_sys::DataHandleWrapper>> {
         Ok(self
             .inner
             .as_mut()
@@ -204,8 +211,8 @@ impl DataHandle<Reading> {
     ///
     /// Mirrors C++ `DataHandle::saveInto()`.
     pub fn save_into(&mut self, target: &mut DataHandle<Writing>) -> Result<i64> {
-        self.inner_mut()?
-            .save_into(target.inner_mut()?)
+        self.as_sys_mut()?
+            .save_into(target.as_sys_mut()?)
             .map_err(eckit_sys::Error::from)
     }
 
@@ -248,7 +255,7 @@ impl DataHandle<Writing> {
 impl Read for DataHandle<Reading> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         let n = self
-            .inner_mut()
+            .as_sys_mut()
             .map_err(to_io_error)?
             .read(buf)
             .map_err(to_io_error)?;
@@ -289,7 +296,7 @@ impl Seek for DataHandle<Reading> {
         };
 
         let actual = self
-            .inner_mut()
+            .as_sys_mut()
             .map_err(to_io_error)?
             .seek(i64::try_from(new_pos).map_err(|e| std::io::Error::other(e.to_string()))?)
             .map_err(to_io_error)?;
@@ -310,7 +317,7 @@ impl Seek for DataHandle<Reading> {
 impl Write for DataHandle<Writing> {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         let n = self
-            .inner_mut()
+            .as_sys_mut()
             .map_err(to_io_error)?
             .write(buf)
             .map_err(to_io_error)?;
@@ -321,7 +328,7 @@ impl Write for DataHandle<Writing> {
     /// flush implementation throw `NotImplemented`, which surfaces here
     /// as `ErrorKind::Unsupported`.
     fn flush(&mut self) -> std::io::Result<()> {
-        self.inner_mut()
+        self.as_sys_mut()
             .map_err(to_io_error)?
             .flush()
             .map_err(to_io_error)

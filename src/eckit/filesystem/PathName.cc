@@ -279,6 +279,10 @@ void PathName::fileSystemSize(FileSystemSize& fs) const {
     path_->fileSystemSize(fs);
 }
 
+std::string PathName::fileSystemType() const {
+    return path_->fileSystemType();
+}
+
 PathName PathName::mountPoint() const {
     return PathName(path_->mountPoint());
 }

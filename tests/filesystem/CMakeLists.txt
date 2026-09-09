@@ -3,6 +3,11 @@
 
 option( ENABLE_ECKIT-352 "Control if ECKIT-352 tests should be enabled" ON )
 
+set( _localpathname_test_environment )
+if( NOT "$ENV{ECKIT_TEST_NFS_MOUNT}" STREQUAL "" )
+    list( APPEND _localpathname_test_environment "ECKIT_TEST_NFS_MOUNT=$ENV{ECKIT_TEST_NFS_MOUNT}" )
+endif()
+
 ecbuild_add_test( TARGET      eckit_test_filesystem_aiohandle
                   CONDITION   NOT DEFINED ENV{CRAYOS_VERSION} AND ${HAVE_AIO}
                   SOURCES     test_aiohandle.cc
@@ -20,6 +25,7 @@ ecbuild_add_test( TARGET      eckit_test_filesystem_atomic_file_update
 ecbuild_add_test( TARGET      eckit_test_filesystem_localpathname
                   SOURCES     test_localpathname.cc
                   LIBS        eckit
+                  ENVIRONMENT "${_localpathname_test_environment}"
                   CONDITION   ENABLE_ECKIT-352 )
 
 

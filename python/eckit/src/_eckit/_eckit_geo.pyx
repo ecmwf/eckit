@@ -55,6 +55,25 @@ def projdb_set_search_paths(db_path, search_paths=()) -> None:
     eckit_geo.LibEcKitGeo.projdb_set_search_paths(_db_path, _search_paths)
 
 
+def _spec_str(spec) -> str:
+    from yaml import dump
+
+    def _safe_str(value):
+        if isinstance(value, str):
+            return value
+        if isinstance(value, (bytes, bytearray)):
+            return value.decode("utf-8")
+        if isinstance(value, dict):
+            return {_safe_str(k): _safe_str(v) for k, v in value.items()}
+        if hasattr(value, "tolist"):
+            return _safe_str(value.tolist())
+        if isinstance(value, (list, tuple, set, frozenset, range)):
+            return [_safe_str(v) for v in value]
+        return value
+
+    return dump(_safe_str(spec), default_flow_style=True).strip()
+
+
 cdef class Area:
     cdef const eckit_geo.Area* _area
 
@@ -67,8 +86,7 @@ cdef class Area:
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
-            from yaml import dump
-            spec = dump(kwargs if kwargs else spec, default_flow_style=True).strip()
+            spec = _spec_str(kwargs if kwargs else spec)
 
         try:
             assert isinstance(spec, str)
@@ -198,8 +216,7 @@ cdef class Figure:
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
-            from yaml import dump
-            spec = dump(kwargs if kwargs else spec, default_flow_style=True).strip()
+            spec = _spec_str(kwargs if kwargs else spec)
 
         try:
             assert isinstance(spec, str)
@@ -275,8 +292,7 @@ cdef class Grid:
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
-            from yaml import dump
-            spec = dump(kwargs if kwargs else spec, default_flow_style=True).strip()
+            spec = _spec_str(kwargs if kwargs else spec)
 
         try:
             assert isinstance(spec, str)

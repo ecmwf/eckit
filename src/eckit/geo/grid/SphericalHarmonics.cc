@@ -18,6 +18,7 @@
 #include "eckit/geo/area/None.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::grid {
@@ -30,15 +31,35 @@ static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
 static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
 
 
-SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {
-    // TODO improve conversion from signed to unsigned
-    if (spec.get_long("truncation") <= 0) {
-        throw exception::SpecError("SphericalHarmonics: truncation must be positive", Here());
+[[nodiscard]] size_t into_unsigned(int value) {
+    // promote exception to contain it
+    try {
+        return static_cast<size_t>(eckit::into_unsigned(value));
+    }
+    catch (const eckit::BadCast& e) {
+        throw exception::SpecError(e.what(), Here());
     }
 }
 
 
-SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {}
+SphericalHarmonics::SphericalHarmonics(const Spec& spec) :
+    SphericalHarmonics(spec.get_int("truncation"), spec.get_int("truncation_subset", 0)) {}
+
+
+SphericalHarmonics::SphericalHarmonics(size_t T, size_t TS) : truncation_(T), truncationSubset_(TS) {
+    if (truncation_ == 0) {
+        throw exception::SpecError("SphericalHarmonics: truncation must be positive", Here());
+    }
+
+    if (truncation_ < truncationSubset_) {
+        throw exception::SpecError("SphericalHarmonics: truncation must be greater or equal to truncation subset",
+                                   Here());
+    }
+}
+
+
+SphericalHarmonics::SphericalHarmonics(int T, int TS) :
+    SphericalHarmonics(static_cast<size_t>(into_unsigned(T)), static_cast<size_t>(into_unsigned(TS))) {}
 
 
 Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
@@ -94,6 +115,9 @@ const Area& SphericalHarmonics::area() const {
 
 void SphericalHarmonics::fill_spec(spec::Custom& custom) const {
     custom.set("grid", "T" + std::to_string(truncation_));
+    if (truncationSubset_ > 0) {
+        custom.set("truncation_subset", truncationSubset_);
+    }
 }
 
 

@@ -45,3 +45,8 @@ repos:
       - id: clang-format
         types_or: [c, c++]
         exclude: 'src/_eckit/_.*\.(h|cpp)'
+
+  - repo: https://github.com/ecmwf/ci-infrastructure
+    rev: 83c6ffdefe118a75d76e6802bf0b8cf27185eaf7
+    hooks:
+      - id: check-ci-approval

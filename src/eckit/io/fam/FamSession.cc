@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cctype>  // isspace isprint
+#include <chrono>
 #include <cstdint>
 #include <cstring>
 #include <ostream>
@@ -44,6 +45,16 @@ namespace eckit {
 // HELPERS
 
 namespace {
+
+void log_atomic(const char* operation, const FamObjectDescriptor& object, const fam::size_t offset,
+                const std::chrono::steady_clock::time_point start, const bool completed) {
+    const auto descriptor = object.get_global_descriptor();
+    const auto elapsed =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+    LOG_DEBUG_LIB(LibEcKit) << "FAM atomic " << operation << (completed ? " completed" : " started")
+                            << " region=" << descriptor.regionId << " object=" << descriptor.offset
+                            << " offset=" << offset << " elapsed_ms=" << elapsed.count() << '\n';
+}
 
 std::unique_ptr<openfam::fam> initializeFamSession(const std::string& name, const net::Endpoint& endpoint) {
     LOG_DEBUG_LIB(LibEcKit) << "Initializing FAM session: " << name << " with endpoint " << endpoint << '\n';
@@ -121,11 +132,17 @@ auto FamSession::invokeFam(Func&& fn_ptr, Args&&... args) {
         fam_ = initializeFamSession(name_, endpoint_);
     }
 
+    const auto start = std::chrono::steady_clock::now();
     try {
         return (fam_.get()->*std::forward<Func>(fn_ptr))(std::forward<Args>(args)...);
     }
     catch (openfam::Fam_Exception& e) {
         const auto code = e.fam_error();
+        const auto elapsed =
+            std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+        LOG_DEBUG_LIB(LibEcKit) << "FAM operation failed: session=" << name_ << " endpoint=" << endpoint_
+                                << " code=" << code << " message=" << e.fam_error_msg()
+                                << " elapsed_ms=" << elapsed.count() << '\n';
         if (code == openfam::Fam_Error::FAM_ERR_NOTFOUND) {
             throw NotFound(e.fam_error_msg());
         }
@@ -369,8 +386,12 @@ void FamSession::add(FamObjectDescriptor& object, const fam::size_t offset, cons
 
 template <typename T>
 T FamSession::fetchAdd(FamObjectDescriptor& object, const fam::size_t offset, const T value) {
-    auto fptr = static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_fetch_add);
-    return invokeFam(fptr, &object, offset, value);
+    const auto start = std::chrono::steady_clock::now();
+    log_atomic("fetch_add", object, offset, start, false);
+    auto fptr   = static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_fetch_add);
+    auto result = invokeFam(fptr, &object, offset, value);
+    log_atomic("fetch_add", object, offset, start, true);
+    return result;
 }
 
 template <typename T>
@@ -387,9 +408,13 @@ T FamSession::swap(FamObjectDescriptor& object, const fam::size_t offset, const 
 
 template <typename T>
 T FamSession::compareSwap(FamObjectDescriptor& object, const fam::size_t offset, const T old_value, const T new_value) {
+    const auto start = std::chrono::steady_clock::now();
+    log_atomic("compare_swap", object, offset, start, false);
     auto fptr =
         static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T, T)>(&openfam::fam::fam_compare_swap);
-    return invokeFam(fptr, &object, offset, old_value, new_value);
+    auto result = invokeFam(fptr, &object, offset, old_value, new_value);
+    log_atomic("compare_swap", object, offset, start, true);
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------

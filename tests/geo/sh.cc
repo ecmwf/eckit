@@ -22,20 +22,22 @@ namespace eckit::geo::test {
 
 
 CASE("sh") {
+    EXPECT_THROWS(grid::SphericalHarmonics(-1));
+
     grid::SphericalHarmonics a(1);
 
     EXPECT(a.truncation() == 1);
     EXPECT(a.size() == 6);
-    EXPECT(a.size() == grid::SphericalHarmonics::number_of_real_coefficients(1));
-    EXPECT(a.size() == grid::SphericalHarmonics::number_of_complex_coefficients(1) * 2);
+    EXPECT(a.size() == grid::SphericalHarmonics::number_of_real_coefficients(a.truncation()));
+    EXPECT(a.size() == grid::SphericalHarmonics::number_of_complex_coefficients(a.truncation()) * 2);
     EXPECT(a.spec_str() == R"({"grid":"T1"})");
 
     grid::SphericalHarmonics b(1279);
 
     EXPECT(b.truncation() == 1279);
     EXPECT(b.size() == 1639680);
-    EXPECT(b.size() == grid::SphericalHarmonics::number_of_real_coefficients(1279));
-    EXPECT(b.size() == grid::SphericalHarmonics::number_of_complex_coefficients(1279) * 2);
+    EXPECT(b.size() == grid::SphericalHarmonics::number_of_real_coefficients(b.truncation()));
+    EXPECT(b.size() == grid::SphericalHarmonics::number_of_complex_coefficients(b.truncation()) * 2);
     EXPECT(b.spec_str() == R"({"grid":"T1279"})");
 
     EXPECT(b == *std::unique_ptr<const Grid>(GridFactory::build(spec::Custom{{"grid", "t1279"}})));
@@ -44,6 +46,22 @@ CASE("sh") {
     EXPECT_THROWS_AS((void)GridFactory::build(spec::Custom{{"type", "sh"}, {"truncation", 0}}), exception::SpecError);
     EXPECT_THROWS_AS((void)GridFactory::build(spec::Custom{{"type", "sh"}, {"truncation", -1}}), exception::SpecError);
     EXPECT_THROWS_AS((void)GridFactory::make_from_string("{type: sh, truncation: 0}"), exception::SpecError);
+}
+
+
+CASE("sh with subset") {
+    grid::SphericalHarmonics a(2, 1);
+
+    EXPECT(a.truncation() == 2);
+    EXPECT(a.size() == 12);
+    EXPECT(a.size() == grid::SphericalHarmonics::number_of_real_coefficients(a.truncation()));
+    EXPECT(a.size() == grid::SphericalHarmonics::number_of_complex_coefficients(a.truncation()) * 2);
+
+    EXPECT_THROWS_AS(grid::SphericalHarmonics(2, -1), exception::SpecError);
+    EXPECT(grid::SphericalHarmonics(2, 0).spec_str() == R"({"grid":"T2"})");
+    EXPECT(grid::SphericalHarmonics(2, 1).spec_str() == R"({"grid":"T2","truncation_subset":1})");
+    EXPECT(grid::SphericalHarmonics(2, 2).spec_str() == R"({"grid":"T2","truncation_subset":2})");
+    EXPECT_THROWS_AS(grid::SphericalHarmonics(2, 3), exception::SpecError);
 }
 
 

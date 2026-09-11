@@ -42,6 +42,8 @@ namespace eckit {
 
 namespace {
 
+constexpr int debug_log_interval = 10000;
+
 /// Byte offset of the bucket descriptor at given index in the table.
 constexpr fam::size_t bucket_offset(std::size_t index) {
     return static_cast<fam::size_t>(index * sizeof(FamList::Descriptor));
@@ -139,6 +141,10 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
     auto head                     = old_head;
     for (int spin = 0; head == 0 || head == creating; ++spin) {
         ASSERT_MSG(spin < max_spin, "FamMap::getOrCreateBucket: bucket creation stalled (creator may have crashed)");
+        if ((spin % debug_log_interval) == 0) {
+            LOG_DEBUG_LIB(LibEcKit) << "FamMap::getOrCreateBucket waiting for bucket publication: map=" << name_
+                                    << " bucket=" << index << " spin=" << spin << " head=" << head << '\n';
+        }
         std::this_thread::yield();
         head = table_.get<fam::size_t>(bucket_head_offset(index));
     }
@@ -382,7 +388,9 @@ void FamMap<T>::print(std::ostream& out) const {
 
 template <typename T>
 void FamMap<T>::lock() {
+    std::size_t attempts = 0;
     for (;;) {
+        ++attempts;
         const auto now = now_seconds();
 
         // Fast path: lock is free (0)
@@ -402,6 +410,10 @@ void FamMap<T>::lock() {
             // Another process acquired it; retry.
         }
 
+        if ((attempts % debug_log_interval) == 0) {
+            LOG_DEBUG_LIB(LibEcKit) << "FamMap::lock waiting: map=" << name_ << " attempts=" << attempts
+                                    << " held=" << lock_.get<size_type>(0) << '\n';
+        }
         std::this_thread::yield();
     }
 }
@@ -416,8 +428,10 @@ void FamMap<T>::unlock() {
 
 template <typename T>
 void FamMap<T>::lockBucket(const std::size_t index) {
-    const auto offset = static_cast<fam::size_t>(index * sizeof(size_type));
+    const auto offset    = static_cast<fam::size_t>(index * sizeof(size_type));
+    std::size_t attempts = 0;
     for (;;) {
+        ++attempts;
         const auto now = now_seconds();
 
         // Fast path: lock is free (0)
@@ -437,6 +451,11 @@ void FamMap<T>::lockBucket(const std::size_t index) {
             // Another process acquired it; retry.
         }
 
+        if ((attempts % debug_log_interval) == 0) {
+            LOG_DEBUG_LIB(LibEcKit) << "FamMap::lockBucket waiting: map=" << name_ << " bucket=" << index
+                                    << " attempts=" << attempts << " held=" << bucketLocks_.get<size_type>(offset)
+                                    << '\n';
+        }
         std::this_thread::yield();
     }
 }

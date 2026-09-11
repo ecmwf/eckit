@@ -10,11 +10,25 @@ if( eckit_HAVE_OPENFAM_MOCK )
     # so running many at once (ctest -j) exhausts tmpfs.
     set( _fam_test_properties TEST_PROPERTIES RESOURCE_LOCK famfdb_mock_shm )
 elseif( eckit_HAVE_OPENFAM )
-    # Real OpenFAM servers running in docker environment.
+    if( DEFINED ENV{OPENFAM_ROOT} )
+        set( _fameckit_openfam_root "$ENV{OPENFAM_ROOT}" )
+    else()
+        set( _fameckit_openfam_root "/workspace/cis-rpc_meta-direct_mem-rpc" )
+    endif()
+    if( DEFINED ENV{ECKIT_FAM_TEST_ENDPOINT} )
+        set( _famfdb_fam_endpoint "$ENV{ECKIT_FAM_TEST_ENDPOINT}" )
+    else()
+        set( _famfdb_fam_endpoint "172.24.0.2:8880" )
+    endif()
     list( APPEND _fam_environment ${_test_environment}
-        "OPENFAM_ROOT=/workspace/cis-rpc_meta-direct_mem-rpc"
-        "ECKIT_FAM_TEST_ENDPOINT=172.26.0.2:8880"
+        "OPENFAM_ROOT=${_fameckit_openfam_root}"
+        "ECKIT_FAM_TEST_ENDPOINT=${_famfdb_fam_endpoint}"
     )
+endif()
+
+set( _fam_includes "${LIB_OPENFAM_INCLUDE_DIRS}" )
+if( eckit_HAVE_OPENFAM_MOCK )
+    list( APPEND _fam_includes "${PROJECT_SOURCE_DIR}/src/eckit/io/fam/openfam_mock" )
 endif()
 
 foreach( _test fam_handle fam_list fam_map fam_map_64 fam_map_concurrent fam_name fam_object fam_path fam_property fam_region fam_session_manager fam_uri_manager )
@@ -26,3 +40,12 @@ foreach( _test fam_handle fam_list fam_map fam_map_64 fam_map_concurrent fam_nam
                     ${_fam_test_properties}
                     LIBS        eckit )
 endforeach()
+
+ecbuild_add_test( TARGET      eckit_test_openfam_atomic_descriptor
+                  SOURCES     test_openfam_atomic_descriptor.cc
+                  CONDITION   eckit_HAVE_OPENFAM
+                  LABELS      fam
+                  INCLUDES    "${_fam_includes}"
+                  ENVIRONMENT "${_fam_environment}"
+                  ${_fam_test_properties}
+                  LIBS        eckit LibOPENFAM )

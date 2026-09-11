@@ -16,18 +16,21 @@
 #include "eckit/io/fam/FamList.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <ostream>
 #include <string>
 #include <utility>
 
 #include "eckit/io/fam/detail/FamBackoff.h"
 
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
 #include "eckit/io/fam/detail/FamListNode.h"
+#include "eckit/log/Log.h"
 
 namespace eckit {
 
@@ -53,6 +56,18 @@ FamList::FamList(FamRegion region, const std::string& list_name) :
     // set tail's prev to head's next (idempotent)
     if (FamListNode::getPrevOffset(tail_) == 0) {
         tail_.put(head_.descriptor(), offsetof(FamListNode, prev));
+    }
+
+    try {
+        std::uint8_t probe{};
+        tail_.get(&probe, 0, sizeof(probe));
+        LOG_DEBUG_LIB(LibEcKit) << "FAM bucket tail probe succeeded region=" << tail_.regionId()
+                                << " object=" << tail_.offset() << " offset=0\n";
+    }
+    catch (const Exception& e) {
+        LOG_DEBUG_LIB(LibEcKit) << "FAM bucket tail probe failed region=" << tail_.regionId()
+                                << " object=" << tail_.offset() << " offset=0 message=" << e.what() << '\n';
+        throw;
     }
 }
 

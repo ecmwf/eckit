@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
@@ -148,6 +149,7 @@ public:
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
+    virtual const Figure& figure() const;
 
     virtual const BoundingBox& boundingBox() const;
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
@@ -195,6 +197,7 @@ private:
 
     mutable std::unique_ptr<const BoundingBox> bbox_;
     mutable std::unique_ptr<const Projection> projection_;
+    mutable std::unique_ptr<const Figure> figure_;
     mutable std::unique_ptr<const Spec> catalog_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_type uid_;

@@ -84,6 +84,18 @@ cdef extern from "eckit/geo/Figure.h" namespace "eckit::geo":
         Figure* make_from_string(const string) except +
 
 
+cdef extern from "eckit/geo/Projection.h" namespace "eckit::geo":
+    cdef cppclass Projection:
+        string spec_str() const
+        string proj_str() const
+        const string& type() const
+        const Figure& figure() except +
+
+    cdef cppclass ProjectionFactory:
+        @staticmethod
+        const Projection* make_from_string(const string) except +
+
+
 cdef extern from "eckit/geo/Range.h" namespace "eckit::geo":
     cdef cppclass Range:
         vector[double] values() const
@@ -103,6 +115,8 @@ cdef extern from "eckit/geo/Grid.h" namespace "eckit::geo":
         vector[size_t] shape() const
         size_t size() const
         const BoundingBox& boundingBox() const
+        const Projection& projection() except +
+        const Figure& figure() except +
         const Range& x() const
         const Range& y() const
         const Range& lon() const

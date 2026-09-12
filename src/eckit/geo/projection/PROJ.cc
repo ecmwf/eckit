@@ -187,7 +187,6 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     p.reset(proj_normalize_for_visualization(ctx(), p.release()));
 
     implementation_ = std::make_unique<Implementation>(p.release(), make_convert(source_), make_convert(target_));
-    ASSERT(implementation_);
 }
 
 

@@ -18,6 +18,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Range.h"
+#include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/share/Grid.h"
@@ -81,7 +82,6 @@ const spec::Spec& Grid::catalog() const {
 const Grid::Spec& Grid::spec() const {
     if (!spec_) {
         spec_ = std::make_unique<spec::Custom>();
-        ASSERT(spec_);
 
         auto& custom = *spec_;
         fill_spec(custom);
@@ -214,12 +214,12 @@ Grid::renumber_type Grid::crop(const Area&) const {
 
 
 const Projection& Grid::projection() const {
-    if (!projection_) {
-        projection_ = std::make_unique<projection::EquidistantCylindrical>();
-        ASSERT(projection_);
-    }
+    return *(projection_ ? projection_ : projection_ = std::make_unique<projection::EquidistantCylindrical>());
+}
 
-    return *projection_;
+
+const Figure& Grid::figure() const {
+    return *(figure_ ? figure_ : figure_ = std::make_unique<figure::Earth>());
 }
 
 

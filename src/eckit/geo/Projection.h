@@ -71,6 +71,8 @@ public:
     std::string spec_str() const { return spec().str(); }
     std::string proj_str() const;
 
+    bool is_default() const;
+
     // -- Class methods
 
     static std::string className() { return "projection"; }

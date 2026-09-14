@@ -266,8 +266,16 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
         return str.str();
     };
 
+    static const keys_type FIGURE_KEYS{"figure", "R", "r", "radius", "a", "b", "semi_major_axis", "semi_minor_axis"};
+
     struct ProjFigure : std::unique_ptr<Figure> {
-        ProjFigure(const spec::Spec& custom) : unique_ptr(FigureFactory::build(custom)) { ASSERT(operator bool()); }
+        ProjFigure(const spec::Spec& custom) :
+            unique_ptr(std::any_of(FIGURE_KEYS.begin(), FIGURE_KEYS.end(),
+                                   [&custom](const auto& key) { return custom.has(key); })
+                           ? FigureFactory::build(custom)
+                           : static_cast<Figure*>(new figure::Earth)) {
+            ASSERT(operator bool());
+        }
 
         bool is_approximately_equal(const Figure& other) const {
             return types::is_approximately_equal(get()->a(), other.a()) &&
@@ -291,8 +299,6 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
         set.emplace("a", to_str(fig->a()));
         set.emplace("b", to_str(fig->b()));
     }
-
-    static const keys_type FIGURE_KEYS{"figure", "R", "r", "radius", "a", "b", "semi_major_axis", "semi_minor_axis"};
 
     for (const auto& [k, v] : custom.container()) {
         if (std::find(FIGURE_KEYS.begin(), FIGURE_KEYS.end(), k) != FIGURE_KEYS.end()) {

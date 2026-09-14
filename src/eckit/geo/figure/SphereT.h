@@ -37,6 +37,8 @@ public:
     double a() const override { return DATUM::radius; }
     double b() const override { return DATUM::radius; }
 
+    bool is_default() const override { return DATUM::default_figure; }
+
     /// Surface area [L^2]
     double area() const override { return _area(); }
 

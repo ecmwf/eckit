@@ -23,6 +23,8 @@ struct DatumSun {
 
     static constexpr double a = radius;
     static constexpr double b = radius;
+
+    static constexpr bool default_figure = false;
 };
 
 

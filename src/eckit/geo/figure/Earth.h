@@ -24,6 +24,8 @@ struct DatumIFS {
 
     static constexpr double a = radius;
     static constexpr double b = radius;
+
+    static constexpr bool default_figure = true;
 };
 
 
@@ -32,6 +34,8 @@ struct DatumGRIB1 {
 
     static constexpr double a = radius;
     static constexpr double b = radius;
+
+    static constexpr bool default_figure = true;
 };
 
 
@@ -40,18 +44,24 @@ struct DatumWgs84Sphere {
 
     static constexpr double a = radius;
     static constexpr double b = radius;
+
+    static constexpr bool default_figure = false;
 };
 
 
 struct DatumGrs80 {
     static constexpr double a = 6378137.;
     static constexpr double b = 6356752.314140;
+
+    static constexpr bool default_figure = false;
 };
 
 
 struct DatumWgs84 {
     static constexpr double a = 6378137.;
     static constexpr double b = 6356752.314245;
+
+    static constexpr bool default_figure = false;
 };
 
 
@@ -59,6 +69,8 @@ struct DatumWgs84 {
 struct DatumIau1965 {
     static constexpr double a = 6378160.;
     static constexpr double b = 6356775.;
+
+    static constexpr bool default_figure = false;
 };
 
 

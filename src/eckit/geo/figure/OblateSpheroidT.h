@@ -32,6 +32,8 @@ public:
     double a() const override { return DATUM::a; }
     double b() const override { return DATUM::b; }
 
+    bool is_default() const override { return DATUM::default_figure; }
+
     /// Surface area [L^2]
     double area() const override { return OblateSpheroid::_area(DATUM::a, DATUM::b); }
 

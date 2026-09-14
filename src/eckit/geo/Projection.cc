@@ -85,6 +85,11 @@ std::string Projection::proj_str() const {
 }
 
 
+bool Projection::is_default() const {
+    return spec_str() == projection_default().spec_str();
+}
+
+
 const Projection& Projection::projection_default() {
     static const projection::None proj;
     return proj;
@@ -108,7 +113,9 @@ Projection* Projection::make_from_spec(const Spec& spec) {
 
 
 void Projection::fill_spec(spec::Custom& custom) const {
-    figure_->fill_spec(custom);
+    if (!figure_->is_default()) {
+        figure_->fill_spec(custom);
+    }
 
     if (!types::is_approximately_equal(false_.X(), 0.)) {
         custom.set("x_0", false_.X());

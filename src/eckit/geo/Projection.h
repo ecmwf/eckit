@@ -62,7 +62,7 @@ public:
     void falseXY(const PointXY& falseXY) { false_ = falseXY; }
     const PointXY& falseXY() const { return false_; }
 
-    const Figure& figure() const;
+    const Figure& figure() const { return *figure_; }
 
     virtual void fill_spec(spec::Custom&) const;
     virtual const std::string& type() const = 0;
@@ -88,6 +88,10 @@ private:
     mutable std::shared_ptr<Figure> figure_;
     mutable std::shared_ptr<spec::Custom> spec_;
     PointXY false_;
+
+    // -- Methods
+
+    virtual void figure(Figure* ptr) const;
 
     // -- Friends
 

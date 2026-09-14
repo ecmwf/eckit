@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # the procedure for adding a new ext dependency to be bundled in here:
 # - add git checkout, compile, etc
 # - ensure the version ends up in python_wrapper/src/versions.txt

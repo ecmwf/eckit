@@ -101,6 +101,7 @@ private:
     friend bool operator==(const Figure& a, const Figure& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Figure& a, const Figure& b) { return !(a == b); }
 
+    friend class Grid;
     friend class Projection;
 };
 

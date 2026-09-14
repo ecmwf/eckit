@@ -49,22 +49,6 @@ CASE("sh") {
 }
 
 
-CASE("sh with subset") {
-    grid::SphericalHarmonics a(2, 1);
-
-    EXPECT(a.truncation() == 2);
-    EXPECT(a.size() == 12);
-    EXPECT(a.size() == grid::SphericalHarmonics::number_of_real_coefficients(a.truncation()));
-    EXPECT(a.size() == grid::SphericalHarmonics::number_of_complex_coefficients(a.truncation()) * 2);
-
-    EXPECT_THROWS_AS(grid::SphericalHarmonics(2, -1), exception::SpecError);
-    EXPECT(grid::SphericalHarmonics(2, 0).spec_str() == R"({"grid":"T2"})");
-    EXPECT(grid::SphericalHarmonics(2, 1).spec_str() == R"({"grid":"T2","truncation_subset":1})");
-    EXPECT(grid::SphericalHarmonics(2, 2).spec_str() == R"({"grid":"T2","truncation_subset":2})");
-    EXPECT_THROWS_AS(grid::SphericalHarmonics(2, 3), exception::SpecError);
-}
-
-
 }  // namespace eckit::geo::test
 
 

@@ -24,9 +24,8 @@ public:
     // -- Constructors
 
     explicit SphericalHarmonics(const Spec&);
-    explicit SphericalHarmonics(size_t T, size_t TS = 0);
-
-    explicit SphericalHarmonics(int T, int TS = 0);
+    explicit SphericalHarmonics(size_t T);
+    explicit SphericalHarmonics(int T);
 
     // -- Methods
 
@@ -63,7 +62,6 @@ private:
     // -- Members
 
     const size_t truncation_;
-    const size_t truncationSubset_;
 };
 
 

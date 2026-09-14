@@ -42,24 +42,17 @@ static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
 }
 
 
-SphericalHarmonics::SphericalHarmonics(const Spec& spec) :
-    SphericalHarmonics(spec.get_int("truncation"), spec.get_int("truncation_subset", 0)) {}
+SphericalHarmonics::SphericalHarmonics(const Spec& spec) : SphericalHarmonics(spec.get_int("truncation")) {}
 
 
-SphericalHarmonics::SphericalHarmonics(size_t T, size_t TS) : truncation_(T), truncationSubset_(TS) {
+SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {
     if (truncation_ == 0) {
         throw exception::SpecError("SphericalHarmonics: truncation must be positive", Here());
-    }
-
-    if (truncation_ < truncationSubset_) {
-        throw exception::SpecError("SphericalHarmonics: truncation must be greater or equal to truncation subset",
-                                   Here());
     }
 }
 
 
-SphericalHarmonics::SphericalHarmonics(int T, int TS) :
-    SphericalHarmonics(static_cast<size_t>(into_unsigned(T)), static_cast<size_t>(into_unsigned(TS))) {}
+SphericalHarmonics::SphericalHarmonics(int T) : SphericalHarmonics(static_cast<size_t>(into_unsigned(T))) {}
 
 
 Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
@@ -115,9 +108,6 @@ const Area& SphericalHarmonics::area() const {
 
 void SphericalHarmonics::fill_spec(spec::Custom& custom) const {
     custom.set("grid", "T" + std::to_string(truncation_));
-    if (truncationSubset_ > 0) {
-        custom.set("truncation_subset", truncationSubset_);
-    }
 }
 
 

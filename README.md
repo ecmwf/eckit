@@ -13,6 +13,7 @@ SPDX-License-Identifier: Apache-2.0
 
 [![codecov](https://codecov.io/gh/ecmwf/eckit/branch/develop/graph/badge.svg)](https://codecov.io/gh/ecmwf/eckit)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ecmwf/eckit/blob/develop/LICENSE)
+[![REUSE status](https://api.reuse.software/badge/github.com/ecmwf/eckit)](https://api.reuse.software/info/github.com/ecmwf/eckit)
 [![Project Maturity](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity/graduated_badge.svg)](https://github.com/ecmwf/codex/raw/refs/heads/main/Project%20Maturity#graduated)
 
 </div>

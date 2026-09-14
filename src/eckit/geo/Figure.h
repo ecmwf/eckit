@@ -88,6 +88,8 @@ public:
     double eccentricity() const;
     double flattening() const;
 
+    virtual bool is_default() const { return false; }
+
 private:
 
     // -- Methods

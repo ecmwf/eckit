@@ -48,4 +48,5 @@ ecbuild_add_test( TARGET      eckit_test_openfam_atomic_descriptor
                   INCLUDES    "${_fam_includes}"
                   ENVIRONMENT "${_fam_environment}"
                   ${_fam_test_properties}
+                  TEST_PROPERTIES TIMEOUT 3000
                   LIBS        eckit LibOPENFAM )

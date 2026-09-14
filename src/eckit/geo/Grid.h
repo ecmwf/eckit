@@ -149,7 +149,7 @@ public:
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
-    virtual const Figure& figure() const;
+    virtual const Figure& figure() const { return projection().figure(); }
 
     virtual const BoundingBox& boundingBox() const;
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
@@ -189,7 +189,7 @@ protected:
     void reset_uid(uid_type = {});
 
     void projection(Projection* ptr) { projection_.reset(ptr); }
-    void figure(Figure* ptr) { figure_.reset(ptr); }
+    void figure(Figure* ptr) { projection_->figure(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
 
 private:
@@ -198,7 +198,6 @@ private:
 
     mutable std::unique_ptr<const BoundingBox> bbox_;
     mutable std::unique_ptr<const Projection> projection_;
-    mutable std::unique_ptr<const Figure> figure_;
     mutable std::unique_ptr<const Spec> catalog_;
     mutable std::unique_ptr<spec::Custom> spec_;
     mutable uid_type uid_;

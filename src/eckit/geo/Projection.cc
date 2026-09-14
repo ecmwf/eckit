@@ -48,14 +48,14 @@ class lock_type {
 }  // namespace
 
 
-Projection::Projection(Figure* figure_ptr) : figure_(figure_ptr != nullptr ? figure_ptr : new figure::Earth) {
+Projection::Projection(Figure* ptr) : figure_(ptr != nullptr ? ptr : new figure::Earth()) {
     ASSERT(figure_);
 }
 
 
-const Figure& Projection::figure() const {
+void Projection::figure(Figure* ptr) const {
+    figure_.reset(ptr);
     ASSERT(figure_);
-    return *figure_;
 }
 
 

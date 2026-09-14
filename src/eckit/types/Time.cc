@@ -305,6 +305,105 @@ Time::Time(long hh, long mm, long ss, bool extended) : seconds_(hh * 3600 + mm *
 }
 
 Time::~Time() {}
+namespace {
+    inline long computeDayCarry(long total, long day) {
+        long carry = total / day;
+        long rem = total % day;
+
+        if (rem < 0) {
+            rem += day;
+            --carry;
+        }
+        return carry;
+    }
+
+    inline long normalizeSeconds(long total, long day) {
+        long rem = total % day;
+        if (rem < 0) rem += day;
+        return rem;
+    }
+}
+
+// --- shiftSeconds ---
+
+Time& Time::shiftSeconds(long n) {
+    long dummy;
+    return shiftSeconds(n, dummy);
+}
+
+Time& Time::shiftSeconds(long n, long& dayCarry) {
+    const long day = static_cast<long>(secondsInDay);
+    const long total = std::lround(seconds_) + n;
+
+    dayCarry = computeDayCarry(total, day);
+    seconds_ = normalizeSeconds(total, day);
+
+    return *this;
+}
+
+// --- shiftMinutes ---
+
+Time& Time::shiftMinutes(long n) {
+    long dummy;
+    return shiftMinutes(n, dummy);
+}
+
+Time& Time::shiftMinutes(long n, long& dayCarry) {
+    return shiftSeconds(static_cast<long>(secondsInMinute) * n, dayCarry);
+}
+
+// --- shiftHours ---
+
+Time& Time::shiftHours(long n) {
+    long dummy;
+    return shiftHours(n, dummy);
+}
+
+Time& Time::shiftHours(long n, long& dayCarry) {
+    return shiftSeconds(static_cast<long>(secondsInHour) * n, dayCarry);
+}
+
+// --- withShiftSeconds ---
+
+Time Time::withShiftSeconds(long n) const {
+    Time out(*this);
+    out.shiftSeconds(n);
+    return out;
+}
+
+Time Time::withShiftSeconds(long n, long& dayCarry) const {
+    Time out(*this);
+    out.shiftSeconds(n, dayCarry);
+    return out;
+}
+
+// --- withShiftMinutes ---
+
+Time Time::withShiftMinutes(long n) const {
+    Time out(*this);
+    out.shiftMinutes(n);
+    return out;
+}
+
+Time Time::withShiftMinutes(long n, long& dayCarry) const {
+    Time out(*this);
+    out.shiftMinutes(n, dayCarry);
+    return out;
+}
+
+// --- withShiftHours ---
+
+Time Time::withShiftHours(long n) const {
+    Time out(*this);
+    out.shiftHours(n);
+    return out;
+}
+
+Time Time::withShiftHours(long n, long& dayCarry) const {
+    Time out(*this);
+    out.shiftHours(n, dayCarry);
+    return out;
+}
 
 bool Time::operator==(const Time& other) const {
     return seconds_ == other.seconds_;

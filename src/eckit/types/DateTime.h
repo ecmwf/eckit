@@ -69,6 +69,53 @@ public:
 
     DateTime round(const Second& seconds) const;
 
+    bool isLeap() const;
+    long numberOfDaysInMonth() const;
+
+    DateTime& shiftSeconds(long n = 1);
+    DateTime& shiftSeconds(long n, long& dayCarry);
+
+    DateTime& shiftMinutes(long n = 1);
+    DateTime& shiftMinutes(long n, long& dayCarry);
+
+    DateTime& shiftHours(long n = 1);
+    DateTime& shiftHours(long n, long& dayCarry);
+
+    DateTime& shiftDays(long n = 1);
+    DateTime& shiftMonths(long n = 1);
+    DateTime& shiftYears(long n = 1);
+
+    DateTime& beginOfDay();
+    DateTime& endOfDay();
+
+    DateTime& beginOfMonth();
+    DateTime& endOfMonth();
+
+    DateTime& beginOfYear();
+    DateTime& endOfYear();
+
+    DateTime withShiftSeconds(long n = 1) const;
+    DateTime withShiftSeconds(long n, long& dayCarry) const;
+
+    DateTime withShiftMinutes(long n = 1) const;
+    DateTime withShiftMinutes(long n, long& dayCarry) const;
+
+    DateTime withShiftHours(long n = 1) const;
+    DateTime withShiftHours(long n, long& dayCarry) const;
+
+    DateTime withShiftDays(long n = 1) const;
+    DateTime withShiftMonths(long n = 1) const;
+    DateTime withShiftYears(long n = 1) const;
+
+    DateTime withBeginOfDay() const;
+    DateTime withEndOfDay() const;
+
+    DateTime withBeginOfMonth() const;
+    DateTime withEndOfMonth() const;
+
+    DateTime withBeginOfYear() const;
+    DateTime withEndOfYear() const;
+
     void dump(DumpLoad&) const;
     void load(DumpLoad&);
 

@@ -373,7 +373,7 @@ endif()
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
                        SOURCES AUTHORS README.md NOTICE LICENSE
-                       INSTALL ChangeLog COPYING )
+                       INSTALL ChangeLog REUSE.toml LICENSES/Apache-2.0.txt )
 
 ############################################################################################
 # finalize

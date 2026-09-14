@@ -214,12 +214,12 @@ Grid::renumber_type Grid::crop(const Area&) const {
 
 
 const Projection& Grid::projection() const {
-    return *(projection_ ? projection_ : projection_ = std::make_unique<projection::EquidistantCylindrical>());
+    return projection_ ? *projection_ : *(projection_ = std::make_unique<projection::EquidistantCylindrical>());
 }
 
 
 const Figure& Grid::figure() const {
-    return *(figure_ ? figure_ : figure_ = std::make_unique<figure::Earth>());
+    return figure_ ? *figure_ : projection().figure();
 }
 
 
@@ -383,7 +383,6 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
         }
         back->set("type", "unstructured_ll");
     }
-
 
     if (static const std::string projection{"projection"}, rotation{"rotation"};
         !cfg->has(projection) && cfg->has(rotation)) {

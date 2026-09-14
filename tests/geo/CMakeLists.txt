@@ -6,6 +6,7 @@ foreach(_test
         area_polygon
         figure
         figure_earth
+        figure_sun
         gaussian
         great_circle
         grid

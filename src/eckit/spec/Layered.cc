@@ -98,19 +98,21 @@ void Layered::json(JSON&) const {
 
 
 const Spec& Layered::spec(const std::string& name) const {
-    for (const auto& spec : front_) {
-        if (spec->has(name)) {
-            return spec->spec(name);
+    if (!hide_.contains(name)) {
+        for (const auto& spec : front_) {
+            if (spec->has(name)) {
+                return spec->spec(name);
+            }
         }
-    }
 
-    if (has(name)) {
-        return Spec::spec(name);
-    }
+        if (spec_.has(name)) {
+            return spec_.spec(name);
+        }
 
-    for (const auto& spec : back_) {
-        if (spec->has(name)) {
-            return spec->spec(name);
+        for (const auto& spec : back_) {
+            if (spec->has(name)) {
+                return spec->spec(name);
+            }
         }
     }
 

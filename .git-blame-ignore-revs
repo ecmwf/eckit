@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # The following refs can be ignored by git blame if 'git blame' is called with
 # --ignore-revs-file .git-blame-ignore-revs
 # Alternatively configure git to always ignore refs stored in this file by
@@ -9,3 +12,6 @@
 
 # Reformatted codebase with clang-format
 2b05a8023ff3b4aef2d6047a0ab38ac38d9de026
+
+# Replaced the prose licence header with SPDX tags
+216c4fba731b7819fe51521663db4b33f818320e

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 
 configure_file( eckit_codec_config.h.in ${CMAKE_CURRENT_BINARY_DIR}/eckit_codec_config.h @ONLY )
 install(

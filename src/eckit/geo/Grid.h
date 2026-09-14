@@ -189,7 +189,7 @@ protected:
     void reset_uid(uid_type = {});
 
     void projection(Projection* ptr) { projection_.reset(ptr); }
-    void figure(Figure* ptr) { projection_->figure(ptr); }
+    void figure(Figure* ptr) { projection().figure(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
 
 private:

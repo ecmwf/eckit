@@ -317,6 +317,10 @@ void Grid::fill_spec(spec::Custom& custom) const {
 
     custom_set_if_different("area", area(), area_default);
     custom_set_if_different("projection", projection(), proj_default);
+
+    if (const auto& fig = figure(); !fig.is_default()) {
+        custom_set_if_different("figure", fig, "");
+    }
 }
 
 

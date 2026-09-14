@@ -12,3 +12,6 @@
 
 # Reformatted codebase with clang-format
 2b05a8023ff3b4aef2d6047a0ab38ac38d9de026
+
+# Replaced the prose licence header with SPDX tags
+216c4fba731b7819fe51521663db4b33f818320e

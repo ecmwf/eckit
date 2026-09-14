@@ -14,15 +14,20 @@
 
 #include <proj.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <map>
+#include <memory>
 #include <set>
+#include <sstream>
 #include <utility>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
+#include "eckit/geo/figure/Earth.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::projection {
@@ -242,15 +247,11 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
 
     static const std::map<std::string, std::string> KEYS{
         {"type", "proj"},
-        {"figure", "ellps"},
-        {"r", "R"},
     };
 
     static const std::map<std::string, std::string> VALUES{
         {"mercator", "merc"},
         {"reverse_mercator", "merc"},
-        {"grs80", "GRS80"},
-        {"wgs84", "WGS84"},
     };
 
     auto rename = [](const std::map<std::string, std::string>& map, const std::string& key) {
@@ -258,8 +259,46 @@ std::string PROJ::proj_str(const spec::Custom& custom) {
         return it != map.end() ? it->second : key;
     };
 
+    auto to_str = [](double value) {
+        std::ostringstream str;
+        str.precision(15);
+        str << value;
+        return str.str();
+    };
+
+    struct ProjFigure : std::unique_ptr<Figure> {
+        ProjFigure(const spec::Spec& custom) : unique_ptr(FigureFactory::build(custom)) { ASSERT(operator bool()); }
+
+        bool is_approximately_equal(const Figure& other) const {
+            return types::is_approximately_equal(get()->a(), other.a()) &&
+                   types::is_approximately_equal(get()->b(), other.b());
+        };
+    } fig(custom);
+
+
     std::set<key_value_type, key_value_compare> set;
+
+    if (fig.is_approximately_equal(figure::EARTH_WGS84)) {
+        set.emplace("ellps", "WGS84");
+    }
+    else if (fig.is_approximately_equal(figure::EARTH_GRS80)) {
+        set.emplace("ellps", "GRS80");
+    }
+    else if (fig->spherical()) {
+        set.emplace("R", to_str(fig->R()));
+    }
+    else {
+        set.emplace("a", to_str(fig->a()));
+        set.emplace("b", to_str(fig->b()));
+    }
+
+    static const keys_type FIGURE_KEYS{"figure", "R", "r", "radius", "a", "b", "semi_major_axis", "semi_minor_axis"};
+
     for (const auto& [k, v] : custom.container()) {
+        if (std::find(FIGURE_KEYS.begin(), FIGURE_KEYS.end(), k) != FIGURE_KEYS.end()) {
+            continue;
+        }
+
         if (const auto& key = rename(KEYS, k); !key.empty()) {
             const auto& value = rename(VALUES, to_string(v));
             set.emplace(key, value);

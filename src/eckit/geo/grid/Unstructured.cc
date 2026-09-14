@@ -42,10 +42,7 @@ Unstructured::Unstructured(const Spec& spec) :
     Unstructured(spec.has("uid")
                      ? spec.get_string("uid")
                      : uid_from_cached_ll({spec.get_double_vector("latitudes"), spec.get_double_vector("longitudes")}),
-                 spec.get_string("name", [&spec]() {
-                     std::string grid;
-                     return spec.get("grid", grid) && is_uid(grid) ? "" : grid;
-                 }())) {}
+                 spec.get_string("name", spec.get_string("cache_as", ""))) {}
 
 
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,

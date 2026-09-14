@@ -35,6 +35,14 @@ struct DatumGRIB1 {
 };
 
 
+struct DatumWgs84Sphere {
+    static constexpr double radius = 6371200.;
+
+    static constexpr double a = radius;
+    static constexpr double b = radius;
+};
+
+
 struct DatumGrs80 {
     static constexpr double a = 6378137.;
     static constexpr double b = 6356752.314140;
@@ -47,14 +55,27 @@ struct DatumWgs84 {
 };
 
 
-using Earth = SphereT<DatumIFS>;
-using Grs80 = OblateSpheroidT<DatumGrs80>;
-using Wgs84 = OblateSpheroidT<DatumWgs84>;
+// Note: 1/f = 298.25, other references have 1/297
+struct DatumIau1965 {
+    static constexpr double a = 6378160.;
+    static constexpr double b = 6356775.;
+};
+
+
+using Earth            = SphereT<DatumIFS>;
+using EarthGrib1       = SphereT<DatumGRIB1>;
+using EarthGrs80       = OblateSpheroidT<DatumGrs80>;
+using EarthIau1965     = OblateSpheroidT<DatumIau1965>;
+using EarthWgs84       = OblateSpheroidT<DatumWgs84>;
+using EarthWgs84Sphere = SphereT<DatumWgs84Sphere>;
 
 
 extern const Earth EARTH;
-extern const Grs80 GRS80;
-extern const Wgs84 WGS84;
+extern const EarthGrib1 EARTH_GRIB1;
+extern const EarthGrs80 EARTH_GRS80;
+extern const EarthIau1965 EARTH_IAU1965;
+extern const EarthWgs84 EARTH_WGS84;
+extern const EarthWgs84Sphere EARTH_WGS84_SPHERE;
 
 
 }  // namespace eckit::geo::figure

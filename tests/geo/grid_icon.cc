@@ -53,6 +53,13 @@ CASE("spec") {
 }
 
 
+CASE("type") {
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
+
+    EXPECT(grid->type() == "ICON");
+}
+
+
 CASE("equals") {
     std::unique_ptr<const Grid> grid1(GridFactory::make_from_string("{uid:" + UID + "}"));
     std::unique_ptr<const Grid> grid2(GridFactory::build(spec::Custom({{"uid", UID}})));

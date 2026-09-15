@@ -1,0 +1,19 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "ci",
+      "cacheVariables": {
+        "ENABLE_TESTS": "ON",
+        "ENABLE_AEC": "ON",
+        "ENABLE_ECKIT_SQL": "ON",
+        "ENABLE_ECKIT_CMD": "ON"
+      }
+    }
+  ]
+}

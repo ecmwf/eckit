@@ -19,14 +19,14 @@ compiler-inputs = ["cxx-compiler"]
 
 [[matrix.build.include]]
 cxx-compiler = "clang++-18"
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "arc-runner-very-large"
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-clang18-gfortran13:latest"
 platform = "ubuntu-24.04"
 
 [[matrix.build.include]]
 cxx-compiler = "g++-13"
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "arc-runner-very-large"
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-clang18-gfortran13:latest"
 platform = "ubuntu-24.04"
@@ -42,7 +42,7 @@ ctest-args = '-j "$(nproc)"'
 
 [[matrix.build-hpc.include]]
 cxx-compiler = "g++-8"
-build-type = "Release"
+build-type = "RelWithDebInfo"
 runs-on = "hpc-submit"
 container = "eccr.ecmwf.int/private-ci-images/ubuntu24.04-internal-tools:latest"
 site = "hpc-batch"
@@ -52,6 +52,7 @@ platform = "hpc-atos-gnu"
 modules = ["load prgenv/gnu", "unload gcc", "load gcc/old", "load cmake", "load ninja"]
 cc = "gcc"
 cxx = "g++"
+time = "00:40:00"
 
 [matrix.build-hpc]
 execution = "hpc"

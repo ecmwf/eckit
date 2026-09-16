@@ -27,7 +27,7 @@ public:
     // -- Constructors
 
     explicit EquidistantCylindrical(const Spec&);
-    explicit EquidistantCylindrical(double lat_ts = 0, double lat_0 = 0);
+    explicit EquidistantCylindrical(double lat_ts = 0, double lat_0 = 0, Figure* = nullptr);
 
     // -- Methods
 

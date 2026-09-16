@@ -203,12 +203,6 @@ PROJ::PROJ(const Spec& spec) :
 PROJ::~PROJ() = default;
 
 
-void PROJ::figure(Figure*) const {
-    throw exception::NotImplemented("PROJ: figure is derived from the target CRS and cannot be set/replaced directly",
-                                    Here());
-}
-
-
 const std::string& PROJ::type() const {
     static const std::string type{"proj"};
     return type;

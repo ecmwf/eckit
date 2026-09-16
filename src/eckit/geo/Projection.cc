@@ -17,7 +17,7 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
-#include "eckit/geo/figure/Earth.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/None.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util/mutex.h"
@@ -48,13 +48,7 @@ class lock_type {
 }  // namespace
 
 
-Projection::Projection(Figure* ptr) : figure_(ptr != nullptr ? ptr : new figure::Earth()) {
-    ASSERT(figure_);
-}
-
-
-void Projection::figure(Figure* ptr) const {
-    figure_.reset(ptr);
+Projection::Projection(Figure* ptr) : figure_(ptr != nullptr ? ptr : FigureFactory::make_default()) {
     ASSERT(figure_);
 }
 
@@ -97,18 +91,18 @@ const Projection& Projection::projection_default() {
 
 
 Projection* Projection::make_from_spec(const Spec& spec) {
+    // an explicit 'projection' has to name its type
     if (const std::string projection = "projection"; spec.has(projection)) {
-        auto ptr = dynamic_cast<const spec::Custom&>(spec).custom(projection);
-        ASSERT(ptr);
-
-        return make_from_spec(*ptr);
+        const auto& cfg = spec.spec(projection);
+        return ProjectionFactoryType::instance().get(cfg.get_string("type")).create(cfg);
     }
 
-    if (std::string type; spec.get("type", type)) {
+    // NOTE: a 'type' that isn't a projection's is somebody else's (eg. a grid's)
+    if (std::string type; spec.get("type", type) && ProjectionFactory::has_type(type)) {
         return ProjectionFactoryType::instance().get(type).create(spec);
     }
 
-    throw exception::SpecError("Projection: cannot build grid without 'type'", Here());
+    return new projection::EquidistantCylindrical(spec);
 }
 
 

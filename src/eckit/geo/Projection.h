@@ -59,6 +59,9 @@ public:
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
 
+    /// Map a grid's (x, y) coordinates to geographic coordinates
+    virtual Point from_grid_xy(double x, double y) const { return inv(PointXY{x, y}); }
+
     void falseXY(const PointXY& falseXY) { false_ = falseXY; }
     const PointXY& falseXY() const { return false_; }
 
@@ -85,17 +88,11 @@ private:
 
     // -- Members
 
-    mutable std::shared_ptr<Figure> figure_;
+    std::shared_ptr<Figure> figure_;
     mutable std::shared_ptr<spec::Custom> spec_;
     PointXY false_;
 
-    // -- Methods
-
-    virtual void figure(Figure* ptr) const;
-
     // -- Friends
-
-    friend class Grid;
 
     friend bool operator==(const Projection& a, const Projection& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Projection& a, const Projection& b) { return !(a == b); }

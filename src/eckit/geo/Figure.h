@@ -107,8 +107,10 @@ private:
 
 
 struct FigureFactory {
+    /// Build the spec's figure, or the default one if the spec doesn't describe any
     [[nodiscard]] static Figure* build(const Figure::Spec& spec) { return instance().make_from_spec_(spec); }
     [[nodiscard]] static Figure* make_from_string(const std::string&);
+    [[nodiscard]] static Figure* make_default();
 
 private:
 

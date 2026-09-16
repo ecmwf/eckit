@@ -79,8 +79,6 @@ private:
     // -- Overridden methods
 
     void fill_spec(spec::Custom&) const override;
-
-    void figure(Figure*) const override;
 };
 
 

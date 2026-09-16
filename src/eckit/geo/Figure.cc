@@ -146,6 +146,11 @@ Figure* FigureFactory::make_from_string(const std::string& str) {
 }
 
 
+Figure* FigureFactory::make_default() {
+    return new figure::Earth;
+}
+
+
 Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
     lock_type lock;
 
@@ -165,9 +170,7 @@ Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
         return new figure::Sphere(R);
     }
 
-    const auto* msg = "Figure: cannot build figure without 'R'/'a'/'b' or 'radius'/'semi_major_axis'/'semi_minor_axis'";
-    Log::error() << msg << std::endl;
-    throw exception::SpecError(msg, Here());
+    return make_default();
 }
 
 

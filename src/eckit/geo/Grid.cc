@@ -52,7 +52,7 @@ class lock_type {
 
 
 Grid::Grid(BoundingBox* bbox, Projection* proj) :
-    bbox_(bbox), projection_(proj != nullptr ? proj : new projection::EquidistantCylindrical) {}
+    bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()) {}
 
 
 const spec::Spec& Grid::catalog() const {
@@ -214,7 +214,8 @@ Grid::renumber_type Grid::crop(const Area&) const {
 
 
 const Projection& Grid::projection() const {
-    return projection_ ? *projection_ : *(projection_ = std::make_unique<projection::EquidistantCylindrical>());
+    return projection_ ? *projection_
+                       : *(projection_ = std::unique_ptr<const Projection>(ProjectionFactory::make_default()));
 }
 
 

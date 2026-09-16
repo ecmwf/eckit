@@ -90,6 +90,11 @@ const Projection& Projection::projection_default() {
 }
 
 
+const Projection* ProjectionFactory::make_default() {
+    return new projection::EquidistantCylindrical;
+}
+
+
 Projection* Projection::make_from_spec(const Spec& spec) {
     // an explicit 'projection' has to name its type
     if (const std::string projection = "projection"; spec.has(projection)) {

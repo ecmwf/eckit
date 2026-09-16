@@ -146,7 +146,7 @@ Figure* FigureFactory::make_from_string(const std::string& str) {
 }
 
 
-Figure* FigureFactory::make_default() {
+const Figure* FigureFactory::make_default() {
     return new figure::Earth;
 }
 
@@ -170,7 +170,7 @@ Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
         return new figure::Sphere(R);
     }
 
-    return make_default();
+    return const_cast<Figure*>(make_default());
 }
 
 

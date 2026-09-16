@@ -88,7 +88,7 @@ private:
 
     // -- Members
 
-    std::shared_ptr<Figure> figure_;
+    std::shared_ptr<const Figure> figure_;
     mutable std::shared_ptr<spec::Custom> spec_;
     PointXY false_;
 
@@ -115,6 +115,8 @@ struct ProjectionFactory {
     [[nodiscard]] static const Projection* build(const Projection::Spec& spec) {
         return instance().make_from_spec_(spec);
     }
+
+    [[nodiscard]] static const Projection* make_default();
 
     // This is 'const' as Projection should always be immutable
     [[nodiscard]] static const Projection* make_from_string(const std::string&);

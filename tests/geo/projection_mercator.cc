@@ -49,9 +49,9 @@ CASE("Mercator: spec_str, proj_str") {
 
 
     SECTION("spec_str") {
-        EXPECT(proj1.spec_str() == R"({"lat_ts":14,"r":6371229,"type":"mercator"})");
-        EXPECT(proj2.spec_str() == R"({"lat_ts":14,"r":6371229,"type":"mercator"})");
-        EXPECT(proj3.spec_str() == R"({"lon_0":-180,"r":6371229,"type":"mercator"})");
+        EXPECT(proj1.spec_str() == R"({"lat_ts":14,"type":"mercator"})");
+        EXPECT(proj2.spec_str() == R"({"lat_ts":14,"type":"mercator"})");
+        EXPECT(proj3.spec_str() == R"({"lon_0":-180,"type":"mercator"})");
     }
 
 

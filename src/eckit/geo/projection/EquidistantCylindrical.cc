@@ -14,6 +14,7 @@
 
 #include <cmath>
 
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
@@ -27,11 +28,11 @@ static ProjectionRegisterType<EquidistantCylindrical> PROJECTION2("plate-carree"
 
 
 EquidistantCylindrical::EquidistantCylindrical(const Spec& spec) :
-    EquidistantCylindrical(spec.get_double("lat_ts", 0.), spec.get_double("lat_0", 0.)) {}
+    EquidistantCylindrical(spec.get_double("lat_ts", 0.), spec.get_double("lat_0", 0.), FigureFactory::build(spec)) {}
 
 
-EquidistantCylindrical::EquidistantCylindrical(double lat_ts, double lat_0) :
-    lat_ts_(types::is_approximately_equal(lat_ts, 0., PointLonLat::EPS) ? 0. : lat_ts), lat_0_(lat_0) {
+EquidistantCylindrical::EquidistantCylindrical(double lat_ts, double lat_0, Figure* fig) :
+    Projection(fig), lat_ts_(types::is_approximately_equal(lat_ts, 0., PointLonLat::EPS) ? 0. : lat_ts), lat_0_(lat_0) {
     auto cos_lat_ts = std::cos(util::DEGREE_TO_RADIAN * lat_ts_);
     ASSERT(!types::is_approximately_equal(0., cos_lat_ts));
 
@@ -66,6 +67,7 @@ const std::string& EquidistantCylindrical::type() const {
 
 void EquidistantCylindrical::fill_spec(spec::Custom& custom) const {
     // this is the default projection so spec is only set with non-default parameters
+    // NOTE: the figure is deliberately not set here, Grid::fill_spec is its single emitter
     if (auto set_lat_ts = !types::is_approximately_equal(lat_ts_, 0., PointLonLat::EPS),
         set_lat_0       = !types::is_approximately_equal(lat_0_, 0., PointLonLat::EPS);
         set_lat_ts || set_lat_0) {

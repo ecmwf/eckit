@@ -12,6 +12,7 @@
 
 #include "eckit/geo/grid/regular/RegularXY.h"
 
+#include <cmath>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
@@ -46,7 +47,7 @@ RegularXY::Increments RegularXY::Increments::make_from_spec(const Spec& spec) {
     }
 
     if (spec.get("grid", grid) && grid.size() == 2) {
-        return {grid[0], -grid[1]};
+        return {grid[0], grid[1]};
     }
 
     throw exception::SpecError("'grid' = ['dx', 'dy'] expected", Here());
@@ -82,10 +83,11 @@ RegularXY::RegularXY(const Spec& spec) :
 
 RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox, order::Scan s, Projection* p) :
     Regular(s, p),
+    // NOTE: the range references its own first value, so the grid isn't snapped to multiples of the increment
     x_(s.is_scan_i_positive() ? inc.dx : -inc.dx, s.is_scan_i_positive() ? bbox.min_x : bbox.max_x,
-       s.is_scan_i_positive() ? bbox.max_x : bbox.min_x),
+       s.is_scan_i_positive() ? bbox.max_x : bbox.min_x, s.is_scan_i_positive() ? bbox.min_x : bbox.max_x),
     y_(s.is_scan_j_positive() ? inc.dy : -inc.dy, s.is_scan_j_positive() ? bbox.min_y : bbox.max_y,
-       s.is_scan_j_positive() ? bbox.max_y : bbox.min_y) {
+       s.is_scan_j_positive() ? bbox.max_y : bbox.min_y, s.is_scan_j_positive() ? bbox.min_y : bbox.max_y) {
     ASSERT(!empty());
 }
 
@@ -101,7 +103,8 @@ RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, Projection* p) :
 
 
 const std::string& RegularXY::type() const {
-    NOTIMP;
+    static const std::string type{"regular_xy"};
+    return type;
 }
 
 
@@ -127,14 +130,20 @@ Grid::BoundingBox* RegularXY::calculate_bbox() const {
 void RegularXY::fill_spec(spec::Custom& custom) const {
     Regular::fill_spec(custom);
 
-    custom.set("grid", std::vector<double>{dx(), dy()});
+    // NOTE: 'type' is required, a 'grid' of two values is otherwise taken for a regular_ll's increments
+    custom.set("type", type());
+    custom.set("grid", std::vector<double>{std::abs(dx()), std::abs(dy())});
     custom.set("shape", std::vector<long>{static_cast<long>(nx()), static_cast<long>(ny())});
-    // custom.set("first_lonlat", std::vector<double>{first_lonlat.lon, first_lonlat.lat});
+
+    // NOTE: the grid is defined on the projection plane, unlike the geographic 'area' set above
+    custom.set("bounding_box_xy", std::vector<double>{x_.min(), y_.min(), x_.max(), y_.max()});
 }
 
 
 // ---
 
+
+static const GridRegisterType<RegularXY> GRIDTYPE("regular_xy");
 
 // static const GridRegisterType<RegularXY> GRID2("lambert");
 // static const GridRegisterType<RegularXY> GRID3("lambert_lam");

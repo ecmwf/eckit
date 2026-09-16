@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
@@ -125,6 +126,10 @@ public:
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;
 
+    /// Name and staggering arrangement, for the grids that are identified by them (eg. ORCA, FESOM, ICON)
+    virtual std::string name() const { return {}; }
+    virtual std::string arrangement() const { return {}; }
+
     virtual bool empty() const;
     virtual size_t size() const;
     virtual void cache() const;
@@ -148,6 +153,7 @@ public:
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
+    virtual const Figure& figure() const { return projection().figure(); }
 
     virtual const BoundingBox& boundingBox() const;
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
@@ -178,7 +184,7 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(Projection* = nullptr);
+    explicit Grid(BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 
@@ -188,6 +194,8 @@ protected:
 
     void projection(Projection* ptr) { projection_.reset(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
+
+    [[nodiscard]] static BoundingBox* bounding_box_from_spec(const Spec&);
 
 private:
 

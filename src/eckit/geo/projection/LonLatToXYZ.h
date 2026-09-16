@@ -27,7 +27,7 @@ public:
 
     // -- Constructors
 
-    explicit LonLatToXYZ(Figure* = new figure::Earth);
+    explicit LonLatToXYZ(Figure* = nullptr);
 
     explicit LonLatToXYZ(double R);
     explicit LonLatToXYZ(double a, double b);

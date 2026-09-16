@@ -28,13 +28,18 @@ public:
     // -- Constructors
 
     explicit HEALPix(const Spec&);
-    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default());
+    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default(), BoundingBox* = nullptr,
+                     Projection* = nullptr);
 
     // -- Methods
 
     size_t Nside() const { return Nside_; }
 
     // -- Overridden methods
+
+    std::string name() const override { return "H" + std::to_string(Nside_); }
+
+    BoundingBox* calculate_bbox() const override;
 
     iterator cbegin() const override;
     iterator cend() const override;

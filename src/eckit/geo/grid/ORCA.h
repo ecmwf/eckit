@@ -41,8 +41,8 @@ public:
     size_t nx() const override { return shape().at(1); }
     size_t ny() const override { return shape().at(0); }
 
-    std::string name() const { return name_; }
-    std::string arrangement() const;
+    std::string name() const override { return name_; }
+    std::string arrangement() const override;
 
     // -- Overridden methods
 

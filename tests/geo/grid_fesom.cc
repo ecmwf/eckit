@@ -55,6 +55,21 @@ CASE("spec") {
 }
 
 
+CASE("name") {
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID_N}})));
+
+    EXPECT(grid->name() == "pi");
+    EXPECT(grid->arrangement() == "N");
+}
+
+
+CASE("type") {
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID_N}})));
+
+    EXPECT(grid->type() == "FESOM");
+}
+
+
 CASE("equals") {
     for (const auto& p : std::vector<std::pair<std::string, std::string>>{{UID_N, GRID_N}, {UID_C, GRID_C}}) {
         const auto& uid  = p.first;

@@ -20,14 +20,15 @@
 namespace eckit::geo::projection {
 
 
-/// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
+/// Calculate coordinates of a point on an equidistant cylindrical (plate carrée) projection, given the standard
+/// parallel the scale is true at, and the central parallel
 class EquidistantCylindrical : public Projection {
 public:
 
     // -- Constructors
 
     explicit EquidistantCylindrical(const Spec&);
-    explicit EquidistantCylindrical(double lat_ts = 0, double lat_0 = 0);
+    explicit EquidistantCylindrical(double lat_ts = 0, double lat_0 = 0, Figure* = nullptr);
 
     // -- Methods
 

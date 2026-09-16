@@ -31,7 +31,9 @@ namespace eckit::geo::grid {
 
 
 ORCA::ORCA(const Spec& spec) :
-    name_(spec.get_string("name")), arrangement_(arrangement_from_string(spec.get_string("arrangement"))) {
+    Grid(bounding_box_from_spec(spec), Projection::make_from_spec(spec)),
+    name_(spec.get_string("name")),
+    arrangement_(arrangement_from_string(spec.get_string("arrangement"))) {
     reset_uid(spec.get_string("uid"));
 }
 
@@ -145,6 +147,8 @@ std::string ORCA::arrangement_to_string(Arrangement a) {
 
 
 void ORCA::fill_spec(spec::Custom& custom) const {
+    Grid::fill_spec(custom);
+
     auto grid = name_ + "_" + arrangement_to_string(arrangement_);
     custom.set("grid", grid);
 

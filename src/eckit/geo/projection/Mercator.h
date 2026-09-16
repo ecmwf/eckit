@@ -18,7 +18,7 @@
 namespace eckit::geo::projection {
 
 
-/// Calculate coordinates of a point on a rotated sphere given new location of South Pole (vector) and angle
+/// Calculate coordinates of a point on a Mercator projection, given the projection centre and first point
 class Mercator : public Projection {
 public:
 

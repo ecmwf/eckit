@@ -43,7 +43,8 @@ public:
     // -- Constructors
 
     explicit RegularLL(const Spec&);
-    explicit RegularLL(const Increments&, BoundingBox = {}, Reference = {}, order::Scan = scan_default());
+    explicit RegularLL(const Increments&, BoundingBox = {}, Reference = {}, order::Scan = scan_default(),
+                       Projection* = nullptr);
 
     // -- Methods
 
@@ -58,6 +59,9 @@ public:
     [[nodiscard]] Point last_point() const override;
 
     [[nodiscard]] BoundingBox* calculate_bbox() const override;
+
+    /// Bounding box in the grid's own (possibly rotated) frame
+    [[nodiscard]] BoundingBox* calculate_bbox_xy() const;
 
     [[nodiscard]] Grid* make_grid_cropped(const Area&) const override;
 

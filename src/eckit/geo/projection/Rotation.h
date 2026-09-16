@@ -45,6 +45,9 @@ public:
     inline Point fwd(const Point& p) const override { return fwd(std::get<PointLonLat>(p)); }
     inline Point inv(const Point& q) const override { return inv(std::get<PointLonLat>(q)); }
 
+    /// NOTE: a rotated grid's (x, y) are (lon, lat) on the rotated sphere, which fwd() un-rotates
+    inline Point from_grid_xy(double x, double y) const override { return fwd(PointLonLat{x, y}); }
+
     // -- Class methods
 
     [[nodiscard]] static Rotation* make_from_spec(const Spec&);

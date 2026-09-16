@@ -12,6 +12,7 @@
 
 #include <cmath>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "eckit/geo/figure/Earth.h"
@@ -34,7 +35,7 @@ CASE("Earth") {
     F f2(new figure::Earth);
 
     EXPECT(*f1 == *f2);
-    EXPECT(f1->spec_str() == R"({"r":6371229})");
+    EXPECT(f1->spec_str() == R"({"figure":"earth"})");
     EXPECT(types::is_approximately_equal(f1->R(), 6371229., 1e-8));
 
     F f4(FigureFactory::build(spec::Custom{{"figure", "wgs84"}}));
@@ -42,6 +43,86 @@ CASE("Earth") {
     EXPECT(f4->spec_str() == R"({"figure":"wgs84"})");
     EXPECT(types::is_approximately_equal(1. / f4->flattening(), 298.257223563, 1e-8));
     EXPECT_THROWS_AS(f4->R(), BadValue);
+}
+
+
+CASE("Named spheres") {
+    struct test_t {
+        const std::string name;
+        const double radius;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"earth", figure::DatumIFS::radius},
+             {"grib1", figure::DatumGRIB1::radius},
+             {"wgs84_sphere", figure::DatumWgs84Sphere::radius},
+         }) {
+        SECTION(test.name) {
+            F f1(FigureFactory::build(spec::Custom{{"figure", test.name}}));
+            F f2(FigureFactory::build(spec::Custom{{"r", test.radius}}));
+
+            EXPECT(*f1 == *f2);
+            EXPECT(f1->spherical());
+            EXPECT(types::is_approximately_equal(f1->R(), test.radius));
+            EXPECT(types::is_approximately_equal(f1->a(), test.radius));
+            EXPECT(types::is_approximately_equal(f1->b(), test.radius));
+            EXPECT(types::is_approximately_equal(f1->eccentricity(), 0.));
+
+            // a named sphere round-trips by name
+            EXPECT(f1->spec_str() == R"({"figure":")" + test.name + R"("})");
+        }
+    }
+}
+
+
+CASE("Named oblate spheroids") {
+    struct test_t {
+        const std::string name;
+        const double a;
+        const double b;
+        const double inverse_flattening;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"grs80", figure::DatumGrs80::a, figure::DatumGrs80::b, 298.257222101},
+             {"wgs84", figure::DatumWgs84::a, figure::DatumWgs84::b, 298.257223563},
+             {"iau1965", figure::DatumIau1965::a, figure::DatumIau1965::b, 298.253916296},
+         }) {
+        SECTION(test.name) {
+            F f1(FigureFactory::build(spec::Custom{{"figure", test.name}}));
+            F f2(FigureFactory::build(spec::Custom{{"a", test.a}, {"b", test.b}}));
+
+            EXPECT(*f1 == *f2);
+            EXPECT(!f1->spherical());
+            EXPECT(types::is_approximately_equal(f1->a(), test.a));
+            EXPECT(types::is_approximately_equal(f1->b(), test.b));
+            EXPECT(types::is_approximately_equal(1. / f1->flattening(), test.inverse_flattening, 1e-8));
+            EXPECT_THROWS_AS(f1->R(), BadValue);
+
+            // a named spheroid round-trips by name
+            EXPECT(f1->spec_str() == R"({"figure":")" + test.name + R"("})");
+        }
+    }
+}
+
+
+CASE("Distinct figures") {
+    // all tabulated figures are distinguishable from one another
+    std::vector<F> figures;
+    for (const auto* name : {"earth", "grib1", "grs80", "iau1965", "wgs84", "wgs84_sphere"}) {
+        figures.emplace_back(FigureFactory::build(spec::Custom{{"figure", name}}));
+    }
+
+    for (size_t i = 0; i < figures.size(); ++i) {
+        for (size_t j = i + 1; j < figures.size(); ++j) {
+            EXPECT(*figures[i] != *figures[j]);
+        }
+    }
+
+    // GRS80 and WGS84 only differ in the semi-minor axis, by less than a millimetre
+    EXPECT(types::is_approximately_equal(figure::DatumGrs80::a, figure::DatumWgs84::a));
+    EXPECT(!types::is_approximately_equal(figure::DatumGrs80::b, figure::DatumWgs84::b));
+    EXPECT(std::abs(figure::DatumGrs80::b - figure::DatumWgs84::b) < 1e-3);
 }
 
 
@@ -58,6 +139,9 @@ CASE("Area") {
              {"earth", 510101140.},  //[km^2]
              {"wgs84", 510065621.},
              {"grs80", 510065621.},
+             {"iau1965", 510069287.},
+             {"grib1", 509499402.},
+             {"wgs84_sphere", 510096496.},
          }) {
         EXPECT(types::is_approximately_equal(test.figure->area() * 1e-6 /*[km^2]*/, test.area, 1.));
     }

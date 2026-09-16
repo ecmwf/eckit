@@ -55,6 +55,25 @@ def projdb_set_search_paths(db_path, search_paths=()) -> None:
     eckit_geo.LibEcKitGeo.projdb_set_search_paths(_db_path, _search_paths)
 
 
+def _spec_str(spec) -> str:
+    from yaml import dump
+
+    def _safe_str(value):
+        if isinstance(value, str):
+            return value
+        if isinstance(value, (bytes, bytearray)):
+            return value.decode("utf-8")
+        if isinstance(value, dict):
+            return {_safe_str(k): _safe_str(v) for k, v in value.items()}
+        if hasattr(value, "tolist"):
+            return _safe_str(value.tolist())
+        if isinstance(value, (list, tuple, set, frozenset, range)):
+            return [_safe_str(v) for v in value]
+        return value
+
+    return dump(_safe_str(spec), default_flow_style=True).strip()
+
+
 cdef class Area:
     cdef const eckit_geo.Area* _area
 
@@ -67,8 +86,7 @@ cdef class Area:
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
-            from yaml import dump
-            spec = dump(kwargs if kwargs else spec, default_flow_style=True).strip()
+            spec = _spec_str(kwargs if kwargs else spec)
 
         try:
             assert isinstance(spec, str)
@@ -188,22 +206,28 @@ cdef class BoundingBox:
 
 cdef class Figure:
     cdef const eckit_geo.Figure* _figure
+    cdef bint _owned
+    cdef object _owner  # keeps the object owning a borrowed _figure alive
 
     def __dealloc__(self):
-        if self._figure != NULL:
+        if self._owned and self._figure != NULL:
             del self._figure
 
     def __cinit__(self, spec = None, **kwargs):
         self._figure = NULL
+        self._owned = False
+        self._owner = None
+        if spec is None and not kwargs:
+            return  # internal use only (borrowed pointer, see _wrap_figure)
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
-            from yaml import dump
-            spec = dump(kwargs if kwargs else spec, default_flow_style=True).strip()
+            spec = _spec_str(kwargs if kwargs else spec)
 
         try:
             assert isinstance(spec, str)
             self._figure = eckit_geo.FigureFactory.make_from_string(spec)
+            self._owned = True
 
         except RuntimeError as e:
             # opportunity to do something interesting
@@ -261,6 +285,80 @@ cdef class Figure:
         return self._figure.flattening()
 
 
+cdef Figure _wrap_figure(const eckit_geo.Figure* ptr, object owner):
+    """Wrap a Figure reference owned by `owner` (no ownership transfer)."""
+    cdef Figure figure = Figure.__new__(Figure)
+    figure._figure = ptr
+    figure._owned = False
+    figure._owner = owner
+    return figure
+
+
+cdef Projection _wrap_projection(const eckit_geo.Projection* ptr, object owner):
+    """Wrap a Projection reference owned by `owner` (no ownership transfer)."""
+    cdef Projection projection = Projection.__new__(Projection)
+    projection._projection = ptr
+    projection._owned = False
+    projection._owner = owner
+    return projection
+
+
+cdef class Projection:
+    cdef const eckit_geo.Projection* _projection
+    cdef bint _owned
+    cdef object _owner  # keeps the object owning a borrowed _projection alive
+
+    def __dealloc__(self):
+        if self._owned and self._projection != NULL:
+            del self._projection
+
+    def __cinit__(self, spec = None, **kwargs):
+        self._projection = NULL
+        self._owned = False
+        self._owner = None
+        if spec is None and not kwargs:
+            return  # internal use only (borrowed pointer, see _wrap_projection)
+        assert bool(spec) != bool(kwargs)
+
+        if kwargs or isinstance(spec, dict):
+            spec = _spec_str(kwargs if kwargs else spec)
+
+        try:
+            assert isinstance(spec, str)
+            self._projection = eckit_geo.ProjectionFactory.make_from_string(spec)
+            self._owned = True
+
+        except RuntimeError as e:
+            # opportunity to do something interesting
+            raise
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, Projection):
+            return NotImplemented
+        return self.spec_str == other.spec_str
+
+    @property
+    def figure(self) -> Figure:
+        return _wrap_figure(&self._projection.figure(), self)
+
+    @property
+    def spec_str(self) -> str:
+        return self._projection.spec_str()
+
+    @property
+    def spec(self) -> dict:
+        from json import loads
+        return loads(self.spec_str)
+
+    @property
+    def proj_str(self) -> str:
+        return self._projection.proj_str()
+
+    @property
+    def type(self) -> str:
+        return self._projection.type()
+
+
 cdef class Grid:
     cdef const eckit_geo.Grid* _grid
 
@@ -275,8 +373,7 @@ cdef class Grid:
         assert bool(spec) != bool(kwargs)
 
         if kwargs or isinstance(spec, dict):
-            from yaml import dump
-            spec = dump(kwargs if kwargs else spec, default_flow_style=True).strip()
+            spec = _spec_str(kwargs if kwargs else spec)
 
         try:
             assert isinstance(spec, str)
@@ -337,6 +434,14 @@ cdef class Grid:
             return None
 
         return mir.grid_box_areas(self)
+
+    @property
+    def figure(self) -> Figure:
+        return _wrap_figure(&self._grid.figure(), self)
+
+    @property
+    def projection(self) -> Projection:
+        return _wrap_projection(&self._grid.projection(), self)
 
     @property
     def spec_str(self) -> str:

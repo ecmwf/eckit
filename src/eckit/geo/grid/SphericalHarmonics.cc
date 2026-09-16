@@ -18,6 +18,7 @@
 #include "eckit/geo/area/None.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::grid {
@@ -30,15 +31,28 @@ static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
 static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
 
 
-SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {
-    // TODO improve conversion from signed to unsigned
-    if (spec.get_long("truncation") <= 0) {
+[[nodiscard]] size_t into_unsigned(int value) {
+    // promote exception to contain it
+    try {
+        return static_cast<size_t>(eckit::into_unsigned(value));
+    }
+    catch (const eckit::BadCast& e) {
+        throw exception::SpecError(e.what(), Here());
+    }
+}
+
+
+SphericalHarmonics::SphericalHarmonics(const Spec& spec) : SphericalHarmonics(spec.get_int("truncation")) {}
+
+
+SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {
+    if (truncation_ == 0) {
         throw exception::SpecError("SphericalHarmonics: truncation must be positive", Here());
     }
 }
 
 
-SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {}
+SphericalHarmonics::SphericalHarmonics(int T) : SphericalHarmonics(static_cast<size_t>(into_unsigned(T))) {}
 
 
 Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
@@ -93,7 +107,7 @@ const Area& SphericalHarmonics::area() const {
 
 
 void SphericalHarmonics::fill_spec(spec::Custom& custom) const {
-    custom.set("grid", "T" + std::to_string(truncation_));
+    custom.set("grid", name());
 }
 
 

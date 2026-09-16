@@ -41,8 +41,8 @@ public:
 
     // -- Methods
 
-    const std::string& name() const { return name_; }
-    const std::string& arrangement() const { return arrangement_; }
+    std::string name() const override { return name_; }
+    std::string arrangement() const override { return arrangement_; }
 
     // -- Overridden methods
 
@@ -68,8 +68,9 @@ protected:
 
     // -- Constructors
 
-    explicit Unstructured(const uid_type&, const std::string& name = "");
-    explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement);
+    explicit Unstructured(const uid_type&, const std::string& name = "", BoundingBox* = nullptr, Projection* = nullptr);
+    explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement,
+                          BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 

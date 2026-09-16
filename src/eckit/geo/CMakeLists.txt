@@ -66,6 +66,8 @@ list(APPEND eckit_geo_srcs
     figure/Sphere.cc
     figure/Sphere.h
     figure/SphereT.h
+    figure/Sun.cc
+    figure/Sun.h
     figure/UnitSphere.cc
     figure/UnitSphere.h
     grid/ORCA.cc

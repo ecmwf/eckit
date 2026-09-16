@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 except=$1
 if [ "$except" = "FE_UNDERFLOW" ]; then
   signal_code_option1=FPE_FLTUND

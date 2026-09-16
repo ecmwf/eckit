@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! Stream — tagged binary serialization over TCP or memory.
 //!
 //! Wraps `eckit::Stream` (`TCPStream`, `MemoryStream`, `ResizableMemoryStream`).

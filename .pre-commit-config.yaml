@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 ---
 
 repos:
@@ -36,7 +39,9 @@ repos:
   #   rev: v5.0.0
   #   hooks:
   #     - id: trailing-whitespace   # 6 files
+  #       exclude: '^LICENSES/'     # canonical licence texts are never edited
   #     - id: end-of-file-fixer     # 10 files
+  #       exclude: '^LICENSES/'
   #
   # - repo: https://github.com/PyCQA/isort
   #   rev: 6.0.1
@@ -59,3 +64,12 @@ repos:
   #     - id: yamllint              # 44 files
   #       args: [--strict, -d, '{extends: default, rules: {line-length: disable}}']
   #       types: [yaml]
+
+  # `reuse lint` checks the whole project.
+  # The hook is passed no filenames, so it cannot be narrowed by an exclude;
+  # always_run keeps it honest for a commit that happens to touch nothing it would otherwise see.
+  - repo: https://github.com/fsfe/reuse-tool
+    rev: v6.2.0
+    hooks:
+      - id: reuse
+        always_run: true

@@ -1,15 +1,34 @@
 eckit
-=====
 
-Copyright 1996- ECMWF
+Copyright 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 
-This product is developed by the
+Licensed under the Apache Licence, Version 2.0.
 
-  Development Section, European Centre for Medium-Range Weather Forecasts (ECMWF) - http://www.ecmwf.int
+In applying this licence, ECMWF does not waive the privileges and immunities
+granted to it by virtue of its status as an intergovernmental organisation nor
+does it submit to any jurisdiction.
 
-Below is a list of software packages which are used inside eckit:
+---
 
-- xxHash (www.xxhash.com)
-    Copyright (c) 2012-2020 Yann Collet
-    BSD 2-Clause License (https://www.opensource.org/licenses/bsd-license.php)
-    See `src/eckit/contrib/xxhash` for more information
+The following third-party software is included in the eckit source tree, and is licensed as described below.
+
+
+xxHash (extremely fast non-cryptographic hash algorithm)
+https://github.com/Cyan4973/xxHash
+Copyright (c) 2012-2020 Yann Collet
+Licensed under the BSD 2-Clause license, included at `src/eckit/contrib/xxhash/`.
+
+
+YAML 1.2 specification examples (chapter 2 of the YAML 1.2 specification, 2009 revision)
+https://yaml.org/spec/1.2-old/spec.html
+Copyright 2001-2009 Oren Ben-Kiki, Clark Evans, Ingy dot Net
+Distributed under the terms "This document may be freely copied, provided it is not modified",
+included at `tests/parser/2.*.yaml` as parser test fixtures; see `LICENSES/LicenseRef-YAML-Spec-1.2.txt`.
+
+
+Eurostat/GISCO "Countries 2024" administrative boundaries, 1:60M (geographical test data)
+https://ec.europa.eu/eurostat/web/gisco/geodata/administrative-units/countries
+(c) EuroGeographics for the administrative boundaries
+Distributed for non-commercial use with acknowledgement of the source, included at
+`tests/geo/CNTR_RG_60M_2024_4326.shp.zip` and `tests/geo/CNTR_RG_60M_2024_4326_mini.geojson`;
+see `LICENSES/LicenseRef-Eurostat-GISCO.txt`.

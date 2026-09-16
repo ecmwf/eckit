@@ -1,6 +1,14 @@
 # SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 # SPDX-License-Identifier: Apache-2.0
 
+# Header written into the workflows that ci-infrastructure-generate renders
+# from this file, so that regeneration keeps them REUSE-compliant.
+[generated]
+header = """
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+"""
+
 [package]
 name = "eckit"
 prefix = "eckit"

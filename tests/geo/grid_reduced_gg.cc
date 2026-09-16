@@ -11,6 +11,8 @@
 
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/util.h"
@@ -59,15 +61,20 @@ CASE("gridspec") {
 
 
 CASE("name") {
-    for (const auto& [spec, name] : std::vector<std::pair<std::string, std::string>>{
+    struct test_t {
+        const std::string spec;
+        const std::string name;
+    };
+
+    for (const auto& test : std::vector<test_t>{
              {"{grid: o2}", "O2"},
              {"{N: 2}", "O2"},
              {"{pl: [20, 24, 24, 20]}", "O2"},
              {"{grid: n32}", "N32"},
          }) {
-        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.spec));
 
-        EXPECT_EQUAL(grid->name(), name);
+        EXPECT_EQUAL(grid->name(), test.name);
         EXPECT(grid->arrangement().empty());
     }
 

@@ -95,7 +95,7 @@ Reduced::operator bool() const {
 
 
 Point Reduced::operator*() const {
-    return projection_.inv(PointXY{longitudes_j_.at(index_ - niacc_[j_]), latitudes_.at(j_)});
+    return projection_.from_grid_xy(longitudes_j_.at(index_ - niacc_[j_]), latitudes_.at(j_));
 }
 
 

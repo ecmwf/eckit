@@ -89,7 +89,7 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return projection_.inv(xy_ ? PointXY{x_.at(ix_), y_.at(iy_)} : PointXY{y_.at(iy_), x_.at(ix_)});
+    return xy_ ? projection_.from_grid_xy(x_.at(ix_), y_.at(iy_)) : projection_.from_grid_xy(y_.at(iy_), x_.at(ix_));
 }
 
 

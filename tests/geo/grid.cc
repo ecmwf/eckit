@@ -52,6 +52,29 @@ CASE("Grid from grid_spec") {
 }
 
 
+CASE("Grid name/arrangement") {
+    struct {
+        const char* grid;
+        const char* name;
+    } tests[]{
+        {"{grid: [10, 10]}", ""},          // unnamed
+        {"{pl: [20, 24, 24, 20]}", "O2"},  //
+        {"{grid: n32}", "N32"},            //
+        {"{grid: o8}", "O8"},              //
+        {"{grid: h2}", "H2"},              //
+        {"{grid: h2n}", "H2"},             //
+        {"{grid: t20}", "T20"},            //
+    };
+
+    for (const auto& test : tests) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.grid));
+
+        EXPECT_EQUAL(grid->name(), test.name);
+        EXPECT(grid->arrangement().empty());
+    }
+}
+
+
 CASE("Grid from name") {
     struct {
         const char* name;

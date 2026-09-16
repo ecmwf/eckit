@@ -58,6 +58,24 @@ CASE("gridspec") {
 }
 
 
+CASE("name") {
+    for (const auto& [spec, name] : std::vector<std::pair<std::string, std::string>>{
+             {"{grid: o2}", "O2"},
+             {"{N: 2}", "O2"},
+             {"{pl: [20, 24, 24, 20]}", "O2"},
+             {"{grid: n32}", "N32"},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
+
+        EXPECT_EQUAL(grid->name(), name);
+        EXPECT(grid->arrangement().empty());
+    }
+
+    EXPECT(ReducedGaussian(3).octahedral());
+    EXPECT_EQUAL(ReducedGaussian(3).name(), "O3");
+}
+
+
 CASE("sizes") {
     struct test_t {
         explicit test_t(size_t N) : N(N), size(4 * N * (N + 9)) {}

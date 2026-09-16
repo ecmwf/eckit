@@ -49,6 +49,13 @@ CASE("sh") {
 }
 
 
+CASE("name") {
+    EXPECT_EQUAL(grid::SphericalHarmonics(1).name(), "T1");
+    EXPECT_EQUAL(grid::SphericalHarmonics(1279).name(), "T1279");
+    EXPECT(grid::SphericalHarmonics(1).arrangement().empty());
+}
+
+
 }  // namespace eckit::geo::test
 
 

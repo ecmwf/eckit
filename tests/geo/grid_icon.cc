@@ -53,6 +53,14 @@ CASE("spec") {
 }
 
 
+CASE("name") {
+    std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
+
+    EXPECT(grid->name() == GRID);
+    EXPECT(grid->arrangement() == "C");
+}
+
+
 CASE("type") {
     std::unique_ptr<const Grid> grid(GridFactory::build(spec::Custom({{"grid", GRID}})));
 

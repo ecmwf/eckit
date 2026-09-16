@@ -68,6 +68,39 @@ def test_grid_regular_ll():
     assert grid.spec == spec
 
 
+def test_grid_rotated():
+    canonical = dict(
+        grid=[5, 5],
+        projection=dict(south_pole=[-20, -40], type="rotation"),
+    )
+
+    for spec in [
+        dict(grid=[5, 5], rotation=[-20, -40]),
+        canonical,
+        dict(grid=[5, 5], projection=dict(south_pole_lon=-20, south_pole_lat=-40, type="rotation")),
+        dict(grid=[5, 5], projection=dict(rotation=[-20, -40], type="rotation")),
+    ]:
+        assert Grid(spec).spec == canonical
+
+
+def test_grid_rotated_default_south_pole_is_not_a_rotation():
+    for spec in [
+        dict(grid=[5, 5]),
+        dict(grid=[5, 5], rotation=[0, -90]),
+        dict(grid=[5, 5], projection=dict(south_pole=[0, -90], type="rotation")),
+    ]:
+        assert Grid(spec).spec == dict(grid=[5, 5])
+
+
+def test_grid_rotated_south_pole_lon_lat_required_together():
+    for projection in [
+        dict(south_pole_lon=-20, type="rotation"),
+        dict(south_pole_lat=-40, type="rotation"),
+    ]:
+        with pytest.raises(Exception):
+            Grid(dict(grid=[5, 5], projection=projection))
+
+
 def test_grid_figure():
     grid = Grid(grid="1/1")
     figure = grid.figure

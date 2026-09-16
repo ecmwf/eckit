@@ -64,6 +64,20 @@ CASE("gridspec") {
 }
 
 
+CASE("name") {
+    for (size_t n : {2, 3, 64}) {
+        const auto name = "H" + std::to_string(n);
+
+        for (const auto& suffix : std::vector<std::string>{"", "n", "r"}) {
+            std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: " + name + suffix + "}"));
+
+            EXPECT_EQUAL(grid->name(), name);
+            EXPECT(grid->arrangement().empty());
+        }
+    }
+}
+
+
 CASE("sizes") {
     struct test_t {
         explicit test_t(size_t N) : N(N), size(12 * N * N) {}

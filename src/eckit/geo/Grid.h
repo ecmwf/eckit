@@ -126,6 +126,10 @@ public:
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;
 
+    /// Name and staggering arrangement, for the grids that are identified by them (eg. ORCA, FESOM, ICON)
+    virtual std::string name() const { return {}; }
+    virtual std::string arrangement() const { return {}; }
+
     virtual bool empty() const;
     virtual size_t size() const;
     virtual void cache() const;
@@ -180,7 +184,7 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(Projection* = nullptr);
+    explicit Grid(BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 
@@ -189,8 +193,9 @@ protected:
     void reset_uid(uid_type = {});
 
     void projection(Projection* ptr) { projection_.reset(ptr); }
-    void figure(Figure* ptr) { projection().figure(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
+
+    [[nodiscard]] static BoundingBox* bounding_box_from_spec(const Spec&);
 
 private:
 

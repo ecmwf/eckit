@@ -146,13 +146,13 @@ static const std::string HEALPIX_PATTERN = "h[rn][1-9][0-9]*|h[1-9][0-9]*[rn]?";
 
 
 HEALPix::HEALPix(const Spec& spec) :
-    HEALPix(into_unsigned(spec.get_long("Nside")), spec.get_string("order", order::HEALPix::order_default())) {}
+    HEALPix(into_unsigned(spec.get_long("Nside")), spec.get_string("order", order::HEALPix::order_default()),
+            bounding_box_from_spec(spec), Projection::make_from_spec(spec)) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order) : Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
+HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, Projection* p) :
+    Reduced(bbox, p), Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
     ASSERT(y_);
-
-    boundingBox(new BoundingBox{});
 }
 
 
@@ -261,8 +261,15 @@ const std::vector<double>& HEALPix::longitudes(size_t j) const {
 }
 
 
+Grid::BoundingBox* HEALPix::calculate_bbox() const {
+    return new BoundingBox;
+}
+
+
 void HEALPix::fill_spec(spec::Custom& custom) const {
-    custom.set("grid", "H" + std::to_string(Nside_));
+    Reduced::fill_spec(custom);
+
+    custom.set("grid", name());
     if (const auto o = order(); o != order::HEALPix::order_default()) {
         custom.set("order", o);
     }

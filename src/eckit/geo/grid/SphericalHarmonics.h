@@ -38,6 +38,8 @@ public:
     iterator cbegin() const override;
     iterator cend() const override;
 
+    std::string name() const override { return "T" + std::to_string(truncation_); }
+
     const std::string& type() const override;
     std::vector<size_t> shape() const override;
 

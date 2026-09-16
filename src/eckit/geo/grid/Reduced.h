@@ -44,6 +44,10 @@ public:
 
 protected:
 
+    // -- Constructors
+
+    using Grid::Grid;
+
     // -- Methods
 
     const std::vector<size_t>& nxacc() const;

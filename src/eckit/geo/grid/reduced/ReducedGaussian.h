@@ -31,15 +31,19 @@ public:
     // -- Constructors
 
     explicit ReducedGaussian(const Spec&);
-    explicit ReducedGaussian(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default());
-    explicit ReducedGaussian(size_t N, const BoundingBox& = BoundingBox::bounding_box_default());
+    explicit ReducedGaussian(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default(),
+                             Projection* = nullptr);
+    explicit ReducedGaussian(size_t N, const BoundingBox& = BoundingBox::bounding_box_default(), Projection* = nullptr);
 
     // -- Methods
 
     size_t N() const { return N_; }
     const pl_type& pl() const { return pl_; }
+    bool octahedral() const;
 
     // -- Overridden methods
+
+    std::string name() const override;
 
     iterator cbegin() const override;
     iterator cend() const override;

@@ -30,7 +30,8 @@ public:
     // -- Constructors
 
     explicit ReducedLonLat(const Spec&);
-    explicit ReducedLonLat(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default());
+    explicit ReducedLonLat(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default(),
+                           Projection* = nullptr);
 
     // -- Methods
 

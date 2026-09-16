@@ -107,7 +107,7 @@ const Area& SphericalHarmonics::area() const {
 
 
 void SphericalHarmonics::fill_spec(spec::Custom& custom) const {
-    custom.set("grid", "T" + std::to_string(truncation_));
+    custom.set("grid", name());
 }
 
 

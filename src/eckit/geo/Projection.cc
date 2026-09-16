@@ -11,6 +11,7 @@
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/None.h"
+#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
@@ -89,9 +90,18 @@ const Projection* ProjectionFactory::make_default() {
 
 Projection* Projection::make_from_spec(const Spec& spec) {
     // an explicit 'projection' has to name its type
-    if (const std::string projection = "projection"; spec.has(projection)) {
-        const auto& cfg = spec.spec(projection);
+    static const std::string PROJECTION{"projection"};
+    static const std::string ROTATION{"rotation"};
+
+    if (spec.has(PROJECTION)) {
+        const auto& cfg = spec.spec(PROJECTION);
         return ProjectionFactoryType::instance().get(cfg.get_string("type")).create(cfg);
+    }
+
+    if (spec.has(ROTATION)) {
+        if (auto* rotation = projection::Rotation::make_from_spec(spec); rotation != nullptr) {
+            return rotation;
+        }
     }
 
     // NOTE: a 'type' that isn't a projection's is somebody else's (eg. a grid's)

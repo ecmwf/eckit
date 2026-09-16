@@ -388,9 +388,11 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
         back->set("type", "unstructured_ll");
     }
 
-    if (static const std::string projection{"projection"}, rotation{"rotation"};
-        !cfg->has(projection) && cfg->has(rotation)) {
-        back->set(projection, new spec::Custom({{"type", rotation}, {"south_pole", cfg->get_double_vector(rotation)}}));
+    static const std::string PROJECTION{"projection"};
+    static const std::string ROTATION{"rotation"};
+
+    if (!cfg->has(PROJECTION) && cfg->has(ROTATION)) {
+        back->set(PROJECTION, new spec::Custom({{"type", ROTATION}, {"south_pole", cfg->get_double_vector(ROTATION)}}));
     }
 
     if (!back->empty()) {

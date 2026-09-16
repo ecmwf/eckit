@@ -49,7 +49,12 @@ public:
 
     // -- Methods
 
-    container_type deconstruct() const { return {min_x, min_y, max_x, max_y}; }
+    value_type min_x() const { return operator[](0); }
+    value_type min_y() const { return operator[](1); }
+    value_type max_x() const { return operator[](2); }
+    value_type max_y() const { return operator[](3); }
+
+    container_type deconstruct() const { return {min_x(), min_y(), max_x(), max_y()}; }
 
     bool contains(const Point&) const override;
     bool contains(const BoundingBoxXY&) const;
@@ -64,13 +69,6 @@ public:
     // -- Class methods
 
     [[nodiscard]] static BoundingBoxXY* make_from_spec(const Spec&);
-
-    // -- Members
-
-    const value_type& min_x = operator[](0);
-    const value_type& min_y = operator[](1);
-    const value_type& max_x = operator[](2);
-    const value_type& max_y = operator[](3);
 };
 
 

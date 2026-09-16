@@ -14,8 +14,8 @@ namespace eckit::geo::util {
 struct sincos_t final : std::array<double, 2> {
     explicit sincos_t(value_type r) : array{std::sin(r), std::cos(r)} {}
 
-    const value_type& sin = array::operator[](0);
-    const value_type& cos = array::operator[](1);
+    value_type sin() const { return operator[](0); }
+    value_type cos() const { return operator[](1); }
 };
 
 

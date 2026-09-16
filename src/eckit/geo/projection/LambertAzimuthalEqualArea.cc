@@ -34,10 +34,11 @@ LambertAzimuthalEqualArea::LambertAzimuthalEqualArea(PointLonLat centre, PointLo
 
 
 PointXY LambertAzimuthalEqualArea::fwd(const PointLonLat& p) const {
-    const auto kp = figure().R() * std::sqrt(2. / (1. + phi0_.sin * phi_.sin + phi0_.cos * phi_.cos * dlam_.cos));
+    const auto kp =
+        figure().R() * std::sqrt(2. / (1. + phi0_.sin() * phi_.sin() + phi0_.cos() * phi_.cos() * dlam_.cos()));
 
-    auto x = kp * phi_.cos * dlam_.sin;
-    auto y = kp * (phi0_.cos * phi_.sin - phi0_.sin * phi_.cos * dlam_.cos);
+    auto x = kp * phi_.cos() * dlam_.sin();
+    auto y = kp * (phi0_.cos() * phi_.sin() - phi0_.sin() * phi_.cos() * dlam_.cos());
 
     return {x, y};
 }
@@ -48,8 +49,9 @@ PointLonLat LambertAzimuthalEqualArea::inv(const PointXY& p) const {
     const util::sincos_t c(2. * std::asin(rho / (2. * figure().R())));
 
     return PointLonLat::make_from_lonlatr(
-        centre_r_.lonr() + std::atan2(p.X() * c.sin, rho * phi0_.cos * c.cos - p.Y() * phi0_.sin * c.sin),
-        std::asin(c.cos * phi0_.sin + p.Y() * c.sin * phi0_.cos / rho), centre_.lon() - PointLonLat::FLAT_ANGLE);
+        centre_r_.lonr() + std::atan2(p.X() * c.sin(), rho * phi0_.cos() * c.cos() - p.Y() * phi0_.sin() * c.sin()),
+        std::asin(c.cos() * phi0_.sin() + p.Y() * c.sin() * phi0_.cos() / rho),
+        centre_.lon() - PointLonLat::FLAT_ANGLE);
 }
 
 

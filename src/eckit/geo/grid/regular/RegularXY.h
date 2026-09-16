@@ -25,8 +25,8 @@ public:
         bool operator==(const Increments&) const;
         bool operator!=(const Increments& other) const { return !operator==(other); }
 
-        const value_type& dx = array::operator[](0);
-        const value_type& dy = array::operator[](1);
+        value_type dx() const { return operator[](0); }
+        value_type dy() const { return operator[](1); }
 
         static Increments make_from_spec(const Spec&);
     };

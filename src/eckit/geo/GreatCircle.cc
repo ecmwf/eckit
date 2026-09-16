@@ -117,8 +117,10 @@ std::pair<double, double> GreatCircle::course() const {
     const util::sincos_t scA(util::DEGREE_TO_RADIAN * A_.lat());
     const util::sincos_t scB(util::DEGREE_TO_RADIAN * B_.lat());
 
-    return {util::RADIAN_TO_DEGREE * std::atan2(scB.cos * dl.sin, scA.cos * scB.sin - scA.sin * scB.cos * dl.cos),
-            util::RADIAN_TO_DEGREE * std::atan2(scA.cos * dl.sin, -scB.cos * scA.sin + scB.sin * scA.cos * dl.cos)};
+    return {util::RADIAN_TO_DEGREE *
+                std::atan2(scB.cos() * dl.sin(), scA.cos() * scB.sin() - scA.sin() * scB.cos() * dl.cos()),
+            util::RADIAN_TO_DEGREE *
+                std::atan2(scA.cos() * dl.sin(), -scB.cos() * scA.sin() + scB.sin() * scA.cos() * dl.cos())};
 }
 
 

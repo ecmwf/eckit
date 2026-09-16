@@ -41,7 +41,7 @@ public:
 
     // -- Operators
 
-    bool operator==(const Shape& other) const { return nx == other.nx && ny == other.ny; }
+    bool operator==(const Shape& other) const { return nx() == other.nx() && ny() == other.ny(); }
 
     bool operator!=(const Shape& other) const { return !operator==(other); }
 
@@ -55,14 +55,12 @@ public:
         return *this;
     }
 
-    // Members
-
-    const value_type& nx = container_type::operator[](0);
-    const value_type& ny = container_type::operator[](1);
-
     // -- Methods
 
-    container_type deconstruct() const { return {nx, ny}; }
+    value_type nx() const { return container_type::operator[](0); }
+    value_type ny() const { return container_type::operator[](1); }
+
+    container_type deconstruct() const { return {nx(), ny()}; }
 
     // -- Class methods
 
@@ -73,7 +71,7 @@ private:
     // -- Friends
 
     friend std::ostream& operator<<(std::ostream& os, const Shape& inc) {
-        return os << "[" << inc.nx << "," << inc.ny << "]";
+        return os << "[" << inc.nx() << "," << inc.ny() << "]";
     }
 };
 

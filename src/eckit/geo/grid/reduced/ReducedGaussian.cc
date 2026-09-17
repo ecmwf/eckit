@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
@@ -22,11 +14,12 @@
 namespace eckit::geo::grid::reduced {
 
 
-ReducedGaussian::ReducedGaussian(const Spec& spec) : ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}) {}
+ReducedGaussian::ReducedGaussian(const Spec& spec) :
+    ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}, Projection::make_from_spec(spec)) {}
 
 
-ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox) :
-    N_(pl.size() / 2), pl_(pl), latitude_(N_, false) {
+ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, Projection* p) :
+    Reduced(nullptr, p), N_(pl.size() / 2), pl_(pl), latitude_(N_, false) {
     const auto& lats = latitude_.values();
     ASSERT(lats.size() == pl_.size());
 
@@ -59,8 +52,8 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox) :
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox) :
-    ReducedGaussian(util::reduced_octahedral_pl(N), bbox) {}
+ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, Projection* p) :
+    ReducedGaussian(util::reduced_octahedral_pl(N), bbox, p) {}
 
 
 Grid::iterator ReducedGaussian::cbegin() const {
@@ -73,17 +66,23 @@ Grid::iterator ReducedGaussian::cend() const {
 }
 
 
+std::string ReducedGaussian::name() const {
+    return (octahedral() ? "O" : "N") + std::to_string(N_);
+}
+
+
+bool ReducedGaussian::octahedral() const {
+    return pl_ == util::reduced_octahedral_pl(N_);
+}
+
+
 void ReducedGaussian::fill_spec(spec::Custom& custom) const {
     Reduced::fill_spec(custom);
 
-    if (pl_ == util::reduced_octahedral_pl(N_)) {
-        custom.set("grid", "O" + std::to_string(N_));
-    }
-    else {
-        custom.set("grid", "N" + std::to_string(N_));
-        if (!util::reduced_classical_pl_known(N_)) {
-            custom.set("pl", pl_);
-        }
+    custom.set("grid", name());
+
+    if (!octahedral() && !util::reduced_classical_pl_known(N_)) {
+        custom.set("pl", pl_);
     }
 
     if (order() != order::Scan::order_default()) {

@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/area/BoundingBoxXY.h"
@@ -38,18 +30,18 @@ BoundingBoxXY::BoundingBoxXY(value_type min_x, value_type min_y, value_type max_
 
 bool BoundingBoxXY::contains(const Point& p) const {
     const auto& q = std::get<PointXY>(p);
-    return types::is_approximately_equal(min_x, q.X()) && types::is_approximately_equal(q.X(), max_x) &&
-           types::is_approximately_equal(min_y, q.Y()) && types::is_approximately_equal(q.Y(), max_y);
+    return types::is_approximately_equal(min_x(), q.X()) && types::is_approximately_equal(q.X(), max_x()) &&
+           types::is_approximately_equal(min_y(), q.Y()) && types::is_approximately_equal(q.Y(), max_y());
 }
 
 
 bool BoundingBoxXY::contains(const BoundingBoxXY& other) const {
-    return contains(PointXY{other.min_x, other.min_y}) && contains(PointXY{other.max_x, other.max_y});
+    return contains(PointXY{other.min_x(), other.min_y()}) && contains(PointXY{other.max_x(), other.max_y()});
 }
 
 
 bool BoundingBoxXY::empty() const {
-    return types::is_approximately_equal(min_x, max_x) || types::is_approximately_equal(min_y, max_y);
+    return types::is_approximately_equal(min_x(), max_x()) || types::is_approximately_equal(min_y(), max_y());
 }
 
 
@@ -61,7 +53,7 @@ const std::string& BoundingBoxXY::type() const {
 
 void BoundingBoxXY::fill_spec(spec::Custom& custom) const {
     custom.set("type", type());
-    custom.set(type(), std::vector<double>{min_x, min_y, max_x, max_y});
+    custom.set(type(), std::vector<double>{min_x(), min_y(), max_x(), max_y()});
 }
 
 

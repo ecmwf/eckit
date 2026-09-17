@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/regular/RegularLL.h"
@@ -18,8 +10,10 @@
 
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
+#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
@@ -75,11 +69,12 @@ RegularLL::Reference make_reference_from_spec(const Grid::Spec& spec) {
 
 
 RegularLL::RegularLL(const Spec& spec) :
-    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec), order::Scan{spec}) {}
+    RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec), order::Scan{spec},
+              Projection::make_from_spec(spec)) {}
 
 
-RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s) :
-    Regular(s),
+RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s, Projection* p) :
+    Regular(s, p),
     x_{s.is_scan_i_positive() ? inc.dlon() : -inc.dlon(), s.is_scan_i_positive() ? bbox.west() : bbox.east(),
        s.is_scan_i_positive() ? bbox.east() : bbox.west(), ref.lon()},
     y_{s.is_scan_j_positive() ? inc.dlat() : -inc.dlat(), s.is_scan_j_positive() ? bbox.south() : bbox.north(),
@@ -103,8 +98,9 @@ void RegularLL::fill_spec(spec::Custom& custom) const {
 
     custom.set("grid", std::vector<double>{std::abs(dx()), std::abs(dy())});
 
-    if (const auto& bbox = boundingBox(); bbox != BoundingBox::bounding_box_default()) {
-        auto [n, w, s, e] = bbox.deconstruct();
+    // NOTE: the spec describes the grid in its own (possibly rotated) frame, unlike boundingBox()
+    if (std::unique_ptr<const BoundingBox> bbox(calculate_bbox_xy()); *bbox != BoundingBox::bounding_box_default()) {
+        auto [n, w, s, e] = bbox->deconstruct();
         custom.set("area", std::vector<double>{n, w, s, e});
     }
 
@@ -148,6 +144,17 @@ RegularLL::Reference RegularLL::reference_default() {
 
 
 Grid::BoundingBox* RegularLL::calculate_bbox() const {
+    if (const auto* rotation = dynamic_cast<const projection::Rotation*>(&projection()); rotation != nullptr) {
+        return area::BoundingBox::make_from_projection(PointLonLat{x_.min(), y_.min()}, PointLonLat{x_.max(), y_.max()},
+                                                       *rotation)
+            .release();
+    }
+
+    return calculate_bbox_xy();
+}
+
+
+Grid::BoundingBox* RegularLL::calculate_bbox_xy() const {
     auto n = y_.includesNorthPole() ? PointLonLat::RIGHT_ANGLE : y_.max();
     auto s = y_.includesSouthPole() ? -PointLonLat::RIGHT_ANGLE : y_.min();
     auto w = x_.min();

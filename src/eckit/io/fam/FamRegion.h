@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
  * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
@@ -25,6 +18,7 @@
 
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamTypes.h"
 
 namespace eckit {
 
@@ -43,6 +37,13 @@ public:  // methods
     // properties
 
     fam::index_t index() const;
+
+    /// Region id as carried by this region's data items, which OpenFAM may report
+    /// differently from the region descriptor's own id; falls back to index().
+    fam::index_t objectIndex() const;
+
+    /// Seed objectIndex() when it is known from a previously stored descriptor.
+    void useObjectIndex(fam::index_t index) const;
 
     fam::size_t size() const;
 
@@ -78,6 +79,9 @@ public:  // methods
 
 private:  // methods
 
+    /// Objects are registered under the id they carry, so remember it for proxying.
+    void noteObjectIndex(const FamObject& object) const;
+
     void print(std::ostream& out) const;
 
     friend std::ostream& operator<<(std::ostream& out, const FamRegion& region);
@@ -86,6 +90,9 @@ private:  // members
 
     std::shared_ptr<FamSession> session_;
     std::shared_ptr<FamRegionDescriptor> region_;
+
+    // 0 means "not yet observed"
+    mutable std::shared_ptr<fam::index_t> objectIndex_{std::make_shared<fam::index_t>(0)};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

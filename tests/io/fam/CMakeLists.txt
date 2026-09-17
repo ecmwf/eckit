@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 # Only the mock shares a size-limited /dev/shm segment; real OpenFAM has no such constraint.
 set( _fam_test_properties "" )
 

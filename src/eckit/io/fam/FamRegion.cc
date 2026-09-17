@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
  * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
@@ -20,12 +13,15 @@
 #include <sstream>
 #include <string>
 
-#include "fam/fam.h"
-
+#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamSession.h"
+#include "eckit/io/fam/FamTypes.h"
+#include "eckit/log/Log.h"
+
+#include "fam/fam.h"
 
 namespace eckit {
 
@@ -51,6 +47,27 @@ bool FamRegion::exists() const {
 
 fam::index_t FamRegion::index() const {
     return region_->get_global_descriptor().regionId;
+}
+
+fam::index_t FamRegion::objectIndex() const {
+    const auto observed = *objectIndex_;
+    return observed != 0 ? observed : index();
+}
+
+void FamRegion::noteObjectIndex(const FamObject& object) const {
+    useObjectIndex(object.regionId());
+}
+
+void FamRegion::useObjectIndex(const fam::index_t observed) const {
+    if (observed == 0 || *objectIndex_ == observed) {
+        return;
+    }
+    if (observed != index()) {
+        LOG_DEBUG_LIB(LibEcKit) << "FAM region " << name() << " reports regionId=" << index()
+                                << " but its objects carry regionId=" << observed
+                                << "; proxying objects with the latter\n";
+    }
+    *objectIndex_ = observed;
 }
 
 fam::size_t FamRegion::size() const {
@@ -82,19 +99,21 @@ void FamRegion::setObjectLevelPermissions() const {
 
 // Creates a FamObject wrapper around an existing object identified by {regionId, offset}
 FamObject FamRegion::proxyObject(const fam::index_t offset) const {
-    return session_->proxyObject(index(), offset);
+    return session_->proxyObject(objectIndex(), offset);
 }
 
 FamObject FamRegion::lookupObject(const std::string& object_name) const {
-    return session_->lookupObject(name(), object_name);
+    auto object = session_->lookupObject(name(), object_name);
+    noteObjectIndex(object);
+    return object;
 }
 
 FamObject FamRegion::allocateObject(const fam::size_t object_size, const fam::perm_t object_perm,
                                     const std::string& object_name, const bool overwrite) const {
-    if (overwrite) {
-        return session_->ensureAllocateObject(*region_, object_size, object_perm, object_name);
-    }
-    return session_->allocateObject(*region_, object_size, object_perm, object_name);
+    auto object = overwrite ? session_->ensureAllocateObject(*region_, object_size, object_perm, object_name)
+                            : session_->allocateObject(*region_, object_size, object_perm, object_name);
+    noteObjectIndex(object);
+    return object;
 }
 
 void FamRegion::deallocateObject(const std::string& object_name) const {

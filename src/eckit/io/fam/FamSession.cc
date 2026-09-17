@@ -1,16 +1,9 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
- * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
- * (Grant agreement: 101092984) horizon-opencube.eu
+ * This software was developed as part of the Horizon Europe programme funded
+ * project OpenCUBE (Grant agreement: 101092984) horizon-opencube.eu
  */
 
 #include "FamSession.h"
@@ -48,6 +41,33 @@ namespace eckit {
 
 namespace {
 
+// OpenFAM exceptions carry no object identity, so record what the in-flight
+// call targets and report it when the call fails.
+struct FamTarget {
+    const char* op{nullptr};
+    std::uint64_t region{0};
+    std::uint64_t object{0};
+    std::uint64_t offset{0};
+};
+
+thread_local FamTarget g_target{};
+
+class FamTargetScope {
+public:
+
+    FamTargetScope(const char* op, FamObjectDescriptor& object, const fam::size_t offset) {
+        const auto descriptor = object.get_global_descriptor();
+        g_target              = {op, descriptor.regionId, descriptor.offset, offset};
+    }
+
+    FamTargetScope(const FamTargetScope&)            = delete;
+    FamTargetScope& operator=(const FamTargetScope&) = delete;
+    FamTargetScope(FamTargetScope&&)                 = delete;
+    FamTargetScope& operator=(FamTargetScope&&)      = delete;
+
+    ~FamTargetScope() { g_target = {}; }
+};
+
 void log_atomic(const char* operation, FamObjectDescriptor& object, const fam::size_t offset,
                 const std::chrono::steady_clock::time_point start, const bool completed) {
     const auto descriptor = object.get_global_descriptor();
@@ -56,6 +76,33 @@ void log_atomic(const char* operation, FamObjectDescriptor& object, const fam::s
     LOG_DEBUG_LIB(LibEcKit) << "FAM atomic " << operation << (completed ? " completed" : " started")
                             << " region=" << descriptor.regionId << " object=" << descriptor.offset
                             << " offset=" << offset << " elapsed_ms=" << elapsed.count() << '\n';
+}
+
+// A NotFound from OpenFAM does not say whether the item is absent from metadata
+// or whether the lookup used the wrong key. Re-stat the same descriptor to tell
+// them apart.
+void probe_not_found(openfam::fam& fam) {
+    if (g_target.op == nullptr) {
+        LOG_DEBUG_LIB(LibEcKit) << "FAM not-found re-probe skipped: no object target recorded\n";
+        return;
+    }
+
+    Fam_Global_Descriptor global{g_target.region, g_target.object};
+    FamObjectDescriptor probe{global};
+    try {
+        Fam_Stat info;
+        fam.fam_stat(&probe, &info);
+        LOG_DEBUG_LIB(LibEcKit) << "FAM not-found re-probe SUCCEEDED (item exists; failing lookup used "
+                                   "a different key)"
+                                << " region=" << g_target.region << " object=" << g_target.object
+                                << " size=" << info.size << '\n';
+    }
+    catch (openfam::Fam_Exception& error) {
+        LOG_DEBUG_LIB(LibEcKit) << "FAM not-found re-probe FAILED (item absent from metadata for this "
+                                   "region)"
+                                << " region=" << g_target.region << " object=" << g_target.object
+                                << " code=" << error.fam_error() << " message=" << error.fam_error_msg() << '\n';
+    }
 }
 
 std::unique_ptr<openfam::fam> initializeFamSession(const std::string& name, const net::Endpoint& endpoint) {
@@ -94,7 +141,6 @@ bool isValidName(std::string_view str) {
         return std::isprint(uchr) != 0 && std::isspace(uchr) == 0;
     });
 }
-
 
 }  // namespace
 
@@ -144,8 +190,11 @@ auto FamSession::invokeFam(Func&& fn_ptr, Args&&... args) {
             std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
         LOG_DEBUG_LIB(LibEcKit) << "FAM operation failed: session=" << name_ << " endpoint=" << endpoint_
                                 << " code=" << code << " message=" << e.fam_error_msg()
-                                << " elapsed_ms=" << elapsed.count() << '\n';
+                                << " elapsed_ms=" << elapsed.count() << " op=" << (g_target.op ? g_target.op : "?")
+                                << " region=" << g_target.region << " object=" << g_target.object
+                                << " offset=" << g_target.offset << '\n';
         if (code == openfam::Fam_Error::FAM_ERR_NOTFOUND) {
+            probe_not_found(*fam_);
             throw NotFound(e.fam_error_msg());
         }
         if (code == openfam::Fam_Error::FAM_ERR_ALREADYEXIST) {
@@ -176,7 +225,6 @@ auto FamSession::invokeFam(Func&& fn_ptr, Args&&... args) {
     }
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------
 // REGION
 
@@ -184,6 +232,9 @@ FamRegion FamSession::lookupRegion(const std::string& region_name) {
     ASSERT(isValidName(region_name));
 
     auto* region = invokeFam(&openfam::fam::fam_lookup_region, region_name.c_str());
+
+    LOG_DEBUG_LIB(LibEcKit) << "FAM region lookup name=" << region_name
+                            << " regionId=" << region->get_global_descriptor().regionId << '\n';
 
     return {*this, region};
 }
@@ -194,6 +245,9 @@ FamRegion FamSession::createRegion(const fam::size_t region_size, const fam::per
     ASSERT(isValidName(region_name));
 
     auto* region = invokeFam(&openfam::fam::fam_create_region, region_name.c_str(), region_size, region_perm, nullptr);
+
+    LOG_DEBUG_LIB(LibEcKit) << "FAM region create name=" << region_name
+                            << " regionId=" << region->get_global_descriptor().regionId << '\n';
 
     return {*this, region};
 }
@@ -249,6 +303,7 @@ FamProperty FamSession::stat(FamRegionDescriptor& region) {
 //  OBJECT
 
 FamObject FamSession::proxyObject(const std::uint64_t region, const std::uint64_t offset) {
+    LOG_DEBUG_LIB(LibEcKit) << "FAM object proxy region=" << region << " object=" << offset << '\n';
     return {*this, region, offset};
 }
 
@@ -257,6 +312,10 @@ FamObject FamSession::lookupObject(const std::string& region_name, const std::st
     ASSERT(isValidName(object_name));
 
     auto* object = invokeFam(&openfam::fam::fam_lookup, object_name.c_str(), region_name.c_str());
+
+    LOG_DEBUG_LIB(LibEcKit) << "FAM object lookup name=" << object_name << " region=" << region_name
+                            << " regionId=" << object->get_global_descriptor().regionId
+                            << " object=" << object->get_global_descriptor().offset << '\n';
 
     return {*this, object};
 }
@@ -270,6 +329,14 @@ FamObject FamSession::allocateObject(FamRegionDescriptor& region, const fam::siz
             &openfam::fam::fam_allocate);
 
     auto* object = invokeFam(allocate, object_name.c_str(), object_size, object_perm, &region);
+
+    // Region id is the metadata lookup key for later atomics; flag any drift.
+    const auto requested_region = region.get_global_descriptor().regionId;
+    const auto returned_region  = object->get_global_descriptor().regionId;
+    LOG_DEBUG_LIB(LibEcKit) << "FAM object allocate name=" << object_name << " requestedRegion=" << requested_region
+                            << " returnedRegion=" << returned_region
+                            << " object=" << object->get_global_descriptor().offset
+                            << (requested_region == returned_region ? "" : " REGION-ID-MISMATCH") << '\n';
 
     return {*this, object};
 }
@@ -309,6 +376,7 @@ FamObject FamSession::ensureAllocateObject(FamRegionDescriptor& region, const fa
 FamProperty FamSession::stat(FamObjectDescriptor& object) {
     Fam_Stat info;
 
+    const FamTargetScope target{"stat", object, 0};
     auto fn_ptr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, Fam_Stat*)>(&openfam::fam::fam_stat);
     invokeFam(fn_ptr, &object, &info);
 
@@ -321,6 +389,7 @@ void FamSession::put(FamObjectDescriptor& object, const void* buffer, const fam:
     ASSERT(length > 0);
 
     /// @note we have to remove "const" qualifier from buffer
+    const FamTargetScope target{"put", object, offset};
     invokeFam(&openfam::fam::fam_put_blocking, const_cast<void*>(buffer), &object, offset, length);
 }
 
@@ -328,6 +397,7 @@ void FamSession::get(FamObjectDescriptor& object, void* buffer, const fam::size_
     ASSERT(buffer);
     ASSERT(length > 0);
 
+    const FamTargetScope target{"get", object, offset};
     invokeFam(&openfam::fam::fam_get_blocking, buffer, &object, offset, length);
 }
 
@@ -341,48 +411,57 @@ T FamSession::fetch(FamObjectDescriptor& /* object */, const fam::size_t /* offs
 
 template <>
 int32_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
+    const FamTargetScope target{"fetch_int32", object, offset};
     return invokeFam(&openfam::fam::fam_fetch_int32, &object, offset);
 }
 
 template <>
 int64_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
+    const FamTargetScope target{"fetch_int64", object, offset};
     return invokeFam(&openfam::fam::fam_fetch_int64, &object, offset);
 }
 
 template <>
 openfam::int128_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
+    const FamTargetScope target{"fetch_int128", object, offset};
     return invokeFam(&openfam::fam::fam_fetch_int128, &object, offset);
 }
 
 template <>
 uint32_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
+    const FamTargetScope target{"fetch_uint32", object, offset};
     return invokeFam(&openfam::fam::fam_fetch_uint32, &object, offset);
 }
 
 template <>
 uint64_t FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
+    const FamTargetScope target{"fetch_uint64", object, offset};
     return invokeFam(&openfam::fam::fam_fetch_uint64, &object, offset);
 }
 
 template <>
 float FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
+    const FamTargetScope target{"fetch_float", object, offset};
     return invokeFam(&openfam::fam::fam_fetch_float, &object, offset);
 }
 
 template <>
 double FamSession::fetch(FamObjectDescriptor& object, const fam::size_t offset) {
+    const FamTargetScope target{"fetch_double", object, offset};
     return invokeFam(&openfam::fam::fam_fetch_double, &object, offset);
 }
 
 template <typename T>
 void FamSession::set(FamObjectDescriptor& object, const fam::size_t offset, const T value) {
     auto fptr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_set);
+    const FamTargetScope target{"set", object, offset};
     invokeFam(fptr, &object, offset, value);
 }
 
 template <typename T>
 void FamSession::add(FamObjectDescriptor& object, const fam::size_t offset, const T value) {
     auto fptr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_add);
+    const FamTargetScope target{"add", object, offset};
     invokeFam(fptr, &object, offset, value);
 }
 
@@ -390,7 +469,8 @@ template <typename T>
 T FamSession::fetchAdd(FamObjectDescriptor& object, const fam::size_t offset, const T value) {
     const auto start = std::chrono::steady_clock::now();
     log_atomic("fetch_add", object, offset, start, false);
-    auto fptr   = static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_fetch_add);
+    auto fptr = static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_fetch_add);
+    const FamTargetScope target{"fetch_add", object, offset};
     auto result = invokeFam(fptr, &object, offset, value);
     log_atomic("fetch_add", object, offset, start, true);
     return result;
@@ -399,12 +479,15 @@ T FamSession::fetchAdd(FamObjectDescriptor& object, const fam::size_t offset, co
 template <typename T>
 void FamSession::subtract(FamObjectDescriptor& object, const fam::size_t offset, const T value) {
     auto fptr = static_cast<void (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_subtract);
+    const FamTargetScope target{"subtract", object, offset};
     invokeFam(fptr, &object, offset, value);
 }
 
 template <typename T>
-T FamSession::swap(FamObjectDescriptor& object, const fam::size_t offset, const T value) {  // NOLINT
+T FamSession::swap(FamObjectDescriptor& object, const fam::size_t offset,
+                   const T value) {  // NOLINT
     auto fptr = static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T)>(&openfam::fam::fam_swap);
+    const FamTargetScope target{"swap", object, offset};
     return invokeFam(fptr, &object, offset, value);
 }
 
@@ -414,6 +497,7 @@ T FamSession::compareSwap(FamObjectDescriptor& object, const fam::size_t offset,
     log_atomic("compare_swap", object, offset, start, false);
     auto fptr =
         static_cast<T (openfam::fam::*)(FamObjectDescriptor*, fam::size_t, T, T)>(&openfam::fam::fam_compare_swap);
+    const FamTargetScope target{"compare_swap", object, offset};
     auto result = invokeFam(fptr, &object, offset, old_value, new_value);
     log_atomic("compare_swap", object, offset, start, true);
     return result;

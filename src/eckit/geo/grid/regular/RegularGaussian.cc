@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
@@ -38,11 +30,11 @@ size_t check_N(size_t N) {
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec), order::Scan{spec}) {}
+    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec), order::Scan{spec}, Projection::make_from_spec(spec)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s) :
-    Regular(s),
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s, Projection* p) :
+    Regular(s, p),
     N_(check_N(N)),
     x_(*range::RegularLongitude(
             (s.is_scan_i_positive() ? 1. : -1.) * PointLonLat::FULL_ANGLE / static_cast<double>(4 * N), 0.,

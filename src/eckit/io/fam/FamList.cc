@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /*
  * This software was developed as part of the Horizon Europe programme funded project OpenCUBE
@@ -21,14 +14,14 @@
 #include <string>
 #include <utility>
 
-#include "eckit/io/fam/detail/FamBackoff.h"
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
+#include "eckit/io/fam/FamTypes.h"
+#include "eckit/io/fam/detail/FamBackoff.h"
 #include "eckit/io/fam/detail/FamListNode.h"
 #include "eckit/log/Log.h"
 
@@ -36,12 +29,23 @@ namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
 
+namespace {
+
+// A stored descriptor records the region id its objects resolve under; adopt it
+// before proxying, since the region descriptor may report a different id.
+const FamRegion& adopt(const FamRegion& region, const fam::index_t object_region) {
+    region.useObjectIndex(object_region);
+    return region;
+}
+
+}  // namespace
+
 FamList::FamList(FamRegion region, const Descriptor& desc) :
     region_{std::move(region)},
-    head_{region_.proxyObject(desc.head)},
+    head_{adopt(region_, desc.region).proxyObject(desc.head)},
     tail_{region_.proxyObject(desc.tail)},
     size_{region_.proxyObject(desc.size)} {
-    ASSERT(region_.index() == desc.region);
+    ASSERT(region_.objectIndex() == desc.region);
 }
 
 FamList::FamList(FamRegion region, const std::string& list_name) :
@@ -72,7 +76,7 @@ FamList::FamList(FamRegion region, const std::string& list_name) :
 }
 
 auto FamList::descriptor() const -> Descriptor {
-    return {region_.index(), head_.offset(), tail_.offset(), size_.offset()};
+    return {region_.objectIndex(), head_.offset(), tail_.offset(), size_.offset()};
 }
 
 //----------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,109 @@
+version = 1
+SPDX-PackageName = "eckit"
+SPDX-PackageSupplier = "European Centre for Medium-Range Weather Forecasts (ECMWF) <software.support@ecmwf.int>"
+SPDX-PackageDownloadLocation = "https://github.com/ecmwf/eckit"
+
+# This file covers the content that does not carry an SPDX header, either
+# because the format has no comment syntax, because a header would be read as
+# data, because the file is meant to be maintained by the user, or because the
+# content is third-party and must not be re-stamped. An in-file header always
+# takes precedence over an entry here, so a broad path below does not override
+# a file that states its own licensing.
+
+# ----------------------------------------------------------------------------
+# ECMWF-authored content
+# ----------------------------------------------------------------------------
+
+# The human-facing licence, notice and authorship files, which live outside
+# LICENSES/. AUTHORS is prose with no comment convention.
+[[annotations]]
+path = ["LICENSE", "NOTICE", "AUTHORS"]
+precedence = "closest"
+SPDX-FileCopyrightText = "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
+# Files read verbatim. VERSION is read as a bare version string by
+# python/eckit/setup.py, by pyproject.toml and by ecbuild;
+# src/eckit/io/rados/README is plain prose.
+[[annotations]]
+path = ["VERSION", "src/eckit/io/rados/README"]
+precedence = "closest"
+SPDX-FileCopyrightText = "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
+# Runtime configuration, installed to share/eckit/geo and intended to be
+# edited and maintained by the user. An in-file header would sit above the
+# user's own edits in the deployed copy.
+[[annotations]]
+path = ["share/eckit/geo/**.yaml"]
+precedence = "closest"
+SPDX-FileCopyrightText = "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
+# Cython sources: the SPDX copyright line is 90 characters and cython-lint
+# enforces 88, so these four files declare their licensing here rather than
+# in a header. A deliberate exception to ADR-010 clause 1.
+[[annotations]]
+path = ["python/eckit/src/_eckit/**.pyx", "python/eckit/src/_eckit/**.pxd"]
+precedence = "closest"
+SPDX-FileCopyrightText = "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
+# Test fixtures and test data: ECMWF-written YAML parser cases, the eckit::geo
+# grid caches and archives. The CMakeLists.txt and sources under tests/ carry
+# their own headers and are unaffected by this entry.
+[[annotations]]
+path = ["tests/parser/cfg.1.yaml", "tests/parser/string.yaml", "tests/parser/unicode.yaml",
+        "tests/geo/**.ek", "tests/geo/test.zip"]
+precedence = "closest"
+SPDX-FileCopyrightText = "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
+# ----------------------------------------------------------------------------
+# Third-party content: original licensing, never re-stamped (ADR-010 clause 7)
+# ----------------------------------------------------------------------------
+
+# xxHash, vendored unmodified; see src/eckit/contrib/xxhash/eckit-manifest.txt.
+[[annotations]]
+path = ["src/eckit/contrib/xxhash/**"]
+precedence = "closest"
+SPDX-FileCopyrightText = "2012-2020 Yann Collet"
+SPDX-License-Identifier = "BSD-2-Clause"
+
+# The examples of chapter 2 of the YAML 1.2 specification (2009 revision),
+# used as parser fixtures. Twenty are verbatim copies. The specification is
+# distributed under the terms "may be freely copied, provided it is not
+# modified"; see LICENSES/LicenseRef-YAML-Spec-1.2.txt.
+[[annotations]]
+path = ["tests/parser/2.1.yaml", "tests/parser/2.2.yaml", "tests/parser/2.3.yaml",
+        "tests/parser/2.4.yaml", "tests/parser/2.5.yaml", "tests/parser/2.6.yaml",
+        "tests/parser/2.7.yaml", "tests/parser/2.8.yaml", "tests/parser/2.9.yaml",
+        "tests/parser/2.10.yaml", "tests/parser/2.11.yaml", "tests/parser/2.13.yaml",
+        "tests/parser/2.15.yaml", "tests/parser/2.16.yaml", "tests/parser/2.18.yaml",
+        "tests/parser/2.22.yaml", "tests/parser/2.23.yaml", "tests/parser/2.24.yaml",
+        "tests/parser/2.27.yaml", "tests/parser/2.28.yaml"]
+precedence = "closest"
+SPDX-FileCopyrightText = "2001-2009 Oren Ben-Kiki, Clark Evans, Ingy dot Net"
+SPDX-License-Identifier = "LicenseRef-YAML-Spec-1.2"
+
+# Eight further examples from the same chapter, modified by ECMWF: comments
+# reworded (2.12, 2.25, 2.26), a folding indicator and an escape changed
+# (2.14, 2.17), and three rewritten as broader scalar test cases (2.19, 2.20,
+# 2.21). Recorded as derived from the specification.
+[[annotations]]
+path = ["tests/parser/2.12.yaml", "tests/parser/2.14.yaml", "tests/parser/2.17.yaml",
+        "tests/parser/2.19.yaml", "tests/parser/2.20.yaml", "tests/parser/2.21.yaml",
+        "tests/parser/2.25.yaml", "tests/parser/2.26.yaml"]
+precedence = "closest"
+SPDX-FileCopyrightText = ["2001-2009 Oren Ben-Kiki, Clark Evans, Ingy dot Net",
+                          "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"]
+SPDX-License-Identifier = "LicenseRef-YAML-Spec-1.2"
+
+# Eurostat/GISCO "Countries 2024" administrative boundaries at 1:60M, used by
+# the eckit::geo area tests, and a subset of the same data as GeoJSON. Subject
+# to the GISCO download provisions: non-commercial use, source acknowledged.
+[[annotations]]
+path = ["tests/geo/CNTR_RG_60M_2024_4326.shp.zip", "tests/geo/CNTR_RG_60M_2024_4326_mini.geojson"]
+precedence = "closest"
+SPDX-FileCopyrightText = "2024 EuroGeographics for the administrative boundaries; Eurostat/GISCO"
+SPDX-License-Identifier = "LicenseRef-Eurostat-GISCO"

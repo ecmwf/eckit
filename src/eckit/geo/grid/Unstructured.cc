@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/Unstructured.h"
@@ -42,10 +34,8 @@ Unstructured::Unstructured(const Spec& spec) :
     Unstructured(spec.has("uid")
                      ? spec.get_string("uid")
                      : uid_from_cached_ll({spec.get_double_vector("latitudes"), spec.get_double_vector("longitudes")}),
-                 spec.get_string("name", [&spec]() {
-                     std::string grid;
-                     return spec.get("grid", grid) && is_uid(grid) ? "" : grid;
-                 }())) {}
+                 spec.get_string("name", spec.get_string("cache_as", "")), bounding_box_from_spec(spec),
+                 Projection::make_from_spec(spec)) {}
 
 
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,
@@ -53,7 +43,8 @@ Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vec
     Unstructured(uid_from_cached_ll({latitudes, longitudes}), name) {}
 
 
-Unstructured::Unstructured(const uid_type& uid, const std::string& name) {
+Unstructured::Unstructured(const uid_type& uid, const std::string& name, BoundingBox* bbox, Projection* p) :
+    Grid(bbox, p) {
     ASSERT(is_uid(uid));
     reset_uid(uid);
     name_ = name;
@@ -94,8 +85,9 @@ Unstructured::Unstructured(const uid_type& uid, const std::string& name) {
 }
 
 
-Unstructured::Unstructured(const uid_type& uid, const std::string& name, const std::string& arrangement) :
-    name_(name), arrangement_(arrangement) {
+Unstructured::Unstructured(const uid_type& uid, const std::string& name, const std::string& arrangement,
+                           BoundingBox* bbox, Projection* p) :
+    Grid(bbox, p), name_(name), arrangement_(arrangement) {
     reset_uid(uid);
 }
 
@@ -116,13 +108,7 @@ Grid::iterator Unstructured::cend() const {
 
 
 Grid::BoundingBox* Unstructured::calculate_bbox() const {
-    if (const std::string BOUNDING_BOX = "bounding_box"; catalog().has(BOUNDING_BOX)) {
-        const auto bbox = catalog().get_double_vector(BOUNDING_BOX);
-        ASSERT(bbox.size() == 4);
-
-        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
-    }
-
+    // NOTE: a grid declaring its own bounding box (eg. a regional ICON) gets it from its spec, at construction
     return new BoundingBox;
 }
 
@@ -166,6 +152,8 @@ Grid::uid_type Unstructured::uid_from_latlons(const std::vector<double>& lat, co
 
 
 void Unstructured::fill_spec(spec::Custom& custom) const {
+    Grid::fill_spec(custom);
+
     if (!name_.empty()) {
         auto grid = name_ + (name_.empty() || arrangement_.empty() ? "" : "_" + arrangement_);
         custom.set("grid", grid);

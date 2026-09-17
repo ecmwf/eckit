@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -88,6 +80,8 @@ public:
     double eccentricity() const;
     double flattening() const;
 
+    virtual bool is_default() const { return false; }
+
 private:
 
     // -- Methods
@@ -99,13 +93,16 @@ private:
     friend bool operator==(const Figure& a, const Figure& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Figure& a, const Figure& b) { return !(a == b); }
 
+    friend class Grid;
     friend class Projection;
 };
 
 
 struct FigureFactory {
+    /// Build the spec's figure, or the default one if the spec doesn't describe any
     [[nodiscard]] static Figure* build(const Figure::Spec& spec) { return instance().make_from_spec_(spec); }
     [[nodiscard]] static Figure* make_from_string(const std::string&);
+    [[nodiscard]] static const Figure* make_default();
 
 private:
 

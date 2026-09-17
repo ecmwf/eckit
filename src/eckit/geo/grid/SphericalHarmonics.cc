@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/SphericalHarmonics.h"
@@ -18,6 +10,7 @@
 #include "eckit/geo/area/None.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/utils/MD5.h"
+#include "eckit/utils/SafeCasts.h"
 
 
 namespace eckit::geo::grid {
@@ -30,15 +23,28 @@ static const GridRegisterType<SphericalHarmonics> GRIDTYPE("sh");
 static const GridRegisterName<SphericalHarmonics> GRIDNAME(PATTERN);
 
 
-SphericalHarmonics::SphericalHarmonics(const Spec& spec) : truncation_(spec.get_unsigned("truncation")) {
-    // TODO improve conversion from signed to unsigned
-    if (spec.get_long("truncation") <= 0) {
+[[nodiscard]] size_t into_unsigned(int value) {
+    // promote exception to contain it
+    try {
+        return static_cast<size_t>(eckit::into_unsigned(value));
+    }
+    catch (const eckit::BadCast& e) {
+        throw exception::SpecError(e.what(), Here());
+    }
+}
+
+
+SphericalHarmonics::SphericalHarmonics(const Spec& spec) : SphericalHarmonics(spec.get_int("truncation")) {}
+
+
+SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {
+    if (truncation_ == 0) {
         throw exception::SpecError("SphericalHarmonics: truncation must be positive", Here());
     }
 }
 
 
-SphericalHarmonics::SphericalHarmonics(size_t T) : truncation_(T) {}
+SphericalHarmonics::SphericalHarmonics(int T) : SphericalHarmonics(static_cast<size_t>(into_unsigned(T))) {}
 
 
 Grid::Spec* SphericalHarmonics::spec(const std::string& name) {
@@ -93,7 +99,7 @@ const Area& SphericalHarmonics::area() const {
 
 
 void SphericalHarmonics::fill_spec(spec::Custom& custom) const {
-    custom.set("grid", "T" + std::to_string(truncation_));
+    custom.set("grid", name());
 }
 
 

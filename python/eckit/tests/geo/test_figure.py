@@ -75,8 +75,8 @@ def test_figure_earth():
     figure = Figure(figure="earth")
 
     assert figure == Figure(R=EARTH_RADIUS)
-    assert figure.spec_str == '{"r":6371229}'
-    assert figure.spec == dict(r=EARTH_RADIUS)
+    assert figure.spec_str == '{"figure":"earth"}'
+    assert figure.spec == dict(figure="earth")
 
     assert figure.R == EARTH_RADIUS
     assert figure.a == figure.R
@@ -132,4 +132,4 @@ def test_grid_default_figure_is_spherical_earth(spec):
     assert figure.b == EARTH_RADIUS
     assert figure.eccentricity == pytest.approx(0.0)
     assert figure.flattening == pytest.approx(0.0)
-    assert figure.spec == dict(r=EARTH_RADIUS)
+    assert figure.spec == dict(figure="earth")

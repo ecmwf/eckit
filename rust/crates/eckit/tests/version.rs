@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! Guard against drift between the crate version and the repo's `VERSION`
 //! file (cargo cannot read it dynamically).
 

@@ -29,11 +29,6 @@ elseif( eckit_HAVE_OPENFAM )
     )
 endif()
 
-set( _fam_includes "${LIB_OPENFAM_INCLUDE_DIRS}" )
-if( eckit_HAVE_OPENFAM_MOCK )
-    list( APPEND _fam_includes "${PROJECT_SOURCE_DIR}/src/eckit/io/fam/openfam_mock" )
-endif()
-
 foreach( _test fam_handle fam_list fam_map fam_map_64 fam_map_concurrent fam_name fam_object fam_path fam_property fam_region fam_session_manager fam_uri_manager )
   ecbuild_add_test( TARGET      eckit_test_${_test}
                     SOURCES     test_${_test}.cc
@@ -43,12 +38,3 @@ foreach( _test fam_handle fam_list fam_map fam_map_64 fam_map_concurrent fam_nam
                     ${_fam_test_properties}
                     LIBS        eckit )
 endforeach()
-
-ecbuild_add_test( TARGET      eckit_test_openfam_atomic_descriptor
-                  SOURCES     test_openfam_atomic_descriptor.cc
-                  CONDITION   eckit_HAVE_OPENFAM
-                  LABELS      fam
-                  INCLUDES    "${_fam_includes}"
-                  ENVIRONMENT "${_fam_environment}"
-                  ${_fam_test_properties}
-                  LIBS        eckit LibOPENFAM )

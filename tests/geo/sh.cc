@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to itr by virtue of its status as an intergovernmental organisation nor
- * does itr submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
@@ -22,20 +14,22 @@ namespace eckit::geo::test {
 
 
 CASE("sh") {
+    EXPECT_THROWS(grid::SphericalHarmonics(-1));
+
     grid::SphericalHarmonics a(1);
 
     EXPECT(a.truncation() == 1);
     EXPECT(a.size() == 6);
-    EXPECT(a.size() == grid::SphericalHarmonics::number_of_real_coefficients(1));
-    EXPECT(a.size() == grid::SphericalHarmonics::number_of_complex_coefficients(1) * 2);
+    EXPECT(a.size() == grid::SphericalHarmonics::number_of_real_coefficients(a.truncation()));
+    EXPECT(a.size() == grid::SphericalHarmonics::number_of_complex_coefficients(a.truncation()) * 2);
     EXPECT(a.spec_str() == R"({"grid":"T1"})");
 
     grid::SphericalHarmonics b(1279);
 
     EXPECT(b.truncation() == 1279);
     EXPECT(b.size() == 1639680);
-    EXPECT(b.size() == grid::SphericalHarmonics::number_of_real_coefficients(1279));
-    EXPECT(b.size() == grid::SphericalHarmonics::number_of_complex_coefficients(1279) * 2);
+    EXPECT(b.size() == grid::SphericalHarmonics::number_of_real_coefficients(b.truncation()));
+    EXPECT(b.size() == grid::SphericalHarmonics::number_of_complex_coefficients(b.truncation()) * 2);
     EXPECT(b.spec_str() == R"({"grid":"T1279"})");
 
     EXPECT(b == *std::unique_ptr<const Grid>(GridFactory::build(spec::Custom{{"grid", "t1279"}})));
@@ -44,6 +38,13 @@ CASE("sh") {
     EXPECT_THROWS_AS((void)GridFactory::build(spec::Custom{{"type", "sh"}, {"truncation", 0}}), exception::SpecError);
     EXPECT_THROWS_AS((void)GridFactory::build(spec::Custom{{"type", "sh"}, {"truncation", -1}}), exception::SpecError);
     EXPECT_THROWS_AS((void)GridFactory::make_from_string("{type: sh, truncation: 0}"), exception::SpecError);
+}
+
+
+CASE("name") {
+    EXPECT_EQUAL(grid::SphericalHarmonics(1).name(), "T1");
+    EXPECT_EQUAL(grid::SphericalHarmonics(1279).name(), "T1279");
+    EXPECT(grid::SphericalHarmonics(1).arrangement().empty());
 }
 
 

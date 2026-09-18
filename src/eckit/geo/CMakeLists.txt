@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 list(APPEND eckit_geo_srcs
     Area.cc
     Area.h
@@ -66,6 +69,8 @@ list(APPEND eckit_geo_srcs
     figure/Sphere.cc
     figure/Sphere.h
     figure/SphereT.h
+    figure/Sun.cc
+    figure/Sun.h
     figure/UnitSphere.cc
     figure/UnitSphere.h
     grid/ORCA.cc

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 set -ex
 
 BASE_DIR="$( cd "$( dirname "$0" )" >/dev/null 2>&1 && pwd )"

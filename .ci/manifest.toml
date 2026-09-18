@@ -30,6 +30,7 @@ compiler-inputs = ["cxx-compiler"]
 
 [[matrix.build.include]]
 cxx-compiler = "clang++-18"
+c-compiler = "clang-18"
 build-type = "RelWithDebInfo"
 runs-on = "arc-runner-very-large"
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-clang18-gfortran13:latest"
@@ -37,6 +38,7 @@ platform = "ubuntu-24.04"
 
 [[matrix.build.include]]
 cxx-compiler = "g++-13"
+c-compiler = "gcc-13"
 build-type = "RelWithDebInfo"
 runs-on = "arc-runner-very-large"
 container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-clang18-gfortran13:latest"
@@ -45,7 +47,7 @@ platform = "ubuntu-24.04"
 [matrix.build]
 triggers = ["upstream-change", "rebuild-request"]
 action = "./.github/actions/build-eckit"
-forwarded-inputs = ["cxx-compiler", "build-type"]
+forwarded-inputs = ["c-compiler", "cxx-compiler", "build-type"]
 forwarded-deps-outputs = ["cmake-prefix-path"]
 needs = ["ecbuild/build", "stack-deps/build"]
 ctest = true

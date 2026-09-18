@@ -41,7 +41,7 @@ cxx-compiler = "g++-13"
 c-compiler = "gcc-13"
 build-type = "RelWithDebInfo"
 runs-on = "arc-runner-very-large"
-container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-clang18-gfortran13:latest"
+container = "eccr.ecmwf.int/public-ci-images/ubuntu24.04-gcc13-gfortran13:latest"
 platform = "ubuntu-24.04"
 
 [matrix.build]

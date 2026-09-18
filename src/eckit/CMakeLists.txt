@@ -107,6 +107,7 @@ list( APPEND eckit_container_srcs
     container/MappedArray.cc
     container/MappedArray.h
     container/Queue.h
+    container/QueueOfQueues.h
     container/Recycler.h
     container/SharedMemArray.cc
     container/SharedMemArray.h

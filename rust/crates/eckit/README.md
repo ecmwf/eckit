@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+SPDX-License-Identifier: Apache-2.0
+-->
+
 # eckit
 
 Safe Rust wrapper for ECMWF's [eckit](https://github.com/ecmwf/eckit) C++ library.

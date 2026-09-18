@@ -1,16 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/util.h"
@@ -55,6 +49,29 @@ CASE("gridspec") {
         EXPECT_EQUAL(n3, n2);
         EXPECT_EQUAL(grid3->spec_str(), R"({"area":[-19.8757191474409,0,-90,360],"grid":"O2"})");
     }
+}
+
+
+CASE("name") {
+    struct test_t {
+        const std::string spec;
+        const std::string name;
+    };
+
+    for (const auto& test : std::vector<test_t>{
+             {"{grid: o2}", "O2"},
+             {"{N: 2}", "O2"},
+             {"{pl: [20, 24, 24, 20]}", "O2"},
+             {"{grid: n32}", "N32"},
+         }) {
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(test.spec));
+
+        EXPECT_EQUAL(grid->name(), test.name);
+        EXPECT(grid->arrangement().empty());
+    }
+
+    EXPECT(ReducedGaussian(3).octahedral());
+    EXPECT_EQUAL(ReducedGaussian(3).name(), "O3");
 }
 
 

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 // eckit DataHandle bridge — wraps `eckit::DataHandle` and its factories.
 #pragma once
 
@@ -28,6 +31,7 @@ public:
     void open_for_write(int64_t estimated_length);
     int64_t read(rust::Slice<uint8_t> buf);
     int64_t write(rust::Slice<const uint8_t> buf);
+    void flush();
     void close();
     int64_t position() const;
     int64_t seek(int64_t offset);

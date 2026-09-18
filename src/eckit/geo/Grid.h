@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -20,6 +12,7 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
@@ -33,7 +26,8 @@ namespace eckit {
 class JSON;
 namespace geo {
 class Area;
-}
+class Range;
+}  // namespace geo
 }  // namespace eckit
 
 
@@ -124,6 +118,10 @@ public:
     virtual const std::string& type() const   = 0;
     virtual std::vector<size_t> shape() const = 0;
 
+    /// Name and staggering arrangement, for the grids that are identified by them (eg. ORCA, FESOM, ICON)
+    virtual std::string name() const { return {}; }
+    virtual std::string arrangement() const { return {}; }
+
     virtual bool empty() const;
     virtual size_t size() const;
     virtual void cache() const;
@@ -136,8 +134,9 @@ public:
     [[nodiscard]] virtual std::vector<Point> to_points() const;
     [[nodiscard]] virtual std::pair<std::vector<double>, std::vector<double>> to_latlons() const;
 
-    [[nodiscard]] virtual std::vector<double> distinct_latitudes() const;
-    [[nodiscard]] virtual std::vector<double> distinct_longitudes() const;
+    [[nodiscard]] Grid* to_unstructured_ll(const std::string& name = "") const;
+
+    virtual size_t truncation() const;
 
     virtual const order_type& order() const;
     virtual renumber_type reorder(const order_type&) const;
@@ -146,12 +145,27 @@ public:
     virtual renumber_type crop(const Area&) const;
 
     virtual const Projection& projection() const;
+    virtual const Figure& figure() const { return projection().figure(); }
 
     virtual const BoundingBox& boundingBox() const;
     [[nodiscard]] virtual BoundingBox* calculate_bbox() const;
 
     [[nodiscard]] virtual Grid* make_grid_reordered(const order_type&) const;
     [[nodiscard]] virtual Grid* make_grid_cropped(const Area&) const;
+
+    double dx() const;
+    double dy() const;
+    virtual size_t nx() const;
+    virtual size_t ny() const;
+    virtual const Range& x() const;
+    virtual const Range& y() const;
+
+    double dlon() const;
+    double dlat() const;
+    size_t nlon() const;
+    size_t nlat() const;
+    virtual const Range& lon() const;
+    virtual const Range& lat() const;
 
     // -- Class methods
 
@@ -162,7 +176,7 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(Projection* = nullptr);
+    explicit Grid(BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 
@@ -172,6 +186,8 @@ protected:
 
     void projection(Projection* ptr) { projection_.reset(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
+
+    [[nodiscard]] static BoundingBox* bounding_box_from_spec(const Spec&);
 
 private:
 
@@ -221,10 +237,11 @@ using GridRegisterUID = spec::ConcreteSpecGeneratorT0<T>;
 
 
 template <typename T>
-bool GridRegisterName(const std::string& name_or_pattern) {
-    new eckit::spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
-    return true;
-}
+struct GridRegisterName {
+    explicit GridRegisterName(const std::string& name_or_pattern) {
+        new spec::ConcreteSpecGeneratorT1<T, const std::string&>(name_or_pattern);
+    }
+};
 
 
 struct GridFactory {

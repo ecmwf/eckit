@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! FFI bindings to ECMWF eckit C++ library.
 //!
 //! This crate builds eckit and provides:
@@ -102,6 +105,7 @@ mod ffi {
         fn open_for_write(self: Pin<&mut DataHandleWrapper>, estimated_length: i64) -> Result<()>;
         fn read(self: Pin<&mut DataHandleWrapper>, buf: &mut [u8]) -> Result<i64>;
         fn write(self: Pin<&mut DataHandleWrapper>, buf: &[u8]) -> Result<i64>;
+        fn flush(self: Pin<&mut DataHandleWrapper>) -> Result<()>;
         fn close(self: Pin<&mut DataHandleWrapper>) -> Result<()>;
         fn position(self: &DataHandleWrapper) -> Result<i64>;
         fn seek(self: Pin<&mut DataHandleWrapper>, offset: i64) -> Result<i64>;
@@ -263,11 +267,11 @@ impl<T: std::io::Read + std::io::Seek + ?Sized> ReadSeek for T {}
 ///
 /// The C++ `RustReaderHandle` (declared in `DataHandleWrapper.h` as `struct
 /// ReaderBox`) carries this by `rust::Box<ReaderBox>` and forwards each C++
-/// `read(void*, long)` / `seek(Offset)` call via [`invoke_reader_read`] /
-/// [`invoke_reader_seek`].
+/// `read(void*, long)` / `seek(Offset)` call via `invoke_reader_read` /
+/// `invoke_reader_seek`.
 pub struct ReaderBox(Box<dyn ReadSeek + Send>);
 
-/// Wrap a Rust `Read + Seek` source for [`ffi::data_handle_from_reader`].
+/// Wrap a Rust `Read + Seek` source for `ffi::from_reader`.
 ///
 /// The `Seek` bound is load-bearing: eckit's `DataHandle::openForRead`
 /// contract is "leave at offset 0", so the C++ side rewinds the source on

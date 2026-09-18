@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to itr by virtue of its status as an intergovernmental organisation nor
- * does itr submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <cstdlib>
@@ -50,8 +42,8 @@ CASE("unstructured_ll") {
     EXPECT_THROWS((void)GridFactory::build(spec::Custom({{"latitudes", lats}})));
     EXPECT_THROWS((void)GridFactory::build(spec::Custom({{"longitudes", lons}})));
 
-    std::unique_ptr<const Grid> b(
-        GridFactory::build(spec::Custom{{"longitudes", lons}, {"latitudes", lats}, {"grid", name}}));  // registers name
+    std::unique_ptr<const Grid> b(GridFactory::build(
+        spec::Custom{{"longitudes", lons}, {"latitudes", lats}, {"cache_as", name}}));  // registers name
     std::unique_ptr<const Grid> c(
         GridFactory::build(spec::Custom{{"longitudes", lons}, {"latitudes", lats}, {"name", name}}));
 
@@ -66,6 +58,65 @@ CASE("unstructured_ll") {
     EXPECT(*b == *e);
     EXPECT(*b == *f);
     EXPECT(b->uid() == g->uid());  // b has a name, g doesn't
+
+    cleanup();
+}
+
+
+CASE("'grid' does not re-define an unstructured grid name") {
+    cleanup();
+
+    for (const auto& key : {"grid", "type"}) {
+        const std::vector<double> lats_a{90., 80., 70.};
+        const std::vector<double> lons_a{0., 10., 20.};
+        const std::vector<double> lats_b{90., 80., 70., 60.};
+        const std::vector<double> lons_b{0., 10., 20., 30.};
+
+        std::unique_ptr<const Grid> a(
+            GridFactory::build(spec::Custom{{"latitudes", lats_a}, {"longitudes", lons_a}, {key, "unstructured_ll"}}));
+        std::unique_ptr<const Grid> b(GridFactory::build(spec::Custom{{"latitudes", lats_b}, {"longitudes", lons_b}}));
+
+        EXPECT(a->shape() == std::vector<size_t>{3});
+        EXPECT(b->shape() == std::vector<size_t>{4});
+
+        EXPECT(a->to_latlons() == std::make_pair(lats_a, lons_a));
+        EXPECT(b->to_latlons() == std::make_pair(lats_b, lons_b));
+
+        EXPECT(a->type() == b->type());
+        EXPECT(a->uid() != b->uid());
+
+        // 'cache_as' is the key that registers a name (in addition to the uid)
+        const std::string name = "custom-cache-as";
+        std::unique_ptr<const Grid> c(
+            GridFactory::build(spec::Custom{{"latitudes", lats_a}, {"longitudes", lons_a}, {"cache_as", name}}));
+        std::unique_ptr<const Grid> d(GridFactory::make_from_string("{grid:" + name + "}"));
+
+        EXPECT(*c == *d);
+    }
+
+    cleanup();
+}
+
+
+CASE("to_unstructured_ll") {
+    cleanup();
+
+    const std::vector<double> lats{0, 1, 2};
+    const std::vector<double> lons{2, 1, 0};
+
+    std::unique_ptr<const Grid> src(new grid::Unstructured(lons, lats));
+
+    std::unique_ptr<const Grid> a(src->to_unstructured_ll());
+    EXPECT_EQUAL(a->type(), std::string("unstructured_ll"));
+    EXPECT(a->to_latlons() == src->to_latlons());
+    EXPECT(a->uid() == src->uid());  // same points, no name -> same uid
+
+    const std::string name = "custom-to-unstructured-ll";
+    std::unique_ptr<const Grid> b(src->to_unstructured_ll(name));
+    std::unique_ptr<const Grid> c(GridFactory::make_from_string("{grid:" + name + "}"));
+
+    EXPECT(b->uid() == src->uid());  // name doesn't change uid
+    EXPECT(*b == *c);
 
     cleanup();
 }

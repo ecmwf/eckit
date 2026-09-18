@@ -1,10 +1,5 @@
-# (C) Copyright 1996- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation
-# nor does it submit to any jurisdiction.
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 # to be source'd by wheelmaker's compile.sh *and* wheel-linux.sh
 # NOTE replace the whole thing with pyproject.toml? Less powerful, and quaint to use for sourcing ecbuild invocation
@@ -13,6 +8,6 @@
 NAME="eckit"
 _HERE="$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")"
 PYTHON_INSTALL_DIR=$(cd -- "$_HERE/../eckit/src" && pwd) # dont use readlink -m here, not macos portable
-CMAKE_PARAMS="-DENABLE_MPI=0  -DENABLE_ECKIT_GEO=1 -DENABLE_BUILD_TOOLS=OFF -DENABLE_AEC=0 -DENABLE_EIGEN=0 -DENABLE_LZ4=1 -DENABLE_PYTHON=1 -DPYTHONEXT_INSTALL_DIR=$PYTHON_INSTALL_DIR"
+CMAKE_PARAMS="-DENABLE_MPI=0  -DENABLE_ECKIT_GEO=1 -DENABLE_BUILD_TOOLS=OFF -DENABLE_AEC=0 -DENABLE_EIGEN=0 -DENABLE_LZ4=1 -DENABLE_PYTHON=1 -DPYTHONEXT_INSTALL_DIR=$PYTHON_INSTALL_DIR -DENABLE_PROJ=1"
 PYPROJECT_DIR="python/eckitlib"
 DEPENDENCIES='[]'

@@ -1,19 +1,12 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include <memory>
 
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/HEALPix.h"
 
@@ -27,7 +20,8 @@ public:
     // -- Constructors
 
     explicit HEALPix(const Spec&);
-    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default());
+    explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default(), BoundingBox* = nullptr,
+                     Projection* = nullptr);
 
     // -- Methods
 
@@ -35,18 +29,22 @@ public:
 
     // -- Overridden methods
 
+    std::string name() const override { return "H" + std::to_string(Nside_); }
+
+    BoundingBox* calculate_bbox() const override;
+
     iterator cbegin() const override;
     iterator cend() const override;
 
     size_t size() const override;
 
-    size_t nx(size_t j) const override;
-    size_t ny() const override;
+    size_t nxj(size_t j) const override;
+    const Range& lat() const override { return *y_; }
 
     [[nodiscard]] std::vector<Point> to_points() const override;
 
-    const order_type& order() const override { return healpix_.order(); }
-    renumber_type reorder(const order_type& to) const override { return healpix_.reorder(to, Nside_); }
+    const order_type& order() const override { return order_.order(); }
+    renumber_type reorder(const order_type& to) const override { return order_.reorder(to, Nside_); }
 
     [[nodiscard]] Grid* make_grid_reordered(const order_type& order) const override {
         return new HEALPix(Nside_, order);
@@ -54,7 +52,6 @@ public:
 
     [[nodiscard]] const std::vector<double>& latitudes() const override;
     [[nodiscard]] const std::vector<double>& longitudes(size_t j) const override;
-    [[nodiscard]] std::vector<double> distinct_latitudes() const override { return healpix_latitudes_; }
 
     // -- Class members
 
@@ -70,9 +67,10 @@ private:
     // -- Members
 
     const size_t Nside_;
-    order::HEALPix healpix_;
+    order::HEALPix order_;
 
-    mutable std::vector<double> healpix_latitudes_;
+    const std::unique_ptr<Range> y_;
+
     mutable std::vector<double> nested_latitudes_;
     mutable std::vector<double> nested_longitudes_;
 

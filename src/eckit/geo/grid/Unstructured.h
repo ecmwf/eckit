@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
@@ -41,8 +33,8 @@ public:
 
     // -- Methods
 
-    const std::string& name() const { return name_; }
-    const std::string& arrangement() const { return arrangement_; }
+    std::string name() const override { return name_; }
+    std::string arrangement() const override { return arrangement_; }
 
     // -- Overridden methods
 
@@ -68,8 +60,9 @@ protected:
 
     // -- Constructors
 
-    explicit Unstructured(const uid_type&, const std::string& name = "");
-    explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement);
+    explicit Unstructured(const uid_type&, const std::string& name = "", BoundingBox* = nullptr, Projection* = nullptr);
+    explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement,
+                          BoundingBox* = nullptr, Projection* = nullptr);
 
     // -- Methods
 

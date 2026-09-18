@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Grid.h"
@@ -17,8 +9,9 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
+#include "eckit/geo/grid/Unstructured.h"
 #include "eckit/geo/projection/EquidistantCylindrical.h"
-#include "eckit/geo/projection/Reverse.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
@@ -50,8 +43,8 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(Projection* proj) :
-    projection_(proj == nullptr ? new projection::Reverse<projection::EquidistantCylindrical> : proj) {}
+Grid::Grid(BoundingBox* bbox, Projection* proj) :
+    bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()) {}
 
 
 const spec::Spec& Grid::catalog() const {
@@ -81,7 +74,6 @@ const spec::Spec& Grid::catalog() const {
 const Grid::Spec& Grid::spec() const {
     if (!spec_) {
         spec_ = std::make_unique<spec::Custom>();
-        ASSERT(spec_);
 
         auto& custom = *spec_;
         fill_spec(custom);
@@ -173,29 +165,28 @@ std::pair<std::vector<double>, std::vector<double>> Grid::to_latlons() const {
     return ll;
 }
 
-
-std::vector<double> Grid::distinct_latitudes() const {
-    NOTIMP;
+Grid* Grid::to_unstructured_ll(const std::string& name) const {
+    auto [lat, lon] = to_latlons();
+    return new grid::Unstructured(lon, lat, name);
 }
 
-
-std::vector<double> Grid::distinct_longitudes() const {
-    NOTIMP;
+size_t Grid::truncation() const {
+    throw exception::NotImplemented("Grid: truncation() is not implemented for type '" + type() + "'", Here());
 }
 
 
 const Grid::order_type& Grid::order() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: order() is not implemented for type '" + type() + "'", Here());
 }
 
 
 Grid::renumber_type Grid::reorder(const order_type&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: reorder() is not implemented for type '" + type() + "'", Here());
 }
 
 
 Grid* Grid::make_grid_reordered(const order_type&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: make_grid_reordered() is not implemented for type '" + type() + "'", Here());
 }
 
 
@@ -210,22 +201,78 @@ const Area& Grid::area() const {
 
 
 Grid::renumber_type Grid::crop(const Area&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: crop() is not implemented for type '" + type() + "'", Here());
 }
 
 
 const Projection& Grid::projection() const {
-    if (!projection_) {
-        projection_ = std::make_unique<projection::Reverse<projection::EquidistantCylindrical>>();
-        ASSERT(projection_);
-    }
-
-    return *projection_;
+    return projection_ ? *projection_
+                       : *(projection_ = std::unique_ptr<const Projection>(ProjectionFactory::make_default()));
 }
 
 
 Grid* Grid::make_grid_cropped(const Area&) const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: make_grid_cropped() is not implemented for type '" + type() + "'", Here());
+}
+
+
+double Grid::dx() const {
+    return x().increment();
+}
+
+
+double Grid::dy() const {
+    return y().increment();
+}
+
+
+size_t Grid::nx() const {
+    return x().size();
+}
+
+
+size_t Grid::ny() const {
+    return y().size();
+}
+
+
+const Range& Grid::x() const {
+    return lon();
+}
+
+
+const Range& Grid::y() const {
+    return lat();
+}
+
+
+double Grid::dlon() const {
+    return lon().increment();
+}
+
+
+double Grid::dlat() const {
+    return lat().increment();
+}
+
+
+size_t Grid::nlon() const {
+    return x().size();
+}
+
+
+size_t Grid::nlat() const {
+    return y().size();
+}
+
+
+const Range& Grid::lon() const {
+    throw exception::NotImplemented("Grid: lon() is not implemented for type '" + type() + "'", Here());
+}
+
+
+const Range& Grid::lat() const {
+    throw exception::NotImplemented("Grid: lat() is not implemented for type '" + type() + "'", Here());
 }
 
 
@@ -240,7 +287,19 @@ const Grid::BoundingBox& Grid::boundingBox() const {
 
 
 Grid::BoundingBox* Grid::calculate_bbox() const {
-    NOTIMP;
+    throw exception::NotImplemented("Grid: calculate_bbox() is not implemented for type '" + type() + "'", Here());
+}
+
+
+Grid::BoundingBox* Grid::bounding_box_from_spec(const Spec& spec) {
+    // NOTE: 'bounding_box' is how a grid catalogue entry spells its own 'area'; loose north/west/south/east keys are
+    // not considered, they can describe the first/last grid point instead
+    if (std::vector<double> bbox; spec.get("bounding_box", bbox)) {
+        ASSERT(bbox.size() == 4);
+        return new BoundingBox{bbox[0], bbox[1], bbox[2], bbox[3]};
+    }
+
+    return spec.has("area") ? BoundingBox::make_from_spec(spec).release() : nullptr;
 }
 
 
@@ -264,6 +323,10 @@ void Grid::fill_spec(spec::Custom& custom) const {
 
     custom_set_if_different("area", area(), area_default);
     custom_set_if_different("projection", projection(), proj_default);
+
+    if (const auto& fig = figure(); !fig.is_default()) {
+        custom_set_if_different("figure", fig, "");
+    }
 }
 
 
@@ -325,10 +388,11 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
         back->set("type", "unstructured_ll");
     }
 
+    static const std::string PROJECTION{"projection"};
+    static const std::string ROTATION{"rotation"};
 
-    if (static const std::string projection{"projection"}, rotation{"rotation"};
-        !cfg->has(projection) && cfg->has(rotation)) {
-        back->set(projection, new spec::Custom({{"type", rotation}, {rotation, cfg->get_double_vector(rotation)}}));
+    if (!cfg->has(PROJECTION) && cfg->has(ROTATION)) {
+        back->set(PROJECTION, new spec::Custom({{"type", ROTATION}, {"south_pole", cfg->get_double_vector(ROTATION)}}));
     }
 
     if (!back->empty()) {

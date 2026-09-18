@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/spec/Layered.h"
@@ -20,12 +12,14 @@ namespace eckit::spec::test {
 
 
 CASE("Spec <- Layered") {
-    int one    = 1;
-    double two = 2.;
+    int one                              = 1;
+    double two                           = 2.;
+    std::vector<bool> expected_bool_list = {true, false, true};
 
-    spec::Custom a({{"foo", one}, {"bar", two}});
+    spec::Custom a({{"foo", one}, {"bar", two}, {"bool_list", expected_bool_list}});
     ASSERT(a.has("foo"));
     ASSERT(a.has("bar"));
+    ASSERT(a.has("bool_list"));
 
     spec::Layered b(a);
 
@@ -42,6 +36,13 @@ CASE("Spec <- Layered") {
 
     auto value = b.get_int("foo");
     EXPECT(value == one);
+
+    std::vector<bool> bool_list;
+    EXPECT(b.get("bool_list", bool_list));
+    EXPECT(bool_list == expected_bool_list);
+
+    b.hide("bool_list");
+    EXPECT_NOT(b.get("bool_list", bool_list));
 }
 
 

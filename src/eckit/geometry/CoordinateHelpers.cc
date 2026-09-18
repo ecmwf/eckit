@@ -1,9 +1,6 @@
-/*
- * (C) Copyright 2023 UCAR
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- */
+// SPDX-FileCopyrightText: 2023 UCAR
+// SPDX-FileCopyrightText: 2023- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 #include <cmath>
 #include <limits>

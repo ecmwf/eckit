@@ -1,19 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Range.h"
 #include "eckit/geo/order/Scan.h"
 
 
@@ -27,17 +18,6 @@ namespace eckit::geo::grid {
 
 class Regular : public Grid {
 public:
-
-    // -- Methods
-
-    virtual double dx() const = 0;
-    virtual double dy() const = 0;
-
-    virtual size_t nx() const = 0;
-    virtual size_t ny() const = 0;
-
-    virtual const Range& x() const = 0;
-    virtual const Range& y() const = 0;
 
     // -- Overridden methods
 
@@ -58,8 +38,7 @@ protected:
 
     // -- Constructors
 
-    explicit Regular(const Spec&);
-    explicit Regular(order::Scan scan = scan_default(), const Projection* = nullptr);
+    explicit Regular(order::Scan scan = scan_default(), Projection* = nullptr);
 
     // -- Overridden methods
 

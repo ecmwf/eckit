@@ -1,17 +1,10 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "eckit/system/Library.h"
@@ -49,6 +42,18 @@ public:
     static std::string url(const std::string& url_path);
 
     static bool proj();
+
+    /// If PROJ has a usable database.
+    /// @return true if PROJ has a usable database, false otherwise
+    static bool projdb_is_available();
+
+    /// Set PROJ search paths for the database.
+    /// @param db_path Path to the PROJ database.
+    /// @param search_paths Additional search paths for the PROJ database.
+    static void projdb_set_search_paths(const std::string& db_path, const std::vector<std::string>& search_paths = {});
+
+    /// Reset PROJ search paths to the default values.
+    static void projdb_reset();
 
     std::string version() const override;
     std::string gitsha1(unsigned int count) const override;

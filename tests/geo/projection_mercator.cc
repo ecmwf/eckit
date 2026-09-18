@@ -1,18 +1,9 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <limits>
 
-#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/projection/Mercator.h"
 #include "eckit/testing/Test.h"
 
@@ -50,19 +41,17 @@ CASE("Mercator: spec_str, proj_str") {
 
 
     SECTION("spec_str") {
-        EXPECT(proj1.spec_str() == R"({"lat_ts":14,"r":6371229,"type":"mercator"})");
-        EXPECT(proj2.spec_str() == R"({"lat_ts":14,"r":6371229,"type":"mercator"})");
-        EXPECT(proj3.spec_str() == R"({"lon_0":-180,"r":6371229,"type":"mercator"})");
+        EXPECT(proj1.spec_str() == R"({"lat_ts":14,"type":"mercator"})");
+        EXPECT(proj2.spec_str() == R"({"lat_ts":14,"type":"mercator"})");
+        EXPECT(proj3.spec_str() == R"({"lon_0":-180,"type":"mercator"})");
     }
 
 
-#if eckit_HAVE_PROJ
     SECTION("proj_str") {
         EXPECT(proj1.proj_str() == "+proj=merc +lat_ts=14 +R=6371229");
         EXPECT(proj2.proj_str() == "+proj=merc +lat_ts=14 +R=6371229");
         EXPECT(proj3.proj_str() == "+proj=merc +lon_0=-180 +R=6371229");
     }
-#endif
 }
 
 

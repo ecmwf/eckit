@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/figure/OblateSpheroid.h"
@@ -86,7 +78,7 @@ double OblateSpheroid::_area(double a, double b, const area::BoundingBox& bbox) 
     const auto dlam = util::DEGREE_TO_RADIAN * (bbox.east() - bbox.west());
 
     const auto e = eccentricity(a, b);
-    const auto A = dlam * a * b * (f(phi2, e) - f(phi1, e));
+    const auto A = dlam * b * b / 2. * (f(phi2, e) - f(phi1, e));
 
     return A;
 }

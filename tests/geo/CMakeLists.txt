@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
+
 set(_cache_path "${CMAKE_CURRENT_BINARY_DIR}/eckit_geo_cache")
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/eckit_geo_cache" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
@@ -6,6 +9,7 @@ foreach(_test
         area_polygon
         figure
         figure_earth
+        figure_sun
         gaussian
         great_circle
         grid
@@ -14,6 +18,7 @@ foreach(_test
         grid_reduced_ll
         grid_regular_gg
         grid_regular_ll
+        grid_regular_xy
         grid_reorder
         grid_to_points
         gridspec
@@ -27,9 +32,7 @@ foreach(_test
         pointlonlat
         pointlonlatr
         projection
-        projection_albers
         projection_ll_to_xyz
-        projection_mercator
         projection_plate-caree
         projection_rotation
         range
@@ -68,10 +71,18 @@ if(eckit_HAVE_ZIP)
 endif()
 
 if(eckit_HAVE_PROJ)
-    ecbuild_add_test(
-        TARGET  eckit_test_geo_projection_proj
-        SOURCES projection_proj.cc
-        LIBS    eckit_geo )
+    foreach(_test
+            grid_regular_xy_swisslv03
+            grid_regular_xy_swisslv95
+            projection_albers
+            projection_mercator
+            projection_proj
+        )
+        ecbuild_add_test(
+            TARGET  eckit_test_geo_${_test}
+            SOURCES ${_test}.cc
+            LIBS    eckit_geo )
+    endforeach()
 endif()
 
 ecbuild_add_test(

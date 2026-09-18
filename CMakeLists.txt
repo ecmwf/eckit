@@ -1,14 +1,7 @@
-# (C) Copyright 2011- ECMWF.
-#
-# This software is licensed under the terms of the Apache Licence Version 2.0
-# which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
-# In applying this licence, ECMWF does not waive the privileges and immunities
-# granted to it by virtue of its status as an intergovernmental organisation nor
-# does it submit to any jurisdiction.
+# SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+# SPDX-License-Identifier: Apache-2.0
 
 ########################################################################################################################
-
-
 cmake_minimum_required( VERSION 3.18 FATAL_ERROR )
 
 find_package( ecbuild 3.7 REQUIRED HINTS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../ecbuild)
@@ -20,6 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ########################################################################################################################
 ### dependencies and options
+
 
 ecbuild_add_option( FEATURE BUILD_TOOLS
                     DEFAULT ON
@@ -379,7 +373,7 @@ endif()
 
 ecbuild_add_resources( TARGET ${PROJECT_NAME}_top_files
                        SOURCES AUTHORS README.md NOTICE LICENSE
-                       INSTALL ChangeLog COPYING )
+                       INSTALL ChangeLog REUSE.toml LICENSES/Apache-2.0.txt )
 
 ############################################################################################
 # finalize

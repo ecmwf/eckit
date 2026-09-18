@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/Projection.h"
@@ -17,8 +9,9 @@
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/eckit_geo_config.h"
-#include "eckit/geo/figure/Earth.h"
+#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/projection/None.h"
+#include "eckit/geo/projection/Rotation.h"
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
@@ -48,14 +41,8 @@ class lock_type {
 }  // namespace
 
 
-Projection::Projection(Figure* figure_ptr) : figure_(figure_ptr != nullptr ? figure_ptr : new figure::Earth) {
+Projection::Projection(Figure* ptr) : figure_(ptr != nullptr ? ptr : FigureFactory::make_default()) {
     ASSERT(figure_);
-}
-
-
-const Figure& Projection::figure() const {
-    ASSERT(figure_);
-    return *figure_;
 }
 
 
@@ -85,23 +72,51 @@ std::string Projection::proj_str() const {
 }
 
 
+bool Projection::is_default() const {
+    return spec_str() == projection_default().spec_str();
+}
+
+
 const Projection& Projection::projection_default() {
     static const projection::None proj;
     return proj;
 }
 
 
+const Projection* ProjectionFactory::make_default() {
+    return new projection::EquidistantCylindrical;
+}
+
+
 Projection* Projection::make_from_spec(const Spec& spec) {
-    if (std::string type; spec.get("type", type)) {
+    // an explicit 'projection' has to name its type
+    static const std::string PROJECTION{"projection"};
+    static const std::string ROTATION{"rotation"};
+
+    if (spec.has(PROJECTION)) {
+        const auto& cfg = spec.spec(PROJECTION);
+        return ProjectionFactoryType::instance().get(cfg.get_string("type")).create(cfg);
+    }
+
+    if (spec.has(ROTATION)) {
+        if (auto* rotation = projection::Rotation::make_from_spec(spec); rotation != nullptr) {
+            return rotation;
+        }
+    }
+
+    // NOTE: a 'type' that isn't a projection's is somebody else's (eg. a grid's)
+    if (std::string type; spec.get("type", type) && ProjectionFactory::has_type(type)) {
         return ProjectionFactoryType::instance().get(type).create(spec);
     }
 
-    throw exception::SpecError("Projection: cannot build grid without 'type'", Here());
+    return new projection::EquidistantCylindrical(spec);
 }
 
 
 void Projection::fill_spec(spec::Custom& custom) const {
-    figure_->fill_spec(custom);
+    if (!figure_->is_default()) {
+        figure_->fill_spec(custom);
+    }
 
     if (!types::is_approximately_equal(false_.X(), 0.)) {
         custom.set("x_0", false_.X());

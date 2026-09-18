@@ -1,13 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/iterator/Regular.h"
@@ -15,6 +7,7 @@
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Regular.h"
 
 
@@ -36,10 +29,10 @@ struct RegularInstance : Instance, Regular {
 
 
 Regular::Regular(const grid::Regular& grid, size_t index) :
-    grid_(grid),
-    projection_(grid_.projection()),
-    x_(grid.x().values()),
-    y_(grid.y().values()),
+    projection_(grid.projection()),
+    xy_(grid.scan().is_scan_i_then_j()),
+    x_((xy_ ? grid.x() : grid.y()).values()),
+    y_((xy_ ? grid.y() : grid.x()).values()),
     ix_(0),
     iy_(0),
     index_(index),
@@ -72,8 +65,8 @@ bool Regular::operator++() {
 bool Regular::operator+=(difference_type d) {
     if (auto di = static_cast<difference_type>(index_); 0 <= di + d && di + d < static_cast<difference_type>(size_)) {
         index_ = static_cast<size_t>(di + d);
-        ix_    = index_ % nx_;  // FIXME depends on order
-        iy_    = index_ / nx_;  //...
+        ix_    = index_ % nx_;
+        iy_    = index_ / nx_;
         return true;
     }
 
@@ -88,7 +81,7 @@ Regular::operator bool() const {
 
 
 Point Regular::operator*() const {
-    return projection_.fwd(PointXY{x_.at(ix_), y_.at(iy_)});
+    return xy_ ? projection_.from_grid_xy(x_.at(ix_), y_.at(iy_)) : projection_.from_grid_xy(y_.at(iy_), x_.at(ix_));
 }
 
 

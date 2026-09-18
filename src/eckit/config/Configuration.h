@@ -1,12 +1,5 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
@@ -54,6 +47,7 @@ public:  // methods
     double getDouble(const std::string& name) const;
     std::string getString(const std::string& name) const;
 
+    std::vector<bool> getBoolVector(const std::string& name) const;
     std::vector<int> getIntVector(const std::string& name) const;
     std::vector<long> getLongVector(const std::string& name) const;
     std::vector<std::size_t> getUnsignedVector(const std::string& name) const;
@@ -75,6 +69,7 @@ public:  // methods
     double getDouble(const std::string& name, const double& defaultValue) const;
     std::string getString(const std::string& name, const std::string& defaultValue) const;
 
+    std::vector<bool> getBoolVector(const std::string& name, const std::vector<bool>& defaultValue) const;
     std::vector<int> getIntVector(const std::string& name, const std::vector<int>& defaultValue) const;
     std::vector<long> getLongVector(const std::string& name, const std::vector<long>& defaultValue) const;
     std::vector<std::size_t> getUnsignedVector(const std::string& name,
@@ -115,6 +110,7 @@ public:  // methods
     bool get(const std::string& name, float& value) const override;
     bool get(const std::string& name, double& value) const override;
 
+    bool get(const std::string& name, std::vector<bool>& value) const override;
     bool get(const std::string& name, std::vector<int>& value) const override;
     bool get(const std::string& name, std::vector<long>& value) const override;
     bool get(const std::string& name, std::vector<long long>& value) const override;
@@ -174,6 +170,9 @@ public:  // methods
             using _V = std::decay_t<typename _T::value_type>;
             if constexpr (std::is_base_of_v<LocalConfiguration, _V>) {
                 return isSubConfigurationList(name);
+            }
+            else if constexpr (std::is_same_v<_V, bool>) {
+                return isBooleanList(name);
             }
             else if constexpr (std::is_same_v<_V, int> || std::is_same_v<_V, long> || std::is_same_v<_V, long long> ||
                                std::is_same_v<_V, std::size_t>) {

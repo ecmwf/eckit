@@ -1,18 +1,9 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include <memory>
 
-#include "eckit/geo/eckit_geo_config.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/geo/projection/AlbersEqualArea.h"
 #include "eckit/spec/Custom.h"
@@ -23,7 +14,6 @@ namespace eckit::geo::test {
 
 
 CASE("AlbersEqualArea") {
-#if eckit_HAVE_PROJ
     constexpr auto eps = 10. * PointXY::EPS;  // FIXME improve floating-point errors
 
     projection::AlbersEqualArea proj1(-96., 23., 29.5, 45.5, new figure::Sphere(6378206.4));
@@ -65,7 +55,6 @@ CASE("AlbersEqualArea") {
             EXPECT(points_equal(b, bbbbb));
         }
     }
-#endif
 }
 
 

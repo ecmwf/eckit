@@ -1,18 +1,11 @@
-/*
- * (C) Copyright 1996- ECMWF.
- *
- * This software is licensed under the terms of the Apache Licence Version 2.0
- * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
- *
- * In applying this licence, ECMWF does not waive the privileges and immunities
- * granted to it by virtue of its status as an intergovernmental organisation nor
- * does it submit to any jurisdiction.
- */
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
 
 
 #include "eckit/geo/grid/Reduced.h"
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Range.h"
 
 
 namespace eckit::geo::grid {
@@ -41,7 +34,7 @@ const std::vector<size_t>& Reduced::nxacc() const {
 
         size_t j = 0;
         for (auto a = nxacc_.begin(), b = a + 1; b != nxacc_.end(); ++j, ++a, ++b) {
-            *b = *a + nx(j);
+            *b = *a + nxj(j);
         }
 
         ASSERT(nxacc_.back() == size());

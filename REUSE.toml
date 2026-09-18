@@ -31,6 +31,14 @@ precedence = "closest"
 SPDX-FileCopyrightText = "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"
 SPDX-License-Identifier = "Apache-2.0"
 
+# CMake presets. JSON has no comment syntax, so a header is impossible and any
+# key added to carry one would be read as preset data.
+[[annotations]]
+path = ["CMakePresets.json"]
+precedence = "closest"
+SPDX-FileCopyrightText = "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"
+SPDX-License-Identifier = "Apache-2.0"
+
 # Runtime configuration, installed to share/eckit/geo and intended to be
 # edited and maintained by the user. An in-file header would sit above the
 # user's own edits in the deployed copy.

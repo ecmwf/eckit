@@ -83,6 +83,7 @@ private:
 
     std::string asString() const override;
     void fileSystemSize(FileSystemSize&) const override;
+    std::string fileSystemType() const override;
 
     DataHandle* fileHandle(bool overwrite) const override;
     DataHandle* partHandle(const OffsetList&, const LengthList&) const override;

@@ -57,7 +57,7 @@ public:  // types
 
 public:  // methods
 
-    QueueOfQueues(size_t maxQueues, size_t maxQueueSize=100) :
+    QueueOfQueues(size_t maxQueues, size_t maxQueueSize = 100) :
         maxQueues_(maxQueues), maxQueueSize_(maxQueueSize), interrupt_{nullptr}, closed_(false) {
         ASSERT(maxQueues > 0);
         ASSERT(maxQueueSize > 0);

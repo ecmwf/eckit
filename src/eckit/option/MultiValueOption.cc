@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iterator>
 
 #include "eckit/config/Configured.h"
 #include "eckit/exception/Exceptions.h"

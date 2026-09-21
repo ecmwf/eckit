@@ -4,9 +4,9 @@
 #ifndef eckit_utils_EnumBitmasks_H
 #define eckit_utils_EnumBitmasks_H
 
-namespace eckit {
-
 #include <type_traits>
+
+namespace eckit {
 #define ENUM_FLAG_OPERATORS(T)                                                          \
     inline constexpr T operator&(T X, T Y) {                                            \
         return static_cast<T>(static_cast<typename std::underlying_type<T>::type>(X) &  \

@@ -7,6 +7,7 @@
 #define eckit_log_CodeLocation_h
 
 #include <iosfwd>
+#include <ostream>
 #include <string>
 
 namespace eckit {

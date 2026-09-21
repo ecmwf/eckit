@@ -9,6 +9,8 @@
 
 #include <iosfwd>
 #include <optional>
+#include <ostream>
+#include <string>
 
 #include "eckit/io/Buffer.h"
 #include "eckit/utils/EnumBitmask.h"

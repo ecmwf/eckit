@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <unistd.h>
+#include <exception>
 #include <fstream>
 #include <iostream>
+#include <new>
 
 #include "eckit/bases/Loader.h"
 #include "eckit/config/Resource.h"

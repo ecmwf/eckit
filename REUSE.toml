@@ -31,8 +31,7 @@ precedence = "closest"
 SPDX-FileCopyrightText = "1996- European Centre for Medium-Range Weather Forecasts (ECMWF)"
 SPDX-License-Identifier = "Apache-2.0"
 
-# CMake presets. JSON has no comment syntax, so a header is impossible and any
-# key added to carry one would be read as preset data.
+# CMake presets. JSON has no comment syntax.
 [[annotations]]
 path = ["CMakePresets.json"]
 precedence = "closest"

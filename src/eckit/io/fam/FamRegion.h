@@ -36,6 +36,9 @@ public:  // methods
 
     // properties
 
+    /// Bare region number, as carried by the *region* descriptor.
+    /// This region's objects report a different id — theirs packs in the memory server serving them — so this must
+    /// never be used to address an object. @see FamDescriptor
     fam::index_t index() const;
 
     fam::size_t size() const;

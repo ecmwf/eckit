@@ -14,14 +14,14 @@
 ///
 /// ## Overview
 ///
-/// FamMap is a hash-based key-value store residing entirely in Fabric-Attached Memory (FAM).
-/// It provides an `std::unordered_map`-like interface with fixed types, using `FixedString<KeySize>` keys and
-/// variable-length `Buffer` values.
+/// FamMap is a hash-based key-value store residing entirely in Fabric-Attached Memory (FAM). It provides an
+/// `std::unordered_map`-like interface with fixed types, using `FixedString<KeySize>` keys and variable-length
+/// `Buffer` values.
 ///
 /// ## Architecture
 ///
 /// - **Hash table**: A flat FAM object holding `bucket_count` (1024) bucket slots. Each slot stores a
-///   `FamList::Descriptor` (32 bytes). A zero `head` field means the bucket is empty.
+///   `FamList::Descriptor` (24 bytes). A zero `head` field means the bucket is empty.
 /// - **Buckets**: Each non-empty bucket is a `FamList` whose nodes store key-value entries as:
 ///   `[key (32/64/128 bytes)] [value data (variable length)]`
 /// - **Size counter**: An atomic FAM counter tracking total number of entries across all buckets.
@@ -50,9 +50,9 @@
 ///
 /// ## Iterator
 ///
-/// The iterator walks buckets 0..bucket_count-1, and within each non-empty bucket walks
-/// the FamList elements. Dereferencing returns a `FamMapEntry{key, value}` by value.
-/// Iterators are safe during concurrent modifications via FamList's marked-node skipping.
+/// The iterator walks buckets 0..bucket_count-1, and within each non-empty bucket walks the FamList elements.
+/// Dereferencing returns a `FamMapEntry{key, value}` by value. Iterators are safe during concurrent modifications via
+/// FamList's marked-node skipping.
 
 #pragma once
 
@@ -90,9 +90,8 @@ struct FamHash {
 
 /// @brief Concurrent-safe, FAM-resident unordered associative container.
 ///
-/// Hash table with FamList buckets. Fixed key type `FixedString<KeySize>`, variable-length
-/// `Buffer` values. Supports concurrent insert, find, erase, and iteration.
-/// Iterators are forward-only and safe during concurrent modifications.
+/// Hash table with FamList buckets. Fixed key type `FixedString<KeySize>`, variable-length `Buffer` values. Supports
+/// concurrent insert, find, erase, and iteration. Iterators are forward-only and safe during concurrent modifications.
 /// @tparam T Must be `FamMapEntry<KeySize>`, which defines key and value types and encoding.
 template <typename T>
 class FamMap {
@@ -117,7 +116,8 @@ public:  // constants
     /// Number of buckets in the hash table. Chosen as a power of two for efficient modulo.
     static constexpr std::size_t bucket_count = 1024;
 
-    /// needed for preventing concurrent double-init of buckets, as sentinel value in bucket head during creation
+    /// Sentinel written into a bucket head during creation, to prevent concurrent double-init.
+    /// Never collides with a real address: FamDescriptor::pack() cannot produce an all-ones word.
     static constexpr fam::size_t creating = ~fam::size_t{0};
 
     static constexpr auto table_suffix       = ".t";
@@ -125,8 +125,7 @@ public:  // constants
     static constexpr auto lock_suffix        = ".l";
     static constexpr auto bucket_lock_suffix = ".lb";
 
-    /// Lock lease time-to-live.  If a lock holder crashes, waiters can steal
-    /// the lock after this many seconds.
+    /// Lock lease time-to-live. If a lock holder crashes, waiters can steal the lock after this many seconds.
     static constexpr std::chrono::seconds lock_ttl{30};
 
 public:  // methods
@@ -145,16 +144,13 @@ public:  // methods
     // ---- capacity ----
 
     /// Return total number of entries across all buckets (atomic read).
-    [[nodiscard]]
-    size_type size() const;
+    [[nodiscard]] size_type size() const;
 
     /// Check if the map has no entries.
-    [[nodiscard]]
-    bool empty() const;
+    [[nodiscard]] bool empty() const;
 
     /// Return the average number of entries per bucket (size / bucket_count).
-    [[nodiscard]]
-    float loadFactor() const;
+    [[nodiscard]] float loadFactor() const;
 
     // ---- iterators ----
 
@@ -171,17 +167,14 @@ public:  // methods
     // ---- lookup ----
 
     /// Find entry by key. Returns end() if not found.
-    [[nodiscard]]
-    iterator find(const key_type& key) const;
+    [[nodiscard]] iterator find(const key_type& key) const;
 
     /// Check if an entry with the given key exists.
-    [[nodiscard]]
-    bool contains(const key_type& key) const;
+    [[nodiscard]] bool contains(const key_type& key) const;
 
     /// Return the number of entries matching key.
     /// For unique-key usage this is 0 or 1; may be >1 after forceInsert() creates duplicates.
-    [[nodiscard]]
-    size_type count(const key_type& key) const;
+    [[nodiscard]] size_type count(const key_type& key) const;
 
     // ---- modifiers (concurrent-safe) ----
 
@@ -200,8 +193,8 @@ public:  // methods
     std::pair<iterator, bool> insert(const key_type& key, const Buffer& data) { return insert(key, data.view()); }
 
     /// Insert or replace a key-value pair.
-    /// First insert (via pushFront), then erase any previous entry. This ordering guarantees that
-    /// concurrent readers always see either the old or the new value — never an empty slot.
+    /// First insert (via pushFront), then erase any previous entry. This ordering guarantees that concurrent readers
+    /// always see either the old or the new value — never an empty slot.
     /// Returns {iterator, true} if no prior entry existed, {iterator, false} if an existing entry was replaced.
     std::pair<iterator, bool> insertOrAssign(const key_type& key, const void* data, size_type length);
 
@@ -215,9 +208,8 @@ public:  // methods
         return insertOrAssign(key, data.view());
     }
 
-    /// Insert a key-value pair unconditionally (no dedup check). Supports multi-valued keys.
-    /// The new entry is prepended (pushFront) so the latest entry for a key is found first.
-    /// Use insert() for unique-key semantics.
+    /// Insert a key-value pair unconditionally (no dedup check). Supports multi-valued keys. The new entry is
+    /// prepended (pushFront) so the latest entry for a key is found first. Use insert() for unique-key semantics.
     /// Returns an iterator to the newly inserted entry.
     iterator forceInsert(const key_type& key, const void* data, size_type length);
 
@@ -242,9 +234,9 @@ public:  // methods
     /// @pre No concurrent modifications to @p other during merge.
     void merge(const FamMap& other);
 
-    /// Acquire the map-wide FAM spinlock (lease-based).  Pair with unlock().
-    /// Stores a wall-clock timestamp in the FAM lock object.  If the holder
-    /// crashes, waiters take the lock after @c lock_ttl seconds.
+    /// Acquire the map-wide FAM spinlock (lease-based). Pair with unlock().
+    /// Stores a wall-clock timestamp in the FAM lock object. If the holder crashes, waiters take the lock after
+    /// @c lock_ttl seconds.
     void lock();
 
     /// Release the map-wide FAM spinlock.  Pair with lock().

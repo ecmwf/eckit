@@ -38,13 +38,6 @@ public:  // methods
 
     fam::index_t index() const;
 
-    /// Region id as carried by this region's data items, which OpenFAM may report
-    /// differently from the region descriptor's own id; falls back to index().
-    fam::index_t objectIndex() const;
-
-    /// Seed objectIndex() when it is known from a previously stored descriptor.
-    void useObjectIndex(fam::index_t index) const;
-
     fam::size_t size() const;
 
     fam::perm_t permissions() const;
@@ -59,8 +52,10 @@ public:  // methods
 
     // object methods
 
+    /// Wraps an already-allocated object at @p descriptor, reusing this region's session.
+    /// The descriptor addresses the object on its own memory server, which need not match index().
     /// @note this avoids invoking fam, as in lookupObject.
-    FamObject proxyObject(fam::index_t offset) const;
+    FamObject proxyObject(const FamDescriptor& descriptor) const;
 
     FamObject lookupObject(const std::string& object_name) const;
 
@@ -79,9 +74,6 @@ public:  // methods
 
 private:  // methods
 
-    /// Objects are registered under the id they carry, so remember it for proxying.
-    void noteObjectIndex(const FamObject& object) const;
-
     void print(std::ostream& out) const;
 
     friend std::ostream& operator<<(std::ostream& out, const FamRegion& region);
@@ -90,9 +82,6 @@ private:  // members
 
     std::shared_ptr<FamSession> session_;
     std::shared_ptr<FamRegionDescriptor> region_;
-
-    // 0 means "not yet observed"
-    mutable std::shared_ptr<fam::index_t> objectIndex_{std::make_shared<fam::index_t>(0)};
 };
 
 //----------------------------------------------------------------------------------------------------------------------

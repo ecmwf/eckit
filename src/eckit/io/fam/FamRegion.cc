@@ -13,13 +13,11 @@
 #include <sstream>
 #include <string>
 
-#include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamProperty.h"
 #include "eckit/io/fam/FamSession.h"
 #include "eckit/io/fam/FamTypes.h"
-#include "eckit/log/Log.h"
 
 #include "fam/fam.h"
 
@@ -47,27 +45,6 @@ bool FamRegion::exists() const {
 
 fam::index_t FamRegion::index() const {
     return region_->get_global_descriptor().regionId;
-}
-
-fam::index_t FamRegion::objectIndex() const {
-    const auto observed = *objectIndex_;
-    return observed != 0 ? observed : index();
-}
-
-void FamRegion::noteObjectIndex(const FamObject& object) const {
-    useObjectIndex(object.regionId());
-}
-
-void FamRegion::useObjectIndex(const fam::index_t observed) const {
-    if (observed == 0 || *objectIndex_ == observed) {
-        return;
-    }
-    if (observed != index()) {
-        LOG_DEBUG_LIB(LibEcKit) << "FAM region " << name() << " reports regionId=" << index()
-                                << " but its objects carry regionId=" << observed
-                                << "; proxying objects with the latter\n";
-    }
-    *objectIndex_ = observed;
 }
 
 fam::size_t FamRegion::size() const {
@@ -98,22 +75,18 @@ void FamRegion::setObjectLevelPermissions() const {
 // OBJECT factory methods
 
 // Creates a FamObject wrapper around an existing object identified by {regionId, offset}
-FamObject FamRegion::proxyObject(const fam::index_t offset) const {
-    return session_->proxyObject(objectIndex(), offset);
+FamObject FamRegion::proxyObject(const FamDescriptor& descriptor) const {
+    return session_->proxyObject(descriptor.region, descriptor.offset);
 }
 
 FamObject FamRegion::lookupObject(const std::string& object_name) const {
-    auto object = session_->lookupObject(name(), object_name);
-    noteObjectIndex(object);
-    return object;
+    return session_->lookupObject(name(), object_name);
 }
 
 FamObject FamRegion::allocateObject(const fam::size_t object_size, const fam::perm_t object_perm,
                                     const std::string& object_name, const bool overwrite) const {
-    auto object = overwrite ? session_->ensureAllocateObject(*region_, object_size, object_perm, object_name)
-                            : session_->allocateObject(*region_, object_size, object_perm, object_name);
-    noteObjectIndex(object);
-    return object;
+    return overwrite ? session_->ensureAllocateObject(*region_, object_size, object_perm, object_name)
+                     : session_->allocateObject(*region_, object_size, object_perm, object_name);
 }
 
 void FamRegion::deallocateObject(const std::string& object_name) const {

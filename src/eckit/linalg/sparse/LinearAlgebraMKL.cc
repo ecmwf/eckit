@@ -1,12 +1,11 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include "eckit/linalg/sparse/LinearAlgebraMKL.h"
 
-#include "mkl.h"
-
 #include <ostream>
+
+#include "mkl.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/linalg/Matrix.h"

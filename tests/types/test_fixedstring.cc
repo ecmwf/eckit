@@ -1,9 +1,8 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-#include "eckit/types/FixedString.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FixedString.h"
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wself-assign-overloaded"

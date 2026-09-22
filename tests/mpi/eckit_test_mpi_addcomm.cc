@@ -5,11 +5,11 @@
 #define MPICH_SKIP_MPICXX 1
 
 #include <mpi.h>
+
 #include <cstdlib>
 
 #include "eckit/mpi/Comm.h"
 #include "eckit/mpi/Parallel.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

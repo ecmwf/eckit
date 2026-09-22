@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "eckit/filesystem/PathName.h"
-
 #include "eckit/sql/Environment.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"

@@ -4,8 +4,8 @@
 // File BufferCache.cc
 // Baudouin Raoult - (c) ECMWF Jul 11
 
-
 #include "eckit/io/BufferCache.h"
+
 #include "eckit/serialisation/Stream.h"
 
 //----------------------------------------------------------------------------------------------------------------------

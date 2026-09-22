@@ -1,11 +1,10 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/testing/Test.h"
 #include "eckit/thread/Mutex.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace eckit;
 using namespace eckit::testing;

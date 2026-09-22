@@ -1,9 +1,10 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/io/FTPHandle.h"
+
 #include <arpa/inet.h>
 
-#include "eckit/io/FTPHandle.h"
 #include "eckit/log/Log.h"
 #include "eckit/net/IPAddress.h"
 #include "eckit/net/TCPServer.h"

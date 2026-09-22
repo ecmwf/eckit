@@ -9,6 +9,7 @@
 #define eckit_system_ResourceUsage_H
 
 #include <sys/resource.h>
+
 #include <cstddef>
 #include <iosfwd>
 

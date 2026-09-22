@@ -3,9 +3,8 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/maths/FloatingPointExceptions.h"
-#include "eckit/types/Fraction.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/Fraction.h"
 
 namespace eckit::test {
 

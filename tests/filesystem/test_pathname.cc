@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/filesystem/PathName.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2023 Crown Copyright, Met Office
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include <cmath>
 #include <limits>
 #include <vector>

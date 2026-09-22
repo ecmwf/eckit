@@ -7,7 +7,6 @@
 #include <unistd.h>
 
 #include "eckit/eckit.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/os/Stat.h"

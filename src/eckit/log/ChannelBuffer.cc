@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/log/ChannelBuffer.h"
+
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/CallbackTarget.h"
-#include "eckit/log/ChannelBuffer.h"
 #include "eckit/log/FileTarget.h"
 #include "eckit/log/IndentTarget.h"
 #include "eckit/log/LogTarget.h"

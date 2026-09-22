@@ -7,9 +7,8 @@
 #ifndef eckit_Loader_h
 #define eckit_Loader_h
 
-#include "eckit/eckit.h"
-
 #include "eckit/container/ClassExtent.h"
+#include "eckit/eckit.h"
 
 //-----------------------------------------------------------------------------
 

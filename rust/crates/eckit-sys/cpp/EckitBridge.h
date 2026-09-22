@@ -5,6 +5,7 @@
 // cxx-generated bridge (`include!("EckitBridge.h")` in lib.rs) and by
 // downstream `-sys` crates. Real declarations live in the per-topic headers
 // below.
+
 #pragma once
 
 // Note: the auto-generated `rust::behavior::trycatch` lives in

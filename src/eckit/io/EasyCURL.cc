@@ -8,6 +8,7 @@
 
 #include "eckit/io/EasyCURL.h"
 
+#include <curl/curl.h>
 #include <unistd.h>
 
 #include <memory>
@@ -15,8 +16,6 @@
 #include <sstream>
 #include <variant>
 #include <vector>
-
-#include <curl/curl.h>
 
 // #include "eckit/io/BufferedHandle.h"
 #include "eckit/io/CircularBuffer.h"

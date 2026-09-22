@@ -13,13 +13,12 @@
 #include <string>
 #include <utility>
 
-#include "eckit/io/fam/detail/FamBackoff.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/fam/FamListIterator.h"
 #include "eckit/io/fam/FamObject.h"
 #include "eckit/io/fam/FamRegion.h"
 #include "eckit/io/fam/FamRegionName.h"
+#include "eckit/io/fam/detail/FamBackoff.h"
 #include "eckit/io/fam/detail/FamListNode.h"
 
 namespace eckit {

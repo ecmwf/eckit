@@ -2,15 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/net/IPAddress.h"
-#include "eckit/exception/Exceptions.h"
 
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
 #include <cstring>
 #include <ostream>
+
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit::net {
 

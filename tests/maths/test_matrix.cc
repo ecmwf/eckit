@@ -4,9 +4,8 @@
 #include <array>
 
 #include "eckit/maths/Matrix.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 using eckit::types::is_approximately_equal;
 

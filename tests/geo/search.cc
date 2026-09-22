@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/geo/Search.h"
 
 #include <vector>
 
@@ -8,7 +9,6 @@
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/PointXY.h"
 #include "eckit/geo/PointXYZ.h"
-#include "eckit/geo/Search.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/testing/Test.h"
 

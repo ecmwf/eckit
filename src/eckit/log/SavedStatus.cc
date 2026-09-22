@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/log/SavedStatus.h"
+
 #include "eckit/runtime/Monitor.h"
 
 //----------------------------------------------------------------------------------------------------------------------

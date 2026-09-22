@@ -5,6 +5,7 @@
 /// Piotr Kuchta - (C) ECMWF July 2009
 
 #include "eckit/sql/expression/function/FunctionROWNUMBER.h"
+
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"

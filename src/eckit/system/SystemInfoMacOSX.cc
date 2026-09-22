@@ -5,12 +5,12 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
+#include "eckit/system/SystemInfoMacOSX.h"
+
 #include <mach-o/dyld.h>
 #include <mach/mach.h>
 #include <malloc/malloc.h>
 #include <sys/param.h>
-
-#include "eckit/system/SystemInfoMacOSX.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"

@@ -9,7 +9,6 @@
 #define eckit_log_TimeStamp_h
 
 #include <ctime>
-
 #include <iosfwd>
 #include <string>
 

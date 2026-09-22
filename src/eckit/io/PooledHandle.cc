@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/io/PooledHandle.h"
+
 #include <cstdio>
 #include <memory>
 #include <string>
@@ -10,7 +12,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
-#include "eckit/io/PooledHandle.h"
 #include "eckit/utils/MD5.h"
 
 

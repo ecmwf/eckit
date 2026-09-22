@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/function/FunctionJULIAN_SECONDS.h"
+
 #include "eckit/sql/expression/function/FunctionFactory.h"
 #include "eckit/types/Date.h"
 

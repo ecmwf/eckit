@@ -1,12 +1,10 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
-
-#include <algorithm>
 #include <memory>
 
 #include "eckit/io/Buffer.h"

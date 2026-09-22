@@ -5,9 +5,8 @@
 #include <limits>
 
 #include "eckit/maths/FloatingPointExceptions.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 namespace eckit::test {
 

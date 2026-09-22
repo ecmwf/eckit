@@ -12,9 +12,6 @@
 
 #include "FamMockSession.h"
 
-#include "fam/fam.h"
-#include "fam/fam_exception.h"
-
 #include <fcntl.h>
 #include <pthread.h>
 #include <sys/fcntl.h>
@@ -38,6 +35,9 @@
 #include <string_view>
 #include <system_error>
 #include <utility>
+
+#include "fam/fam.h"
+#include "fam/fam_exception.h"
 
 // process-shared mutexes are an optional POSIX feature
 #if defined(PTHREAD_MUTEX_ROBUST) && !defined(__APPLE__)

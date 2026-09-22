@@ -5,9 +5,8 @@
 
 #include "eckit/runtime/ProducerConsumer.h"
 #include "eckit/runtime/Tool.h"
-#include "eckit/utils/Translator.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/utils/Translator.h"
 
 using namespace std;
 using namespace eckit;

@@ -3,17 +3,16 @@
 
 #include "KDMapped.h"
 
-#include "eckit/filesystem/PathName.h"
-#include "eckit/os/Stat.h"
-
-
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #include <cstring>  // for memcpy
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/memory/MMap.h"
+#include "eckit/os/Stat.h"
 
 
 namespace eckit {

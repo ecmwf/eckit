@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/SQLDistinctOutput.h"
+
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 

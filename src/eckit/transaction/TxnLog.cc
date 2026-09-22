@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/transaction/TxnLog.h"
+
 #include <algorithm>
 #include <iomanip>
 #include <memory>
@@ -19,7 +21,6 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-#include "eckit/transaction/TxnLog.h"
 #include "eckit/utils/Translator.h"
 
 namespace eckit {

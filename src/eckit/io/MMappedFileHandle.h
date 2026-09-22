@@ -8,6 +8,7 @@
 #define eckit_io_MMappedFileHandle_h
 
 #include <memory>
+
 #include "eckit/io/DataHandle.h"
 
 

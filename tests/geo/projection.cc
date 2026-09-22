@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/geo/Projection.h"
 
 #include <memory>
 
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"  // to test Reverse
 #include "eckit/geo/projection/Reverse.h"

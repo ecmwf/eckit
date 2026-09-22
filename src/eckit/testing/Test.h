@@ -11,7 +11,6 @@
 #include <cerrno>
 #include <cstdlib>  // for setenv
 #include <cstring>  // for strerror
-
 #include <functional>
 #include <optional>
 #include <set>

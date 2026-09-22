@@ -7,8 +7,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cstring>
 
+#include <cstring>
 #include <string>
 
 #include "eckit/config/Resource.h"

@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include "eckit/distributed/mpi/MPITransport.h"
 
 #include <unistd.h>
@@ -9,6 +8,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "eckit/distributed/Actor.h"
+#include "eckit/distributed/Message.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Statistics.h"
 #include "eckit/log/TimeStamp.h"
@@ -17,9 +18,6 @@
 #include "eckit/os/AutoAlarm.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"
-
-#include "eckit/distributed/Actor.h"
-#include "eckit/distributed/Message.h"
 
 
 namespace eckit::distributed {

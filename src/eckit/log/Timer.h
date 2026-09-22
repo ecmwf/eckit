@@ -8,6 +8,7 @@
 #define eckit_Timer_h
 
 #include <sys/time.h>
+
 #include <ctime>
 
 #include "eckit/log/Log.h"

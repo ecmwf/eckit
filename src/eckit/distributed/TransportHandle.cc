@@ -3,11 +3,10 @@
 
 #include "TransportHandle.h"
 
-#include "eckit/exception/Exceptions.h"
-#include "eckit/maths/Functions.h"
-
 #include "eckit/distributed/Message.h"
 #include "eckit/distributed/Transport.h"
+#include "eckit/exception/Exceptions.h"
+#include "eckit/maths/Functions.h"
 
 namespace eckit::distributed {
 

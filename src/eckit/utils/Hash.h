@@ -4,14 +4,13 @@
 #ifndef eckit_utils_Hash_H
 #define eckit_utils_Hash_H
 
-#include "eckit/eckit.h"
-
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
 #include <map>
 #include <string>
 
+#include "eckit/eckit.h"
 #include "eckit/thread/Mutex.h"
 
 namespace eckit {

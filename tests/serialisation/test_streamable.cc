@@ -6,6 +6,7 @@
 /// @author Florian Rathgeber
 
 #include <sys/types.h>
+
 #include <cstdint>
 #include <limits>
 
@@ -13,7 +14,6 @@
 #include "eckit/io/AutoCloser.h"
 #include "eckit/serialisation/FileStream.h"
 #include "eckit/serialisation/Streamable.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

@@ -7,9 +7,8 @@
 #include "eckit/log/Log.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/runtime/Tool.h"
-#include "eckit/types/DateTime.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/DateTime.h"
 
 using namespace std;
 using namespace eckit;

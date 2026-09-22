@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/net/Port.h"
+
 #include "eckit/config/Resource.h"
 
 namespace eckit::net {

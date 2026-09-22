@@ -5,7 +5,6 @@
 #include "eckit/log/Log.h"
 #include "eckit/os/BackTrace.h"
 #include "eckit/runtime/Main.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

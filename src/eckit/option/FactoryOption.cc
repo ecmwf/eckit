@@ -7,11 +7,12 @@
 
 #pragma once
 
+#include "eckit/option/FactoryOption.h"
+
 #include <iostream>
 
 #include "eckit/config/Configured.h"
 #include "eckit/exception/Exceptions.h"
-#include "eckit/option/FactoryOption.h"
 
 namespace eckit::option {
 

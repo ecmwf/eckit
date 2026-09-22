@@ -6,7 +6,7 @@
 #pragma diag_suppress 550
 #endif
 
-#include <sys/types.h>  // FreeBSD: must appear before netinet/ip.h
+#include "eckit/net/TCPSocket.h"
 
 #include <arpa/inet.h>
 #include <fcntl.h>
@@ -16,9 +16,10 @@
 #include <setjmp.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
+#include <sys/types.h>  // FreeBSD: must appear before netinet/ip.h
 #include <unistd.h>
-#include <csignal>
 
+#include <csignal>
 #include <cstring>
 
 #include "eckit/config/Resource.h"
@@ -29,7 +30,6 @@
 #include "eckit/memory/Zero.h"
 #include "eckit/net/IPAddress.h"
 #include "eckit/net/TCPClient.h"
-#include "eckit/net/TCPSocket.h"
 #include "eckit/os/AutoAlarm.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/thread/AutoLock.h"

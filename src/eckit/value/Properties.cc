@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/value/Properties.h"
+
 #include "eckit/log/JSON.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/MD5.h"

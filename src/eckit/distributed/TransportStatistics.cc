@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/distributed/TransportStatistics.h"
+
 #include "eckit/serialisation/Stream.h"
 
 

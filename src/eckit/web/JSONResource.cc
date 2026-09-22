@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/web/JSONResource.h"
+
 #include "eckit/log/JSON.h"
 #include "eckit/web/Url.h"
 

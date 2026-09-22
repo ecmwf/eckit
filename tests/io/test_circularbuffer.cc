@@ -7,7 +7,6 @@
 
 #include "eckit/eckit.h"
 #include "eckit/io/CircularBuffer.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

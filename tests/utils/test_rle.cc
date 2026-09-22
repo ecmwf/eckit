@@ -10,9 +10,8 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/Timer.h"
-#include "eckit/utils/RLE.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/utils/RLE.h"
 
 using namespace std;
 using namespace eckit;

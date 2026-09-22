@@ -4,6 +4,9 @@
 #ifndef eckit_net_UDPServer_h
 #define eckit_net_UDPServer_h
 
+#include <sys/socket.h>
+
+#include <cstddef>
 #include <iosfwd>
 #include <string>
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/OrderByExpressions.h"
+
 #include "eckit/utils/StringTools.h"
 
 namespace eckit::sql::expression {

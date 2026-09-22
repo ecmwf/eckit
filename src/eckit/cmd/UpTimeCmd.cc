@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/UpTimeCmd.h"
+
 #include "eckit/log/Seconds.h"
 #include "eckit/log/TimeStamp.h"
 #include "eckit/runtime/Monitor.h"

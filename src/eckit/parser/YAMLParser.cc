@@ -6,11 +6,12 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
+#include "eckit/parser/YAMLParser.h"
+
 #include <algorithm>
 #include <fstream>
 
 #include "eckit/memory/Counted.h"
-#include "eckit/parser/YAMLParser.h"
 #include "eckit/types/Time.h"
 #include "eckit/utils/Regex.h"
 #include "eckit/utils/Translator.h"

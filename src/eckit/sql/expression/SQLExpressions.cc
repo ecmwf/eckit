@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/SQLExpressions.h"
+
 #include "eckit/sql/type/SQLType.h"
 
 namespace eckit::sql::expression {

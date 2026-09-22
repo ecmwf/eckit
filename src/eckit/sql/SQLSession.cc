@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/sql/SQLSession.h"
+
 #include <libgen.h>
+
 #include <cstring>
 
 #include "eckit/config/LibEcKit.h"
@@ -9,15 +12,13 @@
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/log/Timer.h"
-#include "eckit/utils/StringTools.h"
-
 #include "eckit/sql/SQLDatabase.h"
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLParser.h"
-#include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/SQLTableFactory.h"
+#include "eckit/utils/StringTools.h"
 
 using namespace eckit;
 

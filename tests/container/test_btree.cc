@@ -5,10 +5,9 @@
 
 #include "eckit/container/BTree.h"
 #include "eckit/os/Semaphore.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/FixedString.h"
 #include "eckit/types/Types.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

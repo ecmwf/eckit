@@ -1,19 +1,19 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-#include "eckit/types/Types.h"
-#include "eckit/utils/Translator.h"
+#include "eckit/sql/SQLSelectFactory.h"
 
 #include "eckit/sql/SQLDistinctOutput.h"
 #include "eckit/sql/SQLOrderOutput.h"
 #include "eckit/sql/SQLOutputConfig.h"
 #include "eckit/sql/SQLSelect.h"
-#include "eckit/sql/SQLSelectFactory.h"
 #include "eckit/sql/SQLSession.h"
 #include "eckit/sql/expression/BitColumnExpression.h"
 #include "eckit/sql/expression/SQLExpressions.h"
 #include "eckit/sql/expression/ShiftedColumnExpression.h"
 #include "eckit/sql/expression/function/FunctionExpression.h"
+#include "eckit/types/Types.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit::sql {
 

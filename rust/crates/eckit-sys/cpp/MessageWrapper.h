@@ -2,17 +2,18 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // eckit Message + Reader bridge — iterate GRIB messages over a DataHandle.
+
 #pragma once
-
-#include "DataHandleWrapper.h"
-#include "eckit/message/Message.h"
-#include "eckit/message/Reader.h"
-
-#include "rust/cxx.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+
+#include "DataHandleWrapper.h"
+#include "rust/cxx.h"
+
+#include "eckit/message/Message.h"
+#include "eckit/message/Reader.h"
 
 namespace eckit_bridge {
 

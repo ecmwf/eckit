@@ -6,7 +6,6 @@
 /// @author Simon Smart
 /// @date March 2016
 
-
 #include "eckit/option/CmdArgs.h"
 
 #include <iostream>

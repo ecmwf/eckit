@@ -12,10 +12,9 @@
 #include <memory>
 #include <vector>
 
+#include "eckit/distributed/Transport.h"
 #include "eckit/io/Select.h"
 #include "eckit/net/TCPServer.h"
-
-#include "eckit/distributed/Transport.h"
 
 namespace eckit {
 class Stream;

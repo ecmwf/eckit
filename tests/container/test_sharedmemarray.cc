@@ -5,6 +5,7 @@
 #include <sys/mman.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
+
 #include <cstdlib>
 
 #include "eckit/container/SharedMemArray.h"

@@ -4,12 +4,13 @@
 // File ClusterNodes.cc
 // Baudouin Raoult - (c) ECMWF Jul 11
 
+#include "eckit/io/cluster/ClusterNodes.h"
+
 #include <algorithm>
 
 #include "eckit/config/EtcTable.h"
 #include "eckit/config/Resource.h"
 #include "eckit/container/MappedArray.h"
-#include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/JSON.h"
 #include "eckit/memory/Zero.h"

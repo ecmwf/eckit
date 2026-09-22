@@ -1,18 +1,17 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include "eckit/maths/Qhull.h"
 
 #include <set>
 #include <sstream>
 
-#include "eckit/log/Log.h"
-#include "eckit/maths/ConvexHull.h"
-
 #include "libqhullcpp/Qhull.h"
 #include "libqhullcpp/QhullFacetList.h"
 #include "libqhullcpp/QhullVertexSet.h"
+
+#include "eckit/log/Log.h"
+#include "eckit/maths/ConvexHull.h"
 
 
 namespace eckit::maths {

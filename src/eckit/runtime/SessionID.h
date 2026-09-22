@@ -8,6 +8,7 @@
 #define eckit_runtime_SessionID_H
 
 #include <sys/types.h>
+
 #include <iosfwd>
 #include <string>
 #include <thread>

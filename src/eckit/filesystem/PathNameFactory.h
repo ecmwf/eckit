@@ -7,11 +7,11 @@
 #ifndef eckit_filesystem_PathNameFactory_h
 #define eckit_filesystem_PathNameFactory_h
 
-#include "eckit/filesystem/BasePathNameT.h"
-
 #include <map>
 #include <string>
 #include <vector>
+
+#include "eckit/filesystem/BasePathNameT.h"
 
 namespace eckit {
 

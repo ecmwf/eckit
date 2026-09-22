@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/web/HttpService.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/io/TCPSocketHandle.h"
 #include "eckit/runtime/Monitor.h"

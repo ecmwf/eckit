@@ -5,9 +5,8 @@
 #include <cctype>
 
 #include "eckit/log/Log.h"
-#include "eckit/testing/Test.h"
-
 #include "eckit/runtime/Metrics.h"
+#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

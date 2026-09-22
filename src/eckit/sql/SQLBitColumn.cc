@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/SQLBitColumn.h"
+
 #include "eckit/eckit.h"
 #include "eckit/log/Log.h"
 #include "eckit/sql/type/SQLBitfield.h"

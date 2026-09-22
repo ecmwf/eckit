@@ -8,9 +8,8 @@
 #ifndef eckit_types_FixedString_h
 #define eckit_types_FixedString_h
 
-#include <cstring>
-
 #include <algorithm>
+#include <cstring>
 #include <string>
 
 #include "eckit/exception/Exceptions.h"

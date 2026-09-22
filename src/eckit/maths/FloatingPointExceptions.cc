@@ -3,13 +3,13 @@
 
 #include "eckit/maths/FloatingPointExceptions.h"
 
+#include <unistd.h>
+
 #include <cfenv>
 #include <csignal>
 #include <map>
 #include <utility>
 #include <vector>
-
-#include <unistd.h>
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/eckit_config.h"

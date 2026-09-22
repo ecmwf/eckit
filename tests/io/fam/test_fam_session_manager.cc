@@ -10,9 +10,9 @@
 /// @author Metin Cakircali
 /// @date   Mar 2026
 
-#include "test_fam_common.h"
-
 #include <chrono>
+
+#include "test_fam_common.h"
 
 #include "eckit/io/fam/FamSession.h"
 #include "eckit/io/fam/FamSessionManager.h"

@@ -2,12 +2,13 @@
 // SPDX-FileCopyrightText: 2023- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/geometry/CoordinateHelpers.h"
+
 #include <cmath>
 #include <limits>
 #include <sstream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geometry/CoordinateHelpers.h"
 #include "eckit/geometry/Point2.h"
 
 namespace eckit::geometry {

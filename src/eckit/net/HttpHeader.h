@@ -8,7 +8,6 @@
 #define HttpHeader_H
 
 #include "eckit/eckit.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/MemoryHandle.h"
 

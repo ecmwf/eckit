@@ -2,14 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // eckit DataHandle bridge — wraps `eckit::DataHandle` and its factories.
+
 #pragma once
-
-#include "eckit/io/DataHandle.h"
-
-#include "rust/cxx.h"
 
 #include <cstdint>
 #include <memory>
+
+#include "rust/cxx.h"
+
+#include "eckit/io/DataHandle.h"
 
 namespace eckit_bridge {
 

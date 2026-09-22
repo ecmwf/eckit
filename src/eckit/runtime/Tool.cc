@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/runtime/Tool.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/OStreamTarget.h"
 

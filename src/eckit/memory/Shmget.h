@@ -9,6 +9,7 @@
 #define eckit_memory_Shmget_h
 
 #include <sys/shm.h>  // for key_t
+
 #include <iosfwd>
 
 namespace eckit {

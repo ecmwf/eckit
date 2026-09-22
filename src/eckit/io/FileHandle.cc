@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/io/FileHandle.h"
+
 #include <dirent.h>
 #include <sys/stat.h>
 
-#include "eckit/eckit.h"
-
 #include "eckit/config/Resource.h"
+#include "eckit/eckit.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/FDataSync.h"
-#include "eckit/io/FileHandle.h"
 #include "eckit/io/MoverTransferSelection.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/Bytes.h"

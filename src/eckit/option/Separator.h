@@ -5,7 +5,6 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
 #ifndef Separator_H
 #define Separator_H
 

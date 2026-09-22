@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/eckit.h"
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Regex.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/utils/Regex.h"
 
 using namespace std;
 using namespace eckit;

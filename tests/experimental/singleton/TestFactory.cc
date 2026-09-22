@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "TestFactory.h"
+
 #include <algorithm>
 #include <cassert>
 #include <exception>
@@ -9,8 +11,6 @@
 #include <new>
 
 #include "eckit/exception/Exceptions.h"
-
-#include "TestFactory.h"
 
 
 struct TestFactory::PImpl {

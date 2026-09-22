@@ -5,10 +5,10 @@
 #define eckit_SignalHandler_h
 
 #include <setjmp.h>
+
 #include <csignal>
 
 #include "eckit/eckit.h"
-
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {

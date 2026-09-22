@@ -4,8 +4,8 @@
 #include "eckit/mpi/Serial.h"
 
 #include <unistd.h>
-#include <cerrno>
 
+#include <cerrno>
 #include <cstring>
 #include <deque>
 #include <limits>

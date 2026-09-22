@@ -8,6 +8,8 @@
 #define eckit_Exporter_h
 
 
+#include <cstddef>
+#include <iosfwd>
 #include <map>
 #include <vector>
 

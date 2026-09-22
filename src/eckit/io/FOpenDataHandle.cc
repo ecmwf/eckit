@@ -4,10 +4,9 @@
 #include <cmath>
 #include <cstring>
 
-#include "eckit/eckit.h"
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
+#include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/io/rados/RadosWriteHandle.h"
 
 #include <map>
 
@@ -8,7 +9,6 @@
 #include "eckit/io/rados/RadosAttributes.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
-#include "eckit/io/rados/RadosWriteHandle.h"
 
 
 namespace eckit {

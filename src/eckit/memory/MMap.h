@@ -8,8 +8,10 @@
 #ifndef eckit_memory_MMap_h
 #define eckit_memory_MMap_h
 
-#include <iosfwd>
+#include <sys/types.h>
 
+#include <cstddef>
+#include <iosfwd>
 
 namespace eckit {
 

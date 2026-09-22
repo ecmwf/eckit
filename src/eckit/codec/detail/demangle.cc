@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include "eckit/codec/detail/demangle.h"
 
 #include "eckit/eckit_config.h"
 
 #if eckit_HAVE_CXXABI_H
 #include <cxxabi.h>
+
 #include <cstdlib>
 #include <memory>
 #endif

@@ -4,7 +4,6 @@
 /// @author Florian Rathgeber
 /// @author Pedro Maciel
 
-
 #pragma once
 
 #include <iosfwd>

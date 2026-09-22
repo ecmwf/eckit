@@ -7,10 +7,9 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/Fraction.h"
 #include "eckit/utils/Translator.h"
-
-#include "eckit/testing/Test.h"
 
 namespace eckit::test {
 

@@ -7,7 +7,6 @@
 #include "eckit/log/ColouringTarget.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/runtime/Main.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

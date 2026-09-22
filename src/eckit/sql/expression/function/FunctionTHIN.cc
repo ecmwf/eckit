@@ -5,6 +5,7 @@
 /// (C) ECMWF July 2010
 
 #include "eckit/sql/expression/function/FunctionTHIN.h"
+
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLTable.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"

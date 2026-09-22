@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/type/SQLDouble.h"
+
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/utils/Translator.h"
 

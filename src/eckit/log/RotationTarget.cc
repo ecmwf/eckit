@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-#include <fstream>
-
 #include "eckit/log/RotationTarget.h"
+
+#include <fstream>
 
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"

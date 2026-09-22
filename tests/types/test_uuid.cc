@@ -1,11 +1,9 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include "eckit/exception/Exceptions.h"
-#include "eckit/types/UUID.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/UUID.h"
 
 using namespace std;
 using namespace eckit;

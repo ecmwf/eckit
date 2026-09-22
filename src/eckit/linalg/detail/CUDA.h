@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include <cublas_v2.h>
 #include <cuda_runtime.h>
 #include <cusparse.h>

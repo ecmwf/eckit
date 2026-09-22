@@ -7,9 +7,9 @@
 #ifndef SQLIterator_H
 #define SQLIterator_H
 
-#include "eckit/sql/type/SQLType.h"
-
 #include <functional>
+
+#include "eckit/sql/type/SQLType.h"
 
 namespace eckit {
 namespace sql {

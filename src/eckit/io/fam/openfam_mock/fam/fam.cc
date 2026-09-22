@@ -22,9 +22,8 @@
 #include <string>
 #include <string_view>
 
-#include "fam/fam_exception.h"
-
 #include "FamMockSession.h"
+#include "fam/fam_exception.h"
 
 //----------------------------------------------------------------------------------------------------------------------
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/SQLOrderOutput.h"
+
 #include "eckit/sql/expression/SQLExpressionEvaluated.h"
 
 using namespace eckit::sql::expression;

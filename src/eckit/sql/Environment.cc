@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/Environment.h"
+
 #include "eckit/sql/SQLTable.h"
 
 namespace eckit::sql {

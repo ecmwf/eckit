@@ -8,12 +8,12 @@
 #ifndef eckit_io_rados_RadosCluster_h
 #define eckit_io_rados_RadosCluster_h
 
+#include <rados/librados.h>
+
 #include <iostream>
 #include <map>
 #include <memory>
 #include <string>
-
-#include <rados/librados.h>
 
 #include "eckit/io/Length.h"
 

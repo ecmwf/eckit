@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/AliasCmd.h"
+
 #include "eckit/cmd/CmdParser.h"
 
 //----------------------------------------------------------------------------------------------------------------------

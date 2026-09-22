@@ -5,7 +5,6 @@
 #define eckit_Pipe_h
 
 #include "eckit/eckit.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/CodeLocation.h"
 #include "eckit/thread/AutoLock.h"

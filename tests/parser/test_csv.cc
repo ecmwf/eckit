@@ -3,7 +3,6 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/parser/CSVParser.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

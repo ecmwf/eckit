@@ -4,11 +4,10 @@
 #ifndef BSPTree_H
 #define BSPTree_H
 
+#include "eckit/container/KDMapped.h"
+#include "eckit/container/KDMemory.h"
 #include "eckit/container/bsptree/BSPNode.h"
 #include "eckit/container/sptree/SPTree.h"
-
-#include "KDMapped.h"
-#include "KDMemory.h"
 
 namespace eckit {
 

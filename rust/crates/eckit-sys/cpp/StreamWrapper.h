@@ -2,21 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // eckit Stream bridge — TCP and in-memory `eckit::Stream` serialization.
+
 #pragma once
 
+#include <cstdint>
+#include <memory>
+#include <string>
+
 #include "DataHandleWrapper.h"
+#include "rust/cxx.h"
+
 #include "eckit/io/Buffer.h"
 #include "eckit/net/TCPSocket.h"
 #include "eckit/net/TCPStream.h"
 #include "eckit/serialisation/MemoryStream.h"
 #include "eckit/serialisation/ResizableMemoryStream.h"
 #include "eckit/serialisation/Stream.h"
-
-#include "rust/cxx.h"
-
-#include <cstdint>
-#include <memory>
-#include <string>
 
 namespace eckit_bridge {
 

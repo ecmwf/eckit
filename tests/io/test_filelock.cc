@@ -3,9 +3,8 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/FileLock.h"
-#include "eckit/thread/AutoLock.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/thread/AutoLock.h"
 
 namespace eckit::test {
 

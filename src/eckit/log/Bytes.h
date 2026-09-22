@@ -8,10 +8,10 @@
 #ifndef eckit_log_Bytes_h
 #define eckit_log_Bytes_h
 
-#include "eckit/utils/Literals.h"
-
 #include <iosfwd>
 #include <string>
+
+#include "eckit/utils/Literals.h"
 
 
 namespace eckit {

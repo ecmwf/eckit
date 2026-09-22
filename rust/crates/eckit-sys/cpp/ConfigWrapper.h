@@ -2,15 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // eckit Configuration bridge — wraps `eckit::LocalConfiguration`.
+
 #pragma once
-
-#include "eckit/config/LocalConfiguration.h"
-
-#include "rust/cxx.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+
+#include "rust/cxx.h"
+
+#include "eckit/config/LocalConfiguration.h"
 
 namespace eckit_bridge {
 

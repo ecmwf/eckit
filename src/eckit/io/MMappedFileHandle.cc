@@ -3,12 +3,13 @@
 
 // #include <dirent.h>
 // #include <sys/stat.h>
+#include "eckit/io/MMappedFileHandle.h"
+
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/io/MMappedFileHandle.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/memory/MMap.h"
 #include "eckit/os/Stat.h"

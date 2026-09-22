@@ -3,11 +3,10 @@
 
 #include <algorithm>
 
+#include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/RendezvousHash.h"
 #include "eckit/utils/Translator.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

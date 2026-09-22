@@ -7,10 +7,9 @@
 #include "eckit/filesystem/LocalPathName.h"
 #include "eckit/log/Log.h"
 #include "eckit/mpi/Comm.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/types/Types.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace eckit;
 using namespace eckit::types;

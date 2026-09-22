@@ -1,11 +1,9 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date   Nov 2016
-
 
 #ifndef eckit_StaticMutex_h
 #define eckit_StaticMutex_h

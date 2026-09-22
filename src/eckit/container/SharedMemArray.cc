@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <fcntl.h>
-#include <unistd.h>
-#include <cstdint>
-#include <cstring>
-
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
+
+#include <cstdint>
+#include <cstring>
 
 namespace eckit {
 

@@ -18,7 +18,6 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

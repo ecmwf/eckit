@@ -5,7 +5,6 @@
 /// @author Tiago Quintino
 /// @date   Sep 96
 
-
 #ifndef eckit_Date_h
 #define eckit_Date_h
 

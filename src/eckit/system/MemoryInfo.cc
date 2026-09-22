@@ -5,6 +5,8 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
+#include "eckit/system/MemoryInfo.h"
+
 #include <cstring>
 #include <iostream>
 
@@ -12,7 +14,6 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/memory/MMap.h"
 #include "eckit/memory/Shmget.h"
-#include "eckit/system/MemoryInfo.h"
 
 namespace eckit::system {
 

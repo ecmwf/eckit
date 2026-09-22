@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "eckit/io/EasyCURL.h"
-
 #include "eckit/testing/Test.h"
 
 using eckit::EasyCURL;

@@ -6,7 +6,6 @@
 #include "eckit/log/Colour.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

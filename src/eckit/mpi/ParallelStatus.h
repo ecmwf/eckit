@@ -8,6 +8,7 @@
 #define MPICH_SKIP_MPICXX 1
 
 #include <mpi.h>
+
 #include <iosfwd>
 
 #include "eckit/mpi/Status.h"

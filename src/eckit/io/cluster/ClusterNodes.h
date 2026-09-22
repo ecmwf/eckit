@@ -8,7 +8,6 @@
 #define eckit_ClusterNodes_h
 
 #include "eckit/eckit.h"
-
 #include "eckit/io/cluster/NodeInfo.h"
 
 //-----------------------------------------------------------------------------

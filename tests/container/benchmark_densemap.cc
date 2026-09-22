@@ -8,10 +8,9 @@
 #include "eckit/container/DenseMap.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Timer.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/FixedString.h"
 #include "eckit/utils/Translator.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/function/FunctionNOT_IN.h"
+
 #include "eckit/sql/expression/function/FunctionEQ.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 

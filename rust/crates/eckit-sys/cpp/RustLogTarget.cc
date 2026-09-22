@@ -5,13 +5,12 @@
 
 // trycatch handler — must come before the cxx-generated header so the
 // generated wrappers' Result<T> handling picks up our specialization.
-#include "eckit_exceptions.h"
-
 #include "RustLogTarget.h"
-#include "eckit-sys/src/lib.rs.h"  // cxx-generated — provides LogLevel values
 
+#include "eckit-sys/src/lib.rs.h"  // cxx-generated — provides LogLevel values
 #include "eckit/system/Library.h"
 #include "eckit/system/LibraryManager.h"
+#include "eckit_exceptions.h"
 
 #ifdef __APPLE__
 #include <cstdlib>  // getprogname

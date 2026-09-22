@@ -8,11 +8,12 @@
 
 #pragma once
 
+#include "eckit/option/VectorOption.h"
+
 #include <iostream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/option/Title.h"
-#include "eckit/option/VectorOption.h"
 #include "eckit/utils/Tokenizer.h"
 #include "eckit/utils/Translator.h"
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/value/BoolContent.h"
+
 #include "eckit/log/JSON.h"
 #include "eckit/utils/Hash.h"
 #include "eckit/utils/Translator.h"

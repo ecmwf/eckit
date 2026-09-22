@@ -3,14 +3,13 @@
 
 // eckit Stream bridge — implementation.
 
-#include "eckit_exceptions.h"
-
 #include "StreamWrapper.h"
-#include "eckit-sys/src/lib.rs.h"
 
+#include "eckit-sys/src/lib.rs.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/TCPSocketHandle.h"
 #include "eckit/net/TCPClient.h"
+#include "eckit_exceptions.h"
 
 namespace eckit_bridge {
 

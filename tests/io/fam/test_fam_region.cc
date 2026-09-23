@@ -12,9 +12,12 @@
 
 #include "test_fam_common.h"
 
+#include <cstddef>
 #include <cstdlib>
 #include <sstream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"
@@ -25,6 +28,7 @@
 #include "eckit/io/fam/FamRegionName.h"
 #include "eckit/io/fam/FamSession.h"
 #include "eckit/io/fam/FamSessionManager.h"
+#include "eckit/io/fam/FamTypes.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/testing/Test.h"
 
@@ -135,10 +139,9 @@ CASE("FamRegion: proxyObject creates a valid proxy") {
     const std::string data = "proxy_test_data";
     auto object            = region.allocateObject(data.size(), object_name);
     object.put(data.data(), 0, data.size());
-    const auto offset = object.offset();
 
     // proxyObject wraps an existing object by {regionId, offset}
-    auto proxy = region.proxyObject(offset);
+    auto proxy = region.proxyObject(object.descriptor());
 
     // proxy doesn't carry metadata, but can perform data ops
     Buffer buf(data.size());
@@ -147,6 +150,56 @@ CASE("FamRegion: proxyObject creates a valid proxy") {
     EXPECT(buf.view() == data);
 
     object.deallocate();
+    region.destroy();
+}
+
+CASE("FamRegion: objects are addressed by {regionId, offset}, not offset alone") {
+    // A region striped over several memory servers hands out colliding offsets, and its data items report a region id
+    // that differs from the region descriptor's own. Both are why FamDescriptor carries the pair.
+    const auto region_name = fam::TestFam::makeRandomText("REGION");
+    FamRegionName name{fam::test_endpoint, region_name};
+
+    name.create(4096, 0640);
+    auto region = name.lookup();
+
+    constexpr std::size_t object_count = 8;
+
+    std::vector<FamObject> objects;
+    std::vector<std::string> payloads;
+    objects.reserve(object_count);
+    payloads.reserve(object_count);
+
+    for (std::size_t i = 0; i < object_count; ++i) {
+        payloads.emplace_back("payload_" + std::to_string(i));
+        auto object = region.allocateObject(payloads[i].size(), fam::TestFam::makeRandomText("OBJECT"));
+        object.put(payloads[i].data(), 0, payloads[i].size());
+        objects.push_back(std::move(object));
+    }
+
+    // Every descriptor must round-trip through a single 64-bit word.
+    for (std::size_t i = 0; i < object_count; ++i) {
+        const auto descriptor = objects[i].descriptor();
+        EXPECT(FamDescriptor::unpack(descriptor.pack()) == descriptor);
+    }
+
+    // Descriptors are unique as pairs even where the offsets alone are not.
+    for (std::size_t i = 0; i < object_count; ++i) {
+        for (std::size_t j = i + 1; j < object_count; ++j) {
+            EXPECT(objects[i].descriptor() != objects[j].descriptor());
+        }
+    }
+
+    // A proxy built from the full descriptor reaches the right object; one built from the region's own id need not.
+    for (std::size_t i = 0; i < object_count; ++i) {
+        Buffer buffer(payloads[i].size());
+        buffer.zero();
+        region.proxyObject(objects[i].descriptor()).get(buffer.data(), 0, payloads[i].size());
+        EXPECT(buffer.view() == payloads[i]);
+    }
+
+    for (auto& object : objects) {
+        object.deallocate();
+    }
     region.destroy();
 }
 

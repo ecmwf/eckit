@@ -51,6 +51,34 @@ constexpr std::size_t g_max_objs_per_region = 4096;              // Max objects 
 constexpr std::size_t g_default_shm_size    = 64 * 1024 * 1024;  // 64 MiB default
 
 //----------------------------------------------------------------------------------------------------------------------
+/// Multi-memory-server emulation
+///
+/// A real OpenFAM region is striped over several memory servers. Data items then carry
+/// `regionNumber | (memoryServerId << REGIONID_BITS)` in the region half of their global descriptor, while the *region*
+/// descriptor keeps the bare region number; and item offsets are only unique within one memory server. Reproducing both
+/// properties here is what keeps FamDescriptor::pack() under test.
+/// Override the server count with "export ECKIT_FAM_MOCK_MEMSERVERS=1" to get single-server addressing.
+
+constexpr unsigned g_regionid_bits         = 14;  // OpenFAM REGIONID_BITS
+constexpr std::uint64_t g_regionid_mask    = (std::uint64_t{1} << g_regionid_bits) - 1;
+constexpr std::size_t g_max_memservers     = 8;
+constexpr std::size_t g_default_memservers = 2;
+
+/// Offset 0 is the null address, so every server's allocation cursor starts here.
+constexpr std::uint64_t g_first_offset = 8;
+
+/// Region half of a data item's global descriptor.
+constexpr std::uint64_t encodeRegionId(std::uint64_t regionId, std::uint64_t server) {
+    return regionId | (server << g_regionid_bits);
+}
+
+/// Address of a data item within a region: memory server plus offset in that server's space.
+struct Address {
+    std::uint64_t server{0};
+    std::uint64_t offset{0};
+};
+
+//----------------------------------------------------------------------------------------------------------------------
 
 /// @note POD no virtual, no std::string
 struct Object {
@@ -58,6 +86,7 @@ struct Object {
 
     char name[g_max_name_len]{};
 
+    std::uint64_t server{0};
     std::uint64_t offset{0};
 
     std::uint64_t size{0};
@@ -78,8 +107,11 @@ struct Region {
     std::uint64_t size{0};
     mode_t perm{0};
 
-    /// Starts at 8 as offset 0 is used as a null value
-    std::uint64_t nextOffset{8};
+    std::uint64_t memoryServers{1};
+    std::uint64_t nextServer{0};
+
+    /// Allocation cursor per memory server; see g_first_offset.
+    std::uint64_t nextOffset[g_max_memservers]{};
 
     Object objects[g_max_objs_per_region];
 };
@@ -158,7 +190,10 @@ public:
     // Region
 
     Region* findRegionByName(const char* name);
+
+    /// @param regionId bare region number, or a data item's encoded region half.
     Region* findRegionById(std::uint64_t regionId);
+
     Region* allocateRegionSlot();
 
     /// throws `FAM_ERR_NOTFOUND`
@@ -170,14 +205,20 @@ public:
     //------------------------------------------------------------------------------------------------------------------
     // Object
 
-    static Object* findObjectByOffset(Region& region, std::uint64_t offset);
+    /// Offsets repeat across memory servers, so both halves of the address are needed.
+    static Object* findObjectAt(Region& region, std::uint64_t server, std::uint64_t offset);
+
     static Object* findObjectByName(Region& region, const char* name);
     static Object* allocateObjectSlot(Region& region);
+
+    /// Reserves the next {server, offset} address in @p region for an object of @p size bytes.
+    static Address reserveAddress(Region& region, std::uint64_t size);
 
     /// Finds an object by descriptor or throws `FAM_ERR_NOTFOUND`.
     Object& findObject(Fam_Descriptor* desc);
 
-    void freeObject(Object& obj);
+    /// Releases @p obj and, if it was the last allocation on its server, rewinds that server's cursor.
+    void freeObject(Region& region, Object& obj);
 
     //------------------------------------------------------------------------------------------------------------------
     // Data
@@ -194,6 +235,9 @@ public:
     // Accessors
 
     std::uint64_t nextRegion() { return state_->nextRegion++; }
+
+    /// Number of memory servers new regions are striped over (ECKIT_FAM_MOCK_MEMSERVERS).
+    static std::uint64_t memoryServers();
 
 private:
 

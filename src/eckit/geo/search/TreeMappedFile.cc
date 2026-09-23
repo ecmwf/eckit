@@ -1,16 +1,14 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include "eckit/geo/search/TreeMappedFile.h"
 
 #include "eckit/filesystem/PathExpander.h"
-#include "eckit/utils/Tokenizer.h"
-
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/log/Log.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit::geo::search {

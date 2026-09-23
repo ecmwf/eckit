@@ -5,7 +5,6 @@
 
 #include "eckit/container/CacheLRU.h"
 #include "eckit/exception/Exceptions.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

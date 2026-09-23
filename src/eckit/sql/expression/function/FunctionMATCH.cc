@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-#include "eckit/types/Types.h"
+#include "eckit/sql/expression/function/FunctionMATCH.h"
+
+#include <algorithm>
+#include <vector>
 
 #include "eckit/sql/SQLMATCHSubquerySession.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLStatement.h"
 #include "eckit/sql/expression/function/FunctionEQ.h"
-#include "eckit/sql/expression/function/FunctionMATCH.h"
-
-#include <algorithm>
-#include <vector>
+#include "eckit/types/Types.h"
 
 namespace eckit {
 namespace sql {

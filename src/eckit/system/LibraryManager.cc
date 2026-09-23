@@ -4,15 +4,14 @@
 /// @author Tiago Quintino
 /// @date   November 2020
 
-#include <algorithm>
-#include <cctype>
-#include <map>
-
-#include <dlfcn.h>  // for dlopen
-#include <climits>  // for PATH_MAX
-
 #include "eckit/system/LibraryManager.h"
 
+#include <dlfcn.h>  // for dlopen
+
+#include <algorithm>
+#include <cctype>
+#include <climits>  // for PATH_MAX
+#include <map>
 
 #include "eckit/config/LocalConfiguration.h"
 #include "eckit/config/Resource.h"

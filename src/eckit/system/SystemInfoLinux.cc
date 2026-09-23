@@ -5,6 +5,8 @@
 /// @author Tiago Quintino
 /// @date   May 2016
 
+#include "eckit/system/SystemInfoLinux.h"
+
 #include <malloc.h>
 #include <sys/resource.h>
 #include <sys/time.h>
@@ -14,8 +16,6 @@
 #include <climits>
 #include <cstdlib>
 #include <fstream>
-
-#include "eckit/system/SystemInfoLinux.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"

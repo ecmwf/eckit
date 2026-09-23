@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <sys/types.h>
+
 #include <cstdio>
 #include <cstdlib>
 
 #include "eckit/io/AutoCloser.h"
 #include "eckit/serialisation/FileStream.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

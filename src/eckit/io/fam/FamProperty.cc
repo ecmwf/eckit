@@ -8,8 +8,6 @@
 
 #include "eckit/io/fam/FamProperty.h"
 
-#include "eckit/exception/Exceptions.h"
-
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -18,6 +16,8 @@
 #include <sstream>
 #include <string>
 #include <utility>
+
+#include "eckit/exception/Exceptions.h"
 
 namespace eckit {
 

@@ -4,11 +4,10 @@
 #ifndef KDTree_H
 #define KDTree_H
 
+#include "eckit/container/KDMapped.h"
+#include "eckit/container/KDMemory.h"
 #include "eckit/container/kdtree/KDNode.h"
 #include "eckit/container/sptree/SPTree.h"
-
-#include "KDMapped.h"
-#include "KDMemory.h"
 
 
 namespace eckit {

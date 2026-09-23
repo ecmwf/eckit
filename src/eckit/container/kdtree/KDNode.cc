@@ -4,6 +4,8 @@
 #ifndef KDNode_CC
 #define KDNode_CC
 
+#include "eckit/container/kdtree/KDNode.h"
+
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -12,8 +14,6 @@
 #include <algorithm>
 #include <cstdio>
 #include <limits>
-
-#include "KDNode.h"
 
 namespace eckit {
 

@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/io/cluster/ClusterNode.h"
+
 #include <unistd.h>
 
 #include "eckit/config/Resource.h"
 #include "eckit/io/cluster/ClusterDisks.h"
-#include "eckit/io/cluster/ClusterNode.h"
 #include "eckit/io/cluster/ClusterNodes.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/net/Port.h"

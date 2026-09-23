@@ -5,9 +5,8 @@
 #include <iostream>
 #include <memory>
 
-#include "eckit/utils/Hash.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/utils/Hash.h"
 
 using namespace std;
 using namespace eckit;

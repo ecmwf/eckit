@@ -6,18 +6,16 @@
 /// @author Simon Smart
 /// @date   March 2017
 
-#include <cstdlib>
-
-#include <sys/types.h>  // FreeBSD: must appear before sys/sysctl.h
+#include "eckit/system/SystemInfoFreeBSD.h"
 
 #include <sys/resource.h>
 #include <sys/sysctl.h>
 #include <sys/time.h>
+#include <sys/types.h>  // FreeBSD: must appear before sys/sysctl.h
 #include <unistd.h>
 
 #include <climits>
-
-#include "eckit/system/SystemInfoFreeBSD.h"
+#include <cstdlib>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/LocalPathName.h"

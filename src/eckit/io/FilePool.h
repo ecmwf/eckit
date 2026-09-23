@@ -4,7 +4,6 @@
 /// @author Tiago Quintino
 /// @date Dec 2015
 
-
 #ifndef eckit_io_FilePool_h
 #define eckit_io_FilePool_h
 

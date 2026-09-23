@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/web/FileResource.h"
+
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/StdFile.h"
 #include "eckit/web/HttpStream.h"

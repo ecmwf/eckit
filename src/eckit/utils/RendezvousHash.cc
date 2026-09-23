@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/utils/RendezvousHash.h"
+
 #include <algorithm>
 #include <numeric>
-
-#include "eckit/utils/RendezvousHash.h"
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"

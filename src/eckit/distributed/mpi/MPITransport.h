@@ -5,13 +5,11 @@
 /// @author Tiago Quintino
 /// @author Pedro Maciel
 
-
 #pragma once
-
-#include "eckit/distributed/Transport.h"
 
 #include <list>
 
+#include "eckit/distributed/Transport.h"
 #include "eckit/mpi/Comm.h"
 #include "eckit/thread/Mutex.h"
 

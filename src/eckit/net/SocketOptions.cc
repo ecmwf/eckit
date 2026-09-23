@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/net/SocketOptions.h"
+
 #include <sys/socket.h>
+
 #include <ostream>
 
 #include "eckit/config/Resource.h"
-#include "eckit/net/SocketOptions.h"
 
 namespace eckit::net {
 

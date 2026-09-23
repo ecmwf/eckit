@@ -5,6 +5,8 @@
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 
+#include "eckit/io/cluster/ClusterDisks.h"
+
 #include <algorithm>
 #include <fstream>
 #include <string>
@@ -14,7 +16,6 @@
 #include "eckit/container/SharedMemArray.h"
 #include "eckit/filesystem/FileSpace.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/io/cluster/ClusterDisks.h"
 #include "eckit/io/cluster/NodeInfo.h"
 #include "eckit/log/JSON.h"
 #include "eckit/memory/Zero.h"

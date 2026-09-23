@@ -1,11 +1,9 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #pragma once
 
 #include "eckit/linalg/SparseMatrix.h"
-
 #include "eckit/memory/MemoryBuffer.h"
 
 

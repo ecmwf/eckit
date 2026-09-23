@@ -3,10 +3,10 @@
 
 // eckit Message + Reader bridge — implementation.
 
-#include "eckit_exceptions.h"
-
 #include "MessageWrapper.h"
+
 #include "eckit-sys/src/lib.rs.h"
+#include "eckit_exceptions.h"
 
 namespace eckit_bridge {
 

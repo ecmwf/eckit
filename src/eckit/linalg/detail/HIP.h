@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 // There is a name clash because hip_runtime defines DEPRECATED, and eckit as well
 #ifdef DEPRECATED
 #undef DEPRECATED

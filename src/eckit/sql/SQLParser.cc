@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/sql/SQLParser.h"
+
 #include <stack>
 
 #include "eckit/sql/SQLDatabase.h"
-#include "eckit/sql/SQLParser.h"
 #include "eckit/sql/SQLSelect.h"
 #include "eckit/sql/SQLSession.h"
 #include "eckit/sql/SQLStatement.h"

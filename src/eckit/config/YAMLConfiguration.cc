@@ -4,10 +4,11 @@
 /// @author Baudouin Raoult
 /// @date Jul 2015
 
+#include "eckit/config/YAMLConfiguration.h"
+
 #include <fstream>
 
 #include "eckit/config/LibEcKit.h"
-#include "eckit/config/YAMLConfiguration.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/value/Value.h"

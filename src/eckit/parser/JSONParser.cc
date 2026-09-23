@@ -6,9 +6,10 @@
 /// @author Tiago Quintino
 /// @date   Jun 2012
 
+#include "eckit/parser/JSONParser.h"
+
 #include <fstream>
 
-#include "eckit/parser/JSONParser.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/Value.h"
 

@@ -11,6 +11,7 @@
 #include <stack>
 
 #include "SQLOutputConfig.h"
+
 #include "eckit/exception/Exceptions.h"
 
 namespace eckit {

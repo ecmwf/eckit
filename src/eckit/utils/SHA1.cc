@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/utils/SHA1.h"
+
 #include <cstring>
 
 #include "eckit/exception/Exceptions.h"
-
-#include "eckit/utils/SHA1.h"
 
 // Cray C++ compiler should not try to optimize this code
 #if _CRAYC

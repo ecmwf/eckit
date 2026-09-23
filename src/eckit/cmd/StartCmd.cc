@@ -1,10 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/cmd/StartCmd.h"
+
 #include <unistd.h>
+
 #include <fstream>
 
-#include "eckit/cmd/StartCmd.h"
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Monitor.h"
 #include "eckit/utils/Tokenizer.h"

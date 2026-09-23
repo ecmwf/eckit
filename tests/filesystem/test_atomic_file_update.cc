@@ -10,7 +10,6 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/JSONParser.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

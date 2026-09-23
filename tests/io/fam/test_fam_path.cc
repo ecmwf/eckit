@@ -10,9 +10,9 @@
 /// @author Metin Cakircali
 /// @date   May 2024
 
-#include "test_fam_common.h"
-
 #include <string>
+
+#include "test_fam_common.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/URI.h"

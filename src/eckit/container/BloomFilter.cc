@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include "eckit/container/BloomFilter.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/MD5.h"
 
 #include <string>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/utils/MD5.h"
 
 namespace eckit {
 

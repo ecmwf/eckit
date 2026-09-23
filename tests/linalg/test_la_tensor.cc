@@ -3,10 +3,11 @@
 
 #include <numeric>
 
+#include "util.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/serialisation/FileStream.h"
-#include "util.h"
 
 using eckit::linalg::TensorDouble;
 using eckit::linalg::TensorFloat;

@@ -2,9 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/log/Log.h"
-#include "eckit/types/Types.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
 
 using namespace std;
 using namespace eckit;

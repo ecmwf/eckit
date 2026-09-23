@@ -1,7 +1,10 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/runtime/Telemetry.h"
+
 #include <unistd.h>
+
 #include <fstream>
 #include <memory>
 #include <string>
@@ -16,7 +19,6 @@
 #include "eckit/log/Log.h"
 #include "eckit/net/UDPClient.h"
 #include "eckit/runtime/Main.h"
-#include "eckit/runtime/Telemetry.h"
 #include "eckit/thread/ThreadSingleton.h"
 #include "eckit/utils/Clock.h"
 

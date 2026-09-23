@@ -10,7 +10,6 @@
 #define eckit_filesystem_BasePathName_h
 
 #include "eckit/eckit.h"
-
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/Length.h"
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/types/Types.h"
+
 #include "eckit/serialisation/Stream.h"
 
 namespace eckit {

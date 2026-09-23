@@ -6,8 +6,8 @@
 
 #include <algorithm>
 #include <vector>
-#include "eckit/mpi/Comm.h"
 
+#include "eckit/mpi/Comm.h"
 #include "eckit/testing/Test.h"
 
 using namespace std;

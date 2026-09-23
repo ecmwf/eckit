@@ -5,7 +5,6 @@
 /// @author Pedro Maciel
 /// @author Tiago Quintino
 
-
 #pragma once
 
 #include <cstddef>

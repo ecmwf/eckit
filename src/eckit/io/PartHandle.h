@@ -7,11 +7,10 @@
 #ifndef eckit_filesystem_PartHandle_h
 #define eckit_filesystem_PartHandle_h
 
+#include "eckit/filesystem/PathName.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/HandleHolder.h"
-
-#include "eckit/filesystem/PathName.h"
 #include "eckit/types/Types.h"
 
 //-----------------------------------------------------------------------------

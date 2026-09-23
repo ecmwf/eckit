@@ -4,6 +4,7 @@
 // #include <cstdlib>
 
 #include "eckit/runtime/Library.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/OStreamTarget.h"

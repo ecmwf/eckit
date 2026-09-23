@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/SQLSimpleOutput.h"
+
+#include <limits>
+
 #include "eckit/eckit.h"
 #include "eckit/log/Number.h"
 #include "eckit/sql/SQLSelect.h"
-
-#include <limits>
 
 namespace eckit::sql {
 

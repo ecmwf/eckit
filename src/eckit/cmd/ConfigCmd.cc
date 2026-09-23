@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/ConfigCmd.h"
+
 #include "eckit/config/Configurable.h"
 #include "eckit/config/ResourceMgr.h"
 

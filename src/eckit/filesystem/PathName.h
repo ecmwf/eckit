@@ -6,18 +6,17 @@
 /// @author Tiago Quintino
 /// @date   May 1996
 
-
 #ifndef eckit_filesystem_PathName_h
 #define eckit_filesystem_PathName_h
+
+#include <map>
+#include <mutex>
 
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/types/Types.h"
-
-#include <map>
-#include <mutex>
 
 namespace eckit {
 

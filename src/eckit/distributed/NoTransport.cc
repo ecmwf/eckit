@@ -1,15 +1,15 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/distributed/NoTransport.h"
+
+#include "eckit/distributed/Actor.h"
+#include "eckit/distributed/Message.h"
+#include "eckit/distributed/Transport.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/os/AutoAlarm.h"
-
-#include "eckit/distributed/Actor.h"
-#include "eckit/distributed/Message.h"
-#include "eckit/distributed/NoTransport.h"
-#include "eckit/distributed/Transport.h"
 
 using eckit::Log;
 

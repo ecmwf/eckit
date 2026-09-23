@@ -5,13 +5,13 @@
 /// @author Tiago Quintino
 /// @date   July 2015
 
-
 #ifndef eckit_Configuration_H
 #define eckit_Configuration_H
 
 #include <cstdint>
 #include <memory>
 #include <type_traits>
+
 #include "eckit/config/Parametrisation.h"
 
 

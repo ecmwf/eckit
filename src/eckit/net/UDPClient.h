@@ -4,6 +4,9 @@
 #ifndef eckit_net_UDPClient_h
 #define eckit_net_UDPClient_h
 
+#include <netdb.h>
+
+#include <cstddef>
 #include <iosfwd>
 #include <string>
 

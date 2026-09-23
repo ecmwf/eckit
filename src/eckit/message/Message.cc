@@ -4,11 +4,12 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
+#include "eckit/message/Message.h"
+
 #include <iostream>
 
 #include "eckit/io/Offset.h"
 #include "eckit/message/Decoder.h"
-#include "eckit/message/Message.h"
 #include "eckit/message/MessageContent.h"
 #include "eckit/types/Types.h"
 

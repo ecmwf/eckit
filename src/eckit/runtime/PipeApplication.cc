@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/runtime/PipeApplication.h"
+
 #include <fcntl.h>
 #include <sys/resource.h>
 #include <unistd.h>
@@ -12,7 +14,6 @@
 #include "eckit/log/Seconds.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/runtime/PipeApplication.h"
 #include "eckit/serialisation/PipeStream.h"
 #include "eckit/serialisation/Stream.h"
 

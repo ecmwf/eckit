@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 /// @author Baudouin Raoult
 /// @author Tiago Quintino
 /// @date   June 2017
@@ -10,14 +9,13 @@
 #define eckit_filesystem_URI_h
 
 #include <map>
+#include <string>
 
 #include "eckit/eckit.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/net/Endpoint.h"
-
-#include <string>
 
 namespace eckit {
 

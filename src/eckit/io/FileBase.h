@@ -8,7 +8,6 @@
 #define eckit_FileBase_h
 
 #include "eckit/eckit.h"
-
 #include "eckit/filesystem/PathName.h"
 
 //-----------------------------------------------------------------------------

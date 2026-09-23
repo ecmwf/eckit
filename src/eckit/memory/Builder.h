@@ -6,7 +6,6 @@
 /// @author Pedro Maciel
 /// @date Jul 2014
 
-
 #pragma once
 
 #include "eckit/eckit_config.h"

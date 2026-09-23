@@ -5,6 +5,7 @@
 #define GreatCircle_H
 
 #include <vector>
+
 #include "eckit/geometry/Point2.h"
 
 //------------------------------------------------------------------------------------------------------

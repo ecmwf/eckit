@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
+
 #include <cmath>
 
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
-#include "eckit/sql/expression/function/FunctionIntegerExpression.h"
 #include "eckit/utils/Translator.h"
 
 #define ftrunc(x) ((x) - fmod((x), 1))

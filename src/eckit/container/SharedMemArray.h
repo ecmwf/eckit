@@ -10,15 +10,13 @@
 
 #include <cstdint>
 
-#include "eckit/os/Semaphore.h"
-
-#include "eckit/memory/Padded.h"
-#include "eckit/thread/AutoLock.h"
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/memory/MMap.h"
+#include "eckit/memory/Padded.h"
+#include "eckit/os/Semaphore.h"
 #include "eckit/os/Stat.h"
+#include "eckit/thread/AutoLock.h"
 
 namespace eckit {
 

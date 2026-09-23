@@ -7,6 +7,9 @@
 #ifndef eckit_log_UserChannel_h
 #define eckit_log_UserChannel_h
 
+#include <ostream>
+#include <string>
+
 namespace eckit {
 
 //-----------------------------------------------------------------------------

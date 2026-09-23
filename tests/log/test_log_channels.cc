@@ -13,16 +13,14 @@
 
 #include "eckit/config/LibEcKit.h"
 #include "eckit/filesystem/LocalPathName.h"
-#include "eckit/os/BackTrace.h"
-#include "eckit/runtime/Tool.h"
-
 #include "eckit/log/CallbackTarget.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/ColouringTarget.h"
 #include "eckit/log/FileTarget.h"
 #include "eckit/log/OStreamTarget.h"
 #include "eckit/log/WrapperTarget.h"
-
+#include "eckit/os/BackTrace.h"
+#include "eckit/runtime/Tool.h"
 #include "eckit/testing/Test.h"
 
 using namespace std;

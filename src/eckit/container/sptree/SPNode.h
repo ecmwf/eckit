@@ -4,11 +4,10 @@
 #ifndef SPNode_H
 #define SPNode_H
 
-#include "eckit/eckit.h"
-
 #include "eckit/container/sptree/SPNodeInfo.h"
 #include "eckit/container/sptree/SPNodeQueue.h"
 #include "eckit/container/sptree/SPValue.h"
+#include "eckit/eckit.h"
 
 namespace eckit {
 

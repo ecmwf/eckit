@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/filesystem/LocalFileManager.h"
+
 #include "eckit/filesystem/PathName.h"
 #include "eckit/filesystem/URI.h"
 

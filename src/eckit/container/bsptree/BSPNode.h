@@ -4,8 +4,7 @@
 #ifndef BSPNode_H
 #define BSPNode_H
 
-#include "BSPHyperPlane.h"
-
+#include "eckit/container/bsptree/BSPHyperPlane.h"
 #include "eckit/container/sptree/SPNode.h"
 
 namespace eckit {

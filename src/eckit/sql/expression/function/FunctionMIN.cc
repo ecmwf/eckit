@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/sql/expression/function/FunctionMIN.h"
+
 #include <cfloat>
 #include <climits>
 
 #include "eckit/sql/expression/function/FunctionFactory.h"
-#include "eckit/sql/expression/function/FunctionMIN.h"
 
 namespace eckit::sql::expression::function {
 

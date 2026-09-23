@@ -5,10 +5,12 @@
 /// @author Florian Rathgeber
 /// @date   June 2015
 
+#include "eckit/cmd/CmdApplication.h"
+
 #include <unistd.h>
+
 #include <fstream>
 
-#include "eckit/cmd/CmdApplication.h"
 #include "eckit/config/Resource.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/SockBuf.h"

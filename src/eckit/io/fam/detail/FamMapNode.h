@@ -12,9 +12,9 @@
 
 #pragma once
 
-#include "FamNode.h"
-
 #include <memory>
+
+#include "FamNode.h"
 
 #include "eckit/io/fam/FamList.h"
 

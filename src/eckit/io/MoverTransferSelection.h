@@ -4,14 +4,12 @@
 // File MoverTransferSelection.h
 // Baudouin Raoult - (c) ECMWF Jun 23
 
-
 #ifndef eckit_MoverTransferSelection_h
 #define eckit_MoverTransferSelection_h
 
 #include <map>
 #include <set>
 #include <string>
-
 
 #include "eckit/io/Length.h"
 

@@ -5,9 +5,8 @@
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
-#include "eckit/sql/SQLSimpleOutput.h"
-
 #include "eckit/os/BackTrace.h"
+#include "eckit/sql/SQLSimpleOutput.h"
 
 namespace eckit::sql {
 

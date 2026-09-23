@@ -3,13 +3,11 @@
 
 #include <cstring>
 
+#include "eckit/io/Buffer.h"
 #include "eckit/io/rados/RadosCluster.h"
 #include "eckit/io/rados/RadosHandle.h"
 #include "eckit/io/rados/RadosReadHandle.h"
 #include "eckit/io/rados/RadosWriteHandle.h"
-
-#include "eckit/io/Buffer.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

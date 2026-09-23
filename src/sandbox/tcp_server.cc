@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <unistd.h>
+
 #include <sstream>
 
 #include "eckit/io/MemoryHandle.h"

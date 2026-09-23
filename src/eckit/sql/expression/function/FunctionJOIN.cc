@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/function/FunctionJOIN.h"
+
 #include "eckit/sql/expression/ColumnExpression.h"
 #include "eckit/sql/expression/function/FunctionFactory.h"
 

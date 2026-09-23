@@ -4,14 +4,14 @@
 #ifndef SPNode_CC
 #define SPNode_CC
 
-#include <algorithm>
-#include <cstdio>
-#include <limits>
-
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include <algorithm>
+#include <cstdio>
+#include <limits>
 
 namespace eckit {
 

@@ -5,6 +5,7 @@
 // Baudouin Raoult - (c) ECMWF Feb 12
 
 #include "eckit/thread/ThreadPool.h"
+
 #include "eckit/runtime/Monitor.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Thread.h"

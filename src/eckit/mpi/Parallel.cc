@@ -4,6 +4,7 @@
 #include "eckit/mpi/Parallel.h"
 
 #include <unistd.h>
+
 #include <atomic>
 #include <cerrno>
 #include <csetjmp>
@@ -11,9 +12,8 @@
 #include <limits>
 #include <sstream>
 
-#include "eckit/exception/Exceptions.h"
-
 #include "eckit/config/Resource.h"
+#include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/mpi/ParallelGroup.h"

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/QuitCmd.h"
+
 #include "eckit/runtime/Application.h"
 #include "eckit/runtime/Main.h"
 

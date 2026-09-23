@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/RemoteCommander.h"
+
 #include "eckit/cmd/RemoteCommandUser.h"
 #include "eckit/config/Resource.h"
 #include "eckit/runtime/Monitor.h"

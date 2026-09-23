@@ -10,13 +10,12 @@
 
 #include <list>
 
-#include "eckit/types/Date.h"
-#include "eckit/types/DateTime.h"
-#include "eckit/value/Content.h"
-
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
+#include "eckit/types/Date.h"
+#include "eckit/types/DateTime.h"
+#include "eckit/value/Content.h"
 
 
 namespace eckit {

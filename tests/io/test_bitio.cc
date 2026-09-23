@@ -5,7 +5,6 @@
 
 #include "eckit/io/BitIO.h"
 #include "eckit/io/Buffer.h"
-
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/testing/Test.h"
 

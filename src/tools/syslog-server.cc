@@ -11,14 +11,14 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-#include "eckit/eckit.h"
-
 #include "eckit/config/Resource.h"
+#include "eckit/eckit.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Log.h"

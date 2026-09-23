@@ -62,11 +62,14 @@ ForEachMacros:
   - foreach
   - Q_FOREACH
   - BOOST_FOREACH
+IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^<.*\.h>'
     Priority: 1
   - Regex: "^<.*"
     Priority: 2
+  - Regex: '^"eckit[/_-]'
+    Priority: 4
   - Regex: ".*"
     Priority: 3
 IncludeIsMainRegex: "([-_](test|unittest))?$"

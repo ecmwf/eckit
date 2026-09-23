@@ -6,7 +6,6 @@
 /// @author Tiago Quintino
 /// @date   May 1996
 
-
 #ifndef eckit_filesystem_LocalPathName_h
 #define eckit_filesystem_LocalPathName_h
 

@@ -5,7 +5,6 @@
 
 #include "eckit/io/Base64.h"
 #include "eckit/io/MemoryHandle.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

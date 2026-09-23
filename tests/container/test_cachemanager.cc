@@ -6,7 +6,6 @@
 #include "eckit/container/CacheManager.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Log.h"
-
 #include "eckit/testing/Filesystem.h"
 #include "eckit/testing/Test.h"
 

@@ -6,9 +6,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <cerrno>
 
 #include <cassert>
+#include <cerrno>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -17,7 +17,6 @@
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/Bytes.h"
 #include "eckit/memory/MMap.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

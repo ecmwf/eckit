@@ -6,7 +6,6 @@
 /// @author Simon Smart
 /// @date March 2017
 
-
 #ifndef eckit_containers_Trie_H
 #define eckit_containers_Trie_H
 

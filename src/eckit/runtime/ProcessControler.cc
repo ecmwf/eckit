@@ -1,15 +1,16 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/runtime/ProcessControler.h"
+
 #include <sys/wait.h>
 #include <unistd.h>
+
 #include <csignal>
 
 #include "eckit/eckit.h"
-
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Monitor.h"
-#include "eckit/runtime/ProcessControler.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
 

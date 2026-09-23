@@ -7,10 +7,10 @@
 #ifndef eckit_net_IPAddress_H
 #define eckit_net_IPAddress_H
 
+#include <netinet/in.h>
+
 #include <iosfwd>
 #include <string>
-
-#include <netinet/in.h>
 
 namespace eckit::net {
 

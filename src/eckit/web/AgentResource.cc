@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/web/AgentResource.h"
+
 #include <cstring>
 #include <fstream>
 
 #include "eckit/io/Buffer.h"
-#include "eckit/web/AgentResource.h"
 #include "eckit/web/JavaAgent.h"
 #include "eckit/web/Url.h"
 

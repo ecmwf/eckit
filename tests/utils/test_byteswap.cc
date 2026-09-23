@@ -7,10 +7,9 @@
 #include <vector>
 
 #include "eckit/log/Log.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/ByteSwap.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 

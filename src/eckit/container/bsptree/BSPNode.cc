@@ -4,17 +4,14 @@
 #ifndef BSPNode_CC
 #define BSPNode_CC
 
-#include <random>
-#include "eckit/eckit.h"
-
-#include <cstdio>
-#include <limits>
-#include <random>
-
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include <cstdio>
+#include <limits>
+#include <random>
 
 #include "eckit/eckit.h"
 #include "eckit/exception/Exceptions.h"

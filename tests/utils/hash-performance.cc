@@ -9,10 +9,8 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
-
-#include "eckit/utils/Hash.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/utils/Hash.h"
 
 using namespace std;
 using namespace eckit;

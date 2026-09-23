@@ -5,12 +5,12 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
 #include "eckit/option/Separator.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/utils/Translator.h"
 
 #include <iostream>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/utils/Translator.h"
 
 namespace eckit::option {
 

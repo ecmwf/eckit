@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/SQLMATCHSubquerySession.h"
-#include "eckit/sql/SQLMATCHSubquerySessionOutput.h"
+
 #include "odb_api/FunctionMATCH.h"
+
+#include "eckit/sql/SQLMATCHSubquerySessionOutput.h"
 
 namespace eckit {
 namespace sql {

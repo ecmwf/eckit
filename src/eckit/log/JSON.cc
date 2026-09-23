@@ -1,10 +1,11 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/log/JSON.h"
+
 #include <iomanip>
 #include <string>
 
-#include "eckit/log/JSON.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/types/DateTime.h"
 

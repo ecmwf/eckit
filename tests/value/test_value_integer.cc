@@ -8,10 +8,11 @@
 #pragma diag_suppress 68
 #endif
 
+#include "test_value_helper.h"
+
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"
 #include "eckit/value/Value.h"
-#include "test_value_helper.h"
 
 using namespace std;
 using namespace eckit;

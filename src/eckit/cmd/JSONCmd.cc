@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/JSONCmd.h"
+
 #include "eckit/log/JSON.h"
 #include "eckit/runtime/Monitorable.h"
 

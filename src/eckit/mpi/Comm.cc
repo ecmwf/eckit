@@ -6,10 +6,9 @@
 #include <algorithm>
 #include <map>
 
-#include "eckit/eckit_config.h"
-
 #include "eckit/config/LibEcKit.h"
 #include "eckit/config/Resource.h"
+#include "eckit/eckit_config.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/Mutex.h"

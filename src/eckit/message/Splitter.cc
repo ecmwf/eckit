@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/message/Splitter.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/io/PeekHandle.h"
-#include "eckit/message/Message.h"
 
 #include <algorithm>
 #include <iomanip>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/io/PeekHandle.h"
+#include "eckit/message/Message.h"
 
 namespace eckit::message {
 

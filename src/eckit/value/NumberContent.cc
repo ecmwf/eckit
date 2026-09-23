@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/value/NumberContent.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
+#include "eckit/utils/Hash.h"
 #include "eckit/utils/Translator.h"
 #include "eckit/value/DoubleContent.h"
-
-#include "eckit/utils/Hash.h"
 
 namespace eckit {
 

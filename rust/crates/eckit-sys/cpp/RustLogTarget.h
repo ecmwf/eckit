@@ -2,15 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // eckit log bridge — routes `eckit::Log` output to Rust's `log` crate.
+
 #pragma once
-
-#include "eckit/log/LogTarget.h"
-#include "eckit/runtime/Main.h"
-
-#include "rust/cxx.h"
 
 #include <cstdint>
 #include <string>
+
+#include "rust/cxx.h"
+
+#include "eckit/log/LogTarget.h"
+#include "eckit/runtime/Main.h"
 
 namespace eckit_bridge {
 

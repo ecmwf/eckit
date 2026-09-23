@@ -1,20 +1,21 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
+
 #include <sys/types.h>
+
 #include <limits>
+
+#include "AnyKeyParams.h"
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/testing/Test.h"
 #include "eckit/value/CompositeParams.h"
 #include "eckit/value/DispatchParams.h"
 #include "eckit/value/Params.h"
 #include "eckit/value/Properties.h"
 #include "eckit/value/ScopeParams.h"
-
-#include "eckit/testing/Test.h"
-
-#include "AnyKeyParams.h"
 
 using namespace std;
 using namespace eckit;

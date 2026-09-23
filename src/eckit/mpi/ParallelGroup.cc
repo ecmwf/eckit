@@ -1,11 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/mpi/ParallelGroup.h"
+
 #include <string_view>
 
 #include "eckit/log/CodeLocation.h"
 #include "eckit/mpi/Parallel.h"
-#include "eckit/mpi/ParallelGroup.h"
 
 namespace eckit {
 namespace mpi {

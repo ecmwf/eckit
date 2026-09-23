@@ -5,9 +5,8 @@
 
 #include "eckit/log/BigNum.h"
 #include "eckit/log/Timer.h"
-#include "eckit/types/FloatCompare.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 using namespace std;
 using namespace eckit;

@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/web/HttpResource.h"
+
 #include <map>
 
 #include "eckit/config/Resource.h"
@@ -9,7 +11,6 @@
 #include "eckit/thread/Mutex.h"
 #include "eckit/types/Types.h"
 #include "eckit/web/Html.h"
-#include "eckit/web/HttpResource.h"
 #include "eckit/web/HttpStream.h"
 #include "eckit/web/Url.h"
 

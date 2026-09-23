@@ -12,7 +12,6 @@
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/FileHandle.h"
 #include "eckit/io/FilePool.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

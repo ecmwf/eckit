@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/type/SQLBit.h"
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/sql/SQLOutput.h"
 

@@ -7,6 +7,7 @@
 #include <set>
 #include <string>
 #include <vector>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 #include "eckit/runtime/Main.h"
@@ -14,9 +15,7 @@
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/types/Types.h"
-
 #include "eckit/utils/Tokenizer.h"
-
 #include "eckit/value/Value.h"
 
 namespace eckit {

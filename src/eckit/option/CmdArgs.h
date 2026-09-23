@@ -6,7 +6,6 @@
 /// @author Simon Smart
 /// @date March 2016
 
-
 #ifndef eckit_option_CmdArgs_H
 #define eckit_option_CmdArgs_H
 

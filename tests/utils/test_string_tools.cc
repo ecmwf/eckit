@@ -3,10 +3,9 @@
 
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/Types.h"
 #include "eckit/utils/StringTools.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

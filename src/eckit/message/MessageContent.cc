@@ -4,13 +4,13 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
-#include "eckit/memory/Counted.h"
+#include "eckit/message/MessageContent.h"
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/DataHandle.h"
 #include "eckit/io/MemoryHandle.h"
+#include "eckit/memory/Counted.h"
 #include "eckit/message/Decoder.h"
-#include "eckit/message/MessageContent.h"
 
 namespace eckit::message {
 

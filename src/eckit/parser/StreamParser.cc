@@ -6,10 +6,10 @@
 /// @date Sep 2012
 
 #include "eckit/parser/StreamParser.h"
-#include "eckit/os/BackTrace.h"
-#include "eckit/utils/Translator.h"
 
 #include "eckit/log/Log.h"
+#include "eckit/os/BackTrace.h"
+#include "eckit/utils/Translator.h"
 
 
 namespace eckit {

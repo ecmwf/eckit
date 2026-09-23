@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/eckit_config.h"
-
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/JSONParser.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

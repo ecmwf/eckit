@@ -7,7 +7,6 @@
 #include "eckit/config/Resource.h"
 #include "eckit/config/ResourceMgr.h"
 #include "eckit/log/Log.h"
-
 #include "eckit/web/Html.h"
 #include "eckit/web/HtmlResource.h"
 #include "eckit/web/Url.h"

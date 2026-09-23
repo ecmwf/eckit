@@ -7,10 +7,9 @@
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/Length.h"
 #include "eckit/serialisation/FileStream.h"
+#include "eckit/testing/Test.h"
 #include "eckit/types/Date.h"
 #include "eckit/value/Properties.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

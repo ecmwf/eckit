@@ -4,11 +4,9 @@
 #include <cmath>
 
 #include "eckit/eckit_config.h"
-
 #include "eckit/exception/Exceptions.h"
 #include "eckit/log/JSON.h"
 #include "eckit/parser/YAMLParser.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

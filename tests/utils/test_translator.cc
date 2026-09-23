@@ -4,14 +4,11 @@
 #include <string>
 
 #include "eckit/eckit.h"
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/filesystem/PathName.h"
+#include "eckit/testing/Test.h"
 #include "eckit/utils/StringTools.h"
 #include "eckit/utils/Translator.h"
-
-#include "eckit/filesystem/PathName.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/log/TimeStampTarget.h"
+
 #include <iomanip>
 #include <iostream>
 
-
 #include "eckit/log/TimeStamp.h"
-#include "eckit/log/TimeStampTarget.h"
 #include "eckit/runtime/Monitor.h"
 
 

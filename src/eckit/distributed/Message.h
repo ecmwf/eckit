@@ -11,10 +11,9 @@
 
 #include <string>
 
+#include "eckit/distributed/Actor.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/serialisation/Stream.h"
-
-#include "eckit/distributed/Actor.h"
 
 namespace eckit::distributed {
 

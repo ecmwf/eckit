@@ -4,13 +4,13 @@
 #include "eckit/runtime/SessionID.h"
 
 #include <unistd.h>
+
 #include <ostream>
 
+#include "eckit/log/Log.h"
 #include "eckit/runtime/Main.h"
 #include "eckit/serialisation/Stream.h"
 #include "eckit/utils/Hash.h"
-
-#include "eckit/log/Log.h"
 
 namespace eckit {
 

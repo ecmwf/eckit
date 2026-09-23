@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-#include "eckit/exception/Exceptions.h"
-
-#include "eckit/log/OStreamTarget.h"
 #include "eckit/log/TeeTarget.h"
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/log/OStreamTarget.h"
 
 namespace eckit {
 

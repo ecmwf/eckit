@@ -5,12 +5,11 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
-#include <cstdlib>
+#include "eckit/config/LibEcKit.h"
 
 #include <algorithm>
+#include <cstdlib>
 #include <string>
-
-#include "eckit/config/LibEcKit.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/eckit_version.h"

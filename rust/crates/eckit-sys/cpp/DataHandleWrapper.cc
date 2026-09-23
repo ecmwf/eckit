@@ -3,17 +3,16 @@
 
 // eckit DataHandle bridge — implementation.
 
-#include "eckit_exceptions.h"
-
 #include "DataHandleWrapper.h"
-#include "eckit-sys/src/lib.rs.h"
 
+#include "eckit-sys/src/lib.rs.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/MemoryHandle.h"
 #include "eckit/io/MultiHandle.h"
 #include "eckit/io/PartFileHandle.h"
 #include "eckit/io/TeeHandle.h"
+#include "eckit_exceptions.h"
 
 namespace eckit_bridge {
 

@@ -5,7 +5,6 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
 #pragma once
 
 #include <iosfwd>

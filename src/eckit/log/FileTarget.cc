@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/log/FileTarget.h"
+
 #include "eckit/config/Resource.h"
 #include "eckit/exception/Exceptions.h"
 

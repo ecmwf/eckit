@@ -10,11 +10,11 @@
 /// @author Metin Cakircali
 /// @date   May 2024
 
-#include "test_fam_common.h"
-
 #include <cstdlib>
 #include <set>
 #include <string>
+
+#include "test_fam_common.h"
 
 #include "eckit/io/Buffer.h"
 #include "eckit/io/fam/FamList.h"

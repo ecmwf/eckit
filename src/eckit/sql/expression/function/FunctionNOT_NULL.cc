@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/function/FunctionNOT_NULL.h"
+
 #include "eckit/sql/expression/function/FunctionFactory.h"
 
 namespace eckit::sql::expression::function {

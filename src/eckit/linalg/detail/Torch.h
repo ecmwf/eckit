@@ -1,14 +1,13 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #pragma once
 
 #include <iosfwd>
 
-#include "eckit/linalg/types.h"
-
 #include "torch/torch.h"
+
+#include "eckit/linalg/types.h"
 
 
 namespace eckit::linalg::detail {

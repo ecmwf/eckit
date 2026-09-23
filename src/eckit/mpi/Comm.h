@@ -13,7 +13,6 @@
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/io/SharedBuffer.h"
-
 #include "eckit/mpi/Buffer.h"
 #include "eckit/mpi/DataType.h"
 #include "eckit/mpi/Group.h"

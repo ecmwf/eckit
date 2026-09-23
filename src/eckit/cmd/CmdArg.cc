@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/cmd/CmdArg.h"
+
 #include "eckit/utils/Translator.h"
 #include "eckit/value/Value.h"
 

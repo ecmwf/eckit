@@ -13,9 +13,8 @@
 #include "eckit/mpi/Request.h"
 #include "eckit/runtime/Tool.h"
 #include "eckit/serialisation/ResizableMemoryStream.h"
-#include "eckit/types/Types.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
 
 using namespace std;
 using namespace eckit;

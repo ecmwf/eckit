@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
+#include "eckit/geo/Grid.h"
 
 #include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"

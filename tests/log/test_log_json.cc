@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <sstream>
+
 #include "eckit/config/LibEcKit.h"
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/runtime/Tool.h"
-
 #include "eckit/testing/Test.h"
 
 using namespace std;

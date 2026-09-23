@@ -2,14 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/message/Decoder.h"
-#include "eckit/exception/Exceptions.h"
-#include "eckit/message/Message.h"
-#include "eckit/thread/AutoLock.h"
-#include "eckit/thread/Mutex.h"
 
 #include <algorithm>
 #include <string>
 #include <vector>
+
+#include "eckit/exception/Exceptions.h"
+#include "eckit/message/Message.h"
+#include "eckit/thread/AutoLock.h"
+#include "eckit/thread/Mutex.h"
 
 namespace eckit::message {
 

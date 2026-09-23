@@ -4,7 +4,6 @@
 /// @author Baudouin Raoult
 /// @date JUl 2015
 
-
 #ifndef eckit_JSONConfiguration_H
 #define eckit_JSONConfiguration_H
 

@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include <unistd.h>
+
 #include <memory>
 #include <string>
-
-#include "eckit/types/Types.h"
 
 #include "eckit/filesystem/FileSystemSize.h"
 #include "eckit/filesystem/LocalPathName.h"
@@ -14,9 +13,9 @@
 #include "eckit/filesystem/TmpFile.h"
 #include "eckit/io/Buffer.h"
 #include "eckit/io/DataHandle.h"
-#include "eckit/utils/Hash.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/types/Types.h"
+#include "eckit/utils/Hash.h"
 
 using namespace std;
 using namespace eckit;

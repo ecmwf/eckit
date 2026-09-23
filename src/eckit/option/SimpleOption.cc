@@ -7,13 +7,14 @@
 
 #pragma once
 
+#include "eckit/option/SimpleOption.h"
+
 #include <iostream>
 
 #include "eckit/config/Configuration.h"
 #include "eckit/config/Configured.h"
 #include "eckit/exception/Exceptions.h"
 #include "eckit/filesystem/PathName.h"
-#include "eckit/option/SimpleOption.h"
 #include "eckit/option/Title.h"
 #include "eckit/utils/Translator.h"
 

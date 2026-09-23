@@ -8,9 +8,8 @@
 #ifndef eckit_maths_MatrixEigen_h
 #define eckit_maths_MatrixEigen_h
 
-#include "eckit/maths/Eigen.h"
-
 #include "eckit/exception/Exceptions.h"
+#include "eckit/maths/Eigen.h"
 
 namespace eckit {
 

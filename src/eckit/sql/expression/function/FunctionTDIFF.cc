@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/sql/expression/function/FunctionTDIFF.h"
+
 #include "eckit/sql/SQLOutput.h"
 #include "eckit/types/DateTime.h"
 

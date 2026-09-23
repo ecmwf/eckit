@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #include "eckit/exception/Exceptions.h"
-
 #include "eckit/testing/Test.h"
 
 namespace eckit::test {

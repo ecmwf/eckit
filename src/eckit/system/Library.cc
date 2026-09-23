@@ -5,11 +5,11 @@
 /// @author Tiago Quintino
 /// @date   August 2016
 
+#include "eckit/system/Library.h"
+
 #include <algorithm>
 #include <cctype>
 #include <map>
-
-#include "eckit/system/Library.h"
 
 #include "eckit/config/Resource.h"
 #include "eckit/config/YAMLConfiguration.h"

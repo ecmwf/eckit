@@ -5,7 +5,6 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
 #include "eckit/config/Configured.h"
 
 #include "eckit/exception/Exceptions.h"

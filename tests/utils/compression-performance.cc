@@ -15,10 +15,8 @@
 #include "eckit/log/Bytes.h"
 #include "eckit/log/Seconds.h"
 #include "eckit/log/Timer.h"
-
-#include "eckit/utils/Compressor.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/utils/Compressor.h"
 
 using namespace std;
 using namespace eckit;

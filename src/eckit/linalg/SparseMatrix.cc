@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
 // SPDX-License-Identifier: Apache-2.0
 
-
 #include "eckit/linalg/SparseMatrix.h"
 
 #include <algorithm>
@@ -10,9 +9,8 @@
 #include <limits>
 #include <ostream>
 
-#include "eckit/eckit.h"  // for endianness
-
 #include "eckit/config/LibEcKit.h"
+#include "eckit/eckit.h"  // for endianness
 #include "eckit/exception/Exceptions.h"
 #include "eckit/io/AutoCloser.h"
 #include "eckit/io/MemoryHandle.h"

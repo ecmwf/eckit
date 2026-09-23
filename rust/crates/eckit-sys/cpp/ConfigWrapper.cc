@@ -3,13 +3,12 @@
 
 // eckit Configuration bridge — implementation.
 
-#include "eckit_exceptions.h"
-
 #include "ConfigWrapper.h"
-#include "eckit-sys/src/lib.rs.h"
 
+#include "eckit-sys/src/lib.rs.h"
 #include "eckit/config/YAMLConfiguration.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit_exceptions.h"
 
 namespace eckit_bridge {
 

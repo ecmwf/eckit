@@ -5,9 +5,9 @@
 
 #include <netinet/in.h>
 #include <sys/types.h>
-#include <cstdint>
 
 #include <cassert>
+#include <cstdint>
 #include <cstring>
 
 #include "eckit/exception/Exceptions.h"

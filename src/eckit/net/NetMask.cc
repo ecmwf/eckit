@@ -4,8 +4,8 @@
 #include "eckit/net/NetMask.h"
 
 #include <arpa/inet.h>
-#include <ostream>
 
+#include <ostream>
 
 #include "eckit/exception/Exceptions.h"
 #include "eckit/net/IPAddress.h"

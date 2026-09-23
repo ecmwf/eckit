@@ -4,21 +4,16 @@
 #include <unistd.h>
 
 #include "eckit/filesystem/LocalPathName.h"
-
 #include "eckit/log/CallbackTarget.h"
 #include "eckit/log/Channel.h"
 #include "eckit/log/Log.h"
-
 #include "eckit/os/BackTrace.h"
-
 #include "eckit/runtime/Tool.h"
-
+#include "eckit/testing/Test.h"
 #include "eckit/thread/AutoLock.h"
 #include "eckit/thread/StaticMutex.h"
 #include "eckit/thread/Thread.h"
 #include "eckit/thread/ThreadControler.h"
-
-#include "eckit/testing/Test.h"
 
 using namespace std;
 using namespace eckit;

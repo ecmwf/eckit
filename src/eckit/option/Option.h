@@ -5,7 +5,6 @@
 /// @author Tiago Quintino
 /// @date Apr 2015
 
-
 #ifndef Option_H
 #define Option_H
 

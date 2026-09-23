@@ -4,7 +4,6 @@
 /// @author Baudouin Raoult
 /// @date   Jun 2020
 
-
 #ifndef eckit_message_MessageContent_H
 #define eckit_message_MessageContent_H
 

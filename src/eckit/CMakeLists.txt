@@ -274,6 +274,7 @@ list(APPEND eckit_message_srcs
 # FAM support
 
 list( APPEND eckit_io_srcs
+    io/fam/FamTypes.cc
     io/fam/FamTypes.h
 )
 

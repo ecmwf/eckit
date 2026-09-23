@@ -116,7 +116,6 @@ FamList FamMap<T>::getOrCreateBucket(const std::size_t index) {
 
         // Write remaining descriptor fields FIRST (tail, size)
         const auto offset = bucket_offset(index);
-        table_.put(desc.region, offset + offsetof(FamList::Descriptor, region));
         table_.put(desc.tail, offset + offsetof(FamList::Descriptor, tail));
         table_.put(desc.size, offset + offsetof(FamList::Descriptor, size));
 

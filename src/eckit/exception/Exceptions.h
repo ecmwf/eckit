@@ -191,12 +191,18 @@ class NotFound : public Exception {
 public:
 
     explicit NotFound(const std::string& /* w */, const CodeLocation& = {});
+
+    /// @param quiet suppress the automatic Log::error() on construction
+    NotFound(const std::string& /* w */, const CodeLocation&, bool quiet);
 };
 
 class AlreadyExists : public Exception {
 public:
 
     explicit AlreadyExists(const std::string& /* w */, const CodeLocation& = {});
+
+    /// @param quiet suppress the automatic Log::error() on construction
+    AlreadyExists(const std::string& /* w */, const CodeLocation&, bool quiet);
 };
 
 class OutOfStorage : public Exception {

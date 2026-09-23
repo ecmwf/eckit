@@ -330,8 +330,9 @@ Region* FamMockSession::findRegionByName(const char* name) {
 }
 
 Region* FamMockSession::findRegionById(std::uint64_t regionId) {
+    const auto bare = regionId & g_regionid_mask;
     for (auto& region : state_->regions) {
-        if (region.active && region.id == regionId) {
+        if (region.active && region.id == bare) {
             return &region;
         }
     }
@@ -350,12 +351,27 @@ void FamMockSession::freeRegion(Region& region) {
     reclaimDataArea();
 }
 
+std::uint64_t FamMockSession::memoryServers() {
+    static const std::uint64_t count = [] {
+        const char* env = ::getenv("ECKIT_FAM_MOCK_MEMSERVERS");
+        if (!env) {
+            return std::uint64_t{g_default_memservers};
+        }
+        const auto requested = std::strtoull(env, nullptr, 10);
+        if (requested < 1 || requested > g_max_memservers) {
+            throw Fam_Exception("ECKIT_FAM_MOCK_MEMSERVERS out of range", FAM_ERR_INVALID);
+        }
+        return static_cast<std::uint64_t>(requested);
+    }();
+    return count;
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 // Object helpers
 
-Object* FamMockSession::findObjectByOffset(Region& region, std::uint64_t offset) {
+Object* FamMockSession::findObjectAt(Region& region, std::uint64_t server, std::uint64_t offset) {
     for (auto& obj : region.objects) {
-        if (obj.active && obj.offset == offset) {
+        if (obj.active && obj.server == server && obj.offset == offset) {
             return &obj;
         }
     }
@@ -380,6 +396,17 @@ Object* FamMockSession::allocateObjectSlot(Region& region) {
     return nullptr;
 }
 
+Address FamMockSession::reserveAddress(Region& region, std::uint64_t size) {
+    const auto server = region.nextServer++ % region.memoryServers;
+
+    auto& cursor      = region.nextOffset[server];
+    const auto offset = cursor;
+
+    cursor = alignTo8(offset + size);
+
+    return {server, offset};
+}
+
 Object& FamMockSession::findObject(Fam_Descriptor* desc) {
     const auto [regionId, offset] = desc->get_global_descriptor();
 
@@ -388,14 +415,19 @@ Object& FamMockSession::findObject(Fam_Descriptor* desc) {
         throw Fam_Exception("Region not found", FAM_ERR_NOTFOUND);
     }
 
-    auto* obj = findObjectByOffset(*region, offset);
+    auto* obj = findObjectAt(*region, regionId >> g_regionid_bits, offset);
     if (!obj) {
         throw Fam_Exception("Object not found", FAM_ERR_NOTFOUND);
     }
     return *obj;
 }
 
-void FamMockSession::freeObject(Object& obj) {
+void FamMockSession::freeObject(Region& region, Object& obj) {
+    auto& cursor = region.nextOffset[obj.server];
+    if (cursor == alignTo8(obj.offset + obj.size)) {
+        cursor = obj.offset;
+    }
+
     obj = Object{};
     reclaimDataArea();
 }

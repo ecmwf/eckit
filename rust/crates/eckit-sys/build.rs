@@ -45,6 +45,7 @@ fn build_cxx_bridge(include: &std::path::Path) {
     let out_dir = std::path::PathBuf::from(std::env::var("OUT_DIR").expect("OUT_DIR not set"));
 
     println!("cargo:rerun-if-changed=cpp/EckitBridge.h");
+    println!("cargo:rerun-if-changed=cpp/RustVec.h");
     println!("cargo:rerun-if-changed=cpp/RustLogTarget.h");
     println!("cargo:rerun-if-changed=cpp/RustLogTarget.cc");
     println!("cargo:rerun-if-changed=cpp/ConfigWrapper.h");
@@ -64,6 +65,8 @@ fn build_cxx_bridge(include: &std::path::Path) {
         println!("cargo:rerun-if-changed=cpp/EckitGeoBridge.h");
         println!("cargo:rerun-if-changed=cpp/GridWrapper.h");
         println!("cargo:rerun-if-changed=cpp/GridWrapper.cc");
+        println!("cargo:rerun-if-changed=cpp/SpecWrapper.h");
+        println!("cargo:rerun-if-changed=cpp/SpecWrapper.cc");
         bridges.push(std::path::PathBuf::from("src/geo.rs"));
     }
 
@@ -77,7 +80,9 @@ fn build_cxx_bridge(include: &std::path::Path) {
         .file(crate_dir.join("cpp/StreamWrapper.cc"));
 
     #[cfg(feature = "eckit-geo")]
-    build.file(crate_dir.join("cpp/GridWrapper.cc"));
+    build
+        .file(crate_dir.join("cpp/GridWrapper.cc"))
+        .file(crate_dir.join("cpp/SpecWrapper.cc"));
 
     build
         .include(include)

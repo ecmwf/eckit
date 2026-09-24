@@ -37,7 +37,9 @@ mod ffi {
         fn from_spec(spec: &str) -> Result<UniquePtr<GridWrapper>>;
 
         // Identity
-        fn spec_str(self: &GridWrapper) -> Result<String>;
+
+        /// The canonical gridSpec, cached by the grid and valid for its lifetime.
+        fn spec(self: &GridWrapper) -> &SpecWrapper;
         fn catalog_str(self: &GridWrapper) -> Result<String>;
         fn uid(self: &GridWrapper) -> Result<String>;
         fn grid_type(self: &GridWrapper) -> Result<String>;
@@ -63,6 +65,26 @@ mod ffi {
         /// Fill caller-owned buffers with the grid's latitudes and longitudes.
         /// Both must hold at least `size()` elements.
         fn fill_latlons(self: &GridWrapper, lat: &mut [f64], lon: &mut [f64]) -> Result<()>;
+
+        // ==================== Spec ====================
+
+        /// Read-only view of a gridSpec, borrowed from the grid that owns it.
+        type SpecWrapper;
+
+        fn has(self: &SpecWrapper, key: &str) -> bool;
+
+        // Typed access; a missing key, or one holding another type, is a `SpecError`.
+        fn get_string(self: &SpecWrapper, key: &str) -> Result<String>;
+        fn get_bool(self: &SpecWrapper, key: &str) -> Result<bool>;
+        fn get_long(self: &SpecWrapper, key: &str) -> Result<i64>;
+        fn get_unsigned(self: &SpecWrapper, key: &str) -> Result<usize>;
+        fn get_double(self: &SpecWrapper, key: &str) -> Result<f64>;
+        fn get_long_vector(self: &SpecWrapper, key: &str) -> Result<Vec<i64>>;
+        fn get_unsigned_vector(self: &SpecWrapper, key: &str) -> Result<Vec<usize>>;
+        fn get_double_vector(self: &SpecWrapper, key: &str) -> Result<Vec<f64>>;
+
+        /// Canonical JSON form.
+        fn json(self: &SpecWrapper) -> Result<String>;
 
         // ==================== Caches ====================
 

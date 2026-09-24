@@ -11,3 +11,4 @@
 // only built when the `eckit-geo` feature is on.
 
 #include "GridWrapper.h"
+#include "SpecWrapper.h"

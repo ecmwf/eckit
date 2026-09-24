@@ -4,6 +4,8 @@
 // eckit geo Grid bridge — wraps `eckit::geo::Grid`.
 #pragma once
 
+#include "SpecWrapper.h"
+
 #include "eckit/geo/Grid.h"
 
 #include "rust/cxx.h"
@@ -26,13 +28,15 @@ struct LonLat;
 /// back an owning pointer; the wrapper adopts it for its whole lifetime.
 class GridWrapper {
     std::unique_ptr<const eckit::geo::Grid> grid_;
+    SpecWrapper spec_;
 
 public:
 
-    explicit GridWrapper(std::unique_ptr<const eckit::geo::Grid> grid) : grid_(std::move(grid)) {}
+    explicit GridWrapper(std::unique_ptr<const eckit::geo::Grid> grid) : grid_(std::move(grid)), spec_(grid_->spec()) {}
 
     // Identity
-    rust::String spec_str() const;
+    /// The canonical gridSpec, cached by the grid and valid for its lifetime.
+    const SpecWrapper& spec() const { return spec_; }
     rust::String catalog_str() const;
     rust::String uid() const;
     rust::String grid_type() const;

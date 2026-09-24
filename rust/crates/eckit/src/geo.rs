@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! Geospatial grids from `eckit::geo`.
 //!
 //! A grid is identified by its **gridSpec** — a YAML/JSON mapping such as
@@ -117,12 +120,12 @@ impl Grid {
 
     /// Number of latitude rows, or `0` for grids with no row structure.
     pub fn ny(&self) -> Result<usize> {
-        Ok(self.pl()?.len())
+        self.inner.ny().map_err(eckit_sys::Error::from)
     }
 
     /// Whether this grid has a row structure, i.e. a non-empty [`Grid::pl`].
     pub fn is_structured(&self) -> Result<bool> {
-        Ok(!self.pl()?.is_empty())
+        Ok(self.ny()? > 0)
     }
 
     /// Bounding box in degrees.
@@ -212,6 +215,11 @@ pub fn cache_footprint() -> usize {
 }
 
 /// Drop every entry from eckit geo's process-global memory caches.
+///
+/// Live grids keep working, they simply recompute on next use. However eckit's
+/// own iterators hold references into these caches while they run, so do not
+/// purge while another thread is inside [`Grid::fill_latlons`],
+/// [`Grid::to_latlons`] or any other grid call.
 pub fn cache_purge() {
     eckit_sys::geo::MemoryCache::total_purge();
 }

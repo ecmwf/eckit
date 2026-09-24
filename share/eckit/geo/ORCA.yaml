@@ -8,7 +8,7 @@ grid_names:
     arrangement: F
     shape: [149, 182]
     uid: "174487fbace54b00d959d971e88b71e7"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_F.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA2_F.atlas
 
   - ORCA2_T: &ORCA2_T
     type: ORCA
@@ -17,7 +17,7 @@ grid_names:
     arrangement: T
     shape: [149, 182]
     uid: "d5bde4f52ff3a9bea5629cd9ac514410"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA2_T.atlas
 
   - ORCA2_U: &ORCA2_U
     type: ORCA
@@ -26,7 +26,7 @@ grid_names:
     arrangement: U
     shape: [149, 182]
     uid: "857f7affa3a381e3882d38d321384e49"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_U.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA2_U.atlas
 
   - ORCA2_V: &ORCA2_V
     type: ORCA
@@ -35,7 +35,7 @@ grid_names:
     arrangement: V
     shape: [149, 182]
     uid: "ca637bc5dc9a54e2ea4b9750e1b79e6e"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_V.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA2_V.atlas
 
   - ORCA2_W: &ORCA2_W
     type: ORCA
@@ -44,7 +44,7 @@ grid_names:
     arrangement: W
     shape: [149, 182]
     uid: "edea6f71eb558dc056b5f576d5b904f7"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA2_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA2_T.atlas
 
   - ORCA1_F: &ORCA1_F
     type: ORCA
@@ -53,7 +53,7 @@ grid_names:
     arrangement: F
     shape: [292, 362]
     uid: "a832a12030c73928133553ec3a8d2a7e"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA1_F.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA1_F.atlas
 
   - ORCA1_T: &ORCA1_T
     type: ORCA
@@ -62,7 +62,7 @@ grid_names:
     arrangement: T
     shape: [292, 362]
     uid: "f4c91b6233fe55dec992160ec12b38df"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA1_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA1_T.atlas
 
   - ORCA1_U: &ORCA1_U
     type: ORCA
@@ -71,7 +71,7 @@ grid_names:
     arrangement: U
     shape: [292, 362]
     uid: "1b0f8d234753f910197c975c906b4da5"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA1_U.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA1_U.atlas
 
   - ORCA1_V: &ORCA1_V
     type: ORCA
@@ -80,7 +80,7 @@ grid_names:
     arrangement: V
     shape: [292, 362]
     uid: "c637340454795b395f982851b840943d"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA1_V.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA1_V.atlas
 
   - ORCA1_W: &ORCA1_W
     type: ORCA
@@ -89,7 +89,7 @@ grid_names:
     arrangement: W
     shape: [292, 362]
     uid: "d50061c43e83c46c3810002591ea21e1"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA1_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA1_T.atlas
 
   - eORCA1_F: &eORCA1_F
     type: ORCA
@@ -98,7 +98,7 @@ grid_names:
     arrangement: F
     shape: [332, 362]
     uid: "3c6d95561710c6f39b394809ff6c588c"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA1_F.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA1_F.atlas
 
   - eORCA1_T: &eORCA1_T
     type: ORCA
@@ -107,7 +107,7 @@ grid_names:
     arrangement: T
     shape: [332, 362]
     uid: "ba65665a9e68d1a8fa0352ecfcf8e496"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA1_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA1_T.atlas
 
   - eORCA1_U: &eORCA1_U
     type: ORCA
@@ -116,7 +116,7 @@ grid_names:
     arrangement: U
     shape: [332, 362]
     uid: "4eb1054957dcae914e219faf9a4068e3"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA1_U.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA1_U.atlas
 
   - eORCA1_V: &eORCA1_V
     type: ORCA
@@ -125,7 +125,7 @@ grid_names:
     arrangement: V
     shape: [332, 362]
     uid: "09131429766e7737c087d3a8d7073dc9"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA1_V.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA1_V.atlas
 
   - eORCA1_W: &eORCA1_W
     type: ORCA
@@ -134,7 +134,7 @@ grid_names:
     arrangement: W
     shape: [332, 362]
     uid: "5c678d8f9aa2edfbf57246d11d9c1278"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA1_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA1_T.atlas
 
   - ORCA025_F: &ORCA025_F
     type: ORCA
@@ -143,7 +143,7 @@ grid_names:
     arrangement: F
     shape: [1021, 1442]
     uid: "efbc280d8d4b6048797880da2605bacb"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA025_F.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA025_F.atlas
 
   - ORCA025_T: &ORCA025_T
     type: ORCA
@@ -152,7 +152,7 @@ grid_names:
     arrangement: T
     shape: [1021, 1442]
     uid: "15c961c269ac182ca226d7195f3921ba"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA025_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA025_T.atlas
 
   - ORCA025_U: &ORCA025_U
     type: ORCA
@@ -161,7 +161,7 @@ grid_names:
     arrangement: U
     shape: [1021, 1442]
     uid: "3f4a68bc5b54c9f867fbcc12aacc723d"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA025_U.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA025_U.atlas
 
   - ORCA025_V: &ORCA025_V
     type: ORCA
@@ -170,7 +170,7 @@ grid_names:
     arrangement: V
     shape: [1021, 1442]
     uid: "9c87699ee2026c0feee07d2a972eaccd"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA025_V.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA025_V.atlas
 
   - ORCA025_W: &ORCA025_W
     type: ORCA
@@ -179,7 +179,7 @@ grid_names:
     arrangement: W
     shape: [1021, 1442]
     uid: "74ca68f1c8524811f3d3aad99536adc2"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA025_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA025_T.atlas
 
   - eORCA025_F: &eORCA025_F
     type: ORCA
@@ -188,7 +188,7 @@ grid_names:
     arrangement: F
     shape: [1207, 1442]
     uid: "770e5bbb667a253d55db8a98a3b2d3a9"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA025_F.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA025_F.atlas
 
   - eORCA025_T: &eORCA025_T
     type: ORCA
@@ -197,7 +197,7 @@ grid_names:
     arrangement: T
     shape: [1207, 1442]
     uid: "983412216c9768bc794c18dc92082895"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA025_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA025_T.atlas
 
   - eORCA025_U: &eORCA025_U
     type: ORCA
@@ -206,7 +206,7 @@ grid_names:
     arrangement: U
     shape: [1207, 1442]
     uid: "b1b2922e9b57ee9c6eeddad218b6e4f3"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA025_U.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA025_U.atlas
 
   - eORCA025_V: &eORCA025_V
     type: ORCA
@@ -215,7 +215,7 @@ grid_names:
     arrangement: V
     shape: [1207, 1442]
     uid: "9b06bf73a8f14e927bd9b0f1f0c04f74"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA025_V.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA025_V.atlas
 
   - eORCA025_W: &eORCA025_W
     type: ORCA
@@ -224,7 +224,7 @@ grid_names:
     arrangement: W
     shape: [1207, 1442]
     uid: "4a1ba3b11b8888aefc96992b6b1cab62"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA025_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA025_T.atlas
 
   - ORCA12_F: &ORCA12_F
     type: ORCA
@@ -233,7 +233,7 @@ grid_names:
     arrangement: F
     shape: [3059, 4322]
     uid: "29693ad8a7af3ae3ee0f02d090f0ec7b"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA12_F.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA12_F.atlas
 
   - ORCA12_T: &ORCA12_T
     type: ORCA
@@ -242,7 +242,7 @@ grid_names:
     arrangement: T
     shape: [3059, 4322]
     uid: "b117d01170ac77bca68560ab10e559de"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA12_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA12_T.atlas
 
   - ORCA12_U: &ORCA12_U
     type: ORCA
@@ -251,7 +251,7 @@ grid_names:
     arrangement: U
     shape: [3059, 4322]
     uid: "fff193b92d94d03e847ff2fa62b493f4"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA12_U.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA12_U.atlas
 
   - ORCA12_V: &ORCA12_V
     type: ORCA
@@ -260,7 +260,7 @@ grid_names:
     arrangement: V
     shape: [3059, 4322]
     uid: "986e3450774b716f6e75c1987e370b10"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA12_V.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA12_V.atlas
 
   - ORCA12_W: &ORCA12_W
     type: ORCA
@@ -269,7 +269,7 @@ grid_names:
     arrangement: W
     shape: [3059, 4322]
     uid: "ccfe953619a8dd49a7f765923882a274"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/ORCA12_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/ORCA12_T.atlas
 
   - eORCA12_F: &eORCA12_F
     type: ORCA
@@ -278,7 +278,7 @@ grid_names:
     arrangement: F
     shape: [3606, 4322]
     uid: "25da53ed581b3931fa310840fa9aefd9"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA12_F.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA12_F.atlas
 
   - eORCA12_T: &eORCA12_T
     type: ORCA
@@ -287,7 +287,7 @@ grid_names:
     arrangement: T
     shape: [3606, 4322]
     uid: "1553b66f5885cf5f83ad4b4fdf25f460"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA12_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA12_T.atlas
 
   - eORCA12_U: &eORCA12_U
     type: ORCA
@@ -296,7 +296,7 @@ grid_names:
     arrangement: U
     shape: [3606, 4322]
     uid: "3e87c826643da440b4e9d9f67588a576"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA12_U.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA12_U.atlas
 
   - eORCA12_V: &eORCA12_V
     type: ORCA
@@ -305,7 +305,7 @@ grid_names:
     arrangement: V
     shape: [3606, 4322]
     uid: "cc1e3fc06a2cd18c0653e557510b8a71"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA12_V.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA12_V.atlas
 
   - eORCA12_W: &eORCA12_W
     type: ORCA
@@ -314,7 +314,7 @@ grid_names:
     arrangement: W
     shape: [3606, 4322]
     uid: "462469edbd0e0586a0cf17424cc58c89"
-    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA12_T.atlas
+    url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA12_T.atlas
 
 grid_uids:
   - "174487fbace54b00d959d971e88b71e7": *ORCA2_F
@@ -360,7 +360,7 @@ grid_uids:
       arrangement: T
       shape: [332, 362]
       uid: "16076978a048410747dd7c9876677b28"  # (uid older version)
-      url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA1_T.atlas
+      url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA1_T.atlas
 
   - "7378487847e050559b82d0792374a705":
       type: ORCA
@@ -369,7 +369,7 @@ grid_uids:
       arrangement: U
       shape: [332, 362]
       uid: "7378487847e050559b82d0792374a705"  # (uid older version)
-      url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA1_U.atlas
+      url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA1_U.atlas
 
   - "d9622b55f3120eafb3dbaf5c742bc56c":
       type: ORCA
@@ -378,4 +378,4 @@ grid_uids:
       arrangement: V
       shape: [332, 362]
       uid: "d9622b55f3120eafb3dbaf5c742bc56c"  # (uid older version)
-      url: https://sites.ecmwf.int/repository/atlas/grids/orca/v0/eORCA1_V.atlas
+      url: https://sites.ecmwf.int/repository/atlas/grids/orca/v1/eORCA1_V.atlas

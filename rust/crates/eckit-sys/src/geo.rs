@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 //! FFI bindings to `eckit::geo` — grids, identified by gridSpec.
 
 #[cxx::bridge(namespace = "eckit_bridge")]
@@ -46,6 +49,9 @@ mod ffi {
 
         /// Points per latitude row. Empty for grids with no row structure.
         fn pl(self: &GridWrapper) -> Result<Vec<i64>>;
+
+        /// Number of latitude rows, `0` for grids with no row structure.
+        fn ny(self: &GridWrapper) -> Result<usize>;
 
         // Geometry
         fn bounding_box(self: &GridWrapper) -> Result<Bbox>;

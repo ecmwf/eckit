@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 // eckit geo C++ bridge for Rust FFI — umbrella header pulled in by the
 // cxx-generated geo bridge (`include!("EckitGeoBridge.h")` in geo.rs). Real
 // declarations live in the per-topic headers below.

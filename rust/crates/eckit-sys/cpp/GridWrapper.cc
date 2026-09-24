@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 // eckit geo Grid bridge — implementation.
 
 #include "eckit_exceptions.h"
@@ -7,6 +10,7 @@
 
 #include "eckit/geo/Point.h"
 #include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Range.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/grid/Regular.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
@@ -24,6 +28,40 @@ namespace {
 LonLat to_lonlat(const eckit::geo::Point& point) {
     const auto& p = std::get<eckit::geo::PointLonLat>(point);
     return {p.lon(), p.lat()};
+}
+
+template <typename T>
+rust::Vec<T> to_vec(const std::vector<T>& values) {
+    rust::Vec<T> out;
+    out.reserve(values.size());
+    for (const auto& v : values) {
+        out.push_back(v);
+    }
+    return out;
+}
+
+/// Calls `f(ny, nx)` with the grid's row structure, where `nx(j)` is the number
+/// of points in row `j`. Does nothing for grids with no row structure.
+///
+/// `grid::Reduced` keeps `nxj` protected and has no `pl()`, and named grids
+/// like `{"grid":"O1280"}` do not carry "pl" in their spec, so the only route
+/// is a cast to the concrete class.
+template <typename F>
+void with_rows(const eckit::geo::Grid& grid, F&& f) {
+    using namespace eckit::geo::grid;
+
+    if (const auto* g = dynamic_cast<const reduced::ReducedGaussian*>(&grid)) {
+        f(g->pl().size(), [g](size_t j) { return g->pl()[j]; });
+    }
+    else if (const auto* g = dynamic_cast<const reduced::ReducedLonLat*>(&grid)) {
+        f(g->pl().size(), [g](size_t j) { return g->pl()[j]; });
+    }
+    else if (const auto* g = dynamic_cast<const reduced::HEALPix*>(&grid)) {
+        f(g->ny(), [g](size_t j) { return g->nxj(j); });
+    }
+    else if (const auto* g = dynamic_cast<const Regular*>(&grid)) {
+        f(g->ny(), [g](size_t /*j*/) { return g->nx(); });
+    }
 }
 
 }  // namespace
@@ -59,42 +97,24 @@ bool GridWrapper::is_empty() const {
 }
 
 rust::Vec<size_t> GridWrapper::shape() const {
-    rust::Vec<size_t> out;
-    for (auto n : grid_->shape()) {
-        out.push_back(n);
-    }
-    return out;
+    return to_vec(grid_->shape());
 }
 
 rust::Vec<std::int64_t> GridWrapper::pl() const {
-    using namespace eckit::geo::grid;
-
     rust::Vec<std::int64_t> out;
-
-    // `grid::Reduced` keeps `nx`/`ny` protected and has no `pl()`, and named
-    // grids like `{"grid":"O1280"}` do not carry "pl" in their spec, so the
-    // only route is a cast to the concrete class.
-    auto rows = [&out](size_t ny, auto&& nx) {
+    with_rows(*grid_, [&out](size_t ny, auto&& nx) {
         out.reserve(ny);
         for (size_t j = 0; j < ny; ++j) {
             out.push_back(static_cast<std::int64_t>(nx(j)));
         }
-    };
-
-    if (const auto* g = dynamic_cast<const reduced::ReducedGaussian*>(grid_.get())) {
-        rows(g->pl().size(), [g](size_t j) { return g->pl()[j]; });
-    }
-    else if (const auto* g = dynamic_cast<const reduced::ReducedLonLat*>(grid_.get())) {
-        rows(g->pl().size(), [g](size_t j) { return g->pl()[j]; });
-    }
-    else if (const auto* g = dynamic_cast<const reduced::HEALPix*>(grid_.get())) {
-        rows(g->ny(), [g](size_t j) { return g->nx(j); });
-    }
-    else if (const auto* g = dynamic_cast<const Regular*>(grid_.get())) {
-        rows(g->ny(), [g](size_t /*j*/) { return g->nx(); });
-    }
-
+    });
     return out;
+}
+
+size_t GridWrapper::ny() const {
+    size_t ny = 0;
+    with_rows(*grid_, [&ny](size_t n, auto&& /*nx*/) { ny = n; });
+    return ny;
 }
 
 // ============== Geometry ==============
@@ -112,20 +132,15 @@ LonLat GridWrapper::last_point() const {
     return to_lonlat(grid_->last_point());
 }
 
+// Copied, not borrowed: `Range::values()` may return a reference into the
+// process-global memory cache, which `MemoryCache::total_purge()` frees.
+
 rust::Vec<double> GridWrapper::distinct_latitudes() const {
-    rust::Vec<double> out;
-    for (auto v : grid_->distinct_latitudes()) {
-        out.push_back(v);
-    }
-    return out;
+    return to_vec(grid_->lat().values());
 }
 
 rust::Vec<double> GridWrapper::distinct_longitudes() const {
-    rust::Vec<double> out;
-    for (auto v : grid_->distinct_longitudes()) {
-        out.push_back(v);
-    }
-    return out;
+    return to_vec(grid_->lon().values());
 }
 
 void GridWrapper::fill_latlons(rust::Slice<double> lat, rust::Slice<double> lon) const {

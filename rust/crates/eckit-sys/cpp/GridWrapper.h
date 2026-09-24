@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 1996- European Centre for Medium-Range Weather Forecasts (ECMWF)
+// SPDX-License-Identifier: Apache-2.0
+
 // eckit geo Grid bridge — wraps `eckit::geo::Grid`.
 #pragma once
 
@@ -41,6 +44,9 @@ public:
 
     /// Points per latitude row ("pl"), empty for grids with no row structure.
     rust::Vec<std::int64_t> pl() const;
+
+    /// Number of latitude rows, 0 for grids with no row structure.
+    size_t ny() const;
 
     // Geometry
     Bbox bounding_box() const;

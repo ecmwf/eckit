@@ -7,7 +7,7 @@
 //! - [`Config`] — YAML configuration loading and access
 //! - [`DataHandle`] — abstract I/O (`impl Read + Seek`)
 //! - [`Message`] / [`MessageReader`] — GRIB message abstraction
-//! - [`geo::Grid`] — geospatial grids, identified by gridSpec (`geo` feature)
+//! - [`geo::Grid`] / [`geo::Spec`] — geospatial grids and their gridSpec (`geo` feature)
 //! - [`Error`] — auto-generated exception types from eckit
 //! - [`init`] — runtime initialization with Rust log bridge
 
@@ -23,7 +23,7 @@ pub use config::{Config, ConfigGet, ConfigSet, SubConfigs};
 pub use datahandle::{Closed, DataHandle, HandleState, Reading, Writing};
 pub use error::{Error, Result};
 #[cfg(feature = "geo")]
-pub use geo::Grid;
+pub use geo::{Grid, Spec, SpecGet};
 pub use message::{Message, MessageGet, MessageReader};
 pub use stream::{MemoryStream, Stream, StreamRead, StreamWrite, TcpStream};
 

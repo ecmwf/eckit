@@ -6,6 +6,7 @@
 #include "eckit_exceptions.h"
 
 #include "GridWrapper.h"
+#include "RustVec.h"
 #include "eckit-sys/src/geo.rs.h"
 
 #include "eckit/geo/Point.h"
@@ -28,16 +29,6 @@ namespace {
 LonLat to_lonlat(const eckit::geo::Point& point) {
     const auto& p = std::get<eckit::geo::PointLonLat>(point);
     return {p.lon(), p.lat()};
-}
-
-template <typename T>
-rust::Vec<T> to_vec(const std::vector<T>& values) {
-    rust::Vec<T> out;
-    out.reserve(values.size());
-    for (const auto& v : values) {
-        out.push_back(v);
-    }
-    return out;
 }
 
 /// Calls `f(ny, nx)` with the grid's row structure, where `nx(j)` is the number
@@ -70,10 +61,6 @@ void with_rows(const eckit::geo::Grid& grid, F&& f) {
 
 // ============== Identity ==============
 
-rust::String GridWrapper::spec_str() const {
-    return rust::String(grid_->spec_str());
-}
-
 rust::String GridWrapper::catalog_str() const {
     return rust::String(grid_->catalog_str());
 }
@@ -97,7 +84,7 @@ bool GridWrapper::is_empty() const {
 }
 
 rust::Vec<size_t> GridWrapper::shape() const {
-    return to_vec(grid_->shape());
+    return RustVec::copy<size_t>(grid_->shape());
 }
 
 rust::Vec<std::int64_t> GridWrapper::pl() const {
@@ -136,11 +123,11 @@ LonLat GridWrapper::last_point() const {
 // process-global memory cache, which `MemoryCache::total_purge()` frees.
 
 rust::Vec<double> GridWrapper::distinct_latitudes() const {
-    return to_vec(grid_->lat().values());
+    return RustVec::copy<double>(grid_->lat().values());
 }
 
 rust::Vec<double> GridWrapper::distinct_longitudes() const {
-    return to_vec(grid_->lon().values());
+    return RustVec::copy<double>(grid_->lon().values());
 }
 
 void GridWrapper::fill_latlons(rust::Slice<double> lat, rust::Slice<double> lon) const {

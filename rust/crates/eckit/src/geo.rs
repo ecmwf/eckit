@@ -8,6 +8,7 @@
 //! spec round-trips through [`Grid::spec`] in canonical form and can carry an
 //! area, projection or explicit `pl` that a name cannot express.
 
+use std::fmt;
 use std::str::FromStr;
 
 use crate::error::Result;
@@ -20,7 +21,8 @@ pub use eckit_sys::geo::{Bbox, LonLat};
 ///
 /// ```ignore
 /// let grid = Grid::from_name("O1280")?;
-/// assert_eq!(grid.spec()?, r#"{"grid":"O1280"}"#);
+/// assert_eq!(grid.spec().to_json()?, r#"{"grid":"O1280"}"#);
+/// assert_eq!(grid.spec().get::<String>("grid")?, "O1280");
 ///
 /// let pl = grid.pl()?;                       // points per latitude row
 /// assert_eq!(pl.iter().sum::<i64>() as usize, grid.len()?);
@@ -70,10 +72,14 @@ impl Grid {
 
     /// The canonical gridSpec identifying this grid.
     ///
-    /// Normalised, so it may differ textually from the spec passed in —
-    /// `{"grid":"o16"}` comes back as `{"grid":"O16"}`.
-    pub fn spec(&self) -> Result<String> {
-        self.inner.spec_str().map_err(eckit_sys::Error::from)
+    /// Normalised, so it may differ from the spec passed in — `{"grid":"o16"}`
+    /// comes back as `{"grid":"O16"}`. The view borrows the spec the grid
+    /// caches; [`Spec::to_json`] gives the string form.
+    #[must_use]
+    pub fn spec(&self) -> Spec<'_> {
+        Spec {
+            inner: self.inner.spec(),
+        }
     }
 
     /// The catalog entry backing this grid, as a spec string.
@@ -201,6 +207,98 @@ impl FromStr for Grid {
     /// Parse a gridSpec. Equivalent to [`Grid::from_spec`].
     fn from_str(spec: &str) -> std::result::Result<Self, Self::Err> {
         Self::from_spec(spec)
+    }
+}
+
+/// A gridSpec: the key/value description of a grid, borrowed from the [`Grid`]
+/// that owns it.
+///
+/// Values are read by type through [`Spec::get`], the canonical JSON through
+/// [`Spec::to_json`]. A missing key, or one holding another type, is an
+/// [`Error::SpecError`](crate::Error).
+pub struct Spec<'g> {
+    inner: &'g eckit_sys::geo::SpecWrapper,
+}
+
+impl Spec<'_> {
+    /// Whether `key` is present.
+    #[must_use]
+    pub fn has(&self, key: &str) -> bool {
+        self.inner.has(key)
+    }
+
+    /// Read `key` as `T`.
+    pub fn get<T: SpecGet>(&self, key: &str) -> Result<T> {
+        T::get_from(self.inner, key)
+    }
+
+    /// Canonical JSON form, e.g. `{"grid":"O1280"}`.
+    pub fn to_json(&self) -> Result<String> {
+        self.inner.json().map_err(eckit_sys::Error::from)
+    }
+}
+
+impl fmt::Debug for Spec<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.to_json() {
+            Ok(json) => f.write_str(&json),
+            Err(err) => write!(f, "<spec unavailable: {err}>"),
+        }
+    }
+}
+
+/// Types a [`Spec`] value can be read as.
+pub trait SpecGet: Sized {
+    /// Read `key` from `spec` as `Self`.
+    fn get_from(spec: &eckit_sys::geo::SpecWrapper, key: &str) -> Result<Self>;
+}
+
+impl SpecGet for String {
+    fn get_from(spec: &eckit_sys::geo::SpecWrapper, key: &str) -> Result<Self> {
+        spec.get_string(key).map_err(eckit_sys::Error::from)
+    }
+}
+
+impl SpecGet for bool {
+    fn get_from(spec: &eckit_sys::geo::SpecWrapper, key: &str) -> Result<Self> {
+        spec.get_bool(key).map_err(eckit_sys::Error::from)
+    }
+}
+
+impl SpecGet for i64 {
+    fn get_from(spec: &eckit_sys::geo::SpecWrapper, key: &str) -> Result<Self> {
+        spec.get_long(key).map_err(eckit_sys::Error::from)
+    }
+}
+
+impl SpecGet for usize {
+    fn get_from(spec: &eckit_sys::geo::SpecWrapper, key: &str) -> Result<Self> {
+        spec.get_unsigned(key).map_err(eckit_sys::Error::from)
+    }
+}
+
+impl SpecGet for f64 {
+    fn get_from(spec: &eckit_sys::geo::SpecWrapper, key: &str) -> Result<Self> {
+        spec.get_double(key).map_err(eckit_sys::Error::from)
+    }
+}
+
+impl SpecGet for Vec<i64> {
+    fn get_from(spec: &eckit_sys::geo::SpecWrapper, key: &str) -> Result<Self> {
+        spec.get_long_vector(key).map_err(eckit_sys::Error::from)
+    }
+}
+
+impl SpecGet for Vec<usize> {
+    fn get_from(spec: &eckit_sys::geo::SpecWrapper, key: &str) -> Result<Self> {
+        spec.get_unsigned_vector(key)
+            .map_err(eckit_sys::Error::from)
+    }
+}
+
+impl SpecGet for Vec<f64> {
+    fn get_from(spec: &eckit_sys::geo::SpecWrapper, key: &str) -> Result<Self> {
+        spec.get_double_vector(key).map_err(eckit_sys::Error::from)
     }
 }
 

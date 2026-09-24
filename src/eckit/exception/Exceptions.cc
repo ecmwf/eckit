@@ -180,7 +180,13 @@ PermissionDenied::PermissionDenied(const std::string& w, const CodeLocation& loc
 
 NotFound::NotFound(const std::string& w, const CodeLocation& loc) : Exception("Not found: " + w, loc) {}
 
+NotFound::NotFound(const std::string& w, const CodeLocation& loc, bool quiet) :
+    Exception("Not found: " + w, loc, quiet) {}
+
 AlreadyExists::AlreadyExists(const std::string& w, const CodeLocation& loc) : Exception("Already exists: " + w, loc) {}
+
+AlreadyExists::AlreadyExists(const std::string& w, const CodeLocation& loc, bool quiet) :
+    Exception("Already exists: " + w, loc, quiet) {}
 
 OutOfStorage::OutOfStorage(const std::string& w, const CodeLocation& loc) : Exception("Out of storage: " + w, loc) {}
 

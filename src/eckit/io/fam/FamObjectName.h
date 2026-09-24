@@ -12,12 +12,13 @@
 
 #pragma once
 
+#include <optional>
 #include <string>
 
 #include "eckit/io/Length.h"
 #include "eckit/io/Offset.h"
 #include "eckit/io/fam/FamName.h"
-#include "eckit/io/fam/FamProperty.h"
+#include "eckit/io/fam/FamTypes.h"
 
 namespace eckit {
 
@@ -38,7 +39,9 @@ public:  // methods
 
     FamObject lookup() const;
 
-    FamObject allocate(fam::size_t object_size, bool overwrite = false) const;
+    /// Allocates the named object. Without @p object_perm the object inherits the region's permissions.
+    FamObject allocate(fam::size_t object_size, bool overwrite = false,
+                       std::optional<fam::perm_t> object_perm = {}) const;
 
     bool exists() const override;
 

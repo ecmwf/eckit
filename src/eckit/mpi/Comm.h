@@ -484,7 +484,7 @@ private:  // methods
 
 protected:  // methods
 
-    Comm(std::string_view name);
+    explicit Comm(std::string_view name);
 
     virtual ~Comm();
 

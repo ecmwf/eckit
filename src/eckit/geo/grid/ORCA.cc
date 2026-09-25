@@ -23,7 +23,7 @@ namespace eckit::geo::grid {
 
 
 ORCA::ORCA(const Spec& spec) :
-    Grid(bounding_box_from_spec(spec), Projection::make_from_spec(spec)),
+    Grid(bounding_box_from_spec(spec), ProjectionFactory::build(spec)),
     name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("arrangement"))) {
     reset_uid(spec.get_string("uid"));

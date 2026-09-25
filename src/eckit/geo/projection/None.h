@@ -15,8 +15,8 @@ public:
 
     // -- Constructors
 
-    explicit None() = default;
-    explicit None(const Spec&) {}
+    explicit None() : Projection(nullptr, PointLonLat{}, PointLonLat{}) {}
+    explicit None(const Spec&) : None() {}
 
     // -- Overridden methods
 

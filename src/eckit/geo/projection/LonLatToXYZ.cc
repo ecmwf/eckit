@@ -18,7 +18,7 @@ static const std::string TYPE("ll-to-xyz");
 static ProjectionRegisterType<LonLatToXYZ> PROJECTION(TYPE);
 
 
-LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : Projection(figure_ptr) {
+LonLatToXYZ::LonLatToXYZ(Figure* figure_ptr) : Projection(figure_ptr, PointLonLat{}, PointXYZ{}) {
     struct LonLatToSphereXYZ final : Implementation {
         const double R;
 

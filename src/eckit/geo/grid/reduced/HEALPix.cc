@@ -139,10 +139,10 @@ static const std::string HEALPIX_PATTERN = "h[rn][1-9][0-9]*|h[1-9][0-9]*[rn]?";
 
 HEALPix::HEALPix(const Spec& spec) :
     HEALPix(into_unsigned(spec.get_long("Nside")), spec.get_string("order", order::HEALPix::order_default()),
-            bounding_box_from_spec(spec), Projection::make_from_spec(spec)) {}
+            bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
 
 
-HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, Projection* p) :
+HEALPix::HEALPix(size_t Nside, order_type order, BoundingBox* bbox, const Projection* p) :
     Reduced(bbox, p), Nside_(Nside), order_(order), y_(new range::HEALPixLatitude(Nside)) {
     ASSERT(y_);
 }

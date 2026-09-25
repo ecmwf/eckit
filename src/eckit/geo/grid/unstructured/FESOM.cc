@@ -40,7 +40,7 @@ static std::string arrangement_to_string(Arrangement a) {
 FESOM::FESOM(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
                  arrangement_to_string(arrangement_from_string(spec.get_string("arrangement"))),
-                 bounding_box_from_spec(spec), Projection::make_from_spec(spec)) {}
+                 bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
 
 
 FESOM::FESOM(const uid_type& uid) :

@@ -4,8 +4,10 @@
 
 #pragma once
 
+#include <cstddef>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "eckit/geo/Point.h"
 #include "eckit/memory/Builder.h"
@@ -33,7 +35,8 @@ public:
 
     // -- Constructors
 
-    explicit Projection(Figure* = nullptr);
+    /// @param source/target point types, given by example points
+    explicit Projection(Figure* = nullptr, const Point& source = PointLonLat{}, const Point& target = PointXY{});
     Projection(const Projection&) = default;
     Projection(Projection&&)      = default;
 
@@ -48,8 +51,21 @@ public:
 
     // -- Methods
 
+    /// Project a point, from the source to the target point type (fwd) or the reverse (inv)
     virtual Point fwd(const Point&) const = 0;
     virtual Point inv(const Point&) const = 0;
+
+    /// Project points given one vector per coordinate (v1, v2 and, for points of 3 coordinates, v3), from the source
+    /// to the target point type (fwd) or the reverse (inv), returning one vector per coordinate; points that fail to
+    /// project result in NaN coordinates
+    std::vector<std::vector<double>> fwd(const std::vector<double>& v1, const std::vector<double>& v2,
+                                         const std::vector<double>& v3 = {}) const;
+    std::vector<std::vector<double>> inv(const std::vector<double>& v1, const std::vector<double>& v2,
+                                         const std::vector<double>& v3 = {}) const;
+
+    /// Source/target point coordinate names (see point_coordinates)
+    const std::vector<std::string>& source_point_coordinates() const;
+    const std::vector<std::string>& target_point_coordinates() const;
 
     /// Map a grid's (x, y) coordinates to geographic coordinates
     virtual Point from_grid_xy(double x, double y) const { return inv(PointXY{x, y}); }
@@ -74,7 +90,25 @@ public:
 
     static const Projection& projection_default();
 
-    [[nodiscard]] static Projection* make_from_spec(const Spec&);
+protected:
+
+    // -- Methods
+
+    /// Set the source/target point types, given by example points
+    void point_types(const Point& source, const Point& target);
+
+    /// Set the source/target point types as the source of the first and the target of the last projections
+    void point_types_from(const Projection& first, const Projection& last);
+
+    /// Swap the source/target point types
+    void reverse_point_types();
+
+    /// Project points (see fwd/inv), given one vector per coordinate of checked sizes (v3 is empty for points of 2
+    /// coordinates); the default projects point by point
+    virtual std::vector<std::vector<double>> fwd_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                        const std::vector<double>& v3) const;
+    virtual std::vector<std::vector<double>> inv_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                        const std::vector<double>& v3) const;
 
 private:
 
@@ -83,6 +117,8 @@ private:
     std::shared_ptr<const Figure> figure_;
     mutable std::shared_ptr<spec::Custom> spec_;
     PointXY false_;
+    size_t source_;  // point types (as Point alternatives)
+    size_t target_;
 
     // -- Friends
 

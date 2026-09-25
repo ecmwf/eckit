@@ -70,10 +70,10 @@ RegularXY::RangeXY RegularXY::RangeXY::make_from_spec(const Spec& spec, const st
 
 RegularXY::RegularXY(const Spec& spec) :
     RegularXY(Increments::make_from_spec(spec), BoundingBoxXY(spec), order::Scan{spec},
-              Projection::make_from_spec(spec)) {}
+              ProjectionFactory::build(spec)) {}
 
 
-RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox, order::Scan s, Projection* p) :
+RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox, order::Scan s, const Projection* p) :
     Regular(s, p),
     // NOTE: the range references its own first value, so the grid isn't snapped to multiples of the increment
     x_(s.is_scan_i_positive() ? inc.dx() : -inc.dx(), s.is_scan_i_positive() ? bbox.min_x() : bbox.max_x(),
@@ -84,7 +84,7 @@ RegularXY::RegularXY(const Increments& inc, BoundingBoxXY bbox, order::Scan s, P
 }
 
 
-RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, Projection* p) :
+RegularXY::RegularXY(const RangeXY& x, const RangeXY& y, const Projection* p) :
     Regular(order::Scan("i" + std::string(x.b() - x.a() < 0 ? "-" : "+") +  //
                         "j" + std::string(y.b() - y.a() < 0 ? "-" : "+")),
             p),

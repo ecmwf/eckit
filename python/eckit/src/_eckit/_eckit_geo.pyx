@@ -3,6 +3,7 @@ from cython.operator cimport dereference
 from libcpp.memory cimport unique_ptr
 from libcpp.string cimport string
 from libcpp.utility cimport pair
+from libc.string cimport memcpy
 from libcpp.vector cimport vector
 
 cimport eckit
@@ -325,7 +326,100 @@ cdef class Projection:
     def __eq__(self, other) -> bool:
         if not isinstance(other, Projection):
             return NotImplemented
-        return self.spec_str == other.spec_str
+        return (dereference(self._projection) ==
+                dereference((<Projection>other)._projection))
+
+    cdef tuple _project(self, bint forward, tuple ordered, dict named):
+        names = tuple(self._projection.source_point_coordinates() if forward else
+                      self._projection.target_point_coordinates())
+
+        # coordinates, ordered or named (not mixed), as the point coordinates
+        if (ordered and named) or (
+            set(named) != set(names) if named else len(ordered) != len(names)
+        ):
+            raise TypeError(
+                f"Projection: expected coordinates {names}, ordered or named"
+            )
+        coordinates = [named[name] for name in names] if named else ordered
+
+        # to vectors: all scalars (one point) or 1-d array-likes (many points)
+        cdef vector[vector[double]] v = vector[vector[double]](3)
+        cdef const double[::1] buffer
+        scalars = set()
+        for k, c in enumerate(coordinates):
+            try:
+                len(c)
+                scalars.add(False)
+            except TypeError:
+                scalars.add(True)
+                v[k].push_back(c)
+                continue
+
+            if getattr(c, "ndim", 1) != 1:
+                raise ValueError("Projection: coordinate arrays are 1-dimensional")
+            try:
+                buffer = c  # contiguous float64 buffers (eg. numpy) copied directly
+                if buffer.shape[0] > 0:
+                    v[k].assign(&buffer[0], &buffer[0] + buffer.shape[0])
+            except (TypeError, ValueError):
+                v[k] = [float(x) for x in c]
+
+        if len(scalars) > 1:
+            raise ValueError(
+                "Projection: coordinates are either all scalars or all 1-d array-likes"
+            )
+
+        cdef vector[vector[double]] w = (
+            self._projection.fwd(v[0], v[1], v[2]) if forward else
+            self._projection.inv(v[0], v[1], v[2])
+        )
+
+        # from vectors: floats (one point), numpy arrays or lists (many points)
+        if True in scalars:
+            return tuple(c[0] for c in w)
+
+        try:
+            import numpy as np
+        except ImportError:  # numpy is optional
+            return tuple(list(c) for c in w)
+
+        cdef double[::1] array
+        out = tuple(np.empty(c.size()) for c in w)
+        for k in range(w.size()):
+            array = out[k]
+            if w[k].size() > 0:
+                memcpy(&array[0], w[k].data(), w[k].size() * sizeof(double))
+        return out
+
+    def fwd(self, *coordinates, **named) -> tuple:
+        """Project points from source_point_coordinates to target_point_coordinates.
+
+        Arguments are either all scalars (one point) or all 1-d array-likes of the same
+        length (many points).
+
+        Returns a tuple as the target_point_coordinates (in size and order), of floats
+        (one point) or of 1-d numpy float64 arrays (lists without numpy). Points failing
+        to project result in NaN.
+
+        Warning: coordinates are copied (to/from C++ vectors).
+        """
+        return self._project(True, coordinates, named)
+
+    def inv(self, *coordinates, **named) -> tuple:
+        """Project points from target_point_coordinates back to
+        source_point_coordinates (see fwd, with source and target swapped)."""
+        return self._project(False, coordinates, named)
+
+    @property
+    def source_point_coordinates(self) -> tuple:
+        """Coordinate names (in order) fwd() takes and inv() returns, as defined by
+        eckit::geo (point_coordinates)."""
+        return tuple(self._projection.source_point_coordinates())
+
+    @property
+    def target_point_coordinates(self) -> tuple:
+        """Coordinates fwd() returns and inv() takes (see source_point_coordinates)."""
+        return tuple(self._projection.target_point_coordinates())
 
     @property
     def figure(self) -> Figure:

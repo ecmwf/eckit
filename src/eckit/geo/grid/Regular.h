@@ -38,7 +38,7 @@ protected:
 
     // -- Constructors
 
-    explicit Regular(order::Scan scan = scan_default(), Projection* = nullptr);
+    explicit Regular(order::Scan scan = scan_default(), const Projection* = nullptr);
 
     // -- Overridden methods
 

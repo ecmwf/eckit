@@ -41,8 +41,8 @@ public:
     // -- Constructors
 
     explicit RegularXY(const Spec&);
-    explicit RegularXY(const Increments&, BoundingBoxXY, order::Scan = scan_default(), Projection* = nullptr);
-    explicit RegularXY(const RangeXY& x, const RangeXY& y, Projection* = nullptr);
+    explicit RegularXY(const Increments&, BoundingBoxXY, order::Scan = scan_default(), const Projection* = nullptr);
+    explicit RegularXY(const RangeXY& x, const RangeXY& y, const Projection* = nullptr);
 
     // -- Overridden methods
 

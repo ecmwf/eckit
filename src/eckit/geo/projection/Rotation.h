@@ -5,6 +5,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/Projection.h"
 
@@ -50,6 +51,16 @@ protected:
 
     void fill_spec(spec::Custom&) const override;
 
+    std::vector<std::vector<double>> fwd_vector(const std::vector<double>& lon, const std::vector<double>& lat,
+                                                const std::vector<double>&) const override {
+        return (*fwd_)(lon, lat);
+    }
+
+    std::vector<std::vector<double>> inv_vector(const std::vector<double>& lon, const std::vector<double>& lat,
+                                                const std::vector<double>&) const override {
+        return (*inv_)(lon, lat);
+    }
+
 private:
 
     // -- Types
@@ -64,6 +75,18 @@ private:
         void operator=(Implementation&&)      = delete;
 
         virtual PointLonLat operator()(const PointLonLat&) const = 0;
+
+        /// Rotate points, given/returning one vector per coordinate (lon, lat)
+        virtual std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
+                                                            const std::vector<double>& lat) const {
+            std::vector<std::vector<double>> out{std::vector<double>(lon.size()), std::vector<double>(lon.size())};
+            for (size_t i = 0; i < lon.size(); ++i) {
+                const auto q = operator()(PointLonLat{lon[i], lat[i]});
+                out[0][i]    = q.lon();
+                out[1][i]    = q.lat();
+            }
+            return out;
+        }
     };
 
     // -- Members

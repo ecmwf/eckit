@@ -234,10 +234,10 @@ CASE("Spec <- Custom") {
                 EXPECT(a.get(key, value_as_long) && value_as_long == static_cast<long>(one));
                 EXPECT(a.get(key, value_as_size_t) && value_as_size_t == static_cast<size_t>(one));
 
-                EXPECT(a.get_string(key) == std::to_string(1));
+                EXPECT(a.get_string(key) == "1");
             }
             else {
-                EXPECT(a.get_string(key) == std::to_string(1.));
+                EXPECT(a.get_string(key) == "1");
             }
         }
     }
@@ -285,7 +285,7 @@ CASE("Spec <- Custom") {
         EXPECT(c.has("foo"));
         EXPECT_THROWS_AS(c.get_int("foo"), exception::SpecError);  // cannot access as int
         EXPECT(types::is_approximately_equal(c.get_double("foo"), two));
-        EXPECT(c.get_string("foo") == std::to_string(two));
+        EXPECT(c.get_string("foo") == "2");
 
         c.set("bar", one);
         EXPECT(c.get_int("bar") == one);

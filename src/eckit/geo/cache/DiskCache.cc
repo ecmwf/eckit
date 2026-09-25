@@ -12,10 +12,20 @@
 namespace eckit::geo::cache {
 
 
-void DiskCache::rmdir(const PathName& p) const {
-    // control concurrent access
-    static util::recursive_mutex MUTEX;
+namespace {
+
+
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
+
+
+void DiskCache::rmdir(const PathName& p) const {
+    lock_type lock;
 
     if (!p.exists()) {
         return;

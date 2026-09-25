@@ -27,14 +27,16 @@
 namespace eckit::geo::cache {
 
 
-static util::recursive_mutex MUTEX;
-
 const int Download::VERSION        = 1;
 const std::string Download::PREFIX = "";
 const std::string Download::SUFFIX = ".download";
 
 
+namespace {
+
+
 class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
 
@@ -68,6 +70,9 @@ public:
 
     explicit file_lock_type(const PathName& path) : flock_(path), lock_guard_(flock_) {}
 };
+
+
+}  // namespace
 
 
 std::string Download::url_file_basename(const url_type& url, bool ext) {

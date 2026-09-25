@@ -16,7 +16,16 @@
 namespace eckit::geo::range {
 
 
-static util::recursive_mutex MUTEX;
+namespace {
+
+
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
 
 
 inline bool is_equal(double a, double b) {
@@ -75,7 +84,8 @@ GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double cro
 
 
 const std::vector<double>& GaussianLatitude::values() const {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
+
     return values_.empty() ? util::gaussian_latitudes(N_, a() < b()) : values_;
 }
 

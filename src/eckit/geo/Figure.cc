@@ -133,15 +133,9 @@ void Figure::fill_spec(spec::Custom& custom) const {
 }
 
 
-FigureFactory& FigureFactory::instance() {
-    static FigureFactory obj;
-    return obj;
-}
-
-
 Figure* FigureFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Figure::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
-    return instance().make_from_spec_(*spec);
+    return build(*spec);
 }
 
 
@@ -150,13 +144,13 @@ const Figure* FigureFactory::make_default() {
 }
 
 
-Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
+Figure* FigureFactory::build(const Figure::Spec& spec) {
     lock_type lock;
 
     if (spec.has("figure")) {
         std::string name;
         if (!spec.get("figure", name)) {
-            return make_from_spec_(spec.spec("figure"));
+            return build(spec.spec("figure"));
         }
 
         // a figure described inline (e.g. '{"R":6371229}', '{"a":6378137,"b":6356752}'), or by name

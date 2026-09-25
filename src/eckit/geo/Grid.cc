@@ -329,22 +329,14 @@ void Grid::fill_spec(spec::Custom& custom) const {
 
 const Grid* GridFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Grid::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
-    return instance().make_from_spec_(*spec);
+    return build(*spec);
 }
 
 
-GridFactory& GridFactory::instance() {
-    share::Grid::instance();  // ensure load of supporting files
-
-    static GridFactory INSTANCE;
-    return INSTANCE;
-}
-
-
-const Grid* GridFactory::make_from_spec_(const Grid::Spec& spec) const {
+const Grid* GridFactory::build(const Grid::Spec& spec) {
     lock_type lock;
 
-    std::unique_ptr<Grid::Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Grid::Spec> cfg(make_spec(spec));
 
     if (std::string type; cfg->get("type", type)) {
         return Factory<Grid>::instance().get(type).create(*cfg);
@@ -355,8 +347,9 @@ const Grid* GridFactory::make_from_spec_(const Grid::Spec& spec) const {
 }
 
 
-Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
+Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     lock_type lock;
+    share::Grid::instance();  // ensure load of supporting files
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
@@ -412,8 +405,9 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
 }
 
 
-std::ostream& GridFactory::list_(std::ostream& out) const {
+std::ostream& GridFactory::list(std::ostream& out) {
     lock_type lock;
+    share::Grid::instance();  // ensure load of supporting files
 
     out << GridSpecByUID::instance() << std::endl;
     out << GridSpecByName::instance() << std::endl;

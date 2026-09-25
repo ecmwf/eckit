@@ -248,23 +248,11 @@ struct GridRegisterName {
 
 struct GridFactory {
     // This is 'const' as Grid should always be immutable
-    [[nodiscard]] static const Grid* build(const Grid::Spec& spec) { return instance().make_from_spec_(spec); }
-
-    // This is 'const' as Grid should always be immutable
+    [[nodiscard]] static const Grid* build(const Grid::Spec&);
     [[nodiscard]] static const Grid* make_from_string(const std::string&);
 
-    [[nodiscard]] static Grid::Spec* make_spec(const Grid::Spec& spec) { return instance().make_spec_(spec); }
-    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
-
-private:
-
-    static GridFactory& instance();
-
-    // This is 'const' as Grid should always be immutable
-    [[nodiscard]] const Grid* make_from_spec_(const Grid::Spec&) const;
-
-    [[nodiscard]] Grid::Spec* make_spec_(const Grid::Spec&) const;
-    std::ostream& list_(std::ostream&) const;
+    [[nodiscard]] static Grid::Spec* make_spec(const Grid::Spec&);
+    static std::ostream& list(std::ostream&);
 };
 
 

@@ -129,8 +129,7 @@ private:
 };
 
 
-using ProjectionFactoryType = Factory<Projection>;
-using ProjectionSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+using ProjectionSpecByName = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
 
 
 template <typename T>
@@ -142,30 +141,13 @@ using ProjectionRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::strin
 
 struct ProjectionFactory {
     // This is 'const' as Projection should always be immutable
-    [[nodiscard]] static const Projection* build(const Projection::Spec& spec) {
-        return instance().make_from_spec_(spec);
-    }
-
+    [[nodiscard]] static const Projection* build(const Projection::Spec&);
+    [[nodiscard]] static const Projection* make_from_string(const std::string&);
     [[nodiscard]] static const Projection* make_default();
 
-    // This is 'const' as Projection should always be immutable
-    [[nodiscard]] static const Projection* make_from_string(const std::string&);
-
-    [[nodiscard]] static Projection::Spec* make_spec(const Projection::Spec& spec) {
-        return instance().make_spec_(spec);
-    }
-    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
-    static bool has_type(const std::string& type) { return ProjectionFactoryType::instance().exists(type); }
-
-private:
-
-    static ProjectionFactory& instance();
-
-    // This is 'const' as Projection should always be immutable
-    [[nodiscard]] const Projection* make_from_spec_(const Projection::Spec&) const;
-
-    [[nodiscard]] Projection::Spec* make_spec_(const Projection::Spec&) const;
-    std::ostream& list_(std::ostream&) const;
+    [[nodiscard]] static Projection::Spec* make_spec(const Projection::Spec&);
+    static std::ostream& list(std::ostream&);
+    static bool has_type(const std::string& type) { return Factory<Projection>::instance().exists(type); }
 };
 
 

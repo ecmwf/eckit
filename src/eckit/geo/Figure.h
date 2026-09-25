@@ -96,20 +96,14 @@ private:
 
 struct FigureFactory {
     /// Build the spec's figure, or the default one if the spec doesn't describe any
-    [[nodiscard]] static Figure* build(const Figure::Spec& spec) { return instance().make_from_spec_(spec); }
+    [[nodiscard]] static Figure* build(const Figure::Spec&);
     [[nodiscard]] static Figure* make_from_string(const std::string&);
     [[nodiscard]] static const Figure* make_default();
-
-private:
-
-    static FigureFactory& instance();
-
-    [[nodiscard]] Figure* make_from_spec_(const Figure::Spec&) const;
 };
 
 
 template <typename T>
-using FigureBuilder = ConcreteBuilderT0<Figure, T>;
+using FigureRegisterType = ConcreteBuilderT0<Figure, T>;
 
 
 }  // namespace eckit::geo

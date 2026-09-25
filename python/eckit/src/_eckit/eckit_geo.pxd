@@ -59,6 +59,7 @@ cdef extern from "eckit/geo/area/BoundingBox.h" namespace "eckit::geo::area":
 
 cdef extern from "eckit/geo/Figure.h" namespace "eckit::geo":
     cdef cppclass Figure:
+        double R() except +  # spherical figures only
         double a() const
         double b() const
         double area() const
@@ -68,6 +69,7 @@ cdef extern from "eckit/geo/Figure.h" namespace "eckit::geo":
         bool spherical() const
         double eccentricity() const
         double flattening() const
+        bool operator==(const Figure&) const
 
     cdef cppclass FigureFactory:
         @staticmethod
@@ -122,7 +124,6 @@ cdef extern from * namespace "eckit::geo::python":
     #include <vector>
 
     #include "eckit/geo/area/BoundingBox.h"
-    #include "eckit/geo/Figure.h"
     #include "eckit/geo/Grid.h"
     #include "eckit/geo/PointLonLat.h"
 
@@ -145,8 +146,6 @@ cdef extern from * namespace "eckit::geo::python":
         return bbox.contains(PointLonLat{lon, lat});
     }
 
-    inline double figure_R(const Figure& figure) { return figure.R(); }
-
     }
     """
     vector[double] grid_x_values(const Grid& grid) except +
@@ -156,4 +155,3 @@ cdef extern from * namespace "eckit::geo::python":
 
     bint bbox_intersects(const BoundingBox& lhs, BoundingBox& rhs) except +
     bint bbox_contains_lonlat(const BoundingBox& bbox, double lon, double lat) except +
-    double figure_R(const Figure& figure) except +

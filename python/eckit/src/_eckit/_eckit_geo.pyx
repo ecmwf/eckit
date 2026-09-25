@@ -226,7 +226,7 @@ cdef class Figure:
     def __eq__(self, other) -> bool:
         if not isinstance(other, Figure):
             return NotImplemented
-        return self.spec_str == other.spec_str
+        return dereference(self._figure) == dereference((<Figure>other)._figure)
 
     def area(self, bbox = None) -> float:
         cdef BoundingBox _bbox
@@ -239,7 +239,7 @@ cdef class Figure:
 
     @property
     def R(self) -> float:
-        return eckit_geo.figure_R(dereference(self._figure))
+        return self._figure.R()
 
     @property
     def a(self) -> float:

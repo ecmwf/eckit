@@ -49,7 +49,7 @@ CASE("Sphere") {
     auto e = f1->eccentricity();
     EXPECT(types::is_approximately_equal(e, 0.));
 
-    EXPECT(f1->spec_str() == R"({"r":1})");
+    EXPECT(f1->spec_str() == R"({"figure":{"r":1}})");
 }
 
 
@@ -65,7 +65,36 @@ CASE("Oblate spheroid") {
     auto e = f1->eccentricity();
     EXPECT(types::is_strictly_greater(e, 0.));
 
-    EXPECT(f1->spec_str() == R"({"a":1,"b":0.5})");
+    EXPECT(f1->spec_str() == R"({"figure":{"a":1,"b":0.5}})");
+}
+
+
+CASE("Inline figure") {
+    // figure described inline by a (JSON/YAML) string, as opposed to by name or by a sub-spec
+    F f1(FigureFactory::build(spec::Custom{{"figure", R"({"R":6371229})"}}));
+    F f2(FigureFactory::build(spec::Custom{{"figure", " {R: 6371229.000000}"}}));
+    F f3(FigureFactory::build(spec::Custom{{"figure", "earth"}}));
+
+    EXPECT(*f1 == *f2);
+    EXPECT(*f1 == *f3);
+
+    // figures equivalent to a default figure are default figures
+    EXPECT(f1->is_default());
+    EXPECT(F(FigureFactory::build(spec::Custom{{"figure", R"({"R":6367470})"}}))->is_default());
+    EXPECT(!F(FigureFactory::build(spec::Custom{{"figure", R"({"R":6371200})"}}))->is_default());
+
+    F f4(FigureFactory::build(spec::Custom{{"figure", R"({"a":6378140,"b":6356755})"}}));
+    F f5(new figure::OblateSpheroid(6378140., 6356755.));
+
+    EXPECT(*f4 == *f5);
+    EXPECT(!f4->is_default());
+
+    F f6(FigureFactory::make_from_string(R"({"figure":"{\"a\":1,\"b\":0.5}"})"));
+    F f7(new figure::OblateSpheroid(1., 0.5));
+
+    EXPECT(*f6 == *f7);
+
+    EXPECT_THROWS_AS(F(FigureFactory::build(spec::Custom{{"figure", "not_a_figure"}})), BadParameter);
 }
 
 

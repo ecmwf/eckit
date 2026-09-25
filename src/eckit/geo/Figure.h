@@ -80,7 +80,7 @@ public:
     double eccentricity() const;
     double flattening() const;
 
-    virtual bool is_default() const { return false; }
+    virtual bool is_default() const;
 
 private:
 
@@ -90,7 +90,7 @@ private:
 
     // -- Friends
 
-    friend bool operator==(const Figure& a, const Figure& b) { return a.spec_str() == b.spec_str(); }
+    friend bool operator==(const Figure& a, const Figure& b);
     friend bool operator!=(const Figure& a, const Figure& b) { return !(a == b); }
 
     friend class Grid;

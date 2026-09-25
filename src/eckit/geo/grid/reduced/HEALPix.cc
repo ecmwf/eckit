@@ -25,6 +25,18 @@
 namespace eckit::geo::range {
 
 
+namespace {
+
+
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
+
+
 class HEALPixLatitude final : public Range {
 public:
 
@@ -37,8 +49,7 @@ public:
     [[nodiscard]] HEALPixLatitude* make_cropped_range(double, double) const override { NOTIMP; }
 
     [[nodiscard]] const std::vector<double>& values() const override {
-        static util::recursive_mutex MUTEX;
-        util::lock_guard<util::recursive_mutex> lock(MUTEX);
+        lock_type lock;
 
         using cache_t = cache::MemoryCacheT<size_t, std::vector<double>>;
         const cache_t::key_type key{Nside_};
@@ -91,8 +102,7 @@ public:
     [[nodiscard]] HEALPixLongitude* make_cropped_range(double, double) const override { NOTIMP; }
 
     [[nodiscard]] const std::vector<double>& values() const override {
-        static util::recursive_mutex MUTEX;
-        util::lock_guard<util::recursive_mutex> lock(MUTEX);
+        lock_type lock;
 
         using cache_t = cache::MemoryCacheT<std::pair<size_t, size_t>, std::vector<double>>;
         const cache_t::key_type key{Nside_, j_};

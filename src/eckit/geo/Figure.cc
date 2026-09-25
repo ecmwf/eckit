@@ -27,10 +27,10 @@
 namespace eckit::geo {
 
 
-static util::recursive_mutex MUTEX;
+namespace {
 
 
-static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
+const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
     {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
     {std::shared_ptr<Figure>{new figure::EarthGrib1}, "grib1"},
     {std::shared_ptr<Figure>{new figure::EarthGrs80}, "grs80"},
@@ -42,8 +42,12 @@ static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
 
 
 class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
+
+
+}  // namespace
 
 
 double Figure::R() const {

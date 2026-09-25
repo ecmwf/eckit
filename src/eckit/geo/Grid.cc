@@ -31,10 +31,8 @@ constexpr size_t DIGEST_LENGTH = 32;
 static_assert(DIGEST_LENGTH == MD5_DIGEST_LENGTH * 2, "MD5 digest length mismatch");
 
 
-util::recursive_mutex MUTEX;
-
-
 class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
 

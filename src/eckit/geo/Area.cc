@@ -22,10 +22,8 @@ namespace eckit::geo {
 namespace {
 
 
-util::recursive_mutex MUTEX;
-
-
 class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
 

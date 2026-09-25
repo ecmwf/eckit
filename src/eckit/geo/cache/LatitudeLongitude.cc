@@ -25,7 +25,10 @@ namespace eckit::geo::cache {
 namespace {
 
 
-util::recursive_mutex MUTEX;
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
 
 
 using Cache = cache::RecordCacheT<LatitudeLongitude, LatitudeLongitude::uid_type>;
@@ -77,13 +80,13 @@ LatitudeLongitude::LatitudeLongitude(const std::vector<double>& lat, const std::
 
 
 const LatitudeLongitude& LatitudeLongitude::get(const uid_type& uid) {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
     return cache().get(uid);
 }
 
 
 const LatitudeLongitude& LatitudeLongitude::set(const uid_type& uid, LatitudeLongitude&& ll) {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
     return cache().set(uid, std::move(ll));
 }
 

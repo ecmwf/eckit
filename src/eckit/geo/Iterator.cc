@@ -4,8 +4,11 @@
 
 #include "eckit/geo/Iterator.h"
 
+#include <ostream>
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Log.h"
 
 
 namespace eckit::geo {

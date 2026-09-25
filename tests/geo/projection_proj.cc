@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/spec/Custom.h"

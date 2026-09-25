@@ -4,10 +4,10 @@
 
 #include "eckit/geo/projection/LonLatToXYZ.h"
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/figure/OblateSpheroid.h"
 #include "eckit/geo/figure/Sphere.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/spec/Spec.h"
 #include "eckit/types/FloatCompare.h"
 
 

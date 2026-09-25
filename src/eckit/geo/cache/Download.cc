@@ -4,11 +4,11 @@
 
 #include "eckit/geo/cache/Download.h"
 
-#include "eckit/eckit_config.h"
-
 #include <fstream>
 #include <iterator>
+#include <ostream>
 
+#include "eckit/eckit_config.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/cache/MemoryCache.h"
 #include "eckit/geo/util/mutex.h"

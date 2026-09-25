@@ -5,8 +5,6 @@
 #include "eckit/geo/Point.h"
 
 #include <ostream>
-#include <string>
-#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 

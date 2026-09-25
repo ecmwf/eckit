@@ -134,7 +134,7 @@ cdef extern from * namespace "eckit::geo::python":
 
     #include "eckit/geo/area/BoundingBox.h"
     #include "eckit/geo/Grid.h"
-    #include "eckit/geo/PointLonLat.h"
+    #include "eckit/geo/Point.h"
 
     namespace eckit::geo::python {
 

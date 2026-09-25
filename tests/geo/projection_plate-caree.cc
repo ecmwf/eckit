@@ -3,7 +3,9 @@
 
 
 #include <memory>
+#include <variant>
 
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/Point.h"
@@ -20,6 +21,7 @@
 #include "eckit/memory/Builder.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit {

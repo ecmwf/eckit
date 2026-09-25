@@ -4,6 +4,8 @@
 
 #include "eckit/geo/Figure.h"
 
+#include <algorithm>
+#include <map>
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"

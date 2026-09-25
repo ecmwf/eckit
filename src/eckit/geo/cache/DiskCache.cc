@@ -4,6 +4,8 @@
 
 #include "eckit/geo/cache/DiskCache.h"
 
+#include <vector>
+
 #include "eckit/geo/util/mutex.h"
 
 

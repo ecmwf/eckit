@@ -4,13 +4,9 @@
 
 #pragma once
 
-#include <iosfwd>
 #include <string>
 
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXYZ.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
 
 
 namespace eckit {

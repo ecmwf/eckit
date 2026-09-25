@@ -4,7 +4,13 @@
 
 #pragma once
 
+#include <cstddef>
+#include <string>
+#include <vector>
+
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo {

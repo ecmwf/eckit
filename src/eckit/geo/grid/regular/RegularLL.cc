@@ -5,16 +5,19 @@
 #include "eckit/geo/grid/regular/RegularLL.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <memory>
+#include <regex>
 #include <vector>
 
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/projection/Rotation.h"
-#include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"

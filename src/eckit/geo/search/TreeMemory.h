@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <cstddef>
+#include <iosfwd>
+
 #include "eckit/container/KDTree.h"
 #include "eckit/geo/search/Tree.h"
 

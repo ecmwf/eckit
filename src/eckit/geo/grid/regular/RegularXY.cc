@@ -5,14 +5,16 @@
 #include "eckit/geo/grid/regular/RegularXY.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
-#include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"
 

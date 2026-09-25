@@ -4,10 +4,10 @@
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/range/GaussianLatitude.h"
-#include "eckit/geo/range/Regular.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/spec/Custom.h"
 
 

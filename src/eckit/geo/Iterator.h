@@ -5,11 +5,12 @@
 #pragma once
 
 #include <cstddef>
+#include <iosfwd>
 #include <iterator>
+#include <string>
 
 #include "eckit/geo/Point.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 
 

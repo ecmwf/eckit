@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <cstddef>
+#include <string>
+
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/grid/Unstructured.h"
 

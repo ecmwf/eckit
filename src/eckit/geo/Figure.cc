@@ -28,6 +28,17 @@ namespace eckit::geo {
 static util::recursive_mutex MUTEX;
 
 
+static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
+    {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
+    {std::shared_ptr<Figure>{new figure::EarthGrib1}, "grib1"},
+    {std::shared_ptr<Figure>{new figure::EarthGrs80}, "grs80"},
+    {std::shared_ptr<Figure>{new figure::EarthIau1965}, "iau1965"},
+    {std::shared_ptr<Figure>{new figure::Sun}, "sun"},
+    {std::shared_ptr<Figure>{new figure::EarthWgs84}, "wgs84"},
+    {std::shared_ptr<Figure>{new figure::EarthWgs84Sphere}, "wgs84_sphere"},
+};
+
+
 class lock_type {
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
@@ -98,31 +109,21 @@ double Figure::flattening() const {
 }
 
 
+bool Figure::is_default() const {
+    // default figures are known figures (not all)
+    auto fn = std::find_if(KNOWN.begin(), KNOWN.end(), [this](const auto& fn) { return *fn.first == *this; });
+    return fn != KNOWN.end() && fn->first->is_default();
+}
+
+
 void Figure::fill_spec(spec::Custom& custom) const {
-    static const std::map<std::shared_ptr<Figure>, std::string> KNOWN{
-        {std::shared_ptr<Figure>{new figure::Earth}, "earth"},
-        {std::shared_ptr<Figure>{new figure::EarthGrib1}, "grib1"},
-        {std::shared_ptr<Figure>{new figure::EarthGrs80}, "grs80"},
-        {std::shared_ptr<Figure>{new figure::EarthIau1965}, "iau1965"},
-        {std::shared_ptr<Figure>{new figure::Sun}, "sun"},
-        {std::shared_ptr<Figure>{new figure::EarthWgs84}, "wgs84"},
-        {std::shared_ptr<Figure>{new figure::EarthWgs84Sphere}, "wgs84_sphere"},
-    };
-
-    for (const auto& [figure, name] : KNOWN) {
-        if (types::is_approximately_equal(figure->a(), a()) && types::is_approximately_equal(figure->b(), b())) {
-            custom.set("figure", name);
-            return;
-        }
+    auto fn = std::find_if(KNOWN.begin(), KNOWN.end(), [this](const auto& fn) { return *fn.first == *this; });
+    if (fn != KNOWN.end()) {
+        custom.set("figure", fn->second);
+        return;
     }
 
-    if (types::is_approximately_equal(a(), b())) {
-        custom.set("R", R());
-    }
-    else {
-        custom.set("a", a());
-        custom.set("b", b());
-    }
+    custom.set("figure", spherical() ? new spec::Custom{{"R", R()}} : new spec::Custom{{"a", a()}, {"b", b()}});
 }
 
 
@@ -148,8 +149,16 @@ Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
 
     if (spec.has("figure")) {
         std::string name;
-        return spec.get("figure", name) ? Factory<Figure>::instance().get(name).create()
-                                        : make_from_spec_(spec.spec("figure"));
+        if (!spec.get("figure", name)) {
+            return make_from_spec_(spec.spec("figure"));
+        }
+
+        // a figure described inline (e.g. '{"R":6371229}', '{"a":6378137,"b":6356752}'), or by name
+        if (auto first = name.find_first_not_of(" \t\n"); first != std::string::npos && name[first] == '{') {
+            return make_from_string(name);
+        }
+
+        return Factory<Figure>::instance().get(name).create();
     }
 
     if (double a = 0., b = 0.;
@@ -163,6 +172,11 @@ Figure* FigureFactory::make_from_spec_(const Figure::Spec& spec) const {
     }
 
     return const_cast<Figure*>(make_default());
+}
+
+
+bool operator==(const Figure& a, const Figure& b) {
+    return types::is_approximately_equal(a.a(), b.a()) && types::is_approximately_equal(a.b(), b.b());
 }
 
 

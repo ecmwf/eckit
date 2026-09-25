@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <map>
-#include <memory>
+#include <iosfwd>
 #include <string>
 
 #include "eckit/geo/Point.h"
@@ -82,8 +81,7 @@ private:
 };
 
 
-using AreaFactoryType = Factory<Area>;
-using AreaSpecByName  = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
+using AreaSpecByName = spec::GeneratorT<spec::SpecGeneratorT1<const std::string&>>;
 
 
 template <typename T>
@@ -94,27 +92,13 @@ using AreaRegisterName = spec::ConcreteSpecGeneratorT1<T, const std::string&>;
 
 
 struct AreaFactory {
-    [[nodiscard]] static const Area* build(const Area::Spec& spec) { return instance().make_from_spec_(spec); }
-
+    [[nodiscard]] static const Area* build(const Area::Spec&);
     [[nodiscard]] static const Area* make_from_string(const std::string&);
-    [[nodiscard]] static Area::Spec* make_spec(const Area::Spec& spec) { return instance().make_spec_(spec); }
+    [[nodiscard]] static Area::Spec* make_spec(const Area::Spec&);
 
-    static void add_library(const std::string& lib, Area::Spec* spec) { return instance().add_library_(lib, spec); }
+    static void add_library(const std::string& lib, Area::Spec*);
 
-    static std::ostream& list(std::ostream& out) { return instance().list_(out); }
-
-private:
-
-    static AreaFactory& instance();
-
-    [[nodiscard]] const Area* make_from_spec_(const Area::Spec&) const;
-    [[nodiscard]] Area::Spec* make_spec_(const Area::Spec&) const;
-
-    void add_library_(const std::string& lib, Area::Spec* spec);
-
-    std::ostream& list_(std::ostream&) const;
-
-    std::map<std::string, std::unique_ptr<Area::Spec>> libraries_;
+    static std::ostream& list(std::ostream&);
 };
 
 

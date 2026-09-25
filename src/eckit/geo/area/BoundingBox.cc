@@ -125,6 +125,51 @@ struct Derivate {
     void operator=(const Derivate&) = delete;
     void operator=(Derivate&&)      = delete;
 
+    [[nodiscard]] static Derivate* make(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
+                                        double refLongitude = 0.) {
+        struct Degenerate final : Derivate {
+            using Derivate::Derivate;
+            PointLonLat d(PointXY) const override { return {99, 99}; }  // FIXME
+        };
+
+        struct Forwards final : Derivate {
+            using Derivate::Derivate;
+            PointLonLat d(PointXY P) const override { return (f(P + H()) - f(P)) * invnH(); }
+        };
+
+        struct Backwards final : Derivate {
+            using Derivate::Derivate;
+            PointLonLat d(PointXY P) const override { return (f(P) - f(P - H())) * invnH(); }
+        };
+
+        struct Central final : Derivate {
+            Central(const Projection& p, PointXY A, PointXY B, double h, double refLongitude) :
+                Derivate(p, A, B, h, refLongitude), H2_{H() * 0.5} {}
+            PointLonLat d(PointXY P) const override { return (f(P + H2_) - f(P - H2_)) * invnH(); }
+            const PointXY H2_;
+        };
+
+        ASSERT(0. < h);
+
+        if (A.distance2(B) < h * h) {
+            return new Degenerate(p, A, B, h, refLongitude);
+        }
+
+        if (type == "forwards") {
+            return new Forwards(p, A, B, h, refLongitude);
+        }
+
+        if (type == "backwards") {
+            return new Backwards(p, A, B, h, refLongitude);
+        }
+
+        if (type == "central") {
+            return new Central(p, A, B, h, refLongitude);
+        }
+
+        throw BadValue("Derivate: unknown type '" + type + "', choices are: forwards, backwards, central", Here());
+    }
+
     virtual PointLonLat d(PointXY) const = 0;
 
     PointLonLat f(const PointXY& p) const {
@@ -140,62 +185,6 @@ private:
     const PointXY H_;
     const double invnH_;
     const double refLongitude_;
-};
-
-
-struct DerivateForwards final : Derivate {
-    using Derivate::Derivate;
-    PointLonLat d(PointXY P) const override { return (f(P + H()) - f(P)) * invnH(); }
-};
-
-
-struct DerivateBackwards final : Derivate {
-    using Derivate::Derivate;
-    PointLonLat d(PointXY P) const override { return (f(P) - f(P - H())) * invnH(); }
-};
-
-
-struct DerivateCentral final : Derivate {
-    DerivateCentral(const Projection& p, PointXY A, PointXY B, double h, double refLongitude) :
-        Derivate(p, A, B, h, refLongitude), H2_{H() * 0.5} {}
-    const PointXY H2_;
-    PointLonLat d(PointXY P) const override { return (f(P + H2_) - f(P - H2_)) * invnH(); }
-};
-
-
-struct DerivateFactory {
-    static const Derivate* build(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
-                                 double refLongitude = 0.) {
-        ASSERT(0. < h);
-
-        if (A.distance2(B) < h * h) {
-            struct DerivateDegenerate final : Derivate {
-                using Derivate::Derivate;
-                PointLonLat d(PointXY) const override { return {99, 99}; }  // FIXME
-            };
-            return new DerivateDegenerate(p, A, B, h, refLongitude);
-        }
-
-        return type == "forwards"    ? static_cast<Derivate*>(new DerivateForwards(p, A, B, h, refLongitude))
-               : type == "backwards" ? static_cast<Derivate*>(new DerivateBackwards(p, A, B, h, refLongitude))
-               : type == "central"   ? static_cast<Derivate*>(new DerivateCentral(p, A, B, h, refLongitude))
-                                     : throw BadValue("DerivateFactory: unknown method", Here());
-    }
-
-    static void list(std::ostream& out) { return instance().list_(out); }
-
-private:
-
-    static DerivateFactory& instance() {
-        static DerivateFactory obj;
-        return obj;
-    }
-
-    // This is 'const' as Grid should always be immutable
-    const Derivate* build_(const std::string& type, const Projection& p, PointXY A, PointXY B, double h,
-                           double refLongitude) const;
-
-    void list_(std::ostream& out) const { out << "forwards, backwards, central" << std::endl; }
 };
 
 
@@ -251,8 +240,8 @@ private:
 
     for (auto [A, B] : segments) {
         if (!bounds.includesNorthPole() || !bounds.includesSouthPole()) {
-            std::unique_ptr<const Derivate> derivate(
-                DerivateFactory::build(derivative_type, projection, A, B, h, centre_lon));
+            std::unique_ptr<const Derivate> derivate(Derivate::make(derivative_type, projection, A, B, h, centre_lon));
+            ASSERT(derivate);
 
             double dAdy = derivate->d(A).lat();
             double dBdy = derivate->d(B).lat();
@@ -287,8 +276,8 @@ private:
 
     for (auto [A, B] : segments) {
         if (!bounds.crossesDateLine()) {
-            std::unique_ptr<const Derivate> derivate(
-                DerivateFactory::build(derivative_type, projection, A, B, h, centre_lon));
+            std::unique_ptr<const Derivate> derivate(Derivate::make(derivative_type, projection, A, B, h, centre_lon));
+            ASSERT(derivate);
 
             double dAdx = derivate->d(A).lon();
             double dBdx = derivate->d(B).lon();

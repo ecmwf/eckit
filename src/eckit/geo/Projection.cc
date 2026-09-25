@@ -261,23 +261,17 @@ void Projection::fill_spec(spec::Custom& custom) const {
 
 const Projection* ProjectionFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Projection::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
-    return instance().make_from_spec_(*spec);
+    return build(*spec);
 }
 
 
-ProjectionFactory& ProjectionFactory::instance() {
-    static ProjectionFactory obj;
-    return obj;
-}
-
-
-const Projection* ProjectionFactory::make_from_spec_(const Projection::Spec& spec) const {
+const Projection* ProjectionFactory::build(const Projection::Spec& spec) {
     lock_type lock;
 
     // an explicit 'projection' has to name its type
     if (spec.has("projection")) {
         const auto& cfg = spec.spec("projection");
-        return ProjectionFactoryType::instance().get(cfg.get_string("type")).create(cfg);
+        return Factory<Projection>::instance().get(cfg.get_string("type")).create(cfg);
     }
 
     if (spec.has("rotation")) {
@@ -286,18 +280,18 @@ const Projection* ProjectionFactory::make_from_spec_(const Projection::Spec& spe
         }
     }
 
-    std::unique_ptr<Projection::Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Projection::Spec> cfg(make_spec(spec));
 
     // NOTE: a 'type' that isn't a projection's is somebody else's (eg. a grid's)
     if (std::string type; cfg->get("type", type) && has_type(type)) {
-        return ProjectionFactoryType::instance().get(type).create(*cfg);
+        return Factory<Projection>::instance().get(type).create(*cfg);
     }
 
     return new projection::EquidistantCylindrical(*cfg);
 }
 
 
-Projection::Spec* ProjectionFactory::make_spec_(const Projection::Spec& spec) const {
+Projection::Spec* ProjectionFactory::make_spec(const Projection::Spec& spec) {
     lock_type lock;
     share::Projection::instance();
 
@@ -320,12 +314,12 @@ Projection::Spec* ProjectionFactory::make_spec_(const Projection::Spec& spec) co
 }
 
 
-std::ostream& ProjectionFactory::list_(std::ostream& out) const {
+std::ostream& ProjectionFactory::list(std::ostream& out) {
     lock_type lock;
     share::Projection::instance();
 
     out << ProjectionSpecByName::instance() << std::endl;
-    out << ProjectionFactoryType::instance() << std::endl;
+    out << Factory<Projection>::instance() << std::endl;
 
     return out;
 }

@@ -10,7 +10,7 @@
 namespace eckit::geo::figure {
 
 
-static const FigureBuilder<Sun> REGISTER("sun");
+static const FigureRegisterType<Sun> REGISTER("sun");
 
 
 const Sun SUN;

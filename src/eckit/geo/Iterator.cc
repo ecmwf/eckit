@@ -26,17 +26,11 @@ class lock_type {
 }  // namespace
 
 
-IteratorFactory& IteratorFactory::instance() {
-    static IteratorFactory INSTANCE;
-    return INSTANCE;
-}
-
-
-Iterator* IteratorFactory::build_(const Iterator::Spec& spec) const {
+Iterator* IteratorFactory::build(const Iterator::Spec& spec) {
     lock_type lock;
 
     if (std::string type; spec.get("type", type)) {
-        return IteratorFactoryType::instance().get(type).create(spec);
+        return Factory<Iterator>::instance().get(type).create(spec);
     }
 
     list(Log::error() << "Iterator: cannot build iterator without 'type', choices are: ");
@@ -44,10 +38,10 @@ Iterator* IteratorFactory::build_(const Iterator::Spec& spec) const {
 }
 
 
-std::ostream& IteratorFactory::list_(std::ostream& out) const {
+std::ostream& IteratorFactory::list(std::ostream& out) {
     lock_type lock;
 
-    out << IteratorFactoryType::instance() << std::endl;
+    out << Factory<Iterator>::instance() << std::endl;
 
     return out;
 }

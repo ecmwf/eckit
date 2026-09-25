@@ -21,7 +21,7 @@ public:
 
     explicit HEALPix(const Spec&);
     explicit HEALPix(size_t Nside, order_type = order::HEALPix::order_default(), BoundingBox* = nullptr,
-                     Projection* = nullptr);
+                     const Projection* = nullptr);
 
     // -- Methods
 

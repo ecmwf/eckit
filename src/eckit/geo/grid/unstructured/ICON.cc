@@ -32,7 +32,7 @@ static std::string arrangement_to_string(Arrangement a) {
 ICON::ICON(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
                  arrangement_to_string(arrangement_from_string(spec.get_string("arrangement"))),
-                 bounding_box_from_spec(spec), Projection::make_from_spec(spec)) {}
+                 bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
 
 
 ICON::ICON(const uid_type& uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}

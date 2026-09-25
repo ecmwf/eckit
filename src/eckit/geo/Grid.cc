@@ -43,7 +43,7 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(BoundingBox* bbox, Projection* proj) :
+Grid::Grid(BoundingBox* bbox, const Projection* proj) :
     bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()) {}
 
 

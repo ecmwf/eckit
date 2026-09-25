@@ -36,7 +36,7 @@ public:
 
     explicit RegularLL(const Spec&);
     explicit RegularLL(const Increments&, BoundingBox = {}, Reference = {}, order::Scan = scan_default(),
-                       Projection* = nullptr);
+                       const Projection* = nullptr);
 
     // -- Methods
 

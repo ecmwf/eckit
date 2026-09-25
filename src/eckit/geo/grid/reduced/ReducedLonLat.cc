@@ -51,10 +51,10 @@ range::RegularLatitude* make_lat_range(size_t Nj, const area::BoundingBox& bbox)
 
 
 ReducedLonLat::ReducedLonLat(const Spec& spec) :
-    ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}, Projection::make_from_spec(spec)) {}
+    ReducedLonLat(spec.get_long_vector("pl"), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
 
 
-ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, Projection* p) :
+ReducedLonLat::ReducedLonLat(const pl_type& pl, const BoundingBox& bbox, const Projection* p) :
     Reduced(nullptr, p), pl_(pl), longitude_(pl.size()) {
     if (pl_.empty()) {
         throw exception::GridError("ReducedLonLat: 'pl' must not be empty", Here());

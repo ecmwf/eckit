@@ -44,24 +44,73 @@ Rotation::Rotation(const Spec& spec) :
 
 
 Rotation::Rotation(const PointLonLat& south_pole, double angle) :
-    south_pole_(south_pole), angle_(angle), rotated_(true) {
+    Projection(nullptr, PointLonLat{}, PointLonLat{}), south_pole_(south_pole), angle_(angle), rotated_(true) {
     using M = maths::Matrix3<double>;
 
     struct NonRotated final : Implementation {
+        using Implementation::operator();
         PointLonLat operator()(const PointLonLat& p) const override { return p; }
+        std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
+                                                    const std::vector<double>& lat) const override {
+            return {lon, lat};
+        }
     };
 
     struct RotationAngle final : Implementation {
         explicit RotationAngle(double angle) : angle_(angle) {}
+        using Implementation::operator();
         PointLonLat operator()(const PointLonLat& p) const override { return {p.lon() + angle_, p.lat()}; }
+        std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
+                                                    const std::vector<double>& lat) const override {
+            std::vector<std::vector<double>> out{lon, lat};
+            for (auto& x : out[0]) {
+                x += angle_;
+            }
+            return out;
+        }
         const double angle_;
     };
 
     struct RotationMatrix final : Implementation {
         explicit RotationMatrix(M&& R) : R_(R) {}
+        using Implementation::operator();
         PointLonLat operator()(const PointLonLat& p) const override {
             return figure::UnitSphere::_convertCartesianToSpherical(
                 R_ * figure::UnitSphere::_convertSphericalToCartesian(p));
+        }
+        std::vector<std::vector<double>> operator()(const std::vector<double>& lon,
+                                                    const std::vector<double>& lat) const override {
+            const auto n = lon.size();
+
+            // spherical to Cartesian (unit sphere)
+            std::vector<double> x(n);
+            std::vector<double> y(n);
+            std::vector<double> z(n);
+            for (size_t i = 0; i < n; ++i) {
+                const auto p = figure::UnitSphere::_convertSphericalToCartesian(PointLonLat{lon[i], lat[i]});
+                x[i]         = p.X();
+                y[i]         = p.Y();
+                z[i]         = p.Z();
+            }
+
+            // rotation, as the matrix product of all points at once
+            for (size_t i = 0; i < n; ++i) {
+                const auto a = x[i];
+                const auto b = y[i];
+                const auto c = z[i];
+                x[i]         = R_.XX() * a + R_.XY() * b + R_.XZ() * c;
+                y[i]         = R_.YX() * a + R_.YY() * b + R_.YZ() * c;
+                z[i]         = R_.ZX() * a + R_.ZY() * b + R_.ZZ() * c;
+            }
+
+            // Cartesian to spherical
+            std::vector<std::vector<double>> out{std::vector<double>(n), std::vector<double>(n)};
+            for (size_t i = 0; i < n; ++i) {
+                const auto q = figure::UnitSphere::_convertCartesianToSpherical(PointXYZ{x[i], y[i], z[i]});
+                out[0][i]    = q.lon();
+                out[1][i]    = q.lat();
+            }
+            return out;
         }
         const M R_;
     };

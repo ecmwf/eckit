@@ -4,6 +4,7 @@
 
 #include "eckit/geo/projection/Composer.h"
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -77,6 +78,40 @@ Point Composer::inv(const Point& p) const {
         q = (*proj)->inv(q);
     }
     return q;
+}
+
+
+Composer::Composer(std::initializer_list<Projection*> list) : deque(list) {
+    update_point_types();
+}
+
+
+void Composer::clear() {
+    deque::clear();
+    update_point_types();
+}
+
+
+void Composer::emplace_back(Projection* p) {
+    deque::emplace_back(p);
+    update_point_types();
+}
+
+
+void Composer::emplace_front(Projection* p) {
+    deque::emplace_front(p);
+    update_point_types();
+}
+
+
+void Composer::update_point_types() {
+    if (empty()) {
+        point_types(PointLonLat{}, PointXY{});
+        return;
+    }
+
+    ASSERT(front() != nullptr && back() != nullptr);
+    point_types_from(*front(), *back());
 }
 
 

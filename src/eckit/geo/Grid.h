@@ -176,7 +176,7 @@ protected:
 
     // -- Constructors
 
-    explicit Grid(BoundingBox* = nullptr, Projection* = nullptr);
+    explicit Grid(BoundingBox* = nullptr, const Projection* = nullptr);
 
     // -- Methods
 
@@ -184,7 +184,7 @@ protected:
 
     void reset_uid(uid_type = {});
 
-    void projection(Projection* ptr) { projection_.reset(ptr); }
+    void projection(const Projection* ptr) { projection_.reset(ptr); }
     void boundingBox(BoundingBox* bbox) { bbox_.reset(bbox); }
 
     [[nodiscard]] static BoundingBox* bounding_box_from_spec(const Spec&);

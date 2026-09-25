@@ -30,10 +30,10 @@ size_t check_N(size_t N) {
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec), order::Scan{spec}, Projection::make_from_spec(spec)) {}
+    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec), order::Scan{spec}, ProjectionFactory::build(spec)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s, Projection* p) :
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s, const Projection* p) :
     Regular(s, p),
     N_(check_N(N)),
     x_(*range::RegularLongitude(

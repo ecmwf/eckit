@@ -2,9 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <algorithm>
+#include <cmath>
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/Projection.h"
@@ -171,6 +174,76 @@ CASE("EPSG:4326 / EPSG:2056") {
 
         EXPECT(points_equal(to_ll->fwd(test.xy), test.ll, eps_ll));
         EXPECT(points_equal(to_ll->inv(test.ll), test.xy, eps_xy));
+    }
+}
+
+
+CASE("projection: proj vectors") {
+    using v = std::vector<double>;
+
+    auto approx = [](const v& a, const v& b, double eps) {
+        return a.size() == b.size() &&
+               std::equal(a.begin(), a.end(), b.begin(), [eps](double x, double y) { return std::abs(x - y) < eps; });
+    };
+
+    constexpr double eps_ll = 1e-9;  // [degree]
+    constexpr double eps_xy = 1e-6;  // [m]
+    constexpr double A      = 6378137.;
+
+
+    SECTION("lonlat to xy (EPSG:4326 to EPSG:3857)") {
+        P merc(ProjectionFactory::build(spec::Custom{{{"type", "proj"}, {"target", "EPSG:3857"}}}));
+
+        const v lon{0., 10.};
+        const v lat{0., 20.};
+        const auto xy = merc->fwd(lon, lat);
+
+        EXPECT(approx(xy[0], v{0., 1113194.9079327357}, eps_xy));
+        EXPECT(approx(xy[1], v{0., 2273030.9269876895}, eps_xy));
+
+        const auto ll = merc->inv(xy[0], xy[1]);
+        EXPECT(approx(ll[0], lon, eps_ll));
+        EXPECT(approx(ll[1], lat, eps_ll));
+
+        // same as the single point
+        const auto q = std::get<PointXY>(merc->fwd(PointLonLat{10., 20.}));
+        EXPECT(approx(v{q.X(), q.Y()}, v{xy[0][1], xy[1][1]}, eps_xy));
+    }
+
+
+    SECTION("lonlat to xyz (EPSG:4326 to EPSG:4978), and back") {
+        P ecef(ProjectionFactory::build(spec::Custom{{{"type", "proj"}, {"target", "EPSG:4978"}}}));
+
+        const v lon{0., 90.};
+        const v lat{0., 0.};
+        const auto xyz = ecef->fwd(lon, lat);  // 2 to 3 coordinates
+
+        EXPECT(approx(xyz[0], v{A, 0.}, eps_xy));
+        EXPECT(approx(xyz[1], v{0., A}, eps_xy));
+        EXPECT(approx(xyz[2], v{0., 0.}, eps_xy));
+
+        const auto ll = ecef->inv(xyz[0], xyz[1], xyz[2]);  // 3 to 2 coordinates
+        EXPECT(approx(ll[0], lon, eps_ll));
+        EXPECT(approx(ll[1], lat, eps_ll));
+    }
+
+
+    SECTION("failure is NaN, for the failing points only") {
+        P merc(ProjectionFactory::build(spec::Custom{{{"type", "proj"}, {"target", "EPSG:3857"}}}));
+
+        const auto xy = merc->fwd(v{0., 0., 10.}, v{0., 91., 20.});  // invalid latitude
+
+        EXPECT(std::isnan(xy[0][1]) && std::isnan(xy[1][1]));
+        EXPECT(approx(v{xy[0][0], xy[0][2]}, v{0., 1113194.9079327357}, eps_xy));
+    }
+
+
+    SECTION("longitudes in [lon_minimum, lon_minimum + 360)") {
+        P ll(ProjectionFactory::build(
+            spec::Custom{{{"type", "proj"}, {"target", "EPSG:4326"}, {"lon_minimum", -180.}}}));
+
+        const auto lonlat = ll->fwd(v{190., -10.}, v{0., 0.});
+        EXPECT(approx(lonlat[0], v{-170., -10.}, eps_ll));
     }
 }
 

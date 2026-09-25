@@ -24,8 +24,9 @@ public:
 
     explicit ReducedGaussian(const Spec&);
     explicit ReducedGaussian(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default(),
-                             Projection* = nullptr);
-    explicit ReducedGaussian(size_t N, const BoundingBox& = BoundingBox::bounding_box_default(), Projection* = nullptr);
+                             const Projection* = nullptr);
+    explicit ReducedGaussian(size_t N, const BoundingBox& = BoundingBox::bounding_box_default(),
+                             const Projection* = nullptr);
 
     // -- Methods
 

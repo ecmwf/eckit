@@ -7,7 +7,9 @@
 #include <proj.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
+#include <limits>
 #include <map>
 #include <memory>
 #include <set>
@@ -79,6 +81,11 @@ struct Convert {
 
     virtual PJ_COORD to_coord(const Point&) const = 0;
     virtual Point to_point(const PJ_COORD&) const = 0;
+    virtual Point point() const                   = 0;  // an example point, of the point type
+    virtual size_t dims() const                   = 0;
+
+    /// Normalise projected coordinates (one vector per coordinate), as to_point does
+    virtual void normalise(std::vector<std::vector<double>>&) const {}
 };
 
 
@@ -89,6 +96,21 @@ struct LonLat final : Convert {
     }
 
     Point to_point(const PJ_COORD& c) const final { return PointLonLat::make(c.enu.e, c.enu.n, lon_minimum_); }
+
+    Point point() const final { return PointLonLat{}; }
+    size_t dims() const final { return PointLonLat::DIMS; }
+
+    void normalise(std::vector<std::vector<double>>& c) const final {
+        auto& lon = c[0];
+        auto& lat = c[1];
+        for (size_t i = 0; i < lon.size(); ++i) {
+            if (std::isfinite(lon[i]) && std::isfinite(lat[i])) {
+                const auto q = PointLonLat::make(lon[i], lat[i], lon_minimum_);
+                lon[i]       = q.lon();
+                lat[i]       = q.lat();
+            }
+        }
+    }
 
     explicit LonLat(double lon_minimum) : lon_minimum_(lon_minimum) {}
     const double lon_minimum_;
@@ -102,6 +124,9 @@ struct XY final : Convert {
     }
 
     Point to_point(const PJ_COORD& c) const final { return PointXY{c.xy.x, c.xy.y}; }
+
+    Point point() const final { return PointXY{}; }
+    size_t dims() const final { return PointXY::DIMS; }
 };
 
 
@@ -112,6 +137,9 @@ struct XYZ final : Convert {
     }
 
     Point to_point(const PJ_COORD& c) const final { return PointXYZ{c.xy.x, c.xy.y, c.xyz.z}; }
+
+    Point point() const final { return PointXYZ{}; }
+    size_t dims() const final { return PointXYZ::DIMS; }
 };
 
 
@@ -150,11 +178,49 @@ struct PROJ::Implementation {
         return source_->to_point(proj_trans(proj_.get(), PJ_INV, target_->to_coord(p)));
     }
 
+    /// Project points (one vector per coordinate), in the given direction; points failing to project are NaN
+    std::vector<std::vector<double>> trans(PJ_DIRECTION direction, const std::vector<double>& v1,
+                                           const std::vector<double>& v2, const std::vector<double>& v3) const {
+        const auto& from = direction == PJ_FWD ? *source_ : *target_;
+        const auto& to   = direction == PJ_FWD ? *target_ : *source_;
+
+        // PROJ transforms coordinates x, y (and z) in place
+        const auto n = v1.size();
+        const auto m = std::max(from.dims(), to.dims());
+        ASSERT(2 <= m && m <= 3);
+
+        std::vector<std::vector<double>> c{v1, v2};
+        if (m == 3) {
+            c.emplace_back(from.dims() == 3 ? v3 : std::vector<double>(n, 0.));
+        }
+
+        constexpr auto stride = sizeof(double);
+        proj_trans_generic(proj_.get(), direction, c[0].data(), stride, n, c[1].data(), stride, n,
+                           m == 3 ? c[2].data() : nullptr, stride, m == 3 ? n : 0, nullptr, 0, 0);
+
+        c.resize(to.dims());
+
+        // points that fail to project (HUGE_VAL) result in NaN
+        for (size_t i = 0; i < n; ++i) {
+            if (std::any_of(c.begin(), c.end(), [i](const auto& ci) { return !std::isfinite(ci[i]); })) {
+                for (auto& ci : c) {
+                    ci[i] = std::numeric_limits<double>::quiet_NaN();
+                }
+            }
+        }
+
+        to.normalise(c);
+        return c;
+    }
+
+    inline Point source_point() const { return source_->point(); }
+    inline Point target_point() const { return target_->point(); }
+
 private:
 
     const pj_t proj_;
-    const std::unique_ptr<Convert> source_;
-    const std::unique_ptr<Convert> target_;
+    const std::unique_ptr<const Convert> source_;
+    const std::unique_ptr<const Convert> target_;
 };
 
 
@@ -184,6 +250,7 @@ PROJ::PROJ(const std::string& source, const std::string& target, double lon_mini
     p.reset(proj_normalize_for_visualization(ctx(), p.release()));
 
     implementation_ = std::make_unique<Implementation>(p.release(), make_convert(source_), make_convert(target_));
+    point_types(implementation_->source_point(), implementation_->target_point());
 }
 
 
@@ -208,6 +275,18 @@ Point PROJ::fwd(const Point& p) const {
 
 Point PROJ::inv(const Point& q) const {
     return implementation_->inv(q);
+}
+
+
+std::vector<std::vector<double>> PROJ::fwd_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                  const std::vector<double>& v3) const {
+    return implementation_->trans(PJ_FWD, v1, v2, v3);
+}
+
+
+std::vector<std::vector<double>> PROJ::inv_vector(const std::vector<double>& v1, const std::vector<double>& v2,
+                                                  const std::vector<double>& v3) const {
+    return implementation_->trans(PJ_INV, v1, v2, v3);
 }
 
 
@@ -329,7 +408,7 @@ bool PROJ::projdb_is_available() {
 
     // Note: not using pj_t, which throws on failure (failure is a possible outcome)
     std::unique_ptr<pj_t::element_type, pj_t::deleter_type> crs(
-        proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, false, nullptr), &proj_destroy);
+        proj_create_from_database(ctx(), "EPSG", "4326", PJ_CATEGORY_CRS, 0, nullptr), &proj_destroy);
 
     return static_cast<bool>(crs);
 }

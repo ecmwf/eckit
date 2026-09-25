@@ -15,10 +15,10 @@ namespace eckit::geo::grid::reduced {
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}, Projection::make_from_spec(spec)) {}
+    ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
 
 
-ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, Projection* p) :
+ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, const Projection* p) :
     Reduced(nullptr, p), N_(pl.size() / 2), pl_(pl), latitude_(N_, false) {
     const auto& lats = latitude_.values();
     ASSERT(lats.size() == pl_.size());
@@ -52,7 +52,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, Pro
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, Projection* p) :
+ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, const Projection* p) :
     ReducedGaussian(util::reduced_octahedral_pl(N), bbox, p) {}
 
 

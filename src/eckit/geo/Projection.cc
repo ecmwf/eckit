@@ -7,10 +7,8 @@
 #include <array>
 #include <limits>
 #include <ostream>
-#include <string>
 #include <utility>
 #include <variant>
-#include <vector>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
@@ -21,7 +19,6 @@
 #include "eckit/geo/share/Projection.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/parser/YAMLParser.h"
-#include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
 

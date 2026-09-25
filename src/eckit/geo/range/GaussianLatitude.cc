@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"

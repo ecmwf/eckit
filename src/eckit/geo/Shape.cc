@@ -4,6 +4,8 @@
 
 #include "eckit/geo/Shape.h"
 
+#include <vector>
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/spec/Spec.h"
 

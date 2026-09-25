@@ -3,16 +3,21 @@
 
 
 #include <algorithm>
+#include <memory>
+#include <ostream>
 #include <random>
 #include <string>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/ORCA.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 #include "eckit/geo/grid/regular/RegularLL.h"
+#include "eckit/log/Log.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 

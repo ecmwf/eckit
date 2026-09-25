@@ -4,6 +4,7 @@
 #include "eckit/geo/GreatCircle.h"
 
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 #include <sstream>
 

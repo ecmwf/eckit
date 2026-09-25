@@ -4,10 +4,15 @@
 
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 
+#include <algorithm>
+#include <iterator>
+
+#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/Regular.h"
-#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 
 

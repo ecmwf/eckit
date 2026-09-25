@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "eckit/codec/codec.h"
 #include "eckit/config/Resource.h"

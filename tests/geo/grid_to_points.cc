@@ -5,7 +5,10 @@
 #include <memory>
 #include <vector>
 
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/grid/reduced/HEALPix.h"
+#include "eckit/geo/order/HEALPix.h"
 #include "eckit/testing/Test.h"
 
 

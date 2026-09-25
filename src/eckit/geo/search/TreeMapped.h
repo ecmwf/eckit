@@ -4,7 +4,11 @@
 
 #pragma once
 
+#include <cstddef>
+#include <iosfwd>
+
 #include "eckit/container/KDTree.h"
+#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/search/Tree.h"
 #include "eckit/os/AutoUmask.h"
 

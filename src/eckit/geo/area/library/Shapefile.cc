@@ -5,7 +5,6 @@
 #include "eckit/geo/area/library/Shapefile.h"
 
 #include <algorithm>
-#include <memory>
 #include <ostream>
 #include <vector>
 
@@ -13,6 +12,7 @@
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/area/Polygon.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/Unzip.h"
@@ -20,6 +20,7 @@
 #include "eckit/log/JSON.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::area::library {

@@ -4,13 +4,16 @@
 
 #include "eckit/geo/search/TreeMappedFile.h"
 
-#include "eckit/filesystem/PathExpander.h"
-#include "eckit/utils/Tokenizer.h"
+#include <unistd.h>
+#include <ostream>
+#include <vector>
 
+#include "eckit/filesystem/PathExpander.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/log/Log.h"
+#include "eckit/utils/Tokenizer.h"
 
 
 namespace eckit::geo::search {

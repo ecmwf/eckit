@@ -5,11 +5,13 @@
 #include "eckit/geo/Area.h"
 
 #include <ostream>
+#include <string>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/share/Area.h"
 #include "eckit/geo/util/mutex.h"
+#include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Layered.h"
 

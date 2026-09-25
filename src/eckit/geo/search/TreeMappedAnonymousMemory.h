@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "eckit/geo/search/Tree.h"
 #include "eckit/geo/search/TreeMapped.h"
 
 

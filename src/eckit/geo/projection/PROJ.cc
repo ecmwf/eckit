@@ -4,21 +4,21 @@
 
 #include "eckit/geo/projection/PROJ.h"
 
-#include <proj.h>
-
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
 #include <map>
-#include <memory>
 #include <set>
 #include <sstream>
 #include <utility>
 #include <vector>
 
+#include <proj.h>
+
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/types/FloatCompare.h"

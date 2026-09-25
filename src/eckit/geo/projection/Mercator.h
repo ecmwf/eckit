@@ -4,6 +4,11 @@
 
 #pragma once
 
+#include <cstddef>
+#include <string>
+
+#include "eckit/geo/Figure.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 
 

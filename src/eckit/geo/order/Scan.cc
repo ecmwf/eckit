@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::order {

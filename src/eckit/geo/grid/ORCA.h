@@ -5,9 +5,12 @@
 #pragma once
 
 #include <cstddef>
+#include <string>
+#include <vector>
 
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo::cache {

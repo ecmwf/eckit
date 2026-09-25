@@ -5,8 +5,13 @@
 #include "eckit/geo/grid/unstructured/ICON.h"
 
 #include <memory>
+#include <vector>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Projection.h"
+#include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::grid::unstructured {

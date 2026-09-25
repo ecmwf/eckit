@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <map>
+#include <sstream>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
@@ -148,5 +149,6 @@ void TreeFactory::list(std::ostream& out) {
         sep = ", ";
     }
 }
+
 
 }  // namespace eckit::geo::search

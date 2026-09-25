@@ -4,6 +4,8 @@
 
 #include "eckit/geo/figure/UnitSphere.h"
 
+#include "eckit/geo/Figure.h"
+
 
 namespace eckit::geo::figure {
 

@@ -5,8 +5,10 @@
 #include "eckit/geo/grid/Unstructured.h"
 
 #include <memory>
+#include <utility>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/cache/Grid.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/geo/iterator/Unstructured.h"

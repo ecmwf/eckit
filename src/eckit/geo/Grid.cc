@@ -9,14 +9,13 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Unstructured.h"
-#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
-#include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
 

@@ -6,6 +6,7 @@
 
 #include "eckit/config/Resource.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/log/Log.h"
 #include "eckit/log/ResourceUsage.h"
 
 

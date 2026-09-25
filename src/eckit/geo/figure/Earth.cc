@@ -4,6 +4,8 @@
 
 #include "eckit/geo/figure/Earth.h"
 
+#include "eckit/geo/Figure.h"
+
 
 namespace eckit::geo::figure {
 

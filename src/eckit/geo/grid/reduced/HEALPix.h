@@ -4,8 +4,13 @@
 
 #pragma once
 
+#include <cstddef>
 #include <memory>
+#include <string>
+#include <vector>
 
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/HEALPix.h"

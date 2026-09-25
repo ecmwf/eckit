@@ -4,11 +4,14 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <variant>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/UnitSphere.h"
 #include "eckit/geo/projection/Composer.h"

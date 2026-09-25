@@ -5,11 +5,14 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
 #include "eckit/geo/grid/Unstructured.h"
+#include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
 

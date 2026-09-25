@@ -4,6 +4,7 @@
 
 #include "eckit/geo/LibEcKitGeo.h"
 
+#include <algorithm>
 #include <regex>
 
 #include "eckit/config/Resource.h"

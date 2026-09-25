@@ -5,15 +5,17 @@
 #pragma once
 
 #include <cstddef>
+#include <iosfwd>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "eckit/geo/Figure.h"
 #include "eckit/geo/Point.h"
 #include "eckit/memory/Builder.h"
-#include "eckit/memory/Factory.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Generator.h"
+#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo {

@@ -6,11 +6,8 @@
 #include <utility>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Point.h"
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointLonLatR.h"
-#include "eckit/geo/PointXY.h"
-#include "eckit/geo/PointXYZ.h"
 #include "eckit/testing/Test.h"
 
 

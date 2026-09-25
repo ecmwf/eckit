@@ -2,13 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <vector>
 
-#include "eckit/geo/PointLonLat.h"
-#include "eckit/geo/PointXY.h"
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/geo/polygon/PolygonXY.h"
 #include "eckit/testing/Test.h"
+#include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::test {

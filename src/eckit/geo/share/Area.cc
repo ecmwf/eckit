@@ -4,6 +4,10 @@
 
 #include "eckit/geo/share/Area.h"
 
+#include <map>
+#include <ostream>
+#include <string>
+
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
@@ -11,6 +15,7 @@
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/value/Content.h"
 #include "eckit/value/Value.h"
 
 

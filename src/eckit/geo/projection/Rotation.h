@@ -4,9 +4,12 @@
 
 #pragma once
 
+#include <cstddef>
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 
 

@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Figure.h"
 #include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"

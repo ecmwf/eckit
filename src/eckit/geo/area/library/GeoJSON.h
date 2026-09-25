@@ -4,11 +4,14 @@
 
 #pragma once
 
+#include <cstddef>
+#include <iosfwd>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/area/Library.h"
 #include "eckit/geo/polygon/Polygon.h"
 #include "eckit/value/Value.h"

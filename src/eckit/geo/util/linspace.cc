@@ -3,6 +3,8 @@
 
 
 #include <algorithm>
+#include <cstddef>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/cache/MemoryCache.h"

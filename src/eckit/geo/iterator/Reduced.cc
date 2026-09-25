@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/Reduced.h"
 
 

@@ -6,8 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/unstructured/ICON.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/testing/Test.h"
 
 

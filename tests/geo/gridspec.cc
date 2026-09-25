@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
@@ -12,7 +13,6 @@
 #include "eckit/geo/order/HEALPix.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/util.h"
-#include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/testing/Test.h"

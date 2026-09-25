@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <iostream>
 
-#include "eckit/geo/Exceptions.h"
 #include "eckit/types/FloatCompare.h"
 
 

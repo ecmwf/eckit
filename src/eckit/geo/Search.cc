@@ -4,14 +4,19 @@
 
 #include "eckit/geo/Search.h"
 
+#include <ostream>
+#include <string>
+
 #include "eckit/config/Resource.h"
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/Iterator.h"
 #include "eckit/geo/LibEcKitGeo.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Trace.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/log/ResourceUsage.h"
+#include "eckit/spec/Spec.h"
 #include "eckit/thread/AutoLock.h"
 
 

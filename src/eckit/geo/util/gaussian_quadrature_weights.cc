@@ -3,8 +3,10 @@
 
 
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "eckit/geo/Exceptions.h"

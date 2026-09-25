@@ -39,6 +39,9 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         _exit(1);
     }
 
+    if (::getenv("DEBUG")) {
+        debug_ = eckit::Translator<std::string, bool>()(::getenv("DEBUG"));
+    }
 
     if (::getenv("MAIN_DEBUG")) {
         debug_ = eckit::Translator<std::string, bool>()(::getenv("MAIN_DEBUG"));
@@ -47,12 +50,6 @@ Main::Main(int argc, char** argv, const char* homeenv) :
     name_ = displayName_ = PathName(argv[0]).baseName(false);
 
     for (int i = 1; i < argc; ++i) {
-
-        // Old style
-        if (::strcmp(argv[i], "-debug") == 0) {
-            eckit::Log::warning() << "-debug is deprecated, please use --debug" << std::endl;
-            debug_ = true;
-        }
 
         // New style
         if (::strcmp(argv[i], "--debug") == 0) {
@@ -63,13 +60,6 @@ Main::Main(int argc, char** argv, const char* homeenv) :
         const char* debug = "--debug=";
         if (::strncmp(argv[i], debug, ::strlen(debug)) == 0) {
             debug_ = eckit::Translator<std::string, bool>()(argv[i] + ::strlen(debug));
-        }
-
-        // Old style -name
-        if (::strcmp(argv[i], "-name") == 0) {
-            ASSERT(argc > i + 1);
-            displayName_ = argv[i + 1];
-            eckit::Log::warning() << "-name is deprecated, please use --display-name=" << displayName_ << std::endl;
         }
 
         const char* display_name = "--display-name=";

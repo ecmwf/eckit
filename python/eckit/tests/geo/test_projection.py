@@ -37,7 +37,7 @@ def check_point_coordinates(projection, source, target):
     "spec,type_,source,target",
     [
         (dict(type="rotation", south_pole=[10.0, -40.0]), "rotation", LL, LL),
-        (dict(rotation=[10.0, -40.0]), "rotation", LL, LL),
+        (dict(rotation=[-40.0, 10.0]), "rotation", LL, LL),
         (dict(type="eqc"), "eqc", LL, XY),
         (dict(type="plate-carree", lat_ts=60.0), "eqc", LL, XY),
         (dict(type="ll-to-xyz", R=1.0), "ll-to-xyz", LL, XYZ),
@@ -95,7 +95,7 @@ def test_projection_equidistant_cylindrical():
 def test_projection_equality():
     # equality is by spec, however the projection is described
     assert Projection(type="eqc") == Projection(type="plate-carree")
-    assert Projection(type="rotation", south_pole=[10.0, -40.0]) == Projection(rotation=[10.0, -40.0])
+    assert Projection(type="rotation", south_pole=[10.0, -40.0]) == Projection(rotation=[-40.0, 10.0])
     assert Projection(type="eqc", lat_ts=60.0) != Projection(type="eqc")
 
 

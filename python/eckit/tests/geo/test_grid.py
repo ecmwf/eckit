@@ -69,10 +69,10 @@ def test_grid_rotated():
     )
 
     for spec in [
-        dict(grid=[5, 5], rotation=[-20, -40]),
+        dict(grid=[5, 5], rotation=[-40, -20]),
         canonical,
         dict(grid=[5, 5], projection=dict(south_pole_lon=-20, south_pole_lat=-40, type="rotation")),
-        dict(grid=[5, 5], projection=dict(rotation=[-20, -40], type="rotation")),
+        dict(grid=[5, 5], projection=dict(rotation=[-40, -20], type="rotation")),
     ]:
         assert Grid(spec).spec == canonical
 
@@ -80,7 +80,7 @@ def test_grid_rotated():
 def test_grid_rotated_default_south_pole_is_not_a_rotation():
     for spec in [
         dict(grid=[5, 5]),
-        dict(grid=[5, 5], rotation=[0, -90]),
+        dict(grid=[5, 5], rotation=[-90, 0]),
         dict(grid=[5, 5], projection=dict(south_pole=[0, -90], type="rotation")),
     ]:
         assert Grid(spec).spec == dict(grid=[5, 5])

@@ -24,9 +24,14 @@ static ProjectionRegisterType<Rotation> PROJECTION("rotation");
 Rotation::Rotation(const Spec& spec) :
     Rotation(
         [](const auto& spec) -> PointLonLat {
-            if (std::vector<double> p; spec.get("south_pole", p) || spec.get("rotation", p)) {
-                ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as a list of size 2");
+            if (std::vector<double> p; spec.get("south_pole", p)) {
+                ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as [lon, lat]");
                 return {p[0], p[1]};
+            }
+
+            if (std::vector<double> p; spec.get("rotation", p)) {
+                ASSERT_MSG(p.size() == 2, "Rotation: expected 'rotation' as [lat, lon]");
+                return {p[1], p[0]};
             }
 
             if (auto lon = SOUTH_POLE.lon(), lat = SOUTH_POLE.lat();
@@ -177,10 +182,15 @@ Rotation* Rotation::make_from_spec(const Spec& spec) {
 
     auto lon = SOUTH_POLE.lon();
     auto lat = SOUTH_POLE.lat();
-    if (std::vector<double> p{lon, lat}; spec.get("south_pole", p) || spec.get("rotation", p)) {
-        ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as a list of size 2");
+    if (std::vector<double> p; spec.get("south_pole", p)) {
+        ASSERT_MSG(p.size() == 2, "Rotation: expected 'south_pole' as [lon, lat]");
         lon = p[0];
         lat = p[1];
+    }
+    else if (spec.get("rotation", p)) {
+        ASSERT_MSG(p.size() == 2, "Rotation: expected 'rotation' as [lat, lon]");
+        lon = p[1];
+        lat = p[0];
     }
     else {
         ASSERT_MSG(spec.get("south_pole_lon", lon) == spec.get("south_pole_lat", lat),

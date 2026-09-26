@@ -7,11 +7,39 @@
 #include <cstring>
 
 #include "eckit/exception/Exceptions.h"
+#include "eckit/io/FileLocker.h"
 
 
 namespace eckit {
 
 //----------------------------------------------------------------------------------------------------------------------
+
+namespace {
+
+// Exception-safe fcntl range lock: guarantees unlock() runs even if the read/write
+// syscall it guards throws, since an fcntl lock is only released by unlocking or by
+// closing the fd -- and fd_ here lives for the whole process, so a lock leaked on an
+// exception path would wedge that record for every other process until this one restarts.
+class ScopedFileLock {
+public:
+
+    ScopedFileLock(FileLocker& locker, off_t off, off_t len, bool exclusive) : locker_(locker), off_(off), len_(len) {
+        if (exclusive)
+            locker_.lockExclusive(off_, len_);
+        else
+            locker_.lockShared(off_, len_);
+    }
+
+    ~ScopedFileLock() { locker_.unlock(off_, len_); }
+
+private:
+
+    FileLocker& locker_;
+    off_t off_;
+    off_t len_;
+};
+
+}  // namespace
 
 template <class T>
 FileBase<T>::FileBase(const PathName& path) : fd_(-1), path_(path), pos_(0) {
@@ -32,12 +60,10 @@ bool FileBase<T>::read(long rec, T& data) {
 
     long size = 0;
 
-    // struct flock lock   = { F_RDLCK, SEEK_SET, pos_, sizeof(Record), };
-    // struct flock unlock = { F_UNLCK, SEEK_SET, pos_, sizeof(Record), };
+    FileLocker locker(fd_);
+    ScopedFileLock lock(locker, pos_, sizeof(Record), /*exclusive=*/false);
 
-    // SYSCALL(::fcntl(fd_,F_SETLK,&lock));
     SYSCALL(size = ::read(fd_, &buffer_, sizeof(Record)));
-    // SYSCALL(::fcntl(fd_,F_SETLK,&unlock));
 
     pos_ += size;
 
@@ -59,11 +85,10 @@ void FileBase<T>::write(long rec, const T& data) {
     ::memcpy(&buffer_, &data, sizeof(T));
     buffer_.valid_ = true;
 
-    // struct flock lock   = { F_WRLCK, SEEK_SET, pos_, sizeof(Record), };
-    // struct flock unlock = { F_UNLCK, SEEK_SET, pos_, sizeof(Record), };
-    // SYSCALL(::fcntl(fd_,F_SETLK,&lock));
+    FileLocker locker(fd_);
+    ScopedFileLock lock(locker, pos_, sizeof(Record), /*exclusive=*/true);
+
     SYSCALL(size = ::write(fd_, &buffer_, sizeof(Record)));
-    // SYSCALL(::fcntl(fd_,F_SETLK,&unlock));
 
     pos_ += size;
     ASSERT(size == sizeof(Record));

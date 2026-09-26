@@ -382,7 +382,7 @@ Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     static const std::string ROTATION{"rotation"};
 
     if (!cfg->has(PROJECTION) && cfg->has(ROTATION)) {
-        back->set(PROJECTION, new spec::Custom({{"type", ROTATION}, {"south_pole", cfg->get_double_vector(ROTATION)}}));
+        back->set(PROJECTION, new spec::Custom({{"type", ROTATION}, {ROTATION, cfg->get_double_vector(ROTATION)}}));
     }
 
     if (!back->empty()) {

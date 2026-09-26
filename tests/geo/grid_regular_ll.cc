@@ -28,10 +28,10 @@ CASE("rotated: spec equivalences") {
     const std::string canonical = R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})";
 
     for (const auto& spec : {
-             R"({"grid":[5,5],"rotation":[-20,-40]})",
+             R"({"grid":[5,5],"rotation":[-40,-20]})",
              R"({"grid":[5,5],"projection":{"south_pole":[-20,-40],"type":"rotation"}})",
              R"({"grid":[5,5],"projection":{"south_pole_lon":-20,"south_pole_lat":-40,"type":"rotation"}})",
-             R"({"grid":[5,5],"projection":{"rotation":[-20,-40],"type":"rotation"}})",
+             R"({"grid":[5,5],"projection":{"rotation":[-40,-20],"type":"rotation"}})",
          }) {
         std::unique_ptr<const Grid> grid(GridFactory::make_from_string(spec));
 
@@ -42,7 +42,7 @@ CASE("rotated: spec equivalences") {
     SECTION("a south pole at its default is no rotation at all") {
         for (const auto& spec : {
                  R"({"grid":[5,5]})",
-                 R"({"grid":[5,5],"rotation":[0,-90]})",
+                 R"({"grid":[5,5],"rotation":[-90,0]})",
                  R"({"grid":[5,5],"projection":{"south_pole":[0,-90],"type":"rotation"}})",
                  R"({"grid":[5,5],"projection":{"south_pole_lon":0,"south_pole_lat":-90,"type":"rotation"}})",
              }) {
@@ -69,7 +69,7 @@ CASE("rotated") {
     const projection::Rotation rotation(south_pole);
 
     std::unique_ptr<const Grid> grid(
-        GridFactory::make_from_string("{area: [10, -10, -10, 10], grid: [5, 5], rotation: [-20, -40]}"));
+        GridFactory::make_from_string("{area: [10, -10, -10, 10], grid: [5, 5], rotation: [-40, -20]}"));
 
 
     SECTION("spec") {
@@ -118,6 +118,30 @@ CASE("rotated") {
         for (const auto& p : grid->to_points()) {
             auto q = std::get<PointLonLat>(p);
             EXPECT(bbox.contains(q));
+        }
+    }
+
+
+    SECTION("compare") {
+        constexpr double EPS = 1e-6;  // comparison tolerance
+        const std::vector<PointLonLat> points_ref{
+            {-30.37923437901262, 54.30167983367708}, {-30.21461696695217, 54.28605285392668},
+            {-30.05013625049183, 54.27016346802356}, {-29.88579431820473, 54.25401202651201},
+            {-29.72159324673793, 54.23759888507955}, {-29.55753510066738, 54.22092440451927},
+            {-29.39362193235515, 54.20398895069178}, {-29.22985578180936, 54.18679289448672},
+            {-29.06623867654653, 54.16933661178392}, {-28.90277263145643, 54.15162048341411},
+        };
+
+        std::unique_ptr<const Grid> grid(GridFactory::make_from_string(
+            R"({area:[26.65, 5.75, -13.25, 30.45], grid:[0.1, 0.1], order:i+j+, rotation:[-22, 320]})"));
+        ASSERT(grid);
+
+        EXPECT(grid->projection().type() == "rotation");
+        EXPECT(grid->size() >= points_ref.size());
+
+        auto points = grid->to_points();
+        for (size_t i = 0; i < points_ref.size(); ++i) {
+            EXPECT(points_equal(points[i], points_ref[i], EPS));
         }
     }
 }

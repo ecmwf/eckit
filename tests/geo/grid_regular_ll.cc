@@ -88,6 +88,12 @@ CASE("rotated") {
     }
 
 
+    SECTION("first and last points (rotated frame)") {
+        EXPECT(points_equal(grid->first_point(), PointLonLat{-10., 10.}));
+        EXPECT(points_equal(grid->last_point(), PointLonLat{10., -10.}));
+    }
+
+
     SECTION("points are rotated") {
         std::unique_ptr<const Grid> unrotated(
             GridFactory::make_from_string("{area: [10, -10, -10, 10], grid: [5, 5]}"));

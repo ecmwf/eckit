@@ -4,11 +4,13 @@
 
 #include "eckit/geo/figure/UnitSphere.h"
 
+#include "eckit/geo/Figure.h"
+
 
 namespace eckit::geo::figure {
 
 
-static const FigureBuilder<UnitSphere> REGISTER("unit-sphere");
+static const FigureRegisterType<UnitSphere> REGISTER("unit-sphere");
 
 
 }  // namespace eckit::geo::figure

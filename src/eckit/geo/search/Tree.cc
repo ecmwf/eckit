@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <map>
+#include <sstream>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
@@ -14,6 +15,18 @@
 
 
 namespace eckit::geo::search {
+
+
+namespace {
+
+
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
 
 
 Tree::Point::value_type Tree::Point::distance(const Point& p, const Point& q) {
@@ -104,12 +117,11 @@ std::string Tree::str() const {
 }
 
 
-static util::recursive_mutex MUTEX;
 static std::map<std::string, TreeFactory*> TREES;
 
 
 TreeFactory::TreeFactory(const std::string& name) : name_(name) {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
 
     if (auto j = TREES.find(name); j == TREES.end()) {
         TREES[name] = this;
@@ -121,14 +133,14 @@ TreeFactory::TreeFactory(const std::string& name) : name_(name) {
 
 
 TreeFactory::~TreeFactory() {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
 
     TREES.erase(name_);
 }
 
 
 Tree* TreeFactory::build(const std::string& name, const Grid& r) {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
 
     if (auto j = TREES.find(name); j != TREES.end()) {
         return j->second->make(r);
@@ -140,7 +152,7 @@ Tree* TreeFactory::build(const std::string& name, const Grid& r) {
 
 
 void TreeFactory::list(std::ostream& out) {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
 
     const auto* sep = "";
     for (const auto& j : TREES) {
@@ -148,5 +160,6 @@ void TreeFactory::list(std::ostream& out) {
         sep = ", ";
     }
 }
+
 
 }  // namespace eckit::geo::search

@@ -9,14 +9,13 @@
 #include <ostream>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Unstructured.h"
-#include "eckit/geo/projection/EquidistantCylindrical.h"
 #include "eckit/geo/share/Grid.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
-#include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/utils/MD5.h"
 
@@ -32,10 +31,8 @@ constexpr size_t DIGEST_LENGTH = 32;
 static_assert(DIGEST_LENGTH == MD5_DIGEST_LENGTH * 2, "MD5 digest length mismatch");
 
 
-util::recursive_mutex MUTEX;
-
-
 class lock_type {
+    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
 
@@ -43,7 +40,7 @@ class lock_type {
 }  // namespace
 
 
-Grid::Grid(BoundingBox* bbox, Projection* proj) :
+Grid::Grid(BoundingBox* bbox, const Projection* proj) :
     bbox_(bbox), projection_(proj != nullptr ? proj : ProjectionFactory::make_default()) {}
 
 
@@ -332,22 +329,14 @@ void Grid::fill_spec(spec::Custom& custom) const {
 
 const Grid* GridFactory::make_from_string(const std::string& str) {
     std::unique_ptr<Grid::Spec> spec(spec::Custom::make_from_value(YAMLParser::decodeString(str)));
-    return instance().make_from_spec_(*spec);
+    return build(*spec);
 }
 
 
-GridFactory& GridFactory::instance() {
-    share::Grid::instance();  // ensure load of supporting files
-
-    static GridFactory INSTANCE;
-    return INSTANCE;
-}
-
-
-const Grid* GridFactory::make_from_spec_(const Grid::Spec& spec) const {
+const Grid* GridFactory::build(const Grid::Spec& spec) {
     lock_type lock;
 
-    std::unique_ptr<Grid::Spec> cfg(make_spec_(spec));
+    std::unique_ptr<Grid::Spec> cfg(make_spec(spec));
 
     if (std::string type; cfg->get("type", type)) {
         return Factory<Grid>::instance().get(type).create(*cfg);
@@ -358,8 +347,9 @@ const Grid* GridFactory::make_from_spec_(const Grid::Spec& spec) const {
 }
 
 
-Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
+Grid::Spec* GridFactory::make_spec(const Grid::Spec& spec) {
     lock_type lock;
+    share::Grid::instance();  // ensure load of supporting files
 
     auto* cfg = new spec::Layered(spec);
     ASSERT(cfg != nullptr);
@@ -392,7 +382,7 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
     static const std::string ROTATION{"rotation"};
 
     if (!cfg->has(PROJECTION) && cfg->has(ROTATION)) {
-        back->set(PROJECTION, new spec::Custom({{"type", ROTATION}, {"south_pole", cfg->get_double_vector(ROTATION)}}));
+        back->set(PROJECTION, new spec::Custom({{"type", ROTATION}, {ROTATION, cfg->get_double_vector(ROTATION)}}));
     }
 
     if (!back->empty()) {
@@ -415,8 +405,9 @@ Grid::Spec* GridFactory::make_spec_(const Grid::Spec& spec) const {
 }
 
 
-std::ostream& GridFactory::list_(std::ostream& out) const {
+std::ostream& GridFactory::list(std::ostream& out) {
     lock_type lock;
+    share::Grid::instance();  // ensure load of supporting files
 
     out << GridSpecByUID::instance() << std::endl;
     out << GridSpecByName::instance() << std::endl;

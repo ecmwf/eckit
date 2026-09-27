@@ -4,10 +4,11 @@
 
 #include "eckit/geo/iterator/Unstructured.h"
 
-#include <vector>
+#include <memory>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/grid/Unstructured.h"
 
 

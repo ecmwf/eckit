@@ -6,7 +6,9 @@
 
 #include <algorithm>
 #include <cctype>
+#include <limits>
 #include <sstream>
+#include <type_traits>
 
 #include "eckit/log/JSON.h"
 #include "eckit/spec/Exceptions.h"
@@ -23,6 +25,24 @@ namespace {
 constexpr int STREAM_PRECISION = 15;
 
 
+template <typename T>
+std::string to_string(const T& value) {
+    static_assert(std::is_arithmetic_v<T>);
+
+    std::ostringstream str;
+    str.precision(std::min(STREAM_PRECISION, std::numeric_limits<T>::digits10));
+
+    if constexpr (std::is_floating_point_v<T>) {
+        str.clear();
+        str << value;
+        return str.str();
+    }
+    else {
+        return std::to_string(value);
+    }
+}
+
+
 template <typename From, typename To>
 bool get_t_s(const From& from, To& to) {
     to = static_cast<To>(from);
@@ -32,7 +52,7 @@ bool get_t_s(const From& from, To& to) {
 
 template <typename From>
 bool get_t_s(const From& from, std::string& to) {
-    to = std::to_string(from);
+    to = to_string(from);
     return true;
 }
 
@@ -58,7 +78,7 @@ template <typename From>
 bool get_t_v(const std::vector<From>& from, std::vector<std::string>& to) {
     to.clear();
     for (const auto& f : from) {
-        to.emplace_back(std::to_string(f));
+        to.emplace_back(to_string(f));
     }
     return true;
 }

@@ -2,14 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-#include "eckit/eckit_config.h"
-
+#include <cstddef>
 #include <fstream>
 #include <memory>
+#include <ostream>
+#include <string>
 #include <vector>
 
 #include "eckit/eckit_config.h"
 #include "eckit/filesystem/PathName.h"
+#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/cache/Download.h"
 #include "eckit/geo/cache/MemoryCache.h"
@@ -17,9 +19,8 @@
 #include "eckit/geo/util.h"
 #include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/utils/StringTools.h"
-
 #include "eckit/testing/Test.h"
+#include "eckit/utils/StringTools.h"
 
 
 namespace eckit::geo::test {

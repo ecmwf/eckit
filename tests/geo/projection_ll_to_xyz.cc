@@ -4,9 +4,14 @@
 
 #include <cmath>
 #include <memory>
+#include <ostream>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
+#include "eckit/log/Log.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -29,7 +34,7 @@ CASE("projection: ll-to-xyz") {
 
 
     // spherical projections
-    P to_xyz_1(ProjectionFactoryType::instance().get("ll-to-xyz").create(spec::Custom{{"R", 1.}}));
+    P to_xyz_1(Factory<Projection>::instance().get("ll-to-xyz").create(spec::Custom{{"R", 1.}}));
     P to_xyz_2(new projection::LonLatToXYZ(1., 1.));
 
     EXPECT(*to_xyz_1 == *to_xyz_2);
@@ -37,7 +42,7 @@ CASE("projection: ll-to-xyz") {
 
 
     // oblate spheroid projections
-    P to_xyz_3(ProjectionFactoryType::instance().get("ll-to-xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
+    P to_xyz_3(Factory<Projection>::instance().get("ll-to-xyz").create(spec::Custom{{"a", 1.}, {"b", 0.5}}));
     P to_xyz_4(new projection::LonLatToXYZ(1., 0.5));
 
     EXPECT(*to_xyz_3 == *to_xyz_4);
@@ -52,10 +57,10 @@ CASE("projection: ll-to-xyz") {
         Log::info() << to_xyz_2->spec_str() << std::endl;
         Log::info() << to_xyz_3->spec_str() << std::endl;
         Log::info() << to_xyz_4->spec_str() << std::endl;
-        EXPECT(to_xyz_1->spec_str() == R"({"r":1,"type":"ll-to-xyz"})");
-        EXPECT(to_xyz_2->spec_str() == R"({"r":1,"type":"ll-to-xyz"})");
-        EXPECT(to_xyz_3->spec_str() == R"({"a":1,"b":0.5,"type":"ll-to-xyz"})");
-        EXPECT(to_xyz_4->spec_str() == R"({"a":1,"b":0.5,"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_1->spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_2->spec_str() == R"({"figure":{"r":1},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_3->spec_str() == R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
+        EXPECT(to_xyz_4->spec_str() == R"({"figure":{"a":1,"b":0.5},"type":"ll-to-xyz"})");
     }
 
 

@@ -2,9 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
-import numpy as np
 import pytest
 from eckit.geo import Projection
+
+try:
+    import numpy as np
+except ImportError:  # numpy is optional
+    np = None
 
 LL = ("longitude", "latitude")
 XY = ("x", "y")
@@ -49,6 +53,53 @@ def test_projection_point_coordinates(spec, type_, source, target):
     check_point_coordinates(projection, source, target)
 
 
+def test_projection_source_target_point_coordinates():
+    for spec, source, target in [
+        (dict(type="eqc"), LL, XY),
+        (dict(type="rotation", south_pole=[10.0, -40.0]), LL, LL),
+        (dict(type="ll-to-xyz", R=1.0), LL, XYZ),
+    ]:
+        projection = Projection(spec)
+        assert projection.source_point_coordinates == source
+        assert projection.target_point_coordinates == target
+        assert all(isinstance(c, str) for c in source + target)
+
+    # fwd takes the source names, inv the target names
+    eqc = Projection(type="eqc")
+    assert eqc.fwd(**dict(zip(eqc.source_point_coordinates, (10.0, 20.0)))) == pytest.approx((10.0, 20.0))
+    assert eqc.inv(**dict(zip(eqc.target_point_coordinates, (10.0, 20.0)))) == pytest.approx((10.0, 20.0))
+
+
+def test_projection_eqc_scalars_and_lists():
+    eqc = Projection(type="eqc")  # (longitude, latitude) to (x, y), both in degree
+
+    assert eqc.fwd(10.0, 20.0) == pytest.approx((10.0, 20.0))
+    assert eqc.inv(10.0, 20.0) == pytest.approx((10.0, 20.0))
+
+    x, y = eqc.fwd([0.0, 10.0, 20.0], [0.0, 20.0, 40.0])
+    assert list(x) == pytest.approx([0.0, 10.0, 20.0])
+    assert list(y) == pytest.approx([0.0, 20.0, 40.0])
+
+    lon, lat = eqc.inv(x, y)
+    assert list(lon) == pytest.approx([0.0, 10.0, 20.0])
+    assert list(lat) == pytest.approx([0.0, 20.0, 40.0])
+
+
+@pytest.mark.skipif(np is None, reason="numpy not available")
+def test_projection_eqc_numpy():
+    eqc = Projection(type="eqc")
+
+    x, y = eqc.fwd(np.array([0.0, 10.0, 20.0]), np.array([0.0, 20.0, 40.0]))
+    assert isinstance(x, np.ndarray) and isinstance(y, np.ndarray)
+    assert x == pytest.approx([0.0, 10.0, 20.0])
+    assert y == pytest.approx([0.0, 20.0, 40.0])
+
+    lon, lat = eqc.inv(x, y)
+    assert lon == pytest.approx([0.0, 10.0, 20.0])
+    assert lat == pytest.approx([0.0, 20.0, 40.0])
+
+
+@pytest.mark.skipif(np is None, reason="numpy not available")
 def test_projection_rotation():
     # fwd: rotated (lon, lat) to geographic (lon, lat)
     rotation = Projection(type="rotation", south_pole=[10.0, -40.0])
@@ -99,6 +150,7 @@ def test_projection_equality():
     assert Projection(type="eqc", lat_ts=60.0) != Projection(type="eqc")
 
 
+@pytest.mark.skipif(np is None, reason="numpy not available")
 def test_projection_coordinates_forms():
     # the same point, given in all the supported forms
     eqc = Projection(type="eqc", lat_ts=60.0)
@@ -114,6 +166,7 @@ def test_projection_coordinates_forms():
     assert all(isinstance(c, float) for c in eqc.fwd(10.0, 20.0))
 
 
+@pytest.mark.skipif(np is None, reason="numpy not available")
 def test_projection_arrays():
     eqc = Projection(type="eqc", lat_ts=60.0)
 
@@ -145,6 +198,7 @@ def test_projection_arrays():
     assert x0.size == 0 and y0.size == 0
 
 
+@pytest.mark.skipif(np is None, reason="numpy not available")
 def test_projection_arrays_lonlat_to_xyz():
     to_xyz = Projection(type="ll-to-xyz", R=1.0)
     assert (to_xyz.source_point_coordinates, to_xyz.target_point_coordinates) == (LL, XYZ)
@@ -159,6 +213,7 @@ def test_projection_arrays_lonlat_to_xyz():
     assert lon[:2] == pytest.approx([0.0, 90.0], abs=EPS_LL)  # longitude at the pole is arbitrary
 
 
+@pytest.mark.skipif(np is None, reason="numpy not available")
 def test_projection_arguments_rejected():
     eqc = Projection(type="eqc")
 

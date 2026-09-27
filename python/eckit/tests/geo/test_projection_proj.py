@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: Apache-2.0
 
 
+import math
 import os
 from pathlib import Path
 
-import numpy as np
 import pytest
 from eckit.geo import Projection
 from eckit.geo._eckit_geo import projdb_is_available
@@ -177,7 +177,7 @@ def test_proj_epsg_4326_to_3857_arrays():
     lon = [0.0, 0.0, 10.0]
     lat = [0.0, 91.0, 20.0]
     x, y = merc.fwd(longitude=lon, latitude=lat)
-    assert np.isnan(x[1]) and np.isnan(y[1])
+    assert math.isnan(x[1]) and math.isnan(y[1])
     assert [x[0], x[2]] == pytest.approx([0.0, 1113194.9079327357], abs=EPS_XY)
     assert [y[0], y[2]] == pytest.approx([0.0, 2273030.9269876895], abs=EPS_XY)
 
@@ -185,6 +185,6 @@ def test_proj_epsg_4326_to_3857_arrays():
     for i in (0, 2):
         assert merc.fwd(lon[i], lat[i]) == pytest.approx((x[i], y[i]))
 
-    lon2, lat2 = merc.inv(x[[0, 2]], y[[0, 2]])
+    lon2, lat2 = merc.inv([x[0], x[2]], [y[0], y[2]])
     assert lon2 == pytest.approx([0.0, 10.0], abs=EPS_LL)
     assert lat2 == pytest.approx([0.0, 20.0], abs=EPS_LL)

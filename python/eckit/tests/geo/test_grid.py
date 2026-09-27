@@ -95,6 +95,15 @@ def test_grid_rotated_south_pole_lon_lat_required_together():
             Grid(dict(grid=[5, 5], projection=projection))
 
 
+def test_grid_rotated_gg():
+    grid = Grid(grid="F48", rotation=[30, 30])
+    assert grid.spec == dict(grid="F48", projection=dict(south_pole=[30, 30], type="rotation"))
+
+    lats, lons = grid.to_latlons()
+    assert list(lats[:3]) == pytest.approx([-28.57216851400726, -28.57292230625801, -28.57518290821670])
+    assert list(lons[:3]) == pytest.approx([-150.00000000000000, -150.05319064425672, -150.10632666115495])
+
+
 def test_grid_figure():
     grid = Grid(grid="1/1")
     figure = grid.figure

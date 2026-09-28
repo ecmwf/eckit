@@ -5,10 +5,9 @@
 #pragma once
 
 #include <array>
-#include <string>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointXY.h"
 
 
 namespace eckit::geo::area {

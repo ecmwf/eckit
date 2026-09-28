@@ -4,9 +4,6 @@
 
 #pragma once
 
-#include <cstddef>
-#include <vector>
-
 #include "eckit/geo/Range.h"
 
 

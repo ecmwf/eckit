@@ -6,10 +6,10 @@
 
 #include <array>
 #include <memory>
-#include <string>
 
 #include "eckit/geo/Area.h"
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXY.h"
 
 
 namespace eckit::geo {

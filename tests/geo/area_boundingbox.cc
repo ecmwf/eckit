@@ -4,12 +4,8 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
-#include "eckit/geo/Area.h"
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/testing/Test.h"
 

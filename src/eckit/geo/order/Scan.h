@@ -4,11 +4,8 @@
 
 #pragma once
 
-#include <cstddef>
-
 #include "eckit/geo/Grid.h"
 #include "eckit/geo/util.h"
-#include "eckit/spec/Spec.h"
 
 
 namespace eckit::spec {

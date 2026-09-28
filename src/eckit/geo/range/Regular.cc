@@ -5,28 +5,15 @@
 #include "eckit/geo/range/Regular.h"
 
 #include <algorithm>
-#include <vector>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
 
 
 namespace eckit::geo::range {
-
-
-namespace {
-
-
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
-
-
-}  // namespace
 
 
 namespace detail {
@@ -173,7 +160,8 @@ Fraction Regular::Implementation::max() const {
 
 
 const std::vector<double>& Regular::values() const {
-    lock_type lock;
+    static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
 
     return util::linspace(a(), b(), size());
 }

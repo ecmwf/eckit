@@ -4,7 +4,6 @@
 
 #include <limits>
 
-#include "eckit/geo/Point.h"
 #include "eckit/geo/projection/Mercator.h"
 #include "eckit/testing/Test.h"
 

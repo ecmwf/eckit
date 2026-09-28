@@ -4,13 +4,10 @@
 
 #pragma once
 
-#include <cstddef>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "eckit/geo/Projection.h"
-#include "eckit/geo/Range.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/GaussianLatitude.h"
@@ -27,9 +24,8 @@ public:
 
     explicit ReducedGaussian(const Spec&);
     explicit ReducedGaussian(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default(),
-                             const Projection* = nullptr);
-    explicit ReducedGaussian(size_t N, const BoundingBox& = BoundingBox::bounding_box_default(),
-                             const Projection* = nullptr);
+                             Projection* = nullptr);
+    explicit ReducedGaussian(size_t N, const BoundingBox& = BoundingBox::bounding_box_default(), Projection* = nullptr);
 
     // -- Methods
 

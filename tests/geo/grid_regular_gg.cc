@@ -2,17 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-#include <cstddef>
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "eckit/geo/Exceptions.h"
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Point.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/grid/regular/RegularGaussian.h"
-#include "eckit/geo/order/Scan.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
 
@@ -68,31 +62,6 @@ CASE("points") {
         EXPECT(points_equal(ref[i++], it));
     }
     EXPECT(i == grid.size());
-}
-
-
-CASE("rotated") {
-    std::unique_ptr<const Grid> grid(GridFactory::make_from_string("{grid: F48, rotation: [30, 30]}"));
-
-    EXPECT(grid->projection().type() == "rotation");
-    EXPECT_EQUAL(grid->spec_str(), R"({"grid":"F48","projection":{"south_pole":[30,30],"type":"rotation"}})");
-
-    // first/last points are in the rotated frame
-    EXPECT(points_equal(grid->first_point(), PointLonLat{0., 88.572168514007274}));
-    EXPECT(points_equal(grid->last_point(), PointLonLat{358.125, -88.572168514007274}));
-
-    const std::vector<PointLonLat> ref{
-        {-150.00000000000000, -28.57216851400726}, {-150.05319064425672, -28.57292230625801},
-        {-150.10632666115495, -28.57518290821670}, {-150.15935347266884, -28.57894799620847},
-        {-150.21221659941676, -28.58421369979395}, {-150.26486170993135, -28.59097460529629},
-        {-150.31723466986631, -28.59922376073626}, {-150.36928159111906, -28.60895268217335},
-        {-150.42094888084813, -28.62015136144922}, {-150.47218329036292, -28.63280827532991},
-    };
-
-    auto points = grid->to_points();
-    for (size_t i = 0; i < ref.size(); ++i) {
-        EXPECT(points_equal(points[i], ref[i]));
-    }
 }
 
 

@@ -4,10 +4,10 @@
 
 #include "eckit/geo/grid/regular/RegularGaussian.h"
 
-#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Grid.h"
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/range/GaussianLatitude.h"
+#include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -30,10 +30,10 @@ size_t check_N(size_t N) {
 
 
 RegularGaussian::RegularGaussian(const Spec& spec) :
-    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec), order::Scan{spec}, ProjectionFactory::build(spec)) {}
+    RegularGaussian(spec.get_unsigned("N"), BoundingBox(spec), order::Scan{spec}, Projection::make_from_spec(spec)) {}
 
 
-RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s, const Projection* p) :
+RegularGaussian::RegularGaussian(size_t N, BoundingBox bbox, order::Scan s, Projection* p) :
     Regular(s, p),
     N_(check_N(N)),
     x_(*range::RegularLongitude(

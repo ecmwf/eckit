@@ -4,28 +4,16 @@
 
 #include "eckit/geo/cache/DiskCache.h"
 
-#include <vector>
-
 #include "eckit/geo/util/mutex.h"
 
 
 namespace eckit::geo::cache {
 
 
-namespace {
-
-
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
-
-
-}  // namespace
-
-
 void DiskCache::rmdir(const PathName& p) const {
-    lock_type lock;
+    // control concurrent access
+    static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 
     if (!p.exists()) {
         return;

@@ -4,18 +4,16 @@
 
 #include "eckit/geo/figure/Earth.h"
 
-#include "eckit/geo/Figure.h"
-
 
 namespace eckit::geo::figure {
 
 
-static const FigureRegisterType<Earth> REGISTER1("earth");
-static const FigureRegisterType<EarthGrib1> REGISTER2("grib1");
-static const FigureRegisterType<EarthGrs80> REGISTER3("grs80");
-static const FigureRegisterType<EarthWgs84> REGISTER4("wgs84");
-static const FigureRegisterType<EarthIau1965> REGISTER5("iau1965");
-static const FigureRegisterType<EarthWgs84Sphere> REGISTER6("wgs84_sphere");
+static const FigureBuilder<Earth> REGISTER1("earth");
+static const FigureBuilder<EarthGrib1> REGISTER2("grib1");
+static const FigureBuilder<EarthGrs80> REGISTER3("grs80");
+static const FigureBuilder<EarthWgs84> REGISTER4("wgs84");
+static const FigureBuilder<EarthIau1965> REGISTER5("iau1965");
+static const FigureBuilder<EarthWgs84Sphere> REGISTER6("wgs84_sphere");
 
 
 const Earth EARTH;

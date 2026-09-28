@@ -69,10 +69,10 @@ def test_grid_rotated():
     )
 
     for spec in [
-        dict(grid=[5, 5], rotation=[-40, -20]),
+        dict(grid=[5, 5], rotation=[-20, -40]),
         canonical,
         dict(grid=[5, 5], projection=dict(south_pole_lon=-20, south_pole_lat=-40, type="rotation")),
-        dict(grid=[5, 5], projection=dict(rotation=[-40, -20], type="rotation")),
+        dict(grid=[5, 5], projection=dict(rotation=[-20, -40], type="rotation")),
     ]:
         assert Grid(spec).spec == canonical
 
@@ -80,7 +80,7 @@ def test_grid_rotated():
 def test_grid_rotated_default_south_pole_is_not_a_rotation():
     for spec in [
         dict(grid=[5, 5]),
-        dict(grid=[5, 5], rotation=[-90, 0]),
+        dict(grid=[5, 5], rotation=[0, -90]),
         dict(grid=[5, 5], projection=dict(south_pole=[0, -90], type="rotation")),
     ]:
         assert Grid(spec).spec == dict(grid=[5, 5])
@@ -93,15 +93,6 @@ def test_grid_rotated_south_pole_lon_lat_required_together():
     ]:
         with pytest.raises(Exception):
             Grid(dict(grid=[5, 5], projection=projection))
-
-
-def test_grid_rotated_gg():
-    grid = Grid(grid="F48", rotation=[30, 30])
-    assert grid.spec == dict(grid="F48", projection=dict(south_pole=[30, 30], type="rotation"))
-
-    lats, lons = grid.to_latlons()
-    assert list(lats[:3]) == pytest.approx([-28.57216851400726, -28.57292230625801, -28.57518290821670])
-    assert list(lons[:3]) == pytest.approx([-150.00000000000000, -150.05319064425672, -150.10632666115495])
 
 
 def test_grid_figure():

@@ -8,7 +8,7 @@
 #include <ostream>
 
 #include "eckit/exception/Exceptions.h"
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointXYZ.h"
 
 
 namespace eckit::maths {

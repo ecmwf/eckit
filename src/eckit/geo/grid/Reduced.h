@@ -4,11 +4,7 @@
 
 #pragma once
 
-#include <cstddef>
-#include <vector>
-
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/area/BoundingBox.h"
 
 

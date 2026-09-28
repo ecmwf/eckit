@@ -5,11 +5,8 @@
 #pragma once
 
 #include <deque>
-#include <initializer_list>
-#include <string>
 #include <vector>
 
-#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 
 
@@ -21,8 +18,8 @@ public:
 
     // -- Constructors
 
+    using deque::deque;
     explicit Composer() = default;
-    Composer(std::initializer_list<Projection*>);
 
     Composer(const Composer&) = delete;
     Composer(Composer&&)      = delete;
@@ -42,9 +39,9 @@ public:
 
     // -- Methods
 
-    void clear();
-    void emplace_back(Projection*);
-    void emplace_front(Projection*);
+    using deque::clear;
+    using deque::emplace_back;
+    using deque::emplace_front;
 
     using deque::empty;
     using deque::size;
@@ -65,11 +62,6 @@ public:
     [[nodiscard]] static Projection* compose_front(const Spec&, Projection*);
 
 private:
-
-    // -- Methods
-
-    /// Source/target point types from the first/last projections
-    void update_point_types();
 
     // -- Overridden methods
 

@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Grid.h"
 #include "eckit/geo/grid/SphericalHarmonics.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"

@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include "eckit/geo/Point.h"
 #include "eckit/geo/figure/Sphere.h"
 
 

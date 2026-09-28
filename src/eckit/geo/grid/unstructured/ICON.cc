@@ -5,13 +5,8 @@
 #include "eckit/geo/grid/unstructured/ICON.h"
 
 #include <memory>
-#include <vector>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Grid.h"
-#include "eckit/geo/Projection.h"
-#include "eckit/spec/Custom.h"
-#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::grid::unstructured {
@@ -37,7 +32,7 @@ static std::string arrangement_to_string(Arrangement a) {
 ICON::ICON(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
                  arrangement_to_string(arrangement_from_string(spec.get_string("arrangement"))),
-                 bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
+                 bounding_box_from_spec(spec), Projection::make_from_spec(spec)) {}
 
 
 ICON::ICON(const uid_type& uid) : ICON(*std::unique_ptr<Spec>(GridFactory::make_spec(spec::Custom({{"uid", uid}})))) {}

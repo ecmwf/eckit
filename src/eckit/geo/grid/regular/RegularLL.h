@@ -4,7 +4,13 @@
 
 #pragma once
 
+#include <array>
+#include <string>
+
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/grid/Regular.h"
+#include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/Regular.h"
 
 
@@ -36,7 +42,7 @@ public:
 
     explicit RegularLL(const Spec&);
     explicit RegularLL(const Increments&, BoundingBox = {}, Reference = {}, order::Scan = scan_default(),
-                       Projection* = nullptr);
+                       const Projection* = nullptr);
 
     // -- Methods
 

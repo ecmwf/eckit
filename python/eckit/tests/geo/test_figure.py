@@ -24,8 +24,8 @@ def test_figure_sphere():
     f2 = Figure(a=1, b=1)
 
     assert f1 == f2
-    assert f1.spec_str == '{"r":1}'
-    assert f1.spec == dict(r=1)
+    assert f1.spec_str == '{"figure":{"r":1}}'
+    assert f1.spec == dict(figure=dict(r=1))
 
     assert f1.R == 1
     assert f1.a == f1.R
@@ -55,8 +55,8 @@ def test_figure_sphere_area_scales_with_radius():
 def test_figure_oblate_spheroid():
     figure = Figure(a=1, b=0.5)
 
-    assert figure.spec_str == '{"a":1,"b":0.5}'
-    assert figure.spec == dict(a=1, b=0.5)
+    assert figure.spec_str == '{"figure":{"a":1,"b":0.5}}'
+    assert figure.spec == dict(figure=dict(a=1, b=0.5))
 
     assert figure.a == 1
     assert figure.b == 0.5
@@ -133,3 +133,13 @@ def test_grid_default_figure_is_spherical_earth(spec):
     assert figure.eccentricity == pytest.approx(0.0)
     assert figure.flattening == pytest.approx(0.0)
     assert figure.spec == dict(figure="earth")
+
+
+def test_figure_equality():
+    # equality is by size, however the figure is described
+    assert Figure(figure="earth") == Figure(R=6371229.0) == Figure(a=6371229.0, b=6371229.0)
+    assert Figure(figure="grib1") == Figure(R=6367470.0)
+    assert Figure(figure="wgs84") == Figure(a=6378137.0, b=6356752.314245)
+
+    assert Figure(figure="earth") != Figure(figure="grib1")
+    assert Figure(figure="wgs84") != Figure(figure="grs80")  # same semi-major axis, different flattening

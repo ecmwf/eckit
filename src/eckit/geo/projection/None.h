@@ -4,6 +4,9 @@
 
 #pragma once
 
+#include <string>
+
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 
 
@@ -15,8 +18,8 @@ public:
 
     // -- Constructors
 
-    explicit None() = default;
-    explicit None(const Spec&) {}
+    explicit None() : Projection(nullptr, PointLonLat{}, PointLonLat{}) {}
+    explicit None(const Spec&) : None() {}
 
     // -- Overridden methods
 

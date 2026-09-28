@@ -2,9 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <cstddef>
 #include <memory>
+#include <variant>
 #include <vector>
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/projection/Composer.h"
 #include "eckit/geo/projection/Rotation.h"
@@ -29,7 +34,7 @@ CASE("rotation (1)") {
     });
 
     Point p = PointLonLat{1, 1};
-    P projection(ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec));
+    P projection(Factory<Projection>::instance().get(spec.get_string("type")).create(spec));
 
     EXPECT(points_equal(p, projection->inv(projection->fwd(p))));
     EXPECT(points_equal(p, projection->fwd(projection->inv(p))));
@@ -227,7 +232,7 @@ CASE("rotation (5)") {
     });
 
     // compose sequentially
-    const auto& builder = ProjectionFactoryType::instance().get(spec.get_string("type"));
+    const auto& builder = Factory<Projection>::instance().get(spec.get_string("type"));
     P composition1(new projection::Composer{
         builder.create(spec),
         builder.create(spec),

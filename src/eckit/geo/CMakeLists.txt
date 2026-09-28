@@ -202,14 +202,20 @@ if(eckit_HAVE_PROJ)
     list(APPEND eckit_geo_private_libs PROJ::proj)
 endif()
 
+if(eckit_HAVE_ZIP)
+    list(APPEND eckit_geo_srcs
+        cache/Unzip.cc
+        cache/Unzip.h
+    )
+    list(APPEND eckit_geo_private_libs libzip::zip)
+endif()
+
 if(eckit_HAVE_GEO_AREA_SHAPEFILE)
     list(APPEND eckit_geo_srcs
         area/library/Shapefile.cc
         area/library/Shapefile.h
-        cache/Unzip.cc
-        cache/Unzip.h
     )
-    list(APPEND eckit_geo_private_libs shapelib::shp libzip::zip)
+    list(APPEND eckit_geo_private_libs shapelib::shp)
 endif()
 
 string(REPLACE ";" ":" eckit_GEO_SHARE_GRID "${eckit_GEO_SHARE_GRID}")

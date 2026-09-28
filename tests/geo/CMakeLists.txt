@@ -46,44 +46,39 @@ foreach(_test
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
 endforeach()
 
-if(eckit_HAVE_LZ4)
-    foreach(_test
-            grid_fesom
-            grid_icon
-            grid_orca
-            grid_unstructured_ll )
-        ecbuild_add_test(
-            TARGET      eckit_test_geo_${_test}
-            SOURCES     ${_test}.cc
-            LIBS        eckit_geo
-            ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
-    endforeach()
-endif()
-
-if(eckit_HAVE_ZIP)
+foreach(_test
+        grid_fesom
+        grid_icon
+        grid_orca
+        grid_unstructured_ll )
     ecbuild_add_test(
-        TARGET      eckit_test_geo_cache
-        SOURCES     cache.cc ${PROJECT_SOURCE_DIR}/src/eckit/geo/cache/Unzip.cc
-        LIBS        eckit_geo libzip::zip
+        TARGET      eckit_test_geo_${_test}
+        SOURCES     ${_test}.cc
+        CONDITION   eckit_HAVE_LZ4 AND eckit_HAVE_CURL
+        LIBS        eckit_geo
         ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
+endforeach()
 
-    target_compile_definitions(eckit_test_geo_cache PRIVATE ZIP_FILE="${CMAKE_CURRENT_SOURCE_DIR}/test.zip")
-endif()
+ecbuild_add_test(
+    TARGET      eckit_test_geo_cache
+    SOURCES     cache.cc
+    ARGS        --cacheable_zip "${CMAKE_CURRENT_SOURCE_DIR}/test.zip"
+    LIBS        eckit_geo
+    ENVIRONMENT "ECKIT_GEO_CACHE_PATH=${_cache_path}" )
 
-if(eckit_HAVE_PROJ)
-    foreach(_test
-            grid_regular_xy_swisslv03
-            grid_regular_xy_swisslv95
-            projection_albers
-            projection_mercator
-            projection_proj
-        )
-        ecbuild_add_test(
-            TARGET  eckit_test_geo_${_test}
-            SOURCES ${_test}.cc
-            LIBS    eckit_geo )
-    endforeach()
-endif()
+foreach(_test
+        grid_regular_xy_swisslv03
+        grid_regular_xy_swisslv95
+        projection_albers
+        projection_mercator
+        projection_proj
+    )
+    ecbuild_add_test(
+        TARGET    eckit_test_geo_${_test}
+        SOURCES   ${_test}.cc
+        CONDITION eckit_HAVE_PROJ
+        LIBS      eckit_geo )
+endforeach()
 
 ecbuild_add_test(
     TARGET            eckit_test_geo_area_library

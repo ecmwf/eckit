@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "eckit/config/Resource.h"
 #include "eckit/eckit_config.h"
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
@@ -219,7 +220,13 @@ CASE("grid") {
 
 #if eckit_HAVE_ZIP
 CASE("unzip") {
-    const PathName zip(ZIP_FILE);
+    const std::string cacheable_zip = Resource<std::string>("--cacheable_zip", "");
+    if (cacheable_zip.empty()) {
+        Log::info() << "unzip: skipped (no --cacheable_zip)" << std::endl;
+        return;
+    }
+
+    const PathName zip(cacheable_zip);
     ASSERT(zip.exists());
 
     const std::vector<std::string> contents{"a", "b/", "b/c"};

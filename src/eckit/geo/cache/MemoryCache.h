@@ -6,8 +6,6 @@
 
 #include <map>
 #include <numeric>
-#include <type_traits>
-#include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"

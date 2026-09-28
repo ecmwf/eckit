@@ -4,19 +4,12 @@
 
 #include "eckit/geo/grid/unstructured/FESOM.h"
 
-#include <stdint.h>
 #include <memory>
-#include <vector>
 
 #include "eckit/codec/codec.h"
-#include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Grid.h"
 #include "eckit/geo/LibEcKitGeo.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/cache/Download.h"
-#include "eckit/spec/Custom.h"
-#include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -47,7 +40,7 @@ static std::string arrangement_to_string(Arrangement a) {
 FESOM::FESOM(const Spec& spec) :
     Unstructured(spec.get_string("uid"), spec.get_string("name"),
                  arrangement_to_string(arrangement_from_string(spec.get_string("arrangement"))),
-                 bounding_box_from_spec(spec), ProjectionFactory::build(spec)) {}
+                 bounding_box_from_spec(spec), Projection::make_from_spec(spec)) {}
 
 
 FESOM::FESOM(const uid_type& uid) :

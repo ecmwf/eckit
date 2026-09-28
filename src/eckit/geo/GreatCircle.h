@@ -7,7 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
 
 
 namespace eckit::geo {

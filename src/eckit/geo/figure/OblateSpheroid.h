@@ -5,7 +5,6 @@
 #pragma once
 
 #include "eckit/geo/Figure.h"
-#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo::figure {

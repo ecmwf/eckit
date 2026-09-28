@@ -5,14 +5,10 @@
 #pragma once
 
 #include <unistd.h>
-#include <fstream>
-#include <string>
 
-#include "eckit/filesystem/PathName.h"
-#include "eckit/geo/search/Tree.h"
+#include <fstream>
+
 #include "eckit/geo/search/TreeMapped.h"
-#include "eckit/log/Log.h"
-#include "eckit/os/AutoUmask.h"
 #include "eckit/os/Semaphore.h"
 #include "eckit/runtime/Main.h"
 

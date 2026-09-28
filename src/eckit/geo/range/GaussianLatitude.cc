@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/util.h"
 #include "eckit/geo/util/mutex.h"
 #include "eckit/types/FloatCompare.h"
@@ -16,16 +16,7 @@
 namespace eckit::geo::range {
 
 
-namespace {
-
-
-class lock_type {
-    inline static util::recursive_mutex MUTEX;
-    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
-};
-
-
-}  // namespace
+static util::recursive_mutex MUTEX;
 
 
 inline bool is_equal(double a, double b) {
@@ -84,8 +75,7 @@ GaussianLatitude* GaussianLatitude::make_cropped_range(double crop_a, double cro
 
 
 const std::vector<double>& GaussianLatitude::values() const {
-    lock_type lock;
-
+    util::lock_guard<util::recursive_mutex> lock(MUTEX);
     return values_.empty() ? util::gaussian_latitudes(N_, a() < b()) : values_;
 }
 

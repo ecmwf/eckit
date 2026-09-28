@@ -3,14 +3,10 @@
 
 
 #include <cmath>
-#include <cstdlib>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Figure.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/figure/Earth.h"
 #include "eckit/geo/projection/LonLatToXYZ.h"
 #include "eckit/spec/Custom.h"

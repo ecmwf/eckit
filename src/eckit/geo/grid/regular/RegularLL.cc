@@ -5,19 +5,16 @@
 #include "eckit/geo/grid/regular/RegularLL.h"
 
 #include <cmath>
-#include <cstdlib>
 #include <memory>
-#include <regex>
 #include <vector>
 
-#include "eckit/geo/Area.h"
 #include "eckit/geo/Arrangement.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Grid.h"
 #include "eckit/geo/area/BoundingBox.h"
 #include "eckit/geo/iterator/Regular.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/projection/Rotation.h"
+#include "eckit/geo/range/Regular.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/spec/Layered.h"
 #include "eckit/types/FloatCompare.h"
@@ -73,10 +70,10 @@ RegularLL::Reference make_reference_from_spec(const Grid::Spec& spec) {
 
 RegularLL::RegularLL(const Spec& spec) :
     RegularLL(Increments::make_from_spec(spec), BoundingBox{spec}, make_reference_from_spec(spec), order::Scan{spec},
-              ProjectionFactory::build(spec)) {}
+              Projection::make_from_spec(spec)) {}
 
 
-RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s, const Projection* p) :
+RegularLL::RegularLL(const Increments& inc, BoundingBox bbox, PointLonLat ref, order::Scan s, Projection* p) :
     Regular(s, p),
     x_{s.is_scan_i_positive() ? inc.dlon() : -inc.dlon(), s.is_scan_i_positive() ? bbox.west() : bbox.east(),
        s.is_scan_i_positive() ? bbox.east() : bbox.west(), ref.lon()},

@@ -3,7 +3,6 @@
 
 
 #include <algorithm>
-#include <cstddef>
 #include <vector>
 
 #include "eckit/types/FloatCompare.h"

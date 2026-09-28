@@ -4,15 +4,10 @@
 
 #include "eckit/geo/grid/reduced/ReducedGaussian.h"
 
-#include <algorithm>
-#include <iterator>
-
-#include "eckit/geo/Area.h"
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Grid.h"
-#include "eckit/geo/Point.h"
 #include "eckit/geo/iterator/Reduced.h"
 #include "eckit/geo/range/Regular.h"
+#include "eckit/geo/util.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -20,10 +15,10 @@ namespace eckit::geo::grid::reduced {
 
 
 ReducedGaussian::ReducedGaussian(const Spec& spec) :
-    ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}, ProjectionFactory::build(spec)) {}
+    ReducedGaussian(spec.get_long_vector("pl"), BoundingBox{spec}, Projection::make_from_spec(spec)) {}
 
 
-ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, const Projection* p) :
+ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, Projection* p) :
     Reduced(nullptr, p), N_(pl.size() / 2), pl_(pl), latitude_(N_, false) {
     const auto& lats = latitude_.values();
     ASSERT(lats.size() == pl_.size());
@@ -57,7 +52,7 @@ ReducedGaussian::ReducedGaussian(const pl_type& pl, const BoundingBox& bbox, con
 }
 
 
-ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, const Projection* p) :
+ReducedGaussian::ReducedGaussian(size_t N, const BoundingBox& bbox, Projection* p) :
     ReducedGaussian(util::reduced_octahedral_pl(N), bbox, p) {}
 
 

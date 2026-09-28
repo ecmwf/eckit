@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "eckit/geo/Point.h"
+#include "eckit/geo/PointXY.h"
 
 
 namespace eckit::geo::polygon {

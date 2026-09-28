@@ -4,9 +4,6 @@
 
 #pragma once
 
-#include <utility>
-#include <vector>
-
 #include "eckit/geo/Point.h"
 #include "eckit/spec/Custom.h"
 
@@ -24,31 +21,12 @@ public:
 
     // -- Constructors
 
-    template <typename... Args>
-    explicit Reverse(Args&&... args) : P(std::forward<Args>(args)...) {
-        this->reverse_point_types();
-    }
+    using P::P;
 
     // -- Overridden methods
 
     inline Point fwd(const Point& p) const override { return P::inv(p); }
     inline Point inv(const Point& p) const override { return P::fwd(p); }
-
-protected:
-
-    // -- Overridden methods
-
-    // NOTE: the default (point by point, using the reversed fwd/inv above), as a specialised P::fwd_vector/inv_vector
-    // is not reversed
-    std::vector<std::vector<double>> fwd_vector(const std::vector<double>& v1, const std::vector<double>& v2,
-                                                const std::vector<double>& v3) const override {
-        return Projection::fwd_vector(v1, v2, v3);
-    }
-
-    std::vector<std::vector<double>> inv_vector(const std::vector<double>& v1, const std::vector<double>& v2,
-                                                const std::vector<double>& v3) const override {
-        return Projection::inv_vector(v1, v2, v3);
-    }
 
 private:
 

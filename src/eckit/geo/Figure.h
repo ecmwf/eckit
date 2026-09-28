@@ -4,9 +4,13 @@
 
 #pragma once
 
+#include <iosfwd>
 #include <string>
 
+#include "eckit/geo/PointLonLat.h"
+#include "eckit/geo/PointXYZ.h"
 #include "eckit/memory/Builder.h"
+#include "eckit/memory/Factory.h"
 
 
 namespace eckit {
@@ -76,7 +80,7 @@ public:
     double eccentricity() const;
     double flattening() const;
 
-    virtual bool is_default() const;
+    virtual bool is_default() const { return false; }
 
 private:
 
@@ -86,7 +90,7 @@ private:
 
     // -- Friends
 
-    friend bool operator==(const Figure& a, const Figure& b);
+    friend bool operator==(const Figure& a, const Figure& b) { return a.spec_str() == b.spec_str(); }
     friend bool operator!=(const Figure& a, const Figure& b) { return !(a == b); }
 
     friend class Grid;
@@ -96,14 +100,20 @@ private:
 
 struct FigureFactory {
     /// Build the spec's figure, or the default one if the spec doesn't describe any
-    [[nodiscard]] static Figure* build(const Figure::Spec&);
+    [[nodiscard]] static Figure* build(const Figure::Spec& spec) { return instance().make_from_spec_(spec); }
     [[nodiscard]] static Figure* make_from_string(const std::string&);
     [[nodiscard]] static const Figure* make_default();
+
+private:
+
+    static FigureFactory& instance();
+
+    [[nodiscard]] Figure* make_from_spec_(const Figure::Spec&) const;
 };
 
 
 template <typename T>
-using FigureRegisterType = ConcreteBuilderT0<Figure, T>;
+using FigureBuilder = ConcreteBuilderT0<Figure, T>;
 
 
 }  // namespace eckit::geo

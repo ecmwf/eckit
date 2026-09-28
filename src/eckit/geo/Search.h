@@ -4,10 +4,7 @@
 
 #pragma once
 
-#include <cstddef>
-#include <iosfwd>
 #include <memory>
-#include <vector>
 
 #include "eckit/geo/search/Tree.h"
 #include "eckit/spec/Custom.h"

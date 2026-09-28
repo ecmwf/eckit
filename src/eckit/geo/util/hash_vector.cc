@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-#include <cstddef>
 #include <vector>
 
 #include "eckit/eckit_config.h"

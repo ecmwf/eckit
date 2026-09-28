@@ -2,17 +2,20 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
+#include <iostream>
 #include <memory>
 
 #include "eckit/geo/Area.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/area/Library.h"
 #include "eckit/geo/area/library/GeoJSON.h"
 #include "eckit/geo/eckit_geo_config.h"
+#include "eckit/log/Log.h"
+#include "eckit/testing/Test.h"
 
 #if eckit_HAVE_GEO_AREA_SHAPEFILE
 #include "eckit/geo/area/library/Shapefile.h"
 #endif
-
-#include "eckit/testing/Test.h"
 
 
 namespace eckit::geo::test {

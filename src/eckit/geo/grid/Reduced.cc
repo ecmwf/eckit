@@ -5,7 +5,7 @@
 #include "eckit/geo/grid/Reduced.h"
 
 #include "eckit/geo/Exceptions.h"
-#include "eckit/geo/Range.h"
+#include "eckit/geo/Point.h"
 
 
 namespace eckit::geo::grid {

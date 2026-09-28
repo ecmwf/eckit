@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "eckit/exception/Exceptions.h"
 #include "eckit/spec/Exceptions.h"
 

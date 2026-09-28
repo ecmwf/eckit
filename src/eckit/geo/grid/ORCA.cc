@@ -5,12 +5,14 @@
 #include "eckit/geo/grid/ORCA.h"
 
 #include <memory>
+#include <utility>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/geo/iterator/Unstructured.h"
 #include "eckit/spec/Custom.h"
-#include "eckit/spec/Spec.h"
 #include "eckit/utils/MD5.h"
 
 
@@ -23,7 +25,7 @@ namespace eckit::geo::grid {
 
 
 ORCA::ORCA(const Spec& spec) :
-    Grid(bounding_box_from_spec(spec), Projection::make_from_spec(spec)),
+    Grid(bounding_box_from_spec(spec), ProjectionFactory::build(spec)),
     name_(spec.get_string("name")),
     arrangement_(arrangement_from_string(spec.get_string("arrangement"))) {
     reset_uid(spec.get_string("uid"));

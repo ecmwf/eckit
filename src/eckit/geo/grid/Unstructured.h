@@ -4,7 +4,13 @@
 
 #pragma once
 
+#include <cstddef>
+#include <string>
+#include <vector>
+
 #include "eckit/geo/Grid.h"
+#include "eckit/geo/Point.h"
+#include "eckit/geo/Projection.h"
 
 
 namespace eckit::geo {
@@ -60,9 +66,10 @@ protected:
 
     // -- Constructors
 
-    explicit Unstructured(const uid_type&, const std::string& name = "", BoundingBox* = nullptr, Projection* = nullptr);
+    explicit Unstructured(const uid_type&, const std::string& name = "", BoundingBox* = nullptr,
+                          const Projection* = nullptr);
     explicit Unstructured(const uid_type&, const std::string& name, const std::string& arrangement,
-                          BoundingBox* = nullptr, Projection* = nullptr);
+                          BoundingBox* = nullptr, const Projection* = nullptr);
 
     // -- Methods
 

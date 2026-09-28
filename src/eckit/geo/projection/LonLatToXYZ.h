@@ -5,7 +5,10 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
+#include "eckit/geo/Figure.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/geo/figure/Earth.h"
 

@@ -4,6 +4,8 @@
 
 #include "eckit/geo/projection/Composer.h"
 
+#include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -80,13 +82,47 @@ Point Composer::inv(const Point& p) const {
 }
 
 
+Composer::Composer(std::initializer_list<Projection*> list) : deque(list) {
+    update_point_types();
+}
+
+
+void Composer::clear() {
+    deque::clear();
+    update_point_types();
+}
+
+
+void Composer::emplace_back(Projection* p) {
+    deque::emplace_back(p);
+    update_point_types();
+}
+
+
+void Composer::emplace_front(Projection* p) {
+    deque::emplace_front(p);
+    update_point_types();
+}
+
+
+void Composer::update_point_types() {
+    if (empty()) {
+        point_types(PointLonLat{}, PointXY{});
+        return;
+    }
+
+    ASSERT(front() != nullptr && back() != nullptr);
+    point_types_from(*front(), *back());
+}
+
+
 Projection* Composer::compose_back(Projection* p, const Spec& spec) {
-    return new Composer{p, ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec)};
+    return new Composer{p, Factory<Projection>::instance().get(spec.get_string("type")).create(spec)};
 }
 
 
 Projection* Composer::compose_front(const Spec& spec, Projection* p) {
-    return new Composer{ProjectionFactoryType::instance().get(spec.get_string("type")).create(spec), p};
+    return new Composer{Factory<Projection>::instance().get(spec.get_string("type")).create(spec), p};
 }
 
 

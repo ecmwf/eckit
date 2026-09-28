@@ -4,9 +4,7 @@
 
 #include "eckit/geo/grid/Regular.h"
 
-#include "eckit/geo/Range.h"
 #include "eckit/geo/iterator/Regular.h"
-#include "eckit/geo/order/Scan.h"
 #include "eckit/spec/Custom.h"
 
 
@@ -39,7 +37,7 @@ const order::Scan& Regular::scan_default() {
 }
 
 
-Regular::Regular(order::Scan s, Projection* proj) : Grid(nullptr, proj), scan_(s) {}
+Regular::Regular(order::Scan s, const Projection* proj) : Grid(nullptr, proj), scan_(s) {}
 
 
 void Regular::fill_spec(spec::Custom& custom) const {

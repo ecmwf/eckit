@@ -5,8 +5,10 @@
 #include "eckit/geo/grid/Unstructured.h"
 
 #include <memory>
+#include <utility>
 
 #include "eckit/geo/Exceptions.h"
+#include "eckit/geo/Point.h"
 #include "eckit/geo/cache/Grid.h"
 #include "eckit/geo/cache/LatitudeLongitude.h"
 #include "eckit/geo/iterator/Unstructured.h"
@@ -35,7 +37,7 @@ Unstructured::Unstructured(const Spec& spec) :
                      ? spec.get_string("uid")
                      : uid_from_cached_ll({spec.get_double_vector("latitudes"), spec.get_double_vector("longitudes")}),
                  spec.get_string("name", spec.get_string("cache_as", "")), bounding_box_from_spec(spec),
-                 Projection::make_from_spec(spec)) {}
+                 ProjectionFactory::build(spec)) {}
 
 
 Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vector<double>& latitudes,
@@ -43,7 +45,7 @@ Unstructured::Unstructured(const std::vector<double>& longitudes, const std::vec
     Unstructured(uid_from_cached_ll({latitudes, longitudes}), name) {}
 
 
-Unstructured::Unstructured(const uid_type& uid, const std::string& name, BoundingBox* bbox, Projection* p) :
+Unstructured::Unstructured(const uid_type& uid, const std::string& name, BoundingBox* bbox, const Projection* p) :
     Grid(bbox, p) {
     ASSERT(is_uid(uid));
     reset_uid(uid);
@@ -86,7 +88,7 @@ Unstructured::Unstructured(const uid_type& uid, const std::string& name, Boundin
 
 
 Unstructured::Unstructured(const uid_type& uid, const std::string& name, const std::string& arrangement,
-                           BoundingBox* bbox, Projection* p) :
+                           BoundingBox* bbox, const Projection* p) :
     Grid(bbox, p), name_(name), arrangement_(arrangement) {
     reset_uid(uid);
 }

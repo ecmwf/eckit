@@ -7,6 +7,8 @@
 #include <fstream>
 #include <map>
 #include <memory>
+#include <ostream>
+#include <string>
 
 #include "eckit/filesystem/PathName.h"
 #include "eckit/geo/Exceptions.h"
@@ -15,12 +17,22 @@
 #include "eckit/log/Log.h"
 #include "eckit/parser/YAMLParser.h"
 #include "eckit/spec/Custom.h"
+#include "eckit/value/Content.h"
 
 
 namespace eckit::geo::cache {
 
 
-static util::recursive_mutex MUTEX;
+namespace {
+
+
+class lock_type {
+    inline static util::recursive_mutex MUTEX;
+    util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
+};
+
+
+}  // namespace
 
 
 Grid& Grid::instance() {
@@ -30,7 +42,7 @@ Grid& Grid::instance() {
 
 
 void Grid::save(const geo::Grid::uid_type& uid, const geo::Grid::Spec& spec) {
-    util::lock_guard<util::recursive_mutex> lock(MUTEX);
+    lock_type lock;
 
     if (!LibEcKitGeo::caching()) {
         return;

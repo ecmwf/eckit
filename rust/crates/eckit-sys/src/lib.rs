@@ -40,7 +40,8 @@ mod ffi {
         type RustMain;
 
         /// Initialise eckit runtime with the Rust log bridge.
-        /// Safe to call multiple times; only the first call has effect.
+        /// Safe to call multiple times, from any thread; only the first call
+        /// has effect.
         #[Self = "RustMain"]
         fn initialise();
 
@@ -327,7 +328,8 @@ fn rust_log(level: ffi::LogLevel, target: &str, msg: &str) {
 
 /// Initialize eckit runtime with Rust log bridge.
 ///
-/// Must be called before any eckit API usage. Safe to call multiple times.
+/// Must be called before any eckit API usage. Safe to call multiple times,
+/// from any thread.
 ///
 /// This creates a `RustMain` C++ object that overrides eckit's log target
 /// factory methods, ensuring every thread gets log output routed through

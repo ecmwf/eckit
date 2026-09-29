@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "eckit/geo/Point.h"
+#include "eckit/geo/PointLonLat.h"
 #include "eckit/geo/eckit_geo_config.h"
 #include "eckit/testing/Test.h"
 #include "eckit/types/FloatCompare.h"

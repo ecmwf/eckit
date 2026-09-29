@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <string>
-
 #include "eckit/geo/Area.h"
 
 

@@ -4,11 +4,8 @@
 
 #include "eckit/geo/Iterator.h"
 
-#include <ostream>
-
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/util/mutex.h"
-#include "eckit/log/Log.h"
 
 
 namespace eckit::geo {
@@ -17,8 +14,10 @@ namespace eckit::geo {
 namespace {
 
 
+util::recursive_mutex MUTEX;
+
+
 class lock_type {
-    inline static util::recursive_mutex MUTEX;
     util::lock_guard<util::recursive_mutex> lock_guard_{MUTEX};
 };
 
@@ -26,11 +25,17 @@ class lock_type {
 }  // namespace
 
 
-Iterator* IteratorFactory::build(const Iterator::Spec& spec) {
+IteratorFactory& IteratorFactory::instance() {
+    static IteratorFactory INSTANCE;
+    return INSTANCE;
+}
+
+
+Iterator* IteratorFactory::build_(const Iterator::Spec& spec) const {
     lock_type lock;
 
     if (std::string type; spec.get("type", type)) {
-        return Factory<Iterator>::instance().get(type).create(spec);
+        return IteratorFactoryType::instance().get(type).create(spec);
     }
 
     list(Log::error() << "Iterator: cannot build iterator without 'type', choices are: ");
@@ -38,10 +43,10 @@ Iterator* IteratorFactory::build(const Iterator::Spec& spec) {
 }
 
 
-std::ostream& IteratorFactory::list(std::ostream& out) {
+std::ostream& IteratorFactory::list_(std::ostream& out) const {
     lock_type lock;
 
-    out << Factory<Iterator>::instance() << std::endl;
+    out << IteratorFactoryType::instance() << std::endl;
 
     return out;
 }

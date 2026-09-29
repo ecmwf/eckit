@@ -30,32 +30,4 @@ std::ostream& operator<<(std::ostream& out, const Point& p) {
 }
 
 
-template <>
-const std::vector<std::string>& point_coordinates<PointXY>() {
-    static const std::vector<std::string> names{"x", "y"};
-    return names;
-}
-
-
-template <>
-const std::vector<std::string>& point_coordinates<PointXYZ>() {
-    static const std::vector<std::string> names{"x", "y", "z"};
-    return names;
-}
-
-
-template <>
-const std::vector<std::string>& point_coordinates<PointLonLat>() {
-    static const std::vector<std::string> names{"longitude", "latitude"};
-    return names;
-}
-
-
-template <>
-const std::vector<std::string>& point_coordinates<PointLonLatR>() {
-    static const std::vector<std::string> names{"longitude_r", "latitude_r"};
-    return names;
-}
-
-
 }  // namespace eckit::geo

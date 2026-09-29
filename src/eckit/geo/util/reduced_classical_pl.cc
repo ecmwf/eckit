@@ -2,10 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-#include <cstddef>
 #include <map>
 #include <string>
-#include <utility>
 
 #include "eckit/geo/Exceptions.h"
 #include "eckit/geo/cache/MemoryCache.h"

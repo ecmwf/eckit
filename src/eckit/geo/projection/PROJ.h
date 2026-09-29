@@ -5,12 +5,8 @@
 #pragma once
 
 #include <memory>
-#include <string>
-#include <vector>
 
-#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
-#include "eckit/spec/Custom.h"
 
 
 namespace eckit::geo::projection {
@@ -59,15 +55,6 @@ public:
     /// Reset PROJ search paths to the default values.
     static void projdb_reset();
 
-protected:
-
-    // -- Overridden methods
-
-    std::vector<std::vector<double>> fwd_vector(const std::vector<double>& v1, const std::vector<double>& v2,
-                                                const std::vector<double>& v3) const override;
-    std::vector<std::vector<double>> inv_vector(const std::vector<double>& v1, const std::vector<double>& v2,
-                                                const std::vector<double>& v3) const override;
-
 private:
 
     // -- Types
@@ -76,7 +63,7 @@ private:
 
     // -- Members
 
-    std::unique_ptr<const Implementation> implementation_;
+    std::unique_ptr<Implementation> implementation_;
 
     const std::string source_;
     const std::string target_;

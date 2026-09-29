@@ -4,10 +4,7 @@
 
 #pragma once
 
-#include <cstddef>
-
 #include "eckit/geo/Grid.h"
-#include "eckit/spec/Spec.h"
 
 
 namespace eckit::geo::order {

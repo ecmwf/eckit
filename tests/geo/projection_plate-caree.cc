@@ -3,9 +3,7 @@
 
 
 #include <memory>
-#include <variant>
 
-#include "eckit/geo/Point.h"
 #include "eckit/geo/Projection.h"
 #include "eckit/spec/Custom.h"
 #include "eckit/testing/Test.h"
@@ -20,7 +18,7 @@ using P = std::unique_ptr<Projection>;
 CASE("projection: plate-caree") {
     Point p = PointXY{1, 1};
     Point q = PointLonLat{1, 1};
-    P projection(Factory<Projection>::instance().get("plate-carree").create(spec::Custom{}));
+    P projection(ProjectionFactoryType::instance().get("plate-carree").create(spec::Custom{}));
 
     EXPECT(points_equal(q, projection->inv(p)));
     EXPECT(std::holds_alternative<PointLonLat>(projection->inv(p)));

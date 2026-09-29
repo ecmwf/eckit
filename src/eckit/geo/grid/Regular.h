@@ -4,11 +4,7 @@
 
 #pragma once
 
-#include <cstddef>
-#include <vector>
-
 #include "eckit/geo/Grid.h"
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/order/Scan.h"
 
 
@@ -42,7 +38,7 @@ protected:
 
     // -- Constructors
 
-    explicit Regular(order::Scan scan = scan_default(), const Projection* = nullptr);
+    explicit Regular(order::Scan scan = scan_default(), Projection* = nullptr);
 
     // -- Overridden methods
 

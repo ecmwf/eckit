@@ -4,12 +4,9 @@
 
 #pragma once
 
-#include <cstddef>
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "eckit/geo/Projection.h"
 #include "eckit/geo/grid/Reduced.h"
 #include "eckit/geo/order/Scan.h"
 #include "eckit/geo/range/Regular.h"
@@ -26,7 +23,7 @@ public:
 
     explicit ReducedLonLat(const Spec&);
     explicit ReducedLonLat(const pl_type&, const BoundingBox& = BoundingBox::bounding_box_default(),
-                           const Projection* = nullptr);
+                           Projection* = nullptr);
 
     // -- Methods
 

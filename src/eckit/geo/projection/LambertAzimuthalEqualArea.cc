@@ -5,7 +5,6 @@
 #include "eckit/geo/projection/LambertAzimuthalEqualArea.h"
 
 #include <cmath>
-#include <vector>
 
 #include "eckit/geo/Figure.h"
 #include "eckit/spec/Custom.h"

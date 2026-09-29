@@ -4,9 +4,6 @@
 
 #include "eckit/geo/search/TreeMemory.h"
 
-#include <ostream>
-#include <vector>
-
 
 namespace eckit::geo::search {
 
